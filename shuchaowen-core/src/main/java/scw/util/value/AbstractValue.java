@@ -66,6 +66,8 @@ public abstract class AbstractValue implements Value {
 			v = getAsClass();
 		} else if (type.isEnum()) {
 			v = getAsEnum(type);
+		} else if(type == Value.class){
+			v = this;
 		} else {
 			v = getAsObjectNotSupport(type);
 		}

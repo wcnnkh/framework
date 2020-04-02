@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Enumeration;
 
-import scw.message.session.AbstractSessionManager;
-import scw.message.session.SessionManager;
+import scw.util.message.session.AbstractSessionManager;
+import scw.util.message.session.SessionManager;
 
 public abstract class WebSocketSessionManager extends AbstractSessionManager
 		implements SessionManager {

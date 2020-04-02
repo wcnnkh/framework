@@ -2,51 +2,51 @@ package scw.net.message.converter;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
-import scw.json.JSONUtils;
+import scw.json.JSONSupport;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 
-public class JsonMessageConverter extends AbstractTextMessageConverter {
-	private SupportMimeTypes<MimeType> supportMimeTypes = new SupportMimeTypes<MimeType>();
+public final class JsonMessageConverter extends
+		AbstractMessageConverter<Object> {
+	private static final long serialVersionUID = 1L;
+	public static final MimeType JSON_ALL = new MimeType("application",
+			"*+json");
+	private JSONSupport jsonSupport;
 
-	public JsonMessageConverter() {
-		supportMimeTypes.add(MimeTypeUtils.APPLICATION_JSON, MimeTypeUtils.TEXT_JSON,
-				new MimeType("application", "*+json"));
+	public JsonMessageConverter(JSONSupport jsonSupport) {
+		addAll(Arrays
+				.asList(MimeTypeUtils.APPLICATION_JSON, JSON_ALL, TEXT_ALL));
+		this.jsonSupport = jsonSupport;
 	}
 
 	@Override
-	protected boolean canRead(Type type) {
+	public boolean support(Class<?> clazz) {
 		return true;
 	}
 
 	@Override
-	protected boolean canRead(MimeType contentType) {
-		return supportMimeTypes.canRead(contentType);
+	protected Object readInternal(Type type, InputMessage inputMessage)
+			throws IOException, MessageConvertException {
+		String text = readTextBody(inputMessage);
+		if (text == null) {
+			return null;
+		}
+		return jsonSupport.parseObject(text, type);
 	}
 
 	@Override
-	protected boolean canWrite(Object body) {
-		return true;
-	}
-
-	@Override
-	protected boolean canWrite(MimeType contentType) {
-		return supportMimeTypes.canWrite(contentType);
-	}
-
-	@Override
-	protected Object readInternal(Type type, InputMessage inputMessage) throws IOException {
-		String text = read(inputMessage);
-		return JSONUtils.parseObject(text, type);
-	}
-
-	@Override
-	protected void writeInternal(Object body, MimeType contentType, OutputMessage outputMessage) throws IOException {
-		String text = JSONUtils.toJSONString(body);
-		write(text, contentType, outputMessage);
+	protected void writeInternal(Object body, MimeType contentType,
+			OutputMessage outputMessage) throws IOException,
+			MessageConvertException {
+		String text = jsonSupport.toJSONString(body);
+		if (text == null) {
+			return;
+		}
+		writeTextBody(text, contentType, outputMessage);
 	}
 
 }

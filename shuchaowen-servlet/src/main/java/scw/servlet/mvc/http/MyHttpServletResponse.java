@@ -55,11 +55,6 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements Http
 
 	public void flush() throws IOException {
 		for(Entry<String, List<String>> entry : headers.entrySet()){
-			List<String> values = entry.getValue();
-			if(CollectionUtils.isEmpty(values)){
-				continue;
-			}
-			
 			httpServletResponse.setHeader(entry.getKey(), StringUtils.collectionToDelimitedString(entry.getValue(), "; "));
 		}
 		httpServletResponse.flushBuffer();

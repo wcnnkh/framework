@@ -1,4 +1,4 @@
-package scw.message;
+package scw.util.message;
 
 public class ObjectFragmentMessage<T> extends AbstractMessage<T> implements
 		FragmentMessage<T> {

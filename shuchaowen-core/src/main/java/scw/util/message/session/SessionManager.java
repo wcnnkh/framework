@@ -1,8 +1,8 @@
-package scw.message.session;
+package scw.util.message.session;
 
 import java.util.Enumeration;
 
-import scw.message.Message;
+import scw.util.message.Message;
 
 public interface SessionManager {
 	Session getSession(String sessionId);

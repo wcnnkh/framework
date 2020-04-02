@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.message.session.Session;
+import scw.util.message.session.Session;
 
 public class LocalWebSocketSessionManager extends WebSocketSessionManager {
 	private static Logger logger = LoggerUtils

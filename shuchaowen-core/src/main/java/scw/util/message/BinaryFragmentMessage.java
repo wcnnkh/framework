@@ -1,4 +1,4 @@
-package scw.message;
+package scw.util.message;
 
 import java.nio.ByteBuffer;
 

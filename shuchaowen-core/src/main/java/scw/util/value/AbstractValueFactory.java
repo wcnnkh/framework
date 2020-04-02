@@ -193,6 +193,8 @@ public abstract class AbstractValueFactory<K> implements ValueFactory<K> {
 			value = getClass(key);
 		} else if (type.isEnum()) {
 			value = getEnum(key, type);
+		} else if(type == Value.class){
+			value = get(key);
 		} else {
 			value = getObjectSupport(key, type);
 		}

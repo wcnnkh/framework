@@ -1,7 +1,6 @@
 package scw.net;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -10,23 +9,12 @@ import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
-import scw.net.message.InputMessage;
-import scw.net.message.OutputMessage;
-import scw.net.message.converter.ByteArrayMessageConveter;
-import scw.net.message.converter.DefaultMessageConverterChain;
-import scw.net.message.converter.JsonMessageConverter;
-import scw.net.message.converter.MessageConverter;
-import scw.net.message.converter.MessageConverterChain;
-import scw.net.message.converter.StringMessageConverter;
 import scw.net.ssl.TrustAllManager;
 
 public final class NetworkUtils {
@@ -38,7 +26,6 @@ public final class NetworkUtils {
 	 * 注意:在初始化失败后可能为空
 	 */
 	public static final SSLSocketFactory TRUSE_ALL_SSL_SOCKET_FACTORY;
-	private static final LinkedList<MessageConverter> MESSAGE_CONVERTERS = new LinkedList<MessageConverter>();
 
 	static {
 		// 创建一个信任所有的
@@ -55,10 +42,6 @@ public final class NetworkUtils {
 			e.printStackTrace();
 		}
 		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
-
-		MESSAGE_CONVERTERS.add(new ByteArrayMessageConveter());
-		MESSAGE_CONVERTERS.add(new StringMessageConverter());
-		MESSAGE_CONVERTERS.add(new JsonMessageConverter());
 	}
 
 	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {
@@ -118,22 +101,6 @@ public final class NetworkUtils {
 	 */
 	public static boolean checkLocalPortCccupied(int port) {
 		return checkPortCccupied("127.0.0.1", port);
-	}
-
-	public static Collection<MessageConverter> getMessageConverters() {
-		return Collections.unmodifiableCollection(MESSAGE_CONVERTERS);
-	}
-
-	public static Object read(Type type, InputMessage inputMessage,
-			Collection<? extends MessageConverter> messageConverters) throws IOException {
-		MessageConverterChain chain = new DefaultMessageConverterChain(messageConverters, null);
-		return chain.read(type, inputMessage);
-	}
-
-	public static void write(Object body, MimeType contentType, OutputMessage outputMessage,
-			Collection<? extends MessageConverter> messageConverters) throws IOException {
-		MessageConverterChain chain = new DefaultMessageConverterChain(messageConverters, null);
-		chain.write(body, contentType, outputMessage);
 	}
 
 	public static URI toURI(String uri) {

@@ -1,4 +1,4 @@
-package scw.message;
+package scw.util.message;
 
 import scw.core.Assert;
 import scw.core.utils.ObjectUtils;

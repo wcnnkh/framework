@@ -3,7 +3,7 @@ package scw.websocket;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import scw.message.session.Session;
+import scw.util.message.session.Session;
 
 public interface WebSocketSession extends Session {
 

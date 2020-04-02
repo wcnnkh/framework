@@ -1,4 +1,4 @@
-package scw.message;
+package scw.util.message;
 
 public class TextFragmentMessage extends TextMessage implements FragmentMessage<String>{
 	private static final long serialVersionUID = 1L;

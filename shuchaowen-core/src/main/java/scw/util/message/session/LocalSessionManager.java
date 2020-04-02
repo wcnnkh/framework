@@ -1,4 +1,4 @@
-package scw.message.session;
+package scw.util.message.session;
 
 import java.io.IOException;
 import java.util.Enumeration;

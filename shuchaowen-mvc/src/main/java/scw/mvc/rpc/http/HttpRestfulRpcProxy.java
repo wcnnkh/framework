@@ -15,8 +15,9 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
 import scw.mvc.rpc.RpcConstants;
-import scw.mvc.rpc.support.ObjectRpcMessageConvert;
 import scw.net.http.HttpHeaders;
+import scw.net.message.converter.support.AllMessageConverter;
+import scw.serializer.ObjectMessageConveter;
 import scw.serializer.Serializer;
 import scw.util.value.property.PropertyFactory;
 
@@ -46,7 +47,8 @@ public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 		HttpRpcRequestFactory httpRpcRequestFactory = new HttpRestfulRpcRequestFactory(propertyFactory, host, cName,
 				shareHeaderSet.toArray(new String[0]));
 		this.httpRpcProxy = new HttpRpcProxy(propertyFactory, instanceFactory, httpRpcRequestFactory);
-		this.httpRpcProxy.add(new ObjectRpcMessageConvert(serializer, cName));
+		this.httpRpcProxy.add(new ObjectMessageConveter(serializer));
+		this.httpRpcProxy.add(new AllMessageConverter());
 	}
 
 	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)

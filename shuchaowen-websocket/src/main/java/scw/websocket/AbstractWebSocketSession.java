@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import scw.lang.NotSupportException;
-import scw.message.BinaryMessage;
-import scw.message.FragmentMessage;
-import scw.message.Message;
-import scw.message.TextMessage;
+import scw.util.message.BinaryMessage;
+import scw.util.message.FragmentMessage;
+import scw.util.message.Message;
+import scw.util.message.TextMessage;
 
 public abstract class AbstractWebSocketSession implements WebSocketSession {
 

@@ -80,5 +80,5 @@ public interface HttpClient {
 			HttpHeaders httpHeaders) throws HttpClientException;
 
 	SerializableClientHttpInputMessage execute(String url, Method method, byte[] body, MediaType contentType,
-			HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory) throws HttpClientException;
+			HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory) throws HttpClientException;	
 }

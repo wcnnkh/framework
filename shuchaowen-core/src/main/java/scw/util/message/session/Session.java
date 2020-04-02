@@ -1,8 +1,8 @@
-package scw.message.session;
+package scw.util.message.session;
 
 import java.io.Closeable;
 
-import scw.message.Message;
+import scw.util.message.Message;
 
 public interface Session extends Closeable {
 	String getId();

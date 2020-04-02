@@ -36,7 +36,7 @@ public final class ApplicationConfigUtils {
 		return getPackageName(propertyFactory, "scan.static");
 	}
 
-	public static String getAnnotationPackage(PropertyFactory propertyFactory) {
+	public static String getAnnotationPackage(PropertyFactory propertyFactory) { 
 		return getPackageName(propertyFactory, "scan.package");
 	}
 

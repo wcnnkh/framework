@@ -1,9 +1,9 @@
-package scw.message.session;
+package scw.util.message.session;
 
 import java.util.Enumeration;
 
 import scw.logger.Logger;
-import scw.message.Message;
+import scw.util.message.Message;
 
 public abstract class AbstractSessionManager implements SessionManager {
 	protected abstract Logger getLogger();

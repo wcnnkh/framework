@@ -1,4 +1,4 @@
-package scw.message;
+package scw.util.message;
 
 public class ObjectMessage<T> extends AbstractMessage<T> {
 	private int length;

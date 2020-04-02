@@ -17,6 +17,7 @@
 package scw.core;
 
 import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 
 import scw.asm.Opcodes;
 import scw.core.utils.StringUtils;
@@ -55,7 +56,9 @@ public class Constants {
 	public static final String DEFAULT_CHARSET_NAME = StringUtils.toString(
 			GlobalPropertyFactory.getInstance().getString(
 					"constants.default.charsetName"), "UTF-8");
-
+	
+	public static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_CHARSET_NAME);
+	
 	/**
 	 * The ASM version used internally throughout the framework.
 	 *

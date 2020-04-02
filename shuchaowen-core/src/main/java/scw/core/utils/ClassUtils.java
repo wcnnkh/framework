@@ -36,9 +36,6 @@ public final class ClassUtils {
 	/** The package separator character: '.' */
 	private static final char PACKAGE_SEPARATOR = '.';
 
-	private static final String TYPE_CLASS_PREFIX = "class ";
-	private static final String TYPE_INTERFACE_PREFIX = "interface ";
-
 	/** The inner class separator character: '$' */
 	private static final char INNER_CLASS_SEPARATOR = '$';
 
@@ -695,13 +692,12 @@ public final class ClassUtils {
 			Class<?> elementClass = forName(elementName, initialize, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
-
-		if (name.startsWith(TYPE_CLASS_PREFIX)) {
-			return forName(name.substring(TYPE_CLASS_PREFIX.length()), initialize, classLoader);
-		}
-
-		if (name.startsWith(TYPE_INTERFACE_PREFIX)) {
-			return forName(name.substring(TYPE_INTERFACE_PREFIX.length()), initialize, classLoader);
+		
+		//对于泛型字符串处理
+		int index = name.indexOf(" ");
+		if(index != -1){
+			int end = name.indexOf("<", index);
+			return forName(end == -1? name.substring(index):name.substring(index, end), initialize, classLoader);
 		}
 
 		ClassLoader classLoaderToUse = classLoader;
