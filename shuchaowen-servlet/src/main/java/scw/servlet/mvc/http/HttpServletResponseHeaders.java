@@ -81,11 +81,16 @@ public class HttpServletResponseHeaders extends HttpHeaders {
 			this.httpServletResponse
 					.setContentType(getContentType().toString());
 		}
+		
 		if (this.httpServletResponse.getCharacterEncoding() == null
 				&& getContentType() != null
 				&& getContentType().getCharsetName() != null) {
 			this.httpServletResponse.setCharacterEncoding(getContentType()
 					.getCharsetName());
+		}
+		
+		if(getContentLength() >= 0){
+			this.httpServletResponse.setContentLength((int)getContentLength());
 		}
 		readyOnly();
 	}

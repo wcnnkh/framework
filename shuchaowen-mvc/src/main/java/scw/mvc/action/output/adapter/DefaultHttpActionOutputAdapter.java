@@ -2,6 +2,7 @@ package scw.mvc.action.output.adapter;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.mvc.MVCUtils;
 import scw.mvc.View;
@@ -80,6 +81,8 @@ public class DefaultHttpActionOutputAdapter extends HttpActionOutputAdapter {
 		if (channel.isLogEnabled()) {
 			channel.log(content);
 		}
+		
+		XUtils.destroy(channel.getResponse());
 	}
 
 	@Override

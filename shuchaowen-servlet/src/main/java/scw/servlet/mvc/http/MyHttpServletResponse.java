@@ -6,16 +6,17 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.core.Destroy;
 import scw.mvc.http.HttpResponse;
+import scw.net.MimeType;
 import scw.net.http.Cookie;
 import scw.net.http.HttpHeaders;
 import scw.net.message.AbstractOutputMessage;
 
 public class MyHttpServletResponse extends AbstractOutputMessage implements
-		HttpResponse, Destroy {
+		HttpResponse {
 	private HttpServletResponse httpServletResponse;
 	private HttpServletResponseHeaders headers;
+	private boolean bodyUse = false;
 
 	public MyHttpServletResponse(HttpServletResponse httpServletResponse) {
 		this.httpServletResponse = httpServletResponse;
@@ -23,7 +24,15 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 	}
 
 	public OutputStream getBody() throws IOException {
+		headers.write();
+		bodyUse = true;
 		return httpServletResponse.getOutputStream();
+	}
+	
+	public PrintWriter getWriter() throws IOException {
+		headers.write();
+		bodyUse = true;
+		return httpServletResponse.getWriter();
 	}
 
 	public final HttpHeaders getHeaders() {
@@ -37,11 +46,17 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 	public void setCharacterEncoding(String env) {
 		httpServletResponse.setCharacterEncoding(env);
 	}
-
-	public PrintWriter getWriter() throws IOException {
-		return httpServletResponse.getWriter();
+	
+	@Override
+	public void setContentType(MimeType contentType) {
+		setContentType(contentType.toString());
 	}
-
+	
+	@Override
+	public void setContentLength(long contentLength) {
+		httpServletResponse.setContentLength((int)contentLength);
+	}
+	
 	public void addCookie(Cookie cookie) {
 		if (cookie instanceof HttpServletCookie) {
 			httpServletResponse.addCookie(((HttpServletCookie) cookie)
@@ -104,7 +119,10 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 		return httpServletResponse;
 	}
 
-	public void destroy() {
+	public void flush() throws IOException {
 		headers.write();
+		if(bodyUse){
+			httpServletResponse.flushBuffer();
+		}
 	}
 }

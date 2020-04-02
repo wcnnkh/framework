@@ -1,5 +1,7 @@
 package scw.core.utils;
 
+import java.io.Flushable;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -34,7 +36,8 @@ public final class XUtils {
 	private static final boolean isSupportJdk6;
 
 	static {
-		isSupportJdk6 = ReflectionUtils.getMethod(String.class, "getBytes", new Class<?>[] { Charset.class }) != null;
+		isSupportJdk6 = ReflectionUtils.getMethod(String.class, "getBytes",
+				new Class<?>[] { Charset.class }) != null;
 	}
 
 	public static boolean isSupportJdk6() {
@@ -114,7 +117,8 @@ public final class XUtils {
 			return;
 		}
 
-		final CountDownLatch countDownLatch = new CountDownLatch(runnables.size());
+		final CountDownLatch countDownLatch = new CountDownLatch(
+				runnables.size());
 		for (final Runnable runnable : runnables) {
 			new Thread(new Runnable() {
 
@@ -132,7 +136,8 @@ public final class XUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <V> Collection<Future<V>> submit(ExecutorService executorService, Collection<Callable<V>> callables) {
+	public static <V> Collection<Future<V>> submit(
+			ExecutorService executorService, Collection<Callable<V>> callables) {
 		if (CollectionUtils.isEmpty(callables)) {
 			return Collections.EMPTY_LIST;
 		}
@@ -145,8 +150,9 @@ public final class XUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <V> Collection<V> getAndAwait(Collection<Future<V>> futures, long timeout, TimeUnit unit)
-			throws InterruptedException, ExecutionException, TimeoutException {
+	public static <V> Collection<V> getAndAwait(Collection<Future<V>> futures,
+			long timeout, TimeUnit unit) throws InterruptedException,
+			ExecutionException, TimeoutException {
 		if (CollectionUtils.isEmpty(futures)) {
 			return Collections.EMPTY_LIST;
 		}
@@ -172,19 +178,23 @@ public final class XUtils {
 		return list;
 	}
 
-	public static <V> Collection<V> submitAndAwait(ExecutorService executorService, Collection<Callable<V>> callables,
-			long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+	public static <V> Collection<V> submitAndAwait(
+			ExecutorService executorService, Collection<Callable<V>> callables,
+			long timeout, TimeUnit unit) throws InterruptedException,
+			ExecutionException, TimeoutException {
 		Collection<Future<V>> collection = submit(executorService, callables);
 		return getAndAwait(collection, timeout, unit);
 	}
 
-	public static <V> Collection<V> submitAndAwait(ExecutorService executorService, Collection<Callable<V>> callables)
+	public static <V> Collection<V> submitAndAwait(
+			ExecutorService executorService, Collection<Callable<V>> callables)
 			throws InterruptedException, ExecutionException {
 		Collection<Future<V>> collection = submit(executorService, callables);
 		return getAndAwait(collection);
 	}
 
-	public static <T, R> T useResource(ResourceFactory<R> resourceFactory, Converter<R, T> converter) {
+	public static <T, R> T useResource(ResourceFactory<R> resourceFactory,
+			Converter<R, T> converter) {
 		R resource = null;
 		try {
 			resource = resourceFactory.getResource();
@@ -226,8 +236,18 @@ public final class XUtils {
 		}
 	}
 
-	public static <T, R> T execute(ResourceFactory<R> resourceFactory, Converter<R, T> resourceConverter)
-			throws Exception {
+	public static void flush(Object flushable) throws IOException {
+		if(flushable == null){
+			return ;
+		}
+		
+		if (flushable instanceof Flushable) {
+			((Flushable) flushable).flush();
+		}
+	}
+
+	public static <T, R> T execute(ResourceFactory<R> resourceFactory,
+			Converter<R, T> resourceConverter) throws Exception {
 		R r = null;
 		try {
 			r = resourceFactory.getResource();
@@ -254,7 +274,8 @@ public final class XUtils {
 
 		Map<K, Object> valueMap = new LinkedHashMap<K, Object>();
 		for (Entry<? extends K, ?> entry : map.entrySet()) {
-			valueMap.put(entry.getKey(), toParameterMapTransformation(entry.getValue()));
+			valueMap.put(entry.getKey(),
+					toParameterMapTransformation(entry.getValue()));
 		}
 		return valueMap;
 	}
