@@ -7,23 +7,23 @@ import scw.mvc.action.exception.ActionExceptionHandlerChain;
 import scw.mvc.action.filter.Filter;
 import scw.mvc.action.filter.FilterChain;
 import scw.mvc.action.filter.IteratorFilterChain;
-import scw.mvc.action.output.ActionOutput;
 import scw.mvc.context.ContextManager;
 import scw.mvc.handler.Handler;
 import scw.mvc.handler.HandlerChain;
+import scw.mvc.output.Output;
 
 public class ActionHandler implements Handler {
 	private final ActionFactory actionFactory;
 	private final Collection<Filter> filters;
-	private final ActionOutput actionOutput;
+	private Output output;
 	private final ActionExceptionHandlerChain actionExceptionHandlerChain;
 
 	public ActionHandler(ActionFactory actionFactory,
-			Collection<Filter> filters, ActionOutput actionOutput,
+			Collection<Filter> filters, Output output,
 			ActionExceptionHandlerChain actionExceptionHandlerChain) {
 		this.actionFactory = actionFactory;
 		this.filters = filters;
-		this.actionOutput = actionOutput;
+		this.output = output;
 		this.actionExceptionHandlerChain = actionExceptionHandlerChain;
 	}
 
@@ -34,7 +34,7 @@ public class ActionHandler implements Handler {
 			return;
 		}
 
-		actionOutput.output(channel, action, doAction(channel, action, chain));
+		output.write(channel, doAction(channel, action, chain));
 	}
 
 	protected Object doAction(Channel channel, Action action, HandlerChain chain) {

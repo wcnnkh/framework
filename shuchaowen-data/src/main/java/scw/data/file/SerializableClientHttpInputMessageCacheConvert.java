@@ -1,12 +1,14 @@
 package scw.data.file;
 
 import scw.core.Converter;
-import scw.net.http.HttpUtils;
-import scw.net.http.client.SerializableClientHttpInputMessage;
+import scw.net.client.http.HttpUtils;
+import scw.net.message.SerializableInputMessage;
 
-public class SerializableClientHttpInputMessageCacheConvert implements Converter<String, SerializableClientHttpInputMessage> {
+public class SerializableClientHttpInputMessageCacheConvert implements
+		Converter<String, SerializableInputMessage> {
 
-	public SerializableClientHttpInputMessage convert(String url) throws Exception {
-		return HttpUtils.getHttpClient().getToSerializableInputMessage(url);
+	public SerializableInputMessage convert(String url) throws Exception {
+		return HttpUtils.getHttpClient().getSerializableHttpInputMessage(url,
+				null);
 	}
 }

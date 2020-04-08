@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
-import scw.net.http.HttpUtils;
+import scw.net.client.http.HttpUtils;
 import scw.util.value.property.PropertyFactory;
 
 public class SimpleProperties extends AbstractProperties {
@@ -62,7 +62,8 @@ public class SimpleProperties extends AbstractProperties {
 		}
 
 		public String getValue() {
-			String path = XMLUtils.formatNodeValue(getPropertyFactory(), getNode(), getFilePath(getNode()));
+			String path = XMLUtils.formatNodeValue(getPropertyFactory(),
+					getNode(), getFilePath(getNode()));
 			return ResourceUtils.getResourceOperations().getFileContent(path,
 					XmlPropertyUtils.getCharsetName(getNode()));
 		}
@@ -75,8 +76,9 @@ public class SimpleProperties extends AbstractProperties {
 		}
 
 		public String getValue() {
-			String url = XMLUtils.formatNodeValue(getPropertyFactory(), getNode(), getURL(getNode()));
-			return HttpUtils.getHttpClient().get(url, XmlPropertyUtils.getCharsetName(getNode()));
+			String url = XMLUtils.formatNodeValue(getPropertyFactory(),
+					getNode(), getURL(getNode()));
+			return HttpUtils.getHttpClient().get(url, String.class);
 		}
 	}
 
@@ -87,7 +89,8 @@ public class SimpleProperties extends AbstractProperties {
 		}
 
 		public String getValue() {
-			return XMLUtils.getNodeAttributeValueOrNodeContent(getPropertyFactory(), getNode(), "value");
+			return XMLUtils.getNodeAttributeValueOrNodeContent(
+					getPropertyFactory(), getNode(), "value");
 		}
 	}
 }

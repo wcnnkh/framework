@@ -3,6 +3,7 @@ package scw.net.message.converter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+import scw.io.IOUtils;
 import scw.net.MimeType;
 import scw.net.http.MediaType;
 import scw.net.message.InputMessage;
@@ -25,7 +26,7 @@ public class ByteArrayMessageConverter extends AbstractMessageConverter<byte[]>{
 	@Override
 	protected byte[] readInternal(Type type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
-		return inputMessage.toByteArray();
+		return IOUtils.toByteArray(inputMessage.getBody());
 	}
 
 	@Override

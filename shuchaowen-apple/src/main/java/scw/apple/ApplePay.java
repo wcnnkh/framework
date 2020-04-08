@@ -7,7 +7,8 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.http.HttpUtils;
+import scw.net.client.http.HttpUtils;
+import scw.net.http.MediaType;
 
 public final class ApplePay {
 	private static Logger logger = LoggerFactory.getLogger(ApplePay.class);
@@ -24,8 +25,8 @@ public final class ApplePay {
 	 *            可选
 	 * @return
 	 */
-	private ReceiptResponse checkReceipt(String host, String receiptData, String password,
-			String excludeOldTransactions) {
+	private ReceiptResponse checkReceipt(String host, String receiptData,
+			String password, String excludeOldTransactions) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("receipt-data", receiptData);
 		if (!StringUtils.isEmpty(password)) {
@@ -36,7 +37,8 @@ public final class ApplePay {
 			map.put("exclude-old-transactions", excludeOldTransactions);
 		}
 
-		String response = HttpUtils.getHttpClient().postForJson(host, JSONUtils.toJSONString(map));
+		String response = HttpUtils.getHttpClient().post(host, String.class,
+				map, MediaType.APPLICATION_JSON);
 		logger.debug(response);
 		return JSONUtils.parseObject(response, ReceiptResponse.class);
 	}
@@ -49,11 +51,14 @@ public final class ApplePay {
 	 * @param excludeOldTransactions
 	 * @return
 	 */
-	public ReceiptResponse autoCheckReceipt(String receiptData, String password, String excludeOldTransactions) {
-		ReceiptResponse res = checkReceipt(DEV_URL, receiptData, password, excludeOldTransactions);
+	public ReceiptResponse autoCheckReceipt(String receiptData,
+			String password, String excludeOldTransactions) {
+		ReceiptResponse res = checkReceipt(DEV_URL, receiptData, password,
+				excludeOldTransactions);
 		res.setSandbox(false);
 		if (res.isOperationModeError()) {// 这是一个测试环境下的订单或者收据无法通过身份验证。
-			res = checkReceipt(SANDBOX_URL, receiptData, password, excludeOldTransactions);
+			res = checkReceipt(SANDBOX_URL, receiptData, password,
+					excludeOldTransactions);
 			res.setSandbox(true);
 		}
 		return res;

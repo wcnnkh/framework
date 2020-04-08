@@ -77,6 +77,6 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 	}
 
 	public AsyncControl getAsyncControl() {
-		return new HttpServletAsyncControl(getRequest(), getResponse());
+		return new HttpServletAsyncControl(this);
 	}
 }

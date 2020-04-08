@@ -8,7 +8,8 @@ import scw.core.utils.XUtils;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.net.ToParameterMap;
-import scw.net.http.HttpUtils;
+import scw.net.client.http.HttpUtils;
+import scw.net.http.MediaType;
 import scw.security.signature.SignType;
 import scw.security.signature.SignatureUtils;
 
@@ -92,7 +93,7 @@ public class KDNiao {
 		}
 		parameterMap.put("DataSign", dataSign);
 		parameterMap.put("DataType", "2");
-		return HttpUtils.getHttpClient().postForFrom(requestUrl, parameterMap, CHARSET_NAME);
+		return HttpUtils.getHttpClient().post(requestUrl, String.class, parameterMap, new MediaType(MediaType.APPLICATION_JSON_VALUE, CHARSET_NAME));
 	}
 
 	/**

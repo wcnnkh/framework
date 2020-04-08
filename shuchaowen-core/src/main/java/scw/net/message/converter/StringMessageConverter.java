@@ -9,13 +9,13 @@ import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 import scw.util.value.StringValue;
 
-public class StringMessageConverter extends AbstractMessageConverter<Object>{
+public class StringMessageConverter extends AbstractMessageConverter<Object> {
 	private static final long serialVersionUID = 1L;
 
-	public StringMessageConverter(){
+	public StringMessageConverter() {
 		add(MimeTypeUtils.TEXT_PLAIN, TEXT_ALL);
 	}
-	
+
 	@Override
 	public boolean support(Class<?> clazz) {
 		return true;
@@ -25,7 +25,9 @@ public class StringMessageConverter extends AbstractMessageConverter<Object>{
 	protected Object readInternal(Type type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		String text = readTextBody(inputMessage);
-		return new StringValue(text).getAsObject(type);
+		StringValue value = new StringValue(text);
+		value.setJsonSupport(getJsonSupport());
+		return value.getAsObject(type);
 	}
 
 	@Override

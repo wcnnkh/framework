@@ -24,18 +24,18 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 	}
 
 	public OutputStream getBody() throws IOException {
-		headers.write();
 		bodyUse = true;
+		headers.write();
 		return httpServletResponse.getOutputStream();
 	}
 	
 	public PrintWriter getWriter() throws IOException {
-		headers.write();
 		bodyUse = true;
+		headers.write();
 		return httpServletResponse.getWriter();
 	}
 
-	public final HttpHeaders getHeaders() {
+	public HttpHeaders getHeaders() {
 		return headers;
 	}
 
@@ -105,10 +105,6 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 
 	public int getStatus() {
 		return httpServletResponse.getStatus();
-	}
-
-	public boolean isCommitted() {
-		return httpServletResponse.isCommitted();
 	}
 
 	public void setContentType(String contentType) {

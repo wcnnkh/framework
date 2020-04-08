@@ -22,51 +22,39 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.servlet.AsyncContext;
 import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import scw.core.Assert;
 import scw.lang.NotSupportException;
 import scw.mvc.AsyncControl;
+import scw.mvc.Channel;
+import scw.mvc.MultiAsyncListener;
 
-/**
- * A {@link ServerHttpAsyncRequestControl} to use on Servlet containers (Servlet
- * 3.0+).
- *
- * @author Rossen Stoyanchev
- * @since 4.0
- */
 public class HttpServletAsyncControl implements AsyncControl, AsyncListener {
 
 	private static final long NO_TIMEOUT_VALUE = Long.MIN_VALUE;
-	private final MyHttpServletRequest request;
-	private final MyHttpServletResponse response;
-
+	private final HttpServletChannel httpServletChannel;
 	private AsyncContext asyncContext;
 
 	private AtomicBoolean asyncCompleted = new AtomicBoolean(false);
+	private MultiAsyncListener multiAsyncListener = new MultiAsyncListener();
 
-	/**
-	 * Constructor accepting a request and response pair that are expected to be
-	 * of type {@link ServletServerHttpRequest} and
-	 * {@link ServletServerHttpResponse} respectively.
-	 */
-	public HttpServletAsyncControl(MyHttpServletRequest request, MyHttpServletResponse response) {
-		Assert.notNull(request, "request is required");
-		Assert.notNull(response, "response is required");
+	public HttpServletAsyncControl(HttpServletChannel httpServletChannel) {
+		Assert.notNull(httpServletChannel, "channel is required");
 
-		if (!request.getHttpServletRequest().isAsyncSupported()) {
-			throw new NotSupportException("Async support must be enabled on a servlet and for all filters involved "
-					+ "in async request processing. This is done in Java code using the Servlet API "
-					+ "or by adding \"<async-supported>true</async-supported>\" to servlet and "
-					+ "filter declarations in web.xml. Also you must use a Servlet 3.0+ container");
+		if (!httpServletChannel.getHttpServletRequest().isAsyncSupported()) {
+			throw new NotSupportException(
+					"Async support must be enabled on a servlet and for all filters involved "
+							+ "in async request processing. This is done in Java code using the Servlet API "
+							+ "or by adding \"<async-supported>true</async-supported>\" to servlet and "
+							+ "filter declarations in web.xml. Also you must use a Servlet 3.0+ container");
 		}
-		this.request = request;
-		this.response = response;
+
+		this.httpServletChannel = httpServletChannel;
 	}
 
 	public boolean isStarted() {
-		return (this.asyncContext != null && this.request.getHttpServletRequest().isAsyncStarted());
+		return (this.asyncContext != null && this.httpServletChannel
+				.getHttpServletRequest().isAsyncStarted());
 	}
 
 	public boolean isCompleted() {
@@ -83,9 +71,9 @@ public class HttpServletAsyncControl implements AsyncControl, AsyncListener {
 			return;
 		}
 
-		HttpServletRequest servletRequest = this.request.getHttpServletRequest();
-		HttpServletResponse servletResponse = this.response.getHttpServletResponse();
-		this.asyncContext = servletRequest.startAsync(servletRequest, servletResponse);
+		this.asyncContext = httpServletChannel.getHttpServletRequest()
+				.startAsync(httpServletChannel.getHttpServletRequest(),
+						httpServletChannel.getHttpServletResponse());
 		this.asyncContext.addListener(this);
 		if (timeout != NO_TIMEOUT_VALUE) {
 			this.asyncContext.setTimeout(timeout);
@@ -103,25 +91,33 @@ public class HttpServletAsyncControl implements AsyncControl, AsyncListener {
 	// ---------------------------------------------------------------------
 
 	public void onComplete(AsyncEvent event) throws IOException {
+		multiAsyncListener.onComplete(new scw.mvc.AsyncEvent(this, event
+				.getThrowable()));
 		this.asyncContext = null;
 		this.asyncCompleted.set(true);
 	}
 
 	public void onStartAsync(AsyncEvent event) throws IOException {
+		multiAsyncListener.onStartAsync(new scw.mvc.AsyncEvent(this, event
+				.getThrowable()));
 	}
 
 	public void onError(AsyncEvent event) throws IOException {
+		multiAsyncListener.onError(new scw.mvc.AsyncEvent(this, event
+				.getThrowable()));
 	}
 
 	public void onTimeout(AsyncEvent event) throws IOException {
+		multiAsyncListener.onTimeout(new scw.mvc.AsyncEvent(this, event
+				.getThrowable()));
 	}
 
-	public MyHttpServletRequest getRequest() {
-		return request;
+	public Channel getChannel() {
+		return httpServletChannel;
 	}
 
-	public MyHttpServletResponse getResponse() {
-		return response;
+	public void addListener(scw.mvc.AsyncListener asyncListener) {
+		multiAsyncListener.add(asyncListener);
 	}
 
 }

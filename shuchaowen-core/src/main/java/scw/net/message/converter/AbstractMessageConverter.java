@@ -6,8 +6,11 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Enumeration;
 
+import scw.core.Constants;
 import scw.core.utils.TypeUtils;
 import scw.io.IOUtils;
+import scw.json.JSONSupport;
+import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;
@@ -22,10 +25,10 @@ import scw.net.message.OutputMessage;
 public abstract class AbstractMessageConverter<T> extends MimeTypes
 		implements MessageConverter {
 	private static final long serialVersionUID = 1L;
-	protected transient Logger logger = LoggerUtils.getLogger(getClass());
+	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
-	
-	private Charset defaultCharset;
+	private Charset defaultCharset = Constants.DEFAULT_CHARSET;
+	private JSONSupport jsonSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
 
 	public Enumeration<MimeType> enumerationSupportMimeTypes() {
 		return Collections.enumeration(this);
@@ -36,6 +39,14 @@ public abstract class AbstractMessageConverter<T> extends MimeTypes
 			add(mimeType);
 		}
 		return this;
+	}
+
+	public JSONSupport getJsonSupport() {
+		return jsonSupport;
+	}
+
+	public void setJsonSupport(JSONSupport jsonSupport) {
+		this.jsonSupport = jsonSupport;
 	}
 
 	public Charset getDefaultCharset() {
@@ -159,11 +170,15 @@ public abstract class AbstractMessageConverter<T> extends MimeTypes
 	}
 
 	protected String readTextBody(InputMessage inputMessage) throws IOException {
-		return inputMessage.convertToString(getCharset(inputMessage).name());
+		return IOUtils.toString(inputMessage.getBody(), getCharset(inputMessage).name());
 	}
 
 	protected void writeTextBody(String text, MimeType contentType,
 			OutputMessage outputMessage) throws IOException {
+		if(text == null){
+			return ;
+		}
+		
 		IOUtils.write(text, outputMessage.getBody(), getCharset(outputMessage)
 				.name());
 	}

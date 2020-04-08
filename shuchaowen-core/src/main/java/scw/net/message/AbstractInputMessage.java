@@ -27,10 +27,6 @@ public abstract class AbstractInputMessage extends AbstractMessage implements In
 		return Constants.DEFAULT_CHARSET_NAME;
 	}
 
-	public String convertToString() throws IOException, MessageConvertException {
-		return convertToString(getCharsetName());
-	}
-
 	public String getCharsetName() {
 		String charsetName = null;
 		MimeType mimeType = getContentType();

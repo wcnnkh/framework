@@ -5,11 +5,13 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 
 import scw.core.utils.StringUtils;
+import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 
 public class StringValue extends AbstractValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String value;
+	private transient JSONSupport jsonSupport;
 	
 	public StringValue(String value){
 		this(value, DefaultValueDefinition.DEFAULT_VALUE_DEFINITION);
@@ -20,6 +22,14 @@ public class StringValue extends AbstractValue implements Serializable {
 		this.value = value;
 	}
 	
+	public JSONSupport getJsonSupport() {
+		return jsonSupport == null? JSONUtils.DEFAULT_JSON_SUPPORT:jsonSupport;
+	}
+
+	public void setJsonSupport(JSONSupport jsonSupport) {
+		this.jsonSupport = jsonSupport;
+	}
+
 	public String getAsString() {
 		return value;
 	}
@@ -64,11 +74,11 @@ public class StringValue extends AbstractValue implements Serializable {
 	
 	@Override
 	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		return JSONUtils.parseObject(getAsString(), type);
+		return getJsonSupport().parseObject(getAsString(), type);
 	}
 	
 	@Override
 	protected <T> T getAsObjectNotSupport(Type type) {
-		return JSONUtils.parseObject(getAsString(), type);
+		return getJsonSupport().parseObject(getAsString(), type);
 	}
 }

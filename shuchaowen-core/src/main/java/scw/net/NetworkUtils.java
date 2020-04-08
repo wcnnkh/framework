@@ -10,11 +10,15 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
+import scw.net.message.Headers;
+import scw.net.message.InputMessage;
+import scw.net.message.OutputMessage;
 import scw.net.ssl.TrustAllManager;
 
 public final class NetworkUtils {
@@ -41,10 +45,12 @@ public final class NetworkUtils {
 		} catch (KeyManagementException e) {
 			e.printStackTrace();
 		}
-		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
+		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc
+				.getSocketFactory();
 	}
 
-	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {
+	public static List<InetSocketAddress> parseInetSocketAddressList(
+			String address) {
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
 		String[] arr = StringUtils.commonSplit(address);
 		for (String a : arr) {
@@ -109,5 +115,37 @@ public final class NetworkUtils {
 		} catch (URISyntaxException e) {
 			throw new IllegalStateException("Failed to URI", e);
 		}
+	}
+
+	public static void writeHeader(InputMessage inputMessage,
+			OutputMessage outputMessage) throws IOException {
+		if (outputMessage.getContentLength() < 0) {
+			long len = outputMessage.getContentLength();
+			if (len >= 0) {
+				outputMessage.setContentLength(len);
+			}
+		}
+
+		if (outputMessage.getContentType() == null) {
+			MimeType mimeType = inputMessage.getContentType();
+			if (mimeType != null) {
+				outputMessage.setContentType(mimeType);
+			}
+		}
+
+		Headers headers = inputMessage.getHeaders();
+		if (headers != null) {
+			for (Entry<String, List<String>> entry : headers.entrySet()) {
+				for (String value : entry.getValue()) {
+					outputMessage.getHeaders().add(entry.getKey(), value);
+				}
+			}
+		}
+	}
+
+	public static void write(InputMessage inputMessage,
+			OutputMessage outputMessage) throws IOException {
+		writeHeader(inputMessage, outputMessage);
+		IOUtils.write(inputMessage.getBody(), outputMessage.getBody());
 	}
 }

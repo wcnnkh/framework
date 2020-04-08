@@ -676,18 +676,6 @@ public final class XMLUtils {
 			throw new RuntimeException(e);
 		}
 	}
-
-	public static LinkedHashMap<String, String> nodeList2Map(NodeList nodeList) {
-		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
-			Node node = nodeList.item(i);
-			if (node == null) {
-				continue;
-			}
-			map.put(node.getNodeName(), node.getNodeValue());
-		}
-		return map;
-	}
 }
 
 final class MyNodeList extends ArrayList<Node> implements NodeList {

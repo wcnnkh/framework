@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 
-import scw.json.JSONSupport;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
+import scw.net.client.http.HttpUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 
@@ -15,12 +15,10 @@ public final class JsonMessageConverter extends
 	private static final long serialVersionUID = 1L;
 	public static final MimeType JSON_ALL = new MimeType("application",
 			"*+json");
-	private JSONSupport jsonSupport;
 
-	public JsonMessageConverter(JSONSupport jsonSupport) {
+	public JsonMessageConverter() {
 		addAll(Arrays
 				.asList(MimeTypeUtils.APPLICATION_JSON, JSON_ALL, TEXT_ALL));
-		this.jsonSupport = jsonSupport;
 	}
 
 	@Override
@@ -35,14 +33,14 @@ public final class JsonMessageConverter extends
 		if (text == null) {
 			return null;
 		}
-		return jsonSupport.parseObject(text, type);
+		return getJsonSupport().parseObject(text, type);
 	}
 
 	@Override
 	protected void writeInternal(Object body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
-		String text = jsonSupport.toJSONString(body);
+		String text = HttpUtils.toJsonString(body, getJsonSupport());
 		if (text == null) {
 			return;
 		}

@@ -45,6 +45,7 @@ public abstract class AbstractChannel extends
 	private final long createTime;
 	private final JSONSupport jsonSupport;
 	private final ChannelBeanFactory channelBeanFactory;
+	private boolean completed = false;
 
 	public AbstractChannel(BeanFactory beanFactory, JSONSupport jsonSupport) {
 		this.createTime = System.currentTimeMillis();
@@ -88,8 +89,16 @@ public abstract class AbstractChannel extends
 	public final JSONSupport getJsonSupport() {
 		return jsonSupport;
 	}
+	
+	public boolean isCompleted() {
+		return completed;
+	}
 
 	public void destroy() {
+		if(isCompleted()){
+			return ;
+		}
+		
 		attributeMap = null;
 		XUtils.destroy(channelBeanFactory);
 		try {
@@ -97,6 +106,8 @@ public abstract class AbstractChannel extends
 		} catch (IOException e) {
 			getLogger().error(e, "resposne flush error for channel:{}", toString());
 		}
+		
+		completed = true;
 	}
 
 	public final <T> T getBean(Class<T> type) {

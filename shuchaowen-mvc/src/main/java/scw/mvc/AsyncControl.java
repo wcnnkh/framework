@@ -1,9 +1,7 @@
 package scw.mvc;
 
 public interface AsyncControl {
-	Request getRequest();
-
-	Response getResponse();
+	Channel getChannel();
 
 	void start();
 
@@ -14,4 +12,6 @@ public interface AsyncControl {
 	void complete();
 
 	boolean isCompleted();
+	
+	void addListener(AsyncListener asyncListener);
 }

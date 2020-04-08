@@ -13,12 +13,15 @@ import scw.integration.sms.SmsException;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.http.HttpUtils;
+import scw.net.client.http.HttpUtils;
+import scw.net.http.MediaType;
 import scw.security.signature.SignatureUtils;
 import scw.util.phone.PhoneNumber;
 
-public final class ALiDaYuShortMessageService implements ShortMessageService<ALiDaYuMessage, ALiDaYuResult> {
-	private static Logger logger = LoggerFactory.getLogger(ALiDaYuShortMessageService.class);
+public final class ALiDaYuShortMessageService implements
+		ShortMessageService<ALiDaYuMessage, ALiDaYuResult> {
+	private static Logger logger = LoggerFactory
+			.getLogger(ALiDaYuShortMessageService.class);
 	private final String host;
 	private final String appKey;
 	private final String version;
@@ -26,8 +29,8 @@ public final class ALiDaYuShortMessageService implements ShortMessageService<ALi
 	private final String sign_method;
 	private final String appSecret;
 
-	public ALiDaYuShortMessageService(String host, String appKey, String version, String format, String sign_method,
-			String appSecret) {
+	public ALiDaYuShortMessageService(String host, String appKey,
+			String version, String format, String sign_method, String appSecret) {
 		this.host = host;
 		this.appKey = appKey;
 		this.version = version;
@@ -36,11 +39,13 @@ public final class ALiDaYuShortMessageService implements ShortMessageService<ALi
 		this.appSecret = appSecret;
 	}
 
-	public ALiDaYuResult send(ALiDaYuMessage message, PhoneNumber phoneNumber) throws SmsException {
+	public ALiDaYuResult send(ALiDaYuMessage message, PhoneNumber phoneNumber)
+			throws SmsException {
 		return send(message, Arrays.asList(phoneNumber));
 	}
 
-	public ALiDaYuResult send(ALiDaYuMessage message, Collection<PhoneNumber> phoneNumbers) throws SmsException {
+	public ALiDaYuResult send(ALiDaYuMessage message,
+			Collection<PhoneNumber> phoneNumbers) throws SmsException {
 		return send(message, joinPhoneNumber(phoneNumbers));
 	}
 
@@ -68,16 +73,20 @@ public final class ALiDaYuShortMessageService implements ShortMessageService<ALi
 		map.put("format", format);
 		map.put("sign_method", sign_method);
 
-		map.put("timestamp", XTime.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
-		map.put("sms_free_sign_name", message.getMessageModel().getSms_free_sign_name());
+		map.put("timestamp",
+				XTime.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
+		map.put("sms_free_sign_name", message.getMessageModel()
+				.getSms_free_sign_name());
 		map.put("sms_param", JSONUtils.toJSONString(message.getSms_param()));
-		map.put("sms_template_code", message.getMessageModel().getSms_template_code());
+		map.put("sms_template_code", message.getMessageModel()
+				.getSms_template_code());
 		map.put("method", "alibaba.aliqin.fc.sms.num.send");
 		map.put("sms_type", "normal");
 
 		map.put("rec_num", phones);
 		map.put("sign", getSign(map));
-		String content = HttpUtils.getHttpClient().postForFrom(host, map);
+		String content = HttpUtils.getHttpClient().post(host, String.class,
+				map, MediaType.APPLICATION_FORM_URLENCODED);
 		logger.debug(content);
 		if (content == null) {
 			return null;

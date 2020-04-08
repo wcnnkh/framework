@@ -18,7 +18,7 @@ import scw.data.ExpiredCache;
 import scw.io.FileUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.http.HttpUtils;
+import scw.net.client.http.HttpUtils;
 import scw.serializer.NoTypeSpecifiedSerializer;
 import scw.serializer.SerializerUtils;
 

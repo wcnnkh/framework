@@ -19,4 +19,6 @@ public interface Channel extends LogService, Attributes<String, Object>, Paramet
 	AsyncControl getAsyncControl();
 	
 	<E> E[] getArray(String name, Class<? extends E> type);
+	
+	boolean isCompleted();
 }

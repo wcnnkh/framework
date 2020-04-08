@@ -16,6 +16,4 @@ public interface Response extends OutputMessage, Flushable{
 	void setCharacterEncoding(String env);
 
 	PrintWriter getWriter() throws IOException;
-	
-	boolean isCommitted();
 }

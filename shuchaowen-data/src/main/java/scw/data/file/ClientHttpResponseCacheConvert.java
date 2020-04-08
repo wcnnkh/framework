@@ -3,10 +3,10 @@ package scw.data.file;
 import java.net.URI;
 
 import scw.core.Converter;
+import scw.net.client.http.ClientHttpRequest;
+import scw.net.client.http.ClientHttpResponse;
+import scw.net.client.http.accessor.HttpAccessor;
 import scw.net.http.Method;
-import scw.net.http.client.ClientHttpRequest;
-import scw.net.http.client.ClientHttpResponse;
-import scw.net.http.client.accessor.HttpAccessor;
 
 public class ClientHttpResponseCacheConvert extends HttpAccessor implements Converter<String, ClientHttpResponse> {
 
