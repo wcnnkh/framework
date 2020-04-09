@@ -7,15 +7,8 @@ import java.util.Collections;
 import java.util.List;
 
 public final class ArrayUtils {
-	private static final Object[] EMPTY_ARRAY = new Object[0];
-
 	private ArrayUtils() {
 	};
-
-	@SuppressWarnings("unchecked")
-	public static <T> T[] empty() {
-		return (T[]) EMPTY_ARRAY;
-	}
 
 	public static boolean isEmpty(Object[] array) {
 		return array == null || array.length == 0;

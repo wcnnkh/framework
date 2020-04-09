@@ -12,7 +12,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpRequest;
@@ -61,7 +60,7 @@ public class MyHttpServletRequest extends AbstractInputMessage implements
 	public Cookie[] getCookies() {
 		javax.servlet.http.Cookie[] cookies = httpServletRequest.getCookies();
 		if (cookies == null) {
-			return ArrayUtils.empty();
+			return new Cookie[0];
 		}
 
 		Cookie[] values = new Cookie[cookies.length];
