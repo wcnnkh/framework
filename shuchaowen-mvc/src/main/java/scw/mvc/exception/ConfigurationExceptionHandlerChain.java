@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
+import scw.core.instance.InstanceUtils;
 import scw.util.value.property.PropertyFactory;
 
 
@@ -16,7 +16,7 @@ public final class ConfigurationExceptionHandlerChain extends DefaultExceptionHa
 
 	private static List<ExceptionHandler> getActionExceptionHandlers(BeanFactory beanFactory){
 		List<ExceptionHandler> handlers = new LinkedList<ExceptionHandler>();
-		handlers.addAll(BeanUtils.getConfigurationList(ExceptionHandler.class, beanFactory));
+		handlers.addAll(InstanceUtils.getConfigurationList(ExceptionHandler.class, beanFactory));
 		
 		if (beanFactory.isInstance(DefaultExceptionHandler.class)) {
 			handlers.add(beanFactory

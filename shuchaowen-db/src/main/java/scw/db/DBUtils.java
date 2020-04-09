@@ -17,7 +17,7 @@ import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
 import scw.io.resource.ResourceUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.util.ConfigUtils;
@@ -44,12 +44,12 @@ public final class DBUtils {
 	 * @param username
 	 * @param password
 	 * @return
-	 * @throws NotSupportException
+	 * @throws UnsupportedException
 	 */
 	public static DataBase automaticRecognition(String driverClassName, String url, String username, String password)
-			throws NotSupportException {
+			throws UnsupportedException {
 		if (StringUtils.isEmpty(driverClassName) && StringUtils.isEmpty(url)) {
-			throw new NotSupportException("driverClassName和url至少要存在一个有效的参数");
+			throw new UnsupportedException("driverClassName和url至少要存在一个有效的参数");
 		}
 
 		if (StringUtils.isEmpty(driverClassName)) {// 没有驱动名，只能根据URL来判断
@@ -75,7 +75,7 @@ public final class DBUtils {
 			}
 		}
 
-		throw new NotSupportException("不支持的数据库类型,driver=" + driverClassName + ",url=" + url);
+		throw new UnsupportedException("不支持的数据库类型,driver=" + driverClassName + ",url=" + url);
 	}
 
 	public static Collection<Sql> getSqlByFile(String path, boolean lines) {

@@ -9,8 +9,8 @@ import javax.servlet.ServletContainerInitializer;
 import org.apache.tomcat.websocket.server.WsSci;
 
 import scw.beans.BeanUtils;
-import scw.beans.annotation.Configuration;
 import scw.core.Constants;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
 

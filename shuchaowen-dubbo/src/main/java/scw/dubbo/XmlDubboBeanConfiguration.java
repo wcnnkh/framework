@@ -8,9 +8,9 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanConfiguration;
+import scw.core.instance.annotation.Configuration;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration

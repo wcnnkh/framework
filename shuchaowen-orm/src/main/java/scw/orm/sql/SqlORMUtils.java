@@ -19,7 +19,7 @@ import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.orm.ColumnFactory;
 import scw.orm.Filter;
 import scw.orm.sql.annotation.Index;
@@ -92,7 +92,7 @@ public final class SqlORMUtils {
 		case UPDATE:
 			return sqlDialect.toUpdateSql(bean, clazz, tableName);
 		default:
-			throw new NotSupportException(operationType.name());
+			throw new UnsupportedException(operationType.name());
 		}
 	}
 }

@@ -5,8 +5,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import scw.core.utils.ClassUtils;
-import scw.lang.NestedRuntimeException;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 
 public abstract class AbstractValue implements Value {
 	private final Value defaultValue;
@@ -75,11 +74,11 @@ public abstract class AbstractValue implements Value {
 	}
 
 	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		throw new NotSupportException(type.toString());
+		throw new UnsupportedException(type.toString());
 	}
 
 	protected <T> T getAsObjectNotSupport(Type type) {
-		throw new NotSupportException(type.toString());
+		throw new UnsupportedException(type.toString());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -283,7 +282,7 @@ public abstract class AbstractValue implements Value {
 		try {
 			return ClassUtils.forName(v);
 		} catch (ClassNotFoundException e) {
-			throw new NestedRuntimeException(e);
+			return null;
 		}
 	}
 

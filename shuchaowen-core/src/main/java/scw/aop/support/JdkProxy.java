@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.Arrays;
 
 import scw.aop.Proxy;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 
 public class JdkProxy implements Proxy {
 	private Class<?> clazz;
@@ -23,6 +23,6 @@ public class JdkProxy implements Proxy {
 	}
 
 	public Object create(Class<?>[] parameterTypes, Object[] arguments) {
-		throw new NotSupportException(clazz.getName() + "," + Arrays.toString(parameterTypes));
+		throw new UnsupportedException(clazz.getName() + "," + Arrays.toString(parameterTypes));
 	}
 }

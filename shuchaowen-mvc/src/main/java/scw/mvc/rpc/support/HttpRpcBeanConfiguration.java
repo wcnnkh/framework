@@ -5,11 +5,11 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.annotation.AnnotationUtils;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;

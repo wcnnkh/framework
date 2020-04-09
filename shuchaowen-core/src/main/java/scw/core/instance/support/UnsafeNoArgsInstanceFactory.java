@@ -3,12 +3,12 @@ package scw.core.instance.support;
 import scw.core.instance.InstanceException;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.utils.UnsafeUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 
 public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	static {
 		if (!UnsafeUtils.isSupport()) {
-			throw new NotSupportException("UnsafeNoArgsInstanceFactory");
+			throw new UnsupportedException("UnsafeNoArgsInstanceFactory");
 		}
 	}
 

@@ -1,12 +1,12 @@
 package scw.mvc.action.filter;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
+import scw.core.instance.InstanceUtils;
 
 public final class ConfigurationActionFilterChain extends DefaultActionFilterChain{
 
 	public ConfigurationActionFilterChain(BeanFactory beanFactory) {
-		super(BeanUtils.getConfigurationList(ActionFilter.class, beanFactory), null);
+		super(InstanceUtils.getConfigurationList(ActionFilter.class, beanFactory), null);
 	}
 
 }

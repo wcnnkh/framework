@@ -3,7 +3,6 @@ package scw.core.utils;
 import java.io.Flushable;
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,23 +26,11 @@ import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.ResourceFactory;
 import scw.core.Start;
-import scw.core.reflect.ReflectionUtils;
 import scw.util.ToMap;
 
 public final class XUtils {
 	private XUtils() {
 	};
-
-	private static final boolean isSupportJdk6;
-
-	static {
-		isSupportJdk6 = ReflectionUtils.getMethod(String.class, "getBytes",
-				new Class<?>[] { Charset.class }) != null;
-	}
-
-	public static boolean isSupportJdk6() {
-		return isSupportJdk6;
-	}
 
 	public static boolean isWin() {
 		return System.getProperty("os.name").toLowerCase().startsWith("win");

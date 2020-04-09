@@ -7,7 +7,7 @@ import javax.servlet.Filter;
 
 import org.apache.tomcat.websocket.server.WsFilter;
 
-import scw.beans.annotation.Configuration;
+import scw.core.instance.annotation.Configuration;
 import scw.embed.servlet.FilterConfiguration;
 
 @Configuration

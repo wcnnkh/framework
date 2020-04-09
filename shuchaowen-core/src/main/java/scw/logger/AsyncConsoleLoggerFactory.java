@@ -1,5 +1,6 @@
 package scw.logger;
 
+
 public final class AsyncConsoleLoggerFactory extends AsyncLoggerFactory {
 
 	public AsyncConsoleLoggerFactory() {

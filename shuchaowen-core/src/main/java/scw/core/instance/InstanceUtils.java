@@ -3,14 +3,23 @@ package scw.core.instance;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
+import scw.core.instance.annotation.Configuration;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.instance.support.ReflectionInstanceFactory;
@@ -20,9 +29,10 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.CompareUtils;
 import scw.core.utils.StringUtils;
 import scw.io.resource.ResourceUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.FormatUtils;
@@ -32,7 +42,7 @@ import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class InstanceUtils {
-	private static Logger logger = LoggerUtils.getLogger(InstanceUtils.class);
+	private static Logger logger = LoggerUtils.getConsoleLogger(InstanceUtils.class);
 
 	private InstanceUtils() {
 	};
@@ -52,7 +62,7 @@ public final class InstanceUtils {
 		}
 
 		if (instanceFactory == null) {
-			throw new NotSupportException(
+			throw new UnsupportedException(
 					"Instances that do not call constructors are not supported");
 		}
 
@@ -83,7 +93,7 @@ public final class InstanceUtils {
 		}
 
 		if (t == null) {
-			throw new NotSupportException("无法实例化对象：" + name);
+			throw new UnsupportedException("无法实例化对象：" + name);
 		}
 		return t;
 	}
@@ -102,7 +112,7 @@ public final class InstanceUtils {
 		}
 
 		if (t == null) {
-			throw new NotSupportException("无法实例化对象：" + type.getName());
+			throw new UnsupportedException("无法实例化对象：" + type.getName());
 		}
 		return t;
 	}
@@ -253,15 +263,8 @@ public final class InstanceUtils {
 
 	public static <T> T autoNewInstanceBySystemProperty(
 			Class<? extends T> clazz, String key, T defaultValue) {
-		String name = GlobalPropertyFactory.getInstance().getString(key);
-		if (StringUtils.isEmpty(name)) {
-			return defaultValue;
-		}
-		Class<?> clz;
-		try {
-			clz = ClassUtils.forName(name, ClassUtils.getDefaultClassLoader());
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		Class<?> clz = GlobalPropertyFactory.getInstance().getClass(key);
+		if (clz == null) {
 			return defaultValue;
 		}
 
@@ -481,5 +484,162 @@ public final class InstanceUtils {
 			}
 		}
 		return args;
+	}
+
+	private static Set<Class<?>> getConfigurationClassListInternal(
+			Class<?> type, String packageName) {
+		Set<Class<?>> list = new HashSet<Class<?>>();
+		for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
+			Configuration configuration = clazz
+					.getAnnotation(Configuration.class);
+			if (configuration == null) {
+				continue;
+			}
+
+			if (!type.isAssignableFrom(clazz)) {
+				continue;
+			}
+
+			if (!ClassUtils.isPresent(clazz.getName())) {
+				logger.debug("not support class:{}", clazz.getName());
+				continue;
+			}
+
+			list.add(clazz);
+		}
+		return list;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> List<Class<T>> getConfigurationClassList(
+			Class<? extends T> type, Collection<Class> excludeTypes) {
+		return getConfigurationClassList(type, excludeTypes, Arrays.asList(
+				Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName()));
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> List<Class<T>> getConfigurationClassList(
+			Class<? extends T> type, Class... excludeTypes) {
+		return getConfigurationClassList(type, Arrays.asList(excludeTypes));
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T> List<Class<T>> getConfigurationClassList(
+			Class<? extends T> type, Collection<Class> excludeTypes,
+			Collection<String> packageNames) {
+		HashSet<Class<T>> set = new HashSet<Class<T>>();
+		for (String packageName : packageNames) {
+			for (Class<?> clazz : getConfigurationClassListInternal(type,
+					packageName)) {
+				Configuration configuration = clazz
+						.getAnnotation(Configuration.class);
+				if (configuration == null) {
+					continue;
+				}
+
+				if (!CollectionUtils.isEmpty(excludeTypes)) {
+					for (Class<?> excludeType : excludeTypes) {
+						if (excludeType.isAssignableFrom(clazz)) {
+							continue;
+						}
+					}
+				}
+				set.add((Class<T>) clazz);
+			}
+		}
+
+		List<Class<T>> list = new ArrayList<Class<T>>(set);
+		for (Class<? extends T> clazz : list) {
+			Configuration c = clazz.getAnnotation(Configuration.class);
+			for (Class<?> e : c.excludes()) {
+				if (e == clazz) {
+					continue;
+				}
+				set.remove(e);
+			}
+		}
+
+		list = new ArrayList<Class<T>>(set);
+		Comparator<Class<? extends T>> comparator = new Comparator<Class<? extends T>>() {
+
+			public int compare(Class<? extends T> o1, Class<? extends T> o2) {
+				Configuration c1 = o1.getAnnotation(Configuration.class);
+				Configuration c2 = o2.getAnnotation(Configuration.class);
+				return CompareUtils.compare(c1.order(), c2.order(), true);
+			}
+		};
+		Collections.sort(list, comparator);
+		return list;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> List<T> getConfigurationList(Class<? extends T> type,
+			InstanceFactory instanceFactory, Collection<Class> excludeTypes) {
+		return getConfigurationList(type, instanceFactory, excludeTypes,
+				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
+						getScanAnnotationPackageName()));
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> List<T> getConfigurationList(Class<? extends T> type,
+			InstanceFactory instanceFactory, Collection<Class> excludeTypes,
+			Collection<String> packageNames) {
+		List<T> list = new ArrayList<T>();
+		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
+				packageNames)) {
+			if (!instanceFactory.isInstance(clazz)) {
+				logger.debug("factory [{}] not create instance:{}",
+						instanceFactory.getClass(), clazz);
+				continue;
+			}
+
+			list.add(instanceFactory.getInstance(clazz));
+		}
+		return list;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> List<T> getConfigurationList(Class<? extends T> type,
+			InstanceFactory instanceFactory, Class... excludeTypes) {
+		return getConfigurationList(type, instanceFactory,
+				Arrays.asList(excludeTypes));
+	}
+
+	public static String getScanAnnotationPackageName() {
+		return GlobalPropertyFactory.getInstance().getValue(
+				"scw.scan.annotation.package", String.class,
+				GlobalPropertyFactory.getInstance().getBasePackageName());
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> T getConfiguration(Class<? extends T> type,
+			InstanceFactory instanceFactory, Collection<Class> excludeTypes,
+			Collection<String> packageNames) {
+		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
+				packageNames)) {
+			if (!instanceFactory.isInstance(clazz)) {
+				logger.debug("factory [{}] not create instance:{}",
+						instanceFactory.getClass(), clazz);
+				continue;
+			}
+
+			return instanceFactory.getInstance(clazz);
+		}
+		return null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> T getConfiguration(Class<? extends T> type,
+			InstanceFactory instanceFactory, Collection<Class> excludeTypes) {
+		return getConfiguration(type, instanceFactory, excludeTypes,
+				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
+						getScanAnnotationPackageName()));
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> T getConfiguration(Class<? extends T> type,
+			InstanceFactory instanceFactory, Class... excludeTypes) {
+		return getConfiguration(type, instanceFactory,
+				Arrays.asList(excludeTypes));
 	}
 }

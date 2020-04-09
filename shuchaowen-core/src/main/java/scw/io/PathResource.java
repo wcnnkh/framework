@@ -29,14 +29,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import scw.core.Assert;
-import scw.lang.UsesJava7;
 
 /**
  * java7的Path实现
  * @author shuchaowen
  *
  */
-@UsesJava7
 public class PathResource extends AbstractResource {
 
 	private final Path path;

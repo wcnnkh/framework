@@ -1,7 +1,7 @@
 package scw.beans;
 
 import scw.beans.property.ValueWiredManager;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefinition {
@@ -21,11 +21,11 @@ public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefini
 	}
 
 	public <T> T create(Object... params) throws Exception{
-		throw new NotSupportException(getType().getName());
+		throw new UnsupportedException(getType().getName());
 	}
 
 	public <T> T create(Class<?>[] parameterTypes, Object... params) throws Exception{
-		throw new NotSupportException(getType().getName());
+		throw new UnsupportedException(getType().getName());
 	}
 
 	public String[] getNames() {

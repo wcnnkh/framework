@@ -15,6 +15,7 @@ import scw.beans.BeanUtils;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
+import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterConfig;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -238,7 +239,7 @@ public final class MVCUtils implements MvcConstants {
 		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
 		BeanUtils.appendBean(list, instanceFactory, propertyFactory,
 				ParameterFilter.class, "mvc.parameter.filter");
-		list.addAll(BeanUtils.getConfigurationList(ParameterFilter.class,
+		list.addAll(InstanceUtils.getConfigurationList(ParameterFilter.class,
 				instanceFactory));
 		return list;
 	}

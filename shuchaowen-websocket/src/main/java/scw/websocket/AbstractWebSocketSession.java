@@ -3,7 +3,7 @@ package scw.websocket;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.util.message.BinaryMessage;
 import scw.util.message.FragmentMessage;
 import scw.util.message.Message;
@@ -42,11 +42,11 @@ public abstract class AbstractWebSocketSession implements WebSocketSession {
 	}
 
 	public void sendText(String fragment, boolean last) throws IOException {
-		throw new NotSupportException(fragment);
+		throw new UnsupportedException(fragment);
 	}
 
 	public void sendBinary(ByteBuffer fragment, boolean last) throws Exception {
-		throw new NotSupportException(fragment.toString());
+		throw new UnsupportedException(fragment.toString());
 	}
 	
 	public void sendObject(Object data) throws Exception {
@@ -55,7 +55,7 @@ public abstract class AbstractWebSocketSession implements WebSocketSession {
 		} else if (data instanceof ByteBuffer) {
 			sendBinary((ByteBuffer) data);
 		} else {
-			throw new NotSupportException(data.toString());
+			throw new UnsupportedException(data.toString());
 		}
 	}
 
@@ -65,7 +65,7 @@ public abstract class AbstractWebSocketSession implements WebSocketSession {
 		} else if (fragment instanceof ByteBuffer) {
 			sendBinary((ByteBuffer) fragment, last);
 		} else {
-			throw new NotSupportException(fragment.toString());
+			throw new UnsupportedException(fragment.toString());
 		}
 	}
 }

@@ -6,7 +6,7 @@ import java.util.Set;
 import javax.servlet.ServletContainerInitializer;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
+import scw.core.instance.InstanceUtils;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
 import scw.util.value.property.PropertyFactory;
 
@@ -16,7 +16,7 @@ public class RootServletContainerInitializerConfiguration implements
 
 	public RootServletContainerInitializerConfiguration(
 			BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		this.initializers = BeanUtils.getConfigurationList(
+		this.initializers = InstanceUtils.getConfigurationList(
 				ServletContainerInitializer.class, beanFactory);
 	}
 

@@ -1,6 +1,6 @@
 package scw.mvc.http;
 
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.mvc.Channel;
 import scw.mvc.View;
 
@@ -24,7 +24,7 @@ public abstract class HttpView implements View {
 			afterRender(httpChannel, httpChannel.getRequest(), httpChannel.getResponse());
 			return ;
 		}
-		throw new NotSupportException(channel.toString());
+		throw new UnsupportedException(channel.toString());
 	}
 
 	public abstract void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse)

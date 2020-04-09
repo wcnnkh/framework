@@ -6,36 +6,14 @@ import java.util.Collection;
 import scw.beans.BeanFactory;
 import scw.core.annotation.AnnotationFactory;
 import scw.core.annotation.SimpleAnnotationFactory;
-import scw.core.instance.InstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.annotation.Controller;
-import scw.security.authority.SimpleAuthorityManager;
-import scw.security.authority.http.HttpAuthority;
-import scw.security.authority.http.HttpAuthorityManager;
-import scw.security.authority.http.SimpleHttpAuthorityManager;
 import scw.util.value.property.PropertyFactory;
 
 public final class DefaultMultiHttpActionFactory extends MultiHttpActionFactory {
 	private static Logger logger = LoggerUtils
 			.getLogger(DefaultMultiHttpActionFactory.class);
-	private SimpleAuthorityManager<HttpAuthority> httpAuthorityManager;
-
-	public DefaultMultiHttpActionFactory(InstanceFactory instanceFactory) {
-		if (instanceFactory.isInstance(HttpAuthorityManager.class)
-				&& instanceFactory.isSingleton(HttpAuthorityManager.class)) {
-			HttpAuthorityManager httpAuthorityManager = instanceFactory
-					.getInstance(HttpAuthorityManager.class);
-			if (httpAuthorityManager instanceof SimpleHttpAuthorityManager) {
-				this.httpAuthorityManager = (SimpleHttpAuthorityManager) httpAuthorityManager;
-			}
-		}
-	}
-
-	public DefaultMultiHttpActionFactory(
-			SimpleAuthorityManager<HttpAuthority> httpAuthorityManager) {
-		this.httpAuthorityManager = httpAuthorityManager;
-	}
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Collection<Class<?>> classes) {
@@ -61,12 +39,6 @@ public final class DefaultMultiHttpActionFactory extends MultiHttpActionFactory 
 
 				HttpAction httpAction = new AnnotationHttpAction(beanFactory,
 						propertyFactory, clz, method, clazzAnnotationFactory);
-				if (httpAuthorityManager != null
-						&& httpAction.getAuthority() != null) {
-					httpAuthorityManager
-							.addAuthroity(httpAction.getAuthority());
-				}
-
 				scanning(httpAction);
 			}
 		}

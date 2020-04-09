@@ -1,7 +1,7 @@
 package scw.mvc.http.cors;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Configuration;
+import scw.core.instance.annotation.Configuration;
 import scw.mvc.MVCUtils;
 import scw.mvc.handler.HandlerChain;
 import scw.mvc.handler.HttpHandler;

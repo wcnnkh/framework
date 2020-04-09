@@ -7,7 +7,7 @@ import java.util.List;
 import javax.servlet.Filter;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
+import scw.core.instance.InstanceUtils;
 import scw.embed.servlet.FilterConfiguration;
 import scw.util.value.property.PropertyFactory;
 
@@ -16,8 +16,8 @@ public class ServletRootFilterConfiguration implements FilterConfiguration {
 
 	public ServletRootFilterConfiguration(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
-		this.filters = BeanUtils
-				.getConfigurationList(Filter.class, beanFactory);
+		this.filters = InstanceUtils.getConfigurationList(Filter.class,
+				beanFactory);
 	}
 
 	public String getName() {

@@ -18,7 +18,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
 import scw.json.JSONUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.lang.ParameterException;
 import scw.lang.SignatureException;
 import scw.logger.Logger;
@@ -428,9 +428,9 @@ public final class WeiXinPay {
 			return SignatureUtils.md5(str, charsetName).toUpperCase();
 		} else if ("HMAC-SHA256".equalsIgnoreCase(sign_type)) {
 			// TODO
-			throw new NotSupportException(sign_type);
+			throw new UnsupportedException(sign_type);
 		} else {
-			throw new NotSupportException("不支持的签名方式:" + sign_type);
+			throw new UnsupportedException("不支持的签名方式:" + sign_type);
 		}
 	}
 

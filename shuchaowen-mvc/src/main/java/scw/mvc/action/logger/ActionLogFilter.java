@@ -1,7 +1,7 @@
 package scw.mvc.action.logger;
 
-import scw.beans.annotation.Configuration;
 import scw.core.GlobalPropertyFactory;
+import scw.core.instance.annotation.Configuration;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
 import scw.mvc.action.filter.ActionFilter;

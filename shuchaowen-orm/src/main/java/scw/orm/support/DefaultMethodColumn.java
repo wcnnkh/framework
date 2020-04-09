@@ -11,7 +11,7 @@ import scw.core.annotation.MultipleAnnotationFactory;
 import scw.core.annotation.SimpleAnnotationFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.orm.AbstractColumn;
 import scw.orm.MethodColumn;
 import scw.orm.ORMException;
@@ -69,7 +69,7 @@ public class DefaultMethodColumn extends AbstractColumn implements MethodColumn 
 			return setter.getParameterTypes()[0];
 		}
 
-		throw new NotSupportException(getClass() + ", name=" + getName());
+		throw new UnsupportedException(getClass() + ", name=" + getName());
 	}
 
 	public Type getGenericType() {

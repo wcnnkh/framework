@@ -9,12 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import scw.aop.Filter;
 import scw.aop.Proxy;
@@ -22,7 +20,6 @@ import scw.aop.ProxyUtils;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
-import scw.beans.annotation.Configuration;
 import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Service;
@@ -30,19 +27,17 @@ import scw.beans.annotation.Value;
 import scw.beans.property.ValueWired;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
-import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.Init;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
+import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.DefaultFieldDefinition;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.CompareUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
@@ -52,126 +47,8 @@ import scw.util.value.property.PropertyFactory;
 public final class BeanUtils {
 	private static Logger logger = LoggerUtils.getLogger(BeanUtils.class);
 
-	private static Set<Class<?>> getConfigurationClassListInternal(
-			Class<?> type, String packageName) {
-		Set<Class<?>> list = new HashSet<Class<?>>();
-		for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
-			Configuration configuration = clazz
-					.getAnnotation(Configuration.class);
-			if (configuration == null) {
-				continue;
-			}
-
-			if (!type.isAssignableFrom(clazz)) {
-				continue;
-			}
-
-			if (!ClassUtils.isPresent(clazz.getName())) {
-				logger.debug("not support class:{}", clazz.getName());
-				continue;
-			}
-
-			list.add(clazz);
-		}
-		return list;
-	}
-
 	private BeanUtils() {
 	};
-
-	@SuppressWarnings("rawtypes")
-	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, Collection<Class> excludeTypes) {
-		return getConfigurationClassList(type, excludeTypes, Arrays.asList(
-				Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName()));
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, Class... excludeTypes) {
-		return getConfigurationClassList(type, Arrays.asList(excludeTypes));
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, Collection<Class> excludeTypes,
-			Collection<String> packageNames) {
-		HashSet<Class<T>> set = new HashSet<Class<T>>();
-		for (String packageName : packageNames) {
-			for (Class<?> clazz : getConfigurationClassListInternal(type,
-					packageName)) {
-				Configuration configuration = clazz
-						.getAnnotation(Configuration.class);
-				if (configuration == null) {
-					continue;
-				}
-
-				if (!CollectionUtils.isEmpty(excludeTypes)) {
-					for (Class<?> excludeType : excludeTypes) {
-						if (excludeType.isAssignableFrom(clazz)) {
-							continue;
-						}
-					}
-				}
-				set.add((Class<T>) clazz);
-			}
-		}
-
-		List<Class<T>> list = new ArrayList<Class<T>>(set);
-		for (Class<? extends T> clazz : list) {
-			Configuration c = clazz.getAnnotation(Configuration.class);
-			for (Class<?> e : c.excludes()) {
-				if (e == clazz) {
-					continue;
-				}
-				set.remove(e);
-			}
-		}
-
-		list = new ArrayList<Class<T>>(set);
-		Comparator<Class<? extends T>> comparator = new Comparator<Class<? extends T>>() {
-
-			public int compare(Class<? extends T> o1, Class<? extends T> o2) {
-				Configuration c1 = o1.getAnnotation(Configuration.class);
-				Configuration c2 = o2.getAnnotation(Configuration.class);
-				return CompareUtils.compare(c1.order(), c2.order(), true);
-			}
-		};
-		Collections.sort(list, comparator);
-		return list;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, Collection<Class> excludeTypes) {
-		return getConfigurationList(type, instanceFactory, excludeTypes,
-				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
-						getScanAnnotationPackageName()));
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, Collection<Class> excludeTypes,
-			Collection<String> packageNames) {
-		List<T> list = new ArrayList<T>();
-		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
-				packageNames)) {
-			if (!instanceFactory.isInstance(clazz)) {
-				logger.debug("factory [{}] not create instance:{}", instanceFactory.getClass(), clazz);
-				continue;
-			}
-
-			list.add(instanceFactory.getInstance(clazz));
-		}
-		return list;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, Class... excludeTypes) {
-		return getConfigurationList(type, instanceFactory,
-				Arrays.asList(excludeTypes));
-	}
 
 	public static void autowired(ValueWiredManager valueWiredManager,
 			BeanFactory beanFactory, PropertyFactory propertyFactory,
@@ -561,6 +438,6 @@ public final class BeanUtils {
 	public static String getScanAnnotationPackageName() {
 		return GlobalPropertyFactory.getInstance().getValue(
 				"scw.scan.beans.package", String.class,
-				GlobalPropertyFactory.getInstance().getBasePackageName());
+				InstanceUtils.getScanAnnotationPackageName());
 	}
 }

@@ -3,6 +3,7 @@ package scw.mvc.action.http;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
@@ -14,10 +15,10 @@ public final class DefaultHttpActionFactory implements ActionFactory {
 	private ActionFactory actionFactory;
 
 	public DefaultHttpActionFactory(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		DefaultMultiHttpActionFactory multiHttpActionFactory = new DefaultMultiHttpActionFactory(beanFactory);
+		DefaultMultiHttpActionFactory multiHttpActionFactory = new DefaultMultiHttpActionFactory();
 		BeanUtils.appendBean(multiHttpActionFactory.getFactoryList(), beanFactory, propertyFactory,
 				HttpActionFactory.class, "mvc.http.action.factory");
-		multiHttpActionFactory.getFactoryList().addAll(BeanUtils.getConfigurationList(HttpActionFactory.class, beanFactory));
+		multiHttpActionFactory.getFactoryList().addAll(InstanceUtils.getConfigurationList(HttpActionFactory.class, beanFactory));
 		multiHttpActionFactory.getFactoryList()
 				.add(new HttpParameterActionFactory(MVCUtils.getHttpParameterActionKey(propertyFactory)));
 		multiHttpActionFactory.getFactoryList().add(new HttpPathActionFactory());

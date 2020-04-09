@@ -3,7 +3,7 @@ package scw.freemarker.mvc;
 import java.io.IOException;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Configuration;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.mvc.page.PageFactoryAdapter;
 import scw.util.value.property.PropertyFactory;

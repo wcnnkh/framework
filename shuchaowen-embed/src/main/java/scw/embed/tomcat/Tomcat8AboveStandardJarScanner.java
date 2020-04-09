@@ -6,7 +6,7 @@ import org.apache.tomcat.JarScanType;
 import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
-import scw.beans.annotation.Configuration;
+import scw.core.instance.annotation.Configuration;
 import scw.embed.EmbeddedUtils;
 import scw.util.value.property.PropertyFactory;
 

@@ -20,7 +20,6 @@ import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
@@ -86,7 +85,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		addServletContainerInitializer(context,
 				new RootServletContainerInitializerConfiguration(beanFactory,
 						propertyFactory));
-		for (ServletContainerInitializerConfiguration configuration : BeanUtils
+		for (ServletContainerInitializerConfiguration configuration : InstanceUtils
 				.getConfigurationList(
 						ServletContainerInitializerConfiguration.class,
 						beanFactory)) {
@@ -95,7 +94,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 
 		addFilter(context, new ServletRootFilterConfiguration(beanFactory,
 				propertyFactory));
-		for (FilterConfiguration filterConfiguration : BeanUtils
+		for (FilterConfiguration filterConfiguration : InstanceUtils
 				.getConfigurationList(FilterConfiguration.class,
 						beanFactory)) {
 			addFilter(context, filterConfiguration);

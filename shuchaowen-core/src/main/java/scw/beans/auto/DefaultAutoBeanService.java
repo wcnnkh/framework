@@ -8,9 +8,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
+import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -65,7 +65,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 
 		if (!ReflectionUtils.isInstance(clazz, false)) {
 			AutoBeanServiceChain autoBeanServiceChain = new NextAutoBeanServiceChain(
-					BeanUtils.getConfigurationClassList(AutoBeanService.class), serviceChain);
+					InstanceUtils.getConfigurationClassList(AutoBeanService.class), serviceChain);
 			return autoBeanServiceChain.service(clazz, beanFactory,
 					propertyFactory);
 		}
@@ -79,7 +79,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		AutoImpl autoConfig = clazz.getAnnotation(AutoImpl.class);
 		if (autoConfig == null) {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
-			List<Class<?>> impls = BeanUtils.getConfigurationClassList((Class)clazz);
+			List<Class<?>> impls = InstanceUtils.getConfigurationClassList((Class)clazz);
 			if(!CollectionUtils.isEmpty(impls)){
 				return defaultService(impls.get(0), beanFactory, propertyFactory, serviceChain);
 			}

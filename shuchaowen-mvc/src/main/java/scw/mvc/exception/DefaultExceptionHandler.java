@@ -1,6 +1,6 @@
 package scw.mvc.exception;
 
-import scw.beans.annotation.Configuration;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.lang.ParameterException;
 import scw.mvc.Channel;

@@ -2,7 +2,7 @@ package scw.aop;
 
 import java.lang.reflect.Method;
 
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 
 public class EmptyInvoker implements Invoker {
 	private final Method method;
@@ -12,6 +12,6 @@ public class EmptyInvoker implements Invoker {
 	}
 
 	public Object invoke(Object... args) throws Throwable {
-		throw new NotSupportException(method.toString());
+		throw new UnsupportedException(method.toString());
 	}
 }

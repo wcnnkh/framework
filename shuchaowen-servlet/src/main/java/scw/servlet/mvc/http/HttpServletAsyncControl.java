@@ -24,7 +24,7 @@ import javax.servlet.AsyncEvent;
 import javax.servlet.AsyncListener;
 
 import scw.core.Assert;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.mvc.AsyncControl;
 import scw.mvc.Channel;
 import scw.mvc.MultiAsyncListener;
@@ -42,7 +42,7 @@ public class HttpServletAsyncControl implements AsyncControl, AsyncListener {
 		Assert.notNull(httpServletChannel, "channel is required");
 
 		if (!httpServletChannel.getHttpServletRequest().isAsyncSupported()) {
-			throw new NotSupportException(
+			throw new UnsupportedException(
 					"Async support must be enabled on a servlet and for all filters involved "
 							+ "in async request processing. This is done in Java code using the Servlet API "
 							+ "or by adding \"<async-supported>true</async-supported>\" to servlet and "

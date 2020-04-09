@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import scw.lang.AlreadyExistsException;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.orm.sql.ValueIndexMapping;
 
 public final class ResultSetValueIndexMapping implements ValueIndexMapping {
@@ -81,7 +81,7 @@ public final class ResultSetValueIndexMapping implements ValueIndexMapping {
 
 	public int getSingleIndex(String name) {
 		if (isExistDuplicateField()) {
-			throw new NotSupportException("存在重复的字段，不能使用此方法");
+			throw new UnsupportedException("存在重复的字段，不能使用此方法");
 		}
 
 		Integer index = singleIndexMap.get(name);

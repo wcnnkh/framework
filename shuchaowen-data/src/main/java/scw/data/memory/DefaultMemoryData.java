@@ -1,24 +1,24 @@
 package scw.data.memory;
 
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 
 public class DefaultMemoryData extends AbstractMemoryData {
 	private volatile Object value;
 
 	public long incr(long incr, long initialValue) {
-		throw new NotSupportException("incr");
+		throw new UnsupportedException("incr");
 	}
 
 	public long decr(long incr, long initialValue) {
-		throw new NotSupportException("decr");
+		throw new UnsupportedException("decr");
 	}
 
 	public long incr(long delta) {
-		throw new NotSupportException("incr");
+		throw new UnsupportedException("incr");
 	}
 
 	public long decr(long delta) {
-		throw new NotSupportException("decr");
+		throw new UnsupportedException("decr");
 	}
 
 	@Override

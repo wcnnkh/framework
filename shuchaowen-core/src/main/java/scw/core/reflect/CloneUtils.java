@@ -9,7 +9,7 @@ import scw.core.Verification;
 import scw.core.instance.InstanceException;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 
 public final class CloneUtils {
 	private CloneUtils() {
@@ -214,7 +214,7 @@ public final class CloneUtils {
 	public static <T> T copy(Object source, Class<T> clazz, Verification<Field> ignoreVerification,
 			InstanceFactory instanceFactory, boolean invokeSetter) {
 		if (!instanceFactory.isInstance(clazz)) {
-			throw new NotSupportException("无法实例化:" + clazz);
+			throw new UnsupportedException("无法实例化:" + clazz);
 		}
 
 		T target = instanceFactory.getInstance(clazz);

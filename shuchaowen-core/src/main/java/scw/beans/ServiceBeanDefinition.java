@@ -8,7 +8,7 @@ import scw.beans.auto.SimpleAutoBean;
 import scw.beans.property.ValueWiredManager;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotFoundException;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.util.value.property.PropertyFactory;
 
 public final class ServiceBeanDefinition extends AbstractBeanDefinition {
@@ -58,7 +58,7 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 	@SuppressWarnings("unchecked")
 	public <T> T create() throws Exception {
 		if (!isInstance()) {
-			throw new NotSupportException(getType().toString());
+			throw new UnsupportedException(getType().toString());
 		}
 
 		if (getType().isInterface()) {

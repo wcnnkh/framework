@@ -3,11 +3,11 @@ package scw.mvc.rpc;
 import java.util.Arrays;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Configuration;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanService;
 import scw.beans.auto.AutoBeanServiceChain;
 import scw.beans.auto.ProxyAutoBean;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.Host;
 import scw.mvc.rpc.http.HttpRestfulRpcProxy;

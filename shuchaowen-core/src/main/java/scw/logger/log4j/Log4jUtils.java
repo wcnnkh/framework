@@ -10,7 +10,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.logger.Level;
 import scw.logger.LoggerLevelUtils;
 import scw.logger.LoggerUtils;
@@ -64,7 +64,7 @@ public final class Log4jUtils {
 	public static void defaultInit() {
 		Boolean enable = LoggerUtils.defaultConfigEnable();
 		if (enable == null) {
-			throw new NotSupportException("不支持log4j");
+			throw new UnsupportedException("不支持log4j");
 		}
 
 		if (!enable) {

@@ -1,6 +1,6 @@
 package scw.mvc.handler;
 
-import scw.beans.annotation.Configuration;
+import scw.core.instance.annotation.Configuration;
 import scw.mvc.http.HttpChannel;
 import scw.net.http.HttpMethod;
 

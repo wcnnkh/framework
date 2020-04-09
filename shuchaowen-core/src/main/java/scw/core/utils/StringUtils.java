@@ -31,14 +31,14 @@ import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import scw.compatible.CompatibleUtils;
 import scw.core.Assert;
 import scw.core.Callable;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
-import scw.lang.NotSupportException;
 import scw.lang.ParameterException;
-import scw.lang.StringCodecUtils;
+import scw.lang.UnsupportedException;
 import scw.util.FormatUtils;
 
 public final class StringUtils {
@@ -2624,7 +2624,7 @@ public final class StringUtils {
 			return parseEnum(text, type);
 		} else {
 			if (notFoundTypeCallable == null) {
-				throw new NotSupportException("不支持的类型：" + type);
+				throw new UnsupportedException("不支持的类型：" + type);
 			}
 
 			return notFoundTypeCallable.call();
@@ -2658,7 +2658,7 @@ public final class StringUtils {
 				}
 
 				if (notFoundTypeCallable == null) {
-					throw new NotSupportException("不支持的类型：" + type);
+					throw new UnsupportedException("不支持的类型：" + type);
 				}
 
 				return notFoundTypeCallable.call();
@@ -2693,7 +2693,7 @@ public final class StringUtils {
 				}
 
 				if (notFoundTypeCallable == null) {
-					throw new NotSupportException("不支持的类型：" + type);
+					throw new UnsupportedException("不支持的类型：" + type);
 				}
 
 				return notFoundTypeCallable.call();
@@ -2935,8 +2935,8 @@ public final class StringUtils {
 				bos.write(ch);
 			}
 		}
-		return (changed ? StringCodecUtils.getStringCodec(charset).decode(
-				bos.toByteArray()) : source);
+		return (changed ? CompatibleUtils.getStringOperations().createString(
+				bos.toByteArray(), charset) : source);
 	}
 
 	public static String removeChar(String text, char remove) {

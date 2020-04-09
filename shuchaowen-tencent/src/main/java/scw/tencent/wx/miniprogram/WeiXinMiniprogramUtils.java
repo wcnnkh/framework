@@ -12,9 +12,9 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import scw.compatible.CompatibleUtils;
 import scw.core.Base64;
 import scw.json.JsonObject;
-import scw.lang.StringCodecUtils;
 import scw.tencent.wx.BaseResponse;
 import scw.tencent.wx.WeiXinUtils;
 
@@ -161,7 +161,7 @@ public final class WeiXinMiniprogramUtils {
 			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(ivKeys));
 			byte[] data = cipher.doFinal(dataBytes);
-			return StringCodecUtils.getStringCodec("UTF-8").decode(data).trim();
+			return CompatibleUtils.getStringOperations().createString(data, "UTF-8").trim();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

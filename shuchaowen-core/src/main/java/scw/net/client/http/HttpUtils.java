@@ -21,7 +21,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.net.http.MediaType;
 import scw.net.http.HttpMethod;
 import scw.util.LinkedMultiValueMap;
@@ -211,7 +211,7 @@ public final class HttpUtils {
 		try {
 			return URLEncoder.encode(value.toString(), charsetName);
 		} catch (UnsupportedEncodingException e) {
-			throw new NotSupportException(e);
+			throw new UnsupportedException(e);
 		}
 	}
 
@@ -227,7 +227,7 @@ public final class HttpUtils {
 		try {
 			return URLDecoder.decode(value, charsetName);
 		} catch (UnsupportedEncodingException e) {
-			throw new NotSupportException(e);
+			throw new UnsupportedException(e);
 		}
 	}
 

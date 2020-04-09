@@ -22,8 +22,6 @@ import java.nio.charset.Charset;
 import scw.asm.Opcodes;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemUtils;
-import scw.lang.StringCodec;
-import scw.lang.StringCodecUtils;
 import scw.util.value.StringValue;
 import scw.util.value.property.NotSupportEnumerationPropertyFactory;
 import scw.util.value.property.PropertyFactory;
@@ -84,8 +82,7 @@ public class Constants {
 	public static final String DEFAULT_PREFIX = GlobalPropertyFactory
 			.getInstance().getString("constants.default.prefix");
 
-	public static final StringCodec DEFAULT_STRING_CODEC = StringCodecUtils
-			.getStringCodec(DEFAULT_CHARSET_NAME);
+	public static final Charset ISO_8859_1 = Charset.forName("iso-8859-1");
 
 	public static final PropertyFactory PROPERTY_FACTORY = new NotSupportEnumerationPropertyFactory() {
 

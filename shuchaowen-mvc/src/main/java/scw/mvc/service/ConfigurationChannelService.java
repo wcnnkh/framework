@@ -3,7 +3,7 @@ package scw.mvc.service;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
+import scw.core.instance.InstanceUtils;
 import scw.mvc.exception.ExceptionHandlerChain;
 import scw.mvc.handler.DefaultHandlerChain;
 import scw.mvc.handler.Handler;
@@ -22,7 +22,7 @@ public final class ConfigurationChannelService extends DefaultChannelService {
 	}
 
 	private static Collection<Handler> getHandlers(BeanFactory beanFactory) {
-		return BeanUtils.getConfigurationList(Handler.class, beanFactory);
+		return InstanceUtils.getConfigurationList(Handler.class, beanFactory);
 	}
 
 	private static HandlerChain getHandlerChain(BeanFactory beanFactory) {

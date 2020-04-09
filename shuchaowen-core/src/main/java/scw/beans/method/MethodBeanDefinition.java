@@ -14,7 +14,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.util.value.property.PropertyFactory;
 
 @SuppressWarnings("unchecked")
@@ -46,7 +46,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 
 	public <T> T create() {
 		if (!isInstance()) {
-			throw new NotSupportException("不支持的构造方式");
+			throw new UnsupportedException("不支持的构造方式");
 		}
 
 		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory, getType(),
@@ -79,7 +79,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 				return (T) invoke(method, params);
 			}
 		}
-		throw new NotSupportException(method.toString());
+		throw new UnsupportedException(method.toString());
 	}
 
 	public <T> T create(Class<?>[] parameterTypes, Object... params) {
@@ -87,7 +87,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 		try {
 			method = targetClazz.getDeclaredMethod(this.method.getName(), parameterTypes);
 		} catch (NoSuchMethodException e) {
-			throw new NotSupportException(e);
+			throw new UnsupportedException(e);
 		}
 		return (T) invoke(method, params);
 	}

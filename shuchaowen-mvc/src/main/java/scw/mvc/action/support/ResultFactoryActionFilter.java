@@ -1,7 +1,7 @@
 package scw.mvc.action.support;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Configuration;
+import scw.core.instance.annotation.Configuration;
 import scw.json.JSONUtils;
 import scw.mvc.Channel;
 import scw.mvc.View;

@@ -1,6 +1,6 @@
 package scw.servlet.mvc.page;
 
-import scw.beans.annotation.Configuration;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.mvc.page.PageFactoryAdapter;
 

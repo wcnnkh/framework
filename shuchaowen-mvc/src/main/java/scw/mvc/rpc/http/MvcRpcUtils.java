@@ -13,7 +13,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.lang.NotSupportException;
+import scw.lang.UnsupportedException;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
 import scw.mvc.context.ContextManager;
@@ -35,7 +35,7 @@ public final class MvcRpcUtils {
 	public static ShareData getShareData() {
 		Context context = ContextManager.getInstance().getContext();
 		if (context == null) {
-			throw new NotSupportException("不存在MVC的上下文");
+			throw new UnsupportedException("不存在MVC的上下文");
 		}
 
 		ShareData shareData = (ShareData) context.getResource(MvcRpcUtils.class);

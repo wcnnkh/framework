@@ -12,6 +12,7 @@ import scw.beans.xml.DefaultXmlBeanConfiguration;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanMethodInfo;
 import scw.beans.xml.XmlBeanUtils;
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
@@ -79,7 +80,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 				addBeanConfiguration(new MethodBeanConfiguration(
 						getValueWiredManager(), this, propertyFactory,
 						BeanUtils.getScanAnnotationPackageName()));
-				for (BeanConfiguration beanConfiguration : BeanUtils
+				for (BeanConfiguration beanConfiguration : InstanceUtils
 						.getConfigurationList(BeanConfiguration.class, this)) {
 					if (beanConfiguration instanceof XmlBeanConfiguration) {
 						((XmlBeanConfiguration) beanConfiguration).init(

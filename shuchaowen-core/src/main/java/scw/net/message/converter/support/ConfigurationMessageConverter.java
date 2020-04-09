@@ -1,7 +1,7 @@
 package scw.net.message.converter.support;
 
-import scw.beans.BeanUtils;
 import scw.core.instance.InstanceFactory;
+import scw.core.instance.InstanceUtils;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MultiMessageConverter;
 import scw.util.value.property.PropertyFactory;
@@ -11,6 +11,6 @@ public class ConfigurationMessageConverter extends MultiMessageConverter{
 	
 	public ConfigurationMessageConverter(InstanceFactory instanceFactory, PropertyFactory propertyFactory){
 		add(new AllMessageConverter());
-		addAll(BeanUtils.getConfigurationList(MessageConverter.class, instanceFactory));
+		addAll(InstanceUtils.getConfigurationList(MessageConverter.class, instanceFactory));
 	}
 }

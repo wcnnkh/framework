@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
-import scw.beans.annotation.Configuration;
 import scw.core.annotation.AnnotationUtils;
+import scw.core.instance.annotation.Configuration;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

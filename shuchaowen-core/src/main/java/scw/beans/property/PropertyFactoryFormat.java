@@ -3,7 +3,7 @@ package scw.beans.property;
 import java.lang.reflect.Field;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Configuration;
+import scw.core.instance.annotation.Configuration;
 import scw.util.value.Value;
 import scw.util.value.property.PropertyFactory;
 
