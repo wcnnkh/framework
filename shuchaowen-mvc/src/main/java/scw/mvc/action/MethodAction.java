@@ -13,7 +13,7 @@ import scw.core.annotation.SimpleAnnotationFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.parameter.ParameterUtils;
 import scw.mvc.MVCUtils;
-import scw.mvc.action.filter.Filter;
+import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.parameter.ParameterFilter;
 import scw.util.value.property.PropertyFactory;
 
@@ -25,7 +25,7 @@ public abstract class MethodAction extends AbstractAction {
 	private final AnnotationFactory annotationFactory;
 	private final Class<?> targetClass;
 	private final Method method;
-	private final Collection<Filter> filters;
+	private final Collection<ActionFilter> filters;
 
 	public MethodAction(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Class<?> targetClass,
@@ -41,7 +41,7 @@ public abstract class MethodAction extends AbstractAction {
 		this.method = method;
 		this.superAnnotationFactory = superAnnotationFactory;
 		this.annotationFactory = new SimpleAnnotationFactory(method);
-		this.filters = MVCUtils.getControllerFilter(targetClass, method,
+		this.filters = MVCUtils.getActionFilters(targetClass, method,
 				beanFactory);
 	}
 
@@ -67,7 +67,7 @@ public abstract class MethodAction extends AbstractAction {
 		return invoker;
 	}
 
-	public Collection<Filter> getFilters() {
+	public Collection<ActionFilter> getActionFilters() {
 		return filters;
 	}
 	

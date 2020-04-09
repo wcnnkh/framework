@@ -30,7 +30,7 @@ import scw.mvc.action.AbstractAction;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFactory;
 import scw.mvc.action.MultiActionFactory;
-import scw.mvc.action.filter.Filter;
+import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.context.ContextManager;
@@ -53,8 +53,6 @@ import scw.util.value.property.PropertyFactory;
 
 public final class MVCUtils implements MvcConstants {
 	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
-	public static final String JSONP_RESP_PREFIX = "(";
-	public static final String JSONP_RESP_SUFFIX = ");";
 
 	private static final String[] IP_HEADERS = SystemPropertyUtils
 			.getArrayProperty(String.class, "mvc.ip.headers", new String[] {
@@ -424,13 +422,13 @@ public final class MVCUtils implements MvcConstants {
 				config.isCredentials() + "");
 	}
 
-	public static LinkedList<Filter> getControllerFilter(Class<?> clazz,
+	public static LinkedList<ActionFilter> getActionFilters(Class<?> clazz,
 			Method method, InstanceFactory instanceFactory) {
 		Filters filters = clazz.getAnnotation(Filters.class);
-		LinkedList<Filter> list = new LinkedList<Filter>();
+		LinkedList<ActionFilter> list = new LinkedList<ActionFilter>();
 		if (filters != null) {
-			for (Class<? extends Filter> f : filters.value()) {
-				if (Filter.class.isAssignableFrom(f)) {
+			for (Class<? extends ActionFilter> f : filters.value()) {
+				if (ActionFilter.class.isAssignableFrom(f)) {
 					list.add(instanceFactory.getInstance(f));
 				}
 			}
@@ -438,8 +436,8 @@ public final class MVCUtils implements MvcConstants {
 
 		Controller controller = clazz.getAnnotation(Controller.class);
 		if (controller != null) {
-			for (Class<? extends Filter> f : controller.filters()) {
-				if (Filter.class.isAssignableFrom(f)) {
+			for (Class<? extends ActionFilter> f : controller.filters()) {
+				if (ActionFilter.class.isAssignableFrom(f)) {
 					list.add(instanceFactory.getInstance(f));
 				}
 			}
@@ -448,8 +446,8 @@ public final class MVCUtils implements MvcConstants {
 		filters = method.getAnnotation(Filters.class);
 		if (filters != null) {
 			list.clear();
-			for (Class<? extends Filter> f : filters.value()) {
-				if (Filter.class.isAssignableFrom(f)) {
+			for (Class<? extends ActionFilter> f : filters.value()) {
+				if (ActionFilter.class.isAssignableFrom(f)) {
 					list.add(instanceFactory.getInstance(f));
 				}
 			}
@@ -457,8 +455,8 @@ public final class MVCUtils implements MvcConstants {
 
 		controller = method.getAnnotation(Controller.class);
 		if (controller != null) {
-			for (Class<? extends Filter> f : controller.filters()) {
-				if (Filter.class.isAssignableFrom(f)) {
+			for (Class<? extends ActionFilter> f : controller.filters()) {
+				if (ActionFilter.class.isAssignableFrom(f)) {
 					list.add(instanceFactory.getInstance(f));
 				}
 			}

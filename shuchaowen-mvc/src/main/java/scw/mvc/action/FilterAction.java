@@ -3,10 +3,10 @@ package scw.mvc.action;
 import java.util.Collection;
 
 import scw.mvc.Channel;
-import scw.mvc.action.filter.Filter;
+import scw.mvc.action.filter.ActionFilter;
 
 public interface FilterAction extends Action{
-	Collection<Filter> getFilters();
+	Collection<ActionFilter> getFilters();
 	
 	Object doFilterAction(Channel channel) throws Throwable;
 }

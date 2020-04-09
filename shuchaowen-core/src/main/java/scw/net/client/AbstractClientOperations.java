@@ -3,6 +3,7 @@ package scw.net.client;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+import scw.io.IOUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;
@@ -72,7 +73,8 @@ public abstract class AbstractClientOperations<B extends ClientRequestBuilder<R>
 		return execute(builder, new ClientRequestCallback<R>() {
 
 			public void callback(R clientRequest) throws IOException {
-				NetworkUtils.write(inputMessage, clientRequest);
+				NetworkUtils.writeHeader(inputMessage, clientRequest);
+				IOUtils.write(inputMessage.getBody(), clientRequest.getBody());
 			}
 		}, new ClientResponseExtractor<P, SerializableInputMessage>() {
 

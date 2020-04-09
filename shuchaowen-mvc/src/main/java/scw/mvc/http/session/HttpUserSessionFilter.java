@@ -4,7 +4,7 @@ import scw.core.annotation.DefaultValue;
 import scw.core.annotation.Order;
 import scw.core.annotation.ParameterName;
 import scw.core.utils.StringUtils;
-import scw.mvc.action.filter.FilterChain;
+import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.action.http.HttpAction;
 import scw.mvc.http.HttpChannel;
 import scw.result.ResultFactory;
@@ -25,7 +25,7 @@ public class HttpUserSessionFilter extends scw.mvc.action.http.HttpFilter	{
 	
 	@Override
 	protected Object doHttpFilter(HttpChannel channel, HttpAction action,
-			FilterChain chain) throws Throwable {
+			ActionFilterChain chain) throws Throwable {
 		UserSession userSession = httpChannelUserSessionFactory.getUserSession(channel);
 		if(userSession == null){
 			return resultFactory.authorizationFailure();

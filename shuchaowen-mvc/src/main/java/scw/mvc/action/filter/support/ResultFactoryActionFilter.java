@@ -6,20 +6,20 @@ import scw.json.JSONUtils;
 import scw.mvc.Channel;
 import scw.mvc.View;
 import scw.mvc.action.Action;
-import scw.mvc.action.filter.Filter;
-import scw.mvc.action.filter.FilterChain;
+import scw.mvc.action.filter.ActionFilter;
+import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.annotation.ResultFactory;
 import scw.result.Result;
 
 @Configuration(order=Integer.MAX_VALUE)
-public final class ResultFactoryFilter implements Filter{
+public final class ResultFactoryActionFilter implements ActionFilter{
 	private BeanFactory beanFactory;
 	
-	public ResultFactoryFilter(BeanFactory beanFactory){
+	public ResultFactoryActionFilter(BeanFactory beanFactory){
 		this.beanFactory = beanFactory;
 	}
 	
-	public Object doFilter(Channel channel, Action action, FilterChain chain)
+	public Object doFilter(Channel channel, Action action, ActionFilterChain chain)
 			throws Throwable {
 		Object value = chain.doFilter(channel, action);
 		if(value != null && value instanceof View){

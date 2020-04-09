@@ -4,11 +4,11 @@ import scw.beans.annotation.Configuration;
 import scw.core.GlobalPropertyFactory;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
-import scw.mvc.action.filter.Filter;
-import scw.mvc.action.filter.FilterChain;
+import scw.mvc.action.filter.ActionFilter;
+import scw.mvc.action.filter.ActionFilterChain;
 
 @Configuration(order = Integer.MAX_VALUE)
-public final class ActionLogFilter implements Filter {
+public final class ActionLogFilter implements ActionFilter {
 	private static final boolean LOGGER_ENABLE = GlobalPropertyFactory
 			.getInstance().getValue("mvc.logger.enable", boolean.class, true);
 	private ActionLogService logService;
@@ -20,7 +20,7 @@ public final class ActionLogFilter implements Filter {
 		this.logService = logService;
 	}
 
-	public Object doFilter(Channel channel, Action action, FilterChain chain)
+	public Object doFilter(Channel channel, Action action, ActionFilterChain chain)
 			throws Throwable {
 		if (!LOGGER_ENABLE) {
 			return chain.doFilter(channel, action);

@@ -7,7 +7,6 @@ import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterConfig;
 import scw.core.utils.StringUtils;
 import scw.json.JSONSupport;
-import scw.json.JSONUtils;
 import scw.mvc.AbstractChannel;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.session.HttpChannelAuthorization;
@@ -47,7 +46,7 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 		return super.getParameter(parameterConfig);
 	}
 
-	public String decodeGETParameter(String value) {
+	protected String decodeGETParameter(String value) {
 		if (StringUtils.containsChinese(value)) {
 			return value;
 		}
@@ -71,7 +70,7 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 			}
 		}
 
-		if (Method.GET == request.getMethod()) {
+		if (v != null && Method.GET == request.getMethod()) {
 			v = decodeGETParameter(v);
 		}
 		return v;
@@ -93,7 +92,7 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 		appendable.append("path=").append(getRequest().getControllerPath());
 		appendable.append(",method=").append(getRequest().getMethod());
 		appendable.append(",").append(
-				JSONUtils.toJSONString(getRequest().getParameterMap()));
+				getJsonSupport().toJSONString(getRequest().getParameterMap()));
 		return appendable.toString();
 	}
 }

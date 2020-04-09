@@ -119,18 +119,14 @@ public final class NetworkUtils {
 
 	public static void writeHeader(InputMessage inputMessage,
 			OutputMessage outputMessage) throws IOException {
-		if (outputMessage.getContentLength() < 0) {
-			long len = outputMessage.getContentLength();
-			if (len >= 0) {
-				outputMessage.setContentLength(len);
-			}
+		long len = outputMessage.getContentLength();
+		if (len >= 0) {
+			outputMessage.setContentLength(len);
 		}
 
-		if (outputMessage.getContentType() == null) {
-			MimeType mimeType = inputMessage.getContentType();
-			if (mimeType != null) {
-				outputMessage.setContentType(mimeType);
-			}
+		MimeType mimeType = inputMessage.getContentType();
+		if (mimeType != null) {
+			outputMessage.setContentType(mimeType);
 		}
 
 		Headers headers = inputMessage.getHeaders();
@@ -141,11 +137,5 @@ public final class NetworkUtils {
 				}
 			}
 		}
-	}
-
-	public static void write(InputMessage inputMessage,
-			OutputMessage outputMessage) throws IOException {
-		writeHeader(inputMessage, outputMessage);
-		IOUtils.write(inputMessage.getBody(), outputMessage.getBody());
 	}
 }

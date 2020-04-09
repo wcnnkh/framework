@@ -7,7 +7,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
-import scw.mvc.action.filter.FilterChain;
+import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.handler.HandlerChain;
 
 public class ContextManager extends ThreadLocalDefaultContextManager {
@@ -57,7 +57,7 @@ public class ContextManager extends ThreadLocalDefaultContextManager {
 	}
 
 	public static Object doFilter(Channel channel, Action action,
-			FilterChain chain) throws Throwable {
+			ActionFilterChain chain) throws Throwable {
 		return getInstance().execute(Propagation.REQUIRES_NEW,
 				new FilterContextExecute(channel, action, chain));
 	}

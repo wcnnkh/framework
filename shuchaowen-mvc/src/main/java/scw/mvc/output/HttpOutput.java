@@ -60,34 +60,27 @@ public abstract class HttpOutput<T> extends AbstractOutput<HttpChannel, T> {
 	protected MimeType getJsonpContentType(HttpChannel channel, T body) {
 		return MimeTypeUtils.TEXT_JAVASCRIPT;
 	}
-	
-	@Override
-	protected void appendHeaderBefore(HttpChannel channel, T body) {
-		String jsonp = getJsonpCallback(channel);
-		if(!StringUtils.isEmpty(jsonp)){
-			channel.getResponse().setContentType(getJsonpContentType(channel, body));
-		}
-		super.appendHeaderBefore(channel, body);
-	}
-	
+
 	@Override
 	protected void writeBodyBefore(HttpChannel channel, T body)
 			throws Throwable {
 		String jsonp = getJsonpCallback(channel);
-		if(!StringUtils.isEmpty(jsonp)){
+		if (!StringUtils.isEmpty(jsonp)) {
+			MimeType contentType = getJsonpContentType(channel, body);
+			if (contentType != null) {
+				channel.getResponse().setContentType(contentType);
+			}
 			PrintWriter writer = channel.getResponse().getWriter();
 			writer.write(jsonp);
 			writer.write(JSONP_RESP_PREFIX);
 		}
-		super.writeBodyBefore(channel, body);
 	}
-	
+
 	@Override
 	protected void writeBodyAfter(HttpChannel channel, T body) throws Throwable {
 		String jsonp = getJsonpCallback(channel);
-		if(!StringUtils.isEmpty(jsonp)){
+		if (!StringUtils.isEmpty(jsonp)) {
 			channel.getResponse().getWriter().write(JSONP_RESP_SUFFIX);
 		}
-		super.writeBodyAfter(channel, body);
 	}
 }

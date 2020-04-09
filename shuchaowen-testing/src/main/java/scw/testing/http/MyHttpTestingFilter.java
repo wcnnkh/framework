@@ -2,7 +2,7 @@ package scw.testing.http;
 
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
-import scw.mvc.action.filter.FilterChain;
+import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.action.http.HttpAction;
 import scw.mvc.action.http.HttpFilter;
 import scw.mvc.http.HttpChannel;
@@ -17,13 +17,13 @@ public final class MyHttpTestingFilter extends HttpFilter {
 	
 	@Override
 	protected Object doNoHttpFilter(Channel channel, Action action,
-			FilterChain chain) throws Throwable {
+			ActionFilterChain chain) throws Throwable {
 		return chain.doFilter(channel, action);
 	}
 
 	@Override
 	protected Object doHttpFilter(HttpChannel channel, HttpAction action,
-			FilterChain chain) throws Throwable {
+			ActionFilterChain chain) throws Throwable {
 		producer.push(new SimpleHttpTestingRequestMessage(channel.getRequest()));
 		return chain.doFilter(channel, action);
 	}

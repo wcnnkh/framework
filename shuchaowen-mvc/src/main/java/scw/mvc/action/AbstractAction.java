@@ -7,15 +7,15 @@ import scw.core.parameter.ParameterConfig;
 import scw.core.utils.CollectionUtils;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
-import scw.mvc.action.filter.Filter;
-import scw.mvc.action.filter.FilterChain;
-import scw.mvc.action.filter.IteratorFilterChain;
+import scw.mvc.action.filter.ActionFilter;
+import scw.mvc.action.filter.ActionFilterChain;
+import scw.mvc.action.filter.IteratorActionFilterChain;
 import scw.mvc.parameter.ParameterFilter;
 
 public abstract class AbstractAction implements Action{
 	public abstract Invoker getInvoker();
 	
-	public abstract Collection<Filter> getFilters();
+	public abstract Collection<ActionFilter> getActionFilters();
 
 	public abstract Collection<ParameterFilter> getParameterFilters();
 
@@ -26,9 +26,9 @@ public abstract class AbstractAction implements Action{
 				getParameterFilters(), null);
 	}
 	
-	public FilterChain getFilterChain() {
-		Collection<Filter> filters = getFilters();
-		return CollectionUtils.isEmpty(filters)? null:new IteratorFilterChain(getFilters(), null);
+	public ActionFilterChain getActionFilterChain() {
+		Collection<ActionFilter> filters = getActionFilters();
+		return CollectionUtils.isEmpty(filters)? null:new IteratorActionFilterChain(filters, null);
 	}
 	
 	public final Object doAction(Channel channel) throws Throwable {

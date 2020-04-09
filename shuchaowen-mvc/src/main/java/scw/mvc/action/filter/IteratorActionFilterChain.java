@@ -7,10 +7,10 @@ import scw.core.utils.CollectionUtils;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
 
-public class IteratorFilterChain extends AbstractIteratorFilterChain {
-	private Iterator<? extends Filter> iterator;
+public class IteratorActionFilterChain extends AbstractIteratorActionFilterChain {
+	private Iterator<? extends ActionFilter> iterator;
 
-	public IteratorFilterChain(Collection<? extends Filter> filters, FilterChain chain) {
+	public IteratorActionFilterChain(Collection<? extends ActionFilter> filters, ActionFilterChain chain) {
 		super(chain);
 		if(!CollectionUtils.isEmpty(filters)){
 			this.iterator = filters.iterator();
@@ -18,7 +18,7 @@ public class IteratorFilterChain extends AbstractIteratorFilterChain {
 	}
 	
 	@Override
-	protected Filter getNextFilter(Channel channel, Action action)
+	protected ActionFilter getNextFilter(Channel channel, Action action)
 			throws Throwable {
 		if(iterator == null){
 			return null;

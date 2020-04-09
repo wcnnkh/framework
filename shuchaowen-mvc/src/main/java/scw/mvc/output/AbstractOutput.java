@@ -1,7 +1,6 @@
 package scw.mvc.output;
 
-import java.nio.charset.Charset;
-
+import scw.io.IOUtils;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.mvc.Channel;
@@ -27,159 +26,42 @@ public abstract class AbstractOutput<C extends Channel, T> implements Output {
 			return false;
 		}
 
-		if (body instanceof InputMessage) {
-			return true;
-		}
-
-		if (body instanceof View) {
-			return true;
-		}
-
-		if (body instanceof Text) {
-			return true;
-		}
-
-		return canWriteInternal(channel, body);
+		return body instanceof View || body instanceof InputMessage
+				|| body instanceof Text || canWriteInternal(channel, body);
 	}
 
 	protected abstract boolean canWriteInternal(Channel channel, Object body);
 
-	protected void writeView(Channel channel, View view) throws Throwable {
-		view.render(channel);
-	}
+	protected abstract void writeBodyBefore(C channel, T body) throws Throwable;
 
-	protected void appendHeaderBefore(C channel, T body) {
-	}
+	protected abstract void writeBody(C channel, T body) throws Throwable;
 
-	protected void appendHeaderAfter(C channel, T body) {
-	}
+	protected abstract void writeBodyAfter(C channel, T body) throws Throwable;
 
 	@SuppressWarnings("unchecked")
 	public void write(Channel channel, Object body) throws Throwable {
-		if (body instanceof View) {
-			writeView(channel, (View) body);
-			return;
+		if(body instanceof View){
+			((View) body).render(channel);
+			return ;
 		}
-
+		
 		C wrapperChannel = (C) channel;
 		T b = (T) body;
-		appendHeaderBefore(wrapperChannel, b);
 		if (body instanceof InputMessage) {
-			NetworkUtils
-					.writeHeader((InputMessage) body, channel.getResponse());
-			appendHeader(wrapperChannel, b);
-			appendHeaderAfter(wrapperChannel, b);
+			NetworkUtils.writeHeader((InputMessage)body, channel.getResponse());
 			writeBodyBefore(wrapperChannel, b);
-			if (channel.isLogEnabled()) {
-				channel.log(body);
-			}
-
-			NetworkUtils.write((InputMessage) body, channel.getResponse());
+			IOUtils.write(((InputMessage) body).getBody(), channel.getResponse().getBody());
 		} else if (body instanceof Text) {
 			MimeType mimeType = ((Text) body).getMimeType();
-			if (mimeType != null) {
+			if(mimeType != null){
 				channel.getResponse().setContentType(mimeType);
 			}
-
-			appendHeader(wrapperChannel, b);
-			appendHeaderAfter(wrapperChannel, b);
-			String text = ((Text) body).getTextContent();
-			if (channel.isLogEnabled()) {
-				channel.log(text);
-			}
-
 			writeBodyBefore(wrapperChannel, b);
-			if (text != null) {
-				channel.getResponse().getWriter().write(text);
-			}
-			return;
+			channel.getResponse().getWriter().write(((Text) body).getTextContent());
 		} else {
-			appendHeader(wrapperChannel, b);
-			appendHeaderAfter(wrapperChannel, b);
 			writeBodyBefore(wrapperChannel, b);
 			writeBody(wrapperChannel, b);
 		}
 		writeBodyAfter(wrapperChannel, b);
-	}
-
-	protected void appendHeader(C channel, T body) {
-		if (channel.getResponse().getContentLength() < 0) {
-			Long contentLength = getContentLength(channel, body);
-			if (contentLength != null && contentLength >= 0) {
-				channel.getResponse().setContentLength(contentLength);
-			}
-		}
-
-		MimeType contentType = channel.getResponse().getContentType();
-		if (contentType == null) {
-			contentType = getContentType(channel, body);
-		}
-
-		Charset charset = contentType.getCharset();
-		if (charset == null) {
-			String charsetName = getCharsetName(channel, body);
-			if (charsetName != null) {
-				contentType = createContentType(contentType, charsetName);
-			}
-		}
-		channel.getResponse().setContentType(contentType);
-	}
-
-	protected MimeType createContentType(MimeType mimeType, String charsetName) {
-		return new MimeType(mimeType, charsetName);
-	}
-
-	protected String getCharsetName(C channel, T body) {
-		String charsetName = null;
-		MimeType contentType = channel.getResponse().getContentType();
-		if (contentType != null) {
-			charsetName = contentType.getCharsetName();
-		}
-
-		if (charsetName == null) {
-			charsetName = channel.getResponse().getCharacterEncoding();
-		}
-
-		if (charsetName == null) {
-			contentType = channel.getRequest().getContentType();
-			if (contentType != null) {
-				charsetName = contentType.getCharsetName();
-			}
-		}
-
-		if (charsetName == null) {
-			charsetName = channel.getRequest().getCharacterEncoding();
-		}
-		return charsetName;
-	}
-
-	protected MimeType getContentType(C channel, T body) {
-		return null;
-	}
-
-	protected Long getContentLength(C channel, T body) {
-		return null;
-	}
-
-	/**
-	 * 在写入之前
-	 * 
-	 * @param channel
-	 * @param body
-	 * @throws Throwable
-	 */
-	protected void writeBodyBefore(C channel, T body) throws Throwable {
-	}
-
-	protected abstract void writeBody(C channel, T body) throws Throwable;
-
-	/**
-	 * 在写入之后
-	 * 
-	 * @param channel
-	 * @param body
-	 * @throws Throwable
-	 */
-	protected void writeBodyAfter(C channel, T body) throws Throwable {
 	}
 }
