@@ -1810,15 +1810,30 @@ public final class StringUtils {
 	}
 
 	/**
-	 * 判断字符串是否与通配符匹配 只能存在通配符*和? ?代表1个 *代表0个或多个
+	 * 判断字符串是否与通配符匹配 只能存在通配符*和? ?代表1个 *代表0个或多个<br/>
+	 * !开头代表非(只支持开头使用!)
 	 * 
 	 * @param text
+	 *            可以为空
 	 * @param match
 	 * @return
 	 */
 	public static boolean test(String text, String match) {
+		Assert.notNull(match, "'match' must not be null");
 		if (StringUtils.isEmpty(match)) {
 			return false;
+		}
+
+		if (match.startsWith("!")) {
+			// 是否进行'非'处理
+			return !testInternal(text, match.substring(1));
+		}
+		return testInternal(text, match);
+	}
+
+	private static boolean testInternal(String text, String match) {
+		if (text == null) {
+			return "*".equals(match);
 		}
 
 		if ("*".equals(match)) {

@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -237,10 +238,10 @@ public final class XUtils {
 	}
 
 	public static void flush(Object flushable) throws IOException {
-		if(flushable == null){
-			return ;
+		if (flushable == null) {
+			return;
 		}
-		
+
 		if (flushable instanceof Flushable) {
 			((Flushable) flushable).flush();
 		}
@@ -325,5 +326,18 @@ public final class XUtils {
 			}
 		}
 		return value;
+	}
+
+	public static void appendToMap(Properties properties,
+			Map<String, String> map) {
+		if(properties == null || map == null){
+			return ;
+		}
+		
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			map.put(entry.getKey() == null ? null : entry.getKey().toString(),
+					entry.getValue() == null ? null : entry.getValue()
+							.toString());
+		}
 	}
 }
