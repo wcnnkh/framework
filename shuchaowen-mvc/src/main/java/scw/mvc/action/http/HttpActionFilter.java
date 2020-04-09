@@ -7,7 +7,7 @@ import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.http.HttpChannel;
 
-public abstract class HttpFilter implements ActionFilter{
+public abstract class HttpActionFilter implements ActionFilter{
 
 	public final Object doFilter(Channel channel, Action action, ActionFilterChain chain)
 			throws Throwable {

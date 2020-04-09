@@ -11,7 +11,7 @@ import scw.result.ResultFactory;
 import scw.security.session.UserSession;
 
 @SuppressWarnings("rawtypes")
-public class HttpUserSessionFilter extends scw.mvc.action.http.HttpFilter	{
+public class HttpUserSessionFilter extends scw.mvc.action.http.HttpActionFilter	{
 	private HttpChannelUserSessionFactory httpChannelUserSessionFactory;
 	private String uidKey;
 	private ResultFactory resultFactory;

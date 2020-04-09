@@ -5,10 +5,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.action.http.HttpAction;
-import scw.mvc.action.http.HttpFilter;
+import scw.mvc.action.http.HttpActionFilter;
 import scw.mvc.http.HttpChannel;
 
-public abstract class HttpServletFilter extends HttpFilter {
+public abstract class HttpServletFilter extends HttpActionFilter {
 
 	@Override
 	protected Object doHttpFilter(HttpChannel channel, HttpAction action,
