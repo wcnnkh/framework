@@ -62,7 +62,7 @@ public class DefaultServletService implements ServletService {
 				return;
 			}
 
-			channelService.doHandler(httpChannel);
+			channelService.service(httpChannel);
 		}
 	}
 }
