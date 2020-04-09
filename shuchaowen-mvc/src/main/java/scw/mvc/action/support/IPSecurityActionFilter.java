@@ -1,4 +1,4 @@
-package scw.mvc.action.filter.support;
+package scw.mvc.action.support;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Configuration;

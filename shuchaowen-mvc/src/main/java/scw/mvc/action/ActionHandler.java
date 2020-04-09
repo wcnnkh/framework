@@ -3,7 +3,6 @@ package scw.mvc.action;
 import java.util.Collection;
 
 import scw.mvc.Channel;
-import scw.mvc.action.exception.ActionExceptionHandlerChain;
 import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.action.filter.IteratorActionFilterChain;
@@ -16,15 +15,12 @@ public class ActionHandler implements Handler {
 	private final ActionFactory actionFactory;
 	private final Collection<ActionFilter> filters;
 	private Output output;
-	private final ActionExceptionHandlerChain actionExceptionHandlerChain;
 
 	public ActionHandler(ActionFactory actionFactory,
-			Collection<ActionFilter> filters, Output output,
-			ActionExceptionHandlerChain actionExceptionHandlerChain) {
+			Collection<ActionFilter> filters, Output output) {
 		this.actionFactory = actionFactory;
 		this.filters = filters;
 		this.output = output;
-		this.actionExceptionHandlerChain = actionExceptionHandlerChain;
 	}
 
 	public void doHandler(Channel channel, HandlerChain chain) throws Throwable {
@@ -37,13 +33,9 @@ public class ActionHandler implements Handler {
 		output.write(channel, doAction(channel, action, chain));
 	}
 
-	protected Object doAction(Channel channel, Action action, HandlerChain chain) {
-		ActionFilterChain filterChain = new IteratorActionFilterChain(filters, action.getActionFilterChain());
-		try {
-			return ContextManager.doFilter(channel, action, filterChain);
-		} catch (Throwable e) {
-			channel.getLogger().error(e, channel.toString());
-			return actionExceptionHandlerChain.doHandler(channel, action, e);
-		}
+	protected Object doAction(Channel channel, Action action, HandlerChain chain) throws Throwable {
+		ActionFilterChain filterChain = new IteratorActionFilterChain(filters,
+				action.getActionFilterChain());
+		return ContextManager.doFilter(channel, action, filterChain);
 	}
 }

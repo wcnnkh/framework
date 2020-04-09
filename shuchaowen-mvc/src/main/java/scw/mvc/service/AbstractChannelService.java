@@ -9,15 +9,21 @@ import scw.mvc.AsyncEvent;
 import scw.mvc.AsyncListener;
 import scw.mvc.Channel;
 import scw.mvc.context.ContextManager;
+import scw.mvc.exception.ExceptionHandlerChain;
 import scw.mvc.handler.HandlerChain;
+import scw.mvc.output.Output;
 
 public abstract class AbstractChannelService implements ChannelService,
 		AsyncListener {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 
-	public abstract HandlerChain getHandlerChain();
+	protected abstract HandlerChain getHandlerChain();
+	
+	protected abstract ExceptionHandlerChain getExceptionHandlerChain();
 
-	public abstract long getWarnExecuteMillisecond();
+	protected abstract long getWarnExecuteMillisecond();
+	
+	protected abstract Output getOutput();
 
 	public final void doHandler(Channel channel) {
 		try {
@@ -71,6 +77,12 @@ public abstract class AbstractChannelService implements ChannelService,
 
 	protected void doError(Channel channel, Throwable error) {
 		logger.error(error, channel.toString());
+		Object value = getExceptionHandlerChain().doHandler(channel, error);
+		try {
+			getOutput().write(channel, value);
+		} catch (Throwable e) {
+			logger.error(e, "output error for channel:{}", channel.toString());
+		}
 	}
 
 	protected void executeOvertime(Channel channel, long millisecond) {

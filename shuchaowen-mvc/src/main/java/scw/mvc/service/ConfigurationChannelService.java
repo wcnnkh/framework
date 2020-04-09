@@ -4,19 +4,21 @@ import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.utils.StringUtils;
+import scw.mvc.exception.ExceptionHandlerChain;
 import scw.mvc.handler.DefaultHandlerChain;
 import scw.mvc.handler.Handler;
 import scw.mvc.handler.HandlerChain;
+import scw.mvc.output.Output;
 import scw.util.value.property.PropertyFactory;
 
-public final class ConfigurationChannelService extends
-		DefaultChannelService {
+public final class ConfigurationChannelService extends DefaultChannelService {
 
 	public ConfigurationChannelService(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
 		super(getHandlerChain(beanFactory),
-				getWarnExecuteTime(propertyFactory));
+				getWarnExecuteTime(propertyFactory), beanFactory
+						.getInstance(Output.class), beanFactory
+						.getInstance(ExceptionHandlerChain.class));
 	}
 
 	private static Collection<Handler> getHandlers(BeanFactory beanFactory) {
@@ -24,13 +26,12 @@ public final class ConfigurationChannelService extends
 	}
 
 	private static HandlerChain getHandlerChain(BeanFactory beanFactory) {
-		HandlerChain chain =  new DefaultHandlerChain(
-				getHandlers(beanFactory), null);
+		HandlerChain chain = new DefaultHandlerChain(getHandlers(beanFactory),
+				null);
 		return chain;
 	}
 
 	private static long getWarnExecuteTime(PropertyFactory propertyFactory) {
-		return StringUtils.parseLong(
-				propertyFactory.getString("mvc.warn-execute-time"), 100);
+		return propertyFactory.getValue("mvc.warn-execute-time", long.class, 100L);
 	}
 }
