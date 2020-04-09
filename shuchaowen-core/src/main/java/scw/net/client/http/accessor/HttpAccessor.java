@@ -25,7 +25,7 @@ import scw.logger.LoggerFactory;
 import scw.net.client.http.ClientHttpRequest;
 import scw.net.client.http.ClientHttpRequestFactory;
 import scw.net.client.http.SimpleClientHttpRequestFactory;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 /**
  * Base class for
@@ -77,7 +77,7 @@ public abstract class HttpAccessor {
 		return this.requestFactory;
 	}
 
-	protected ClientHttpRequest createRequest(URI url, Method method) throws IOException {
+	protected ClientHttpRequest createRequest(URI url, HttpMethod method) throws IOException {
 		ClientHttpRequest request = getRequestFactory().createRequest(url, method);
 		if (logger.isDebugEnabled()) {
 			logger.debug("Created " + method.name() + " request for \"" + url + "\"");

@@ -8,7 +8,7 @@ import scw.json.JsonObject;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.parameter.Body;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.util.value.Value;
 
 @SuppressWarnings("unchecked")
@@ -19,7 +19,7 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	public JsonHttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport,
 			MyHttpServletRequest request, MyHttpServletResponse response) {
 		super(beanFactory, jsonParseSupport, request, response);
-		if (Method.GET.name().equals(request.getMethod())) {
+		if (HttpMethod.GET.name().equals(request.getMethod())) {
 			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getControllerPath(), request.getMethod());
 		} else {
 			String content = getBean(Body.class).getBody();

@@ -13,7 +13,7 @@ import scw.net.client.ClientResponseExtractor;
 import scw.net.client.http.exception.HttpClientException;
 import scw.net.client.http.exception.HttpClientResourceAccessException;
 import scw.net.http.MediaType;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.net.http.SerializableHttpInputMessage;
 import scw.net.message.InputMessage;
 
@@ -46,7 +46,7 @@ public abstract class AbstractHttpClient
 	protected SerializableHttpInputMessage convertToSerializableInputMessage(
 			ClientHttpRequestBuilder builder, ClientHttpResponse response)
 			throws IOException {
-		byte[] body = builder.getMethod() == Method.OPTIONS ? null : IOUtils
+		byte[] body = builder.getMethod() == HttpMethod.OPTIONS ? null : IOUtils
 				.toByteArray(response.getBody());
 		return new SerializableHttpInputMessage(body, response.getHeaders());
 	}
@@ -82,12 +82,12 @@ public abstract class AbstractHttpClient
 	public SerializableHttpInputMessage getSerializableHttpInputMessage(
 			String url, SSLSocketFactory sslSocketFactory)
 			throws HttpClientException {
-		return executeAndGetSerializableHttpInputMessage(url, Method.GET,
+		return executeAndGetSerializableHttpInputMessage(url, HttpMethod.GET,
 				sslSocketFactory, null, null);
 	}
 
 	public SerializableHttpInputMessage executeAndGetSerializableHttpInputMessage(
-			String url, Method method, SSLSocketFactory sslSocketFactory,
+			String url, HttpMethod method, SSLSocketFactory sslSocketFactory,
 			final Object body, final MediaType contentType)
 			throws HttpClientException {
 		final ClientHttpRequestBuilder builder = createBuilder(url, method,
@@ -114,7 +114,7 @@ public abstract class AbstractHttpClient
 	}
 
 	protected abstract ClientHttpRequestBuilder createBuilder(String url,
-			Method method, SSLSocketFactory sslSocketFactory);
+			HttpMethod method, SSLSocketFactory sslSocketFactory);
 
 	public <T> T get(String url, Class<? extends T> responseType)
 			throws HttpClientException {
@@ -123,7 +123,7 @@ public abstract class AbstractHttpClient
 
 	public <T> T get(String url, Class<? extends T> responseType,
 			SSLSocketFactory sslSocketFactory) throws HttpClientException {
-		return execute(createBuilder(url, Method.GET, sslSocketFactory),
+		return execute(createBuilder(url, HttpMethod.GET, sslSocketFactory),
 				responseType, null, null);
 	}
 
@@ -133,7 +133,7 @@ public abstract class AbstractHttpClient
 
 	public Object get(String url, Type responseType,
 			SSLSocketFactory sslSocketFactory) throws HttpClientException {
-		return execute(createBuilder(url, Method.GET, sslSocketFactory),
+		return execute(createBuilder(url, HttpMethod.GET, sslSocketFactory),
 				responseType, null, null);
 	}
 
@@ -145,7 +145,7 @@ public abstract class AbstractHttpClient
 	public <T> T post(String url, Class<? extends T> responseType,
 			SSLSocketFactory sslSocketFactory, Object body,
 			MediaType contentType) throws HttpClientException {
-		return execute(createBuilder(url, Method.POST, sslSocketFactory),
+		return execute(createBuilder(url, HttpMethod.POST, sslSocketFactory),
 				responseType, body, contentType);
 	}
 
@@ -157,7 +157,7 @@ public abstract class AbstractHttpClient
 	public Object post(String url, Type responseType,
 			SSLSocketFactory sslSocketFactory, Object body,
 			MediaType contentType) throws HttpClientException {
-		return execute(createBuilder(url, Method.POST, sslSocketFactory),
+		return execute(createBuilder(url, HttpMethod.POST, sslSocketFactory),
 				responseType, body, contentType);
 	}
 }

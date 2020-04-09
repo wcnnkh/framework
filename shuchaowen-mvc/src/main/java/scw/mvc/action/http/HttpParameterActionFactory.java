@@ -8,10 +8,10 @@ import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.action.AnnotationAction;
 import scw.mvc.http.HttpChannel;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 public final class HttpParameterActionFactory extends HttpActionFactory {
-	private final Map<String, EnumMap<Method, Map<String, HttpAction>>> actionMap = new HashMap<String, EnumMap<Method, Map<String, HttpAction>>>();
+	private final Map<String, EnumMap<HttpMethod, Map<String, HttpAction>>> actionMap = new HashMap<String, EnumMap<HttpMethod, Map<String, HttpAction>>>();
 	private String key;
 
 	public HttpParameterActionFactory(String key) {
@@ -24,7 +24,7 @@ public final class HttpParameterActionFactory extends HttpActionFactory {
 			return null;
 		}
 
-		Map<Method, Map<String, HttpAction>> map = actionMap.get(httpChannel
+		Map<HttpMethod, Map<String, HttpAction>> map = actionMap.get(httpChannel
 				.getRequest().getControllerPath());
 		if (map == null) {
 			return null;
@@ -50,12 +50,12 @@ public final class HttpParameterActionFactory extends HttpActionFactory {
 		}
 
 		AnnotationAction annotationAction = (AnnotationAction) action;
-		for (Method method : action.getHttpMethods()) {
-			EnumMap<Method, Map<String, HttpAction>> clzMap = actionMap
+		for (HttpMethod method : action.getHttpMethods()) {
+			EnumMap<HttpMethod, Map<String, HttpAction>> clzMap = actionMap
 					.get(annotationAction.getClassController());
 			if (clzMap == null) {
-				clzMap = new EnumMap<Method, Map<String, HttpAction>>(
-						Method.class);
+				clzMap = new EnumMap<HttpMethod, Map<String, HttpAction>>(
+						HttpMethod.class);
 			}
 
 			Map<String, HttpAction> map = clzMap.get(method);

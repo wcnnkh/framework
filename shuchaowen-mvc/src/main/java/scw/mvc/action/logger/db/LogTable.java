@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import scw.db.cache.TemporaryCacheEnable;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.orm.annotation.PrimaryKey;
 import scw.orm.sql.annotation.Column;
 import scw.orm.sql.annotation.CreateTime;
@@ -25,7 +25,7 @@ public class LogTable implements Serializable{
 	private String controller;
 	@Column(length=1000, nullAble=false)
 	private String requestController;
-	private Method httpMethod;
+	private HttpMethod httpMethod;
 	private String requestContentType;
 	@Column(type="text")
 	private String requestBody;
@@ -58,10 +58,10 @@ public class LogTable implements Serializable{
 	public void setController(String controller) {
 		this.controller = controller;
 	}
-	public Method getHttpMethod() {
+	public HttpMethod getHttpMethod() {
 		return httpMethod;
 	}
-	public void setHttpMethod(Method httpMethod) {
+	public void setHttpMethod(HttpMethod httpMethod) {
 		this.httpMethod = httpMethod;
 	}
 	public String getRequestContentType() {

@@ -16,11 +16,11 @@ import scw.core.utils.StringUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpRequest;
 import scw.net.NetworkUtils;
-import scw.net.http.Cookie;
+import scw.net.http.HttpCookie;
 import scw.net.http.HttpHeaders;
 import scw.net.http.InvalidMediaTypeException;
 import scw.net.http.MediaType;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.net.message.AbstractInputMessage;
 import scw.security.session.Session;
 import scw.servlet.ServletUtils;
@@ -43,7 +43,7 @@ public class MyHttpServletRequest extends AbstractInputMessage implements
 		return httpServletRequest.getServletPath();
 	}
 
-	public Cookie getCookie(String name) {
+	public HttpCookie getCookie(String name) {
 		if (name == null) {
 			return null;
 		}
@@ -57,13 +57,13 @@ public class MyHttpServletRequest extends AbstractInputMessage implements
 		return new HttpServletCookie(cookie);
 	}
 
-	public Cookie[] getCookies() {
+	public HttpCookie[] getCookies() {
 		javax.servlet.http.Cookie[] cookies = httpServletRequest.getCookies();
 		if (cookies == null) {
-			return new Cookie[0];
+			return new HttpCookie[0];
 		}
 
-		Cookie[] values = new Cookie[cookies.length];
+		HttpCookie[] values = new HttpCookie[cookies.length];
 		for (int i = 0; i < cookies.length; i++) {
 			values[i] = new HttpServletCookie(cookies[i]);
 		}
@@ -148,8 +148,8 @@ public class MyHttpServletRequest extends AbstractInputMessage implements
 		return this.headers;
 	}
 
-	public Method getMethod() {
-		return Method.resolve(getRawMethod());
+	public HttpMethod getMethod() {
+		return HttpMethod.resolve(getRawMethod());
 	}
 
 	public MediaType getContentType() {

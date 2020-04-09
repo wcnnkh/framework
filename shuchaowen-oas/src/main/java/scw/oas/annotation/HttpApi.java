@@ -6,13 +6,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface HttpApi {
-	public Method[] method() default { Method.GET };
+	public HttpMethod[] method() default { HttpMethod.GET };
 
 	public String path() default "";
 }

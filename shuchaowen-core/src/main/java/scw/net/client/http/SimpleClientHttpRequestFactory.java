@@ -11,7 +11,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.net.NetworkUtils;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory {
 	private static final int DEFAULT_CHUNK_SIZE = 4096;
@@ -118,7 +118,7 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory 
 		this.outputStreaming = outputStreaming;
 	}
 
-	public ClientHttpRequest createRequest(URI uri, Method httpMethod) throws IOException {
+	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
 		HttpURLConnection connection = openConnection(uri.toURL(), this.proxy);
 		prepareConnection(connection, httpMethod.name());
 

@@ -50,8 +50,8 @@ public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRp
 			host = "http://127.0.0.1";
 		}
 
-		KeyValuePair<scw.net.http.Method, String> requestMethod = AnnotationUtils.getHttpMethodAnnotation(method);
-		scw.net.http.Method httpMethod = scw.net.http.Method.GET;
+		KeyValuePair<scw.net.http.HttpMethod, String> requestMethod = AnnotationUtils.getHttpMethodAnnotation(method);
+		scw.net.http.HttpMethod httpMethod = scw.net.http.HttpMethod.GET;
 		if (requestMethod != null) {
 			httpMethod = requestMethod.getKey();
 			if (StringUtils.isNotEmpty(requestMethod.getValue())) {
@@ -74,7 +74,7 @@ public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRp
 		host = stringFormat.format(host);
 		host = FormatUtils.format(host, propertyFactory);
 
-		host = httpMethod == scw.net.http.Method.GET ? HttpUtils.appendParameters(host, parameterMap, charsetName)
+		host = httpMethod == scw.net.http.HttpMethod.GET ? HttpUtils.appendParameters(host, parameterMap, charsetName)
 				: host;
 
 		ClientHttpRequest clientHttpRequest = createRequest(new URI(host), httpMethod);

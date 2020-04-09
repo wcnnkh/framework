@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.parameter.ParameterFilter;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -26,7 +26,7 @@ public @interface Controller {
 	 * 只在http中有用
 	 * @return
 	 */
-	public Method[] methods() default {};
+	public HttpMethod[] methods() default {};
 
 	/**
 	 * filters

@@ -562,7 +562,7 @@ public class HttpHeaders extends Headers {
 	 * Set the (new) value of the {@code Access-Control-Allow-Methods} response
 	 * header.
 	 */
-	public void setAccessControlAllowMethods(List<Method> allowedMethods) {
+	public void setAccessControlAllowMethods(List<HttpMethod> allowedMethods) {
 		set(ACCESS_CONTROL_ALLOW_METHODS, StringUtils.collectionToCommaDelimitedString(allowedMethods));
 	}
 
@@ -570,13 +570,13 @@ public class HttpHeaders extends Headers {
 	 * Return the value of the {@code Access-Control-Allow-Methods} response
 	 * header.
 	 */
-	public List<Method> getAccessControlAllowMethods() {
-		List<Method> result = new ArrayList<Method>();
+	public List<HttpMethod> getAccessControlAllowMethods() {
+		List<HttpMethod> result = new ArrayList<HttpMethod>();
 		String value = getFirst(ACCESS_CONTROL_ALLOW_METHODS);
 		if (value != null) {
 			String[] tokens = StringUtils.tokenizeToStringArray(value, ",");
 			for (String token : tokens) {
-				Method resolved = Method.resolve(token);
+				HttpMethod resolved = HttpMethod.resolve(token);
 				if (resolved != null) {
 					result.add(resolved);
 				}
@@ -655,7 +655,7 @@ public class HttpHeaders extends Headers {
 	 * Set the (new) value of the {@code Access-Control-Request-Method} request
 	 * header.
 	 */
-	public void setAccessControlRequestMethod(Method requestMethod) {
+	public void setAccessControlRequestMethod(HttpMethod requestMethod) {
 		set(ACCESS_CONTROL_REQUEST_METHOD, requestMethod.name());
 	}
 
@@ -663,8 +663,8 @@ public class HttpHeaders extends Headers {
 	 * Return the value of the {@code Access-Control-Request-Method} request
 	 * header.
 	 */
-	public Method getAccessControlRequestMethod() {
-		return Method.resolve(getFirst(ACCESS_CONTROL_REQUEST_METHOD));
+	public HttpMethod getAccessControlRequestMethod() {
+		return HttpMethod.resolve(getFirst(ACCESS_CONTROL_REQUEST_METHOD));
 	}
 
 	/**
@@ -711,33 +711,33 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Set the set of allowed {@link Method HTTP methods}, as specified by the
+	 * Set the set of allowed {@link HttpMethod HTTP methods}, as specified by the
 	 * {@code Allow} header.
 	 */
-	public void setAllow(Set<Method> allowedMethods) {
+	public void setAllow(Set<HttpMethod> allowedMethods) {
 		set(ALLOW, StringUtils.collectionToCommaDelimitedString(allowedMethods));
 	}
 
 	/**
-	 * Return the set of allowed {@link Method HTTP methods}, as specified by
+	 * Return the set of allowed {@link HttpMethod HTTP methods}, as specified by
 	 * the {@code Allow} header.
 	 * <p>
 	 * Returns an empty set when the allowed methods are unspecified.
 	 */
-	public Set<Method> getAllow() {
+	public Set<HttpMethod> getAllow() {
 		String value = getFirst(ALLOW);
 		if (!StringUtils.isEmpty(value)) {
 			String[] tokens = StringUtils.tokenizeToStringArray(value, ",");
-			List<Method> result = new ArrayList<Method>(tokens.length);
+			List<HttpMethod> result = new ArrayList<HttpMethod>(tokens.length);
 			for (String token : tokens) {
-				Method resolved = Method.resolve(token);
+				HttpMethod resolved = HttpMethod.resolve(token);
 				if (resolved != null) {
 					result.add(resolved);
 				}
 			}
 			return EnumSet.copyOf(result);
 		} else {
-			return EnumSet.noneOf(Method.class);
+			return EnumSet.noneOf(HttpMethod.class);
 		}
 	}
 

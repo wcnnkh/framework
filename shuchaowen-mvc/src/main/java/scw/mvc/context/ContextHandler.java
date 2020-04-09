@@ -6,8 +6,8 @@ import scw.mvc.handler.HandlerChain;
 
 public final class ContextHandler implements Handler{
 
-	public void doHandler(Channel channel, HandlerChain chain) throws Throwable {
-		ContextManager.doHandler(channel, chain);
+	public Object doHandler(Channel channel, HandlerChain chain) throws Throwable {
+		return ContextManager.doHandler(channel, chain);
 	}
 
 }

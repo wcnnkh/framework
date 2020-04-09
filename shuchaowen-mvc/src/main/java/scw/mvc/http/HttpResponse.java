@@ -3,11 +3,11 @@ package scw.mvc.http;
 import java.io.IOException;
 
 import scw.mvc.Response;
-import scw.net.http.Cookie;
+import scw.net.http.HttpCookie;
 import scw.net.http.HttpHeaders;
 
 public interface HttpResponse extends Response{
-    void addCookie(Cookie cookie);
+    void addCookie(HttpCookie cookie);
     
     void addCookie(String name, String value);
 

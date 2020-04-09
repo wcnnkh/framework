@@ -25,11 +25,11 @@ public abstract class AbstractChannelService implements ChannelService,
 	
 	protected abstract Output getOutput();
 
-	public final void doHandler(Channel channel) {
+	public final void service(Channel channel) {
 		try {
-			ContextManager.doHandler(channel, getHandlerChain());
+			output(channel, ContextManager.doHandler(channel, getHandlerChain()));
 		} catch (Throwable e) {
-			doError(channel, e);
+			output(channel, doError(channel, e));
 		} finally {
 			try {
 				long millisecond = System.currentTimeMillis()
@@ -45,6 +45,14 @@ public abstract class AbstractChannelService implements ChannelService,
 			} finally {
 				destroyChannel(channel);
 			}
+		}
+	}
+	
+	public void output(Channel channel, Object body){
+		try {
+			getOutput().write(channel, body);
+		} catch (Throwable e) {
+			logger.error(e, "output error for channel:{}", channel.toString());
 		}
 	}
 	
@@ -75,14 +83,9 @@ public abstract class AbstractChannelService implements ChannelService,
 		XUtils.destroy(channel);
 	}
 
-	protected void doError(Channel channel, Throwable error) {
+	protected Object doError(Channel channel, Throwable error) {
 		logger.error(error, channel.toString());
-		Object value = getExceptionHandlerChain().doHandler(channel, error);
-		try {
-			getOutput().write(channel, value);
-		} catch (Throwable e) {
-			logger.error(e, "output error for channel:{}", channel.toString());
-		}
+		return getExceptionHandlerChain().doHandler(channel, error);
 	}
 
 	protected void executeOvertime(Channel channel, long millisecond) {

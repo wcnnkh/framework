@@ -1,6 +1,6 @@
 package scw.mvc.http;
 
-import scw.net.http.Cookie;
+import scw.net.http.HttpCookie;
 import scw.security.session.Session;
 import scw.util.MultiValueParameterFactory;
 import scw.util.ip.IP;
@@ -8,9 +8,9 @@ import scw.util.ip.IP;
 public interface HttpRequest extends scw.net.http.HttpRequest, scw.mvc.Request, MultiValueParameterFactory, IP {
 	String getRawMethod();
 
-	Cookie getCookie(String name);
+	HttpCookie getCookie(String name);
 	
-	Cookie[] getCookies();
+	HttpCookie[] getCookies();
 
 	/**
 	 * Returns the fully qualified name of the client or the last proxy that

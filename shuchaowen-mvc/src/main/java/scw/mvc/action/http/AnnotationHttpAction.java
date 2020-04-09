@@ -18,8 +18,8 @@ import scw.util.value.property.PropertyFactory;
 
 public class AnnotationHttpAction extends AnnotationAction implements HttpAction {
 	private SimpleHttpAuthority authority;
-	private EnumSet<scw.net.http.Method> httpMethods = EnumSet
-			.noneOf(scw.net.http.Method.class);
+	private EnumSet<scw.net.http.HttpMethod> httpMethods = EnumSet
+			.noneOf(scw.net.http.HttpMethod.class);
 	
 
 	public AnnotationHttpAction(BeanFactory beanFactory,
@@ -31,31 +31,31 @@ public class AnnotationHttpAction extends AnnotationAction implements HttpAction
 		Methods methods = method.getAnnotation(Methods.class);
 		if (methods == null) {
 			if (classController != null) {
-				for (scw.net.http.Method requestType : classController
+				for (scw.net.http.HttpMethod requestType : classController
 						.methods()) {
 					httpMethods.add(requestType);
 				}
 			}
 		} else {
-			for (scw.net.http.Method requestType : methods.value()) {
+			for (scw.net.http.HttpMethod requestType : methods.value()) {
 				httpMethods.add(requestType);
 			}
 		}
 
 		if (methodController != null) {
-			for (scw.net.http.Method requestType : methodController.methods()) {
+			for (scw.net.http.HttpMethod requestType : methodController.methods()) {
 				httpMethods.add(requestType);
 			}
 		}
 
 		if (httpMethods.isEmpty()) {
-			httpMethods.add(scw.net.http.Method.GET);
+			httpMethods.add(scw.net.http.HttpMethod.GET);
 		}
 
 		HttpAuthorityConfig httpAuthorityConfig = method
 				.getAnnotation(HttpAuthorityConfig.class);
 		if (httpAuthorityConfig != null) {
-			for (scw.net.http.Method httpMethod : httpMethods) {
+			for (scw.net.http.HttpMethod httpMethod : httpMethods) {
 				HttpAuthorityParent parent = clz
 						.getAnnotation(HttpAuthorityParent.class);
 				HttpAuthorityParent methodParent = method
@@ -84,7 +84,7 @@ public class AnnotationHttpAction extends AnnotationAction implements HttpAction
 		return authority;
 	}
 
-	public Collection<scw.net.http.Method> getHttpMethods() {
+	public Collection<scw.net.http.HttpMethod> getHttpMethods() {
 		return httpMethods;
 	}
 }

@@ -46,7 +46,7 @@ public abstract class HttpOutput<T> extends AbstractOutput<HttpChannel, T> {
 
 	protected String getJsonpCallback(HttpChannel httpChannel) {
 		// 非GET请求不支持jsonp
-		if (scw.net.http.Method.GET != httpChannel.getRequest().getMethod()) {
+		if (scw.net.http.HttpMethod.GET != httpChannel.getRequest().getMethod()) {
 			return null;
 		}
 

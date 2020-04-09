@@ -7,14 +7,14 @@ import java.util.Map;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 public final class HttpPathActionFactory extends HttpActionFactory {
-	private final Map<String, EnumMap<Method, HttpAction>> actionMap = new HashMap<String, EnumMap<Method, HttpAction>>();
+	private final Map<String, EnumMap<HttpMethod, HttpAction>> actionMap = new HashMap<String, EnumMap<HttpMethod, HttpAction>>();
 
 	@Override
 	public HttpAction getAction(HttpChannel httpChannel) {
-		Map<Method, HttpAction> map = actionMap.get(httpChannel.getRequest()
+		Map<HttpMethod, HttpAction> map = actionMap.get(httpChannel.getRequest()
 				.getControllerPath());
 		if (map == null) {
 			return null;
@@ -34,12 +34,12 @@ public final class HttpPathActionFactory extends HttpActionFactory {
 			return;
 		}
 
-		EnumMap<Method, HttpAction> map = actionMap.get(action.getController());
+		EnumMap<HttpMethod, HttpAction> map = actionMap.get(action.getController());
 		if (map == null) {
-			map = new EnumMap<Method, HttpAction>(Method.class);
+			map = new EnumMap<HttpMethod, HttpAction>(HttpMethod.class);
 		}
 
-		for (Method method : action.getHttpMethods()) {
+		for (HttpMethod method : action.getHttpMethods()) {
 			if (map.containsKey(method)) {
 				throw new AlreadyExistsException(MVCUtils.getExistActionErrMsg(
 						action, map.get(method)));

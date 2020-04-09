@@ -24,7 +24,7 @@ import java.net.URISyntaxException;
 
 import scw.io.StreamUtils;
 import scw.net.http.HttpHeaders;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
 
@@ -44,8 +44,8 @@ final class SimpleStreamingClientHttpRequest extends AbstractClientHttpRequest {
 	}
 
 
-	public Method getMethod() {
-		return Method.resolve(this.connection.getRequestMethod());
+	public HttpMethod getMethod() {
+		return HttpMethod.resolve(this.connection.getRequestMethod());
 	}
 
 	public URI getURI() {

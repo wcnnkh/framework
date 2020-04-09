@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URI;
 
 import scw.core.Assert;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 public abstract class AbstractClientHttpRequestFactoryWrapper implements ClientHttpRequestFactory {
 
@@ -15,11 +15,11 @@ public abstract class AbstractClientHttpRequestFactoryWrapper implements ClientH
 		this.requestFactory = requestFactory;
 	}
 
-	public final ClientHttpRequest createRequest(URI uri, Method httpMethod) throws IOException {
+	public final ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
 		return createRequest(uri, httpMethod, this.requestFactory);
 	}
 
-	protected abstract ClientHttpRequest createRequest(URI uri, Method httpMethod,
+	protected abstract ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod,
 			ClientHttpRequestFactory requestFactory) throws IOException;
 
 }

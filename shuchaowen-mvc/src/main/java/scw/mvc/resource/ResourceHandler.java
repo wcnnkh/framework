@@ -22,14 +22,14 @@ public final class ResourceHandler extends HttpHandler{
 	}
 	
 	@Override
-	protected void doHttpHandler(HttpChannel channel, HandlerChain chain)
+	protected Object doHttpHandler(HttpChannel channel, HandlerChain chain)
 			throws Throwable {
 		Resource resource = resourceFactory.getResource(channel.getRequest());
 		if(resource == null || resource.exists()){
-			chain.doHandler(channel);
-			return ;
+			return chain.doHandler(channel);
 		}
 		
 		IOUtils.copy(resource.getInputStream(), channel.getResponse().getBody());
+		return null;
 	}
 }

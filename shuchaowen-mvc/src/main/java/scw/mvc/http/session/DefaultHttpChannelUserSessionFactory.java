@@ -6,7 +6,7 @@ import scw.core.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 import scw.mvc.http.HttpChannel;
-import scw.net.http.Cookie;
+import scw.net.http.HttpCookie;
 import scw.security.session.UserSession;
 import scw.security.session.UserSessionFactory;
 
@@ -26,7 +26,7 @@ public class DefaultHttpChannelUserSessionFactory<T> implements HttpChannelUserS
 	public UserSession<T> getUserSession(HttpChannel httpChannel) {
 		String id = httpChannel.getString(sessionIdKey);
 		if (id == null && searchCookie) {
-			Cookie cookie = httpChannel.getRequest().getCookie(sessionIdKey);
+			HttpCookie cookie = httpChannel.getRequest().getCookie(sessionIdKey);
 			if (cookie != null) {
 				id = cookie.getValue();
 			}

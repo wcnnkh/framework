@@ -16,7 +16,7 @@ import scw.io.resource.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 @Bean(proxy = false)
 public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
@@ -96,7 +96,7 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 		simpleAuthority.setParentId(parentId);
 		simpleAuthority.setName(name);
 		simpleAuthority.setPath(path);
-		simpleAuthority.setHttpMethod(Method.resolve(method));
+		simpleAuthority.setHttpMethod(HttpMethod.resolve(method));
 		simpleAuthority.setAttributeMap(map);
 		addAuthroity(simpleAuthority);
 	}

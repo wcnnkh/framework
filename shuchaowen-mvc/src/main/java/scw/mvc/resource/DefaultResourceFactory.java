@@ -9,7 +9,7 @@ import scw.logger.LoggerUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.Request;
 import scw.mvc.http.HttpRequest;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.util.value.property.PropertyFactory;
 
 public class DefaultResourceFactory implements ResourceFactory {
@@ -37,7 +37,7 @@ public class DefaultResourceFactory implements ResourceFactory {
 		}
 
 		if (request instanceof HttpRequest) {
-			if (Method.GET != ((HttpRequest) request).getMethod()) {
+			if (HttpMethod.GET != ((HttpRequest) request).getMethod()) {
 				return null;
 			}
 		}

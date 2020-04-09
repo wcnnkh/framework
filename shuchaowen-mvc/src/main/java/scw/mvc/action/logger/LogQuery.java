@@ -3,7 +3,7 @@ package scw.mvc.action.logger;
 import java.io.Serializable;
 import java.util.Map;
 
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 public class LogQuery implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -11,7 +11,7 @@ public class LogQuery implements Serializable {
 	private Map<String, String> attributeMap;
 	private String controller;
 	private String requestController;
-	private Method httpMethod;
+	private HttpMethod httpMethod;
 	private String requestContentType;
 	private String requestBody;
 	private String responseContentType;
@@ -49,11 +49,11 @@ public class LogQuery implements Serializable {
 		this.requestController = requestController;
 	}
 
-	public Method getHttpMethod() {
+	public HttpMethod getHttpMethod() {
 		return httpMethod;
 	}
 
-	public void setHttpMethod(Method httpMethod) {
+	public void setHttpMethod(HttpMethod httpMethod) {
 		this.httpMethod = httpMethod;
 	}
 

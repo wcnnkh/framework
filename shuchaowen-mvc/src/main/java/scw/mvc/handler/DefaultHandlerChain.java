@@ -14,9 +14,9 @@ public class DefaultHandlerChain implements HandlerChain {
 		this.chain = chain;
 	}
 
-	public void doHandler(Channel channel) throws Throwable {
+	public Object doHandler(Channel channel) throws Throwable {
 		HandlerChain chain = new IteratorHandlerChain(handlers, this.chain);
-		chain.doHandler(channel);
+		return chain.doHandler(channel);
 	}
 
 }

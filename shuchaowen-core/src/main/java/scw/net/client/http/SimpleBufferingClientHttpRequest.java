@@ -26,7 +26,7 @@ import java.util.Map;
 import scw.core.utils.StringUtils;
 import scw.io.FileCopyUtils;
 import scw.net.http.HttpHeaders;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttpRequest {
 	
@@ -41,8 +41,8 @@ final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttp
 	}
 
 
-	public Method getMethod() {
-		return Method.resolve(this.connection.getRequestMethod());
+	public HttpMethod getMethod() {
+		return HttpMethod.resolve(this.connection.getRequestMethod());
 	}
 
 	public URI getURI() {
@@ -58,7 +58,7 @@ final class SimpleBufferingClientHttpRequest extends AbstractBufferingClientHttp
 	protected ClientHttpResponse executeInternal(HttpHeaders headers, byte[] bufferedOutput) throws IOException {
 		addHeaders(this.connection, headers);
 		// JDK <1.8 doesn't support getOutputStream with HTTP DELETE
-		if (getMethod() == Method.DELETE && bufferedOutput.length == 0) {
+		if (getMethod() == HttpMethod.DELETE && bufferedOutput.length == 0) {
 			this.connection.setDoOutput(false);
 		}
 		if (this.connection.getDoOutput() && this.outputStreaming) {

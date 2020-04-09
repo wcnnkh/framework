@@ -23,7 +23,7 @@ import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.lang.NotSupportException;
 import scw.net.http.MediaType;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.ToMap;
@@ -48,7 +48,7 @@ public final class HttpUtils {
 	}
 
 	public static ClientHttpRequest createRequest(String url,
-			Method httpMethod, MediaType contentType,
+			HttpMethod httpMethod, MediaType contentType,
 			ClientHttpRequestFactory clientHttpRequestFactory)
 			throws IOException {
 		URI uri;

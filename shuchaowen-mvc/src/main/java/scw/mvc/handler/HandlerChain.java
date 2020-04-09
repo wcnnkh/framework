@@ -5,5 +5,5 @@ import scw.mvc.Channel;
 
 @AutoImpl(ConfigurationHandlerChain.class)
 public interface HandlerChain{
-	void doHandler(Channel channel) throws Throwable;
+	Object doHandler(Channel channel) throws Throwable;
 }

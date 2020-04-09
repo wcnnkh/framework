@@ -62,7 +62,7 @@ public class ContextManager extends ThreadLocalDefaultContextManager {
 				new FilterContextExecute(channel, action, chain));
 	}
 	
-	public static void doHandler(Channel channel, HandlerChain chain) throws Throwable{
-		getInstance().execute(Propagation.REQUIRES_NEW, new HandlerContextExecute(channel, chain));
+	public static Object doHandler(Channel channel, HandlerChain chain) throws Throwable{
+		return getInstance().execute(Propagation.REQUIRES_NEW, new HandlerContextExecute(channel, chain));
 	}
 }

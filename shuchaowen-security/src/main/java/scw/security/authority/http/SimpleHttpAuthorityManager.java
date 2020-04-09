@@ -6,14 +6,14 @@ import java.util.Map;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.security.authority.SimpleAuthorityManager;
 
 public class SimpleHttpAuthorityManager extends SimpleAuthorityManager<HttpAuthority> implements HttpAuthorityManager {
-	private Map<String, Map<Method, String>> pathMap = new HashMap<String, Map<Method, String>>();
+	private Map<String, Map<HttpMethod, String>> pathMap = new HashMap<String, Map<HttpMethod, String>>();
 
-	public HttpAuthority getAuthority(String path, Method method) {
-		Map<Method, String> map = pathMap.get(path);
+	public HttpAuthority getAuthority(String path, HttpMethod method) {
+		Map<HttpMethod, String> map = pathMap.get(path);
 		if (map == null) {
 			return null;
 		}
@@ -28,9 +28,9 @@ public class SimpleHttpAuthorityManager extends SimpleAuthorityManager<HttpAutho
 
 	public synchronized void addAuthroity(HttpAuthority authority) {
 		if (StringUtils.isNotEmpty(authority.getPath())) {
-			Map<Method, String> map = pathMap.get(authority.getPath());
+			Map<HttpMethod, String> map = pathMap.get(authority.getPath());
 			if (map == null) {
-				map = new HashMap<Method, String>();
+				map = new HashMap<HttpMethod, String>();
 			}
 
 			if (map.containsKey(authority.getHttpMethod())) {

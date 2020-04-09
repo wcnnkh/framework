@@ -3,7 +3,7 @@ package scw.net.http;
 import java.io.Serializable;
 import java.util.Date;
 
-public class SimpleCookie implements Cookie, Serializable {
+public class SimpleHttpCookie implements HttpCookie, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private String value;
@@ -13,7 +13,7 @@ public class SimpleCookie implements Cookie, Serializable {
 	private int maxAge = -1;
 	private Date expires;
 
-	public SimpleCookie(String name, String value) {
+	public SimpleHttpCookie(String name, String value) {
 		this.name = name;
 		this.value = value;
 	}

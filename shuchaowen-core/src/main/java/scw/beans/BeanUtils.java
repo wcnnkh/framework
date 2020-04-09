@@ -157,7 +157,7 @@ public final class BeanUtils {
 		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
 				packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
-				logger.debug("not create instance:{}", clazz);
+				logger.debug("factory [{}] not create instance:{}", instanceFactory.getClass(), clazz);
 				continue;
 			}
 

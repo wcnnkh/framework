@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 /**
  * 此值会覆盖controller中的内容,如果要追加内容请在action中添加
@@ -19,5 +19,5 @@ public @interface Methods {
 	 * 此值会覆盖controller中的内容,如果要追加内容请在action中添加
 	 * @return
 	 */
-	public Method[] value() default {};
+	public HttpMethod[] value() default {};
 }

@@ -22,8 +22,8 @@ import scw.net.message.InputMessage;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
 
-public abstract class AbstractMessageConverter<T> extends MimeTypes
-		implements MessageConverter {
+public abstract class AbstractMessageConverter<T> extends MimeTypes implements
+		MessageConverter {
 	private static final long serialVersionUID = 1L;
 	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
@@ -33,9 +33,9 @@ public abstract class AbstractMessageConverter<T> extends MimeTypes
 	public Enumeration<MimeType> enumerationSupportMimeTypes() {
 		return Collections.enumeration(this);
 	}
-	
-	public AbstractMessageConverter<T> add(MimeType ...mimeTypes){
-		for(MimeType mimeType : mimeTypes){
+
+	public AbstractMessageConverter<T> add(MimeType... mimeTypes) {
+		for (MimeType mimeType : mimeTypes) {
 			add(mimeType);
 		}
 		return this;
@@ -112,16 +112,13 @@ public abstract class AbstractMessageConverter<T> extends MimeTypes
 		T t = (T) body;
 		if (outputMessage.getContentType() == null) {
 			MimeType contentTypeToUse = contentType;
-			if (contentType == null || contentType.isWildcardType()
-					|| contentType.isWildcardSubtype()) {
+			if (contentTypeToUse == null || contentTypeToUse.isWildcardType()
+					|| contentTypeToUse.isWildcardSubtype()) {
 				contentTypeToUse = getDefaultContentType(t);
-			} else if (MimeTypeUtils.APPLICATION_OCTET_STREAM
-					.equals(contentType)) {
-				MimeType mediaType = getDefaultContentType(t);
-				contentTypeToUse = (mediaType != null ? mediaType
-						: contentTypeToUse);
 			}
-			if (contentTypeToUse != null) {
+
+			if (contentTypeToUse != null && !contentTypeToUse.isWildcardType()
+					&& !contentTypeToUse.isWildcardSubtype()) {
 				if (contentTypeToUse.getCharset() == null) {
 					Charset defaultCharset = getDefaultCharset();
 					if (defaultCharset != null) {
@@ -139,7 +136,7 @@ public abstract class AbstractMessageConverter<T> extends MimeTypes
 					&& headers.containsKey(HttpHeaders.TRANSFER_ENCODING)) {
 				Long contentLength = getContentLength(t,
 						outputMessage.getContentType());
-				if (contentLength != null) {
+				if (contentLength != null && contentLength >= 0) {
 					outputMessage.setContentLength(contentLength);
 				}
 			}
@@ -170,15 +167,16 @@ public abstract class AbstractMessageConverter<T> extends MimeTypes
 	}
 
 	protected String readTextBody(InputMessage inputMessage) throws IOException {
-		return IOUtils.toString(inputMessage.getBody(), getCharset(inputMessage).name());
+		return IOUtils.toString(inputMessage.getBody(),
+				getCharset(inputMessage).name());
 	}
 
 	protected void writeTextBody(String text, MimeType contentType,
 			OutputMessage outputMessage) throws IOException {
-		if(text == null){
-			return ;
+		if (text == null) {
+			return;
 		}
-		
+
 		IOUtils.write(text, outputMessage.getBody(), getCharset(outputMessage)
 				.name());
 	}

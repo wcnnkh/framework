@@ -9,7 +9,7 @@ import scw.net.client.ClientRequestCallback;
 import scw.net.client.ClientResponseExtractor;
 import scw.net.client.http.exception.HttpClientException;
 import scw.net.http.MediaType;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.net.http.SerializableHttpInputMessage;
 import scw.net.message.InputMessage;
 
@@ -28,7 +28,7 @@ public interface HttpClient
 	SerializableHttpInputMessage getSerializableHttpInputMessage(String url, SSLSocketFactory sslSocketFactory) throws HttpClientException;
 
 	SerializableHttpInputMessage executeAndGetSerializableHttpInputMessage(
-			String url, Method method, SSLSocketFactory sslSocketFactory,
+			String url, HttpMethod method, SSLSocketFactory sslSocketFactory,
 			Object body, MediaType contentType) throws HttpClientException;
 
 	<T> T get(String url, Class<? extends T> responseType)

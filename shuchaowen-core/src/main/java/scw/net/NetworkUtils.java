@@ -17,7 +17,7 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.net.message.Headers;
-import scw.net.message.InputMessage;
+import scw.net.message.Message;
 import scw.net.message.OutputMessage;
 import scw.net.ssl.TrustAllManager;
 
@@ -117,7 +117,7 @@ public final class NetworkUtils {
 		}
 	}
 
-	public static void writeHeader(InputMessage inputMessage,
+	public static void writeHeader(Message inputMessage,
 			OutputMessage outputMessage) throws IOException {
 		long len = outputMessage.getContentLength();
 		if (len >= 0) {

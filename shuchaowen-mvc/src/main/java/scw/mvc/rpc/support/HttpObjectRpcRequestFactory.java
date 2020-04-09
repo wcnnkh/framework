@@ -40,7 +40,7 @@ public class HttpObjectRpcRequestFactory extends HttpAccessor implements HttpRpc
 		requestMessage.setAttribute("sign",
 				(SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + sign)))));
 		requestMessage.setAttribute("responseThrowable", responseThrowable);
-		ClientHttpRequest request = createRequest(new URI(host), scw.net.http.Method.POST);
+		ClientHttpRequest request = createRequest(new URI(host), scw.net.http.HttpMethod.POST);
 		serializer.serialize(request.getBody(), requestMessage);
 		Map<String, String> headerMap = MvcRpcUtils.getHeaderMap(shareHeaders, clazz, method);
 		if (!CollectionUtils.isEmpty(headerMap)) {

@@ -5,7 +5,7 @@ import scw.context.ContextExecute;
 import scw.mvc.Channel;
 import scw.mvc.handler.HandlerChain;
 
-class HandlerContextExecute implements ContextExecute<Void>{
+class HandlerContextExecute implements ContextExecute<Object>{
 	private Channel channel;
 	private HandlerChain chain;
 	
@@ -14,10 +14,9 @@ class HandlerContextExecute implements ContextExecute<Void>{
 		this.chain = chain;
 	}
 	
-	public Void execute(Context context) throws Throwable {
+	public Object execute(Context context) throws Throwable {
 		ContextManager.bindChannel(context, channel);
-		chain.doHandler(channel);
-		return null;
+		return chain.doHandler(channel);
 	}
 
 }

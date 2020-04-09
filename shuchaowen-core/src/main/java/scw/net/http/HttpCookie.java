@@ -2,7 +2,7 @@ package scw.net.http;
 
 import java.util.Date;
 
-public interface Cookie {
+public interface HttpCookie {
 	public static final String PATH = "path";
 	public static final String DOMAIN = "domain";
 	public static final String MAX_AGE = "max-age";

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.mvc.http.HttpResponse;
 import scw.net.MimeType;
-import scw.net.http.Cookie;
+import scw.net.http.HttpCookie;
 import scw.net.http.HttpHeaders;
 import scw.net.message.AbstractOutputMessage;
 
@@ -57,7 +57,7 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 		httpServletResponse.setContentLength((int)contentLength);
 	}
 	
-	public void addCookie(Cookie cookie) {
+	public void addCookie(HttpCookie cookie) {
 		if (cookie instanceof HttpServletCookie) {
 			httpServletResponse.addCookie(((HttpServletCookie) cookie)
 					.getCookie());

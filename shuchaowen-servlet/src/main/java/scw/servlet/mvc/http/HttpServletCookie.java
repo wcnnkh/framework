@@ -2,9 +2,9 @@ package scw.servlet.mvc.http;
 
 import java.util.Date;
 
-import scw.net.http.Cookie;
+import scw.net.http.HttpCookie;
 
-public class HttpServletCookie implements Cookie {
+public class HttpServletCookie implements HttpCookie {
 	private javax.servlet.http.Cookie cookie;
 
 	public HttpServletCookie(javax.servlet.http.Cookie cookie) {

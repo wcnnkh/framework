@@ -5,7 +5,7 @@ import scw.net.Request;
 public interface HttpRequest extends Request {
 	HttpHeaders getHeaders();
 
-	Method getMethod();
+	HttpMethod getMethod();
 	
 	MediaType getContentType();
 }

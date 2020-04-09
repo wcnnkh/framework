@@ -14,26 +14,27 @@ public abstract class AbstractIteratorHandlerChain implements
 		this.chain = chain;
 	}
 
-	public final void doHandler(Channel channel) throws Throwable {
+	public final Object doHandler(Channel channel) throws Throwable {
 		Handler channelHandler = getNextChannelHandler(channel);
 		if (channelHandler == null) {
 			if (chain == null) {
-				lastHandler(channel);
+				return lastHandler(channel);
 			} else {
-				chain.doHandler(channel);
+				return chain.doHandler(channel);
 			}
 		} else {
-			channelHandler.doHandler(channel, this);
+			return channelHandler.doHandler(channel, this);
 		}
 	}
 
 	protected abstract Handler getNextChannelHandler(Channel channel)
 			throws Throwable;
 	
-	protected void lastHandler(Channel channel) throws Throwable{
+	protected Object lastHandler(Channel channel) throws Throwable{
 		if(logger.isDebugEnabled()){
 			logger.debug("handler not support channel:{}",
 					channel.toString());
 		}
+		return null;
 	}
 }

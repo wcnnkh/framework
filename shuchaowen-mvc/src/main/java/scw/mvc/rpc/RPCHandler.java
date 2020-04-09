@@ -14,7 +14,7 @@ import scw.mvc.handler.Handler;
 import scw.mvc.handler.HandlerChain;
 import scw.mvc.http.HttpRequest;
 import scw.net.MimeTypeUtils;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration(order=RPCHandler.ORDER)
@@ -35,7 +35,7 @@ public final class RPCHandler implements Handler{
 		this.rpcPath = rpcPath;
 	}
 	
-	public void doHandler(Channel channel, HandlerChain chain) throws Throwable {
+	public Object doHandler(Channel channel, HandlerChain chain) throws Throwable {
 		if (checkRPCEnable(channel.getRequest())) {
 			channel.getResponse().setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
 			try {
@@ -43,10 +43,10 @@ public final class RPCHandler implements Handler{
 			} catch (IOException e) {
 				logger.error(e, channel.toString());
 			}
-			return ;
+			return  null;
 		}
 		
-		chain.doHandler(channel);
+		return chain.doHandler(channel);
 	}
 	
 	protected final boolean checkRPCEnable(Request request) {
@@ -59,7 +59,7 @@ public final class RPCHandler implements Handler{
 		}
 		
 		if(request instanceof HttpRequest){
-			if (Method.POST != ((HttpRequest)request).getMethod()) {
+			if (HttpMethod.POST != ((HttpRequest)request).getMethod()) {
 				return false;
 			}
 		}

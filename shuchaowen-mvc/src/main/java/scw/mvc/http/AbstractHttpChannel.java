@@ -11,7 +11,7 @@ import scw.mvc.AbstractChannel;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.session.HttpChannelAuthorization;
 import scw.mvc.http.session.HttpChannelUserSessionFactory;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 import scw.security.session.Authorization;
 import scw.security.session.Session;
 import scw.util.ip.IP;
@@ -70,7 +70,7 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 			}
 		}
 
-		if (v != null && Method.GET == request.getMethod()) {
+		if (v != null && HttpMethod.GET == request.getMethod()) {
 			v = decodeGETParameter(v);
 		}
 		return v;

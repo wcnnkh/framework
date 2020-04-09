@@ -21,7 +21,7 @@ import java.net.URI;
 
 import scw.io.StreamUtils;
 import scw.net.http.HttpHeaders;
-import scw.net.http.Method;
+import scw.net.http.HttpMethod;
 
 /**
  * Simple implementation of {@link ClientHttpRequest} that wraps another
@@ -38,7 +38,7 @@ final class BufferingClientHttpRequestWrapper extends AbstractBufferingClientHtt
 		this.request = request;
 	}
 
-	public Method getMethod() {
+	public HttpMethod getMethod() {
 		return this.request.getMethod();
 	}
 

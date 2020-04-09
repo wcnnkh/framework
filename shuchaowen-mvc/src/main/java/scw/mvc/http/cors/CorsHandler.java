@@ -23,7 +23,7 @@ public final class CorsHandler extends HttpHandler{
 	}
 	
 	@Override
-	protected void doHttpHandler(HttpChannel channel, HandlerChain chain)
+	protected Object doHttpHandler(HttpChannel channel, HandlerChain chain)
 			throws Throwable {
 		if(crossDomainDefinitionFactory != null){
 			CorsConfig corsConfig = crossDomainDefinitionFactory
@@ -32,6 +32,6 @@ public final class CorsHandler extends HttpHandler{
 				MVCUtils.responseCrossDomain(corsConfig, channel.getResponse());
 			}
 		}
-		chain.doHandler(channel);
+		return chain.doHandler(channel);
 	}
 }
