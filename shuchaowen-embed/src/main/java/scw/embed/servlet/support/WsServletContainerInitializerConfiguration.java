@@ -8,27 +8,22 @@ import javax.servlet.ServletContainerInitializer;
 
 import org.apache.tomcat.websocket.server.WsSci;
 
-import scw.application.ApplicationConfigUtils;
+import scw.beans.BeanUtils;
 import scw.beans.annotation.Configuration;
+import scw.core.Constants;
 import scw.core.utils.ClassUtils;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
-import scw.util.value.property.PropertyFactory;
 
 @Configuration
 public class WsServletContainerInitializerConfiguration implements ServletContainerInitializerConfiguration{
 	private static final WsSci WS_SCI = new WsSci();
-	private PropertyFactory propertyFactory;
-	
-	public WsServletContainerInitializerConfiguration(PropertyFactory propertyFactory){
-		this.propertyFactory = propertyFactory;
-	}
 	
 	public Collection<? extends ServletContainerInitializer> getServletContainerInitializers() {
 		return Arrays.asList(WS_SCI);
 	}
 
 	public Set<Class<?>> getClassSet() {
-		return ClassUtils.getClassSet("scw", ApplicationConfigUtils.getAnnotationPackage(propertyFactory));
+		return ClassUtils.getClassSet(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName());
 	}
 
 

@@ -78,23 +78,26 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		Context context = tomcat.addContext(getContextPath(propertyFactory),
 				getDocBase(propertyFactory));
 		context.setParentClassLoader(classLoader);
-		
-		if(beanFactory.isInstance(JarScanner.class)){
+
+		if (beanFactory.isInstance(JarScanner.class)) {
 			context.setJarScanner(beanFactory.getInstance(JarScanner.class));
 		}
 
-		addServletContainerInitializer(context, new RootServletContainerInitializerConfiguration(beanFactory, propertyFactory));
+		addServletContainerInitializer(context,
+				new RootServletContainerInitializerConfiguration(beanFactory,
+						propertyFactory));
 		for (ServletContainerInitializerConfiguration configuration : BeanUtils
 				.getConfigurationList(
-						ServletContainerInitializerConfiguration.class, null,
-						beanFactory, propertyFactory)) {
+						ServletContainerInitializerConfiguration.class,
+						beanFactory)) {
 			addServletContainerInitializer(context, configuration);
 		}
 
-		addFilter(context, new ServletRootFilterConfiguration(beanFactory, propertyFactory));
+		addFilter(context, new ServletRootFilterConfiguration(beanFactory,
+				propertyFactory));
 		for (FilterConfiguration filterConfiguration : BeanUtils
-				.getConfigurationList(FilterConfiguration.class, null,
-						beanFactory, propertyFactory)) {
+				.getConfigurationList(FilterConfiguration.class,
+						beanFactory)) {
 			addFilter(context, filterConfiguration);
 		}
 		return context;
@@ -240,7 +243,8 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 			PropertyFactory propertyFactory) {
 		Tomcat.addServlet(context, "scw", servlet);
 		addServletMapping(context, "/", "scw");
-		String sourceMapping = EmbeddedUtils.getDefaultServletMapping(propertyFactory);
+		String sourceMapping = EmbeddedUtils
+				.getDefaultServletMapping(propertyFactory);
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {

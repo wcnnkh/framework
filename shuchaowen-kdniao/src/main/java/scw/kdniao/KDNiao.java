@@ -7,11 +7,11 @@ import java.util.Map;
 import scw.core.utils.XUtils;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
-import scw.net.ToParameterMap;
 import scw.net.client.http.HttpUtils;
 import scw.net.http.MediaType;
 import scw.security.signature.SignType;
 import scw.security.signature.SignatureUtils;
+import scw.util.ToMap;
 
 /**
  * 快递鸟接口
@@ -130,7 +130,7 @@ public class KDNiao {
 		return new EbusinessOrderHandleResponse(json);
 	}
 
-	public String distRequest(String requestType, ToParameterMap paramsMap) {
+	public String distRequest(String requestType, ToMap<String, Object> paramsMap) {
 		return doRequest(isSandbox() ? "http://sandboxapi.kdniao.com:8080/kdniaosandbox/gateway/exterfaceInvoke.json"
 				: "http://api.kdniao.com/api/dist", requestType, XUtils.toMap(paramsMap));
 	}

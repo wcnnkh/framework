@@ -2,13 +2,14 @@ package scw.mq;
 
 import java.lang.reflect.Method;
 
-import scw.application.ApplicationConfigUtils;
 import scw.beans.AbstractBeanConfiguration;
 import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.beans.SimpleBeanConfiguration;
 import scw.beans.annotation.Configuration;
 import scw.beans.property.ValueWiredManager;
+import scw.core.GlobalPropertyFactory;
 import scw.core.Init;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
@@ -21,25 +22,29 @@ import scw.mq.support.MqMethodConsumer;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration
-public class MQBeanConfigFactory extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
-	private static Logger logger = LoggerUtils.getLogger(MQBeanConfigFactory.class);
+public class MQAnnotationBeanConfiguration extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
+	private static Logger logger = LoggerUtils.getLogger(MQAnnotationBeanConfiguration.class);
 
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		addInit(new ScanConsumer(beanFactory, propertyFactory));
+		addInit(new ScanConsumer(beanFactory));
+	}
+	
+	public static String getScanAnnotationPackageName() {
+		return GlobalPropertyFactory.getInstance().getValue(
+				"scw.scan.mq.package", String.class,
+				BeanUtils.getScanAnnotationPackageName());
 	}
 
 	private static class ScanConsumer implements Init {
 		private BeanFactory beanFactory;
-		private PropertyFactory propertyFactory;
 
-		public ScanConsumer(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		public ScanConsumer(BeanFactory beanFactory) {
 			this.beanFactory = beanFactory;
-			this.propertyFactory = propertyFactory;
 		}
 
 		public void init() {
 			for (Class<?> clazz : ClassUtils
-					.getClassSet(ApplicationConfigUtils.getMQAnnotationPackage(propertyFactory))) {
+					.getClassSet(getScanAnnotationPackageName())) {
 				scanningConsumer(beanFactory, clazz);
 				scanningAMQPConsumer(beanFactory, clazz);
 			}

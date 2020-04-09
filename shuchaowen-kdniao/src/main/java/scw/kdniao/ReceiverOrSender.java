@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.net.ToParameterMap;
+import scw.util.ToMap;
 
 /**
  * 收件人或发件人
@@ -12,7 +12,7 @@ import scw.net.ToParameterMap;
  * @author shuchaowen
  *
  */
-public class ReceiverOrSender implements Serializable, ToParameterMap {
+public class ReceiverOrSender implements Serializable, ToMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 	// 公司 选填
 	private String company;

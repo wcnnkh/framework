@@ -15,7 +15,7 @@ import scw.util.value.property.PropertyFactory;
  */
 public class ServiceBeanConfiguration extends AbstractBeanConfiguration {
 	public ServiceBeanConfiguration(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory, String packageNames) throws Exception {
-		for (Class<?> clz : ClassUtils.getClassSet(packageNames, Constants.DEFAULT_ROOT_PACKAGE_PREFIX)) {
+		for (Class<?> clz : ClassUtils.getClassSet(packageNames, Constants.SYSTEM_PACKAGE_NAME)) {
 			Service service = clz.getAnnotation(Service.class);
 			if (service == null) {
 				continue;

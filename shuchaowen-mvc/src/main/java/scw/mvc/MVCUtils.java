@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.application.ApplicationConfigUtils;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
@@ -242,8 +241,8 @@ public final class MVCUtils implements MvcConstants {
 		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
 		BeanUtils.appendBean(list, instanceFactory, propertyFactory,
 				ParameterFilter.class, "mvc.parameter.filter");
-		list.addAll(BeanUtils.getConfigurationList(ParameterFilter.class, null,
-				instanceFactory, propertyFactory));
+		list.addAll(BeanUtils.getConfigurationList(ParameterFilter.class,
+				instanceFactory));
 		return list;
 	}
 
@@ -415,12 +414,14 @@ public final class MVCUtils implements MvcConstants {
 
 		/* 允许跨域的请求头 */
 		if (StringUtils.isNotEmpty(config.getHeaders())) {
-			httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
+			httpResponse.getHeaders().set(
+					HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
 					config.getHeaders());
 		}
 
 		/* 是否携带cookie */
-		httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
+		httpResponse.getHeaders().set(
+				HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
 				config.isCredentials() + "");
 	}
 
@@ -504,10 +505,9 @@ public final class MVCUtils implements MvcConstants {
 		return SUPPORT_SERVLET;
 	}
 
-	public static String getAnnotationScannPackage(
-			PropertyFactory propertyFactory) {
-		return ApplicationConfigUtils.getPackageName(propertyFactory,
-				"mvc.annotation.scann");
+	public static String getScanAnnotationPackageName() {
+		return GlobalPropertyFactory.getInstance().getValue(
+				"scw.scan.mvc.package", String.class, BeanUtils.getScanAnnotationPackageName());
 	}
 
 	public static boolean isSupportCookieValue(PropertyFactory propertyFactory) {

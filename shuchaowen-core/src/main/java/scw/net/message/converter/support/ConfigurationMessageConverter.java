@@ -11,6 +11,6 @@ public class ConfigurationMessageConverter extends MultiMessageConverter{
 	
 	public ConfigurationMessageConverter(InstanceFactory instanceFactory, PropertyFactory propertyFactory){
 		add(new AllMessageConverter());
-		addAll(BeanUtils.getConfigurationList(MessageConverter.class, instanceFactory, propertyFactory));
+		addAll(BeanUtils.getConfigurationList(MessageConverter.class, instanceFactory));
 	}
 }

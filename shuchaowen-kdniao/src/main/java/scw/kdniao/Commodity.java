@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.net.ToParameterMap;
+import scw.util.ToMap;
 
-public class Commodity implements Serializable, ToParameterMap {
+public class Commodity implements Serializable, ToMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 	// 商品名称
 	private String goodsName;

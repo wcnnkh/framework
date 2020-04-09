@@ -15,20 +15,17 @@ public final class ConfigurationChannelService extends
 
 	public ConfigurationChannelService(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
-		super(getHandlerChain(beanFactory, propertyFactory),
+		super(getHandlerChain(beanFactory),
 				getWarnExecuteTime(propertyFactory));
 	}
 
-	private static Collection<Handler> getHandlers(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		return BeanUtils.getConfigurationList(Handler.class, beanFactory,
-				propertyFactory);
+	private static Collection<Handler> getHandlers(BeanFactory beanFactory) {
+		return BeanUtils.getConfigurationList(Handler.class, beanFactory);
 	}
 
-	private static HandlerChain getHandlerChain(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
+	private static HandlerChain getHandlerChain(BeanFactory beanFactory) {
 		HandlerChain chain =  new DefaultHandlerChain(
-				getHandlers(beanFactory, propertyFactory), null);
+				getHandlers(beanFactory), null);
 		return chain;
 	}
 

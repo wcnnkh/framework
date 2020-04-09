@@ -19,7 +19,7 @@ public class MethodBeanConfiguration extends AbstractBeanConfiguration {
 	
 	public MethodBeanConfiguration(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, String packageNames) throws Exception {
-		for (Class<?> clz : ClassUtils.getClassSet(packageNames, Constants.DEFAULT_ROOT_PACKAGE_PREFIX)) {
+		for (Class<?> clz : ClassUtils.getClassSet(packageNames, Constants.SYSTEM_PACKAGE_NAME)) {
 			if(!ReflectionUtils.isPresent(clz)){
 				if(logger.isDebugEnabled()){
 					logger.debug("not support class:{}", clz);

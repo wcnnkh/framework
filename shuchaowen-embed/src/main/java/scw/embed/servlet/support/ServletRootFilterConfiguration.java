@@ -14,9 +14,10 @@ import scw.util.value.property.PropertyFactory;
 public class ServletRootFilterConfiguration implements FilterConfiguration {
 	private List<Filter> filters;
 
-	public ServletRootFilterConfiguration(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		this.filters = BeanUtils.getConfigurationList(Filter.class, null,
-				beanFactory, propertyFactory);
+	public ServletRootFilterConfiguration(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
+		this.filters = BeanUtils
+				.getConfigurationList(Filter.class, beanFactory);
 	}
 
 	public String getName() {

@@ -11,12 +11,12 @@ import scw.util.value.property.PropertyFactory;
 public final class ConfigurationActionExceptionHandlerChain extends DefaultActionExceptionHandlerChain{
 
 	public ConfigurationActionExceptionHandlerChain(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		super(getActionExceptionHandlers(beanFactory, propertyFactory), null);
+		super(getActionExceptionHandlers(beanFactory), null);
 	}
 
-	private static List<ActionExceptionHandler> getActionExceptionHandlers(BeanFactory beanFactory, PropertyFactory propertyFactory){
+	private static List<ActionExceptionHandler> getActionExceptionHandlers(BeanFactory beanFactory){
 		List<ActionExceptionHandler> handlers = new LinkedList<ActionExceptionHandler>();
-		handlers.addAll(BeanUtils.getConfigurationList(ActionExceptionHandler.class, beanFactory, propertyFactory));
+		handlers.addAll(BeanUtils.getConfigurationList(ActionExceptionHandler.class, beanFactory));
 		
 		if (beanFactory.isInstance(DefaultActionExceptionHandler.class)) {
 			handlers.add(beanFactory

@@ -23,6 +23,13 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSES_DIRECTORY = "classes.directory";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
+	private static final String BASE_PACKAGE_NAME = "scw.base.package";
+
+	private static GlobalPropertyFactory instance = new GlobalPropertyFactory();
+
+	public static GlobalPropertyFactory getInstance() {
+		return instance;
+	}
 
 	private ConcurrentHashMap<String, Value> properties = new ConcurrentHashMap<String, Value>();
 
@@ -30,18 +37,17 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 		if (getWorkPath() == null) {
 			setWorkPath(getDefaultWorkPath());
 		}
-		
-		String path = getString(
-				"scw.properties.private");
+
+		String path = getString("scw.properties.private");
 		if (path == null) {
 			path = "/private.properties";
 		}
-		
+
 		ResourceOperations resourceOperations = new PropertyFactoryMultiSuffixResourceOperations(
 				new DefaultResourceLookup(getWorkPath(), false, this), this);
 		if (resourceOperations.isExist(path)) {
-			Properties properties = resourceOperations.getProperties(path,
-					this);
+			Properties properties = resourceOperations
+					.getProperties(path, this);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {
@@ -210,9 +216,19 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 		return FormatUtils.format(text, this, supportEL);
 	}
 
-	private static GlobalPropertyFactory instance = new GlobalPropertyFactory();
+	/**
+	 * 可能会返回空
+	 * @return
+	 */
+	public String getBasePackageName() {
+		return getString(BASE_PACKAGE_NAME);
+	}
 
-	public static GlobalPropertyFactory getInstance() {
-		return instance;
+	public void setBasePackageName(String packageName) {
+		if (StringUtils.isEmpty(packageName)) {
+			return;
+		}
+
+		putIfAbsent(BASE_PACKAGE_NAME, packageName);
 	}
 }

@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import scw.net.ToParameterMap;
+import scw.util.ToMap;
 
 /**
  * 物流跟踪 订阅请求参数，无特殊说明都是选填参数
@@ -13,7 +13,7 @@ import scw.net.ToParameterMap;
  * @author shuchaowen
  *
  */
-public class SubscribeRequestParameter implements Serializable, ToParameterMap {
+public class SubscribeRequestParameter implements Serializable, ToMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 	// 用户自定义回调信息
 	private String callback;

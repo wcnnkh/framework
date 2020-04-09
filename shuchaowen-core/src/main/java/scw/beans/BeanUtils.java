@@ -19,7 +19,6 @@ import java.util.Set;
 import scw.aop.Filter;
 import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
-import scw.application.ApplicationConfigUtils;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
@@ -32,6 +31,7 @@ import scw.beans.property.ValueWired;
 import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.Constants;
+import scw.core.GlobalPropertyFactory;
 import scw.core.Init;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
@@ -81,44 +81,15 @@ public final class BeanUtils {
 
 	@SuppressWarnings("rawtypes")
 	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, Collection<Class> excludeTypes,
-			PropertyFactory propertyFactory) {
+			Class<? extends T> type, Collection<Class> excludeTypes) {
 		return getConfigurationClassList(type, excludeTypes, Arrays.asList(
-				Constants.DEFAULT_ROOT_PACKAGE_PREFIX,
-				ApplicationConfigUtils.getAnnotationPackage(propertyFactory)));
+				Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName()));
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, PropertyFactory propertyFactory,
-			Class... excludeTypes) {
-		return getConfigurationClassList(type, Arrays.asList(excludeTypes),
-				propertyFactory);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			Collection<Class> excludeTypes, InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) {
-		List<T> list = new ArrayList<T>();
-		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
-				propertyFactory)) {
-			if (!instanceFactory.isInstance(clazz)) {
-				logger.debug("not create instance:{}", clazz);
-				continue;
-			}
-
-			list.add(instanceFactory.getInstance(clazz));
-		}
-		return list;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Class... excludeTypes) {
-		return getConfigurationList(type, Arrays.asList(excludeTypes),
-				instanceFactory, propertyFactory);
+			Class<? extends T> type, Class... excludeTypes) {
+		return getConfigurationClassList(type, Arrays.asList(excludeTypes));
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -168,6 +139,38 @@ public final class BeanUtils {
 		};
 		Collections.sort(list, comparator);
 		return list;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> List<T> getConfigurationList(Class<? extends T> type,
+			InstanceFactory instanceFactory, Collection<Class> excludeTypes) {
+		return getConfigurationList(type, instanceFactory, excludeTypes,
+				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
+						getScanAnnotationPackageName()));
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> List<T> getConfigurationList(Class<? extends T> type,
+			InstanceFactory instanceFactory, Collection<Class> excludeTypes,
+			Collection<String> packageNames) {
+		List<T> list = new ArrayList<T>();
+		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
+				packageNames)) {
+			if (!instanceFactory.isInstance(clazz)) {
+				logger.debug("not create instance:{}", clazz);
+				continue;
+			}
+
+			list.add(instanceFactory.getInstance(clazz));
+		}
+		return list;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <T> List<T> getConfigurationList(Class<? extends T> type,
+			InstanceFactory instanceFactory, Class... excludeTypes) {
+		return getConfigurationList(type, instanceFactory,
+				Arrays.asList(excludeTypes));
 	}
 
 	public static void autowired(ValueWiredManager valueWiredManager,
@@ -251,8 +254,9 @@ public final class BeanUtils {
 		return args;
 	}
 
-	private static void setConfig(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz,
-			Object obj, FieldDefinition field) {
+	private static void setConfig(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> clz, Object obj,
+			FieldDefinition field) {
 		Config config = field.getAnnotation(Config.class);
 		if (config != null) {
 			staticFieldWarnLog(Config.class.getName(), clz, field);
@@ -262,7 +266,8 @@ public final class BeanUtils {
 						obj);
 
 				value = beanFactory.getInstance(config.parse()).parse(
-						beanFactory, propertyFactory, field, config.value(), config.charset());
+						beanFactory, propertyFactory, field, config.value(),
+						config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
 				throw new RuntimeException("config：clz=" + clz.getName()
@@ -518,16 +523,11 @@ public final class BeanUtils {
 			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Class<? extends T> type, Collection<Class<?>> excludeTypes,
 			String key) {
-		scw.util.value.Value value = propertyFactory.get(key);
-		if(value == null){
-			return ;
-		}
-		
-		String[] filters = value.getAsObject(String[].class);
+		String[] filters = propertyFactory.getObject(key, String[].class);
 		if (ArrayUtils.isEmpty(filters)) {
-			return ;
+			return;
 		}
-		
+
 		for (String name : filters) {
 			if (!instanceFactory.isInstance(name)) {
 				logger.warn("{}无法使用默认的方式实例化，请进行配置", name);
@@ -558,22 +558,9 @@ public final class BeanUtils {
 		}
 	}
 
-	public static String parseRootPackage(Class<?> clazz) {
-		String[] arr = StringUtils.split(clazz.getName(), '.');
-		if (arr.length < 2) {
-			return null;
-		} else if (arr.length == 2) {
-			return arr[0];
-		} else {
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < 2; i++) {
-				if (i != 0) {
-					sb.append(".");
-				}
-				sb.append(arr[i]);
-			}
-
-			return sb.toString();
-		}
+	public static String getScanAnnotationPackageName() {
+		return GlobalPropertyFactory.getInstance().getValue(
+				"scw.scan.beans.package", String.class,
+				GlobalPropertyFactory.getInstance().getBasePackageName());
 	}
 }

@@ -273,13 +273,6 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		return getInstance(type.getName());
 	}
 
-	/**
-	 * 对静态类型的注解扫描目录
-	 * 
-	 * @return
-	 */
-	protected abstract String getInitStaticPackage();
-
 	public void addPropertyFactory(PropertyFactory propertyFactory) {
 		this.propertyFactory.add(propertyFactory);
 	}
@@ -444,7 +437,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public synchronized void init() {
 		for (Class<? extends Filter> clazz : BeanUtils
-				.getConfigurationClassList(Filter.class, null, propertyFactory)) {
+				.getConfigurationClassList(Filter.class)) {
 			if (!isInstance(clazz)) {
 				continue;
 			}
@@ -452,7 +445,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 			filterNames.add(clazz.getName());
 		}
 		
-		propertyFactory.addAll(BeanUtils.getConfigurationList(PropertyFactory.class, this, propertyFactory), true);
+		propertyFactory.addAll(BeanUtils.getConfigurationList(PropertyFactory.class, this), true);
 		for (Init init : inits) {
 			init.init();
 		}

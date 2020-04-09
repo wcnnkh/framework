@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.net.ToParameterMap;
+import scw.util.ToMap;
 
-public class AddService implements Serializable, ToParameterMap {
+public class AddService implements Serializable, ToMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private String value;

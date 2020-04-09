@@ -65,8 +65,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 
 		if (!ReflectionUtils.isInstance(clazz, false)) {
 			AutoBeanServiceChain autoBeanServiceChain = new NextAutoBeanServiceChain(
-					BeanUtils.getConfigurationClassList(AutoBeanService.class,
-							null, propertyFactory), serviceChain);
+					BeanUtils.getConfigurationClassList(AutoBeanService.class), serviceChain);
 			return autoBeanServiceChain.service(clazz, beanFactory,
 					propertyFactory);
 		}
@@ -80,7 +79,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		AutoImpl autoConfig = clazz.getAnnotation(AutoImpl.class);
 		if (autoConfig == null) {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
-			List<Class<?>> impls = BeanUtils.getConfigurationClassList((Class)clazz, propertyFactory);
+			List<Class<?>> impls = BeanUtils.getConfigurationClassList((Class)clazz);
 			if(!CollectionUtils.isEmpty(impls)){
 				return defaultService(impls.get(0), beanFactory, propertyFactory, serviceChain);
 			}

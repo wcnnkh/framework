@@ -50,15 +50,17 @@ import scw.util.value.property.PropertyFactory;
  */
 public class Constants {
 	private static final String CONSTANTS_KEY_PREFIX = "constants.";
-	
-	public static final String DEFAULT_ROOT_PACKAGE_PREFIX = "scw";
+
+	public static final String SYSTEM_PACKAGE_NAME = StringUtils.split(
+			Constants.class.getPackage().getName(), '.')[0];
 
 	public static final String DEFAULT_CHARSET_NAME = StringUtils.toString(
 			GlobalPropertyFactory.getInstance().getString(
 					"constants.default.charsetName"), "UTF-8");
-	
-	public static final Charset DEFAULT_CHARSET = Charset.forName(DEFAULT_CHARSET_NAME);
-	
+
+	public static final Charset DEFAULT_CHARSET = Charset
+			.forName(DEFAULT_CHARSET_NAME);
+
 	/**
 	 * The ASM version used internally throughout the framework.
 	 *

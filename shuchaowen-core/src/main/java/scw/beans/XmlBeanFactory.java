@@ -6,7 +6,6 @@ import java.util.Arrays;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.application.ApplicationConfigUtils;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.property.XmlPropertyFactory;
 import scw.beans.xml.DefaultXmlBeanConfiguration;
@@ -46,15 +45,6 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 		return (T) bean;
 	}
 
-	protected String getServicePackage() {
-		return ApplicationConfigUtils
-				.getServiceAnnotationPackage(propertyFactory);
-	}
-
-	protected String getBeanAnnotationPackage() {
-		return ApplicationConfigUtils.getBeanAnnotationPackage(propertyFactory);
-	}
-
 	private void appendNameMapping(NodeList nodeList) {
 		if (nodeList == null) {
 			return;
@@ -85,13 +75,12 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 						nodeList, "bean"));
 				addBeanConfiguration(new ServiceBeanConfiguration(
 						getValueWiredManager(), this, propertyFactory,
-						getServicePackage()));
+						BeanUtils.getScanAnnotationPackageName()));
 				addBeanConfiguration(new MethodBeanConfiguration(
 						getValueWiredManager(), this, propertyFactory,
-						getBeanAnnotationPackage()));
+						BeanUtils.getScanAnnotationPackageName()));
 				for (BeanConfiguration beanConfiguration : BeanUtils
-						.getConfigurationList(BeanConfiguration.class, null,
-								this, propertyFactory)) {
+						.getConfigurationList(BeanConfiguration.class, this)) {
 					if (beanConfiguration instanceof XmlBeanConfiguration) {
 						((XmlBeanConfiguration) beanConfiguration).init(
 								getValueWiredManager(), this, propertyFactory,
@@ -210,10 +199,5 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 			throw new BeansException("not found [" + name + "]");
 		}
 		return bean;
-	}
-
-	@Override
-	protected String getInitStaticPackage() {
-		return ApplicationConfigUtils.getInitStaticPackage(propertyFactory);
 	}
 }
