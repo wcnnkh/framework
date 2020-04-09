@@ -143,10 +143,9 @@ public final class MVCUtils implements MvcConstants {
 		return args;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static Map<String, String> getRestPathParameterMap(
-			Attributes attributes) {
-		return (Map<String, String>) attributes
+	@SuppressWarnings({ "unchecked" })
+	public static Map<String, String> getRestPathParameterMap(Channel channel) {
+		return (Map<String, String>) channel
 				.getAttribute(RESTURL_PATH_PARAMETER);
 	}
 
@@ -507,11 +506,8 @@ public final class MVCUtils implements MvcConstants {
 
 	public static String getScanAnnotationPackageName() {
 		return GlobalPropertyFactory.getInstance().getValue(
-				"scw.scan.mvc.package", String.class, BeanUtils.getScanAnnotationPackageName());
-	}
-
-	public static boolean isSupportCookieValue(PropertyFactory propertyFactory) {
-		return propertyFactory.getBooleanValue("mvc.parameter.cookie");
+				"scw.scan.mvc.package", String.class,
+				BeanUtils.getScanAnnotationPackageName());
 	}
 
 	public static JSONSupport getJsonSupport(InstanceFactory instanceFactory,
@@ -524,15 +520,5 @@ public final class MVCUtils implements MvcConstants {
 			jsonSupport = instanceFactory.getInstance(jsonSupportBeanName);
 		}
 		return jsonSupport;
-	}
-
-	public static String getJsonp(PropertyFactory propertyFactory) {
-		boolean enable = StringUtils.parseBoolean(
-				propertyFactory.getString("mvc.http.jsonp.enable"), true);
-		if (enable) {
-			String jsonp = propertyFactory.getString("mvc.http.jsonp");
-			return StringUtils.isEmpty(jsonp) ? "callback" : jsonp;
-		}
-		return null;
 	}
 }

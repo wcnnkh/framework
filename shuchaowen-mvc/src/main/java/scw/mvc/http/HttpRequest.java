@@ -8,7 +8,9 @@ import scw.util.ip.IP;
 public interface HttpRequest extends scw.net.http.HttpRequest, scw.mvc.Request, MultiValueParameterFactory, IP {
 	String getRawMethod();
 
-	Cookie getCookie(String name, boolean ignoreCase);
+	Cookie getCookie(String name);
+	
+	Cookie[] getCookies();
 
 	/**
 	 * Returns the fully qualified name of the client or the last proxy that

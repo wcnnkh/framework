@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpRequest;
@@ -26,7 +27,8 @@ import scw.security.session.Session;
 import scw.servlet.ServletUtils;
 import scw.util.LinkedCaseInsensitiveMap;
 
-public class MyHttpServletRequest extends AbstractInputMessage implements HttpRequest {
+public class MyHttpServletRequest extends AbstractInputMessage implements
+		HttpRequest {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 
@@ -42,17 +44,31 @@ public class MyHttpServletRequest extends AbstractInputMessage implements HttpRe
 		return httpServletRequest.getServletPath();
 	}
 
-	public Cookie getCookie(String name, boolean ignoreCase) {
+	public Cookie getCookie(String name) {
 		if (name == null) {
 			return null;
 		}
 
-		javax.servlet.http.Cookie cookie = ServletUtils.getCookie(httpServletRequest, name, ignoreCase);
+		javax.servlet.http.Cookie cookie = ServletUtils.getCookie(
+				httpServletRequest, name);
 		if (cookie == null) {
 			return null;
 		}
 
 		return new HttpServletCookie(cookie);
+	}
+
+	public Cookie[] getCookies() {
+		javax.servlet.http.Cookie[] cookies = httpServletRequest.getCookies();
+		if (cookies == null) {
+			return ArrayUtils.empty();
+		}
+
+		Cookie[] values = new Cookie[cookies.length];
+		for (int i = 0; i < cookies.length; i++) {
+			values[i] = new HttpServletCookie(cookies[i]);
+		}
+		return values;
 	}
 
 	public Session getHttpSession() {
@@ -81,9 +97,11 @@ public class MyHttpServletRequest extends AbstractInputMessage implements HttpRe
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
 
-			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names.hasMoreElements();) {
+			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names
+					.hasMoreElements();) {
 				String headerName = (String) names.nextElement();
-				for (Enumeration<?> headerValues = httpServletRequest.getHeaders(headerName); headerValues.hasMoreElements();) {
+				for (Enumeration<?> headerValues = httpServletRequest
+						.getHeaders(headerName); headerValues.hasMoreElements();) {
 					String headerValue = (String) headerValues.nextElement();
 					this.headers.add(headerName, headerValue);
 				}
@@ -94,9 +112,11 @@ public class MyHttpServletRequest extends AbstractInputMessage implements HttpRe
 			try {
 				MediaType contentType = this.headers.getContentType();
 				if (contentType == null) {
-					String requestContentType = httpServletRequest.getContentType();
+					String requestContentType = httpServletRequest
+							.getContentType();
 					if (StringUtils.hasLength(requestContentType)) {
-						contentType = MediaType.parseMediaType(requestContentType);
+						contentType = MediaType
+								.parseMediaType(requestContentType);
 						this.headers.setContentType(contentType);
 					}
 				}
@@ -107,7 +127,9 @@ public class MyHttpServletRequest extends AbstractInputMessage implements HttpRe
 						Map<String, String> params = new LinkedCaseInsensitiveMap<String>();
 						params.putAll(contentType.getParameters());
 						params.put("charset", charSet.toString());
-						MediaType mediaType = new MediaType(contentType.getType(), contentType.getSubtype(), params);
+						MediaType mediaType = new MediaType(
+								contentType.getType(),
+								contentType.getSubtype(), params);
 						this.headers.setContentType(mediaType);
 					}
 				}
@@ -117,7 +139,8 @@ public class MyHttpServletRequest extends AbstractInputMessage implements HttpRe
 			}
 
 			if (this.headers.getContentLength() < 0) {
-				int requestContentLength = httpServletRequest.getContentLength();
+				int requestContentLength = httpServletRequest
+						.getContentLength();
 				if (requestContentLength != -1) {
 					this.headers.setContentLength(requestContentLength);
 				}

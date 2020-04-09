@@ -19,7 +19,7 @@ public class DefaultHttpOutput extends HttpOutput<Object> {
 	}
 
 	@Override
-	protected void writeBodyInternal(HttpChannel channel, Object body)
+	protected void writeBody(HttpChannel channel, Object body)
 			throws Throwable {
 		String content;
 		if ((body instanceof String)

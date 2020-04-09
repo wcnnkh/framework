@@ -16,9 +16,9 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(JsonHttpServletChannel.class);
 	private JsonObject jsonObject;
 
-	public JsonHttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport, boolean cookieValue,
+	public JsonHttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport,
 			MyHttpServletRequest request, MyHttpServletResponse response) {
-		super(beanFactory, jsonParseSupport, cookieValue, request, response);
+		super(beanFactory, jsonParseSupport, request, response);
 		if (Method.GET.name().equals(request.getMethod())) {
 			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getControllerPath(), request.getMethod());
 		} else {

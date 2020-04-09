@@ -10,13 +10,10 @@ import scw.mvc.http.HttpChannel;
 
 public class DefaultHttpServletChannelFactory implements HttpServletChannelFactory {
 	private BeanFactory beanFactory;
-	private boolean cookieValue;
 	private JSONSupport jsonSupport;
 
-	public DefaultHttpServletChannelFactory(BeanFactory beanFactory, JSONSupport jsonSupport,
-			boolean cookieValue) {
+	public DefaultHttpServletChannelFactory(BeanFactory beanFactory, JSONSupport jsonSupport) {
 		this.beanFactory = beanFactory;
-		this.cookieValue = cookieValue;
 		this.jsonSupport = jsonSupport;
 	}
 
@@ -24,9 +21,9 @@ public class DefaultHttpServletChannelFactory implements HttpServletChannelFacto
 		MyHttpServletRequest httpRequest = new MyHttpServletRequest(httpServletRequest);
 		MyHttpServletResponse httpResponse = new MyHttpServletResponse(httpServletResponse);
 		if (MVCUtils.isJsonRequest(httpRequest)) {
-			return new JsonHttpServletChannel(beanFactory, jsonSupport, cookieValue, httpRequest, httpResponse);
+			return new JsonHttpServletChannel(beanFactory, jsonSupport, httpRequest, httpResponse);
 		} else {
-			return new FormHttpServletChannel(beanFactory, jsonSupport, cookieValue, httpRequest, httpResponse);
+			return new FormHttpServletChannel(beanFactory, jsonSupport, httpRequest, httpResponse);
 		}
 	}
 }

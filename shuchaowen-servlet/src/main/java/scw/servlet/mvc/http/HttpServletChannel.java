@@ -17,9 +17,9 @@ import scw.mvc.http.AbstractHttpChannel;
 @SuppressWarnings("unchecked")
 public abstract class HttpServletChannel extends AbstractHttpChannel {
 	
-	public HttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport, boolean cookieValue,
+	public HttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport,
 			MyHttpServletRequest request, MyHttpServletResponse response) {
-		super(beanFactory, jsonParseSupport, cookieValue, request, response);
+		super(beanFactory, jsonParseSupport, request, response);
 	}
 
 	@Override

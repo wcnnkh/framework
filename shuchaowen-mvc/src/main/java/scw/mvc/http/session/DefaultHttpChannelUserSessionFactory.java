@@ -26,7 +26,7 @@ public class DefaultHttpChannelUserSessionFactory<T> implements HttpChannelUserS
 	public UserSession<T> getUserSession(HttpChannel httpChannel) {
 		String id = httpChannel.getString(sessionIdKey);
 		if (id == null && searchCookie) {
-			Cookie cookie = httpChannel.getRequest().getCookie(sessionIdKey, true);
+			Cookie cookie = httpChannel.getRequest().getCookie(sessionIdKey);
 			if (cookie != null) {
 				id = cookie.getValue();
 			}

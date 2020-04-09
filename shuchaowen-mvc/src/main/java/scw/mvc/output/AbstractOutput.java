@@ -48,6 +48,12 @@ public abstract class AbstractOutput<C extends Channel, T> implements Output {
 		view.render(channel);
 	}
 
+	protected void appendHeaderBefore(C channel, T body) {
+	}
+
+	protected void appendHeaderAfter(C channel, T body) {
+	}
+
 	@SuppressWarnings("unchecked")
 	public void write(Channel channel, Object body) throws Throwable {
 		if (body instanceof View) {
@@ -57,41 +63,42 @@ public abstract class AbstractOutput<C extends Channel, T> implements Output {
 
 		C wrapperChannel = (C) channel;
 		T b = (T) body;
+		appendHeaderBefore(wrapperChannel, b);
 		if (body instanceof InputMessage) {
 			NetworkUtils
 					.writeHeader((InputMessage) body, channel.getResponse());
 			appendHeader(wrapperChannel, b);
+			appendHeaderAfter(wrapperChannel, b);
 			writeBodyBefore(wrapperChannel, b);
 			if (channel.isLogEnabled()) {
 				channel.log(body);
 			}
 
 			NetworkUtils.write((InputMessage) body, channel.getResponse());
-			writeBodyAfter(wrapperChannel, b);
-			return;
-		}
-
-		if (body instanceof Text) {
+		} else if (body instanceof Text) {
 			MimeType mimeType = ((Text) body).getMimeType();
 			if (mimeType != null) {
 				channel.getResponse().setContentType(mimeType);
 			}
 
 			appendHeader(wrapperChannel, b);
+			appendHeaderAfter(wrapperChannel, b);
 			String text = ((Text) body).getTextContent();
 			if (channel.isLogEnabled()) {
 				channel.log(text);
 			}
 
+			writeBodyBefore(wrapperChannel, b);
 			if (text != null) {
 				channel.getResponse().getWriter().write(text);
 			}
 			return;
+		} else {
+			appendHeader(wrapperChannel, b);
+			appendHeaderAfter(wrapperChannel, b);
+			writeBodyBefore(wrapperChannel, b);
+			writeBody(wrapperChannel, b);
 		}
-
-		appendHeader(wrapperChannel, b);
-		writeBodyBefore(wrapperChannel, b);
-		writeBody(wrapperChannel, b);
 		writeBodyAfter(wrapperChannel, b);
 	}
 
@@ -154,11 +161,25 @@ public abstract class AbstractOutput<C extends Channel, T> implements Output {
 		return null;
 	}
 
+	/**
+	 * 在写入之前
+	 * 
+	 * @param channel
+	 * @param body
+	 * @throws Throwable
+	 */
 	protected void writeBodyBefore(C channel, T body) throws Throwable {
 	}
 
 	protected abstract void writeBody(C channel, T body) throws Throwable;
 
+	/**
+	 * 在写入之后
+	 * 
+	 * @param channel
+	 * @param body
+	 * @throws Throwable
+	 */
 	protected void writeBodyAfter(C channel, T body) throws Throwable {
 	}
 }

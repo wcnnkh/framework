@@ -1,16 +1,30 @@
 package scw.mvc.output;
 
+import java.io.PrintWriter;
+
 import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
 import scw.mvc.http.HttpChannel;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
+import scw.util.value.property.PropertyFactory;
 
 public abstract class HttpOutput<T> extends AbstractOutput<HttpChannel, T> {
 	private static final String JSONP_RESP_PREFIX = "(";
 	private static final String JSONP_RESP_SUFFIX = ");";
-	private String jsonp = "";
-	
+	private static final String DEFAULT_JSONP_CALLBACK = "callback";
+
+	public static String getJsonp(PropertyFactory propertyFactory) {
+		if (propertyFactory.getValue("mvc.http.jsonp.enable", boolean.class,
+				true)) {
+			return propertyFactory.getValue("mvc.http.jsonp", String.class,
+					DEFAULT_JSONP_CALLBACK);
+		}
+		return null;
+	}
+
+	private String jsonp = DEFAULT_JSONP_CALLBACK;
+
 	public String getJsonp() {
 		return jsonp;
 	}
@@ -29,38 +43,51 @@ public abstract class HttpOutput<T> extends AbstractOutput<HttpChannel, T> {
 
 	protected abstract boolean canWriteInternal(HttpChannel httpChannel,
 			Object body);
-	
-	
-	protected String getJsonpCallback(HttpChannel httpChannel){
-		//非GET请求不支持jsonp
-		if(scw.net.http.Method.GET != httpChannel.getRequest().getMethod()){
+
+	protected String getJsonpCallback(HttpChannel httpChannel) {
+		// 非GET请求不支持jsonp
+		if (scw.net.http.Method.GET != httpChannel.getRequest().getMethod()) {
 			return null;
 		}
-		
+
 		String jsonp = getJsonp();
-		if(StringUtils.isEmpty(jsonp)){
+		if (StringUtils.isEmpty(jsonp)) {
 			return null;
 		}
 		return httpChannel.getString(jsonp);
 	}
-	
-	protected MimeType getJsonpContentType(HttpChannel channel, T body){
-		return createContentType(MimeTypeUtils.TEXT_JAVASCRIPT, getCharsetName(channel, body));
+
+	protected MimeType getJsonpContentType(HttpChannel channel, T body) {
+		return MimeTypeUtils.TEXT_JAVASCRIPT;
 	}
 	
 	@Override
-	protected void writeBody(HttpChannel channel, T body) throws Throwable {
-		String callback = getJsonpCallback(channel);
-		if(StringUtils.isEmpty(callback)){
-			writeBodyInternal(channel, body);
-			return ;
+	protected void appendHeaderBefore(HttpChannel channel, T body) {
+		String jsonp = getJsonpCallback(channel);
+		if(!StringUtils.isEmpty(jsonp)){
+			channel.getResponse().setContentType(getJsonpContentType(channel, body));
 		}
-		
-		channel.getResponse().setContentType(getJsonpContentType(channel, body));
-		channel.getResponse().getWriter().write(JSONP_RESP_PREFIX);
-		writeBodyInternal(channel, body);
-		channel.getResponse().getWriter().write(JSONP_RESP_SUFFIX);
+		super.appendHeaderBefore(channel, body);
 	}
 	
-	protected abstract void writeBodyInternal(HttpChannel channel, T body) throws Throwable;
+	@Override
+	protected void writeBodyBefore(HttpChannel channel, T body)
+			throws Throwable {
+		String jsonp = getJsonpCallback(channel);
+		if(!StringUtils.isEmpty(jsonp)){
+			PrintWriter writer = channel.getResponse().getWriter();
+			writer.write(jsonp);
+			writer.write(JSONP_RESP_PREFIX);
+		}
+		super.writeBodyBefore(channel, body);
+	}
+	
+	@Override
+	protected void writeBodyAfter(HttpChannel channel, T body) throws Throwable {
+		String jsonp = getJsonpCallback(channel);
+		if(!StringUtils.isEmpty(jsonp)){
+			channel.getResponse().getWriter().write(JSONP_RESP_SUFFIX);
+		}
+		super.writeBodyAfter(channel, body);
+	}
 }

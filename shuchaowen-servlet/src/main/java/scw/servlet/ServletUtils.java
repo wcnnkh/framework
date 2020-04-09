@@ -45,11 +45,9 @@ public final class ServletUtils {
 	 * 
 	 * @param name
 	 *            cookie中的名字
-	 * @param ignoreCase
-	 *            查找时是否忽略大小写
 	 * @return
 	 */
-	public static Cookie getCookie(HttpServletRequest request, String name, boolean ignoreCase) {
+	public static Cookie getCookie(HttpServletRequest request, String name) {
 		if (name == null) {
 			return null;
 		}
@@ -64,14 +62,8 @@ public final class ServletUtils {
 				continue;
 			}
 
-			if (ignoreCase) {
-				if (name.equalsIgnoreCase(cookie.getName())) {
-					return cookie;
-				}
-			} else {
-				if (name.equals(cookie.getName())) {
-					return cookie;
-				}
+			if (name.equals(cookie.getName())) {
+				return cookie;
 			}
 		}
 		return null;

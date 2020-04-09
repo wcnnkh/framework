@@ -10,7 +10,6 @@ public final class ConfigurationHttpServletChannelFactory extends
 	public ConfigurationHttpServletChannelFactory(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
 		super(beanFactory, MVCUtils.getJsonSupport(
-				beanFactory, propertyFactory),
-				MVCUtils.isSupportCookieValue(propertyFactory));
+				beanFactory, propertyFactory));
 	}
 }

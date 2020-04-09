@@ -11,9 +11,9 @@ import scw.mvc.AsyncControl;
 public class FormHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(FormHttpServletChannel.class);
 
-	public FormHttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport, boolean cookieValue,
+	public FormHttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport,
 			MyHttpServletRequest request, MyHttpServletResponse response) {
-		super(beanFactory, jsonParseSupport, cookieValue, request, response);
+		super(beanFactory, jsonParseSupport, request, response);
 		if (isLogEnabled()) {
 			log("requestPath={},method={},{}", getRequest().getRequestPath(), getRequest().getMethod(),
 					JSONUtils.toJSONString(getRequest().getParameterMap()));

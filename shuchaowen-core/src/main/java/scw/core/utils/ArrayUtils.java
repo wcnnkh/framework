@@ -7,8 +7,15 @@ import java.util.Collections;
 import java.util.List;
 
 public final class ArrayUtils {
+	private static final Object[] EMPTY_ARRAY = new Object[0];
+
 	private ArrayUtils() {
 	};
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] empty() {
+		return (T[]) EMPTY_ARRAY;
+	}
 
 	public static boolean isEmpty(Object[] array) {
 		return array == null || array.length == 0;
@@ -43,7 +50,8 @@ public final class ArrayUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T[] toArray(Class<T> type, Collection<? extends T> collection) {
+	public static <T> T[] toArray(Class<T> type,
+			Collection<? extends T> collection) {
 		if (CollectionUtils.isEmpty(collection)) {
 			return (T[]) Array.newInstance(type, 0);
 		}
@@ -94,7 +102,8 @@ public final class ArrayUtils {
 
 		int len1 = Array.getLength(arr1);
 		int len2 = Array.getLength(arr2);
-		Object arr = Array.newInstance(arr1.getClass().getComponentType(), len1 + len2);
+		Object arr = Array.newInstance(arr1.getClass().getComponentType(), len1
+				+ len2);
 		System.arraycopy(arr1, 0, arr, 0, len1);
 		System.arraycopy(arr2, 0, arr, len1, len2);
 		return (T) arr;
