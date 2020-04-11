@@ -1,13 +1,13 @@
 package scw.mvc;
 
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.logger.LogService;
 import scw.mvc.beans.ChannelBeanFactory;
 import scw.util.attribute.Attributes;
 import scw.util.value.ValueFactory;
 
-public interface Channel extends LogService, Attributes<String, Object>, ParameterFactory<ParameterConfig>, ValueFactory<String>, ChannelBeanFactory {
+public interface Channel extends LogService, Attributes<String, Object>, ParameterFactory<ParameterDescriptor>, ValueFactory<String>, ChannelBeanFactory {
 	long getCreateTime();
 
 	<T extends Request> T getRequest();

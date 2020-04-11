@@ -11,10 +11,10 @@ import java.util.List;
 
 import scw.core.reflect.ReflectionUtils;
 
-public class DefaultParameterConfigFactory implements ParameterConfigFactory {
+public class DefaultParameterDescriptorFactory implements ParameterDescriptorFactory {
 
-	public FieldParameterConfig[] getFieldParameterConfigs(Class<?> clazz) {
-		List<FieldParameterConfig> parameterConfigs = new LinkedList<FieldParameterConfig>();
+	public FieldParameterDescriptor[] getParameterDescriptors(Class<?> clazz) {
+		List<FieldParameterDescriptor> parameterConfigs = new LinkedList<FieldParameterDescriptor>();
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			for (Field field : clz.getDeclaredFields()) {
@@ -23,37 +23,37 @@ public class DefaultParameterConfigFactory implements ParameterConfigFactory {
 				}
 
 				ReflectionUtils.setAccessibleField(field);
-				parameterConfigs.add(new FieldParameterConfig(field));
+				parameterConfigs.add(new FieldParameterDescriptor(field));
 			}
 			clz = clz.getSuperclass();
 		}
 		return parameterConfigs
-				.toArray(new FieldParameterConfig[parameterConfigs.size()]);
+				.toArray(new FieldParameterDescriptor[parameterConfigs.size()]);
 	}
 
-	public ParameterConfig[] getParameterConfigs(Constructor<?> constructor) {
+	public ParameterDescriptor[] getParameterDescriptors(Constructor<?> constructor) {
 		String[] names = ParameterUtils.getParameterName(constructor);
 		Annotation[][] parameterAnnoatations = constructor
 				.getParameterAnnotations();
 		Type[] parameterGenericTypes = constructor.getGenericParameterTypes();
 		Class<?>[] parameterTypes = constructor.getParameterTypes();
-		ParameterConfig[] parameterDefinitions = new ParameterConfig[names.length];
+		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
 		for (int i = 0; i < names.length; i++) {
-			parameterDefinitions[i] = new DefaultParameterConfig(names[i],
+			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i],
 					parameterAnnoatations[i], parameterTypes[i],
 					parameterGenericTypes[i]);
 		}
 		return parameterDefinitions;
 	}
 
-	public ParameterConfig[] getParameterConfigs(Method method) {
+	public ParameterDescriptor[] getParameterDescriptors(Method method) {
 		String[] names = ParameterUtils.getParameterName(method);
 		Annotation[][] parameterAnnoatations = method.getParameterAnnotations();
 		Type[] parameterGenericTypes = method.getGenericParameterTypes();
 		Class<?>[] parameterTypes = method.getParameterTypes();
-		ParameterConfig[] parameterDefinitions = new ParameterConfig[names.length];
+		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
 		for (int i = 0; i < names.length; i++) {
-			parameterDefinitions[i] = new DefaultParameterConfig(names[i],
+			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i],
 					parameterAnnoatations[i], parameterTypes[i],
 					parameterGenericTypes[i]);
 		}

@@ -1580,7 +1580,7 @@ public final class ClassUtils {
 		return getClassSet(resource, getDefaultClassLoader(), false);
 	}
 
-	public static Set<Class<?>> getClassSet(String... resources) {
+	public static Set<Class<?>> getClassSet(Collection<String> resources) {
 		Set<Class<?>> set = new LinkedHashSet<Class<?>>();
 		for (String resource : resources) {
 			set.addAll(getClassSet(resource));

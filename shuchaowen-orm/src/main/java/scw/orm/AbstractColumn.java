@@ -11,7 +11,7 @@ public abstract class AbstractColumn implements Column {
 	}
 
 	public String getDescription() {
-		Description description = getAnnotation(Description.class);
+		Description description = getAnnotatedElement().getAnnotation(Description.class);
 		return description == null ? null : description.value();
 	}
 

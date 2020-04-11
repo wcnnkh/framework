@@ -14,7 +14,7 @@ public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMap
 	}
 
 	public boolean isIndexColumn(MappingContext context) {
-		return context.getColumn().getAnnotation(Index.class) != null;
+		return context.getColumn().getAnnotatedElement().getAnnotation(Index.class) != null;
 	}
 
 	public boolean isNullable(MappingContext context) {
@@ -26,21 +26,21 @@ public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMap
 			return false;
 		}
 
-		Column column = context.getColumn().getAnnotation(Column.class);
+		Column column = context.getColumn().getAnnotatedElement().getAnnotation(Column.class);
 		return column == null ? true : column.nullAble();
 	}
 
 	public boolean isAutoIncrement(MappingContext context) {
-		return context.getColumn().getAnnotation(AutoIncrement.class) != null;
+		return context.getColumn().getAnnotatedElement().getAnnotation(AutoIncrement.class) != null;
 	}
 
 	public String getCharsetName(MappingContext context) {
-		Column column = context.getColumn().getAnnotation(Column.class);
+		Column column = context.getColumn().getAnnotatedElement().getAnnotation(Column.class);
 		return column == null ? null : column.charsetName().trim();
 	}
 
 	public boolean isUnique(MappingContext context) {
-		Column column = context.getColumn().getAnnotation(Column.class);
+		Column column = context.getColumn().getAnnotatedElement().getAnnotation(Column.class);
 		return column == null ? false : column.unique();
 	}
 
@@ -49,7 +49,7 @@ public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMap
 			return CasType.NOTHING;
 		}
 
-		Column column = context.getColumn().getAnnotation(Column.class);
+		Column column = context.getColumn().getAnnotatedElement().getAnnotation(Column.class);
 		if (column == null) {
 			return CasType.NOTHING;
 		}

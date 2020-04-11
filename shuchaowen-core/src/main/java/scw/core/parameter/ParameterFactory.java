@@ -1,5 +1,5 @@
 package scw.core.parameter;
 
-public interface ParameterFactory<T extends ParameterConfig> {
-	Object getParameter(T parameterConfig);
+public interface ParameterFactory<T extends ParameterDescriptor> {
+	Object getParameter(T parameterDescriptor);
 }

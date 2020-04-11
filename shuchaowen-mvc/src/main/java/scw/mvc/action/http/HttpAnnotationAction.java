@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.EnumSet;
 
 import scw.beans.BeanFactory;
-import scw.core.annotation.AnnotationFactory;
 import scw.core.utils.StringUtils;
 import scw.mvc.action.AnnotationAction;
 import scw.mvc.annotation.Controller;
@@ -16,16 +15,15 @@ import scw.security.authority.http.HttpAuthority;
 import scw.security.authority.http.SimpleHttpAuthority;
 import scw.util.value.property.PropertyFactory;
 
-public class AnnotationHttpAction extends AnnotationAction implements HttpAction {
+public class HttpAnnotationAction extends AnnotationAction implements
+		HttpAction {
 	private SimpleHttpAuthority authority;
 	private EnumSet<scw.net.http.HttpMethod> httpMethods = EnumSet
 			.noneOf(scw.net.http.HttpMethod.class);
-	
 
-	public AnnotationHttpAction(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clz, Method method,
-			AnnotationFactory superAnnotationFactory) {
-		super(beanFactory, propertyFactory, clz, method, superAnnotationFactory);
+	public HttpAnnotationAction(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> clz, Method method) {
+		super(beanFactory, propertyFactory, clz, method);
 		Controller classController = clz.getAnnotation(Controller.class);
 		Controller methodController = method.getAnnotation(Controller.class);
 		Methods methods = method.getAnnotation(Methods.class);
@@ -43,7 +41,8 @@ public class AnnotationHttpAction extends AnnotationAction implements HttpAction
 		}
 
 		if (methodController != null) {
-			for (scw.net.http.HttpMethod requestType : methodController.methods()) {
+			for (scw.net.http.HttpMethod requestType : methodController
+					.methods()) {
 				httpMethods.add(requestType);
 			}
 		}

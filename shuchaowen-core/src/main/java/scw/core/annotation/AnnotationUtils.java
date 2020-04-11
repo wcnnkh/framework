@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -41,7 +40,6 @@ import java.util.Set;
 import scw.core.Assert;
 import scw.core.BridgeMethodResolver;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Description;
@@ -2749,8 +2747,8 @@ public abstract class AnnotationUtils {
 		return accessibleObject.getAnnotation(Deprecated.class) != null;
 	}
 
-	public static boolean isDeprecated(AnnotationFactory annotationFactory) {
-		return annotationFactory.getAnnotation(Deprecated.class) != null;
+	public static boolean isDeprecated(AnnotatedElement annotatedElement) {
+		return annotatedElement.getAnnotation(Deprecated.class) != null;
 	}
 
 	public static LinkedList<Field> getAnnotationFieldList(Class<?> clazz, boolean isDeclared, boolean sup,
@@ -2777,41 +2775,6 @@ public abstract class AnnotationUtils {
 			}
 		}
 		return fieldList;
-	}
-
-	public static IdentityHashMap<Class<? extends Annotation>, Annotation> getAnnoataionMap(
-			AnnotatedElement annotatedElement) {
-		Annotation[] annotations = annotatedElement.getAnnotations();
-		if (ArrayUtils.isEmpty(annotations)) {
-			return null;
-		}
-
-		IdentityHashMap<Class<? extends Annotation>, Annotation> map = new IdentityHashMap<Class<? extends Annotation>, Annotation>(
-				annotations.length);
-		for (Annotation annotation : annotations) {
-			map.put(annotation.getClass(), annotation);
-		}
-		return map;
-	}
-
-	public static <T extends Annotation> T getAnnotation(Class<T> type, AnnotatedElement annotatedElement,
-			AnnotationFactory annotationFactory) {
-		T t = annotatedElement.getAnnotation(type);
-		T t2 = annotationFactory.getAnnotation(type);
-		if (t2 != null) {
-			t = t2;
-		}
-		return t;
-	}
-
-	public static <T extends Annotation> T getAnnotation(Class<T> type, AnnotationFactory annotationFactory,
-			AnnotatedElement annotatedElement) {
-		T t = annotationFactory.getAnnotation(type);
-		T t2 = annotatedElement.getAnnotation(type);
-		if (t2 != null) {
-			t = t2;
-		}
-		return t;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -2887,24 +2850,6 @@ public abstract class AnnotationUtils {
 		return old;
 	}
 
-	/**
-	 * 获取一个注解，后面覆盖前面
-	 * 
-	 * @param type
-	 * @param annotationFactories
-	 * @return
-	 */
-	public static <T extends Annotation> T getAnnotation(Class<T> type, AnnotationFactory... annotationFactories) {
-		T old = null;
-		for (AnnotationFactory annotationFactory : annotationFactories) {
-			T a = annotationFactory.getAnnotation(type);
-			if (a != null) {
-				old = a;
-			}
-		}
-		return old;
-	}
-
 	public static boolean isIgnore(AnnotatedElement... annotatedElements) {
 		Ignore ignore = getAnnotation(Ignore.class, annotatedElements);
 		if (ignore == null) {
@@ -2921,13 +2866,13 @@ public abstract class AnnotationUtils {
 	 * @param defaultValue
 	 * @return
 	 */
-	public static boolean isNullable(AnnotationFactory annotationFactory, boolean defaultValue) {
-		Nullable nullable = annotationFactory.getAnnotation(Nullable.class);
+	public static boolean isNullable(AnnotatedElement annotatedElement, boolean defaultValue) {
+		Nullable nullable = annotatedElement.getAnnotation(Nullable.class);
 		return nullable == null ? defaultValue : nullable.value();
 	}
 
-	public static String getDescription(AnnotationFactory annotationFactory, String defaultValue) {
-		Description description = annotationFactory.getAnnotation(Description.class);
+	public static String getDescription(AnnotatedElement annotatedElement, String defaultValue) {
+		Description description = annotatedElement.getAnnotation(Description.class);
 		return description == null ? defaultValue : description.value();
 	}
 }

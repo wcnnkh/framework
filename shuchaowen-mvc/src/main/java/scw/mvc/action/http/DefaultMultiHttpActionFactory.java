@@ -4,8 +4,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
-import scw.core.annotation.AnnotationFactory;
-import scw.core.annotation.SimpleAnnotationFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.annotation.Controller;
@@ -28,8 +26,6 @@ public final class DefaultMultiHttpActionFactory extends MultiHttpActionFactory 
 				continue;
 			}
 
-			AnnotationFactory clazzAnnotationFactory = new SimpleAnnotationFactory(
-					clz);
 			for (Method method : clz.getDeclaredMethods()) {
 				Controller methodController = method
 						.getAnnotation(Controller.class);
@@ -37,8 +33,8 @@ public final class DefaultMultiHttpActionFactory extends MultiHttpActionFactory 
 					continue;
 				}
 
-				HttpAction httpAction = new AnnotationHttpAction(beanFactory,
-						propertyFactory, clz, method, clazzAnnotationFactory);
+				HttpAction httpAction = new HttpAnnotationAction(beanFactory,
+						propertyFactory, clz, method);
 				scanning(httpAction);
 			}
 		}

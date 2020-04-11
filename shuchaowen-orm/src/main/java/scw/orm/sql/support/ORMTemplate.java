@@ -99,7 +99,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		getSqlMapper().iterator(null, clazz, new IteratorMapping<SqlMapper>() {
 
 			public void iterator(MappingContext context, SqlMapper sqlMapper) throws ORMException {
-				Generator generator = context.getColumn().getAnnotation(Generator.class);
+				Generator generator = context.getColumn().getAnnotatedElement().getAnnotation(Generator.class);
 				if (generator == null) {
 					return;
 				}

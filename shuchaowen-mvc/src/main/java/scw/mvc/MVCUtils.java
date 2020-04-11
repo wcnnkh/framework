@@ -16,7 +16,7 @@ import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -105,7 +105,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static Object[] getParameterValues(Channel channel,
-			ParameterConfig[] parameterConfigs) {
+			ParameterDescriptor[] parameterConfigs) {
 		Action action = ContextManager.getCurrentAction();
 		if (action != null && action instanceof AbstractAction) {
 			return ((AbstractAction) action).getArgs(parameterConfigs, channel);
@@ -114,7 +114,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static Object getParameterValue(Channel channel,
-			ParameterConfig parameterConfig,
+			ParameterDescriptor parameterConfig,
 			Collection<ParameterFilter> parameterFilters,
 			ParameterFilterChain chain) {
 		ParameterFilterChain parameterFilterChain = new DefaultParameterFilterChain(
@@ -131,7 +131,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static Object[] getParameterValues(Channel channel,
-			ParameterConfig[] parameterConfigs,
+			ParameterDescriptor[] parameterConfigs,
 			Collection<ParameterFilter> parameterFilters,
 			ParameterFilterChain chain) throws ParameterException {
 		Object[] args = new Object[parameterConfigs.length];

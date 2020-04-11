@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.security.limit.annotation.CountLimitParameter;
 import scw.security.limit.annotation.CountLimitSecurityCount;
@@ -35,13 +35,14 @@ public class DefaultCountLimitConfigFactory implements CountLimitConfigFactory {
 
 		sb.append("mvc.limit:");
 		sb.append(countLimitSecurityName.value());
-		ParameterConfig[] parameterConfigs = ParameterUtils
-				.getParameterConfigs(method);
+		ParameterDescriptor[] parameterConfigs = ParameterUtils
+				.getParameterDescriptors(method);
 		for (int i = 0; i < parameterConfigs.length; i++) {
-			ParameterConfig config = parameterConfigs[i];
+			ParameterDescriptor config = parameterConfigs[i];
 			boolean b = countLimitSecurityName.condition();
 			CountLimitParameter countLimitParameter = config
-					.getAnnotation(CountLimitParameter.class);
+					.getAnnotatedElement().getAnnotation(
+							CountLimitParameter.class);
 			if (countLimitParameter != null) {
 				b = countLimitParameter.value();
 			}

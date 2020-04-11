@@ -12,9 +12,13 @@ import scw.net.http.HttpMethod;
 
 public final class HttpParameterActionFactory extends HttpActionFactory {
 	private final Map<String, EnumMap<HttpMethod, Map<String, HttpAction>>> actionMap = new HashMap<String, EnumMap<HttpMethod, Map<String, HttpAction>>>();
-	private String key;
+	private String key = "action";
 
-	public HttpParameterActionFactory(String key) {
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
 		this.key = key;
 	}
 

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import scw.core.annotation.AnnotationUtils;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -90,14 +90,14 @@ public class ApiDocumentByAnnotation extends SimpleApiDocument {
 
 	protected List<ApiParameter> getApiParameter(Method method, Mapper mapper) {
 		List<ApiParameter> apiParameters = new ArrayList<ApiParameter>();
-		for (ParameterConfig parameterConfig : ParameterUtils
-				.getParameterConfigs(method)) {
+		for (ParameterDescriptor parameterConfig : ParameterUtils
+				.getParameterDescriptors(method)) {
 			SimpleApiParameter parameter = new SimpleApiParameter();
 			parameter.setType(parameterConfig.getType().getName());
 			parameter.setName(parameterConfig.getName());
 			parameter.setRequired(ParameterUtils.isNullAble(parameterConfig));
 			parameter.setDescription(AnnotationUtils.getDescription(
-					parameterConfig, null));
+					parameterConfig.getAnnotatedElement(), null));
 			if (isEntityType(parameterConfig.getType())) {
 				parameter.setSubList(toEntityApiParameter(mapper,
 						parameterConfig.getType()));

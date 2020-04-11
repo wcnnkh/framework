@@ -1,5 +1,7 @@
 package scw.mvc.action.http;
 
+import java.util.Arrays;
+
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
@@ -14,17 +16,25 @@ import scw.util.value.property.PropertyFactory;
 public final class DefaultHttpActionFactory implements ActionFactory {
 	private ActionFactory actionFactory;
 
-	public DefaultHttpActionFactory(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	public DefaultHttpActionFactory(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
 		DefaultMultiHttpActionFactory multiHttpActionFactory = new DefaultMultiHttpActionFactory();
-		BeanUtils.appendBean(multiHttpActionFactory.getFactoryList(), beanFactory, propertyFactory,
-				HttpActionFactory.class, "mvc.http.action.factory");
-		multiHttpActionFactory.getFactoryList().addAll(InstanceUtils.getConfigurationList(HttpActionFactory.class, beanFactory));
+		BeanUtils.appendBean(multiHttpActionFactory.getFactoryList(),
+				beanFactory, propertyFactory, HttpActionFactory.class,
+				"mvc.http.action.factory");
+		multiHttpActionFactory.getFactoryList().addAll(
+				InstanceUtils.getConfigurationList(HttpActionFactory.class,
+						beanFactory));
+		multiHttpActionFactory.getFactoryList().add(
+				new HttpParameterActionFactory());
 		multiHttpActionFactory.getFactoryList()
-				.add(new HttpParameterActionFactory(MVCUtils.getHttpParameterActionKey(propertyFactory)));
-		multiHttpActionFactory.getFactoryList().add(new HttpPathActionFactory());
-		multiHttpActionFactory.getFactoryList().add(new HttpRestfulActionFactory());
+				.add(new HttpPathActionFactory());
+		multiHttpActionFactory.getFactoryList().add(
+				new HttpRestfulActionFactory());
 		multiHttpActionFactory.init(beanFactory, propertyFactory, ClassUtils
-				.getClassSet(MVCUtils.getScanAnnotationPackageName(), Constants.SYSTEM_PACKAGE_NAME));
+				.getClassSet(Arrays.asList(
+						MVCUtils.getScanAnnotationPackageName(),
+						Constants.SYSTEM_PACKAGE_NAME)));
 		this.actionFactory = multiHttpActionFactory;
 	}
 

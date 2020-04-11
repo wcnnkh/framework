@@ -9,7 +9,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 import scw.beans.annotation.Bean;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.json.JsonArray;
@@ -25,7 +25,7 @@ import scw.util.MultiValueParameterFactory;
 public class DefaultRequestBodyParse implements RequestBodyParse {
 	private static Logger logger = LoggerFactory.getLogger(DefaultRequestBodyParse.class);
 
-	public Object requestBodyParse(Channel channel, JSONSupport jsonParseSupport, ParameterConfig parameterConfig)
+	public Object requestBodyParse(Channel channel, JSONSupport jsonParseSupport, ParameterDescriptor parameterConfig)
 			throws Exception {
 		String body = null;
 		if (MVCUtils.isJsonRequest(channel.getRequest())) {

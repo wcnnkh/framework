@@ -12,30 +12,30 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
 public final class ParameterUtils {
-	private static LocalVariableTableParameterNameDiscoverer lvtpnd = new LocalVariableTableParameterNameDiscoverer();
-	private static ParameterConfigFactory parameterConfigFactory = InstanceUtils
-			.autoNewInstanceBySystemProperty(ParameterConfigFactory.class,
-					"scw.parameter.config.factory",
-					new DefaultParameterConfigFactory());
+	private static final LocalVariableTableParameterNameDiscoverer LVTPND = new LocalVariableTableParameterNameDiscoverer();
+	private static final ParameterDescriptorFactory PARAMETER_DESCRIPTOR_FACTORY = InstanceUtils
+			.autoNewInstanceBySystemProperty(ParameterDescriptorFactory.class,
+					"scw.parameter.descriptor.factory",
+					new DefaultParameterDescriptorFactory());
 
 	private ParameterUtils() {
 	};
 
-	public static ParameterConfigFactory getParameterConfigFactory() {
-		return parameterConfigFactory;
+	public static ParameterDescriptorFactory getParameterDescriptorFactory() {
+		return PARAMETER_DESCRIPTOR_FACTORY;
 	}
 
-	public static ParameterConfig[] getParameterConfigs(
+	public static ParameterDescriptor[] getParameterDescriptors(
 			Constructor<?> constructor) {
-		return getParameterConfigFactory().getParameterConfigs(constructor);
+		return getParameterDescriptorFactory().getParameterDescriptors(constructor);
 	}
 
-	public static ParameterConfig[] getParameterConfigs(Method method) {
-		return getParameterConfigFactory().getParameterConfigs(method);
+	public static ParameterDescriptor[] getParameterDescriptors(Method method) {
+		return getParameterDescriptorFactory().getParameterDescriptors(method);
 	}
 
-	public static String getParameterName(ParameterConfig parameterConfig) {
-		ParameterName parameterName = parameterConfig
+	public static String getParameterName(ParameterDescriptor parameterConfig) {
+		ParameterName parameterName = parameterConfig.getAnnotatedElement()
 				.getAnnotation(ParameterName.class);
 		if (parameterName != null
 				&& StringUtils.isNotEmpty(parameterName.value())) {
@@ -45,62 +45,63 @@ public final class ParameterUtils {
 	}
 
 	public static String[] getParameterName(Method method) {
-		return lvtpnd.getParameterNames(method);
+		return LVTPND.getParameterNames(method);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static String[] getParameterName(Constructor constructor) {
-		return lvtpnd.getParameterNames(constructor);
+		return LVTPND.getParameterNames(constructor);
 	}
 
-	public static boolean isNullAble(ParameterConfig parameterConfig) {
+	public static boolean isNullAble(ParameterDescriptor parameterConfig) {
 		if (parameterConfig.getType().isPrimitive()) {
 			return false;
 		}
 
-		return AnnotationUtils.isNullable(parameterConfig, true);
+		return AnnotationUtils.isNullable(
+				parameterConfig.getAnnotatedElement(), true);
 	}
 
 	public static Object createObjectByParameter(
-			ParameterFactory<ParameterConfig> parameterFactory, Class<?> type)
+			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type)
 			throws Exception {
 		return createObjectByParameter(parameterFactory, type, null);
 	}
 
 	public static Object createObjectByParameter(
 			InstanceFactory instanceFactory,
-			ParameterConfigFactory parameterConfigFactory,
-			ParameterFactory<ParameterConfig> parameterFactory, Class<?> type)
+			ParameterDescriptorFactory parameterConfigFactory,
+			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type)
 			throws Exception {
 		return createObjectByParameter(instanceFactory, parameterConfigFactory,
 				parameterFactory, type, null);
 	}
 
 	public static Object createObjectByParameter(
-			ParameterFactory<ParameterConfig> parameterFactory, Class<?> type,
+			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type,
 			String name) throws Exception {
 		return createObjectByParameterInternal(
 				InstanceUtils.REFLECTION_INSTANCE_FACTORY,
-				parameterConfigFactory, parameterFactory, type,
+				getParameterDescriptorFactory(), parameterFactory, type,
 				StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name
 						: name + "."));
 	}
 
 	public static Object createObjectByParameter(
 			InstanceFactory instanceFactory,
-			ParameterConfigFactory parameterConfigFactory,
-			ParameterFactory<ParameterConfig> parameterFactory, Class<?> type,
+			ParameterDescriptorFactory parameterDescriptorFactory,
+			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type,
 			String name) throws Exception {
 		return createObjectByParameterInternal(instanceFactory,
-				parameterConfigFactory, parameterFactory, type,
+				parameterDescriptorFactory, parameterFactory, type,
 				StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name
 						: name + "."));
 	}
 
 	private static Object createObjectByParameterInternal(
 			InstanceFactory instanceFactory,
-			ParameterConfigFactory parameterConfigFactory,
-			ParameterFactory<ParameterConfig> parameterFactory, Class<?> type,
+			ParameterDescriptorFactory parameterConfigFactory,
+			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type,
 			String prefix) throws Exception {
 		if (!instanceFactory.isInstance(type)) {
 			return null;
@@ -114,11 +115,11 @@ public final class ParameterUtils {
 
 	private static void setParameter(Object instance,
 			InstanceFactory instanceFactory,
-			ParameterConfigFactory parameterConfigFactory,
-			ParameterFactory<ParameterConfig> parameterFactory, Class<?> type,
+			ParameterDescriptorFactory parameterConfigFactory,
+			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type,
 			String prefix) throws Exception {
-		for (FieldParameterConfig parameterConfig : parameterConfigFactory
-				.getFieldParameterConfigs(type)) {
+		for (FieldParameterDescriptor parameterConfig : parameterConfigFactory
+				.getParameterDescriptors(type)) {
 			if (!parameterConfig.getType().isPrimitive()
 					&& parameterConfig.getField().get(instance) != null) {
 				continue;

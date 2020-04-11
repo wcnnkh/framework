@@ -134,7 +134,7 @@ public final class BeanUtils {
 	private static void setConfig(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Class<?> clz, Object obj,
 			FieldDefinition field) {
-		Config config = field.getAnnotation(Config.class);
+		Config config = field.getAnnotatedElement().getAnnotation(Config.class);
 		if (config != null) {
 			staticFieldWarnLog(Config.class.getName(), clz, field);
 			Object value = null;
@@ -191,7 +191,7 @@ public final class BeanUtils {
 
 		Collection<ValueWired> valueWireds = new LinkedList<ValueWired>();
 		for (FieldDefinition field : fieldDefinitions) {
-			Value value = field.getAnnotation(Value.class);
+			Value value = field.getAnnotatedElement().getAnnotation(Value.class);
 			if (value != null) {
 				staticFieldWarnLog(Value.class.getName(), clz, field);
 				try {
@@ -218,7 +218,7 @@ public final class BeanUtils {
 
 	private static void setBean(BeanFactory beanFactory, Class<?> clz,
 			Object obj, FieldDefinition field) {
-		Autowired s = field.getAnnotation(Autowired.class);
+		Autowired s = field.getAnnotatedElement().getAnnotation(Autowired.class);
 		if (s != null) {
 			staticFieldWarnLog(Autowired.class.getName(), clz, field);
 

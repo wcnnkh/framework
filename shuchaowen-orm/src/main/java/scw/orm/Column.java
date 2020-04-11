@@ -1,11 +1,12 @@
 package scw.orm;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
-import scw.core.annotation.AnnotationFactory;
-
-public interface Column extends AnnotationFactory {
+public interface Column {
+	AnnotatedElement getAnnotatedElement();
+	
 	Class<?> getType();
 
 	Type getGenericType();

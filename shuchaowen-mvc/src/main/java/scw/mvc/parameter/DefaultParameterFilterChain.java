@@ -3,7 +3,7 @@ package scw.mvc.parameter;
 import java.util.Collection;
 import java.util.Iterator;
 
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.CollectionUtils;
 import scw.mvc.Channel;
 
@@ -18,7 +18,7 @@ public class DefaultParameterFilterChain implements ParameterFilterChain {
 		this.chain = chain;
 	}
 
-	public Object doFilter(Channel channel, ParameterConfig parameterConfig) throws Throwable {
+	public Object doFilter(Channel channel, ParameterDescriptor parameterConfig) throws Throwable {
 		if (iterator == null) {
 			return lastFilter(channel, parameterConfig);
 		}
@@ -30,7 +30,7 @@ public class DefaultParameterFilterChain implements ParameterFilterChain {
 		return lastFilter(channel, parameterConfig);
 	}
 
-	private Object lastFilter(Channel channel, ParameterConfig parameterConfig) throws Throwable {
+	private Object lastFilter(Channel channel, ParameterDescriptor parameterConfig) throws Throwable {
 		return chain == null ? channel.getParameter(parameterConfig) : chain.doFilter(channel, parameterConfig);
 	}
 }

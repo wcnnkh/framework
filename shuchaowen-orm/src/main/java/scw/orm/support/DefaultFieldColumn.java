@@ -1,14 +1,12 @@
 package scw.orm.support;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
-import scw.core.annotation.AnnotationFactory;
-import scw.core.annotation.MultipleAnnotationFactory;
-import scw.core.annotation.SimpleAnnotationFactory;
+import scw.core.annotation.AnnotatedElementUtils;
+import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
 import scw.orm.AbstractColumn;
@@ -18,31 +16,27 @@ import scw.orm.ORMException;
 public class DefaultFieldColumn extends AbstractColumn implements Column {
 	private Field field;
 	private String name;
-	private AnnotationFactory annotationFactory;
+	private AnnotatedElement annotatedElement;
 	private Method getter;
 	private Method setter;
 
-	public DefaultFieldColumn(Class<?> clazz, Field field, boolean getter, boolean setter) {
+	public DefaultFieldColumn(Class<?> clazz, Field field, boolean getter,
+			boolean setter) {
 		super(clazz);
 		this.field = field;
-		this.annotationFactory = new SimpleAnnotationFactory(field);
+		this.annotatedElement = AnnotatedElementUtils.forAnnotations(field
+				.getDeclaredAnnotations());
 		if (getter) {
 			this.getter = ReflectionUtils.getGetterMethod(clazz, field);
-			if (this.getter != null) {
-				this.annotationFactory = new MultipleAnnotationFactory(
-						Arrays.asList(new SimpleAnnotationFactory(this.getter), this.annotationFactory));
-			}
 		}
 
 		if (setter) {
 			this.setter = ReflectionUtils.getSetterMethod(clazz, field);
-			if (this.setter != null) {
-				this.annotationFactory = new MultipleAnnotationFactory(
-						Arrays.asList(new SimpleAnnotationFactory(this.setter), this.annotationFactory));
-			}
 		}
 
-		scw.orm.annotation.ColumnName columnName = getAnnotation(scw.orm.annotation.ColumnName.class);
+		this.annotatedElement = MultiAnnotatedElement.forAnnotatedElements(true, this.field, this.getter, this.setter);
+		scw.orm.annotation.ColumnName columnName = getAnnotatedElement()
+				.getAnnotation(scw.orm.annotation.ColumnName.class);
 		if (columnName != null && !StringUtils.isEmpty(columnName.value())) {
 			this.name = columnName.value();
 		}
@@ -52,8 +46,8 @@ public class DefaultFieldColumn extends AbstractColumn implements Column {
 		return field;
 	}
 
-	public <T extends Annotation> T getAnnotation(Class<T> type) {
-		return annotationFactory.getAnnotation(type);
+	public AnnotatedElement getAnnotatedElement() {
+		return annotatedElement;
 	}
 
 	public Object get(Object obj) throws ORMException {

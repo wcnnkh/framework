@@ -10,7 +10,7 @@ import java.util.Map;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.mvc.Channel;
 import scw.mvc.annotation.ChannelConstructor;
@@ -55,7 +55,7 @@ public abstract class AbstractChannelBeanFactory implements ChannelBeanFactory,
 		return getBean(type.getName());
 	}
 
-	protected abstract Object[] getBeanArgs(ParameterConfig[] parameterConfigs);
+	protected abstract Object[] getBeanArgs(ParameterDescriptor[] parameterConfigs);
 
 	protected Constructor<?> getModelConstructor(Class<?> type) {
 		Constructor<?>[] constructors = type.getDeclaredConstructors();
@@ -129,7 +129,7 @@ public abstract class AbstractChannelBeanFactory implements ChannelBeanFactory,
 								beanDefinition.getId(),
 								constructor.getParameterTypes(),
 								getBeanArgs(ParameterUtils
-										.getParameterConfigs(constructor)));
+										.getParameterDescriptors(constructor)));
 						if (beanMap == null) {
 							beanMap = createBeanMap();
 						}

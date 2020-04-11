@@ -3,7 +3,8 @@ package scw.core.instance;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
+import scw.core.parameter.ParameterDescriptorFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.util.value.property.PropertyFactory;
@@ -13,22 +14,22 @@ public class AutoInstanceConfig implements InstanceConfig {
 	protected final PropertyFactory propertyFactory;
 	protected final Class<?> clazz;
 	private Constructor<?> constructor;
-	private ParameterConfig[] parameterConfigs;
+	private ParameterDescriptor[] parameterConfigs;
 
 	public AutoInstanceConfig(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz) {
 		this(instanceFactory, propertyFactory, clazz,
-				ReflectionUtils.getConstructorOrderList(clazz));
+				ReflectionUtils.getConstructorOrderList(clazz), ParameterUtils.getParameterDescriptorFactory());
 	}
 
 	public AutoInstanceConfig(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
-			Collection<Constructor<?>> constructors) {
+			Collection<Constructor<?>> constructors, ParameterDescriptorFactory parameterDescriptorFactory) {
 		this.propertyFactory = propertyFactory;
 		this.instanceFactory = instanceFactory;
 		this.clazz = clazz;
 		for (Constructor<?> constructor : constructors) {
 			if (isAutoConstructor(constructor)) {
 				this.constructor = constructor;
-				this.parameterConfigs = ParameterUtils.getParameterConfigs(constructor);
+				this.parameterConfigs = parameterDescriptorFactory.getParameterDescriptors(constructor);
 				break;
 			}
 		}
@@ -36,7 +37,7 @@ public class AutoInstanceConfig implements InstanceConfig {
 
 	public final boolean isAutoConstructor(Constructor<?> constructor) {
 		return InstanceUtils.isAuto(instanceFactory, propertyFactory, clazz,
-				ParameterUtils.getParameterConfigs(constructor), constructor);
+				ParameterUtils.getParameterDescriptors(constructor), constructor);
 	}
 
 	public final Constructor<?> getConstructor() {

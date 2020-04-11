@@ -58,7 +58,7 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 			MappingContext context = iterator.next();
 			Object v = mappingOperations.getter(context, obj);
 			scw.orm.Column col = context.getColumn();
-			Counter counter = col.getAnnotation(Counter.class);
+			Counter counter = col.getAnnotatedElement().getAnnotation(Counter.class);
 			if (counter == null) {
 				keywordProcessing(sb, col.getName());
 				sb.append("=?");

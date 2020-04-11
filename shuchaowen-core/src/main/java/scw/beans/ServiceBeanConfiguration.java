@@ -1,5 +1,7 @@
 package scw.beans;
 
+import java.util.Arrays;
+
 import scw.beans.annotation.Service;
 import scw.beans.property.ValueWiredManager;
 import scw.core.Constants;
@@ -15,7 +17,7 @@ import scw.util.value.property.PropertyFactory;
  */
 public class ServiceBeanConfiguration extends AbstractBeanConfiguration {
 	public ServiceBeanConfiguration(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory, String packageNames) throws Exception {
-		for (Class<?> clz : ClassUtils.getClassSet(packageNames, Constants.SYSTEM_PACKAGE_NAME)) {
+		for (Class<?> clz : ClassUtils.getClassSet(Arrays.asList(packageNames, Constants.SYSTEM_PACKAGE_NAME))) {
 			Service service = clz.getAnnotation(Service.class);
 			if (service == null) {
 				continue;

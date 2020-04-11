@@ -24,7 +24,7 @@ public final class IPSecurityActionFilter implements ActionFilter{
 
 	public Object doFilter(Channel channel, Action action, ActionFilterChain chain)
 			throws Throwable {
-		IPSecurity ipSecurity = action.getAnnotation(IPSecurity.class);
+		IPSecurity ipSecurity = action.getAnnotatedElement().getAnnotation(IPSecurity.class);
 		if (ipSecurity != null) {
 			boolean b = verificationIP(MVCUtils.getIP(channel), ipSecurity);
 			if (!b) {

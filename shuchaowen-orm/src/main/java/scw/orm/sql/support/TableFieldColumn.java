@@ -11,7 +11,7 @@ public class TableFieldColumn extends DefaultFieldColumn {
 
 	public TableFieldColumn(Class<?> clazz, Field field) {
 		super(clazz, field, false, false);
-		Column column = getAnnotation(Column.class);
+		Column column = getAnnotatedElement().getAnnotation(Column.class);
 		if (column != null && !StringUtils.isEmpty(column.name())) {
 			this.name = column.name();
 		}
@@ -24,7 +24,7 @@ public class TableFieldColumn extends DefaultFieldColumn {
 	@Override
 	public String getDescription() {
 		String describe = null;
-		Column column = getAnnotation(Column.class);
+		Column column = getAnnotatedElement().getAnnotation(Column.class);
 		if (column != null) {
 			describe = column.comment();
 		}

@@ -47,7 +47,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 			}
 
 			scw.orm.sql.annotation.SequenceId sequenceId = generatorContext
-					.getMappingContext().getColumn()
+					.getMappingContext().getColumn().getAnnotatedElement()
 					.getAnnotation(scw.orm.sql.annotation.SequenceId.class);
 			if (sequenceId != null) {
 				generatorContext.getSqlMapper().setter(
@@ -79,7 +79,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 			}
 
 			CreateTime createTime = generatorContext.getMappingContext()
-					.getColumn().getAnnotation(CreateTime.class);
+					.getColumn().getAnnotatedElement().getAnnotation(CreateTime.class);
 			if (createTime != null) {
 				generatorContext.getSqlMapper().setter(
 						generatorContext.getMappingContext(),
@@ -88,7 +88,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 				return;
 			}
 
-			UUID uuid = generatorContext.getMappingContext().getColumn()
+			UUID uuid = generatorContext.getMappingContext().getColumn().getAnnotatedElement()
 					.getAnnotation(UUID.class);
 			if (uuid != null) {
 				generatorContext.getSqlMapper().setter(
@@ -119,7 +119,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 		}
 
 		UpdateTime updateTime = generatorContext.getMappingContext()
-				.getColumn().getAnnotation(UpdateTime.class);
+				.getColumn().getAnnotatedElement().getAnnotation(UpdateTime.class);
 		if (updateTime != null) {
 			generatorContext.getSqlMapper().setter(
 					generatorContext.getMappingContext(),

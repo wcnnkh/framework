@@ -6,8 +6,8 @@ import java.util.Map;
 import scw.core.Callable;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
-import scw.core.parameter.DefaultParameterConfig;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.DefaultParameterDescriptor;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
@@ -18,13 +18,13 @@ import scw.mvc.http.HttpRequest;
 
 public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	private static final Callable<HashMap<String, String>> ATTRIBUTE_MAP_CALLABLE = CollectionUtils.hashMapCallable(8);
-	private ParameterConfig identificationParameterConfig;
+	private ParameterDescriptor identificationParameterConfig;
 	private boolean ipEnable;
 
 	public DefaultActionLogFactory(
-			@ParameterName("mvc.logger.identification") @DefaultValue("uid") String identificationKey, @ParameterName("mvc.logger.ip")@DefaultValue("false") boolean ipEnable) {
+			@ParameterName("mvc.http.action.logger.identification") @DefaultValue("uid") String identificationKey, @ParameterName("mvc.logger.ip")@DefaultValue("false") boolean ipEnable) {
 		if (StringUtils.isNotEmpty(identificationKey)) {
-			this.identificationParameterConfig = new DefaultParameterConfig(
+			this.identificationParameterConfig = new DefaultParameterDescriptor(
 					identificationKey, null, String.class, String.class);
 		}
 		this.ipEnable = ipEnable;
@@ -44,7 +44,7 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	}
 	
 	protected final void appendAnnotationAttributeMap(Map<String, String> map, Action action, Channel channel){
-		ActionLogAttributeConfig logConfig = action.getAnnotation(ActionLogAttributeConfig.class);
+		ActionLogAttributeConfig logConfig = action.getAnnotatedElement().getAnnotation(ActionLogAttributeConfig.class);
 		if(ipEnable){
 			if(logConfig == null || logConfig.ip()){
 				CollectionUtils.put(map, "ip", getIp(action, channel), ATTRIBUTE_MAP_CALLABLE);
@@ -66,7 +66,7 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	}
 	
 	protected String getAttirubteValue(Channel channel, String name){
-		return (String) channel.getParameter( new DefaultParameterConfig(
+		return (String) channel.getParameter( new DefaultParameterDescriptor(
 				name, null, String.class, String.class));
 	}
 	

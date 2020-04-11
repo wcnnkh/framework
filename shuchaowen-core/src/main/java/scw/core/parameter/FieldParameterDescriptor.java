@@ -1,25 +1,25 @@
 package scw.core.parameter;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 
 import scw.core.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 
-public class FieldParameterConfig implements ParameterConfig {
+public class FieldParameterDescriptor implements ParameterDescriptor {
 	private final Field field;
 
-	public FieldParameterConfig(Field field) {
+	public FieldParameterDescriptor(Field field) {
 		this.field = field;
 	}
-
-	public <T extends Annotation> T getAnnotation(Class<T> type) {
-		return field.getAnnotation(type);
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return field;
 	}
 
 	public String getName() {
-		ParameterName parameterName = getAnnotation(ParameterName.class);
+		ParameterName parameterName = getAnnotatedElement().getAnnotation(ParameterName.class);
 		if (parameterName != null
 				&& StringUtils.isNotEmpty(parameterName.value())) {
 			return parameterName.value();

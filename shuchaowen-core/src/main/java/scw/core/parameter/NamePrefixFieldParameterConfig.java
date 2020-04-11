@@ -1,24 +1,24 @@
 package scw.core.parameter;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 
 import scw.core.utils.StringUtils;
 
-public final class NamePrefixFieldParameterConfig extends FieldParameterConfig {
-	private FieldParameterConfig fieldParameterConfig;
+public final class NamePrefixFieldParameterConfig extends FieldParameterDescriptor {
+	private FieldParameterDescriptor fieldParameterConfig;
 	private String name;
 
 	public NamePrefixFieldParameterConfig(
-			FieldParameterConfig fieldParameterConfig, String namePrefix) {
+			FieldParameterDescriptor fieldParameterConfig, String namePrefix) {
 		super(fieldParameterConfig.getField());
 		this.fieldParameterConfig = fieldParameterConfig;
 		this.name = StringUtils.isEmpty(namePrefix) ? fieldParameterConfig
 				.getName() : (namePrefix + fieldParameterConfig.getName());
 	}
-
+	
 	@Override
-	public <T extends Annotation> T getAnnotation(Class<T> type) {
-		return fieldParameterConfig.getAnnotation(type);
+	public AnnotatedElement getAnnotatedElement() {
+		return fieldParameterConfig.getAnnotatedElement();
 	}
 
 	@Override

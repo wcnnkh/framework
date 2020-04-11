@@ -119,7 +119,7 @@ public abstract class AbstractMapper implements Mapper {
 	}
 
 	public boolean isPrimaryKey(MappingContext context) {
-		return context.getColumn().getAnnotation(PrimaryKey.class) != null;
+		return context.getColumn().getAnnotatedElement().getAnnotation(PrimaryKey.class) != null;
 	}
 
 	public Collection<MappingContext> getPrimaryKeys(MappingContext supperContext, Class<?> clazz) {
@@ -203,12 +203,12 @@ public abstract class AbstractMapper implements Mapper {
 	}
 
 	public boolean isIgnore(MappingContext context) {
-		Ignore ignore = context.getColumn().getAnnotation(Ignore.class);
+		Ignore ignore = context.getColumn().getAnnotatedElement().getAnnotation(Ignore.class);
 		if (ignore != null) {
 			return true;
 		}
 
-		NotColumn exclude = context.getColumn().getAnnotation(NotColumn.class);
+		NotColumn exclude = context.getColumn().getAnnotatedElement().getAnnotation(NotColumn.class);
 		if (exclude != null) {
 			return true;
 		}
@@ -216,7 +216,7 @@ public abstract class AbstractMapper implements Mapper {
 	}
 
 	public boolean isEntity(MappingContext context) {
-		return context.getColumn().getAnnotation(Entity.class) != null
+		return context.getColumn().getAnnotatedElement().getAnnotation(Entity.class) != null
 				|| context.getColumn().getType().getAnnotation(Entity.class) != null;
 	}
 
@@ -277,7 +277,7 @@ public abstract class AbstractMapper implements Mapper {
 		}
 
 		Nullable nullable = AnnotationUtils.getAnnotation(Nullable.class, context.getDeclaringClass(),
-				context.getColumn());
+				context.getColumn().getAnnotatedElement());
 		if (nullable == null) {
 			return true;
 		}

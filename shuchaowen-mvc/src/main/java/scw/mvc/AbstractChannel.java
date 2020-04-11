@@ -17,7 +17,7 @@ import java.util.Map;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
 import scw.core.annotation.DefaultValue;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
@@ -40,8 +40,8 @@ import scw.util.value.StringValue;
 import scw.util.value.Value;
 import scw.util.value.ValueUtils;
 
-public abstract class AbstractChannel extends
-		AbstractValueFactory<String> implements Channel, Destroy {
+public abstract class AbstractChannel extends AbstractValueFactory<String>
+		implements Channel, Destroy {
 	private final long createTime;
 	private final JSONSupport jsonSupport;
 	private final ChannelBeanFactory channelBeanFactory;
@@ -50,7 +50,8 @@ public abstract class AbstractChannel extends
 	public AbstractChannel(BeanFactory beanFactory, JSONSupport jsonSupport) {
 		this.createTime = System.currentTimeMillis();
 		this.jsonSupport = jsonSupport;
-		this.channelBeanFactory = new DefaultChannelBeanFactory(beanFactory, this);
+		this.channelBeanFactory = new DefaultChannelBeanFactory(beanFactory,
+				this);
 	}
 
 	private Map<String, Object> attributeMap;
@@ -89,24 +90,25 @@ public abstract class AbstractChannel extends
 	public final JSONSupport getJsonSupport() {
 		return jsonSupport;
 	}
-	
+
 	public boolean isCompleted() {
 		return completed;
 	}
 
 	public void destroy() {
-		if(isCompleted()){
-			return ;
+		if (isCompleted()) {
+			return;
 		}
-		
+
 		attributeMap = null;
 		XUtils.destroy(channelBeanFactory);
 		try {
 			getResponse().flush();
 		} catch (IOException e) {
-			getLogger().error(e, "resposne flush error for channel:{}", toString());
+			getLogger().error(e, "resposne flush error for channel:{}",
+					toString());
 		}
-		
+
 		completed = true;
 	}
 
@@ -166,7 +168,7 @@ public abstract class AbstractChannel extends
 		}
 		return (E[]) array;
 	}
-	
+
 	@Override
 	public final <T> T getObject(String key, Class<? extends T> type) {
 		return super.getObject(key, type);
@@ -174,15 +176,15 @@ public abstract class AbstractChannel extends
 
 	@Override
 	protected Object getObjectSupport(String key, Class<?> type) {
-		if(type.isArray()){
+		if (type.isArray()) {
 			return getArray(key, type.getComponentType());
 		}
-		
+
 		// 不可以被实例化且不存在无参的构造方法
 		if (!ReflectionUtils.isInstance(type, true)) {
 			return getBean(type);
 		}
-		
+
 		return getObjectIsNotBean(key, type);
 	}
 
@@ -193,18 +195,18 @@ public abstract class AbstractChannel extends
 			throw new ParameterException("name=" + name + ", type=" + type, e);
 		}
 	}
-	
+
 	public final Object getObject(String name, Type type) {
 		return super.getObject(name, type);
 	}
-	
+
 	// 一般情况下建议重写止方法，因为默认的实现不支持泛型
 	@Override
 	protected Object getObjectSupport(String key, Type type) {
 		return getObjectSupport(key, TypeUtils.toClass(type));
 	}
 
-	public Object getParameter(ParameterConfig parameterConfig) {
+	public Object getParameter(ParameterDescriptor parameterConfig) {
 		if (Request.class.isAssignableFrom(parameterConfig.getType())) {
 			return getRequest();
 		} else if (Response.class.isAssignableFrom(parameterConfig.getType())) {
@@ -213,7 +215,7 @@ public abstract class AbstractChannel extends
 			return this;
 		}
 
-		RequestBody requestBody = parameterConfig
+		RequestBody requestBody = parameterConfig.getAnnotatedElement()
 				.getAnnotation(RequestBody.class);
 		if (requestBody != null) {
 			RequestBodyParse requestBodyParse = getBean(requestBody.value());
@@ -226,7 +228,7 @@ public abstract class AbstractChannel extends
 			}
 		}
 
-		RequestBean requestBean = parameterConfig
+		RequestBean requestBean = parameterConfig.getAnnotatedElement()
 				.getAnnotation(RequestBean.class);
 		if (requestBean != null) {
 			return StringUtils.isEmpty(requestBean.value()) ? getBean(parameterConfig
@@ -235,17 +237,18 @@ public abstract class AbstractChannel extends
 
 		String name = ParameterUtils.getParameterName(parameterConfig);
 		BigDecimalMultiply bigDecimalMultiply = parameterConfig
-				.getAnnotation(BigDecimalMultiply.class);
+				.getAnnotatedElement().getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
 			return bigDecimalMultiply(name, parameterConfig, bigDecimalMultiply);
 		}
 
-		DateFormat dateFormat = parameterConfig.getAnnotation(DateFormat.class);
+		DateFormat dateFormat = parameterConfig.getAnnotatedElement()
+				.getAnnotation(DateFormat.class);
 		if (dateFormat != null) {
 			return dateFormat(dateFormat, parameterConfig, name);
 		}
 
-		DefaultValue defaultValue = parameterConfig
+		DefaultValue defaultValue = parameterConfig.getAnnotatedElement()
 				.getAnnotation(DefaultValue.class);
 		if (defaultValue != null) {
 			Object value = getObject(
@@ -265,7 +268,7 @@ public abstract class AbstractChannel extends
 	}
 
 	protected Object dateFormat(DateFormat dateFormat,
-			ParameterConfig parameterConfig, String name) {
+			ParameterDescriptor parameterConfig, String name) {
 		String value = getString(name);
 		if (TypeUtils.isString(parameterConfig.getType())) {
 			return StringUtils.isEmpty(value) ? value : new SimpleDateFormat(
@@ -299,7 +302,7 @@ public abstract class AbstractChannel extends
 	}
 
 	protected Object bigDecimalMultiply(String name,
-			ParameterConfig parameterConfig,
+			ParameterDescriptor parameterConfig,
 			BigDecimalMultiply bigDecimalMultiply) {
 		String value = getString(name);
 		if (StringUtils.isEmpty(value)) {
@@ -326,7 +329,7 @@ public abstract class AbstractChannel extends
 
 		return NumberUtils.converPrimitive(bigDecimal, type);
 	}
-	
+
 	@Override
 	protected Value getDefaultValue(String key) {
 		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;

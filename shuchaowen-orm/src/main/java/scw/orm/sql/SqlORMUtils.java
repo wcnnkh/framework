@@ -68,7 +68,7 @@ public final class SqlORMUtils {
 	}
 
 	public static boolean isIndexColumn(FieldDefinition fieldDefinition) {
-		return fieldDefinition.getAnnotation(Index.class) != null;
+		return fieldDefinition.getAnnotatedElement().getAnnotation(Index.class) != null;
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {

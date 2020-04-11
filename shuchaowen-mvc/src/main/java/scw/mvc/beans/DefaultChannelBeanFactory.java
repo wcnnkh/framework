@@ -1,7 +1,7 @@
 package scw.mvc.beans;
 
 import scw.beans.BeanFactory;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
 
@@ -25,7 +25,7 @@ public class DefaultChannelBeanFactory extends AbstractChannelBeanFactory{
 	}
 
 	@Override
-	protected Object[] getBeanArgs(ParameterConfig[] parameterConfigs) {
+	protected Object[] getBeanArgs(ParameterDescriptor[] parameterConfigs) {
 		return MVCUtils.getParameterValues(channel, parameterConfigs);
 	}
 

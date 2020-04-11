@@ -30,7 +30,7 @@ public final class ResultFactoryActionFilter implements ActionFilter{
 			channel.getLogger().error("fail:{}, result={}", channel.toString(), JSONUtils.toJSONString(value));
 		}
 		
-		ResultFactory resultFactory = action.getAnnotation(ResultFactory.class);
+		ResultFactory resultFactory = action.getAnnotatedElement().getAnnotation(ResultFactory.class);
 		if (resultFactory != null && resultFactory.enable()) {
 			if (value != null && value instanceof Result) {
 				return value;

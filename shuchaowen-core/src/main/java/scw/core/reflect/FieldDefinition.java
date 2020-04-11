@@ -1,10 +1,11 @@
 package scw.core.reflect;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 
-import scw.core.annotation.AnnotationFactory;
-
-public interface FieldDefinition extends AnnotationFactory {
+public interface FieldDefinition {
+	AnnotatedElement getAnnotatedElement();
+	
 	Field getField();
 
 	Object get(Object obj) throws Exception;

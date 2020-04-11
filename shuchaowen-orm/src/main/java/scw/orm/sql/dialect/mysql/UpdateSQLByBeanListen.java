@@ -88,7 +88,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			}
 
 			Object value = mappingOperations.getter(context, beanFieldListen);
-			Counter counter = context.getColumn().getAnnotation(Counter.class);
+			Counter counter = context.getColumn().getAnnotatedElement().getAnnotation(Counter.class);
 			if (counter != null && TypeUtils.isNumber(field.getType())) {
 				Object oldValue = entry.getValue();
 				if (oldValue != null && value != null) {

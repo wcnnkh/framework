@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.json.JSONSupport;
 import scw.mvc.AbstractChannel;
@@ -33,7 +33,7 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public Object getParameter(ParameterConfig parameterConfig) {
+	public Object getParameter(ParameterDescriptor parameterConfig) {
 		if (Session.class == parameterConfig.getType()) {
 			return getRequest().getHttpSession();
 		} else if (Authorization.class == parameterConfig.getType()) {

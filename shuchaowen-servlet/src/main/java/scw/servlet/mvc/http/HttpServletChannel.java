@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import scw.beans.BeanFactory;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.json.JSONSupport;
 import scw.mvc.AsyncControl;
 import scw.mvc.http.AbstractHttpChannel;
@@ -23,7 +23,7 @@ public abstract class HttpServletChannel extends AbstractHttpChannel {
 	}
 
 	@Override
-	public Object getParameter(ParameterConfig parameterConfig) {
+	public Object getParameter(ParameterDescriptor parameterConfig) {
 		if (ServletRequest.class.isAssignableFrom(parameterConfig.getType())) {
 			return getHttpServletRequest();
 		} else if (ServletResponse.class.isAssignableFrom(parameterConfig.getType())) {

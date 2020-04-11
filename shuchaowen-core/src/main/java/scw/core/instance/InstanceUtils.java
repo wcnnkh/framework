@@ -24,7 +24,7 @@ import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.instance.support.ReflectionInstanceFactory;
 import scw.core.instance.support.ReflectionSingleInstanceFactory;
-import scw.core.parameter.ParameterConfig;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
@@ -322,8 +322,8 @@ public final class InstanceUtils {
 		return list.isEmpty() ? defaultValues : list;
 	}
 
-	private static boolean isProerptyType(ParameterConfig parameterConfig) {
-		PropertyParameter propertyParameter = parameterConfig
+	private static boolean isProerptyType(ParameterDescriptor parameterConfig) {
+		PropertyParameter propertyParameter = parameterConfig.getAnnotatedElement()
 				.getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
 			Class<?> type = parameterConfig.getType();
@@ -336,19 +336,19 @@ public final class InstanceUtils {
 	}
 
 	private static String getDefaultName(Class<?> clazz,
-			ParameterConfig parameterConfig) {
+			ParameterDescriptor parameterConfig) {
 		return clazz.getClass().getName() + "." + parameterConfig.getName();
 	}
 
 	private static Value getProperty(PropertyFactory propertyFactory,
-			Class<?> clazz, ParameterConfig parameterConfig) {
-		ParameterName parameterName = parameterConfig
+			Class<?> clazz, ParameterDescriptor parameterConfig) {
+		ParameterName parameterName = parameterConfig.getAnnotatedElement()
 				.getAnnotation(ParameterName.class);
 		Value value = propertyFactory
 				.get(parameterName == null ? getDefaultName(clazz,
 						parameterConfig) : parameterName.value());
 		if (value == null) {
-			DefaultValue defaultValue = parameterConfig
+			DefaultValue defaultValue = parameterConfig.getAnnotatedElement()
 					.getAnnotation(DefaultValue.class);
 			if (defaultValue != null) {
 				value = new StringValue(defaultValue.value());
@@ -356,7 +356,7 @@ public final class InstanceUtils {
 		}
 
 		if (value != null) {
-			ResourceParameter resourceParameter = parameterConfig
+			ResourceParameter resourceParameter = parameterConfig.getAnnotatedElement()
 					.getAnnotation(ResourceParameter.class);
 			if (resourceParameter != null) {
 				if (!ResourceUtils.getResourceOperations().isExist(
@@ -370,8 +370,8 @@ public final class InstanceUtils {
 
 	private static String getInstanceName(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterConfig parameterConfig) {
-		ParameterName parameterName = parameterConfig
+			ParameterDescriptor parameterConfig) {
+		ParameterName parameterName = parameterConfig.getAnnotatedElement()
 				.getAnnotation(ParameterName.class);
 		if (parameterName != null
 				&& StringUtils.isNotEmpty(parameterName.value())) {
@@ -398,14 +398,14 @@ public final class InstanceUtils {
 
 	public static boolean isAuto(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterConfig[] parameterConfigs, Object logFirstParameter) {
+			ParameterDescriptor[] parameterConfigs, Object logFirstParameter) {
 		if (parameterConfigs.length == 0) {
 			return true;
 		}
 
 		for (int i = 0; i < parameterConfigs.length; i++) {
-			ParameterConfig parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(parameterConfig,
+			ParameterDescriptor parameterConfig = parameterConfigs[i];
+			boolean require = !AnnotationUtils.isNullable(parameterConfig.getAnnotatedElement(),
 					false);
 			if (!require) {
 				continue;
@@ -448,15 +448,15 @@ public final class InstanceUtils {
 
 	public static Object[] getAutoArgs(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterConfig[] parameterConfigs) {
+			ParameterDescriptor[] parameterConfigs) {
 		if (parameterConfigs.length == 0) {
 			return new Object[0];
 		}
 
 		Object[] args = new Object[parameterConfigs.length];
 		for (int i = 0; i < parameterConfigs.length; i++) {
-			ParameterConfig parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(parameterConfig,
+			ParameterDescriptor parameterConfig = parameterConfigs[i];
+			boolean require = !AnnotationUtils.isNullable(parameterConfig.getAnnotatedElement(),
 					false);
 			if (isProerptyType(parameterConfig)) {
 				Value value = getProperty(propertyFactory, clazz,

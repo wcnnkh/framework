@@ -1,6 +1,7 @@
 package scw.beans.method;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanDefinition;
@@ -19,7 +20,7 @@ public class MethodBeanConfiguration extends AbstractBeanConfiguration {
 	
 	public MethodBeanConfiguration(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, String packageNames) throws Exception {
-		for (Class<?> clz : ClassUtils.getClassSet(packageNames, Constants.SYSTEM_PACKAGE_NAME)) {
+		for (Class<?> clz : ClassUtils.getClassSet(Arrays.asList(packageNames, Constants.SYSTEM_PACKAGE_NAME))) {
 			if(!ReflectionUtils.isPresent(clz)){
 				if(logger.isDebugEnabled()){
 					logger.debug("not support class:{}", clz);

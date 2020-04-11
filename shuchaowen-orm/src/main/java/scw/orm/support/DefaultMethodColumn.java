@@ -1,14 +1,11 @@
 package scw.orm.support;
 
-import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.LinkedList;
 
-import scw.core.annotation.AnnotationFactory;
-import scw.core.annotation.MultipleAnnotationFactory;
-import scw.core.annotation.SimpleAnnotationFactory;
+import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.UnsupportedException;
@@ -21,7 +18,7 @@ public class DefaultMethodColumn extends AbstractColumn implements MethodColumn 
 	private Method setter;
 	private Field field;
 	private String name;
-	private AnnotationFactory annotationFactory;
+	private AnnotatedElement annotatedElement;
 
 	public DefaultMethodColumn(Class<?> declaringClass, Method getter, Method setter, Field field, String name) {
 		super(declaringClass);
@@ -29,27 +26,27 @@ public class DefaultMethodColumn extends AbstractColumn implements MethodColumn 
 		this.setter = setter;
 		this.field = field;
 		this.name = name;
-		LinkedList<AnnotationFactory> annotationFactories = new LinkedList<AnnotationFactory>();
 		if (field != null) {
 			ReflectionUtils.setAccessibleField(field);
-			annotationFactories.add(new SimpleAnnotationFactory(field));
 		}
 
 		if (setter != null) {
 			ReflectionUtils.setAccessibleMethod(setter);
-			annotationFactories.add(new SimpleAnnotationFactory(setter));
 		}
 
 		if (getter != null) {
 			ReflectionUtils.setAccessibleMethod(getter);
-			annotationFactories.add(new SimpleAnnotationFactory(getter));
 		}
-
-		this.annotationFactory = new MultipleAnnotationFactory(annotationFactories);
-		scw.orm.annotation.ColumnName columnName = getAnnotation(scw.orm.annotation.ColumnName.class);
+		
+		this.annotatedElement = MultiAnnotatedElement.forAnnotatedElements(true, field, getter, setter);
+		scw.orm.annotation.ColumnName columnName = getAnnotatedElement().getAnnotation(scw.orm.annotation.ColumnName.class);
 		if (columnName != null && !StringUtils.isEmpty(columnName.value())) {
 			this.name = columnName.value();
 		}
+	}
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return annotatedElement;
 	}
 
 	public Field getField() {
@@ -137,10 +134,6 @@ public class DefaultMethodColumn extends AbstractColumn implements MethodColumn 
 			}
 		}
 		throw createNotSupportException();
-	}
-
-	public <T extends Annotation> T getAnnotation(Class<T> type) {
-		return annotationFactory.getAnnotation(type);
 	}
 
 	public Method getGetter() {

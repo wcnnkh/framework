@@ -93,7 +93,7 @@ public class CreateTableSql extends MysqlDialectSql {
 				tableFieldContext.getNotPrimaryKeys().iterator());
 		while (iterator.hasNext()) {
 			MappingContext context = iterator.next();
-			Index index = context.getColumn().getAnnotation(Index.class);
+			Index index = context.getColumn().getAnnotatedElement().getAnnotation(Index.class);
 			if (index == null) {
 				continue;
 			}
@@ -184,7 +184,7 @@ public class CreateTableSql extends MysqlDialectSql {
 
 	private static SqlType getSqlType(scw.orm.Column col, SqlTypeFactory sqlTypeFactory) {
 		String type = null;
-		Column column = col.getAnnotation(Column.class);
+		Column column = col.getAnnotatedElement().getAnnotation(Column.class);
 		if (column != null) {
 			type = column.type();
 		}

@@ -2,11 +2,12 @@ package scw.mvc.action.logger;
 
 import java.util.Map;
 
-import scw.core.parameter.DefaultParameterConfig;
+import scw.core.parameter.DefaultParameterDescriptor;
 import scw.json.JSONUtils;
 import scw.mvc.Channel;
 import scw.mvc.Request;
 import scw.mvc.action.Action;
+import scw.mvc.action.http.HttpAction;
 import scw.mvc.action.logger.annotation.ActionLogConfig;
 import scw.mvc.http.HttpRequest;
 
@@ -17,7 +18,7 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 			Channel channel);
 
 	protected String getAttirubteValue(Channel channel, String name) {
-		return (String) channel.getParameter(new DefaultParameterConfig(name,
+		return (String) channel.getParameter(new DefaultParameterDescriptor(name,
 				null, String.class, String.class));
 	}
 
@@ -29,10 +30,17 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 
 		return null;
 	}
-
+	
+	protected String getController(Action action){
+		if(action instanceof HttpAction){
+			return ((HttpAction) action).getController();
+		}
+		return null;
+	}
+	
 	public ActionLog createActionLog(Action action, Channel channel,
 			Object response, Throwable error) {
-		ActionLogConfig logConfig = action.getAnnotation(ActionLogConfig.class);
+		ActionLogConfig logConfig = action.getAnnotatedElement().getAnnotation(ActionLogConfig.class);
 		if (logConfig != null && !logConfig.enable()) {
 			return null;
 		}
@@ -40,7 +48,7 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 		Map<String, String> attributeMap = getAttributeMap(action, channel);
 		ActionLog log = new ActionLog();
 		log.setAttributeMap(attributeMap);
-		log.setController(action.getController());
+		log.setController(getController(action));
 		log.setIdentification(getIdentification(action, channel));
 		log.setRequestController(channel.getRequest().getControllerPath());
 		if (channel.getRequest() instanceof HttpRequest) {

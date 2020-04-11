@@ -23,7 +23,7 @@ public class WsServletContainerInitializerConfiguration implements ServletContai
 	}
 
 	public Set<Class<?>> getClassSet() {
-		return ClassUtils.getClassSet(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName());
+		return ClassUtils.getClassSet(Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName()));
 	}
 
 

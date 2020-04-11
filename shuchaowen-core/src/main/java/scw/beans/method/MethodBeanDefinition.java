@@ -41,7 +41,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 
 	public boolean isInstance() {
 		return InstanceUtils.isAuto(beanFactory, propertyFactory, getType(),
-				ParameterUtils.getParameterConfigs(method), method);
+				ParameterUtils.getParameterDescriptors(method), method);
 	}
 
 	public <T> T create() {
@@ -50,7 +50,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 		}
 
 		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory, getType(),
-				ParameterUtils.getParameterConfigs(method));
+				ParameterUtils.getParameterDescriptors(method));
 		return (T) invoke(method, args);
 	}
 

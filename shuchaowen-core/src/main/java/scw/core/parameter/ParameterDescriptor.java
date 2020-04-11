@@ -1,10 +1,11 @@
 package scw.core.parameter;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
-import scw.core.annotation.AnnotationFactory;
-
-public interface ParameterConfig extends AnnotationFactory{
+public interface ParameterDescriptor{
+	AnnotatedElement getAnnotatedElement();
+	
 	String getName();
 
 	Class<?> getType();
