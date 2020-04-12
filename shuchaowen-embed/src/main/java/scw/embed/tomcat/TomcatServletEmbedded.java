@@ -22,6 +22,7 @@ import org.apache.tomcat.util.descriptor.web.FilterMap;
 import scw.beans.BeanFactory;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -38,6 +39,7 @@ import scw.logger.LoggerUtils;
 import scw.servlet.MultiFilter;
 import scw.util.value.property.PropertyFactory;
 
+@Configuration(order=Integer.MIN_VALUE + 1000)
 public final class TomcatServletEmbedded implements ServletEmbedded {
 	private static Logger logger = LoggerUtils
 			.getLogger(TomcatServletEmbedded.class);
@@ -95,8 +97,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		addFilter(context, new ServletRootFilterConfiguration(beanFactory,
 				propertyFactory));
 		for (FilterConfiguration filterConfiguration : InstanceUtils
-				.getConfigurationList(FilterConfiguration.class,
-						beanFactory)) {
+				.getConfigurationList(FilterConfiguration.class, beanFactory)) {
 			addFilter(context, filterConfiguration);
 		}
 		return context;
@@ -188,7 +189,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 
 	private void configureJSP(Context context, PropertyFactory propertyFactory) {
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet")) {
-			ServletContainerInitializer containerInitializer = InstanceUtils
+			ServletContainerInitializer containerInitializer = InstanceUtils.REFLECTION_INSTANCE_FACTORY
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
 				context.addServletContainerInitializer(containerInitializer,

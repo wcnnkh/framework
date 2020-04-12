@@ -1,17 +1,22 @@
 package scw.orm.sql;
 
-import scw.core.instance.SimpleCacheNoArgsInstanceFactory;
+import scw.core.instance.InstanceUtils;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.FieldSetterListenUtils;
+import scw.orm.ORMInstanceFactory;
 import scw.orm.sql.annotation.Table;
 
-public final class TableInstanceFactory extends SimpleCacheNoArgsInstanceFactory {
+@Configuration(order=Integer.MIN_VALUE)
+public final class TableInstanceFactory implements ORMInstanceFactory {
+
 	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getInstance(Class<? extends T> clazz) {
+	public <T> T newInstance(Class<? extends T> clazz) {
 		Table table = clazz.getAnnotation(Table.class);
 		if (table != null) {
-			return (T) FieldSetterListenUtils.newFieldSetterListenInstance(clazz);
+			return (T) FieldSetterListenUtils
+					.newFieldSetterListenInstance(clazz);
 		}
-		return super.getInstance(clazz);
+
+		return InstanceUtils.REFLECTION_INSTANCE_FACTORY.getInstance(clazz);
 	}
 }

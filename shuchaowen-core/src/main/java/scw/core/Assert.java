@@ -158,7 +158,7 @@ public abstract class Assert {
 	 * @param expression false的情况下会抛出异常
 	 * @param name
 	 */
-	public static void isRequiredArgument(boolean expression, String name) {
+	public static void requiredArgument(boolean expression, String name) {
 		isTrue(expression, "[Assertion failed] - [" + name + "] argument is required");
 	}
 

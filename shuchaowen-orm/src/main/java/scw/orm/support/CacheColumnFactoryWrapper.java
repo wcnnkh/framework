@@ -1,16 +1,16 @@
 package scw.orm.support;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import scw.orm.Column;
 import scw.orm.ColumnFactory;
+import scw.util.ConcurrentReferenceHashMap;
 
-public final class CacheColumnFactory implements ColumnFactory {
-	private Map<Class<?>, Map<String, ? extends Column>> cacheMap = new HashMap<Class<?>, Map<String, ? extends Column>>();
+public class CacheColumnFactoryWrapper implements ColumnFactory {
+	private Map<Class<?>, Map<String, ? extends Column>> cacheMap = new ConcurrentReferenceHashMap<Class<?>, Map<String, ? extends Column>>();
 	private ColumnFactory targetColumnFactory;
-
-	public CacheColumnFactory(ColumnFactory columnFactory) {
+	
+	public CacheColumnFactoryWrapper(ColumnFactory columnFactory) {
 		this.targetColumnFactory = columnFactory;
 	}
 

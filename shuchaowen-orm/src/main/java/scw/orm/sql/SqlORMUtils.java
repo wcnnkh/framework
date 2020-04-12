@@ -9,58 +9,37 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.StringUtils;
 import scw.lang.UnsupportedException;
-import scw.orm.ColumnFactory;
-import scw.orm.Filter;
 import scw.orm.sql.annotation.Index;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
-import scw.orm.sql.support.DefaultSqlFilter;
-import scw.orm.sql.support.DefaultSqlMapper;
-import scw.orm.sql.support.DefaultTableNameMapping;
-import scw.orm.sql.support.TableColumnFactory;
-import scw.orm.support.CacheColumnFactory;
 import scw.sql.Sql;
 
-@SuppressWarnings("unchecked")
 public final class SqlORMUtils {
-	private static final SqlMapper SQL_MAPPER;
+	private static final TableNameMapping TABLE_NAME_MAPPING = InstanceUtils
+			.getConfiguration(TableNameMapping.class,
+					InstanceUtils.REFLECTION_INSTANCE_FACTORY,
+					GlobalPropertyFactory.getInstance());
+	private static final SqlColumnFactory SQL_COLUMN_FACTORY = InstanceUtils.getConfiguration(SqlColumnFactory.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY, GlobalPropertyFactory.getInstance());
+
+	private static final SqlMapper SQL_MAPPER = InstanceUtils.getConfiguration(
+			SqlMapper.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY,
+			GlobalPropertyFactory.getInstance());
 
 	private SqlORMUtils() {
 	};
 
-	static {
-		String sqlMappingOperationsName = GlobalPropertyFactory.getInstance().getString("orm.sql.mapper");
-		if (StringUtils.isEmpty(sqlMappingOperationsName)) {
-			Collection<Filter> filters = new LinkedList<Filter>();
-			filters.addAll(InstanceUtils.autoNewInstancesBySystemProperty(Filter.class, "orm.sql.filters",
-					Collections.EMPTY_LIST));
-			filters.add(new DefaultSqlFilter());
-			NoArgsInstanceFactory noArgsInstanceFactory = InstanceUtils.autoNewInstanceBySystemProperty(
-					NoArgsInstanceFactory.class, "orm.sql.table.instance.factory", new TableInstanceFactory());
-			TableNameMapping tableNameMapping = InstanceUtils.autoNewInstanceBySystemProperty(TableNameMapping.class,
-					"orm.sql.table.name.mapping", new DefaultTableNameMapping());
-			SQL_MAPPER = new DefaultSqlMapper(tableNameMapping,
-					new CacheColumnFactory(InstanceUtils.autoNewInstanceBySystemProperty(ColumnFactory.class,
-							"orm.sql.column.factory", new TableColumnFactory())),
-					filters, noArgsInstanceFactory);
-		} else {
-			try {
-				SQL_MAPPER = InstanceUtils.autoNewInstance(sqlMappingOperationsName);
-			} catch (Exception e) {
-				throw new RuntimeException(e);
-			}
-		}
+	public static TableNameMapping getTableNameMapping() {
+		return TABLE_NAME_MAPPING;
+	}
+
+	public static SqlColumnFactory getSqlColumnFactory() {
+		return SQL_COLUMN_FACTORY;
 	}
 
 	public static final SqlMapper getSqlMapper() {
@@ -72,16 +51,22 @@ public final class SqlORMUtils {
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {
-		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
-				|| Date.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
-				|| Time.class.isAssignableFrom(type) || Timestamp.class.isAssignableFrom(type)
-				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
-				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
-				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
+		return ClassUtils.isPrimitiveOrWrapper(type)
+				|| String.class.isAssignableFrom(type)
+				|| Date.class.isAssignableFrom(type)
+				|| java.util.Date.class.isAssignableFrom(type)
+				|| Time.class.isAssignableFrom(type)
+				|| Timestamp.class.isAssignableFrom(type)
+				|| Array.class.isAssignableFrom(type)
+				|| Blob.class.isAssignableFrom(type)
+				|| Clob.class.isAssignableFrom(type)
+				|| BigDecimal.class.isAssignableFrom(type)
+				|| Reader.class.isAssignableFrom(type)
+				|| NClob.class.isAssignableFrom(type);
 	}
 
-	public static Sql toSql(OperationType operationType, SqlDialect sqlDialect, Class<?> clazz, Object bean,
-			String tableName) {
+	public static Sql toSql(OperationType operationType, SqlDialect sqlDialect,
+			Class<?> clazz, Object bean, String tableName) {
 		switch (operationType) {
 		case SAVE:
 			return sqlDialect.toInsertSql(bean, clazz, tableName);

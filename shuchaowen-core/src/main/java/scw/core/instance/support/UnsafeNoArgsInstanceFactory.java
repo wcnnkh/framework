@@ -2,9 +2,11 @@ package scw.core.instance.support;
 
 import scw.core.instance.InstanceException;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.UnsafeUtils;
 import scw.lang.UnsupportedException;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	static {
 		if (!UnsafeUtils.isSupport()) {

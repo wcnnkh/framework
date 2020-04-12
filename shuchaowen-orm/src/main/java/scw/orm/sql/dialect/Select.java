@@ -70,7 +70,7 @@ public abstract class Select extends MysqlDialectSql {
 	}
 
 	public String getTableName(Class<?> tableClass) {
-		return sqlDialect.getSqlMapper().getTableName(tableClass);
+		return sqlDialect.getSqlMapper().getTableNameMapping().getTableName(tableClass);
 	}
 
 	protected void addSelectTable(String tableName) {

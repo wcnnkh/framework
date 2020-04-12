@@ -15,25 +15,17 @@ import java.util.jar.JarFile;
 
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 
 public class ScanningPackage {
-	protected static Logger logger = LoggerUtils.getLogger(ScanningPackage.class);
-	
 	public Set<Class<?>> getClassList(String packageName,
 			ClassLoader classLoader, boolean initialize) {
 		Set<Class<?>> classes;
-		long t = System.currentTimeMillis();
 		if (!StringUtils.hasText(packageName)) {
 			classes = getClassesDirectoryList(classLoader, initialize);
 		}else{
 			classes = new LinkedHashSet<Class<?>>();
 			appendClassesByClassLoader(packageName, classes, classLoader,
 					initialize);
-		}
-		if(logger.isDebugEnabled()){
-			logger.debug("scanning package [{}] use time:{}, size={}", packageName, System.currentTimeMillis() - t, classes.size());
 		}
 		return classes;
 	}

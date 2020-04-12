@@ -1,5 +1,6 @@
 package scw.orm.sql.support;
 
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.json.JSONUtils;
@@ -13,6 +14,7 @@ import scw.orm.SetterFilterChain;
 import scw.orm.sql.SqlORMUtils;
 import scw.util.EnumUtils;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class DefaultSqlFilter implements Filter {
 	public Object toSqlField(Column column, Object value) {
 		if (column.getType().isEnum()) {

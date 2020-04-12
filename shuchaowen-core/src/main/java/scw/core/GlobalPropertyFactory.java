@@ -11,6 +11,7 @@ import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
 import scw.io.resource.DefaultResourceLookup;
 import scw.io.resource.PropertyFactoryMultiSuffixResourceOperations;
+import scw.io.resource.ResourceLookup;
 import scw.io.resource.ResourceOperations;
 import scw.util.FormatUtils;
 import scw.util.MultiEnumeration;
@@ -38,16 +39,11 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 			setWorkPath(getDefaultWorkPath());
 		}
 
-		String path = getString("scw.properties.private");
-		if (path == null) {
-			path = "/private.properties";
-		}
-
-		ResourceOperations resourceOperations = new PropertyFactoryMultiSuffixResourceOperations(
-				new DefaultResourceLookup(getWorkPath(), false, this), this);
-		if (resourceOperations.isExist(path)) {
-			Properties properties = resourceOperations
-					.getProperties(path, this);
+		String path = getValue("scw.properties.private", String.class,
+				"/private.properties");
+		if (getResourceOperations().isExist(path)) {
+			Properties properties = getResourceOperations().getProperties(path,
+					this);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {
@@ -64,8 +60,16 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 		}
 	}
 
-	public Value put(String key, String value) {
-		return put(key, new StringValue(value));
+	public ResourceOperations getResourceOperations() {
+		ResourceLookup resourceLookup = new DefaultResourceLookup(
+				getWorkPath(), false, this);
+		return new PropertyFactoryMultiSuffixResourceOperations(resourceLookup,
+				this);
+	}
+
+	public Value put(String key, Object value) {
+		return put(key,
+				new StringValue(value == null ? null : value.toString()));
 	}
 
 	public Value remove(String key) {
@@ -85,6 +89,7 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 	}
 
 	public Value get(String key) {
+		Assert.requiredArgument(key != null, "key");
 		Value v = properties.get(key);
 		if (v == null) {
 			v = SystemPropertyFactory.getInstance().get(key);
@@ -218,6 +223,7 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 
 	/**
 	 * 可能会返回空
+	 * 
 	 * @return
 	 */
 	public String getBasePackageName() {

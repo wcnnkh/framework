@@ -9,7 +9,6 @@ import java.util.Properties;
 
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
-import scw.core.utils.StringUtils;
 import scw.io.resource.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
@@ -29,24 +28,25 @@ public class LoggerLevelUtils {
 			} else if (key.equalsIgnoreCase("logger.rootPath")) {
 				value = GlobalPropertyFactory.getInstance().getWorkPath();
 			}
-			return value == null ? Constants.PROPERTY_FACTORY.get(key) : new StringValue(value);
+			return value == null ? Constants.PROPERTY_FACTORY.get(key)
+					: new StringValue(value);
 		};
 	};
 
-	private static final Level DEFAULT_LEVEL;
+	private static final Level DEFAULT_LEVEL = GlobalPropertyFactory
+			.getInstance().getValue(Level.class.getName(), Level.class,
+					Level.INFO);
 
 	static {
-		String levelName = GlobalPropertyFactory.getInstance().getString("scw.logger.level");
-		DEFAULT_LEVEL = StringUtils.isEmpty(levelName) ? Level.INFO : Level.valueOf(levelName);
-
-		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance().getString("scw.logger.level.config");
-		if (loggerEnablePropertiePath == null) {
-			loggerEnablePropertiePath = "/logger-level.properties";
-		}
-
-		if (ResourceUtils.getResourceOperations().isExist(loggerEnablePropertiePath)) {
-			FormatUtils.info(LoggerLevelUtils.class, "loading " + loggerEnablePropertiePath);
-			Properties properties = ResourceUtils.getResourceOperations().getProperties(loggerEnablePropertiePath);
+		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance()
+				.getValue("scw.logger.level.config", String.class,
+						"/logger-level.properties");
+		if (ResourceUtils.getResourceOperations().isExist(
+				loggerEnablePropertiePath)) {
+			FormatUtils.info(LoggerLevelUtils.class, "loading "
+					+ loggerEnablePropertiePath);
+			Properties properties = ResourceUtils.getResourceOperations()
+					.getProperties(loggerEnablePropertiePath);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {
@@ -63,7 +63,8 @@ public class LoggerLevelUtils {
 					continue;
 				}
 
-				LOGGER_LEVEL_LIST.add(new SimpleKeyValuePair<String, Level>(key.toString(), level));
+				LOGGER_LEVEL_LIST.add(new SimpleKeyValuePair<String, Level>(key
+						.toString(), level));
 			}
 		}
 	}
@@ -73,7 +74,8 @@ public class LoggerLevelUtils {
 	}
 
 	public static Level getLevel(String name) {
-		ListIterator<KeyValuePair<String, Level>> iterator = LOGGER_LEVEL_LIST.listIterator(LOGGER_LEVEL_LIST.size());
+		ListIterator<KeyValuePair<String, Level>> iterator = LOGGER_LEVEL_LIST
+				.listIterator(LOGGER_LEVEL_LIST.size());
 		while (iterator.hasPrevious()) {
 			KeyValuePair<String, Level> keyValuePair = iterator.previous();
 			if (keyValuePair == null) {

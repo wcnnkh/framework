@@ -3,6 +3,7 @@ package scw.core.parameter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.InstanceFactory;
@@ -14,9 +15,9 @@ import scw.core.utils.StringUtils;
 public final class ParameterUtils {
 	private static final LocalVariableTableParameterNameDiscoverer LVTPND = new LocalVariableTableParameterNameDiscoverer();
 	private static final ParameterDescriptorFactory PARAMETER_DESCRIPTOR_FACTORY = InstanceUtils
-			.autoNewInstanceBySystemProperty(ParameterDescriptorFactory.class,
-					"scw.parameter.descriptor.factory",
-					new DefaultParameterDescriptorFactory());
+			.getConfiguration(ParameterDescriptorFactory.class,
+					InstanceUtils.REFLECTION_INSTANCE_FACTORY,
+					GlobalPropertyFactory.getInstance());
 
 	private ParameterUtils() {
 	};
@@ -27,7 +28,8 @@ public final class ParameterUtils {
 
 	public static ParameterDescriptor[] getParameterDescriptors(
 			Constructor<?> constructor) {
-		return getParameterDescriptorFactory().getParameterDescriptors(constructor);
+		return getParameterDescriptorFactory().getParameterDescriptors(
+				constructor);
 	}
 
 	public static ParameterDescriptor[] getParameterDescriptors(Method method) {
@@ -63,23 +65,23 @@ public final class ParameterUtils {
 	}
 
 	public static Object createObjectByParameter(
-			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type)
-			throws Exception {
+			ParameterFactory<ParameterDescriptor> parameterFactory,
+			Class<?> type) throws Exception {
 		return createObjectByParameter(parameterFactory, type, null);
 	}
 
 	public static Object createObjectByParameter(
 			InstanceFactory instanceFactory,
 			ParameterDescriptorFactory parameterConfigFactory,
-			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type)
-			throws Exception {
+			ParameterFactory<ParameterDescriptor> parameterFactory,
+			Class<?> type) throws Exception {
 		return createObjectByParameter(instanceFactory, parameterConfigFactory,
 				parameterFactory, type, null);
 	}
 
 	public static Object createObjectByParameter(
-			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type,
-			String name) throws Exception {
+			ParameterFactory<ParameterDescriptor> parameterFactory,
+			Class<?> type, String name) throws Exception {
 		return createObjectByParameterInternal(
 				InstanceUtils.REFLECTION_INSTANCE_FACTORY,
 				getParameterDescriptorFactory(), parameterFactory, type,
@@ -90,8 +92,8 @@ public final class ParameterUtils {
 	public static Object createObjectByParameter(
 			InstanceFactory instanceFactory,
 			ParameterDescriptorFactory parameterDescriptorFactory,
-			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type,
-			String name) throws Exception {
+			ParameterFactory<ParameterDescriptor> parameterFactory,
+			Class<?> type, String name) throws Exception {
 		return createObjectByParameterInternal(instanceFactory,
 				parameterDescriptorFactory, parameterFactory, type,
 				StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name
@@ -101,8 +103,8 @@ public final class ParameterUtils {
 	private static Object createObjectByParameterInternal(
 			InstanceFactory instanceFactory,
 			ParameterDescriptorFactory parameterConfigFactory,
-			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type,
-			String prefix) throws Exception {
+			ParameterFactory<ParameterDescriptor> parameterFactory,
+			Class<?> type, String prefix) throws Exception {
 		if (!instanceFactory.isInstance(type)) {
 			return null;
 		}
@@ -116,8 +118,8 @@ public final class ParameterUtils {
 	private static void setParameter(Object instance,
 			InstanceFactory instanceFactory,
 			ParameterDescriptorFactory parameterConfigFactory,
-			ParameterFactory<ParameterDescriptor> parameterFactory, Class<?> type,
-			String prefix) throws Exception {
+			ParameterFactory<ParameterDescriptor> parameterFactory,
+			Class<?> type, String prefix) throws Exception {
 		for (FieldParameterDescriptor parameterConfig : parameterConfigFactory
 				.getParameterDescriptors(type)) {
 			if (!parameterConfig.getType().isPrimitive()

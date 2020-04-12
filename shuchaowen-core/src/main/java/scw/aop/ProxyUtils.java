@@ -4,22 +4,17 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
-import scw.aop.support.BuiltInCglibProxyAdapter;
-import scw.aop.support.JdkProxyAdapter;
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 
 public final class ProxyUtils {
 	private static final MultipleProxyAdapter PROXY_ADAPTER = new MultipleProxyAdapter();
 
 	static {
-		@SuppressWarnings("unchecked")
-		Collection<ProxyAdapter> proxyAdapters = InstanceUtils.autoNewInstancesBySystemProperty(ProxyAdapter.class,
-				"aop.proxy.adapter", Collections.EMPTY_LIST);
-		PROXY_ADAPTER.addAll(proxyAdapters);
-		PROXY_ADAPTER.add(new JdkProxyAdapter());
-		PROXY_ADAPTER.add(new BuiltInCglibProxyAdapter());
+		PROXY_ADAPTER.addAll(InstanceUtils.getConfigurationList(
+				ProxyAdapter.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY,
+				GlobalPropertyFactory.getInstance()));
 	}
 
 	private ProxyUtils() {
@@ -34,7 +29,8 @@ public final class ProxyUtils {
 	}
 
 	private static String ignoreToString(Object obj) {
-		return obj.getClass().getName() + "@" + Integer.toHexString(ignoreHashCode(obj));
+		return obj.getClass().getName() + "@"
+				+ Integer.toHexString(ignoreHashCode(obj));
 	}
 
 	/**
@@ -54,7 +50,8 @@ public final class ProxyUtils {
 			}
 		}
 
-		if (args != null && args.length == 1 && method.getName().equals("equals")) {
+		if (args != null && args.length == 1
+				&& method.getName().equals("equals")) {
 			return obj == args[0];
 		}
 		return null;
@@ -69,8 +66,8 @@ public final class ProxyUtils {
 	 * @param filters
 	 * @return
 	 */
-	public static Proxy proxyInstance(Class<?> clazz, Object instance, Class<?>[] interfaces,
-			Collection<? extends Filter> filters) {
+	public static Proxy proxyInstance(Class<?> clazz, Object instance,
+			Class<?>[] interfaces, Collection<? extends Filter> filters) {
 		return proxyInstance(clazz, instance, interfaces, filters, null);
 	}
 
@@ -84,13 +81,15 @@ public final class ProxyUtils {
 	 * @param filterChain
 	 * @return
 	 */
-	public static Proxy proxyInstance(Class<?> clazz, Object instance, Class<?>[] interfaces,
-			Collection<? extends Filter> filters, FilterChain filterChain) {
-		return getProxyAdapter().proxy(clazz, interfaces, Arrays.asList(new InstanceFilter(instance)),
+	public static Proxy proxyInstance(Class<?> clazz, Object instance,
+			Class<?>[] interfaces, Collection<? extends Filter> filters,
+			FilterChain filterChain) {
+		return getProxyAdapter().proxy(clazz, interfaces,
+				Arrays.asList(new InstanceFilter(instance)),
 				new DefaultFilterChain(filters, filterChain));
 	}
 
-	private static final class InstanceFilter implements Filter, Serializable{
+	private static final class InstanceFilter implements Filter, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final Object instnace;
 
@@ -98,10 +97,11 @@ public final class ProxyUtils {
 			this.instnace = instance;
 		}
 
-		public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+		public Object doFilter(Invoker invoker, Object proxy,
+				Class<?> targetClass, Method method, Object[] args,
 				FilterChain filterChain) throws Throwable {
-			return filterChain.doFilter(
-					instnace == null ? new EmptyInvoker(method) : new ReflectInvoker(instnace, method), proxy,
+			return filterChain.doFilter(instnace == null ? new EmptyInvoker(
+					method) : new ReflectInvoker(instnace, method), proxy,
 					targetClass, method, args);
 		}
 	}

@@ -55,7 +55,7 @@ public abstract class AbstractMapper implements Mapper {
 	@SuppressWarnings("unchecked")
 	public <T, M extends Mapper> T create(MappingContext superContext, Class<T> clazz, SetterMapping<M> setterMapping)
 			throws ORMException {
-		T bean = newInstance(clazz);
+		T bean = getInstanceFactory().newInstance(clazz);
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			Map<String, ? extends Column> map = getColumnMap(clz);

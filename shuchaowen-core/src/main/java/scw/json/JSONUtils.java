@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.SystemPropertyUtils;
-import scw.json.support.BuiltinGsonSupport;
 import scw.util.FormatUtils;
 
 public final class JSONUtils {
@@ -15,21 +13,12 @@ public final class JSONUtils {
 	/**
 	 * 默认的json序列化工具
 	 */
-	public static final JSONSupport DEFAULT_JSON_SUPPORT;
+	public static final JSONSupport DEFAULT_JSON_SUPPORT = InstanceUtils.getConfiguration(JSONSupport.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY);
 
 	static {
-		JSONSupport jSONSupport = null;
-		String[] supportClass = SystemPropertyUtils.getArrayProperty(String.class, "json.support.class",
-				new String[] { "scw.json.support.FastJsonSupport" });
-		for (String name : supportClass) {
-			jSONSupport = InstanceUtils.getInstance(name);
-			if (jSONSupport != null) {
-				break;
-			}
+		if(DEFAULT_JSON_SUPPORT != null){
+			FormatUtils.info(JSONUtils.class, "default json parse：{}", DEFAULT_JSON_SUPPORT.getClass().getName());
 		}
-
-		DEFAULT_JSON_SUPPORT = jSONSupport == null ? new BuiltinGsonSupport() : jSONSupport;
-		FormatUtils.info(JSONUtils.class, "default json parse：{}", DEFAULT_JSON_SUPPORT.getClass().getName());
 	}
 
 	public static String toJSONString(Object obj) {

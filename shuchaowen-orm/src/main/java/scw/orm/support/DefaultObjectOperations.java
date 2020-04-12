@@ -12,24 +12,37 @@ import java.util.Map;
 import java.util.Set;
 
 import scw.core.Assert;
+import scw.core.GlobalPropertyFactory;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.lang.AlreadyExistsException;
 import scw.lang.ParameterVerifyException;
+import scw.orm.ColumnFactory;
 import scw.orm.Mapper;
 import scw.orm.MappingContext;
 import scw.orm.ORMException;
+import scw.orm.ORMUtils;
 import scw.orm.ObjectRelationalMapping;
 
+@Configuration(order = Integer.MIN_VALUE)
 @SuppressWarnings("unchecked")
 public class DefaultObjectOperations implements ObjectOperations {
 	private Mapper mapper;
+
+	public DefaultObjectOperations() {
+		ColumnFactory columnFactory = new CacheColumnFactoryWrapper(
+				new MethodColumnFactory(GlobalPropertyFactory.getInstance()));
+		this.mapper = new DefaultMapper(columnFactory, ORMUtils.getFilters(),
+				ORMUtils.getFilters(), ORMUtils.getInstanceFactory());
+	}
 
 	public DefaultObjectOperations(Mapper mapper) {
 		this.mapper = mapper;
 	}
 
-	public Map<String, Object> getColumnValueMapExcludeName(ObjectRelationalMapping objectRelationalMapping, Object obj,
+	public Map<String, Object> getColumnValueMapExcludeName(
+			ObjectRelationalMapping objectRelationalMapping, Object obj,
 			Set<String> excludeNames) {
 		if (obj == null) {
 			return null;
@@ -45,13 +58,15 @@ public class DefaultObjectOperations implements ObjectOperations {
 				continue;
 			}
 
-			map.put(mappingContext.getColumn().getName(), getColumnValue(obj, mappingContext));
+			map.put(mappingContext.getColumn().getName(),
+					getColumnValue(obj, mappingContext));
 		}
 		return map;
 	}
 
-	public Map<String, Object> getColumnValueMapEffectiveName(ObjectRelationalMapping objectRelationalMapping,
-			Object obj, Collection<String> effectiveNames) {
+	public Map<String, Object> getColumnValueMapEffectiveName(
+			ObjectRelationalMapping objectRelationalMapping, Object obj,
+			Collection<String> effectiveNames) {
 		if (obj == null) {
 			return null;
 		}
@@ -59,7 +74,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 		Map<String, Object> map = new HashMap<String, Object>();
 		Iterator<String> iterator = effectiveNames.iterator();
 		while (iterator.hasNext()) {
-			MappingContext context = objectRelationalMapping.getMappingContext(iterator.next());
+			MappingContext context = objectRelationalMapping
+					.getMappingContext(iterator.next());
 			if (context == null) {
 				continue;
 			}
@@ -73,35 +89,40 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return map;
 	}
 
-	public Map<String, Object> getColumnValueMapExcludeName(Object obj, Collection<String> excludeNames) {
+	public Map<String, Object> getColumnValueMapExcludeName(Object obj,
+			Collection<String> excludeNames) {
 		if (obj == null) {
 			return Collections.EMPTY_MAP;
 		}
 
-		return getColumnValueMapExcludeName(mapper.getObjectRelationalMapping(ClassUtils.getUserClass(obj)), obj,
-				CollectionUtils.asSet(excludeNames));
+		return getColumnValueMapExcludeName(
+				mapper.getObjectRelationalMapping(ClassUtils.getUserClass(obj)),
+				obj, CollectionUtils.asSet(excludeNames));
 	}
 
-	public Map<String, Object> getColumnValueMapEffectiveName(Object obj, Collection<String> effectiveNames) {
+	public Map<String, Object> getColumnValueMapEffectiveName(Object obj,
+			Collection<String> effectiveNames) {
 		if (obj == null) {
 			return Collections.EMPTY_MAP;
 		}
 
-		return getColumnValueMapEffectiveName(mapper.getObjectRelationalMapping(ClassUtils.getUserClass(obj)), obj,
-				effectiveNames);
+		return getColumnValueMapEffectiveName(
+				mapper.getObjectRelationalMapping(ClassUtils.getUserClass(obj)),
+				obj, effectiveNames);
 	}
 
 	public Map<String, Object> getColumnValueMap(Object obj) {
 		return getColumnValueMapExcludeName(obj, Collections.EMPTY_LIST);
 	}
 
-	public List<Map<String, Object>> getColumnValueListMapExcludeName(Collection<?> objs,
-			Collection<String> excludeNames) {
+	public List<Map<String, Object>> getColumnValueListMapExcludeName(
+			Collection<?> objs, Collection<String> excludeNames) {
 		if (CollectionUtils.isEmpty(objs)) {
 			return Collections.EMPTY_LIST;
 		}
 
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(objs.size());
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(
+				objs.size());
 		ObjectRelationalMapping mapping = getFirstObjectRelationalMapping(objs);
 		Iterator<?> iterator = objs.iterator();
 		Set<String> excludeNameSet = CollectionUtils.asSet(excludeNames);
@@ -116,13 +137,14 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return list;
 	}
 
-	public List<Map<String, Object>> getColumnValueListMapEffectiveName(Collection<?> objs,
-			Collection<String> effectiveNames) {
+	public List<Map<String, Object>> getColumnValueListMapEffectiveName(
+			Collection<?> objs, Collection<String> effectiveNames) {
 		if (CollectionUtils.isEmpty(objs)) {
 			return Collections.EMPTY_LIST;
 		}
 
-		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(objs.size());
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>(
+				objs.size());
 		ObjectRelationalMapping mapping = getFirstObjectRelationalMapping(objs);
 		Iterator<?> iterator = objs.iterator();
 		while (iterator.hasNext()) {
@@ -131,7 +153,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 				continue;
 			}
 
-			list.add(getColumnValueMapEffectiveName(mapping, obj, effectiveNames));
+			list.add(getColumnValueMapEffectiveName(mapping, obj,
+					effectiveNames));
 		}
 		return list;
 	}
@@ -148,7 +171,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 		}
 	}
 
-	private ObjectRelationalMapping getFirstObjectRelationalMapping(Collection<? extends Object> objs) {
+	private ObjectRelationalMapping getFirstObjectRelationalMapping(
+			Collection<? extends Object> objs) {
 		Iterator<? extends Object> iterator = objs.iterator();
 		while (iterator.hasNext()) {
 			Object obj = iterator.next();
@@ -156,12 +180,14 @@ public class DefaultObjectOperations implements ObjectOperations {
 				continue;
 			}
 
-			return mapper.getObjectRelationalMapping(ClassUtils.getUserClass(obj));
+			return mapper.getObjectRelationalMapping(ClassUtils
+					.getUserClass(obj));
 		}
 		return null;
 	}
 
-	public <E> List<E> getColumnValueList(MappingContext context, Collection<?> objs) {
+	public <E> List<E> getColumnValueList(MappingContext context,
+			Collection<?> objs) {
 		List<E> list = new ArrayList<E>(objs.size());
 		Iterator<?> iterator = objs.iterator();
 		while (iterator.hasNext()) {
@@ -194,7 +220,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return getColumnValueList(context, objs);
 	}
 
-	private MappingContext getFirstMappingContext(Collection<? extends Object> objs) {
+	private MappingContext getFirstMappingContext(
+			Collection<? extends Object> objs) {
 		if (CollectionUtils.isEmpty(objs)) {
 			return null;
 		}
@@ -230,7 +257,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return getColumnValueList(mappingContext, objs);
 	}
 
-	public <K, V> Map<K, ? extends V> toMap(Collection<? extends V> objs, MappingContext context) {
+	public <K, V> Map<K, ? extends V> toMap(Collection<? extends V> objs,
+			MappingContext context) {
 		Map<K, V> map = new LinkedHashMap<K, V>();
 		Iterator<? extends V> iterator = objs.iterator();
 		while (iterator.hasNext()) {
@@ -245,7 +273,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 			}
 
 			if (map.containsKey(k)) {
-				throw new AlreadyExistsException("[" + k + "] 已经存在 class=" + v.getClass().getName());
+				throw new AlreadyExistsException("[" + k + "] 已经存在 class="
+						+ v.getClass().getName());
 			}
 
 			map.put(k, v);
@@ -253,7 +282,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return map;
 	}
 
-	public <K, V> Map<K, ? extends V> toMap(Collection<? extends V> objs, String name) {
+	public <K, V> Map<K, ? extends V> toMap(Collection<? extends V> objs,
+			String name) {
 		if (CollectionUtils.isEmpty(objs)) {
 			return Collections.EMPTY_MAP;
 		}
@@ -267,7 +297,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return toMap(objs, context);
 	}
 
-	public <K, V> Map<K, ? extends V> toMapByFirstPrimary(Collection<? extends V> objs) {
+	public <K, V> Map<K, ? extends V> toMapByFirstPrimary(
+			Collection<? extends V> objs) {
 		MappingContext mappingContext = getFirstMappingContext(objs);
 		if (mappingContext == null) {
 			return Collections.EMPTY_MAP;
@@ -276,7 +307,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 		return toMap(objs, mappingContext);
 	}
 
-	protected void verify(ObjectRelationalMapping objectRelationalMapping, Object obj) {
+	protected void verify(ObjectRelationalMapping objectRelationalMapping,
+			Object obj) {
 		for (MappingContext mappingContext : objectRelationalMapping) {
 			if (!mappingContext.getColumn().isSupportGet()) {
 				continue;
@@ -288,7 +320,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 				if (!mapper.isNullable(mappingContext)) {
 					Object value = mappingContext.getColumn().get(obj);
 					if (value == null) {
-						throw new ParameterVerifyException(mappingContext.getColumn().getName());
+						throw new ParameterVerifyException(mappingContext
+								.getColumn().getName());
 					}
 				}
 			}
@@ -297,7 +330,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 
 	@SuppressWarnings("rawtypes")
 	public void verify(Object obj) {
-		Assert.isRequiredArgument(obj != null, "obj");
+		Assert.requiredArgument(obj != null, "obj");
 
 		if (obj instanceof Collection) {
 			Assert.notEmpty((Collection) obj);
@@ -306,7 +339,8 @@ public class DefaultObjectOperations implements ObjectOperations {
 		} else if (obj.getClass().isArray()) {
 			Assert.isTrue(Array.getLength(obj) == 0);
 		} else {
-			verify(mapper.getObjectRelationalMapping(ClassUtils.getUserClass(obj)), obj);
+			verify(mapper.getObjectRelationalMapping(ClassUtils
+					.getUserClass(obj)), obj);
 		}
 	}
 

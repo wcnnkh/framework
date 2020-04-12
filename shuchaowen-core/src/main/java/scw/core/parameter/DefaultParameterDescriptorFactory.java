@@ -9,8 +9,10 @@ import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
 
+import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.ReflectionUtils;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class DefaultParameterDescriptorFactory implements ParameterDescriptorFactory {
 
 	public FieldParameterDescriptor[] getParameterDescriptors(Class<?> clazz) {

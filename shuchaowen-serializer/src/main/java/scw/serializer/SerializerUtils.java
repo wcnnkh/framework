@@ -8,38 +8,24 @@ import java.io.IOException;
 import scw.core.Bits;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.SystemPropertyUtils;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.util.FormatUtils;
 
 public final class SerializerUtils {
-	static {
-		Class<?> serializerClass = null;
-		String[] seralizerClassNames = SystemPropertyUtils.getArrayProperty(
-				String.class, "serializer.support.class", new String[] {
-						"scw.serializer.hessian.Hessian2Serializer",
-						"scw.serializer.hessian.HessianSerializer" });
-
-		for (String name : seralizerClassNames) {
-			try {
-				serializerClass = ClassUtils.forName(name);
-				break;
-			} catch (Throwable e) {
-			}
-		}
-
-		DEFAULT_SERIALIZER = (Serializer) (serializerClass == null ? JavaSerializer.SERIALIZER
-				: InstanceUtils.getInstance(serializerClass));
-		FormatUtils.info(SerializerUtils.class, "default serializer："
-				+ (serializerClass == null ? JavaSerializer.class.getName()
-						: serializerClass.getName()));
-	}
-
 	/**
 	 * 默认的序列化实现
 	 */
-	public static final Serializer DEFAULT_SERIALIZER;
+	public static final Serializer DEFAULT_SERIALIZER = InstanceUtils
+			.getConfiguration(Serializer.class,
+					InstanceUtils.REFLECTION_INSTANCE_FACTORY);
+
+	static {
+		if (DEFAULT_SERIALIZER != null) {
+			FormatUtils.info(SerializerUtils.class, "default serializer："
+					+ DEFAULT_SERIALIZER.getClass().getName());
+		}
+	}
 
 	private SerializerUtils() {
 	}

@@ -6,8 +6,10 @@ import java.util.IdentityHashMap;
 
 import scw.core.instance.InstanceException;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 
+@Configuration(order=Integer.MIN_VALUE + 100)
 public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	private static final Constructor<?> CONSTRUCTOR;
 	private volatile IdentityHashMap<Class<?>, Constructor<?>> constructorMap = new IdentityHashMap<Class<?>, Constructor<?>>();

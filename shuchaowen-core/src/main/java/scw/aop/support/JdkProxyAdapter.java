@@ -12,7 +12,9 @@ import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
+import scw.core.instance.annotation.Configuration;
 
+@Configuration(order=Integer.MIN_VALUE + 100)
 public class JdkProxyAdapter extends AbsttractProxyAdapter {
 
 	public boolean isSupport(Class<?> clazz) {

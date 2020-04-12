@@ -22,8 +22,8 @@ import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.lang.UnsupportedException;
-import scw.net.http.MediaType;
 import scw.net.http.HttpMethod;
+import scw.net.http.MediaType;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.ToMap;
@@ -40,8 +40,9 @@ public final class HttpUtils {
 					"scw.http.client.read.timeout"), 10000);
 
 	private static final HttpClient HTTP_CLIENT = InstanceUtils
-			.autoNewInstanceBySystemProperty(HttpClient.class,
-					"scw.http.client", new SimpleHttpClient());
+			.getConfiguration(HttpClient.class,
+					InstanceUtils.REFLECTION_INSTANCE_FACTORY,
+					GlobalPropertyFactory.getInstance());
 
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;
@@ -101,7 +102,7 @@ public final class HttpUtils {
 			return toFormBody(map, charsetName);
 		}
 	}
-	
+
 	public static String toFormBody(String key, Collection<?> values,
 			String charsetName) throws UnsupportedEncodingException {
 		if (StringUtils.isEmpty(key) || CollectionUtils.isEmpty(values)) {

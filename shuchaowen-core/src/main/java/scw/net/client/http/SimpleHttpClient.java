@@ -4,9 +4,11 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.instance.annotation.Configuration;
 import scw.net.http.HttpMethod;
 import scw.net.message.converter.MessageConverter;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class SimpleHttpClient extends AbstractHttpClient {
 	public SimpleHttpClient() {
 	}

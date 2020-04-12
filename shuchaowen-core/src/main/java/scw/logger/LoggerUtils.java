@@ -3,7 +3,6 @@ package scw.logger;
 import java.lang.reflect.Method;
 
 import scw.core.GlobalPropertyFactory;
-import scw.core.utils.StringUtils;
 
 public final class LoggerUtils {
 	private static final ConsoleLoggerFactory CONSOLE_LOGGER_FACTORY = new ConsoleLoggerFactory();
@@ -20,11 +19,11 @@ public final class LoggerUtils {
 	}
 
 	public static Boolean defaultConfigEnable() {
-		return StringUtils.parseBoolean(GlobalPropertyFactory.getInstance().getString("scw.logger.default.config.enable"), null);
+		return GlobalPropertyFactory.getInstance().getBoolean("scw.logger.default.config.enable");
 	}
 
 	public static void setDefaultConfigenable(boolean enable) {
-		GlobalPropertyFactory.getInstance().put("scw.logger.default.config.enable", enable + "");
+		GlobalPropertyFactory.getInstance().put("scw.logger.default.config.enable", enable);
 	}
 
 	/**

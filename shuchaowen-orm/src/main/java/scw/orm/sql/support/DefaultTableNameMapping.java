@@ -1,9 +1,11 @@
 package scw.orm.sql.support;
 
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.orm.sql.TableNameMapping;
 import scw.orm.sql.annotation.Table;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class DefaultTableNameMapping implements TableNameMapping {
 
 	public String getTableName(Class<?> clazz) {

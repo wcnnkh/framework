@@ -3,11 +3,10 @@ package scw.embed.servlet;
 import scw.application.Application;
 import scw.application.CommonApplication;
 import scw.core.GlobalPropertyFactory;
-import scw.core.utils.ClassUtils;
-import scw.core.utils.StringUtils;
-import scw.embed.EmbeddedUtils;
+import scw.core.instance.InstanceUtils;
 import scw.embed.tomcat.TomcatApplication;
 import scw.io.resource.ResourceUtils;
+import scw.lang.UnsupportedException;
 import scw.servlet.mvc.DispatcherServlet;
 import scw.util.FormatUtils;
 
@@ -20,37 +19,15 @@ public class ServletEmbeddedApplication extends CommonApplication {
 		this.mainClass = mainClass;
 	}
 
-	private String getSupportServletEmbeddedClassName() {
-		String[] classNames = new String[] { "scw.embed.tomcat.TomcatServletEmbedded", };
-
-		for (String name : classNames) {
-			if (ClassUtils.isPresent(name, mainClass.getClassLoader())) {
-				return name;
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public void init() {
 		super.init();
-		String embeddedName = EmbeddedUtils
-				.getEmbeddedName(getPropertyFactory());
-		if (StringUtils.isEmpty(embeddedName)) {
-			String name = getSupportServletEmbeddedClassName();
-			if (name == null) {
-				FormatUtils.warn(ServletEmbeddedApplication.class,
-						"未找到支持的embedded, 如需支持请导入对应的jar");
-			} else {
-				initEmbedded(name);
-			}
-		} else {
-			initEmbedded(embeddedName);
+		embedded = InstanceUtils.getConfiguration(ServletEmbedded.class,
+				getBeanFactory(), getPropertyFactory());
+		if (embedded == null) {
+			throw new UnsupportedException("未找到支持的embedded, 如需支持请导入对应的jar");
 		}
-	}
 
-	private void initEmbedded(String embeddedName) {
-		embedded = getBeanFactory().getInstance(embeddedName);
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 		dispatcherServlet.setCommonApplication(this);
 		if (propertyFactory.getValue("servlet.service.startup", boolean.class,

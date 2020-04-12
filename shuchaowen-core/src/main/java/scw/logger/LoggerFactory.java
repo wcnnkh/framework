@@ -2,33 +2,18 @@ package scw.logger;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.utils.StringUtils;
 import scw.util.FormatUtils;
 
 public final class LoggerFactory {
-	private static final ILoggerFactory LOGGER_FACTORY;
+	private static final ILoggerFactory LOGGER_FACTORY = InstanceUtils.getConfiguration(ILoggerFactory.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY, GlobalPropertyFactory.getInstance());
 
 	private LoggerFactory() {
 	};
 
-	private static String[] getSupperLoggerFactory() {
-		String value = GlobalPropertyFactory.getInstance().getString("scw.logger.factory");
-		return StringUtils.isEmpty(value)
-				? new String[] { "scw.logger.log4j2.Log4j2LoggerFactory", "scw.logger.log4j.Log4jLoggerFactory"}
-				: StringUtils.commonSplit(value);
-	}
-
 	static {
-		ILoggerFactory loggerFactory = null;
-		for (String name : getSupperLoggerFactory()) {
-			loggerFactory = InstanceUtils.getInstance(name);
-			if (loggerFactory != null) {
-				break;
-			}
+		if(LOGGER_FACTORY != null){
+			FormatUtils.info(LoggerFactory.class, "Init shuchaowen-logger [{}]", LOGGER_FACTORY.getClass().getName());
 		}
-
-		LOGGER_FACTORY = loggerFactory == null ? new AsyncConsoleLoggerFactory() : loggerFactory;
-		FormatUtils.info(LoggerFactory.class, "Init shuchaowen-logger [{}]", LOGGER_FACTORY.getClass().getName());
 	}
 
 	public static Logger getLogger(String name) {

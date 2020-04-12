@@ -3,7 +3,9 @@ package scw.logger;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.core.UnsafeStringBuffer;
+import scw.core.instance.annotation.Configuration;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class AsyncLoggerFactory extends AbstractMyLoggerFactory implements Runnable {
 	private final LinkedBlockingQueue<Message> handlerQueue;
 	private final Thread thread;

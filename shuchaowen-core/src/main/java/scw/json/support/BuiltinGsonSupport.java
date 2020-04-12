@@ -2,15 +2,17 @@ package scw.json.support;
 
 import java.lang.reflect.Type;
 
+import scw.core.instance.annotation.Configuration;
+import scw.json.JSONSupport;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
-import scw.json.JSONSupport;
 import scw.json.gson.Gson;
 import scw.json.gson.GsonJsonElement;
 
+@Configuration(order=Integer.MIN_VALUE)
 public final class BuiltinGsonSupport implements JSONSupport {
 	private static final Gson GSON = new Gson();
-
+	
 	public String toJSONString(Object obj) {
 		return GSON.toJson(obj);
 	}

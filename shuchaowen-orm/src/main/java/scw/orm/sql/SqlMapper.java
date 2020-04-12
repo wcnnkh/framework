@@ -4,7 +4,9 @@ import scw.orm.Mapper;
 import scw.orm.MappingContext;
 import scw.orm.sql.enums.CasType;
 
-public interface SqlMapper extends Mapper, TableNameMapping {
+public interface SqlMapper extends Mapper{
+	TableNameMapping getTableNameMapping();
+	
 	boolean isTable(Class<?> clazz);
 
 	boolean isAutoIncrement(MappingContext context);

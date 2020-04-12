@@ -46,7 +46,7 @@ import scw.sql.SqlUtils;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public abstract GeneratorService getGeneratorService();
-	
+
 	public abstract SqlDialect getSqlDialect();
 
 	public SqlMapper getSqlMapper() {
@@ -61,45 +61,55 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return getByIdList(null, type, params);
 	}
 
-	public <T> T getById(String tableName, Class<? extends T> type, Object... params) {
+	public <T> T getById(String tableName, Class<? extends T> type,
+			Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
 
 		String tName = getSqlDialect().getTableName(type, tableName);
-		ResultSet resultSet = select(getSqlDialect().toSelectByIdSql(type, tName, params));
+		ResultSet resultSet = select(getSqlDialect().toSelectByIdSql(type,
+				tName, params));
 		return resultSet.getFirst().get(type, tName);
 	}
 
-	public <T> List<T> getByIdList(String tableName, Class<? extends T> type, Object... params) {
+	public <T> List<T> getByIdList(String tableName, Class<? extends T> type,
+			Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
 
 		String tName = getSqlDialect().getTableName(type, tableName);
-		ResultSet resultSet = select(getSqlDialect().toSelectByIdSql(type, tName, params));
+		ResultSet resultSet = select(getSqlDialect().toSelectByIdSql(type,
+				tName, params));
 		return resultSet.getList(type, tName);
 	}
 
-	public Object getAutoIncrementLastId(Connection connection, String tableName) throws SQLException {
-		return query(getSqlDialect().toLastInsertIdSql(tableName), connection, new ResultSetMapper<Object>() {
+	public Object getAutoIncrementLastId(Connection connection, String tableName)
+			throws SQLException {
+		return query(getSqlDialect().toLastInsertIdSql(tableName), connection,
+				new ResultSetMapper<Object>() {
 
-			public Object mapper(java.sql.ResultSet resultSet) throws SQLException {
-				if (resultSet.next()) {
-					return resultSet.getObject(1);
-				}
-				return null;
-			}
-		});
+					public Object mapper(java.sql.ResultSet resultSet)
+							throws SQLException {
+						if (resultSet.next()) {
+							return resultSet.getObject(1);
+						}
+						return null;
+					}
+				});
 	}
 
-	protected void generator(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
-		final GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean,
-				getSqlDialect().getSqlMapper(), tableName);
+	protected void generator(OperationType operationType, Class<?> clazz,
+			Object bean, String tableName) {
+		final GeneratorContext generatorContext = new GeneratorContext(this,
+				operationType, bean, getSqlDialect().getSqlMapper(), tableName);
 		getSqlMapper().iterator(null, clazz, new IteratorMapping<SqlMapper>() {
 
-			public void iterator(MappingContext context, SqlMapper sqlMapper) throws ORMException {
-				Generator generator = context.getColumn().getAnnotatedElement().getAnnotation(Generator.class);
+			public void iterator(MappingContext context, SqlMapper sqlMapper)
+					throws ORMException {
+				Generator generator = context.getColumn().getAnnotatedElement()
+						.getAnnotation(Generator.class);
 				if (generator == null) {
 					return;
 				}
@@ -110,14 +120,17 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 
-	protected boolean orm(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
+	protected boolean orm(OperationType operationType, Class<?> clazz,
+			Object bean, String tableName) {
 		generator(operationType, clazz, bean, tableName);
 		String tName = getSqlDialect().getTableName(clazz, bean, tableName);
-		Sql sql = SqlORMUtils.toSql(operationType, getSqlDialect(), clazz, bean, tName);
+		Sql sql = SqlORMUtils.toSql(operationType, getSqlDialect(), clazz,
+				bean, tName);
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
-			return ormExecute(operationType, clazz, bean, tName, sql, connection);
+			return ormExecute(operationType, clazz, bean, tName, sql,
+					connection);
 		} catch (Throwable e) {
 			throw new ORMException(SqlUtils.getSqlId(sql), e);
 		} finally {
@@ -125,21 +138,30 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		}
 	}
 
-	protected boolean ormExecute(final OperationType operationType, Class<?> clazz, final Object bean,
-			final String tableName, final Sql sql, final Connection connection) throws Throwable {
+	protected boolean ormExecute(final OperationType operationType,
+			Class<?> clazz, final Object bean, final String tableName,
+			final Sql sql, final Connection connection) throws Throwable {
 		final int count = update(sql, connection);
 		getSqlMapper().iterator(null, clazz, new IteratorMapping<SqlMapper>() {
 
-			public void iterator(MappingContext context, SqlMapper mappingOperations) throws ORMException {
+			public void iterator(MappingContext context,
+					SqlMapper mappingOperations) throws ORMException {
 				if (mappingOperations.isAutoIncrement(context)) {
-					if (operationType == OperationType.SAVE || operationType == OperationType.SAVE_OR_UPDATE) {
+					if (operationType == OperationType.SAVE
+							|| operationType == OperationType.SAVE_OR_UPDATE) {
 						if (count == 0) {
-							logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号", SqlUtils.getSqlId(sql));
+							logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号",
+									SqlUtils.getSqlId(sql));
 						} else if (count == 1) {
 							try {
-								mappingOperations.setter(context, bean, getAutoIncrementLastId(connection, tableName));
+								mappingOperations.setter(
+										context,
+										bean,
+										getAutoIncrementLastId(connection,
+												tableName));
 							} catch (SQLException e) {
-								throw new ORMException(context.getColumn().getName(), e);
+								throw new ORMException(context.getColumn()
+										.getName(), e);
 							}
 						}
 					}
@@ -151,7 +173,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 
 	public boolean save(Object bean, String tableName) {
 		Class<?> userClass = ClassUtils.getUserClass(bean);
-		return orm(OperationType.SAVE, userClass, bean, getSqlDialect().getTableName(userClass, bean, tableName));
+		return orm(OperationType.SAVE, userClass, bean, getSqlDialect()
+				.getTableName(userClass, bean, tableName));
 	}
 
 	public boolean update(Object bean, String tableName) {
@@ -163,7 +186,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		}
 
 		Class<?> userClass = ClassUtils.getUserClass(bean);
-		return orm(OperationType.UPDATE, userClass, bean, getSqlDialect().getTableName(userClass, bean, tableName));
+		return orm(OperationType.UPDATE, userClass, bean, getSqlDialect()
+				.getTableName(userClass, bean, tableName));
 	}
 
 	public boolean delete(Object bean) {
@@ -180,8 +204,11 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public boolean deleteById(String tableName, Class<?> type, Object... params) {
-		Sql sql = getSqlDialect().toDeleteByIdSql(type,
-				StringUtils.isEmpty(tableName) ? getSqlMapper().getTableName(type) : tableName, params);
+		Sql sql = getSqlDialect().toDeleteByIdSql(
+				type,
+				StringUtils.isEmpty(tableName) ? getSqlMapper()
+						.getTableNameMapping().getTableName(type) : tableName,
+				params);
 		return update(sql) != 0;
 	}
 
@@ -204,7 +231,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, String tableName, Collection<? extends K> inPrimaryKeys,
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type,
+			String tableName, Collection<? extends K> inPrimaryKeys,
 			Object... primaryKeys) {
 		if (CollectionUtils.isEmpty(inPrimaryKeys)) {
 			return Collections.EMPTY_MAP;
@@ -214,19 +242,24 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			throw new NullPointerException("type is null");
 		}
 
-		if (primaryKeys != null && primaryKeys.length > getSqlMapper().getPrimaryKeys(type).size() - 1) {
-			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
+		if (primaryKeys != null
+				&& primaryKeys.length > getSqlMapper().getPrimaryKeys(type)
+						.size() - 1) {
+			throw new NullPointerException(
+					"primaryKeys length  greater than primary key lenght");
 		}
 
 		String tName = getSqlDialect().getTableName(type, tableName);
-		Sql sql = getSqlDialect().toSelectInIdSql(type, tName, primaryKeys, inPrimaryKeys);
+		Sql sql = getSqlDialect().toSelectInIdSql(type, tName, primaryKeys,
+				inPrimaryKeys);
 		ResultSet resultSet = select(sql);
 		List<V> list = resultSet.getList(type, tName);
 		if (list == null || list.isEmpty()) {
 			return Collections.EMPTY_MAP;
 		}
 
-		Map<String, K> keyMap = getSqlMapper().getInIdKeyMap(type, inPrimaryKeys, primaryKeys);
+		Map<String, K> keyMap = getSqlMapper().getInIdKeyMap(type,
+				inPrimaryKeys, primaryKeys);
 		Map<K, V> map = new LinkedHashMap<K, V>();
 		for (V v : list) {
 			String key = getSqlMapper().getObjectKey(type, v);
@@ -235,14 +268,16 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		return map;
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIdList, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type,
+			Collection<? extends K> inIdList, Object... params) {
 		return getInIdList(type, null, inIdList, params);
 	}
 
 	public ResultSet select(Sql sql) {
 		return query(sql, new ResultSetMapper<ResultSet>() {
 
-			public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
+			public ResultSet mapper(java.sql.ResultSet resultSet)
+					throws SQLException {
 				return new DefaultResultSet(resultSet);
 			}
 		});
@@ -260,7 +295,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public <T> T selectOne(Class<? extends T> type, Sql sql, T defaultValue) {
 		if (type.isPrimitive()) {
 			// 如果是基本数据类型
-			Object v = selectOne(ClassUtils.resolvePrimitiveIfNecessary(type), sql);
+			Object v = selectOne(ClassUtils.resolvePrimitiveIfNecessary(type),
+					sql);
 			return (T) (v == null ? defaultValue : v);
 		} else {
 			T v = selectOne(type, sql);
@@ -273,7 +309,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public void createTable(Class<?> tableClass, String tableName) {
-		execute(getSqlDialect().toCreateTableSql(tableClass, getSqlDialect().getTableName(tableClass, tableName)));
+		execute(getSqlDialect().toCreateTableSql(tableClass,
+				getSqlDialect().getTableName(tableClass, tableName)));
 	}
 
 	public void createTable(String packageName) {
@@ -291,8 +328,10 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Pagination<List<T>> select(Class<? extends T> type, long page, int limit, Sql sql) {
-		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql, page, limit);
+	public <T> Pagination<List<T>> select(Class<? extends T> type, long page,
+			int limit, Sql sql) {
+		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql,
+				page, limit);
 		Long count = select(paginationSql.getCountSql()).getFirst().get(0);
 		if (count == null) {
 			count = 0L;
@@ -302,25 +341,30 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			return new Pagination<List<T>>(0, limit, Collections.EMPTY_LIST);
 		}
 
-		return new Pagination<List<T>>(count, limit, select(type, paginationSql.getResultSql()));
+		return new Pagination<List<T>>(count, limit, select(type,
+				paginationSql.getResultSql()));
 	}
 
-	public <T> Pagination<List<T>> select(Class<? extends T> type, int page, int limit, Sql sql) {
+	public <T> Pagination<List<T>> select(Class<? extends T> type, int page,
+			int limit, Sql sql) {
 		return select(type, (long) page, limit, sql);
 	}
 
 	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
-		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql, page, limit);
+		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql,
+				page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		if (count == null) {
 			count = 0L;
 		}
 
 		if (count == 0) {
-			return new Pagination<ResultSet>(0, limit, ResultSet.EMPTY_RESULT_SET);
+			return new Pagination<ResultSet>(0, limit,
+					ResultSet.EMPTY_RESULT_SET);
 		}
 
-		return new Pagination<ResultSet>(count, limit, select(paginationSql.getResultSql()));
+		return new Pagination<ResultSet>(count, limit,
+				select(paginationSql.getResultSql()));
 	}
 
 	public Pagination<ResultSet> select(int page, int limit, Sql sql) {
@@ -333,8 +377,11 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	 * @param tableClass
 	 * @param iterator
 	 */
-	public <T> void iterator(final Class<? extends T> tableClass, final IteratorCallback<T> iterator) {
-		Sql sql = getSqlDialect().toSelectByIdSql(tableClass, getSqlMapper().getTableName(tableClass), null);
+	public <T> void iterator(final Class<? extends T> tableClass,
+			final IteratorCallback<T> iterator) {
+		Sql sql = getSqlDialect().toSelectByIdSql(tableClass,
+				getSqlMapper().getTableNameMapping().getTableName(tableClass),
+				null);
 		iterator(sql, new IteratorCallback<ResultMapping>() {
 
 			public boolean iteratorCallback(ResultMapping data) {
@@ -348,7 +395,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		});
 	}
 
-	public <T> void iterator(Sql sql, final Class<? extends T> type, final IteratorCallback<T> iterator) {
+	public <T> void iterator(Sql sql, final Class<? extends T> type,
+			final IteratorCallback<T> iterator) {
 		iterator(sql, new IteratorCallback<ResultMapping>() {
 
 			public boolean iteratorCallback(ResultMapping data) {
@@ -365,14 +413,18 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public void iterator(Sql sql, final IteratorCallback<ResultMapping> iterator) {
 		query(sql, new RowCallback() {
 
-			public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
+			public boolean processRow(java.sql.ResultSet rs, int rowNum)
+					throws SQLException {
 				return iterator.iteratorCallback(new DefaultResultMapping(rs));
 			}
 		});
 	}
-	
-	public <T> void query(final Class<? extends T> tableClass, final IteratorCallback<Row<T>> iterator) {
-		Sql sql = getSqlDialect().toSelectByIdSql(tableClass, getSqlMapper().getTableName(tableClass), null);
+
+	public <T> void query(final Class<? extends T> tableClass,
+			final IteratorCallback<Row<T>> iterator) {
+		Sql sql = getSqlDialect().toSelectByIdSql(tableClass,
+				getSqlMapper().getTableNameMapping().getTableName(tableClass),
+				null);
 		query(sql, new IteratorCallback<Row<ResultMapping>>() {
 
 			public boolean iteratorCallback(Row<ResultMapping> row) {
@@ -385,7 +437,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			}
 		});
 	}
-	
+
 	public <T> void query(Sql sql, final Class<? extends T> type,
 			final IteratorCallback<Row<T>> iterator) {
 		query(sql, new IteratorCallback<Row<ResultMapping>>() {
@@ -400,22 +452,28 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			}
 		});
 	}
-	
-	public void query(Sql sql, final IteratorCallback<Row<ResultMapping>> iterator) {
+
+	public void query(Sql sql,
+			final IteratorCallback<Row<ResultMapping>> iterator) {
 		query(sql, new RowCallback() {
 
-			public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
-				return iterator.iteratorCallback(new Row<ResultMapping>(rowNum, new DefaultResultMapping(rs)));
+			public boolean processRow(java.sql.ResultSet rs, int rowNum)
+					throws SQLException {
+				return iterator.iteratorCallback(new Row<ResultMapping>(rowNum,
+						new DefaultResultMapping(rs)));
 			}
 		});
 	}
 
-	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, String idField) {
-		Sql sql = getSqlDialect().toMaxIdSql(tableClass, getSqlDialect().getTableName(tableClass, tableName), idField);
+	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass,
+			String tableName, String idField) {
+		Sql sql = getSqlDialect().toMaxIdSql(tableClass,
+				getSqlDialect().getTableName(tableClass, tableName), idField);
 		return select(sql).getFirst().get(type, 0);
 	}
 
-	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String idField) {
+	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass,
+			String idField) {
 		return getMaxValue(type, tableClass, null, idField);
 	}
 
@@ -434,7 +492,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 				Arrays.asList(TableStructureResultField.NAME));
 		List<String[]> list = select(String[].class, sql);
 		HashSet<String> hashSet = new HashSet<String>();
-		ObjectRelationalMapping mapping = getSqlMapper().getObjectRelationalMapping(tableClass);
+		ObjectRelationalMapping mapping = getSqlMapper()
+				.getObjectRelationalMapping(tableClass);
 		List<String> deleteList = new LinkedList<String>();
 		for (String[] names : list) {
 			String name = names[0];
@@ -445,7 +504,8 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 		}
 
 		List<MappingContext> addList = new LinkedList<MappingContext>();
-		Iterator<MappingContext> iterator = mapping.iteratorPrimaryKeyAndNotPrimaryKey();
+		Iterator<MappingContext> iterator = mapping
+				.iteratorPrimaryKeyAndNotPrimaryKey();
 		while (iterator.hasNext()) {
 			MappingContext mappingContext = iterator.next();
 			if (!hashSet.contains(mappingContext.getColumn().getName())) {// 在已有的数据库中不存在，应该添加

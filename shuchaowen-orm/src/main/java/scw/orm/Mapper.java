@@ -14,8 +14,8 @@ public interface Mapper extends ColumnFactory {
 	Object getter(MappingContext context, Object bean) throws ORMException;
 
 	Object getter(MappingContext context, Getter getter) throws ORMException;
-
-	<T> T newInstance(Class<? extends T> type) throws ORMException;
+	
+	ORMInstanceFactory getInstanceFactory();
 
 	<T, M extends Mapper> T create(MappingContext superContext, Class<T> clazz, SetterMapping<M> setterMapping)
 			throws ORMException;

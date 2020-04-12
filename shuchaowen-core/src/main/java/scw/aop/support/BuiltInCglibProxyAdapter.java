@@ -15,8 +15,10 @@ import scw.aop.ProxyUtils;
 import scw.cglib.proxy.Enhancer;
 import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
+import scw.core.instance.annotation.Configuration;
 import scw.lang.NestedExceptionUtils;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class BuiltInCglibProxyAdapter extends AbsttractProxyAdapter {
 	public boolean isSupport(Class<?> clazz) {
 		return !Modifier.isFinal(clazz.getModifiers());

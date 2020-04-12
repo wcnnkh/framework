@@ -2,13 +2,15 @@ package scw.json.support;
 
 import java.lang.reflect.Type;
 
+import scw.core.instance.annotation.Configuration;
+import scw.json.JSONSupport;
+import scw.json.JsonObject;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.parser.Feature;
 
-import scw.json.JsonObject;
-import scw.json.JSONSupport;
-
+@Configuration(order=Integer.MIN_VALUE + 10000)
 public final class FastJsonSupport implements JSONSupport {
 
 	public scw.json.JsonArray parseArray(String text) {

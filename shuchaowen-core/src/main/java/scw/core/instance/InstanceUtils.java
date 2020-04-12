@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +26,7 @@ import scw.core.instance.support.ReflectionSingleInstanceFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.CompareUtils;
@@ -35,68 +35,24 @@ import scw.io.resource.ResourceUtils;
 import scw.lang.UnsupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.FormatUtils;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class InstanceUtils {
-	private static Logger logger = LoggerUtils.getConsoleLogger(InstanceUtils.class);
+	private static Logger logger = LoggerUtils
+			.getConsoleLogger(InstanceUtils.class);
 
 	private InstanceUtils() {
 	};
 
 	public static final ReflectionInstanceFactory REFLECTION_INSTANCE_FACTORY = new ReflectionInstanceFactory();
 
-	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY;
+	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY = getConfiguration(
+			NoArgsInstanceFactory.class, REFLECTION_INSTANCE_FACTORY);
 
 	public static final ReflectionSingleInstanceFactory SINGLE_INSTANCE_FACTORY = new ReflectionSingleInstanceFactory();
-
-	static {
-		NoArgsInstanceFactory instanceFactory = REFLECTION_INSTANCE_FACTORY
-				.getInstance("scw.core.instance.support.SunNoArgsInstanceFactory");
-		if (instanceFactory == null) {
-			instanceFactory = REFLECTION_INSTANCE_FACTORY
-					.getInstance("scw.core.instance.support.UnsafeNoArgsInstanceFactory");
-		}
-
-		if (instanceFactory == null) {
-			throw new UnsupportedException(
-					"Instances that do not call constructors are not supported");
-		}
-
-		NO_ARGS_INSTANCE_FACTORY = instanceFactory;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(String name, boolean invokeConstructor) {
-		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY
-				.getInstance(name) : NO_ARGS_INSTANCE_FACTORY.getInstance(name));
-	}
-
-	public static <T> T newInstance(Class<T> type, boolean invokeConstructor) {
-		return (T) (invokeConstructor ? REFLECTION_INSTANCE_FACTORY
-				.getInstance(type) : NO_ARGS_INSTANCE_FACTORY.getInstance(type));
-	}
-
-	/**
-	 * 如果无参的构造方法调用失败就会使用不调用构造方法实例化
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static <T> T newInstance(String name) {
-		T t = REFLECTION_INSTANCE_FACTORY.getInstance(name);
-		if (t == null) {
-			t = NO_ARGS_INSTANCE_FACTORY.getInstance(name);
-		}
-
-		if (t == null) {
-			throw new UnsupportedException("无法实例化对象：" + name);
-		}
-		return t;
-	}
 
 	/**
 	 * 如果无参的构造方法调用失败就会使用不调用构造方法实例化
@@ -115,56 +71,6 @@ public final class InstanceUtils {
 			throw new UnsupportedException("无法实例化对象：" + type.getName());
 		}
 		return t;
-	}
-
-	/**
-	 * 执行失败返回空
-	 * 
-	 * @param name
-	 * @param params
-	 * @return
-	 */
-	public static <T> T getInstance(String name, Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(name, params);
-	}
-
-	/**
-	 * 执行失败返回空
-	 * 
-	 * @param type
-	 * @param params
-	 * @return
-	 */
-	public static <T> T getInstance(Class<T> type, Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(type, params);
-	}
-
-	/**
-	 * 执行失败返回空
-	 * 
-	 * @param name
-	 * @param parameterTypes
-	 * @param params
-	 * @return
-	 */
-	public static <T> T getInstance(String name, Class<?>[] parameterTypes,
-			Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(name, parameterTypes,
-				params);
-	}
-
-	/**
-	 * 执行失败返回空或抛出异常
-	 * 
-	 * @param type
-	 * @param parameterTypes
-	 * @param params
-	 * @return
-	 */
-	public static <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
-			Object... params) {
-		return REFLECTION_INSTANCE_FACTORY.getInstance(type, parameterTypes,
-				params);
 	}
 
 	/**
@@ -231,100 +137,71 @@ public final class InstanceUtils {
 		return SINGLE_INSTANCE_FACTORY;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> T autoNewInstance(Class<T> clazz,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory)
-			throws Exception {
-		InstanceConfig instanceConfig = new AutoInstanceConfig(instanceFactory,
-				propertyFactory, clazz);
-		if (instanceConfig.getConstructor() == null) {
+	public static <T> T getInstance(Class<? extends T> type,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+		return getInstance(type, instanceFactory, propertyFactory,
+				type.getName());
+	}
+
+	public static <T> T getInstance(Class<? extends T> type,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			String key) {
+		String[] names = propertyFactory.getObject(key, String[].class);
+		if (ArrayUtils.isEmpty(names)) {
 			return null;
 		}
 
-		return (T) instanceConfig.getConstructor().newInstance(
-				instanceConfig.getArgs());
+		String name = names[0];
+		if (!instanceFactory.isInstance(name)) {
+			logger.warn("{} not create instance class {}", name, type);
+			return null;
+		}
+
+		Object t = instanceFactory.getInstance(name);
+		if (!ClassUtils.isAssignableValue(type, t)) {
+			logger.warn("{} not is assignable from {}", name, type);
+			return null;
+		}
+		return type.cast(t);
+	}
+
+	public static <T> Collection<T> getInstances(Class<? extends T> type,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+		return getInstances(type, instanceFactory, propertyFactory,
+				type.getName());
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T autoNewInstance(String name) throws Exception {
-		return (T) autoNewInstance(ClassUtils.forName(name,
-				ClassUtils.getDefaultClassLoader()));
-	}
-
-	public static <T> T autoNewInstance(Class<T> clazz,
-			InstanceFactory instanceFactory) throws Exception {
-		return autoNewInstance(clazz, instanceFactory,
-				GlobalPropertyFactory.getInstance());
-	}
-
-	public static <T> T autoNewInstance(Class<T> clazz) throws Exception {
-		return autoNewInstance(clazz, REFLECTION_INSTANCE_FACTORY);
-	}
-
-	public static <T> T autoNewInstanceBySystemProperty(
-			Class<? extends T> clazz, String key, T defaultValue) {
-		Class<?> clz = GlobalPropertyFactory.getInstance().getClass(key);
-		if (clz == null) {
-			return defaultValue;
+	public static <T> Collection<T> getInstances(Class<? extends T> type,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			String key) {
+		String[] names = propertyFactory.getObject(key, String[].class);
+		if (ArrayUtils.isEmpty(names)) {
+			return Collections.EMPTY_LIST;
 		}
 
-		if (clz.isAssignableFrom(clazz)) {
-			FormatUtils.warn(InstanceUtils.class,
-					"{} not is assignable from {}", clz, clazz);
-			return defaultValue;
-		}
-
-		Object bean;
-		try {
-			bean = autoNewInstance(clz);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return defaultValue;
-		}
-
-		return clazz.cast(bean);
-	}
-
-	public static <T> Collection<? extends T> autoNewInstancesBySystemProperty(
-			Class<T> clazz, String key, Collection<? extends T> defaultValues) {
-		String names = GlobalPropertyFactory.getInstance().getString(key);
-		if (StringUtils.isEmpty(names)) {
-			return defaultValues;
-		}
-
-		LinkedList<T> list = new LinkedList<T>();
-		for (String name : StringUtils.commonSplit(names)) {
-			Class<?> clz;
-			try {
-				clz = ClassUtils.forName(name,
-						ClassUtils.getDefaultClassLoader());
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+		List<T> list = new ArrayList<T>();
+		for (String name : names) {
+			if (!instanceFactory.isInstance(name)) {
+				logger.warn("{} not create instance class {}", name, type);
 				continue;
 			}
 
-			if (clz.isAssignableFrom(clazz)) {
-				FormatUtils.warn(InstanceUtils.class,
-						"{} not is assignable from {}", clz, clazz);
+			Object t = instanceFactory.getInstance(name);
+			if (!ClassUtils.isAssignableValue(type, t)) {
+				logger.warn("{} not is assignable from {}", name, type);
 				continue;
 			}
 
-			Object bean;
-			try {
-				bean = autoNewInstance(clz);
-			} catch (Exception e) {
-				e.printStackTrace();
-				continue;
-			}
-
-			list.add(clazz.cast(bean));
+			list.add(type.cast(t));
 		}
-		return list.isEmpty() ? defaultValues : list;
+		return list.isEmpty() ? Collections.EMPTY_LIST : Collections
+				.unmodifiableCollection(list);
 	}
 
 	private static boolean isProerptyType(ParameterDescriptor parameterConfig) {
-		PropertyParameter propertyParameter = parameterConfig.getAnnotatedElement()
-				.getAnnotation(PropertyParameter.class);
+		PropertyParameter propertyParameter = parameterConfig
+				.getAnnotatedElement().getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
 			Class<?> type = parameterConfig.getType();
 			return ValueUtils.isCommonType(type) || type.isArray()
@@ -356,8 +233,9 @@ public final class InstanceUtils {
 		}
 
 		if (value != null) {
-			ResourceParameter resourceParameter = parameterConfig.getAnnotatedElement()
-					.getAnnotation(ResourceParameter.class);
+			ResourceParameter resourceParameter = parameterConfig
+					.getAnnotatedElement().getAnnotation(
+							ResourceParameter.class);
 			if (resourceParameter != null) {
 				if (!ResourceUtils.getResourceOperations().isExist(
 						value.getAsString())) {
@@ -405,8 +283,8 @@ public final class InstanceUtils {
 
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterDescriptor parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(parameterConfig.getAnnotatedElement(),
-					false);
+			boolean require = !AnnotationUtils.isNullable(
+					parameterConfig.getAnnotatedElement(), false);
 			if (!require) {
 				continue;
 			}
@@ -456,8 +334,8 @@ public final class InstanceUtils {
 		Object[] args = new Object[parameterConfigs.length];
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterDescriptor parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(parameterConfig.getAnnotatedElement(),
-					false);
+			boolean require = !AnnotationUtils.isNullable(
+					parameterConfig.getAnnotatedElement(), false);
 			if (isProerptyType(parameterConfig)) {
 				Value value = getProperty(propertyFactory, clazz,
 						parameterConfig);
@@ -641,5 +519,22 @@ public final class InstanceUtils {
 			InstanceFactory instanceFactory, Class... excludeTypes) {
 		return getConfiguration(type, instanceFactory,
 				Arrays.asList(excludeTypes));
+	}
+
+	public static <T> T getConfiguration(Class<? extends T> type,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+		T t = getInstance(type, instanceFactory, propertyFactory);
+		if (t == null) {
+			t = getConfiguration(type, instanceFactory);
+		}
+		return t;
+	}
+
+	public static <T> List<T> getConfigurationList(Class<? extends T> type,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+		List<T> list = new ArrayList<T>();
+		list.addAll(getConfigurationList(type, instanceFactory));
+		list.addAll(getInstances(type, instanceFactory, propertyFactory));
+		return Collections.unmodifiableList(list);
 	}
 }

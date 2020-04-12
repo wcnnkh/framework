@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.caucho.hessian.io.HessianInput;
-import com.caucho.hessian.io.HessianOutput;
-
+import scw.core.instance.annotation.Configuration;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.serializer.Serializer;
 
+import com.caucho.hessian.io.HessianInput;
+import com.caucho.hessian.io.HessianOutput;
+
+@Configuration(order=Integer.MIN_VALUE + 100)
 public class HessianSerializer extends Serializer {
 	@Override
 	public byte[] serialize(Object data) {
