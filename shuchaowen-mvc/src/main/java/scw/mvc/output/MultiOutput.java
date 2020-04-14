@@ -14,7 +14,7 @@ public class MultiOutput extends LinkedList<Output> implements Output {
 		for (Output output : this) {
 			if (output.canWrite(channel, body)) {
 				if (logger.isTraceEnabled()) {
-					logger.trace("{} output adpater is body={}, channel={}",
+					logger.trace("{} output adpater is body:{}, channel:{}",
 							output, body, channel.toString());
 				}
 				return true;
@@ -27,7 +27,7 @@ public class MultiOutput extends LinkedList<Output> implements Output {
 		for (Output output : this) {
 			if (output.canWrite(channel, body)) {
 				if (logger.isTraceEnabled()) {
-					logger.trace("{} output adapter is body={}, channel={}",
+					logger.trace("{} output adapter is body:{}, channel:{}",
 							output, body, channel.toString());
 				}
 				output.write(channel, body);
@@ -35,7 +35,7 @@ public class MultiOutput extends LinkedList<Output> implements Output {
 			}
 		}
 		if (logger.isDebugEnabled()) {
-			logger.debug("not support output body={}, channel={}", body,
+			logger.debug("not support output body:{}, channel:{}", body,
 					channel.toString());
 		}
 	}

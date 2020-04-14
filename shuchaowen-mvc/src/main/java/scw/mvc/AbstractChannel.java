@@ -99,6 +99,10 @@ public abstract class AbstractChannel extends AbstractValueFactory<String>
 		if (isCompleted()) {
 			return;
 		}
+		
+		if(getLogger().isTraceEnabled()){
+			getLogger().trace("destroy channel: {}", toString());
+		}
 
 		attributeMap = null;
 		XUtils.destroy(channelBeanFactory);
