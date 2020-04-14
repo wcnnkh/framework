@@ -36,6 +36,7 @@ public class AutoConstructorDefinition implements ConstructorDefinition {
 					.getParameterDescriptors(constructor);
 			if (InstanceUtils.isAuto(instanceFactory, propertyFactory, clazz,
 					parameterDescriptors, constructor)) {
+				ReflectionUtils.setAccessibleConstructor(constructor);
 				this.constructor = constructor;
 				this.parameterDescriptors = parameterDescriptors;
 				break;
