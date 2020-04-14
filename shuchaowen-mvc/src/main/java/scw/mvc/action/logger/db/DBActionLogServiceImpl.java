@@ -37,7 +37,7 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 		db.createTable(LogTable.class);
 		db.createTable(LogAttributeTable.class);
 		CrontabTaskConfig config = new SimpleCrontabConfig("清理网络请求过期日志", this,
-				null, null, null, null, "0", "0");
+				null, null, null, null, null, null);
 		timer.crontab(config);
 		if (logger.isDebugEnabled()) {
 			logger.debug("网络请求日志过期时间为：{}天", LOG_EXPIRATION_TIME);
@@ -50,7 +50,7 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 		}
 
 		db.execute(new SimpleSql(
-				"delete from log_table as l, log_attribute_table as a where l.logId=a.logId and l.createTime<?",
+				"delete log_table, log_attribute_table from log_table, log_attribute_table where log_table.logId=log_attribute_table.logId and log_table.createTime<?",
 				executionTime - LOG_EXPIRATION_TIME * XTime.ONE_DAY));
 	}
 

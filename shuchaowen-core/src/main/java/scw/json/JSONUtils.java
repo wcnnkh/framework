@@ -3,7 +3,6 @@ package scw.json;
 import java.lang.reflect.Type;
 
 import scw.core.instance.InstanceUtils;
-import scw.core.utils.ClassUtils;
 import scw.util.FormatUtils;
 
 public final class JSONUtils {
@@ -50,14 +49,5 @@ public final class JSONUtils {
 		}
 		
 		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
-	}
-
-	/**
-	 * 是否支持fastjson
-	 * 
-	 * @return
-	 */
-	public static boolean isSupportFastJSON() {
-		return ClassUtils.isPresent("scw.json.support.FastJsonSupport");
 	}
 }
