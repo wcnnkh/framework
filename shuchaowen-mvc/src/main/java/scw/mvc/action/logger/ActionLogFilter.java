@@ -17,8 +17,8 @@ public class ActionLogFilter implements ActionFilter {
 
 	public ActionLogFilter(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
-		if (propertyFactory.getValue("mvc.action.logger.filter.enable",
-				boolean.class, true)
+		if (propertyFactory.getValue("mvc.action.log.enable",
+				boolean.class, false)
 				&& beanFactory.isInstance(ActionLogService.class)
 				&& beanFactory.isInstance(ActionLogFactory.class)) {
 			this.logService = beanFactory.getInstance(ActionLogService.class);

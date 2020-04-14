@@ -24,7 +24,7 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	private boolean ipEnable;
 
 	public DefaultActionLogFactory(
-			@ParameterName("mvc.http.action.logger.identification") @DefaultValue("uid") String identificationKey, @ParameterName("mvc.logger.ip")@DefaultValue("false") boolean ipEnable) {
+			@ParameterName("mvc.action.log.identification") @DefaultValue("uid") String identificationKey, @ParameterName("mvc.action.log.ip")@DefaultValue("false") boolean ipEnable) {
 		if (StringUtils.isNotEmpty(identificationKey)) {
 			this.identificationParameterConfig = new DefaultParameterDescriptor(
 					identificationKey, null, String.class, String.class);
