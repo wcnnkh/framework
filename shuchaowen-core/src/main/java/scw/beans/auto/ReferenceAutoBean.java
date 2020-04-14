@@ -26,7 +26,7 @@ public class ReferenceAutoBean implements AutoBean {
 	}
 
 	public boolean isInstance() {
-		return beanFactory.getBeanDefinition(reference).isInstance();
+		return beanFactory.getDefinition(reference).isInstance();
 	}
 
 	public <T> T create() {
@@ -41,9 +41,11 @@ public class ReferenceAutoBean implements AutoBean {
 		return beanFactory.getInstance(reference, parameterTypes, params);
 	}
 
-	public void init(Object bean) {
+	public String getId() {
+		return beanFactory.getDefinition(reference).getId();
 	}
 
-	public void destroy(Object bean) {
+	public boolean isSingleton() {
+		return beanFactory.isSingleton(reference);
 	}
 }

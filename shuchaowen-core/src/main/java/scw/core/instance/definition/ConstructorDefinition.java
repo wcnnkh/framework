@@ -1,8 +1,8 @@
-package scw.core.instance;
+package scw.core.instance.definition;
 
 import java.lang.reflect.Constructor;
 
-public interface InstanceConfig {
+public interface ConstructorDefinition {
 	Constructor<?> getConstructor();
 
 	Object[] getArgs();

@@ -190,7 +190,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 
 	private void configureJSP(Context context, PropertyFactory propertyFactory) {
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet")) {
-			ServletContainerInitializer containerInitializer = InstanceUtils.REFLECTION_INSTANCE_FACTORY
+			ServletContainerInitializer containerInitializer = InstanceUtils.INSTANCE_FACTORY
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
 				context.addServletContainerInitializer(containerInitializer,

@@ -1,12 +1,19 @@
-package scw.core.instance;
+package scw.core.instance.definition;
 
 public interface InstanceDefinition {
+	String getId();
+	
+	Class<?> getTargetClass();
+	
+	boolean isSingleton();
+	
 	/**
 	 * 是否可以调用create()方法实例化
+	 * 
 	 * @return
 	 */
 	boolean isInstance();
-	
+
 	<T> T create() throws Exception;
 
 	<T> T create(Object... params) throws Exception;

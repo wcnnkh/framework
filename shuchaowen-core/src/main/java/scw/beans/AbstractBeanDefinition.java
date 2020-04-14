@@ -10,7 +10,7 @@ import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	protected final BeanFactory beanFactory;
-	private final Class<?> type;
+	private final Class<?> targetClass;
 	private final String id;
 	private NoArgumentBeanMethod[] initMethods;
 	private NoArgumentBeanMethod[] destroyMethods;
@@ -22,25 +22,25 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 
 	public AbstractBeanDefinition(ValueWiredManager valueWiredManager,
 			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> type) {
+			Class<?> targetClass) {
 		this.valueWiredManager = valueWiredManager;
 		this.beanFactory = beanFactory;
-		this.type = type;
+		this.targetClass = targetClass;
 		this.propertyFactory = propertyFactory;
-		this.id = type.getName();
+		this.id = targetClass.getName();
 	}
 
 	public void init() {
-		this.initMethods = BeanUtils.getInitMethodList(getType()).toArray(
-				new NoArgumentBeanMethod[0]);
-		this.destroyMethods = BeanUtils.getDestroyMethdoList(getType())
+		this.initMethods = BeanUtils.getInitMethodList(getTargetClass())
 				.toArray(new NoArgumentBeanMethod[0]);
-		this.proxy = BeanUtils.checkProxy(getType());
-		scw.beans.annotation.Bean bean = getType().getAnnotation(
+		this.destroyMethods = BeanUtils.getDestroyMethdoList(getTargetClass())
+				.toArray(new NoArgumentBeanMethod[0]);
+		this.proxy = BeanUtils.checkProxy(getTargetClass());
+		scw.beans.annotation.Bean bean = getTargetClass().getAnnotation(
 				scw.beans.annotation.Bean.class);
 		this.singleton = bean == null ? true : bean.singleton();
 		this.autowriteFieldDefinition = BeanUtils
-				.getAutowriteFieldDefinitionList(getType()).toArray(
+				.getAutowriteFieldDefinitionList(getTargetClass()).toArray(
 						new FieldDefinition[0]);
 	}
 
@@ -56,14 +56,16 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 		return this.id;
 	}
 
-	public Class<?> getType() {
-		return this.type;
+	public Class<?> getTargetClass() {
+		return targetClass;
 	}
 
 	public void init(Object bean) throws Exception {
-		BeanUtils.autowired(valueWiredManager, beanFactory, propertyFactory,
-				getType(), bean, Arrays.asList(autowriteFieldDefinition));
-		
+		BeanUtils
+				.autowired(valueWiredManager, beanFactory, propertyFactory,
+						getTargetClass(), bean,
+						Arrays.asList(autowriteFieldDefinition));
+
 		if (initMethods != null && initMethods.length != 0) {
 			for (NoArgumentBeanMethod method : initMethods) {
 				method.noArgumentInvoke(bean);

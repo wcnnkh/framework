@@ -53,7 +53,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 	public void consume(AsyncExecute message) throws Throwable {
 		if(beanFactory != null){
 			Class<?> clazz = ProxyUtils.getProxyAdapter().getUserClass(message.getClass());
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(clazz.getName());
+			BeanDefinition beanDefinition = beanFactory.getDefinition(clazz.getName());
 			if(beanDefinition != null){
 				beanDefinition.init(message);
 			}

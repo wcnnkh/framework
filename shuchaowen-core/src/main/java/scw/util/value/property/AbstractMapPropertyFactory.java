@@ -15,6 +15,10 @@ public abstract class AbstractMapPropertyFactory extends
 		AbstractPropertyFactory {
 	protected abstract Map<String, Value> getTargetMap();
 
+	public Map<String, Value> getUnmodifiableMap() {
+		return Collections.unmodifiableMap(getTargetMap());
+	}
+
 	public Value get(String key) {
 		return getTargetMap().get(key);
 	}

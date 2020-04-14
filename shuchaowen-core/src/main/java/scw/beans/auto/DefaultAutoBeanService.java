@@ -79,9 +79,6 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			throws Exception {
 		AutoImpl autoConfig = clazz.getAnnotation(AutoImpl.class);
 		if (autoConfig == null) {
-			if(clazz.getName().endsWith("ActionManager")){
-				System.out.println(clazz);
-			}
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			Collection<Class<?>> impls = InstanceUtils
 					.getConfigurationClassList((Class)clazz, propertyFactory);

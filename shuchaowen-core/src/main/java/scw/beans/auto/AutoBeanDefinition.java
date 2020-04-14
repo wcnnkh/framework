@@ -16,9 +16,9 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 		init();
 	}
 
-	public Class<?> getType() {
-		return autoBean.getTargetClass() == null ? super.getType() : autoBean
-				.getTargetClass();
+	public Class<?> getTargetClass() {
+		return autoBean.getTargetClass() == null ? super.getTargetClass()
+				: autoBean.getTargetClass();
 	}
 
 	public void init(Object bean) throws Exception {
@@ -26,9 +26,6 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 			return;
 		}
 		super.init(bean);
-		if (autoBean != null) {
-			autoBean.init(bean);
-		}
 	}
 
 	public void destroy(Object bean) throws Exception {

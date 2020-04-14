@@ -17,6 +17,6 @@ public final class TableInstanceFactory implements ORMInstanceFactory {
 					.newFieldSetterListenInstance(clazz);
 		}
 
-		return InstanceUtils.REFLECTION_INSTANCE_FACTORY.getInstance(clazz);
+		return InstanceUtils.INSTANCE_FACTORY.getInstance(clazz);
 	}
 }

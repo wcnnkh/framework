@@ -1,13 +1,7 @@
 package scw.beans.auto;
 
-import scw.core.instance.InstanceDefinition;
+import scw.core.instance.definition.InstanceDefinition;
 
 public interface AutoBean extends InstanceDefinition{
 	boolean isReference();
-	
-	Class<?> getTargetClass();
-	
-	void init(Object bean) throws Exception;
-	
-	void destroy(Object bean) throws Exception;
 }

@@ -3,9 +3,6 @@ package scw.core;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
@@ -15,12 +12,11 @@ import scw.io.resource.ResourceLookup;
 import scw.io.resource.ResourceOperations;
 import scw.util.FormatUtils;
 import scw.util.MultiEnumeration;
-import scw.util.value.StringValue;
 import scw.util.value.Value;
-import scw.util.value.property.AbstractPropertyFactory;
+import scw.util.value.property.ConcurrentMapPropertyFactory;
 import scw.util.value.property.SystemPropertyFactory;
 
-public final class GlobalPropertyFactory extends AbstractPropertyFactory {
+public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSES_DIRECTORY = "classes.directory";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
@@ -32,32 +28,15 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 		return instance;
 	}
 
-	private ConcurrentHashMap<String, Value> properties = new ConcurrentHashMap<String, Value>();
-
 	private GlobalPropertyFactory() {
 		if (getWorkPath() == null) {
 			setWorkPath(getDefaultWorkPath());
 		}
 
-		String path = getValue("scw.properties.private", String.class,
-				"/private.properties");
-		if (getResourceOperations().isExist(path)) {
-			Properties properties = getResourceOperations().getProperties(path,
-					this);
-			for (Entry<Object, Object> entry : properties.entrySet()) {
-				Object key = entry.getKey();
-				if (key == null) {
-					continue;
-				}
-
-				Object value = entry.getValue();
-				if (value == null) {
-					continue;
-				}
-
-				put(key.toString(), value.toString());
-			}
-		}
+		loadProperties(
+				getResourceOperations(),
+				getValue("scw.properties.private", String.class,
+						"/private.properties"));
 	}
 
 	public ResourceOperations getResourceOperations() {
@@ -67,30 +46,9 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 				this);
 	}
 
-	public Value put(String key, Object value) {
-		return put(key,
-				new StringValue(value == null ? null : value.toString()));
-	}
-
-	public Value remove(String key) {
-		return properties.remove(key);
-	}
-
-	public Value put(String key, Value value) {
-		return properties.put(key, value);
-	}
-
-	public Value putIfAbsent(String key, Value value) {
-		return properties.putIfAbsent(key, value);
-	}
-
-	public Value putIfAbsent(String key, String value) {
-		return putIfAbsent(key, new StringValue(value));
-	}
-
 	public Value get(String key) {
 		Assert.requiredArgument(key != null, "key");
-		Value v = properties.get(key);
+		Value v = super.get(key);
 		if (v == null) {
 			v = SystemPropertyFactory.getInstance().get(key);
 		}
@@ -107,12 +65,8 @@ public final class GlobalPropertyFactory extends AbstractPropertyFactory {
 
 	@SuppressWarnings("unchecked")
 	public Enumeration<String> enumerationKeys() {
-		return new MultiEnumeration<String>(properties.keys(),
+		return new MultiEnumeration<String>(super.enumerationKeys(),
 				SystemPropertyFactory.getInstance().enumerationKeys());
-	}
-
-	public void clear() {
-		properties.clear();
 	}
 
 	/**

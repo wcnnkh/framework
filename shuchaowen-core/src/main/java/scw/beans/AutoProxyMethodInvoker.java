@@ -30,7 +30,7 @@ public final class AutoProxyMethodInvoker implements Invoker {
 		this.method = method;
 		ReflectionUtils.setAccessibleMethod(method);
 		this.bean = beanFactory.isSingleton(clz) ? getBean() : null;
-		BeanDefinition beanDefinition = beanFactory.getBeanDefinition(clz.getName());
+		BeanDefinition beanDefinition = beanFactory.getDefinition(clz.getName());
 		proxy = (bean != null && ProxyUtils.getProxyAdapter().isProxy(bean.getClass()))
 				|| (beanDefinition != null && beanDefinition.isProxy());
 		if (proxy) {

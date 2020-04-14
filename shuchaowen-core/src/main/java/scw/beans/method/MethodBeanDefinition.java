@@ -40,7 +40,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	public boolean isInstance() {
-		return InstanceUtils.isAuto(beanFactory, propertyFactory, getType(),
+		return InstanceUtils.isAuto(beanFactory, propertyFactory, getTargetClass(),
 				ParameterUtils.getParameterDescriptors(method), method);
 	}
 
@@ -49,7 +49,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 			throw new UnsupportedException("不支持的构造方式");
 		}
 
-		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory, getType(),
+		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory, getTargetClass(),
 				ParameterUtils.getParameterDescriptors(method));
 		return (T) invoke(method, args);
 	}
@@ -60,11 +60,11 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 			ReflectionUtils.setAccessibleMethod(method);
 			bean = method.invoke(Modifier.isStatic(method.getModifiers())? null:beanFactory.getInstance(targetClazz), args);
 		} catch (Exception e) {
-			throw new BeansException(getType() + "", e);
+			throw new BeansException(getTargetClass() + "", e);
 		}
 
 		if (isProxy()) {
-			bean = BeanUtils.createProxy(beanFactory, getType(), bean, null, null).create();
+			bean = BeanUtils.createProxy(beanFactory, getTargetClass(), bean, null, null).create();
 		}
 		return bean;
 	}

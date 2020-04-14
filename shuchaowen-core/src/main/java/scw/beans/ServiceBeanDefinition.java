@@ -28,7 +28,7 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 					propertyFactory);
 			this.instance = autoBean.isInstance();
 		}
-		this.names = BeanUtils.getServiceNames(getType());
+		this.names = BeanUtils.getServiceNames(getTargetClass());
 	}
 
 	public boolean isInstance() {
@@ -36,32 +36,26 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	protected Proxy getProxy() {
-		return BeanUtils.createProxy(beanFactory, getType(), null, null);
+		return BeanUtils.createProxy(beanFactory, getTargetClass(), null, null);
 	}
 
 	@Override
 	public void init(Object bean) throws Exception {
-		if (autoBean != null) {
-			autoBean.init(bean);
-		}
 		super.init(bean);
 	}
 
 	@Override
 	public void destroy(Object bean) throws Exception {
-		if (autoBean != null) {
-			autoBean.destroy(bean);
-		}
 		super.destroy(bean);
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() throws Exception {
 		if (!isInstance()) {
-			throw new UnsupportedException(getType().toString());
+			throw new UnsupportedException(getTargetClass().toString());
 		}
 
-		if (getType().isInterface()) {
+		if (getTargetClass().isInterface()) {
 			return (T) getProxy().create();
 		}
 
@@ -71,7 +65,7 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 	@SuppressWarnings("unchecked")
 	public <T> T create(Object... params) throws Exception {
 		Constructor<T> constructor = (Constructor<T>) ReflectionUtils
-				.findConstructorByParameters(getType(), true, params);
+				.findConstructorByParameters(getTargetClass(), true, params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}
@@ -89,7 +83,7 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 	@SuppressWarnings("unchecked")
 	public <T> T create(Class<?>[] parameterTypes, Object... params)
 			throws Exception {
-		Constructor<?> constructor = ReflectionUtils.getConstructor(getType(),
+		Constructor<?> constructor = ReflectionUtils.getConstructor(getTargetClass(),
 				false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");

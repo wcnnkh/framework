@@ -16,8 +16,9 @@ import scw.beans.BeanUtils;
 import scw.beans.annotation.Proxy;
 import scw.beans.auto.AutoBeanUtils;
 import scw.beans.property.ValueWiredManager;
-import scw.core.instance.AutoInstanceConfig;
-import scw.core.instance.InstanceConfig;
+import scw.core.instance.definition.AutoConstructorDefinition;
+import scw.core.instance.definition.ConstructorDefinition;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
@@ -45,7 +46,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	private final FieldDefinition[] autowriteFields;
 	private final Class<?> type;
 	private final ValueWiredManager valueWiredManager;
-	private InstanceConfig instanceConfig;
+	private ConstructorDefinition instanceConfig;
 
 	public XmlBeanDefinition(ValueWiredManager valueWiredManager,
 			BeanFactory beanFactory, PropertyFactory propertyFactory,
@@ -76,12 +77,12 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		if (!type.isInterface()) {// 可能只是映射
 			XmlBeanParameter[] constructorParameters = XmlBeanUtils
 					.getConstructorParameters(nodeList);
-			this.instanceConfig = new XmlInstanceConfig(beanFactory,
+			this.instanceConfig = new XmlConstructorDefinition(beanFactory,
 					propertyFactory, type, constructorParameters);
 			if (instanceConfig.getConstructor() == null
 					&& ArrayUtils.isEmpty(constructorParameters)) {
-				instanceConfig = new AutoInstanceConfig(beanFactory,
-						propertyFactory, type);
+				instanceConfig = new AutoConstructorDefinition(beanFactory,
+						propertyFactory, type, ParameterUtils.getParameterDescriptorFactory());
 			}
 
 			if (instanceConfig.getConstructor() == null) {
@@ -94,7 +95,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		return this.id;
 	}
 
-	public Class<?> getType() {
+	public Class<?> getTargetClass() {
 		return this.type;
 	}
 
@@ -111,7 +112,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	private Object createProxyInstance() throws Exception {
-		if (getType().isInterface()) {
+		if (getTargetClass().isInterface()) {
 			if (CollectionUtils.isEmpty(filterNames)) {
 				logger.warn("{} is an interface, but there is no proxy.", type);
 			}
@@ -191,7 +192,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	@SuppressWarnings("unchecked")
 	public final <T> T create(Object... params) throws Exception {
 		Constructor<T> constructor = (Constructor<T>) ReflectionUtils
-				.findConstructorByParameters(getType(), false, params);
+				.findConstructorByParameters(getTargetClass(), false, params);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}
@@ -209,7 +210,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	@SuppressWarnings("unchecked")
 	public final <T> T create(Class<?>[] parameterTypes, Object... params)
 			throws Exception {
-		Constructor<?> constructor = ReflectionUtils.findConstructor(getType(),
+		Constructor<?> constructor = ReflectionUtils.findConstructor(getTargetClass(),
 				false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");

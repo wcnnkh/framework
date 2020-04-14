@@ -80,7 +80,7 @@ public final class ParameterUtils {
 			ParameterFactory<ParameterDescriptor> parameterFactory,
 			Class<?> type, String name) throws Exception {
 		return createObjectByParameterInternal(
-				InstanceUtils.REFLECTION_INSTANCE_FACTORY,
+				InstanceUtils.INSTANCE_FACTORY,
 				getParameterDescriptorFactory(), parameterFactory, type,
 				StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name
 						: name + "."));

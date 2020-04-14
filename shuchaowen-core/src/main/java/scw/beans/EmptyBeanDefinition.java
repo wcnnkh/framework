@@ -44,6 +44,10 @@ public final class EmptyBeanDefinition implements BeanDefinition {
 	public Class<?> getType() {
 		return type;
 	}
+	
+	public Class<?> getTargetClass() {
+		return type;
+	}
 
 	public boolean isProxy() {
 		return ProxyUtils.getProxyAdapter().isProxy(instance.getClass());

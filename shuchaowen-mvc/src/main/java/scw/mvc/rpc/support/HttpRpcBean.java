@@ -27,6 +27,6 @@ public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() {
-		return (T) rpcFactory.getProxy(getType());
+		return (T) rpcFactory.getProxy(getTargetClass());
 	}
 }

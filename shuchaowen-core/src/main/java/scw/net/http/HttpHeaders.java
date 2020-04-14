@@ -5,18 +5,16 @@ import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -24,15 +22,15 @@ import java.util.regex.Pattern;
 
 import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XUtils;
 import scw.io.resource.ResourceUtils;
-import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
+import scw.util.value.property.MapPropertyFactory;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -512,30 +510,16 @@ public class HttpHeaders extends Headers {
 
 	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
-	private static Map<String, String> ajaxHeaderMap = new HashMap<String, String>();
+	private static final MapPropertyFactory AJAX_HEADERS = new MapPropertyFactory();
 
 	static {
-		XUtils.appendToMap(
-				ResourceUtils.getResourceOperations().getProperties(
-						"/scw/net/headers/ajax.headers.properties"),
-				ajaxHeaderMap);
-		String headersResource = GlobalPropertyFactory.getInstance().getValue(
-				"scw.net.ajax.headers", String.class,
-				"/ajax-headers.properties");
-		if (ResourceUtils.getResourceOperations().isExist(headersResource)) {
-			Properties properties = ResourceUtils.getResourceOperations()
-					.getProperties(headersResource);
-			XUtils.appendToMap(properties, ajaxHeaderMap);
-		}
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("init ajax headers:{}",
-					JSONUtils.toJSONString(ajaxHeaderMap));
-		}
-	}
-
-	public static Map<String, String> getAjaxHeaderMap() {
-		return Collections.synchronizedMap(ajaxHeaderMap);
+		AJAX_HEADERS.loadProperties(ResourceUtils.getResourceOperations(),
+				"/scw/net/headers/ajax.headers.properties");
+		AJAX_HEADERS.loadProperties(
+				ResourceUtils.getResourceOperations(),
+				GlobalPropertyFactory.getInstance().getValue(
+						"scw.net.ajax.headers", String.class,
+						"/ajax-headers.properties"));
 	}
 
 	public HttpHeaders() {
@@ -544,6 +528,10 @@ public class HttpHeaders extends Headers {
 
 	public HttpHeaders(Map<String, List<String>> wrapperHeaders) {
 		super(wrapperHeaders, false);
+	}
+
+	public static MapPropertyFactory getAjaxHeaders() {
+		return AJAX_HEADERS;
 	}
 
 	/**
@@ -1425,9 +1413,15 @@ public class HttpHeaders extends Headers {
 	}
 
 	public boolean isAjax() {
-		for (Entry<String, String> entry : ajaxHeaderMap.entrySet()) {
-			if (matchHeaders(entry.getKey(), get(entry.getKey()),
-					Arrays.asList(StringUtils.commonSplit(entry.getValue())))) {
+		Enumeration<String> enumeration = AJAX_HEADERS.enumerationKeys();
+		while (enumeration.hasMoreElements()) {
+			String key = enumeration.nextElement();
+			String[] values = AJAX_HEADERS.getObject(key, String[].class);
+			if (ArrayUtils.isEmpty(values)) {
+				continue;
+			}
+
+			if (matchHeaders(key, get(key), values)) {
 				return true;
 			}
 		}
@@ -1435,8 +1429,12 @@ public class HttpHeaders extends Headers {
 	}
 
 	private boolean matchHeaders(String name, List<String> values,
-			List<String> matchs) {
+			String[] matchs) {
 		for (String match : matchs) {
+			if(match == null){
+				continue;
+			}
+			
 			if (values == null) {
 				if (matchHeader(name, null, match)) {
 					return true;

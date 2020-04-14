@@ -21,15 +21,17 @@ public abstract class AbstractAutoBean implements AutoBean {
 	}
 
 	protected abstract Collection<String> getFilterNames();
+	
+	public String getId() {
+		return type.getName();
+	}
 
 	protected boolean isProxy() {
 		return proxy;
 	}
-
-	public void init(Object bean) throws Exception{
-	}
-
-	public void destroy(Object bean) throws Exception{
+	
+	public boolean isSingleton() {
+		return true;
 	}
 
 	public boolean isReference() {

@@ -3,10 +3,11 @@ package scw.core.instance.support;
 import scw.core.instance.InstanceException;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.UnsafeUtils;
 import scw.lang.UnsupportedException;
 
-@Configuration(order=Integer.MIN_VALUE)
+@Configuration(order = Integer.MIN_VALUE)
 public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	static {
 		if (!UnsafeUtils.isSupport()) {
@@ -28,23 +29,18 @@ public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
-		return (T) getInstance(ReflectionInstanceFactory.forName(name));
+		return (T) getInstance(ClassUtils.forNameNullable(name));
 	}
 
 	public boolean isInstance(String name) {
-		Class<?> clazz = ReflectionInstanceFactory.forName(name);
+		return ClassUtils.forNameNullable(name) != null;
+	}
+
+	public boolean isInstance(Class<?> clazz) {
 		if (clazz == null) {
 			return false;
 		}
 
-		return true;
-	}
-
-	public boolean isInstance(Class<?> clazz) {
-		if(clazz == null){
-			return false;
-		}
-		
 		return true;
 	}
 

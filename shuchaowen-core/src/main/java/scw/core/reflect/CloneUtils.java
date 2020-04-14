@@ -7,8 +7,8 @@ import java.lang.reflect.Modifier;
 
 import scw.core.Verification;
 import scw.core.instance.InstanceException;
-import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.instance.NoArgsInstanceFactory;
 import scw.lang.UnsupportedException;
 
 public final class CloneUtils {
@@ -38,7 +38,7 @@ public final class CloneUtils {
 	}
 
 	public static <T> T clone(T source, Verification<Field> ignoreVerification, boolean invokeSetter) {
-		return clone(source, ignoreVerification, InstanceUtils.REFLECTION_INSTANCE_FACTORY, invokeSetter);
+		return clone(source, ignoreVerification, InstanceUtils.INSTANCE_FACTORY, invokeSetter);
 	}
 
 	/**
@@ -47,7 +47,7 @@ public final class CloneUtils {
 	 * @param obj
 	 * @return
 	 */
-	public static <T> T clone(T source, Verification<Field> ignoreVerification, InstanceFactory instanceFactory,
+	public static <T> T clone(T source, Verification<Field> ignoreVerification, NoArgsInstanceFactory instanceFactory,
 			boolean invokeSetter) {
 		try {
 			return clone(source, ignoreVerification, true, instanceFactory, invokeSetter);
@@ -57,7 +57,7 @@ public final class CloneUtils {
 	}
 
 	private static Object cloneArray(Class<?> type, Object array, Verification<Field> ignoreVerification,
-			boolean invokeCloneableMethod, InstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
+			boolean invokeCloneableMethod, NoArgsInstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(type.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
@@ -68,7 +68,7 @@ public final class CloneUtils {
 	}
 
 	private static void cloneObject(Object obj, Object source, Verification<Field> ignoreVerification,
-			boolean invokeCloneableMethod, InstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
+			boolean invokeCloneableMethod, NoArgsInstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
 		Class<?> clazz = source.getClass();
 		while (clazz != null && clazz != Object.class) {
 			for (Field field : clazz.getDeclaredFields()) {
@@ -98,7 +98,7 @@ public final class CloneUtils {
 	}
 
 	private static Object cloneObject(Class<?> type, Object obj, Verification<Field> ignoreVerification,
-			boolean invokeCloneableMethod, InstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
+			boolean invokeCloneableMethod, NoArgsInstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
 		if (!instanceFactory.isInstance(type)) {
 			return obj;
 		}
@@ -114,7 +114,7 @@ public final class CloneUtils {
 
 	@SuppressWarnings("unchecked")
 	private static <T> T autoClone(T obj, Verification<Field> ignoreVerification, boolean invokeCloneableMethod,
-			InstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
+			NoArgsInstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
 		if (obj == null) {
 			return null;
 		}
@@ -149,7 +149,7 @@ public final class CloneUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T clone(T source, Verification<Field> ignoreVerification, boolean invokeCloneableMethod,
-			InstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
+			NoArgsInstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
 		if (source == null) {
 			return null;
 		}
@@ -181,7 +181,7 @@ public final class CloneUtils {
 	}
 
 	public static <T> T copy(Object source, T target, Verification<Field> ignoreVerification, boolean clone,
-			InstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
+			NoArgsInstanceFactory instanceFactory, boolean invokeSetter) throws Exception {
 		Class<?> clz = target.getClass();
 		while (clz != null && clz != Object.class) {
 			for (Field field : clz.getDeclaredFields()) {
@@ -212,7 +212,7 @@ public final class CloneUtils {
 	}
 
 	public static <T> T copy(Object source, Class<T> clazz, Verification<Field> ignoreVerification,
-			InstanceFactory instanceFactory, boolean invokeSetter) {
+			NoArgsInstanceFactory instanceFactory, boolean invokeSetter) {
 		if (!instanceFactory.isInstance(clazz)) {
 			throw new UnsupportedException("无法实例化:" + clazz);
 		}
@@ -229,14 +229,14 @@ public final class CloneUtils {
 	public static <T> T copy(Object source, T target, boolean invokeSetter) {
 		try {
 			return copy(source, target, new IgnoreStaticFieldVerification(false), false,
-					InstanceUtils.REFLECTION_INSTANCE_FACTORY, invokeSetter);
+					InstanceUtils.INSTANCE_FACTORY, invokeSetter);
 		} catch (Exception e) {
 			throw new RuntimeException("复制时发生异常", e);
 		}
 	}
 
 	public static <T> T copy(Object source, Class<T> clazz, boolean invokeSetter) {
-		return copy(source, clazz, new IgnoreStaticFieldVerification(false), InstanceUtils.REFLECTION_INSTANCE_FACTORY,
+		return copy(source, clazz, new IgnoreStaticFieldVerification(false), InstanceUtils.INSTANCE_FACTORY,
 				invokeSetter);
 	}
 

@@ -104,7 +104,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	private void doInit(BeanDefinition beanDefinition, Node node,
 			String className) throws Exception {
 		XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
-				beanDefinition.getType(), node);
+				beanDefinition.getTargetClass(), node);
 		if (Modifier.isStatic(xmlBeanMethodInfo.getMethod().getModifiers())) {
 			// 静态方法
 			xmlBeanMethodInfo.invoke(null, this, propertyFactory);
@@ -124,7 +124,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 			if ("init".equalsIgnoreCase(n.getNodeName())) {
 				final String className = XMLUtils.getRequireNodeAttributeValue(
 						propertyFactory, n, "class");
-				final BeanDefinition beanDefinition = getBeanDefinition(className);
+				final BeanDefinition beanDefinition = getDefinition(className);
 				if (beanDefinition == null) {
 					throw new NotFoundException(className);
 				}
@@ -158,9 +158,9 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 			if ("destroy".equalsIgnoreCase(n.getNodeName())) {
 				String className = XMLUtils.getRequireNodeAttributeValue(
 						propertyFactory, n, "class");
-				BeanDefinition beanDefinition = getBeanDefinition(className);
+				BeanDefinition beanDefinition = getDefinition(className);
 				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
-						beanDefinition.getType(), n);
+						beanDefinition.getTargetClass(), n);
 				if (Modifier.isStatic(xmlBeanMethodInfo.getMethod()
 						.getModifiers())) {
 					// 静态方法

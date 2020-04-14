@@ -9,7 +9,7 @@ import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 
-@Configuration(order=Integer.MIN_VALUE + 100)
+@Configuration(order = Integer.MIN_VALUE + 100)
 public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 	private static final Constructor<?> CONSTRUCTOR;
 	private volatile IdentityHashMap<Class<?>, Constructor<?>> constructorMap = new IdentityHashMap<Class<?>, Constructor<?>>();
@@ -22,7 +22,8 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 			Class<?> clz = ClassUtils.forName("sun.reflect.ReflectionFactory");
 			Method method = clz.getMethod("getReflectionFactory");
 			INVOKE_INSTANCE = method.invoke(null);
-			METHOD = clz.getMethod("newConstructorForSerialization", Class.class, Constructor.class);
+			METHOD = clz.getMethod("newConstructorForSerialization",
+					Class.class, Constructor.class);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -34,7 +35,8 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 			synchronized (constructorMap) {
 				constructor = constructorMap.get(type);
 				if (constructor == null) {
-					constructor = (Constructor<?>) METHOD.invoke(INVOKE_INSTANCE, type, CONSTRUCTOR);
+					constructor = (Constructor<?>) METHOD.invoke(
+							INVOKE_INSTANCE, type, CONSTRUCTOR);
 					constructor.setAccessible(true);
 					constructorMap.put(type, constructor);
 				}
@@ -71,12 +73,11 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
-		return (T) getInstance(ReflectionInstanceFactory.forName(name));
+		return (T) getInstance(ClassUtils.forNameNullable(name));
 	}
 
 	public boolean isInstance(String name) {
-		Class<?> clazz = ReflectionInstanceFactory.forName(name);
-		return clazz != null;
+		return ClassUtils.forNameNullable(name) != null;
 	}
 
 	public boolean isInstance(Class<?> clazz) {

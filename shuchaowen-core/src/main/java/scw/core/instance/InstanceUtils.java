@@ -22,8 +22,7 @@ import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.Configuration;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
-import scw.core.instance.support.ReflectionInstanceFactory;
-import scw.core.instance.support.ReflectionSingleInstanceFactory;
+import scw.core.instance.definition.ConstructorDefinition;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
@@ -49,11 +48,12 @@ public final class InstanceUtils {
 	private InstanceUtils() {
 	};
 
-	public static final ReflectionInstanceFactory REFLECTION_INSTANCE_FACTORY = new ReflectionInstanceFactory();
+	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
+			GlobalPropertyFactory.getInstance(), false);
+	public static final InstanceFactory SINGLE_INSTANCE_FACTORY = new DefaultInstanceFactory(
+			GlobalPropertyFactory.getInstance(), true);
 
 	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY = getSystemConfiguration(NoArgsInstanceFactory.class);
-
-	public static final ReflectionSingleInstanceFactory SINGLE_INSTANCE_FACTORY = new ReflectionSingleInstanceFactory();
 
 	/**
 	 * 如果无参的构造方法调用失败就会使用不调用构造方法实例化
@@ -63,7 +63,7 @@ public final class InstanceUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(Class<?> type) {
-		T t = (T) REFLECTION_INSTANCE_FACTORY.getInstance(type);
+		T t = (T) INSTANCE_FACTORY.getInstance(type);
 		if (t == null) {
 			t = (T) NO_ARGS_INSTANCE_FACTORY.getInstance(type);
 		}
@@ -284,7 +284,7 @@ public final class InstanceUtils {
 
 				args[i] = value.getAsObject(parameterConfig.getGenericType());
 			} else {
-				if (parameterConfig.getType() == InstanceConfig.class) {
+				if (parameterConfig.getType() == ConstructorDefinition.class) {
 					args[i] = instanceFactory;
 					continue;
 				}
@@ -508,25 +508,25 @@ public final class InstanceUtils {
 
 	public static <T> T getSystemConfiguration(Class<? extends T> type,
 			Collection<? extends Class> excludeTypes) {
-		return getConfiguration(type, REFLECTION_INSTANCE_FACTORY,
+		return getConfiguration(type, INSTANCE_FACTORY,
 				GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 
 	public static <T> List<T> getSystemConfigurationList(
 			Class<? extends T> type, Collection<? extends Class> excludeTypes) {
-		return getConfigurationList(type, REFLECTION_INSTANCE_FACTORY,
+		return getConfigurationList(type, INSTANCE_FACTORY,
 				GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 
 	public static <T> T getSystemConfiguration(Class<? extends T> type,
 			Class... excludeTypes) {
-		return getConfiguration(type, REFLECTION_INSTANCE_FACTORY,
+		return getConfiguration(type, INSTANCE_FACTORY,
 				GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 
 	public static <T> List<T> getSystemConfigurationList(
 			Class<? extends T> type, Class... excludeTypes) {
-		return getConfigurationList(type, REFLECTION_INSTANCE_FACTORY,
+		return getConfigurationList(type, INSTANCE_FACTORY,
 				GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 }

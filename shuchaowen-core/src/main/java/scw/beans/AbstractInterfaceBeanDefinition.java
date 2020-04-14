@@ -21,11 +21,11 @@ public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefini
 	}
 
 	public <T> T create(Object... params) throws Exception{
-		throw new UnsupportedException(getType().getName());
+		throw new UnsupportedException(getTargetClass().getName());
 	}
 
 	public <T> T create(Class<?>[] parameterTypes, Object... params) throws Exception{
-		throw new UnsupportedException(getType().getName());
+		throw new UnsupportedException(getTargetClass().getName());
 	}
 
 	public String[] getNames() {

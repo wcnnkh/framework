@@ -32,7 +32,7 @@ public abstract class AbstractChannelBeanFactory implements ChannelBeanFactory,
 		ListIterator<String> iterator = idList.listIterator(idList.size());
 		while (iterator.hasPrevious()) {
 			String name = iterator.previous();
-			BeanDefinition beanDefinition = getBeanFactory().getBeanDefinition(
+			BeanDefinition beanDefinition = getBeanFactory().getDefinition(
 					name);
 			if (beanDefinition == null) {
 				continue;
@@ -89,7 +89,7 @@ public abstract class AbstractChannelBeanFactory implements ChannelBeanFactory,
 	@SuppressWarnings("unchecked")
 	public final <T> T getBean(String name) {
 		BeanDefinition beanDefinition = getBeanFactory()
-				.getBeanDefinition(name);
+				.getDefinition(name);
 		if (beanDefinition == null) {
 			return null;
 		}
@@ -117,7 +117,7 @@ public abstract class AbstractChannelBeanFactory implements ChannelBeanFactory,
 				}
 			} else {
 				Constructor<?> constructor = getModelConstructor(beanDefinition
-						.getType());
+						.getTargetClass());
 				if (constructor == null) {
 					return null;
 				}

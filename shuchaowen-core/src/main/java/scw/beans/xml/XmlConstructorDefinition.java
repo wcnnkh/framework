@@ -3,19 +3,19 @@ package scw.beans.xml;
 import java.lang.reflect.Constructor;
 
 import scw.beans.BeanUtils;
-import scw.core.instance.InstanceConfig;
 import scw.core.instance.InstanceFactory;
+import scw.core.instance.definition.ConstructorDefinition;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.util.value.property.PropertyFactory;
 
-public class XmlInstanceConfig implements InstanceConfig {
+public class XmlConstructorDefinition implements ConstructorDefinition {
 	private InstanceFactory instanceFactory;
 	private PropertyFactory propertyFactory;
 	private Constructor<?> constructor;
 	private XmlBeanParameter[] xmlBeanParameters;
 
-	public XmlInstanceConfig(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
+	public XmlConstructorDefinition(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
 			XmlBeanParameter[] xmlBeanParameters) {
 		this.instanceFactory = instanceFactory;
 		this.propertyFactory = propertyFactory;
