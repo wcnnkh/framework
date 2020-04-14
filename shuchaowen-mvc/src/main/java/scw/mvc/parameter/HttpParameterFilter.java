@@ -3,7 +3,7 @@ package scw.mvc.parameter;
 import scw.core.parameter.ParameterDescriptor;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
-import scw.mvc.action.http.HttpAction;
+import scw.mvc.action.manager.HttpAction;
 import scw.mvc.http.HttpChannel;
 
 public abstract class HttpParameterFilter implements ParameterFilter {

@@ -1,6 +1,8 @@
 package scw.beans.property;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +12,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.lang.AlreadyExistsException;
-import scw.util.value.DefaultValueDefinition;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
-import scw.util.value.property.AbstractMapPropertyFactory;
+import scw.util.value.property.AbstractPropertyFactory;
 
-public class SimplePropertyFactory extends AbstractMapPropertyFactory<Property>  {
+public class SimplePropertyFactory extends AbstractPropertyFactory  {
 	private Map<String, Property> propertyMap = new HashMap<String, Property>();
 	private ArrayList<Properties> propertiesList = new ArrayList<Properties>();
 
@@ -52,13 +53,12 @@ public class SimplePropertyFactory extends AbstractMapPropertyFactory<Property> 
 		return propertiesList;
 	}
 
-	@Override
-	protected Map<String, Property> getMap() {
-		return propertyMap;
+	public Enumeration<String> enumerationKeys() {
+		return Collections.enumeration(propertyMap.keySet());
 	}
 
-	@Override
-	protected Value createValue(Property value) {
-		return new StringValue(value.getValue(), DefaultValueDefinition.DEFAULT_VALUE_DEFINITION);
+	public Value get(String key) {
+		Property property = propertyMap.get(key);
+		return property == null? null:new StringValue(property.getValue());
 	}
 }

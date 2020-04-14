@@ -3,7 +3,6 @@ package scw.core.parameter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.ParameterName;
 import scw.core.instance.InstanceFactory;
@@ -15,9 +14,7 @@ import scw.core.utils.StringUtils;
 public final class ParameterUtils {
 	private static final LocalVariableTableParameterNameDiscoverer LVTPND = new LocalVariableTableParameterNameDiscoverer();
 	private static final ParameterDescriptorFactory PARAMETER_DESCRIPTOR_FACTORY = InstanceUtils
-			.getConfiguration(ParameterDescriptorFactory.class,
-					InstanceUtils.REFLECTION_INSTANCE_FACTORY,
-					GlobalPropertyFactory.getInstance());
+			.getSystemConfiguration(ParameterDescriptorFactory.class);
 
 	private ParameterUtils() {
 	};

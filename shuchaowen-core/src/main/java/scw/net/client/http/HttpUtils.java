@@ -40,9 +40,7 @@ public final class HttpUtils {
 					"scw.http.client.read.timeout"), 10000);
 
 	private static final HttpClient HTTP_CLIENT = InstanceUtils
-			.getConfiguration(HttpClient.class,
-					InstanceUtils.REFLECTION_INSTANCE_FACTORY,
-					GlobalPropertyFactory.getInstance());
+			.getSystemConfiguration(HttpClient.class);
 
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;

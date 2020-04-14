@@ -1,6 +1,5 @@
 package scw.mvc;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -10,12 +9,10 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
-import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -29,11 +26,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.AbstractAction;
 import scw.mvc.action.Action;
-import scw.mvc.action.ActionFactory;
-import scw.mvc.action.MultiActionFactory;
-import scw.mvc.action.filter.ActionFilter;
-import scw.mvc.annotation.Controller;
-import scw.mvc.annotation.Filters;
 import scw.mvc.context.ContextManager;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
@@ -90,20 +82,6 @@ public final class MVCUtils implements MvcConstants {
 		return RESTURL_PATH_PARAMETER.equals(name);
 	}
 
-	public static ActionFactory getActionFactory(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		MultiActionFactory multiActionFactory = new MultiActionFactory();
-		LinkedList<ActionFactory> actionFactoryList = new LinkedList<ActionFactory>();
-		BeanUtils.appendBean(actionFactoryList, beanFactory, propertyFactory,
-				ActionFactory.class, "mvc.action.factory");
-		if (!CollectionUtils.isEmpty(actionFactoryList)) {
-			multiActionFactory.addAll(actionFactoryList);
-		}
-
-		multiActionFactory.add(beanFactory.getInstance(ActionFactory.class));
-		return multiActionFactory;
-	}
-
 	public static Object[] getParameterValues(Channel channel,
 			ParameterDescriptor[] parameterConfigs) {
 		Action action = ContextManager.getCurrentAction();
@@ -143,18 +121,18 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public static Map<String, String> getRestPathParameterMap(Channel channel) {
-		return (Map<String, String>) channel
+	public static MultiValueMap<String, String> getRestfulParameterMap(
+			Channel channel) {
+		return (MultiValueMap<String, String>) channel
 				.getAttribute(RESTURL_PATH_PARAMETER);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void setRestPathParameterMap(Attributes attributes,
-			Map<String, String> parameterMap) {
-		attributes.setAttribute(RESTURL_PATH_PARAMETER, parameterMap);
+	public static void setRestfulParameterMap(Channel channel,
+			MultiValueMap<String, String> parameterMap) {
+		channel.setAttribute(RESTURL_PATH_PARAMETER, parameterMap);
 	}
 
-	public static boolean isRestPathParameterMapAttributeName(String name) {
+	public static boolean isRestfulParameterMapAttributeName(String name) {
 		return RESTURL_PATH_PARAMETER.equals(name);
 	}
 
@@ -207,41 +185,6 @@ public final class MVCUtils implements MvcConstants {
 	public static String getRPCPath(PropertyFactory propertyFactory) {
 		String path = propertyFactory.getString("mvc.http.rpc-path");
 		return StringUtils.isEmpty(path) ? "/rpc" : path;
-	}
-
-	public static LinkedList<ParameterFilter> getParameterFilters(
-			InstanceFactory instanceFactory, Class<?> clz, Method method) {
-		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
-		Controller controller = clz.getAnnotation(Controller.class);
-		if (controller != null) {
-			for (Class<? extends ParameterFilter> clazz : controller
-					.parameterFilter()) {
-				list.add(instanceFactory.getInstance(clazz));
-			}
-		}
-
-		controller = method.getAnnotation(Controller.class);
-		if (controller != null) {
-			for (Class<? extends ParameterFilter> clazz : controller
-					.parameterFilter()) {
-				list.add(instanceFactory.getInstance(clazz));
-			}
-		}
-
-		if (instanceFactory.isInstance(ParameterFilter.class)) {
-			list.add(instanceFactory.getInstance(ParameterFilter.class));
-		}
-		return list;
-	}
-
-	public static LinkedList<ParameterFilter> getParameterFilters(
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
-		BeanUtils.appendBean(list, instanceFactory, propertyFactory,
-				ParameterFilter.class, "mvc.parameter.filter");
-		list.addAll(InstanceUtils.getConfigurationList(ParameterFilter.class,
-				instanceFactory));
-		return list;
 	}
 
 	public static String getCharsetName(PropertyFactory propertyFactory) {
@@ -421,48 +364,6 @@ public final class MVCUtils implements MvcConstants {
 		httpResponse.getHeaders().set(
 				HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
 				config.isCredentials() + "");
-	}
-
-	public static LinkedList<ActionFilter> getActionFilters(Class<?> clazz,
-			Method method, InstanceFactory instanceFactory) {
-		Filters filters = clazz.getAnnotation(Filters.class);
-		LinkedList<ActionFilter> list = new LinkedList<ActionFilter>();
-		if (filters != null) {
-			for (Class<? extends ActionFilter> f : filters.value()) {
-				if (ActionFilter.class.isAssignableFrom(f)) {
-					list.add(instanceFactory.getInstance(f));
-				}
-			}
-		}
-
-		Controller controller = clazz.getAnnotation(Controller.class);
-		if (controller != null) {
-			for (Class<? extends ActionFilter> f : controller.filters()) {
-				if (ActionFilter.class.isAssignableFrom(f)) {
-					list.add(instanceFactory.getInstance(f));
-				}
-			}
-		}
-
-		filters = method.getAnnotation(Filters.class);
-		if (filters != null) {
-			list.clear();
-			for (Class<? extends ActionFilter> f : filters.value()) {
-				if (ActionFilter.class.isAssignableFrom(f)) {
-					list.add(instanceFactory.getInstance(f));
-				}
-			}
-		}
-
-		controller = method.getAnnotation(Controller.class);
-		if (controller != null) {
-			for (Class<? extends ActionFilter> f : controller.filters()) {
-				if (ActionFilter.class.isAssignableFrom(f)) {
-					list.add(instanceFactory.getInstance(f));
-				}
-			}
-		}
-		return list;
 	}
 
 	public static CorsConfigFactory getCorsConfigFactory(

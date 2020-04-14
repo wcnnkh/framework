@@ -17,7 +17,7 @@ public class RootServletContainerInitializerConfiguration implements
 	public RootServletContainerInitializerConfiguration(
 			BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		this.initializers = InstanceUtils.getConfigurationList(
-				ServletContainerInitializer.class, beanFactory);
+				ServletContainerInitializer.class, beanFactory, propertyFactory);
 	}
 
 	public Collection<? extends ServletContainerInitializer> getServletContainerInitializers() {

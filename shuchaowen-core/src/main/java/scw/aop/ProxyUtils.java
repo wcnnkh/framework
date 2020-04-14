@@ -5,16 +5,14 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
-import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 
 public final class ProxyUtils {
 	private static final MultipleProxyAdapter PROXY_ADAPTER = new MultipleProxyAdapter();
 
 	static {
-		PROXY_ADAPTER.addAll(InstanceUtils.getConfigurationList(
-				ProxyAdapter.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY,
-				GlobalPropertyFactory.getInstance()));
+		PROXY_ADAPTER.addAll(InstanceUtils
+				.getSystemConfigurationList(ProxyAdapter.class));
 	}
 
 	private ProxyUtils() {

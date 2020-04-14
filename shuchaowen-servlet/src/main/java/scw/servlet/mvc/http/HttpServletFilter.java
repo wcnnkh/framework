@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.mvc.action.filter.ActionFilterChain;
-import scw.mvc.action.http.HttpAction;
-import scw.mvc.action.http.HttpActionFilter;
+import scw.mvc.action.filter.HttpActionFilter;
+import scw.mvc.action.manager.HttpAction;
 import scw.mvc.http.HttpChannel;
 
 public abstract class HttpServletFilter extends HttpActionFilter {

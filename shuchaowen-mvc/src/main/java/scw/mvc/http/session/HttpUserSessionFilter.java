@@ -5,13 +5,13 @@ import scw.core.annotation.Order;
 import scw.core.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.mvc.action.filter.ActionFilterChain;
-import scw.mvc.action.http.HttpAction;
+import scw.mvc.action.manager.HttpAction;
 import scw.mvc.http.HttpChannel;
 import scw.result.ResultFactory;
 import scw.security.session.UserSession;
 
 @SuppressWarnings("rawtypes")
-public class HttpUserSessionFilter extends scw.mvc.action.http.HttpActionFilter	{
+public class HttpUserSessionFilter extends scw.mvc.action.filter.HttpActionFilter	{
 	private HttpChannelUserSessionFactory httpChannelUserSessionFactory;
 	private String uidKey;
 	private ResultFactory resultFactory;

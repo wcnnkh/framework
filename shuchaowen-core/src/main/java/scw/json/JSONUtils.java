@@ -13,7 +13,7 @@ public final class JSONUtils {
 	/**
 	 * 默认的json序列化工具
 	 */
-	public static final JSONSupport DEFAULT_JSON_SUPPORT = InstanceUtils.getConfiguration(JSONSupport.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY);
+	public static final JSONSupport DEFAULT_JSON_SUPPORT = InstanceUtils.getSystemConfiguration(JSONSupport.class);
 
 	static {
 		if(DEFAULT_JSON_SUPPORT != null){

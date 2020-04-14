@@ -17,8 +17,7 @@ public final class SerializerUtils {
 	 * 默认的序列化实现
 	 */
 	public static final Serializer DEFAULT_SERIALIZER = InstanceUtils
-			.getConfiguration(Serializer.class,
-					InstanceUtils.REFLECTION_INSTANCE_FACTORY);
+			.getSystemConfiguration(Serializer.class);
 
 	static {
 		if (DEFAULT_SERIALIZER != null) {

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
+import scw.core.instance.annotation.Configuration;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.MVCUtils;
@@ -17,6 +18,7 @@ import scw.mvc.service.ChannelService;
 import scw.servlet.mvc.http.HttpServletChannelFactory;
 import scw.util.value.property.PropertyFactory;
 
+@Configuration(order=Integer.MIN_VALUE)
 @Bean(proxy = false)
 public class DefaultServletService implements ServletService {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());

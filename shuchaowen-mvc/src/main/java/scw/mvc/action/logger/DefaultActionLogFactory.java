@@ -6,6 +6,7 @@ import java.util.Map;
 import scw.core.Callable;
 import scw.core.annotation.DefaultValue;
 import scw.core.annotation.ParameterName;
+import scw.core.instance.annotation.Configuration;
 import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.CollectionUtils;
@@ -16,6 +17,7 @@ import scw.mvc.action.Action;
 import scw.mvc.action.logger.annotation.ActionLogAttributeConfig;
 import scw.mvc.http.HttpRequest;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	private static final Callable<HashMap<String, String>> ATTRIBUTE_MAP_CALLABLE = CollectionUtils.hashMapCallable(8);
 	private ParameterDescriptor identificationParameterConfig;

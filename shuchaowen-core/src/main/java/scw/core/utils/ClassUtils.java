@@ -686,7 +686,16 @@ public final class ClassUtils {
 		}
 		return types;
 	}
-
+	
+	public static Class<?> forNameNullable(String name){
+		Class<?> clazz = null;
+		try {
+			clazz = forName(name);
+		} catch (ClassNotFoundException e) {
+			//ignore
+		}
+		return clazz;
+	}
 	public static Class<?> forName(String name) throws ClassNotFoundException {
 		return forName(name, getDefaultClassLoader());
 	}
@@ -733,12 +742,13 @@ public final class ClassUtils {
 					classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
-		
+
 		int end = name.indexOf("<");
-		if(end != -1){
+		if (end != -1) {
 			// 对于泛型字符串处理
 			int begin = name.lastIndexOf(" ", end);
-			return forName(name.substring(begin == -1? 0:begin + 1, end), initialize, classLoader);
+			return forName(name.substring(begin == -1 ? 0 : begin + 1, end),
+					initialize, classLoader);
 		}
 
 		ClassLoader classLoaderToUse = classLoader;
@@ -1198,6 +1208,41 @@ public final class ClassUtils {
 		return false;
 	}
 
+	@SuppressWarnings("rawtypes")
+	public static boolean isAssignable(Collection<? extends Class> lhsTypes,
+			Class<?> rhsType) {
+		if (CollectionUtils.isEmpty(lhsTypes)) {
+			return false;
+		}
+
+		for (Class<?> lhsType : lhsTypes) {
+			if (isAssignable(lhsType, rhsType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean isAssignable(Class<?> lhsType,
+			Collection<? extends Class> rhsTypes) {
+		if (CollectionUtils.isEmpty(rhsTypes)) {
+			return false;
+		}
+
+		for (Class<?> rhsType : rhsTypes) {
+			if (isAssignable(lhsType, rhsType)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static boolean isAssignable(Class<?> lhsType, Class... rhsTypes) {
+		return isAssignable(lhsType, Arrays.asList(rhsTypes));
+	}
+
 	public static boolean isAssignable(Collection<Class<?>> lhsTypes,
 			Collection<Class<?>> rhsTypes) {
 		if (CollectionUtils.isEmpty(lhsTypes)) {
@@ -1586,6 +1631,10 @@ public final class ClassUtils {
 			set.addAll(getClassSet(resource));
 		}
 		return set;
+	}
+
+	public static Set<Class<?>> getClassSet(String... resources) {
+		return getClassSet(Arrays.asList(resources));
 	}
 
 	public static Set<Class<?>> getClassSet(String resource, boolean initialize) {

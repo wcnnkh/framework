@@ -440,7 +440,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 
 	public synchronized void init() {
 		for (Class<? extends Filter> clazz : InstanceUtils
-				.getConfigurationClassList(Filter.class)) {
+				.getConfigurationClassList(Filter.class, propertyFactory)) {
 			if (!isInstance(clazz)) {
 				continue;
 			}
@@ -449,7 +449,7 @@ public abstract class AbstractBeanFactory implements BeanFactory, Init, Destroy 
 		}
 
 		propertyFactory.addAll(
-				InstanceUtils.getConfigurationList(PropertyFactory.class, this),
+				InstanceUtils.getConfigurationList(PropertyFactory.class, this, propertyFactory),
 				true);
 		for (Init init : inits) {
 			init.init();

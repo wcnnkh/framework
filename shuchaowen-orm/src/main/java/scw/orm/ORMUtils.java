@@ -22,14 +22,11 @@ public final class ORMUtils {
 					GlobalPropertyFactory.getInstance().getString(
 							"orm.primary.key.connector.character"), ':');
 	private static final ORMInstanceFactory INSTANCE_FACTORY = InstanceUtils
-			.getConfiguration(ORMInstanceFactory.class,
-					InstanceUtils.REFLECTION_INSTANCE_FACTORY,
-					GlobalPropertyFactory.getInstance());
+			.getSystemConfiguration(ORMInstanceFactory.class);
 	private static final Collection<Filter> FILTERS = InstanceUtils
-			.getConfigurationList(Filter.class,
-					InstanceUtils.REFLECTION_INSTANCE_FACTORY,
-					GlobalPropertyFactory.getInstance());
-	private static final ObjectOperations OBJECT_OPERATIONS = InstanceUtils.getConfiguration(ObjectOperations.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY, GlobalPropertyFactory.getInstance());
+			.getSystemConfigurationList(Filter.class);
+	private static final ObjectOperations OBJECT_OPERATIONS = InstanceUtils
+			.getSystemConfiguration(ObjectOperations.class);
 
 	private ORMUtils() {
 	};

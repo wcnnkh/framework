@@ -1809,6 +1809,12 @@ public final class StringUtils {
 		return decimalFormat.format(number);
 	}
 
+	public static boolean isSupportTestMatching(String matching) {
+		return !StringUtils.isEmpty(matching)
+				&& (matching.indexOf("!") != -1 || matching.indexOf("?") != -1 || matching
+						.indexOf("*") != -1);
+	}
+
 	/**
 	 * 判断字符串是否与通配符匹配 只能存在通配符*和? ?代表1个 *代表0个或多个<br/>
 	 * !开头代表非(只支持开头使用!)

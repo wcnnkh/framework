@@ -14,11 +14,14 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.SSLSocketFactory;
 
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
+import scw.net.message.converter.MessageConverter;
+import scw.net.message.converter.MultiMessageConverter;
 import scw.net.ssl.TrustAllManager;
 
 public final class NetworkUtils {
@@ -30,6 +33,8 @@ public final class NetworkUtils {
 	 * 注意:在初始化失败后可能为空
 	 */
 	public static final SSLSocketFactory TRUSE_ALL_SSL_SOCKET_FACTORY;
+
+	private static final MultiMessageConverter MESSAGE_CONVERTER = new MultiMessageConverter();
 
 	static {
 		// 创建一个信任所有的
@@ -47,6 +52,13 @@ public final class NetworkUtils {
 		}
 		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc
 				.getSocketFactory();
+		
+		MESSAGE_CONVERTER.addAll(InstanceUtils
+				.getSystemConfigurationList(MessageConverter.class));
+	}
+
+	public static MultiMessageConverter getMessageConverter() {
+		return MESSAGE_CONVERTER;
 	}
 
 	public static List<InetSocketAddress> parseInetSocketAddressList(

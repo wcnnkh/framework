@@ -1,7 +1,6 @@
 package scw.mvc.http;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterDescriptor;
@@ -14,6 +13,7 @@ import scw.mvc.http.session.HttpChannelUserSessionFactory;
 import scw.net.http.HttpMethod;
 import scw.security.session.Authorization;
 import scw.security.session.Session;
+import scw.util.MultiValueMap;
 import scw.util.ip.IP;
 import scw.util.ip.SimpleIP;
 
@@ -63,10 +63,10 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 	public String getString(String name) {
 		String v = request.getParameter(name);
 		if (v == null) {
-			Map<String, String> restParameterMap = MVCUtils
-					.getRestPathParameterMap(this);
-			if (restParameterMap != null) {
-				v = restParameterMap.get(name);
+			MultiValueMap<String, String> restfulParameterMap = MVCUtils
+					.getRestfulParameterMap(this);
+			if (restfulParameterMap != null) {
+				v = restfulParameterMap.getFirst(name);
 			}
 		}
 

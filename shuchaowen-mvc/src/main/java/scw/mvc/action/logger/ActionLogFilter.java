@@ -1,28 +1,35 @@
 package scw.mvc.action.logger;
 
-import scw.core.GlobalPropertyFactory;
+import scw.beans.BeanFactory;
+import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
 import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.action.filter.ActionFilterChain;
+import scw.util.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MAX_VALUE)
-public final class ActionLogFilter implements ActionFilter {
-	private static final boolean LOGGER_ENABLE = GlobalPropertyFactory
-			.getInstance().getValue("mvc.logger.enable", boolean.class, true);
+@Bean(proxy = false)
+public class ActionLogFilter implements ActionFilter {
 	private ActionLogService logService;
 	private ActionLogFactory actionLogFactory;
 
-	public ActionLogFilter(ActionLogFactory actionLogFactory,
-			ActionLogService logService) {
-		this.actionLogFactory = actionLogFactory;
-		this.logService = logService;
+	public ActionLogFilter(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
+		if (propertyFactory.getValue("mvc.action.logger.filter.enable",
+				boolean.class, true)
+				&& beanFactory.isInstance(ActionLogService.class)
+				&& beanFactory.isInstance(ActionLogFactory.class)) {
+			this.logService = beanFactory.getInstance(ActionLogService.class);
+			this.actionLogFactory = beanFactory
+					.getInstance(ActionLogFactory.class);
+		}
 	}
 
-	public Object doFilter(Channel channel, Action action, ActionFilterChain chain)
-			throws Throwable {
-		if (!LOGGER_ENABLE) {
+	public Object doFilter(Channel channel, Action action,
+			ActionFilterChain chain) throws Throwable {
+		if (logService == null || actionLogFactory == null) {
 			return chain.doFilter(channel, action);
 		}
 

@@ -1,11 +1,10 @@
 package scw.logger;
 
-import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.util.FormatUtils;
 
 public final class LoggerFactory {
-	private static final ILoggerFactory LOGGER_FACTORY = InstanceUtils.getConfiguration(ILoggerFactory.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY, GlobalPropertyFactory.getInstance());
+	private static final ILoggerFactory LOGGER_FACTORY = InstanceUtils.getSystemConfiguration(ILoggerFactory.class);
 
 	private LoggerFactory() {
 	};

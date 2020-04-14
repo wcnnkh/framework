@@ -17,7 +17,7 @@ public class ServletRootFilterConfiguration implements FilterConfiguration {
 	public ServletRootFilterConfiguration(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
 		this.filters = InstanceUtils.getConfigurationList(Filter.class,
-				beanFactory);
+				beanFactory, propertyFactory);
 	}
 
 	public String getName() {

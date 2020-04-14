@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +41,7 @@ import scw.util.value.Value;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
+@SuppressWarnings("rawtypes")
 public final class InstanceUtils {
 	private static Logger logger = LoggerUtils
 			.getConsoleLogger(InstanceUtils.class);
@@ -49,8 +51,7 @@ public final class InstanceUtils {
 
 	public static final ReflectionInstanceFactory REFLECTION_INSTANCE_FACTORY = new ReflectionInstanceFactory();
 
-	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY = getConfiguration(
-			NoArgsInstanceFactory.class, REFLECTION_INSTANCE_FACTORY);
+	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY = getSystemConfiguration(NoArgsInstanceFactory.class);
 
 	public static final ReflectionSingleInstanceFactory SINGLE_INSTANCE_FACTORY = new ReflectionSingleInstanceFactory();
 
@@ -135,68 +136,6 @@ public final class InstanceUtils {
 
 	public static InstanceFactory getSingleInstanceFactory() {
 		return SINGLE_INSTANCE_FACTORY;
-	}
-
-	public static <T> T getInstance(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		return getInstance(type, instanceFactory, propertyFactory,
-				type.getName());
-	}
-
-	public static <T> T getInstance(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			String key) {
-		String[] names = propertyFactory.getObject(key, String[].class);
-		if (ArrayUtils.isEmpty(names)) {
-			return null;
-		}
-
-		String name = names[0];
-		if (!instanceFactory.isInstance(name)) {
-			logger.warn("{} not create instance class {}", name, type);
-			return null;
-		}
-
-		Object t = instanceFactory.getInstance(name);
-		if (!ClassUtils.isAssignableValue(type, t)) {
-			logger.warn("{} not is assignable from {}", name, type);
-			return null;
-		}
-		return type.cast(t);
-	}
-
-	public static <T> Collection<T> getInstances(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		return getInstances(type, instanceFactory, propertyFactory,
-				type.getName());
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> Collection<T> getInstances(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			String key) {
-		String[] names = propertyFactory.getObject(key, String[].class);
-		if (ArrayUtils.isEmpty(names)) {
-			return Collections.EMPTY_LIST;
-		}
-
-		List<T> list = new ArrayList<T>();
-		for (String name : names) {
-			if (!instanceFactory.isInstance(name)) {
-				logger.warn("{} not create instance class {}", name, type);
-				continue;
-			}
-
-			Object t = instanceFactory.getInstance(name);
-			if (!ClassUtils.isAssignableValue(type, t)) {
-				logger.warn("{} not is assignable from {}", name, type);
-				continue;
-			}
-
-			list.add(type.cast(t));
-		}
-		return list.isEmpty() ? Collections.EMPTY_LIST : Collections
-				.unmodifiableCollection(list);
 	}
 
 	private static boolean isProerptyType(ParameterDescriptor parameterConfig) {
@@ -368,14 +307,28 @@ public final class InstanceUtils {
 			Class<?> type, String packageName) {
 		Set<Class<?>> list = new HashSet<Class<?>>();
 		for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
+			if (!ClassUtils.isAssignable(type, clazz)) {
+				continue;
+			}
+
 			Configuration configuration = clazz
 					.getAnnotation(Configuration.class);
 			if (configuration == null) {
 				continue;
 			}
 
-			if (!type.isAssignableFrom(clazz)) {
-				continue;
+			if (configuration.value().length != 0) {
+				Collection<Class<?>> values = Arrays.asList(configuration
+						.value());
+				if (configuration.assignableValue()) {
+					if (!ClassUtils.isAssignable(type, values)) {
+						continue;
+					}
+				} else {
+					if (!values.contains(type)) {
+						continue;
+					}
+				}
 			}
 
 			if (!ClassUtils.isPresent(clazz.getName())) {
@@ -388,24 +341,27 @@ public final class InstanceUtils {
 		return list;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, Collection<Class> excludeTypes) {
-		return getConfigurationClassList(type, excludeTypes, Arrays.asList(
-				Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName()));
+	public static <T> Collection<Class<T>> getConfigurationClassList(
+			Class<? extends T> type, PropertyFactory propertyFactory,
+			Collection<? extends Class> excludeTypes) {
+		return getConfigurationClassList(type, propertyFactory, excludeTypes,
+				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
+						getScanAnnotationPackageName()));
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, Class... excludeTypes) {
-		return getConfigurationClassList(type, Arrays.asList(excludeTypes));
+	public static <T> Collection<Class<T>> getConfigurationClassList(
+			Class<? extends T> type, PropertyFactory propertyFactory,
+			Class... excludeTypes) {
+		return getConfigurationClassList(type, propertyFactory,
+				Arrays.asList(excludeTypes));
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T> List<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, Collection<Class> excludeTypes,
-			Collection<String> packageNames) {
-		HashSet<Class<T>> set = new HashSet<Class<T>>();
+	@SuppressWarnings({ "unchecked" })
+	public static <T> Collection<Class<T>> getConfigurationClassList(
+			Class<? extends T> type, PropertyFactory propertyFactory,
+			Collection<? extends Class> excludeTypes,
+			Collection<? extends String> packageNames) {
+		Set<Class<T>> set = new LinkedHashSet<Class<T>>();
 		for (String packageName : packageNames) {
 			for (Class<?> clazz : getConfigurationClassListInternal(type,
 					packageName)) {
@@ -415,13 +371,10 @@ public final class InstanceUtils {
 					continue;
 				}
 
-				if (!CollectionUtils.isEmpty(excludeTypes)) {
-					for (Class<?> excludeType : excludeTypes) {
-						if (excludeType.isAssignableFrom(clazz)) {
-							continue;
-						}
-					}
+				if (ClassUtils.isAssignable(excludeTypes, clazz)) {
+					continue;
 				}
+
 				set.add((Class<T>) clazz);
 			}
 		}
@@ -447,24 +400,56 @@ public final class InstanceUtils {
 			}
 		};
 		Collections.sort(list, comparator);
-		return list;
+
+		set.clear();
+		String[] configNames = propertyFactory.getObject(type.getName(),
+				String[].class);
+		if (!ArrayUtils.isEmpty(configNames)) {
+			for (String name : configNames) {
+				Class<?> clazz = ClassUtils.forNameNullable(name);
+				if (clazz == null) {
+					if (logger.isDebugEnabled()) {
+						logger.debug("not create class by name:{}", name);
+					}
+					continue;
+				}
+
+				if (ClassUtils.isAssignable(type, clazz)) {
+					continue;
+				}
+
+				if (ClassUtils.isAssignable(excludeTypes, clazz)) {
+					continue;
+				}
+				set.add((Class<T>) clazz);
+			}
+		}
+
+		for (Class<T> clazz : list) {
+			if (set.contains(clazz)) {
+				continue;
+			}
+
+			set.add(clazz);
+		}
+		return set;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, Collection<Class> excludeTypes) {
-		return getConfigurationList(type, instanceFactory, excludeTypes,
-				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Collection<? extends Class> excludeTypes) {
+		return getConfigurationList(type, instanceFactory, propertyFactory,
+				excludeTypes, Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
 						getScanAnnotationPackageName()));
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, Collection<Class> excludeTypes,
-			Collection<String> packageNames) {
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Collection<? extends Class> excludeTypes,
+			Collection<? extends String> packageNames) {
 		List<T> list = new ArrayList<T>();
-		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
-				packageNames)) {
+		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory,
+				excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
 				logger.debug("factory [{}] not create instance:{}",
 						instanceFactory.getClass(), clazz);
@@ -476,10 +461,10 @@ public final class InstanceUtils {
 		return list;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, Class... excludeTypes) {
-		return getConfigurationList(type, instanceFactory,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class... excludeTypes) {
+		return getConfigurationList(type, instanceFactory, propertyFactory,
 				Arrays.asList(excludeTypes));
 	}
 
@@ -489,12 +474,12 @@ public final class InstanceUtils {
 				GlobalPropertyFactory.getInstance().getBasePackageName());
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, Collection<Class> excludeTypes,
-			Collection<String> packageNames) {
-		for (Class<T> clazz : getConfigurationClassList(type, excludeTypes,
-				packageNames)) {
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Collection<? extends Class> excludeTypes,
+			Collection<? extends String> packageNames) {
+		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory,
+				excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
 				logger.debug("factory [{}] not create instance:{}",
 						instanceFactory.getClass(), clazz);
@@ -506,35 +491,42 @@ public final class InstanceUtils {
 		return null;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, Collection<Class> excludeTypes) {
-		return getConfiguration(type, instanceFactory, excludeTypes,
-				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Collection<? extends Class> excludeTypes) {
+		return getConfiguration(type, instanceFactory, propertyFactory,
+				excludeTypes, Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
 						getScanAnnotationPackageName()));
 	}
 
-	@SuppressWarnings("rawtypes")
 	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, Class... excludeTypes) {
-		return getConfiguration(type, instanceFactory,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class... excludeTypes) {
+		return getConfiguration(type, instanceFactory, propertyFactory,
 				Arrays.asList(excludeTypes));
 	}
 
-	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		T t = getInstance(type, instanceFactory, propertyFactory);
-		if (t == null) {
-			t = getConfiguration(type, instanceFactory);
-		}
-		return t;
+	public static <T> T getSystemConfiguration(Class<? extends T> type,
+			Collection<? extends Class> excludeTypes) {
+		return getConfiguration(type, REFLECTION_INSTANCE_FACTORY,
+				GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 
-	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		List<T> list = new ArrayList<T>();
-		list.addAll(getConfigurationList(type, instanceFactory));
-		list.addAll(getInstances(type, instanceFactory, propertyFactory));
-		return Collections.unmodifiableList(list);
+	public static <T> List<T> getSystemConfigurationList(
+			Class<? extends T> type, Collection<? extends Class> excludeTypes) {
+		return getConfigurationList(type, REFLECTION_INSTANCE_FACTORY,
+				GlobalPropertyFactory.getInstance(), excludeTypes);
+	}
+
+	public static <T> T getSystemConfiguration(Class<? extends T> type,
+			Class... excludeTypes) {
+		return getConfiguration(type, REFLECTION_INSTANCE_FACTORY,
+				GlobalPropertyFactory.getInstance(), excludeTypes);
+	}
+
+	public static <T> List<T> getSystemConfigurationList(
+			Class<? extends T> type, Class... excludeTypes) {
+		return getConfigurationList(type, REFLECTION_INSTANCE_FACTORY,
+				GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 }

@@ -15,9 +15,11 @@ public class ConfigurationOutput extends MultiOutput {
 
 	public ConfigurationOutput(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
-		addAll(InstanceUtils.getConfigurationList(Output.class, beanFactory));
+		addAll(InstanceUtils.getConfigurationList(Output.class, beanFactory,
+				propertyFactory));
 		List<MessageConverter> messageConverters = InstanceUtils
-				.getConfigurationList(MessageConverter.class, beanFactory);
+				.getConfigurationList(MessageConverter.class, beanFactory,
+						propertyFactory);
 		DefaultHttpOutput output = new DefaultHttpOutput();
 		output.setJsonp(HttpOutput.getJsonp(propertyFactory));
 		output.getMessageConverter().addAll(messageConverters);

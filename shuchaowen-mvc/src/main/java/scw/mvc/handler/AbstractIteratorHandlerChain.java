@@ -1,13 +1,8 @@
 package scw.mvc.handler;
 
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 import scw.mvc.Channel;
 
-
-public abstract class AbstractIteratorHandlerChain implements
-		HandlerChain {
-	private static Logger logger = LoggerUtils.getLogger(AbstractIteratorHandlerChain.class);
+public abstract class AbstractIteratorHandlerChain implements HandlerChain {
 	private final HandlerChain chain;
 
 	public AbstractIteratorHandlerChain(HandlerChain chain) {
@@ -29,12 +24,9 @@ public abstract class AbstractIteratorHandlerChain implements
 
 	protected abstract Handler getNextChannelHandler(Channel channel)
 			throws Throwable;
-	
-	protected Object lastHandler(Channel channel) throws Throwable{
-		if(logger.isDebugEnabled()){
-			logger.debug("handler not support channel:{}",
-					channel.toString());
-		}
+
+	protected Object lastHandler(Channel channel) throws Throwable {
+		channel.getLogger().warn("handler not support channel:{}", channel.toString());
 		return null;
 	}
 }

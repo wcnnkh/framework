@@ -36,6 +36,10 @@ import scw.util.MultiValueMap;
 import scw.util.MultiValueMapWrapper;
 
 public abstract class CollectionUtils {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(
+			Collections.emptyMap());
+
 	/**
 	 * Return {@code true} if the supplied Collection is {@code null} or empty.
 	 * Otherwise, return {@code false}.

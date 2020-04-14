@@ -11,8 +11,7 @@ public final class CompatibleUtils {
 
 	private static final boolean isSupportJdk6;
 	private static final StringOperations STRING_OPERATIONS = InstanceUtils
-			.getConfiguration(StringOperations.class,
-					InstanceUtils.REFLECTION_INSTANCE_FACTORY);
+			.getSystemConfiguration(StringOperations.class);
 
 	static {
 		isSupportJdk6 = ReflectionUtils.getMethod(String.class, "getBytes",

@@ -6,6 +6,7 @@ import java.util.List;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.Pagination;
+import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.CloneUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -25,6 +26,7 @@ import scw.timer.Task;
 import scw.timer.Timer;
 import scw.timer.support.SimpleCrontabConfig;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class DBActionLogServiceImpl implements ActionLogService, Task {
 	private static Logger logger = LoggerUtils
 			.getLogger(DBActionLogServiceImpl.class);

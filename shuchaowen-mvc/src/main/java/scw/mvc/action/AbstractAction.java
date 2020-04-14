@@ -4,6 +4,9 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import scw.aop.Invoker;
 import scw.core.annotation.AnnotatedElementUtils;
@@ -18,23 +21,28 @@ import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.action.filter.IteratorActionFilterChain;
 import scw.mvc.parameter.ParameterFilter;
 
-public abstract class AbstractAction implements Action{
+public abstract class AbstractAction implements Action {
 	private final Method method;
 	private final Class<?> targetClass;
 	private final AnnotatedElement annotatedElement;
 	private final AnnotatedElement targetClassAnnotatedElement;
 	private final AnnotatedElement methodAnnotatedElement;
 	private final ParameterDescriptor[] parameterConfigs;
-	
-	public AbstractAction(Class<?> targetClass, Method method){
+	protected final Set<ActionFilter> actionFilters = new LinkedHashSet<ActionFilter>(4);
+	protected final Set<ParameterFilter> parameterFilters = new LinkedHashSet<ParameterFilter>(4);
+
+	public AbstractAction(Class<?> targetClass, Method method) {
 		this.targetClass = targetClass;
 		this.method = method;
-		this.targetClassAnnotatedElement = AnnotatedElementUtils.forAnnotations(targetClass.getDeclaredAnnotations());
-		this.methodAnnotatedElement = AnnotatedElementUtils.forAnnotations(method.getAnnotations());
-		this.annotatedElement = new MultiAnnotatedElement(Arrays.asList(methodAnnotatedElement, targetClassAnnotatedElement));
+		this.targetClassAnnotatedElement = AnnotatedElementUtils
+				.forAnnotations(targetClass.getDeclaredAnnotations());
+		this.methodAnnotatedElement = AnnotatedElementUtils
+				.forAnnotations(method.getAnnotations());
+		this.annotatedElement = new MultiAnnotatedElement(Arrays.asList(
+				methodAnnotatedElement, targetClassAnnotatedElement));
 		this.parameterConfigs = ParameterUtils.getParameterDescriptors(method);
 	}
-	
+
 	public AnnotatedElement getAnnotatedElement() {
 		return annotatedElement;
 	}
@@ -58,27 +66,33 @@ public abstract class AbstractAction implements Action{
 	public ParameterDescriptor[] getParameterConfigs() {
 		return parameterConfigs;
 	}
-	
-	public abstract Invoker getInvoker();
-	
-	public abstract Collection<ActionFilter> getActionFilters();
 
-	public abstract Collection<ParameterFilter> getParameterFilters();
-	
+	public abstract Invoker getInvoker();
+
+	public Collection<ActionFilter> getActionFilters() {
+		return Collections.unmodifiableCollection(actionFilters);
+	}
+
+	public Collection<ParameterFilter> getParameterFilters() {
+		return Collections.unmodifiableCollection(parameterFilters);
+	}
+
 	public ActionFilterChain getActionFilterChain() {
 		Collection<ActionFilter> filters = getActionFilters();
-		return CollectionUtils.isEmpty(filters)? null:new IteratorActionFilterChain(filters, null);
+		return CollectionUtils.isEmpty(filters) ? null
+				: new IteratorActionFilterChain(filters, null);
 	}
-	
-	public Object[] getArgs(ParameterDescriptor[] parameterConfigs, Channel channel) {
+
+	public Object[] getArgs(ParameterDescriptor[] parameterConfigs,
+			Channel channel) {
 		return MVCUtils.getParameterValues(channel, parameterConfigs,
 				getParameterFilters(), null);
 	}
-	
+
 	public Object doAction(Channel channel) throws Throwable {
 		return getInvoker().invoke(getArgs(getParameterConfigs(), channel));
 	}
-	
+
 	@Override
 	public String toString() {
 		return getInvoker().toString();

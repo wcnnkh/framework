@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.instance.annotation.Configuration;
 import scw.mvc.exception.ExceptionHandlerChain;
 import scw.mvc.handler.DefaultHandlerChain;
 import scw.mvc.handler.Handler;
@@ -11,27 +12,27 @@ import scw.mvc.handler.HandlerChain;
 import scw.mvc.output.Output;
 import scw.util.value.property.PropertyFactory;
 
+@Configuration(order=Integer.MIN_VALUE)
 public final class ConfigurationChannelService extends DefaultChannelService {
 
 	public ConfigurationChannelService(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
-		super(getHandlerChain(beanFactory),
+		super(getHandlerChain(beanFactory, propertyFactory),
 				getWarnExecuteTime(propertyFactory), beanFactory
 						.getInstance(Output.class), beanFactory
 						.getInstance(ExceptionHandlerChain.class));
 	}
 
-	private static Collection<Handler> getHandlers(BeanFactory beanFactory) {
-		return InstanceUtils.getConfigurationList(Handler.class, beanFactory);
-	}
-
-	private static HandlerChain getHandlerChain(BeanFactory beanFactory) {
-		HandlerChain chain = new DefaultHandlerChain(getHandlers(beanFactory),
-				null);
+	private static HandlerChain getHandlerChain(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
+		Collection<Handler> handlers = InstanceUtils.getConfigurationList(Handler.class, beanFactory,
+				propertyFactory);
+		HandlerChain chain = new DefaultHandlerChain(handlers, null);
 		return chain;
 	}
 
 	private static long getWarnExecuteTime(PropertyFactory propertyFactory) {
-		return propertyFactory.getValue("mvc.warn-execute-time", long.class, 100L);
+		return propertyFactory.getValue("mvc.warn-execute-time", long.class,
+				100L);
 	}
 }

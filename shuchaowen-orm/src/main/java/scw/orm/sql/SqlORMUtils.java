@@ -10,7 +10,6 @@ import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
@@ -22,14 +21,11 @@ import scw.sql.Sql;
 
 public final class SqlORMUtils {
 	private static final TableNameMapping TABLE_NAME_MAPPING = InstanceUtils
-			.getConfiguration(TableNameMapping.class,
-					InstanceUtils.REFLECTION_INSTANCE_FACTORY,
-					GlobalPropertyFactory.getInstance());
-	private static final SqlColumnFactory SQL_COLUMN_FACTORY = InstanceUtils.getConfiguration(SqlColumnFactory.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY, GlobalPropertyFactory.getInstance());
-
-	private static final SqlMapper SQL_MAPPER = InstanceUtils.getConfiguration(
-			SqlMapper.class, InstanceUtils.REFLECTION_INSTANCE_FACTORY,
-			GlobalPropertyFactory.getInstance());
+			.getSystemConfiguration(TableNameMapping.class);
+	private static final SqlColumnFactory SQL_COLUMN_FACTORY = InstanceUtils
+			.getSystemConfiguration(SqlColumnFactory.class);
+	private static final SqlMapper SQL_MAPPER = InstanceUtils
+			.getSystemConfiguration(SqlMapper.class);
 
 	private SqlORMUtils() {
 	};

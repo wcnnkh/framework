@@ -11,6 +11,6 @@ public class ConfigurationMessageConverter extends MultiMessageConverter{
 	
 	public ConfigurationMessageConverter(InstanceFactory instanceFactory, PropertyFactory propertyFactory){
 		add(new AllMessageConverter());
-		addAll(InstanceUtils.getConfigurationList(MessageConverter.class, instanceFactory));
+		addAll(InstanceUtils.getConfigurationList(MessageConverter.class, instanceFactory, propertyFactory));
 	}
 }

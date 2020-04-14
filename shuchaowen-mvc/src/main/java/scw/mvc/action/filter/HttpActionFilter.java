@@ -1,10 +1,9 @@
-package scw.mvc.action.http;
+package scw.mvc.action.filter;
 
 import scw.lang.UnsupportedException;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
-import scw.mvc.action.filter.ActionFilter;
-import scw.mvc.action.filter.ActionFilterChain;
+import scw.mvc.action.manager.HttpAction;
 import scw.mvc.http.HttpChannel;
 
 public abstract class HttpActionFilter implements ActionFilter{

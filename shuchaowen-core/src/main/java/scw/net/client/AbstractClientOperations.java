@@ -17,7 +17,7 @@ import scw.net.message.converter.support.AllMessageConverter;
 public abstract class AbstractClientOperations<B extends ClientRequestBuilder<R>, R extends ClientRequest, P extends ClientResponse>
 		implements ClientOperations<B, R, P> {
 	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
-	private MultiMessageConverter messageConverter = new MultiMessageConverter();
+	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
 
 	public AbstractClientOperations() {
 		messageConverter.add(new AllMessageConverter());

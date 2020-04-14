@@ -39,7 +39,7 @@ import scw.logger.LoggerUtils;
 import scw.servlet.MultiFilter;
 import scw.util.value.property.PropertyFactory;
 
-@Configuration(order=Integer.MIN_VALUE + 1000)
+@Configuration(order = Integer.MIN_VALUE + 1000)
 public final class TomcatServletEmbedded implements ServletEmbedded {
 	private static Logger logger = LoggerUtils
 			.getLogger(TomcatServletEmbedded.class);
@@ -90,14 +90,15 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		for (ServletContainerInitializerConfiguration configuration : InstanceUtils
 				.getConfigurationList(
 						ServletContainerInitializerConfiguration.class,
-						beanFactory)) {
+						beanFactory, propertyFactory)) {
 			addServletContainerInitializer(context, configuration);
 		}
 
 		addFilter(context, new ServletRootFilterConfiguration(beanFactory,
 				propertyFactory));
 		for (FilterConfiguration filterConfiguration : InstanceUtils
-				.getConfigurationList(FilterConfiguration.class, beanFactory)) {
+				.getConfigurationList(FilterConfiguration.class, beanFactory,
+						propertyFactory)) {
 			addFilter(context, filterConfiguration);
 		}
 		return context;

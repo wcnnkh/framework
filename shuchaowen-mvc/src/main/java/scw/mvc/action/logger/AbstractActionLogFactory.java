@@ -7,8 +7,9 @@ import scw.json.JSONUtils;
 import scw.mvc.Channel;
 import scw.mvc.Request;
 import scw.mvc.action.Action;
-import scw.mvc.action.http.HttpAction;
 import scw.mvc.action.logger.annotation.ActionLogConfig;
+import scw.mvc.action.manager.HttpAction;
+import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
 import scw.mvc.http.HttpRequest;
 
 public abstract class AbstractActionLogFactory implements ActionLogFactory {
@@ -31,9 +32,11 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 		return null;
 	}
 	
-	protected String getController(Action action){
+	protected String getController(Channel channel, Action action){
 		if(action instanceof HttpAction){
-			return ((HttpAction) action).getController();
+			for(ControllerDescriptor descriptor : ((HttpAction) action).getControllerDescriptors()){
+				return descriptor.getController();
+			}
 		}
 		return null;
 	}
@@ -48,7 +51,7 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 		Map<String, String> attributeMap = getAttributeMap(action, channel);
 		ActionLog log = new ActionLog();
 		log.setAttributeMap(attributeMap);
-		log.setController(getController(action));
+		log.setController(getController(channel, action));
 		log.setIdentification(getIdentification(action, channel));
 		log.setRequestController(channel.getRequest().getControllerPath());
 		if (channel.getRequest() instanceof HttpRequest) {
