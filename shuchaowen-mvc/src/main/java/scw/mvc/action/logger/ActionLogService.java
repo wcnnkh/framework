@@ -6,7 +6,7 @@ import java.util.List;
 import scw.core.Pagination;
 
 public interface ActionLogService {
-	Pagination<List<ActionLog>> getPagination(LogQuery logQuery, long page, int limit);
+	Pagination<List<ActionLog>> getPagination(ActionLog logQuery, long page, int limit);
 
 	Collection<String> getAttributeNames();
 

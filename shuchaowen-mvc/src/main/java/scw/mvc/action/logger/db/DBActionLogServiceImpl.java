@@ -6,7 +6,6 @@ import java.util.List;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.Pagination;
-import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.CloneUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -16,7 +15,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.logger.ActionLog;
 import scw.mvc.action.logger.ActionLogService;
-import scw.mvc.action.logger.LogQuery;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
@@ -26,7 +24,6 @@ import scw.timer.Task;
 import scw.timer.Timer;
 import scw.timer.support.SimpleCrontabConfig;
 
-@Configuration(order=Integer.MIN_VALUE)
 public class DBActionLogServiceImpl implements ActionLogService, Task {
 	private static Logger logger = LoggerUtils
 			.getLogger(DBActionLogServiceImpl.class);
@@ -67,7 +64,7 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 				"select * from log_attribute_table group by name"));
 	}
 
-	public Pagination<List<ActionLog>> getPagination(LogQuery logQuery,
+	public Pagination<List<ActionLog>> getPagination(ActionLog logQuery,
 			long page, int limit) {
 		WhereSql sql = new WhereSql();
 		if (logQuery != null) {
