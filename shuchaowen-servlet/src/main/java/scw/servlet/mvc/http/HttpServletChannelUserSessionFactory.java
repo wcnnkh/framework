@@ -18,7 +18,7 @@ public final class HttpServletChannelUserSessionFactory<T> implements HttpChanne
 
 	public UserSession<T> getUserSession(HttpChannel httpChannel) {
 		if (!(httpChannel instanceof HttpServletChannel)) {
-			logger.warn("{} not a HttpServletRequest", httpChannel.getRequest().getControllerPath());
+			logger.warn("{} not a HttpServletRequest", httpChannel.getRequest().getController());
 			return null;
 		}
 
@@ -33,7 +33,7 @@ public final class HttpServletChannelUserSessionFactory<T> implements HttpChanne
 
 	public UserSession<T> createUserSession(HttpChannel httpChannel, T uid) {
 		if (!(httpChannel instanceof HttpServletChannel)) {
-			logger.warn("{} not a HttpServletRequest", httpChannel.getRequest().getControllerPath());
+			logger.warn("{} not a HttpServletRequest", httpChannel.getRequest().getController());
 			return null;
 		}
 

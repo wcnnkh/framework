@@ -6,7 +6,7 @@ import java.io.IOException;
 import scw.net.message.InputMessage;
 
 public interface Request extends InputMessage {
-	String getControllerPath();
+	String getController();
 	
 	String getRawContentType();
 

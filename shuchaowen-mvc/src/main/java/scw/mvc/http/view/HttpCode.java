@@ -21,7 +21,7 @@ public class HttpCode extends HttpView {
 		}
 
 		if (channel.isLogEnabled()) {
-			channel.log("path={},method={},status={},msg={}", httpRequest.getControllerPath(), httpRequest.getMethod(),
+			channel.log("path={},method={},status={},msg={}", httpRequest.getController(), httpRequest.getMethod(),
 					status, msg);
 		}
 		httpResponse.sendError(status, msg);

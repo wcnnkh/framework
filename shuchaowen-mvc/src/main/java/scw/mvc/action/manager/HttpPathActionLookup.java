@@ -20,7 +20,7 @@ public class HttpPathActionLookup extends HttpActionLookup {
 	@Override
 	public HttpAction lookup(HttpChannel httpChannel) {
 		Map<HttpMethod, HttpAction> map = actionMap.get(httpChannel
-				.getRequest().getControllerPath());
+				.getRequest().getController());
 		if (map == null) {
 			return null;
 		}

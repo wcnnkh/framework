@@ -20,11 +20,11 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 			MyHttpServletRequest request, MyHttpServletResponse response) {
 		super(beanFactory, jsonParseSupport, request, response);
 		if (HttpMethod.GET.name().equals(request.getMethod())) {
-			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getControllerPath(), request.getMethod());
+			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getController(), request.getMethod());
 		} else {
 			String content = getBean(Body.class).getBody();
 			if (isLogEnabled()) {
-				log("requestPath={},method={},{}", request.getControllerPath(), request.getMethod(), content);
+				log("requestPath={},method={},{}", request.getController(), request.getMethod(), content);
 			}
 
 			if (content != null) {

@@ -24,7 +24,7 @@ public final class SimpleHttpTestingRequestMessage implements Serializable, Http
 		HttpHeaders headers = request.getHeaders();
 		this.header = headers.toSingleValueMap();
 		this.method = request.getRawMethod();
-		this.path = request.getControllerPath();
+		this.path = request.getController();
 		this.body = IOUtils.read(request.getBody(), 1024, 0);
 	}
 

@@ -89,7 +89,7 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 	@Override
 	public String toString() {
 		StringBuilder appendable = new StringBuilder();
-		appendable.append("path=").append(getRequest().getControllerPath());
+		appendable.append("path=").append(getRequest().getController());
 		appendable.append(",method=").append(getRequest().getMethod());
 		appendable.append(",").append(
 				getJsonSupport().toJSONString(getRequest().getParameterMap()));

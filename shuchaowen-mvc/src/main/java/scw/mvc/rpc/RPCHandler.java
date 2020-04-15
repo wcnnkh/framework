@@ -54,7 +54,7 @@ public final class RPCHandler implements Handler{
 			return false;
 		}
 
-		if (!request.getControllerPath().equals(rpcPath)) {
+		if (!request.getController().equals(rpcPath)) {
 			return false;
 		}
 		

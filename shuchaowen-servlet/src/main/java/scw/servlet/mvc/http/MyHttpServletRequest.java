@@ -208,7 +208,7 @@ public class MyHttpServletRequest extends AbstractInputMessage implements
 		return httpServletRequest.getContextPath();
 	}
 
-	public String getControllerPath() {
+	public String getController() {
 		return httpServletRequest.getServletPath();
 	}
 

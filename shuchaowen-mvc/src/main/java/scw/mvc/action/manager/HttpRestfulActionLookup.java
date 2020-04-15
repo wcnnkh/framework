@@ -53,7 +53,7 @@ public class HttpRestfulActionLookup extends HttpActionLookup {
 			return null;
 		}
 
-		String[] pathArr = channel.getRequest().getControllerPath().split("/");
+		String[] pathArr = channel.getRequest().getController().split("/");
 		for (Entry<Restful, HttpAction> entry : map.entrySet()) {
 			Restful restful = entry.getKey();
 			RestfulMatchingResult result = restful.matching(pathArr);
