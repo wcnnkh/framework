@@ -1,4 +1,4 @@
-package scw.mvc.action.manager.support;
+package scw.mvc.action.manager;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -14,7 +14,6 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.XUtils;
 import scw.mvc.action.BeanAction;
 import scw.mvc.action.filter.ActionFilter;
-import scw.mvc.action.manager.HttpAction;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Methods;

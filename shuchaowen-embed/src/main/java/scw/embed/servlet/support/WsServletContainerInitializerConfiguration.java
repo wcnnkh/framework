@@ -9,12 +9,14 @@ import javax.servlet.ServletContainerInitializer;
 import org.apache.tomcat.websocket.server.WsSci;
 
 import scw.beans.BeanUtils;
+import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
 
-@Configuration
+@Configuration(order=Integer.MIN_VALUE)
+@Bean(proxy=false)
 public class WsServletContainerInitializerConfiguration implements ServletContainerInitializerConfiguration{
 	private static final WsSci WS_SCI = new WsSci();
 	

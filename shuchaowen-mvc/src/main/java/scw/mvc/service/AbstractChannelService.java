@@ -57,7 +57,11 @@ public abstract class AbstractChannelService implements ChannelService,
 	}
 	
 	public void onComplete(AsyncEvent event) throws IOException {
-		XUtils.destroy(event.getAsyncControl().getChannel());
+		try {
+			XUtils.destroy(event.getAsyncControl().getChannel());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void onError(AsyncEvent event) throws IOException {
@@ -80,7 +84,11 @@ public abstract class AbstractChannelService implements ChannelService,
 			return;
 		}
 
-		XUtils.destroy(channel);
+		try {
+			XUtils.destroy(channel);
+		} catch (Exception e) {
+			logger.error(e, "destroy error for channel:{}", channel.toString());
+		}
 	}
 
 	protected Object doError(Channel channel, Throwable error) {

@@ -14,7 +14,7 @@ import scw.mvc.rpc.http.HttpRestfulRpcProxy;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration
-public class RpcAutoBeanService implements AutoBeanService {
+public final class RpcAutoBeanService implements AutoBeanService {
 
 	public AutoBean doService(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			AutoBeanServiceChain serviceChain) throws Exception {

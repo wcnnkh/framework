@@ -14,7 +14,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration
-public class XmlDubboBeanConfiguration extends AbstractBeanConfiguration implements XmlBeanConfiguration {
+public final class XmlDubboBeanConfiguration extends AbstractBeanConfiguration implements XmlBeanConfiguration {
 
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			NodeList nodeList) throws Exception {

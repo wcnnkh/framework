@@ -25,7 +25,6 @@ import scw.core.Converter;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.ResourceFactory;
-import scw.core.Start;
 import scw.util.ToMap;
 
 public final class XUtils {
@@ -194,17 +193,7 @@ public final class XUtils {
 		}
 	}
 
-	public static void start(Object start) {
-		if (start == null) {
-			return;
-		}
-
-		if (start instanceof Start) {
-			((Start) start).start();
-		}
-	}
-
-	public static void init(Object init) {
+	public static void init(Object init) throws Exception {
 		if (init == null) {
 			return;
 		}
@@ -214,7 +203,7 @@ public final class XUtils {
 		}
 	}
 
-	public static void destroy(Object destroy) {
+	public static void destroy(Object destroy) throws Exception {
 		if (destroy == null) {
 			return;
 		}
@@ -317,10 +306,10 @@ public final class XUtils {
 
 	public static void appendToMap(Properties properties,
 			Map<String, String> map) {
-		if(properties == null || map == null){
-			return ;
+		if (properties == null || map == null) {
+			return;
 		}
-		
+
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			map.put(entry.getKey() == null ? null : entry.getKey().toString(),
 					entry.getValue() == null ? null : entry.getValue()

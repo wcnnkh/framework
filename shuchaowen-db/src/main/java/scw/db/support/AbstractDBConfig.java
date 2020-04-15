@@ -115,7 +115,7 @@ public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants, D
 				: new MemoryQueue<AsyncExecute>(redis, queueName);
 	}
 
-	public void destroy() {
+	public void destroy() throws Exception {
 		XUtils.destroy(asyncQueue);
 		XUtils.destroy(cacheManager);
 		XUtils.destroy(memoryDataManager);

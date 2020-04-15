@@ -67,18 +67,27 @@ public abstract class AbstractInstanceFactory<D extends InstanceDefinition>
 		return (T) object;
 	}
 
-	protected abstract void afterCreation(long createTime, D definition,
-			Object object) throws Exception;
+	/**
+	 * 默认的实现是添加的singletionMap中
+	 * 
+	 * @param createTime
+	 * @param definition
+	 * @param object
+	 * @throws Exception
+	 */
+	protected void init(long createTime, D definition, Object object)
+			throws Exception{
+		if (definition.isSingleton()) {
+			singletonMap.put(definition.getId(), object);
+		}
+	}
 
 	private Object createInternal(D definition) {
 		long t = System.currentTimeMillis();
 		Object obj;
 		try {
 			obj = definition.create();
-			if (definition.isSingleton()) {
-				singletonMap.put(definition.getId(), obj);
-			}
-			afterCreation(t, definition, obj);
+			init(t, definition, obj);
 		} catch (Exception e) {
 			throw new InstanceException(definition.getId(), e);
 		}
@@ -136,10 +145,7 @@ public abstract class AbstractInstanceFactory<D extends InstanceDefinition>
 		Object obj;
 		try {
 			obj = definition.create(params);
-			if (definition.isInstance()) {
-				singletonMap.put(definition.getId(), obj);
-			}
-			afterCreation(t, definition, obj);
+			init(t, definition, obj);
 		} catch (Exception e) {
 			throw new InstanceException(definition.getId(), e);
 		}
@@ -185,10 +191,7 @@ public abstract class AbstractInstanceFactory<D extends InstanceDefinition>
 		Object obj;
 		try {
 			obj = definition.create(parameterTypes, params);
-			if (definition.isInstance()) {
-				singletonMap.put(definition.getId(), obj);
-			}
-			afterCreation(t, definition, obj);
+			init(t, definition, obj);
 		} catch (Exception e) {
 			throw new InstanceException(definition.getId(), e);
 		}

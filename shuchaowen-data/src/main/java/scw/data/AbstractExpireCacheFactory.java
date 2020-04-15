@@ -15,8 +15,11 @@ public abstract class AbstractExpireCacheFactory implements ExpiredCacheFactory,
 		ExpiredCache create = createExpiredCache(exp);
 		ExpiredCache cache = cacheMap.putIfAbsent(exp, create);
 		if (cache == null) {
-			XUtils.init(create);
-			XUtils.start(create);
+			try {
+				XUtils.init(create);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			cache = create;
 		}
 		return cache;
@@ -24,7 +27,11 @@ public abstract class AbstractExpireCacheFactory implements ExpiredCacheFactory,
 
 	public void destroy() {
 		for (Entry<Integer, ExpiredCache> entry : cacheMap.entrySet()) {
-			XUtils.destroy(entry.getValue());
+			try {
+				XUtils.destroy(entry.getValue());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

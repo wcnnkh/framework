@@ -1,26 +1,111 @@
 package scw.mvc.action.manager;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
 
+import scw.beans.BeanFactory;
+import scw.beans.annotation.Bean;
+import scw.core.Constants;
+import scw.core.instance.InstanceUtils;
+import scw.core.instance.annotation.Configuration;
+import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mvc.MVCUtils;
 import scw.mvc.action.Action;
+import scw.mvc.action.filter.ActionFilter;
+import scw.mvc.annotation.Controller;
+import scw.mvc.parameter.ParameterFilter;
+import scw.util.value.property.PropertyFactory;
 
-public class DefaultActionManager extends MultiActionLookup implements
-		ActionManager {
-	private static final long serialVersionUID = 1L;
+@Configuration(order = Integer.MIN_VALUE)
+@Bean(proxy=false)
+public class DefaultActionManager implements ActionManager {
 	protected transient final Logger logger = LoggerUtils.getLogger(getClass());
-	private LinkedList<Action> actions = new LinkedList<Action>();
+	private final Map<Method, Action> actionMap = new HashMap<Method, Action>();
+	private final BeanFactory beanFactory;
+	private final PropertyFactory propertyFactory;
+	private final Collection<ActionFilter> actionFilters;
+	private final Collection<ParameterFilter> parameterFilters;
 
-	@Override
-	public void register(Action action) {
-		actions.add(action);
-		super.register(action);
+	public DefaultActionManager(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
+		this(beanFactory, propertyFactory, MVCUtils
+				.getScanAnnotationPackageName());
+	}
+
+	public DefaultActionManager(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, String scanAnnotationPackageName) {
+		this.beanFactory = beanFactory;
+		this.propertyFactory = propertyFactory;
+		this.actionFilters = InstanceUtils.getConfigurationList(
+				ActionFilter.class, beanFactory, propertyFactory);
+		this.parameterFilters = InstanceUtils.getConfigurationList(
+				ParameterFilter.class, beanFactory, propertyFactory);
+		for (Class<?> clz : ClassUtils.getClassSet(
+				Constants.SYSTEM_PACKAGE_NAME, scanAnnotationPackageName)) {
+			if (!isSupport(clz)) {
+				continue;
+			}
+
+			for (Method method : clz.getDeclaredMethods()) {
+				if (!isSupport(method)) {
+					continue;
+				}
+
+				Action action = builder(clz, method);
+				if (action != null) {
+					actionMap.put(method, action);
+				}
+			}
+		}
 	}
 
 	public Collection<Action> getActions() {
-		return Collections.unmodifiableCollection(actions);
+		return Collections.unmodifiableCollection(actionMap.values());
+	}
+
+	public BeanFactory getBeanFactory() {
+		return beanFactory;
+	}
+
+	public PropertyFactory getPropertyFactory() {
+		return propertyFactory;
+	}
+
+	public Collection<ActionFilter> getActionFilters() {
+		return actionFilters;
+	}
+
+	public Collection<ParameterFilter> getParameterFilters() {
+		return parameterFilters;
+	}
+
+	protected boolean isSupport(Class<?> clazz) {
+		Controller clzController = clazz.getAnnotation(Controller.class);
+		if (clzController == null) {
+			return false;
+		}
+
+		return getBeanFactory().isInstance(clazz);
+	}
+
+	protected boolean isSupport(Method method) {
+		return method.getAnnotation(Controller.class) != null;
+	}
+
+	protected Action builder(Class<?> clazz, Method method) {
+		if (isSupport(clazz) && isSupport(method)) {
+			return new ControllerHttpAction(getBeanFactory(), clazz, method,
+					getActionFilters(), getParameterFilters());
+		}
+		return null;
+	}
+
+	public Action getAction(Class<?> clazz, Method method) {
+		return actionMap.get(method);
 	}
 }

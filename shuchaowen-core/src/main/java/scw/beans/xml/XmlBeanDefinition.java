@@ -158,9 +158,6 @@ public final class XmlBeanDefinition implements BeanDefinition {
 				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
-
-		XUtils.init(bean);
-		XUtils.start(bean);
 	}
 
 	public void destroy(Object bean) throws Exception {

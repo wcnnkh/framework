@@ -25,8 +25,10 @@ import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.XUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
+import scw.lang.UnsupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.property.MultiPropertyFactory;
@@ -129,9 +131,12 @@ public abstract class AbstractBeanFactory extends
 	}
 
 	@Override
-	protected void afterCreation(long createTime, BeanDefinition definition,
+	protected void init(long createTime, BeanDefinition definition,
 			Object object) throws Exception {
+		super.init(createTime, definition, object);
 		definition.init(object);
+		XUtils.init(object);
+		
 		if (logger.isTraceEnabled()) {
 			logger.trace("create id [{}] instance [{}] use time:{}ms",
 					definition.getId(), object.getClass().getName(),
@@ -249,7 +254,7 @@ public abstract class AbstractBeanFactory extends
 		return null;
 	}
 
-	public synchronized void init() {
+	public synchronized void init() throws Exception {
 		for (Class<? extends Filter> clazz : InstanceUtils
 				.getConfigurationClassList(Filter.class, propertyFactory)) {
 			if (!isInstance(clazz)) {
@@ -267,7 +272,7 @@ public abstract class AbstractBeanFactory extends
 		inits.clear();
 	}
 
-	public synchronized void destroy() {
+	public synchronized void destroy() throws Exception {
 		valueWiredManager.destroy();
 
 		synchronized (singletonMap) {
@@ -295,5 +300,33 @@ public abstract class AbstractBeanFactory extends
 		while (iterator.hasPrevious()) {
 			iterator.previous().destroy();
 		}
+	}
+
+	@Override
+	public <T> T getInstance(String name) {
+		T bean = super.getInstance(name);
+		if (bean == null) {
+			throw new UnsupportedException(name);
+		}
+		return bean;
+	}
+
+	@Override
+	public <T> T getInstance(String name, Object... params) {
+		T bean = super.getInstance(name, params);
+		if (bean == null) {
+			throw new UnsupportedException(name);
+		}
+		return bean;
+	}
+
+	@Override
+	public <T> T getInstance(String name, Class<?>[] parameterTypes,
+			Object... params) {
+		T bean = super.getInstance(name, parameterTypes, params);
+		if (bean == null) {
+			throw new UnsupportedException(name);
+		}
+		return bean;
 	}
 }

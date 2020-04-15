@@ -47,9 +47,4 @@ public class DefaultInstanceFactory extends
 		definitionMap.put(definition.getId(), definition);
 		return definition;
 	}
-	
-	@Override
-	protected void afterCreation(long createTime,
-			InstanceDefinition definition, Object object) {
-	}
 }

@@ -25,7 +25,7 @@ import scw.timer.support.SimpleTimerTaskConfig;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration
-public class TimerAnnotationBeanConfiguration extends AbstractBeanConfiguration implements
+public final class TimerAnnotationBeanConfiguration extends AbstractBeanConfiguration implements
 		SimpleBeanConfiguration {
 	public void init(ValueWiredManager valueWiredManager,
 			BeanFactory beanFactory, PropertyFactory propertyFactory) {

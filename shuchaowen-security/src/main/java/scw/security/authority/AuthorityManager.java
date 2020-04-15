@@ -10,4 +10,6 @@ public interface AuthorityManager<T extends Authority> {
 	List<T> getAuthoritySubList(String id);
 
 	AuthorityTree<T> getAuthorityTree(String id);
+	
+	void register(T authority);
 }

@@ -32,7 +32,7 @@ public class HikariCPDB extends DefaultDB implements DBConfigConstants, Destroy 
 		super(new HikariCPDBConfig(propertiesFile));
 	}
 
-	public void destroy() {
+	public void destroy() throws Exception {
 		XUtils.destroy(getDbConfig());
 	}
 }

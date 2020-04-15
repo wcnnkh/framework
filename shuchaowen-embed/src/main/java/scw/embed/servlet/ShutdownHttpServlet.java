@@ -71,6 +71,10 @@ public final class ShutdownHttpServlet extends HttpServlet {
 				return;
 			}
 		}
-		destroy.destroy();
+		try {
+			destroy.destroy();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

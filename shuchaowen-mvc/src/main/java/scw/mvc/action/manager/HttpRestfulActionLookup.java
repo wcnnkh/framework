@@ -1,23 +1,23 @@
-package scw.mvc.action.manager.support;
+package scw.mvc.action.manager;
 
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
-import scw.mvc.action.manager.HttpAction;
 import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
-import scw.mvc.action.manager.HttpActionLookup;
 import scw.mvc.http.HttpChannel;
 import scw.net.Restful;
 import scw.net.Restful.RestfulMatchingResult;
 import scw.net.http.HttpMethod;
 
 @Configuration(order=Integer.MIN_VALUE)
-public final class HttpRestfulActionLookup extends HttpActionLookup {
+@Bean(proxy=false)
+public class HttpRestfulActionLookup extends HttpActionLookup {
 	private final EnumMap<HttpMethod, Map<Restful, HttpAction>> restMap = new EnumMap<HttpMethod, Map<Restful, HttpAction>>(
 			HttpMethod.class);
 

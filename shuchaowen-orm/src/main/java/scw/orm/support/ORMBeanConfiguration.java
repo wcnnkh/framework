@@ -13,7 +13,7 @@ import scw.orm.ORMUtils;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MAX_VALUE)
-public class ORMBeanConfiguration extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
+public final class ORMBeanConfiguration extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
 
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		addInit(new OrmProxyRegister(propertyFactory));

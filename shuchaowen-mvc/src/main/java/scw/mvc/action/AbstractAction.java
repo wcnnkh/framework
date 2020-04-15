@@ -92,6 +92,27 @@ public abstract class AbstractAction implements Action {
 	public Object doAction(Channel channel) throws Throwable {
 		return getInvoker().invoke(getArgs(getParameterConfigs(), channel));
 	}
+	
+	@Override
+	public int hashCode() {
+		return method.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null){
+			return false;
+		}
+
+		if(obj == this){
+			return true;
+		}
+		
+		if(obj instanceof Action){
+			return ((Action) obj).getMethod().equals(getMethod());
+		}
+		return false;
+	}
 
 	@Override
 	public String toString() {

@@ -10,8 +10,12 @@ import java.util.Set;
 import scw.core.utils.CollectionUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
-public class SimpleAuthorityManager<T extends Authority> implements AuthorityManager<T> {
+public class DefaultAuthorityManager<T extends Authority> implements AuthorityManager<T> {
+	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	
 	public Map<String, T> authorityMap = new HashMap<String, T>();
 	public Map<String, Set<String>> subListMap = new HashMap<String, Set<String>>();
 
@@ -42,13 +46,17 @@ public class SimpleAuthorityManager<T extends Authority> implements AuthorityMan
 		return values;
 	}
 
-	public synchronized void addAuthroity(T authority) {
+	public synchronized void register(T authority) {
 		if (authority == null) {
 			return;
 		}
 
 		if (authorityMap.containsKey(authority.getId())) {
 			throw new AlreadyExistsException(JSONUtils.toJSONString(authority));
+		}
+		
+		if(logger.isTraceEnabled()){
+			logger.trace("register authority:{}", JSONUtils.toJSONString(authority));
 		}
 
 		Set<String> set = subListMap.get(authority.getParentId());
@@ -71,7 +79,7 @@ public class SimpleAuthorityManager<T extends Authority> implements AuthorityMan
 			return null;
 		}
 
-		SimpleAuthorityTree<T> authorityTree = new SimpleAuthorityTree<T>();
+		DefaultAuthorityTree<T> authorityTree = new DefaultAuthorityTree<T>();
 		authorityTree.setAuthority(authroity);
 		Set<String> subList = subListMap.get(authroity.getId());
 		if (subList != null) {

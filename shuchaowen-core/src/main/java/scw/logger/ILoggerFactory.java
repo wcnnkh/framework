@@ -7,4 +7,6 @@ public interface ILoggerFactory extends Destroy{
 	Logger getLogger(String name);
 	
 	Logger getLogger(String name, String placeholder);
+	
+	public void destroy();
 }

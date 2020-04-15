@@ -13,6 +13,11 @@ import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 import scw.util.MultiEnumeration;
 
+/**
+ * add默认为addFirst行为
+ * @author shuchaowen
+ *
+ */
 public class MultiMessageConverter extends TreeSet<MessageConverter> implements
 		MessageConverter {
 	private static Logger logger = LoggerUtils

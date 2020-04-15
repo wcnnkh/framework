@@ -7,12 +7,13 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.net.http.HttpMethod;
-import scw.security.authority.SimpleAuthorityManager;
+import scw.security.authority.DefaultAuthorityManager;
 
-public class SimpleHttpAuthorityManager extends SimpleAuthorityManager<HttpAuthority> implements HttpAuthorityManager {
+public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
+		DefaultAuthorityManager<T> implements HttpAuthorityManager<T> {
 	private Map<String, Map<HttpMethod, String>> pathMap = new HashMap<String, Map<HttpMethod, String>>();
 
-	public HttpAuthority getAuthority(String path, HttpMethod method) {
+	public T getAuthority(String path, HttpMethod method) {
 		Map<HttpMethod, String> map = pathMap.get(path);
 		if (map == null) {
 			return null;
@@ -26,7 +27,7 @@ public class SimpleHttpAuthorityManager extends SimpleAuthorityManager<HttpAutho
 		return getAuthority(id);
 	}
 
-	public synchronized void addAuthroity(HttpAuthority authority) {
+	public synchronized void register(T authority) {
 		if (StringUtils.isNotEmpty(authority.getPath())) {
 			Map<HttpMethod, String> map = pathMap.get(authority.getPath());
 			if (map == null) {
@@ -34,13 +35,14 @@ public class SimpleHttpAuthorityManager extends SimpleAuthorityManager<HttpAutho
 			}
 
 			if (map.containsKey(authority.getHttpMethod())) {
-				throw new AlreadyExistsException(JSONUtils.toJSONString(authority));
+				throw new AlreadyExistsException(
+						JSONUtils.toJSONString(authority));
 			}
 
 			map.put(authority.getHttpMethod(), authority.getId());
 			pathMap.put(authority.getPath(), map);
 		}
-		super.addAuthroity(authority);
+		super.register(authority);
 	};
 
 }

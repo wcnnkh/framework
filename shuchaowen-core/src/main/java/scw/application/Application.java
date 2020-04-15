@@ -6,6 +6,10 @@ import scw.core.Init;
 import scw.util.value.property.PropertyFactory;
 
 public interface Application extends Init, Destroy{
+	public void init();
+	
+	public void destroy();
+	
 	/**
 	 * 获取实例工厂
 	 * @return

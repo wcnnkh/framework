@@ -4,5 +4,5 @@ import scw.lang.Ignore;
 
 @Ignore
 public interface Destroy {
-	void destroy();
+	void destroy() throws Exception;
 }

@@ -38,7 +38,7 @@ public abstract class AbstractHikariCPDBConfig extends AbstractDBConfig {
 		return hds.getConnection();
 	}
 
-	public void destroy() {
+	public void destroy() throws Exception {
 		hds.close();
 		super.destroy();
 	}

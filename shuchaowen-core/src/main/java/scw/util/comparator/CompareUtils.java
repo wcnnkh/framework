@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.util.comparator;
 
 public final class CompareUtils {
 	private CompareUtils() {

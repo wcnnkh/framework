@@ -40,7 +40,7 @@ public abstract class AbstractDruidDBConfig extends AbstractDBConfig {
 		return datasource.getConnection();
 	}
 
-	public void destroy() {
+	public void destroy() throws Exception {
 		datasource.close();
 		super.destroy();
 	}

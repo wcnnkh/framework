@@ -22,7 +22,7 @@ import scw.mq.support.MqMethodConsumer;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration
-public class MQAnnotationBeanConfiguration extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
+public final class MQAnnotationBeanConfiguration extends AbstractBeanConfiguration implements SimpleBeanConfiguration {
 	private static Logger logger = LoggerUtils.getLogger(MQAnnotationBeanConfiguration.class);
 
 	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory) {

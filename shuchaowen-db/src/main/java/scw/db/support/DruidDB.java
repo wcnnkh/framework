@@ -24,7 +24,7 @@ public class DruidDB extends DefaultDB implements DBConfigConstants, Destroy {
 		super(new DruidDBConfig(propertiesFile));
 	}
 
-	public void destroy() {
+	public void destroy() throws Exception {
 		XUtils.destroy(getDbConfig());
 	}
 }

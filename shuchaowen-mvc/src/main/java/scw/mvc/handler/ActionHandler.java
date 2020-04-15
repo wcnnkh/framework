@@ -3,22 +3,22 @@ package scw.mvc.handler;
 import scw.core.instance.annotation.Configuration;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
-import scw.mvc.action.manager.ActionManager;
+import scw.mvc.action.manager.ActionLookupManager;
 import scw.mvc.context.ContextManager;
 import scw.mvc.http.HttpChannel;
 import scw.net.http.HttpMethod;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class ActionHandler implements Handler {
-	private final ActionManager actionManager;
+	private ActionLookupManager actionLookupManager;
 
-	public ActionHandler(ActionManager actionManager) {
-		this.actionManager = actionManager;
+	public ActionHandler(ActionLookupManager actionLookupManager) {
+		this.actionLookupManager = actionLookupManager;
 	}
 
 	public Object doHandler(Channel channel, HandlerChain chain)
 			throws Throwable {
-		Action action = actionManager.lookup(channel);
+		Action action = actionLookupManager.lookup(channel);
 		if (action == null) {
 			channel.getLogger().warn("not found：{}", channel.toString());
 			return notfound(channel, chain);

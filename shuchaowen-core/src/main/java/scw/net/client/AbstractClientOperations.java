@@ -12,7 +12,6 @@ import scw.net.client.http.exception.HttpClientException;
 import scw.net.message.InputMessage;
 import scw.net.message.SerializableInputMessage;
 import scw.net.message.converter.MultiMessageConverter;
-import scw.net.message.converter.support.AllMessageConverter;
 
 public abstract class AbstractClientOperations<B extends ClientRequestBuilder<R>, R extends ClientRequest, P extends ClientResponse>
 		implements ClientOperations<B, R, P> {
@@ -20,7 +19,7 @@ public abstract class AbstractClientOperations<B extends ClientRequestBuilder<R>
 	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
 
 	public AbstractClientOperations() {
-		messageConverter.add(new AllMessageConverter());
+		messageConverter.addAll(NetworkUtils.getMessageConverters());
 	}
 
 	public MultiMessageConverter getMessageConverter() {

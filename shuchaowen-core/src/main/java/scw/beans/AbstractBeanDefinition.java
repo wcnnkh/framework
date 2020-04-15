@@ -71,9 +71,6 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 				method.noArgumentInvoke(bean);
 			}
 		}
-
-		XUtils.init(bean);
-		XUtils.start(bean);
 	}
 
 	public void destroy(Object bean) throws Exception {

@@ -180,7 +180,11 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 			e.printStackTrace();
 		}
 		xmlPropertyFactory.destroy();
-		super.destroy();
+		try {
+			super.destroy();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

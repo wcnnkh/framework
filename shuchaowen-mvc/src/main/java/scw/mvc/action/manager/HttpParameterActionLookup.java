@@ -1,19 +1,19 @@
-package scw.mvc.action.manager.support;
+package scw.mvc.action.manager;
 
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
-import scw.mvc.action.manager.HttpAction;
 import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
-import scw.mvc.action.manager.HttpActionLookup;
 import scw.mvc.http.HttpChannel;
 import scw.net.http.HttpMethod;
 
 @Configuration(order=Integer.MIN_VALUE + 1)
+@Bean(proxy=false)
 public class HttpParameterActionLookup extends HttpActionLookup {
 	private final Map<String, EnumMap<HttpMethod, Map<String, HttpAction>>> actionMap = new HashMap<String, EnumMap<HttpMethod, Map<String, HttpAction>>>();
 	private String key = "action";

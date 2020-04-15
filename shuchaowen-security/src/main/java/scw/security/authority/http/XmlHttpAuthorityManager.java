@@ -19,8 +19,10 @@ import scw.logger.LoggerFactory;
 import scw.net.http.HttpMethod;
 
 @Bean(proxy = false)
-public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
-	private static Logger logger = LoggerFactory.getLogger(XmlHttpAuthorityManager.class);
+public class XmlHttpAuthorityManager extends
+		DefaultHttpAuthorityManager<HttpAuthority> {
+	private static Logger logger = LoggerFactory
+			.getLogger(XmlHttpAuthorityManager.class);
 
 	public XmlHttpAuthorityManager(
 			@ParameterName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
@@ -59,10 +61,12 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 		}
 	}
 
-	private void addAuthority(Map<String, String> map, String defParentId, String prefix) {
+	private void addAuthority(Map<String, String> map, String defParentId,
+			String prefix) {
 		String id = map.remove("id");
 		if (id == null) {
-			throw new NullPointerException("id不能为空：" + JSONUtils.toJSONString(map));
+			throw new NullPointerException("id不能为空："
+					+ JSONUtils.toJSONString(map));
 		}
 
 		if (StringUtils.isNotEmpty(prefix)) {
@@ -71,7 +75,8 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 
 		String name = map.remove("name");
 		if (StringUtils.isEmpty(name)) {
-			throw new NullPointerException("name不能为空或空字符串：" + JSONUtils.toJSONString(map));
+			throw new NullPointerException("name不能为空或空字符串："
+					+ JSONUtils.toJSONString(map));
 		}
 
 		String parentId = map.remove("parentId");
@@ -90,14 +95,7 @@ public class XmlHttpAuthorityManager extends SimpleHttpAuthorityManager {
 
 		String path = map.remove("path");
 		String method = map.remove("method");
-
-		SimpleHttpAuthority simpleAuthority = new SimpleHttpAuthority();
-		simpleAuthority.setId(id);
-		simpleAuthority.setParentId(parentId);
-		simpleAuthority.setName(name);
-		simpleAuthority.setPath(path);
-		simpleAuthority.setHttpMethod(HttpMethod.resolve(method));
-		simpleAuthority.setAttributeMap(map);
-		addAuthroity(simpleAuthority);
+		register(new DefaultHttpAuthority(id, parentId, name, map, path,
+				HttpMethod.resolve(method)));
 	}
 }

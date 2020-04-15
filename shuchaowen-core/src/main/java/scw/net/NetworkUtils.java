@@ -34,7 +34,7 @@ public final class NetworkUtils {
 	 */
 	public static final SSLSocketFactory TRUSE_ALL_SSL_SOCKET_FACTORY;
 
-	private static final MultiMessageConverter MESSAGE_CONVERTER = new MultiMessageConverter();
+	private static final MultiMessageConverter MESSAGE_CONVERTERS = new MultiMessageConverter();
 
 	static {
 		// 创建一个信任所有的
@@ -53,12 +53,12 @@ public final class NetworkUtils {
 		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc
 				.getSocketFactory();
 		
-		MESSAGE_CONVERTER.addAll(InstanceUtils
+		MESSAGE_CONVERTERS.addAll(InstanceUtils
 				.getSystemConfigurationList(MessageConverter.class));
 	}
 
-	public static MultiMessageConverter getMessageConverter() {
-		return MESSAGE_CONVERTER;
+	public static MultiMessageConverter getMessageConverters() {
+		return MESSAGE_CONVERTERS;
 	}
 
 	public static List<InetSocketAddress> parseInetSocketAddressList(

@@ -45,7 +45,7 @@ public class ParametersSingleExchange extends SingleExchange<Parameters> impleme
 		push(routingKey, new SimpleParameters(args));
 	}
 
-	public void destroy() {
+	public void destroy() throws Exception {
 		if (destory) {
 			getChannelFactory().destroy();
 		}

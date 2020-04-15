@@ -3,7 +3,7 @@ package scw.security.authority;
 import java.io.Serializable;
 import java.util.List;
 
-public class SimpleAuthorityTree<T extends Authority> implements AuthorityTree<T>, Serializable {
+public class DefaultAuthorityTree<T extends Authority> implements AuthorityTree<T>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private T authority;
 	private List<AuthorityTree<T>> subList;

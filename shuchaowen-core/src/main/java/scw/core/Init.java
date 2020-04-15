@@ -4,5 +4,5 @@ import scw.lang.Ignore;
 
 @Ignore
 public interface Init {
-	void init();
+	void init() throws Exception;
 }

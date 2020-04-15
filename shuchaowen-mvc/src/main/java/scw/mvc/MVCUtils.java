@@ -404,12 +404,6 @@ public final class MVCUtils implements MvcConstants {
 		return SUPPORT_SERVLET;
 	}
 
-	public static String getScanAnnotationPackageName() {
-		return GlobalPropertyFactory.getInstance().getValue(
-				"scw.scan.mvc.package", String.class,
-				BeanUtils.getScanAnnotationPackageName());
-	}
-
 	public static JSONSupport getJsonSupport(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory) {
 		JSONSupport jsonSupport;
@@ -420,5 +414,11 @@ public final class MVCUtils implements MvcConstants {
 			jsonSupport = instanceFactory.getInstance(jsonSupportBeanName);
 		}
 		return jsonSupport;
+	}
+	
+	public static String getScanAnnotationPackageName() {
+		return GlobalPropertyFactory.getInstance().getValue(
+				"scw.scan.mvc.package", String.class,
+				BeanUtils.getScanAnnotationPackageName());
 	}
 }

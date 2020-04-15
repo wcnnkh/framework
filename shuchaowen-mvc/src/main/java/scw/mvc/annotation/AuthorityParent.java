@@ -5,12 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
+@Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HttpAuthorityConfig {
-	public String id();
-
-	public String parentId() default "";
-
-	public String name();
+public @interface AuthorityParent {
+	public Class<?> value();
 }
