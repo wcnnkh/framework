@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.annotation.Bean;
+import scw.compatible.CompatibleUtils;
+import scw.core.Base64;
+import scw.core.Constants;
 import scw.core.Init;
 import scw.core.annotation.KeyValuePair;
 import scw.core.instance.annotation.Configuration;
@@ -40,10 +43,15 @@ public class DefaultHttpActionAuthorityManager extends
 				.getAnnotation(AuthorityParent.class);
 		String parentId = authorityParent == null ? null : authorityParent
 				.value().getName();
+		if(parentId != null){
+			parentId = Base64.encode(CompatibleUtils.getStringOperations().getBytes(parentId, Constants.ISO_8859_1));
+		}
+		
 		Authority classAuthority = action.getTargetClassAnnotatedElement()
 				.getAnnotation(Authority.class);
 		if (classAuthority != null) {// 如果在类上存在此注解说明这是一个菜单
 			String id = action.getTargetClass().getName();
+			id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
 			HttpActionAuthority authority = getAuthority(id);
 			if (authority == null) {
 				register(new DefaultHttpActionAuthority(id, parentId,
@@ -65,6 +73,8 @@ public class DefaultHttpActionAuthorityManager extends
 
 		String id = descriptor.getHttpMethod() + "&"
 				+ descriptor.getController();
+		id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
+		
 		register(new DefaultHttpActionAuthority(id, parentId,
 				methodAuthority.value(), getAttributeMap(classAuthority,
 						methodAuthority), descriptor.getController(),
