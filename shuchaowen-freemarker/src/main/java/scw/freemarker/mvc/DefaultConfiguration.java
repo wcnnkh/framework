@@ -6,12 +6,17 @@ import java.io.IOException;
 import scw.beans.BeanFactory;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
+import scw.core.utils.ClassUtils;
+import scw.freemarker.MultiTemplateLoader;
 import scw.util.value.property.PropertyFactory;
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.TemplateExceptionHandler;
 
-@scw.core.instance.annotation.Configuration(order=Integer.MIN_VALUE, value=Configuration.class)
+@scw.core.instance.annotation.Configuration(order = Integer.MIN_VALUE, value = Configuration.class)
 public class DefaultConfiguration extends Configuration {
 
 	public DefaultConfiguration(BeanFactory beanFactory,
@@ -21,11 +26,25 @@ public class DefaultConfiguration extends Configuration {
 		if (beanFactory.isInstance(TemplateLoader.class)) {
 			setTemplateLoader(beanFactory.getInstance(TemplateLoader.class));
 		} else {
-			setDirectoryForTemplateLoading(new File(GlobalPropertyFactory
-					.getInstance().getWorkPath()));
+			setTemplateLoader(getDefaultTemplateLoader(beanFactory,
+					propertyFactory));
+		}
+		if (beanFactory.isInstance(TemplateExceptionHandler.class)) {
+			setTemplateExceptionHandler(beanFactory
+					.getInstance(TemplateExceptionHandler.class));
 		}
 
 		setObjectWrapper(new DefaultObjectWrapper(
 				Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
+	}
+
+	protected TemplateLoader getDefaultTemplateLoader(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) throws IOException {
+		MultiTemplateLoader multiTemplateLoader = new MultiTemplateLoader();
+		multiTemplateLoader.add(new FileTemplateLoader(new File(
+				GlobalPropertyFactory.getInstance().getWorkPath())));
+		multiTemplateLoader.add(new ClassTemplateLoader(ClassUtils
+				.getDefaultClassLoader(), "/"));
+		return multiTemplateLoader;
 	}
 }
