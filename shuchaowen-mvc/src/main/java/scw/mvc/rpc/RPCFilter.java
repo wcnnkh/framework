@@ -10,32 +10,32 @@ import scw.logger.LoggerUtils;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
 import scw.mvc.Request;
-import scw.mvc.handler.Handler;
-import scw.mvc.handler.HandlerChain;
 import scw.mvc.http.HttpRequest;
+import scw.mvc.service.Filter;
+import scw.mvc.service.FilterChain;
 import scw.net.MimeTypeUtils;
 import scw.net.http.HttpMethod;
 import scw.util.value.property.PropertyFactory;
 
-@Configuration(order=RPCHandler.ORDER)
-public final class RPCHandler implements Handler{
+@Configuration(order=RPCFilter.ORDER)
+public final class RPCFilter implements Filter{
 	public static final int ORDER = 900;
 	
-	private static Logger logger = LoggerUtils.getLogger(RPCHandler.class);
+	private static Logger logger = LoggerUtils.getLogger(RPCFilter.class);
 	private final String rpcPath;
 	private final RpcService rpcService;
 	
-	public RPCHandler(PropertyFactory propertyFactory, BeanFactory beanFactory){
+	public RPCFilter(PropertyFactory propertyFactory, BeanFactory beanFactory){
 		this.rpcService = MVCUtils.getRpcService(propertyFactory, beanFactory);
 		this.rpcPath = MVCUtils.getRPCPath(propertyFactory);
 	}
 	
-	public RPCHandler(RpcService rpcService, String rpcPath){
+	public RPCFilter(RpcService rpcService, String rpcPath){
 		this.rpcService = rpcService;
 		this.rpcPath = rpcPath;
 	}
 	
-	public Object doHandler(Channel channel, HandlerChain chain) throws Throwable {
+	public Object doFilter(Channel channel, FilterChain chain) throws Throwable {
 		if (checkRPCEnable(channel.getRequest())) {
 			channel.getResponse().setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
 			try {
@@ -46,7 +46,7 @@ public final class RPCHandler implements Handler{
 			return  null;
 		}
 		
-		return chain.doHandler(channel);
+		return chain.doFilter(channel);
 	}
 	
 	protected final boolean checkRPCEnable(Request request) {

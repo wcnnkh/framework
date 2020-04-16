@@ -5,6 +5,7 @@ import scw.result.support.DefaultResultFactory;
 
 @AutoImpl({ DefaultResultFactory.class })
 public interface ResultFactory {
+	
 	/**
 	 * 授权失败
 	 * 

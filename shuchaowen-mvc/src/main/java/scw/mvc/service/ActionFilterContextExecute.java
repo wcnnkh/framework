@@ -1,4 +1,4 @@
-package scw.mvc.context;
+package scw.mvc.service;
 
 import scw.context.Context;
 import scw.context.ContextExecute;
@@ -6,12 +6,12 @@ import scw.mvc.Channel;
 import scw.mvc.action.Action;
 import scw.mvc.action.filter.ActionFilterChain;
 
-class FilterContextExecute implements ContextExecute<Object> {
+class ActionFilterContextExecute implements ContextExecute<Object> {
 	private Channel channel;
 	private Action action;
 	private ActionFilterChain chain;
 
-	public FilterContextExecute(Channel channel, Action action,
+	public ActionFilterContextExecute(Channel channel, Action action,
 			ActionFilterChain chain) {
 		this.channel = channel;
 		this.action = action;

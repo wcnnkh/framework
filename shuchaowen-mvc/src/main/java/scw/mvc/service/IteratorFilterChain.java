@@ -1,4 +1,4 @@
-package scw.mvc.handler;
+package scw.mvc.service;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -6,10 +6,10 @@ import java.util.Iterator;
 import scw.core.utils.CollectionUtils;
 import scw.mvc.Channel;
 
-public class IteratorHandlerChain extends AbstractIteratorHandlerChain{
-	private Iterator<? extends Handler> iterator;
+public class IteratorFilterChain extends AbstractIteratorFilterChain{
+	private Iterator<? extends Filter> iterator;
 	
-	public IteratorHandlerChain(Collection<? extends Handler> handlers, HandlerChain chain) {
+	public IteratorFilterChain(Collection<? extends Filter> handlers, FilterChain chain) {
 		super(chain);
 		if(!CollectionUtils.isEmpty(handlers)){
 			iterator = handlers.iterator();
@@ -17,7 +17,7 @@ public class IteratorHandlerChain extends AbstractIteratorHandlerChain{
 	}
 
 	@Override
-	protected Handler getNextChannelHandler(Channel channel)
+	protected Filter getNextFilter(Channel channel)
 			throws Throwable {
 		if(iterator == null){
 			return null;

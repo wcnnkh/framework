@@ -16,7 +16,7 @@ import scw.core.utils.StringUtils;
 import scw.lang.UnsupportedException;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
-import scw.mvc.context.ContextManager;
+import scw.mvc.service.ContextManager;
 import scw.net.message.Message;
 
 public final class MvcRpcUtils {

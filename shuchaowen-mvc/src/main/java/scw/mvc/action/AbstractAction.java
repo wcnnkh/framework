@@ -19,7 +19,6 @@ import scw.mvc.MVCUtils;
 import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.action.filter.IteratorActionFilterChain;
-import scw.mvc.parameter.ParameterFilter;
 
 public abstract class AbstractAction implements Action {
 	private final Method method;
@@ -27,9 +26,9 @@ public abstract class AbstractAction implements Action {
 	private final AnnotatedElement annotatedElement;
 	private final AnnotatedElement targetClassAnnotatedElement;
 	private final AnnotatedElement methodAnnotatedElement;
-	private final ParameterDescriptor[] parameterConfigs;
-	protected final Set<ActionFilter> actionFilters = new LinkedHashSet<ActionFilter>(4);
-	protected final Set<ParameterFilter> parameterFilters = new LinkedHashSet<ParameterFilter>(4);
+	private final ParameterDescriptor[] parameterDescriptors;
+	protected final Set<ActionFilter> actionFilters = new LinkedHashSet<ActionFilter>(
+			4);
 
 	public AbstractAction(Class<?> targetClass, Method method) {
 		this.targetClass = targetClass;
@@ -40,7 +39,8 @@ public abstract class AbstractAction implements Action {
 				.forAnnotations(method.getAnnotations());
 		this.annotatedElement = new MultiAnnotatedElement(Arrays.asList(
 				methodAnnotatedElement, targetClassAnnotatedElement));
-		this.parameterConfigs = ParameterUtils.getParameterDescriptors(method);
+		this.parameterDescriptors = ParameterUtils
+				.getParameterDescriptors(method);
 	}
 
 	public AnnotatedElement getAnnotatedElement() {
@@ -63,8 +63,8 @@ public abstract class AbstractAction implements Action {
 		return methodAnnotatedElement;
 	}
 
-	public ParameterDescriptor[] getParameterConfigs() {
-		return parameterConfigs;
+	public ParameterDescriptor[] getParameterDescriptors() {
+		return parameterDescriptors;
 	}
 
 	public abstract Invoker getInvoker();
@@ -73,42 +73,34 @@ public abstract class AbstractAction implements Action {
 		return Collections.unmodifiableCollection(actionFilters);
 	}
 
-	public Collection<ParameterFilter> getParameterFilters() {
-		return Collections.unmodifiableCollection(parameterFilters);
-	}
-
 	public ActionFilterChain getActionFilterChain() {
 		Collection<ActionFilter> filters = getActionFilters();
 		return CollectionUtils.isEmpty(filters) ? null
 				: new IteratorActionFilterChain(filters, null);
 	}
 
-	public Object[] getArgs(ParameterDescriptor[] parameterConfigs,
-			Channel channel) {
-		return MVCUtils.getParameterValues(channel, parameterConfigs,
-				getParameterFilters(), null);
+	public Object doAction(Channel channel) throws Throwable {
+		return getInvoker()
+				.invoke(MVCUtils.getParameterValues(channel,
+						getParameterDescriptors()));
 	}
 
-	public Object doAction(Channel channel) throws Throwable {
-		return getInvoker().invoke(getArgs(getParameterConfigs(), channel));
-	}
-	
 	@Override
 	public int hashCode() {
 		return method.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
-		if(obj == null){
+		if (obj == null) {
 			return false;
 		}
 
-		if(obj == this){
+		if (obj == this) {
 			return true;
 		}
-		
-		if(obj instanceof Action){
+
+		if (obj instanceof Action) {
 			return ((Action) obj).getMethod().equals(getMethod());
 		}
 		return false;

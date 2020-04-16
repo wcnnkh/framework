@@ -217,7 +217,7 @@ public abstract class AbstractChannel extends AbstractValueFactory<String>
 		if (requestBody != null) {
 			RequestBodyParse requestBodyParse = getBean(requestBody.value());
 			try {
-				return requestBodyParse.requestBodyParse(this, jsonSupport,
+				return requestBodyParse.requestBodyParse(this, getJsonSupport(),
 						parameterConfig);
 			} catch (Exception e) {
 				throw ParameterException.createError(parameterConfig.getName(),

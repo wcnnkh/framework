@@ -8,16 +8,14 @@ import scw.logger.LoggerUtils;
 import scw.mvc.AsyncEvent;
 import scw.mvc.AsyncListener;
 import scw.mvc.Channel;
-import scw.mvc.context.ContextManager;
 import scw.mvc.exception.ExceptionHandlerChain;
-import scw.mvc.handler.HandlerChain;
 import scw.mvc.output.Output;
 
 public abstract class AbstractChannelService implements ChannelService,
 		AsyncListener {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 
-	protected abstract HandlerChain getHandlerChain();
+	protected abstract FilterChain getHandlerChain();
 	
 	protected abstract ExceptionHandlerChain getExceptionHandlerChain();
 
@@ -27,7 +25,7 @@ public abstract class AbstractChannelService implements ChannelService,
 
 	public final void service(Channel channel) {
 		try {
-			output(channel, ContextManager.doHandler(channel, getHandlerChain()));
+			output(channel, ContextManager.doFilter(channel, getHandlerChain()));
 		} catch (Throwable e) {
 			output(channel, doError(channel, e));
 		} finally {

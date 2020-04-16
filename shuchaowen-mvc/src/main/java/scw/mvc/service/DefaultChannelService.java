@@ -1,16 +1,15 @@
 package scw.mvc.service;
 
 import scw.mvc.exception.ExceptionHandlerChain;
-import scw.mvc.handler.HandlerChain;
 import scw.mvc.output.Output;
 
 public class DefaultChannelService extends AbstractChannelService {
-	private final HandlerChain handlerChain;
+	private final FilterChain handlerChain;
 	private final long warnExecuteMillisecond;
 	private final Output output;
 	private final ExceptionHandlerChain exceptionHandlerChain;
 
-	public DefaultChannelService(HandlerChain handlerChain,
+	public DefaultChannelService(FilterChain handlerChain,
 			long warnExecuteMillisecond, Output output,
 			ExceptionHandlerChain exceptionHandlerChain) {
 		this.handlerChain = handlerChain;
@@ -20,7 +19,7 @@ public class DefaultChannelService extends AbstractChannelService {
 	}
 
 	@Override
-	public HandlerChain getHandlerChain() {
+	public FilterChain getHandlerChain() {
 		return handlerChain;
 	}
 

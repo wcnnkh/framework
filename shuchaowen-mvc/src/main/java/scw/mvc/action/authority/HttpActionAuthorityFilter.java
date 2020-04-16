@@ -1,15 +1,14 @@
-package scw.mvc.action.authority.filter;
+package scw.mvc.action.authority;
 
 import scw.core.instance.annotation.Configuration;
-import scw.mvc.action.authority.HttpActionAuthority;
-import scw.mvc.action.authority.HttpActionAuthorityManager;
 import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.action.filter.HttpActionFilter;
 import scw.mvc.action.manager.HttpAction;
 import scw.mvc.http.HttpChannel;
+import scw.util.Result;
 
-@Configuration
-public class HttpActionAuthorityFilter extends HttpActionFilter {
+@Configuration(order = Integer.MIN_VALUE)
+public final class HttpActionAuthorityFilter extends HttpActionFilter {
 	private final HttpActionAuthorityManager httpActionAuthorityManager;
 	private final HttpActionAuthorityIdentify httpActionAuthorityIdentify;
 
@@ -29,12 +28,12 @@ public class HttpActionAuthorityFilter extends HttpActionFilter {
 			return chain.doFilter(channel, action);
 		}
 
-		if (httpActionAuthorityIdentify.identify(channel, action,
-				httpActionAuthority)) {
+		Result<Object> result = httpActionAuthorityIdentify.identify(channel,
+				action, httpActionAuthority);
+		if (result.isSuccess()) {
 			return chain.doFilter(channel, action);
 		}
-
-		return httpActionAuthorityIdentify.error(channel, action);
+		return result.getData();
 	}
 
 }

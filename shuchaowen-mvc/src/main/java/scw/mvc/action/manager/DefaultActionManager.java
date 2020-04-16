@@ -18,18 +18,16 @@ import scw.mvc.MVCUtils;
 import scw.mvc.action.Action;
 import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.annotation.Controller;
-import scw.mvc.parameter.ParameterFilter;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
-@Bean(proxy=false)
+@Bean(proxy = false)
 public class DefaultActionManager implements ActionManager {
 	protected transient final Logger logger = LoggerUtils.getLogger(getClass());
 	private final Map<Method, Action> actionMap = new HashMap<Method, Action>();
 	private final BeanFactory beanFactory;
 	private final PropertyFactory propertyFactory;
 	private final Collection<ActionFilter> actionFilters;
-	private final Collection<ParameterFilter> parameterFilters;
 
 	public DefaultActionManager(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
@@ -43,8 +41,6 @@ public class DefaultActionManager implements ActionManager {
 		this.propertyFactory = propertyFactory;
 		this.actionFilters = InstanceUtils.getConfigurationList(
 				ActionFilter.class, beanFactory, propertyFactory);
-		this.parameterFilters = InstanceUtils.getConfigurationList(
-				ParameterFilter.class, beanFactory, propertyFactory);
 		for (Class<?> clz : ClassUtils.getClassSet(
 				Constants.SYSTEM_PACKAGE_NAME, scanAnnotationPackageName)) {
 			if (!isSupport(clz)) {
@@ -58,6 +54,9 @@ public class DefaultActionManager implements ActionManager {
 
 				Action action = builder(clz, method);
 				if (action != null) {
+					if(logger.isTraceEnabled()){
+						logger.trace("register action: {}", action);
+					}
 					actionMap.put(method, action);
 				}
 			}
@@ -80,10 +79,6 @@ public class DefaultActionManager implements ActionManager {
 		return actionFilters;
 	}
 
-	public Collection<ParameterFilter> getParameterFilters() {
-		return parameterFilters;
-	}
-
 	protected boolean isSupport(Class<?> clazz) {
 		Controller clzController = clazz.getAnnotation(Controller.class);
 		if (clzController == null) {
@@ -100,7 +95,7 @@ public class DefaultActionManager implements ActionManager {
 	protected Action builder(Class<?> clazz, Method method) {
 		if (isSupport(clazz) && isSupport(method)) {
 			return new ControllerHttpAction(getBeanFactory(), clazz, method,
-					getActionFilters(), getParameterFilters());
+					getActionFilters());
 		}
 		return null;
 	}

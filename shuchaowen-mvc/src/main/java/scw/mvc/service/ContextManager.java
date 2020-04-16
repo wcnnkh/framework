@@ -1,4 +1,4 @@
-package scw.mvc.context;
+package scw.mvc.service;
 
 import scw.context.Context;
 import scw.context.Propagation;
@@ -8,7 +8,6 @@ import scw.logger.LoggerUtils;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
 import scw.mvc.action.filter.ActionFilterChain;
-import scw.mvc.handler.HandlerChain;
 
 public class ContextManager extends ThreadLocalDefaultContextManager {
 	private static Logger logger = LoggerUtils.getLogger(ContextManager.class);
@@ -59,10 +58,10 @@ public class ContextManager extends ThreadLocalDefaultContextManager {
 	public static Object doFilter(Channel channel, Action action,
 			ActionFilterChain chain) throws Throwable {
 		return getInstance().execute(Propagation.REQUIRES_NEW,
-				new FilterContextExecute(channel, action, chain));
+				new ActionFilterContextExecute(channel, action, chain));
 	}
 	
-	public static Object doHandler(Channel channel, HandlerChain chain) throws Throwable{
-		return getInstance().execute(Propagation.REQUIRES_NEW, new HandlerContextExecute(channel, chain));
+	public static Object doFilter(Channel channel, FilterChain chain) throws Throwable{
+		return getInstance().execute(Propagation.REQUIRES_NEW, new FilterContextExecute(channel, chain));
 	}
 }

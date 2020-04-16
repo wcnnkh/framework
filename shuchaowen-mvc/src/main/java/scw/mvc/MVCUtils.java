@@ -1,7 +1,6 @@
 package scw.mvc;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -24,17 +23,12 @@ import scw.json.JSONUtils;
 import scw.lang.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.action.AbstractAction;
 import scw.mvc.action.Action;
-import scw.mvc.context.ContextManager;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.cors.CorsConfig;
 import scw.mvc.http.cors.CorsConfigFactory;
 import scw.mvc.http.cors.DefaultCorsConfigFactory;
-import scw.mvc.parameter.DefaultParameterFilterChain;
-import scw.mvc.parameter.ParameterFilter;
-import scw.mvc.parameter.ParameterFilterChain;
 import scw.mvc.rpc.RpcService;
 import scw.net.MimeTypeUtils;
 import scw.net.http.HttpHeaders;
@@ -83,39 +77,16 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static Object[] getParameterValues(Channel channel,
-			ParameterDescriptor[] parameterConfigs) {
-		Action action = ContextManager.getCurrentAction();
-		if (action != null && action instanceof AbstractAction) {
-			return ((AbstractAction) action).getArgs(parameterConfigs, channel);
-		}
-		return getParameterValues(channel, parameterConfigs, null, null);
-	}
-
-	public static Object getParameterValue(Channel channel,
-			ParameterDescriptor parameterConfig,
-			Collection<ParameterFilter> parameterFilters,
-			ParameterFilterChain chain) {
-		ParameterFilterChain parameterFilterChain = new DefaultParameterFilterChain(
-				parameterFilters, chain);
-		try {
-			return parameterFilterChain.doFilter(channel, parameterConfig);
-		} catch (Throwable e) {
-			if (ParameterException.class.isInstance(e)) {
-				throw (ParameterException) e;
+			ParameterDescriptor[] parameterDescriptors)
+			throws ParameterException {
+		Object[] args = new Object[parameterDescriptors.length];
+		for (int i = 0; i < parameterDescriptors.length; i++) {
+			try {
+				args[i] = channel.getParameter(parameterDescriptors[i]);
+			} catch (Exception e) {
+				throw new ParameterException("Parameter error ["
+						+ parameterDescriptors[i].getName() + "]", e);
 			}
-			throw new ParameterException("Parameter error ["
-					+ parameterConfig.getName() + "]", e);
-		}
-	}
-
-	public static Object[] getParameterValues(Channel channel,
-			ParameterDescriptor[] parameterConfigs,
-			Collection<ParameterFilter> parameterFilters,
-			ParameterFilterChain chain) throws ParameterException {
-		Object[] args = new Object[parameterConfigs.length];
-		for (int i = 0; i < parameterConfigs.length; i++) {
-			args[i] = getParameterValue(channel, parameterConfigs[i],
-					parameterFilters, chain);
 		}
 		return args;
 	}
@@ -415,7 +386,7 @@ public final class MVCUtils implements MvcConstants {
 		}
 		return jsonSupport;
 	}
-	
+
 	public static String getScanAnnotationPackageName() {
 		return GlobalPropertyFactory.getInstance().getValue(
 				"scw.scan.mvc.package", String.class,

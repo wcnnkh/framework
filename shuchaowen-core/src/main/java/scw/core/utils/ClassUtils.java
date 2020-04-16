@@ -45,6 +45,8 @@ public final class ClassUtils {
 	/** The ".class" file suffix */
 	public static final String CLASS_FILE_SUFFIX = ".class";
 
+	public static final String GENERIC_PREFIX = "<";
+
 	/**
 	 * Map with primitive wrapper type as key and corresponding primitive type
 	 * as value, for example: Integer.class -> int.class.
@@ -686,16 +688,17 @@ public final class ClassUtils {
 		}
 		return types;
 	}
-	
-	public static Class<?> forNameNullable(String name){
+
+	public static Class<?> forNameNullable(String name) {
 		Class<?> clazz = null;
 		try {
 			clazz = forName(name);
 		} catch (ClassNotFoundException e) {
-			//ignore
+			// ignore
 		}
 		return clazz;
 	}
+
 	public static Class<?> forName(String name) throws ClassNotFoundException {
 		return forName(name, getDefaultClassLoader());
 	}
@@ -743,7 +746,7 @@ public final class ClassUtils {
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
-		int end = name.indexOf("<");
+		int end = name.indexOf(GENERIC_PREFIX);
 		if (end != -1) {
 			// 对于泛型字符串处理
 			int begin = name.lastIndexOf(" ", end);

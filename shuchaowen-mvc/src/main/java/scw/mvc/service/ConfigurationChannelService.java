@@ -6,9 +6,6 @@ import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.mvc.exception.ExceptionHandlerChain;
-import scw.mvc.handler.DefaultHandlerChain;
-import scw.mvc.handler.Handler;
-import scw.mvc.handler.HandlerChain;
 import scw.mvc.output.Output;
 import scw.util.value.property.PropertyFactory;
 
@@ -23,11 +20,11 @@ public final class ConfigurationChannelService extends DefaultChannelService {
 						.getInstance(ExceptionHandlerChain.class));
 	}
 
-	private static HandlerChain getHandlerChain(BeanFactory beanFactory,
+	private static FilterChain getHandlerChain(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
-		Collection<Handler> handlers = InstanceUtils.getConfigurationList(Handler.class, beanFactory,
+		Collection<Filter> handlers = InstanceUtils.getConfigurationList(Filter.class, beanFactory,
 				propertyFactory);
-		HandlerChain chain = new DefaultHandlerChain(handlers, null);
+		FilterChain chain = new DefaultFilterChain(handlers, null);
 		return chain;
 	}
 

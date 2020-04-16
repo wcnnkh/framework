@@ -17,7 +17,6 @@ import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Methods;
-import scw.mvc.parameter.ParameterFilter;
 import scw.net.http.HttpMethod;
 
 public class ControllerHttpAction extends BeanAction implements HttpAction {
@@ -29,9 +28,8 @@ public class ControllerHttpAction extends BeanAction implements HttpAction {
 			8);
 
 	public ControllerHttpAction(BeanFactory beanFactory, Class<?> targetClass,
-			Method method, Collection<ActionFilter> actionFilters,
-			Collection<ParameterFilter> parameterFilters) {
-		super(beanFactory, targetClass, method, actionFilters, parameterFilters);
+			Method method, Collection<ActionFilter> actionFilters) {
+		super(beanFactory, targetClass, method, actionFilters);
 		Controller classController = getTargetClassAnnotatedElement()
 				.getAnnotation(Controller.class);
 		Controller methodController = getMethodAnnotatedElement()
@@ -46,7 +44,6 @@ public class ControllerHttpAction extends BeanAction implements HttpAction {
 				methodController.value(),
 				Arrays.asList(methodController.methods())));
 		this.actionFilters.addAll(getControllerActionFilters());
-		this.parameterFilters.addAll(getControllerParameterFilters());
 	}
 
 	protected Collection<ControllerDescriptor> createControllerDescriptors(
@@ -100,28 +97,6 @@ public class ControllerHttpAction extends BeanAction implements HttpAction {
 				if (ActionFilter.class.isAssignableFrom(f)) {
 					list.add(getBeanFactory().getInstance(f));
 				}
-			}
-		}
-		return list;
-	}
-
-	protected LinkedList<ParameterFilter> getControllerParameterFilters() {
-		LinkedList<ParameterFilter> list = new LinkedList<ParameterFilter>();
-		Controller controller = getTargetClassAnnotatedElement().getAnnotation(
-				Controller.class);
-		if (controller != null) {
-			for (Class<? extends ParameterFilter> clazz : controller
-					.parameterFilter()) {
-				list.add(getBeanFactory().getInstance(clazz));
-			}
-		}
-
-		controller = getMethodAnnotatedElement()
-				.getAnnotation(Controller.class);
-		if (controller != null) {
-			for (Class<? extends ParameterFilter> clazz : controller
-					.parameterFilter()) {
-				list.add(getBeanFactory().getInstance(clazz));
 			}
 		}
 		return list;
