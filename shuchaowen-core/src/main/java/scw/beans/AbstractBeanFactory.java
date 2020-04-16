@@ -28,6 +28,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
+import scw.lang.Ignore;
 import scw.lang.UnsupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -85,10 +86,6 @@ public abstract class AbstractBeanFactory extends
 		return propertyFactory;
 	}
 
-	protected boolean isEnableNotFoundSet() {
-		return propertyFactory.getValue("beans.notfound", boolean.class, true);
-	}
-
 	protected final void addBeanConfiguration(
 			BeanConfiguration beanConfiguration) {
 		if (beanConfiguration == null) {
@@ -136,7 +133,7 @@ public abstract class AbstractBeanFactory extends
 		super.init(createTime, definition, object);
 		definition.init(object);
 		XUtils.init(object);
-		
+
 		if (logger.isTraceEnabled()) {
 			logger.trace("create id [{}] instance [{}] use time:{}ms",
 					definition.getId(), object.getClass().getName(),
@@ -151,44 +148,52 @@ public abstract class AbstractBeanFactory extends
 	public final BeanDefinition getDefinition(String name) {
 		BeanDefinition beanDefinition = getBeanCache(name);
 		if (beanDefinition == null) {
-			if (isEnableNotFoundSet()) {
-				if (notFoundSet.contains(name)) {
-					return null;
-				}
+			if (notFoundSet.contains(name)) {
+				return null;
 			}
 
-			synchronized (this) {
-				beanDefinition = getBeanCache(name);
-				if (beanDefinition == null) {
-					long t = System.currentTimeMillis();
-					beanDefinition = newBeanDefinition(name);
-					if (beanDefinition != null) {
-						t = System.currentTimeMillis() - t;
-						if (logger.isDebugEnabled()) {
-							logger.debug(
-									"create [{}] definition isInstance={} isSingletion={} use time {} ms",
-									name, beanDefinition.isInstance(),
-									beanDefinition.isSingleton(), t);
+			synchronized (beanMap) {
+				synchronized (nameMappingMap) {
+					beanDefinition = getBeanCache(name);
+					if (beanDefinition == null) {
+						long t = System.currentTimeMillis();
+						beanDefinition = newBeanDefinition(name);
+						if (beanDefinition != null) {
+							beanMap.put(beanDefinition.getId(), beanDefinition);
+							if (beanDefinition.getNames() != null) {
+								for (String n : beanDefinition.getNames()) {
+									if (nameMappingMap.containsKey(n)) {
+										throw new AlreadyExistsException(
+												"存在相同的名称映射:"
+														+ n
+														+ ", oldId="
+														+ nameMappingMap.get(n)
+														+ ",newId="
+														+ beanDefinition
+																.getId());
+									}
+									nameMappingMap.put(n,
+											beanDefinition.getId());
+								}
+							}
+
+							t = System.currentTimeMillis() - t;
+							if (logger.isDebugEnabled()) {
+								logger.debug(
+										"create [{}] definition isInstance={} isSingletion={} use time {} ms",
+										name, beanDefinition.isInstance(),
+										beanDefinition.isSingleton(), t);
+							}
 						}
 					}
 				}
 			}
-
-			if (beanDefinition != null) {
-				synchronized (beanMap) {
-					beanMap.put(beanDefinition.getId(), beanDefinition);
-				}
-				addBeanNameMapping(beanDefinition.getNames(),
-						beanDefinition.getId());
-			}
 		}
 
 		if (beanDefinition == null) {
-			if (isEnableNotFoundSet()) {
-				if (!notFoundSet.contains(name)) {
-					synchronized (notFoundSet) {
-						notFoundSet.add(name);
-					}
+			if (!notFoundSet.contains(name)) {
+				synchronized (notFoundSet) {
+					notFoundSet.add(name);
 				}
 			}
 		}
@@ -237,8 +242,15 @@ public abstract class AbstractBeanFactory extends
 		}
 
 		long t = System.currentTimeMillis();
-		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz,
-				clz.getAnnotation(AutoImpl.class), this, getPropertyFactory());
+		AutoImpl autoImpl = clz.getAnnotation(AutoImpl.class);
+		if (autoImpl == null) {
+			if (clz.getAnnotation(Ignore.class) != null) {
+				return null;
+			}
+		}
+
+		AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, autoImpl, this,
+				getPropertyFactory());
 		if (autoBean != null) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("find [{}] use time {}ms", clz,

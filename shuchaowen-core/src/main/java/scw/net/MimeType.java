@@ -15,8 +15,10 @@ import java.util.TreeSet;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
+import scw.lang.Ignore;
 import scw.util.LinkedCaseInsensitiveMap;
 
+@Ignore
 public class MimeType implements Comparable<MimeType>, Serializable {
 
 	private static final long serialVersionUID = 4085923477777865903L;
@@ -69,6 +71,7 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 	private final Map<String, String> parameters;
 
 	// 用于序列化
+	@Ignore
 	protected MimeType() {
 		this.type = null;
 		this.subtype = null;

@@ -227,6 +227,10 @@ public final class InstanceUtils {
 			if (!require) {
 				continue;
 			}
+			
+			if(parameterConfig.getType() == clazz){
+				return false;
+			}
 
 			boolean isProperty = isProerptyType(parameterConfig);
 			// 是否是属性而不是bean

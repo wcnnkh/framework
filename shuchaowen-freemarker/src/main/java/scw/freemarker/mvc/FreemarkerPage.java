@@ -21,12 +21,13 @@ public class FreemarkerPage extends AbstractPage {
 		this(configuration, page, null);
 	}
 
-	public FreemarkerPage(Configuration configuration, String page, MimeType mimeType) {
+	public FreemarkerPage(Configuration configuration, String page,
+			MimeType mimeType) {
 		super(page);
 		this.configuration = configuration;
 		this.mimeType = mimeType;
 	}
-	
+
 	public MimeType getMimeType() {
 		return mimeType;
 	}
@@ -39,12 +40,12 @@ public class FreemarkerPage extends AbstractPage {
 		Request request = channel.getRequest();
 		Response response = channel.getResponse();
 
-		if(getMimeType() != null){
+		if (getMimeType() != null) {
 			response.setContentType(getMimeType());
-		}else{
+		} else {
 			response.setContentType(MimeTypeUtils.TEXT_HTML);
 		}
-		
+
 		Enumeration<String> enumeration = channel.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();
@@ -57,7 +58,8 @@ public class FreemarkerPage extends AbstractPage {
 
 		if (request instanceof HttpRequest) {
 			HttpRequest httpRequest = (HttpRequest) request;
-			for (Entry<String, String[]> entry : httpRequest.getParameterMap().entrySet()) {
+			for (Entry<String, String[]> entry : httpRequest.getParameterMap()
+					.entrySet()) {
 				String key = entry.getKey();
 				if (key == null || containsKey(key)) {
 					continue;
@@ -68,7 +70,8 @@ public class FreemarkerPage extends AbstractPage {
 		}
 
 		String page = getPage();
-		Template template = configuration.getTemplate(page, request.getCharacterEncoding());
+		Template template = configuration.getTemplate(page,
+				request.getCharacterEncoding());
 		template.process(this, response.getWriter());
 
 		if (channel.isLogEnabled()) {
