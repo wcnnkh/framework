@@ -187,7 +187,7 @@ public final class BeanUtils {
 				Object v = beanFactory.getInstance(value.format()).format(
 						beanFactory, propertyFactory, field, value.value());
 				if (v != null) {
-					field.set(obj, value);
+					field.set(obj, v);
 				}
 			} catch (Throwable e) {
 				throw new RuntimeException("value：clz=" + clz.getName()

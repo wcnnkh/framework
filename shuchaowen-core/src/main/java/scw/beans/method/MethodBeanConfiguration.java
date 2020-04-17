@@ -20,7 +20,7 @@ import scw.util.value.property.PropertyFactory;
 
 public class MethodBeanConfiguration implements BeanConfiguration {
 	private static Logger logger = LoggerUtils
-			.getConsoleLogger(MethodBeanConfiguration.class);
+			.getLogger(MethodBeanConfiguration.class);
 
 	public Collection<BeanDefinition> getBeans(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {

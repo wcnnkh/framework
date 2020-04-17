@@ -21,7 +21,7 @@ import scw.util.value.property.PropertyFactory;
  */
 public class ServiceBeanConfiguration implements BeanConfiguration {
 	private static Logger logger = LoggerUtils
-			.getConsoleLogger(ServiceBeanConfiguration.class);
+			.getLogger(ServiceBeanConfiguration.class);
 
 	public Collection<BeanDefinition> getBeans(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {

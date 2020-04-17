@@ -39,7 +39,7 @@ import scw.util.value.property.PropertyFactory;
 public abstract class AbstractBeanFactory extends
 		AbstractInstanceFactory<BeanDefinition> implements BeanFactory, Init,
 		Destroy {
-	protected static Logger logger = LoggerUtils.getConsoleLogger(BeanFactory.class);
+	protected static Logger logger = LoggerUtils.getLogger(BeanFactory.class);
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
@@ -49,8 +49,8 @@ public abstract class AbstractBeanFactory extends
 
 	public AbstractBeanFactory() {
 		super();
-		addInternalBean(this, BeanFactory.class);
-		addInternalBean(propertyFactory, PropertyFactory.class);
+		addInternalSingletion(this, BeanFactory.class);
+		addInternalSingletion(propertyFactory, PropertyFactory.class);
 	}
 
 	public final Collection<String> getFilterNames() {
@@ -300,10 +300,6 @@ public abstract class AbstractBeanFactory extends
 
 	@Override
 	public <T> T getInstance(String name) {
-		if(name.indexOf("BeanFactory") != -1){
-			System.err.println(name);
-		}
-		
 		T bean = super.getInstance(name);
 		if (bean == null) {
 			throw new UnsupportedException(name);
@@ -311,7 +307,7 @@ public abstract class AbstractBeanFactory extends
 		return bean;
 	}
 
-	protected final void addInternalBean(Object instance, Class<?> targetClass,
+	protected final void addInternalSingletion(Object instance, Class<?> targetClass,
 			String... names) {
 		singletonMap.put(targetClass.getName(), instance);
 		addBeanDefinition(new InteranlBeanDefinition(instance, targetClass,

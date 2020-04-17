@@ -9,6 +9,7 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
+import scw.util.FormatUtils;
 
 public class MainApplication extends CommonApplication implements Application {
 	private final Class<?> mainClass;
@@ -56,9 +57,10 @@ public class MainApplication extends CommonApplication implements Application {
 		run.start();
 	}
 
-	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, String[] args)
-			throws InstantiationException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
+	public static MainApplication getAutoMainApplicationImpl(
+			Class<?> mainClass, String[] args) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException {
 		Collection<Class<MainApplication>> impls = InstanceUtils
 				.getConfigurationClassList(MainApplication.class,
 						GlobalPropertyFactory.getInstance());
@@ -92,13 +94,16 @@ public class MainApplication extends CommonApplication implements Application {
 		} catch (Exception e) {
 			throw new ApplicationException("获取MainApplication实现异常", e);
 		}
-		
+
 		if (application == null) {
 			application = new MainApplication(mainClass, args);
 		}
+
+		FormatUtils.info(mainClass, "use application: {}", application.getClass()
+				.getName());
 		run(application);
 	}
-	
+
 	public static void run(Class<?> mainClass) {
 		run(mainClass, null);
 	}

@@ -53,12 +53,13 @@ public final class AutoInstanceBuilder implements InstanceBuilder {
 						}
 					}
 
-					this.constructorDescriptor = new ConstructorDescriptor(
-							null, null);
+					if (constructorDescriptor == null) {
+						this.constructorDescriptor = new ConstructorDescriptor(
+								null, null);
+					}
 				}
 			}
 		}
-
 		return constructorDescriptor;
 	}
 
@@ -69,8 +70,6 @@ public final class AutoInstanceBuilder implements InstanceBuilder {
 	}
 
 	public Constructor<?> getConstructor() {
-		ConstructorDescriptor constructorDescriptor = getConstructorDescriptor();
-		return constructorDescriptor == null ? null : constructorDescriptor
-				.getConstructor();
+		return getConstructorDescriptor().getConstructor();
 	}
 }

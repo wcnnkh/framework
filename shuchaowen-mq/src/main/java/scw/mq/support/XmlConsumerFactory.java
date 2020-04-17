@@ -22,7 +22,7 @@ import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
 public class XmlConsumerFactory implements ConsumerFactory {
-	private static Logger logger = LoggerUtils.getConsoleLogger(XmlConsumerFactory.class);
+	private static Logger logger = LoggerUtils.getLogger(XmlConsumerFactory.class);
 
 	private Map<String, AmqpConfig> amqpMap = new HashMap<String, AmqpConfig>();
 

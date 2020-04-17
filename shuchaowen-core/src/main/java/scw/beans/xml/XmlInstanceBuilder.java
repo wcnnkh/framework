@@ -39,8 +39,11 @@ public class XmlInstanceBuilder implements InstanceBuilder {
 							break;
 						}
 					}
-					this.constructorDescriptor = new XmlConstructorDescriptor(
-							null, null);
+					
+					if(constructorDescriptor == null){
+						this.constructorDescriptor = new XmlConstructorDescriptor(
+								null, null);
+					}
 				}
 			}
 		}

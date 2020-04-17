@@ -13,13 +13,12 @@ import scw.core.utils.StringUtils;
 
 public final class ParameterUtils {
 	private static final LocalVariableTableParameterNameDiscoverer LVTPND = new LocalVariableTableParameterNameDiscoverer();
-	private static final ParameterDescriptorFactory PARAMETER_DESCRIPTOR_FACTORY = new DefaultParameterDescriptorFactory();
+	private static final ParameterDescriptorFactory PARAMETER_DESCRIPTOR_FACTORY = InstanceUtils.getSystemConfiguration(ParameterDescriptorFactory.class);
 
 	private ParameterUtils() {
 	};
 
 	public static ParameterDescriptorFactory getParameterDescriptorFactory() {
-		System.out.println(ParameterUtils.class + "," + PARAMETER_DESCRIPTOR_FACTORY);
 		return PARAMETER_DESCRIPTOR_FACTORY;
 	}
 

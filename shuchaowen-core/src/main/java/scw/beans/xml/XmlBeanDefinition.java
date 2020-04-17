@@ -30,7 +30,7 @@ import scw.logger.LoggerUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class XmlBeanDefinition implements BeanDefinition {
-	private Logger logger = LoggerUtils.getConsoleLogger(XmlBeanDefinition.class);
+	private Logger logger = LoggerUtils.getLogger(XmlBeanDefinition.class);
 
 	private final BeanFactory beanFactory;
 	private final PropertyFactory propertyFactory;
