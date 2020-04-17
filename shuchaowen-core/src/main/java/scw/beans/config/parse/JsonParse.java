@@ -1,11 +1,8 @@
 package scw.beans.config.parse;
 
-import java.lang.reflect.Field;
-
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
-import scw.beans.property.AbstractCharsetNameValueFormat;
-import scw.core.Constants;
+import scw.beans.property.AbstractValueFormat;
 import scw.core.reflect.FieldDefinition;
 import scw.io.resource.ResourceUtils;
 import scw.json.JSONUtils;
@@ -19,15 +16,7 @@ import scw.util.value.property.PropertyFactory;
  * @author shuchaowen
  *
  */
-public final class JsonParse extends AbstractCharsetNameValueFormat implements ConfigParse {
-
-	public JsonParse() {
-		this(Constants.DEFAULT_CHARSET_NAME);
-	}
-
-	public JsonParse(String charsetName) {
-		super(charsetName);
-	}
+public final class JsonParse extends AbstractValueFormat implements ConfigParse {
 
 	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
@@ -43,18 +32,9 @@ public final class JsonParse extends AbstractCharsetNameValueFormat implements C
 		}
 	}
 
-	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
+	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition field, String name)
 			throws Exception {
-		String content = ResourceUtils.getResourceOperations().getFileContent(name, getCharsetName());
-		if (JsonObject.class.isAssignableFrom(field.getType())) {
-			return JSONUtils.parseObject(content);
-		} else if (JsonArray.class.isAssignableFrom(field.getType())) {
-			return JSONUtils.parseArray(content);
-		} else if (String.class.isAssignableFrom(field.getType())) {
-			return content;
-		} else {
-			return JSONUtils.parseObject(content, field.getType());
-		}
+		return parse(beanFactory, propertyFactory, field, name, getCharsetName());
 	}
 
 }

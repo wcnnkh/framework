@@ -1,11 +1,10 @@
 package scw.beans;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 
-import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
 import scw.core.reflect.FieldDefinition;
-import scw.core.utils.XUtils;
 import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
@@ -18,12 +17,9 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	protected final PropertyFactory propertyFactory;
 	protected boolean singleton;
 	private FieldDefinition[] autowriteFieldDefinition;
-	protected final ValueWiredManager valueWiredManager;
 
-	public AbstractBeanDefinition(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> targetClass) {
-		this.valueWiredManager = valueWiredManager;
+	public AbstractBeanDefinition(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> targetClass) {
 		this.beanFactory = beanFactory;
 		this.targetClass = targetClass;
 		this.propertyFactory = propertyFactory;
@@ -61,26 +57,29 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	}
 
 	public void init(Object bean) throws Exception {
-		BeanUtils
-				.autowired(valueWiredManager, beanFactory, propertyFactory,
-						getTargetClass(), bean,
-						Arrays.asList(autowriteFieldDefinition));
+		BeanUtils.autowired(beanFactory, propertyFactory, getTargetClass(),
+				bean, Arrays.asList(autowriteFieldDefinition));
 
 		if (initMethods != null && initMethods.length != 0) {
 			for (NoArgumentBeanMethod method : initMethods) {
 				method.noArgumentInvoke(bean);
 			}
 		}
+		
+		BeanUtils.init(bean);
 	}
 
 	public void destroy(Object bean) throws Exception {
-		valueWiredManager.cancel(bean);
 		if (destroyMethods != null && destroyMethods.length != 0) {
 			for (NoArgumentBeanMethod method : destroyMethods) {
 				method.invoke(bean);
 			}
 		}
 
-		XUtils.destroy(bean);
+		BeanUtils.destroy(bean);
+	}
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return getTargetClass();
 	}
 }

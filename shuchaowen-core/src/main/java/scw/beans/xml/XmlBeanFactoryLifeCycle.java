@@ -2,9 +2,9 @@ package scw.beans.xml;
 
 import org.w3c.dom.NodeList;
 
-import scw.beans.BeanConfiguration;
+import scw.beans.BeanFactoryLifeCycle;
 
-public abstract class XmlBeanConfiguration implements BeanConfiguration {
+public abstract class XmlBeanFactoryLifeCycle implements BeanFactoryLifeCycle {
 	private NodeList nodeList;
 
 	public NodeList getNodeList() {

@@ -13,13 +13,13 @@ import scw.core.utils.StringUtils;
 
 public final class ParameterUtils {
 	private static final LocalVariableTableParameterNameDiscoverer LVTPND = new LocalVariableTableParameterNameDiscoverer();
-	private static final ParameterDescriptorFactory PARAMETER_DESCRIPTOR_FACTORY = InstanceUtils
-			.getSystemConfiguration(ParameterDescriptorFactory.class);
+	private static final ParameterDescriptorFactory PARAMETER_DESCRIPTOR_FACTORY = new DefaultParameterDescriptorFactory();
 
 	private ParameterUtils() {
 	};
 
 	public static ParameterDescriptorFactory getParameterDescriptorFactory() {
+		System.out.println(ParameterUtils.class + "," + PARAMETER_DESCRIPTOR_FACTORY);
 		return PARAMETER_DESCRIPTOR_FACTORY;
 	}
 
@@ -62,7 +62,7 @@ public final class ParameterUtils {
 	}
 
 	public static Object createObjectByParameter(
-			ParameterFactory<ParameterDescriptor> parameterFactory,
+			ParameterFactory parameterFactory,
 			Class<?> type) throws Exception {
 		return createObjectByParameter(parameterFactory, type, null);
 	}
@@ -70,14 +70,14 @@ public final class ParameterUtils {
 	public static Object createObjectByParameter(
 			InstanceFactory instanceFactory,
 			ParameterDescriptorFactory parameterConfigFactory,
-			ParameterFactory<ParameterDescriptor> parameterFactory,
+			ParameterFactory parameterFactory,
 			Class<?> type) throws Exception {
 		return createObjectByParameter(instanceFactory, parameterConfigFactory,
 				parameterFactory, type, null);
 	}
 
 	public static Object createObjectByParameter(
-			ParameterFactory<ParameterDescriptor> parameterFactory,
+			ParameterFactory parameterFactory,
 			Class<?> type, String name) throws Exception {
 		return createObjectByParameterInternal(
 				InstanceUtils.INSTANCE_FACTORY,
@@ -89,7 +89,7 @@ public final class ParameterUtils {
 	public static Object createObjectByParameter(
 			InstanceFactory instanceFactory,
 			ParameterDescriptorFactory parameterDescriptorFactory,
-			ParameterFactory<ParameterDescriptor> parameterFactory,
+			ParameterFactory parameterFactory,
 			Class<?> type, String name) throws Exception {
 		return createObjectByParameterInternal(instanceFactory,
 				parameterDescriptorFactory, parameterFactory, type,
@@ -100,7 +100,7 @@ public final class ParameterUtils {
 	private static Object createObjectByParameterInternal(
 			InstanceFactory instanceFactory,
 			ParameterDescriptorFactory parameterConfigFactory,
-			ParameterFactory<ParameterDescriptor> parameterFactory,
+			ParameterFactory parameterFactory,
 			Class<?> type, String prefix) throws Exception {
 		if (!instanceFactory.isInstance(type)) {
 			return null;
@@ -115,7 +115,7 @@ public final class ParameterUtils {
 	private static void setParameter(Object instance,
 			InstanceFactory instanceFactory,
 			ParameterDescriptorFactory parameterConfigFactory,
-			ParameterFactory<ParameterDescriptor> parameterFactory,
+			ParameterFactory parameterFactory,
 			Class<?> type, String prefix) throws Exception {
 		for (FieldParameterDescriptor parameterConfig : parameterConfigFactory
 				.getParameterDescriptors(type)) {

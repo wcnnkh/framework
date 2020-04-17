@@ -1,14 +1,15 @@
 package scw.beans;
 
-import scw.beans.property.ValueWiredManager;
+import java.lang.reflect.AnnotatedElement;
+
 import scw.lang.UnsupportedException;
 import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefinition {
 
-	public AbstractInterfaceBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
+	public AbstractInterfaceBeanDefinition(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Class<?> type) {
-		super(valueWiredManager, beanFactory, propertyFactory, type);
+		super(beanFactory, propertyFactory, type);
 	}
 
 	public boolean isInstance() {
@@ -30,5 +31,9 @@ public abstract class AbstractInterfaceBeanDefinition extends AbstractBeanDefini
 
 	public String[] getNames() {
 		return null;
+	}
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return getTargetClass();
 	}
 }

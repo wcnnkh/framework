@@ -1,6 +1,7 @@
 package scw.beans.xml;
 
 import java.io.Serializable;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,23 +10,27 @@ import java.util.Date;
 import org.w3c.dom.Node;
 
 import scw.beans.EParameterType;
+import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.instance.InstanceFactory;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
 import scw.util.value.property.PropertyFactory;
 
-public final class XmlBeanParameter implements Cloneable, Serializable {
+public final class XmlBeanParameter implements ParameterDescriptor, Cloneable,
+		Serializable {
 	private static final long serialVersionUID = 1L;
-	private final EParameterType type;
-	private Type parameterType;
+	private final EParameterType parameterType;
+	private Class<?> type;
 	private final String name;// 可能为空
 	private final XmlValue xmlValue;
 
-	public XmlBeanParameter(EParameterType type, Type parameterType, String name, String value, Node node) {
-		this.type = type;
+	public XmlBeanParameter(EParameterType parameterType, Class<?> type,
+			String name, String value, Node node) {
 		this.parameterType = parameterType;
+		this.type = type;
 		this.name = name;
 		this.xmlValue = new XmlValue(value, node);
 	}
@@ -40,43 +45,53 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		return null;
 	}
 
-	public EParameterType getType() {
-		return type;
+	public EParameterType getParameterType() {
+		return parameterType;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public Type getParameterType() {
-		return parameterType;
+	public Class<?> getType() {
+		return type;
 	}
 
-	public void setParameterType(Type parameterType) {
-		this.parameterType = parameterType;
+	public void setType(Class<?> type) {
+		this.type = type;
 	}
 
-	public Object parseValue(InstanceFactory instanceFactory, PropertyFactory propertyFactory) throws Exception {
-		return parseValue(instanceFactory, propertyFactory, this.parameterType);
+	public Type getGenericType() {
+		return type;
 	}
 
-	public Object parseValue(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Type parameterType)
-			throws Exception {
+	public AnnotatedElement getAnnotatedElement() {
+		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT;
+	}
+
+	public Object parseValue(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory) throws Exception {
+		return parseValue(instanceFactory, propertyFactory, this.type);
+	}
+
+	public Object parseValue(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Type type) throws Exception {
 		Object value = null;
-		switch (type) {
+		switch (parameterType) {
 		case value:
 			String text = xmlValue.formatValue(propertyFactory);
-			if(text != null){
-				value = formatStringValue(new StringValue(text), parameterType);
+			if (text != null) {
+				value = formatStringValue(new StringValue(text), type);
 			}
 			break;
 		case ref:
-			value = instanceFactory.getInstance(xmlValue.formatValue(propertyFactory));
+			value = instanceFactory.getInstance(xmlValue
+					.formatValue(propertyFactory));
 			break;
 		case property:
 			Value v = propertyFactory.get(xmlValue.getValue());
-			if(v != null){
-				value = formatStringValue(v, parameterType);
+			if (v != null) {
+				value = formatStringValue(v, type);
 			}
 			break;
 		default:
@@ -89,7 +104,8 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 		return value;
 	}
 
-	private Object formatStringValue(Value value, Type parameterType) throws ClassNotFoundException, ParseException {
+	private Object formatStringValue(Value value, Type parameterType)
+			throws ClassNotFoundException, ParseException {
 		if (value == null) {
 			return null;
 		}
@@ -98,7 +114,8 @@ public final class XmlBeanParameter implements Cloneable, Serializable {
 			if (StringUtils.isNumeric(value.getAsString())) {
 				return new Date(Long.parseLong(value.getAsString()));
 			} else {
-				String dateFormat = xmlValue.getNodeAttributeValue("date-format");
+				String dateFormat = xmlValue
+						.getNodeAttributeValue("date-format");
 				if (StringUtils.isNull(dateFormat)) {
 					throw new NotFoundException("data-format [" + value + "]");
 				}

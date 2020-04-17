@@ -14,6 +14,10 @@ import scw.core.utils.CollectionUtils;
 
 public class MultiAnnotatedElement implements AnnotatedElement {
 	private final Collection<? extends AnnotatedElement> annotatedElements;
+	
+	public MultiAnnotatedElement(AnnotatedElement ...annotatedElements) {
+		this(Arrays.asList(annotatedElements));
+	}
 
 	public MultiAnnotatedElement(
 			Collection<? extends AnnotatedElement> annotatedElements) {

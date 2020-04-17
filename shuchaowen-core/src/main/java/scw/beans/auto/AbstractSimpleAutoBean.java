@@ -17,7 +17,7 @@ public abstract class AbstractSimpleAutoBean extends AbstractAutoBean {
 
 	protected abstract Class<?>[] getParameterTypes();
  
-	protected abstract Object[] getParameters();
+	protected abstract Object[] getParameters() throws Exception;
 
 	@SuppressWarnings("unchecked")
 	public <T> T create() throws Exception{

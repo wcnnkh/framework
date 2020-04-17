@@ -4,7 +4,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,8 +23,6 @@ import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Service;
 import scw.beans.annotation.Value;
-import scw.beans.property.ValueWired;
-import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.GlobalPropertyFactory;
 import scw.core.Init;
@@ -40,6 +37,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.property.PropertyFactory;
@@ -50,23 +48,20 @@ public final class BeanUtils {
 	private BeanUtils() {
 	};
 
-	public static void autowired(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> clz, Object obj, Collection<FieldDefinition> fields)
-			throws Exception {
+	public static void autowired(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> clz, Object obj,
+			Collection<FieldDefinition> fields) throws Exception {
 		for (FieldDefinition field : fields) {
 			setBean(beanFactory, clz, obj, field);
 			setConfig(beanFactory, propertyFactory, clz, obj, field);
+			setValue(beanFactory, propertyFactory, clz, obj, field);
 		}
-
-		setValue(valueWiredManager, beanFactory, propertyFactory, clz, obj,
-				fields);
 	}
 
 	private static XmlBeanParameter[] sortParameters(String[] paramNames,
-			Type[] parameterTypes, XmlBeanParameter[] beanMethodParameters) {
+			Class<?>[] parameterTypes, XmlBeanParameter[] beanMethodParameters) {
 		XmlBeanParameter[] methodParameters = new XmlBeanParameter[beanMethodParameters.length];
-		Type[] types = new Type[methodParameters.length];
+		Class<?>[] types = new Class<?>[methodParameters.length];
 		for (int i = 0; i < methodParameters.length; i++) {
 			XmlBeanParameter beanMethodParameter = beanMethodParameters[i]
 					.clone();
@@ -75,16 +70,16 @@ public final class BeanUtils {
 					if (paramNames[a].equals(beanMethodParameter.getName())) {
 						types[a] = parameterTypes[a];
 						methodParameters[a] = beanMethodParameters[i].clone();
-						methodParameters[a].setParameterType(parameterTypes[a]);
+						methodParameters[a].setType(parameterTypes[a]);
 					}
 				}
 			} else if (beanMethodParameter.getParameterType() != null) {
 				methodParameters[i] = beanMethodParameter;
-				types[i] = beanMethodParameter.getParameterType();
+				types[i] = beanMethodParameter.getType();
 			} else {
 				types[i] = parameterTypes[i];
 				methodParameters[i] = beanMethodParameter;
-				methodParameters[i].setParameterType(types[i]);
+				methodParameters[i].setType(types[i]);
 			}
 		}
 
@@ -181,44 +176,30 @@ public final class BeanUtils {
 		return obj == null ? clazz : obj;
 	}
 
-	public static void setValue(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> clz, Object obj,
-			Collection<FieldDefinition> fieldDefinitions) throws Exception {
-		if (CollectionUtils.isEmpty(fieldDefinitions)) {
-			return;
-		}
-
-		Collection<ValueWired> valueWireds = new LinkedList<ValueWired>();
-		for (FieldDefinition field : fieldDefinitions) {
-			Value value = field.getAnnotatedElement().getAnnotation(Value.class);
-			if (value != null) {
-				staticFieldWarnLog(Value.class.getName(), clz, field);
-				try {
-					existDefaultValueWarnLog(Value.class.getName(), clz, field,
-							obj);
-					ValueWired valueWired = new ValueWired(obj, field, value);
-					if (valueWiredManager == null) {
-						valueWired.wired(beanFactory, propertyFactory);
-					} else {
-						valueWireds.add(valueWired);
-					}
-				} catch (Throwable e) {
-					throw new RuntimeException("properties：clz="
-							+ clz.getName() + ",fieldName="
-							+ field.getField().getName(), e);
+	public static void setValue(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> clz, Object obj,
+			FieldDefinition field) throws Exception {
+		Value value = field.getAnnotatedElement().getAnnotation(Value.class);
+		if (value != null) {
+			staticFieldWarnLog(Value.class.getName(), clz, field);
+			try {
+				existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
+				Object v = beanFactory.getInstance(value.format()).format(
+						beanFactory, propertyFactory, field, value.value());
+				if (v != null) {
+					field.set(obj, value);
 				}
+			} catch (Throwable e) {
+				throw new RuntimeException("value：clz=" + clz.getName()
+						+ ",fieldName=" + field.getField().getName(), e);
 			}
-		}
-
-		if (valueWiredManager != null) {
-			valueWiredManager.write(getValueTaskId(clz, obj), valueWireds);
 		}
 	}
 
 	private static void setBean(BeanFactory beanFactory, Class<?> clz,
 			Object obj, FieldDefinition field) {
-		Autowired s = field.getAnnotatedElement().getAnnotation(Autowired.class);
+		Autowired s = field.getAnnotatedElement()
+				.getAnnotation(Autowired.class);
 		if (s != null) {
 			staticFieldWarnLog(Autowired.class.getName(), clz, field);
 
@@ -439,5 +420,13 @@ public final class BeanUtils {
 		return GlobalPropertyFactory.getInstance().getValue(
 				"scw.scan.beans.package", String.class,
 				InstanceUtils.getScanAnnotationPackageName());
+	}
+
+	public static void init(Object instance) throws Exception {
+		XUtils.init(instance);
+	}
+
+	public static void destroy(Object instance) throws Exception {
+		XUtils.destroy(instance);
 	}
 }

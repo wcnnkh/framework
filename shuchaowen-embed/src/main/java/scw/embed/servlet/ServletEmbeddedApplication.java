@@ -1,27 +1,23 @@
 package scw.embed.servlet;
 
-import scw.application.Application;
-import scw.application.CommonApplication;
-import scw.core.GlobalPropertyFactory;
+import scw.application.MainApplication;
 import scw.core.instance.InstanceUtils;
-import scw.embed.tomcat.TomcatApplication;
-import scw.io.resource.ResourceUtils;
+import scw.core.instance.annotation.Configuration;
 import scw.lang.UnsupportedException;
 import scw.servlet.mvc.DispatcherServlet;
 import scw.util.FormatUtils;
 
-public class ServletEmbeddedApplication extends CommonApplication {
+@Configuration(MainApplication.class)
+public class ServletEmbeddedApplication extends MainApplication {
 	private ServletEmbedded embedded;
-	private Class<?> mainClass;
 
-	public ServletEmbeddedApplication(String configXml, Class<?> mainClass) {
-		super(configXml);
-		this.mainClass = mainClass;
+	public ServletEmbeddedApplication(Class<?> mainClass, String[] args) {
+		super(mainClass, args);
 	}
 
 	@Override
-	public void init() {
-		super.init();
+	protected void initInternal() {
+		super.initInternal();
 		embedded = InstanceUtils.getConfiguration(ServletEmbedded.class,
 				getBeanFactory(), getPropertyFactory());
 		if (embedded == null) {
@@ -36,53 +32,17 @@ public class ServletEmbeddedApplication extends CommonApplication {
 		}
 		embedded.init(getBeanFactory(), getPropertyFactory(),
 				new ShutdownHttpServlet(getPropertyFactory(), this),
-				dispatcherServlet, mainClass);
+				dispatcherServlet, getMainClass());
 	}
 
 	@Override
-	public void destroy() {
-		FormatUtils.info(TomcatApplication.class,
+	public void destroyInternal() {
+		FormatUtils.info(ServletEmbeddedApplication.class,
 				"---------------shutdown---------------");
 		if (embedded != null) {
 			embedded.destroy();
 		}
 		super.destroy();
 		System.exit(0);
-	}
-
-	private static class Run extends Thread {
-		private String beanXml;
-		private Class<?> mainClass;
-
-		public Run(String beanXml, Class<?> mainClass) {
-			this.beanXml = beanXml;
-			this.mainClass = mainClass;
-		}
-
-		public void run() {
-			if (!ResourceUtils.getResourceOperations().isExist(beanXml)) {
-				FormatUtils.warn(TomcatApplication.class, "not found "
-						+ beanXml);
-			}
-
-			Application application = new ServletEmbeddedApplication(beanXml,
-					mainClass);
-			application.init();
-		}
-	}
-
-	public synchronized static void run(Class<?> mainClass, String beanXml) {
-		GlobalPropertyFactory.getInstance().setBasePackageName(
-				CommonApplication.parseRootPackage(mainClass));
-
-		Run run = new Run(beanXml, mainClass);
-		run.setContextClassLoader(mainClass.getClassLoader());
-		run.setName(mainClass.getName());
-		run.setDaemon(false);
-		run.start();
-	}
-
-	public static void run(Class<?> clazz) {
-		run(clazz, DEFAULT_BEANS_PATH);
 	}
 }

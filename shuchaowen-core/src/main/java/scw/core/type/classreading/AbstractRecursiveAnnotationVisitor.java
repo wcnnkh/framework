@@ -25,7 +25,7 @@ import scw.core.Constants;
 import scw.core.annotation.AnnotationAttributes;
 import scw.core.reflect.ReflectionUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 /**
  * @author Chris Beams
@@ -35,7 +35,7 @@ import scw.logger.LoggerFactory;
  * @since 3.1.1
  */
 abstract class AbstractRecursiveAnnotationVisitor extends AnnotationVisitor {
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	protected final Logger logger = LoggerUtils.getLogger(getClass());
 
 	protected final AnnotationAttributes attributes;
 

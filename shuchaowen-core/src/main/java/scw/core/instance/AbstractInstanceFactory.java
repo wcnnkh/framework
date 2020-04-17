@@ -50,6 +50,10 @@ public abstract class AbstractInstanceFactory<D extends InstanceDefinition>
 		if (definition == null) {
 			return null;
 		}
+		
+		if(definition.getId().indexOf("Application") != -1){
+			System.out.println(definition);
+		}
 
 		if (definition.isSingleton()) {
 			object = singletonMap.get(definition.getId());

@@ -1,11 +1,9 @@
 package scw.application;
 
-import scw.beans.XmlBeanFactory;
-import scw.core.GlobalPropertyFactory;
+import scw.beans.BeanFactory;
+import scw.beans.xml.XmlBeanFactory;
 import scw.core.utils.StringUtils;
-import scw.io.resource.ResourceUtils;
 import scw.logger.LoggerUtils;
-import scw.util.FormatUtils;
 
 public class CommonApplication extends XmlBeanFactory implements Application {
 	public static final String DEFAULT_BEANS_PATH = "beans.xml";
@@ -16,18 +14,18 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 				: xmlConfigPath);
 	}
 
-	public final XmlBeanFactory getBeanFactory() {
+	public BeanFactory getBeanFactory() {
 		return this;
 	}
 
-	public void init() {
+	public final synchronized void init() {
 		if (start) {
-			throw new RuntimeException("已经启动了");
+			throw new ApplicationException("已经启动了");
 		}
 
 		synchronized (this) {
 			if (start) {
-				throw new RuntimeException("已经启动了");
+				throw new ApplicationException("已经启动了");
 			}
 
 			start = true;
@@ -41,63 +39,39 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		LoggerUtils.init();
-		super.init();
+		initInternal();
 	}
 
-	public void destroy() {
+	protected void initInternal() {
+		try {
+			super.init();
+		} catch (Exception e) {
+			throw new ApplicationException("BeanFactory初始化异常", e);
+		}
+	}
+
+	protected void destroyInternal() {
+		try {
+			super.destroy();
+		} catch (Exception e) {
+			throw new ApplicationException("销毁异常", e);
+		}
+	}
+
+	public final synchronized void destroy() {
 		if (!start) {
-			throw new RuntimeException("还未启动，无法销毁");
+			throw new ApplicationException("还未启动，无法销毁");
 		}
 
 		synchronized (this) {
 			if (!start) {
-				throw new RuntimeException("还未启动，无法销毁");
+				throw new ApplicationException("还未启动，无法销毁");
 			}
 
 			start = false;
 		}
 
-		super.destroy();
+		destroyInternal();
 		LoggerUtils.destroy();
-	}
-
-	public synchronized static void run(final Class<?> clazz, String beanXml) {
-		if (!ResourceUtils.getResourceOperations().isExist(beanXml)) {
-			FormatUtils.warn(CommonApplication.class, "not found " + beanXml);
-		}
-
-		CommonApplication application = new CommonApplication(beanXml);
-		if (clazz != null) {
-			GlobalPropertyFactory.getInstance().setBasePackageName(
-					parseRootPackage(clazz));
-		}
-		application.init();
-	}
-
-	public static void run(Class<?> clazz) {
-		run(clazz, DEFAULT_BEANS_PATH);
-	}
-
-	public static void run() {
-		run(null);
-	}
-
-	public static String parseRootPackage(Class<?> clazz) {
-		String[] arr = StringUtils.split(clazz.getName(), '.');
-		if (arr.length < 2) {
-			return null;
-		} else if (arr.length == 2) {
-			return arr[0];
-		} else {
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < 2; i++) {
-				if (i != 0) {
-					sb.append(".");
-				}
-				sb.append(arr[i]);
-			}
-
-			return sb.toString();
-		}
 	}
 }

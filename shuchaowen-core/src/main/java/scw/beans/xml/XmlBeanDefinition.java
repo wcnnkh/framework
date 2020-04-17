@@ -1,5 +1,6 @@
 package scw.beans.xml;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -15,22 +16,21 @@ import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Proxy;
 import scw.beans.auto.AutoBeanUtils;
-import scw.beans.property.ValueWiredManager;
-import scw.core.instance.definition.AutoConstructorDefinition;
-import scw.core.instance.definition.ConstructorDefinition;
+import scw.core.instance.AutoInstanceBuilder;
+import scw.core.instance.InstanceBuilder;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.XUtils;
 import scw.lang.NotFoundException;
+import scw.lang.UnsupportedException;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class XmlBeanDefinition implements BeanDefinition {
-	private Logger logger = LoggerFactory.getLogger(XmlBeanDefinition.class);
+	private Logger logger = LoggerUtils.getConsoleLogger(XmlBeanDefinition.class);
 
 	private final BeanFactory beanFactory;
 	private final PropertyFactory propertyFactory;
@@ -45,13 +45,10 @@ public final class XmlBeanDefinition implements BeanDefinition {
 
 	private final FieldDefinition[] autowriteFields;
 	private final Class<?> type;
-	private final ValueWiredManager valueWiredManager;
-	private ConstructorDefinition instanceConfig;
+	private volatile InstanceBuilder instanceBuilder;
 
-	public XmlBeanDefinition(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Node beanNode) throws Exception {
-		this.valueWiredManager = valueWiredManager;
+	public XmlBeanDefinition(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Node beanNode) throws Exception {
 		this.beanFactory = beanFactory;
 		this.propertyFactory = propertyFactory;
 		this.type = XmlBeanUtils.getClass(beanNode);
@@ -72,25 +69,20 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		this.initMethods = XmlBeanUtils.getInitMethodList(type, nodeList);
 		this.destroyMethods = XmlBeanUtils.getDestroyMethodList(type, nodeList);
 		this.properties = XmlBeanUtils.getBeanProperties(nodeList);
-		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type).toArray(new FieldDefinition[0]);
+		this.autowriteFields = BeanUtils.getAutowriteFieldDefinitionList(type)
+				.toArray(new FieldDefinition[0]);
 
 		if (!type.isInterface()) {// 可能只是映射
 			XmlBeanParameter[] constructorParameters = XmlBeanUtils
 					.getConstructorParameters(nodeList);
-			this.instanceConfig = new XmlConstructorDefinition(beanFactory,
-					propertyFactory, type, constructorParameters);
-			if (instanceConfig.getConstructor() == null
-					&& ArrayUtils.isEmpty(constructorParameters)) {
-				instanceConfig = new AutoConstructorDefinition(beanFactory,
-						propertyFactory, type, ParameterUtils.getParameterDescriptorFactory());
-			}
-
-			if (instanceConfig.getConstructor() == null) {
-				throw new NotFoundException(type.getName() + "找不到对应的构造函数");
+			if(ArrayUtils.isEmpty(constructorParameters)){
+				this.instanceBuilder = new AutoInstanceBuilder(beanFactory, propertyFactory, type, ParameterUtils.getParameterDescriptorFactory());
+			}else{
+				this.instanceBuilder = new XmlInstanceBuilder(beanFactory, propertyFactory, type, constructorParameters);
 			}
 		}
 	}
-
+	
 	public String getId() {
 		return this.id;
 	}
@@ -121,8 +113,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 
 		scw.aop.Proxy proxy = getProxy();
 		return proxy.create(
-				instanceConfig.getConstructor().getParameterTypes(),
-				instanceConfig.getArgs());
+				instanceBuilder.getConstructor().getParameterTypes(),
+				instanceBuilder.getArgs());
 	}
 
 	private void setProperties(Object bean) throws Exception {
@@ -144,12 +136,12 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	private Object createInstance() throws Exception {
-		return instanceConfig.getConstructor().newInstance(
-				instanceConfig.getArgs());
+		return instanceBuilder.getConstructor().newInstance(
+				instanceBuilder.getArgs());
 	}
 
 	public void init(Object bean) throws Exception {
-		BeanUtils.autowired(valueWiredManager, beanFactory, propertyFactory,
+		BeanUtils.autowired(beanFactory, propertyFactory,
 				type, bean, Arrays.asList(autowriteFields));
 		setProperties(bean);
 
@@ -158,21 +150,26 @@ public final class XmlBeanDefinition implements BeanDefinition {
 				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
+		
+		BeanUtils.init(bean);
 	}
 
 	public void destroy(Object bean) throws Exception {
-		valueWiredManager.cancel(bean);
 		if (!ArrayUtils.isEmpty(destroyMethods)) {
 			for (BeanMethod method : destroyMethods) {
 				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
 
-		XUtils.destroy(bean);
+		BeanUtils.destroy(bean);
 	}
 
 	@SuppressWarnings("unchecked")
 	public final <T> T create() throws Exception {
+		if(isInstance()){
+			throw new UnsupportedException(id);
+		}
+		
 		Object bean = null;
 		if (isProxy()) {
 			bean = createProxyInstance();
@@ -207,8 +204,8 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	@SuppressWarnings("unchecked")
 	public final <T> T create(Class<?>[] parameterTypes, Object... params)
 			throws Exception {
-		Constructor<?> constructor = ReflectionUtils.findConstructor(getTargetClass(),
-				false, parameterTypes);
+		Constructor<?> constructor = ReflectionUtils.findConstructor(
+				getTargetClass(), false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}
@@ -225,6 +222,10 @@ public final class XmlBeanDefinition implements BeanDefinition {
 	}
 
 	public boolean isInstance() {
-		return true;
+		return instanceBuilder.getConstructor() != null;
+	}
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return getTargetClass();
 	}
 }

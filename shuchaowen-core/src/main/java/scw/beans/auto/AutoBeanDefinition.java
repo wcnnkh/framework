@@ -2,16 +2,15 @@ package scw.beans.auto;
 
 import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.property.ValueWiredManager;
 import scw.util.value.property.PropertyFactory;
 
 public final class AutoBeanDefinition extends AbstractBeanDefinition {
 	private final AutoBean autoBean;
 
-	public AutoBeanDefinition(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> type, AutoBean autoBean) throws Exception {
-		super(valueWiredManager, beanFactory, propertyFactory, type);
+	public AutoBeanDefinition(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> type, AutoBean autoBean)
+			throws Exception {
+		super(beanFactory, propertyFactory, type);
 		this.autoBean = autoBean;
 		init();
 	}

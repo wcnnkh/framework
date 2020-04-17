@@ -22,8 +22,8 @@ import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.Configuration;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
-import scw.core.instance.definition.ConstructorDefinition;
 import scw.core.parameter.ParameterDescriptor;
+import scw.core.parameter.ParameterFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
@@ -46,6 +46,17 @@ public final class InstanceUtils {
 			.getConsoleLogger(InstanceUtils.class);
 
 	private InstanceUtils() {
+	};
+	
+	public static final InstanceBuilder EMPTY_INSTANCE_BUILDER = new InstanceBuilder() {
+		
+		public Constructor<?> getConstructor() {
+			return null;
+		}
+		
+		public Object[] getArgs() throws Exception {
+			return null;
+		}
 	};
 
 	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
@@ -215,94 +226,122 @@ public final class InstanceUtils {
 
 	public static boolean isAuto(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptor[] parameterConfigs, Object logFirstParameter) {
-		if (parameterConfigs.length == 0) {
+			ParameterDescriptor parameterDescriptor,
+			ParameterFactory parameterFactory) {
+		boolean require = !AnnotationUtils.isNullable(
+				parameterDescriptor.getAnnotatedElement(), false);
+		if (!require) {
 			return true;
 		}
 
-		for (int i = 0; i < parameterConfigs.length; i++) {
-			ParameterDescriptor parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(
-					parameterConfig.getAnnotatedElement(), false);
-			if (!require) {
-				continue;
+		if (parameterDescriptor.getType() == clazz) {
+			return false;
+		}
+
+		if (parameterFactory != null) {
+			Object value = parameterFactory.getParameter(parameterDescriptor);
+			if (value != null) {
+				return true;
 			}
-			
-			if(parameterConfig.getType() == clazz){
+		}
+
+		boolean isProperty = isProerptyType(parameterDescriptor);
+		// 是否是属性而不是bean
+		if (isProperty) {
+			Value value = getProperty(propertyFactory, clazz,
+					parameterDescriptor);
+			if (value == null) {
 				return false;
 			}
-
-			boolean isProperty = isProerptyType(parameterConfig);
-			// 是否是属性而不是bean
-			boolean b = true;
-			if (isProperty) {
-				Value value = getProperty(propertyFactory, clazz,
-						parameterConfig);
-				if (value == null) {
-					b = false;
-				}
+		} else {
+			if (parameterDescriptor.getType() == InstanceFactory.class
+					|| parameterDescriptor.getType() == PropertyFactory.class) {
+				return true;
 			} else {
-				if (parameterConfig.getType() == InstanceFactory.class
-						|| parameterConfig.getType() == PropertyFactory.class) {
-					b = true;
-				} else {
-					String name = getInstanceName(instanceFactory,
-							propertyFactory, clazz, parameterConfig);
-					if (name == null) {
-						b = false;
-					}
+				String name = getInstanceName(instanceFactory, propertyFactory,
+						clazz, parameterDescriptor);
+				if (name == null) {
+					return false;
 				}
 			}
+		}
+		return true;
+	}
+	
+	public static boolean isAuto(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class<?> clazz,
+			ParameterDescriptor[] parameterDescriptors,
+			ParameterFactory parameterFactory, Object logFirstParameter) {
+		if (parameterDescriptors == null || parameterDescriptors.length == 0) {
+			return true;
+		}
 
+		for (int i = 0; i < parameterDescriptors.length; i++) {
+			ParameterDescriptor parameterDescriptor = parameterDescriptors[i];
+			boolean auto = isAuto(instanceFactory, propertyFactory, clazz,
+					parameterDescriptor, parameterFactory);
 			if (logger.isDebugEnabled()) {
-				logger.debug("{} parameter index {} is {} matching:{}",
-						logFirstParameter, i, isProperty ? "property" : "bean",
-						b ? "success" : "fail");
+				logger.debug("{} parameter index {} matching:{}",
+						logFirstParameter, i, auto ? "success" : "fail");
 			}
 
-			if (!b) {
+			if (!auto) {
 				return false;
 			}
 		}
 		return true;
 	}
 
+	public static Object getAutoValue(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class<?> clazz,
+			ParameterDescriptor parameterDescriptor,
+			ParameterFactory parameterFactory) {
+		boolean require = !AnnotationUtils.isNullable(
+				parameterDescriptor.getAnnotatedElement(), false);
+
+		if (parameterFactory != null) {
+			Object value = parameterFactory.getParameter(parameterDescriptor);
+			if (value != null) {
+				return value;
+			}
+		}
+
+		if (isProerptyType(parameterDescriptor)) {
+			Value value = getProperty(propertyFactory, clazz,
+					parameterDescriptor);
+			if (require && value == null) {
+				return null;
+			}
+
+			return value.getAsObject(parameterDescriptor.getGenericType());
+		} else {
+			if (parameterDescriptor.getType() == ConstructorDescriptor.class) {
+				return instanceFactory;
+			}
+
+			if (parameterDescriptor.getType() == PropertyFactory.class) {
+				return propertyFactory;
+			}
+
+			String name = getInstanceName(instanceFactory, propertyFactory,
+					clazz, parameterDescriptor);
+			return name == null ? null : instanceFactory.getInstance(name);
+		}
+	}
+
 	public static Object[] getAutoArgs(InstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptor[] parameterConfigs) {
-		if (parameterConfigs.length == 0) {
+			ParameterDescriptor[] parameterDescriptors,
+			ParameterFactory parameterFactory) {
+		if (parameterDescriptors == null || parameterDescriptors.length == 0) {
 			return new Object[0];
 		}
 
-		Object[] args = new Object[parameterConfigs.length];
-		for (int i = 0; i < parameterConfigs.length; i++) {
-			ParameterDescriptor parameterConfig = parameterConfigs[i];
-			boolean require = !AnnotationUtils.isNullable(
-					parameterConfig.getAnnotatedElement(), false);
-			if (isProerptyType(parameterConfig)) {
-				Value value = getProperty(propertyFactory, clazz,
-						parameterConfig);
-				if (require && value == null) {
-					return null;
-				}
+		Object[] args = new Object[parameterDescriptors.length];
+		for (int i = 0; i < parameterDescriptors.length; i++) {
+			args[i] = getAutoValue(instanceFactory, propertyFactory, clazz,
+					parameterDescriptors[i], parameterFactory);
 
-				args[i] = value.getAsObject(parameterConfig.getGenericType());
-			} else {
-				if (parameterConfig.getType() == ConstructorDefinition.class) {
-					args[i] = instanceFactory;
-					continue;
-				}
-
-				if (parameterConfig.getType() == PropertyFactory.class) {
-					args[i] = propertyFactory;
-					continue;
-				}
-
-				String name = getInstanceName(instanceFactory, propertyFactory,
-						clazz, parameterConfig);
-				args[i] = name == null ? null : instanceFactory
-						.getInstance(name);
-			}
 		}
 		return args;
 	}
@@ -311,6 +350,10 @@ public final class InstanceUtils {
 			Class<?> type, String packageName) {
 		Set<Class<?>> list = new HashSet<Class<?>>();
 		for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
+			if(clazz == type){
+				continue;
+			}
+			
 			if (!ClassUtils.isAssignable(type, clazz)) {
 				continue;
 			}
@@ -325,7 +368,7 @@ public final class InstanceUtils {
 				Collection<Class<?>> values = Arrays.asList(configuration
 						.value());
 				if (configuration.assignableValue()) {
-					if (!ClassUtils.isAssignable(type, values)) {
+					if (!ClassUtils.isAssignable(values, type)) {
 						continue;
 					}
 				} else {
@@ -455,8 +498,8 @@ public final class InstanceUtils {
 		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory,
 				excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
-				logger.debug("factory [{}] not create instance:{}",
-						instanceFactory.getClass(), clazz);
+				logger.debug("factory [{}] not create {} in instance:{}",
+						instanceFactory.getClass(), type, clazz);
 				continue;
 			}
 
@@ -485,8 +528,8 @@ public final class InstanceUtils {
 		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory,
 				excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
-				logger.debug("factory [{}] not create instance:{}",
-						instanceFactory.getClass(), clazz);
+				logger.debug("factory [{}] not create {} in instance:{}",
+						instanceFactory.getClass(), type, clazz);
 				continue;
 			}
 

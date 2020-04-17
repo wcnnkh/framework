@@ -1,5 +1,7 @@
 package scw.core.instance.definition;
 
+import java.lang.reflect.AnnotatedElement;
+
 public interface InstanceDefinition {
 	String getId();
 	
@@ -19,4 +21,6 @@ public interface InstanceDefinition {
 	<T> T create(Object... params) throws Exception;
 
 	<T> T create(Class<?>[] parameterTypes, Object... params) throws Exception;
+	
+	AnnotatedElement getAnnotatedElement();
 }

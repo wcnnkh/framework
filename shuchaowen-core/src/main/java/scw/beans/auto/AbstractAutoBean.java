@@ -1,5 +1,6 @@
 package scw.beans.auto;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 
@@ -76,5 +77,9 @@ public abstract class AbstractAutoBean implements AutoBean {
 			return (T) constructor.newInstance(ClassUtils.cast(
 					constructor.getParameterTypes(), params));
 		}
+	}
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return getTargetClass();
 	}
 }

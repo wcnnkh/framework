@@ -2,7 +2,6 @@ package scw.mvc.action;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -37,8 +36,8 @@ public abstract class AbstractAction implements Action {
 				.forAnnotations(targetClass.getDeclaredAnnotations());
 		this.methodAnnotatedElement = AnnotatedElementUtils
 				.forAnnotations(method.getAnnotations());
-		this.annotatedElement = new MultiAnnotatedElement(Arrays.asList(
-				methodAnnotatedElement, targetClassAnnotatedElement));
+		this.annotatedElement = new MultiAnnotatedElement(
+				methodAnnotatedElement, targetClassAnnotatedElement);
 		this.parameterDescriptors = ParameterUtils
 				.getParameterDescriptors(method);
 	}

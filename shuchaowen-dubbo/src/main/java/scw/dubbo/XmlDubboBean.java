@@ -5,15 +5,14 @@ import org.apache.dubbo.config.ReferenceConfig;
 import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.beans.property.ValueWiredManager;
 import scw.util.value.property.PropertyFactory;
 
 public final class XmlDubboBean extends AbstractInterfaceBeanDefinition {
 	private final ReferenceConfig<?> referenceConfig;
 
-	public XmlDubboBean(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
+	public XmlDubboBean(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Class<?> type, ReferenceConfig<?> referenceConfig) {
-		super(valueWiredManager, beanFactory, propertyFactory, type);
+		super(beanFactory, propertyFactory, type);
 		this.referenceConfig = referenceConfig;
 		init();
 	}
