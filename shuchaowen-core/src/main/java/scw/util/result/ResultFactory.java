@@ -34,4 +34,10 @@ public interface ResultFactory {
 	<T> DataResult<T> success(String code, String msg, T data);
 	
 	<T> DataResult<T> error(String code, String msg, T data);
+	
+	<T> DataResult<T> parameterError(String msg);
+	
+	<T> DataResult<T> parameterError();
+	
+	String getParameterErrorCode();
 }
