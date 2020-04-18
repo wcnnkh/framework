@@ -102,26 +102,10 @@ public abstract class AbstractBeanFactory extends
 			return;
 		}
 
-		String[] names = beanDefinition.getNames();
-		if (!ArrayUtils.isEmpty(names)) {
-			for (String name : names) {
-				definition = getDefinitionByCache(name);
-				if (definition != null) {
-					logger.warn("Already exist name:{}, definition:{}", name,
-							JSONUtils.toJSONString(beanDefinition));
-					if (throwExistError) {
-						throw new AlreadyExistsException("存在相同名称的映射:"
-								+ JSONUtils.toJSONString(beanDefinition));
-					}
-					return;
-				}
-			}
-
-			for (String name : names) {
-				nameMappingMap.put(name, beanDefinition.getId());
-			}
+		if (addBeanNameMapping(beanDefinition.getNames(),
+				beanDefinition.getId(), throwExistError)) {
+			beanMap.put(beanDefinition.getId(), beanDefinition);
 		}
-		beanMap.put(beanDefinition.getId(), beanDefinition);
 	}
 
 	@Override
@@ -179,19 +163,29 @@ public abstract class AbstractBeanFactory extends
 		return beanDefinition;
 	}
 
-	protected void addBeanNameMapping(String[] names, String id) {
-		if (names != null) {
-			synchronized (nameMappingMap) {
-				for (String n : names) {
-					if (nameMappingMap.containsKey(n)) {
-						throw new AlreadyExistsException("存在相同的名称映射:" + n
-								+ ", oldId=" + nameMappingMap.get(n)
-								+ ",newId=" + id);
-					}
-					nameMappingMap.put(n, id);
+	protected boolean addBeanNameMapping(String[] names, String id,
+			boolean throwExistError) {
+		if (ArrayUtils.isEmpty(names)) {
+			return true;
+		}
+
+		for (String name : names) {
+			BeanDefinition definition = getDefinitionByCache(name);
+			if (definition != null) {
+				logger.warn("Already exist name:{}, definition:{}", name,
+						JSONUtils.toJSONString(definition));
+				if (throwExistError) {
+					throw new AlreadyExistsException("存在相同名称的映射:"
+							+ JSONUtils.toJSONString(definition));
 				}
+				return false;
 			}
 		}
+
+		for (String name : names) {
+			nameMappingMap.put(name, id);
+		}
+		return true;
 	}
 
 	protected BeanDefinition getDefinitionByCache(String name) {
