@@ -1,7 +1,7 @@
 package scw.orm.support;
 
+import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.BeanFactory;
-import scw.beans.BeanFactoryLifeCycle;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
@@ -9,7 +9,7 @@ import scw.orm.ORMUtils;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MAX_VALUE)
-public final class ORMRegisterProxyTableScann implements BeanFactoryLifeCycle {
+public final class ORMRegisterProxyTableScann extends AbstractBeanFactoryLifeCycle {
 
 	public void destroy(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws Exception {

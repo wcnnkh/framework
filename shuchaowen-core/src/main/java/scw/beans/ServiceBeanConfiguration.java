@@ -1,9 +1,6 @@
 package scw.beans;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 import scw.beans.annotation.Service;
 import scw.core.Constants;
@@ -19,13 +16,12 @@ import scw.util.value.property.PropertyFactory;
  * @author shuchaowen
  *
  */
-public class ServiceBeanConfiguration implements BeanConfiguration {
+public class ServiceBeanConfiguration extends AbstractBeanConfiguration {
 	private static Logger logger = LoggerUtils
 			.getLogger(ServiceBeanConfiguration.class);
-
-	public Collection<BeanDefinition> getBeans(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
-		List<BeanDefinition> beanDefinitions = new LinkedList<BeanDefinition>();
+	
+	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
+			throws Exception {
 		for (Class<?> clz : ClassUtils.getClassSet(Arrays.asList(
 				BeanUtils.getScanAnnotationPackageName(),
 				Constants.SYSTEM_PACKAGE_NAME))) {
@@ -43,6 +39,5 @@ public class ServiceBeanConfiguration implements BeanConfiguration {
 					propertyFactory, clz);
 			beanDefinitions.add(bean);
 		}
-		return beanDefinitions;
 	}
 }

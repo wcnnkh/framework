@@ -36,13 +36,13 @@ public class ServletEmbeddedApplication extends MainApplication {
 	}
 
 	@Override
-	public void destroyInternal() {
+	protected void destroyInternal() {
 		FormatUtils.info(ServletEmbeddedApplication.class,
 				"---------------shutdown---------------");
 		if (embedded != null) {
 			embedded.destroy();
 		}
-		super.destroy();
+		super.destroyInternal();
 		System.exit(0);
 	}
 }

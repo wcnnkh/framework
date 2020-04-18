@@ -5,6 +5,7 @@ import java.util.Collection;
 import scw.util.value.property.PropertyFactory;
 
 public interface BeanConfiguration {
-	Collection<BeanDefinition> getBeans(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception;
+	void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception;
+	
+	Collection<BeanDefinition> getBeans();
 }

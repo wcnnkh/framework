@@ -73,7 +73,7 @@ public final class BeanUtils {
 						methodParameters[a].setType(parameterTypes[a]);
 					}
 				}
-			} else if (beanMethodParameter.getParameterType() != null) {
+			} else if (beanMethodParameter.getType() != null) {
 				methodParameters[i] = beanMethodParameter;
 				types[i] = beanMethodParameter.getType();
 			} else {

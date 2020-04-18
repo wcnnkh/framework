@@ -75,14 +75,17 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		if (!type.isInterface()) {// 可能只是映射
 			XmlBeanParameter[] constructorParameters = XmlBeanUtils
 					.getConstructorParameters(nodeList);
-			if(ArrayUtils.isEmpty(constructorParameters)){
-				this.instanceBuilder = new AutoInstanceBuilder(beanFactory, propertyFactory, type, ParameterUtils.getParameterDescriptorFactory());
-			}else{
-				this.instanceBuilder = new XmlInstanceBuilder(beanFactory, propertyFactory, type, constructorParameters);
+			if (ArrayUtils.isEmpty(constructorParameters)) {
+				this.instanceBuilder = new AutoInstanceBuilder(beanFactory,
+						propertyFactory, type,
+						ParameterUtils.getParameterDescriptorFactory());
+			} else {
+				this.instanceBuilder = new XmlInstanceBuilder(beanFactory,
+						propertyFactory, type, constructorParameters);
 			}
 		}
 	}
-	
+
 	public String getId() {
 		return this.id;
 	}
@@ -103,20 +106,6 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		return BeanUtils.createProxy(beanFactory, type, filterNames, null);
 	}
 
-	private Object createProxyInstance() throws Exception {
-		if (getTargetClass().isInterface()) {
-			if (CollectionUtils.isEmpty(filterNames)) {
-				logger.warn("{} is an interface, but there is no proxy.", type);
-			}
-			return getProxy().create();
-		}
-
-		scw.aop.Proxy proxy = getProxy();
-		return proxy.create(
-				instanceBuilder.getConstructor().getParameterTypes(),
-				instanceBuilder.getArgs());
-	}
-
 	private void setProperties(Object bean) throws Exception {
 		if (ArrayUtils.isEmpty(properties)) {
 			return;
@@ -135,14 +124,9 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		}
 	}
 
-	private Object createInstance() throws Exception {
-		return instanceBuilder.getConstructor().newInstance(
-				instanceBuilder.getArgs());
-	}
-
 	public void init(Object bean) throws Exception {
-		BeanUtils.autowired(beanFactory, propertyFactory,
-				type, bean, Arrays.asList(autowriteFields));
+		BeanUtils.autowired(beanFactory, propertyFactory, type, bean,
+				Arrays.asList(autowriteFields));
 		setProperties(bean);
 
 		if (!ArrayUtils.isEmpty(initMethods)) {
@@ -150,7 +134,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
-		
+
 		BeanUtils.init(bean);
 	}
 
@@ -164,19 +148,33 @@ public final class XmlBeanDefinition implements BeanDefinition {
 		BeanUtils.destroy(bean);
 	}
 
+	protected Object createInternal(Constructor<?> constructor, Object[] args)
+			throws Exception {
+		Object bean;
+		if (isProxy()) {
+			scw.aop.Proxy proxy = getProxy();
+			bean = proxy.create(constructor.getParameterTypes(), args);
+		} else {
+			bean = constructor.newInstance(args);
+		}
+		return bean;
+	}
+
 	@SuppressWarnings("unchecked")
 	public final <T> T create() throws Exception {
-		if(isInstance()){
+		if (!isInstance()) {
 			throw new UnsupportedException(id);
 		}
-		
-		Object bean = null;
-		if (isProxy()) {
-			bean = createProxyInstance();
-		} else {
-			bean = createInstance();
+
+		if (isProxy() && getTargetClass().isInterface()) {
+			if (CollectionUtils.isEmpty(filterNames)) {
+				logger.warn("{} is an interface, but there is no proxy.", type);
+			}
+			return (T) getProxy().create();
 		}
-		return (T) bean;
+
+		return (T) createInternal(instanceBuilder.getConstructor(),
+				instanceBuilder.getArgs());
 	}
 
 	public String[] getNames() {
@@ -191,14 +189,7 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}
 
-		Object bean;
-		if (isProxy()) {
-			scw.aop.Proxy proxy = getProxy();
-			bean = proxy.create(constructor.getParameterTypes(), params);
-		} else {
-			bean = constructor.newInstance(params);
-		}
-		return (T) bean;
+		return (T) createInternal(constructor, params);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -210,21 +201,13 @@ public final class XmlBeanDefinition implements BeanDefinition {
 			throw new NotFoundException(getId() + "找不到指定的构造方法");
 		}
 
-		Object bean;
-		if (isProxy()) {
-			scw.aop.Proxy proxy = getProxy();
-			bean = proxy.create(constructor.getParameterTypes(), params);
-		} else {
-			bean = constructor.newInstance(params);
-		}
-
-		return (T) bean;
+		return (T) createInternal(constructor, params);
 	}
 
 	public boolean isInstance() {
 		return instanceBuilder.getConstructor() != null;
 	}
-	
+
 	public AnnotatedElement getAnnotatedElement() {
 		return getTargetClass();
 	}

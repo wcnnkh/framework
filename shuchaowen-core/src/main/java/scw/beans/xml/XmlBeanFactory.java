@@ -36,13 +36,13 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 	}
 
 	@Override
-	protected void initBeanFactoryLifeCycle(
+	protected void addBeanFactoryLifeCycle(
 			BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
 		if (beanFactoryLifeCycle instanceof XmlBeanFactoryLifeCycle) {
 			((XmlBeanFactoryLifeCycle) beanFactoryLifeCycle)
 					.setNodeList(getNodeList());
 		}
-		super.initBeanFactoryLifeCycle(beanFactoryLifeCycle);
+		super.addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 	}
 
 	public void init() throws Exception {

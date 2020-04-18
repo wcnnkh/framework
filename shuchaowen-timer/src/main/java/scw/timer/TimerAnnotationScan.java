@@ -2,13 +2,12 @@ package scw.timer;
 
 import java.lang.reflect.Method;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 
 import scw.aop.Invoker;
+import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
-import scw.beans.BeanFactoryLifeCycle;
 import scw.beans.BeanUtils;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
@@ -22,23 +21,11 @@ import scw.timer.support.SimpleTimerTaskConfig;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration
-public final class TimerAnnotationScan implements BeanFactoryLifeCycle {
+public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		scanningAnnotation(
-				ClassUtils.getClassSet(getScanAnnotationPackageName()),
-				beanFactory);
-	}
-
-	public static String getScanAnnotationPackageName() {
-		return GlobalPropertyFactory.getInstance().getValue(
-				"scw.scan.crontab.package", String.class,
-				BeanUtils.getScanAnnotationPackageName());
-	}
-
-	public static void scanningAnnotation(Collection<Class<?>> classList,
-			BeanFactory beanFactory) {
 		Timer timer = beanFactory.getInstance(Timer.class);
-		for (Class<?> clz : classList) {
+		for (Class<?> clz : ClassUtils
+				.getClassSet(getScanAnnotationPackageName())) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true,
 					true, Schedule.class)) {
 				Schedule schedule = method.getAnnotation(Schedule.class);
@@ -53,16 +40,21 @@ public final class TimerAnnotationScan implements BeanFactoryLifeCycle {
 		}
 	}
 
-	private static Task getTask(BeanFactory beanFactory, Class<?> clz,
-			Method method) {
+	public String getScanAnnotationPackageName() {
+		return GlobalPropertyFactory.getInstance().getValue(
+				"scw.scan.crontab.package", String.class,
+				BeanUtils.getScanAnnotationPackageName());
+	}
+
+	private Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
 		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null
 				: method.getParameterTypes()[0];
 		return new CrontabRunnable(new AutoProxyMethodInvoker(beanFactory, clz,
 				method), parameterType);
 	}
 
-	private static void schedule(BeanFactory beanFactory, Class<?> clz,
-			Method method, Timer timer, Schedule schedule) {
+	private void schedule(BeanFactory beanFactory, Class<?> clz, Method method,
+			Timer timer, Schedule schedule) {
 		Delayed delayed = beanFactory.isInstance(schedule.delay()) ? beanFactory
 				.getInstance(schedule.delay()) : null;
 		ScheduleTaskConfig config = new SimpleTimerTaskConfig(schedule.name(),
@@ -72,14 +64,14 @@ public final class TimerAnnotationScan implements BeanFactoryLifeCycle {
 		timer.schedule(config);
 	}
 
-	private static TaskListener getTaskListener(BeanFactory beanFactory,
+	private TaskListener getTaskListener(BeanFactory beanFactory,
 			Class<? extends TaskListener> taskListenerClazz) {
 		return beanFactory.isInstance(taskListenerClazz) ? beanFactory
 				.getInstance(taskListenerClazz) : null;
 	}
 
-	private static void crontab(BeanFactory beanFactory, Class<?> clz,
-			Method method, Timer timer, Crontab crontab) {
+	private void crontab(BeanFactory beanFactory, Class<?> clz, Method method,
+			Timer timer, Crontab crontab) {
 		timer.crontab(new SimpleCrontabConfig(crontab, getTask(beanFactory,
 				clz, method), getTaskListener(beanFactory, crontab.listener())));
 	}

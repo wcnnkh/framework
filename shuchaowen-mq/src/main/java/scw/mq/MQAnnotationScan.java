@@ -2,27 +2,22 @@ package scw.mq;
 
 import java.lang.reflect.Method;
 
+import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
-import scw.beans.BeanFactoryLifeCycle;
 import scw.beans.BeanUtils;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 import scw.mq.amqp.Exchange;
 import scw.mq.annotation.AmqpConsumer;
 import scw.mq.annotation.Consumer;
 import scw.mq.support.MqMethodConsumer;
 import scw.util.value.property.PropertyFactory;
 
-@Configuration
-public final class MQAnnotationScan implements
-		BeanFactoryLifeCycle {
-	private static Logger logger = LoggerUtils
-			.getLogger(MQAnnotationScan.class);
+@Configuration(order=Integer.MIN_VALUE)
+public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws Exception {
@@ -33,13 +28,13 @@ public final class MQAnnotationScan implements
 		}
 	}
 
-	public static String getScanAnnotationPackageName() {
+	public String getScanAnnotationPackageName() {
 		return GlobalPropertyFactory.getInstance().getValue(
 				"scw.scan.mq.package", String.class,
 				BeanUtils.getScanAnnotationPackageName());
 	}
 
-	private static void scanningConsumer(BeanFactory beanFactory, Class<?> clz) {
+	private void scanningConsumer(BeanFactory beanFactory, Class<?> clz) {
 		for (Method method : AnnotationUtils.getAnnoationMethods(clz, true,
 				true, Consumer.class)) {
 			Consumer c = method.getAnnotation(Consumer.class);
@@ -53,7 +48,7 @@ public final class MQAnnotationScan implements
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void scanningAMQPConsumer(BeanFactory beanFactory,
+	private void scanningAMQPConsumer(BeanFactory beanFactory,
 			Class<?> clz) {
 		for (Method method : AnnotationUtils.getAnnoationMethods(clz, true,
 				true, AmqpConsumer.class)) {
@@ -70,7 +65,5 @@ public final class MQAnnotationScan implements
 	}
 
 	public void destroy(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		// TODO Auto-generated method stub
-
 	}
 }

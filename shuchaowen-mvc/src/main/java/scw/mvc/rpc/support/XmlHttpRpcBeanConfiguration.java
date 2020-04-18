@@ -1,13 +1,8 @@
 package scw.mvc.rpc.support;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanUtils;
@@ -20,18 +15,17 @@ import scw.serializer.Serializer;
 import scw.serializer.SerializerUtils;
 import scw.util.value.property.PropertyFactory;
 
-@Configuration
+@Configuration(order=Integer.MIN_VALUE)
 public final class XmlHttpRpcBeanConfiguration extends XmlBeanConfiguration {
 	private static final String TAG_NAME = "http:reference";
 
-	public Collection<BeanDefinition> getBeans(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
+	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
+			throws Exception {
 		NodeList rootNodeList = getNodeList();
 		if (rootNodeList == null) {
-			return null;
+			return;
 		}
 
-		List<BeanDefinition> beanDefinitions = new LinkedList<BeanDefinition>();
 		for (int i = 0; i < rootNodeList.getLength(); i++) {
 			Node node = rootNodeList.item(i);
 			if (node == null) {
@@ -101,8 +95,5 @@ public final class XmlHttpRpcBeanConfiguration extends XmlBeanConfiguration {
 						responseThrowable, shareHeaders));
 			}
 		}
-
-		return beanDefinitions;
 	}
-
 }
