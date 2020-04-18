@@ -36,7 +36,7 @@ public final class ZookeeperUtils {
 	}
 
 	public static void run(int port) throws Exception {
-		if (!NetworkUtils.checkLocalPortCccupied(port)) {
+		if (!NetworkUtils.checkPortCccupied(port)) {
 			logger.warn("端口号已被占用：{}", port);
 			return;
 		}

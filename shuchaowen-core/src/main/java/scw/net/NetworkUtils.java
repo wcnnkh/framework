@@ -1,9 +1,8 @@
 package scw.net;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.Socket;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
@@ -78,47 +77,23 @@ public final class NetworkUtils {
 		return addresses;
 	}
 
-	public static boolean checkPortCccupied(InetAddress inetAddress, int port) {
-		Socket socket = null;
-		try {
-			socket = new Socket(inetAddress, port);
-			return true;
-		} catch (IOException e) {
-			// ignore
-		} finally {
-			IOUtils.close(false, socket);
-		}
-		return false;
-	}
-
 	/**
 	 * 检查端口号占用
 	 * 
-	 * @param host
 	 * @param port
 	 * @return
 	 */
-	public static boolean checkPortCccupied(String host, int port) {
-		Socket socket = null;
+	public static boolean checkPortCccupied(int port) {
+		ServerSocket socket = null;
 		try {
-			socket = new Socket(host, port);
+			socket = new ServerSocket(port);
 			return true;
 		} catch (IOException e) {
-			// ignore
+			e.printStackTrace();
 		} finally {
 			IOUtils.close(false, socket);
 		}
 		return false;
-	}
-
-	/**
-	 * 检查本地端口是否被占用
-	 * 
-	 * @param port
-	 * @return
-	 */
-	public static boolean checkLocalPortCccupied(int port) {
-		return checkPortCccupied("127.0.0.1", port);
 	}
 
 	public static URI toURI(String uri) {
