@@ -7,10 +7,10 @@ import java.util.Iterator;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.CollectionUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.logger.LoggerUtils;
 
 public final class InstanceFactoryFilterChain extends AbstractFilterChain {
-	private static Logger logger = LoggerFactory.getLogger(InstanceFactoryFilterChain.class);
+	private static Logger logger = LoggerUtils.getLogger(InstanceFactoryFilterChain.class);
 	private Iterator<String> iterator;
 	private final InstanceFactory instanceFactory;
 

@@ -1,29 +1,26 @@
 package scw.beans;
 
-import java.util.Arrays;
+import java.lang.reflect.AnnotatedElement;
+import java.util.LinkedList;
 
-import scw.beans.property.ValueWiredManager;
 import scw.core.Init;
 import scw.core.reflect.FieldDefinition;
-import scw.core.utils.XUtils;
 import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	protected final BeanFactory beanFactory;
 	private final Class<?> targetClass;
-	private final String id;
-	private NoArgumentBeanMethod[] initMethods;
-	private NoArgumentBeanMethod[] destroyMethods;
+	protected String id;
+	protected final LinkedList<BeanMethod> initMethods = new LinkedList<BeanMethod>();
+	protected final LinkedList<BeanMethod> destroyMethods = new LinkedList<BeanMethod>();
 	protected boolean proxy;
 	protected final PropertyFactory propertyFactory;
 	protected boolean singleton;
-	private FieldDefinition[] autowriteFieldDefinition;
-	protected final ValueWiredManager valueWiredManager;
+	protected final LinkedList<FieldDefinition> autowriteFieldDefinition = new LinkedList<FieldDefinition>();
+	protected final LinkedList<String> filterNames = new LinkedList<String>();
 
-	public AbstractBeanDefinition(ValueWiredManager valueWiredManager,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Class<?> targetClass) {
-		this.valueWiredManager = valueWiredManager;
+	public AbstractBeanDefinition(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> targetClass) {
 		this.beanFactory = beanFactory;
 		this.targetClass = targetClass;
 		this.propertyFactory = propertyFactory;
@@ -31,17 +28,12 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	}
 
 	public void init() {
-		this.initMethods = BeanUtils.getInitMethodList(getTargetClass())
-				.toArray(new NoArgumentBeanMethod[0]);
-		this.destroyMethods = BeanUtils.getDestroyMethdoList(getTargetClass())
-				.toArray(new NoArgumentBeanMethod[0]);
-		this.proxy = BeanUtils.checkProxy(getTargetClass());
-		scw.beans.annotation.Bean bean = getTargetClass().getAnnotation(
-				scw.beans.annotation.Bean.class);
-		this.singleton = bean == null ? true : bean.singleton();
-		this.autowriteFieldDefinition = BeanUtils
-				.getAutowriteFieldDefinitionList(getTargetClass()).toArray(
-						new FieldDefinition[0]);
+		initMethods.addAll(BeanUtils.getInitMethodList(getTargetClass()));
+		destroyMethods.addAll(BeanUtils.getDestroyMethdoList(getTargetClass()));
+		this.proxy = BeanUtils.isProxy(getTargetClass(), getAnnotatedElement());
+		this.singleton = BeanUtils.isSingletion(getTargetClass(), getAnnotatedElement());
+		autowriteFieldDefinition.addAll(BeanUtils
+				.getAutowriteFieldDefinitionList(getTargetClass()));
 	}
 
 	public boolean isSingleton() {
@@ -49,7 +41,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	}
 
 	public boolean isProxy() {
-		return this.proxy;
+		return this.proxy ? true : (!filterNames.isEmpty());
 	}
 
 	public String getId() {
@@ -61,26 +53,29 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	}
 
 	public void init(Object bean) throws Exception {
-		BeanUtils
-				.autowired(valueWiredManager, beanFactory, propertyFactory,
-						getTargetClass(), bean,
-						Arrays.asList(autowriteFieldDefinition));
+		BeanUtils.autowired(beanFactory, propertyFactory, getTargetClass(),
+				bean, autowriteFieldDefinition);
 
-		if (initMethods != null && initMethods.length != 0) {
-			for (NoArgumentBeanMethod method : initMethods) {
-				method.noArgumentInvoke(bean);
+		if (initMethods.size() != 0) {
+			for (BeanMethod method : initMethods) {
+				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
+
+		BeanUtils.init(bean);
 	}
 
 	public void destroy(Object bean) throws Exception {
-		valueWiredManager.cancel(bean);
-		if (destroyMethods != null && destroyMethods.length != 0) {
-			for (NoArgumentBeanMethod method : destroyMethods) {
-				method.invoke(bean);
+		if (destroyMethods.size() != 0) {
+			for (BeanMethod method : destroyMethods) {
+				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
 
-		XUtils.destroy(bean);
+		BeanUtils.destroy(bean);
+	}
+
+	public AnnotatedElement getAnnotatedElement() {
+		return getTargetClass();
 	}
 }

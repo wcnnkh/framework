@@ -17,8 +17,11 @@
 package scw.core.utils;
 
 import scw.core.GlobalPropertyFactory;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public final class SystemPropertyUtils {
+	private static Logger logger = LoggerUtils.getConsoleLogger(SystemPropertyUtils.class);
 	/** Prefix for system property placeholders: "${" */
 	public static final String PLACEHOLDER_PREFIX = "${";
 
@@ -93,7 +96,7 @@ public final class SystemPropertyUtils {
 				}
 				return propVal;
 			} catch (Throwable ex) {
-				System.err.println("Could not resolve placeholder '" + placeholderName + "' in [" + this.text
+				logger.error("Could not resolve placeholder '" + placeholderName + "' in [" + this.text
 						+ "] as system property: " + ex);
 				return null;
 			}

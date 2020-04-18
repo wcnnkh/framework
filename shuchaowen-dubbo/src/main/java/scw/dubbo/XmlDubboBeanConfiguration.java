@@ -6,18 +6,20 @@ import org.apache.dubbo.config.ReferenceConfig;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanFactory;
-import scw.beans.property.ValueWiredManager;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.core.instance.annotation.Configuration;
 import scw.util.value.property.PropertyFactory;
 
-@Configuration
-public final class XmlDubboBeanConfiguration extends AbstractBeanConfiguration implements XmlBeanConfiguration {
-
-	public void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			NodeList nodeList) throws Exception {
+@Configuration(order=Integer.MIN_VALUE)
+public final class XmlDubboBeanConfiguration extends XmlBeanConfiguration {
+	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
+			throws Exception {
+		NodeList nodeList = getNodeList();
+		if (nodeList == null) {
+			return;
+		}
+		
 		XmlDubboUtils.initConfig(propertyFactory, beanFactory, nodeList);
 		for (int x = 0; x < nodeList.getLength(); x++) {
 			Node node = nodeList.item(x);
@@ -29,26 +31,14 @@ public final class XmlDubboBeanConfiguration extends AbstractBeanConfiguration i
 				continue;
 			}
 
-			List<ReferenceConfig<?>> referenceConfigs = XmlDubboUtils.getReferenceConfigList(propertyFactory,
-					beanFactory, node);
+			List<ReferenceConfig<?>> referenceConfigs = XmlDubboUtils
+					.getReferenceConfigList(propertyFactory, beanFactory, node);
 			for (ReferenceConfig<?> referenceConfig : referenceConfigs) {
-				XmlDubboBean xmlDubboBean = new XmlDubboBean(valueWiredManager, beanFactory, propertyFactory,
-						referenceConfig.getInterfaceClass(), referenceConfig);
-				addBean(xmlDubboBean);
-				// addDestroy(new ReferenceConfigDestory(referenceConfig));
+				XmlDubboBean xmlDubboBean = new XmlDubboBean(beanFactory,
+						propertyFactory, referenceConfig.getInterfaceClass(),
+						referenceConfig);
+				beanDefinitions.add(xmlDubboBean);
 			}
 		}
-		addInit(new XmlDubboServiceExort(propertyFactory, beanFactory, nodeList));
-		DubboUtils.registerDubboShutdownHook();
 	}
-
-	/*
-	 * private static final class ReferenceConfigDestory implements Destroy {
-	 * private ReferenceConfig<?> referenceConfig;
-	 * 
-	 * public ReferenceConfigDestory(ReferenceConfig<?> referenceConfig) {
-	 * this.referenceConfig = referenceConfig; }
-	 * 
-	 * public void destroy() { referenceConfig.destroy(); } }
-	 */
 }

@@ -1,11 +1,8 @@
 package scw.beans.config.parse;
 
-import java.lang.reflect.Field;
-
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
-import scw.beans.property.AbstractCharsetNameValueFormat;
-import scw.core.Constants;
+import scw.beans.property.AbstractValueFormat;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
 import scw.util.ConfigUtils;
@@ -17,16 +14,8 @@ import scw.util.value.property.PropertyFactory;
  * @author shuchaowen
  *
  */
-public final class XmlBeansParse extends AbstractCharsetNameValueFormat implements ConfigParse {
+public final class XmlBeansParse extends AbstractValueFormat implements ConfigParse {
 	
-	public XmlBeansParse(){
-		this(Constants.DEFAULT_CHARSET_NAME);
-	}
-	
-	public XmlBeansParse(String charsetName) {
-		super(charsetName);
-	}
-
 	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
 		String type = fieldDefinition.getField().getGenericType().toString();
@@ -40,11 +29,8 @@ public final class XmlBeansParse extends AbstractCharsetNameValueFormat implemen
 		return null;
 	}
 
-	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
+	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition field, String name)
 			throws Exception {
-		String type = field.getGenericType().toString();
-		type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));
-		Class<?> toClz = ClassUtils.forName(type);
-		return ConfigUtils.xmlToList(toClz, name);
+		return parse(beanFactory, propertyFactory, field, name, getCharsetName());
 	}
 }

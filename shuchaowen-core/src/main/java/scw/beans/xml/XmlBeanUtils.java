@@ -11,7 +11,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.BeanMethod;
-import scw.beans.BeanUtils;
 import scw.beans.BeansException;
 import scw.beans.EParameterType;
 import scw.core.utils.ClassUtils;
@@ -24,23 +23,28 @@ public final class XmlBeanUtils {
 	private XmlBeanUtils() {
 	};
 
-	public static XmlBeanParameter parseBeanParameter(Node node) throws ClassNotFoundException {
+	public static XmlBeanParameter parseBeanParameter(Node node)
+			throws ClassNotFoundException {
 		String name = XMLUtils.getNodeAttributeValue(node, "name");
 		String ref = XMLUtils.getNodeAttributeValue(node, "ref");
 		String value = XMLUtils.getNodeAttributeValue(node, "value");
 		String type = XMLUtils.getNodeAttributeValue(node, "type");
 		String property = XMLUtils.getNodeAttributeValue(node, "property");
 
-		Class<?> typeClass = StringUtils.isNull(type) ? null : ClassUtils.forName(type);
+		Class<?> typeClass = StringUtils.isNull(type) ? null : ClassUtils
+				.forName(type);
 		if (!StringUtils.isEmpty(ref)) {
-			return new XmlBeanParameter(EParameterType.ref, typeClass, name, ref, node);
+			return new XmlBeanParameter(EParameterType.ref, typeClass, name,
+					ref, node);
 		} else if (!StringUtils.isEmpty(property)) {
-			return new XmlBeanParameter(EParameterType.property, typeClass, name, property, node);
+			return new XmlBeanParameter(EParameterType.property, typeClass,
+					name, property, node);
 		} else {
 			if (StringUtils.isEmpty(value)) {
 				value = node.getNodeValue();
 			}
-			return new XmlBeanParameter(EParameterType.value, typeClass, name, value, node);
+			return new XmlBeanParameter(EParameterType.value, typeClass, name,
+					value, node);
 		}
 	}
 
@@ -53,18 +57,24 @@ public final class XmlBeanUtils {
 		return StringUtils.isEmpty(name) ? null : StringUtils.commonSplit(name);
 	}
 
-	public static boolean getBooleanValue(PropertyFactory propertyFactory, Node node, String name,
-			boolean defaultValue) {
-		String value = XMLUtils.getNodeAttributeValue(propertyFactory, node, name);
-		return StringUtils.isEmpty(value) ? defaultValue : Boolean.parseBoolean(value);
+	public static boolean getBooleanValue(PropertyFactory propertyFactory,
+			Node node, String name, boolean defaultValue) {
+		String value = XMLUtils.getNodeAttributeValue(propertyFactory, node,
+				name);
+		return StringUtils.isEmpty(value) ? defaultValue : Boolean
+				.parseBoolean(value);
 	}
 
-	public static int getIntegerValue(PropertyFactory propertyFactory, Node node, String name, int defaultValue) {
-		String value = XMLUtils.getNodeAttributeValue(propertyFactory, node, name);
-		return StringUtils.isEmpty(value) ? defaultValue : Integer.parseInt(value);
+	public static int getIntegerValue(PropertyFactory propertyFactory,
+			Node node, String name, int defaultValue) {
+		String value = XMLUtils.getNodeAttributeValue(propertyFactory, node,
+				name);
+		return StringUtils.isEmpty(value) ? defaultValue : Integer
+				.parseInt(value);
 	}
 
-	public static List<XmlBeanParameter> parseBeanParameterList(Node node) throws ClassNotFoundException {
+	public static List<XmlBeanParameter> parseBeanParameterList(Node node)
+			throws ClassNotFoundException {
 		List<XmlBeanParameter> xmlBeanParameters = new ArrayList<XmlBeanParameter>();
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -88,7 +98,8 @@ public final class XmlBeanUtils {
 		try {
 			Node root = XMLUtils.getRootElement(config);
 			if (!"beans".equals(root.getNodeName())) {
-				throw new BeansException("root tag name error [" + root.getNodeName() + "]");
+				throw new BeansException("root tag name error ["
+						+ root.getNodeName() + "]");
 			}
 			return root;
 		} catch (Exception e) {
@@ -96,7 +107,8 @@ public final class XmlBeanUtils {
 		}
 	}
 
-	public static String getPackageName(PropertyFactory propertyFactory, Node node) {
+	public static String getPackageName(PropertyFactory propertyFactory,
+			Node node) {
 		return XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 	}
 
@@ -105,20 +117,25 @@ public final class XmlBeanUtils {
 	}
 
 	public static String getAddress(PropertyFactory propertyFactory, Node node) {
-		return XMLUtils.getRequireNodeAttributeValue(propertyFactory, node, "address");
+		return XMLUtils.getRequireNodeAttributeValue(propertyFactory, node,
+				"address");
 	}
 
 	public static String getRef(PropertyFactory propertyFactory, Node node) {
-		return XMLUtils.getRequireNodeAttributeValue(propertyFactory, node, "ref");
+		return XMLUtils.getRequireNodeAttributeValue(propertyFactory, node,
+				"ref");
 	}
 
-	public static String getCharsetName(PropertyFactory propertyFactory, Node node, String defaultValue) {
-		String charsetName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "charsetName");
+	public static String getCharsetName(PropertyFactory propertyFactory,
+			Node node, String defaultValue) {
+		String charsetName = XMLUtils.getNodeAttributeValue(propertyFactory,
+				node, "charsetName");
 		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}
 
 	public static String getCharsetName(Node node, String defaultValue) {
-		String charsetName = XMLUtils.getNodeAttributeValue(node, "charsetName");
+		String charsetName = XMLUtils
+				.getNodeAttributeValue(node, "charsetName");
 		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}
 
@@ -131,32 +148,33 @@ public final class XmlBeanUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<BeanMethod> getBeanMethodList(Class<?> clz, NodeList nodeList, String tagName) throws Exception {
+	public static List<BeanMethod> getBeanMethodList(Class<?> clz,
+			NodeList nodeList, String tagName) throws Exception {
 		List<BeanMethod> list = new ArrayList<BeanMethod>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (tagName.equalsIgnoreCase(n.getNodeName())) {
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(clz, n);
+				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
+						clz, n);
 				list.add(xmlBeanMethodInfo);
 			}
 		}
 		return list;
 	}
 
-	public static BeanMethod[] getInitMethodList(Class<?> clz, NodeList nodeList) throws Exception {
-		List<BeanMethod> initMethodList = XmlBeanUtils.getBeanMethodList(clz, nodeList, "init");
-		initMethodList.addAll(BeanUtils.getInitMethodList(clz));
-		return CollectionUtils.isEmpty(initMethodList) ? null
-				: initMethodList.toArray(new BeanMethod[initMethodList.size()]);
+	public static List<BeanMethod> getInitMethodList(Class<?> clz,
+			NodeList nodeList) throws Exception {
+		return XmlBeanUtils.getBeanMethodList(clz, nodeList, "init");
 	}
 
-	public static BeanMethod[] getDestroyMethodList(Class<?> clz, NodeList nodeList) throws Exception {
-		List<BeanMethod> list = XmlBeanUtils.getBeanMethodList(clz, nodeList, "destroy");
-		list.addAll(BeanUtils.getDestroyMethdoList(clz));
-		return CollectionUtils.isEmpty(list) ? null : list.toArray(new BeanMethod[list.size()]);
+	public static List<BeanMethod> getDestroyMethodList(Class<?> clz,
+			NodeList nodeList) throws Exception {
+		return XmlBeanUtils.getBeanMethodList(clz, nodeList,
+				"destroy");
 	}
 
-	public static XmlBeanParameter[] getConstructorParameters(NodeList nodeList) throws Exception {
+	public static XmlBeanParameter[] getConstructorParameters(NodeList nodeList)
+			throws Exception {
 		List<XmlBeanParameter> constructorParameterList = new ArrayList<XmlBeanParameter>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
@@ -169,23 +187,27 @@ public final class XmlBeanUtils {
 		}
 
 		return CollectionUtils.isEmpty(constructorParameterList) ? null
-				: constructorParameterList.toArray(new XmlBeanParameter[constructorParameterList.size()]);
+				: constructorParameterList
+						.toArray(new XmlBeanParameter[constructorParameterList
+								.size()]);
 	}
 
-	public static XmlBeanParameter[] getBeanProperties(NodeList nodeList) throws Exception {
+	public static XmlBeanParameter[] getBeanProperties(NodeList nodeList)
+			throws Exception {
 		List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("properties".equalsIgnoreCase(n.getNodeName())) {// Properties
-				List<XmlBeanParameter> list = XmlBeanUtils.parseBeanParameterList(n);
+				List<XmlBeanParameter> list = XmlBeanUtils
+						.parseBeanParameterList(n);
 				if (list != null) {
 					propertiesList.addAll(list);
 				}
 			}
 		}
 
-		return CollectionUtils.isEmpty(propertiesList) ? null
-				: propertiesList.toArray(new XmlBeanParameter[propertiesList.size()]);
+		return CollectionUtils.isEmpty(propertiesList) ? null : propertiesList
+				.toArray(new XmlBeanParameter[propertiesList.size()]);
 	}
 
 	@SuppressWarnings("unchecked")

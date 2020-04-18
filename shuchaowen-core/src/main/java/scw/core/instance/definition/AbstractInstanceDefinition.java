@@ -1,5 +1,6 @@
 package scw.core.instance.definition;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 
 import scw.core.reflect.ReflectionUtils;
@@ -50,5 +51,9 @@ public abstract class AbstractInstanceDefinition implements InstanceDefinition {
 
 	public boolean isSingleton() {
 		return false;
+	}
+	
+	public AnnotatedElement getAnnotatedElement() {
+		return getTargetClass();
 	}
 }

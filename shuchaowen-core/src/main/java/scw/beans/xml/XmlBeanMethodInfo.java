@@ -9,6 +9,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.beans.BeansException;
+import scw.json.JSONUtils;
 import scw.util.value.property.PropertyFactory;
 
 public class XmlBeanMethodInfo implements BeanMethod {
@@ -50,7 +51,7 @@ public class XmlBeanMethodInfo implements BeanMethod {
 		}
 
 		if (this.method == null) {
-			throw new BeansException(type.getName() + " not found method [" + name + "]");
+			throw new BeansException(type.getName() + " not found method [" + name + "] parameterTypes " + JSONUtils.toJSONString(xmlBeanParameters));
 		}
 	}
 

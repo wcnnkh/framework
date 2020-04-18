@@ -1,22 +1,23 @@
 package scw.core.instance.definition;
 
+import scw.core.instance.InstanceBuilder;
 import scw.lang.UnsupportedException;
 
 public class DefaultInstanceDefinition extends AbstractInstanceDefinition {
-	private final ConstructorDefinition constructorDefinition;
+	private final InstanceBuilder instanceBuilder;
 
 	public DefaultInstanceDefinition(Class<?> targetClass,
-			ConstructorDefinition constructorDefinition) {
+			InstanceBuilder instanceBuilder) {
 		super(targetClass);
-		this.constructorDefinition = constructorDefinition;
+		this.instanceBuilder = instanceBuilder;
 	}
 
-	public ConstructorDefinition getConstructorDefinition() {
-		return constructorDefinition;
+	public InstanceBuilder getInstanceBuilder() {
+		return instanceBuilder;
 	}
 
 	public boolean isInstance() {
-		return getConstructorDefinition().getConstructor() != null;
+		return instanceBuilder.getConstructor() != null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -25,7 +26,7 @@ public class DefaultInstanceDefinition extends AbstractInstanceDefinition {
 			throw new UnsupportedException(getTargetClass().getName());
 		}
 
-		return (T) createInternal(getTargetClass(), getConstructorDefinition()
-				.getConstructor(), getConstructorDefinition().getArgs());
+		return (T) createInternal(getTargetClass(), getInstanceBuilder()
+				.getConstructor(), getInstanceBuilder().getArgs());
 	}
 }

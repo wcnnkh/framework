@@ -12,6 +12,7 @@ import scw.orm.ORMUtils;
 import scw.orm.SetterFilter;
 import scw.orm.sql.AbstractSqlMapper;
 import scw.orm.sql.SqlColumnFactory;
+import scw.orm.sql.SqlFilter;
 import scw.orm.sql.SqlMapper;
 import scw.orm.sql.SqlORMUtils;
 import scw.orm.sql.TableNameMapping;
@@ -20,22 +21,22 @@ import scw.orm.sql.TableNameMapping;
 public class DefaultSqlMapper extends AbstractSqlMapper implements SqlMapper {
 	private TableNameMapping tableNameMapping;
 	private SqlColumnFactory sqlColumnFactory;
-	private Collection<? extends Filter> filters;
+	private Collection<? extends Filter> sqlFilters;
 	private ORMInstanceFactory instanceFactory;
 
 	public DefaultSqlMapper() {
 		this(SqlORMUtils.getTableNameMapping(), SqlORMUtils
-				.getSqlColumnFactory(), ORMUtils.getFilters(), ORMUtils
+				.getSqlColumnFactory(), SqlORMUtils.getSqlFilters(), ORMUtils
 				.getInstanceFactory());
 	}
 
 	public DefaultSqlMapper(TableNameMapping tableNameMapping,
 			SqlColumnFactory sqlColumnFactory,
-			Collection<? extends Filter> filters,
+			Collection<? extends SqlFilter> sqlFilters,
 			ORMInstanceFactory instanceFactory) {
 		this.tableNameMapping = tableNameMapping;
 		this.sqlColumnFactory = sqlColumnFactory;
-		this.filters = filters;
+		this.sqlFilters = sqlFilters;
 		this.instanceFactory = instanceFactory;
 	}
 
@@ -62,11 +63,11 @@ public class DefaultSqlMapper extends AbstractSqlMapper implements SqlMapper {
 
 	@Override
 	public Collection<? extends SetterFilter> getSetterFilters() {
-		return filters;
+		return sqlFilters;
 	}
 
 	@Override
 	public Collection<? extends GetterFilter> getGetterFilters() {
-		return filters;
+		return sqlFilters;
 	}
 }

@@ -2,12 +2,16 @@ package scw.beans.xml;
 
 import org.w3c.dom.NodeList;
 
-import scw.beans.BeanConfiguration;
-import scw.beans.BeanFactory;
-import scw.beans.property.ValueWiredManager;
-import scw.util.value.property.PropertyFactory;
+import scw.beans.AbstractBeanConfiguration;
 
-public interface XmlBeanConfiguration extends BeanConfiguration {
-	void init(ValueWiredManager valueWiredManager, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			NodeList nodeList) throws Exception;
+public abstract class XmlBeanConfiguration extends AbstractBeanConfiguration {
+	private NodeList nodeList;
+
+	public NodeList getNodeList() {
+		return nodeList;
+	}
+
+	public void setNodeList(NodeList nodeList) {
+		this.nodeList = nodeList;
+	}
 }

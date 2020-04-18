@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.FieldDefinition;
@@ -24,6 +25,7 @@ public final class SqlORMUtils {
 			.getSystemConfiguration(TableNameMapping.class);
 	private static final SqlColumnFactory SQL_COLUMN_FACTORY = InstanceUtils
 			.getSystemConfiguration(SqlColumnFactory.class);
+	private static final Collection<SqlFilter> SQL_FILTERS = InstanceUtils.getSystemConfigurationList(SqlFilter.class);
 	private static final SqlMapper SQL_MAPPER = InstanceUtils
 			.getSystemConfiguration(SqlMapper.class);
 
@@ -40,6 +42,10 @@ public final class SqlORMUtils {
 
 	public static final SqlMapper getSqlMapper() {
 		return SQL_MAPPER;
+	}
+
+	public static Collection<SqlFilter> getSqlFilters() {
+		return SQL_FILTERS;
 	}
 
 	public static boolean isIndexColumn(FieldDefinition fieldDefinition) {

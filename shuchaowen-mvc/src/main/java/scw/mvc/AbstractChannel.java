@@ -26,6 +26,7 @@ import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
+import scw.mvc.annotation.Attribute;
 import scw.mvc.annotation.BigDecimalMultiply;
 import scw.mvc.annotation.DateFormat;
 import scw.mvc.annotation.RequestBean;
@@ -203,65 +204,74 @@ public abstract class AbstractChannel extends AbstractValueFactory<String>
 		return getObjectSupport(key, TypeUtils.toClass(type));
 	}
 
-	public Object getParameter(ParameterDescriptor parameterConfig) {
-		if (Request.class.isAssignableFrom(parameterConfig.getType())) {
+	public Object getParameter(ParameterDescriptor parameterDescriptor) {
+		if (Request.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return getRequest();
-		} else if (Response.class.isAssignableFrom(parameterConfig.getType())) {
+		} else if (Response.class.isAssignableFrom(parameterDescriptor
+				.getType())) {
 			return getResponse();
-		} else if (Channel.class.isAssignableFrom(parameterConfig.getType())) {
+		} else if (Channel.class
+				.isAssignableFrom(parameterDescriptor.getType())) {
 			return this;
 		}
 
-		RequestBody requestBody = parameterConfig.getAnnotatedElement()
+		Attribute attribute = parameterDescriptor.getAnnotatedElement()
+				.getAnnotation(Attribute.class);
+		if (attribute != null) {
+			return getAttribute(attribute.value());
+		}
+
+		RequestBody requestBody = parameterDescriptor.getAnnotatedElement()
 				.getAnnotation(RequestBody.class);
 		if (requestBody != null) {
 			RequestBodyParse requestBodyParse = getBean(requestBody.value());
 			try {
-				return requestBodyParse.requestBodyParse(this, getJsonSupport(),
-						parameterConfig);
+				return requestBodyParse.requestBodyParse(this,
+						getJsonSupport(), parameterDescriptor);
 			} catch (Exception e) {
-				throw ParameterException.createError(parameterConfig.getName(),
-						e);
+				throw ParameterException.createError(
+						parameterDescriptor.getName(), e);
 			}
 		}
 
-		RequestBean requestBean = parameterConfig.getAnnotatedElement()
+		RequestBean requestBean = parameterDescriptor.getAnnotatedElement()
 				.getAnnotation(RequestBean.class);
 		if (requestBean != null) {
-			return StringUtils.isEmpty(requestBean.value()) ? getBean(parameterConfig
+			return StringUtils.isEmpty(requestBean.value()) ? getBean(parameterDescriptor
 					.getType().getName()) : getBean(requestBean.value());
 		}
 
-		String name = ParameterUtils.getParameterName(parameterConfig);
-		BigDecimalMultiply bigDecimalMultiply = parameterConfig
+		String name = ParameterUtils.getParameterName(parameterDescriptor);
+		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor
 				.getAnnotatedElement().getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
-			return bigDecimalMultiply(name, parameterConfig, bigDecimalMultiply);
+			return bigDecimalMultiply(name, parameterDescriptor,
+					bigDecimalMultiply);
 		}
 
-		DateFormat dateFormat = parameterConfig.getAnnotatedElement()
+		DateFormat dateFormat = parameterDescriptor.getAnnotatedElement()
 				.getAnnotation(DateFormat.class);
 		if (dateFormat != null) {
-			return dateFormat(dateFormat, parameterConfig, name);
+			return dateFormat(dateFormat, parameterDescriptor, name);
 		}
 
-		DefaultValue defaultValue = parameterConfig.getAnnotatedElement()
+		DefaultValue defaultValue = parameterDescriptor.getAnnotatedElement()
 				.getAnnotation(DefaultValue.class);
 		if (defaultValue != null) {
 			Object value = getObject(
 					name,
-					parameterConfig.getType().isPrimitive() ? ClassUtils
-							.resolvePrimitiveIfNecessary(parameterConfig
-									.getType()) : parameterConfig
+					parameterDescriptor.getType().isPrimitive() ? ClassUtils
+							.resolvePrimitiveIfNecessary(parameterDescriptor
+									.getType()) : parameterDescriptor
 							.getGenericType());
 			if (value == null) {
 				return ValueUtils.parse(defaultValue.value(),
-						parameterConfig.getGenericType());
+						parameterDescriptor.getGenericType());
 			}
 			return value;
 		}
 
-		return getObject(name, parameterConfig.getGenericType());
+		return getObject(name, parameterDescriptor.getGenericType());
 	}
 
 	protected Object dateFormat(DateFormat dateFormat,

@@ -1,5 +1,6 @@
 package scw.beans;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,15 +18,14 @@ import scw.beans.annotation.AutoImpl;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.AutoBeanDefinition;
 import scw.beans.auto.AutoBeanUtils;
-import scw.beans.property.ValueWiredManager;
+import scw.beans.method.MethodBeanConfiguration;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.instance.AbstractInstanceFactory;
-import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.XUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.lang.Ignore;
@@ -41,41 +41,15 @@ public abstract class AbstractBeanFactory extends
 	protected static Logger logger = LoggerUtils.getLogger(BeanFactory.class);
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
-	private final LinkedList<Destroy> destroys = new LinkedList<Destroy>();
-	private final LinkedList<Init> inits = new LinkedList<Init>();
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
 	protected final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
 	private final LinkedHashSet<String> filterNames = new LinkedHashSet<String>();
-	private final ValueWiredManager valueWiredManager;
+	private final LinkedList<BeanFactoryLifeCycle> beanFactoryLifeCycles = new LinkedList<BeanFactoryLifeCycle>();
 
 	public AbstractBeanFactory() {
-		this.valueWiredManager = new ValueWiredManager(propertyFactory, this);
-		appendSingleByPropertyFactory();
-		appendSingleByBeanFactory();
-	}
-
-	private void appendSingleByPropertyFactory() {
-		singletonMap.put(PropertyFactory.class.getName(), propertyFactory);
-		beanMap.put(PropertyFactory.class.getName(), new EmptyBeanDefinition(
-				PropertyFactory.class, propertyFactory, null, false));
-	}
-
-	private void appendSingleByBeanFactory() {
-		singletonMap.put(BeanFactory.class.getName(), this);
-		beanMap.put(
-				BeanFactory.class.getName(),
-				new EmptyBeanDefinition(BeanFactory.class, this,
-						new String[] { InstanceFactory.class.getName() }, false));
-		nameMappingMap.put(InstanceFactory.class.getName(),
-				BeanFactory.class.getName());
-	}
-
-	protected final synchronized void addFilterName(Collection<String> names) {
-		if (CollectionUtils.isEmpty(names)) {
-			return;
-		}
-
-		filterNames.addAll(names);
+		super();
+		addInternalSingletion(this, BeanFactory.class);
+		addInternalSingletion(propertyFactory, PropertyFactory.class);
 	}
 
 	public final Collection<String> getFilterNames() {
@@ -86,45 +60,52 @@ public abstract class AbstractBeanFactory extends
 		return propertyFactory;
 	}
 
-	protected final void addBeanConfiguration(
-			BeanConfiguration beanConfiguration) {
-		if (beanConfiguration == null) {
+	protected void addBeanFactoryLifeCycle(
+			BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
+		beanFactoryLifeCycles.add(beanFactoryLifeCycle);
+		beanFactoryLifeCycle.init(this, propertyFactory);
+	}
+
+	protected void beanFactoryLifeCycleDestroy(
+			BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
+		beanFactoryLifeCycle.destroy(this, propertyFactory);
+	}
+
+	protected void addBeanConfiguration(BeanConfiguration beanConfiguration)
+			throws Exception {
+		beanConfiguration.init(this, propertyFactory);
+		Collection<BeanDefinition> beanDefinitions = beanConfiguration
+				.getBeans();
+		if (!CollectionUtils.isEmpty(beanDefinitions)) {
+			for (BeanDefinition beanDefinition : beanDefinitions) {
+				synchronized (beanMap) {
+					synchronized (nameMappingMap) {
+						addBeanDefinition(beanDefinition, false);
+					}
+				}
+			}
+		}
+	}
+
+	protected void addBeanDefinition(BeanDefinition beanDefinition,
+			boolean throwExistError) {
+		BeanDefinition definition = getDefinitionByCache(beanDefinition.getId());
+		if (definition != null) {
+			logger.warn("Already exist id:{}, definition:{}",
+					beanDefinition.getId(),
+					JSONUtils.toJSONString(beanDefinition));
+			if (throwExistError) {
+				throw new AlreadyExistsException("存在相同ID的映射:"
+						+ JSONUtils.toJSONString(beanDefinition));
+			}
+
 			return;
 		}
 
-		Map<String, BeanDefinition> map = beanConfiguration.getBeanMap();
-		if (map != null) {
-			synchronized (beanMap) {
-				for (Entry<String, BeanDefinition> entry : map.entrySet()) {
-					String key = entry.getKey();
-					if (beanMap.containsKey(key)) {
-						logger.warn("Already exist id:{}, definition:{}", key,
-								JSONUtils.toJSONString(entry.getValue()));
-						continue;
-					}
-
-					beanMap.put(key, entry.getValue());
-				}
-			}
+		if (addBeanNameMapping(beanDefinition.getNames(),
+				beanDefinition.getId(), throwExistError)) {
+			beanMap.put(beanDefinition.getId(), beanDefinition);
 		}
-
-		Map<String, String> nameMapping = beanConfiguration.getNameMappingMap();
-		if (nameMapping != null) {
-			synchronized (nameMappingMap) {
-				for (Entry<String, String> entry : nameMapping.entrySet()) {
-					String key = entry.getKey();
-					if (nameMappingMap.containsKey(key)) {
-						logger.warn("Already exist name:{}, definition:{}",
-								key, JSONUtils.toJSONString(entry.getValue()));
-						continue;
-					}
-					nameMappingMap.put(key, entry.getValue());
-				}
-			}
-		}
-
-		destroys.addAll(beanConfiguration.getDestroys());
-		inits.addAll(beanConfiguration.getInits());
 	}
 
 	@Override
@@ -132,7 +113,6 @@ public abstract class AbstractBeanFactory extends
 			Object object) throws Exception {
 		super.init(createTime, definition, object);
 		definition.init(object);
-		XUtils.init(object);
 
 		if (logger.isTraceEnabled()) {
 			logger.trace("create id [{}] instance [{}] use time:{}ms",
@@ -146,7 +126,7 @@ public abstract class AbstractBeanFactory extends
 	}
 
 	public final BeanDefinition getDefinition(String name) {
-		BeanDefinition beanDefinition = getBeanCache(name);
+		BeanDefinition beanDefinition = getDefinitionByCache(name);
 		if (beanDefinition == null) {
 			if (notFoundSet.contains(name)) {
 				return null;
@@ -154,29 +134,12 @@ public abstract class AbstractBeanFactory extends
 
 			synchronized (beanMap) {
 				synchronized (nameMappingMap) {
-					beanDefinition = getBeanCache(name);
+					beanDefinition = getDefinitionByCache(name);
 					if (beanDefinition == null) {
 						long t = System.currentTimeMillis();
-						beanDefinition = newBeanDefinition(name);
+						beanDefinition = autoCreateBeanDefinition(name);
 						if (beanDefinition != null) {
-							beanMap.put(beanDefinition.getId(), beanDefinition);
-							if (beanDefinition.getNames() != null) {
-								for (String n : beanDefinition.getNames()) {
-									if (nameMappingMap.containsKey(n)) {
-										throw new AlreadyExistsException(
-												"存在相同的名称映射:"
-														+ n
-														+ ", oldId="
-														+ nameMappingMap.get(n)
-														+ ",newId="
-														+ beanDefinition
-																.getId());
-									}
-									nameMappingMap.put(n,
-											beanDefinition.getId());
-								}
-							}
-
+							addBeanDefinition(beanDefinition, true);
 							t = System.currentTimeMillis() - t;
 							if (logger.isDebugEnabled()) {
 								logger.debug(
@@ -200,26 +163,32 @@ public abstract class AbstractBeanFactory extends
 		return beanDefinition;
 	}
 
-	protected void addBeanNameMapping(String[] names, String id) {
-		if (names != null) {
-			synchronized (nameMappingMap) {
-				for (String n : names) {
-					if (nameMappingMap.containsKey(n)) {
-						throw new AlreadyExistsException("存在相同的名称映射:" + n
-								+ ", oldId=" + nameMappingMap.get(n)
-								+ ",newId=" + id);
-					}
-					nameMappingMap.put(n, id);
+	protected boolean addBeanNameMapping(String[] names, String id,
+			boolean throwExistError) {
+		if (ArrayUtils.isEmpty(names)) {
+			return true;
+		}
+
+		for (String name : names) {
+			BeanDefinition definition = getDefinitionByCache(name);
+			if (definition != null) {
+				logger.warn("Already exist name:{}, definition:{}", name,
+						JSONUtils.toJSONString(definition));
+				if (throwExistError) {
+					throw new AlreadyExistsException("存在相同名称的映射:"
+							+ JSONUtils.toJSONString(definition));
 				}
+				return false;
 			}
 		}
+
+		for (String name : names) {
+			nameMappingMap.put(name, id);
+		}
+		return true;
 	}
 
-	public final ValueWiredManager getValueWiredManager() {
-		return valueWiredManager;
-	}
-
-	private BeanDefinition getBeanCache(String name) {
+	protected BeanDefinition getDefinitionByCache(String name) {
 		BeanDefinition beanDefinition = beanMap.get(name);
 		if (beanDefinition == null) {
 			String v = nameMappingMap.get(name);
@@ -230,7 +199,7 @@ public abstract class AbstractBeanFactory extends
 		return beanDefinition;
 	}
 
-	private BeanDefinition newBeanDefinition(String name) {
+	protected BeanDefinition autoCreateBeanDefinition(String name) {
 		String n = nameMappingMap.get(name);
 		if (n == null) {
 			n = name;
@@ -257,8 +226,8 @@ public abstract class AbstractBeanFactory extends
 						System.currentTimeMillis() - t);
 			}
 			try {
-				return new AutoBeanDefinition(valueWiredManager, this,
-						getPropertyFactory(), clz, autoBean);
+				return new AutoBeanDefinition(this, getPropertyFactory(), clz,
+						autoBean);
 			} catch (Exception e) {
 				throw new BeansException(clz.getName(), e);
 			}
@@ -266,7 +235,7 @@ public abstract class AbstractBeanFactory extends
 		return null;
 	}
 
-	public synchronized void init() throws Exception {
+	public void init() throws Exception {
 		for (Class<? extends Filter> clazz : InstanceUtils
 				.getConfigurationClassList(Filter.class, propertyFactory)) {
 			if (!isInstance(clazz)) {
@@ -276,16 +245,30 @@ public abstract class AbstractBeanFactory extends
 			filterNames.add(clazz.getName());
 		}
 
-		propertyFactory.addAll(InstanceUtils.getConfigurationList(
-				PropertyFactory.class, this, propertyFactory), true);
-		for (Init init : inits) {
-			init.init();
+		addBeanConfiguration(new MethodBeanConfiguration());
+		addBeanConfiguration(new ServiceBeanConfiguration());
+		for (BeanConfiguration configuration : InstanceUtils
+				.getConfigurationList(BeanConfiguration.class, this,
+						getPropertyFactory())) {
+			addBeanConfiguration(configuration);
 		}
-		inits.clear();
+
+		propertyFactory.addAll(InstanceUtils.getConfigurationList(
+				PropertyFactory.class, this, getPropertyFactory()), true);
+
+		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils
+				.getConfigurationList(BeanFactoryLifeCycle.class, this,
+						getPropertyFactory())) {
+			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
+		}
 	}
 
-	public synchronized void destroy() throws Exception {
-		valueWiredManager.destroy();
+	public void destroy() throws Exception {
+		ListIterator<BeanFactoryLifeCycle> iterator = beanFactoryLifeCycles
+				.listIterator(beanFactoryLifeCycles.size());
+		while (iterator.hasPrevious()) {
+			beanFactoryLifeCycleDestroy(iterator.previous());
+		}
 
 		synchronized (singletonMap) {
 			List<String> beanKeyList = new ArrayList<String>();
@@ -293,24 +276,22 @@ public abstract class AbstractBeanFactory extends
 				beanKeyList.add(entry.getKey());
 			}
 
-			for (String id : beanKeyList) {
-				BeanDefinition beanDefinition = getBeanCache(id);
+			ListIterator<String> keyIterator = beanKeyList
+					.listIterator(beanKeyList.size());
+			while (keyIterator.hasPrevious()) {
+				BeanDefinition beanDefinition = getDefinitionByCache(keyIterator
+						.previous());
 				if (beanDefinition == null) {
 					continue;
 				}
 
-				Object obj = singletonMap.get(id);
+				Object obj = singletonMap.get(beanDefinition.getId());
 				try {
 					beanDefinition.destroy(obj);
 				} catch (Throwable e) {
-					e.printStackTrace();
+					logger.error(e, "destroy error: {}", beanDefinition.getId());
 				}
 			}
-		}
-
-		ListIterator<Destroy> iterator = destroys.listIterator(destroys.size());
-		while (iterator.hasPrevious()) {
-			iterator.previous().destroy();
 		}
 	}
 
@@ -323,22 +304,72 @@ public abstract class AbstractBeanFactory extends
 		return bean;
 	}
 
-	@Override
-	public <T> T getInstance(String name, Object... params) {
-		T bean = super.getInstance(name, params);
-		if (bean == null) {
-			throw new UnsupportedException(name);
-		}
-		return bean;
+	protected final void addInternalSingletion(Object instance,
+			Class<?> targetClass, String... names) {
+		singletonMap.put(targetClass.getName(), instance);
+		addBeanDefinition(new InteranlBeanDefinition(instance, targetClass,
+				names), true);
 	}
 
-	@Override
-	public <T> T getInstance(String name, Class<?>[] parameterTypes,
-			Object... params) {
-		T bean = super.getInstance(name, parameterTypes, params);
-		if (bean == null) {
-			throw new UnsupportedException(name);
+	protected static final class InteranlBeanDefinition implements
+			BeanDefinition {
+		private final Object instance;
+		private final Class<?> targetClass;
+		private final String[] names;
+
+		public InteranlBeanDefinition(Object instance, Class<?> targetClass,
+				String... names) {
+			this.instance = instance;
+			this.targetClass = targetClass;
+			this.names = names;
 		}
-		return bean;
+
+		public String getId() {
+			return getTargetClass().getName();
+		}
+
+		public String[] getNames() {
+			return names;
+		}
+
+		public Class<?> getTargetClass() {
+			return targetClass;
+		}
+
+		public boolean isSingleton() {
+			return true;
+		}
+
+		public boolean isInstance() {
+			return true;
+		}
+
+		@SuppressWarnings("unchecked")
+		public <T> T create() throws Exception {
+			return (T) instance;
+		}
+
+		public <T> T create(Object... params) throws Exception {
+			throw new UnsupportedException(getId());
+		}
+
+		public <T> T create(Class<?>[] parameterTypes, Object... params)
+				throws Exception {
+			throw new UnsupportedException(getId());
+		}
+
+		public boolean isProxy() {
+			return false;
+		}
+
+		public void init(Object bean) throws Exception {
+		}
+
+		public void destroy(Object bean) throws Exception {
+		}
+
+		public AnnotatedElement getAnnotatedElement() {
+			return getTargetClass();
+		}
 	}
 }

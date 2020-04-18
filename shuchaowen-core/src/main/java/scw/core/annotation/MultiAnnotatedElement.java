@@ -3,17 +3,20 @@ package scw.core.annotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.AbstractList;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 
 public class MultiAnnotatedElement implements AnnotatedElement {
 	private final Collection<? extends AnnotatedElement> annotatedElements;
+	
+	public MultiAnnotatedElement(AnnotatedElement ...annotatedElements) {
+		this(Arrays.asList(annotatedElements));
+	}
 
 	public MultiAnnotatedElement(
 			Collection<? extends AnnotatedElement> annotatedElements) {
@@ -27,7 +30,7 @@ public class MultiAnnotatedElement implements AnnotatedElement {
 			return AnnotatedElementUtils.EMPTY_ANNOTATION_ARRAY;
 		}
 
-		List<Annotation> annotations = new ArrayList<Annotation>();
+		LinkedHashSet<Annotation> annotations = new LinkedHashSet<Annotation>();
 		for (AnnotatedElement annotatedElement : annotatedElements) {
 			if (annotatedElement == null) {
 				continue;

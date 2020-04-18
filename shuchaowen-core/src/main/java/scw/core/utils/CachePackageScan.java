@@ -6,7 +6,7 @@ import java.util.Set;
 
 import scw.util.ConcurrentReferenceHashMap;
 
-public class CacheScanningPackage extends ScanningPackage{
+public class CachePackageScan extends PackageScan{
 	private Map<String, Set<Class<?>>> classCache = new ConcurrentReferenceHashMap<String, Set<Class<?>>>();
 	
 	@Override

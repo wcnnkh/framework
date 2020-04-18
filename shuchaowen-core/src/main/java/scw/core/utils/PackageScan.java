@@ -16,7 +16,7 @@ import java.util.jar.JarFile;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 
-public class ScanningPackage {
+public class PackageScan {
 	public Set<Class<?>> getClassList(String packageName,
 			ClassLoader classLoader, boolean initialize) {
 		Set<Class<?>> classes;

@@ -75,7 +75,7 @@ public final class ClassUtils {
 	private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(
 			32);
 
-	private static final ScanningPackage SCANNING_PACKAGE = new CacheScanningPackage();
+	private static final PackageScan PACKAGE_SCAN = new CachePackageScan();
 
 	static {
 		primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
@@ -1653,13 +1653,13 @@ public final class ClassUtils {
 			ClassLoader classLoader, boolean initialize) {
 		String[] arr = StringUtils.commonSplit(resource);
 		if (ArrayUtils.isEmpty(arr)) {
-			return SCANNING_PACKAGE.getClassList(resource, classLoader,
+			return PACKAGE_SCAN.getClassList(resource, classLoader,
 					initialize);
 		}
 
 		LinkedHashSet<Class<?>> classes = new LinkedHashSet<Class<?>>();
 		for (String pg : arr) {
-			classes.addAll(SCANNING_PACKAGE.getClassList(pg, classLoader,
+			classes.addAll(PACKAGE_SCAN.getClassList(pg, classLoader,
 					initialize));
 		}
 		return classes;

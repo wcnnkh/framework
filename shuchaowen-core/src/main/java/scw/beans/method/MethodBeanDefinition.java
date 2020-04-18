@@ -1,5 +1,6 @@
 package scw.beans.method;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -9,7 +10,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.BeansException;
 import scw.beans.annotation.Bean;
-import scw.beans.property.ValueWiredManager;
+import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
@@ -19,13 +20,14 @@ import scw.util.value.property.PropertyFactory;
 
 @SuppressWarnings("unchecked")
 public class MethodBeanDefinition extends AbstractBeanDefinition {
-	private Class<?> targetClazz;
+	private Class<?> methodTargetClass;
 	private Method method;
 
-	public MethodBeanDefinition(ValueWiredManager valueWiredManager, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clazz, Class<?> targetClazz, Method method) {
-		super(valueWiredManager, beanFactory, propertyFactory, clazz);
-		this.targetClazz = targetClazz;
+	public MethodBeanDefinition(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> returnClass,
+			Class<?> methodTargetClass, Method method) {
+		super(beanFactory, propertyFactory, returnClass);
+		this.methodTargetClass = methodTargetClass;
 		this.method = method;
 		init();
 		Bean bean = method.getAnnotation(Bean.class);
@@ -40,8 +42,9 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	public boolean isInstance() {
-		return InstanceUtils.isAuto(beanFactory, propertyFactory, getTargetClass(),
-				ParameterUtils.getParameterDescriptors(method), method);
+		return InstanceUtils.isAuto(beanFactory, propertyFactory,
+				getTargetClass(),
+				ParameterUtils.getParameterDescriptors(method), null, method);
 	}
 
 	public <T> T create() {
@@ -49,8 +52,9 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 			throw new UnsupportedException("不支持的构造方式");
 		}
 
-		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory, getTargetClass(),
-				ParameterUtils.getParameterDescriptors(method));
+		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory,
+				getTargetClass(),
+				ParameterUtils.getParameterDescriptors(method), null);
 		return (T) invoke(method, args);
 	}
 
@@ -58,24 +62,29 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 		Object bean;
 		try {
 			ReflectionUtils.setAccessibleMethod(method);
-			bean = method.invoke(Modifier.isStatic(method.getModifiers())? null:beanFactory.getInstance(targetClazz), args);
+			bean = method.invoke(
+					Modifier.isStatic(method.getModifiers()) ? null
+							: beanFactory.getInstance(methodTargetClass), args);
 		} catch (Exception e) {
 			throw new BeansException(getTargetClass() + "", e);
 		}
 
 		if (isProxy()) {
-			bean = BeanUtils.createProxy(beanFactory, getTargetClass(), bean, null, null).create();
+			bean = BeanUtils.createProxy(beanFactory, getTargetClass(), bean,
+					null, null).create();
 		}
 		return bean;
 	}
 
 	public <T> T create(Object... params) {
-		for (Method method : targetClazz.getDeclaredMethods()) {
+		for (Method method : methodTargetClass.getDeclaredMethods()) {
 			if (!method.getName().equals(this.method.getName())) {
 				continue;
 			}
 
-			if (ClassUtils.isAssignableValue(Arrays.asList(method.getParameterTypes()), Arrays.asList(params))) {
+			if (ClassUtils.isAssignableValue(
+					Arrays.asList(method.getParameterTypes()),
+					Arrays.asList(params))) {
 				return (T) invoke(method, params);
 			}
 		}
@@ -85,11 +94,16 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	public <T> T create(Class<?>[] parameterTypes, Object... params) {
 		Method method;
 		try {
-			method = targetClazz.getDeclaredMethod(this.method.getName(), parameterTypes);
+			method = methodTargetClass.getDeclaredMethod(this.method.getName(),
+					parameterTypes);
 		} catch (NoSuchMethodException e) {
 			throw new UnsupportedException(e);
 		}
 		return (T) invoke(method, params);
+	}
+
+	public AnnotatedElement getAnnotatedElement() {
+		return new MultiAnnotatedElement(method, super.getAnnotatedElement());
 	}
 
 }

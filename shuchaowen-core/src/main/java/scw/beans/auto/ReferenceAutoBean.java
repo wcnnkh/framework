@@ -1,5 +1,7 @@
 package scw.beans.auto;
 
+import java.lang.reflect.AnnotatedElement;
+
 import scw.beans.BeanFactory;
 
 /**
@@ -47,5 +49,9 @@ public class ReferenceAutoBean implements AutoBean {
 
 	public boolean isSingleton() {
 		return beanFactory.isSingleton(reference);
+	}
+
+	public AnnotatedElement getAnnotatedElement() {
+		return beanFactory.getDefinition(reference).getAnnotatedElement();
 	}
 }
