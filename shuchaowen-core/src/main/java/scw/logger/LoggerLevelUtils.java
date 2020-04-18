@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
+import scw.core.utils.StringUtils;
 import scw.io.resource.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
@@ -24,7 +25,7 @@ public class LoggerLevelUtils {
 		public scw.util.value.Value get(String key) {
 			String value = null;
 			if (key.equalsIgnoreCase("default.logger.level")) {
-				value = LoggerLevelUtils.getDefaultLevel().name();
+				value = DEFAULT_LEVEL.name();
 			} else if (key.equalsIgnoreCase("logger.rootPath")) {
 				value = GlobalPropertyFactory.getInstance().getWorkPath();
 			}
@@ -33,11 +34,14 @@ public class LoggerLevelUtils {
 		};
 	};
 
-	private static final Level DEFAULT_LEVEL = GlobalPropertyFactory
-			.getInstance().getValue(Level.class.getName(), Level.class,
-					Level.INFO);
+	public static final Level DEFAULT_LEVEL;
 
 	static {
+		String defaultLevel = GlobalPropertyFactory.getInstance().getString(
+				Level.class.getName());
+		DEFAULT_LEVEL = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level
+				.valueOf(defaultLevel.toUpperCase());
+
 		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance()
 				.getValue("scw.logger.level.config", String.class,
 						"/logger-level.properties");
@@ -69,10 +73,6 @@ public class LoggerLevelUtils {
 		}
 	}
 
-	public static Level getDefaultLevel() {
-		return DEFAULT_LEVEL;
-	}
-
 	public static Level getLevel(String name) {
 		ListIterator<KeyValuePair<String, Level>> iterator = LOGGER_LEVEL_LIST
 				.listIterator(LOGGER_LEVEL_LIST.size());
@@ -87,7 +87,7 @@ public class LoggerLevelUtils {
 			}
 		}
 
-		return getDefaultLevel();
+		return DEFAULT_LEVEL;
 	}
 
 	public static Collection<KeyValuePair<String, Level>> getLevelConfigList() {
