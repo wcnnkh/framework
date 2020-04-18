@@ -5,17 +5,17 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.json.JSONUtils;
 import scw.orm.Column;
-import scw.orm.Filter;
 import scw.orm.Getter;
 import scw.orm.GetterFilterChain;
 import scw.orm.MappingContext;
 import scw.orm.Setter;
 import scw.orm.SetterFilterChain;
+import scw.orm.sql.SqlFilter;
 import scw.orm.sql.SqlORMUtils;
 import scw.util.EnumUtils;
 
-@Configuration(order=Integer.MIN_VALUE)
-public class DefaultSqlFilter implements Filter {
+@Configuration(order=Integer.MIN_VALUE, value=SqlFilter.class)
+public class DefaultSqlFilter implements SqlFilter {
 	public Object toSqlField(Column column, Object value) {
 		if (column.getType().isEnum()) {
 			return value == null ? null : value.toString();
