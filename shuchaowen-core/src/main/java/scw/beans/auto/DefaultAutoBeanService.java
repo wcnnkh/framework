@@ -3,9 +3,11 @@ package scw.beans.auto;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import scw.aop.Filter;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
@@ -58,7 +60,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			Proxy proxy = clazz.getAnnotation(Proxy.class);
 			if (proxy != null) {
 				return new ProxyAutoBean(beanFactory, clazz,
-						AutoBeanUtils.getProxyNames(proxy));
+						getProxyNames(proxy));
 			}
 		}
 
@@ -81,7 +83,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		if (autoConfig == null) {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
 			Collection<Class<?>> impls = InstanceUtils
-					.getConfigurationClassList((Class)clazz, propertyFactory);
+					.getConfigurationClassList((Class) clazz, propertyFactory);
 			if (!CollectionUtils.isEmpty(impls)) {
 				for (Class<?> impl : impls) {
 					return defaultService(impl, beanFactory, propertyFactory,
@@ -145,4 +147,20 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		}
 	}
 
+	public static LinkedList<String> getProxyNames(Proxy proxy) {
+		LinkedList<String> list = new LinkedList<String>();
+		if (proxy == null) {
+			return list;
+		}
+
+		for (String name : proxy.names()) {
+			list.add(name);
+		}
+
+		for (Class<? extends Filter> c : proxy.value()) {
+			list.add(c.getName());
+		}
+
+		return list;
+	}
 }
