@@ -3,7 +3,6 @@ package scw.logger.log4j2;
 import org.apache.logging.log4j.LogManager;
 
 import scw.core.instance.annotation.Configuration;
-import scw.lang.UnsupportedException;
 import scw.logger.AbstractILoggerFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerLevelUtils;
@@ -12,11 +11,7 @@ import scw.logger.LoggerLevelUtils;
 public class Log4j2LoggerFactory extends AbstractILoggerFactory {
 
 	static {
-		try {
-			Class.forName("org.apache.logging.log4j.LogManager");
-		} catch (ClassNotFoundException e) {
-			throw new UnsupportedException("log4j2");
-		}
+		LogManager.class.getName();
 	}
 
 	public void destroy() {

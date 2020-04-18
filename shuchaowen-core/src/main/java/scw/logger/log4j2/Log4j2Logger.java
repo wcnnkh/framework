@@ -2,11 +2,9 @@ package scw.logger.log4j2;
 
 import org.apache.logging.log4j.Logger;
 
-import scw.beans.annotation.Service;
 import scw.logger.AbstractLogger;
 import scw.logger.Level;
 
-@Service
 public class Log4j2Logger extends AbstractLogger {
 	private final Logger logger;
 

@@ -1,8 +1,5 @@
 package scw.logger;
 
-import scw.core.reflect.ReflectionUtils;
-import scw.lang.NestedRuntimeException;
-
 /**
  * 懒加载的logger
  * 
@@ -20,12 +17,8 @@ public final class LazyLogger extends AbstractLazyLogger {
 		if (logger == null) {
 			synchronized (this) {
 				if (logger == null) {
-					try {
-						logger = (Logger) ReflectionUtils.invokeStaticMethod("scw.logger.LoggerFactory", "getLogger",
-								new Class<?>[] { String.class, String.class }, getName(), getPlaceholder());
-					} catch (Throwable e) {
-						throw new NestedRuntimeException(getName(), e);
-					}
+					this.logger = LoggerUtils.getILoggerFactory().getLogger(
+							getName(), getPlaceholder());
 				}
 			}
 		}
