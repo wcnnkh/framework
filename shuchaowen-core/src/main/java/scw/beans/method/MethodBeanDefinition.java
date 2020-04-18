@@ -20,14 +20,14 @@ import scw.util.value.property.PropertyFactory;
 
 @SuppressWarnings("unchecked")
 public class MethodBeanDefinition extends AbstractBeanDefinition {
-	private Class<?> targetClazz;
+	private Class<?> methodTargetClass;
 	private Method method;
 
 	public MethodBeanDefinition(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clazz,
-			Class<?> targetClazz, Method method) {
-		super(beanFactory, propertyFactory, clazz);
-		this.targetClazz = targetClazz;
+			PropertyFactory propertyFactory, Class<?> returnClass,
+			Class<?> methodTargetClass, Method method) {
+		super(beanFactory, propertyFactory, returnClass);
+		this.methodTargetClass = methodTargetClass;
 		this.method = method;
 		init();
 		Bean bean = method.getAnnotation(Bean.class);
@@ -64,7 +64,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 			ReflectionUtils.setAccessibleMethod(method);
 			bean = method.invoke(
 					Modifier.isStatic(method.getModifiers()) ? null
-							: beanFactory.getInstance(targetClazz), args);
+							: beanFactory.getInstance(methodTargetClass), args);
 		} catch (Exception e) {
 			throw new BeansException(getTargetClass() + "", e);
 		}
@@ -77,7 +77,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	public <T> T create(Object... params) {
-		for (Method method : targetClazz.getDeclaredMethods()) {
+		for (Method method : methodTargetClass.getDeclaredMethods()) {
 			if (!method.getName().equals(this.method.getName())) {
 				continue;
 			}
@@ -94,7 +94,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	public <T> T create(Class<?>[] parameterTypes, Object... params) {
 		Method method;
 		try {
-			method = targetClazz.getDeclaredMethod(this.method.getName(),
+			method = methodTargetClass.getDeclaredMethod(this.method.getName(),
 					parameterTypes);
 		} catch (NoSuchMethodException e) {
 			throw new UnsupportedException(e);
@@ -103,7 +103,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	public AnnotatedElement getAnnotatedElement() {
-		return new MultiAnnotatedElement(method, targetClazz);
+		return new MultiAnnotatedElement(method, super.getAnnotatedElement());
 	}
 
 }
