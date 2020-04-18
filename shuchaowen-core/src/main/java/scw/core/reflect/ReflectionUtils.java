@@ -1241,12 +1241,7 @@ public abstract class ReflectionUtils {
 
 	public static Method getMethod(String className, String methodName,
 			Class<?>... parameterTypes) {
-		Class<?> clz = null;
-		try {
-			clz = ClassUtils.forName(className);
-		} catch (Throwable e) {
-		}
-
+		Class<?> clz = ClassUtils.forNameNullable(className);
 		if (clz == null) {
 			return null;
 		}

@@ -281,7 +281,7 @@ public final class InstanceUtils {
 			boolean auto = isAuto(instanceFactory, propertyFactory, clazz,
 					parameterDescriptor, parameterFactory);
 			if (logger.isDebugEnabled()) {
-				logger.debug("{} parameter index {} matching:{}",
+				logger.debug("{} parameter index {} matching: {}",
 						logFirstParameter, i, auto ? "success" : "fail");
 			}
 
@@ -379,7 +379,7 @@ public final class InstanceUtils {
 			}
 
 			if (!ClassUtils.isPresent(clazz.getName())) {
-				logger.debug("not support class:{}", clazz.getName());
+				logger.debug("not support class: {}", clazz.getName());
 				continue;
 			}
 
@@ -456,7 +456,7 @@ public final class InstanceUtils {
 				Class<?> clazz = ClassUtils.forNameNullable(name);
 				if (clazz == null) {
 					if (logger.isDebugEnabled()) {
-						logger.debug("not create class by name:{}", name);
+						logger.debug("not create class by name: {}", name);
 					}
 					continue;
 				}
@@ -498,7 +498,7 @@ public final class InstanceUtils {
 		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory,
 				excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
-				logger.debug("factory [{}] not create {} in instance:{}",
+				logger.debug("factory [{}] not create {} in instance: {}",
 						instanceFactory.getClass(), type, clazz);
 				continue;
 			}
@@ -528,7 +528,7 @@ public final class InstanceUtils {
 		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory,
 				excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
-				logger.debug("factory [{}] not create {} in instance:{}",
+				logger.debug("factory [{}] not create {} in instance: {}",
 						instanceFactory.getClass(), type, clazz);
 				continue;
 			}

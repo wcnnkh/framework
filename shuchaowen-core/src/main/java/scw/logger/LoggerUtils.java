@@ -2,29 +2,16 @@ package scw.logger;
 
 import java.lang.reflect.Method;
 
-import scw.core.GlobalPropertyFactory;
+import scw.core.reflect.ReflectionUtils;
+import scw.lang.NestedRuntimeException;
 
 public final class LoggerUtils {
 	private static final ConsoleLoggerFactory CONSOLE_LOGGER_FACTORY = new ConsoleLoggerFactory();
+	private static Method I_LOGGER_FACTORY_METHOD = ReflectionUtils.getMethod(
+			"scw.logger.LoggerFactory", "getILoggerFactory");
 
 	private LoggerUtils() {
 	};
-
-	public static Class<?> init() {
-		try {
-			return Class.forName("scw.logger.LoggerFactory");
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException("初始化日志工厂失败", e);
-		}
-	}
-
-	public static Boolean defaultConfigEnable() {
-		return GlobalPropertyFactory.getInstance().getBoolean("scw.logger.default.config.enable");
-	}
-
-	public static void setDefaultConfigenable(boolean enable) {
-		GlobalPropertyFactory.getInstance().put("scw.logger.default.config.enable", enable);
-	}
 
 	/**
 	 * 此方法获取的logger是延迟加载的
@@ -68,16 +55,6 @@ public final class LoggerUtils {
 		return new LazyLogger(name, placeholder);
 	}
 
-	public static void destroy() {
-		Class<?> clazz = init();
-		try {
-			Method method = clazz.getDeclaredMethod("destroy");
-			method.invoke(null);
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-	}
-
 	public static Logger getConsoleLogger(Class<?> clazz) {
 		return CONSOLE_LOGGER_FACTORY.getLogger(clazz.getName());
 	}
@@ -92,5 +69,13 @@ public final class LoggerUtils {
 
 	public static Logger getConsoleLogger(String name, String placeholder) {
 		return CONSOLE_LOGGER_FACTORY.getLogger(name, placeholder);
+	}
+
+	public static ILoggerFactory getILoggerFactory() {
+		try {
+			return (ILoggerFactory) I_LOGGER_FACTORY_METHOD.invoke(null);
+		} catch (Exception e) {
+			throw new NestedRuntimeException(e);
+		}
 	}
 }
