@@ -18,7 +18,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 	public AbstractAutoBean(BeanFactory beanFactory, Class<?> type) {
 		this.beanFactory = beanFactory;
 		this.type = type;
-		this.proxy = BeanUtils.checkProxy(type);
+		this.proxy = BeanUtils.isProxy(type, getAnnotatedElement());
 	}
 
 	protected abstract Collection<String> getFilterNames();

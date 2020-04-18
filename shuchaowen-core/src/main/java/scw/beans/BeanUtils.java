@@ -1,5 +1,6 @@
 package scw.beans;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -219,7 +220,14 @@ public final class BeanUtils {
 		}
 	}
 
-	public static boolean checkProxy(Class<?> type) {
+	public static boolean isSingletion(Class<?> type,
+			AnnotatedElement annotatedElement) {
+		Bean bean = annotatedElement.getAnnotation(Bean.class);
+		return bean == null ? true : bean.singleton();
+	}
+
+	public static boolean isProxy(Class<?> type,
+			AnnotatedElement annotatedElement) {
 		if (Modifier.isFinal(type.getModifiers())) {// final修饰的类无法代理
 			return false;
 		}
@@ -228,7 +236,7 @@ public final class BeanUtils {
 			return false;
 		}
 
-		Bean bean = type.getAnnotation(Bean.class);
+		Bean bean = annotatedElement.getAnnotation(Bean.class);
 		if (bean != null) {
 			return bean.proxy();
 		}

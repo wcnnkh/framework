@@ -31,6 +31,8 @@ public final class XmlBeanDefinition extends AbstractBeanDefinition {
 	public XmlBeanDefinition(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Node beanNode) throws Exception {
 		super(beanFactory, propertyFactory, XmlBeanUtils.getClass(beanNode));
+		init();
+		
 		String id = XmlBeanUtils.getId(beanNode);
 		if (!StringUtils.isEmpty(id)) {
 			this.id = id;

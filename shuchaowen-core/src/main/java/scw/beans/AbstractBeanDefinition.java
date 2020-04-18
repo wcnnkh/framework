@@ -30,10 +30,8 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 	public void init() {
 		initMethods.addAll(BeanUtils.getInitMethodList(getTargetClass()));
 		destroyMethods.addAll(BeanUtils.getDestroyMethdoList(getTargetClass()));
-		this.proxy = BeanUtils.checkProxy(getTargetClass());
-		scw.beans.annotation.Bean bean = getTargetClass().getAnnotation(
-				scw.beans.annotation.Bean.class);
-		this.singleton = bean == null ? true : bean.singleton();
+		this.proxy = BeanUtils.isProxy(getTargetClass(), getAnnotatedElement());
+		this.singleton = BeanUtils.isSingletion(getTargetClass(), getAnnotatedElement());
 		autowriteFieldDefinition.addAll(BeanUtils
 				.getAutowriteFieldDefinitionList(getTargetClass()));
 	}
