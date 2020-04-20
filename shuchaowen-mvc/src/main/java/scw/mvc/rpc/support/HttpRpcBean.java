@@ -2,11 +2,11 @@ package scw.mvc.rpc.support;
 
 import scw.beans.AbstractInterfaceBeanDefinition;
 import scw.beans.BeanFactory;
+import scw.io.ObjectMessageConveter;
+import scw.io.Serializer;
 import scw.mvc.rpc.http.HttpRpcFactory;
 import scw.mvc.rpc.http.HttpRpcRequestFactory;
 import scw.net.message.converter.support.AllMessageConverter;
-import scw.serializer.ObjectMessageConveter;
-import scw.serializer.Serializer;
 import scw.util.value.property.PropertyFactory;
 
 public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
@@ -24,8 +24,7 @@ public final class HttpRpcBean extends AbstractInterfaceBeanDefinition {
 		init();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create() {
-		return (T) rpcFactory.getProxy(getTargetClass());
+	public Object create() {	
+		return rpcFactory.getProxy(getTargetClass());
 	}
 }

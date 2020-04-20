@@ -6,8 +6,8 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
 import scw.core.annotation.ParameterName;
+import scw.io.SerializerUtils;
 import scw.net.NetworkUtils;
-import scw.serializer.SerializerUtils;
 
 @SuppressWarnings("rawtypes")
 public final class DefaultXMemcachedClientConfiguration implements XMemcachedClientConfiguration {

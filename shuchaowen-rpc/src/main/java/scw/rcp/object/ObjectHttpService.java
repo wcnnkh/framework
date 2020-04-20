@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.io.JavaSerializer;
+import scw.io.Serializer;
 import scw.rcp.Service;
-import scw.serializer.JavaSerializer;
-import scw.serializer.Serializer;
 
 public abstract class ObjectHttpService implements Service {
 	private Serializer serializer = JavaSerializer.SERIALIZER;

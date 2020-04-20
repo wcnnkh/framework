@@ -8,11 +8,11 @@ import scw.async.beans.DefaultAsyncCompleteService;
 import scw.async.beans.annotation.AsyncComplete;
 import scw.core.Consumer;
 import scw.core.GlobalPropertyFactory;
+import scw.io.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mq.amqp.AmqpQueueConfig;
 import scw.mq.amqp.Exchange;
-import scw.serializer.NoTypeSpecifiedSerializer;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 

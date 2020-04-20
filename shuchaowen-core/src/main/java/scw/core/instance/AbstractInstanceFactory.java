@@ -80,6 +80,7 @@ public abstract class AbstractInstanceFactory<D extends InstanceDefinition>
 		if (definition.isSingleton()) {
 			singletonMap.put(definition.getId(), object);
 		}
+		definition.init(object);
 	}
 
 	private Object createInternal(D definition) {

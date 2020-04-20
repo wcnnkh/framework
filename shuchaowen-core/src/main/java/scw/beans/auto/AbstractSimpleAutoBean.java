@@ -19,15 +19,14 @@ public abstract class AbstractSimpleAutoBean extends AbstractAutoBean {
  
 	protected abstract Object[] getParameters() throws Exception;
 
-	@SuppressWarnings("unchecked")
-	public <T> T create() throws Exception{
+	public Object create() throws Exception{
 		if (!isInstance()) {
 			throw new UnsupportedException(type.getName());
 		}
 
 		if (type.isInterface()) {
 			if (!CollectionUtils.isEmpty(getFilterNames())) {
-				return (T) BeanUtils.createProxy(beanFactory, type, getFilterNames(), null).create();
+				return BeanUtils.createProxy(beanFactory, type, getFilterNames(), null).create();
 			}
 			throw new UnsupportedException(type.getName());
 		}

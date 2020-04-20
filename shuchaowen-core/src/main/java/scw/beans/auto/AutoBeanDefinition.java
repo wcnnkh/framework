@@ -35,20 +35,17 @@ public final class AutoBeanDefinition extends AbstractBeanDefinition {
 		super.destroy(bean);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create() throws Exception {
-		return (T) autoBean.create();
+	public Object create() throws Exception {
+		return autoBean.create();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create(Object... params) throws Exception {
-		return (T) autoBean.create(params);
+	public Object create(Object... params) throws Exception {
+		return autoBean.create(params);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create(Class<?>[] parameterTypes, Object... params)
+	public Object create(Class<?>[] parameterTypes, Object... params)
 			throws Exception {
-		return (T) autoBean.create(parameterTypes, params);
+		return autoBean.create(parameterTypes, params);
 	}
 
 	public boolean isInstance() {

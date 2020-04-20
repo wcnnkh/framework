@@ -8,9 +8,7 @@ import java.util.Arrays;
 import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.beans.BeansException;
 import scw.beans.annotation.Bean;
-import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
@@ -18,7 +16,6 @@ import scw.core.utils.ClassUtils;
 import scw.lang.UnsupportedException;
 import scw.util.value.property.PropertyFactory;
 
-@SuppressWarnings("unchecked")
 public class MethodBeanDefinition extends AbstractBeanDefinition {
 	private Class<?> methodTargetClass;
 	private Method method;
@@ -47,7 +44,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 				ParameterUtils.getParameterDescriptors(method), null, method);
 	}
 
-	public <T> T create() {
+	public Object create() throws Exception {
 		if (!isInstance()) {
 			throw new UnsupportedException("不支持的构造方式");
 		}
@@ -55,19 +52,14 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory,
 				getTargetClass(),
 				ParameterUtils.getParameterDescriptors(method), null);
-		return (T) invoke(method, args);
+		return invoke(method, args);
 	}
 
-	private Object invoke(Method method, Object[] args) {
-		Object bean;
-		try {
-			ReflectionUtils.setAccessibleMethod(method);
-			bean = method.invoke(
-					Modifier.isStatic(method.getModifiers()) ? null
-							: beanFactory.getInstance(methodTargetClass), args);
-		} catch (Exception e) {
-			throw new BeansException(getTargetClass() + "", e);
-		}
+	private Object invoke(Method method, Object[] args) throws Exception {
+		ReflectionUtils.setAccessibleMethod(method);
+		Object bean = method.invoke(
+				Modifier.isStatic(method.getModifiers()) ? null : beanFactory
+						.getInstance(methodTargetClass), args);
 
 		if (isProxy()) {
 			bean = BeanUtils.createProxy(beanFactory, getTargetClass(), bean,
@@ -76,7 +68,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 		return bean;
 	}
 
-	public <T> T create(Object... params) {
+	public Object create(Object... params) throws Exception {
 		for (Method method : methodTargetClass.getDeclaredMethods()) {
 			if (!method.getName().equals(this.method.getName())) {
 				continue;
@@ -85,25 +77,20 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 			if (ClassUtils.isAssignableValue(
 					Arrays.asList(method.getParameterTypes()),
 					Arrays.asList(params))) {
-				return (T) invoke(method, params);
+				return invoke(method, params);
 			}
 		}
 		throw new UnsupportedException(method.toString());
 	}
 
-	public <T> T create(Class<?>[] parameterTypes, Object... params) {
-		Method method;
-		try {
-			method = methodTargetClass.getDeclaredMethod(this.method.getName(),
-					parameterTypes);
-		} catch (NoSuchMethodException e) {
-			throw new UnsupportedException(e);
-		}
-		return (T) invoke(method, params);
+	public Object create(Class<?>[] parameterTypes, Object... params)
+			throws Exception {
+		Method method = methodTargetClass.getDeclaredMethod(
+				this.method.getName(), parameterTypes);
+		return invoke(method, params);
 	}
 
 	public AnnotatedElement getAnnotatedElement() {
-		return new MultiAnnotatedElement(method, super.getAnnotatedElement());
+		return method;
 	}
-
 }

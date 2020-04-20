@@ -16,6 +16,10 @@ public class JdkProxy implements Proxy {
 		this.interfaces = interfaces;
 		this.invocationHandler = invocationHandler;
 	}
+	
+	public Class<?> getTargetClass() {
+		return clazz;
+	}
 
 	public Object create() {
 		return java.lang.reflect.Proxy.newProxyInstance(clazz.getClassLoader(),

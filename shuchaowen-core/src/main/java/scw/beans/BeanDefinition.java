@@ -7,8 +7,6 @@ public interface BeanDefinition extends InstanceDefinition {
 
 	String[] getNames();
 	
-	boolean isProxy();
-
 	void init(Object bean) throws Exception;
 
 	void destroy(Object bean) throws Exception;

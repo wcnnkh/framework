@@ -8,10 +8,16 @@ import scw.cglib.proxy.MethodInterceptor;
 
 public class BuiltInCglibProxy implements Proxy {
 	private Enhancer enhancer;
+	private Class<?> targetClass;
 
 	public BuiltInCglibProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor methodInterceptor) {
 		this.enhancer = createEnhancer(clazz, interfaces);
 		this.enhancer.setCallback(methodInterceptor);
+		this.targetClass = clazz;
+	}
+
+	public Class<?> getTargetClass() {
+		return targetClass;
 	}
 
 	public Object create() {

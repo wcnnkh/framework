@@ -3,18 +3,18 @@ package scw.beans.auto;
 import java.util.Collection;
 
 import scw.beans.BeanFactory;
-import scw.core.instance.AutoInstanceBuilder;
-import scw.core.instance.InstanceBuilder;
+import scw.core.instance.AutoConstructorBuilder;
+import scw.core.instance.ConstructorBuilder;
 import scw.core.parameter.ParameterUtils;
 import scw.util.value.property.PropertyFactory;
 
 public class SimpleAutoBean extends AbstractSimpleAutoBean {
-	private InstanceBuilder instanceBuilder;
+	private ConstructorBuilder instanceBuilder;
 
 	public SimpleAutoBean(BeanFactory beanFactory, Class<?> type,
 			PropertyFactory propertyFactory) {
 		super(beanFactory, type);
-		this.instanceBuilder = new AutoInstanceBuilder(beanFactory,
+		this.instanceBuilder = new AutoConstructorBuilder(beanFactory,
 				propertyFactory, type,
 				ParameterUtils.getParameterDescriptorFactory());
 	}

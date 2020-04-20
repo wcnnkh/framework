@@ -1,9 +1,11 @@
 package scw.core.instance;
 
-import java.lang.reflect.Constructor;
+public interface InstanceBuilder<T> {
+	Class<? extends T> getTargetClass();
+	
+	T create() throws Exception;
 
-public interface InstanceBuilder {
-	Constructor<?> getConstructor();
+	T create(Object... params) throws Exception;
 
-	Object[] getArgs() throws Exception;
+	T create(Class<?>[] parameterTypes, Object... params) throws Exception;
 }

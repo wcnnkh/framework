@@ -9,10 +9,10 @@ import scw.core.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.utils.TypeUtils;
+import scw.io.FileManager;
+import scw.io.SerializerUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.serializer.FileManager;
-import scw.serializer.SerializerUtils;
 
 public final class DefaultAsyncCompleteService implements AsyncCompleteService,
 		Destroy {

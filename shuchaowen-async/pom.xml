@@ -9,7 +9,13 @@
   <dependencies>
   	<dependency>
   		<groupId>shuchaowen</groupId>
-  		<artifactId>shuchaowen-serializer</artifactId>
+  		<artifactId>shuchaowen-core</artifactId>
   	</dependency>
+  <!-- 	
+  	<dependency>
+  		<groupId>shuchaowen</groupId>
+  		<artifactId>shuchaowen-mq</artifactId>
+  		<scope>provided</scope>
+  	</dependency> -->
   </dependencies>
 </project>

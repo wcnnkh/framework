@@ -12,12 +12,18 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-orm</artifactId>
 		</dependency>
-		
+
+		<!-- <dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-async</artifactId>
+			<scope>provided</scope>
+		</dependency> -->
+
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-mq</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-data</artifactId>
@@ -50,5 +56,22 @@
 			<version>8.0.16</version>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- hiberante相关 -->
+		<!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
+		<dependency>
+			<groupId>org.hibernate.orm</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- mybatis相关 -->
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 </project>

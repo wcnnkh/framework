@@ -48,7 +48,7 @@ public final class InstanceUtils {
 	private InstanceUtils() {
 	};
 	
-	public static final InstanceBuilder EMPTY_INSTANCE_BUILDER = new InstanceBuilder() {
+	public static final ConstructorBuilder EMPTY_INSTANCE_BUILDER = new ConstructorBuilder() {
 		
 		public Constructor<?> getConstructor() {
 			return null;

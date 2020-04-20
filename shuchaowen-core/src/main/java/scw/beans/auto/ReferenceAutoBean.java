@@ -31,15 +31,15 @@ public class ReferenceAutoBean implements AutoBean {
 		return beanFactory.getDefinition(reference).isInstance();
 	}
 
-	public <T> T create() {
+	public Object create() throws Exception{
 		return beanFactory.getInstance(reference);
 	}
 
-	public <T> T create(Object... params) {
+	public Object create(Object... params) throws Exception{
 		return beanFactory.getInstance(reference, params);
 	}
 
-	public <T> T create(Class<?>[] parameterTypes, Object... params) {
+	public Object create(Class<?>[] parameterTypes, Object... params) throws Exception{
 		return beanFactory.getInstance(reference, parameterTypes, params);
 	}
 
@@ -53,5 +53,8 @@ public class ReferenceAutoBean implements AutoBean {
 
 	public AnnotatedElement getAnnotatedElement() {
 		return beanFactory.getDefinition(reference).getAnnotatedElement();
+	}
+
+	public void init(Object instance) throws Exception {
 	}
 }

@@ -24,11 +24,6 @@
 		
 		<dependency>
 			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-serializer</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-rpc</artifactId>
 		</dependency>
 		

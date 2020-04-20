@@ -566,33 +566,6 @@ public abstract class CollectionUtils {
 		map.put(key, value);
 	}
 
-	public static <E, C extends Collection<E>> void add(C collection, E e,
-			Callable<? extends C> callable) {
-		if (collection == null) {
-			collection = callable.call();
-		}
-
-		collection.add(e);
-	}
-
-	public static <K, V, M extends Map<K, V>> void putAll(M map,
-			Map<? extends K, ? extends V> all, Callable<? extends M> callback) {
-		if (map == null) {
-			map = callback.call();
-		}
-
-		map.putAll(all);
-	}
-
-	public static <E, C extends Collection<E>> void addAll(C collection,
-			Collection<? extends E> all, Callable<? extends C> callable) {
-		if (collection == null) {
-			collection = callable.call();
-		}
-
-		collection.addAll(all);
-	}
-
 	public static <K, V> Callable<HashMap<K, V>> hashMapCallable(
 			final int initialCapacity) {
 		return new Callable<HashMap<K, V>>() {

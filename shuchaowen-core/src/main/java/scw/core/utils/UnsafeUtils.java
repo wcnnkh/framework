@@ -1,13 +1,17 @@
 package scw.core.utils;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+import scw.core.reflect.ReflectionUtils;
+import scw.lang.NestedRuntimeException;
 
 public class UnsafeUtils {
 	private static final Object UNSAFE;
 	private static final String CLASS_NAME = "sun.misc.Unsafe";
-	private static final Method ALLOCATE_INSTANCE = getMethod("allocateInstance", Class.class);
+	private static final Method ALLOCATE_INSTANCE = getMethod(
+			"allocateInstance", Class.class);
 
 	static {
 		UNSAFE = getInvokeInstance();
@@ -35,28 +39,25 @@ public class UnsafeUtils {
 		return UNSAFE;
 	}
 
-	public static Method getMethod(String methodName, Class<?>... parameterTypes) {
-		try {
-			return ClassUtils.forName(CLASS_NAME).getMethod(methodName, parameterTypes);
-		} catch (ClassNotFoundException e) {
-		} catch (NoSuchMethodException e) {
-		} catch (SecurityException e) {
-		}
-		return null;
+	public static Method getMethod(String methodName,
+			Class<?>... parameterTypes) {
+		return ReflectionUtils
+				.getMethod(CLASS_NAME, methodName, parameterTypes);
 	}
 
 	public static Object invoke(Method method, Object... args) {
+		ReflectionUtils.setAccessibleMethod(method);
 		try {
-			return method.invoke(method, args);
-		} catch (IllegalAccessException e) {
-			throw new RuntimeException(method.toString(), e);
-		} catch (IllegalArgumentException e) {
-			throw new RuntimeException(method.toString(), e);
-		} catch (InvocationTargetException e) {
-			throw new RuntimeException(method.toString(), e);
+			if (Modifier.isStatic(method.getModifiers())) {
+				return method.invoke(null, args);
+			} else {
+				return method.invoke(UNSAFE, args);
+			}
+		} catch (Exception e) {
+			throw new NestedRuntimeException(method.toString(), e);
 		}
 	}
-
+	
 	public static Object allocateInstance(Class<?> type) {
 		return invoke(ALLOCATE_INSTANCE, type);
 	}

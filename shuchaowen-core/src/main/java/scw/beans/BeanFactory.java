@@ -14,6 +14,8 @@ public interface BeanFactory extends InstanceFactory {
 	 * @return
 	 */
 	BeanDefinition getDefinition(String name);
+	
+	BeanDefinition getDefinition(Class<?> clazz);
 
 	Collection<String> getFilterNames();
 }

@@ -344,16 +344,15 @@ public abstract class AbstractBeanFactory extends
 			return true;
 		}
 
-		@SuppressWarnings("unchecked")
-		public <T> T create() throws Exception {
-			return (T) instance;
+		public Object create() throws Exception {
+			return instance;
 		}
 
-		public <T> T create(Object... params) throws Exception {
+		public Object create(Object... params) throws Exception {
 			throw new UnsupportedException(getId());
 		}
 
-		public <T> T create(Class<?>[] parameterTypes, Object... params)
+		public Object create(Class<?>[] parameterTypes, Object... params)
 				throws Exception {
 			throw new UnsupportedException(getId());
 		}

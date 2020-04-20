@@ -9,14 +9,13 @@ import org.w3c.dom.NodeList;
 import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.instance.AutoInstanceBuilder;
-import scw.core.instance.InstanceBuilder;
+import scw.core.instance.AutoConstructorBuilder;
+import scw.core.instance.ConstructorBuilder;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.lang.NotFoundException;
 import scw.lang.UnsupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -26,7 +25,7 @@ public final class XmlBeanDefinition extends AbstractBeanDefinition {
 	private Logger logger = LoggerUtils.getLogger(XmlBeanDefinition.class);
 	private final String[] names;
 	private final XmlBeanParameter[] properties;
-	private volatile InstanceBuilder instanceBuilder;
+	private volatile ConstructorBuilder instanceBuilder;
 
 	public XmlBeanDefinition(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Node beanNode) throws Exception {
@@ -53,11 +52,11 @@ public final class XmlBeanDefinition extends AbstractBeanDefinition {
 			XmlBeanParameter[] constructorParameters = XmlBeanUtils
 					.getConstructorParameters(nodeList);
 			if (ArrayUtils.isEmpty(constructorParameters)) {
-				this.instanceBuilder = new AutoInstanceBuilder(beanFactory,
+				this.instanceBuilder = new AutoConstructorBuilder(beanFactory,
 						propertyFactory, getTargetClass(),
 						ParameterUtils.getParameterDescriptorFactory());
 			} else {
-				this.instanceBuilder = new XmlInstanceBuilder(beanFactory,
+				this.instanceBuilder = new XmlConstructorBuilder(beanFactory,
 						propertyFactory, getTargetClass(),
 						constructorParameters);
 			}
@@ -108,8 +107,7 @@ public final class XmlBeanDefinition extends AbstractBeanDefinition {
 		return bean;
 	}
 
-	@SuppressWarnings("unchecked")
-	public final <T> T create() throws Exception {
+	public Object create() throws Exception {
 		if (!isInstance()) {
 			throw new UnsupportedException(getId());
 		}
@@ -119,38 +117,15 @@ public final class XmlBeanDefinition extends AbstractBeanDefinition {
 				logger.warn("{} is an interface, but there is no proxy.",
 						getTargetClass());
 			}
-			return (T) getProxy().create();
+			return getProxy().create();
 		}
 
-		return (T) createInternal(instanceBuilder.getConstructor(),
+		return createInternal(instanceBuilder.getConstructor(),
 				instanceBuilder.getArgs());
 	}
 
 	public String[] getNames() {
 		return names;
-	}
-
-	@SuppressWarnings("unchecked")
-	public final <T> T create(Object... params) throws Exception {
-		Constructor<T> constructor = (Constructor<T>) ReflectionUtils
-				.findConstructorByParameters(getTargetClass(), false, params);
-		if (constructor == null) {
-			throw new NotFoundException(getId() + "找不到指定的构造方法");
-		}
-
-		return (T) createInternal(constructor, params);
-	}
-
-	@SuppressWarnings("unchecked")
-	public final <T> T create(Class<?>[] parameterTypes, Object... params)
-			throws Exception {
-		Constructor<?> constructor = ReflectionUtils.findConstructor(
-				getTargetClass(), false, parameterTypes);
-		if (constructor == null) {
-			throw new NotFoundException(getId() + "找不到指定的构造方法");
-		}
-
-		return (T) createInternal(constructor, params);
 	}
 
 	public boolean isInstance() {

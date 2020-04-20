@@ -1,16 +1,16 @@
 package scw.beans;
 
-import java.lang.reflect.AnnotatedElement;
 import java.util.LinkedList;
 
 import scw.core.Init;
+import scw.core.instance.definition.AbstractInstanceDefinition;
 import scw.core.reflect.FieldDefinition;
+import scw.core.utils.XUtils;
 import scw.util.value.property.PropertyFactory;
 
-public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
+public abstract class AbstractBeanDefinition extends AbstractInstanceDefinition
+		implements BeanDefinition, Init {
 	protected final BeanFactory beanFactory;
-	private final Class<?> targetClass;
-	protected String id;
 	protected final LinkedList<BeanMethod> initMethods = new LinkedList<BeanMethod>();
 	protected final LinkedList<BeanMethod> destroyMethods = new LinkedList<BeanMethod>();
 	protected boolean proxy;
@@ -21,17 +21,17 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 
 	public AbstractBeanDefinition(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Class<?> targetClass) {
+		super(targetClass, beanFactory);
 		this.beanFactory = beanFactory;
-		this.targetClass = targetClass;
 		this.propertyFactory = propertyFactory;
-		this.id = targetClass.getName();
 	}
 
 	public void init() {
 		initMethods.addAll(BeanUtils.getInitMethodList(getTargetClass()));
 		destroyMethods.addAll(BeanUtils.getDestroyMethdoList(getTargetClass()));
 		this.proxy = BeanUtils.isProxy(getTargetClass(), getAnnotatedElement());
-		this.singleton = BeanUtils.isSingletion(getTargetClass(), getAnnotatedElement());
+		this.singleton = BeanUtils.isSingletion(getTargetClass(),
+				getAnnotatedElement());
 		autowriteFieldDefinition.addAll(BeanUtils
 				.getAutowriteFieldDefinitionList(getTargetClass()));
 	}
@@ -44,25 +44,23 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 		return this.proxy ? true : (!filterNames.isEmpty());
 	}
 
-	public String getId() {
-		return this.id;
-	}
-
-	public Class<?> getTargetClass() {
-		return targetClass;
-	}
-
 	public void init(Object bean) throws Exception {
 		BeanUtils.autowired(beanFactory, propertyFactory, getTargetClass(),
 				bean, autowriteFieldDefinition);
-
 		if (initMethods.size() != 0) {
 			for (BeanMethod method : initMethods) {
 				method.invoke(bean, beanFactory, propertyFactory);
 			}
 		}
 
-		BeanUtils.init(bean);
+		if (bean instanceof BeanFactoryAware) {
+			((BeanFactoryAware) bean).setBeanFactory(beanFactory);
+		}
+
+		if (bean instanceof BeanDefinitionAware) {
+			((BeanDefinitionAware) bean).setBeanDefinition(this);
+		}
+		super.init(bean);
 	}
 
 	public void destroy(Object bean) throws Exception {
@@ -72,10 +70,6 @@ public abstract class AbstractBeanDefinition implements BeanDefinition, Init {
 			}
 		}
 
-		BeanUtils.destroy(bean);
-	}
-
-	public AnnotatedElement getAnnotatedElement() {
-		return getTargetClass();
+		XUtils.destroy(bean);
 	}
 }

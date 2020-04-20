@@ -5,16 +5,16 @@ public final class CompareUtils {
 	};
 
 	/**
-	 * @param x
-	 * @param y
+	 * @param left
+	 * @param right
 	 * @param desc 是否降序
 	 * @return
 	 */
-	public static int compare(int x, int y, boolean desc) {
+	public static int compare(double left, double right, boolean desc) {
 		if (desc) {
-			return (x < y) ? 1 : ((x == y) ? 0 : -1);
+			return (left < right) ? 1 : ((left == right) ? 0 : -1);
 		} else {
-			return (x < y) ? -1 : ((x == y) ? 0 : 1);
+			return (left < right) ? -1 : ((left == right) ? 0 : 1);
 		}
 	}
 }

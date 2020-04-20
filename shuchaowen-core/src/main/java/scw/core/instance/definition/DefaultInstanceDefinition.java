@@ -1,18 +1,19 @@
 package scw.core.instance.definition;
 
-import scw.core.instance.InstanceBuilder;
+import scw.core.instance.ConstructorBuilder;
+import scw.core.instance.InstanceFactory;
 import scw.lang.UnsupportedException;
 
 public class DefaultInstanceDefinition extends AbstractInstanceDefinition {
-	private final InstanceBuilder instanceBuilder;
+	private final ConstructorBuilder instanceBuilder;
 
 	public DefaultInstanceDefinition(Class<?> targetClass,
-			InstanceBuilder instanceBuilder) {
-		super(targetClass);
+			ConstructorBuilder instanceBuilder, InstanceFactory instanceFactory) {
+		super(targetClass, instanceFactory);
 		this.instanceBuilder = instanceBuilder;
 	}
 
-	public InstanceBuilder getInstanceBuilder() {
+	public ConstructorBuilder getInstanceBuilder() {
 		return instanceBuilder;
 	}
 
@@ -20,13 +21,16 @@ public class DefaultInstanceDefinition extends AbstractInstanceDefinition {
 		return instanceBuilder.getConstructor() != null;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create() throws Exception {
+	public Object create() throws Exception {
 		if (!isInstance()) {
 			throw new UnsupportedException(getTargetClass().getName());
 		}
 
-		return (T) createInternal(getTargetClass(), getInstanceBuilder()
+		return createInternal(getTargetClass(), getInstanceBuilder()
 				.getConstructor(), getInstanceBuilder().getArgs());
+	}
+
+	public boolean isSingleton() {
+		return false;
 	}
 }

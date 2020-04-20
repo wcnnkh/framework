@@ -44,12 +44,6 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-serializer</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-async</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -161,7 +155,7 @@
 				<artifactId>shuchaowen-apple</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-office</artifactId>
@@ -444,6 +438,22 @@
 				<artifactId>javax.mail-api</artifactId>
 				<version>1.6.2</version>
 			</dependency>
+
+			<!-- hiberante相关 -->
+			<!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
+			<dependency>
+				<groupId>org.hibernate.orm</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>6.0.0.Alpha4</version>
+			</dependency>
+
+			<!-- mybatis相关 -->
+			<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+			<dependency>
+				<groupId>org.mybatis</groupId>
+				<artifactId>mybatis</artifactId>
+				<version>3.4.6</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -489,7 +499,6 @@
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>
 		<module>shuchaowen-result</module>
-		<module>shuchaowen-serializer</module>
 		<module>shuchaowen-async</module>
 		<module>shuchaowen-rpc</module>
 		<module>shuchaowen-servlet</module>

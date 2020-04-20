@@ -5,8 +5,6 @@ import java.lang.reflect.Constructor;
 import scw.aop.Proxy;
 import scw.beans.auto.AutoBean;
 import scw.beans.auto.SimpleAutoBean;
-import scw.core.reflect.ReflectionUtils;
-import scw.lang.NotFoundException;
 import scw.lang.UnsupportedException;
 import scw.util.value.property.PropertyFactory;
 
@@ -47,54 +45,27 @@ public final class ServiceBeanDefinition extends AbstractBeanDefinition {
 		super.destroy(bean);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create() throws Exception {
+	public Object create() throws Exception {
 		if (!isInstance()) {
 			throw new UnsupportedException(getTargetClass().toString());
 		}
 
 		if (getTargetClass().isInterface()) {
-			return (T) getProxy().create();
+			return getProxy().create();
 		}
 
-		return (T) autoBean.create();
+		return autoBean.create();
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create(Object... params) throws Exception {
-		Constructor<T> constructor = (Constructor<T>) ReflectionUtils
-				.findConstructorByParameters(getTargetClass(), true, params);
-		if (constructor == null) {
-			throw new NotFoundException(getId() + "找不到指定的构造方法");
-		}
-
-		Object bean;
-		if (isProxy()) {
-			return (T) getProxy().create(constructor.getParameterTypes(),
-					params);
-		} else {
-			bean = constructor.newInstance(params);
-		}
-		return (T) bean;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T create(Class<?>[] parameterTypes, Object... params)
+	@Override
+	protected Object createInternal(Class<?> targetClass,
+			Constructor<? extends Object> constructor, Object[] params)
 			throws Exception {
-		Constructor<?> constructor = ReflectionUtils.getConstructor(
-				getTargetClass(), false, parameterTypes);
-		if (constructor == null) {
-			throw new NotFoundException(getId() + "找不到指定的构造方法");
-		}
-
-		Object bean;
 		if (isProxy()) {
-			return (T) getProxy().create(constructor.getParameterTypes(),
-					params);
+			return getProxy().create(constructor.getParameterTypes(), params);
 		} else {
-			bean = constructor.newInstance(params);
+			return constructor.newInstance(params);
 		}
-		return (T) bean;
 	}
 
 	public String[] getNames() {

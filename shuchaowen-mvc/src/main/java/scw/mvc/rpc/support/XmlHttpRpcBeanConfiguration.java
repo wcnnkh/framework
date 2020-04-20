@@ -11,8 +11,8 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.serializer.Serializer;
-import scw.serializer.SerializerUtils;
+import scw.io.Serializer;
+import scw.io.SerializerUtils;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MIN_VALUE)

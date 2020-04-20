@@ -7,6 +7,7 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Bytes;
+import scw.io.Serializer;
 import scw.mvc.rpc.http.HttpRpcRequestFactory;
 import scw.mvc.rpc.http.MvcRpcUtils;
 import scw.net.MimeTypeUtils;
@@ -15,7 +16,6 @@ import scw.net.client.http.accessor.HttpAccessor;
 import scw.net.http.HttpHeaders;
 import scw.rcp.object.ObjectRequestMessage;
 import scw.security.signature.SignatureUtils;
-import scw.serializer.Serializer;
 
 public class HttpObjectRpcRequestFactory extends HttpAccessor implements HttpRpcRequestFactory {
 	private boolean responseThrowable;

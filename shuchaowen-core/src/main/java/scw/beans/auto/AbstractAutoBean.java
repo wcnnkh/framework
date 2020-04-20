@@ -43,8 +43,7 @@ public abstract class AbstractAutoBean implements AutoBean {
 		return type;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create(Object... params) throws Exception{
+	public Object create(Object... params) throws Exception{
 		Constructor<?> constructor = ReflectionUtils
 				.findConstructorByParameters(type, false, params);
 		if (constructor == null) {
@@ -52,16 +51,15 @@ public abstract class AbstractAutoBean implements AutoBean {
 		}
 
 		if (isProxy()) {
-			return (T) BeanUtils.createProxy(beanFactory, type,
+			return BeanUtils.createProxy(beanFactory, type,
 					getFilterNames(), null).create(
 					constructor.getParameterTypes(), params);
 		} else {
-			return (T) constructor.newInstance(params);
+			return constructor.newInstance(params);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create(Class<?>[] parameterTypes, Object... params)
+	public Object create(Class<?>[] parameterTypes, Object... params)
 			throws Exception {
 		Constructor<?> constructor = ReflectionUtils.getConstructor(type,
 				false, parameterTypes);
@@ -70,16 +68,21 @@ public abstract class AbstractAutoBean implements AutoBean {
 		}
 
 		if (isProxy()) {
-			return (T) BeanUtils.createProxy(beanFactory, type,
+			return BeanUtils.createProxy(beanFactory, type,
 					getFilterNames(), null).create(
 					constructor.getParameterTypes(), params);
 		} else {
-			return (T) constructor.newInstance(ClassUtils.cast(
+			return constructor.newInstance(ClassUtils.cast(
 					constructor.getParameterTypes(), params));
 		}
 	}
 	
 	public AnnotatedElement getAnnotatedElement() {
 		return getTargetClass();
+	}
+	
+	public void init(Object instance) throws Exception {
+		// TODO Auto-generated method stub
+		
 	}
 }

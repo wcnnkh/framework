@@ -17,9 +17,8 @@ public class SingleInstanceAutoBean extends AbstractAutoBean {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T create() {
-		return (T) instance;
+	public Object create() {
+		return instance;
 	}
 
 	@SuppressWarnings("unchecked")

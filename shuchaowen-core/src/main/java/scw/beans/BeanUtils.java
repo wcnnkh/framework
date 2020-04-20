@@ -38,7 +38,6 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.property.PropertyFactory;
@@ -428,13 +427,5 @@ public final class BeanUtils {
 		return GlobalPropertyFactory.getInstance().getValue(
 				"scw.scan.beans.package", String.class,
 				InstanceUtils.getScanAnnotationPackageName());
-	}
-
-	public static void init(Object instance) throws Exception {
-		XUtils.init(instance);
-	}
-
-	public static void destroy(Object instance) throws Exception {
-		XUtils.destroy(instance);
 	}
 }
