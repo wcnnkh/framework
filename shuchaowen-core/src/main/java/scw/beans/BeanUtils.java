@@ -44,7 +44,7 @@ import scw.util.value.property.PropertyFactory;
 
 public final class BeanUtils {
 	private static Logger logger = LoggerUtils.getLogger(BeanUtils.class);
-
+	
 	private BeanUtils() {
 	};
 

@@ -1,12 +1,7 @@
 package scw.core.instance;
 
-import scw.core.instance.definition.InstanceDefinition;
 
 public interface InstanceFactory extends NoArgsInstanceFactory {
-	InstanceDefinition getDefinition(String name);
-	
-	InstanceDefinition getDefinition(Class<?> clazz);
-	
 	/**
 	 * 执行失败返回空
 	 * 

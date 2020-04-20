@@ -1,9 +1,10 @@
 package scw.beans.auto;
 
 import scw.beans.BeanFactory;
+import scw.beans.definition.builder.BeanBuilder;
 import scw.util.value.property.PropertyFactory;
 
 public interface AutoBeanServiceChain {
-	AutoBean service(Class<?> clazz, BeanFactory beanFactory,
+	BeanBuilder service(Class<?> clazz, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception;
 }

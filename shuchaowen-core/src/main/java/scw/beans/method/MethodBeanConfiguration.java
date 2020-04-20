@@ -4,10 +4,10 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import scw.beans.AbstractBeanConfiguration;
-import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Bean;
+import scw.beans.definition.BeanDefinition;
 import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;

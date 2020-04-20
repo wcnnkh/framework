@@ -196,7 +196,7 @@ public final class InstanceUtils {
 		return value;
 	}
 
-	private static String getInstanceName(InstanceFactory instanceFactory,
+	private static String getInstanceName(NoArgsInstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptor parameterConfig) {
 		ParameterName parameterName = parameterConfig.getAnnotatedElement()
@@ -224,7 +224,7 @@ public final class InstanceUtils {
 		}
 	}
 
-	public static boolean isAuto(InstanceFactory instanceFactory,
+	public static boolean isAuto(NoArgsInstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptor parameterDescriptor,
 			ParameterFactory parameterFactory) {
@@ -268,7 +268,7 @@ public final class InstanceUtils {
 		return true;
 	}
 	
-	public static boolean isAuto(InstanceFactory instanceFactory,
+	public static boolean isAuto(NoArgsInstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptor[] parameterDescriptors,
 			ParameterFactory parameterFactory, Object logFirstParameter) {
@@ -292,7 +292,7 @@ public final class InstanceUtils {
 		return true;
 	}
 
-	public static Object getAutoValue(InstanceFactory instanceFactory,
+	public static Object getAutoValue(NoArgsInstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptor parameterDescriptor,
 			ParameterFactory parameterFactory) {
@@ -329,7 +329,7 @@ public final class InstanceUtils {
 		}
 	}
 
-	public static Object[] getAutoArgs(InstanceFactory instanceFactory,
+	public static Object[] getAutoArgs(NoArgsInstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptor[] parameterDescriptors,
 			ParameterFactory parameterFactory) {
@@ -483,7 +483,7 @@ public final class InstanceUtils {
 	}
 
 	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Collection<? extends Class> excludeTypes) {
 		return getConfigurationList(type, instanceFactory, propertyFactory,
 				excludeTypes, Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
@@ -491,7 +491,7 @@ public final class InstanceUtils {
 	}
 
 	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Collection<? extends Class> excludeTypes,
 			Collection<? extends String> packageNames) {
 		List<T> list = new ArrayList<T>();
@@ -509,7 +509,7 @@ public final class InstanceUtils {
 	}
 
 	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Class... excludeTypes) {
 		return getConfigurationList(type, instanceFactory, propertyFactory,
 				Arrays.asList(excludeTypes));
@@ -522,7 +522,7 @@ public final class InstanceUtils {
 	}
 
 	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Collection<? extends Class> excludeTypes,
 			Collection<? extends String> packageNames) {
 		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory,
@@ -539,7 +539,7 @@ public final class InstanceUtils {
 	}
 
 	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Collection<? extends Class> excludeTypes) {
 		return getConfiguration(type, instanceFactory, propertyFactory,
 				excludeTypes, Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
@@ -547,7 +547,7 @@ public final class InstanceUtils {
 	}
 
 	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Class... excludeTypes) {
 		return getConfiguration(type, instanceFactory, propertyFactory,
 				Arrays.asList(excludeTypes));

@@ -1,4 +1,6 @@
-package scw.beans;
+package scw.beans.metadata;
+
+import scw.beans.BeanFactory;
 
 public class BeanFactoryAccessor implements BeanFactoryAware {
 	private transient BeanFactory beanFactory;

@@ -10,20 +10,20 @@ import scw.util.value.property.PropertyFactory;
 
 public final class AutoConstructorBuilder implements ConstructorBuilder {
 	private volatile ConstructorDescriptor constructorDescriptor;
-	private final InstanceFactory instanceFactory;
+	private final NoArgsInstanceFactory instanceFactory;
 	private final PropertyFactory propertyFactory;
 	private final Class<?> clazz;
 	private final ParameterFactory parameterFactory;
 	private final ParameterDescriptorFactory parameterDescriptorFactory;
 
-	public AutoConstructorBuilder(InstanceFactory instanceFactory,
+	public AutoConstructorBuilder(NoArgsInstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptorFactory parameterDescriptorFactory) {
 		this(instanceFactory, propertyFactory, clazz,
 				parameterDescriptorFactory, null);
 	}
 
-	public AutoConstructorBuilder(InstanceFactory instanceFactory,
+	public AutoConstructorBuilder(NoArgsInstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptorFactory parameterDescriptorFactory,
 			ParameterFactory parameterFactory) {

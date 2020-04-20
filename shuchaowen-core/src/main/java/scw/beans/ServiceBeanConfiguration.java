@@ -3,6 +3,7 @@ package scw.beans;
 import java.util.Arrays;
 
 import scw.beans.annotation.Service;
+import scw.beans.definition.ServiceBeanDefinition;
 import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;

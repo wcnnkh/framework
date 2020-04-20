@@ -9,7 +9,6 @@ import java.util.Date;
 
 import org.w3c.dom.Node;
 
-import scw.beans.EParameterType;
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterDescriptor;

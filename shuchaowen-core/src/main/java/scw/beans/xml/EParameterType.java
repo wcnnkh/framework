@@ -1,4 +1,4 @@
-package scw.beans;
+package scw.beans.xml;
 
 public enum EParameterType {
 	value,

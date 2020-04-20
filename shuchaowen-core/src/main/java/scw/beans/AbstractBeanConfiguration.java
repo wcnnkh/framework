@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import scw.beans.definition.BeanDefinition;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
