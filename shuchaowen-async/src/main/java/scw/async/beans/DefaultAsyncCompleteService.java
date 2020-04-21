@@ -48,7 +48,7 @@ public final class DefaultAsyncCompleteService implements AsyncCompleteService,
 
 	private void init(String logPath) {
 		logPath += File.separator + "AsyncComplate_"
-				+ GlobalPropertyFactory.getInstance().getSystemOnlyId();
+				+ GlobalPropertyFactory.getInstance().getSystemLocalId();
 		logger.info("异步确认日志目录 ：{}", logPath);
 		fileManager = new FileManager(logPath);
 

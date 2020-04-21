@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import scw.async.AsyncException;
 import scw.async.AsyncRunnable;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.io.FileUtils;
 import scw.io.JavaSerializer;
@@ -21,8 +22,9 @@ public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 
 	public FileLocalAsyncExecutor(String suffix, long delayMillis,
 			TimeUnit delayTimeUnit) {
-		this(new ObjectFileManager(FileUtils.getTempDirectory(), suffix,
-				JavaSerializer.SERIALIZER), delayMillis, delayTimeUnit);
+		this(new ObjectFileManager(FileUtils.getTempDirectoryPath() + "/"
+				+ GlobalPropertyFactory.getInstance().getSystemLocalId(),
+				suffix, JavaSerializer.SERIALIZER), delayMillis, delayTimeUnit);
 	}
 
 	public FileLocalAsyncExecutor(ObjectFileManager objectFileManager,

@@ -22,13 +22,16 @@ public class ObjectFileManager {
 	private final AtomicLong atomicLong = new AtomicLong(
 			System.currentTimeMillis());
 
-	public ObjectFileManager(File directory, String suffix,
+	public ObjectFileManager(String directory, String suffix,
 			Serializer serializer) {
-		Assert.requiredArgument(directory != null && directory.exists()
-				&& directory.isDirectory(), "directory");
+		Assert.requiredArgument(directory != null, "directory");
 		Assert.requiredArgument(StringUtils.isNotEmpty(suffix), "suffix");
 		Assert.requiredArgument(serializer != null, "suffix");
-		this.directory = directory;
+		File file = new File(directory);
+		if (!file.exists()) {
+			file.mkdirs();
+		}
+		this.directory = file;
 		this.suffix = suffix;
 		this.serializer = serializer;
 	}

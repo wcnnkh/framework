@@ -1,17 +1,25 @@
 package scw.async.filter;
 
-import scw.async.AsyncExecutor;
-import scw.core.instance.InstanceFactory;
+import java.util.concurrent.TimeUnit;
 
-public class DefaultAsyncService extends AbstractAsyncService{
-	
-	public DefaultAsyncService(InstanceFactory instanceFactory) {
-		super(instanceFactory);
+import scw.async.AsyncExecutor;
+import scw.async.local.FileLocalAsyncExecutor;
+import scw.beans.BeanFactory;
+import scw.core.instance.annotation.Configuration;
+
+@Configuration(order=Integer.MIN_VALUE, value=AsyncService.class)
+public class DefaultAsyncService extends AbstractAsyncService {
+	private final FileLocalAsyncExecutor fileLocalAsyncExecutor;
+
+	public DefaultAsyncService(BeanFactory beanFactory) {
+		super(beanFactory);
+		this.fileLocalAsyncExecutor = new FileLocalAsyncExecutor("async", 1,
+				TimeUnit.MINUTES);
+		fileLocalAsyncExecutor.setBeanFactory(beanFactory);
 	}
 
 	@Override
 	protected AsyncExecutor getAsyncExecutor() {
-		// TODO Auto-generated method stub
-		return null;
+		return fileLocalAsyncExecutor;
 	}
 }

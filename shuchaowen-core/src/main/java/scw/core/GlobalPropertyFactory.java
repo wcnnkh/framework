@@ -144,7 +144,11 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 		put(CLASSES_DIRECTORY, directory);
 	}
 
-	public String getSystemOnlyId() {
+	/**
+	 * 获取系统本地标识，注意，仅对本地有效
+	 * @return
+	 */
+	public String getSystemLocalId() {
 		String systemOnlyId = getString(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {

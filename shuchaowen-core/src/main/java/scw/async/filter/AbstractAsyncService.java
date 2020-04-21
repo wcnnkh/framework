@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import scw.async.AsyncExecutor;
 import scw.async.AsyncRunnableMethod;
 import scw.async.DefaultAsyncRunnableMethod;
-import scw.core.instance.InstanceFactory;
+import scw.beans.BeanFactory;
 import scw.core.reflect.SerializableMethodHolder;
 import scw.core.utils.StringUtils;
 import scw.lang.UnsupportedException;
@@ -14,10 +14,10 @@ import scw.logger.LoggerUtils;
 
 public abstract class AbstractAsyncService implements AsyncService {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
-	private InstanceFactory instanceFactory;
+	private BeanFactory beanFactory;
 
-	public AbstractAsyncService(InstanceFactory instanceFactory) {
-		this.instanceFactory = instanceFactory;
+	public AbstractAsyncService(BeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
 	}
 
 	protected AsyncRunnableMethod createAsyncExecute(Async async,
@@ -27,7 +27,7 @@ public abstract class AbstractAsyncService implements AsyncService {
 			beanName = targetClass.getName();
 		}
 
-		if (!instanceFactory.isInstance(beanName)) {
+		if (!beanFactory.isInstance(beanName)) {
 			throw new UnsupportedException(method.toString());
 		}
 
@@ -39,8 +39,8 @@ public abstract class AbstractAsyncService implements AsyncService {
 
 	public void service(Async async, Class<?> targetClass, Method method,
 			Object[] args) throws Exception {
-		getAsyncExecutor().execute(createAsyncExecute(async,
-				targetClass, method, args));
+		getAsyncExecutor().execute(
+				createAsyncExecute(async, targetClass, method, args));
 	}
 
 }

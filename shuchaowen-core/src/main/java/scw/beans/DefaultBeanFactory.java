@@ -399,10 +399,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 		addBeanConfiguration(new ServiceBeanConfiguration());
 		propertyFactory.addAll(InstanceUtils.getConfigurationList(
 				PropertyFactory.class, this, getPropertyFactory()), true);
-		this.aop = new DefaultAop(ProxyUtils.getProxyAdapter(),
-				InstanceUtils.getConfigurationList(Filter.class, this,
-						propertyFactory));
-
+		this.aop = createAop();
 		for (BeanConfiguration configuration : InstanceUtils
 				.getConfigurationList(BeanConfiguration.class, this,
 						getPropertyFactory())) {
@@ -414,6 +411,12 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 						getPropertyFactory())) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
+	}
+
+	protected Aop createAop() {
+		return new DefaultAop(ProxyUtils.getProxyAdapter(),
+				InstanceUtils.getConfigurationList(Filter.class, this,
+						propertyFactory));
 	}
 
 	public void destroy() throws Exception {
