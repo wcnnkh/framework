@@ -1,7 +1,7 @@
 package scw.beans.metadata;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.definition.BeanDefinition;
 import scw.util.value.property.PropertyFactory;
 
 public interface BeanLifeCycle {

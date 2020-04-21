@@ -16,10 +16,11 @@ import java.util.Map.Entry;
 import scw.aop.Filter;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.auto.AutoBeanUtils;
-import scw.beans.definition.BeanDefinition;
-import scw.beans.definition.DefaultBeanDefinition;
-import scw.beans.definition.builder.BeanBuilder;
+import scw.beans.builder.BeanBuilder;
+import scw.beans.configuration.BeanConfiguration;
+import scw.beans.configuration.BeanFactoryLifeCycle;
 import scw.beans.method.MethodBeanConfiguration;
+import scw.beans.service.ServiceBeanConfiguration;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.instance.InstanceException;
@@ -35,7 +36,7 @@ import scw.logger.LoggerUtils;
 import scw.util.value.property.MultiPropertyFactory;
 import scw.util.value.property.PropertyFactory;
 
-public abstract class DefaultBeanFactory implements BeanFactory, Init, Destroy {
+public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
@@ -495,5 +496,9 @@ public abstract class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 		public AnnotatedElement getAnnotatedElement() {
 			return getTargetClass();
 		}
+	}
+
+	public Collection<String> getFilterNames() {
+		return filterNames;
 	}
 }

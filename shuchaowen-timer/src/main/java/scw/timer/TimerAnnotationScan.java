@@ -5,10 +5,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 import scw.aop.Invoker;
-import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.beans.configuration.AbstractBeanFactoryLifeCycle;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;

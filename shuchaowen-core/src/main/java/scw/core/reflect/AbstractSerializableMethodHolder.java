@@ -30,7 +30,7 @@ public abstract class AbstractSerializableMethodHolder extends AbstractMethodHol
 		return ReflectionUtils.findMethod(getBelongClass(), getMethodName(), getParameterTypes());
 	}
 
-	// 在进行反序列化时使用反射获取方法
+	// 在进行反序列化时会调用此方法
 	protected void readObject(ObjectInputStream inputStream) throws IOException, ClassNotFoundException {
 		this.method = getMethodInternal();
 	}

@@ -17,31 +17,6 @@ public final class MethodFilterChain implements FilterChain {
 			Collection<Filter> filters) {
 		LinkedList<String> list = new LinkedList<String>();
 		list.addAll(beanFactory.getFilterNames());
-		scw.beans.annotation.Filters annotationFilters = clz.getAnnotation(scw.beans.annotation.Filters.class);
-		if (annotationFilters != null) {
-			for (String n : annotationFilters.names()) {
-				list.add(n);
-			}
-
-			for (Class<? extends Filter> c : annotationFilters.value()) {
-				list.add(c.getName());
-			}
-		}
-
-		annotationFilters = method.getAnnotation(scw.beans.annotation.Filters.class);
-		if (annotationFilters != null) {
-			for (String n : annotationFilters.names()) {
-				list.add(n);
-			}
-
-			for (Class<? extends Filter> c : annotationFilters.value()) {
-				list.add(c.getName());
-			}
-		}
-
-		if (filterNames != null) {
-			list.addAll(filterNames);
-		}
 		this.filterChain = new InstanceFactoryFilterChain(beanFactory, list, new DefaultFilterChain(filters));
 	}
 

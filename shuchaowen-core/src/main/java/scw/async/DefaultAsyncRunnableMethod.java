@@ -10,8 +10,7 @@ public class DefaultAsyncRunnableMethod extends AsyncRunnableMethod {
 	private final String beanName;
 	private final Object[] args;
 
-	public DefaultAsyncRunnableMethod(SerializableMethodHolder methodHolder,
-			String beanName, Object[] args) {
+	public DefaultAsyncRunnableMethod(SerializableMethodHolder methodHolder, String beanName, Object[] args) {
 		this.methodHolder = methodHolder;
 		this.beanName = beanName;
 		this.args = args;
@@ -24,7 +23,7 @@ public class DefaultAsyncRunnableMethod extends AsyncRunnableMethod {
 
 	@Override
 	public Object getInstance() {
-		return getInstanceFactory().getInstance(beanName);
+		return getBeanFactory().getInstance(beanName);
 	}
 
 	public Object[] getArgs() {

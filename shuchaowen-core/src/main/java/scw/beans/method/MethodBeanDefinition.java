@@ -4,7 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 
 import scw.beans.BeanFactory;
-import scw.beans.definition.DefaultBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.util.value.property.PropertyFactory;
 
 public class MethodBeanDefinition extends DefaultBeanDefinition {

@@ -54,7 +54,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 			}
 
 			try {
-				T obj = InstanceUtils.newInstance(type);
+				T obj = InstanceUtils.NO_ARGS_INSTANCE_FACTORY.getInstance(type);
 				for (Entry<String, Integer> entry : nameMapping.entrySet()) {
 					Field field = ReflectionUtils.getField(type, entry.getKey(), true);
 					if (field == null) {

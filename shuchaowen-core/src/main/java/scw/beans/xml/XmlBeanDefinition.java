@@ -6,7 +6,7 @@ import java.util.Collection;
 import org.w3c.dom.Node;
 
 import scw.beans.BeanFactory;
-import scw.beans.definition.DefaultBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.util.value.property.PropertyFactory;

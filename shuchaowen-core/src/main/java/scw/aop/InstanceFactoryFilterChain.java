@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
-import scw.core.instance.InstanceFactory;
+import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.utils.CollectionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -12,9 +12,9 @@ import scw.logger.LoggerUtils;
 public final class InstanceFactoryFilterChain extends AbstractFilterChain {
 	private static Logger logger = LoggerUtils.getLogger(InstanceFactoryFilterChain.class);
 	private Iterator<String> iterator;
-	private final InstanceFactory instanceFactory;
+	private final NoArgsInstanceFactory instanceFactory;
 
-	public InstanceFactoryFilterChain(InstanceFactory instanceFactory, Collection<String> filterNames,
+	public InstanceFactoryFilterChain(NoArgsInstanceFactory instanceFactory, Collection<String> filterNames,
 			FilterChain chain) {
 		super(chain);
 		this.instanceFactory = instanceFactory;

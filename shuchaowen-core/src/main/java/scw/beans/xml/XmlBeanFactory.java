@@ -4,8 +4,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.DefaultBeanFactory;
-import scw.beans.BeanConfiguration;
-import scw.beans.BeanFactoryLifeCycle;
+import scw.beans.configuration.BeanConfiguration;
+import scw.beans.configuration.BeanFactoryLifeCycle;
 import scw.beans.property.XmlPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;

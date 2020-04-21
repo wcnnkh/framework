@@ -7,9 +7,9 @@ import java.util.Collection;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
-import scw.beans.BeanUtils;
 import scw.core.instance.InstanceFactory;
 import scw.mvc.rpc.annotation.MessageConvert;
+import scw.net.NetworkUtils;
 import scw.net.client.http.ClientHttpRequest;
 import scw.net.client.http.ClientHttpResponse;
 import scw.net.message.converter.MessageConverter;
@@ -27,10 +27,7 @@ public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 			HttpRpcRequestFactory httpRpcRequestFactory) {
 		this.instanceFactory = instanceFactory;
 		this.httpRpcRequestFactory = httpRpcRequestFactory;
-		BeanUtils.appendBean(this, instanceFactory, propertyFactory, MessageConverter.class, "rpc.message.convert");
-		if (instanceFactory.isSingleton(MessageConverter.class) && instanceFactory.isInstance(MessageConverter.class)) {
-			messageConverter = instanceFactory.getInstance(MessageConverter.class);
-		}
+		addAll(NetworkUtils.getMessageConverters());
 	}
 
 	private void appendMessageConvert(Collection<MessageConverter> messageConverters, MessageConvert messageConvert) {

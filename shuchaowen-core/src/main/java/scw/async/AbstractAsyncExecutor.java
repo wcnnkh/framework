@@ -1,8 +1,8 @@
 package scw.async;
 
 import scw.aop.ProxyUtils;
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.definition.BeanDefinition;
 import scw.beans.metadata.BeanFactoryAware;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;

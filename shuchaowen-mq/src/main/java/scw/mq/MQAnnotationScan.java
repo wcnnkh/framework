@@ -2,10 +2,10 @@ package scw.mq;
 
 import java.lang.reflect.Method;
 
-import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.beans.configuration.AbstractBeanFactoryLifeCycle;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;

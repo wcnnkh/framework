@@ -20,6 +20,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Service;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.annotation.AnnotationUtils;
+import scw.core.instance.InstanceUtils;
 import scw.core.reflect.CloneUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.utils.ClassUtils;
@@ -35,8 +36,9 @@ public final class XmlDubboUtils {
 
 	private static List<RegistryConfig> parseRegistryConfig(PropertyFactory propertyFactory, BeanFactory beanFactory,
 			Node node) {
-		RegistryConfig registryConfig = XMLUtils.newInstanceLoadAttributeBySetter(RegistryConfig.class, propertyFactory,
-				node, new DubboConfigPropertyMapper(beanFactory) {
+		RegistryConfig registryConfig = XMLUtils.newInstanceLoadAttributeBySetter(
+				InstanceUtils.NO_ARGS_INSTANCE_FACTORY, RegistryConfig.class, propertyFactory, node,
+				new DubboConfigPropertyMapper(beanFactory) {
 					@Override
 					public Object mapper(String name, String value, Type type) throws Exception {
 						if ("address".equals(name)) {
@@ -65,8 +67,8 @@ public final class XmlDubboUtils {
 
 	private static List<ProtocolConfig> parseProtocolConfig(PropertyFactory propertyFactory, BeanFactory beanFactory,
 			Node node, final boolean root) {
-		ProtocolConfig config = XMLUtils.newInstanceLoadAttributeBySetter(ProtocolConfig.class, propertyFactory, node,
-				new DubboConfigPropertyMapper(beanFactory) {
+		ProtocolConfig config = XMLUtils.newInstanceLoadAttributeBySetter(InstanceUtils.NO_ARGS_INSTANCE_FACTORY,
+				ProtocolConfig.class, propertyFactory, node, new DubboConfigPropertyMapper(beanFactory) {
 					@Override
 					public Object mapper(String name, String value, Type type) throws Exception {
 						if (root && "name".equals(name)) {
@@ -89,8 +91,9 @@ public final class XmlDubboUtils {
 
 	private static List<ServiceConfig<?>> parseServiceConfig(PropertyFactory propertyFactory,
 			final BeanFactory beanFactory, Node node) {
-		ServiceConfig<?> serviceConfig = XMLUtils.newInstanceLoadAttributeBySetter(ServiceConfig.class, propertyFactory,
-				node, new DubboConfigPropertyMapper(beanFactory));
+		ServiceConfig<?> serviceConfig = XMLUtils.newInstanceLoadAttributeBySetter(
+				InstanceUtils.NO_ARGS_INSTANCE_FACTORY, ServiceConfig.class, propertyFactory, node,
+				new DubboConfigPropertyMapper(beanFactory));
 		List<ServiceConfig<?>> serviceConfigs = new LinkedList<ServiceConfig<?>>();
 		if (serviceConfig.getInterface() != null) {
 			serviceConfigs.add(serviceConfig);
@@ -131,8 +134,8 @@ public final class XmlDubboUtils {
 
 	private static List<ReferenceConfig<?>> parseReferenceConfig(PropertyFactory propertyFactory,
 			final BeanFactory beanFactory, Node node) {
-		ReferenceConfig<?> config = XMLUtils.newInstanceLoadAttributeBySetter(ReferenceConfig.class, propertyFactory,
-				node, new DubboConfigPropertyMapper(beanFactory));
+		ReferenceConfig<?> config = XMLUtils.newInstanceLoadAttributeBySetter(InstanceUtils.NO_ARGS_INSTANCE_FACTORY,
+				ReferenceConfig.class, propertyFactory, node, new DubboConfigPropertyMapper(beanFactory));
 		List<ReferenceConfig<?>> referenceConfigs = new LinkedList<ReferenceConfig<?>>();
 		if (config.getInterface() != null) {
 			referenceConfigs.add(config);
@@ -205,15 +208,16 @@ public final class XmlDubboUtils {
 			if (DubboUtils.isApplicationNode(node)) {
 				Optional<ApplicationConfig> optional = ConfigManager.getInstance().getApplication();
 				if (!optional.isPresent()) {
-					ApplicationConfig config = XMLUtils.newInstanceLoadAttributeBySetter(ApplicationConfig.class,
-							propertyFactory, node, new DubboConfigPropertyMapper(beanFactory));
+					ApplicationConfig config = XMLUtils.newInstanceLoadAttributeBySetter(
+							InstanceUtils.NO_ARGS_INSTANCE_FACTORY, ApplicationConfig.class, propertyFactory, node,
+							new DubboConfigPropertyMapper(beanFactory));
 					ConfigManager.getInstance().setApplication(config);
 				}
 			} else if (DubboUtils.isConfigCenterNode(node)) {
 				Optional<ConfigCenterConfig> optional = ConfigManager.getInstance().getConfigCenter();
 				if (!optional.isPresent()) {
 					ConfigCenterConfig configCenterConfig = XMLUtils.newInstanceLoadAttributeBySetter(
-							ConfigCenterConfig.class, propertyFactory, node,
+							InstanceUtils.NO_ARGS_INSTANCE_FACTORY, ConfigCenterConfig.class, propertyFactory, node,
 							new DubboConfigPropertyMapper(beanFactory));
 					ConfigManager.getInstance().setConfigCenter(configCenterConfig);
 				}

@@ -21,15 +21,12 @@ import scw.core.utils.SystemPropertyUtils;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.ParameterException;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
 import scw.mvc.http.cors.CorsConfig;
 import scw.mvc.http.cors.CorsConfigFactory;
 import scw.mvc.http.cors.DefaultCorsConfigFactory;
-import scw.mvc.rpc.RpcService;
 import scw.net.MimeTypeUtils;
 import scw.net.http.HttpHeaders;
 import scw.util.LinkedMultiValueMap;
@@ -39,16 +36,11 @@ import scw.util.ip.IP;
 import scw.util.value.property.PropertyFactory;
 
 public final class MVCUtils implements MvcConstants {
-	private static Logger logger = LoggerUtils.getLogger(MVCUtils.class);
-
-	private static final String[] IP_HEADERS = SystemPropertyUtils
-			.getArrayProperty(String.class, "mvc.ip.headers", new String[] {
-					"X-Real-Ip", "X-Forwarded-For" });
+	private static final String[] IP_HEADERS = SystemPropertyUtils.getArrayProperty(String.class, "mvc.ip.headers",
+			new String[] { "X-Real-Ip", "X-Forwarded-For" });
 	// 使用ip的模式 1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回
-	private static final int USE_IP_MODEL = GlobalPropertyFactory.getInstance()
-			.getValue("mvc.ip.model", int.class, 1);
-	private static final boolean SUPPORT_SERVLET = ClassUtils
-			.isPresent("javax.servlet.Servlet");
+	private static final int USE_IP_MODEL = GlobalPropertyFactory.getInstance().getValue("mvc.ip.model", int.class, 1);
+	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet");
 
 	private MVCUtils() {
 	};
@@ -76,30 +68,25 @@ public final class MVCUtils implements MvcConstants {
 		return RESTURL_PATH_PARAMETER.equals(name);
 	}
 
-	public static Object[] getParameterValues(Channel channel,
-			ParameterDescriptor[] parameterDescriptors)
+	public static Object[] getParameterValues(Channel channel, ParameterDescriptor[] parameterDescriptors)
 			throws ParameterException {
 		Object[] args = new Object[parameterDescriptors.length];
 		for (int i = 0; i < parameterDescriptors.length; i++) {
 			try {
 				args[i] = channel.getParameter(parameterDescriptors[i]);
 			} catch (Exception e) {
-				throw new ParameterException("Parameter error ["
-						+ parameterDescriptors[i].getName() + "]", e);
+				throw new ParameterException("Parameter error [" + parameterDescriptors[i].getName() + "]", e);
 			}
 		}
 		return args;
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public static MultiValueMap<String, String> getRestfulParameterMap(
-			Channel channel) {
-		return (MultiValueMap<String, String>) channel
-				.getAttribute(RESTURL_PATH_PARAMETER);
+	public static MultiValueMap<String, String> getRestfulParameterMap(Channel channel) {
+		return (MultiValueMap<String, String>) channel.getAttribute(RESTURL_PATH_PARAMETER);
 	}
 
-	public static void setRestfulParameterMap(Channel channel,
-			MultiValueMap<String, String> parameterMap) {
+	public static void setRestfulParameterMap(Channel channel, MultiValueMap<String, String> parameterMap) {
 		channel.setAttribute(RESTURL_PATH_PARAMETER, parameterMap);
 	}
 
@@ -114,33 +101,25 @@ public final class MVCUtils implements MvcConstants {
 	 * @return
 	 */
 	public static boolean isJsonRequest(Request request) {
-		return isDesignatedContentType(request,
-				MimeTypeUtils.APPLICATION_JSON_VALUE)
-				|| isDesignatedContentType(request,
-						MimeTypeUtils.TEXT_JSON_VALUE);
+		return isDesignatedContentType(request, MimeTypeUtils.APPLICATION_JSON_VALUE)
+				|| isDesignatedContentType(request, MimeTypeUtils.TEXT_JSON_VALUE);
 	}
 
 	public static boolean isXmlRequeset(Request request) {
-		return isDesignatedContentType(request,
-				MimeTypeUtils.APPLICATION_XML_VALUE)
-				|| isDesignatedContentType(request,
-						MimeTypeUtils.TEXT_XML_VALUE);
+		return isDesignatedContentType(request, MimeTypeUtils.APPLICATION_XML_VALUE)
+				|| isDesignatedContentType(request, MimeTypeUtils.TEXT_XML_VALUE);
 	}
 
 	public static boolean isFormRequest(Request request) {
-		return isDesignatedContentType(request,
-				MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
+		return isDesignatedContentType(request, MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
 	}
 
 	public static boolean isMultipartRequest(Request request) {
-		return isDesignatedContentType(request,
-				MimeTypeUtils.MULTIPART_FORM_DATA_VALUE);
+		return isDesignatedContentType(request, MimeTypeUtils.MULTIPART_FORM_DATA_VALUE);
 	}
 
-	public static boolean isDesignatedContentType(Request request,
-			String contentType) {
-		return StringUtils.contains(request.getRawContentType(), contentType,
-				true);
+	public static boolean isDesignatedContentType(Request request, String contentType) {
+		return StringUtils.contains(request.getRawContentType(), contentType, true);
 	}
 
 	public static String getExistActionErrMsg(Action action, Action oldAction) {
@@ -160,8 +139,7 @@ public final class MVCUtils implements MvcConstants {
 
 	public static String getCharsetName(PropertyFactory propertyFactory) {
 		String charsetName = propertyFactory.getString("mvc.charsetName");
-		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME
-				: charsetName;
+		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName;
 	}
 
 	public static String getIP(Channel channel) {
@@ -217,8 +195,7 @@ public final class MVCUtils implements MvcConstants {
 
 	// 默认开启跨域
 	public static boolean isSupportCorssDomain(PropertyFactory propertyFactory) {
-		return propertyFactory.getValue("mvc.http.cross-domain", boolean.class,
-				true);
+		return propertyFactory.getValue("mvc.http.cross-domain", boolean.class, true);
 	}
 
 	public static String getSourceRoot(PropertyFactory propertyFactory) {
@@ -234,21 +211,18 @@ public final class MVCUtils implements MvcConstants {
 		return StringUtils.commonSplit(arr);
 	}
 
-	public static String getHttpParameterActionKey(
-			PropertyFactory propertyFactory) {
+	public static String getHttpParameterActionKey(PropertyFactory propertyFactory) {
 		String actionKey = propertyFactory.getString("mvc.http.actionKey");
 		return StringUtils.isEmpty(actionKey) ? "action" : actionKey;
 	}
 
-	public static MultiValueMap<String, String> getRequestParameters(
-			HttpRequest request) {
+	public static MultiValueMap<String, String> getRequestParameters(HttpRequest request) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (requestParams == null || requestParams.isEmpty()) {
 			return null;
 		}
 
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>(
-				requestParams.size(), 1);
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>(requestParams.size(), 1);
 		for (Entry<String, String[]> entry : requestParams.entrySet()) {
 			String name = entry.getKey();
 			if (name == null) {
@@ -265,15 +239,14 @@ public final class MVCUtils implements MvcConstants {
 		return map;
 	}
 
-	public static Map<String, String> getRequestParameterAndAppendValues(
-			HttpRequest request, CharSequence appendValueChars) {
+	public static Map<String, String> getRequestParameterAndAppendValues(HttpRequest request,
+			CharSequence appendValueChars) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (CollectionUtils.isEmpty(requestParams)) {
 			return null;
 		}
 
-		Map<String, String> params = new HashMap<String, String>(
-				requestParams.size(), 1);
+		Map<String, String> params = new HashMap<String, String>(requestParams.size(), 1);
 		for (Entry<String, String[]> entry : requestParams.entrySet()) {
 			String name = entry.getKey();
 			if (name == null) {
@@ -302,68 +275,40 @@ public final class MVCUtils implements MvcConstants {
 		return params;
 	}
 
-	public static void responseCrossDomain(CorsConfig config,
-			HttpResponse httpResponse) {
+	public static void responseCrossDomain(CorsConfig config, HttpResponse httpResponse) {
 		/* 允许跨域的主机地址 */
 		if (StringUtils.isNotEmpty(config.getOrigin())) {
-			httpResponse.getHeaders()
-					.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
-							config.getOrigin());
+			httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, config.getOrigin());
 		}
 
 		/* 允许跨域的请求方法GET, POST, HEAD 等 */
 		if (StringUtils.isNotEmpty(config.getMethods())) {
-			httpResponse.getHeaders().set(
-					HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
-					config.getMethods());
+			httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, config.getMethods());
 		}
 
 		/* 重新预检验跨域的缓存时间 (s) */
 		if (config.getMaxAge() > 0) {
-			httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_MAX_AGE,
-					config.getMaxAge() + "");
+			httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_MAX_AGE, config.getMaxAge() + "");
 		}
 
 		/* 允许跨域的请求头 */
 		if (StringUtils.isNotEmpty(config.getHeaders())) {
-			httpResponse.getHeaders().set(
-					HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
-					config.getHeaders());
+			httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, config.getHeaders());
 		}
 
 		/* 是否携带cookie */
-		httpResponse.getHeaders().set(
-				HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
-				config.isCredentials() + "");
+		httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, config.isCredentials() + "");
 	}
 
-	public static CorsConfigFactory getCorsConfigFactory(
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
+	public static CorsConfigFactory getCorsConfigFactory(InstanceFactory instanceFactory,
+			PropertyFactory propertyFactory) {
 		String beanName = propertyFactory.getString("mvc.cross-domain.factory");
 		if (StringUtils.isEmpty(beanName)) {
-			return instanceFactory.isInstance(CorsConfigFactory.class) ? instanceFactory
-					.getInstance(CorsConfigFactory.class)
+			return instanceFactory.isInstance(CorsConfigFactory.class)
+					? instanceFactory.getInstance(CorsConfigFactory.class)
 					: new DefaultCorsConfigFactory(propertyFactory);
 		}
 		return instanceFactory.getInstance(beanName);
-	}
-
-	public static RpcService getRpcService(PropertyFactory propertyFactory,
-			InstanceFactory instanceFactory) {
-		String beanName = propertyFactory.getString(RPC_SERVICE);
-		if (StringUtils.isEmpty(beanName)) {
-			if (instanceFactory.isInstance(RpcService.class)
-					|| instanceFactory.isSingleton(RpcService.class)) {
-				return instanceFactory.getInstance(RpcService.class);
-			}
-		} else {
-			if (instanceFactory.isInstance(beanName)
-					&& instanceFactory.isSingleton(beanName)) {
-				return instanceFactory.getInstance(beanName);
-			}
-			logger.warn("RPC配置错误，无法实例化或不是一个单例: {}", beanName);
-		}
-		return null;
 	}
 
 	/**
@@ -375,8 +320,7 @@ public final class MVCUtils implements MvcConstants {
 		return SUPPORT_SERVLET;
 	}
 
-	public static JSONSupport getJsonSupport(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) {
+	public static JSONSupport getJsonSupport(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
 		JSONSupport jsonSupport;
 		String jsonSupportBeanName = propertyFactory.getString("mvc.json");
 		if (StringUtils.isEmpty(jsonSupportBeanName)) {
@@ -388,8 +332,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static String getScanAnnotationPackageName() {
-		return GlobalPropertyFactory.getInstance().getValue(
-				"scw.scan.mvc.package", String.class,
+		return GlobalPropertyFactory.getInstance().getValue("scw.scan.mvc.package", String.class,
 				BeanUtils.getScanAnnotationPackageName());
 	}
 }

@@ -49,7 +49,7 @@ public final class TCCTransactionFilter implements Filter {
 			return;
 		}
 		
-		if(!instanceFactory.isSingleton(belongClass) || !instanceFactory.isInstance(belongClass)){
+		if(!instanceFactory.isInstance(belongClass)){
 			logger.warn("[{}]不支持使用@TCC注解 {}", belongClass.getName(), method);
 			return ;
 		}

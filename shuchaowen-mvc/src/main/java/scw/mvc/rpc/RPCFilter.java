@@ -26,7 +26,7 @@ public final class RPCFilter implements Filter{
 	private final RpcService rpcService;
 	
 	public RPCFilter(PropertyFactory propertyFactory, BeanFactory beanFactory){
-		this.rpcService = MVCUtils.getRpcService(propertyFactory, beanFactory);
+		this.rpcService = beanFactory.getInstance(RpcService.class);
 		this.rpcPath = MVCUtils.getRPCPath(propertyFactory);
 	}
 	

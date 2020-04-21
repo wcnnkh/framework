@@ -3,8 +3,8 @@ package scw.mvc.action;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.aop.AutoProxyMethodInvoker;
 import scw.aop.Invoker;
-import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
 import scw.core.utils.CollectionUtils;
 import scw.mvc.action.filter.ActionFilter;
@@ -27,7 +27,7 @@ public class BeanAction extends AbstractAction {
 		}
 
 		this.invoker = new AutoProxyMethodInvoker(beanFactory, targetClass,
-				method);
+				method, beanFactory.getFilterNames());
 	}
 
 	public Invoker getInvoker() {

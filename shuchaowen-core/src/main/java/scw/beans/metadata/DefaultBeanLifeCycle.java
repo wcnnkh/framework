@@ -3,13 +3,13 @@ package scw.beans.metadata;
 import java.lang.reflect.Modifier;
 
 import scw.aop.ProxyUtils;
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;
 import scw.beans.annotation.Value;
-import scw.beans.definition.BeanDefinition;
 import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.XUtils;

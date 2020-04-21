@@ -2,7 +2,7 @@ package scw.beans.xml;
 
 import org.w3c.dom.NodeList;
 
-import scw.beans.AbstractBeanConfiguration;
+import scw.beans.configuration.AbstractBeanConfiguration;
 
 public abstract class XmlBeanConfiguration extends AbstractBeanConfiguration {
 	private NodeList nodeList;

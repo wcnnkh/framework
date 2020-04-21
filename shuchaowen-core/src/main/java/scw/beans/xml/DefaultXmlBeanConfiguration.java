@@ -2,8 +2,8 @@ package scw.beans.xml;
 
 import org.w3c.dom.Node;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.definition.BeanDefinition;
 import scw.util.value.property.PropertyFactory;
 
 public class DefaultXmlBeanConfiguration extends XmlBeanConfiguration {

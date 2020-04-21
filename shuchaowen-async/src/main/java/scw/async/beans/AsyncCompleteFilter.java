@@ -38,8 +38,8 @@ public final class AsyncCompleteFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	private Object realFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
-			throws Throwable {
+	private Object realFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+			FilterChain filterChain) throws Throwable {
 		if (!isEnable()) {
 			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		}
@@ -54,7 +54,7 @@ public final class AsyncCompleteFilter implements Filter {
 			beanName = targetClass.getName();
 		}
 
-		if (!instanceFactory.isSingleton(beanName) || !instanceFactory.isInstance(beanName)) {
+		if (!instanceFactory.isInstance(beanName)) {
 			logger.warn("[{}]不支持使用@AsyncComplete注解:{}", beanName, method);
 			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
 		}
@@ -64,8 +64,8 @@ public final class AsyncCompleteFilter implements Filter {
 		return service.service(info);
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args, FilterChain filterChain)
-			throws Throwable {
+	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+			FilterChain filterChain) throws Throwable {
 		try {
 			return realFilter(invoker, proxy, targetClass, method, args, filterChain);
 		} finally {

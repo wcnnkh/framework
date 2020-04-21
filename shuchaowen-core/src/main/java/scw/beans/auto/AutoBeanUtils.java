@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import scw.beans.BeanFactory;
 import scw.beans.BeansException;
 import scw.beans.annotation.AutoImpl;
-import scw.beans.definition.builder.BeanBuilder;
+import scw.beans.builder.BeanBuilder;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;

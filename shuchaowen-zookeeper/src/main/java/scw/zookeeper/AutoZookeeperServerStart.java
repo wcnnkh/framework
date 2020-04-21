@@ -1,7 +1,7 @@
 package scw.zookeeper;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanFactoryLifeCycle;
+import scw.beans.configuration.BeanFactoryLifeCycle;
 import scw.core.instance.annotation.Configuration;
 import scw.io.resource.ResourceUtils;
 import scw.util.value.property.PropertyFactory;

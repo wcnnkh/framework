@@ -11,6 +11,7 @@ import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Consumer;
 import scw.core.annotation.DefaultValue;
+import scw.core.instance.InstanceUtils;
 import scw.core.reflect.PropertyMapper;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
@@ -46,7 +47,7 @@ public class XmlConsumerFactory implements ConsumerFactory {
 				}
 
 				if (node.getNodeName().equals("consumer:amqp")) {
-					amqpMap.put(name, XMLUtils.newInstanceLoadAttributeBySetter(AmqpConfig.class, propertyFactory, node,
+					amqpMap.put(name, XMLUtils.newInstanceLoadAttributeBySetter(InstanceUtils.NO_ARGS_INSTANCE_FACTORY, AmqpConfig.class, propertyFactory, node,
 							new PropertyMapper<String>() {
 
 								public Object mapper(String name, String value, Type type) throws Exception {
