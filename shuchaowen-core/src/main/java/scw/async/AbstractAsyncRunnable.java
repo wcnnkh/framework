@@ -1,6 +1,6 @@
 package scw.async;
 
-import scw.beans.metadata.BeanFactoryAccessor;
+import scw.beans.BeanFactoryAccessor;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;

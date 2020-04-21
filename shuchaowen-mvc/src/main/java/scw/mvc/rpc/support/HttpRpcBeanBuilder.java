@@ -1,7 +1,7 @@
 package scw.mvc.rpc.support;
 
+import scw.beans.AbstractBeanBuilder;
 import scw.beans.BeanFactory;
-import scw.beans.builder.AbstractBeanBuilder;
 import scw.io.ObjectMessageConveter;
 import scw.io.Serializer;
 import scw.mvc.rpc.http.HttpRpcFactory;

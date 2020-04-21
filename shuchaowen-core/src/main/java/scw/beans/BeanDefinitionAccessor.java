@@ -1,6 +1,5 @@
-package scw.beans.metadata;
+package scw.beans;
 
-import scw.beans.BeanDefinition;
 
 public class BeanDefinitionAccessor implements BeanDefinitionAware {
 	private transient BeanDefinition beanDefinition;

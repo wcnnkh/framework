@@ -3,9 +3,9 @@ package scw.mvc.rpc.support;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.beans.BeanBuilder;
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilder;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.annotation.AnnotationUtils;

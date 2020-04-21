@@ -2,10 +2,9 @@ package scw.mq;
 
 import java.lang.reflect.Method;
 
-import scw.beans.AutoProxyMethodInvoker;
+import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.beans.configuration.AbstractBeanFactoryLifeCycle;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
@@ -16,7 +15,7 @@ import scw.mq.annotation.Consumer;
 import scw.mq.support.MqMethodConsumer;
 import scw.util.value.property.PropertyFactory;
 
-@Configuration(order=Integer.MIN_VALUE)
+@Configuration(order = Integer.MIN_VALUE)
 public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
@@ -42,14 +41,15 @@ public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {
 					.factory());
 			logger.info("添加消费者：{}, name={}, factory={}", method, c.name(),
 					c.factory());
-			consumerFactory.bindConsumer(c.name(), new MqMethodConsumer(
-					new AutoProxyMethodInvoker(beanFactory, clz, method)));
+			consumerFactory.bindConsumer(
+					c.name(),
+					new MqMethodConsumer(beanFactory.getAop().proxyMethod(
+							beanFactory, clz, method, null)));
 		}
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void scanningAMQPConsumer(BeanFactory beanFactory,
-			Class<?> clz) {
+	private void scanningAMQPConsumer(BeanFactory beanFactory, Class<?> clz) {
 		for (Method method : AnnotationUtils.getAnnoationMethods(clz, true,
 				true, AmqpConsumer.class)) {
 			AmqpConsumer c = method.getAnnotation(AmqpConsumer.class);
@@ -58,9 +58,14 @@ public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {
 					"添加消费者：{}, amqp routingKey={}, queueName={}, durable={}, exclusive={}, autoDelete={}",
 					method, c.routingKey(), c.queueName(), c.durable(),
 					c.exclusive(), c.autoDelete());
-			mq.bindConsumer(c.routingKey(), c.queueName(), c.durable(), c
-					.exclusive(), c.autoDelete(), new MqMethodConsumer(
-					new AutoProxyMethodInvoker(beanFactory, clz, method)));
+			mq.bindConsumer(
+					c.routingKey(),
+					c.queueName(),
+					c.durable(),
+					c.exclusive(),
+					c.autoDelete(),
+					new MqMethodConsumer(beanFactory.getAop().proxyMethod(
+							beanFactory, clz, method, null)));
 		}
 	}
 

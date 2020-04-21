@@ -2,10 +2,10 @@ package scw.beans.service;
 
 import java.util.Arrays;
 
+import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Service;
-import scw.beans.configuration.AbstractBeanConfiguration;
 import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;

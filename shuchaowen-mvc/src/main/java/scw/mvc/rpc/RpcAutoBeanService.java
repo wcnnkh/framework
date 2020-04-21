@@ -2,11 +2,11 @@ package scw.mvc.rpc;
 
 import java.util.Arrays;
 
+import scw.beans.BeanBuilder;
 import scw.beans.BeanFactory;
+import scw.beans.ProxyBeanBuilder;
 import scw.beans.auto.AutoBeanService;
 import scw.beans.auto.AutoBeanServiceChain;
-import scw.beans.builder.BeanBuilder;
-import scw.beans.builder.ProxyBeanBuilder;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.Host;

@@ -1,6 +1,5 @@
-package scw.beans.builder;
+package scw.beans;
 
-import scw.beans.BeanFactory;
 import scw.core.instance.ConstructorBuilder;
 import scw.lang.UnsupportedException;
 import scw.util.value.property.PropertyFactory;

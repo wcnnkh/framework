@@ -2,29 +2,31 @@ package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.aop.Aop;
+import scw.aop.DefaultAop;
 import scw.aop.Filter;
+import scw.aop.ProxyUtils;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.auto.AutoBeanUtils;
-import scw.beans.builder.BeanBuilder;
-import scw.beans.configuration.BeanConfiguration;
-import scw.beans.configuration.BeanFactoryLifeCycle;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
 import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.instance.InstanceException;
+import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.json.JSONUtils;
@@ -43,11 +45,14 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
 	protected final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
-	private final LinkedHashSet<String> filterNames = new LinkedHashSet<String>();
 	private final LinkedList<BeanFactoryLifeCycle> beanFactoryLifeCycles = new LinkedList<BeanFactoryLifeCycle>();
+	private Aop aop;
 
 	public DefaultBeanFactory() {
-		singletonMap.put(BeanFactory.class.getName(), this);
+		addInternalSingleton(BeanFactory.class, this,
+				InstanceFactory.class.getName(),
+				NoArgsInstanceFactory.class.getName());
+		addInternalSingleton(PropertyFactory.class, propertyFactory);
 	}
 
 	protected BeanDefinition getDefinitionByCache(String name) {
@@ -377,26 +382,32 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 		}
 	}
 
+	protected <T> void addInternalSingleton(Class<? extends T> type,
+			T instance, String... names) {
+		singletonMap.put(type.getName(), instance);
+		addBeanDefinition(
+				new InternalBeanDefinition(instance, type, Arrays.asList(names)),
+				false);
+	}
+
+	public Aop getAop() {
+		return aop;
+	}
+
 	public void init() throws Exception {
-		for (Class<? extends Filter> clazz : InstanceUtils
-				.getConfigurationClassList(Filter.class, propertyFactory)) {
-			if (!isInstance(clazz)) {
-				continue;
-			}
-
-			filterNames.add(clazz.getName());
-		}
-
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
+		propertyFactory.addAll(InstanceUtils.getConfigurationList(
+				PropertyFactory.class, this, getPropertyFactory()), true);
+		this.aop = new DefaultAop(ProxyUtils.getProxyAdapter(),
+				InstanceUtils.getConfigurationList(Filter.class, this,
+						propertyFactory));
+
 		for (BeanConfiguration configuration : InstanceUtils
 				.getConfigurationList(BeanConfiguration.class, this,
 						getPropertyFactory())) {
 			addBeanConfiguration(configuration);
 		}
-
-		propertyFactory.addAll(InstanceUtils.getConfigurationList(
-				PropertyFactory.class, this, getPropertyFactory()), true);
 
 		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils
 				.getConfigurationList(BeanFactoryLifeCycle.class, this,
@@ -437,13 +448,13 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 		}
 	}
 
-	protected static final class InteranlBeanDefinition implements
+	protected static final class InternalBeanDefinition implements
 			BeanDefinition {
 		private final Object instance;
 		private final Class<?> targetClass;
 		private final Collection<String> names;
 
-		public InteranlBeanDefinition(Object instance, Class<?> targetClass,
+		public InternalBeanDefinition(Object instance, Class<?> targetClass,
 				Collection<String> names) {
 			this.instance = instance;
 			this.targetClass = targetClass;
@@ -496,9 +507,5 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 		public AnnotatedElement getAnnotatedElement() {
 			return getTargetClass();
 		}
-	}
-
-	public Collection<String> getFilterNames() {
-		return filterNames;
 	}
 }

@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
+import scw.beans.AbstractBeanBuilder;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.beans.builder.AbstractBeanBuilder;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
@@ -51,7 +51,7 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 				Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), args);
 
 		if (isProxy()) {
-			return createProxy(null, bean).create();
+			return createInstanceProxy(bean, getTargetClass(), null);
 		}
 		return bean;
 	}

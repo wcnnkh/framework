@@ -7,13 +7,13 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 
 import scw.aop.Filter;
+import scw.beans.AutoBeanBuilder;
+import scw.beans.BeanBuilder;
 import scw.beans.BeanFactory;
+import scw.beans.ProxyBeanBuilder;
+import scw.beans.ThreadPoolExecutorBeanBuilder;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
-import scw.beans.builder.AutoBeanBuilder;
-import scw.beans.builder.BeanBuilder;
-import scw.beans.builder.ProxyBeanBuilder;
-import scw.beans.builder.ThreadPoolExecutorBeanBuilder;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;

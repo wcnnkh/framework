@@ -1,6 +1,5 @@
-package scw.beans.metadata;
+package scw.beans;
 
-import scw.beans.BeanDefinition;
 
 public interface BeanDefinitionAware {
 	void setBeanDefinition(BeanDefinition beanDefinition);

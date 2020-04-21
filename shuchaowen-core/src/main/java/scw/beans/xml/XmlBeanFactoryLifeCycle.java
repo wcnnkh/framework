@@ -2,7 +2,7 @@ package scw.beans.xml;
 
 import org.w3c.dom.NodeList;
 
-import scw.beans.configuration.AbstractBeanFactoryLifeCycle;
+import scw.beans.AbstractBeanFactoryLifeCycle;
 
 public abstract class XmlBeanFactoryLifeCycle extends
 		AbstractBeanFactoryLifeCycle {

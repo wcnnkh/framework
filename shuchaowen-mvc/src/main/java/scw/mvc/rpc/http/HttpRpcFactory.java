@@ -2,11 +2,7 @@ package scw.mvc.rpc.http;
 
 import java.util.Arrays;
 
-import scw.aop.Filter;
-import scw.aop.ProxyUtils;
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
-import scw.core.utils.ArrayUtils;
 import scw.mvc.rpc.RPCProxyFactory;
 import scw.util.value.property.PropertyFactory;
 
@@ -14,7 +10,8 @@ public class HttpRpcFactory extends HttpRpcProxy implements RPCProxyFactory {
 	private static final long serialVersionUID = 1L;
 	private final BeanFactory beanFactory;
 
-	public HttpRpcFactory(BeanFactory beanFactory, PropertyFactory propertyFactory,
+	public HttpRpcFactory(BeanFactory beanFactory,
+			PropertyFactory propertyFactory,
 			HttpRpcRequestFactory httpRpcRequestFactory) {
 		super(propertyFactory, beanFactory, httpRpcRequestFactory);
 		this.beanFactory = beanFactory;
@@ -22,8 +19,8 @@ public class HttpRpcFactory extends HttpRpcProxy implements RPCProxyFactory {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getProxy(Class<T> clazz) {
-		return ProxyUtils.getSupportAnnotationProxyAdapter(beanFactory).proxy(clazz, interfaces, Arrays.asList(this))
-		return (T) BeanUtils.createProxy(beanFactory, clazz, null, Arrays.asList((Filter) this)).create();
+		return (T) beanFactory.getAop().proxy(clazz, null, Arrays.asList(this))
+				.create();
 	}
 
 }

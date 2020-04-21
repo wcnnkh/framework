@@ -1,4 +1,4 @@
-package scw.beans.configuration;
+package scw.beans;
 
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;

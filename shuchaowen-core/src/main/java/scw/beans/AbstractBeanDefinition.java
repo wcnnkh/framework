@@ -1,15 +1,11 @@
-package scw.beans.configuration;
+package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
-import scw.beans.builder.BeanBuilder;
-import scw.beans.metadata.BeanLifeCycle;
 import scw.core.utils.StringUtils;
 import scw.util.value.property.PropertyFactory;
 

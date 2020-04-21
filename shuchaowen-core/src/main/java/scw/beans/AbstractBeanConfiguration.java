@@ -1,10 +1,9 @@
-package scw.beans.configuration;
+package scw.beans;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.beans.BeanDefinition;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

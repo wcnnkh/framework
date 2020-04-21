@@ -16,7 +16,6 @@ public final class MethodFilterChain implements FilterChain {
 	public MethodFilterChain(BeanFactory beanFactory, Class<?> clz, Method method, Collection<String> filterNames,
 			Collection<Filter> filters) {
 		LinkedList<String> list = new LinkedList<String>();
-		list.addAll(beanFactory.getFilterNames());
 		this.filterChain = new InstanceFactoryFilterChain(beanFactory, list, new DefaultFilterChain(filters));
 	}
 

@@ -8,7 +8,7 @@ public class SerializableMethodHolder extends AbstractSerializableMethodHolder {
 	private Class<?>[] parameterTypes;
 
 	public SerializableMethodHolder(Class<?> belongClass, Method method) {
-		super(method == null ? null : method.getName());
+		super(method == null? null:method.getName());//训练化时可能会调用此方法，所以这里要求可以为空
 		this.belongClass = belongClass;
 		this.parameterTypes = method.getParameterTypes();
 	}

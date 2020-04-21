@@ -1,8 +1,7 @@
-package scw.beans.builder;
+package scw.beans;
 
 import java.util.Collection;
 
-import scw.beans.BeanFactory;
 import scw.util.value.property.PropertyFactory;
 
 public class ProxyBeanBuilder extends AutoBeanBuilder {

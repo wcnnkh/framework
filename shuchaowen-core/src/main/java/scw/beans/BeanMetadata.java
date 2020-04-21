@@ -1,12 +1,10 @@
-package scw.beans.metadata;
+package scw.beans;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 
-import scw.beans.BeanMethod;
-import scw.beans.NoArgumentBeanMethod;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Config;
 import scw.beans.annotation.InitMethod;

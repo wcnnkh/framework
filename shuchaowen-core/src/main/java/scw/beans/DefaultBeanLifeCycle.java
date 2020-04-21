@@ -1,11 +1,8 @@
-package scw.beans.metadata;
+package scw.beans;
 
 import java.lang.reflect.Modifier;
 
 import scw.aop.ProxyUtils;
-import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
-import scw.beans.BeanMethod;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Config;

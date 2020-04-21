@@ -1,6 +1,5 @@
-package scw.beans.configuration;
+package scw.beans;
 
-import scw.beans.BeanFactory;
 import scw.util.value.property.PropertyFactory;
 
 /**

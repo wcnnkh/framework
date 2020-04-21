@@ -1,6 +1,6 @@
 package scw.beans;
 
-import scw.aop.AopProxyAdapter;
+import scw.aop.Aop;
 import scw.core.instance.InstanceFactory;
 
 public interface BeanFactory extends InstanceFactory {
@@ -8,5 +8,5 @@ public interface BeanFactory extends InstanceFactory {
 
 	BeanDefinition getDefinition(Class<?> clazz);
 
-	AopProxyAdapter getAopProxyAdapter();
+	Aop getAop();
 }

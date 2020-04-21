@@ -1,4 +1,4 @@
-package scw.beans.builder;
+package scw.beans;
 
 import scw.core.instance.InstanceBuilder;
 

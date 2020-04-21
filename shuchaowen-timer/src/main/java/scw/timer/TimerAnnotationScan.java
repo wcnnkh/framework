@@ -5,10 +5,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 import scw.aop.Invoker;
-import scw.beans.AutoProxyMethodInvoker;
+import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.beans.configuration.AbstractBeanFactoryLifeCycle;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
@@ -49,8 +48,8 @@ public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 	private Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
 		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null
 				: method.getParameterTypes()[0];
-		return new CrontabRunnable(new AutoProxyMethodInvoker(beanFactory, clz,
-				method), parameterType);
+		return new CrontabRunnable(beanFactory.getAop().proxyMethod(
+				beanFactory, clz, method, null), parameterType);
 	}
 
 	private void schedule(BeanFactory beanFactory, Class<?> clz, Method method,

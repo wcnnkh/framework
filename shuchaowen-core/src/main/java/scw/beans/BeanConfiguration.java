@@ -1,9 +1,7 @@
-package scw.beans.configuration;
+package scw.beans;
 
 import java.util.Collection;
 
-import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
 import scw.util.value.property.PropertyFactory;
 
 public interface BeanConfiguration {

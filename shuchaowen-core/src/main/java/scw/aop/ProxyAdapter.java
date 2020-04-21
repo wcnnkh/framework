@@ -17,9 +17,8 @@ public interface ProxyAdapter {
 	 */
 	boolean isSupport(Class<?> clazz);
 
-	Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters);
-
-	Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters, FilterChain filterChain);
+	Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
+			Collection<? extends Filter> filters, FilterChain filterChain);
 
 	/**
 	 * 获取代理类

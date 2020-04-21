@@ -1,7 +1,7 @@
 package scw.orm.support;
 
+import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.BeanFactory;
-import scw.beans.configuration.AbstractBeanFactoryLifeCycle;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;

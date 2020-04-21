@@ -6,7 +6,8 @@ import scw.core.utils.ArrayUtils;
 
 public abstract class AbstractProxyAdapter implements ProxyAdapter {
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters) {
+	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
+			Collection<? extends Filter> filters) {
 		return proxy(clazz, interfaces, filters, null);
 	}
 

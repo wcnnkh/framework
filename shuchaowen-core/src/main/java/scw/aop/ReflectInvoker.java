@@ -3,9 +3,8 @@ package scw.aop;
 import java.lang.reflect.Method;
 
 import scw.core.reflect.ReflectionUtils;
-import scw.lang.NestedExceptionUtils;
 
-public final class ReflectInvoker implements Invoker {
+public final class ReflectInvoker extends MethodInvoker {
 	private final Object obj;
 	private final Method method;
 
@@ -15,16 +14,13 @@ public final class ReflectInvoker implements Invoker {
 		ReflectionUtils.setAccessibleMethod(method);
 	}
 
-	public Object invoke(Object... args) throws Throwable {
-		try {
-			return method.invoke(obj, args);
-		} catch (Throwable e) {
-			throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
-		}
+	@Override
+	public Method getMethod() {
+		return method;
 	}
 
 	@Override
-	public String toString() {
-		return method.toString();
+	public Object getInstance() {
+		return obj;
 	}
 }
