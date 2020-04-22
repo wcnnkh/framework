@@ -1,13 +1,12 @@
-package scw.mvc.service;
+package scw.mvc.action;
 
 import scw.core.instance.annotation.Configuration;
 import scw.mvc.Channel;
-import scw.mvc.action.Action;
 import scw.mvc.action.manager.ActionLookupManager;
 import scw.mvc.action.notfound.NotFoundService;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.service.Filter;
+import scw.mvc.service.FilterChain;
 import scw.mvc.service.context.ContextManager;
-import scw.net.http.HttpMethod;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class ActionServiceFilter implements Filter {
@@ -34,22 +33,5 @@ public final class ActionServiceFilter implements Filter {
 			throws Throwable {
 		return ContextManager.doFilter(channel, action,
 				action.getActionFilterChain());
-	}
-
-	protected Object notfound(Channel channel, FilterChain chain)
-			throws Throwable {
-		if (channel instanceof HttpChannel) {
-			return notfoundHttpAction((HttpChannel) channel, chain);
-		}
-		return chain.doFilter(channel);
-	}
-
-	protected Object notfoundHttpAction(HttpChannel channel, FilterChain chain)
-			throws Throwable {
-		if (HttpMethod.OPTIONS == channel.getRequest().getMethod()) {
-			return chain.doFilter(channel);
-		}
-		channel.getResponse().sendError(404, "not found handler");
-		return null;
 	}
 }
