@@ -1,17 +1,14 @@
 package scw.beans;
 
-import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 
 import scw.aop.InstanceFactoryFilterChain;
 import scw.aop.Proxy;
-import scw.core.instance.AbstractInstanceBuilder;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.property.PropertyFactory;
 
-public abstract class AbstractBeanBuilder extends
-		AbstractInstanceBuilder<Object> implements BeanBuilder {
+public abstract class AbstractBeanBuilder implements BeanBuilder {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 
 	protected final BeanFactory beanFactory;
@@ -19,20 +16,20 @@ public abstract class AbstractBeanBuilder extends
 	protected final LinkedList<String> filterNames = new LinkedList<String>();
 	protected final LinkedList<BeanMethod> initMethods = new LinkedList<BeanMethod>();
 	protected final LinkedList<BeanMethod> destroyMethods = new LinkedList<BeanMethod>();
+	private final Class<?> targetClass;
 
-	public AbstractBeanBuilder(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> targetClass) {
-		super(targetClass);
+	public AbstractBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
+		this.targetClass = targetClass;
 		this.propertyFactory = propertyFactory;
 		this.beanFactory = beanFactory;
 	}
 
 	protected boolean isProxy() {
-		if (getTargetClass().isInterface()) {
-			return true;
-		}
-
 		return BeanUtils.isProxy(getTargetClass(), getTargetClass());
+	}
+
+	public Class<? extends Object> getTargetClass() {
+		return targetClass;
 	}
 
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
@@ -40,26 +37,18 @@ public abstract class AbstractBeanBuilder extends
 				new InstanceFactoryFilterChain(beanFactory, filterNames, null));
 	}
 
-	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass,
-			Class<?>[] interfaces) {
-		return beanFactory.getAop().proxyInstance(targetClass, instance,
-				interfaces, null,
+	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass, Class<?>[] interfaces) {
+		return beanFactory.getAop().proxyInstance(targetClass, instance, interfaces, null,
 				new InstanceFactoryFilterChain(beanFactory, filterNames, null));
 	}
 
-	@Override
-	protected Object createInternal(Class<?> targetClass,
-			Constructor<? extends Object> constructor, Object[] params)
-			throws Exception {
+	protected Object createProxyInstance(Class<?> targetClass, Class<?>[] parameterTypes, Object[] args) {
 		if (getTargetClass().isInterface() && filterNames.isEmpty()) {
 			logger.warn("empty filter: {}", getTargetClass().getName());
 		}
 
-		if (isProxy()) {
-			Proxy proxy = createProxy(targetClass, null);
-			return proxy.create(constructor.getParameterTypes(), params);
-		}
-		return super.createInternal(targetClass, constructor, params);
+		Proxy proxy = createProxy(targetClass, null);
+		return proxy.create(parameterTypes, args);
 	}
 
 	public void init(Object instance) throws Exception {

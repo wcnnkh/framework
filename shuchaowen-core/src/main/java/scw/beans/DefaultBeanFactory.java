@@ -147,10 +147,6 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
-		if (name.indexOf("DefaultExceptionHandler") != -1) {
-			System.out.println(name);
-		}
-
 		Object object = singletonMap.get(name);
 		if (object != null) {
 			return (T) object;
@@ -373,20 +369,18 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 	}
 
 	public Aop getAop() {
-		return new DefaultAop(Arrays.asList((Filter)new InstanceNamesFilter(this, filterNameList)));
+		return new DefaultAop(Arrays.asList((Filter) new InstanceNamesFilter(this, filterNameList)));
 	}
 
 	public void init() throws Exception {
+		for (Class<Filter> filter : ProxyUtils.FILTERS) {
+			filterNameList.add(filter.getName());
+		}
+
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
 		propertyFactory.addAll(InstanceUtils.getConfigurationList(PropertyFactory.class, this, getPropertyFactory()),
 				true);
-		for (Class<Filter> filter : ProxyUtils.FILTERS) {
-			if (!isInstance(filter)) {
-				continue;
-			}
-			filterNameList.add(filter.getName());
-		}
 
 		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
 				getPropertyFactory())) {

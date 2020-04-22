@@ -77,15 +77,4 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 		Method method = methodTargetClass.getDeclaredMethod(this.method.getName(), parameterTypes);
 		return invoke(method, params);
 	}
-
-	public void init(Object instance) throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void destroy(Object instance) throws Exception {
-		// TODO Auto-generated method stub
-
-	}
-
 }

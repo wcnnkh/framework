@@ -33,7 +33,9 @@ public final class InstanceFactoryFilterChain extends AbstractFilterChain {
 			if (instanceFactory.isInstance(name)) {
 				return instanceFactory.getInstance(name);
 			} else {
-				logger.warn("{}无法被实例化，已忽略使用此filter", name);
+				if (logger.isDebugEnabled()) {
+					logger.debug("{}无法被实例化，已忽略使用此filter", name);
+				}
 				return getNextFilter(invoker, context);
 			}
 		}

@@ -15,6 +15,12 @@ public abstract class AbstractInstanceBuilder<T> implements InstanceBuilder<T> {
 	public Class<? extends T> getTargetClass() {
 		return targetClass;
 	}
+	
+	protected T createInternal(Class<?> targetClass,
+			Constructor<? extends T> constructor, Object[] params)
+			throws Exception {
+		return constructor.newInstance(params);
+	}
 
 	public T create(Object... params) throws Exception {
 		Constructor<? extends T> constructor = ReflectionUtils
@@ -24,12 +30,6 @@ public abstract class AbstractInstanceBuilder<T> implements InstanceBuilder<T> {
 		}
 
 		return createInternal(getTargetClass(), constructor, params);
-	}
-
-	protected T createInternal(Class<?> targetClass,
-			Constructor<? extends T> constructor, Object[] params)
-			throws Exception {
-		return constructor.newInstance(params);
 	}
 
 	public T create(Class<?>[] parameterTypes, Object... params)

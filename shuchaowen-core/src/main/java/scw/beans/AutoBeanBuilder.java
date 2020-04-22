@@ -8,11 +8,9 @@ import scw.util.value.property.PropertyFactory;
 public class AutoBeanBuilder extends ConstructorBeanBuilder {
 	private final AutoConstructorBuilder constructorBuilder;
 
-	public AutoBeanBuilder(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> targetClass) {
+	public AutoBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
 		super(beanFactory, propertyFactory, targetClass);
-		this.constructorBuilder = new AutoConstructorBuilder(beanFactory,
-				propertyFactory, getTargetClass(),
+		this.constructorBuilder = new AutoConstructorBuilder(beanFactory, propertyFactory, getTargetClass(),
 				ParameterUtils.getParameterDescriptorFactory());
 	}
 
