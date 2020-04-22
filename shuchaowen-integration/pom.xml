@@ -31,17 +31,7 @@
 		
 		<dependency>
 			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-async</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-dubbo</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-tcc</artifactId>
 		</dependency>
 
 		<dependency>

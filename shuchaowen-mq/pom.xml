@@ -18,11 +18,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-async</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>
 			<exclusions>
