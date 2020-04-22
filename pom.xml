@@ -44,12 +44,6 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-async</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-orm</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -117,12 +111,6 @@
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-testing</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-tcc</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 
