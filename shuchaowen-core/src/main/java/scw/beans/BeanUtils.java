@@ -21,13 +21,12 @@ public final class BeanUtils {
 	private BeanUtils() {
 	};
 
-	private static XmlBeanParameter[] sortParameters(String[] paramNames,
-			Class<?>[] parameterTypes, XmlBeanParameter[] beanMethodParameters) {
+	private static XmlBeanParameter[] sortParameters(String[] paramNames, Class<?>[] parameterTypes,
+			XmlBeanParameter[] beanMethodParameters) {
 		XmlBeanParameter[] methodParameters = new XmlBeanParameter[beanMethodParameters.length];
 		Class<?>[] types = new Class<?>[methodParameters.length];
 		for (int i = 0; i < methodParameters.length; i++) {
-			XmlBeanParameter beanMethodParameter = beanMethodParameters[i]
-					.clone();
+			XmlBeanParameter beanMethodParameter = beanMethodParameters[i].clone();
 			if (!StringUtils.isNull(beanMethodParameter.getDisplayName())) {
 				for (int a = 0; a < paramNames.length; a++) {
 					if (paramNames[a].equals(beanMethodParameter.getDisplayName())) {
@@ -46,8 +45,7 @@ public final class BeanUtils {
 			}
 		}
 
-		return ObjectUtils.equals(Arrays.asList(parameterTypes),
-				Arrays.asList(types)) ? methodParameters : null;
+		return ObjectUtils.equals(Arrays.asList(parameterTypes), Arrays.asList(types)) ? methodParameters : null;
 	}
 
 	/**
@@ -57,14 +55,13 @@ public final class BeanUtils {
 	 * @param beanMethodParameters
 	 * @return
 	 */
-	public static XmlBeanParameter[] sortParameters(Method method,
-			XmlBeanParameter[] beanMethodParameters) {
+	public static XmlBeanParameter[] sortParameters(Method method, XmlBeanParameter[] beanMethodParameters) {
 		if (method.getParameterTypes().length != beanMethodParameters.length) {
 			return null;
 		}
 
-		return sortParameters(ParameterUtils.getParameterName(method),
-				method.getParameterTypes(), beanMethodParameters);
+		return sortParameters(ParameterUtils.getParameterName(method), method.getParameterTypes(),
+				beanMethodParameters);
 	}
 
 	public static XmlBeanParameter[] sortParameters(Constructor<?> constructor,
@@ -73,30 +70,26 @@ public final class BeanUtils {
 			return null;
 		}
 
-		return sortParameters(ParameterUtils.getParameterName(constructor),
-				constructor.getParameterTypes(), beanMethodParameters);
+		return sortParameters(ParameterUtils.getParameterName(constructor), constructor.getParameterTypes(),
+				beanMethodParameters);
 	}
 
-	public static Object[] getBeanMethodParameterArgs(
-			XmlBeanParameter[] beanParameters, InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory) throws Exception {
+	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters,
+			InstanceFactory instanceFactory, PropertyFactory propertyFactory) throws Exception {
 		Object[] args = new Object[beanParameters.length];
 		for (int i = 0; i < args.length; i++) {
 			XmlBeanParameter xmlBeanParameter = beanParameters[i];
-			args[i] = xmlBeanParameter.parseValue(instanceFactory,
-					propertyFactory);
+			args[i] = xmlBeanParameter.parseValue(instanceFactory, propertyFactory);
 		}
 		return args;
 	}
 
-	public static boolean isSingletion(Class<?> type,
-			AnnotatedElement annotatedElement) {
+	public static boolean isSingletion(Class<?> type, AnnotatedElement annotatedElement) {
 		Bean bean = annotatedElement.getAnnotation(Bean.class);
 		return bean == null ? true : bean.singleton();
 	}
 
-	public static boolean isProxy(Class<?> type,
-			AnnotatedElement annotatedElement) {
+	public static boolean isProxy(Class<?> type, AnnotatedElement annotatedElement) {
 		if (Modifier.isFinal(type.getModifiers())) {// final修饰的类无法代理
 			return false;
 		}
@@ -104,12 +97,16 @@ public final class BeanUtils {
 		if (Filter.class.isAssignableFrom(type)) {
 			return false;
 		}
-		return true;
+
+		Bean bean = annotatedElement.getAnnotation(Bean.class);
+		if (bean == null) {
+			return true;
+		}
+		return bean.proxy();
 	}
 
 	public static String getScanAnnotationPackageName() {
-		return GlobalPropertyFactory.getInstance().getValue(
-				"scw.scan.beans.package", String.class,
+		return GlobalPropertyFactory.getInstance().getValue("scw.scan.beans.package", String.class,
 				InstanceUtils.getScanAnnotationPackageName());
 	}
 }

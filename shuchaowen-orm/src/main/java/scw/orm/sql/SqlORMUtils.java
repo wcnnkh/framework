@@ -14,7 +14,7 @@ import java.util.Collection;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.orm.sql.annotation.Index;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
@@ -79,7 +79,7 @@ public final class SqlORMUtils {
 		case UPDATE:
 			return sqlDialect.toUpdateSql(bean, clazz, tableName);
 		default:
-			throw new UnsupportedException(operationType.name());
+			throw new NotSupportedException(operationType.name());
 		}
 	}
 }

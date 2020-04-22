@@ -5,7 +5,7 @@ import scw.async.AsyncExecutor;
 import scw.beans.BeanFactory;
 import scw.core.reflect.SerializableMethodHolder;
 import scw.core.utils.StringUtils;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -24,7 +24,7 @@ public abstract class AbstractAsyncService implements AsyncService {
 		}
 
 		if (!beanFactory.isInstance(beanName)) {
-			throw new UnsupportedException(context.getMethod().toString());
+			throw new NotSupportedException(context.getMethod().toString());
 		}
 
 		return new DefaultAsyncRunnableMethod(

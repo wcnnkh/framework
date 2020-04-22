@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import scw.core.instance.annotation.Configuration;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.util.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE + 100)
@@ -76,7 +76,7 @@ public class JdkProxyAdapter extends AbstractProxyAdapter {
 		}
 
 		public Object createInternal(Class<?>[] parameterTypes, Object[] arguments) {
-			throw new UnsupportedException(getTargetClass().getName() + "," + Arrays.toString(parameterTypes));
+			throw new NotSupportedException(getTargetClass().getName() + "," + Arrays.toString(parameterTypes));
 		}
 	}
 }

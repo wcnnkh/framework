@@ -23,8 +23,7 @@ public class DefaultBeanLifeCycle implements BeanLifeCycle {
 		return new BeanMetadata(targetClass);
 	}
 
-	public void initBefore(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, BeanDefinition definition,
+	public void initBefore(BeanFactory beanFactory, PropertyFactory propertyFactory, BeanDefinition definition,
 			Object instance) throws Exception {
 		if (instance instanceof BeanFactoryAccessor) {
 			((BeanFactoryAccessor) instance).setBeanFactory(beanFactory);
@@ -34,77 +33,60 @@ public class DefaultBeanLifeCycle implements BeanLifeCycle {
 			((BeanDefinitionAware) instance).setBeanDefinition(definition);
 		}
 
-		Class<?> instanceClass = ProxyUtils.getProxyAdapter().getUserClass(
-				instance.getClass());
-		for (FieldDefinition fieldDefinition : getBeanMetadata(instanceClass)
-				.getAutowriteFieldDefinitions()) {
-			setConfig(beanFactory, propertyFactory, instanceClass, instance,
-					fieldDefinition);
-			setValue(beanFactory, propertyFactory, instanceClass, instance,
-					fieldDefinition);
-			setBean(beanFactory, propertyFactory, instanceClass, instance,
-					fieldDefinition);
+		Class<?> instanceClass = ProxyUtils.getProxyAdapter().getUserClass(instance.getClass());
+		for (FieldDefinition fieldDefinition : getBeanMetadata(instanceClass).getAutowriteFieldDefinitions()) {
+			setConfig(beanFactory, propertyFactory, instanceClass, instance, fieldDefinition);
+			setValue(beanFactory, propertyFactory, instanceClass, instance, fieldDefinition);
+			setBean(beanFactory, propertyFactory, instanceClass, instance, fieldDefinition);
 		}
 	}
 
-	public void initAfter(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, BeanDefinition definition,
+	public void initAfter(BeanFactory beanFactory, PropertyFactory propertyFactory, BeanDefinition definition,
 			Object instance) throws Exception {
-		Class<?> instanceClass = ProxyUtils.getProxyAdapter().getUserClass(
-				instance.getClass());
-		for (BeanMethod beanMethod : getBeanMetadata(instanceClass)
-				.getInitMethods()) {
+		Class<?> instanceClass = ProxyUtils.getProxyAdapter().getUserClass(instance.getClass());
+		for (BeanMethod beanMethod : getBeanMetadata(instanceClass).getInitMethods()) {
 			beanMethod.invoke(instance, beanFactory, propertyFactory);
 		}
 		XUtils.init(instance);
 	}
 
-	public void destroyBefore(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, BeanDefinition definition,
+	public void destroyBefore(BeanFactory beanFactory, PropertyFactory propertyFactory, BeanDefinition definition,
 			Object instance) throws Exception {
 	}
 
-	public void destroyAfter(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, BeanDefinition definition,
+	public void destroyAfter(BeanFactory beanFactory, PropertyFactory propertyFactory, BeanDefinition definition,
 			Object instance) throws Exception {
-		Class<?> instanceClass = ProxyUtils.getProxyAdapter().getUserClass(
-				instance.getClass());
-		for (BeanMethod beanMethod : getBeanMetadata(instanceClass)
-				.getDestroyMethods()) {
+		Class<?> instanceClass = ProxyUtils.getProxyAdapter().getUserClass(instance.getClass());
+		for (BeanMethod beanMethod : getBeanMetadata(instanceClass).getDestroyMethods()) {
 			beanMethod.invoke(instance, beanFactory, propertyFactory);
 		}
 		XUtils.destroy(instance);
 	}
 
-	protected void existDefaultValueWarnLog(String tag, Class<?> clz,
-			FieldDefinition field, Object obj) throws Exception {
-		if (checkExistDefaultValue(field, obj)) {
-			logger.warn("{} class[{}] fieldName[{}] existence default value",
-					tag, clz.getName(), field.getField().getName());
-		}
-	}
-
-	protected void staticFieldWarnLog(String tag, Class<?> clz,
-			FieldDefinition field) {
-		if (Modifier.isStatic(field.getField().getModifiers())) {
-			logger.warn("{} class[{}] fieldName[{}] is a static field", tag,
-					clz.getName(), field.getField().getName());
-		}
-	}
-
-	protected boolean checkExistDefaultValue(FieldDefinition field, Object obj)
+	protected void existDefaultValueWarnLog(String tag, Class<?> clz, FieldDefinition field, Object obj)
 			throws Exception {
+		if (checkExistDefaultValue(field, obj)) {
+			logger.warn("{} class[{}] fieldName[{}] existence default value", tag, clz.getName(),
+					field.getField().getName());
+		}
+	}
+
+	protected void staticFieldWarnLog(String tag, Class<?> clz, FieldDefinition field) {
+		if (Modifier.isStatic(field.getField().getModifiers())) {
+			logger.warn("{} class[{}] fieldName[{}] is a static field", tag, clz.getName(), field.getField().getName());
+		}
+	}
+
+	protected boolean checkExistDefaultValue(FieldDefinition field, Object obj) throws Exception {
 		if (field.getField().getType().isPrimitive()) {// 值类型一定是有默认值的,所以不用判断直接所回false
 			return false;
 		}
 		return field.get(obj) != null;
 	}
 
-	protected void setBean(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clz, Object obj,
+	protected void setBean(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz, Object obj,
 			FieldDefinition field) {
-		Autowired s = field.getAnnotatedElement()
-				.getAnnotation(Autowired.class);
+		Autowired s = field.getAnnotatedElement().getAnnotation(Autowired.class);
 		if (s != null) {
 			staticFieldWarnLog(Autowired.class.getName(), clz, field);
 
@@ -113,55 +95,51 @@ public class DefaultBeanLifeCycle implements BeanLifeCycle {
 				name = field.getField().getType().getName();
 			}
 
+			Object instance = beanFactory.getInstance(name);
 			try {
-				existDefaultValueWarnLog(Autowired.class.getName(), clz, field,
-						obj);
-				field.set(obj, beanFactory.getInstance(name));
+				existDefaultValueWarnLog(Autowired.class.getName(), clz, field, obj);
+				field.set(obj, instance);
 			} catch (Exception e) {
-				throw new RuntimeException("autowrite：clz=" + clz.getName()
-						+ ",fieldName=" + field.getField().getName(), e);
+				throw new RuntimeException(
+						"autowrite：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(), e);
 			}
 		}
 	}
 
-	protected void setConfig(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clz, Object obj,
+	protected void setConfig(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz, Object obj,
 			FieldDefinition field) {
 		Config config = field.getAnnotatedElement().getAnnotation(Config.class);
 		if (config != null) {
 			staticFieldWarnLog(Config.class.getName(), clz, field);
 			Object value = null;
 			try {
-				existDefaultValueWarnLog(Config.class.getName(), clz, field,
-						obj);
+				existDefaultValueWarnLog(Config.class.getName(), clz, field, obj);
 
-				value = beanFactory.getInstance(config.parse()).parse(
-						beanFactory, propertyFactory, field, config.value(),
-						config.charset());
+				value = beanFactory.getInstance(config.parse()).parse(beanFactory, propertyFactory, field,
+						config.value(), config.charset());
 				field.set(obj, value);
 			} catch (Exception e) {
-				throw new RuntimeException("config：clz=" + clz.getName()
-						+ ",fieldName=" + field.getField().getName(), e);
+				throw new RuntimeException("config：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(),
+						e);
 			}
 		}
 	}
 
-	protected void setValue(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> clz, Object obj,
+	protected void setValue(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clz, Object obj,
 			FieldDefinition field) throws Exception {
 		Value value = field.getAnnotatedElement().getAnnotation(Value.class);
 		if (value != null) {
 			staticFieldWarnLog(Value.class.getName(), clz, field);
 			try {
 				existDefaultValueWarnLog(Value.class.getName(), clz, field, obj);
-				Object v = beanFactory.getInstance(value.format()).format(
-						beanFactory, propertyFactory, field, value.value());
+				Object v = beanFactory.getInstance(value.format()).format(beanFactory, propertyFactory, field,
+						value.value());
 				if (v != null) {
 					field.set(obj, v);
 				}
 			} catch (Throwable e) {
-				throw new RuntimeException("value：clz=" + clz.getName()
-						+ ",fieldName=" + field.getField().getName(), e);
+				throw new RuntimeException("value：clz=" + clz.getName() + ",fieldName=" + field.getField().getName(),
+						e);
 			}
 		}
 	}

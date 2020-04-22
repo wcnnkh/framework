@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import javax.websocket.EncodeException;
 import javax.websocket.Session;
 
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.websocket.AbstractWebSocketSession;
 
 public class JavaWebSocketSession extends AbstractWebSocketSession{
@@ -21,7 +21,7 @@ public class JavaWebSocketSession extends AbstractWebSocketSession{
 	}
 
 	public void sendText(String fragment, boolean last) throws IOException,
-			UnsupportedException {
+			NotSupportedException {
 		this.session.getBasicRemote().sendText(fragment, last);
 	}
 
@@ -30,7 +30,7 @@ public class JavaWebSocketSession extends AbstractWebSocketSession{
 	}
 
 	public void sendBinary(ByteBuffer fragment, boolean last)
-			throws IOException, UnsupportedException {
+			throws IOException, NotSupportedException {
 		this.session.getBasicRemote().sendBinary(fragment, last);
 	}
 

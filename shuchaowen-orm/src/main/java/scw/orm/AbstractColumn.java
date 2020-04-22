@@ -1,7 +1,7 @@
 package scw.orm;
 
 import scw.lang.Description;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 
 public abstract class AbstractColumn implements Column {
 	private Class<?> declaringClass;
@@ -29,7 +29,7 @@ public abstract class AbstractColumn implements Column {
 		return e == null ? new ORMException(message) : new ORMException(message, e);
 	}
 
-	public UnsupportedException createNotSupportException() {
-		return new UnsupportedException("[ORM failed] - class=[" + getDeclaringClass() + "] column [" + getName() + "]");
+	public NotSupportedException createNotSupportException() {
+		return new NotSupportedException("[ORM failed] - class=[" + getDeclaringClass() + "] column [" + getName() + "]");
 	}
 }

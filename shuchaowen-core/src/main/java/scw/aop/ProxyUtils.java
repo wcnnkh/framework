@@ -1,7 +1,9 @@
 package scw.aop;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.util.result.SimpleResult;
 
@@ -9,9 +11,11 @@ public final class ProxyUtils {
 
 	private static final MultipleProxyAdapter PROXY_ADAPTER = new MultipleProxyAdapter();
 
+	public static final Collection<Class<Filter>> FILTERS = InstanceUtils.getConfigurationClassList(Filter.class,
+			GlobalPropertyFactory.getInstance());
+
 	static {
-		PROXY_ADAPTER.addAll(InstanceUtils
-				.getSystemConfigurationList(ProxyAdapter.class));
+		PROXY_ADAPTER.addAll(InstanceUtils.getSystemConfigurationList(ProxyAdapter.class));
 	}
 
 	private ProxyUtils() {
@@ -26,8 +30,7 @@ public final class ProxyUtils {
 	}
 
 	private static String ignoreToString(Object obj) {
-		return obj.getClass().getName() + "@"
-				+ Integer.toHexString(ignoreHashCode(obj));
+		return obj.getClass().getName() + "@" + Integer.toHexString(ignoreHashCode(obj));
 	}
 
 	/**
@@ -38,8 +41,7 @@ public final class ProxyUtils {
 	 * @param args
 	 * @return
 	 */
-	public static SimpleResult<Object> ignoreMethod(Object obj, Method method,
-			Object[] args) {
+	public static SimpleResult<Object> ignoreMethod(Object obj, Method method, Object[] args) {
 		if (args == null || args.length == 0) {
 			if (method.getName().equals("hashCode")) {
 				return new SimpleResult<Object>(true, ignoreHashCode(obj));
@@ -48,8 +50,7 @@ public final class ProxyUtils {
 			}
 		}
 
-		if (args != null && args.length == 1
-				&& method.getName().equals("equals")) {
+		if (args != null && args.length == 1 && method.getName().equals("equals")) {
 			return new SimpleResult<Object>(true, obj == args[0]);
 		}
 		return new SimpleResult<Object>(false);

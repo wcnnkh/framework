@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.LinkedList;
 
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import freemarker.cache.TemplateLoader;
 
 public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements
@@ -26,7 +26,7 @@ public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements
 			return ((MultiTemplateLoaderSource) templateSource)
 					.getLastModified();
 		}
-		throw new UnsupportedException(templateSource.getClass().getName());
+		throw new NotSupportedException(templateSource.getClass().getName());
 	}
 
 	public Reader getReader(Object templateSource, String encoding)
@@ -35,7 +35,7 @@ public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements
 			return ((MultiTemplateLoaderSource) templateSource)
 					.getReader(encoding);
 		}
-		throw new UnsupportedException(templateSource.getClass().getName()
+		throw new NotSupportedException(templateSource.getClass().getName()
 				+ ", encoding=" + encoding);
 	}
 
@@ -44,7 +44,7 @@ public class MultiTemplateLoader extends LinkedList<TemplateLoader> implements
 			((MultiTemplateLoaderSource) templateSource).closeTemplateSource();
 			return ;
 		}
-		throw new UnsupportedException(templateSource.getClass().getName());
+		throw new NotSupportedException(templateSource.getClass().getName());
 	}
 
 	public static final class MultiTemplateLoaderSource {

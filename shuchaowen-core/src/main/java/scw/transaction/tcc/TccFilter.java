@@ -6,7 +6,7 @@ import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.transaction.TransactionLifeCycle;
 import scw.transaction.TransactionManager;
 import scw.transaction.tcc.annotation.Tcc;
@@ -26,11 +26,11 @@ public class TccFilter implements Filter {
 		}
 
 		if (!instanceFactory.isInstance(tcc.service())) {
-			throw new UnsupportedException("not support tcc: " + context.getMethod().toString());
+			throw new NotSupportedException("not support tcc: " + context.getMethod().toString());
 		}
 
 		if (!TransactionManager.hasTransaction()) {
-			throw new UnsupportedException("not exist transaction");
+			throw new NotSupportedException("not exist transaction");
 		}
 
 		Object result = filterChain.doFilter(invoker, context);

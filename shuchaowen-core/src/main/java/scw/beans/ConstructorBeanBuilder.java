@@ -1,7 +1,7 @@
 package scw.beans;
 
 import scw.core.instance.ConstructorBuilder;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.util.value.property.PropertyFactory;
 
 public abstract class ConstructorBeanBuilder extends
@@ -20,7 +20,7 @@ public abstract class ConstructorBeanBuilder extends
 
 	public Object create() throws Exception {
 		if (!isInstance()) {
-			throw new UnsupportedException(getTargetClass().getName());
+			throw new NotSupportedException(getTargetClass().getName());
 		}
 		
 		return createInternal(getTargetClass(), getConstructorBuilder().getConstructor(), getConstructorBuilder().getArgs());

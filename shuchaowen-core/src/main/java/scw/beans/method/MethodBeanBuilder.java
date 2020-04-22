@@ -11,7 +11,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.util.value.property.PropertyFactory;
 
 public class MethodBeanBuilder extends AbstractBeanBuilder {
@@ -37,7 +37,7 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 
 	public Object create() throws Exception {
 		if (!isInstance()) {
-			throw new UnsupportedException("不支持的构造方式");
+			throw new NotSupportedException("不支持的构造方式");
 		}
 
 		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory, getTargetClass(),
@@ -51,7 +51,7 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 				Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), args);
 
 		if (isProxy()) {
-			return createInstanceProxy(bean, getTargetClass(), null);
+			return createInstanceProxy(bean, getTargetClass(), null).create(method.getParameterTypes(), args);
 		}
 		return bean;
 	}
@@ -70,7 +70,7 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 				return invoke(method, params);
 			}
 		}
-		throw new UnsupportedException(method.toString());
+		throw new NotSupportedException(method.toString());
 	}
 
 	public Object create(Class<?>[] parameterTypes, Object... params) throws Exception {

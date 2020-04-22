@@ -3,7 +3,7 @@ package scw.aop;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 
 public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements
 		ProxyAdapter {
@@ -24,7 +24,7 @@ public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements
 				return proxyAdapter.getClass(clazz, interfaces);
 			}
 		}
-		throw new UnsupportedException(clazz.getName());
+		throw new NotSupportedException(clazz.getName());
 	}
 
 	public boolean isProxy(Class<?> clazz) {
@@ -44,7 +44,7 @@ public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements
 						filterChain);
 			}
 		}
-		throw new UnsupportedException(clazz.getName());
+		throw new NotSupportedException(clazz.getName());
 	}
 
 	public Class<?> getUserClass(Class<?> proxyClass) {

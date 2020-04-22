@@ -38,7 +38,7 @@ import scw.io.UnsafeByteArrayOutputStream;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.ParameterException;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.util.FormatUtils;
 
 public final class StringUtils {
@@ -2630,7 +2630,7 @@ public final class StringUtils {
 			return parseEnum(text, type);
 		} else {
 			if (notFoundTypeCallable == null) {
-				throw new UnsupportedException("不支持的类型：" + type);
+				throw new NotSupportedException("不支持的类型：" + type);
 			}
 
 			return notFoundTypeCallable.call();
@@ -2664,7 +2664,7 @@ public final class StringUtils {
 				}
 
 				if (notFoundTypeCallable == null) {
-					throw new UnsupportedException("不支持的类型：" + type);
+					throw new NotSupportedException("不支持的类型：" + type);
 				}
 
 				return notFoundTypeCallable.call();
@@ -2699,7 +2699,7 @@ public final class StringUtils {
 				}
 
 				if (notFoundTypeCallable == null) {
-					throw new UnsupportedException("不支持的类型：" + type);
+					throw new NotSupportedException("不支持的类型：" + type);
 				}
 
 				return notFoundTypeCallable.call();

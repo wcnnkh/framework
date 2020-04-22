@@ -16,14 +16,14 @@ import java.util.Map.Entry;
 import scw.aop.Aop;
 import scw.aop.DefaultAop;
 import scw.aop.Filter;
-import scw.aop.InstanceNameFilter;
+import scw.aop.InstanceNamesFilter;
+import scw.aop.ProxyUtils;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.auto.AutoBeanUtils;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
 import scw.core.Destroy;
 import scw.core.Init;
-import scw.core.instance.InstanceException;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
@@ -32,7 +32,7 @@ import scw.core.utils.CollectionUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.lang.Ignore;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.property.MultiPropertyFactory;
@@ -46,7 +46,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 	private volatile HashSet<String> notFoundSet = new HashSet<String>();
 	protected final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
 	private final LinkedList<BeanFactoryLifeCycle> beanFactoryLifeCycles = new LinkedList<BeanFactoryLifeCycle>();
-	private Aop aop;
+	protected final LinkedList<String> filterNameList = new LinkedList<String>();
 
 	public DefaultBeanFactory() {
 		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
@@ -147,6 +147,10 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
+		if (name.indexOf("DefaultExceptionHandler") != -1) {
+			System.out.println(name);
+		}
+
 		Object object = singletonMap.get(name);
 		if (object != null) {
 			return (T) object;
@@ -191,7 +195,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 			obj = definition.create();
 			init(t, definition, obj);
 		} catch (Exception e) {
-			throw new InstanceException(definition.getId(), e);
+			throw new BeansException(definition.getId(), e);
 		}
 		return obj;
 	}
@@ -248,7 +252,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 			obj = definition.create(params);
 			init(t, definition, obj);
 		} catch (Exception e) {
-			throw new InstanceException(definition.getId(), e);
+			throw new BeansException(definition.getId(), e);
 		}
 		return obj;
 	}
@@ -369,15 +373,21 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 	}
 
 	public Aop getAop() {
-		return aop;
+		return new DefaultAop(Arrays.asList((Filter)new InstanceNamesFilter(this, filterNameList)));
 	}
 
 	public void init() throws Exception {
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
-		this.aop = createAop();
 		propertyFactory.addAll(InstanceUtils.getConfigurationList(PropertyFactory.class, this, getPropertyFactory()),
 				true);
+		for (Class<Filter> filter : ProxyUtils.FILTERS) {
+			if (!isInstance(filter)) {
+				continue;
+			}
+			filterNameList.add(filter.getName());
+		}
+
 		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
 				getPropertyFactory())) {
 			addBeanConfiguration(configuration);
@@ -387,16 +397,6 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 				this, getPropertyFactory())) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
-	}
-
-	protected Aop createAop() {
-		Collection<Class<Filter>> filterClassList = InstanceUtils.getConfigurationClassList(Filter.class,
-				propertyFactory);
-		List<Filter> filters = new LinkedList<Filter>();
-		for (Class<?> clazz : filterClassList) {
-			filters.add(new InstanceNameFilter(clazz.getName(), this));
-		}
-		return new DefaultAop(filters);
 	}
 
 	public void destroy() throws Exception {
@@ -464,11 +464,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 		}
 
 		public Object create(Object... params) throws Exception {
-			throw new UnsupportedException(getId());
+			throw new NotSupportedException(getId());
 		}
 
 		public Object create(Class<?>[] parameterTypes, Object... params) throws Exception {
-			throw new UnsupportedException(getId());
+			throw new NotSupportedException(getId());
 		}
 
 		public boolean isProxy() {
