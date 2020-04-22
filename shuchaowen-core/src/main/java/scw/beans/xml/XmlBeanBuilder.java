@@ -65,7 +65,7 @@ public class XmlBeanBuilder extends ConstructorBeanBuilder {
 		if (!ArrayUtils.isEmpty(properties)) {
 			for (XmlBeanParameter beanProperties : properties) {
 				Field field = ReflectionUtils.getField(getTargetClass(),
-						beanProperties.getName(), true);
+						beanProperties.getDisplayName(), true);
 				if (field == null) {
 					continue;
 				}

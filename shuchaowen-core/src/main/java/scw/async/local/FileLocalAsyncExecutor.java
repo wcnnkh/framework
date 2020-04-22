@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import scw.async.AsyncException;
 import scw.async.AsyncRunnable;
+import scw.beans.BeanFactory;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.io.FileUtils;
@@ -14,22 +15,23 @@ import scw.io.JavaSerializer;
 import scw.io.ObjectFileManager;
 
 public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
-	private final ScheduledExecutorService executorService = Executors
-			.newScheduledThreadPool(4);
+	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 	private final ObjectFileManager objectFileManager;
 	private final long delayMillis;
 	private final TimeUnit delayTimeUnit;
 
-	public FileLocalAsyncExecutor(String suffix, long delayMillis,
-			TimeUnit delayTimeUnit) {
-		this(new ObjectFileManager(FileUtils.getTempDirectoryPath() + "/"
-				+ GlobalPropertyFactory.getInstance().getSystemLocalId(),
-				suffix, JavaSerializer.SERIALIZER), delayMillis, delayTimeUnit);
+	public FileLocalAsyncExecutor(BeanFactory beanFactory, String suffix, long delayMillis, TimeUnit delayTimeUnit) {
+		this(beanFactory,
+				new ObjectFileManager(
+						FileUtils.getTempDirectoryPath() + "/" + GlobalPropertyFactory.getInstance().getSystemLocalId(),
+						suffix, JavaSerializer.SERIALIZER),
+				delayMillis, delayTimeUnit);
 	}
 
-	public FileLocalAsyncExecutor(ObjectFileManager objectFileManager,
-			long delayMillis, TimeUnit delayTimeUnit) {
+	public FileLocalAsyncExecutor(BeanFactory beanFactory, ObjectFileManager objectFileManager, long delayMillis,
+			TimeUnit delayTimeUnit) {
 		super(true);
+		setBeanFactory(beanFactory);
 		this.objectFileManager = objectFileManager;
 		this.delayMillis = delayMillis;
 		this.delayTimeUnit = delayTimeUnit;
@@ -66,8 +68,7 @@ public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 			Object rtn;
 			try {
 				rtn = asyncRunnable.call();
-				if (rtn != null
-						&& ClassUtils.isAssignableValue(boolean.class, rtn)) {
+				if (rtn != null && ClassUtils.isAssignableValue(boolean.class, rtn)) {
 					if (!((Boolean) rtn).booleanValue()) {
 						retry();
 						return;

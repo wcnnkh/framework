@@ -28,9 +28,9 @@ public final class BeanUtils {
 		for (int i = 0; i < methodParameters.length; i++) {
 			XmlBeanParameter beanMethodParameter = beanMethodParameters[i]
 					.clone();
-			if (!StringUtils.isNull(beanMethodParameter.getName())) {
+			if (!StringUtils.isNull(beanMethodParameter.getDisplayName())) {
 				for (int a = 0; a < paramNames.length; a++) {
-					if (paramNames[a].equals(beanMethodParameter.getName())) {
+					if (paramNames[a].equals(beanMethodParameter.getDisplayName())) {
 						types[a] = parameterTypes[a];
 						methodParameters[a] = beanMethodParameters[i].clone();
 						methodParameters[a].setType(parameterTypes[a]);

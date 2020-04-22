@@ -16,7 +16,7 @@ import scw.logger.LoggerUtils;
  * @author shuchaowen
  *
  */
-@Configuration
+@Configuration(order=Integer.MAX_VALUE)
 public final class TransactionFilter implements Filter {
 	private static Logger logger = LoggerUtils.getLogger(TransactionFilter.class);
 	private final TransactionDefinition transactionDefinition;

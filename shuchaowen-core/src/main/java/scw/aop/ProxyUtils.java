@@ -3,7 +3,7 @@ package scw.aop;
 import java.lang.reflect.Method;
 
 import scw.core.instance.InstanceUtils;
-import scw.util.result.CommonResult;
+import scw.util.result.SimpleResult;
 
 public final class ProxyUtils {
 
@@ -38,20 +38,20 @@ public final class ProxyUtils {
 	 * @param args
 	 * @return
 	 */
-	public static CommonResult<Object> ignoreMethod(Object obj, Method method,
+	public static SimpleResult<Object> ignoreMethod(Object obj, Method method,
 			Object[] args) {
 		if (args == null || args.length == 0) {
 			if (method.getName().equals("hashCode")) {
-				return new CommonResult<Object>(true, ignoreHashCode(obj));
+				return new SimpleResult<Object>(true, ignoreHashCode(obj));
 			} else if (method.getName().equals("toString")) {
-				return new CommonResult<Object>(true, ignoreToString(obj));
+				return new SimpleResult<Object>(true, ignoreToString(obj));
 			}
 		}
 
 		if (args != null && args.length == 1
 				&& method.getName().equals("equals")) {
-			return new CommonResult<Object>(true, obj == args[0]);
+			return new SimpleResult<Object>(true, obj == args[0]);
 		}
-		return new CommonResult<Object>(false);
+		return new SimpleResult<Object>(false);
 	}
 }

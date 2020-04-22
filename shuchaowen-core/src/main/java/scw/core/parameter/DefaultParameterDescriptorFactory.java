@@ -10,13 +10,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.core.instance.annotation.Configuration;
+import scw.core.parameter.field.DefaultFieldDescriptor;
+import scw.core.parameter.field.FieldDescriptor;
 import scw.core.reflect.ReflectionUtils;
 
 @Configuration(order=Integer.MIN_VALUE)
 public class DefaultParameterDescriptorFactory implements ParameterDescriptorFactory {
 
-	public FieldParameterDescriptor[] getParameterDescriptors(Class<?> clazz) {
-		List<FieldParameterDescriptor> parameterConfigs = new LinkedList<FieldParameterDescriptor>();
+	public FieldDescriptor[] getFieldDescriptors(Class<?> clazz) {
+		List<FieldDescriptor> parameterConfigs = new LinkedList<FieldDescriptor>();
 		Class<?> clz = clazz;
 		while (clz != null && clz != Object.class) {
 			for (Field field : clz.getDeclaredFields()) {
@@ -25,12 +27,12 @@ public class DefaultParameterDescriptorFactory implements ParameterDescriptorFac
 				}
 
 				ReflectionUtils.setAccessibleField(field);
-				parameterConfigs.add(new FieldParameterDescriptor(field));
+				parameterConfigs.add(new DefaultFieldDescriptor(field));
 			}
 			clz = clz.getSuperclass();
 		}
 		return parameterConfigs
-				.toArray(new FieldParameterDescriptor[parameterConfigs.size()]);
+				.toArray(new FieldDescriptor[parameterConfigs.size()]);
 	}
 
 	public ParameterDescriptor[] getParameterDescriptors(Constructor<?> constructor) {

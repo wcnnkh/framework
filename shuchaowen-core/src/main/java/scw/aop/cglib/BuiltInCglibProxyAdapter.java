@@ -17,7 +17,7 @@ import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NestedExceptionUtils;
-import scw.util.result.CommonResult;
+import scw.util.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class BuiltInCglibProxyAdapter extends AbstractProxyAdapter {
@@ -53,7 +53,7 @@ public class BuiltInCglibProxyAdapter extends AbstractProxyAdapter {
 		}
 
 		public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-			CommonResult<Object> ignoreResult = ProxyUtils.ignoreMethod(obj, method, args);
+			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(obj, method, args);
 			if (ignoreResult.isSuccess()) {
 				return ignoreResult.getData();
 			}

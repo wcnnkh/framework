@@ -13,7 +13,7 @@ import scw.aop.FilterChain;
 import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
 import scw.core.instance.annotation.Configuration;
-import scw.util.result.CommonResult;
+import scw.util.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE + 100)
 public class JdkProxyAdapter extends AbstractProxyAdapter {
@@ -50,7 +50,7 @@ public class JdkProxyAdapter extends AbstractProxyAdapter {
 		}
 
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			CommonResult<Object> ignoreResult = ProxyUtils.ignoreMethod(proxy, method, args);
+			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(proxy, method, args);
 			if (ignoreResult.isSuccess()) {
 				return ignoreResult.getData();
 			}

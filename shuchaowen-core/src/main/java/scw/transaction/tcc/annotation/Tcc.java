@@ -18,6 +18,8 @@ public @interface Tcc {
 	public String confirm() default "";
 
 	public String cancel() default "";
+	
+	public String beanName() default "";
 
 	/**
 	 * TCC事务的服务方式， 默认是以定时器的方式重试

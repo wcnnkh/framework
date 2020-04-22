@@ -5,16 +5,16 @@ import java.io.Serializable;
 import scw.lang.Ignore;
 
 @Ignore
-public class CommonResult<T> implements Serializable {
+public class SimpleResult<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final boolean success;
 	private final T data;
 
-	public CommonResult(boolean success) {
+	public SimpleResult(boolean success) {
 		this(success, null);
 	}
 
-	public CommonResult(boolean success, T data) {
+	public SimpleResult(boolean success, T data) {
 		this.success = success;
 		this.data = data;
 	}
@@ -28,7 +28,7 @@ public class CommonResult<T> implements Serializable {
 	}
 
 	@Ignore
-	public static final class AnyResult extends CommonResult<Object> {
+	public static final class AnyResult extends SimpleResult<Object> {
 		private static final long serialVersionUID = 1L;
 
 		public AnyResult(boolean success) {

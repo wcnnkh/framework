@@ -7,6 +7,8 @@ public interface ParameterDescriptor{
 	AnnotatedElement getAnnotatedElement();
 	
 	String getName();
+	
+	String getDisplayName();
 
 	Class<?> getType();
 

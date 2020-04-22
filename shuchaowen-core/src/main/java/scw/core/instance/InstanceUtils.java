@@ -127,7 +127,7 @@ public final class InstanceUtils {
 	}
 
 	private static String getDefaultName(Class<?> clazz, ParameterDescriptor parameterConfig) {
-		return clazz.getClass().getName() + "." + parameterConfig.getName();
+		return clazz.getClass().getName() + "." + parameterConfig.getDisplayName();
 	}
 
 	private static Value getProperty(PropertyFactory propertyFactory, Class<?> clazz,

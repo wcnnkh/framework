@@ -9,7 +9,7 @@ import scw.logger.LoggerUtils;
 public abstract class AbstractAsyncExecutor extends BeanFactoryAccessor
 		implements AsyncExecutor, BeanFactoryAware {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
-
+	
 	protected Object executeInternal(AsyncRunnable asyncRunnable)
 			throws Exception {
 		if (asyncRunnable == null) {
