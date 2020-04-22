@@ -16,8 +16,6 @@ import java.util.Set;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.annotation.DefaultValue;
-import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.Configuration;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
@@ -29,12 +27,10 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
 import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.comparator.CompareUtils;
-import scw.util.value.StringValue;
 import scw.util.value.Value;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
@@ -131,19 +127,15 @@ public final class InstanceUtils {
 	}
 
 	private static Value getProperty(PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptor parameterConfig) {
-		ParameterName parameterName = parameterConfig.getAnnotatedElement().getAnnotation(ParameterName.class);
+			ParameterDescriptor parameterDescriptor) {
 		Value value = propertyFactory
-				.get(parameterName == null ? getDefaultName(clazz, parameterConfig) : parameterName.value());
+				.get(getDefaultName(clazz, parameterDescriptor));
 		if (value == null) {
-			DefaultValue defaultValue = parameterConfig.getAnnotatedElement().getAnnotation(DefaultValue.class);
-			if (defaultValue != null) {
-				value = new StringValue(defaultValue.value());
-			}
+			value = parameterDescriptor.getDefaultValue();
 		}
 
 		if (value != null) {
-			ResourceParameter resourceParameter = parameterConfig.getAnnotatedElement()
+			ResourceParameter resourceParameter = parameterDescriptor.getAnnotatedElement()
 					.getAnnotation(ResourceParameter.class);
 			if (resourceParameter != null) {
 				if (!ResourceUtils.getResourceOperations().isExist(value.getAsString())) {
@@ -156,26 +148,16 @@ public final class InstanceUtils {
 
 	private static String getInstanceName(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
 			Class<?> clazz, ParameterDescriptor parameterConfig) {
-		ParameterName parameterName = parameterConfig.getAnnotatedElement().getAnnotation(ParameterName.class);
-		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
-			Value value = propertyFactory.get(parameterName.value());
-			if (value == null) {
-				return null;
-			}
-
-			return instanceFactory.isInstance(value.getAsString()) ? null : value.getAsString();
-		} else {
-			if (instanceFactory.isInstance(parameterConfig.getType())) {
-				return parameterConfig.getType().getName();
-			}
-
-			String name = getDefaultName(clazz, parameterConfig);
-			if (instanceFactory.isInstance(name)) {
-				return name;
-			}
-
-			return null;
+		if (instanceFactory.isInstance(parameterConfig.getType())) {
+			return parameterConfig.getType().getName();
 		}
+
+		String name = getDefaultName(clazz, parameterConfig);
+		if (instanceFactory.isInstance(name)) {
+			return name;
+		}
+
+		return null;
 	}
 
 	public static boolean isAuto(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,

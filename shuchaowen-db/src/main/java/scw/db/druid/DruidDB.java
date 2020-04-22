@@ -2,8 +2,8 @@ package scw.db.druid;
 
 import scw.beans.annotation.Bean;
 import scw.core.Destroy;
-import scw.core.annotation.DefaultValue;
 import scw.core.instance.annotation.ResourceParameter;
+import scw.core.parameter.annotation.DefaultValue;
 import scw.core.utils.XUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;

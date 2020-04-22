@@ -2,8 +2,8 @@ package scw.db.hikaricp;
 
 import java.util.Map;
 
-import scw.core.annotation.DefaultValue;
 import scw.core.instance.annotation.ResourceParameter;
+import scw.core.parameter.annotation.DefaultValue;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.io.resource.ResourceUtils;

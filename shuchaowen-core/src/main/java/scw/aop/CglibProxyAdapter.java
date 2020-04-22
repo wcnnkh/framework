@@ -1,17 +1,10 @@
-package scw.aop.cglib;
+package scw.aop;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 
-import scw.aop.AbstractProxyAdapter;
-import scw.aop.DefaultFilterChain;
-import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.Proxy;
-import scw.aop.ProxyUtils;
 import scw.cglib.proxy.Enhancer;
 import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
@@ -20,7 +13,7 @@ import scw.lang.NestedExceptionUtils;
 import scw.util.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE)
-public class BuiltInCglibProxyAdapter extends AbstractProxyAdapter {
+public class CglibProxyAdapter extends AbstractProxyAdapter {
 	public boolean isSupport(Class<?> clazz) {
 		return !Modifier.isFinal(clazz.getModifiers());
 	}
@@ -30,12 +23,12 @@ public class BuiltInCglibProxyAdapter extends AbstractProxyAdapter {
 	}
 
 	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
-		return BuiltInCglibProxy.createEnhancer(clazz, getInterfaces(clazz, interfaces)).createClass();
+		return CglibProxy.createEnhancer(clazz, getInterfaces(clazz, interfaces)).createClass();
 	}
 
 	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters,
 			FilterChain filterChain) {
-		return new BuiltInCglibProxy(clazz, getInterfaces(clazz, interfaces),
+		return new CglibProxy(clazz, getInterfaces(clazz, interfaces),
 				new FiltersConvertCglibMethodInterceptor(clazz, filters, filterChain));
 	}
 
@@ -87,5 +80,35 @@ public class BuiltInCglibProxyAdapter extends AbstractProxyAdapter {
 			return clazz;
 		}
 		return clz;
+	}
+	
+	public static final class CglibProxy extends AbstractProxy {
+		private Enhancer enhancer;
+
+		public CglibProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor methodInterceptor) {
+			super(clazz);
+			this.enhancer = createEnhancer(clazz, interfaces);
+			this.enhancer.setCallback(methodInterceptor);
+		}
+
+		public Object create() {
+			return enhancer.create();
+		}
+
+		public Object createInternal(Class<?>[] parameterTypes, Object[] arguments) {
+			return enhancer.create(parameterTypes, arguments);
+		}
+
+		public static Enhancer createEnhancer(Class<?> clazz, Class<?>[] interfaces) {
+			Enhancer enhancer = new Enhancer();
+			if (Serializable.class.isAssignableFrom(clazz)) {
+				enhancer.setSerialVersionUID(1L);
+			}
+			if (interfaces != null) {
+				enhancer.setInterfaces(interfaces);
+			}
+			enhancer.setSuperclass(clazz);
+			return enhancer;
+		}
 	}
 }

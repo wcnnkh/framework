@@ -4,9 +4,9 @@ import java.util.Properties;
 
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
-import scw.core.annotation.DefaultValue;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.annotation.ResourceParameter;
+import scw.core.parameter.annotation.DefaultValue;
 import scw.core.utils.StringUtils;
 import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;

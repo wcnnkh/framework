@@ -1,6 +1,6 @@
 package scw.tencent.wx.token;
 
-import scw.core.annotation.ParameterName;
+import scw.core.parameter.annotation.ParameterName;
 import scw.tencent.wx.AccessToken;
 import scw.tencent.wx.WeiXinUtils;
 

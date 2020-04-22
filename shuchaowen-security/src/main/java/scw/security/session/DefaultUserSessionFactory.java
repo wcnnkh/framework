@@ -1,8 +1,8 @@
 package scw.security.session;
 
-import scw.core.annotation.DefaultValue;
 import scw.core.annotation.Order;
-import scw.core.annotation.ParameterName;
+import scw.core.parameter.annotation.DefaultValue;
+import scw.core.parameter.annotation.ParameterName;
 import scw.data.MemcachedDataTemplete;
 import scw.data.RedisDataTemplete;
 import scw.data.TemporaryCache;

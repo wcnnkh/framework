@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import scw.core.annotation.ParameterName;
 import scw.core.instance.InstanceFactory;
+import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.Bytes;

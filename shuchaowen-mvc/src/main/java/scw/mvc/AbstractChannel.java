@@ -15,11 +15,9 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
-import scw.core.annotation.DefaultValue;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
@@ -38,7 +36,6 @@ import scw.util.value.AbstractValueFactory;
 import scw.util.value.DefaultValueDefinition;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
-import scw.util.value.ValueUtils;
 
 public abstract class AbstractChannel extends AbstractValueFactory<String> implements Channel, Destroy {
 	private final long createTime;
@@ -241,19 +238,11 @@ public abstract class AbstractChannel extends AbstractValueFactory<String> imple
 		if (dateFormat != null) {
 			return dateFormat(dateFormat, parameterDescriptor);
 		}
-
-		DefaultValue defaultValue = parameterDescriptor.getAnnotatedElement().getAnnotation(DefaultValue.class);
-		if (defaultValue != null) {
-			Object value = getObject(parameterDescriptor.getDisplayName(),
-					parameterDescriptor.getType().isPrimitive()
-							? ClassUtils.resolvePrimitiveIfNecessary(parameterDescriptor.getType())
-							: parameterDescriptor.getGenericType());
-			if (value == null) {
-				return ValueUtils.parse(defaultValue.value(), parameterDescriptor.getGenericType());
-			}
-			return value;
+		
+		Value value = parameterDescriptor.getDefaultValue();
+		if(value != null){
+			return value.getAsObject(parameterDescriptor.getGenericType());
 		}
-
 		return getObject(parameterDescriptor.getDisplayName(), parameterDescriptor.getGenericType());
 	}
 

@@ -1,8 +1,8 @@
 package scw.result.support;
 
 import scw.beans.annotation.Bean;
-import scw.core.annotation.DefaultValue;
-import scw.core.annotation.ParameterName;
+import scw.core.parameter.annotation.DefaultValue;
+import scw.core.parameter.annotation.ParameterName;
 import scw.lang.Nullable;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;

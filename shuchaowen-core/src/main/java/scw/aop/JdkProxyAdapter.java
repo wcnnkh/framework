@@ -1,18 +1,13 @@
-package scw.aop.jdk;
+package scw.aop;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
 
-import scw.aop.AbstractProxyAdapter;
-import scw.aop.DefaultFilterChain;
-import scw.aop.EmptyInvoker;
-import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Proxy;
-import scw.aop.ProxyUtils;
 import scw.core.instance.annotation.Configuration;
+import scw.lang.UnsupportedException;
 import scw.util.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE + 100)
@@ -62,5 +57,25 @@ public class JdkProxyAdapter extends AbstractProxyAdapter {
 
 	public Class<?> getUserClass(Class<?> clazz) {
 		return clazz.getInterfaces()[0];
+	}
+	
+	public static final class JdkProxy extends AbstractProxy {
+		private Class<?>[] interfaces;
+		private InvocationHandler invocationHandler;
+
+		public JdkProxy(Class<?> clazz, Class<?>[] interfaces, InvocationHandler invocationHandler) {
+			super(clazz);
+			this.interfaces = interfaces;
+			this.invocationHandler = invocationHandler;
+		}
+
+		public Object create() {
+			return java.lang.reflect.Proxy.newProxyInstance(getTargetClass().getClassLoader(),
+					interfaces == null ? new Class<?>[0] : interfaces, invocationHandler);
+		}
+
+		public Object createInternal(Class<?>[] parameterTypes, Object[] arguments) {
+			throw new UnsupportedException(getTargetClass().getName() + "," + Arrays.toString(parameterTypes));
+		}
 	}
 }
