@@ -18,7 +18,7 @@ import scw.locks.annotation.LockParameter;
  * @author shuchaowen
  *
  */
-@Configuration
+@Configuration(order=Integer.MAX_VALUE)
 public final class LockFilter implements Filter {
 	private LockFactory lockFactory;
 

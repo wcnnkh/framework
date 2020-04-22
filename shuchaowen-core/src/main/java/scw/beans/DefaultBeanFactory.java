@@ -14,9 +14,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.aop.Aop;
+import scw.aop.Context;
 import scw.aop.DefaultAop;
 import scw.aop.Filter;
-import scw.aop.InstanceNamesFilter;
+import scw.aop.FilterChain;
+import scw.aop.InstanceFactoryFilterChain;
+import scw.aop.Invoker;
 import scw.aop.ProxyUtils;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.auto.AutoBeanUtils;
@@ -38,7 +41,7 @@ import scw.logger.LoggerUtils;
 import scw.util.value.property.MultiPropertyFactory;
 import scw.util.value.property.PropertyFactory;
 
-public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
+public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
@@ -369,7 +372,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 	}
 
 	public Aop getAop() {
-		return new DefaultAop(Arrays.asList((Filter) new InstanceNamesFilter(this, filterNameList)));
+		return new DefaultAop(this);
 	}
 
 	public void init() throws Exception {
@@ -478,5 +481,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy {
 		public AnnotatedElement getAnnotatedElement() {
 			return getTargetClass();
 		}
+	}
+
+	public Object doFilter(Invoker invoker, Context context,
+			FilterChain filterChain) throws Throwable {
+		InstanceFactoryFilterChain chain = new InstanceFactoryFilterChain(this, filterNameList, filterChain);
+		return chain.doFilter(invoker, context);
 	}
 }

@@ -17,7 +17,7 @@ import scw.security.limit.annotation.CountLimitSecurity;
  * @author shuchaowen
  *
  */
-@Configuration
+@Configuration(order=Integer.MAX_VALUE)
 public final class CountLimitFilter implements Filter {
 	private static Logger logger = LoggerUtils.getLogger(CountLimitFilter.class);
 	private final InstanceFactory instanceFactory;

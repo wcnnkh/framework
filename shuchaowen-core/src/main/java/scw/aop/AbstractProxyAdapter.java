@@ -1,15 +1,8 @@
 package scw.aop;
 
-import java.util.Collection;
-
 import scw.core.utils.ArrayUtils;
 
 public abstract class AbstractProxyAdapter implements ProxyAdapter {
-
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
-			Collection<? extends Filter> filters) {
-		return proxy(clazz, interfaces, filters, null);
-	}
 
 	protected Class<?>[] getInterfaces(Class<?> clazz, Class<?>[] interfaces) {
 		if (ArrayUtils.isEmpty(interfaces) && clazz.isInterface()) {

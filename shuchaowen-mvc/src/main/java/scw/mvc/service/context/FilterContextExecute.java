@@ -1,8 +1,9 @@
-package scw.mvc.service;
+package scw.mvc.service.context;
 
 import scw.context.Context;
 import scw.context.ContextExecute;
 import scw.mvc.Channel;
+import scw.mvc.service.FilterChain;
 
 class FilterContextExecute implements ContextExecute<Object>{
 	private Channel channel;

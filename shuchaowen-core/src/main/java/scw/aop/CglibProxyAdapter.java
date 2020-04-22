@@ -3,7 +3,6 @@ package scw.aop;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
 
 import scw.cglib.proxy.Enhancer;
 import scw.cglib.proxy.MethodInterceptor;
@@ -23,37 +22,39 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 	}
 
 	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
-		return CglibProxy.createEnhancer(clazz, getInterfaces(clazz, interfaces)).createClass();
+		return CglibProxy.createEnhancer(clazz,
+				getInterfaces(clazz, interfaces)).createClass();
 	}
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters,
+	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
 			FilterChain filterChain) {
 		return new CglibProxy(clazz, getInterfaces(clazz, interfaces),
-				new FiltersConvertCglibMethodInterceptor(clazz, filters, filterChain));
+				new FiltersConvertCglibMethodInterceptor(clazz, filterChain));
 	}
 
-	private static final class FiltersConvertCglibMethodInterceptor implements MethodInterceptor, Serializable {
+	private static final class FiltersConvertCglibMethodInterceptor implements
+			MethodInterceptor, Serializable {
 		private static final long serialVersionUID = 1L;
-		private final Collection<? extends Filter> filters;
 		private final Class<?> targetClass;
 		private final FilterChain filterChain;
 
-		public FiltersConvertCglibMethodInterceptor(Class<?> targetClass, Collection<? extends Filter> filters,
+		public FiltersConvertCglibMethodInterceptor(Class<?> targetClass,
 				FilterChain filterChain) {
-			this.filters = filters;
 			this.targetClass = targetClass;
 			this.filterChain = filterChain;
 		}
 
-		public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(obj, method, args);
+		public Object intercept(Object obj, Method method, Object[] args,
+				MethodProxy proxy) throws Throwable {
+			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(obj,
+					method, args);
 			if (ignoreResult.isSuccess()) {
 				return ignoreResult.getData();
 			}
 
 			Context context = new Context(obj, targetClass, method, args);
-			DefaultFilterChain filterChain = new DefaultFilterChain(filters, this.filterChain);
-			return filterChain.doFilter(new CglibInvoker(proxy, obj), context);
+			Invoker invoker = new CglibInvoker(proxy, obj);
+			return filterChain.doFilter(invoker, context);
 		}
 	}
 
@@ -86,7 +87,8 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 	public static final class CglibProxy extends AbstractProxy {
 		private Enhancer enhancer;
 
-		public CglibProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor methodInterceptor) {
+		public CglibProxy(Class<?> clazz, Class<?>[] interfaces,
+				MethodInterceptor methodInterceptor) {
 			super(clazz);
 			this.enhancer = createEnhancer(clazz, interfaces);
 			this.enhancer.setCallback(methodInterceptor);
@@ -96,11 +98,13 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 			return enhancer.create();
 		}
 
-		public Object createInternal(Class<?>[] parameterTypes, Object[] arguments) {
+		public Object createInternal(Class<?>[] parameterTypes,
+				Object[] arguments) {
 			return enhancer.create(parameterTypes, arguments);
 		}
 
-		public static Enhancer createEnhancer(Class<?> clazz, Class<?>[] interfaces) {
+		public static Enhancer createEnhancer(Class<?> clazz,
+				Class<?>[] interfaces) {
 			Enhancer enhancer = new Enhancer();
 			if (Serializable.class.isAssignableFrom(clazz)) {
 				enhancer.setSerialVersionUID(1L);

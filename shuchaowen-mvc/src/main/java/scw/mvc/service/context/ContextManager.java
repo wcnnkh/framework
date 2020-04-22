@@ -1,4 +1,4 @@
-package scw.mvc.service;
+package scw.mvc.service.context;
 
 import scw.context.Context;
 import scw.context.Propagation;
@@ -8,6 +8,7 @@ import scw.logger.LoggerUtils;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
 import scw.mvc.action.filter.ActionFilterChain;
+import scw.mvc.service.FilterChain;
 
 public class ContextManager extends ThreadLocalDefaultContextManager {
 	private static Logger logger = LoggerUtils.getLogger(ContextManager.class);

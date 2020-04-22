@@ -1,6 +1,5 @@
 package scw.aop;
 
-import java.util.Collection;
 
 /**
  * 代理桥接器
@@ -17,8 +16,7 @@ public interface ProxyAdapter {
 	 */
 	boolean isSupport(Class<?> clazz);
 
-	Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
-			Collection<? extends Filter> filters, FilterChain filterChain);
+	Proxy proxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain);
 
 	/**
 	 * 获取代理类

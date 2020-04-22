@@ -18,7 +18,8 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
 	protected final LinkedList<BeanMethod> destroyMethods = new LinkedList<BeanMethod>();
 	private final Class<?> targetClass;
 
-	public AbstractBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
+	public AbstractBeanBuilder(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> targetClass) {
 		this.targetClass = targetClass;
 		this.propertyFactory = propertyFactory;
 		this.beanFactory = beanFactory;
@@ -33,16 +34,19 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
 	}
 
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
-		return beanFactory.getAop().proxy(targetClass, interfaces, null,
+		return beanFactory.getAop().proxy(targetClass, interfaces,
 				new InstanceFactoryFilterChain(beanFactory, filterNames, null));
 	}
 
-	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass, Class<?>[] interfaces) {
-		return beanFactory.getAop().proxyInstance(targetClass, instance, interfaces, null,
+	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass,
+			Class<?>[] interfaces) {
+		return beanFactory.getAop().proxyInstance(targetClass, instance,
+				interfaces,
 				new InstanceFactoryFilterChain(beanFactory, filterNames, null));
 	}
 
-	protected Object createProxyInstance(Class<?> targetClass, Class<?>[] parameterTypes, Object[] args) {
+	protected Object createProxyInstance(Class<?> targetClass,
+			Class<?>[] parameterTypes, Object[] args) {
 		if (getTargetClass().isInterface() && filterNames.isEmpty()) {
 			logger.warn("empty filter: {}", getTargetClass().getName());
 		}

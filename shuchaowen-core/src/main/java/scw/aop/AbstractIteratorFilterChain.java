@@ -1,9 +1,14 @@
 package scw.aop;
 
-public abstract class AbstractFilterChain implements FilterChain {
+import scw.aop.Context;
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
+
+abstract class AbstractIteratorFilterChain implements FilterChain {
 	private final FilterChain chain;
 
-	public AbstractFilterChain(FilterChain chain) {
+	public AbstractIteratorFilterChain(FilterChain chain) {
 		this.chain = chain;
 	}
 

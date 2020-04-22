@@ -1,7 +1,5 @@
 package scw.mvc.rpc.http;
 
-import java.util.Arrays;
-
 import scw.beans.BeanFactory;
 import scw.mvc.rpc.RPCProxyFactory;
 import scw.util.value.property.PropertyFactory;
@@ -19,8 +17,7 @@ public class HttpRpcFactory extends HttpRpcProxy implements RPCProxyFactory {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getProxy(Class<T> clazz) {
-		return (T) beanFactory.getAop().proxy(clazz, null, Arrays.asList(this))
-				.create();
+		return (T) beanFactory.getAop().proxy(clazz, null, this).create();
 	}
 
 }

@@ -1,6 +1,5 @@
 package scw.aop;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
 import scw.lang.NotSupportedException;
@@ -37,11 +36,10 @@ public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements
 	}
 
 	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
-			Collection<? extends Filter> filters, FilterChain filterChain) {
+			FilterChain filterChain) {
 		for (ProxyAdapter proxyAdapter : this) {
 			if (proxyAdapter.isSupport(clazz)) {
-				return proxyAdapter.proxy(clazz, interfaces, filters,
-						filterChain);
+				return proxyAdapter.proxy(clazz, interfaces, filterChain);
 			}
 		}
 		throw new NotSupportedException(clazz.getName());

@@ -14,4 +14,9 @@ public class EmptyInvoker implements Invoker {
 	public Object invoke(Object... args) throws Throwable {
 		throw new NotSupportedException(method.toString());
 	}
+	
+	@Override
+	public String toString() {
+		return method.toString();
+	}
 }

@@ -18,7 +18,8 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 	private Method method;
 	private Class<?> methodTargetClass;
 
-	public MethodBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> methodTargetClass,
+	public MethodBeanBuilder(BeanFactory beanFactory,
+			PropertyFactory propertyFactory, Class<?> methodTargetClass,
 			Method method) {
 		super(beanFactory, propertyFactory, method.getReturnType());
 		this.methodTargetClass = methodTargetClass;
@@ -27,11 +28,13 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 
 	@Override
 	protected boolean isProxy() {
-		return BeanUtils.isProxy(method.getReturnType(), method);
+		return BeanUtils.isProxy(method.getReturnType(), method)
+				&& method.getReturnType().isInterface();
 	}
 
 	public boolean isInstance() {
-		return InstanceUtils.isAuto(beanFactory, propertyFactory, getTargetClass(),
+		return InstanceUtils.isAuto(beanFactory, propertyFactory,
+				getTargetClass(),
 				ParameterUtils.getParameterDescriptors(method), null, method);
 	}
 
@@ -40,7 +43,8 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 			throw new NotSupportedException("不支持的构造方式");
 		}
 
-		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory, getTargetClass(),
+		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory,
+				getTargetClass(),
 				ParameterUtils.getParameterDescriptors(method), null);
 		return invoke(method, args);
 	}
@@ -48,10 +52,11 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 	private Object invoke(Method method, Object[] args) throws Exception {
 		ReflectionUtils.setAccessibleMethod(method);
 		Object bean = method.invoke(
-				Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), args);
+				Modifier.isStatic(method.getModifiers()) ? null : beanFactory
+						.getInstance(methodTargetClass), args);
 
 		if (isProxy()) {
-			return createInstanceProxy(bean, getTargetClass(), null).create(method.getParameterTypes(), args);
+			return createInstanceProxy(bean, getTargetClass(), null).create();
 		}
 		return bean;
 	}
@@ -66,15 +71,19 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 				continue;
 			}
 
-			if (ClassUtils.isAssignableValue(Arrays.asList(method.getParameterTypes()), Arrays.asList(params))) {
+			if (ClassUtils.isAssignableValue(
+					Arrays.asList(method.getParameterTypes()),
+					Arrays.asList(params))) {
 				return invoke(method, params);
 			}
 		}
 		throw new NotSupportedException(method.toString());
 	}
 
-	public Object create(Class<?>[] parameterTypes, Object... params) throws Exception {
-		Method method = methodTargetClass.getDeclaredMethod(this.method.getName(), parameterTypes);
+	public Object create(Class<?>[] parameterTypes, Object... params)
+			throws Exception {
+		Method method = methodTargetClass.getDeclaredMethod(
+				this.method.getName(), parameterTypes);
 		return invoke(method, params);
 	}
 }
