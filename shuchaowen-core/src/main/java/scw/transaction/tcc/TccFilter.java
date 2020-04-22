@@ -1,7 +1,6 @@
 package scw.transaction.tcc;
 
-import java.lang.reflect.Method;
-
+import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
@@ -20,27 +19,26 @@ public class TccFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
-			FilterChain filterChain) throws Throwable {
-		final Tcc tcc = method.getAnnotation(Tcc.class);
+	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+		final Tcc tcc = context.getMethod().getAnnotation(Tcc.class);
 		if (tcc == null) {
-			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
+			return filterChain.doFilter(invoker, context);
 		}
 
 		if (!instanceFactory.isInstance(tcc.service())) {
-			throw new UnsupportedException("not support tcc: " + method.toString());
+			throw new UnsupportedException("not support tcc: " + context.getMethod().toString());
 		}
 
 		if (!TransactionManager.hasTransaction()) {
 			throw new UnsupportedException("not exist transaction");
 		}
 
-		Object result = filterChain.doFilter(invoker, proxy, targetClass, method, args);
+		Object result = filterChain.doFilter(invoker, context);
 		final TccService tccService = instanceFactory.getInstance(tcc.service());
-		final Stage confirm = tccService.createConfirm(targetClass, method, result, args, tcc);
-		final Stage cancel = tccService.createCancel(targetClass, method, result, args, tcc);
+		final Stage confirm = tccService.createConfirm(context, result, tcc);
+		final Stage cancel = tccService.createCancel(context, result, tcc);
 		if (confirm == null && cancel == null) {
-			throw new TccException("confirm or cancel At least one: " + method.toString());
+			throw new TccException("confirm or cancel At least one: " + context.getMethod().toString());
 		}
 
 		TransactionManager.transactionLifeCycle(new TransactionLifeCycle() {

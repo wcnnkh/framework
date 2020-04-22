@@ -50,15 +50,16 @@ public class JdkProxyAdapter extends AbstractProxyAdapter {
 				return ignoreResult.getData();
 			}
 
+			Context context = new Context(proxy, targetClass, method, args);
 			FilterChain filterChain = new DefaultFilterChain(filters, this.filterChain);
-			return filterChain.doFilter(new EmptyInvoker(method), proxy, targetClass, method, args);
+			return filterChain.doFilter(new EmptyInvoker(method), context);
 		}
 	}
 
 	public Class<?> getUserClass(Class<?> clazz) {
 		return clazz.getInterfaces()[0];
 	}
-	
+
 	public static final class JdkProxy extends AbstractProxy {
 		private Class<?>[] interfaces;
 		private InvocationHandler invocationHandler;

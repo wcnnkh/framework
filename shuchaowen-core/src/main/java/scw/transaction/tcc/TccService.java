@@ -1,13 +1,12 @@
 package scw.transaction.tcc;
 
-import java.lang.reflect.Method;
-
+import scw.aop.Context;
 import scw.transaction.tcc.annotation.Tcc;
 
 public interface TccService {
-	Stage createConfirm(Class<?> targetClass, Method tryMethod, Object tryResult, Object[] args, Tcc tcc);
+	Stage createConfirm(Context context, Object tryResult, Tcc tcc);
 
-	Stage createCancel(Class<?> targetClass, Method tryMethod, Object tryResult, Object[] args, Tcc tcc);
+	Stage createCancel(Context context, Object tryResult, Tcc tcc);
 
 	void execute(Stage stage);
 }

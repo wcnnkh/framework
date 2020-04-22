@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 
+import scw.aop.Context;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.StringUtils;
 import scw.transaction.tcc.annotation.TccStage;
@@ -14,8 +15,9 @@ public class TryInfo implements Serializable {
 	private final Object tryResult;
 	private final LinkedHashMap<String, Object> parameterMap;
 
-	public TryInfo(Class<?> targetClass, Object tryResult, Method method, Object[] args) {
-		this(targetClass, tryResult, ParameterUtils.getParameterMap(method, args));
+	public TryInfo(Context context, Object tryResult) {
+		this(context.getTargetClass(), tryResult,
+				ParameterUtils.getParameterMap(context.getMethod(), context.getArgs()));
 	}
 
 	public TryInfo(Class<?> targetClass, Object tryResult, LinkedHashMap<String, Object> parameterMap) {

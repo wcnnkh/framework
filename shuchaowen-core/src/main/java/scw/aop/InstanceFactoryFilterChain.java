@@ -1,6 +1,5 @@
 package scw.aop;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -24,8 +23,7 @@ public final class InstanceFactoryFilterChain extends AbstractFilterChain {
 	}
 
 	@Override
-	protected Filter getNextFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)
-			throws Throwable {
+	protected Filter getNextFilter(Invoker invoker, Context context) throws Throwable {
 		if (iterator == null) {
 			return null;
 		}
@@ -36,7 +34,7 @@ public final class InstanceFactoryFilterChain extends AbstractFilterChain {
 				return instanceFactory.getInstance(name);
 			} else {
 				logger.warn("{}无法被实例化，已忽略使用此filter", name);
-				return getNextFilter(invoker, proxy, targetClass, method, args);
+				return getNextFilter(invoker, context);
 			}
 		}
 		return null;

@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 
+import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
@@ -63,12 +64,11 @@ public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 		return converters;
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
-			FilterChain filterChain) throws Throwable {
-		if (Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers())) {
-			ClientHttpRequest request = httpRpcRequestFactory.getHttpRequest(targetClass, method, args);
+	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+		if (Modifier.isAbstract(context.getMethod().getModifiers()) || Modifier.isInterface(context.getMethod().getModifiers())) {
+			ClientHttpRequest request = httpRpcRequestFactory.getHttpRequest(context.getTargetClass(), context.getMethod(), context.getArgs());
 			ClientHttpResponse httpInputMessage = request.execute();
-			Object obj = getMessageConverter(targetClass, method).read(method.getGenericReturnType(), httpInputMessage);
+			Object obj = getMessageConverter(context.getTargetClass(), context.getMethod()).read(context.getMethod().getGenericReturnType(), httpInputMessage);
 			if (obj instanceof ObjectResponseMessage) {
 				if (((ObjectResponseMessage) obj).getError() != null) {
 					throw ((ObjectResponseMessage) obj).getError();
@@ -78,7 +78,7 @@ public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 				return obj;
 			}
 		}
-		return filterChain.doFilter(invoker, proxy, targetClass, method, args);
+		return filterChain.doFilter(invoker, context);
 	}
 
 }

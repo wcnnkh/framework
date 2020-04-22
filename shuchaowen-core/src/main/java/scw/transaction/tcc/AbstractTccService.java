@@ -2,6 +2,7 @@ package scw.transaction.tcc;
 
 import java.lang.reflect.Method;
 
+import scw.aop.Context;
 import scw.beans.BeanFactory;
 import scw.core.utils.StringUtils;
 import scw.transaction.tcc.annotation.Tcc;
@@ -26,21 +27,21 @@ public abstract class AbstractTccService implements TccService {
 
 		return createStage(tryInfo, tcc, tcc.confirm());
 	}
-	
-	public Stage createConfirm(Class<?> targetClass, Method tryMethod, Object tryResult, Object[] args, Tcc tcc) {
+
+	public Stage createConfirm(Context context, Object tryResult, Tcc tcc) {
 		if (StringUtils.isEmpty(tcc.confirm())) {
 			return null;
 		}
 
-		return createStage(new TryInfo(targetClass, tryResult, tryMethod, args), tcc, tcc.confirm());
+		return createStage(new TryInfo(context, tryResult), tcc, tcc.confirm());
 	}
-	
-	public Stage createCancel(Class<?> targetClass, Method tryMethod, Object tryResult, Object[] args, Tcc tcc) {
+
+	public Stage createCancel(Context context, Object tryResult, Tcc tcc) {
 		if (StringUtils.isEmpty(tcc.confirm())) {
 			return null;
 		}
 
-		return createStage(new TryInfo(targetClass, tryResult, tryMethod, args), tcc, tcc.confirm());
+		return createStage(new TryInfo(context, tryResult), tcc, tcc.confirm());
 	}
 
 	public Stage createCancel(TryInfo tryInfo, Method tryMethod, Tcc tcc) {

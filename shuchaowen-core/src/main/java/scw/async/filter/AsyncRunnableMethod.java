@@ -1,8 +1,9 @@
-package scw.async;
+package scw.async.filter;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import scw.async.AbstractAsyncRunnable;
 import scw.core.reflect.ReflectionUtils;
 
 public abstract class AsyncRunnableMethod extends AbstractAsyncRunnable {

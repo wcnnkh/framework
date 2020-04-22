@@ -51,8 +51,9 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 				return ignoreResult.getData();
 			}
 
+			Context context = new Context(obj, targetClass, method, args);
 			DefaultFilterChain filterChain = new DefaultFilterChain(filters, this.filterChain);
-			return filterChain.doFilter(new CglibInvoker(proxy, obj), obj, targetClass, method, args);
+			return filterChain.doFilter(new CglibInvoker(proxy, obj), context);
 		}
 	}
 
@@ -81,7 +82,7 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 		}
 		return clz;
 	}
-	
+
 	public static final class CglibProxy extends AbstractProxy {
 		private Enhancer enhancer;
 

@@ -1,10 +1,7 @@
 package scw.async.filter;
 
-import java.lang.reflect.Method;
-
+import scw.aop.Context;
 import scw.async.AsyncExecutor;
-import scw.async.AsyncRunnableMethod;
-import scw.async.DefaultAsyncRunnableMethod;
 import scw.beans.BeanFactory;
 import scw.core.reflect.SerializableMethodHolder;
 import scw.core.utils.StringUtils;
@@ -20,27 +17,25 @@ public abstract class AbstractAsyncService implements AsyncService {
 		this.beanFactory = beanFactory;
 	}
 
-	protected AsyncRunnableMethod createAsyncExecute(Async async,
-			Class<?> targetClass, Method method, Object[] args) {
+	protected AsyncRunnableMethod createAsyncExecute(Async async, Context context) {
 		String beanName = async.beanName();
 		if (StringUtils.isEmpty(beanName)) {
-			beanName = targetClass.getName();
+			beanName = context.getTargetClass().getName();
 		}
 
 		if (!beanFactory.isInstance(beanName)) {
-			throw new UnsupportedException(method.toString());
+			throw new UnsupportedException(context.getMethod().toString());
 		}
 
-		return new DefaultAsyncRunnableMethod(new SerializableMethodHolder(
-				targetClass, method), beanName, args);
+		return new DefaultAsyncRunnableMethod(
+				new SerializableMethodHolder(context.getTargetClass(), context.getMethod()), beanName,
+				context.getArgs());
 	}
 
 	protected abstract AsyncExecutor getAsyncExecutor();
 
-	public void service(Async async, Class<?> targetClass, Method method,
-			Object[] args) throws Exception {
-		getAsyncExecutor().execute(
-				createAsyncExecute(async, targetClass, method, args));
+	public void service(Async async, Context context) throws Exception {
+		getAsyncExecutor().execute(createAsyncExecute(async, context));
 	}
 
 }

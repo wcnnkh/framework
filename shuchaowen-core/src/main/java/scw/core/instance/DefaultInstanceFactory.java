@@ -25,12 +25,12 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 			if (clazz == null) {
 				return null;
 			}
-
-			if (NoArgsInstanceFactory.class.isAssignableFrom(clazz)) {
+			
+			if(ClassUtils.isAssignableValue(clazz, this)){
 				return new InternalInstanceBuilder<T>(clazz, clazz.cast(this));
 			}
 
-			if (PropertyFactory.class.isAssignableFrom(clazz)) {
+			if (PropertyFactory.class == clazz) {
 				return new InternalInstanceBuilder<T>(clazz, clazz.cast(propertyFactory));
 			}
 

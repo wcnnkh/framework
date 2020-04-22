@@ -1,6 +1,5 @@
 package scw.aop;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -19,7 +18,7 @@ public final class DefaultFilterChain extends AbstractFilterChain {
 	}
 
 	@Override
-	protected Filter getNextFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)
+	protected Filter getNextFilter(Invoker invoker, Context context)
 			throws Throwable {
 		if (iterator == null) {
 			return null;

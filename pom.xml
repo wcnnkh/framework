@@ -487,7 +487,6 @@
 		<module>shuchaowen-testing</module>
 		<module>shuchaowen-embed</module>
 		<module>shuchaowen-dubbo</module>
-		<module>shuchaowen-tcc</module>
 		<module>shuchaowen-locks</module>
 		<module>shuchaowen-timer</module>
 		<module>shuchaowen-orm</module>
@@ -499,7 +498,6 @@
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>
 		<module>shuchaowen-result</module>
-		<module>shuchaowen-async</module>
 		<module>shuchaowen-rpc</module>
 		<module>shuchaowen-servlet</module>
 		<module>shuchaowen-office</module>

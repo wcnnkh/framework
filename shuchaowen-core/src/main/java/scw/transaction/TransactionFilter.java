@@ -1,7 +1,6 @@
 package scw.transaction;
 
-import java.lang.reflect.Method;
-
+import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
@@ -16,7 +15,7 @@ import scw.logger.LoggerUtils;
  * @author shuchaowen
  *
  */
-@Configuration(order=Integer.MAX_VALUE)
+@Configuration(order = Integer.MAX_VALUE)
 public final class TransactionFilter implements Filter {
 	private static Logger logger = LoggerUtils.getLogger(TransactionFilter.class);
 	private final TransactionDefinition transactionDefinition;
@@ -29,21 +28,20 @@ public final class TransactionFilter implements Filter {
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	private Object defaultTransaction(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
-			FilterChain filterChain) throws Throwable {
+	private Object defaultTransaction(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
 		if (TransactionManager.hasTransaction()) {
-			return result(invoker, proxy, targetClass, method, args, filterChain);
+			return result(invoker, context, filterChain);
 		}
 
-		return transaction(invoker, proxy, targetClass, method, args, filterChain, transactionDefinition);
+		return transaction(invoker, context, filterChain, transactionDefinition);
 	}
 
-	private Object transaction(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
-			FilterChain filterChain, TransactionDefinition transactionDefinition) throws Throwable {
+	private Object transaction(Invoker invoker, Context context, FilterChain filterChain,
+			TransactionDefinition transactionDefinition) throws Throwable {
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
 		Object v;
 		try {
-			v = result(invoker, proxy, targetClass, method, args, filterChain);
+			v = result(invoker, context, filterChain);
 			TransactionManager.commit(transaction);
 			return v;
 		} catch (Throwable e) {
@@ -52,29 +50,27 @@ public final class TransactionFilter implements Filter {
 		}
 	}
 
-	private Object result(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
-			FilterChain filterChain) throws Throwable {
-		Object rtn = filterChain.doFilter(invoker, proxy, targetClass, method, args);
+	private Object result(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+		Object rtn = filterChain.doFilter(invoker, context);
 		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
 			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
 			if (result.isRollbackOnly()) {
 				TransactionManager.setRollbackOnly();
 				if (logger.isDebugEnabled()) {
-					logger.debug("rollback only in {}", method);
+					logger.debug("rollback only in {}", context.getMethod());
 				}
 			}
 		}
 		return rtn;
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
-			FilterChain filterChain) throws Throwable {
-		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, targetClass, method);
+	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, context.getTargetClass(),
+				context.getMethod());
 		if (tx == null) {
-			return defaultTransaction(invoker, proxy, targetClass, method, args, filterChain);
+			return defaultTransaction(invoker, context, filterChain);
 		}
 
-		return transaction(invoker, proxy, targetClass, method, args, filterChain,
-				new AnnotationTransactionDefinition(tx));
+		return transaction(invoker, context, filterChain, new AnnotationTransactionDefinition(tx));
 	}
 }

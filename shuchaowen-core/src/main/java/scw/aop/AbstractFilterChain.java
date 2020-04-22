@@ -1,24 +1,20 @@
 package scw.aop;
 
-import java.lang.reflect.Method;
-
-public abstract class AbstractFilterChain implements FilterChain{
+public abstract class AbstractFilterChain implements FilterChain {
 	private final FilterChain chain;
 
 	public AbstractFilterChain(FilterChain chain) {
 		this.chain = chain;
 	}
 
-	public final Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)
-			throws Throwable {
-		Filter filter = getNextFilter(invoker, proxy, targetClass, method, args);
+	public final Object doFilter(Invoker invoker, Context context) throws Throwable {
+		Filter filter = getNextFilter(invoker, context);
 		if (filter == null) {
-			return chain == null ? invoker.invoke(args) : chain.doFilter(invoker, proxy, targetClass, method, args);
+			return chain == null ? invoker.invoke(context.getArgs()) : chain.doFilter(invoker, context);
 		}
 
-		return filter.doFilter(invoker, proxy, targetClass, method, args, this);
+		return filter.doFilter(invoker, context, this);
 	}
 
-	protected abstract Filter getNextFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method,
-			Object[] args) throws Throwable;
+	protected abstract Filter getNextFilter(Invoker invoker, Context context) throws Throwable;
 }

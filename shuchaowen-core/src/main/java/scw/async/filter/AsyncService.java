@@ -1,7 +1,7 @@
 package scw.async.filter;
 
-import java.lang.reflect.Method;
+import scw.aop.Context;
 
 public interface AsyncService {
-	void service(Async async, Class<?> targetClass, Method method, Object[] args) throws Exception;
+	void service(Async async, Context context) throws Exception;
 }
