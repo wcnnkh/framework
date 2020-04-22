@@ -1,14 +1,13 @@
 package scw.mvc.action.notfound;
 
+import scw.core.instance.annotation.Configuration;
 import scw.mvc.Channel;
-import scw.mvc.action.notfound.adapter.MultiNotfoundAdapter;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.service.FilterChain;
 import scw.net.http.HttpMethod;
 
-public class DefaultNotfoundService extends MultiNotfoundAdapter implements
-		NotFoundService {
-	private static final long serialVersionUID = 1L;
+@Configuration(order=Integer.MIN_VALUE)
+public class DefaultNotfoundService implements NotFoundService {
 
 	public Object notfound(Channel channel, FilterChain filterChain)
 			throws Throwable {
@@ -18,12 +17,15 @@ public class DefaultNotfoundService extends MultiNotfoundAdapter implements
 			if (HttpMethod.OPTIONS == httpChannel.getRequest().getMethod()) {
 				return filterChain.doFilter(httpChannel);
 			}
-		}
 
-		if (isAdapter(channel)) {
-			return notfound(channel);
+			return httpNotfound(httpChannel, filterChain);
 		}
-
 		return filterChain.doFilter(channel);
+	}
+
+	protected Object httpNotfound(HttpChannel httpChannel,
+			FilterChain filterChain) throws Throwable {
+		httpChannel.getResponse().sendError(404, "not found action");
+		return null;
 	}
 }
