@@ -15,7 +15,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import scw.core.Assert;
 import scw.core.Base64;
-import scw.lang.NotFoundException;
+import scw.lang.NotSupportedException;
 
 public final class SignatureUtils {
 	private static final String DEFAULT_CONCAT = "&";
@@ -248,7 +248,7 @@ public final class SignatureUtils {
 		case SHA1:
 			return sha1(text, charsetName);
 		default:
-			throw new NotFoundException("不支持的签名方式");
+			throw new NotSupportedException("不支持的签名方式:" + signType);
 		}
 	}
 

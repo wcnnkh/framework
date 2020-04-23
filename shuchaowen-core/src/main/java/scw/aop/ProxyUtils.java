@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
-import scw.util.result.SimpleResult;
+import scw.util.SimpleResult;
 
 public final class ProxyUtils {
 
@@ -53,6 +53,6 @@ public final class ProxyUtils {
 		if (args != null && args.length == 1 && method.getName().equals("equals")) {
 			return new SimpleResult<Object>(true, obj == args[0]);
 		}
-		return new SimpleResult<Object>(false);
+		return new SimpleResult<Object>(false, null);
 	}
 }

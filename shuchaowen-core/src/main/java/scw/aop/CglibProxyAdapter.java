@@ -9,7 +9,7 @@ import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NestedExceptionUtils;
-import scw.util.result.SimpleResult;
+import scw.util.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class CglibProxyAdapter extends AbstractProxyAdapter {

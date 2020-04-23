@@ -1,4 +1,4 @@
-package scw.util.result;
+package scw.util;
 
 import java.io.Serializable;
 
@@ -9,10 +9,6 @@ public class SimpleResult<T> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final boolean success;
 	private final T data;
-
-	public SimpleResult(boolean success) {
-		this(success, null);
-	}
 
 	public SimpleResult(boolean success, T data) {
 		this.success = success;
@@ -27,16 +23,7 @@ public class SimpleResult<T> implements Serializable {
 		return data;
 	}
 
-	@Ignore
-	public static final class AnyResult extends SimpleResult<Object> {
-		private static final long serialVersionUID = 1L;
-
-		public AnyResult(boolean success) {
-			super(success);
-		}
-
-		public AnyResult(boolean success, Object data) {
-			super(success, data);
-		}
+	public boolean isError() {
+		return !isSuccess();
 	}
 }
