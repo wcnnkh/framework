@@ -8,8 +8,7 @@ public class HttpRpcFactory extends HttpRpcProxy implements RPCProxyFactory {
 	private static final long serialVersionUID = 1L;
 	private final BeanFactory beanFactory;
 
-	public HttpRpcFactory(BeanFactory beanFactory,
-			PropertyFactory propertyFactory,
+	public HttpRpcFactory(BeanFactory beanFactory, PropertyFactory propertyFactory,
 			HttpRpcRequestFactory httpRpcRequestFactory) {
 		super(propertyFactory, beanFactory, httpRpcRequestFactory);
 		this.beanFactory = beanFactory;

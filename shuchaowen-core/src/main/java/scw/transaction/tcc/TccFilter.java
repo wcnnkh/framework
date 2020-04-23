@@ -41,6 +41,10 @@ public class TccFilter implements Filter {
 			throw new TccException("confirm or cancel At least one: " + context.getMethod().toString());
 		}
 
+		if ((confirm != null && !confirm.isActive()) || (cancel != null && !cancel.isActive())) {
+			throw new TccException("tcc definition error:" + context.getMethod());
+		}
+
 		TransactionManager.transactionLifeCycle(new TransactionLifeCycle() {
 
 			public void complete() {

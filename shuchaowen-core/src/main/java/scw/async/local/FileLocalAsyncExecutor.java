@@ -8,11 +8,10 @@ import java.util.concurrent.TimeUnit;
 import scw.async.AsyncException;
 import scw.async.AsyncRunnable;
 import scw.beans.BeanFactory;
-import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
-import scw.io.FileUtils;
 import scw.io.JavaSerializer;
 import scw.io.ObjectFileManager;
+import scw.io.ObjectFileManager.ObjectInfo;
 
 public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
@@ -20,21 +19,27 @@ public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 	private final long delayMillis;
 	private final TimeUnit delayTimeUnit;
 
-	public FileLocalAsyncExecutor(BeanFactory beanFactory, String suffix, long delayMillis, TimeUnit delayTimeUnit) {
-		this(beanFactory,
-				new ObjectFileManager(
-						FileUtils.getTempDirectoryPath() + "/" + GlobalPropertyFactory.getInstance().getSystemLocalId(),
-						suffix, JavaSerializer.SERIALIZER),
-				delayMillis, delayTimeUnit);
+	public FileLocalAsyncExecutor(BeanFactory beanFactory, String suffix, long delayMillis, TimeUnit delayTimeUnit)
+			throws IOException {
+		this(beanFactory, new ObjectFileManager(suffix, JavaSerializer.SERIALIZER), delayMillis, delayTimeUnit);
 	}
 
 	public FileLocalAsyncExecutor(BeanFactory beanFactory, ObjectFileManager objectFileManager, long delayMillis,
-			TimeUnit delayTimeUnit) {
+			TimeUnit delayTimeUnit) throws IOException {
 		super(true);
 		setBeanFactory(beanFactory);
 		this.objectFileManager = objectFileManager;
 		this.delayMillis = delayMillis;
 		this.delayTimeUnit = delayTimeUnit;
+
+		// 对意外结束的任务重新执行
+		for (ObjectInfo objectInfo : objectFileManager.getObjectList()) {
+			AsyncRunnable asyncRunnable = (AsyncRunnable) objectInfo.getInstance();
+			InternalRunnable internalRunnable = new InternalRunnable(asyncRunnable,
+					objectInfo.getIndex());
+			logger.info("add internal runnable: " + asyncRunnable);
+			getExecutorService().execute(internalRunnable);
+		}
 	}
 
 	public ScheduledExecutorService getExecutorService() {
@@ -67,7 +72,7 @@ public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 		public void run() {
 			Object rtn;
 			try {
-				rtn = asyncRunnable.call();
+				rtn = executeInternal(asyncRunnable);
 				if (rtn != null && ClassUtils.isAssignableValue(boolean.class, rtn)) {
 					if (!((Boolean) rtn).booleanValue()) {
 						retry();

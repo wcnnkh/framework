@@ -37,11 +37,11 @@ public abstract class AbstractTccService implements TccService {
 	}
 
 	public Stage createCancel(Context context, Object tryResult, Tcc tcc) {
-		if (StringUtils.isEmpty(tcc.confirm())) {
+		if (StringUtils.isEmpty(tcc.cancel())) {
 			return null;
 		}
 
-		return createStage(new TryInfo(context, tryResult), tcc, tcc.confirm());
+		return createStage(new TryInfo(context, tryResult), tcc, tcc.cancel());
 	}
 
 	public Stage createCancel(TryInfo tryInfo, Method tryMethod, Tcc tcc) {

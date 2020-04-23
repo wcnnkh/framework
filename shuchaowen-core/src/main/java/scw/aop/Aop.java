@@ -3,6 +3,7 @@ package scw.aop;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -23,6 +24,10 @@ public abstract class Aop implements ProxyAdapter {
 			FilterChain filterChain) {
 		return getProxyAdapter().proxy(clazz, interfaces,
 				new DefaultFilterChain(getFilters(), filterChain));
+	}
+	
+	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Filter ...filters){
+		return proxy(clazz, interfaces, new DefaultFilterChain(Arrays.asList(filters)));
 	}
 
 	public final Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {

@@ -227,7 +227,10 @@ public final class InstanceUtils {
 
 		if (isProerptyType(parameterDescriptor)) {
 			Value value = getProperty(propertyFactory, clazz, parameterDescriptor);
-			if (require && value == null) {
+			if(value == null){
+				if(require){
+					throw new RuntimeException("require parameter:" + parameterDescriptor.toString());
+				}
 				return null;
 			}
 

@@ -11,22 +11,31 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import scw.core.Assert;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.util.comparator.CompareUtils;
 
 public class ObjectFileManager {
+	protected final Logger logger = LoggerUtils.getLogger(ObjectFileManager.class);
+
 	private final File directory;
 	private final Serializer serializer;
 	private final String suffix;
-	private final AtomicLong atomicLong = new AtomicLong(
-			System.currentTimeMillis());
+	private final AtomicLong atomicLong = new AtomicLong(System.currentTimeMillis());
 
-	public ObjectFileManager(String directory, String suffix,
-			Serializer serializer) {
+	public ObjectFileManager(String suffix, Serializer serializer) {
+		this(FileUtils.getTempDirectoryPath() + File.separator + GlobalPropertyFactory.getInstance().getSystemLocalId(), suffix,
+				serializer);
+	}
+
+	public ObjectFileManager(String directory, String suffix, Serializer serializer) {
 		Assert.requiredArgument(directory != null, "directory");
 		Assert.requiredArgument(StringUtils.isNotEmpty(suffix), "suffix");
-		Assert.requiredArgument(serializer != null, "suffix");
+		Assert.requiredArgument(serializer != null, "serializer");
+		logger.info("object field manager directory [{}] suffix [{}]", directory, suffix);
 		File file = new File(directory);
 		if (!file.exists()) {
 			file.mkdirs();
@@ -71,16 +80,14 @@ public class ObjectFileManager {
 	}
 
 	private long getIndex(File file) {
-		return Long.parseLong(file.getName().substring(0,
-				file.getName().length() - suffix.length() - 1));
+		return Long.parseLong(file.getName().substring(0, file.getName().length() - suffix.length() - 1));
 	}
 
 	public List<ObjectInfo> getObjectList() throws IOException {
 		File[] files = directory.listFiles(new FileFilter() {
 
 			public boolean accept(File pathname) {
-				return pathname.isFile()
-						&& pathname.getName().endsWith("." + suffix);
+				return pathname.isFile() && pathname.getName().endsWith("." + suffix);
 			}
 		});
 		if (ArrayUtils.isEmpty(files)) {

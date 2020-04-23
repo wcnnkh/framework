@@ -9,6 +9,7 @@ import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.NestedExceptionUtils;
 import scw.transaction.tcc.annotation.TryResult;
 
 public class Stage extends AbstractAsyncRunnable {
@@ -33,10 +34,12 @@ public class Stage extends AbstractAsyncRunnable {
 			return false;
 		}
 
-		if (getMethod() == null) {
+		Method method = getMethod();
+		if (method == null) {
 			return false;
 		}
 
+		getArgs(method);
 		return true;
 	}
 
@@ -44,7 +47,7 @@ public class Stage extends AbstractAsyncRunnable {
 		return tryInfo.getStageMethod(stageName);
 	}
 
-	protected Object[] getArgs(Method method) {
+	public Object[] getArgs(Method method) {
 		ParameterDescriptor[] parameterDescriptors = ParameterUtils.getParameterDescriptors(method);
 		if (parameterDescriptors.length == 0) {
 			return new Object[0];
@@ -78,7 +81,13 @@ public class Stage extends AbstractAsyncRunnable {
 		try {
 			return methodInvoker.invoke(getArgs(method));
 		} catch (Throwable e) {
-			throw new TccException(method.toString(), e);
+			throw new TccException(method.toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
 		}
+	}
+
+	@Override
+	public String toString() {
+		Method method = getMethod();
+		return "beanName=" + beanName + " stage=" + stageName + ", method=" + (method == null? null:method);
 	}
 }

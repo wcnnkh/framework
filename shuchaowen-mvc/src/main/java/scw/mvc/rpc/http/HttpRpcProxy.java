@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 
 import scw.aop.Context;
+import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.core.instance.InstanceFactory;
@@ -17,7 +18,7 @@ import scw.net.message.converter.MultiMessageConverter;
 import scw.rcp.object.ObjectResponseMessage;
 import scw.util.value.property.PropertyFactory;
 
-public class HttpRpcProxy extends MultiMessageConverter implements FilterChain {
+public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 	private static final long serialVersionUID = 1L;
 	private final HttpRpcRequestFactory httpRpcRequestFactory;
 	private final InstanceFactory instanceFactory;
@@ -71,7 +72,7 @@ public class HttpRpcProxy extends MultiMessageConverter implements FilterChain {
 		return converters;
 	}
 
-	public Object doFilter(Invoker invoker, Context context) throws Throwable {
+	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
 		if (Modifier.isAbstract(context.getMethod().getModifiers())
 				|| Modifier.isInterface(context.getMethod().getModifiers())) {
 			ClientHttpRequest request = httpRpcRequestFactory.getHttpRequest(
@@ -91,6 +92,6 @@ public class HttpRpcProxy extends MultiMessageConverter implements FilterChain {
 				return obj;
 			}
 		}
-		return invoker.invoke(context.getArgs());
+		return filterChain.doFilter(invoker, context);
 	}
 }

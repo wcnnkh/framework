@@ -1,5 +1,6 @@
 package scw.transaction.tcc;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import scw.async.AsyncExecutor;
@@ -11,7 +12,7 @@ import scw.core.instance.annotation.Configuration;
 public class DefaultTccService extends AbstractTccService {
 	private AsyncExecutor asyncExecutor;
 
-	public DefaultTccService(BeanFactory beanFactory) {
+	public DefaultTccService(BeanFactory beanFactory) throws IOException {
 		super(beanFactory);
 		this.asyncExecutor = new FileLocalAsyncExecutor(beanFactory, "tcc", 1, TimeUnit.MINUTES);
 	}

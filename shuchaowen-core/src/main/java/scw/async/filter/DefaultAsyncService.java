@@ -1,5 +1,6 @@
 package scw.async.filter;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import scw.async.AsyncExecutor;
@@ -11,7 +12,7 @@ import scw.core.instance.annotation.Configuration;
 public class DefaultAsyncService extends AbstractAsyncService {
 	private final FileLocalAsyncExecutor fileLocalAsyncExecutor;
 
-	public DefaultAsyncService(BeanFactory beanFactory) {
+	public DefaultAsyncService(BeanFactory beanFactory) throws IOException {
 		super(beanFactory);
 		this.fileLocalAsyncExecutor = new FileLocalAsyncExecutor(beanFactory, "async", 1, TimeUnit.MINUTES);
 	}

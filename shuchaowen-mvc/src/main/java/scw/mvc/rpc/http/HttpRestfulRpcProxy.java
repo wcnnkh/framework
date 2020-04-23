@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import scw.aop.Context;
+import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.core.Constants;
@@ -20,7 +21,7 @@ import scw.net.http.HttpHeaders;
 import scw.net.message.converter.support.AllMessageConverter;
 import scw.util.value.property.PropertyFactory;
 
-public class HttpRestfulRpcProxy implements FilterChain, RpcConstants {
+public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 	private static final String[] DEFAULT_SHARE_HEADERS = new String[] { HttpHeaders.CONTENT_TYPE, HttpHeaders.COOKIE,
 			HttpHeaders.X_FORWARDED_FOR };
 	private HttpRpcProxy httpRpcProxy;
@@ -49,7 +50,7 @@ public class HttpRestfulRpcProxy implements FilterChain, RpcConstants {
 		this.httpRpcProxy.add(new AllMessageConverter());
 	}
 
-	public Object doFilter(Invoker invoker, Context context) throws Throwable {
-		return httpRpcProxy.doFilter(invoker, context);
+	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+		return httpRpcProxy.doFilter(invoker, context, filterChain);
 	}
 }
