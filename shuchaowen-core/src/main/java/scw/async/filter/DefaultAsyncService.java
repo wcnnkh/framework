@@ -18,7 +18,7 @@ public class DefaultAsyncService extends AbstractAsyncService {
 	}
 
 	@Override
-	protected AsyncExecutor getAsyncExecutor() {
+	public AsyncExecutor getAsyncExecutor() {
 		return fileLocalAsyncExecutor;
 	}
 }

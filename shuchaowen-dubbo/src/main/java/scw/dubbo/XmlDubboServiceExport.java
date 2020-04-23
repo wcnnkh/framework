@@ -13,7 +13,7 @@ import scw.logger.SplitLineAppend;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
-public class XmlDubboServiceExport extends XmlBeanFactoryLifeCycle {
+public final class XmlDubboServiceExport extends XmlBeanFactoryLifeCycle {
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws Exception {
