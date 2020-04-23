@@ -15,7 +15,6 @@ import scw.net.client.http.ClientHttpRequest;
 import scw.net.client.http.ClientHttpResponse;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MultiMessageConverter;
-import scw.rcp.object.ObjectResponseMessage;
 import scw.util.value.property.PropertyFactory;
 
 public class HttpRpcProxy extends MultiMessageConverter implements Filter {
@@ -24,44 +23,36 @@ public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 	private final InstanceFactory instanceFactory;
 	private MessageConverter messageConverter;
 
-	public HttpRpcProxy(PropertyFactory propertyFactory,
-			InstanceFactory instanceFactory,
+	public HttpRpcProxy(PropertyFactory propertyFactory, InstanceFactory instanceFactory,
 			HttpRpcRequestFactory httpRpcRequestFactory) {
 		this.instanceFactory = instanceFactory;
 		this.httpRpcRequestFactory = httpRpcRequestFactory;
 		addAll(NetworkUtils.getMessageConverters());
 	}
 
-	private void appendMessageConvert(
-			Collection<MessageConverter> messageConverters,
-			MessageConvert messageConvert) {
+	private void appendMessageConvert(Collection<MessageConverter> messageConverters, MessageConvert messageConvert) {
 		for (String name : messageConvert.name()) {
 			if (instanceFactory.isInstance(name)) {
-				messageConverters.add((MessageConverter) instanceFactory
-						.getInstance(name));
+				messageConverters.add((MessageConverter) instanceFactory.getInstance(name));
 			}
 		}
 
 		for (Class<?> clazz : messageConvert.value()) {
 			if (instanceFactory.isInstance(clazz)) {
-				messageConverters.add((MessageConverter) instanceFactory
-						.getInstance(clazz));
+				messageConverters.add((MessageConverter) instanceFactory.getInstance(clazz));
 			}
 		}
 	}
 
-	protected MultiMessageConverter getMessageConverter(Class<?> clazz,
-			Method method) {
+	protected MultiMessageConverter getMessageConverter(Class<?> clazz, Method method) {
 		MultiMessageConverter converters = new MultiMessageConverter();
 		converters.add(this);
-		MessageConvert messageConvert = method
-				.getAnnotation(MessageConvert.class);
+		MessageConvert messageConvert = method.getAnnotation(MessageConvert.class);
 		if (messageConvert != null) {
 			appendMessageConvert(converters, messageConvert);
 		}
 
-		messageConvert = method.getDeclaringClass().getAnnotation(
-				MessageConvert.class);
+		messageConvert = method.getDeclaringClass().getAnnotation(MessageConvert.class);
 		if (messageConvert != null) {
 			appendMessageConvert(converters, messageConvert);
 		}
@@ -75,22 +66,11 @@ public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
 		if (Modifier.isAbstract(context.getMethod().getModifiers())
 				|| Modifier.isInterface(context.getMethod().getModifiers())) {
-			ClientHttpRequest request = httpRpcRequestFactory.getHttpRequest(
-					context.getTargetClass(), context.getMethod(),
-					context.getArgs());
+			ClientHttpRequest request = httpRpcRequestFactory.getHttpRequest(context.getTargetClass(),
+					context.getMethod(), context.getArgs());
 			ClientHttpResponse httpInputMessage = request.execute();
-			Object obj = getMessageConverter(context.getTargetClass(),
-					context.getMethod()).read(
-					context.getMethod().getGenericReturnType(),
-					httpInputMessage);
-			if (obj instanceof ObjectResponseMessage) {
-				if (((ObjectResponseMessage) obj).getError() != null) {
-					throw ((ObjectResponseMessage) obj).getError();
-				}
-				return ((ObjectResponseMessage) obj).getResponse();
-			} else {
-				return obj;
-			}
+			return getMessageConverter(context.getTargetClass(), context.getMethod())
+					.read(context.getMethod().getGenericReturnType(), httpInputMessage);
 		}
 		return filterChain.doFilter(invoker, context);
 	}

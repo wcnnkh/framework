@@ -102,6 +102,11 @@
 		
 		<dependency>
 			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-result</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-core</artifactId>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->

@@ -11,8 +11,10 @@ import scw.io.Bytes;
 import scw.io.Serializer;
 import scw.net.MimeTypeUtils;
 import scw.net.client.http.ClientHttpRequest;
+import scw.net.client.http.ClientHttpResponse;
 import scw.net.client.http.accessor.HttpAccessor;
 import scw.net.rpc.simple.SimpleObjectRequestMessage;
+import scw.net.rpc.simple.SimpleResponseMessage;
 import scw.security.SignatureUtils;
 
 public class SimpleHttpObjectRpcServiceFilter extends HttpAccessor implements Filter {
@@ -44,7 +46,23 @@ public class SimpleHttpObjectRpcServiceFilter extends HttpAccessor implements Fi
 		ClientHttpRequest request = createRequest(new URI(host), scw.net.http.HttpMethod.POST);
 		serializer.serialize(request.getBody(), requestMessage);
 		request.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
-		return request;
+		ClientHttpResponse response = null;
+		try {
+			response = request.execute();
+			Object obj = serializer.deserialize(response.getBody());
+			if (obj instanceof SimpleResponseMessage) {
+				if (((SimpleResponseMessage) obj).getError() != null) {
+					throw ((SimpleResponseMessage) obj).getError();
+				}
+				return ((SimpleResponseMessage) obj).getResponse();
+			} else {
+				return obj;
+			}
+		} finally {
+			if (response != null) {
+				response.close();
+			}
+		}
 	}
 
 }

@@ -110,12 +110,6 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-testing</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-mq</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -183,12 +177,6 @@
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-zookeeper</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-rpc</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 
@@ -472,7 +460,6 @@
 		<module>shuchaowen-tencent</module>
 		<module>shuchaowen-apple</module>
 		<module>shuchaowen-zookeeper</module>
-		<module>shuchaowen-testing</module>
 		<module>shuchaowen-embed</module>
 		<module>shuchaowen-dubbo</module>
 		<module>shuchaowen-locks</module>
@@ -486,7 +473,6 @@
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>
 		<module>shuchaowen-result</module>
-		<module>shuchaowen-rpc</module>
 		<module>shuchaowen-servlet</module>
 		<module>shuchaowen-office</module>
 	</modules>
