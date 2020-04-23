@@ -2,6 +2,7 @@ package scw.beans;
 
 import java.util.LinkedList;
 
+import scw.aop.FilterChain;
 import scw.aop.InstanceFactoryFilterChain;
 import scw.aop.Proxy;
 import scw.logger.Logger;
@@ -17,9 +18,9 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
 	protected final LinkedList<BeanMethod> initMethods = new LinkedList<BeanMethod>();
 	protected final LinkedList<BeanMethod> destroyMethods = new LinkedList<BeanMethod>();
 	private final Class<?> targetClass;
+	protected FilterChain filterChain;
 
-	public AbstractBeanBuilder(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> targetClass) {
+	public AbstractBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
 		this.targetClass = targetClass;
 		this.propertyFactory = propertyFactory;
 		this.beanFactory = beanFactory;
@@ -35,18 +36,15 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
 
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
 		return beanFactory.getAop().proxy(targetClass, interfaces,
-				new InstanceFactoryFilterChain(beanFactory, filterNames, null));
+				new InstanceFactoryFilterChain(beanFactory, filterNames, filterChain));
 	}
 
-	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass,
-			Class<?>[] interfaces) {
-		return beanFactory.getAop().proxyInstance(targetClass, instance,
-				interfaces,
-				new InstanceFactoryFilterChain(beanFactory, filterNames, null));
+	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass, Class<?>[] interfaces) {
+		return beanFactory.getAop().proxyInstance(targetClass, instance, interfaces,
+				new InstanceFactoryFilterChain(beanFactory, filterNames, filterChain));
 	}
 
-	protected Object createProxyInstance(Class<?> targetClass,
-			Class<?>[] parameterTypes, Object[] args) {
+	protected Object createProxyInstance(Class<?> targetClass, Class<?>[] parameterTypes, Object[] args) {
 		if (getTargetClass().isInterface() && filterNames.isEmpty()) {
 			logger.warn("empty filter: {}", getTargetClass().getName());
 		}

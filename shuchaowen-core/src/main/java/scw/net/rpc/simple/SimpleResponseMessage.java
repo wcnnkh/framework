@@ -1,12 +1,12 @@
-package scw.rcp.object;
+package scw.net.rpc.simple;
 
 import java.io.Serializable;
 
 import scw.util.attribute.SimpleAttributes;
 
-public class ObjectResponseMessage extends SimpleAttributes<String, Object> implements Serializable {
+public class SimpleResponseMessage extends SimpleAttributes<String, Object> implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private ObjectRequestMessage requestMessage;
+	private SimpleObjectRequestMessage requestMessage;
 	private Object response;
 	private Throwable error;
 
@@ -18,7 +18,7 @@ public class ObjectResponseMessage extends SimpleAttributes<String, Object> impl
 		return error;
 	}
 
-	public ObjectRequestMessage getRequestMessage() {
+	public SimpleObjectRequestMessage getRequestMessage() {
 		return requestMessage;
 	}
 
@@ -26,7 +26,7 @@ public class ObjectResponseMessage extends SimpleAttributes<String, Object> impl
 		this.response = response;
 	}
 
-	public void setRequestMessage(ObjectRequestMessage requestMessage) {
+	public void setRequestMessage(SimpleObjectRequestMessage requestMessage) {
 		this.requestMessage = requestMessage;
 	}
 

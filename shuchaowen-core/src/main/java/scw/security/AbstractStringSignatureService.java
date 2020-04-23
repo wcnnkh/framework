@@ -1,4 +1,4 @@
-package scw.security.signature;
+package scw.security;
 
 public abstract class AbstractStringSignatureService implements StringSignatureService {
 	private final String charsetName;

@@ -1,4 +1,4 @@
-package scw.security.signature;
+package scw.security;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

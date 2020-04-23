@@ -1,4 +1,4 @@
-package scw.mvc.rpc.support;
+package scw.net.rpc.simple;
 
 import java.lang.reflect.Method;
 

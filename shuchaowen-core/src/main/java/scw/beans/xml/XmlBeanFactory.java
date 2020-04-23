@@ -55,7 +55,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 			}
 
 			this.xmlPropertyFactory = new XmlPropertyFactory(nodeList);
-			propertyFactory.add(xmlPropertyFactory);
+			propertyFactory.addFirst(xmlPropertyFactory);
 		}
 		addBeanConfiguration(new DefaultXmlBeanConfiguration());
 		super.init();

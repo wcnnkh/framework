@@ -122,14 +122,18 @@ public final class InstanceUtils {
 		}
 	}
 
-	private static String getDefaultName(Class<?> clazz, ParameterDescriptor parameterConfig) {
-		return clazz.getClass().getName() + "." + parameterConfig.getDisplayName();
+	private static String getDefaultName(Class<?> clazz, ParameterDescriptor parameterDescriptor) {
+		if(parameterDescriptor.getName().equals(parameterDescriptor.getDisplayName())){
+			return clazz.getClass().getName() + "." + parameterDescriptor.getDisplayName();
+		}
+		return parameterDescriptor.getDisplayName();
 	}
 
 	private static Value getProperty(PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptor parameterDescriptor) {
+		String name = getDefaultName(clazz, parameterDescriptor);
 		Value value = propertyFactory
-				.get(getDefaultName(clazz, parameterDescriptor));
+				.get(name);
 		if (value == null) {
 			value = parameterDescriptor.getDefaultValue();
 		}
@@ -160,8 +164,12 @@ public final class InstanceUtils {
 		return null;
 	}
 
-	public static boolean isAuto(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
+	private static boolean isAuto(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptor parameterDescriptor, ParameterFactory parameterFactory) {
+		if(clazz.getName().indexOf("SimpleObjectRpcService") != -1){
+			System.out.println(clazz);
+		}
+		
 		boolean require = !AnnotationUtils.isNullable(parameterDescriptor.getAnnotatedElement(), false);
 		if (!require) {
 			return true;

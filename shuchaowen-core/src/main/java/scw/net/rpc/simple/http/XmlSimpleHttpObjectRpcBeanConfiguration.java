@@ -1,11 +1,16 @@
-package scw.mvc.rpc.support;
+package scw.net.rpc.simple.http;
+
+import java.util.Arrays;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.aop.DefaultFilterChain;
+import scw.aop.Filter;
 import scw.beans.BeanBuilder;
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
+import scw.beans.ProxyBeanBuilder;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.annotation.AnnotationUtils;
@@ -18,7 +23,7 @@ import scw.io.SerializerUtils;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
-public final class XmlHttpRpcBeanConfiguration extends XmlBeanConfiguration {
+public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfiguration {
 	private static final String TAG_NAME = "http:reference";
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
@@ -43,8 +48,6 @@ public final class XmlHttpRpcBeanConfiguration extends XmlBeanConfiguration {
 			String address = XmlBeanUtils.getAddress(propertyFactory, node);
 			boolean responseThrowable = StringUtils
 					.parseBoolean(XMLUtils.getNodeAttributeValue(propertyFactory, node, "throwable"), true);
-			String[] shareHeaders = StringUtils
-					.commonSplit(XMLUtils.getNodeAttributeValue(propertyFactory, node, "headers"));
 
 			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
@@ -54,10 +57,10 @@ public final class XmlHttpRpcBeanConfiguration extends XmlBeanConfiguration {
 						continue;
 					}
 
-					HttpRpcBeanBuilder httpRpcBeanBuilder = new HttpRpcBeanBuilder(beanFactory, propertyFactory, clz,
-							address, sign, ser, responseThrowable, shareHeaders);
-					beanDefinitions
-							.add(new DefaultBeanDefinition(beanFactory, propertyFactory, clz, httpRpcBeanBuilder));
+					Filter filter = new SimpleHttpObjectRpcServiceFilter(ser, sign, responseThrowable, address);
+					BeanBuilder beanBuilder = new ProxyBeanBuilder(beanFactory, propertyFactory, clz, null,
+							new DefaultFilterChain(Arrays.asList(filter)));
+					beanDefinitions.add(new DefaultBeanDefinition(beanFactory, propertyFactory, clz, beanBuilder));
 				}
 			}
 
@@ -84,8 +87,9 @@ public final class XmlHttpRpcBeanConfiguration extends XmlBeanConfiguration {
 					myAddress = address;
 				}
 
-				BeanBuilder beanBuilder = new HttpRpcBeanBuilder(beanFactory, propertyFactory, clz, myAddress, mySign,
-						ser, responseThrowable, shareHeaders);
+				Filter filter = new SimpleHttpObjectRpcServiceFilter(ser, mySign, responseThrowable, myAddress);
+				BeanBuilder beanBuilder = new ProxyBeanBuilder(beanFactory, propertyFactory, clz, null,
+						new DefaultFilterChain(Arrays.asList(filter)));
 				beanDefinitions.add(new DefaultBeanDefinition(beanFactory, propertyFactory, clz, beanBuilder));
 			}
 		}

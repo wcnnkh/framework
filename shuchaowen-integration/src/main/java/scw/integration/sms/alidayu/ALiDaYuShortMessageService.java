@@ -15,7 +15,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.client.http.HttpUtils;
 import scw.net.http.MediaType;
-import scw.security.signature.SignatureUtils;
+import scw.security.SignatureUtils;
 import scw.util.phone.PhoneNumber;
 
 public final class ALiDaYuShortMessageService implements

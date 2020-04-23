@@ -12,7 +12,7 @@ import scw.net.client.http.HttpUtils;
 import scw.net.http.MediaType;
 import scw.result.DataResult;
 import scw.result.ResultFactory;
-import scw.security.signature.SignatureUtils;
+import scw.security.SignatureUtils;
 
 public final class DefaultAliDaYu implements AliDaYu {
 	private static Logger logger = LoggerFactory

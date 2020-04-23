@@ -26,6 +26,7 @@ import scw.beans.auto.AutoBeanUtils;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
 import scw.core.Destroy;
+import scw.core.GlobalPropertyFactory;
 import scw.core.Init;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
@@ -52,6 +53,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	protected final LinkedList<String> filterNameList = new LinkedList<String>();
 
 	public DefaultBeanFactory() {
+		propertyFactory.add(GlobalPropertyFactory.getInstance());
 		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
 				NoArgsInstanceFactory.class.getName());
 		addInternalSingleton(PropertyFactory.class, propertyFactory);
@@ -483,8 +485,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		}
 	}
 
-	public Object doFilter(Invoker invoker, Context context,
-			FilterChain filterChain) throws Throwable {
+	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
 		InstanceFactoryFilterChain chain = new InstanceFactoryFilterChain(this, filterNameList, filterChain);
 		return chain.doFilter(invoker, context);
 	}

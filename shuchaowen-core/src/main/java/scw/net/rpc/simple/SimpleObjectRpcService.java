@@ -1,10 +1,9 @@
-package scw.mvc.rpc.support;
+package scw.net.rpc.simple;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import scw.core.instance.InstanceFactory;
+import scw.core.instance.annotation.Configuration;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
@@ -12,26 +11,29 @@ import scw.io.Bytes;
 import scw.io.Serializer;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.rpc.RpcConstants;
-import scw.mvc.rpc.RpcService;
-import scw.rcp.object.ObjectRequestMessage;
-import scw.rcp.object.ObjectResponseMessage;
-import scw.security.signature.SignatureUtils;
+import scw.net.MimeTypeUtils;
+import scw.net.message.InputMessage;
+import scw.net.message.OutputMessage;
+import scw.net.rpc.RpcConstants;
+import scw.net.rpc.RpcService;
+import scw.net.rpc.RpcServiceException;
+import scw.security.SignatureUtils;
 
-public final class DefaultObjectRpcService implements RpcService, RpcConstants {
-	private static Logger logger = LoggerUtils.getLogger(DefaultObjectRpcService.class);
+@Configuration(order = Integer.MIN_VALUE, value = RpcService.class)
+public final class SimpleObjectRpcService implements RpcService, RpcConstants {
+	private static Logger logger = LoggerUtils.getLogger(SimpleObjectRpcService.class);
 	private final String sign;
 	private final InstanceFactory instanceFactory;
 	private final Serializer serializer;
 
-	public DefaultObjectRpcService(InstanceFactory instanceFactory, @ParameterName(RPC_HTTP_SIGN_NAME) String sign,
+	public SimpleObjectRpcService(InstanceFactory instanceFactory, @ParameterName(RPC_HTTP_SIGN_NAME) String sign,
 			Serializer serializer) {
 		this.instanceFactory = instanceFactory;
 		this.sign = sign;
 		this.serializer = serializer;
 	}
 
-	public Object request(ObjectRequestMessage requestMessage) throws Throwable {
+	public Object request(SimpleObjectRequestMessage requestMessage) throws Throwable {
 		if (!rpcAuthorize(requestMessage)) {
 			throw new RuntimeException("RPC验证失败");
 		}
@@ -40,24 +42,27 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 		return requestMessage.invoke(instance);
 	}
 
-	private void response(OutputStream os, ObjectResponseMessage responseMessage) {
+	private void response(OutputMessage outputMessage, SimpleResponseMessage responseMessage)
+			throws RpcServiceException {
+		outputMessage.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
 		try {
-			serializer.serialize(os, responseMessage);
+			serializer.serialize(outputMessage.getBody(), responseMessage);
 		} catch (IOException e) {
 			logger.error(e, "rpc返回失败");
 		}
 	}
 
-	public void service(InputStream in, OutputStream os) {
-		ObjectResponseMessage resonseMessage = new ObjectResponseMessage();
-		ObjectRequestMessage requestMessage;
+	public void service(InputMessage inputMessage, OutputMessage outputMessage) throws RpcServiceException {
+		outputMessage.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
+		SimpleResponseMessage resonseMessage = new SimpleResponseMessage();
+		SimpleObjectRequestMessage requestMessage;
 		try {
-			requestMessage = serializer.deserialize(in);
+			requestMessage = serializer.deserialize(inputMessage.getBody());
 			resonseMessage.setRequestMessage(requestMessage);
 		} catch (IOException e1) {
 			logger.error(e1, "序列化失败");
 			resonseMessage.setError(e1);
-			response(os, resonseMessage);
+			response(outputMessage, resonseMessage);
 			return;
 		}
 
@@ -71,7 +76,7 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 			logger.error(e, requestMessage);
 			resonseMessage.setError(e);
 		}
-		response(os, resonseMessage);
+		response(outputMessage, resonseMessage);
 	}
 
 	/**
@@ -79,7 +84,7 @@ public final class DefaultObjectRpcService implements RpcService, RpcConstants {
 	 * 
 	 * @param objectRpcRequestMessage
 	 */
-	private boolean rpcAuthorize(ObjectRequestMessage objectRpcRequestMessage) {
+	private boolean rpcAuthorize(SimpleObjectRequestMessage objectRpcRequestMessage) {
 		if (StringUtils.isNull(sign)) {// 不校验签名
 			logger.warn("RPC Signature verification not opened(未开启签名验证)");
 			return true;

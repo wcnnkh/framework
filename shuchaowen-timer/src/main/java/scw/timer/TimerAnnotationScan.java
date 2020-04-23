@@ -19,7 +19,7 @@ import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
 import scw.util.value.property.PropertyFactory;
 
-@Configuration
+@Configuration(order=Integer.MIN_VALUE)
 public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Timer timer = beanFactory.getInstance(Timer.class);
