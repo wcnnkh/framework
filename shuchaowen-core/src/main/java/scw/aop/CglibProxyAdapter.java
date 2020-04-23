@@ -23,12 +23,12 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 
 	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
 		return CglibProxy.createEnhancer(clazz,
-				getInterfaces(clazz, interfaces)).createClass();
+				mergeInterfaces(clazz, interfaces)).createClass();
 	}
 
 	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
 			FilterChain filterChain) {
-		return new CglibProxy(clazz, getInterfaces(clazz, interfaces),
+		return new CglibProxy(clazz, mergeInterfaces(clazz, interfaces),
 				new FiltersConvertCglibMethodInterceptor(clazz, filterChain));
 	}
 

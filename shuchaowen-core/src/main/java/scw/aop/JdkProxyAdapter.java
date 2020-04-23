@@ -22,12 +22,12 @@ public class JdkProxyAdapter extends AbstractProxyAdapter {
 
 	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
 		return java.lang.reflect.Proxy.getProxyClass(clazz.getClassLoader(),
-				getInterfaces(clazz, interfaces));
+				mergeInterfaces(clazz, interfaces));
 	}
 
 	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
 			FilterChain filterChain) {
-		return new JdkProxy(clazz, getInterfaces(clazz, interfaces),
+		return new JdkProxy(clazz, mergeInterfaces(clazz, interfaces),
 				new FiltersInvocationHandler(clazz, filterChain));
 	}
 
