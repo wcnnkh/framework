@@ -28,6 +28,7 @@ public class ServiceBeanConfiguration extends AbstractBeanConfiguration {
 		for (Class<?> clz : ClassUtils.getClassSet(Arrays.asList(
 				BeanUtils.getScanAnnotationPackageName(),
 				Constants.SYSTEM_PACKAGE_NAME))) {
+			System.out.println(clz);
 			Service service = clz.getAnnotation(Service.class);
 			if (service == null) {
 				continue;

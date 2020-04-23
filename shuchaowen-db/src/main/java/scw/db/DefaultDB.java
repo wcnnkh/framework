@@ -7,8 +7,8 @@ import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.db.cache.CacheManager;
 import scw.db.database.DataBase;
-import scw.mq.queue.Queue;
 import scw.orm.sql.GeneratorService;
+import scw.util.queue.MessageQueue;
 
 @Configuration(order=Integer.MIN_VALUE)
 @Bean(proxy = false)
@@ -35,7 +35,7 @@ public class DefaultDB extends AbstractDB {
 		return dbConfig.getSannerTablePackage();
 	}
 
-	public final Queue<AsyncExecute> getAsyncQueue() {
+	public final MessageQueue<AsyncExecute> getAsyncQueue() {
 		return dbConfig.getAsyncQueue();
 	}
 

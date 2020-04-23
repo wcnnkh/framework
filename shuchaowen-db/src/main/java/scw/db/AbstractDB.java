@@ -15,7 +15,6 @@ import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowired;
-import scw.core.Consumer;
 import scw.core.Init;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -29,6 +28,7 @@ import scw.orm.sql.enums.OperationType;
 import scw.orm.sql.support.ORMTemplate;
 import scw.sql.Sql;
 import scw.transaction.sql.SqlTransactionUtils;
+import scw.util.queue.Consumer;
 
 public abstract class AbstractDB extends ORMTemplate implements DB,
 		Consumer<AsyncExecute>, DBConfig, Init {
