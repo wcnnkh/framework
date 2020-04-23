@@ -10,7 +10,6 @@ import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
 import scw.async.filter.Async;
-import scw.core.Consumer;
 import scw.core.GlobalPropertyFactory;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
@@ -19,6 +18,7 @@ import scw.mq.amqp.AmqpQueueConfig;
 import scw.mq.amqp.Exchange;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
+import scw.util.queue.Consumer;
 
 public class SingleExchange<T> implements Exchange<T> {
 	private static final long RETRY_TIME_CYCLE = GlobalPropertyFactory.getInstance().getValue("rabbit.retry.time.cycle", Long.class, 1000L);

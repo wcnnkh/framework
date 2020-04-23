@@ -2,7 +2,7 @@ package scw.io.resource;
 
 import java.io.InputStream;
 
-import scw.core.Consumer;
+import scw.util.queue.Consumer;
 
 /**
  * 本地资源查找

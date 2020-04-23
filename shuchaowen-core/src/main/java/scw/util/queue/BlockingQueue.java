@@ -1,4 +1,4 @@
-package scw.mq.queue;
+package scw.util.queue;
 
 /**
  * 阻塞队列

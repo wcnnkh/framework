@@ -1,9 +1,10 @@
-package scw.mq.queue;
+package scw.data.queue;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import scw.data.redis.Redis;
+import scw.util.queue.BlockingQueue;
 
 public class RedisBlockingQueue<E> implements BlockingQueue<E> {
 	private final Redis redis;

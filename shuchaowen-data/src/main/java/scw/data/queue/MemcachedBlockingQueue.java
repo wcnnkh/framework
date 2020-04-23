@@ -1,8 +1,9 @@
-package scw.mq.queue;
+package scw.data.queue;
 
 import java.util.concurrent.TimeUnit;
 
 import scw.data.memcached.Memcached;
+import scw.util.queue.BlockingQueue;
 
 public class MemcachedBlockingQueue<E> implements BlockingQueue<E> {
 	private static final String READ_KEY = "_read";

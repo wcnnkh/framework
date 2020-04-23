@@ -4,7 +4,7 @@ import scw.aop.Invoker;
 import scw.core.Parameters;
 
 @SuppressWarnings("rawtypes")
-public class MqMethodConsumer implements scw.core.Consumer {
+public class MqMethodConsumer implements scw.util.queue.Consumer {
 	private Invoker invoker;
 
 	public MqMethodConsumer(Invoker invoker) {

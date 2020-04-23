@@ -1,6 +1,6 @@
 package scw.testing;
 
-import scw.core.Producer;
+import scw.util.queue.Producer;
 
 public interface TestingProducer<T> extends Producer<T>{
 }

@@ -6,11 +6,11 @@ import java.io.Reader;
 import java.lang.reflect.Method;
 import java.util.Properties;
 
-import scw.core.Consumer;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.util.FormatUtils;
+import scw.util.queue.Consumer;
 
 public class LoadPropertiesConsumer implements Consumer<InputStream> {
 	private Properties properties;

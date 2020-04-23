@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import scw.core.Consumer;
+import scw.util.queue.Consumer;
 
 public final class MultiResourceLookup implements ResourceLookup {
 	private final LinkedList<ResourceLookup> resourceLookups = new LinkedList<ResourceLookup>();

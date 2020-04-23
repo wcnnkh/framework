@@ -1,14 +1,12 @@
-package scw.mq.queue;
-
-import scw.core.Consumer;
+package scw.util.queue;
 
 /**
- * 队列
+ * 消息队列
  * @author shuchaowen
  *
  * @param <T>
  */
-public interface Queue<E> {
+public interface MessageQueue<E> extends Producer<E>{
 	/**
 	 * 向队列中推送消息
 	 * 

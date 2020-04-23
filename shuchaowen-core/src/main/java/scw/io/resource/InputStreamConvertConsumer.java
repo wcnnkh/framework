@@ -2,8 +2,8 @@ package scw.io.resource;
 
 import java.io.InputStream;
 
-import scw.core.Consumer;
 import scw.core.Converter;
+import scw.util.queue.Consumer;
 
 public class InputStreamConvertConsumer<T> implements Consumer<InputStream> {
 	private Converter<InputStream, T> converter;

@@ -26,8 +26,7 @@ public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 
 	public FileLocalAsyncExecutor(BeanFactory beanFactory, ObjectFileManager objectFileManager, long delayMillis,
 			TimeUnit delayTimeUnit) throws IOException {
-		super(true);
-		setBeanFactory(beanFactory);
+		super(beanFactory, true);
 		this.objectFileManager = objectFileManager;
 		this.delayMillis = delayMillis;
 		this.delayTimeUnit = delayTimeUnit;
@@ -72,7 +71,7 @@ public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 		public void run() {
 			Object rtn;
 			try {
-				rtn = executeInternal(asyncRunnable);
+				rtn = call(asyncRunnable);
 				if (rtn != null && ClassUtils.isAssignableValue(boolean.class, rtn)) {
 					if (!((Boolean) rtn).booleanValue()) {
 						retry();

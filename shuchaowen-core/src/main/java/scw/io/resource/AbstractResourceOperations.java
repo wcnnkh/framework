@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.Consumer;
 import scw.core.Converter;
 import scw.core.GlobalPropertyFactory;
 import scw.io.IOUtils;
 import scw.lang.NotFoundException;
 import scw.util.FormatUtils;
+import scw.util.queue.Consumer;
 import scw.util.value.property.PropertyFactory;
 
 public abstract class AbstractResourceOperations implements ResourceOperations {

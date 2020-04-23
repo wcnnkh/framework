@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.core.Consumer;
 import scw.io.IOUtils;
+import scw.util.queue.Consumer;
 
 public class FileSystemResourceLookup implements ResourceLookup {
 	private String rootPath;

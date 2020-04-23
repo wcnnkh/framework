@@ -1,8 +1,6 @@
-package scw.mq.queue;
+package scw.util.queue;
 
 import scw.core.Destroy;
-import scw.data.memcached.Memcached;
-import scw.data.redis.Redis;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -19,14 +17,6 @@ public final class MemoryQueue<E> extends AbstractQueue<E> implements Runnable, 
 		this.blockingQueue = blockingQueue;
 		this.thread = new Thread(this, getClass().getName());
 		thread.start();
-	}
-
-	public MemoryQueue(Memcached memcached, String queueKey) {
-		this(new MemcachedBlockingQueue<E>(memcached, queueKey));
-	}
-
-	public MemoryQueue(Redis redis, String queueKey) {
-		this(new RedisBlockingQueue<E>(redis, queueKey));
 	}
 
 	public void push(E message) {

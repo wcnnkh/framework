@@ -1,6 +1,6 @@
 package scw.mq;
 
-import scw.core.Consumer;
+import scw.util.queue.Consumer;
 
 public interface MQ<T> {
 	void push(String name, T message);

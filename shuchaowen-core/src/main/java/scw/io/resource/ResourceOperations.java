@@ -4,8 +4,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
 
-import scw.core.Consumer;
 import scw.core.Converter;
+import scw.util.queue.Consumer;
 import scw.util.value.property.PropertyFactory;
 
 public interface ResourceOperations extends ResourceLookup{

@@ -1,13 +1,12 @@
-package scw.mq.queue;
+package scw.util.queue;
 
 import java.util.LinkedList;
 
-import scw.core.Consumer;
 import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
 
-public abstract class AbstractQueue<E> implements Consumer<E>, Queue<E> {
+public abstract class AbstractQueue<E> implements Consumer<E>, MessageQueue<E> {
 	private LinkedList<Consumer<E>> consumers = new LinkedList<Consumer<E>>();
 
 	public final void addConsumer(Consumer<E> consumer) {

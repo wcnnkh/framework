@@ -1,4 +1,4 @@
-package scw.core;
+package scw.util.queue;
 
 import scw.lang.Ignore;
 

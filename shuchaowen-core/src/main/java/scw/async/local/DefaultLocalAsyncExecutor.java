@@ -10,7 +10,7 @@ public class DefaultLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 			.newScheduledThreadPool(4);
 
 	public DefaultLocalAsyncExecutor(BeanFactory beanFactory) {
-		super(true);
+		super(beanFactory, true);
 	}
 
 	@Override

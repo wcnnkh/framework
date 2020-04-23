@@ -2,7 +2,7 @@ package scw.mq.amqp;
 
 import java.util.Map;
 
-import scw.core.Consumer;
+import scw.util.queue.Consumer;
 
 public interface Exchange<T> extends scw.mq.Producer<T> {
 	void bindConsumer(AmqpQueueConfig config, Consumer<T> consumer);
