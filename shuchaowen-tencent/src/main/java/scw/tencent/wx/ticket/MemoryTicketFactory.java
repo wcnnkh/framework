@@ -1,6 +1,6 @@
 package scw.tencent.wx.ticket;
 
-import scw.core.annotation.ParameterName;
+import scw.core.parameter.annotation.ParameterName;
 import scw.tencent.wx.Ticket;
 import scw.tencent.wx.WeiXinUtils;
 import scw.tencent.wx.token.AccessTokenFactory;

@@ -1,33 +1,30 @@
 package scw.aop;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 
-public final class DefaultFilterChain extends AbstractFilterChain {
-	private Iterator<? extends Filter> iterator;
+import scw.aop.Context;
+import scw.aop.Filter;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
 
+public final class DefaultFilterChain implements FilterChain{
+	private final FilterChain filterChain;
+	private final Collection<? extends Filter> filters;
+	
 	public DefaultFilterChain(Collection<? extends Filter> filters) {
 		this(filters, null);
 	}
-
-	public DefaultFilterChain(Collection<? extends Filter> filters, FilterChain chain) {
-		super(chain);
-		if (filters != null && !filters.isEmpty()) {
-			iterator = filters.iterator();
-		}
+	
+	@SuppressWarnings("unchecked")
+	public DefaultFilterChain(Collection<? extends Filter> filters, FilterChain filterChain){
+		this.filters = filters == null? Collections.EMPTY_LIST:filters;
+		this.filterChain = filterChain;
+	}
+	
+	public Object doFilter(Invoker invoker, Context context) throws Throwable {
+		DefaultIteratorFilterChain chain = new DefaultIteratorFilterChain(filters, filterChain);
+		return chain.doFilter(invoker, context);
 	}
 
-	@Override
-	protected Filter getNextFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)
-			throws Throwable {
-		if (iterator == null) {
-			return null;
-		}
-
-		if (iterator.hasNext()) {
-			return iterator.next();
-		}
-		return null;
-	}
 }

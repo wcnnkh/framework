@@ -9,8 +9,8 @@ import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.net.client.http.HttpUtils;
 import scw.net.http.MediaType;
-import scw.security.signature.SignType;
-import scw.security.signature.SignatureUtils;
+import scw.security.SignType;
+import scw.security.SignatureUtils;
 import scw.util.ToMap;
 
 /**

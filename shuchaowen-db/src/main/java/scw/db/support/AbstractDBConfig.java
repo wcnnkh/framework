@@ -11,14 +11,13 @@ import scw.data.RedisDataTemplete;
 import scw.data.memcached.Memcached;
 import scw.data.memory.MemoryDataManager;
 import scw.data.memory.MemoryDataTemplete;
+import scw.data.queue.DataMessageQueue;
 import scw.data.redis.Redis;
 import scw.db.AsyncExecute;
 import scw.db.DBConfig;
 import scw.db.cache.CacheManager;
 import scw.db.cache.DefaultCacheManager;
 import scw.db.cache.TemporaryCacheManager;
-import scw.mq.queue.MemoryQueue;
-import scw.mq.queue.Queue;
 import scw.orm.sql.GeneratorService;
 import scw.orm.sql.SqlMapper;
 import scw.orm.sql.SqlORMUtils;
@@ -27,13 +26,16 @@ import scw.orm.sql.support.MemcachedGeneratorService;
 import scw.orm.sql.support.MemoryGeneratorService;
 import scw.orm.sql.support.MySqlSqlDialect;
 import scw.orm.sql.support.RedisGeneratorService;
+import scw.util.queue.MemoryMessageQueue;
+import scw.util.queue.MemoryQueue;
+import scw.util.queue.MessageQueue;
 
 @SuppressWarnings("rawtypes")
 public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants, Destroy {
 	private String sannerTablePackage;
 	private SqlDialect sqlDialect;
 	private CacheManager cacheManager;
-	private Queue<AsyncExecute> asyncQueue;
+	private MessageQueue<AsyncExecute> asyncQueue;
 	private GeneratorService generatorService;
 	private MemoryDataManager memoryDataManager;
 
@@ -50,7 +52,7 @@ public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants, D
 		return cacheManager;
 	}
 
-	public Queue<AsyncExecute> getAsyncQueue() {
+	public MessageQueue<AsyncExecute> getAsyncQueue() {
 		return asyncQueue;
 	}
 
@@ -103,16 +105,16 @@ public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants, D
 		return new TemporaryCacheManager(mappingOperations, new RedisDataTemplete(redis), true, cachePrefix);
 	}
 
-	public static Queue<AsyncExecute> createAsyncQueue(Map properties, Memcached memcached) {
+	public static MessageQueue<AsyncExecute> createAsyncQueue(Map properties, Memcached memcached) {
 		String queueName = StringUtils.toString(properties.get("async.name"), null);
-		return StringUtils.isEmpty(queueName) ? new MemoryQueue<AsyncExecute>()
-				: new MemoryQueue<AsyncExecute>(memcached, queueName);
+		return StringUtils.isEmpty(queueName) ? new MemoryMessageQueue<AsyncExecute>()
+				: new DataMessageQueue<AsyncExecute>(memcached, queueName);
 	}
 
-	public static Queue<AsyncExecute> createAsyncQueue(Map properties, Redis redis) {
+	public static MessageQueue<AsyncExecute> createAsyncQueue(Map properties, Redis redis) {
 		String queueName = StringUtils.toString(properties.get("async.name"), null);
-		return StringUtils.isEmpty(queueName) ? new MemoryQueue<AsyncExecute>()
-				: new MemoryQueue<AsyncExecute>(redis, queueName);
+		return StringUtils.isEmpty(queueName) ? new MemoryMessageQueue<AsyncExecute>()
+				: new DataMessageQueue<AsyncExecute>(redis, queueName);
 	}
 
 	public void destroy() throws Exception {

@@ -4,22 +4,21 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
-import scw.async.beans.DefaultAsyncCompleteService;
-import scw.async.beans.annotation.AsyncComplete;
-import scw.core.Consumer;
-import scw.core.GlobalPropertyFactory;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
-import scw.mq.amqp.AmqpQueueConfig;
-import scw.mq.amqp.Exchange;
-import scw.serializer.NoTypeSpecifiedSerializer;
-import scw.transaction.DefaultTransactionLifeCycle;
-import scw.transaction.TransactionManager;
-
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+
+import scw.async.filter.Async;
+import scw.core.GlobalPropertyFactory;
+import scw.io.NoTypeSpecifiedSerializer;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
+import scw.mq.amqp.AmqpQueueConfig;
+import scw.mq.amqp.Exchange;
+import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.TransactionManager;
+import scw.util.queue.Consumer;
 
 public class SingleExchange<T> implements Exchange<T> {
 	private static final long RETRY_TIME_CYCLE = GlobalPropertyFactory.getInstance().getValue("rabbit.retry.time.cycle", Long.class, 1000L);
@@ -94,7 +93,7 @@ public class SingleExchange<T> implements Exchange<T> {
 		}
 	}
 
-	@AsyncComplete(service = DefaultAsyncCompleteService.class)
+	@Async
 	protected void asyncPush(String routingKey, boolean mandatory, boolean immediate, T message) {
 		basePush(routingKey, mandatory, immediate, message);
 	}
@@ -115,7 +114,7 @@ public class SingleExchange<T> implements Exchange<T> {
 		}
 	}
 
-	@AsyncComplete(service = DefaultAsyncCompleteService.class)
+	@Async
 	public void asyncPush(String routingKey, T message) {
 		basePush(routingKey, message);
 	}

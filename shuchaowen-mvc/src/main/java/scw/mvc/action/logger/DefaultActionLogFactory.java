@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.core.Callable;
-import scw.core.annotation.DefaultValue;
-import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.Configuration;
 import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
+import scw.core.parameter.annotation.DefaultValue;
+import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Channel;

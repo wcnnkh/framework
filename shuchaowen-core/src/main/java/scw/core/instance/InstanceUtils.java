@@ -2,7 +2,6 @@ package scw.core.instance;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,11 +16,10 @@ import java.util.Set;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.annotation.DefaultValue;
-import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.Configuration;
 import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
+import scw.core.parameter.DefaultParameterDescriptorFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.core.parameter.ParameterUtils;
@@ -29,61 +27,40 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
 import scw.io.resource.ResourceUtils;
-import scw.lang.UnsupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.comparator.CompareUtils;
-import scw.util.value.StringValue;
 import scw.util.value.Value;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
 @SuppressWarnings("rawtypes")
 public final class InstanceUtils {
-	private static Logger logger = LoggerUtils
-			.getConsoleLogger(InstanceUtils.class);
+	private static Logger logger = LoggerUtils.getConsoleLogger(InstanceUtils.class);
 
 	private InstanceUtils() {
 	};
-	
-	public static final InstanceBuilder EMPTY_INSTANCE_BUILDER = new InstanceBuilder() {
-		
+
+	public static final ConstructorBuilder EMPTY_INSTANCE_BUILDER = new ConstructorBuilder() {
+
 		public Constructor<?> getConstructor() {
 			return null;
 		}
-		
+
 		public Object[] getArgs() throws Exception {
 			return null;
 		}
 	};
 
 	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
-			GlobalPropertyFactory.getInstance(), false);
-	public static final InstanceFactory SINGLE_INSTANCE_FACTORY = new DefaultInstanceFactory(
-			GlobalPropertyFactory.getInstance(), true);
-
-	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY = getSystemConfiguration(NoArgsInstanceFactory.class);
+			GlobalPropertyFactory.getInstance(), new DefaultParameterDescriptorFactory());
 
 	/**
-	 * 如果无参的构造方法调用失败就会使用不调用构造方法实例化
-	 * 
-	 * @param type
-	 * @return
+	 * 不调用构造方法实例化对象
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<?> type) {
-		T t = (T) INSTANCE_FACTORY.getInstance(type);
-		if (t == null) {
-			t = (T) NO_ARGS_INSTANCE_FACTORY.getInstance(type);
-		}
-
-		if (t == null) {
-			throw new UnsupportedException("无法实例化对象：" + type.getName());
-		}
-		return t;
-	}
+	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY = getSystemConfiguration(
+			NoArgsInstanceFactory.class);
 
 	/**
 	 * 根据参数名来调用构造方法
@@ -94,13 +71,11 @@ public final class InstanceUtils {
 	 * @return
 	 * @throws NoSuchMethodException
 	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(Class<T> type, boolean isPublic,
+	public static <T> T newInstance(InstanceFactory instanceFactory, Class<T> type, boolean isPublic,
 			Map<String, Object> parameterMap) throws NoSuchMethodException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			try {
-				return ReflectionUtils.getConstructor(type, isPublic)
-						.newInstance();
+				return ReflectionUtils.getConstructor(type, isPublic).newInstance();
 			} catch (InstantiationException e) {
 				throw new RuntimeException(e);
 			} catch (IllegalAccessException e) {
@@ -113,8 +88,7 @@ public final class InstanceUtils {
 		}
 
 		int size = parameterMap.size();
-		for (Constructor<?> constructor : isPublic ? type.getConstructors()
-				: type.getDeclaredConstructors()) {
+		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
 			if (size == constructor.getParameterTypes().length) {
 				String[] names = ParameterUtils.getParameterName(constructor);
 				Object[] args = new Object[size];
@@ -129,66 +103,46 @@ public final class InstanceUtils {
 				}
 
 				if (find) {
-					if (!Modifier.isPublic(constructor.getModifiers())) {
-						constructor.setAccessible(true);
-					}
-					try {
-						return (T) constructor.newInstance(args);
-					} catch (Exception e) {
-						new RuntimeException(e);
-					}
-					break;
+					return instanceFactory.getInstance(type, constructor.getParameterTypes(), args);
 				}
 			}
 		}
-
 		throw new NoSuchMethodException(type.getName());
 	}
 
-	public static InstanceFactory getSingleInstanceFactory() {
-		return SINGLE_INSTANCE_FACTORY;
-	}
-
 	private static boolean isProerptyType(ParameterDescriptor parameterConfig) {
-		PropertyParameter propertyParameter = parameterConfig
-				.getAnnotatedElement().getAnnotation(PropertyParameter.class);
+		PropertyParameter propertyParameter = parameterConfig.getAnnotatedElement()
+				.getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
 			Class<?> type = parameterConfig.getType();
-			return ValueUtils.isCommonType(type) || type.isArray()
-					|| Collection.class.isAssignableFrom(type)
+			return ValueUtils.isCommonType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
 					|| Map.class.isAssignableFrom(type);
 		} else {
 			return propertyParameter.value();
 		}
 	}
 
-	private static String getDefaultName(Class<?> clazz,
-			ParameterDescriptor parameterConfig) {
-		return clazz.getClass().getName() + "." + parameterConfig.getName();
+	private static String getDefaultName(Class<?> clazz, ParameterDescriptor parameterDescriptor) {
+		if(parameterDescriptor.getName().equals(parameterDescriptor.getDisplayName())){
+			return clazz.getClass().getName() + "." + parameterDescriptor.getDisplayName();
+		}
+		return parameterDescriptor.getDisplayName();
 	}
 
-	private static Value getProperty(PropertyFactory propertyFactory,
-			Class<?> clazz, ParameterDescriptor parameterConfig) {
-		ParameterName parameterName = parameterConfig.getAnnotatedElement()
-				.getAnnotation(ParameterName.class);
+	private static Value getProperty(PropertyFactory propertyFactory, Class<?> clazz,
+			ParameterDescriptor parameterDescriptor) {
+		String name = getDefaultName(clazz, parameterDescriptor);
 		Value value = propertyFactory
-				.get(parameterName == null ? getDefaultName(clazz,
-						parameterConfig) : parameterName.value());
+				.get(name);
 		if (value == null) {
-			DefaultValue defaultValue = parameterConfig.getAnnotatedElement()
-					.getAnnotation(DefaultValue.class);
-			if (defaultValue != null) {
-				value = new StringValue(defaultValue.value());
-			}
+			value = parameterDescriptor.getDefaultValue();
 		}
 
 		if (value != null) {
-			ResourceParameter resourceParameter = parameterConfig
-					.getAnnotatedElement().getAnnotation(
-							ResourceParameter.class);
+			ResourceParameter resourceParameter = parameterDescriptor.getAnnotatedElement()
+					.getAnnotation(ResourceParameter.class);
 			if (resourceParameter != null) {
-				if (!ResourceUtils.getResourceOperations().isExist(
-						value.getAsString())) {
+				if (!ResourceUtils.getResourceOperations().isExist(value.getAsString())) {
 					return null;
 				}
 			}
@@ -196,40 +150,23 @@ public final class InstanceUtils {
 		return value;
 	}
 
-	private static String getInstanceName(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptor parameterConfig) {
-		ParameterName parameterName = parameterConfig.getAnnotatedElement()
-				.getAnnotation(ParameterName.class);
-		if (parameterName != null
-				&& StringUtils.isNotEmpty(parameterName.value())) {
-			Value value = propertyFactory.get(parameterName.value());
-			if (value == null) {
-				return null;
-			}
-
-			return instanceFactory.isInstance(value.getAsString()) ? null
-					: value.getAsString();
-		} else {
-			if (instanceFactory.isInstance(parameterConfig.getType())) {
-				return parameterConfig.getType().getName();
-			}
-
-			String name = getDefaultName(clazz, parameterConfig);
-			if (instanceFactory.isInstance(name)) {
-				return name;
-			}
-
-			return null;
+	private static String getInstanceName(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class<?> clazz, ParameterDescriptor parameterConfig) {
+		if (instanceFactory.isInstance(parameterConfig.getType())) {
+			return parameterConfig.getType().getName();
 		}
+
+		String name = getDefaultName(clazz, parameterConfig);
+		if (instanceFactory.isInstance(name)) {
+			return name;
+		}
+
+		return null;
 	}
 
-	public static boolean isAuto(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptor parameterDescriptor,
-			ParameterFactory parameterFactory) {
-		boolean require = !AnnotationUtils.isNullable(
-				parameterDescriptor.getAnnotatedElement(), false);
+	private static boolean isAuto(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
+			ParameterDescriptor parameterDescriptor, ParameterFactory parameterFactory) {
+		boolean require = !AnnotationUtils.isNullable(parameterDescriptor.getAnnotatedElement(), false);
 		if (!require) {
 			return true;
 		}
@@ -248,41 +185,30 @@ public final class InstanceUtils {
 		boolean isProperty = isProerptyType(parameterDescriptor);
 		// 是否是属性而不是bean
 		if (isProperty) {
-			Value value = getProperty(propertyFactory, clazz,
-					parameterDescriptor);
+			Value value = getProperty(propertyFactory, clazz, parameterDescriptor);
 			if (value == null) {
 				return false;
 			}
 		} else {
-			if (parameterDescriptor.getType() == InstanceFactory.class
-					|| parameterDescriptor.getType() == PropertyFactory.class) {
-				return true;
-			} else {
-				String name = getInstanceName(instanceFactory, propertyFactory,
-						clazz, parameterDescriptor);
-				if (name == null) {
-					return false;
-				}
+			String name = getInstanceName(instanceFactory, propertyFactory, clazz, parameterDescriptor);
+			if (name == null) {
+				return false;
 			}
 		}
 		return true;
 	}
-	
-	public static boolean isAuto(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptor[] parameterDescriptors,
-			ParameterFactory parameterFactory, Object logFirstParameter) {
+
+	public static boolean isAuto(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
+			ParameterDescriptor[] parameterDescriptors, ParameterFactory parameterFactory, Object logFirstParameter) {
 		if (parameterDescriptors == null || parameterDescriptors.length == 0) {
 			return true;
 		}
 
 		for (int i = 0; i < parameterDescriptors.length; i++) {
 			ParameterDescriptor parameterDescriptor = parameterDescriptors[i];
-			boolean auto = isAuto(instanceFactory, propertyFactory, clazz,
-					parameterDescriptor, parameterFactory);
+			boolean auto = isAuto(instanceFactory, propertyFactory, clazz, parameterDescriptor, parameterFactory);
 			if (logger.isDebugEnabled()) {
-				logger.debug("{} parameter index {} matching: {}",
-						logFirstParameter, i, auto ? "success" : "fail");
+				logger.debug("{} parameter index {} matching: {}", logFirstParameter, i, auto ? "success" : "fail");
 			}
 
 			if (!auto) {
@@ -292,12 +218,9 @@ public final class InstanceUtils {
 		return true;
 	}
 
-	public static Object getAutoValue(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptor parameterDescriptor,
-			ParameterFactory parameterFactory) {
-		boolean require = !AnnotationUtils.isNullable(
-				parameterDescriptor.getAnnotatedElement(), false);
+	public static Object getAutoValue(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class<?> clazz, ParameterDescriptor parameterDescriptor, ParameterFactory parameterFactory) {
+		boolean require = !AnnotationUtils.isNullable(parameterDescriptor.getAnnotatedElement(), false);
 
 		if (parameterFactory != null) {
 			Object value = parameterFactory.getParameter(parameterDescriptor);
@@ -307,66 +230,53 @@ public final class InstanceUtils {
 		}
 
 		if (isProerptyType(parameterDescriptor)) {
-			Value value = getProperty(propertyFactory, clazz,
-					parameterDescriptor);
-			if (require && value == null) {
+			Value value = getProperty(propertyFactory, clazz, parameterDescriptor);
+			if(value == null){
+				if(require){
+					throw new RuntimeException("require parameter:" + parameterDescriptor.toString());
+				}
 				return null;
 			}
 
 			return value.getAsObject(parameterDescriptor.getGenericType());
 		} else {
-			if (parameterDescriptor.getType() == ConstructorDescriptor.class) {
-				return instanceFactory;
-			}
-
-			if (parameterDescriptor.getType() == PropertyFactory.class) {
-				return propertyFactory;
-			}
-
-			String name = getInstanceName(instanceFactory, propertyFactory,
-					clazz, parameterDescriptor);
+			String name = getInstanceName(instanceFactory, propertyFactory, clazz, parameterDescriptor);
 			return name == null ? null : instanceFactory.getInstance(name);
 		}
 	}
 
-	public static Object[] getAutoArgs(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptor[] parameterDescriptors,
-			ParameterFactory parameterFactory) {
+	public static Object[] getAutoArgs(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class<?> clazz, ParameterDescriptor[] parameterDescriptors, ParameterFactory parameterFactory) {
 		if (parameterDescriptors == null || parameterDescriptors.length == 0) {
 			return new Object[0];
 		}
 
 		Object[] args = new Object[parameterDescriptors.length];
-		for (int i = 0; i < parameterDescriptors.length; i++) {
-			args[i] = getAutoValue(instanceFactory, propertyFactory, clazz,
-					parameterDescriptors[i], parameterFactory);
+ 		for (int i = 0; i < parameterDescriptors.length; i++) {
+			args[i] = getAutoValue(instanceFactory, propertyFactory, clazz, parameterDescriptors[i], parameterFactory);
 
 		}
 		return args;
 	}
 
-	private static Set<Class<?>> getConfigurationClassListInternal(
-			Class<?> type, String packageName) {
+	private static Set<Class<?>> getConfigurationClassListInternal(Class<?> type, String packageName) {
 		Set<Class<?>> list = new HashSet<Class<?>>();
 		for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
-			if(clazz == type){
+			if (clazz == type) {
 				continue;
 			}
-			
+
 			if (!ClassUtils.isAssignable(type, clazz)) {
 				continue;
 			}
 
-			Configuration configuration = clazz
-					.getAnnotation(Configuration.class);
+			Configuration configuration = clazz.getAnnotation(Configuration.class);
 			if (configuration == null) {
 				continue;
 			}
 
 			if (configuration.value().length != 0) {
-				Collection<Class<?>> values = Arrays.asList(configuration
-						.value());
+				Collection<Class<?>> values = Arrays.asList(configuration.value());
 				if (configuration.assignableValue()) {
 					if (!ClassUtils.isAssignable(values, type)) {
 						continue;
@@ -388,32 +298,25 @@ public final class InstanceUtils {
 		return list;
 	}
 
-	public static <T> Collection<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, PropertyFactory propertyFactory,
-			Collection<? extends Class> excludeTypes) {
+	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type,
+			PropertyFactory propertyFactory, Collection<? extends Class> excludeTypes) {
 		return getConfigurationClassList(type, propertyFactory, excludeTypes,
-				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
-						getScanAnnotationPackageName()));
+				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName()));
 	}
 
-	public static <T> Collection<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, PropertyFactory propertyFactory,
-			Class... excludeTypes) {
-		return getConfigurationClassList(type, propertyFactory,
-				Arrays.asList(excludeTypes));
+	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type,
+			PropertyFactory propertyFactory, Class... excludeTypes) {
+		return getConfigurationClassList(type, propertyFactory, Arrays.asList(excludeTypes));
 	}
 
 	@SuppressWarnings({ "unchecked" })
-	public static <T> Collection<Class<T>> getConfigurationClassList(
-			Class<? extends T> type, PropertyFactory propertyFactory,
-			Collection<? extends Class> excludeTypes,
+	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type,
+			PropertyFactory propertyFactory, Collection<? extends Class> excludeTypes,
 			Collection<? extends String> packageNames) {
 		Set<Class<T>> set = new LinkedHashSet<Class<T>>();
 		for (String packageName : packageNames) {
-			for (Class<?> clazz : getConfigurationClassListInternal(type,
-					packageName)) {
-				Configuration configuration = clazz
-						.getAnnotation(Configuration.class);
+			for (Class<?> clazz : getConfigurationClassListInternal(type, packageName)) {
+				Configuration configuration = clazz.getAnnotation(Configuration.class);
 				if (configuration == null) {
 					continue;
 				}
@@ -449,8 +352,7 @@ public final class InstanceUtils {
 		Collections.sort(list, comparator);
 
 		set.clear();
-		String[] configNames = propertyFactory.getObject(type.getName(),
-				String[].class);
+		String[] configNames = propertyFactory.getObject(type.getName(), String[].class);
 		if (!ArrayUtils.isEmpty(configNames)) {
 			for (String name : configNames) {
 				Class<?> clazz = ClassUtils.forNameNullable(name);
@@ -482,24 +384,19 @@ public final class InstanceUtils {
 		return set;
 	}
 
-	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Collection<? extends Class> excludeTypes) {
-		return getConfigurationList(type, instanceFactory, propertyFactory,
-				excludeTypes, Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
-						getScanAnnotationPackageName()));
+	public static <T> List<T> getConfigurationList(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Collection<? extends Class> excludeTypes) {
+		return getConfigurationList(type, instanceFactory, propertyFactory, excludeTypes,
+				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName()));
 	}
 
-	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Collection<? extends Class> excludeTypes,
+	public static <T> List<T> getConfigurationList(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Collection<? extends Class> excludeTypes,
 			Collection<? extends String> packageNames) {
 		List<T> list = new ArrayList<T>();
-		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory,
-				excludeTypes, packageNames)) {
+		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory, excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
-				logger.debug("factory [{}] not create {} in instance: {}",
-						instanceFactory.getClass(), type, clazz);
+				logger.debug("factory [{}] not create {} in instance: {}", instanceFactory.getClass(), type, clazz);
 				continue;
 			}
 
@@ -508,28 +405,22 @@ public final class InstanceUtils {
 		return list;
 	}
 
-	public static <T> List<T> getConfigurationList(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Class... excludeTypes) {
-		return getConfigurationList(type, instanceFactory, propertyFactory,
-				Arrays.asList(excludeTypes));
+	public static <T> List<T> getConfigurationList(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class... excludeTypes) {
+		return getConfigurationList(type, instanceFactory, propertyFactory, Arrays.asList(excludeTypes));
 	}
 
 	public static String getScanAnnotationPackageName() {
-		return GlobalPropertyFactory.getInstance().getValue(
-				"scw.scan.annotation.package", String.class,
+		return GlobalPropertyFactory.getInstance().getValue("scw.scan.annotation.package", String.class,
 				GlobalPropertyFactory.getInstance().getBasePackageName());
 	}
 
-	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Collection<? extends Class> excludeTypes,
+	public static <T> T getConfiguration(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Collection<? extends Class> excludeTypes,
 			Collection<? extends String> packageNames) {
-		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory,
-				excludeTypes, packageNames)) {
+		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory, excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
-				logger.debug("factory [{}] not create {} in instance: {}",
-						instanceFactory.getClass(), type, clazz);
+				logger.debug("factory [{}] not create {} in instance: {}", instanceFactory.getClass(), type, clazz);
 				continue;
 			}
 
@@ -538,42 +429,31 @@ public final class InstanceUtils {
 		return null;
 	}
 
-	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
+	public static <T> T getConfiguration(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Collection<? extends Class> excludeTypes) {
+		return getConfiguration(type, instanceFactory, propertyFactory, excludeTypes,
+				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName()));
+	}
+
+	public static <T> T getConfiguration(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
+			PropertyFactory propertyFactory, Class... excludeTypes) {
+		return getConfiguration(type, instanceFactory, propertyFactory, Arrays.asList(excludeTypes));
+	}
+
+	public static <T> T getSystemConfiguration(Class<? extends T> type, Collection<? extends Class> excludeTypes) {
+		return getConfiguration(type, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(), excludeTypes);
+	}
+
+	public static <T> List<T> getSystemConfigurationList(Class<? extends T> type,
 			Collection<? extends Class> excludeTypes) {
-		return getConfiguration(type, instanceFactory, propertyFactory,
-				excludeTypes, Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
-						getScanAnnotationPackageName()));
+		return getConfigurationList(type, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 
-	public static <T> T getConfiguration(Class<? extends T> type,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Class... excludeTypes) {
-		return getConfiguration(type, instanceFactory, propertyFactory,
-				Arrays.asList(excludeTypes));
+	public static <T> T getSystemConfiguration(Class<? extends T> type, Class... excludeTypes) {
+		return getConfiguration(type, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 
-	public static <T> T getSystemConfiguration(Class<? extends T> type,
-			Collection<? extends Class> excludeTypes) {
-		return getConfiguration(type, INSTANCE_FACTORY,
-				GlobalPropertyFactory.getInstance(), excludeTypes);
-	}
-
-	public static <T> List<T> getSystemConfigurationList(
-			Class<? extends T> type, Collection<? extends Class> excludeTypes) {
-		return getConfigurationList(type, INSTANCE_FACTORY,
-				GlobalPropertyFactory.getInstance(), excludeTypes);
-	}
-
-	public static <T> T getSystemConfiguration(Class<? extends T> type,
-			Class... excludeTypes) {
-		return getConfiguration(type, INSTANCE_FACTORY,
-				GlobalPropertyFactory.getInstance(), excludeTypes);
-	}
-
-	public static <T> List<T> getSystemConfigurationList(
-			Class<? extends T> type, Class... excludeTypes) {
-		return getConfigurationList(type, INSTANCE_FACTORY,
-				GlobalPropertyFactory.getInstance(), excludeTypes);
+	public static <T> List<T> getSystemConfigurationList(Class<? extends T> type, Class... excludeTypes) {
+		return getConfigurationList(type, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 }

@@ -1,6 +1,6 @@
 package scw.tencent.wx.ticket;
 
-import scw.core.annotation.ParameterName;
+import scw.core.parameter.annotation.ParameterName;
 import scw.data.redis.Redis;
 import scw.locks.Lock;
 import scw.locks.LockFactory;

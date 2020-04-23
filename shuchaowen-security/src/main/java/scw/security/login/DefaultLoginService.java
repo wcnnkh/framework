@@ -2,8 +2,8 @@ package scw.security.login;
 
 import scw.beans.annotation.Bean;
 import scw.core.Constants;
-import scw.core.annotation.DefaultValue;
-import scw.core.annotation.ParameterName;
+import scw.core.parameter.annotation.DefaultValue;
+import scw.core.parameter.annotation.ParameterName;
 import scw.data.MemcachedDataTemplete;
 import scw.data.RedisDataTemplete;
 import scw.data.TemporaryCache;

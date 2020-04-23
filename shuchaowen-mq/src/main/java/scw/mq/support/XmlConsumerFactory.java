@@ -9,8 +9,8 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.Consumer;
-import scw.core.annotation.DefaultValue;
+import scw.core.instance.InstanceUtils;
+import scw.core.parameter.annotation.DefaultValue;
 import scw.core.reflect.PropertyMapper;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
@@ -18,6 +18,7 @@ import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mq.ConsumerFactory;
+import scw.util.queue.Consumer;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
@@ -46,7 +47,7 @@ public class XmlConsumerFactory implements ConsumerFactory {
 				}
 
 				if (node.getNodeName().equals("consumer:amqp")) {
-					amqpMap.put(name, XMLUtils.newInstanceLoadAttributeBySetter(AmqpConfig.class, propertyFactory, node,
+					amqpMap.put(name, XMLUtils.newInstanceLoadAttributeBySetter(InstanceUtils.NO_ARGS_INSTANCE_FACTORY, AmqpConfig.class, propertyFactory, node,
 							new PropertyMapper<String>() {
 
 								public Object mapper(String name, String value, Type type) throws Exception {

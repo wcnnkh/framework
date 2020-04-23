@@ -1,15 +1,14 @@
 package scw.beans;
 
-import scw.core.instance.definition.InstanceDefinition;
+import java.lang.reflect.AnnotatedElement;
+import java.util.Collection;
 
-public interface BeanDefinition extends InstanceDefinition {
+public interface BeanDefinition extends BeanBuilder {
 	String getId();
 
-	String[] getNames();
-	
-	boolean isProxy();
+	Collection<String> getNames();
 
-	void init(Object bean) throws Exception;
+	boolean isSingleton();
 
-	void destroy(Object bean) throws Exception;
+	AnnotatedElement getAnnotatedElement();
 }

@@ -28,7 +28,7 @@ import java.net.URL;
 import scw.core.Assert;
 import scw.io.resource.ResourceUtils;
 import scw.lang.NestedIOException;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 
 /**
  * Convenience base class for {@link Resource} implementations,
@@ -210,6 +210,6 @@ public abstract class AbstractResource implements Resource {
 	}
 	
 	public OutputStream getOutputStream() throws IOException {
-		throw new UnsupportedException(getDescription());
+		throw new NotSupportedException(getDescription());
 	}
 }

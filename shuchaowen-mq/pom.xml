@@ -14,16 +14,7 @@
 		</dependency>
 		<dependency>
 			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-serializer</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-data</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-async</artifactId>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.core.utils.RandomUtils;
-import scw.security.signature.SignatureUtils;
+import scw.security.SignatureUtils;
 
 public final class JsApiSignature implements Serializable {
 	private static final long serialVersionUID = 1L;

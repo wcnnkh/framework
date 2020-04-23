@@ -2,9 +2,9 @@ package scw.io.resource;
 
 import java.io.InputStream;
 
-import scw.core.Consumer;
 import scw.core.utils.StringUtils;
 import scw.util.FormatUtils;
+import scw.util.queue.Consumer;
 import scw.util.value.property.PropertyFactory;
 
 public final class DefaultResourceLookup extends LocalResourceLookup {

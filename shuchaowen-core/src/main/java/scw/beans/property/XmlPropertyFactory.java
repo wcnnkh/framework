@@ -1,5 +1,6 @@
 package scw.beans.property;
 
+import java.util.Collections;
 import java.util.Enumeration;
 
 import org.w3c.dom.NodeList;
@@ -8,7 +9,6 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.io.resource.ResourceUtils;
-import scw.util.MultiEnumeration;
 import scw.util.value.Value;
 import scw.util.value.property.AbstractPropertyFactory;
 
@@ -25,29 +25,23 @@ public class XmlPropertyFactory extends AbstractPropertyFactory implements Destr
 		}
 		autoRefreshPropertyFactory = new AutoRefreshPropertyFactory(nodeList);
 	}
-	
-	public Value get(String key){
-		if(autoRefreshPropertyFactory == null){
+
+	public Value get(String key) {
+		if (autoRefreshPropertyFactory == null) {
 			return GlobalPropertyFactory.getInstance().get(key);
 		}
-		
-		Value value = autoRefreshPropertyFactory.get(key);
-		if(value == null){
-			value = GlobalPropertyFactory.getInstance().get(key);
-		}
-		return value;
+
+		return autoRefreshPropertyFactory.get(key);
 	}
 
 	public void destroy() {
 		autoRefreshPropertyFactory.destroy();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Enumeration<String> enumerationKeys() {
-		if(autoRefreshPropertyFactory == null){
-			return GlobalPropertyFactory.getInstance().enumerationKeys();
+		if (autoRefreshPropertyFactory == null) {
+			return Collections.emptyEnumeration();
 		}
-		
-		return new MultiEnumeration<String>(autoRefreshPropertyFactory.enumerationKeys(), GlobalPropertyFactory.getInstance().enumerationKeys());
+		return autoRefreshPropertyFactory.enumerationKeys();
 	}
 }

@@ -5,7 +5,7 @@ import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.action.filter.HttpActionFilter;
 import scw.mvc.action.manager.HttpAction;
 import scw.mvc.http.HttpChannel;
-import scw.util.result.CommonResult;
+import scw.util.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class HttpActionAuthorityFilter extends HttpActionFilter {
@@ -28,7 +28,7 @@ public final class HttpActionAuthorityFilter extends HttpActionFilter {
 			return chain.doFilter(channel, action);
 		}
 
-		CommonResult<Object> result = httpActionAuthorityIdentify.identify(channel,
+		SimpleResult<Object> result = httpActionAuthorityIdentify.identify(channel,
 				action, httpActionAuthority);
 		if (result.isSuccess()) {
 			return chain.doFilter(channel, action);

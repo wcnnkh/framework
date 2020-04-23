@@ -66,7 +66,7 @@ public class DispatcherServlet extends GenericServlet {
 					propertyFactory.getConfigXml());
 		}
 
-		getCommonApplication().addPropertyFactory(propertyFactory);
+		getCommonApplication().getPropertyFactory().add(propertyFactory);
 
 		if (!reference) {
 			getCommonApplication().init();

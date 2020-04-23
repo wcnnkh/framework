@@ -1,8 +1,8 @@
 package scw.mq.support;
 
-import scw.core.Consumer;
 import scw.mq.MQ;
 import scw.mq.amqp.Exchange;
+import scw.util.queue.Consumer;
 
 public class ExchangeMQ<T> implements MQ<T> {
 	private final Exchange<T> exchange;

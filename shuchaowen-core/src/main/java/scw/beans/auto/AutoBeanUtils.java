@@ -3,6 +3,7 @@ package scw.beans.auto;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import scw.beans.BeanBuilder;
 import scw.beans.BeanFactory;
 import scw.beans.BeansException;
 import scw.beans.annotation.AutoImpl;
@@ -49,7 +50,7 @@ public final class AutoBeanUtils {
 		return autoBeanServices;
 	}
 
-	public static AutoBean autoBeanService(Class<?> clazz, AutoImpl autoConfig,
+	public static BeanBuilder autoBeanService(Class<?> clazz, AutoImpl autoConfig,
 			BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Collection<AutoBeanService> autoBeanServices = AutoBeanUtils
 				.getAutoBeanServices(autoConfig, beanFactory, propertyFactory);

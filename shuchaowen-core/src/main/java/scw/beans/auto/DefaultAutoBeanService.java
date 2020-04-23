@@ -5,10 +5,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import scw.aop.Filter;
+import scw.beans.AutoBeanBuilder;
+import scw.beans.BeanBuilder;
 import scw.beans.BeanFactory;
+import scw.beans.ProxyBeanBuilder;
+import scw.beans.ThreadPoolExecutorBeanBuilder;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
 import scw.core.instance.InstanceUtils;
@@ -17,24 +20,17 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.ExecutorUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class DefaultAutoBeanService implements AutoBeanService {
 	private static Logger logger = LoggerUtils
 			.getLogger(DefaultAutoBeanService.class);
 
-	private AutoBean defaultService(Class<?> clazz, BeanFactory beanFactory,
+	private BeanBuilder defaultService(Class<?> clazz, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, AutoBeanServiceChain serviceChain)
 			throws Exception {
-		AutoBean autoBean = null;
 		if (clazz == ExecutorService.class) {
-			autoBean = createExecutorServiceAutoBean(beanFactory,
-					propertyFactory);
-		}
-
-		if (autoBean != null) {
-			return autoBean;
+			return new ThreadPoolExecutorBeanBuilder(beanFactory, propertyFactory);
 		}
 
 		// 未注解service时接口默认实现
@@ -42,7 +38,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			String name = clazz.getName() + "Impl";
 			if (ClassUtils.isPresent(name) && beanFactory.isInstance(name)) {
 				logger.info("{} reference {}", clazz.getName(), name);
-				return new ReferenceAutoBean(beanFactory, name);
+				return new AutoBeanBuilder(beanFactory, propertyFactory, ClassUtils.forName(name));
 			} else {
 				int index = clazz.getName().lastIndexOf(".");
 				name = index == -1 ? (clazz.getName() + "Impl") : (clazz
@@ -51,7 +47,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 						+ clazz.getSimpleName() + "Impl");
 				if (ClassUtils.isPresent(name) && beanFactory.isInstance(name)) {
 					logger.info("{} reference {}", clazz.getName(), name);
-					return new ReferenceAutoBean(beanFactory, name);
+					return new AutoBeanBuilder(beanFactory, propertyFactory, ClassUtils.forName(name));
 				}
 			}
 		}
@@ -59,8 +55,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
 			Proxy proxy = clazz.getAnnotation(Proxy.class);
 			if (proxy != null) {
-				return new ProxyAutoBean(beanFactory, clazz,
-						getProxyNames(proxy));
+				return new ProxyBeanBuilder(beanFactory, propertyFactory, clazz, getProxyNames(proxy));
 			}
 		}
 
@@ -72,11 +67,11 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 			return autoBeanServiceChain.service(clazz, beanFactory,
 					propertyFactory);
 		}
-
-		return new SimpleAutoBean(beanFactory, clazz, propertyFactory);
+		
+		return new AutoBeanBuilder(beanFactory, propertyFactory, clazz);
 	}
 
-	public AutoBean doService(Class<?> clazz, BeanFactory beanFactory,
+	public BeanBuilder doService(Class<?> clazz, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, AutoBeanServiceChain serviceChain)
 			throws Exception {
 		AutoImpl autoConfig = clazz.getAnnotation(AutoImpl.class);
@@ -102,7 +97,7 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		}
 
 		for (Class<?> clz : implList) {
-			AutoBean autoBean = AutoBeanUtils.autoBeanService(clz, autoConfig,
+			BeanBuilder autoBean = AutoBeanUtils.autoBeanService(clz, autoConfig,
 					beanFactory, propertyFactory);
 			if (autoBean != null && autoBean.isInstance()) {
 				return autoBean;
@@ -110,13 +105,6 @@ public final class DefaultAutoBeanService implements AutoBeanService {
 		}
 
 		return defaultService(clazz, beanFactory, propertyFactory, serviceChain);
-	}
-
-	private AutoBean createExecutorServiceAutoBean(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		return new SingleInstanceAutoBean(beanFactory,
-				ThreadPoolExecutor.class,
-				ExecutorUtils.newExecutorService(true));
 	}
 
 	private static class NextAutoBeanServiceChain extends

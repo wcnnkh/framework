@@ -4,17 +4,17 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 
+import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
-import scw.beans.BeanUtils;
 import scw.core.instance.InstanceFactory;
 import scw.mvc.rpc.annotation.MessageConvert;
+import scw.net.NetworkUtils;
 import scw.net.client.http.ClientHttpRequest;
 import scw.net.client.http.ClientHttpResponse;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MultiMessageConverter;
-import scw.rcp.object.ObjectResponseMessage;
 import scw.util.value.property.PropertyFactory;
 
 public class HttpRpcProxy extends MultiMessageConverter implements Filter {
@@ -27,10 +27,7 @@ public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 			HttpRpcRequestFactory httpRpcRequestFactory) {
 		this.instanceFactory = instanceFactory;
 		this.httpRpcRequestFactory = httpRpcRequestFactory;
-		BeanUtils.appendBean(this, instanceFactory, propertyFactory, MessageConverter.class, "rpc.message.convert");
-		if (instanceFactory.isSingleton(MessageConverter.class) && instanceFactory.isInstance(MessageConverter.class)) {
-			messageConverter = instanceFactory.getInstance(MessageConverter.class);
-		}
+		addAll(NetworkUtils.getMessageConverters());
 	}
 
 	private void appendMessageConvert(Collection<MessageConverter> messageConverters, MessageConvert messageConvert) {
@@ -66,22 +63,15 @@ public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 		return converters;
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
-			FilterChain filterChain) throws Throwable {
-		if (Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers())) {
-			ClientHttpRequest request = httpRpcRequestFactory.getHttpRequest(targetClass, method, args);
+	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+		if (Modifier.isAbstract(context.getMethod().getModifiers())
+				|| Modifier.isInterface(context.getMethod().getModifiers())) {
+			ClientHttpRequest request = httpRpcRequestFactory.getHttpRequest(context.getTargetClass(),
+					context.getMethod(), context.getArgs());
 			ClientHttpResponse httpInputMessage = request.execute();
-			Object obj = getMessageConverter(targetClass, method).read(method.getGenericReturnType(), httpInputMessage);
-			if (obj instanceof ObjectResponseMessage) {
-				if (((ObjectResponseMessage) obj).getError() != null) {
-					throw ((ObjectResponseMessage) obj).getError();
-				}
-				return ((ObjectResponseMessage) obj).getResponse();
-			} else {
-				return obj;
-			}
+			return getMessageConverter(context.getTargetClass(), context.getMethod())
+					.read(context.getMethod().getGenericReturnType(), httpInputMessage);
 		}
-		return filterChain.doFilter(invoker, proxy, targetClass, method, args);
+		return filterChain.doFilter(invoker, context);
 	}
-
 }

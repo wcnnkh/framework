@@ -10,6 +10,7 @@ import scw.mvc.AsyncListener;
 import scw.mvc.Channel;
 import scw.mvc.exception.ExceptionHandlerChain;
 import scw.mvc.output.Output;
+import scw.mvc.service.context.ContextManager;
 
 public abstract class AbstractChannelService implements ChannelService,
 		AsyncListener {

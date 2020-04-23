@@ -3,15 +3,15 @@ package scw.beans.xml;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.AbstractBeanFactory;
 import scw.beans.BeanConfiguration;
 import scw.beans.BeanFactoryLifeCycle;
+import scw.beans.DefaultBeanFactory;
 import scw.beans.property.XmlPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.io.resource.ResourceUtils;
 
-public class XmlBeanFactory extends AbstractBeanFactory {
+public class XmlBeanFactory extends DefaultBeanFactory {
 	private NodeList nodeList;
 	private XmlPropertyFactory xmlPropertyFactory;
 	private String xmlConfigPath;
@@ -55,7 +55,7 @@ public class XmlBeanFactory extends AbstractBeanFactory {
 			}
 
 			this.xmlPropertyFactory = new XmlPropertyFactory(nodeList);
-			propertyFactory.add(xmlPropertyFactory);
+			propertyFactory.addFirst(xmlPropertyFactory);
 		}
 		addBeanConfiguration(new DefaultXmlBeanConfiguration());
 		super.init();

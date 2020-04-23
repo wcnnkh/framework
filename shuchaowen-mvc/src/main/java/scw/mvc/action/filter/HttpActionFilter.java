@@ -1,6 +1,6 @@
 package scw.mvc.action.filter;
 
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
 import scw.mvc.action.manager.HttpAction;
@@ -18,7 +18,7 @@ public abstract class HttpActionFilter implements ActionFilter{
 	}
 	
 	protected Object doNoHttpFilter(Channel channel, Action action, ActionFilterChain chain) throws Throwable{
-		throw new UnsupportedException(channel.toString());
+		throw new NotSupportedException(channel.toString());
 	}
 
 	protected abstract Object doHttpFilter(HttpChannel channel, HttpAction action, ActionFilterChain chain) throws Throwable;

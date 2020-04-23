@@ -2,11 +2,11 @@ package scw.io.resource;
 
 import java.io.InputStream;
 
-import scw.core.Consumer;
 import scw.core.Converter;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.util.ConcurrentReferenceHashMap;
+import scw.util.queue.Consumer;
 
 final class CacheResourceLookup implements ResourceLookup {
 	private final ConcurrentReferenceHashMap<String, ResourceData> resourceMap = new ConcurrentReferenceHashMap<String, ResourceData>();

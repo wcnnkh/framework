@@ -2,7 +2,7 @@ package scw.mvc.page;
 
 import java.util.LinkedList;
 
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 
 public class MultiPageFactory extends LinkedList<PageFactory> implements
 		PageFactory {
@@ -14,7 +14,7 @@ public class MultiPageFactory extends LinkedList<PageFactory> implements
 				return adapter.getPage(page);
 			}
 		}
-		throw new UnsupportedException("not support page: " + page);
+		throw new NotSupportedException("not support page: " + page);
 	}
 
 	public boolean isSupport(String page) {

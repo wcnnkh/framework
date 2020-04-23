@@ -15,11 +15,9 @@ import java.util.Map;
 
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
-import scw.core.annotation.DefaultValue;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
@@ -38,10 +36,8 @@ import scw.util.value.AbstractValueFactory;
 import scw.util.value.DefaultValueDefinition;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
-import scw.util.value.ValueUtils;
 
-public abstract class AbstractChannel extends AbstractValueFactory<String>
-		implements Channel, Destroy {
+public abstract class AbstractChannel extends AbstractValueFactory<String> implements Channel, Destroy {
 	private final long createTime;
 	private final JSONSupport jsonSupport;
 	private final ChannelBeanFactory channelBeanFactory;
@@ -50,8 +46,7 @@ public abstract class AbstractChannel extends AbstractValueFactory<String>
 	public AbstractChannel(BeanFactory beanFactory, JSONSupport jsonSupport) {
 		this.createTime = System.currentTimeMillis();
 		this.jsonSupport = jsonSupport;
-		this.channelBeanFactory = new DefaultChannelBeanFactory(beanFactory,
-				this);
+		this.channelBeanFactory = new DefaultChannelBeanFactory(beanFactory, this);
 	}
 
 	private Map<String, Object> attributeMap;
@@ -66,9 +61,8 @@ public abstract class AbstractChannel extends AbstractValueFactory<String>
 
 	@SuppressWarnings("unchecked")
 	public Enumeration<String> getAttributeNames() {
-		return (Enumeration<String>) (attributeMap == null ? Collections
-				.emptyEnumeration() : Collections.enumeration(attributeMap
-				.keySet()));
+		return (Enumeration<String>) (attributeMap == null ? Collections.emptyEnumeration()
+				: Collections.enumeration(attributeMap.keySet()));
 	}
 
 	public void setAttribute(String name, Object o) {
@@ -207,79 +201,56 @@ public abstract class AbstractChannel extends AbstractValueFactory<String>
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
 		if (Request.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return getRequest();
-		} else if (Response.class.isAssignableFrom(parameterDescriptor
-				.getType())) {
+		} else if (Response.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return getResponse();
-		} else if (Channel.class
-				.isAssignableFrom(parameterDescriptor.getType())) {
+		} else if (Channel.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return this;
 		}
 
-		Attribute attribute = parameterDescriptor.getAnnotatedElement()
-				.getAnnotation(Attribute.class);
+		Attribute attribute = parameterDescriptor.getAnnotatedElement().getAnnotation(Attribute.class);
 		if (attribute != null) {
 			return getAttribute(attribute.value());
 		}
 
-		RequestBody requestBody = parameterDescriptor.getAnnotatedElement()
-				.getAnnotation(RequestBody.class);
+		RequestBody requestBody = parameterDescriptor.getAnnotatedElement().getAnnotation(RequestBody.class);
 		if (requestBody != null) {
 			RequestBodyParse requestBodyParse = getBean(requestBody.value());
 			try {
-				return requestBodyParse.requestBodyParse(this,
-						getJsonSupport(), parameterDescriptor);
+				return requestBodyParse.requestBodyParse(this, getJsonSupport(), parameterDescriptor);
 			} catch (Exception e) {
-				throw ParameterException.createError(
-						parameterDescriptor.getName(), e);
+				throw ParameterException.createError(parameterDescriptor.getDisplayName(), e);
 			}
 		}
 
-		RequestBean requestBean = parameterDescriptor.getAnnotatedElement()
-				.getAnnotation(RequestBean.class);
+		RequestBean requestBean = parameterDescriptor.getAnnotatedElement().getAnnotation(RequestBean.class);
 		if (requestBean != null) {
-			return StringUtils.isEmpty(requestBean.value()) ? getBean(parameterDescriptor
-					.getType().getName()) : getBean(requestBean.value());
+			return StringUtils.isEmpty(requestBean.value()) ? getBean(parameterDescriptor.getType().getName())
+					: getBean(requestBean.value());
 		}
 
-		String name = ParameterUtils.getParameterName(parameterDescriptor);
-		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor
-				.getAnnotatedElement().getAnnotation(BigDecimalMultiply.class);
+		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor.getAnnotatedElement()
+				.getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
-			return bigDecimalMultiply(name, parameterDescriptor,
-					bigDecimalMultiply);
+			return bigDecimalMultiply(parameterDescriptor, bigDecimalMultiply);
 		}
 
-		DateFormat dateFormat = parameterDescriptor.getAnnotatedElement()
-				.getAnnotation(DateFormat.class);
+		DateFormat dateFormat = parameterDescriptor.getAnnotatedElement().getAnnotation(DateFormat.class);
 		if (dateFormat != null) {
-			return dateFormat(dateFormat, parameterDescriptor, name);
+			return dateFormat(dateFormat, parameterDescriptor);
 		}
-
-		DefaultValue defaultValue = parameterDescriptor.getAnnotatedElement()
-				.getAnnotation(DefaultValue.class);
-		if (defaultValue != null) {
-			Object value = getObject(
-					name,
-					parameterDescriptor.getType().isPrimitive() ? ClassUtils
-							.resolvePrimitiveIfNecessary(parameterDescriptor
-									.getType()) : parameterDescriptor
-							.getGenericType());
-			if (value == null) {
-				return ValueUtils.parse(defaultValue.value(),
-						parameterDescriptor.getGenericType());
-			}
-			return value;
+		
+		Value value = parameterDescriptor.getDefaultValue();
+		if(value != null){
+			return value.getAsObject(parameterDescriptor.getGenericType());
 		}
-
-		return getObject(name, parameterDescriptor.getGenericType());
+		return getObject(parameterDescriptor.getDisplayName(), parameterDescriptor.getGenericType());
 	}
 
-	protected Object dateFormat(DateFormat dateFormat,
-			ParameterDescriptor parameterConfig, String name) {
-		String value = getString(name);
+	protected Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterConfig) {
+		String value = getString(parameterConfig.getDisplayName());
 		if (TypeUtils.isString(parameterConfig.getType())) {
-			return StringUtils.isEmpty(value) ? value : new SimpleDateFormat(
-					dateFormat.value()).format(StringUtils.parseLong(value));
+			return StringUtils.isEmpty(value) ? value
+					: new SimpleDateFormat(dateFormat.value()).format(StringUtils.parseLong(value));
 		}
 
 		long time = 0;
@@ -288,8 +259,7 @@ public abstract class AbstractChannel extends AbstractValueFactory<String>
 			try {
 				time = format.parse(value).getTime();
 			} catch (ParseException e) {
-				getLogger().error("{} format error value:{}",
-						dateFormat.value(), value);
+				getLogger().error("{} format error value:{}", dateFormat.value(), value);
 			}
 		}
 
@@ -304,14 +274,11 @@ public abstract class AbstractChannel extends AbstractValueFactory<String>
 			calendar.setTimeInMillis(time);
 			return calendar;
 		}
-		throw new ParameterException("not support type ["
-				+ parameterConfig.getType() + "]");
+		throw new ParameterException("not support type [" + parameterConfig.getType() + "]");
 	}
 
-	protected Object bigDecimalMultiply(String name,
-			ParameterDescriptor parameterConfig,
-			BigDecimalMultiply bigDecimalMultiply) {
-		String value = getString(name);
+	protected Object bigDecimalMultiply(ParameterDescriptor parameterConfig, BigDecimalMultiply bigDecimalMultiply) {
+		String value = getString(parameterConfig.getDisplayName());
 		if (StringUtils.isEmpty(value)) {
 			return castBigDecimal(null, parameterConfig.getType());
 		}

@@ -1,8 +1,8 @@
 package scw.security.ip;
 
-import scw.core.annotation.DefaultValue;
-import scw.core.annotation.ParameterName;
 import scw.core.instance.annotation.PropertyParameter;
+import scw.core.parameter.annotation.DefaultValue;
+import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;

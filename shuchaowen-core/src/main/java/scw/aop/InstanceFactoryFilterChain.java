@@ -1,45 +1,36 @@
 package scw.aop;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 
-import scw.core.instance.InstanceFactory;
-import scw.core.utils.CollectionUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.aop.Context;
+import scw.aop.FilterChain;
+import scw.aop.Invoker;
+import scw.core.instance.NoArgsInstanceFactory;
 
-public final class InstanceFactoryFilterChain extends AbstractFilterChain {
-	private static Logger logger = LoggerUtils.getLogger(InstanceFactoryFilterChain.class);
-	private Iterator<String> iterator;
-	private final InstanceFactory instanceFactory;
+public final class InstanceFactoryFilterChain implements FilterChain {
+	private final Collection<String> filterNames;
+	private final FilterChain filterChain;
+	private final NoArgsInstanceFactory instanceFactory;
 
-	public InstanceFactoryFilterChain(InstanceFactory instanceFactory, Collection<String> filterNames,
-			FilterChain chain) {
-		super(chain);
-		this.instanceFactory = instanceFactory;
-		if (!CollectionUtils.isEmpty(filterNames)) {
-			iterator = filterNames.iterator();
-		}
+	public InstanceFactoryFilterChain(NoArgsInstanceFactory instanceFactory,
+			Collection<String> filterNames) {
+		this(instanceFactory, filterNames, null);
 	}
 
-	@Override
-	protected Filter getNextFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args)
-			throws Throwable {
-		if (iterator == null) {
-			return null;
-		}
+	@SuppressWarnings("unchecked")
+	public InstanceFactoryFilterChain(NoArgsInstanceFactory instanceFactory,
+			Collection<String> filterNames, FilterChain filterChain) {
+		this.filterNames = filterNames == null ? Collections.EMPTY_LIST
+				: filterNames;
+		this.instanceFactory = instanceFactory;
+		this.filterChain = filterChain;
+	}
 
-		if (iterator.hasNext()) {
-			String name = iterator.next();
-			if (instanceFactory.isInstance(name)) {
-				return instanceFactory.getInstance(name);
-			} else {
-				logger.warn("{}无法被实例化，已忽略使用此filter", name);
-				return getNextFilter(invoker, proxy, targetClass, method, args);
-			}
-		}
-		return null;
+	public Object doFilter(Invoker invoker, Context context) throws Throwable {
+		InstanceFactoryIteratorFilterChain chain = new InstanceFactoryIteratorFilterChain(
+				instanceFactory, filterNames, filterChain);
+		return chain.doFilter(invoker, context);
 	}
 
 }

@@ -6,10 +6,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import scw.core.Verification;
-import scw.core.instance.InstanceException;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 
 public final class CloneUtils {
 	private CloneUtils() {
@@ -172,7 +171,7 @@ public final class CloneUtils {
 		}
 
 		if (!instanceFactory.isInstance(type)) {
-			throw new InstanceException("无法进行实例化");
+			throw new NotSupportedException("无法进行实例化");
 		}
 
 		T t = (T) instanceFactory.getInstance(type);
@@ -214,7 +213,7 @@ public final class CloneUtils {
 	public static <T> T copy(Object source, Class<T> clazz, Verification<Field> ignoreVerification,
 			NoArgsInstanceFactory instanceFactory, boolean invokeSetter) {
 		if (!instanceFactory.isInstance(clazz)) {
-			throw new UnsupportedException("无法实例化:" + clazz);
+			throw new NotSupportedException("无法实例化:" + clazz);
 		}
 
 		T target = instanceFactory.getInstance(clazz);

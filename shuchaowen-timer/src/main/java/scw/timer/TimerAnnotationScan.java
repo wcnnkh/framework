@@ -6,7 +6,6 @@ import java.util.Date;
 
 import scw.aop.Invoker;
 import scw.beans.AbstractBeanFactoryLifeCycle;
-import scw.beans.AutoProxyMethodInvoker;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.GlobalPropertyFactory;
@@ -20,7 +19,7 @@ import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
 import scw.util.value.property.PropertyFactory;
 
-@Configuration
+@Configuration(order=Integer.MIN_VALUE)
 public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Timer timer = beanFactory.getInstance(Timer.class);
@@ -49,8 +48,8 @@ public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 	private Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
 		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null
 				: method.getParameterTypes()[0];
-		return new CrontabRunnable(new AutoProxyMethodInvoker(beanFactory, clz,
-				method), parameterType);
+		return new CrontabRunnable(beanFactory.getAop().proxyMethod(
+				beanFactory, clz, method, null), parameterType);
 	}
 
 	private void schedule(BeanFactory beanFactory, Class<?> clz, Method method,

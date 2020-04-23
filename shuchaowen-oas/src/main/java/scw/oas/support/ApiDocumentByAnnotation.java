@@ -94,7 +94,7 @@ public class ApiDocumentByAnnotation extends SimpleApiDocument {
 				.getParameterDescriptors(method)) {
 			SimpleApiParameter parameter = new SimpleApiParameter();
 			parameter.setType(parameterConfig.getType().getName());
-			parameter.setName(parameterConfig.getName());
+			parameter.setName(parameterConfig.getDisplayName());
 			parameter.setRequired(ParameterUtils.isNullAble(parameterConfig));
 			parameter.setDescription(AnnotationUtils.getDescription(
 					parameterConfig.getAnnotatedElement(), null));

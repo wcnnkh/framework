@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import scw.core.utils.ClassUtils;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 
 public abstract class AbstractValue implements Value {
 	private final Value defaultValue;
@@ -74,11 +74,11 @@ public abstract class AbstractValue implements Value {
 	}
 
 	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		throw new UnsupportedException(type.toString());
+		throw new NotSupportedException(type.toString());
 	}
 
 	protected <T> T getAsObjectNotSupport(Type type) {
-		throw new UnsupportedException(type.toString());
+		throw new NotSupportedException(type.toString());
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

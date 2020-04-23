@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
 
 import scw.core.Converter;
 import scw.core.StringFormat;
-import scw.core.instance.InstanceUtils;
+import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectionUtils;
 import scw.io.IOUtils;
@@ -500,7 +500,7 @@ public final class XMLUtils {
 				.parseBoolean(value);
 	}
 
-	public static <T> T getBean(Node node, Class<T> type) throws Exception {
+	public static <T> T getBean(NoArgsInstanceFactory instanceFactory, Node node, Class<T> type) throws Exception {
 		T t = null;
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -524,7 +524,7 @@ public final class XMLUtils {
 			}
 
 			if (t == null) {
-				t = InstanceUtils.newInstance(type);
+				t = instanceFactory.getInstance(type);
 			}
 
 			ReflectionUtils
@@ -538,7 +538,7 @@ public final class XMLUtils {
 		return t;
 	}
 
-	public static <T> List<T> getBeanList(Node rootNode, Class<T> type)
+	public static <T> List<T> getBeanList(NoArgsInstanceFactory instanceFactory, Node rootNode, Class<T> type)
 			throws InstantiationException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		if (rootNode == null) {
@@ -559,7 +559,7 @@ public final class XMLUtils {
 
 			T t;
 			try {
-				t = getBean(node, type);
+				t = getBean(instanceFactory, node, type);
 				if (t == null) {
 					continue;
 				}
@@ -652,12 +652,12 @@ public final class XMLUtils {
 		return value;
 	}
 
-	public static <T> T newInstanceLoadAttributeBySetter(Class<T> type,
+	public static <T> T newInstanceLoadAttributeBySetter(NoArgsInstanceFactory instanceFactory, Class<T> type,
 			final PropertyFactory propertyFactory, Node node,
 			final PropertyMapper<String> mapper) {
 		Map<String, Node> map = attributeAsMap(node);
 		try {
-			T t = InstanceUtils.newInstance(type);
+			T t = instanceFactory.getInstance(type);
 			ReflectionUtils.setProperties(type, t, map,
 					new PropertyMapper<Node>() {
 						public Object mapper(String name, Node value, Type type)

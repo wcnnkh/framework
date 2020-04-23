@@ -1,7 +1,6 @@
 package scw.locks;
 
-import java.lang.reflect.Method;
-
+import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
@@ -19,7 +18,7 @@ import scw.locks.annotation.LockParameter;
  * @author shuchaowen
  *
  */
-@Configuration
+@Configuration(order=Integer.MAX_VALUE)
 public final class LockFilter implements Filter {
 	private LockFactory lockFactory;
 
@@ -31,16 +30,16 @@ public final class LockFilter implements Filter {
 		this.lockFactory = lockFactory;
 	}
 
-	public Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args,
+	public Object doFilter(Invoker invoker, Context context,
 			FilterChain filterChain) throws Throwable {
-		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, targetClass, method);
+		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, context.getMethod(), context.getTargetClass());
 		if (lockConfig == null) {
-			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
+			return filterChain.doFilter(invoker, context);
 		}
 
 		StringBuilder sb = new StringBuilder(128);
-		sb.append(method.toString());
-		ParameterDescriptor[] configs = ParameterUtils.getParameterDescriptors(method);
+		sb.append(context.getMethod().toString());
+		ParameterDescriptor[] configs = ParameterUtils.getParameterDescriptors(context.getMethod());
 		for (int i = 0; i < configs.length; i++) {
 			ParameterDescriptor config = configs[i];
 			boolean b = lockConfig.all();
@@ -53,7 +52,7 @@ public final class LockFilter implements Filter {
 				sb.append(i == 0 ? "?" : "&");
 				sb.append(config.getName());
 				sb.append("=");
-				sb.append(JSONUtils.toJSONString(args[i]));
+				sb.append(JSONUtils.toJSONString(context.getArgs()[i]));
 			}
 		}
 
@@ -66,7 +65,7 @@ public final class LockFilter implements Filter {
 				throw new HasBeenLockedException(lockKey);
 			}
 
-			return filterChain.doFilter(invoker, proxy, targetClass, method, args);
+			return filterChain.doFilter(invoker, context);
 		} finally {
 			lock.unlock();
 		}

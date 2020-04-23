@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.orm.AbstractColumn;
 import scw.orm.MethodColumn;
 import scw.orm.ORMException;
@@ -66,7 +66,7 @@ public class DefaultMethodColumn extends AbstractColumn implements MethodColumn 
 			return setter.getParameterTypes()[0];
 		}
 
-		throw new UnsupportedException(getClass() + ", name=" + getName());
+		throw new NotSupportedException(getClass() + ", name=" + getName());
 	}
 
 	public Type getGenericType() {

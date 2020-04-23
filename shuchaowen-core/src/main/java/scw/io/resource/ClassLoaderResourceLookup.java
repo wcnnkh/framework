@@ -2,10 +2,10 @@ package scw.io.resource;
 
 import java.io.InputStream;
 
-import scw.core.Consumer;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
+import scw.util.queue.Consumer;
 
 public class ClassLoaderResourceLookup implements ResourceLookup {
 	private static final String DEFAULT_PREFIX = "resources/";

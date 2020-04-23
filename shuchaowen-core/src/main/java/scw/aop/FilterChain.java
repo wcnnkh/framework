@@ -1,7 +1,5 @@
 package scw.aop;
 
-import java.lang.reflect.Method;
-
 public interface FilterChain {
-	Object doFilter(Invoker invoker, Object proxy, Class<?> targetClass, Method method, Object[] args) throws Throwable;
+	Object doFilter(Invoker invoker, Context context) throws Throwable;
 }

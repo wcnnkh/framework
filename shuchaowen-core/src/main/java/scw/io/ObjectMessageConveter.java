@@ -1,0 +1,40 @@
+package scw.io;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+
+import scw.net.MimeType;
+import scw.net.MimeTypeUtils;
+import scw.net.message.InputMessage;
+import scw.net.message.OutputMessage;
+import scw.net.message.converter.AbstractMessageConverter;
+import scw.net.message.converter.MessageConvertException;
+
+public class ObjectMessageConveter extends AbstractMessageConverter<Object> {
+	private static final long serialVersionUID = 1L;
+	private Serializer serializer;
+
+	public ObjectMessageConveter(Serializer serializer) {
+		add(MimeTypeUtils.APPLICATION_OCTET_STREAM, MimeTypeUtils.ALL);
+		this.serializer = serializer;
+	}
+
+	@Override
+	public boolean support(Class<?> clazz) {
+		return true;
+	}
+
+	@Override
+	protected Object readInternal(Type type, InputMessage inputMessage)
+			throws IOException, MessageConvertException {
+		return serializer.deserialize(inputMessage.getBody());
+	}
+
+	@Override
+	protected void writeInternal(Object body, MimeType contentType,
+			OutputMessage outputMessage) throws IOException,
+			MessageConvertException {
+		serializer.serialize(outputMessage.getBody(), body);
+	}
+
+}

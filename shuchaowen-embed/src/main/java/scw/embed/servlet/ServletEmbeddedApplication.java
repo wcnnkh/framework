@@ -3,7 +3,7 @@ package scw.embed.servlet;
 import scw.application.MainApplication;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 import scw.servlet.mvc.DispatcherServlet;
 import scw.util.FormatUtils;
 
@@ -21,7 +21,7 @@ public class ServletEmbeddedApplication extends MainApplication {
 		embedded = InstanceUtils.getConfiguration(ServletEmbedded.class,
 				getBeanFactory(), getPropertyFactory());
 		if (embedded == null) {
-			throw new UnsupportedException("未找到支持的embedded, 如需支持请导入对应的jar");
+			throw new NotSupportedException("未找到支持的embedded, 如需支持请导入对应的jar");
 		}
 
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();

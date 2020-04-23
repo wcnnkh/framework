@@ -9,9 +9,9 @@ import com.rabbitmq.client.ConnectionFactory;
 import scw.core.SimpleParameters;
 import scw.core.Destroy;
 import scw.core.Parameters;
+import scw.io.JavaSerializer;
+import scw.io.NoTypeSpecifiedSerializer;
 import scw.mq.amqp.ParametersExchange;
-import scw.serializer.JavaSerializer;
-import scw.serializer.NoTypeSpecifiedSerializer;
 
 public class ParametersSingleExchange extends SingleExchange<Parameters> implements ParametersExchange, Destroy {
 	private boolean destory;

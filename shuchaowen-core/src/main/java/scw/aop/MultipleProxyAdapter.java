@@ -1,11 +1,11 @@
 package scw.aop;
 
-import java.util.Collection;
 import java.util.LinkedList;
 
-import scw.lang.UnsupportedException;
+import scw.lang.NotSupportedException;
 
-public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements ProxyAdapter {
+public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements
+		ProxyAdapter {
 	private static final long serialVersionUID = 1L;
 
 	public boolean isSupport(Class<?> clazz) {
@@ -17,22 +17,13 @@ public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements Pr
 		return false;
 	}
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters) {
-		for (ProxyAdapter proxyAdapter : this) {
-			if (proxyAdapter.isSupport(clazz)) {
-				return proxyAdapter.proxy(clazz, interfaces, filters);
-			}
-		}
-		throw new UnsupportedException(clazz.getName());
-	}
-
 	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
 		for (ProxyAdapter proxyAdapter : this) {
 			if (proxyAdapter.isSupport(clazz)) {
 				return proxyAdapter.getClass(clazz, interfaces);
 			}
 		}
-		throw new UnsupportedException(clazz.getName());
+		throw new NotSupportedException(clazz.getName());
 	}
 
 	public boolean isProxy(Class<?> clazz) {
@@ -44,14 +35,14 @@ public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements Pr
 		return false;
 	}
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Collection<? extends Filter> filters,
+	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
 			FilterChain filterChain) {
 		for (ProxyAdapter proxyAdapter : this) {
 			if (proxyAdapter.isSupport(clazz)) {
-				return proxyAdapter.proxy(clazz, interfaces, filters, filterChain);
+				return proxyAdapter.proxy(clazz, interfaces, filterChain);
 			}
 		}
-		throw new UnsupportedException(clazz.getName());
+		throw new NotSupportedException(clazz.getName());
 	}
 
 	public Class<?> getUserClass(Class<?> proxyClass) {

@@ -1,9 +1,6 @@
 package scw.beans.xml;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +9,6 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeanMethod;
 import scw.beans.BeansException;
-import scw.beans.EParameterType;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -50,11 +46,6 @@ public final class XmlBeanUtils {
 
 	public static boolean isSingleton(Node node) {
 		return XMLUtils.getBooleanValue(node, "singleton", true);
-	}
-
-	public static String[] getNames(Node node) {
-		String name = XMLUtils.getNodeAttributeValue(node, "name");
-		return StringUtils.isEmpty(name) ? null : StringUtils.commonSplit(name);
 	}
 
 	public static boolean getBooleanValue(PropertyFactory propertyFactory,
@@ -169,8 +160,7 @@ public final class XmlBeanUtils {
 
 	public static List<BeanMethod> getDestroyMethodList(Class<?> clz,
 			NodeList nodeList) throws Exception {
-		return XmlBeanUtils.getBeanMethodList(clz, nodeList,
-				"destroy");
+		return XmlBeanUtils.getBeanMethodList(clz, nodeList, "destroy");
 	}
 
 	public static XmlBeanParameter[] getConstructorParameters(NodeList nodeList)
@@ -210,33 +200,6 @@ public final class XmlBeanUtils {
 				.toArray(new XmlBeanParameter[propertiesList.size()]);
 	}
 
-	@SuppressWarnings("unchecked")
-	public static Collection<String> getFilters(Node node) {
-		String filters = XMLUtils.getNodeAttributeValue(node, "filters");
-		if (StringUtils.isEmpty(filters)) {
-			return Collections.EMPTY_LIST;
-		}
-
-		return Arrays.asList(StringUtils.commonSplit(filters));
-	}
-
-	public static String getClassName(Node node) {
-		return XMLUtils.getRequireNodeAttributeValue(node, "class");
-	}
-
-	public static String getId(Node node) {
-		String id = XMLUtils.getNodeAttributeValue(node, "id");
-		return StringUtils.isEmpty(id) ? getClassName(node) : id;
-	}
-
-	public static Class<?> getClass(Node node) {
-		try {
-			return ClassUtils.forName(getClassName(node));
-		} catch (ClassNotFoundException e) {
-			throw new BeansException(e);
-		}
-	}
-
 	public static TimeUnit getTimeUnit(Node node) {
 		String format = XMLUtils.getNodeAttributeValue(node, "unit");
 		TimeUnit timeUnit = TimeUnit.MINUTES;
@@ -244,5 +207,20 @@ public final class XmlBeanUtils {
 			timeUnit = TimeUnit.valueOf(format.toUpperCase());
 		}
 		return timeUnit;
+	}
+
+	public static String getClassName(Node node, boolean require) {
+		return require ? XMLUtils.getRequireNodeAttributeValue(node, "class")
+				: XMLUtils.getNodeAttributeValue(node, "class");
+	}
+
+	public static Class<?> getClass(Node node, boolean require)
+			throws ClassNotFoundException {
+		String className = getClassName(node, require);
+		if (StringUtils.isEmpty(className)) {
+			return null;
+		}
+
+		return ClassUtils.forName(className);
 	}
 }
