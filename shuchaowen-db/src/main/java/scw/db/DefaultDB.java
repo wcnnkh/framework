@@ -4,11 +4,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import scw.beans.annotation.Bean;
+import scw.core.instance.annotation.Configuration;
 import scw.db.cache.CacheManager;
 import scw.db.database.DataBase;
 import scw.mq.queue.Queue;
 import scw.orm.sql.GeneratorService;
 
+@Configuration(order=Integer.MIN_VALUE)
 @Bean(proxy = false)
 public class DefaultDB extends AbstractDB {
 	private final DBConfig dbConfig;

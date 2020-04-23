@@ -166,10 +166,6 @@ public final class InstanceUtils {
 
 	private static boolean isAuto(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptor parameterDescriptor, ParameterFactory parameterFactory) {
-		if(clazz.getName().indexOf("SimpleObjectRpcService") != -1){
-			System.out.println(clazz);
-		}
-		
 		boolean require = !AnnotationUtils.isNullable(parameterDescriptor.getAnnotatedElement(), false);
 		if (!require) {
 			return true;

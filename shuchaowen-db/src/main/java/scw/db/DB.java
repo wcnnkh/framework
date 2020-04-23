@@ -2,13 +2,11 @@ package scw.db;
 
 import java.sql.SQLException;
 
-import scw.beans.annotation.AutoImpl;
 import scw.db.cache.CacheManager;
 import scw.orm.sql.ORMOperations;
 import scw.sql.Sql;
 import scw.sql.SqlOperations;
 
-@AutoImpl(className = {"scw.db.DefaultDB"})
 public interface DB extends ORMOperations, SqlOperations {
 	CacheManager getCacheManager();
 	

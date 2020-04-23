@@ -2,12 +2,14 @@ package scw.db.druid;
 
 import java.util.Map;
 
+import scw.core.instance.annotation.Configuration;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.io.resource.ResourceUtils;
 
+@Configuration(order=Integer.MIN_VALUE)
 @SuppressWarnings("rawtypes")
 public final class DruidDBConfig extends AbstractDruidDBConfig {
 

@@ -1,13 +1,11 @@
 package scw.db;
 
-import scw.beans.annotation.AutoImpl;
 import scw.db.cache.CacheManager;
 import scw.db.database.DataBase;
 import scw.mq.queue.Queue;
 import scw.orm.sql.GeneratorService;
 import scw.sql.ConnectionFactory;
 
-@AutoImpl(className = { "scw.db.support.HikariCPDBConfig", "scw.db.support.DruidDBConfig" })
 public interface DBConfig extends ConnectionFactory {
 	DataBase getDataBase();
 

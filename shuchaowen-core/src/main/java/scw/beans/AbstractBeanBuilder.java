@@ -45,7 +45,7 @@ public abstract class AbstractBeanBuilder implements BeanBuilder {
 	}
 
 	protected Object createProxyInstance(Class<?> targetClass, Class<?>[] parameterTypes, Object[] args) {
-		if (getTargetClass().isInterface() && filterNames.isEmpty()) {
+		if (getTargetClass().isInterface() && filterNames.isEmpty() && filterChain == null) {
 			logger.warn("empty filter: {}", getTargetClass().getName());
 		}
 
