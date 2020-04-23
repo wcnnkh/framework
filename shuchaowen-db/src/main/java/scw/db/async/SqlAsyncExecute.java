@@ -2,11 +2,11 @@ package scw.db.async;
 
 import scw.sql.Sql;
 
-public final class SqlAsyncRunnable extends AsyncRunnableDB {
+public final class SqlAsyncExecute extends AsyncExecute {
 	private static final long serialVersionUID = 1L;
 	private final Sql sql;
 
-	public SqlAsyncRunnable(Sql sql) {
+	public SqlAsyncExecute(Sql sql) {
 		this.sql = sql;
 	}
 
