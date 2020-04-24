@@ -25,14 +25,14 @@ public class ObjectFileManager {
 	private final Serializer serializer;
 	private final String suffix;
 	private final AtomicLong atomicLong = new AtomicLong(System.currentTimeMillis());
-	
+
 	public ObjectFileManager(String suffix) {
 		this(suffix, JavaSerializer.SERIALIZER);
 	}
 
 	public ObjectFileManager(String suffix, Serializer serializer) {
-		this(FileUtils.getTempDirectoryPath() + File.separator + GlobalPropertyFactory.getInstance().getSystemLocalId(), suffix,
-				serializer);
+		this(FileUtils.getTempDirectoryPath() + File.separator + GlobalPropertyFactory.getInstance().getSystemLocalId(),
+				suffix, serializer);
 	}
 
 	public ObjectFileManager(String directory, String suffix, Serializer serializer) {
@@ -80,6 +80,10 @@ public class ObjectFileManager {
 
 	private Object readObject(File file) throws IOException, ClassNotFoundException {
 		byte[] data = FileUtils.readFileToByteArray(file);
+		if (ArrayUtils.isEmpty(data)) {
+			return null;
+		}
+
 		return serializer.deserialize(data);
 	}
 
@@ -108,7 +112,12 @@ public class ObjectFileManager {
 
 		List<ObjectInfo> objects = new ArrayList<ObjectInfo>(fileList.size());
 		for (File file : fileList) {
-			objects.add(new ObjectInfo(readObject(file), getIndex(file)));
+			Object obj = readObject(file);
+			if (obj == null) {
+				continue;
+			}
+
+			objects.add(new ObjectInfo(obj, getIndex(file)));
 		}
 		return objects;
 	}
