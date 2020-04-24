@@ -10,7 +10,7 @@ import java.util.Properties;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.util.SimpleKeyValuePair;
@@ -50,7 +50,7 @@ public class LoggerLevelUtils {
 			FormatUtils.info(LoggerLevelUtils.class, "loading "
 					+ loggerEnablePropertiePath);
 			Properties properties = ResourceUtils.getResourceOperations()
-					.getProperties(loggerEnablePropertiePath);
+					.getFormattedProperties(loggerEnablePropertiePath);
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
 				if (key == null) {

@@ -1,19 +1,23 @@
-package scw.io.resource;
+package scw.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.util.Collections;
+import java.util.List;
 
 import scw.core.Assert;
-import scw.core.Converter;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.NestedRuntimeException;
 import scw.lang.Nullable;
 
 /**
@@ -70,28 +74,15 @@ public final class ResourceUtils {
 	/** Special separator between WAR URL and jar part on Tomcat. */
 	public static final String WAR_URL_SEPARATOR = "*/";
 
-	private static final ResourceLookup RESOURCE_LOOKUP = new DefaultResourceLookup(GlobalPropertyFactory.getInstance().getWorkPath(),
-			false, GlobalPropertyFactory.getInstance());
-	private static final ResourceOperations RESOURCE_OPERATIONS = new PropertyFactoryMultiSuffixResourceOperations(
-			RESOURCE_LOOKUP, GlobalPropertyFactory.getInstance());
+	private static final ResourceOperations RESOURCE_OPERATIONS = new ResourceOperations();
+
+	static {
+		RESOURCE_OPERATIONS.addResourceLoader(
+				new FileSystemSearchResourceLoader(GlobalPropertyFactory.getInstance().getWorkPath(), false));
+	}
 
 	public static final ResourceOperations getResourceOperations() {
 		return RESOURCE_OPERATIONS;
-	}
-
-	public static final ResourceLookup getResourceLookup() {
-		return RESOURCE_LOOKUP;
-	}
-
-	public static <T> T getResource(String resource, Converter<InputStream, T> converter,
-			ResourceLookup resourceLookup) {
-		if (StringUtils.isEmpty(resource)) {
-			return null;
-		}
-
-		InputStreamConvertConsumer<T> inputStreamConvertConsumer = new InputStreamConvertConsumer<T>(converter);
-		resourceLookup.lookup(resource, inputStreamConvertConsumer);
-		return inputStreamConvertConsumer.getValue();
 	}
 
 	/**
@@ -425,5 +416,61 @@ public final class ResourceUtils {
 	 */
 	public static void useCachesIfNecessary(URLConnection con) {
 		con.setUseCaches(con.getClass().getSimpleName().startsWith("JNLP"));
+	}
+
+	public static List<String> getLines(Resource resource, String charsetName) {
+		if (resource == null || !resource.exists()) {
+			return Collections.emptyList();
+		}
+
+		InputStream is = null;
+		try {
+			is = resource.getInputStream();
+			return IOUtils.readLines(is, charsetName);
+		} catch (IOException e) {
+			throw new NestedRuntimeException(resource.getDescription(), e);
+		} finally {
+			IOUtils.close(is);
+		}
+	}
+
+	public static List<String> getLines(Resource resource, Charset charset) {
+		return getLines(resource, charset.name());
+	}
+
+	public static String getContent(Resource resource, String charsetName) {
+		if (resource == null || !resource.exists()) {
+			return null;
+		}
+
+		InputStream is = null;
+		try {
+			is = resource.getInputStream();
+			return IOUtils.readContent(is, charsetName);
+		} catch (IOException e) {
+			throw new NestedRuntimeException(resource.getDescription(), e);
+		} finally {
+			IOUtils.close(is);
+		}
+	}
+
+	public static String getContent(Resource resource, Charset charset) {
+		return getContent(resource, charset.name());
+	}
+
+	public static byte[] getBytes(Resource resource) {
+		if (resource == null || !resource.exists()) {
+			return null;
+		}
+
+		InputStream is = null;
+		try {
+			is = resource.getInputStream();
+			return IOUtils.toByteArray(is);
+		} catch (IOException e) {
+			throw new NestedRuntimeException(resource.getDescription(), e);
+		} finally {
+			IOUtils.close(is);
+		}
 	}
 }

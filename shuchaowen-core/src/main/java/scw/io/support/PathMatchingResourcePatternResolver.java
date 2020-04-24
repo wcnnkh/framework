@@ -44,9 +44,9 @@ import scw.io.DefaultResourceLoader;
 import scw.io.FileSystemResource;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
+import scw.io.ResourceUtils;
 import scw.io.UrlResource;
 import scw.io.VfsResource;
-import scw.io.resource.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.AntPathMatcher;
@@ -615,7 +615,7 @@ public class PathMatchingResourcePatternResolver implements ResourcePatternResol
 	 *            the resource handle to check (usually the root directory to
 	 *            start path matching from)
 	 * @see #doFindPathMatchingJarResources
-	 * @see org.springframework.util.ResourceUtils#isJarURL
+	 * @see scw.io.springframework.util.ResourceUtils#isJarURL
 	 */
 	protected boolean isJarResource(Resource resource) throws IOException {
 		return false;

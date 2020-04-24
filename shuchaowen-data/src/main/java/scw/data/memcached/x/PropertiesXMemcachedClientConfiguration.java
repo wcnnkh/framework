@@ -8,7 +8,7 @@ import scw.core.instance.InstanceFactory;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.utils.StringUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -18,7 +18,7 @@ public final class PropertiesXMemcachedClientConfiguration implements XMemcached
 
 	public PropertiesXMemcachedClientConfiguration(InstanceFactory instanceFactory,
 			@ResourceParameter @DefaultValue("memcached.properties") String configurationFile) {
-		this(instanceFactory, ResourceUtils.getResourceOperations().getProperties(configurationFile));
+		this(instanceFactory, ResourceUtils.getResourceOperations().getFormattedProperties(configurationFile));
 	}
 
 	@SuppressWarnings("rawtypes")

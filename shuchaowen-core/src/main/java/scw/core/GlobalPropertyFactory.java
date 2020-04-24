@@ -6,10 +6,7 @@ import java.util.Enumeration;
 
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
-import scw.io.resource.DefaultResourceLookup;
-import scw.io.resource.PropertyFactoryMultiSuffixResourceOperations;
-import scw.io.resource.ResourceLookup;
-import scw.io.resource.ResourceOperations;
+import scw.io.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.MultiEnumeration;
 import scw.util.value.Value;
@@ -33,17 +30,9 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 			setWorkPath(getDefaultWorkPath());
 		}
 
-		loadProperties(
-				getResourceOperations(),
+		loadProperties(ResourceUtils.getResourceOperations(),
 				getValue("scw.properties.private", String.class,
 						"/private.properties"));
-	}
-
-	public ResourceOperations getResourceOperations() {
-		ResourceLookup resourceLookup = new DefaultResourceLookup(
-				getWorkPath(), false, this);
-		return new PropertyFactoryMultiSuffixResourceOperations(resourceLookup,
-				this);
 	}
 
 	public Value get(String key) {

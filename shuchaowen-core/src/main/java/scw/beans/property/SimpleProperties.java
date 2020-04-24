@@ -8,7 +8,7 @@ import org.w3c.dom.NodeList;
 
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.net.client.http.HttpUtils;
 import scw.util.value.property.PropertyFactory;
 
@@ -64,7 +64,7 @@ public class SimpleProperties extends AbstractProperties {
 		public String getValue() {
 			String path = XMLUtils.formatNodeValue(getPropertyFactory(),
 					getNode(), getFilePath(getNode()));
-			return ResourceUtils.getResourceOperations().getFileContent(path,
+			return ResourceUtils.getResourceOperations().getContent(path,
 					XmlPropertyUtils.getCharsetName(getNode()));
 		}
 	}

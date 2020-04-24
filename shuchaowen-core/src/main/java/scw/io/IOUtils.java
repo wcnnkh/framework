@@ -95,11 +95,9 @@ public final class IOUtils {
 	private IOUtils() {
 	}
 
-	public static InputStream limitedInputStream(final InputStream is,
-			final int limit) throws IOException {
+	public static InputStream limitedInputStream(final InputStream is, final int limit) throws IOException {
 		return new InputStream() {
-			private int mPosition = 0, mMark = 0, mLimit = Math.min(limit,
-					is.available());
+			private int mPosition = 0, mMark = 0, mLimit = Math.min(limit, is.available());
 
 			public int read() throws IOException {
 				if (mPosition < mLimit) {
@@ -165,8 +163,7 @@ public final class IOUtils {
 		};
 	}
 
-	public static InputStream markSupportedInputStream(final InputStream is,
-			final int markBufferSize) {
+	public static InputStream markSupportedInputStream(final InputStream is, final int markBufferSize) {
 		if (is.markSupported()) {
 			return is;
 		}
@@ -236,8 +233,7 @@ public final class IOUtils {
 				// mark buffer is not empty
 				int count = mCount - mPosition;
 				if (count > 0) {
-					System.arraycopy(mMarkBuffer, mPosition, mMarkBuffer, 0,
-							count);
+					System.arraycopy(mMarkBuffer, mPosition, mMarkBuffer, 0, count);
 					mCount = count;
 					mPosition = 0;
 				}
@@ -280,8 +276,7 @@ public final class IOUtils {
 		}
 	}
 
-	public static long write(OutputStream os, InputStream is, int buffSize,
-			int mark) throws IOException {
+	public static long write(OutputStream os, InputStream is, int buffSize, int mark) throws IOException {
 		if (mark >= 0) {
 			if (is.markSupported()) {
 				is.mark(0);
@@ -309,8 +304,7 @@ public final class IOUtils {
 	 * @return count
 	 * @throws IOException
 	 */
-	public static long write(InputStream is, OutputStream os)
-			throws IOException {
+	public static long write(InputStream is, OutputStream os) throws IOException {
 		return write(is, os, DEFAULT_BUFFER_SIZE);
 	}
 
@@ -326,8 +320,7 @@ public final class IOUtils {
 	 * @return count
 	 * @throws IOException
 	 */
-	public static long write(InputStream is, OutputStream os, int bufferSize)
-			throws IOException {
+	public static long write(InputStream is, OutputStream os, int bufferSize) throws IOException {
 		return copyLarge(is, os, new byte[bufferSize]);
 	}
 
@@ -340,8 +333,7 @@ public final class IOUtils {
 	 *            lines.
 	 * @throws IOException
 	 */
-	public static void writeLines(OutputStream os, String[] lines)
-			throws IOException {
+	public static void writeLines(OutputStream os, String[] lines) throws IOException {
 		PrintWriter writer = new PrintWriter(new OutputStreamWriter(os));
 		try {
 			for (String line : lines) {
@@ -378,8 +370,7 @@ public final class IOUtils {
 	 *            lines.
 	 * @throws IOException
 	 */
-	public static void appendLines(File file, String[] lines)
-			throws IOException {
+	public static void appendLines(File file, String[] lines) throws IOException {
 		if (file == null) {
 			throw new IOException("File is null.");
 		}
@@ -396,8 +387,7 @@ public final class IOUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static ByteArray read(InputStream in, int buffSize, int mark)
-			throws IOException {
+	public static ByteArray read(InputStream in, int buffSize, int mark) throws IOException {
 		ByteArray byteArray = new ByteArray(buffSize);
 		byte[] b = new byte[buffSize];
 		int len;
@@ -421,8 +411,7 @@ public final class IOUtils {
 		}
 	}
 
-	public static String read(Reader reader, int buffSize, int mark)
-			throws IOException {
+	public static String read(Reader reader, int buffSize, int mark) throws IOException {
 		StringBuilder sb = new StringBuilder(buffSize);
 		char[] buff = new char[buffSize];
 		int len;
@@ -469,8 +458,7 @@ public final class IOUtils {
 		}
 	}
 
-	public static List<String> readLineList(BufferedReader br, int mark)
-			throws IOException {
+	public static List<String> readLineList(BufferedReader br, int mark) throws IOException {
 		List<String> list = new ArrayList<String>();
 		String line;
 		try {
@@ -564,8 +552,7 @@ public final class IOUtils {
 	 * @since 2.2
 	 */
 	public static BufferedReader toBufferedReader(Reader reader) {
-		return reader instanceof BufferedReader ? (BufferedReader) reader
-				: new BufferedReader(reader);
+		return reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);
 	}
 
 	// read toByteArray
@@ -613,12 +600,10 @@ public final class IOUtils {
 	 * @see IOUtils#toByteArray(java.io.InputStream, int)
 	 * @since 2.1
 	 */
-	public static byte[] toByteArray(InputStream input, long size)
-			throws IOException {
+	public static byte[] toByteArray(InputStream input, long size) throws IOException {
 
 		if (size > Integer.MAX_VALUE) {
-			throw new IllegalArgumentException(
-					"Size cannot be greater than Integer max value: " + size);
+			throw new IllegalArgumentException("Size cannot be greater than Integer max value: " + size);
 		}
 
 		return toByteArray(input, (int) size);
@@ -641,12 +626,10 @@ public final class IOUtils {
 	 *             if size is less than zero
 	 * @since 2.1
 	 */
-	public static byte[] toByteArray(InputStream input, int size)
-			throws IOException {
+	public static byte[] toByteArray(InputStream input, int size) throws IOException {
 
 		if (size < 0) {
-			throw new IllegalArgumentException(
-					"Size must be equal or greater than zero: " + size);
+			throw new IllegalArgumentException("Size must be equal or greater than zero: " + size);
 		}
 
 		if (size == 0) {
@@ -657,14 +640,12 @@ public final class IOUtils {
 		int offset = 0;
 		int readed;
 
-		while (offset < size
-				&& (readed = input.read(data, offset, size - offset)) != EOF) {
+		while (offset < size && (readed = input.read(data, offset, size - offset)) != EOF) {
 			offset += readed;
 		}
 
 		if (offset != size) {
-			throw new IOException("Unexpected readed size. current: " + offset
-					+ ", excepted: " + size);
+			throw new IOException("Unexpected readed size. current: " + offset + ", excepted: " + size);
 		}
 
 		return data;
@@ -695,8 +676,8 @@ public final class IOUtils {
 	 * Get the contents of a <code>Reader</code> as a <code>byte[]</code> using
 	 * the specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * This method buffers the input internally, so there is no need to use a
 	 * <code>BufferedReader</code>.
@@ -712,8 +693,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static byte[] toByteArray(Reader input, String encoding)
-			throws IOException {
+	public static byte[] toByteArray(Reader input, String encoding) throws IOException {
 		UnsafeByteArrayOutputStream output = new UnsafeByteArrayOutputStream();
 		copy(input, output, encoding);
 		return output.toByteArray();
@@ -747,8 +727,8 @@ public final class IOUtils {
 	 * Get the contents of an <code>InputStream</code> as a character array
 	 * using the specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * This method buffers the input internally, so there is no need to use a
 	 * <code>BufferedInputStream</code>.
@@ -764,8 +744,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static char[] toCharArray(InputStream is, String encoding)
-			throws IOException {
+	public static char[] toCharArray(InputStream is, String encoding) throws IOException {
 		CharArrayWriter output = new CharArrayWriter();
 		copy(is, output, encoding);
 		return output.toCharArray();
@@ -817,8 +796,8 @@ public final class IOUtils {
 	 * Get the contents of an <code>InputStream</code> as a String using the
 	 * specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * This method buffers the input internally, so there is no need to use a
 	 * <code>BufferedInputStream</code>.
@@ -833,8 +812,7 @@ public final class IOUtils {
 	 * @throws IOException
 	 *             if an I/O error occurs
 	 */
-	public static String toString(InputStream input, String encoding)
-			throws IOException {
+	public static String toString(InputStream input, String encoding) throws IOException {
 		UnsafeStringWriter sw = new UnsafeStringWriter();
 		copy(input, sw, encoding);
 		return sw.toString();
@@ -952,8 +930,8 @@ public final class IOUtils {
 	 * Get the contents of an <code>InputStream</code> as a list of Strings, one
 	 * entry per line, using the specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * This method buffers the input internally, so there is no need to use a
 	 * <code>BufferedInputStream</code>.
@@ -969,8 +947,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static List<String> readLines(InputStream input, String encoding)
-			throws IOException {
+	public static List<String> readLines(InputStream input, String encoding) throws IOException {
 		if (encoding == null) {
 			return readLines(input);
 		} else {
@@ -1024,8 +1001,8 @@ public final class IOUtils {
 	 * Convert the specified CharSequence to an input stream, encoded as bytes
 	 * using the specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 *
 	 * @param input
 	 *            the CharSequence to convert
@@ -1036,8 +1013,7 @@ public final class IOUtils {
 	 * @return an input stream
 	 * @since 2.0
 	 */
-	public static InputStream toInputStream(CharSequence input, String encoding)
-			throws IOException {
+	public static InputStream toInputStream(CharSequence input, String encoding) throws IOException {
 		return toInputStream(input.toString(), encoding);
 	}
 
@@ -1060,8 +1036,8 @@ public final class IOUtils {
 	 * Convert the specified string to an input stream, encoded as bytes using
 	 * the specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 *
 	 * @param input
 	 *            the string to convert
@@ -1072,10 +1048,8 @@ public final class IOUtils {
 	 * @return an input stream
 	 * @since 1.1
 	 */
-	public static InputStream toInputStream(String input, String encoding)
-			throws IOException {
-		byte[] bytes = encoding != null ? input.getBytes(encoding) : input
-				.getBytes();
+	public static InputStream toInputStream(String input, String encoding) throws IOException {
+		byte[] bytes = encoding != null ? input.getBytes(encoding) : input.getBytes();
 		return new ByteArrayInputStream(bytes);
 	}
 
@@ -1095,8 +1069,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void write(byte[] data, OutputStream output)
-			throws IOException {
+	public static void write(byte[] data, OutputStream output) throws IOException {
 		if (data != null) {
 			output.write(data);
 		}
@@ -1129,8 +1102,8 @@ public final class IOUtils {
 	 * Writes bytes from a <code>byte[]</code> to chars on a <code>Writer</code>
 	 * using the specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * This method uses {@link String#String(byte[], String)}.
 	 * 
@@ -1147,8 +1120,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void write(byte[] data, Writer output, String encoding)
-			throws IOException {
+	public static void write(byte[] data, Writer output, String encoding) throws IOException {
 		if (data != null) {
 			if (encoding == null) {
 				write(data, output);
@@ -1199,8 +1171,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void write(char[] data, OutputStream output)
-			throws IOException {
+	public static void write(char[] data, OutputStream output) throws IOException {
 		if (data != null) {
 			output.write(new String(data).getBytes());
 		}
@@ -1210,8 +1181,8 @@ public final class IOUtils {
 	 * Writes chars from a <code>char[]</code> to bytes on an
 	 * <code>OutputStream</code> using the specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * This method uses {@link String#String(char[])} and
 	 * {@link String#getBytes(String)}.
@@ -1229,8 +1200,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void write(char[] data, OutputStream output, String encoding)
-			throws IOException {
+	public static void write(char[] data, OutputStream output, String encoding) throws IOException {
 		if (data != null) {
 			if (encoding == null) {
 				write(data, output);
@@ -1255,8 +1225,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.0
 	 */
-	public static void write(CharSequence data, Writer output)
-			throws IOException {
+	public static void write(CharSequence data, Writer output) throws IOException {
 		if (data != null) {
 			write(data.toString(), output);
 		}
@@ -1279,8 +1248,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.0
 	 */
-	public static void write(CharSequence data, OutputStream output)
-			throws IOException {
+	public static void write(CharSequence data, OutputStream output) throws IOException {
 		if (data != null) {
 			write(data.toString(), output);
 		}
@@ -1290,8 +1258,8 @@ public final class IOUtils {
 	 * Writes chars from a <code>CharSequence</code> to bytes on an
 	 * <code>OutputStream</code> using the specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * This method uses {@link String#getBytes(String)}.
 	 * 
@@ -1307,8 +1275,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.0
 	 */
-	public static void write(CharSequence data, OutputStream output,
-			String encoding) throws IOException {
+	public static void write(CharSequence data, OutputStream output, String encoding) throws IOException {
 		if (data != null) {
 			write(data.toString(), output, encoding);
 		}
@@ -1352,8 +1319,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void write(String data, OutputStream output)
-			throws IOException {
+	public static void write(String data, OutputStream output) throws IOException {
 		if (data != null) {
 			output.write(data.getBytes());
 		}
@@ -1363,8 +1329,8 @@ public final class IOUtils {
 	 * Writes chars from a <code>String</code> to bytes on an
 	 * <code>OutputStream</code> using the specified character encoding.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * This method uses {@link String#getBytes(String)}.
 	 * 
@@ -1380,8 +1346,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void write(String data, OutputStream output, String encoding)
-			throws IOException {
+	public static void write(String data, OutputStream output, String encoding) throws IOException {
 		if (data != null) {
 			if (encoding == null) {
 				write(data, output);
@@ -1411,8 +1376,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void writeLines(Collection<?> lines, String lineEnding,
-			OutputStream output) throws IOException {
+	public static void writeLines(Collection<?> lines, String lineEnding, OutputStream output) throws IOException {
 		if (lines == null) {
 			return;
 		}
@@ -1432,8 +1396,8 @@ public final class IOUtils {
 	 * an <code>OutputStream</code> line by line, using the specified character
 	 * encoding and the specified line ending.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 *
 	 * @param lines
 	 *            the lines to write, null entries produce blank lines
@@ -1450,8 +1414,8 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void writeLines(Collection<?> lines, String lineEnding,
-			OutputStream output, String encoding) throws IOException {
+	public static void writeLines(Collection<?> lines, String lineEnding, OutputStream output, String encoding)
+			throws IOException {
 		if (encoding == null) {
 			writeLines(lines, lineEnding, output);
 		} else {
@@ -1486,8 +1450,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void writeLines(Collection<?> lines, String lineEnding,
-			Writer writer) throws IOException {
+	public static void writeLines(Collection<?> lines, String lineEnding, Writer writer) throws IOException {
 		if (lines == null) {
 			return;
 		}
@@ -1527,8 +1490,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static int copy(InputStream input, OutputStream output)
-			throws IOException {
+	public static int copy(InputStream input, OutputStream output) throws IOException {
 		long count = copyLarge(input, output);
 		if (count > Integer.MAX_VALUE) {
 			return -1;
@@ -1556,8 +1518,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.3
 	 */
-	public static long copyLarge(InputStream input, OutputStream output)
-			throws IOException {
+	public static long copyLarge(InputStream input, OutputStream output) throws IOException {
 		return copyLarge(input, output, new byte[DEFAULT_BUFFER_SIZE]);
 	}
 
@@ -1582,8 +1543,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.2
 	 */
-	public static long copyLarge(InputStream input, OutputStream output,
-			byte[] buffer) throws IOException {
+	public static long copyLarge(InputStream input, OutputStream output, byte[] buffer) throws IOException {
 		long count = 0;
 		int n = 0;
 		while (EOF != (n = input.read(buffer))) {
@@ -1618,10 +1578,9 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.2
 	 */
-	public static long copyLarge(InputStream input, OutputStream output,
-			long inputOffset, long length) throws IOException {
-		return copyLarge(input, output, inputOffset, length,
-				new byte[DEFAULT_BUFFER_SIZE]);
+	public static long copyLarge(InputStream input, OutputStream output, long inputOffset, long length)
+			throws IOException {
+		return copyLarge(input, output, inputOffset, length, new byte[DEFAULT_BUFFER_SIZE]);
 	}
 
 	/**
@@ -1651,9 +1610,8 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.2
 	 */
-	public static long copyLarge(InputStream input, OutputStream output,
-			final long inputOffset, final long length, byte[] buffer)
-			throws IOException {
+	public static long copyLarge(InputStream input, OutputStream output, final long inputOffset, final long length,
+			byte[] buffer) throws IOException {
 		if (inputOffset > 0) {
 			skipFully(input, inputOffset);
 		}
@@ -1667,8 +1625,7 @@ public final class IOUtils {
 		}
 		int read;
 		long totalRead = 0;
-		while (bytesToRead > 0
-				&& EOF != (read = input.read(buffer, 0, bytesToRead))) {
+		while (bytesToRead > 0 && EOF != (read = input.read(buffer, 0, bytesToRead))) {
 			output.write(buffer, 0, read);
 			totalRead += read;
 			if (length > 0) { // only adjust length if not reading to the end
@@ -1698,8 +1655,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void copy(InputStream input, Writer output)
-			throws IOException {
+	public static void copy(InputStream input, Writer output) throws IOException {
 		InputStreamReader in = new InputStreamReader(input);
 		copy(in, output);
 	}
@@ -1711,8 +1667,8 @@ public final class IOUtils {
 	 * This method buffers the input internally, so there is no need to use a
 	 * <code>BufferedInputStream</code>.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * This method uses {@link InputStreamReader}.
 	 *
@@ -1728,8 +1684,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void copy(InputStream input, Writer output, String encoding)
-			throws IOException {
+	public static void copy(InputStream input, Writer output, String encoding) throws IOException {
 		if (encoding == null) {
 			copy(input, output);
 		} else {
@@ -1790,8 +1745,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.3
 	 */
-	public static long copyLarge(Reader input, Writer output)
-			throws IOException {
+	public static long copyLarge(Reader input, Writer output) throws IOException {
 		return copyLarge(input, output, new char[DEFAULT_BUFFER_SIZE]);
 	}
 
@@ -1816,8 +1770,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.2
 	 */
-	public static long copyLarge(Reader input, Writer output, char[] buffer)
-			throws IOException {
+	public static long copyLarge(Reader input, Writer output, char[] buffer) throws IOException {
 		long count = 0;
 		int n = 0;
 		while (EOF != (n = input.read(buffer))) {
@@ -1852,10 +1805,9 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.2
 	 */
-	public static long copyLarge(Reader input, Writer output,
-			final long inputOffset, final long length) throws IOException {
-		return copyLarge(input, output, inputOffset, length,
-				new char[DEFAULT_BUFFER_SIZE]);
+	public static long copyLarge(Reader input, Writer output, final long inputOffset, final long length)
+			throws IOException {
+		return copyLarge(input, output, inputOffset, length, new char[DEFAULT_BUFFER_SIZE]);
 	}
 
 	/**
@@ -1884,8 +1836,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.2
 	 */
-	public static long copyLarge(Reader input, Writer output,
-			final long inputOffset, final long length, char[] buffer)
+	public static long copyLarge(Reader input, Writer output, final long inputOffset, final long length, char[] buffer)
 			throws IOException {
 		if (inputOffset > 0) {
 			skipFully(input, inputOffset);
@@ -1899,8 +1850,7 @@ public final class IOUtils {
 		}
 		int read;
 		long totalRead = 0;
-		while (bytesToRead > 0
-				&& EOF != (read = input.read(buffer, 0, bytesToRead))) {
+		while (bytesToRead > 0 && EOF != (read = input.read(buffer, 0, bytesToRead))) {
 			output.write(buffer, 0, read);
 			totalRead += read;
 			if (length > 0) { // only adjust length if not reading to the end
@@ -1934,8 +1884,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void copy(Reader input, OutputStream output)
-			throws IOException {
+	public static void copy(Reader input, OutputStream output) throws IOException {
 		OutputStreamWriter out = new OutputStreamWriter(output);
 		copy(input, out);
 		// XXX Unless anyone is planning on rewriting OutputStreamWriter, we
@@ -1951,8 +1900,8 @@ public final class IOUtils {
 	 * This method buffers the input internally, so there is no need to use a
 	 * <code>BufferedReader</code>.
 	 * <p>
-	 * Character encoding names can be found at <a
-	 * href="http://www.iana.org/assignments/character-sets">IANA</a>.
+	 * Character encoding names can be found at
+	 * <a href="http://www.iana.org/assignments/character-sets">IANA</a>.
 	 * <p>
 	 * Due to the implementation of OutputStreamWriter, this method performs a
 	 * flush.
@@ -1971,8 +1920,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static void copy(Reader input, OutputStream output, String encoding)
-			throws IOException {
+	public static void copy(Reader input, OutputStream output, String encoding) throws IOException {
 		if (encoding == null) {
 			copy(input, output);
 		} else {
@@ -2004,8 +1952,7 @@ public final class IOUtils {
 	 * @throws IOException
 	 *             if an I/O error occurs
 	 */
-	public static boolean contentEquals(InputStream input1, InputStream input2)
-			throws IOException {
+	public static boolean contentEquals(InputStream input1, InputStream input2) throws IOException {
 		if (!(input1 instanceof BufferedInputStream)) {
 			input1 = new BufferedInputStream(input1);
 		}
@@ -2045,8 +1992,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 1.1
 	 */
-	public static boolean contentEquals(Reader input1, Reader input2)
-			throws IOException {
+	public static boolean contentEquals(Reader input1, Reader input2) throws IOException {
 
 		input1 = toBufferedReader(input1);
 		input2 = toBufferedReader(input2);
@@ -2083,8 +2029,7 @@ public final class IOUtils {
 	 *             if an I/O error occurs
 	 * @since 2.2
 	 */
-	public static boolean contentEqualsIgnoreEOL(Reader input1, Reader input2)
-			throws IOException {
+	public static boolean contentEqualsIgnoreEOL(Reader input1, Reader input2) throws IOException {
 		BufferedReader br1 = toBufferedReader(input1);
 		BufferedReader br2 = toBufferedReader(input2);
 
@@ -2094,8 +2039,7 @@ public final class IOUtils {
 			line1 = br1.readLine();
 			line2 = br2.readLine();
 		}
-		return line1 == null ? line2 == null ? true : false : line1
-				.equals(line2);
+		return line1 == null ? line2 == null ? true : false : line1.equals(line2);
 	}
 
 	/**
@@ -2119,8 +2063,7 @@ public final class IOUtils {
 	 */
 	public static long skip(InputStream input, long toSkip) throws IOException {
 		if (toSkip < 0) {
-			throw new IllegalArgumentException(
-					"Skip count must be non-negative, actual: " + toSkip);
+			throw new IllegalArgumentException("Skip count must be non-negative, actual: " + toSkip);
 		}
 		/*
 		 * N.B. no need to synchronize this because: - we don't care if the
@@ -2134,8 +2077,7 @@ public final class IOUtils {
 		}
 		long remain = toSkip;
 		while (remain > 0) {
-			long n = input.read(SKIP_BYTE_BUFFER, 0,
-					(int) Math.min(remain, SKIP_BUFFER_SIZE));
+			long n = input.read(SKIP_BYTE_BUFFER, 0, (int) Math.min(remain, SKIP_BUFFER_SIZE));
 			if (n < 0) { // EOF
 				break;
 			}
@@ -2165,8 +2107,7 @@ public final class IOUtils {
 	 */
 	public static long skip(Reader input, long toSkip) throws IOException {
 		if (toSkip < 0) {
-			throw new IllegalArgumentException(
-					"Skip count must be non-negative, actual: " + toSkip);
+			throw new IllegalArgumentException("Skip count must be non-negative, actual: " + toSkip);
 		}
 		/*
 		 * N.B. no need to synchronize this because: - we don't care if the
@@ -2180,8 +2121,7 @@ public final class IOUtils {
 		}
 		long remain = toSkip;
 		while (remain > 0) {
-			long n = input.read(SKIP_CHAR_BUFFER, 0,
-					(int) Math.min(remain, SKIP_BUFFER_SIZE));
+			long n = input.read(SKIP_CHAR_BUFFER, 0, (int) Math.min(remain, SKIP_BUFFER_SIZE));
 			if (n < 0) { // EOF
 				break;
 			}
@@ -2211,16 +2151,13 @@ public final class IOUtils {
 	 *             if the number of bytes skipped was incorrect
 	 * @since 2.0
 	 */
-	public static void skipFully(InputStream input, long toSkip)
-			throws IOException {
+	public static void skipFully(InputStream input, long toSkip) throws IOException {
 		if (toSkip < 0) {
-			throw new IllegalArgumentException(
-					"Bytes to skip must not be negative: " + toSkip);
+			throw new IllegalArgumentException("Bytes to skip must not be negative: " + toSkip);
 		}
 		long skipped = skip(input, toSkip);
 		if (skipped != toSkip) {
-			throw new EOFException("Bytes to skip: " + toSkip + " actual: "
-					+ skipped);
+			throw new EOFException("Bytes to skip: " + toSkip + " actual: " + skipped);
 		}
 	}
 
@@ -2249,8 +2186,7 @@ public final class IOUtils {
 	public static void skipFully(Reader input, long toSkip) throws IOException {
 		long skipped = skip(input, toSkip);
 		if (skipped != toSkip) {
-			throw new EOFException("Chars to skip: " + toSkip + " actual: "
-					+ skipped);
+			throw new EOFException("Chars to skip: " + toSkip + " actual: " + skipped);
 		}
 	}
 
@@ -2272,11 +2208,9 @@ public final class IOUtils {
 	 *             if a read error occurs
 	 * @since 2.2
 	 */
-	public static int read(Reader input, char[] buffer, int offset, int length)
-			throws IOException {
+	public static int read(Reader input, char[] buffer, int offset, int length) throws IOException {
 		if (length < 0) {
-			throw new IllegalArgumentException("Length must not be negative: "
-					+ length);
+			throw new IllegalArgumentException("Length must not be negative: " + length);
 		}
 		int remaining = length;
 		while (remaining > 0) {
@@ -2326,11 +2260,9 @@ public final class IOUtils {
 	 *             if a read error occurs
 	 * @since 2.2
 	 */
-	public static int read(InputStream input, byte[] buffer, int offset,
-			int length) throws IOException {
+	public static int read(InputStream input, byte[] buffer, int offset, int length) throws IOException {
 		if (length < 0) {
-			throw new IllegalArgumentException("Length must not be negative: "
-					+ length);
+			throw new IllegalArgumentException("Length must not be negative: " + length);
 		}
 		int remaining = length;
 		while (remaining > 0) {
@@ -2387,12 +2319,10 @@ public final class IOUtils {
 	 *             if the number of characters read was incorrect
 	 * @since 2.2
 	 */
-	public static void readFully(Reader input, char[] buffer, int offset,
-			int length) throws IOException {
+	public static void readFully(Reader input, char[] buffer, int offset, int length) throws IOException {
 		long actual = read(input, buffer, offset, length);
 		if (actual != length) {
-			throw new EOFException("Length to read: " + length + " actual: "
-					+ actual);
+			throw new EOFException("Length to read: " + length + " actual: " + actual);
 		}
 	}
 
@@ -2417,8 +2347,7 @@ public final class IOUtils {
 	 *             if the number of characters read was incorrect
 	 * @since 2.2
 	 */
-	public static void readFully(Reader input, char[] buffer)
-			throws IOException {
+	public static void readFully(Reader input, char[] buffer) throws IOException {
 		readFully(input, buffer, 0, buffer.length);
 	}
 
@@ -2446,12 +2375,10 @@ public final class IOUtils {
 	 *             if the number of bytes read was incorrect
 	 * @since 2.2
 	 */
-	public static void readFully(InputStream input, byte[] buffer, int offset,
-			int length) throws IOException {
+	public static void readFully(InputStream input, byte[] buffer, int offset, int length) throws IOException {
 		int actual = read(input, buffer, offset, length);
 		if (actual != length) {
-			throw new EOFException("Length to read: " + length + " actual: "
-					+ actual);
+			throw new EOFException("Length to read: " + length + " actual: " + actual);
 		}
 	}
 
@@ -2475,18 +2402,15 @@ public final class IOUtils {
 	 *             if the number of bytes read was incorrect
 	 * @since 2.2
 	 */
-	public static void readFully(InputStream input, byte[] buffer)
-			throws IOException {
+	public static void readFully(InputStream input, byte[] buffer) throws IOException {
 		readFully(input, buffer, 0, buffer.length);
 	}
 
-	public static String readContent(InputStream inputStream, String charsetName) {
+	public static String readContent(InputStream inputStream, String charsetName) throws IOException {
 		InputStreamReader isr = null;
 		try {
 			isr = new InputStreamReader(inputStream, charsetName);
 			return IOUtils.read(isr, 256, 0);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
 		} finally {
 			IOUtils.close(isr);
 		}
@@ -2499,8 +2423,7 @@ public final class IOUtils {
 	 * @param out
 	 * @throws IOException
 	 */
-	public static void gzipCompress(InputStream input, OutputStream out,
-			int buffSize) throws IOException {
+	public static void gzipCompress(InputStream input, OutputStream out, int buffSize) throws IOException {
 		// 使用默认缓冲区大小创建新的输出流
 		GZIPOutputStream gzip = null;
 		try {
@@ -2537,8 +2460,7 @@ public final class IOUtils {
 	 * @param buffSize
 	 * @throws IOException
 	 */
-	public static void gzipUnCompress(InputStream input, OutputStream out,
-			int buffSize) throws IOException {
+	public static void gzipUnCompress(InputStream input, OutputStream out, int buffSize) throws IOException {
 		// 使用默认缓冲区大小创建新的输入流
 		GZIPInputStream gzip = null;
 		try {
@@ -2560,8 +2482,7 @@ public final class IOUtils {
 		ByteArrayInputStream input = new ByteArrayInputStream(data);
 		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
 		try {
-			gzipUnCompress(input, out,
-					Math.min(data.length, DEFAULT_BUFFER_SIZE));
+			gzipUnCompress(input, out, Math.min(data.length, DEFAULT_BUFFER_SIZE));
 			return out.toByteArray();
 		} finally {
 			close(out, input);

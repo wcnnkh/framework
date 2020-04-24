@@ -18,11 +18,10 @@ import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.office.excel.RowCallback;
-import scw.util.queue.Consumer;
 
 public final class JxlUtils {
 	private JxlUtils() {
@@ -37,8 +36,7 @@ public final class JxlUtils {
 	 * @return
 	 */
 	public static boolean isNull(String str) {
-		if ("NULL".equalsIgnoreCase(str) || null == str
-				|| "".equals(str.trim()) || 0 == str.trim().length()
+		if ("NULL".equalsIgnoreCase(str) || null == str || "".equals(str.trim()) || 0 == str.trim().length()
 				|| ("0".equals(str.trim()))) {
 			return true;
 		}
@@ -52,16 +50,15 @@ public final class JxlUtils {
 	 * @return
 	 */
 	public static boolean isNull4Str(String str) {
-		if ("NULL".equalsIgnoreCase(str) || null == str
-				|| "".equals(str.trim()) || 0 == str.trim().length()) {
+		if ("NULL".equalsIgnoreCase(str) || null == str || "".equals(str.trim()) || 0 == str.trim().length()) {
 			return true;
 		}
 		return false;
 	}
 
 	public static boolean isNull4db(String str) {
-		if (null == str || "".equals(str.trim()) || ("0".equals(str.trim()))
-				|| "null".equals(str) || "NULL".equals(str)) {
+		if (null == str || "".equals(str.trim()) || ("0".equals(str.trim())) || "null".equals(str)
+				|| "NULL".equals(str)) {
 			return true;
 		}
 		return false;
@@ -211,8 +208,7 @@ public final class JxlUtils {
 		for (int i = 0; i < arr1.length; i++) {
 			String subStr = arr1[i].trim();
 			String[] arr2 = subStr.split(":");
-			list.add(new int[] { Integer.parseInt(arr2[0]),
-					Integer.parseInt(arr2[1]), Integer.parseInt(arr2[2]) });
+			list.add(new int[] { Integer.parseInt(arr2[0]), Integer.parseInt(arr2[1]), Integer.parseInt(arr2[2]) });
 		}
 		return list;
 	}
@@ -283,8 +279,7 @@ public final class JxlUtils {
 	 * @param map
 	 * @param appendMap
 	 */
-	public static void appendMap(Map<Integer, Integer> map,
-			Map<Integer, Integer> appendMap) {
+	public static void appendMap(Map<Integer, Integer> map, Map<Integer, Integer> appendMap) {
 		if (appendMap != null) {
 			Iterator<Integer> it = appendMap.keySet().iterator();
 			while (it.hasNext()) {
@@ -300,8 +295,7 @@ public final class JxlUtils {
 		} // end if
 	}
 
-	public static Map<Integer, Integer> getNewMap(Map<Integer, Integer> map,
-			int plus) {
+	public static Map<Integer, Integer> getNewMap(Map<Integer, Integer> map, int plus) {
 		Map<Integer, Integer> newMap = new HashMap<Integer, Integer>();
 		if (map != null) {
 			Iterator<Integer> it = map.keySet().iterator();
@@ -315,8 +309,7 @@ public final class JxlUtils {
 		return newMap;
 	}
 
-	public static void appendMap(Map<Integer, Integer> map,
-			Map<Integer, Integer> appendMap, int count) {
+	public static void appendMap(Map<Integer, Integer> map, Map<Integer, Integer> appendMap, int count) {
 		if (appendMap != null) {
 			Iterator<Integer> it = appendMap.keySet().iterator();
 			while (it.hasNext()) {
@@ -346,14 +339,12 @@ public final class JxlUtils {
 		return m.matches();
 	}
 
-	public static void exportExcel(HttpServletResponse response,
-			List<Object[]> list, int columnNum, String fileName,
+	public static void exportExcel(HttpServletResponse response, List<Object[]> list, int columnNum, String fileName,
 			String sheetName) {
 		try {
 			OutputStream os = response.getOutputStream();// 取得输出流
 			response.reset();// 清空输出流
-			response.setHeader("Content-disposition", "attachment; filename="
-					+ fileName + ".xls");// 设定输出文件头
+			response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");// 设定输出文件头
 			response.setContentType("application/msexcel");// 定义输出类型
 
 			WritableWorkbook wbook = Workbook.createWorkbook(os); // 建立excel文件
@@ -390,40 +381,35 @@ public final class JxlUtils {
 	public static void load(final String filePath, final RowCallback callback) {
 		logger.debug("开始读取:{}", filePath);
 		final long t = System.currentTimeMillis();
-		ResourceUtils.getResourceOperations().consumterInputStream(filePath,
-				new Consumer<InputStream>() {
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(filePath);
+		if (inputStream == null) {
+			logger.warn("not found: " + filePath);
+			return;
+		}
 
-					public void consume(InputStream message) throws Exception {
-						Workbook workbook = null;
-						try {
-							workbook = Workbook.getWorkbook(message);
-							Sheet[] sheets = workbook.getSheets();
-							for (int sheetIndex = 0; sheetIndex < sheets.length; sheetIndex++) {
-								Sheet sheet = sheets[sheetIndex];
-								for (int rowIndex = 0; rowIndex < sheet
-										.getRows(); rowIndex++) {
-									int columns = sheet.getColumns();
-									String[] contents = new String[columns];
-									for (int columnIndex = 0; columnIndex < columns; columnIndex++) {
-										Cell cell = sheet.getCell(columnIndex,
-												rowIndex);
-										contents[columnIndex] = cell
-												.getContents();
-									}
-									callback.call(sheetIndex, rowIndex,
-											contents);
-								}
-							}
-							logger.debug("加载{}完成, 用时：{}ms", filePath,
-									(System.currentTimeMillis() - t));
-						} catch (Exception e) {
-							e.printStackTrace();
-						} finally {
-							if (workbook != null) {
-								workbook.close();
-							}
-						}
+		Workbook workbook = null;
+		try {
+			workbook = Workbook.getWorkbook(inputStream);
+			Sheet[] sheets = workbook.getSheets();
+			for (int sheetIndex = 0; sheetIndex < sheets.length; sheetIndex++) {
+				Sheet sheet = sheets[sheetIndex];
+				for (int rowIndex = 0; rowIndex < sheet.getRows(); rowIndex++) {
+					int columns = sheet.getColumns();
+					String[] contents = new String[columns];
+					for (int columnIndex = 0; columnIndex < columns; columnIndex++) {
+						Cell cell = sheet.getCell(columnIndex, rowIndex);
+						contents[columnIndex] = cell.getContents();
 					}
-				});
+					callback.call(sheetIndex, rowIndex, contents);
+				}
+			}
+			logger.debug("加载{}完成, 用时：{}ms", filePath, (System.currentTimeMillis() - t));
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (workbook != null) {
+				workbook.close();
+			}
+		}
 	}
 }

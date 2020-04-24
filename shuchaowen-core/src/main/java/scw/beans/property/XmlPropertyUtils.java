@@ -8,7 +8,7 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 
 public final class XmlPropertyUtils {
 	private XmlPropertyUtils() {
@@ -34,7 +34,7 @@ public final class XmlPropertyUtils {
 			return null;
 		}
 
-		return ResourceUtils.getResourceOperations().getProperties(file, getCharsetName(node));
+		return ResourceUtils.getResourceOperations().getFormattedProperties(file, getCharsetName(node));
 	}
 
 	public static String getCharsetName(Node node) {

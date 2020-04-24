@@ -3,7 +3,7 @@ package scw.zookeeper;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryLifeCycle;
 import scw.core.instance.annotation.Configuration;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.util.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MAX_VALUE)
@@ -14,7 +14,7 @@ public final class AutoZookeeperServerStart implements BeanFactoryLifeCycle{
 			throws Exception {
 		ZookeeperServerStart start = null;
 		if(ResourceUtils.getResourceOperations().isExist(DEFAULT_ZOOKEEPER_CONFIG)){
-			start = new ZookeeperServerStart(ResourceUtils.getResourceOperations().getProperties(DEFAULT_ZOOKEEPER_CONFIG));
+			start = new ZookeeperServerStart(ResourceUtils.getResourceOperations().getFormattedProperties(DEFAULT_ZOOKEEPER_CONFIG));
 		}else{
 			Integer port = propertyFactory.getInteger("zookeeper.port");
 			if(port != null){

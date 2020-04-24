@@ -4,9 +4,9 @@ import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
-import scw.async.AsyncException;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
+import scw.lang.NotSupportedException;
 
 @Configuration(order = Integer.MAX_VALUE)
 public final class AsyncFilter implements Filter {
@@ -23,8 +23,8 @@ public final class AsyncFilter implements Filter {
 			return filterChain.doFilter(invoker, context);
 		}
 
-		if (instanceFactory.isInstance(async.service())) {
-			throw new AsyncException(context.getMethod().toString());
+		if (!instanceFactory.isInstance(async.service())) {
+			throw new NotSupportedException("not support async: " + context.getMethod());
 		}
 
 		instanceFactory.getInstance(async.service()).service(async, context);

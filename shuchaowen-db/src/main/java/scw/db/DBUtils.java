@@ -16,7 +16,7 @@ import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.lang.NotSupportedException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
@@ -81,7 +81,7 @@ public final class DBUtils {
 	public static Collection<Sql> getSqlByFile(String path, boolean lines) {
 		LinkedList<Sql> list = new LinkedList<Sql>();
 		if (lines) {
-			Collection<String> sqlList = ResourceUtils.getResourceOperations().getFileContentLineList(path, Constants.DEFAULT_CHARSET_NAME);
+			Collection<String> sqlList = ResourceUtils.getResourceOperations().getLines(path, Constants.DEFAULT_CHARSET_NAME);
 			for (String sql : sqlList) {
 				if (sql.startsWith(IGNORE_SQL_START_WITH)) {
 					continue;
@@ -90,7 +90,7 @@ public final class DBUtils {
 				list.add(new SimpleSql(sql));
 			}
 		} else {
-			String sql = ResourceUtils.getResourceOperations().getFileContent(path, Constants.DEFAULT_CHARSET_NAME);
+			String sql = ResourceUtils.getResourceOperations().getContent(path, Constants.DEFAULT_CHARSET_NAME);
 			if (!StringUtils.isEmpty(sql)) {
 				list.add(new SimpleSql(sql));
 			}

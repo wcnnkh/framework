@@ -12,7 +12,7 @@ import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;

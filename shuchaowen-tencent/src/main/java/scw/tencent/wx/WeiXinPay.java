@@ -5,19 +5,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import scw.core.Constants;
-import scw.core.Converter;
 import scw.core.utils.RandomUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
+import scw.lang.NestedRuntimeException;
 import scw.lang.NotSupportedException;
 import scw.lang.ParameterException;
 import scw.lang.SignatureException;
@@ -48,14 +47,12 @@ public final class WeiXinPay {
 		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET_NAME, null);
 	}
 
-	public WeiXinPay(String appId, String mch_id, String apiKey,
-			String certTrustFile) {
-		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET_NAME,
-				certTrustFile);
+	public WeiXinPay(String appId, String mch_id, String apiKey, String certTrustFile) {
+		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET_NAME, certTrustFile);
 	}
 
-	public WeiXinPay(String appId, String mch_id, String apiKey,
-			String sign_type, String charsetName, String certTrustFile) {
+	public WeiXinPay(String appId, String mch_id, String apiKey, String sign_type, String charsetName,
+			String certTrustFile) {
 		this.appId = appId;
 		this.mch_id = mch_id;
 		this.apiKey = apiKey;
@@ -70,23 +67,17 @@ public final class WeiXinPay {
 			return null;
 		}
 
-		SSLContext sslContext = ResourceUtils.getResourceOperations()
-				.getResource(certTrustFile,
-						new Converter<InputStream, SSLContext>() {
+		InputStream is = ResourceUtils.getResourceOperations().getInputStream(certTrustFile);
+		if (is == null) {
+			return null;
+		}
 
-							public SSLContext convert(InputStream input) {
-								char[] password = mch_id.toCharArray();
-								try {
-									return SSLContexts
-											.custom()
-											.loadKeyMaterial(input, password,
-													password).build();
-								} catch (Exception e) {
-									throw new RuntimeException(e);
-								}
-							};
-						});
-		return sslContext == null ? null : sslContext.getSocketFactory();
+		char[] password = mch_id.toCharArray();
+		try {
+			return SSLContexts.custom().loadKeyMaterial(is, password, password).build().getSocketFactory();
+		} catch (Exception e) {
+			throw new NestedRuntimeException(certTrustFile, e);
+		}
 	}
 
 	/**
@@ -126,28 +117,23 @@ public final class WeiXinPay {
 	 * @param openid
 	 * @return
 	 */
-	public Unifiedorder getUnifiedorder(String device_info, String nonce_str,
-			long timestamp, String body, String detail, String attach,
-			String out_trade_no, String fee_type, int total_fee,
-			String spbill_create_ip, String time_start, String time_expire,
-			String goods_tag, String notify_url, String trade_type,
+	public Unifiedorder getUnifiedorder(String device_info, String nonce_str, long timestamp, String body,
+			String detail, String attach, String out_trade_no, String fee_type, int total_fee, String spbill_create_ip,
+			String time_start, String time_expire, String goods_tag, String notify_url, String trade_type,
 			String product_id, String limit_pay, String openid) {
-		Map<String, String> map = getUnifiedorder(device_info, nonce_str, body,
-				detail, attach, out_trade_no, fee_type, total_fee,
-				spbill_create_ip, time_start, time_expire, goods_tag,
-				notify_url, trade_type, product_id, limit_pay, openid);
+		Map<String, String> map = getUnifiedorder(device_info, nonce_str, body, detail, attach, out_trade_no, fee_type,
+				total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type, product_id,
+				limit_pay, openid);
 		String prepay_id = map.get("prepay_id");
 		Unifiedorder unifiedorder = new Unifiedorder();
 		unifiedorder.setTimestamp(timestamp);
 		unifiedorder.setNonce_str(nonce_str);
 		if (!StringUtils.isEmpty(openid)) {
-			unifiedorder.setPaySign(WeiXinUtils.getBrandWCPayRequestSign(appId,
-					apiKey, String.valueOf(unifiedorder.getTimestamp()),
-					nonce_str, prepay_id));
+			unifiedorder.setPaySign(WeiXinUtils.getBrandWCPayRequestSign(appId, apiKey,
+					String.valueOf(unifiedorder.getTimestamp()), nonce_str, prepay_id));
 		} else {
-			unifiedorder.setPaySign(WeiXinUtils.getAppPayRequestSign(appId,
-					mch_id, apiKey, unifiedorder.getTimestamp(), nonce_str,
-					prepay_id));
+			unifiedorder.setPaySign(WeiXinUtils.getAppPayRequestSign(appId, mch_id, apiKey, unifiedorder.getTimestamp(),
+					nonce_str, prepay_id));
 		}
 
 		unifiedorder.setPrepay_id(prepay_id);
@@ -180,16 +166,12 @@ public final class WeiXinPay {
 	 *            回调url
 	 * @return
 	 */
-	public Unifiedorder getDefaultUnifiedorder(String trade_type, String body,
-			String out_trade_no, String fee_type, int total_fee,
-			String spbill_create_ip, String time_start, String time_expire,
-			String limit_pay, String openid, String notify_url) {
-		return getUnifiedorder(DEFAULT_DEVICE_INFO,
-				RandomUtils.getRandomStr(16),
-				System.currentTimeMillis() / 1000, body, null, null,
-				out_trade_no, fee_type, total_fee, spbill_create_ip,
-				time_start, time_expire, null, notify_url, trade_type, null,
-				limit_pay, openid);
+	public Unifiedorder getDefaultUnifiedorder(String trade_type, String body, String out_trade_no, String fee_type,
+			int total_fee, String spbill_create_ip, String time_start, String time_expire, String limit_pay,
+			String openid, String notify_url) {
+		return getUnifiedorder(DEFAULT_DEVICE_INFO, RandomUtils.getRandomStr(16), System.currentTimeMillis() / 1000,
+				body, null, null, out_trade_no, fee_type, total_fee, spbill_create_ip, time_start, time_expire, null,
+				notify_url, trade_type, null, limit_pay, openid);
 	}
 
 	/**
@@ -206,10 +188,9 @@ public final class WeiXinPay {
 	 * @param notify_url
 	 * @return
 	 */
-	public Unifiedorder getSimpleUnifiedorder(String trade_type, String name,
-			String orderId, int amount, String ip, String notify_url) {
-		return getDefaultUnifiedorder(trade_type, name, orderId, "CNY", amount,
-				ip, null, null, null, null, notify_url);
+	public Unifiedorder getSimpleUnifiedorder(String trade_type, String name, String orderId, int amount, String ip,
+			String notify_url) {
+		return getDefaultUnifiedorder(trade_type, name, orderId, "CNY", amount, ip, null, null, null, null, notify_url);
 	}
 
 	public String getPaySign(Map<String, String> paramMap) {
@@ -224,16 +205,12 @@ public final class WeiXinPay {
 	 * @param prepay_id
 	 * @return
 	 */
-	public String getBrandWCPayRequestSign(String timeStamp, String nonceStr,
-			String prepay_id) {
-		return WeiXinUtils.getBrandWCPayRequestSign(appId, apiKey, timeStamp,
-				nonceStr, prepay_id);
+	public String getBrandWCPayRequestSign(String timeStamp, String nonceStr, String prepay_id) {
+		return WeiXinUtils.getBrandWCPayRequestSign(appId, apiKey, timeStamp, nonceStr, prepay_id);
 	}
 
-	public String getAppPayRequestSign(long timeStamp, String noceStr,
-			String prepay_id) {
-		return WeiXinUtils.getAppPayRequestSign(appId, mch_id, apiKey,
-				timeStamp, noceStr, prepay_id);
+	public String getAppPayRequestSign(long timeStamp, String noceStr, String prepay_id) {
+		return WeiXinUtils.getAppPayRequestSign(appId, mch_id, apiKey, timeStamp, noceStr, prepay_id);
 	}
 
 	public String getAppId() {
@@ -281,11 +258,9 @@ public final class WeiXinPay {
 	 * @param openid
 	 * @return
 	 */
-	public UnifiedOrderResponse getUnifiedorder(String device_info,
-			String nonce_str, String body, String detail, String attach,
-			String out_trade_no, String fee_type, int total_fee,
-			String spbill_create_ip, String time_start, String time_expire,
-			String goods_tag, String notify_url, String trade_type,
+	public UnifiedOrderResponse getUnifiedorder(String device_info, String nonce_str, String body, String detail,
+			String attach, String out_trade_no, String fee_type, int total_fee, String spbill_create_ip,
+			String time_start, String time_expire, String goods_tag, String notify_url, String trade_type,
 			String product_id, String limit_pay, String openid) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("appid", appId);
@@ -313,8 +288,7 @@ public final class WeiXinPay {
 		map.put("product_id", product_id);
 		map.put("limit_pay", limit_pay);
 		map.put("openid", openid);
-		Map<String, String> responseMap = invoke(weixin_unifiedorder_url, map,
-				false);
+		Map<String, String> responseMap = invoke(weixin_unifiedorder_url, map, false);
 		return new UnifiedOrderResponse(responseMap);
 	}
 
@@ -331,8 +305,7 @@ public final class WeiXinPay {
 		String mySign = toSign(checkStr.toString());
 		boolean b = sign.equals(mySign);
 		if (!b) {
-			logger.error("签名检验失败：{}------>{}", JSONUtils.toJSONString(params),
-					mySign);
+			logger.error("签名检验失败：{}------>{}", JSONUtils.toJSONString(params), mySign);
 		}
 		return b;
 	}
@@ -354,8 +327,7 @@ public final class WeiXinPay {
 	 *            请求中是否包含证书
 	 * @return
 	 */
-	public Map<String, String> invoke(String url, Map<String, ?> parameterMap,
-			boolean isCertTrustFile) {
+	public Map<String, String> invoke(String url, Map<String, ?> parameterMap, boolean isCertTrustFile) {
 		if (isCertTrustFile && StringUtils.isEmpty(certTrustFile)) {
 			throw new ParameterException("未配置API证书目录");
 		}
@@ -396,8 +368,7 @@ public final class WeiXinPay {
 
 		logger.debug("微信支付请求xml内容:{}", content);
 
-		String res = HttpUtils.getHttpClient().post(url, String.class,
-				sslSocketFactory, content,
+		String res = HttpUtils.getHttpClient().post(url, String.class, sslSocketFactory, content,
 				new MediaType(MimeTypeUtils.APPLICATION_XML, charsetName));
 		if (res == null) {
 			throw new RuntimeException("请求：" + url + "失败");
@@ -434,10 +405,8 @@ public final class WeiXinPay {
 		}
 	}
 
-	public Map<String, String> refund(String transaction_id,
-			String out_trade_no, String out_refund_no, int total_fee,
-			int refund_fee, String refund_fee_type, String refund_desc,
-			String notify_url) {
+	public Map<String, String> refund(String transaction_id, String out_trade_no, String out_refund_no, int total_fee,
+			int refund_fee, String refund_fee_type, String refund_desc, String notify_url) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("appid", appId);
 		map.put("mch_id", mch_id);

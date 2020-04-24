@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -20,14 +21,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.core.Converter;
 import scw.core.StringFormat;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XMLUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.Value;
@@ -35,8 +35,9 @@ import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class ConfigUtils {
-	private ConfigUtils(){};
-	
+	private ConfigUtils() {
+	};
+
 	private static Logger logger = LoggerUtils.getLogger(ConfigUtils.class);
 	private static final String LOG_MESSAGE = "Property {} on target {} set value {}";
 
@@ -45,23 +46,21 @@ public final class ConfigUtils {
 		for (Entry<String, String> entry : map.entrySet()) {
 			Field field = ReflectionUtils.getField(clz, entry.getKey(), true);
 			if (field == null) {
-				continue;	
+				continue;
 			}
 
-			ReflectionUtils.setFieldValue(clz, field, t,
-					ValueUtils.parse(entry.getValue(), field.getGenericType()));
+			ReflectionUtils.setFieldValue(clz, field, t, ValueUtils.parse(entry.getValue(), field.getGenericType()));
 		}
 		return t;
 	}
 
 	public static List<Map<String, String>> getDefaultXmlContent(String path, final String rootTag) {
-		return ResourceUtils.getResourceOperations().getResource(path,
-				new Converter<InputStream, List<Map<String, String>>>() {
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path);
+		if (inputStream == null) {
+			return Collections.emptyList();
+		}
 
-					public List<Map<String, String>> convert(InputStream inputStream) {
-						return getDefaultXmlContent(inputStream, rootTag);
-					}
-				});
+		return getDefaultXmlContent(inputStream, rootTag);
 	}
 
 	public static List<Map<String, String>> getDefaultXmlContent(InputStream inputStream, String rootTag) {
@@ -91,12 +90,12 @@ public final class ConfigUtils {
 	}
 
 	public static <T> List<T> xmlToList(final Class<T> type, String path) {
-		return ResourceUtils.getResourceOperations().getResource(path, new Converter<InputStream, List<T>>() {
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path);
+		if (inputStream == null) {
+			return Collections.emptyList();
+		}
 
-			public List<T> convert(InputStream inputStream) {
-				return xmlToList(type, inputStream);
-			}
-		});
+		return xmlToList(type, inputStream);
 	}
 
 	public static <T> List<T> xmlToList(Class<T> type, InputStream inputStream) {
@@ -114,12 +113,12 @@ public final class ConfigUtils {
 	}
 
 	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType, String path) {
-		return ResourceUtils.getResourceOperations().getResource(path, new Converter<InputStream, Map<K, V>>() {
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path);
+		if (inputStream == null) {
+			return Collections.emptyMap();
+		}
 
-			public Map<K, V> convert(InputStream inputStream) {
-				return xmlToMap(valueType, inputStream);
-			}
-		});
+		return xmlToMap(valueType, inputStream);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -200,7 +199,7 @@ public final class ConfigUtils {
 	}
 
 	public static void loadProperties(Object instance, String propertiesFile, Collection<String> asNameList) {
-		loadProperties(instance, ResourceUtils.getResourceOperations().getProperties(propertiesFile), asNameList);
+		loadProperties(instance, ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile), asNameList);
 	}
 
 	@SuppressWarnings("rawtypes")

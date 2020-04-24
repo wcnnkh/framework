@@ -7,24 +7,20 @@ import jxl.Cell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.office.excel.ReadExcelSupport;
 import scw.office.excel.RowCallback;
-import scw.util.queue.Consumer;
 
 public class JxlReadExcelSupport implements ReadExcelSupport {
 
 	public void read(String excel, final RowCallback callback) {
-		ResourceUtils.getResourceOperations().consumterInputStream(excel, new Consumer<InputStream>() {
-
-			public void consume(InputStream message) throws Exception {
-				read(message, callback);
-			}
-		});
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(excel);
+		if (inputStream != null) {
+			read(inputStream, callback);
+		}
 	}
 
-	protected Workbook getWrokBook(InputStream inputStream)
-			throws BiffException, IOException {
+	protected Workbook getWrokBook(InputStream inputStream) throws BiffException, IOException {
 		return Workbook.getWorkbook(inputStream);
 	}
 

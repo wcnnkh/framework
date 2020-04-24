@@ -24,7 +24,7 @@ import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;

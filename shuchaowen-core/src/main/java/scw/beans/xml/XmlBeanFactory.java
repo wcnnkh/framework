@@ -9,7 +9,7 @@ import scw.beans.DefaultBeanFactory;
 import scw.beans.property.XmlPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
 	private NodeList nodeList;

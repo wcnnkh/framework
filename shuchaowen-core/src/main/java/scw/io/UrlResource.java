@@ -28,7 +28,6 @@ import java.net.URLConnection;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
-import scw.io.resource.ResourceUtils;
 
 /**
  * {@link Resource} implementation for {@code java.net.URL} locators.
@@ -201,7 +200,7 @@ public class UrlResource extends AbstractFileResolvingResource {
 	/**
 	 * This implementation returns a File reference for the underlying URL/URI,
 	 * provided that it refers to a file in the file system.
-	 * @see org.springframework.util.ResourceUtils#getFile(java.net.URL, String)
+	 * @see scw.io.springframework.util.ResourceUtils#getFile(java.net.URL, String)
 	 */
 	@Override
 	public File getFile() throws IOException {
