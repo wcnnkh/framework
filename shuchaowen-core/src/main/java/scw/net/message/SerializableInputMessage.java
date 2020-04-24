@@ -2,10 +2,10 @@ package scw.net.message;
 
 import java.io.Serializable;
 
+import scw.compatible.CompatibleUtils;
 import scw.io.UnsafeByteArrayInputStream;
 
-public class SerializableInputMessage extends AbstractInputMessage implements
-		Serializable {
+public class SerializableInputMessage extends AbstractInputMessage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final byte[] body;
 	private final Headers headers;
@@ -26,5 +26,14 @@ public class SerializableInputMessage extends AbstractInputMessage implements
 
 	public byte[] toByteArray() {
 		return body == null ? null : body.clone();
+	}
+
+	@Override
+	public String getTextBody() {
+		if (body == null) {
+			return null;
+		}
+
+		return CompatibleUtils.getStringOperations().createString(body, getDefaultCharset());
 	}
 }

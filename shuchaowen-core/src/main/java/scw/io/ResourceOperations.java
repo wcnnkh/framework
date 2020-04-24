@@ -1,6 +1,5 @@
 package scw.io;
 
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -215,13 +214,12 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return getFormattedProperties(resource, getPropertyFactory());
 	}
 
-	public ByteArrayInputStream getInputStream(String resource) {
+	public UnsafeByteArrayInputStream getInputStream(String resource) {
 		byte[] data = getBytes(resource);
 		if (data == null) {
 			return null;
 		}
-
-		return new ByteArrayInputStream(data);
+		return new UnsafeByteArrayInputStream(data);
 	}
 
 	public byte[] getBytes(String resource) {

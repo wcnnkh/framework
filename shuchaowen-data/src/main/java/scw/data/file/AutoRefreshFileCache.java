@@ -4,8 +4,6 @@ import java.io.File;
 
 import scw.core.Constants;
 import scw.core.Converter;
-import scw.core.GlobalPropertyFactory;
-import scw.data.ExpiredCache;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerUtils;
 
@@ -29,8 +27,7 @@ public class AutoRefreshFileCache extends FileCache {
 
 	@Override
 	protected void expireExecute(File file, long currentTimeMillis) {
-		String key = file.getName();
-		key = decodeKey(key);
+		String key = getKey(file);
 		refresh(key);
 	}
 
@@ -47,10 +44,9 @@ public class AutoRefreshFileCache extends FileCache {
 		return value;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	protected <T> T getNotFound(String key) {
-		return (T) refresh(key);
+	protected Object getNotFound(String key) {
+		return refresh(key);
 	}
 
 	@Override
@@ -60,10 +56,5 @@ public class AutoRefreshFileCache extends FileCache {
 			return file;
 		}
 		return null;
-	}
-
-	public static ExpiredCache create(String cacheDirectorySuffix, int period, Converter<String, ?> converter) {
-		return new AutoRefreshFileCache(period,
-				GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix, converter);
 	}
 }
