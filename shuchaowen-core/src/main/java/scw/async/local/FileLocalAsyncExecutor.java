@@ -81,7 +81,6 @@ public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 			} catch (Throwable e) {
 				retry();
 				logger.error(e, "execute error retry soon [{}]", asyncRunnable);
-				e.printStackTrace();
 			}
 		}
 

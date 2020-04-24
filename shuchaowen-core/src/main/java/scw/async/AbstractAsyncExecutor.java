@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.lang.NestedRuntimeException;
 import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
@@ -27,7 +26,7 @@ public abstract class AbstractAsyncExecutor implements AsyncExecutor {
 
 	public abstract void execute(AsyncRunnable asyncRunnable);
 
-	protected Object call(AsyncRunnable asyncRunnable) throws Exception {
+	protected Object call(AsyncRunnable asyncRunnable) throws Throwable {
 		Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
 		try {
 			for (AsyncLifeCycle lifeCycle : lifeCycles) {
@@ -49,11 +48,14 @@ public abstract class AbstractAsyncExecutor implements AsyncExecutor {
 			TransactionManager.commit(transaction);
 			return v;
 		} catch (Throwable e) {
-			for (AsyncLifeCycle lifeCycle : lifeCycles) {
-				lifeCycle.executeError(asyncRunnable);
+			try {
+				for (AsyncLifeCycle lifeCycle : lifeCycles) {
+					lifeCycle.executeError(e, asyncRunnable);
+				}
+			} finally{
+				TransactionManager.rollback(transaction);
 			}
-			TransactionManager.rollback(transaction);
-			throw new NestedRuntimeException(e);
+			throw e;
 		} finally {
 			for (AsyncLifeCycle lifeCycle : lifeCycles) {
 				lifeCycle.executeComplete(asyncRunnable);

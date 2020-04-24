@@ -52,7 +52,7 @@ public abstract class ExecutorServiceAsyncExecutor extends AbstractAsyncExecutor
 		public void run() {
 			try {
 				call(asyncRunnable);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				logger.error(e, "async execute error: {}", asyncRunnable);
 			}
 		}

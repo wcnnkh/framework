@@ -7,8 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 此注解可以保证方法一定执行，但此方法一定返回空
- * 
+ * 异步执行此方法，具体效果由执行实现者决定
  * @author shuchaowen
  *
  */

@@ -9,7 +9,7 @@ public class Context extends SimpleAttributes<String, Object> {
 	private final Object proxy;
 	private final Class<?> targetClass;
 	private final Method method;
-	private final Object[] args;
+	private Object[] args;
 
 	public Context(Object proxy, Class<?> targetClass, Method method, Object[] args) {
 		this.proxy = proxy;
@@ -34,6 +34,10 @@ public class Context extends SimpleAttributes<String, Object> {
 		return args;
 	}
 	
+	public void setArgs(Object[] args) {
+		this.args = args;
+	}
+
 	@Override
 	public String toString() {
 		return method.toString();

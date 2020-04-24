@@ -9,7 +9,6 @@ import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
-import scw.lang.NestedExceptionUtils;
 import scw.transaction.tcc.annotation.TryResult;
 
 public class Stage extends AbstractAsyncRunnable {
@@ -81,7 +80,7 @@ public class Stage extends AbstractAsyncRunnable {
 		try {
 			return methodInvoker.invoke(getArgs(method));
 		} catch (Throwable e) {
-			throw new TccException(method.toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+			throw new TccException(method.toString(), e);
 		}
 	}
 

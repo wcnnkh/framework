@@ -39,7 +39,7 @@ public class ObjectFileManager {
 		Assert.requiredArgument(directory != null, "directory");
 		Assert.requiredArgument(StringUtils.isNotEmpty(suffix), "suffix");
 		Assert.requiredArgument(serializer != null, "serializer");
-		logger.info("object field manager directory [{}] suffix [{}]", directory, suffix);
+		logger.info("object file manager directory [{}] suffix [{}]", directory, suffix);
 		File file = new File(directory);
 		if (!file.exists()) {
 			file.mkdirs();

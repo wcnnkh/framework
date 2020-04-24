@@ -17,7 +17,7 @@ public abstract class AbstractAsyncService implements AsyncService {
 		this.beanFactory = beanFactory;
 	}
 
-	protected AsyncRunnableMethod createAsyncExecute(Async async, Context context) {
+	public AsyncRunnableMethod create(Async async, Context context) {
 		String beanName = async.beanName();
 		if (StringUtils.isEmpty(beanName)) {
 			beanName = context.getTargetClass().getName();
@@ -27,15 +27,16 @@ public abstract class AbstractAsyncService implements AsyncService {
 			throw new NotSupportedException(context.getMethod().toString());
 		}
 
-		return new DefaultAsyncRunnableMethod(
-				new SerializableMethodHolder(context.getTargetClass(), context.getMethod()), beanName,
+		return new DefaultAsyncRunnableMethod(new SerializableMethodHolder(
+				context.getTargetClass(), context.getMethod()), beanName,
 				context.getArgs());
 	}
 
 	protected abstract AsyncExecutor getAsyncExecutor();
 
-	public void service(Async async, Context context) throws Exception {
-		getAsyncExecutor().execute(createAsyncExecute(async, context));
+	public void service(AsyncRunnableMethod asyncRunnableMethod)
+			throws Exception {
+		getAsyncExecutor().execute(asyncRunnableMethod);
 	}
 
 }

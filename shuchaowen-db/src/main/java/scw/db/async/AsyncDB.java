@@ -64,7 +64,7 @@ public class AsyncDB extends AsyncExecutorWrapper {
 
 		}
 
-		public void executeError(AsyncRunnable asyncRunnable) throws Exception {
+		public void executeError(Throwable error, AsyncRunnable asyncRunnable) throws Exception {
 			// TODO Auto-generated method stub
 
 		}
