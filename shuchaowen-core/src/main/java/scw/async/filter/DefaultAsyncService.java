@@ -12,7 +12,7 @@ import scw.core.instance.annotation.Configuration;
 public class DefaultAsyncService extends AbstractAsyncService {
 	private final FileLocalAsyncExecutor fileLocalAsyncExecutor;
 
-	public DefaultAsyncService(BeanFactory beanFactory) throws IOException {
+	public DefaultAsyncService(BeanFactory beanFactory) throws IOException, ClassNotFoundException {
 		super(beanFactory);
 		this.fileLocalAsyncExecutor = new FileLocalAsyncExecutor(beanFactory, "async", 1, TimeUnit.MINUTES);
 	}

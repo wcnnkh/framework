@@ -12,6 +12,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
@@ -20,11 +25,6 @@ import scw.mvc.MVCUtils;
 import scw.mvc.page.AbstractPage;
 import scw.net.MimeTypeUtils;
 import scw.servlet.ServletUtils;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.Version;
 
 /**
  * 不再推荐使用，下个版本弃用

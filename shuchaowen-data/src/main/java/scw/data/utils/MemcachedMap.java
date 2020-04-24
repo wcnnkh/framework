@@ -5,7 +5,6 @@ import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
-import scw.data.cas.SimpleCAS;
 import scw.data.memcached.Memcached;
 
 public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
@@ -156,7 +155,7 @@ public final class MemcachedMap<V> implements scw.data.utils.Map<String, V> {
 	private CAS<LinkedHashMap<String, V>> getCasMap() {
 		CAS<Object> v = memcached.getCASOperations().get(dataKey);
 		return v == null ? null
-				: new SimpleCAS<LinkedHashMap<String, V>>(v.getCas(), (LinkedHashMap<String, V>) v.getValue());
+				: new CAS<LinkedHashMap<String, V>>(v.getCas(), (LinkedHashMap<String, V>) v.getValue());
 	}
 
 	@SuppressWarnings("unchecked")

@@ -27,7 +27,11 @@ public class ObjectMessageConveter extends AbstractMessageConverter<Object> {
 	@Override
 	protected Object readInternal(Type type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
-		return serializer.deserialize(inputMessage.getBody());
+		try {
+			return serializer.deserialize(inputMessage.getBody());
+		} catch (ClassNotFoundException e) {
+			throw new MessageConvertException(e);
+		}
 	}
 
 	@Override

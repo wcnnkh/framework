@@ -59,7 +59,7 @@ public final class SimpleObjectRpcService implements RpcService, RpcConstants {
 		try {
 			requestMessage = serializer.deserialize(inputMessage.getBody());
 			resonseMessage.setRequestMessage(requestMessage);
-		} catch (IOException e1) {
+		} catch (Exception e1) {
 			logger.error(e1, "序列化失败");
 			resonseMessage.setError(e1);
 			response(outputMessage, resonseMessage);

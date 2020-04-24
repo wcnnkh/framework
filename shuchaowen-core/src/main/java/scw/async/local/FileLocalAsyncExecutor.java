@@ -9,7 +9,6 @@ import scw.async.AsyncException;
 import scw.async.AsyncRunnable;
 import scw.beans.BeanFactory;
 import scw.core.utils.ClassUtils;
-import scw.io.JavaSerializer;
 import scw.io.ObjectFileManager;
 import scw.io.ObjectFileManager.ObjectInfo;
 
@@ -20,12 +19,12 @@ public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 	private final TimeUnit delayTimeUnit;
 
 	public FileLocalAsyncExecutor(BeanFactory beanFactory, String suffix, long delayMillis, TimeUnit delayTimeUnit)
-			throws IOException {
-		this(beanFactory, new ObjectFileManager(suffix, JavaSerializer.SERIALIZER), delayMillis, delayTimeUnit);
+			throws IOException, ClassNotFoundException {
+		this(beanFactory, new ObjectFileManager(suffix), delayMillis, delayTimeUnit);
 	}
 
 	public FileLocalAsyncExecutor(BeanFactory beanFactory, ObjectFileManager objectFileManager, long delayMillis,
-			TimeUnit delayTimeUnit) throws IOException {
+			TimeUnit delayTimeUnit) throws IOException, ClassNotFoundException {
 		super(beanFactory, true);
 		this.objectFileManager = objectFileManager;
 		this.delayMillis = delayMillis;

@@ -8,7 +8,6 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
-import scw.data.cas.SimpleCAS;
 
 public class MemoryCasOperations implements CASOperations {
 	private final MemoryDataManager memoryDataManager;
@@ -19,7 +18,7 @@ public class MemoryCasOperations implements CASOperations {
 
 	public boolean cas(String key, Object value, int exp, long cas) {
 		MemoryData memoryData = memoryDataManager.createDefaultMemoryCache(key);
-		if (memoryData.set(new SimpleCAS<Object>(cas, value))) {
+		if (memoryData.set(new CAS<Object>(cas, value))) {
 			memoryData.setExpire(exp);
 			return true;
 		}

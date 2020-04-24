@@ -7,9 +7,9 @@ import java.io.OutputStream;
 public interface NoTypeSpecifiedSerializer {
 	void serialize(OutputStream out, Object data) throws IOException;
 
-	byte[] serialize(Object data);
+	byte[] serialize(Object data) throws IOException;
 	
-	<T> T deserialize(InputStream input) throws IOException;
+	<T> T deserialize(InputStream input) throws IOException, ClassNotFoundException;
 
-	<T> T deserialize(byte[] data);
+	<T> T deserialize(byte[] data) throws IOException, ClassNotFoundException;
 }
