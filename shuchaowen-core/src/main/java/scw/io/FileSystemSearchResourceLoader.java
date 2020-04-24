@@ -1,58 +1,43 @@
-package scw.io.resource;
+package scw.io;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.io.IOUtils;
-import scw.util.queue.Consumer;
-
-public class FileSystemResourceLookup implements ResourceLookup {
+public class FileSystemSearchResourceLoader extends DefaultResourceLoader {
 	private String rootPath;
 	private boolean search;
 
-	public FileSystemResourceLookup(boolean search) {
+	public FileSystemSearchResourceLoader(boolean search) {
 		this(null, search);
 	}
 
-	public FileSystemResourceLookup(String rootPath, boolean search) {
+	public FileSystemSearchResourceLoader(String rootPath, boolean search) {
 		this.rootPath = rootPath;
 		this.search = search;
 	}
 
-	public boolean lookup(String resource, Consumer<InputStream> consumer) {
+	@Override
+	protected Resource getResourceByPath(String resource) {
 		if (resource == null) {
-			return false;
+			return null;
 		}
 
 		File file = null;
 		if (search) {
 			file = searchFile(resource, new File(rootPath == null ? "" : rootPath));
 		} else {
-			file = new File((rootPath == null ? "":rootPath) + File.separator + resource);
+			file = new File((rootPath == null ? "" : rootPath) + File.separator + resource);
 		}
 
 		if (file == null || !file.exists()) {
-			return false;
+			return null;
 		}
 
-		if (consumer != null) {
-			InputStream inputStream = null;
-			try {
-				inputStream = new FileInputStream(file);
-				consumer.consume(inputStream);
-			} catch (Throwable e) {
-				throw new RuntimeException(e);
-			} finally {
-				IOUtils.close(inputStream);
-			}
-		}
-		return true;
+		return new FileSystemResource(file);
 	}
 
-	private static File searchFile(String path, File rootFile) {
+	private File searchFile(String path, File rootFile) {
 		if (!rootFile.exists() || !rootFile.isDirectory()) {
 			return null;
 		}

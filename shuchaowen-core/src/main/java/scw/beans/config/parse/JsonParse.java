@@ -4,7 +4,7 @@ import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
 import scw.core.reflect.FieldDefinition;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
@@ -20,7 +20,7 @@ public final class JsonParse extends AbstractValueFormat implements ConfigParse 
 
 	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
-		String content = ResourceUtils.getResourceOperations().getFileContent(filePath, charset);
+		String content = ResourceUtils.getResourceOperations().getContent(filePath, charset);
 		if (JsonObject.class.isAssignableFrom(fieldDefinition.getField().getType())) {
 			return JSONUtils.parseObject(content);
 		} else if (JsonArray.class.isAssignableFrom(fieldDefinition.getField().getType())) {

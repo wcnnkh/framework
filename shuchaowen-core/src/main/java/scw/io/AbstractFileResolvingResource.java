@@ -24,8 +24,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
-import scw.io.resource.ResourceUtils;
-
 /**
  * Abstract base class for resources which resolve URLs into File references,
  * such as {@link UrlResource} or {@link ClassPathResource}.
@@ -41,7 +39,7 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
 	/**
 	 * This implementation returns a File reference for the underlying class path
 	 * resource, provided that it refers to a file in the file system.
-	 * @see org.springframework.util.ResourceUtils#getFile(java.net.URL, String)
+	 * @see scw.io.springframework.util.ResourceUtils#getFile(java.net.URL, String)
 	 */
 	public File getFile() throws IOException {
 		URL url = getURL();
@@ -73,7 +71,7 @@ public abstract class AbstractFileResolvingResource extends AbstractResource {
 	/**
 	 * This implementation returns a File reference for the given URI-identified
 	 * resource, provided that it refers to a file in the file system.
-	 * @see org.springframework.util.ResourceUtils#getFile(java.net.URI, String)
+	 * @see scw.io.springframework.util.ResourceUtils#getFile(java.net.URI, String)
 	 */
 	protected File getFile(URI uri) throws IOException {
 		if (uri.getScheme().startsWith(ResourceUtils.URL_PROTOCOL_VFS)) {

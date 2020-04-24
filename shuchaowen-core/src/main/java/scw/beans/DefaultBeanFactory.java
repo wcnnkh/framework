@@ -183,6 +183,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			singletonMap.put(definition.getId(), object);
 		}
 		definition.init(object);
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("create instance [{}] by definition [{}] use time {}ms", object, definition.getId(),
+					definition.getTargetClass(), System.currentTimeMillis() - createTime);
+		}
 	}
 
 	public MultiPropertyFactory getPropertyFactory() {

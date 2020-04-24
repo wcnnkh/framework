@@ -10,7 +10,7 @@ import scw.core.reflect.FieldDefinition;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
@@ -18,7 +18,7 @@ public final class PropertiesParse extends AbstractValueFormat implements Config
 
 	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition fieldDefinition, String filePath, String charset)
 			throws Exception {
-		Properties properties = ResourceUtils.getResourceOperations().getProperties(filePath, charset, propertyFactory);
+		Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(filePath, charset, propertyFactory);
 		if (ClassUtils.isPrimitiveOrWrapper(fieldDefinition.getField().getType())
 				|| TypeUtils.isString(fieldDefinition.getField().getType())) {
 			return ValueUtils.parse(properties.getProperty(fieldDefinition.getField().getName()), fieldDefinition.getField().getGenericType());

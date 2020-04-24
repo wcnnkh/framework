@@ -16,8 +16,6 @@
 
 package scw.io;
 
-import scw.io.resource.ResourceUtils;
-
 public interface ResourceLoader {
 
 	/** Pseudo URL prefix for loading from the class path: "classpath:" */
@@ -52,7 +50,7 @@ public interface ResourceLoader {
 	 * on the thread context ClassLoader.
 	 * @return the ClassLoader (only {@code null} if even the system
 	 * ClassLoader isn't accessible)
-	 * @see org.springframework.util.ClassUtils#getDefaultClassLoader()
+	 * @see scw.core.utils.ClassUtils#getDefaultClassLoader()
 	 */
 	ClassLoader getClassLoader();
 

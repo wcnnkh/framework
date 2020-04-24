@@ -6,13 +6,13 @@ import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
 import scw.core.reflect.FieldDefinition;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class ContentParse extends AbstractValueFormat implements ConfigParse{
 
 	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition fieldDefinition, String filePath, String charset) throws Exception{
-		List<String> list = ResourceUtils.getResourceOperations().getFileContentLineList(filePath, charset);
+		List<String> list = ResourceUtils.getResourceOperations().getLines(filePath, charset);
 		if(String.class.isAssignableFrom(fieldDefinition.getField().getType())){
 			StringBuilder sb = new StringBuilder();
 			if(list != null){

@@ -26,7 +26,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import scw.core.Assert;
-import scw.io.resource.ResourceUtils;
 import scw.lang.NestedIOException;
 import scw.lang.NotSupportedException;
 

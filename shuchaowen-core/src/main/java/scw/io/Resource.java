@@ -30,7 +30,7 @@ public interface Resource extends InputStreamSource, OutputStreamSource {
 	boolean isWritable();
 
 	/**
-	 * 是否是已打开的资源，如果已打开则不能多次调用getInputStream()
+	 * 是否是已打开的资源
 	 * 
 	 * @return
 	 */

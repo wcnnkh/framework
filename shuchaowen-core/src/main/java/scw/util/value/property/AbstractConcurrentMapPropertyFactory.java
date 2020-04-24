@@ -4,7 +4,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
-import scw.io.resource.ResourceOperations;
+import scw.io.ResourceOperations;
 import scw.util.value.Value;
 
 public abstract class AbstractConcurrentMapPropertyFactory extends
@@ -26,7 +26,7 @@ public abstract class AbstractConcurrentMapPropertyFactory extends
 		if (putIfAbsent) {
 			if (resourceOperations.isExist(resource)) {
 				Properties properties = resourceOperations
-						.getProperties(resource);
+						.getFormattedProperties(resource);
 				if (properties != null) {
 					loadProperties(properties, putIfAbsent);
 				}

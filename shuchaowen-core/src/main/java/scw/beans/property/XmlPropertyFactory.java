@@ -8,7 +8,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
 import scw.core.GlobalPropertyFactory;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.util.value.Value;
 import scw.util.value.property.AbstractPropertyFactory;
 

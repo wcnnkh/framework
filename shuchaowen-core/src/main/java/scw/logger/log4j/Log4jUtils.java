@@ -7,7 +7,7 @@ import org.w3c.dom.Element;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.reflect.ReflectionUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.logger.Level;
 import scw.logger.LoggerLevelUtils;
 import scw.util.FormatUtils;
@@ -66,7 +66,7 @@ public final class Log4jUtils {
 		FormatUtils.info(Log4jUtils.class,
 				"load the default log directory: {}", rootPath);
 		Properties properties = ResourceUtils.getResourceOperations()
-				.getProperties(
+				.getFormattedProperties(
 						"classpath:/scw/logger/log4j/default-log4j.properties",
 						LoggerLevelUtils.PROPERTY_FACTORY);
 		for (KeyValuePair<String, Level> entry : LoggerLevelUtils
@@ -78,7 +78,7 @@ public final class Log4jUtils {
 		if (ResourceUtils.getResourceOperations().isExist(LOG4J_APPEND_PATH)) {
 			FormatUtils.info(Log4jUtils.class, "loading " + LOG4J_APPEND_PATH);
 			Properties append = ResourceUtils.getResourceOperations()
-					.getProperties(LOG4J_APPEND_PATH);
+					.getFormattedProperties(LOG4J_APPEND_PATH, LoggerLevelUtils.PROPERTY_FACTORY);
 			properties.putAll(append);
 		}
 

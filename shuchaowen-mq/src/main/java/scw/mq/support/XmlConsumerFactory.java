@@ -13,7 +13,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.reflect.PropertyMapper;
 import scw.core.utils.XMLUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;

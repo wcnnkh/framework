@@ -14,7 +14,7 @@ import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.data.redis.RedisConstants;
 import scw.data.redis.RedisUtils;
-import scw.io.resource.ResourceUtils;
+import scw.io.ResourceUtils;
 import scw.lang.Nullable;
 import scw.util.ConfigUtils;
 import scw.util.value.property.PropertiesPropertyFactory;
@@ -62,7 +62,7 @@ public final class JedisPoolResourceFactory implements JedisResourceFactory,
 	public JedisPoolResourceFactory(
 			@ParameterName(CONFIG_KEY) @ResourceParameter @DefaultValue(DEFAULT_CONFIG) String configuration) {
 		Properties properties = ResourceUtils.getResourceOperations()
-				.getProperties(configuration, Constants.DEFAULT_CHARSET_NAME);
+				.getFormattedProperties(configuration, Constants.DEFAULT_CHARSET_NAME);
 		PropertyFactory propertyFactory = new PropertiesPropertyFactory(
 				properties);
 		String host = propertyFactory.getString(HOST_CONFIG_KEY);

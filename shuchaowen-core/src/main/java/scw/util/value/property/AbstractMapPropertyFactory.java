@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.Assert;
-import scw.io.resource.ResourceOperations;
+import scw.io.ResourceOperations;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
 
@@ -59,7 +59,7 @@ public abstract class AbstractMapPropertyFactory extends
 	public void loadProperties(ResourceOperations resourceOperations,
 			String resource) {
 		if (resourceOperations.isExist(resource)) {
-			Properties properties = resourceOperations.getProperties(resource);
+			Properties properties = resourceOperations.getFormattedProperties(resource);
 			if (properties != null) {
 				loadProperties(properties);
 			}

@@ -10,7 +10,7 @@ import scw.db.database.DataBase;
 import scw.orm.sql.GeneratorService;
 import scw.util.queue.MessageQueue;
 
-@Configuration(order=Integer.MIN_VALUE)
+@Configuration(order=Integer.MIN_VALUE, value=DB.class)
 @Bean(proxy = false)
 public class DefaultDB extends AbstractDB {
 	private final DBConfig dbConfig;
