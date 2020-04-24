@@ -39,6 +39,10 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	protected void addBeanFactoryLifeCycle(
 			BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
 		if (beanFactoryLifeCycle instanceof XmlBeanFactoryLifeCycle) {
+			if(getNodeList() == null){
+				return ;
+			}
+			
 			((XmlBeanFactoryLifeCycle) beanFactoryLifeCycle)
 					.setNodeList(getNodeList());
 		}

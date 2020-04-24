@@ -18,7 +18,6 @@ public final class XmlDubboServiceExport extends XmlBeanFactoryLifeCycle {
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws Exception {
 		NodeList nodeList = getNodeList();
-
 		for (int x = 0; x < nodeList.getLength(); x++) {
 			Node node = nodeList.item(x);
 			if (node == null) {

@@ -4,7 +4,7 @@ import scw.core.Converter;
 import scw.net.client.http.HttpUtils;
 import scw.net.message.SerializableInputMessage;
 
-public class SerializableClientHttpInputMessageCacheConvert implements
+public class SerializableHttpInputMessageCacheConvert implements
 		Converter<String, SerializableInputMessage> {
 
 	public SerializableInputMessage convert(String url) throws Exception {

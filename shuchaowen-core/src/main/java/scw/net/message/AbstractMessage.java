@@ -1,5 +1,8 @@
 package scw.net.message;
 
+import java.nio.charset.Charset;
+
+import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -26,5 +29,15 @@ public abstract class AbstractMessage implements Message {
 
 	public String getRawContentType() {
 		return getHeaders().getFirst(getContentTypeHeaderName());
+	}
+
+	public Charset getDefaultCharset() {
+		MimeType mimeType = getContentType();
+		if (mimeType == null) {
+			return Constants.DEFAULT_CHARSET;
+		}
+
+		Charset charset = mimeType.getCharset();
+		return charset == null ? Constants.DEFAULT_CHARSET : charset;
 	}
 }

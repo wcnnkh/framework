@@ -35,7 +35,8 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 		this.exp = exp;
 		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
 		this.charsetName = Constants.DEFAULT_CHARSET_NAME;
-		this.cacheDirectory = GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + getClass().getName();
+		this.cacheDirectory = GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator
+				+ getClass().getName();
 	}
 
 	public FileCache(int exp, String cacheDirectory) {
@@ -72,21 +73,17 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 		return cacheDirectory;
 	}
 
-	protected String encodeKey(String key) {
-		return HttpUtils.encode(key, charsetName);
+	protected final String getKey(File file) {
+		return HttpUtils.decode(file.getName(), charsetName);
 	}
 
-	protected String decodeKey(String key) {
-		return HttpUtils.decode(key, charsetName);
-	}
-
-	protected File getFile(String key) {
+	protected final File getFile(String key) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(cacheDirectory);
 		sb.append(File.separator);
 		sb.append(hashPath(key));
 		sb.append(File.separator);
-		sb.append(encodeKey(key));
+		sb.append(HttpUtils.encode(key, charsetName));
 		return new File(sb.toString());
 	}
 
@@ -145,14 +142,14 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 		return file;
 	}
 
-	protected <T> T getNotFound(String key) {
+	protected Object getNotFound(String key) {
 		return null;
 	}
 
 	public <T> T get(String key) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
-			return getNotFound(key);
+			return (T) getNotFound(key);
 		}
 
 		return (T) readObject(file);
@@ -161,7 +158,7 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 	public <T> T getAndTouch(String key) {
 		File file = getNotExpireFile(key);
 		if (file == null) {
-			return getNotFound(key);
+			return (T) getNotFound(key);
 		}
 
 		touchFile(file);
@@ -220,6 +217,12 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 		return map;
 	}
 
+	/**
+	 * 过期后会调用此函数
+	 * 
+	 * @param file
+	 * @param currentTimeMillis
+	 */
 	protected void expireExecute(File file, long currentTimeMillis) {
 		file.delete();
 	}
@@ -271,7 +274,8 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 	}
 
 	public static ExpiredCache create(String cacheDirectorySuffix, int exp) {
-		return new FileCache(exp, GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
+		return new FileCache(exp,
+				GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
 	}
 
 	public void delete(Collection<String> keys) {
