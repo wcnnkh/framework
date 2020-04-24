@@ -60,7 +60,7 @@ public class KryoSerializer extends Serializer {
 		return input;
 	}
 
-	public void serialize(OutputStream out, Object data) throws IOException {
+	public void serialize(OutputStream out, Object data) {
 		Output output = getOutput(out);
 		getKryo().writeClassAndObject(output, data);
 		output.flush();
@@ -91,7 +91,7 @@ public class KryoSerializer extends Serializer {
 	}
 
 	@Override
-	public <T> void serialize(OutputStream out, Class<T> type, T data) throws IOException {
+	public <T> void serialize(OutputStream out, Class<T> type, T data) {
 		Output output = getOutput(out);
 		getKryo().writeObjectOrNull(output, data, type);
 		output.flush();
@@ -103,7 +103,7 @@ public class KryoSerializer extends Serializer {
 	}
 
 	@Override
-	public <T> T deserialize(Class<T> type, InputStream input) throws IOException {
+	public <T> T deserialize(Class<T> type, InputStream input) {
 		return getKryo().readObjectOrNull(getInput(input), type);
 	}
 }

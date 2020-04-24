@@ -12,7 +12,6 @@ import scw.core.Destroy;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
-import scw.data.cas.SimpleCAS;
 import scw.data.memcached.Memcached;
 import scw.data.memcached.MemcachedUtils;
 
@@ -49,7 +48,7 @@ public final class XMemcached implements Memcached, Destroy{
 				return null;
 			}
 
-			return new SimpleCAS<T>(cas.getCas(), cas.getValue());
+			return new CAS<T>(cas.getCas(), cas.getValue());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -221,7 +220,7 @@ public final class XMemcached implements Memcached, Destroy{
 			Map<String, CAS<T>> casMap = new HashMap<String, CAS<T>>();
 			for (Entry<String, GetsResponse<T>> entry : map.entrySet()) {
 				GetsResponse<T> v = entry.getValue();
-				casMap.put(entry.getKey(), new SimpleCAS<T>(v.getCas(), v.getValue()));
+				casMap.put(entry.getKey(), new CAS<T>(v.getCas(), v.getValue()));
 			}
 			return casMap;
 		}

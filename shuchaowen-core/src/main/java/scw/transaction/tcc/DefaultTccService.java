@@ -12,7 +12,7 @@ import scw.core.instance.annotation.Configuration;
 public class DefaultTccService extends AbstractTccService {
 	private AsyncExecutor asyncExecutor;
 
-	public DefaultTccService(BeanFactory beanFactory) throws IOException {
+	public DefaultTccService(BeanFactory beanFactory) throws IOException, ClassNotFoundException {
 		super(beanFactory);
 		this.asyncExecutor = new FileLocalAsyncExecutor(beanFactory, "tcc", 1, TimeUnit.MINUTES);
 	}

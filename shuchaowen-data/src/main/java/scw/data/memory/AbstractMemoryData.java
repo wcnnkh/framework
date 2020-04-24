@@ -3,7 +3,6 @@ package scw.data.memory;
 import java.util.concurrent.atomic.AtomicLong;
 
 import scw.data.cas.CAS;
-import scw.data.cas.SimpleCAS;
 import scw.io.SerializerUtils;
 
 public abstract class AbstractMemoryData implements MemoryData {
@@ -51,7 +50,7 @@ public abstract class AbstractMemoryData implements MemoryData {
 			return null;
 		}
 
-		return new SimpleCAS<T>(cas.get(), (T) SerializerUtils.clone(value));
+		return new CAS<T>(cas.get(), (T) SerializerUtils.clone(value));
 	}
 
 	public boolean incrCasAndCompare(long cas) {

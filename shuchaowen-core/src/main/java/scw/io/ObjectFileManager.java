@@ -26,16 +26,20 @@ public class ObjectFileManager {
 	private final String suffix;
 	private final AtomicLong atomicLong = new AtomicLong(System.currentTimeMillis());
 
+	public ObjectFileManager(String suffix) {
+		this(suffix, JavaSerializer.SERIALIZER);
+	}
+
 	public ObjectFileManager(String suffix, Serializer serializer) {
-		this(FileUtils.getTempDirectoryPath() + File.separator + GlobalPropertyFactory.getInstance().getSystemLocalId(), suffix,
-				serializer);
+		this(FileUtils.getTempDirectoryPath() + File.separator + GlobalPropertyFactory.getInstance().getSystemLocalId(),
+				suffix, serializer);
 	}
 
 	public ObjectFileManager(String directory, String suffix, Serializer serializer) {
 		Assert.requiredArgument(directory != null, "directory");
 		Assert.requiredArgument(StringUtils.isNotEmpty(suffix), "suffix");
 		Assert.requiredArgument(serializer != null, "serializer");
-		logger.info("object field manager directory [{}] suffix [{}]", directory, suffix);
+		logger.info("object file manager directory [{}] suffix [{}]", directory, suffix);
 		File file = new File(directory);
 		if (!file.exists()) {
 			file.mkdirs();
@@ -53,7 +57,7 @@ public class ObjectFileManager {
 		return index;
 	}
 
-	public Object getObject(long index) throws IOException {
+	public Object getObject(long index) throws IOException, ClassNotFoundException {
 		File file = new File(directory, index + "." + suffix);
 		if (!file.exists()) {
 			return null;
@@ -74,8 +78,12 @@ public class ObjectFileManager {
 		return false;
 	}
 
-	private Object readObject(File file) throws IOException {
+	private Object readObject(File file) throws IOException, ClassNotFoundException {
 		byte[] data = FileUtils.readFileToByteArray(file);
+		if (ArrayUtils.isEmpty(data)) {
+			return null;
+		}
+
 		return serializer.deserialize(data);
 	}
 
@@ -83,7 +91,7 @@ public class ObjectFileManager {
 		return Long.parseLong(file.getName().substring(0, file.getName().length() - suffix.length() - 1));
 	}
 
-	public List<ObjectInfo> getObjectList() throws IOException {
+	public List<ObjectInfo> getObjectList() throws IOException, ClassNotFoundException {
 		File[] files = directory.listFiles(new FileFilter() {
 
 			public boolean accept(File pathname) {
@@ -104,7 +112,12 @@ public class ObjectFileManager {
 
 		List<ObjectInfo> objects = new ArrayList<ObjectInfo>(fileList.size());
 		for (File file : fileList) {
-			objects.add(new ObjectInfo(readObject(file), getIndex(file)));
+			Object obj = readObject(file);
+			if (obj == null) {
+				continue;
+			}
+
+			objects.add(new ObjectInfo(obj, getIndex(file)));
 		}
 		return objects;
 	}

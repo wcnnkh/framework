@@ -3,5 +3,7 @@ package scw.async.filter;
 import scw.aop.Context;
 
 public interface AsyncService {
-	void service(Async async, Context context) throws Exception;
+	AsyncRunnableMethod create(Async async, Context context) throws Exception;
+
+	void service(AsyncRunnableMethod asyncRunnableMethod) throws Exception;
 }

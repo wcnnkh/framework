@@ -18,6 +18,7 @@ import scw.data.ExpiredCache;
 import scw.io.FileUtils;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerUtils;
+import scw.lang.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.client.http.HttpUtils;
@@ -96,10 +97,10 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 			byte[] data;
 			try {
 				data = FileUtils.readFileToByteArray(file);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
+				return serializer.deserialize(data);
+			} catch (Exception e) {
+				throw new NestedRuntimeException(e);
 			}
-			return serializer.deserialize(data);
 		}
 		return null;
 	}

@@ -10,7 +10,6 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
-import scw.data.cas.SimpleCAS;
 import scw.io.Serializer;
 import scw.lang.StringCodec;
 
@@ -72,7 +71,13 @@ public class RedisCASOperations implements CASOperations {
 		}
 
 		byte[] v = (byte[]) list.get(0);
-		return new SimpleCAS<T>(Long.parseLong(stringCodec.decode((byte[]) list.get(1))), v == null ? null : (T) serializer.deserialize(v));
+		long version = Long.parseLong(stringCodec.decode((byte[]) list.get(1)));
+		try {
+			return new CAS<T>(version, v == null ? null : (T) serializer.deserialize(v));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new CAS<T>(version, null);
 	}
 
 	public void set(String key, Object value, int exp) {

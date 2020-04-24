@@ -7,17 +7,17 @@ import scw.mvc.service.FilterChain;
 import scw.mvc.service.HttpFilter;
 import scw.util.value.property.PropertyFactory;
 
-@Configuration(order = ResourceHandler.ORDER)
-public final class ResourceHandler extends HttpFilter {
+@Configuration(order = ResourceFilter.ORDER)
+public final class ResourceFilter extends HttpFilter {
 	public static final int ORDER = 800;
 
 	private ResourceFactory resourceFactory;
 
-	public ResourceHandler(PropertyFactory propertyFactory) {
+	public ResourceFilter(PropertyFactory propertyFactory) {
 		this(new DefaultResourceFactory(propertyFactory));
 	}
 
-	public ResourceHandler(ResourceFactory resourceFactory) {
+	public ResourceFilter(ResourceFactory resourceFactory) {
 		this.resourceFactory = resourceFactory;
 	}
 

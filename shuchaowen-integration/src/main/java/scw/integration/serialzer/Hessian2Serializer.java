@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.caucho.hessian.io.Hessian2Input;
+import com.caucho.hessian.io.Hessian2Output;
+
 import scw.core.instance.annotation.Configuration;
 import scw.io.Serializer;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 
-import com.caucho.hessian.io.Hessian2Input;
-import com.caucho.hessian.io.Hessian2Output;
-
-@Configuration(order=Integer.MIN_VALUE + 200)
+@Configuration(order = Integer.MIN_VALUE + 200)
 public class Hessian2Serializer extends Serializer {
 
 	@Override
@@ -27,35 +27,23 @@ public class Hessian2Serializer extends Serializer {
 	}
 
 	@Override
-	public byte[] serialize(Object data) {
+	public byte[] serialize(Object data) throws IOException {
 		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
 		try {
 			serialize(out, data);
 			return out.toByteArray();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		} finally {
-			try {
-				out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			out.close();
 		}
 	}
 
 	@Override
-	public <T> T deserialize(byte[] data) {
+	public <T> T deserialize(byte[] data) throws IOException {
 		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
 		try {
 			return deserialize(input);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		} finally {
-			try {
-				input.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			input.close();
 		}
 	}
 
