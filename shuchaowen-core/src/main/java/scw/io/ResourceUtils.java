@@ -74,7 +74,8 @@ public final class ResourceUtils {
 	/** Special separator between WAR URL and jar part on Tomcat. */
 	public static final String WAR_URL_SEPARATOR = "*/";
 
-	private static final ResourceOperations RESOURCE_OPERATIONS = new ResourceOperations();
+	private static final ResourceOperations RESOURCE_OPERATIONS = new ResourceOperations(
+			GlobalPropertyFactory.getInstance());
 
 	static {
 		RESOURCE_OPERATIONS.addResourceLoader(

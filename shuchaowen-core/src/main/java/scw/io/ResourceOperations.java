@@ -14,8 +14,6 @@ import java.util.ListIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.Constants;
-import scw.core.GlobalPropertyFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
@@ -27,10 +25,19 @@ import scw.util.value.property.PropertyFactory;
 public class ResourceOperations extends DefaultResourceLoader {
 	private static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 	private static final String RESOURCE_SUFFIX = "scw_res_suffix";
+	private final PropertyFactory propertyFactory;
+
+	public ResourceOperations(PropertyFactory propertyFactory) {
+		this.propertyFactory = propertyFactory;
+	}
+
+	public PropertyFactory getPropertyFactory() {
+		return propertyFactory;
+	}
 
 	protected String[] getResourceEnvironmentalSuffixs() {
-		return GlobalPropertyFactory.getInstance().getValue(RESOURCE_SUFFIX, String[].class,
-				GlobalPropertyFactory.getInstance().getObject(CONFIG_SUFFIX, String[].class));
+		return getPropertyFactory().getValue(RESOURCE_SUFFIX, String[].class,
+				getPropertyFactory().getObject(CONFIG_SUFFIX, String[].class));
 	}
 
 	public List<String> getEnvironmentalResourceNameList(String resourceName) {
@@ -147,7 +154,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 	}
 
 	public Properties getProperties(String resource) {
-		return getProperties(resource, Constants.DEFAULT_CHARSET_NAME);
+		return getProperties(resource, null);
 	}
 
 	public Properties getProperties(String resource, String charsetName) {
@@ -164,14 +171,10 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return properties;
 	}
 
-	public String getContent(String resource) {
-		return getContent(resource, Constants.DEFAULT_CHARSET_NAME);
-	}
-
 	public String getContent(String resource, String charsetName) {
 		return ResourceUtils.getContent(getResource(resource), charsetName);
 	}
-
+	
 	public String getContent(String resource, Charset charset) {
 		return ResourceUtils.getContent(getResource(resource), charset);
 	}
@@ -184,16 +187,13 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return ResourceUtils.getLines(getResource(resource), charsetName);
 	}
 
-	public List<String> getLines(String resource) {
-		return getLines(resource, Constants.DEFAULT_CHARSET_NAME);
-	}
-
 	public boolean isExist(String resource) {
 		Resource res = getResource(resource);
 		return res != null && res.exists();
 	}
 
-	public Properties getFormattedProperties(String resource, String charsetName, PropertyFactory formatPropertyFactory) {
+	public Properties getFormattedProperties(String resource, String charsetName,
+			PropertyFactory formatPropertyFactory) {
 		Properties properties = getProperties(resource, charsetName);
 		if (properties == null) {
 			return properties;
@@ -204,15 +204,15 @@ public class ResourceOperations extends DefaultResourceLoader {
 	}
 
 	public Properties getFormattedProperties(String resource, PropertyFactory formatPropertyFactory) {
-		return getFormattedProperties(resource, Constants.DEFAULT_CHARSET_NAME, formatPropertyFactory);
+		return getFormattedProperties(resource, null, formatPropertyFactory);
 	}
-	
+
 	public Properties getFormattedProperties(String resource, String charsetName) {
-		return getFormattedProperties(resource, charsetName, GlobalPropertyFactory.getInstance());
+		return getFormattedProperties(resource, charsetName, getPropertyFactory());
 	}
 
 	public Properties getFormattedProperties(String resource) {
-		return getFormattedProperties(resource, GlobalPropertyFactory.getInstance());
+		return getFormattedProperties(resource, getPropertyFactory());
 	}
 
 	public ByteArrayInputStream getInputStream(String resource) {

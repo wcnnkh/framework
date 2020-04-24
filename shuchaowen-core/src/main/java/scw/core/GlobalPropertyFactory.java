@@ -6,7 +6,7 @@ import java.util.Enumeration;
 
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
-import scw.io.ResourceUtils;
+import scw.io.ResourceOperations;
 import scw.util.FormatUtils;
 import scw.util.MultiEnumeration;
 import scw.util.value.Value;
@@ -30,9 +30,7 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 			setWorkPath(getDefaultWorkPath());
 		}
 
-		loadProperties(ResourceUtils.getResourceOperations(),
-				getValue("scw.properties.private", String.class,
-						"/private.properties"));
+		loadProperties(new ResourceOperations(this), getValue("scw.properties.private", String.class, "/private.properties"));
 	}
 
 	public Value get(String key) {
@@ -80,8 +78,7 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 	}
 
 	public String getDefaultWorkPath() {
-		File file = FileUtils
-				.searchDirectory(new File(getUserDir()), "WEB-INF");
+		File file = FileUtils.searchDirectory(new File(getUserDir()), "WEB-INF");
 		return file == null ? getUserDir() : file.getParent();
 	}
 
@@ -135,6 +132,7 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 
 	/**
 	 * 获取系统本地标识，注意，仅对本地有效
+	 * 
 	 * @return
 	 */
 	public String getSystemLocalId() {
@@ -142,11 +140,9 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {
 				systemOnlyId = scw.core.Base64
-						.encode((getUserDir() + "&" + getWorkPath())
-								.getBytes(Constants.DEFAULT_CHARSET_NAME));
+						.encode((getUserDir() + "&" + getWorkPath()).getBytes(Constants.DEFAULT_CHARSET_NAME));
 				if (systemOnlyId.endsWith("==")) {
-					systemOnlyId = systemOnlyId.substring(0,
-							systemOnlyId.length() - 2);
+					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
 				}
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
