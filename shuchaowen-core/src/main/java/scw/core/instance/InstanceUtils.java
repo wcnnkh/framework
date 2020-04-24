@@ -123,7 +123,7 @@ public final class InstanceUtils {
 	}
 
 	private static String getDefaultName(Class<?> clazz, ParameterDescriptor parameterDescriptor) {
-		if(parameterDescriptor.getName().equals(parameterDescriptor.getDisplayName())){
+		if (parameterDescriptor.getName().equals(parameterDescriptor.getDisplayName())) {
 			return clazz.getClass().getName() + "." + parameterDescriptor.getDisplayName();
 		}
 		return parameterDescriptor.getDisplayName();
@@ -132,8 +132,7 @@ public final class InstanceUtils {
 	private static Value getProperty(PropertyFactory propertyFactory, Class<?> clazz,
 			ParameterDescriptor parameterDescriptor) {
 		String name = getDefaultName(clazz, parameterDescriptor);
-		Value value = propertyFactory
-				.get(name);
+		Value value = propertyFactory.get(name);
 		if (value == null) {
 			value = parameterDescriptor.getDefaultValue();
 		}
@@ -164,8 +163,8 @@ public final class InstanceUtils {
 		return null;
 	}
 
-	private static boolean isAuto(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptor parameterDescriptor, ParameterFactory parameterFactory) {
+	private static boolean isAuto(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class<?> clazz, ParameterDescriptor parameterDescriptor, ParameterFactory parameterFactory) {
 		boolean require = !AnnotationUtils.isNullable(parameterDescriptor.getAnnotatedElement(), false);
 		if (!require) {
 			return true;
@@ -206,12 +205,17 @@ public final class InstanceUtils {
 
 		for (int i = 0; i < parameterDescriptors.length; i++) {
 			ParameterDescriptor parameterDescriptor = parameterDescriptors[i];
-			boolean auto = isAuto(instanceFactory, propertyFactory, clazz, parameterDescriptor, parameterFactory);
-			if (logger.isDebugEnabled()) {
-				logger.debug("{} parameter index {} matching: {}", logFirstParameter, i, auto ? "success" : "fail");
-			}
-
-			if (!auto) {
+			try {
+				boolean auto = isAuto(instanceFactory, propertyFactory, clazz, parameterDescriptor, parameterFactory);
+				if (logger.isDebugEnabled()) {
+					logger.debug("{} parameter index {} matching: {}", logFirstParameter, i, auto ? "success" : "fail");
+				}
+				if (!auto) {
+					return false;
+				}
+			} catch (StackOverflowError e) {
+				logger.error(e, "There are circular references clazz [{}] parameterName [{}] in [{}]", clazz,
+						parameterDescriptor.getDisplayName(), logFirstParameter);
 				return false;
 			}
 		}
@@ -231,8 +235,8 @@ public final class InstanceUtils {
 
 		if (isProerptyType(parameterDescriptor)) {
 			Value value = getProperty(propertyFactory, clazz, parameterDescriptor);
-			if(value == null){
-				if(require){
+			if (value == null) {
+				if (require) {
 					throw new RuntimeException("require parameter:" + parameterDescriptor.toString());
 				}
 				return null;
@@ -252,7 +256,7 @@ public final class InstanceUtils {
 		}
 
 		Object[] args = new Object[parameterDescriptors.length];
- 		for (int i = 0; i < parameterDescriptors.length; i++) {
+		for (int i = 0; i < parameterDescriptors.length; i++) {
 			args[i] = getAutoValue(instanceFactory, propertyFactory, clazz, parameterDescriptors[i], parameterFactory);
 
 		}
