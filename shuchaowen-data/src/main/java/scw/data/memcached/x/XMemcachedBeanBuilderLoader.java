@@ -5,16 +5,20 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
+import scw.beans.annotation.Bean;
 import scw.beans.builder.AbstractBeanBuilder;
 import scw.beans.builder.BeanBuilder;
 import scw.beans.loader.BeanBuilderLoader;
 import scw.beans.loader.BeanBuilderLoaderChain;
 import scw.beans.loader.LoaderContext;
 import scw.core.Constants;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.io.SerializerUtils;
 import scw.net.NetworkUtils;
 
+@Configuration(order = Integer.MIN_VALUE)
+@Bean(proxy = false)
 public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 	private static final String HOST_NAME = "memcached.hosts";
 

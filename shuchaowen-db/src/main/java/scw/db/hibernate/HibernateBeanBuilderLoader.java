@@ -47,6 +47,14 @@ public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 				return configuration.buildSessionFactory();
 			}
 		}
+		
+		@Override
+		public void destroy(Object instance) throws Exception {
+			if(instance instanceof SessionFactory){
+				((SessionFactory) instance).close();
+			}
+			super.destroy(instance);
+		}
 	}
 
 	private static final class ConfigurationBeanBuilder extends
