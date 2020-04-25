@@ -5,8 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.beans.loader.BeanBuilderLoader;
-
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AutoImpl {
@@ -23,19 +21,4 @@ public @interface AutoImpl {
 	 * @return
 	 */
 	public String[] className() default {};
-	
-	/**
-	 * 
-	 * 尝试寻找默认实现
-	 * 
-	 * @return
-	 */
-	public Class<? extends BeanBuilderLoader>[] service() default {};
-
-	/**
-	 * 尝试寻找默认实现
-	 * 
-	 * @return
-	 */
-	public String[] serviceName() default {};
 }

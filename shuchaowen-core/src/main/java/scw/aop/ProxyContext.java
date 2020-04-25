@@ -9,13 +9,21 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 	private final Object proxy;
 	private final Class<?> targetClass;
 	private final Method method;
-	private Object[] args;
+	private final Object[] args;
+	private final ProxyContext parentContext;
 
-	public ProxyContext(Object proxy, Class<?> targetClass, Method method, Object[] args) {
+	public ProxyContext(Object proxy, Class<?> targetClass, Method method,
+			Object[] args, ProxyContext parentContext) {
 		this.proxy = proxy;
 		this.targetClass = targetClass;
 		this.method = method;
 		this.args = args;
+		this.parentContext = parentContext;
+	}
+
+	public ProxyContext(Object[] args, ProxyContext context) {
+		this(context.getProxy(), context.getTargetClass(), context.getMethod(),
+				args, context);
 	}
 
 	public Object getProxy() {
@@ -33,9 +41,9 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 	public Object[] getArgs() {
 		return args;
 	}
-	
-	public void setArgs(Object[] args) {
-		this.args = args;
+
+	public ProxyContext getParentContext() {
+		return parentContext;
 	}
 
 	@Override

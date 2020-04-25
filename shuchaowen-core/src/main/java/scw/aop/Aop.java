@@ -154,7 +154,7 @@ public abstract class Aop implements ProxyAdapter {
 			}
 
 			ProxyContext context = new ProxyContext(bean, getMethodHolder()
-					.getBelongClass(), getMethod(), args);
+					.getBelongClass(), getMethod(), args, null);
 			return filterChain.doFilter(getInvoker(bean), context);
 		}
 	}

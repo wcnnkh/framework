@@ -21,9 +21,7 @@ import scw.aop.InstanceFactoryFilterChain;
 import scw.aop.Invoker;
 import scw.aop.ProxyContext;
 import scw.aop.ProxyUtils;
-import scw.beans.annotation.AutoImpl;
 import scw.beans.builder.BeanBuilder;
-import scw.beans.loader.BeanBuilderLoaderUtils;
 import scw.beans.loader.LoaderContext;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
@@ -37,7 +35,6 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
-import scw.lang.Ignore;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -114,20 +111,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			return null;
 		}
 
-		AutoImpl autoImpl = clz.getAnnotation(AutoImpl.class);
-		if (autoImpl == null) {
-			if (clz.getAnnotation(Ignore.class) != null) {
-				return null;
-			}
-		}
-
-		LoaderContext context = new LoaderContext(clz, this,
-				getPropertyFactory(), null);
-		BeanBuilder autoBean = BeanBuilderLoaderUtils
-				.loading(context, autoImpl);
-		if (autoBean != null) {
+		BeanBuilder beanBuilder = BeanUtils.loading(new LoaderContext(clz,
+				this, getPropertyFactory(), null), null);
+		if (beanBuilder != null) {
 			return new DefaultBeanDefinition(this, propertyFactory, clz,
-					autoBean);
+					beanBuilder);
 		}
 		return null;
 	}

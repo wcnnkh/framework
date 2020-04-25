@@ -383,6 +383,10 @@ public final class InstanceUtils {
 				continue;
 			}
 
+			if(!ReflectionUtils.isPresent(clazz)){
+				logger.debug("reflection not present [{}]", clazz);
+				continue;
+			}
 			set.add(clazz);
 		}
 		return set;
