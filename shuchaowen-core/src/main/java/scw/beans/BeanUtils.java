@@ -23,6 +23,7 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
@@ -195,6 +196,11 @@ public final class BeanUtils {
 
 			Class<?> clz = ClassUtils.forNameNullable(name);
 			if (clz == null) {
+				continue;
+			}
+
+			if (!ReflectionUtils.isPresent(clz)) {
+				logger.debug("{} reflection not present", clz);
 				continue;
 			}
 
