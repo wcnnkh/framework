@@ -62,9 +62,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 				|| Modifier.isAbstract(context.getTargetClass().getModifiers())) {
 			Proxy proxy = context.getTargetClass().getAnnotation(Proxy.class);
 			if (proxy != null) {
-				return new ProxyBeanBuilder(context.getBeanFactory(),
-						context.getPropertyFactory(), context.getTargetClass(),
-						getProxyNames(proxy));
+				return new ProxyBeanBuilder(context, getProxyNames(proxy));
 			}
 		}
 
@@ -76,12 +74,11 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 			return autoBeanServiceChain.loading(context);
 		}
 
-		return new AutoBeanBuilder(context.getBeanFactory(),
-				context.getPropertyFactory(), context.getTargetClass());
+		return new AutoBeanBuilder(context);
 	}
 
 	public BeanBuilder loading(LoaderContext context,
-			BeanBuilderLoaderChain serviceChain) throws Exception {
+			BeanBuilderLoaderChain loaderChain) throws Exception {
 		AutoImpl autoConfig = context.getTargetClass().getAnnotation(
 				AutoImpl.class);
 		if (autoConfig == null) {
@@ -94,29 +91,26 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 				for (Class<?> impl : impls) {
 					return defaultLoading(
 							new LoaderContext(impl, context.getBeanFactory(),
-									context.getPropertyFactory()), serviceChain);
+									context.getPropertyFactory(), context), loaderChain);
 				}
 			}
-			return defaultLoading(context, serviceChain);
+			return defaultLoading(context, loaderChain);
 		}
 
 		Collection<Class<?>> implList = BeanBuilderLoaderUtils
 				.getAutoImplClass(autoConfig, context.getTargetClass(),
 						context.getPropertyFactory());
-		if (CollectionUtils.isEmpty(implList)) {
-			return defaultLoading(context, serviceChain);
-		}
-
-		for (Class<?> clz : implList) {
-			BeanBuilder autoBean = BeanBuilderLoaderUtils.loading(
-					new LoaderContext(clz, context.getBeanFactory(), context
-							.getPropertyFactory()), autoConfig);
-			if (autoBean != null && autoBean.isInstance()) {
-				return autoBean;
+		if (!CollectionUtils.isEmpty(implList)) {
+			for (Class<?> clz : implList) {
+				BeanBuilder autoBean = BeanBuilderLoaderUtils.loading(
+						new LoaderContext(clz, context.getBeanFactory(),
+								context.getPropertyFactory(), context), autoConfig);
+				if (autoBean != null && autoBean.isInstance()) {
+					return autoBean;
+				}
 			}
 		}
-
-		return defaultLoading(context, serviceChain);
+		return defaultLoading(context, loaderChain);
 	}
 
 	private static class NextAutoBeanServiceChain extends

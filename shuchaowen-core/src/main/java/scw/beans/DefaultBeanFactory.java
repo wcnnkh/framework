@@ -122,9 +122,9 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		}
 
 		LoaderContext context = new LoaderContext(clz, this,
-				getPropertyFactory());
-		BeanBuilder autoBean = BeanBuilderLoaderUtils.loading(context,
-				autoImpl);
+				getPropertyFactory(), null);
+		BeanBuilder autoBean = BeanBuilderLoaderUtils
+				.loading(context, autoImpl);
 		if (autoBean != null) {
 			return new DefaultBeanDefinition(this, propertyFactory, clz,
 					autoBean);

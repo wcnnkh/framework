@@ -51,13 +51,13 @@ public final class BeanBuilderLoaderUtils {
 	}
 
 	public static BeanBuilder loading(LoaderContext context, AutoImpl autoConfig) {
-		Collection<BeanBuilderLoader> autoBeanServices = getBeanBuilderLoaders(
+		Collection<BeanBuilderLoader> loaders = getBeanBuilderLoaders(
 				autoConfig, context);
-		if (!CollectionUtils.isEmpty(autoBeanServices)) {
-			BeanBuilderLoaderChain serviceChain = new IteratorBeanBuilderLoaderChain(
-					autoBeanServices, null);
+		if (!CollectionUtils.isEmpty(loaders)) {
+			BeanBuilderLoaderChain loaderChain = new IteratorBeanBuilderLoaderChain(
+					loaders, null);
 			try {
-				return serviceChain.loading(context);
+				return loaderChain.loading(context);
 			} catch (Exception e) {
 				throw new BeansException(context.getTargetClass().getName(), e);
 			}
@@ -78,13 +78,7 @@ public final class BeanBuilderLoaderUtils {
 				continue;
 			}
 
-			Class<?> clz = null;
-			try {
-				clz = ClassUtils.forName(name);
-			} catch (ClassNotFoundException e) {
-			} catch (NoClassDefFoundError e) {
-			}
-
+			Class<?> clz = ClassUtils.forNameNullable(name);
 			if (clz == null) {
 				continue;
 			}

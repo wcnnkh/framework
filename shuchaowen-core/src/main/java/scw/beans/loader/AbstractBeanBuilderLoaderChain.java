@@ -11,12 +11,12 @@ public abstract class AbstractBeanBuilderLoaderChain implements
 	}
 
 	public final BeanBuilder loading(LoaderContext context) throws Exception {
-		BeanBuilderLoader autoBeanService = getNext(context);
-		if (autoBeanService == null) {
+		BeanBuilderLoader loader = getNext(context);
+		if (loader == null) {
 			return chain == null ? null : chain.loading(context);
 		}
 
-		return autoBeanService.loading(context, this);
+		return loader.loading(context, this);
 	}
 
 	protected abstract BeanBuilderLoader getNext(LoaderContext context);
