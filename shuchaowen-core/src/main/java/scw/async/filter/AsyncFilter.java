@@ -50,6 +50,7 @@ public final class AsyncFilter implements Filter {
 				.getInstance(async.service());
 		AsyncRunnableMethod asyncRunnableMethod = asyncService.create(async,
 				context);
+		startAsync();
 		try {
 			asyncService.service(asyncRunnableMethod);
 		} finally{

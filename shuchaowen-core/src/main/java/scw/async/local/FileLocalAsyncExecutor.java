@@ -11,6 +11,7 @@ import scw.beans.BeanFactory;
 import scw.core.utils.ClassUtils;
 import scw.io.ObjectFileManager;
 import scw.io.ObjectFileManager.ObjectInfo;
+import scw.lang.NestedExceptionUtils;
 
 public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
@@ -80,7 +81,7 @@ public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {
 				objectFileManager.delete(index);
 			} catch (Throwable e) {
 				retry();
-				logger.error(e, "execute error retry soon [{}]", asyncRunnable);
+				logger.error(NestedExceptionUtils.getRootCause(e), "execute error retry soon [{}]", asyncRunnable);
 			}
 		}
 
