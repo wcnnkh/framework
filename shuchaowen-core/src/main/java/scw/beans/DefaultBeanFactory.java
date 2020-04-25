@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +45,6 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	protected volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
-	private volatile HashSet<String> notFoundSet = new HashSet<String>();
 	protected final MultiPropertyFactory propertyFactory = new MultiPropertyFactory();
 	private final LinkedList<BeanFactoryLifeCycle> beanFactoryLifeCycles = new LinkedList<BeanFactoryLifeCycle>();
 	protected final LinkedList<String> filterNameList = new LinkedList<String>();
@@ -73,7 +71,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	public final BeanDefinition getDefinition(String name) {
 		BeanDefinition beanDefinition = getDefinitionByCache(name);
 		if (beanDefinition == null) {
-			if (notFoundSet.contains(name)) {
+			Class<?> clazz = ClassUtils.forNameNullable(name);
+			if (clazz == null) {
 				return null;
 			}
 
@@ -81,43 +80,21 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 				synchronized (nameMappingMap) {
 					beanDefinition = getDefinitionByCache(name);
 					if (beanDefinition == null) {
-						beanDefinition = autoCreateBeanDefinition(name);
-						if (beanDefinition != null) {
-							addBeanDefinition(beanDefinition, true);
+						BeanBuilder beanBuilder = BeanUtils.loading(
+								new LoaderContext(clazz, this,
+										getPropertyFactory(), null), null);
+						if (beanBuilder == null) {
+							return null;
 						}
+
+						beanDefinition = new DefaultBeanDefinition(this,
+								propertyFactory, clazz, beanBuilder);
+						addBeanDefinition(beanDefinition, true);
 					}
 				}
 			}
 		}
-
-		if (beanDefinition == null) {
-			if (!notFoundSet.contains(name)) {
-				synchronized (notFoundSet) {
-					notFoundSet.add(name);
-				}
-			}
-		}
 		return beanDefinition;
-	}
-
-	protected BeanDefinition autoCreateBeanDefinition(String name) {
-		String n = nameMappingMap.get(name);
-		if (n == null) {
-			n = name;
-		}
-
-		Class<?> clz = ClassUtils.forNameNullable(n);
-		if (clz == null) {
-			return null;
-		}
-
-		BeanBuilder beanBuilder = BeanUtils.loading(new LoaderContext(clz,
-				this, getPropertyFactory(), null), null);
-		if (beanBuilder != null) {
-			return new DefaultBeanDefinition(this, propertyFactory, clz,
-					beanBuilder);
-		}
-		return null;
 	}
 
 	public BeanDefinition getDefinition(Class<?> clazz) {
