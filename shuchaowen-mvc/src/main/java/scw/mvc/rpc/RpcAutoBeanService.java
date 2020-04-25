@@ -2,8 +2,8 @@ package scw.mvc.rpc;
 
 import java.util.Arrays;
 
-import scw.beans.BeanBuilder;
-import scw.beans.ProxyBeanBuilder;
+import scw.beans.builder.BeanBuilder;
+import scw.beans.builder.ProxyBeanBuilder;
 import scw.beans.loader.BeanBuilderLoader;
 import scw.beans.loader.BeanBuilderLoaderChain;
 import scw.beans.loader.LoaderContext;

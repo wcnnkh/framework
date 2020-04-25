@@ -8,8 +8,8 @@ import java.util.Collections;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.ConstructorBeanBuilder;
 import scw.beans.BeanFactory;
+import scw.beans.builder.ConstructorBeanBuilder;
 import scw.core.instance.AutoConstructorBuilder;
 import scw.core.instance.ConstructorBuilder;
 import scw.core.parameter.ParameterUtils;

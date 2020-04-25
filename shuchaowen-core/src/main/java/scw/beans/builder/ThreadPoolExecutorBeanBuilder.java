@@ -1,9 +1,10 @@
-package scw.beans;
+package scw.beans.builder;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import scw.beans.BeanFactory;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.util.value.property.PropertyFactory;

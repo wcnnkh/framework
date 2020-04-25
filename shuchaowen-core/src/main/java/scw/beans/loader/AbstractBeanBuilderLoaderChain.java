@@ -1,6 +1,6 @@
 package scw.beans.loader;
 
-import scw.beans.BeanBuilder;
+import scw.beans.builder.BeanBuilder;
 
 public abstract class AbstractBeanBuilderLoaderChain implements
 		BeanBuilderLoaderChain {

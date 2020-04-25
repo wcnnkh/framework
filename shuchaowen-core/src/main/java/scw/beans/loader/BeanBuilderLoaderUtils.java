@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import scw.beans.BeanBuilder;
 import scw.beans.BeansException;
 import scw.beans.annotation.AutoImpl;
+import scw.beans.builder.BeanBuilder;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;

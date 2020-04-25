@@ -1,8 +1,9 @@
-package scw.beans;
+package scw.beans.builder;
 
 import java.util.Collection;
 
 import scw.aop.FilterChain;
+import scw.beans.BeanFactory;
 import scw.beans.loader.LoaderContext;
 import scw.util.value.property.PropertyFactory;
 

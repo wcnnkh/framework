@@ -3,10 +3,10 @@ package scw.beans.service;
 import java.util.Collection;
 import java.util.HashSet;
 
-import scw.beans.AutoBeanBuilder;
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
 import scw.beans.annotation.Service;
+import scw.beans.builder.AutoBeanBuilder;
 import scw.core.Init;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;

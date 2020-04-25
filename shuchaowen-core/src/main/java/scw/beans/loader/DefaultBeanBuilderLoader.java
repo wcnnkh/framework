@@ -7,12 +7,12 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 
 import scw.aop.Filter;
-import scw.beans.AutoBeanBuilder;
-import scw.beans.BeanBuilder;
-import scw.beans.ProxyBeanBuilder;
-import scw.beans.ThreadPoolExecutorBeanBuilder;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
+import scw.beans.builder.AutoBeanBuilder;
+import scw.beans.builder.BeanBuilder;
+import scw.beans.builder.ProxyBeanBuilder;
+import scw.beans.builder.ThreadPoolExecutorBeanBuilder;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
@@ -25,7 +25,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 			.getLogger(DefaultBeanBuilderLoader.class);
 
 	private BeanBuilder defaultLoading(LoaderContext context,
-			BeanBuilderLoaderChain serviceChain) throws Exception {
+			BeanBuilderLoaderChain loaderChain) throws Exception {
 		if (context.getTargetClass() == ExecutorService.class) {
 			return new ThreadPoolExecutorBeanBuilder(context.getBeanFactory(),
 					context.getPropertyFactory());
@@ -72,7 +72,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 			BeanBuilderLoaderChain autoBeanServiceChain = new NextAutoBeanServiceChain(
 					InstanceUtils.getConfigurationClassList(
 							BeanBuilderLoader.class,
-							context.getPropertyFactory()), serviceChain);
+							context.getPropertyFactory()), loaderChain);
 			return autoBeanServiceChain.loading(context);
 		}
 

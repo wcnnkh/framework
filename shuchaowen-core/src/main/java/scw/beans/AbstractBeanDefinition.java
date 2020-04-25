@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import scw.beans.annotation.Bean;
+import scw.beans.builder.BeanBuilder;
 import scw.core.utils.StringUtils;
 import scw.util.value.property.PropertyFactory;
 
