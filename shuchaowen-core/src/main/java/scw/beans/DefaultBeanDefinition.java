@@ -1,5 +1,6 @@
 package scw.beans;
 
+import scw.beans.builder.BeanBuilder;
 import scw.util.value.property.PropertyFactory;
 
 public class DefaultBeanDefinition extends AbstractBeanDefinition {

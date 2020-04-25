@@ -29,8 +29,10 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 		if (getWorkPath() == null) {
 			setWorkPath(getDefaultWorkPath());
 		}
-
-		loadProperties(new ResourceOperations(this), getValue("scw.properties.private", String.class, "/private.properties"));
+		
+		ResourceOperations operations = new ResourceOperations(this);
+		loadProperties(operations, "global.properties");
+		loadProperties(operations, getValue("scw.properties.private", String.class, "/private.properties"));
 	}
 
 	public Value get(String key) {

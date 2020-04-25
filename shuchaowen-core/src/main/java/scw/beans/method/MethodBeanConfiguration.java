@@ -25,8 +25,8 @@ public class MethodBeanConfiguration extends AbstractBeanConfiguration {
 				BeanUtils.getScanAnnotationPackageName(),
 				Constants.SYSTEM_PACKAGE_NAME))) {
 			if (!ReflectionUtils.isPresent(clz)) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("not support class:{}", clz);
+				if (logger.isTraceEnabled()) {
+					logger.trace("not support class:{}", clz);
 				}
 				continue;
 			}

@@ -52,7 +52,7 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 				return ignoreResult.getData();
 			}
 
-			Context context = new Context(obj, targetClass, method, args);
+			ProxyContext context = new ProxyContext(obj, targetClass, method, args, null);
 			Invoker invoker = new CglibInvoker(proxy, obj);
 			return filterChain.doFilter(invoker, context);
 		}

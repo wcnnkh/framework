@@ -3,9 +3,6 @@ package scw.aop;
 import java.util.Collection;
 import java.util.Collections;
 
-import scw.aop.Context;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
 import scw.core.instance.NoArgsInstanceFactory;
 
 public final class InstanceFactoryFilterChain implements FilterChain {
@@ -27,7 +24,7 @@ public final class InstanceFactoryFilterChain implements FilterChain {
 		this.filterChain = filterChain;
 	}
 
-	public Object doFilter(Invoker invoker, Context context) throws Throwable {
+	public Object doFilter(Invoker invoker, ProxyContext context) throws Throwable {
 		InstanceFactoryIteratorFilterChain chain = new InstanceFactoryIteratorFilterChain(
 				instanceFactory, filterNames, filterChain);
 		return chain.doFilter(invoker, context);

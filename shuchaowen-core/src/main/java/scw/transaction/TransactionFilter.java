@@ -1,9 +1,9 @@
 package scw.transaction;
 
-import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.aop.ProxyContext;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.logger.Logger;
@@ -28,7 +28,7 @@ public final class TransactionFilter implements Filter {
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	private Object defaultTransaction(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+	private Object defaultTransaction(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
 		if (TransactionManager.hasTransaction()) {
 			return result(invoker, context, filterChain);
 		}
@@ -36,7 +36,7 @@ public final class TransactionFilter implements Filter {
 		return transaction(invoker, context, filterChain, transactionDefinition);
 	}
 
-	private Object transaction(Invoker invoker, Context context, FilterChain filterChain,
+	private Object transaction(Invoker invoker, ProxyContext context, FilterChain filterChain,
 			TransactionDefinition transactionDefinition) throws Throwable {
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
 		Object v;
@@ -50,7 +50,7 @@ public final class TransactionFilter implements Filter {
 		}
 	}
 
-	private Object result(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+	private Object result(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
 		Object rtn = filterChain.doFilter(invoker, context);
 		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
 			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
@@ -64,7 +64,7 @@ public final class TransactionFilter implements Filter {
 		return rtn;
 	}
 
-	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
 		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, context.getTargetClass(),
 				context.getMethod());
 		if (tx == null) {

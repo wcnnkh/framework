@@ -4,10 +4,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 
-import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.aop.ProxyContext;
 import scw.core.instance.InstanceFactory;
 import scw.mvc.rpc.annotation.MessageConvert;
 import scw.net.NetworkUtils;
@@ -63,7 +63,7 @@ public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 		return converters;
 	}
 
-	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
 		if (Modifier.isAbstract(context.getMethod().getModifiers())
 				|| Modifier.isInterface(context.getMethod().getModifiers())) {
 			ClientHttpRequest request = httpRpcRequestFactory.getHttpRequest(context.getTargetClass(),

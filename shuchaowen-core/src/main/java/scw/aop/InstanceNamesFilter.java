@@ -2,10 +2,6 @@ package scw.aop;
 
 import java.util.Collection;
 
-import scw.aop.Context;
-import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
 import scw.core.instance.NoArgsInstanceFactory;
 
 public class InstanceNamesFilter implements Filter {
@@ -18,7 +14,7 @@ public class InstanceNamesFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(Invoker invoker, Context context,
+	public Object doFilter(Invoker invoker, ProxyContext context,
 			FilterChain filterChain) throws Throwable {
 		if (filterNames == null || filterNames.isEmpty()) {
 			return filterChain.doFilter(invoker, context);

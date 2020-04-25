@@ -1,6 +1,5 @@
 package scw.data.memcached.x;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,28 +7,21 @@ import java.util.Map.Entry;
 
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
-import scw.core.Destroy;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.data.memcached.Memcached;
-import scw.data.memcached.MemcachedUtils;
 
-public final class XMemcached implements Memcached, Destroy{
+@Configuration(order=Integer.MIN_VALUE, value=Memcached.class)
+public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
 	private final CASOperations casOperations;
 	private volatile boolean isSupportTouch = true;// 是否支持touch协议
 
-	public XMemcached(XMemcachedClientConfiguration configuration) throws Exception {
-		this.memcachedClient = configuration.configuration();
+	public XMemcached(MemcachedClient memcachedClient) {
+		this.memcachedClient = memcachedClient;
 		this.casOperations = new XMemcachedCASOperations(memcachedClient);
-		if (MemcachedUtils.startingFlushAll()) {
-			memcachedClient.flushAll();
-		}
-	}
-
-	public XMemcached(String hosts) throws Exception {
-		this(new DefaultXMemcachedClientConfiguration(hosts));
 	}
 
 	public <T> T get(String key) {
@@ -237,7 +229,8 @@ public final class XMemcached implements Memcached, Destroy{
 
 	public boolean delete(String key, long cas) {
 		try {
-			return memcachedClient.delete(key, cas, memcachedClient.getOpTimeout());
+			return memcachedClient.delete(key, cas,
+					memcachedClient.getOpTimeout());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -253,7 +246,8 @@ public final class XMemcached implements Memcached, Destroy{
 
 	public long incr(String key, long delta, long initValue, int exp) {
 		try {
-			return memcachedClient.incr(key, delta, initValue, memcachedClient.getOpTimeout(), exp);
+			return memcachedClient.incr(key, delta, initValue,
+					memcachedClient.getOpTimeout(), exp);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -261,17 +255,10 @@ public final class XMemcached implements Memcached, Destroy{
 
 	public long decr(String key, long delta, long initValue, int exp) {
 		try {
-			return memcachedClient.decr(key, delta, initValue, memcachedClient.getOpTimeout(), exp);
+			return memcachedClient.decr(key, delta, initValue,
+					memcachedClient.getOpTimeout(), exp);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}
-	}
-
-	public void destroy() {
-		try {
-			memcachedClient.shutdown();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

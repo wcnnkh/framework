@@ -3,10 +3,10 @@ package scw.net.rpc.simple.http;
 import java.lang.reflect.Modifier;
 import java.net.URI;
 
-import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.aop.ProxyContext;
 import scw.io.Bytes;
 import scw.io.Serializer;
 import scw.net.MimeTypeUtils;
@@ -31,7 +31,7 @@ public class SimpleHttpObjectRpcServiceFilter extends HttpAccessor implements Fi
 		this.host = host;
 	}
 
-	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
 		if (!Modifier.isAbstract(context.getMethod().getModifiers())) {
 			return filterChain.doFilter(invoker, context);
 		}

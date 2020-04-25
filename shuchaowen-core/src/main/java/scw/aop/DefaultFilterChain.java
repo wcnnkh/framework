@@ -3,11 +3,6 @@ package scw.aop;
 import java.util.Collection;
 import java.util.Collections;
 
-import scw.aop.Context;
-import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
-
 public final class DefaultFilterChain implements FilterChain{
 	private final FilterChain filterChain;
 	private final Collection<? extends Filter> filters;
@@ -22,7 +17,7 @@ public final class DefaultFilterChain implements FilterChain{
 		this.filterChain = filterChain;
 	}
 	
-	public Object doFilter(Invoker invoker, Context context) throws Throwable {
+	public Object doFilter(Invoker invoker, ProxyContext context) throws Throwable {
 		DefaultIteratorFilterChain chain = new DefaultIteratorFilterChain(filters, filterChain);
 		return chain.doFilter(invoker, context);
 	}

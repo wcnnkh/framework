@@ -2,34 +2,35 @@ package scw.mvc.rpc;
 
 import java.util.Arrays;
 
-import scw.beans.BeanBuilder;
-import scw.beans.BeanFactory;
-import scw.beans.ProxyBeanBuilder;
-import scw.beans.auto.AutoBeanService;
-import scw.beans.auto.AutoBeanServiceChain;
+import scw.beans.builder.BeanBuilder;
+import scw.beans.builder.ProxyBeanBuilder;
+import scw.beans.loader.BeanBuilderLoader;
+import scw.beans.loader.BeanBuilderLoaderChain;
+import scw.beans.loader.LoaderContext;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.Host;
 import scw.mvc.rpc.http.HttpRestfulRpcProxy;
-import scw.util.value.property.PropertyFactory;
 
-@Configuration
-public final class RpcAutoBeanService implements AutoBeanService {
+@Configuration(order=Integer.MIN_VALUE)
+public final class RpcAutoBeanService implements BeanBuilderLoader {
 
-	public BeanBuilder doService(Class<?> clazz, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			AutoBeanServiceChain serviceChain) throws Exception {
+	public BeanBuilder loading(LoaderContext context,
+			BeanBuilderLoaderChain serviceChain) {
 		// Host注解
-		Host host = clazz.getAnnotation(Host.class);
+		Host host = context.getTargetClass().getAnnotation(Host.class);
 		if (host != null) {
-			String proxyName = propertyFactory.getString("rpc.http.host.proxy");
+			String proxyName = context.getPropertyFactory().getString(
+					"rpc.http.host.proxy");
 			if (StringUtils.isEmpty(proxyName)) {
 				proxyName = HttpRestfulRpcProxy.class.getName();
 			}
 
-			if (beanFactory.isInstance(proxyName)) {
-				return new ProxyBeanBuilder(beanFactory, propertyFactory, clazz, Arrays.asList(proxyName));
+			proxyName = context.getPropertyFactory().format(proxyName, true);
+			if (context.getBeanFactory().isInstance(proxyName)) {
+				return new ProxyBeanBuilder(context, Arrays.asList(proxyName));
 			}
 		}
-		return serviceChain.service(clazz, beanFactory, propertyFactory);
+		return serviceChain.loading(context);
 	}
 }

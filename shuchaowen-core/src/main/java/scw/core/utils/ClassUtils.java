@@ -695,6 +695,8 @@ public final class ClassUtils {
 			clazz = forName(name);
 		} catch (ClassNotFoundException e) {
 			// ignore
+		} catch (NoClassDefFoundError e) {
+			// ignore
 		}
 		return clazz;
 	}

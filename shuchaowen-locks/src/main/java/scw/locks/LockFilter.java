@@ -1,9 +1,9 @@
 package scw.locks;
 
-import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.aop.ProxyContext;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.core.parameter.ParameterDescriptor;
@@ -30,7 +30,7 @@ public final class LockFilter implements Filter {
 		this.lockFactory = lockFactory;
 	}
 
-	public Object doFilter(Invoker invoker, Context context,
+	public Object doFilter(Invoker invoker, ProxyContext context,
 			FilterChain filterChain) throws Throwable {
 		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, context.getMethod(), context.getTargetClass());
 		if (lockConfig == null) {

@@ -7,10 +7,10 @@ import org.w3c.dom.NodeList;
 
 import scw.aop.DefaultFilterChain;
 import scw.aop.Filter;
-import scw.beans.BeanBuilder;
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
-import scw.beans.ProxyBeanBuilder;
+import scw.beans.builder.BeanBuilder;
+import scw.beans.builder.ProxyBeanBuilder;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.annotation.AnnotationUtils;

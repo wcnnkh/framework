@@ -49,7 +49,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.KeyValuePair;
-import scw.util.SimpleKeyValuePair;
 
 /**
  * General utility methods for working with annotations, handling
@@ -2811,22 +2810,22 @@ public abstract class AnnotationUtils {
 	public static KeyValuePair<scw.net.http.HttpMethod, String> getHttpMethodAnnotation(AnnotatedElement annotatedElement) {
 		GET get = annotatedElement.getAnnotation(GET.class);
 		if (get != null) {
-			return new SimpleKeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.GET, get.value());
+			return new KeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.GET, get.value());
 		}
 
 		POST post = annotatedElement.getAnnotation(POST.class);
 		if (post != null) {
-			return new SimpleKeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.POST, post.value());
+			return new KeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.POST, post.value());
 		}
 
 		DELETE delete = annotatedElement.getAnnotation(DELETE.class);
 		if (delete != null) {
-			return new SimpleKeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.DELETE, delete.value());
+			return new KeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.DELETE, delete.value());
 		}
 
 		PUT put = annotatedElement.getAnnotation(PUT.class);
 		if (put != null) {
-			return new SimpleKeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.PUT, put.value());
+			return new KeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.PUT, put.value());
 		}
 
 		return null;
