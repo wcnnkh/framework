@@ -39,14 +39,6 @@ public final class ProxyUtils {
 				+ Integer.toHexString(ignoreHashCode(obj));
 	}
 
-	/**
-	 * 如果返回空说明此方法不能忽略
-	 * 
-	 * @param obj
-	 * @param method
-	 * @param args
-	 * @return
-	 */
 	public static SimpleResult<Object> ignoreMethod(Object obj, Method method,
 			Object[] args) {
 		if (args == null || args.length == 0) {
@@ -95,7 +87,7 @@ public final class ProxyUtils {
 			this.ignoreMethods = ignoreMethods;
 		}
 
-		public Object doFilter(Invoker invoker, Context context,
+		public Object doFilter(Invoker invoker, ProxyContext context,
 				FilterChain filterChain) throws Throwable {
 			if (ArrayUtils.isEmpty(context.getArgs())
 					&& context.getMethod().equals("getIgnoreMethodTarget")) {

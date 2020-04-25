@@ -153,7 +153,7 @@ public abstract class Aop implements ProxyAdapter {
 				}
 			}
 
-			Context context = new Context(bean, getMethodHolder()
+			ProxyContext context = new ProxyContext(bean, getMethodHolder()
 					.getBelongClass(), getMethod(), args);
 			return filterChain.doFilter(getInvoker(bean), context);
 		}
@@ -167,7 +167,7 @@ public abstract class Aop implements ProxyAdapter {
 			this.instance = instance;
 		}
 
-		public Object doFilter(Invoker invoker, Context context,
+		public Object doFilter(Invoker invoker, ProxyContext context,
 				FilterChain filterChain) throws Throwable {
 			Invoker nextInvoker;
 			if (Modifier.isStatic(context.getMethod().getModifiers())) {

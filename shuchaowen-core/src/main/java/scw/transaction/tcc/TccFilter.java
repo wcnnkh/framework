@@ -1,9 +1,9 @@
 package scw.transaction.tcc;
 
-import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.aop.ProxyContext;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
@@ -19,7 +19,7 @@ public class TccFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
 		final Tcc tcc = context.getMethod().getAnnotation(Tcc.class);
 		if (tcc == null) {
 			return filterChain.doFilter(invoker, context);

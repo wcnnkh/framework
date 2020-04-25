@@ -12,7 +12,7 @@ public final class IbatisUtils {
 	private IbatisUtils() {
 	};
 
-	public SqlSession getTransactionSqlSession(
+	public static SqlSession getTransactionSqlSession(
 			SqlSessionFactory sqlSessionFactory) {
 		Transaction transaction = TransactionManager.getCurrentTransaction();
 		if (transaction == null) {

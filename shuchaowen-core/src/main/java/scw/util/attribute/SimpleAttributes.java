@@ -15,7 +15,7 @@ public class SimpleAttributes<K, V> implements Attributes<K, V>, Serializable {
 	}
 
 	protected Map<K, V> createAttributeMap() {
-		return new LinkedHashMap<K, V>();
+		return new LinkedHashMap<K, V>(4);
 	}
 
 	@SuppressWarnings("unchecked")

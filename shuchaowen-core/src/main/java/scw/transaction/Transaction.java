@@ -80,7 +80,7 @@ public final class Transaction {
 		}
 
 		if (resourceMap == null) {
-			resourceMap = new HashMap<Object, Object>(8, 1);
+			resourceMap = new HashMap<Object, Object>(4);
 		} else {
 			if (resourceMap.containsKey(name)) {
 				throw new AlreadyExistsException("已经存在此事务资源了，不可以重复绑定：" + name);

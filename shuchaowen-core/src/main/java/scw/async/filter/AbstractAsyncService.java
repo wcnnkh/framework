@@ -1,6 +1,6 @@
 package scw.async.filter;
 
-import scw.aop.Context;
+import scw.aop.ProxyContext;
 import scw.async.AsyncExecutor;
 import scw.beans.BeanFactory;
 import scw.core.reflect.SerializableMethodHolder;
@@ -17,7 +17,7 @@ public abstract class AbstractAsyncService implements AsyncService {
 		this.beanFactory = beanFactory;
 	}
 
-	public AsyncRunnableMethod create(Async async, Context context) {
+	public AsyncRunnableMethod create(Async async, ProxyContext context) {
 		String beanName = async.beanName();
 		if (StringUtils.isEmpty(beanName)) {
 			beanName = context.getTargetClass().getName();

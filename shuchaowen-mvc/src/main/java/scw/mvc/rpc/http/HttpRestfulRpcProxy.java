@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.aop.ProxyContext;
 import scw.core.Constants;
 import scw.core.instance.InstanceFactory;
 import scw.core.parameter.annotation.ParameterName;
@@ -50,7 +50,7 @@ public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 		this.httpRpcProxy.add(new AllMessageConverter());
 	}
 
-	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
 		return httpRpcProxy.doFilter(invoker, context, filterChain);
 	}
 }

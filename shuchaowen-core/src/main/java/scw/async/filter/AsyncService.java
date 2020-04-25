@@ -1,9 +1,9 @@
 package scw.async.filter;
 
-import scw.aop.Context;
+import scw.aop.ProxyContext;
 
 public interface AsyncService {
-	AsyncRunnableMethod create(Async async, Context context) throws Exception;
+	AsyncRunnableMethod create(Async async, ProxyContext context) throws Exception;
 
 	void service(AsyncRunnableMethod asyncRunnableMethod) throws Exception;
 }

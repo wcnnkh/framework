@@ -39,7 +39,7 @@ public final class HibernateUtils {
 		session.close();
 	}
 
-	public static Session getSession(SessionFactory sessionFactory) {
+	public static Session getTransactionSession(SessionFactory sessionFactory) {
 		Transaction transaction = TransactionManager.getCurrentTransaction();
 		if (transaction == null) {
 			return sessionFactory.openSession();

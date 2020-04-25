@@ -51,7 +51,7 @@ public class JdkProxyAdapter extends AbstractProxyAdapter {
 				return ignoreResult.getData();
 			}
 
-			Context context = new Context(proxy, targetClass, method, args);
+			ProxyContext context = new ProxyContext(proxy, targetClass, method, args);
 			Invoker invoker = new EmptyInvoker(method);
 			return filterChain.doFilter(invoker, context);
 		}

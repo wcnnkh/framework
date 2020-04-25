@@ -14,15 +14,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.aop.Aop;
-import scw.aop.Context;
 import scw.aop.DefaultAop;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.InstanceFactoryFilterChain;
 import scw.aop.Invoker;
+import scw.aop.ProxyContext;
 import scw.aop.ProxyUtils;
 import scw.beans.annotation.AutoImpl;
-import scw.beans.auto.AutoBeanUtils;
+import scw.beans.loader.BeanBuilderLoaderUtils;
+import scw.beans.loader.LoaderContext;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
 import scw.core.Destroy;
@@ -54,7 +55,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 
 	public DefaultBeanFactory() {
 		propertyFactory.add(GlobalPropertyFactory.getInstance());
-		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
+		addInternalSingleton(BeanFactory.class, this,
+				InstanceFactory.class.getName(),
 				NoArgsInstanceFactory.class.getName());
 		addInternalSingleton(PropertyFactory.class, propertyFactory);
 	}
@@ -118,9 +120,13 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			}
 		}
 
-		BeanBuilder autoBean = AutoBeanUtils.autoBeanService(clz, autoImpl, this, getPropertyFactory());
+		LoaderContext context = new LoaderContext(clz, this,
+				getPropertyFactory());
+		BeanBuilder autoBean = BeanBuilderLoaderUtils.loading(context,
+				autoImpl);
 		if (autoBean != null) {
-			return new DefaultBeanDefinition(this, propertyFactory, clz, autoBean);
+			return new DefaultBeanDefinition(this, propertyFactory, clz,
+					autoBean);
 		}
 		return null;
 	}
@@ -178,14 +184,18 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return (T) object;
 	}
 
-	protected void init(long createTime, BeanDefinition definition, Object object) throws Exception {
+	protected void init(long createTime, BeanDefinition definition,
+			Object object) throws Exception {
 		if (definition.isSingleton()) {
 			singletonMap.put(definition.getId(), object);
 		}
 		definition.init(object);
-		
+
 		if (logger.isDebugEnabled()) {
-			logger.debug("create instance [{}] by definition [{}] use time {}ms", object, definition.getId(), System.currentTimeMillis() - createTime);
+			logger.debug(
+					"create instance [{}] by definition [{}] use time {}ms",
+					object, definition.getId(), System.currentTimeMillis()
+							- createTime);
 		}
 	}
 
@@ -215,7 +225,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			return false;
 		}
 
-		return singletonMap.containsKey(definition.getId()) || definition.isInstance();
+		return singletonMap.containsKey(definition.getId())
+				|| definition.isInstance();
 	}
 
 	public boolean isInstance(Class<?> clazz) {
@@ -267,7 +278,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes,
+			Object... params) {
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
 			return (T) obj;
@@ -294,7 +306,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return (T) obj;
 	}
 
-	private Object createInternal(BeanDefinition definition, Class<?>[] parameterTypes, Object... params) {
+	private Object createInternal(BeanDefinition definition,
+			Class<?>[] parameterTypes, Object... params) {
 		long t = System.currentTimeMillis();
 		Object obj;
 		try {
@@ -306,28 +319,34 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return obj;
 	}
 
-	public <T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(Class<? extends T> type,
+			Class<?>[] parameterTypes, Object... params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
 
-	protected void addBeanDefinition(BeanDefinition beanDefinition, boolean throwExistError) {
+	protected void addBeanDefinition(BeanDefinition beanDefinition,
+			boolean throwExistError) {
 		BeanDefinition definition = getDefinitionByCache(beanDefinition.getId());
 		if (definition != null) {
-			logger.warn("Already exist id:{}, definition:{}", beanDefinition.getId(),
+			logger.warn("Already exist id:{}, definition:{}",
+					beanDefinition.getId(),
 					JSONUtils.toJSONString(beanDefinition));
 			if (throwExistError) {
-				throw new AlreadyExistsException("存在相同ID的映射:" + JSONUtils.toJSONString(beanDefinition));
+				throw new AlreadyExistsException("存在相同ID的映射:"
+						+ JSONUtils.toJSONString(beanDefinition));
 			}
 
 			return;
 		}
 
-		if (addBeanNameMapping(beanDefinition.getNames(), beanDefinition.getId(), throwExistError)) {
+		if (addBeanNameMapping(beanDefinition.getNames(),
+				beanDefinition.getId(), throwExistError)) {
 			beanMap.put(beanDefinition.getId(), beanDefinition);
 		}
 	}
 
-	protected boolean addBeanNameMapping(Collection<String> names, String id, boolean throwExistError) {
+	protected boolean addBeanNameMapping(Collection<String> names, String id,
+			boolean throwExistError) {
 		if (CollectionUtils.isEmpty(names)) {
 			return true;
 		}
@@ -335,9 +354,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		for (String name : names) {
 			BeanDefinition definition = getDefinitionByCache(name);
 			if (definition != null) {
-				logger.warn("Already exist name:{}, definition:{}", name, JSONUtils.toJSONString(definition));
+				logger.warn("Already exist name:{}, definition:{}", name,
+						JSONUtils.toJSONString(definition));
 				if (throwExistError) {
-					throw new AlreadyExistsException("存在相同名称的映射:" + JSONUtils.toJSONString(definition));
+					throw new AlreadyExistsException("存在相同名称的映射:"
+							+ JSONUtils.toJSONString(definition));
 				}
 				return false;
 			}
@@ -349,18 +370,22 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return true;
 	}
 
-	protected void addBeanFactoryLifeCycle(BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
+	protected void addBeanFactoryLifeCycle(
+			BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
 		beanFactoryLifeCycles.add(beanFactoryLifeCycle);
 		beanFactoryLifeCycle.init(this, propertyFactory);
 	}
 
-	protected void beanFactoryLifeCycleDestroy(BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
+	protected void beanFactoryLifeCycleDestroy(
+			BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
 		beanFactoryLifeCycle.destroy(this, propertyFactory);
 	}
 
-	protected void addBeanConfiguration(BeanConfiguration beanConfiguration) throws Exception {
+	protected void addBeanConfiguration(BeanConfiguration beanConfiguration)
+			throws Exception {
 		beanConfiguration.init(this, propertyFactory);
-		Collection<BeanDefinition> beanDefinitions = beanConfiguration.getBeans();
+		Collection<BeanDefinition> beanDefinitions = beanConfiguration
+				.getBeans();
 		if (!CollectionUtils.isEmpty(beanDefinitions)) {
 			for (BeanDefinition beanDefinition : beanDefinitions) {
 				synchronized (beanMap) {
@@ -372,9 +397,12 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		}
 	}
 
-	protected <T> void addInternalSingleton(Class<? extends T> type, T instance, String... names) {
+	protected <T> void addInternalSingleton(Class<? extends T> type,
+			T instance, String... names) {
 		singletonMap.put(type.getName(), instance);
-		addBeanDefinition(new InternalBeanDefinition(instance, type, Arrays.asList(names)), false);
+		addBeanDefinition(
+				new InternalBeanDefinition(instance, type, Arrays.asList(names)),
+				false);
 	}
 
 	public Aop getAop() {
@@ -388,22 +416,25 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
-		propertyFactory.addAll(InstanceUtils.getConfigurationList(PropertyFactory.class, this, getPropertyFactory()),
-				true);
+		propertyFactory.addAll(InstanceUtils.getConfigurationList(
+				PropertyFactory.class, this, getPropertyFactory()), true);
 
-		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
-				getPropertyFactory())) {
+		for (BeanConfiguration configuration : InstanceUtils
+				.getConfigurationList(BeanConfiguration.class, this,
+						getPropertyFactory())) {
 			addBeanConfiguration(configuration);
 		}
 
-		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class,
-				this, getPropertyFactory())) {
+		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils
+				.getConfigurationList(BeanFactoryLifeCycle.class, this,
+						getPropertyFactory())) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
 	}
 
 	public void destroy() throws Exception {
-		ListIterator<BeanFactoryLifeCycle> iterator = beanFactoryLifeCycles.listIterator(beanFactoryLifeCycles.size());
+		ListIterator<BeanFactoryLifeCycle> iterator = beanFactoryLifeCycles
+				.listIterator(beanFactoryLifeCycles.size());
 		while (iterator.hasPrevious()) {
 			beanFactoryLifeCycleDestroy(iterator.previous());
 		}
@@ -414,9 +445,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 				beanKeyList.add(entry.getKey());
 			}
 
-			ListIterator<String> keyIterator = beanKeyList.listIterator(beanKeyList.size());
+			ListIterator<String> keyIterator = beanKeyList
+					.listIterator(beanKeyList.size());
 			while (keyIterator.hasPrevious()) {
-				BeanDefinition beanDefinition = getDefinitionByCache(keyIterator.previous());
+				BeanDefinition beanDefinition = getDefinitionByCache(keyIterator
+						.previous());
 				if (beanDefinition == null) {
 					continue;
 				}
@@ -431,12 +464,14 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		}
 	}
 
-	protected static final class InternalBeanDefinition implements BeanDefinition {
+	protected static final class InternalBeanDefinition implements
+			BeanDefinition {
 		private final Object instance;
 		private final Class<?> targetClass;
 		private final Collection<String> names;
 
-		public InternalBeanDefinition(Object instance, Class<?> targetClass, Collection<String> names) {
+		public InternalBeanDefinition(Object instance, Class<?> targetClass,
+				Collection<String> names) {
 			this.instance = instance;
 			this.targetClass = targetClass;
 			this.names = names;
@@ -470,7 +505,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			throw new NotSupportedException(getId());
 		}
 
-		public Object create(Class<?>[] parameterTypes, Object... params) throws Exception {
+		public Object create(Class<?>[] parameterTypes, Object... params)
+				throws Exception {
 			throw new NotSupportedException(getId());
 		}
 
@@ -489,8 +525,10 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		}
 	}
 
-	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
-		InstanceFactoryFilterChain chain = new InstanceFactoryFilterChain(this, filterNameList, filterChain);
+	public Object doFilter(Invoker invoker, ProxyContext context,
+			FilterChain filterChain) throws Throwable {
+		InstanceFactoryFilterChain chain = new InstanceFactoryFilterChain(this,
+				filterNameList, filterChain);
 		return chain.doFilter(invoker, context);
 	}
 }

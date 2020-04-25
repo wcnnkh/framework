@@ -3,11 +3,6 @@ package scw.aop;
 import java.util.Collection;
 import java.util.Iterator;
 
-import scw.aop.Context;
-import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
-
 final class DefaultIteratorFilterChain extends AbstractIteratorFilterChain {
 	private Iterator<? extends Filter> iterator;
 
@@ -18,7 +13,7 @@ final class DefaultIteratorFilterChain extends AbstractIteratorFilterChain {
 	}
 
 	@Override
-	protected Filter getNextFilter(Invoker invoker, Context context)
+	protected Filter getNextFilter(Invoker invoker, ProxyContext context)
 			throws Throwable {
 		if (iterator.hasNext()) {
 			return iterator.next();

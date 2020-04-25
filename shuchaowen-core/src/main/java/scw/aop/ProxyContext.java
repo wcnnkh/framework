@@ -4,14 +4,14 @@ import java.lang.reflect.Method;
 
 import scw.util.attribute.SimpleAttributes;
 
-public class Context extends SimpleAttributes<String, Object> {
+public class ProxyContext extends SimpleAttributes<Object, Object> {
 	private static final long serialVersionUID = 1L;
 	private final Object proxy;
 	private final Class<?> targetClass;
 	private final Method method;
 	private Object[] args;
 
-	public Context(Object proxy, Class<?> targetClass, Method method, Object[] args) {
+	public ProxyContext(Object proxy, Class<?> targetClass, Method method, Object[] args) {
 		this.proxy = proxy;
 		this.targetClass = targetClass;
 		this.method = method;

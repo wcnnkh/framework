@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.beans.auto.AutoBeanService;
+import scw.beans.loader.BeanBuilderLoader;
 
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
@@ -30,7 +30,7 @@ public @interface AutoImpl {
 	 * 
 	 * @return
 	 */
-	public Class<? extends AutoBeanService>[] service() default {};
+	public Class<? extends BeanBuilderLoader>[] service() default {};
 
 	/**
 	 * 尝试寻找默认实现

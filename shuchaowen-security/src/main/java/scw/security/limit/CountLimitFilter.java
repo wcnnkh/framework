@@ -1,9 +1,9 @@
 package scw.security.limit;
 
-import scw.aop.Context;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
+import scw.aop.ProxyContext;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.annotation.Configuration;
@@ -26,7 +26,7 @@ public final class CountLimitFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(Invoker invoker, Context context, FilterChain filterChain) throws Throwable {
+	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
 		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
 				context.getMethod(), context.getTargetClass());
 		if (countLimitSecurity == null) {
