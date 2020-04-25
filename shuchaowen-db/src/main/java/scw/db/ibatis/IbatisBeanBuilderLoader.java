@@ -17,7 +17,7 @@ import scw.io.ResourceUtils;
 public class IbatisBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanBuilder loading(LoaderContext context,
-			BeanBuilderLoaderChain loaderChain) throws Exception {
+			BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == SqlSessionFactory.class) {
 			return new SqlSessionFactoryBeanBuilder(context);
 		}

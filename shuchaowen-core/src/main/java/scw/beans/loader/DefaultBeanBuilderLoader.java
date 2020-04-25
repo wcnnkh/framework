@@ -21,7 +21,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 			.getLogger(DefaultBeanBuilderLoader.class);
 
 	public BeanBuilder loading(LoaderContext context,
-			BeanBuilderLoaderChain loaderChain) throws Exception {
+			BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == ExecutorService.class) {
 			return new ThreadPoolExecutorBeanBuilder(context.getBeanFactory(),
 					context.getPropertyFactory());
@@ -35,7 +35,8 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 				logger.info("{} reference {}", context.getTargetClass()
 						.getName(), name);
 				return new AutoBeanBuilder(context.getBeanFactory(),
-						context.getPropertyFactory(), ClassUtils.forName(name));
+						context.getPropertyFactory(),
+						ClassUtils.forNameNullable(name));
 			} else {
 				int index = context.getTargetClass().getName().lastIndexOf(".");
 				name = index == -1 ? (context.getTargetClass().getName() + "Impl")
@@ -49,7 +50,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 							.getName(), name);
 					return new AutoBeanBuilder(context.getBeanFactory(),
 							context.getPropertyFactory(),
-							ClassUtils.forName(name));
+							ClassUtils.forNameNullable(name));
 				}
 			}
 		}
@@ -61,8 +62,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 				return new ProxyBeanBuilder(context, getProxyNames(proxy));
 			}
 		}
-
-		return new AutoBeanBuilder(context);
+		return loaderChain.loading(context);
 	}
 
 	public static LinkedList<String> getProxyNames(Proxy proxy) {

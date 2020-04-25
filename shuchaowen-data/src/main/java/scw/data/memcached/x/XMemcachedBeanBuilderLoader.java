@@ -23,7 +23,7 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 	private static final String HOST_NAME = "memcached.hosts";
 
 	public BeanBuilder loading(LoaderContext context,
-			BeanBuilderLoaderChain loaderChain) throws Exception {
+			BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == MemcachedClientBuilder.class) {
 			return loading(new LoaderContext(XMemcachedClientBuilder.class,
 					context), loaderChain);

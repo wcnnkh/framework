@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import scw.aop.Filter;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Bean;
+import scw.beans.builder.AutoBeanBuilder;
 import scw.beans.builder.BeanBuilder;
 import scw.beans.loader.BeanBuilderLoader;
 import scw.beans.loader.BeanBuilderLoaderChain;
@@ -166,16 +167,17 @@ public final class BeanUtils {
 			}
 		}
 
+		BeanBuilder beanBuilder = new AutoBeanBuilder(context);
+		if (beanBuilder.isInstance()) {
+			return beanBuilder;
+		}
+
 		Collection<BeanBuilderLoader> loaders = InstanceUtils
 				.getConfigurationList(BeanBuilderLoader.class,
 						context.getBeanFactory(), context.getPropertyFactory());
 		BeanBuilderLoaderChain loaderChain = new IteratorBeanBuilderLoaderChain(
 				loaders, chain);
-		try {
-			return loaderChain.loading(context);
-		} catch (Exception e) {
-			throw new BeansException(context.getTargetClass().getName(), e);
-		}
+		return loaderChain.loading(context);
 	}
 
 	private static Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig,

@@ -12,11 +12,11 @@ import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.Host;
 import scw.mvc.rpc.http.HttpRestfulRpcProxy;
 
-@Configuration
+@Configuration(order=Integer.MIN_VALUE)
 public final class RpcAutoBeanService implements BeanBuilderLoader {
 
 	public BeanBuilder loading(LoaderContext context,
-			BeanBuilderLoaderChain serviceChain) throws Exception {
+			BeanBuilderLoaderChain serviceChain) {
 		// Host注解
 		Host host = context.getTargetClass().getAnnotation(Host.class);
 		if (host != null) {

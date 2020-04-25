@@ -16,7 +16,7 @@ import scw.core.instance.annotation.Configuration;
 public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanBuilder loading(LoaderContext context,
-			BeanBuilderLoaderChain serviceChain) throws Exception {
+			BeanBuilderLoaderChain serviceChain) {
 		if (context.getTargetClass() == org.hibernate.cfg.Configuration.class) {
 			return new ConfigurationBeanBuilder(context);
 		} else if (context.getTargetClass() == SessionFactory.class) {
