@@ -1,7 +1,5 @@
 package scw.data.memcached.x;
 
-import java.util.Properties;
-
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
@@ -15,15 +13,12 @@ import scw.beans.loader.BeanBuilderLoaderChain;
 import scw.beans.loader.LoaderContext;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
-import scw.io.ResourceUtils;
 import scw.io.SerializerUtils;
 import scw.net.NetworkUtils;
 
 @Configuration(order = Integer.MIN_VALUE)
 @Bean(proxy = false)
 public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
-	private static final String HOST_NAME = "memcached.hosts";
-	private static final String DEFAULT_CONFIG = "memcached.properties";
 
 	public BeanBuilder loading(LoaderContext context,
 			BeanBuilderLoaderChain loaderChain) {
@@ -75,28 +70,16 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 		}
 
 		public Object create() throws Exception {
-			if (ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG)) {
-				return createByProperties(ResourceUtils
-						.getResourceOperations()
-						.getFormattedProperties(DEFAULT_CONFIG, propertyFactory));
-			}
-
-			String hosts = propertyFactory.getString(HOST_NAME);
+			String name = propertyFactory.getValue(
+					"memcached.hosts.config.name", String.class,
+					"memcached.hosts");
+			String hosts = propertyFactory.getString(name);
 			if (StringUtils.isEmpty(hosts)) {
 				hosts = "127.0.0.1:11211";
 			}
 
 			XMemcachedClientBuilder builder = new XMemcachedClientBuilder(
 					NetworkUtils.parseInetSocketAddressList(hosts));
-			builderDefault(builder);
-			return builder;
-		}
-
-		// 兼容旧版本
-		private XMemcachedClientBuilder createByProperties(Properties properties) {
-			XMemcachedClientBuilder builder = new XMemcachedClientBuilder(
-					NetworkUtils.parseInetSocketAddressList(properties
-							.getProperty("host")));
 			builderDefault(builder);
 			return builder;
 		}

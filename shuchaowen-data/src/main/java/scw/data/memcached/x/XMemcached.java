@@ -1,6 +1,5 @@
 package scw.data.memcached.x;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,13 +7,14 @@ import java.util.Map.Entry;
 
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
-import scw.core.Destroy;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.data.memcached.Memcached;
 
-public final class XMemcached implements Memcached, Destroy {
+@Configuration(order=Integer.MIN_VALUE, value=Memcached.class)
+public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
 	private final CASOperations casOperations;
 	private volatile boolean isSupportTouch = true;// 是否支持touch协议
@@ -259,14 +259,6 @@ public final class XMemcached implements Memcached, Destroy {
 					memcachedClient.getOpTimeout(), exp);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
-		}
-	}
-
-	public void destroy() {
-		try {
-			memcachedClient.shutdown();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

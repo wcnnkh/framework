@@ -20,6 +20,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
 import scw.io.ResourceUtils;
+import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.Value;
@@ -221,10 +222,9 @@ public final class InstanceUtils {
 			try {
 				boolean auto = isAuto(instanceFactory, propertyFactory, clazz,
 						parameterDescriptor, parameterFactory);
-				if (logger.isDebugEnabled()) {
-					logger.debug("{} parameter index {} matching: {}",
-							logFirstParameter, i, auto ? "success" : "fail");
-				}
+				LoggerUtils.logger(logger, auto ? Level.TRACE : Level.DEBUG,
+						"{} parameter index {} matching: {}",
+						logFirstParameter, i, auto ? "success" : "fail");
 				if (!auto) {
 					return false;
 				}

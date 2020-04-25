@@ -152,7 +152,7 @@ public final class BeanUtils {
 				for (Class<?> impl : impls) {
 					BeanBuilder beanBuilder = loading(new LoaderContext(impl,
 							context), chain);
-					if (beanBuilder != null) {
+					if (beanBuilder != null && beanBuilder.isInstance()) {
 						return beanBuilder;
 					}
 				}
@@ -163,7 +163,7 @@ public final class BeanUtils {
 				context.getTargetClass(), context.getPropertyFactory())) {
 			BeanBuilder beanBuilder = loading(new LoaderContext(impl, context),
 					chain);
-			if (beanBuilder != null) {
+			if (beanBuilder != null && beanBuilder.isInstance()) {
 				return beanBuilder;
 			}
 		}
