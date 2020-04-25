@@ -46,7 +46,6 @@ import scw.io.IOUtils;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
 import scw.util.KeyValuePair;
-import scw.util.SimpleKeyValuePair;
 import scw.util.ToMap;
 import scw.util.value.property.PropertyFactory;
 
@@ -240,7 +239,7 @@ public final class XMLUtils {
 
 					v = list == null ? n.getTextContent() : list;
 				}
-				return new SimpleKeyValuePair<String, Object>(n.getNodeName(), v);
+				return new KeyValuePair<String, Object>(n.getNodeName(), v);
 			}
 		});
 	}

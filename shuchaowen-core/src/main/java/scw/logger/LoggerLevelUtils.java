@@ -2,8 +2,8 @@ package scw.logger;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -13,7 +13,7 @@ import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
-import scw.util.SimpleKeyValuePair;
+import scw.util.comparator.CompareUtils;
 import scw.util.value.StringValue;
 import scw.util.value.property.NotSupportEnumerationPropertyFactory;
 import scw.util.value.property.PropertyFactory;
@@ -42,6 +42,9 @@ public class LoggerLevelUtils {
 		DEFAULT_LEVEL = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level
 				.valueOf(defaultLevel.toUpperCase());
 
+		reader(ResourceUtils.getResourceOperations().getFormattedProperties(
+				"/scw/logger/logger-level.properties", PROPERTY_FACTORY));
+
 		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance()
 				.getValue("scw.logger.level.config", String.class,
 						"/logger-level.properties");
@@ -50,34 +53,46 @@ public class LoggerLevelUtils {
 			FormatUtils.info(LoggerLevelUtils.class, "loading "
 					+ loggerEnablePropertiePath);
 			Properties properties = ResourceUtils.getResourceOperations()
-					.getFormattedProperties(loggerEnablePropertiePath);
-			for (Entry<Object, Object> entry : properties.entrySet()) {
-				Object key = entry.getKey();
-				if (key == null) {
-					continue;
-				}
+					.getFormattedProperties(loggerEnablePropertiePath,
+							PROPERTY_FACTORY);
+			reader(properties);
+		}
 
-				Object value = entry.getValue();
-				if (value == null) {
-					continue;
-				}
+		Comparator<KeyValuePair<String, Level>> comparator = new Comparator<KeyValuePair<String, Level>>() {
 
-				Level level = Level.valueOf(value.toString().toUpperCase());
-				if (level == null) {
-					continue;
-				}
-
-				LOGGER_LEVEL_LIST.add(new SimpleKeyValuePair<String, Level>(key
-						.toString(), level));
+			public int compare(KeyValuePair<String, Level> o1,
+					KeyValuePair<String, Level> o2) {
+				return CompareUtils.compare(o1.getKey().length(), o2.getKey()
+						.length(), false);
 			}
+		};
+		Collections.sort(LOGGER_LEVEL_LIST, comparator);
+	}
+
+	private static void reader(Properties properties) {
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			Object key = entry.getKey();
+			if (key == null) {
+				continue;
+			}
+
+			Object value = entry.getValue();
+			if (value == null) {
+				continue;
+			}
+
+			Level level = Level.valueOf(value.toString().toUpperCase());
+			if (level == null) {
+				continue;
+			}
+
+			LOGGER_LEVEL_LIST.add(new KeyValuePair<String, Level>(key
+					.toString(), level));
 		}
 	}
 
 	public static Level getLevel(String name) {
-		ListIterator<KeyValuePair<String, Level>> iterator = LOGGER_LEVEL_LIST
-				.listIterator(LOGGER_LEVEL_LIST.size());
-		while (iterator.hasPrevious()) {
-			KeyValuePair<String, Level> keyValuePair = iterator.previous();
+		for (KeyValuePair<String, Level> keyValuePair : LOGGER_LEVEL_LIST) {
 			if (keyValuePair == null) {
 				continue;
 			}
@@ -86,7 +101,6 @@ public class LoggerLevelUtils {
 				return keyValuePair.getValue();
 			}
 		}
-
 		return DEFAULT_LEVEL;
 	}
 
