@@ -22,7 +22,6 @@ public final class ActionServiceFilter implements Filter {
 	public Object doFilter(Channel channel, FilterChain chain) throws Throwable {
 		Action action = actionLookupManager.lookup(channel);
 		if (action == null) {
-			channel.getLogger().warn("not found：{}", channel.toString());
 			return notFoundService.notfound(channel, chain);
 		}
 
