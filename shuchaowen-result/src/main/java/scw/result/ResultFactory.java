@@ -1,11 +1,9 @@
 package scw.result;
 
 import scw.beans.annotation.AutoImpl;
-import scw.beans.annotation.Bean;
 import scw.result.support.DefaultResultFactory;
 
 @AutoImpl({ DefaultResultFactory.class })
-@Bean("resultFactory")
 public interface ResultFactory {
 	
 	/**
