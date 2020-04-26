@@ -24,10 +24,9 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == JedisPool.class) {
 			return new JedisPoolBeanBuilder(context);
-		}
-		else if (context.getTargetClass() == JedisPoolConfig.class) {
+		} else if (context.getTargetClass() == JedisPoolConfig.class) {
 			return new JedisPoolConfigBeanBuilder(context);
-		} 
+		}
 		return loaderChain.loading(context);
 	}
 
@@ -48,9 +47,15 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 		private String getHost() {
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);
 			if (host == null) {
-				Properties properties = ResourceUtils.getResourceOperations()
-						.getFormattedProperties(getConfigName(propertyFactory), Constants.DEFAULT_CHARSET_NAME);
-				host = properties.getProperty(HOST_CONFIG_KEY);
+				String config = getConfigName(propertyFactory);
+				if (ResourceUtils.getResourceOperations().isExist(config)) {
+					Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(config,
+							Constants.DEFAULT_CHARSET_NAME);
+					host = properties.getProperty(HOST_CONFIG_KEY);
+					if(host == null){
+						host = properties.getProperty("host");//兼容老版本
+					}
+				}
 			}
 			return host;
 		}
