@@ -20,9 +20,8 @@ import scw.net.NetworkUtils;
 public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == MemcachedClientBuilder.class) {
-			return loading(new LoaderContext(XMemcachedClientBuilder.class, context), loaderChain);
-		} else if (context.getTargetClass() == XMemcachedClientBuilder.class) {
+		if (context.getTargetClass() == MemcachedClientBuilder.class
+				|| context.getTargetClass() == XMemcachedClientBuilder.class) {
 			return new MemcachedClientBuilderBeanBuilder(context);
 		} else if (context.getTargetClass() == MemcachedClient.class) {
 			return new MemcachedClientBeanBuilder(context);

@@ -1,15 +1,14 @@
 package scw.data.redis.jedis;
 
-import scw.data.redis.AbstractRedisWrapper;
+import scw.core.instance.annotation.Configuration;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisImpl;
-import scw.data.redis.RedisOperations;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;
 import scw.lang.StringCodec;
 
-public final class RedisByJedisPool extends AbstractRedisWrapper {
-	private final Redis redis;
+@Configuration(order = Integer.MIN_VALUE, value = Redis.class)
+public final class RedisByJedisPool extends RedisImpl {
 
 	public RedisByJedisPool(JedisResourceFactory jedisResourceFactory) {
 		this(jedisResourceFactory, SerializerUtils.DEFAULT_SERIALIZER);
@@ -20,13 +19,7 @@ public final class RedisByJedisPool extends AbstractRedisWrapper {
 	}
 
 	public RedisByJedisPool(JedisResourceFactory jedisResourceFactory, StringCodec stringCodec, Serializer serializer) {
-		RedisOperations<String, String> stringOperations = new JedisStringOperations(jedisResourceFactory);
-		RedisOperations<byte[], byte[]> binaryOperations = new JedisBinaryOperations(jedisResourceFactory);
-		this.redis = new RedisImpl(binaryOperations, stringOperations, stringCodec, serializer);
-	}
-
-	@Override
-	public Redis getTargetRedis() {
-		return redis;
+		super(new JedisBinaryOperations(jedisResourceFactory), new JedisStringOperations(jedisResourceFactory),
+				stringCodec, serializer);
 	}
 }

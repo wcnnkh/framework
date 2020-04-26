@@ -5,16 +5,17 @@ import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
 
-public class IteratorBeanBuilderLoaderChain extends
-		AbstractBeanBuilderLoaderChain {
+public class IteratorBeanBuilderLoaderChain extends AbstractBeanBuilderLoaderChain {
 	private Iterator<BeanBuilderLoader> iterator;
 
-	public IteratorBeanBuilderLoaderChain(
-			Collection<BeanBuilderLoader> autoBeanServices,
-			BeanBuilderLoaderChain chain) {
+	public IteratorBeanBuilderLoaderChain(Collection<BeanBuilderLoader> loaders) {
+		this(loaders, null);
+	}
+
+	public IteratorBeanBuilderLoaderChain(Collection<BeanBuilderLoader> loaders, BeanBuilderLoaderChain chain) {
 		super(chain);
-		if (!CollectionUtils.isEmpty(autoBeanServices)) {
-			iterator = autoBeanServices.iterator();
+		if (!CollectionUtils.isEmpty(loaders)) {
+			iterator = loaders.iterator();
 		}
 	}
 
@@ -27,7 +28,6 @@ public class IteratorBeanBuilderLoaderChain extends
 		if (iterator.hasNext()) {
 			return iterator.next();
 		}
-
 		return null;
 	}
 }

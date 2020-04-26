@@ -24,8 +24,10 @@ public abstract class AbstractBeanBuilderLoaderChain implements
 		try {
 			return loader.loading(context, this);
 		} catch (NoClassDefFoundError e) {
-			logger.debug("ignore bean builder loader [{}] Reason: {}",
-					loader.getClass(), e.getMessage());
+			if(logger.isDebugEnabled()){
+				logger.debug("ignore bean builder loader [{}] ERROR [{}] Reason [{}]",
+						loader.getClass(), e.getClass(), e.getMessage());
+			}
 			return loading(context);
 		}
 	}
