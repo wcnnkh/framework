@@ -9,7 +9,6 @@ import scw.aop.Proxy;
 import scw.beans.BeanFactory;
 import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
-import scw.beans.loader.LoaderContext;
 import scw.core.instance.AbstractInstanceBuilder;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;

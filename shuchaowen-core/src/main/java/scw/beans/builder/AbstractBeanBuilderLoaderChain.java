@@ -1,7 +1,5 @@
-package scw.beans.loader;
+package scw.beans.builder;
 
-import scw.beans.builder.AutoBeanBuilder;
-import scw.beans.builder.BeanBuilder;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

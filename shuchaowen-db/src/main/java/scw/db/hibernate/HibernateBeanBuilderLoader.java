@@ -6,9 +6,9 @@ import org.hibernate.service.ServiceRegistry;
 import scw.beans.annotation.Bean;
 import scw.beans.builder.AbstractBeanBuilder;
 import scw.beans.builder.BeanBuilder;
-import scw.beans.loader.BeanBuilderLoader;
-import scw.beans.loader.BeanBuilderLoaderChain;
-import scw.beans.loader.LoaderContext;
+import scw.beans.builder.BeanBuilderLoader;
+import scw.beans.builder.BeanBuilderLoaderChain;
+import scw.beans.builder.LoaderContext;
 import scw.core.instance.annotation.Configuration;
 
 @Configuration(order = Integer.MIN_VALUE)

@@ -3,22 +3,18 @@ package scw.data.memcached.x;
 import java.io.IOException;
 
 import net.rubyeye.xmemcached.transcoders.SerializingTranscoder;
-import scw.core.parameter.annotation.ParameterName;
 import scw.io.Serializer;
 import scw.lang.NestedRuntimeException;
 
 public class MyTranscoder extends SerializingTranscoder {
-	private static final String SERIALIZER_NAME = "memcached.serializer";
-
 	private final Serializer serializer;
 
-	public MyTranscoder(@ParameterName(SERIALIZER_NAME) Serializer serializer) {
+	public MyTranscoder(Serializer serializer) {
 		super();
 		this.serializer = serializer;
 	}
 
-	public MyTranscoder(@ParameterName("memcached.transcoder.max-data-size") int transcoderMaxDataSize,
-			@ParameterName(SERIALIZER_NAME) Serializer serializer) {
+	public MyTranscoder(int transcoderMaxDataSize, Serializer serializer) {
 		super(transcoderMaxDataSize);
 		this.serializer = serializer;
 	}

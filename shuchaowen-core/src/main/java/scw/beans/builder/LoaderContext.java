@@ -1,4 +1,4 @@
-package scw.beans.loader;
+package scw.beans.builder;
 
 import scw.beans.BeanFactory;
 import scw.util.attribute.SimpleAttributes;

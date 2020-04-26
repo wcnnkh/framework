@@ -1,7 +1,6 @@
 package scw.beans.builder;
 
 import scw.beans.BeanFactory;
-import scw.beans.loader.LoaderContext;
 import scw.core.instance.AutoConstructorBuilder;
 import scw.core.instance.ConstructorBuilder;
 import scw.core.parameter.ParameterUtils;

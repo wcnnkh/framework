@@ -1,4 +1,4 @@
-package scw.beans.loader;
+package scw.beans.builder;
 
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
@@ -6,10 +6,6 @@ import java.util.concurrent.ExecutorService;
 
 import scw.aop.Filter;
 import scw.beans.annotation.Proxy;
-import scw.beans.builder.AutoBeanBuilder;
-import scw.beans.builder.BeanBuilder;
-import scw.beans.builder.ProxyBeanBuilder;
-import scw.beans.builder.ThreadPoolExecutorBeanBuilder;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;

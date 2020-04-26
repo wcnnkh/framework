@@ -1,4 +1,4 @@
-package scw.beans.loader;
+package scw.beans.builder;
 
 import java.util.Collection;
 import java.util.Iterator;

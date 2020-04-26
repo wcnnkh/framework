@@ -402,7 +402,7 @@ public final class InstanceUtils {
 
 	public static <T> T getSystemConfiguration(Class<? extends T> type,
 			Class... excludeTypes) {
-		return getConfiguration(type, INSTANCE_FACTORY,
+			return getConfiguration(type, INSTANCE_FACTORY,
 				GlobalPropertyFactory.getInstance(), excludeTypes);
 	}
 

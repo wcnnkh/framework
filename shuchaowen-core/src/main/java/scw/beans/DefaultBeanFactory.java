@@ -21,7 +21,7 @@ import scw.aop.Invoker;
 import scw.aop.ProxyContext;
 import scw.aop.ProxyUtils;
 import scw.beans.builder.BeanBuilder;
-import scw.beans.loader.LoaderContext;
+import scw.beans.builder.LoaderContext;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
 import scw.core.Destroy;
