@@ -475,5 +475,6 @@
 		<module>shuchaowen-result</module>
 		<module>shuchaowen-servlet</module>
 		<module>shuchaowen-office</module>
+		<module>shuchaowen-dss</module>
 	</modules>
 </project>
