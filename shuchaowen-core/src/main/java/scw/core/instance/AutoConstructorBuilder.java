@@ -2,7 +2,6 @@ package scw.core.instance;
 
 import java.lang.reflect.Constructor;
 
-import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptorFactory;
 import scw.core.parameter.ParameterFactory;
 import scw.core.reflect.ReflectionUtils;
@@ -14,19 +13,16 @@ public final class AutoConstructorBuilder implements ConstructorBuilder {
 	private final PropertyFactory propertyFactory;
 	private final Class<?> clazz;
 	private final ParameterFactory parameterFactory;
+	private AutoSource<Constructor<?>> autoSource;
 	private final ParameterDescriptorFactory parameterDescriptorFactory;
 
-	public AutoConstructorBuilder(NoArgsInstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptorFactory parameterDescriptorFactory) {
-		this(instanceFactory, propertyFactory, clazz,
-				parameterDescriptorFactory, null);
+	public AutoConstructorBuilder(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class<?> clazz, ParameterDescriptorFactory parameterDescriptorFactory) {
+		this(instanceFactory, propertyFactory, clazz, parameterDescriptorFactory, null);
 	}
 
-	public AutoConstructorBuilder(NoArgsInstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<?> clazz,
-			ParameterDescriptorFactory parameterDescriptorFactory,
-			ParameterFactory parameterFactory) {
+	public AutoConstructorBuilder(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class<?> clazz, ParameterDescriptorFactory parameterDescriptorFactory, ParameterFactory parameterFactory) {
 		this.parameterFactory = parameterFactory;
 		this.clazz = clazz;
 		this.propertyFactory = propertyFactory;
@@ -34,28 +30,24 @@ public final class AutoConstructorBuilder implements ConstructorBuilder {
 		this.parameterDescriptorFactory = parameterDescriptorFactory;
 	}
 
-	public ConstructorDescriptor getConstructorDescriptor() {
+	private ConstructorDescriptor getConstructorDescriptor() {
 		if (constructorDescriptor == null) {
 			synchronized (this) {
 				if (constructorDescriptor == null) {
-					for (Constructor<?> constructor : ReflectionUtils
-							.getConstructorOrderList(clazz)) {
-						ParameterDescriptor[] parameterDescriptors = parameterDescriptorFactory
-								.getParameterDescriptors(constructor);
-						if (InstanceUtils.isAuto(instanceFactory,
-								propertyFactory, clazz, parameterDescriptors,
-								parameterFactory, constructor)) {
-							ReflectionUtils
-									.setAccessibleConstructor(constructor);
-							this.constructorDescriptor = new ConstructorDescriptor(
-									constructor, parameterDescriptors);
+					for (Constructor<?> constructor : ReflectionUtils.getConstructorOrderList(clazz)) {
+						this.autoSource = new AutoSource<Constructor<?>>(instanceFactory, propertyFactory,
+								parameterFactory, clazz,
+								parameterDescriptorFactory.getParameterDescriptors(constructor), constructor);
+						if (autoSource.isAuto()) {
+							ReflectionUtils.setAccessibleConstructor(constructor);
+							this.constructorDescriptor = new ConstructorDescriptor(constructor,
+									autoSource.getParameterDescriptors());
 							break;
 						}
 					}
 
 					if (constructorDescriptor == null) {
-						this.constructorDescriptor = new ConstructorDescriptor(
-								null, null);
+						this.constructorDescriptor = new ConstructorDescriptor(null, null);
 					}
 				}
 			}
@@ -64,12 +56,14 @@ public final class AutoConstructorBuilder implements ConstructorBuilder {
 	}
 
 	public Object[] getArgs() throws Exception {
-		return InstanceUtils.getAutoArgs(instanceFactory, propertyFactory,
-				clazz, getConstructorDescriptor().getParameterDescriptors(),
-				parameterFactory);
+		return autoSource == null ? new Object[0] : autoSource.getAutoArgs();
 	}
 
 	public Constructor<?> getConstructor() {
+		if (!ReflectionUtils.isInstance(clazz, false)) {
+			return null;
+		}
+
 		return getConstructorDescriptor().getConstructor();
 	}
 }

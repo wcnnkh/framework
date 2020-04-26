@@ -3,10 +3,10 @@ package scw.mvc.rpc;
 import java.util.Arrays;
 
 import scw.beans.builder.BeanBuilder;
+import scw.beans.builder.BeanBuilderLoader;
+import scw.beans.builder.BeanBuilderLoaderChain;
+import scw.beans.builder.LoaderContext;
 import scw.beans.builder.ProxyBeanBuilder;
-import scw.beans.loader.BeanBuilderLoader;
-import scw.beans.loader.BeanBuilderLoaderChain;
-import scw.beans.loader.LoaderContext;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.Host;

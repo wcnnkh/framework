@@ -7,7 +7,7 @@ import java.util.Arrays;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.builder.AbstractBeanBuilder;
-import scw.core.instance.InstanceUtils;
+import scw.core.instance.AutoSource;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
@@ -17,25 +17,24 @@ import scw.util.value.property.PropertyFactory;
 public class MethodBeanBuilder extends AbstractBeanBuilder {
 	private Method method;
 	private Class<?> methodTargetClass;
+	private AutoSource<Method> autoSource;
 
-	public MethodBeanBuilder(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> methodTargetClass,
+	public MethodBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> methodTargetClass,
 			Method method) {
 		super(beanFactory, propertyFactory, method.getReturnType());
 		this.methodTargetClass = methodTargetClass;
 		this.method = method;
+		this.autoSource = new AutoSource<Method>(beanFactory, propertyFactory, getTargetClass(),
+				ParameterUtils.getParameterDescriptors(method), method);
 	}
 
 	@Override
 	protected boolean isProxy() {
-		return BeanUtils.isProxy(method.getReturnType(), method)
-				&& method.getReturnType().isInterface();
+		return BeanUtils.isProxy(method.getReturnType(), method) && method.getReturnType().isInterface();
 	}
 
 	public boolean isInstance() {
-		return InstanceUtils.isAuto(beanFactory, propertyFactory,
-				getTargetClass(),
-				ParameterUtils.getParameterDescriptors(method), null, method);
+		return autoSource.isAuto();
 	}
 
 	public Object create() throws Exception {
@@ -43,17 +42,14 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 			throw new NotSupportedException("不支持的构造方式");
 		}
 
-		Object[] args = InstanceUtils.getAutoArgs(beanFactory, propertyFactory,
-				getTargetClass(),
-				ParameterUtils.getParameterDescriptors(method), null);
+		Object[] args = autoSource.getAutoArgs();
 		return invoke(method, args);
 	}
 
 	private Object invoke(Method method, Object[] args) throws Exception {
 		ReflectionUtils.setAccessibleMethod(method);
 		Object bean = method.invoke(
-				Modifier.isStatic(method.getModifiers()) ? null : beanFactory
-						.getInstance(methodTargetClass), args);
+				Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), args);
 
 		if (isProxy()) {
 			return createInstanceProxy(bean, getTargetClass(), null).create();
@@ -71,19 +67,15 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 				continue;
 			}
 
-			if (ClassUtils.isAssignableValue(
-					Arrays.asList(method.getParameterTypes()),
-					Arrays.asList(params))) {
+			if (ClassUtils.isAssignableValue(Arrays.asList(method.getParameterTypes()), Arrays.asList(params))) {
 				return invoke(method, params);
 			}
 		}
 		throw new NotSupportedException(method.toString());
 	}
 
-	public Object create(Class<?>[] parameterTypes, Object... params)
-			throws Exception {
-		Method method = methodTargetClass.getDeclaredMethod(
-				this.method.getName(), parameterTypes);
+	public Object create(Class<?>[] parameterTypes, Object... params) throws Exception {
+		Method method = methodTargetClass.getDeclaredMethod(this.method.getName(), parameterTypes);
 		return invoke(method, params);
 	}
 }

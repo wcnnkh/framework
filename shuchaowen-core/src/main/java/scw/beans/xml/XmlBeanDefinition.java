@@ -2,6 +2,8 @@ package scw.beans.xml;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 import org.w3c.dom.Node;
 
@@ -12,7 +14,7 @@ import scw.core.utils.XMLUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class XmlBeanDefinition extends DefaultBeanDefinition {
-	private final String[] names;
+	private final LinkedList<String> names = new LinkedList<String>();
 	private final String id;
 	private final boolean singleton;
 
@@ -29,14 +31,15 @@ public final class XmlBeanDefinition extends DefaultBeanDefinition {
 		super(beanFactory, propertyFactory, targetClass, new XmlBeanBuilder(
 				beanFactory, propertyFactory, targetClass, beanNode));
 		this.id = getId(beanNode);
-		this.names = getNames(beanNode);
+		this.names.addAll(super.getNames());
+		this.names.addAll(Arrays.asList(getNames(beanNode)));
 		this.singleton = XmlBeanUtils.isSingleton(beanNode) ? true : super
 				.isSingleton();
 	}
 
 	@Override
 	public Collection<String> getNames() {
-		return Arrays.asList(names);
+		return Collections.unmodifiableCollection(names);
 	}
 
 	@Override

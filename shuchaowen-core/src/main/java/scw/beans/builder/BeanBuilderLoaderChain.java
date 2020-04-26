@@ -1,6 +1,4 @@
-package scw.beans.loader;
-
-import scw.beans.builder.BeanBuilder;
+package scw.beans.builder;
 
 public interface BeanBuilderLoaderChain {
 	BeanBuilder loading(LoaderContext context);

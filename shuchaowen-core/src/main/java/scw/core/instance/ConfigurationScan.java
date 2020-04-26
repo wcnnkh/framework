@@ -40,15 +40,13 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 				continue;
 			}
 
-			Configuration configuration = clazz
-					.getAnnotation(Configuration.class);
+			Configuration configuration = clazz.getAnnotation(Configuration.class);
 			if (configuration == null) {
 				continue;
 			}
 
 			if (configuration.value().length != 0) {
-				Collection<Class<?>> values = Arrays.asList(configuration
-						.value());
+				Collection<Class<?>> values = Arrays.asList(configuration.value());
 				if (configuration.assignableValue()) {
 					if (!ClassUtils.isAssignable(values, type)) {
 						continue;
@@ -70,15 +68,12 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 		return list;
 	}
 
-	public <T> Collection<Class<T>> scan(Class<? extends T> type,
-			PropertyFactory propertyFactory,
-			Collection<? extends Class> excludeTypes,
-			Collection<? extends String> packageNames) {
+	public <T> Collection<Class<T>> scan(Class<? extends T> type, PropertyFactory propertyFactory,
+			Collection<? extends Class> excludeTypes, Collection<? extends String> packageNames) {
 		Set<Class<T>> set = new LinkedHashSet<Class<T>>();
 		for (String packageName : packageNames) {
 			for (Class<?> clazz : scan(type, packageName)) {
-				Configuration configuration = clazz
-						.getAnnotation(Configuration.class);
+				Configuration configuration = clazz.getAnnotation(Configuration.class);
 				if (configuration == null) {
 					continue;
 				}
@@ -92,7 +87,6 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 		}
 
 		List<Class<T>> list = new ArrayList<Class<T>>(set);
-		Collections.sort(list, this);
 		for (Class<? extends T> clazz : list) {
 			Configuration c = clazz.getAnnotation(Configuration.class);
 			for (Class<?> e : c.excludes()) {
@@ -103,10 +97,10 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 			}
 		}
 
-		list = new ArrayList<Class<T>>(set);
+		Collections.sort(list, this);
+
 		set.clear();
-		String[] configNames = propertyFactory.getObject(type.getName(),
-				String[].class);
+		String[] configNames = propertyFactory.getObject(type.getName(), String[].class);
 		if (!ArrayUtils.isEmpty(configNames)) {
 			for (String name : configNames) {
 				Class<?> clazz = ClassUtils.forNameNullable(name);
@@ -116,8 +110,7 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 				}
 
 				if (ClassUtils.isAssignable(type, clazz)) {
-					logger.warn("type [{}] not isAssignable class by name: {}",
-							type, name);
+					logger.warn("type [{}] not isAssignable class by name: {}", type, name);
 					continue;
 				}
 
@@ -132,7 +125,7 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 			if (set.contains(clazz)) {
 				continue;
 			}
-			
+
 			if (!ReflectionUtils.isPresent(clazz)) {
 				logger.debug("reflection not present [{}]", clazz);
 				continue;

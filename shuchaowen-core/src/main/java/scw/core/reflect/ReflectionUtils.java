@@ -1528,15 +1528,6 @@ public abstract class ReflectionUtils {
 	/**
 	 * 是否可以实例化
 	 * 
-	 * @return
-	 */
-	public static boolean isInstance(Class<?> clz) {
-		return isInstance(clz, false);
-	}
-
-	/**
-	 * 是否可以实例化
-	 * 
 	 * @param clz
 	 * @param checkConstructor
 	 *            是否检查存在无参的构造方法

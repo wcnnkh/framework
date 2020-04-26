@@ -15,7 +15,7 @@ public final class JSONUtils {
 	public static final JSONSupport DEFAULT_JSON_SUPPORT = InstanceUtils.getSystemConfiguration(JSONSupport.class);
 
 	static {
-		if(DEFAULT_JSON_SUPPORT != null){
+		if (DEFAULT_JSON_SUPPORT != null) {
 			FormatUtils.info(JSONUtils.class, "default json parse：{}", DEFAULT_JSON_SUPPORT.getClass().getName());
 		}
 	}
@@ -34,9 +34,9 @@ public final class JSONUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T parseObject(String text, Class<T> type) {
-		if(type == JsonObject.class){
+		if (type == JsonObject.class) {
 			return (T) parseObject(text);
-		}else if(type == JsonArray.class){
+		} else if (type == JsonArray.class) {
 			return (T) parseArray(text);
 		}
 		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
@@ -44,10 +44,10 @@ public final class JSONUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T parseObject(String text, Type type) {
-		if(type instanceof Class){
-			return parseObject(text, (Class<T>)type);
+		if (type instanceof Class) {
+			return parseObject(text, (Class<T>) type);
 		}
-		
+
 		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
 	}
 }
