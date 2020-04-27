@@ -17,6 +17,7 @@ import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.io.support.PackageScan;
 import scw.lang.NestedRuntimeException;
 import scw.lang.Nullable;
 
@@ -77,6 +78,8 @@ public final class ResourceUtils {
 	private static final ResourceOperations RESOURCE_OPERATIONS = new ResourceOperations(
 			GlobalPropertyFactory.getInstance());
 
+	private static final PackageScan PACKAGE_SCAN = new PackageScan(true);
+
 	static {
 		RESOURCE_OPERATIONS.addResourceLoader(
 				new FileSystemSearchResourceLoader(GlobalPropertyFactory.getInstance().getWorkPath(), false));
@@ -84,6 +87,10 @@ public final class ResourceUtils {
 
 	public static final ResourceOperations getResourceOperations() {
 		return RESOURCE_OPERATIONS;
+	}
+
+	public static PackageScan getPackageScan() {
+		return PACKAGE_SCAN;
 	}
 
 	/**

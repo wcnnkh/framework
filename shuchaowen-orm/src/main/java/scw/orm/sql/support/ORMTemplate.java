@@ -19,6 +19,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.IteratorCallback.Row;
 import scw.core.utils.StringUtils;
+import scw.io.ResourceUtils;
 import scw.orm.IteratorMapping;
 import scw.orm.MappingContext;
 import scw.orm.ORMException;
@@ -314,7 +315,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public void createTable(String packageName) {
-		Collection<Class<?>> list = ClassUtils.getClassSet(packageName);
+		Collection<Class<?>> list = ResourceUtils.getPackageScan().getClasses(packageName);
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {

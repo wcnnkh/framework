@@ -10,7 +10,7 @@ import scw.beans.BeanUtils;
 import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ClassUtils;
+import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.property.PropertyFactory;
@@ -21,7 +21,7 @@ public class MethodBeanConfiguration extends AbstractBeanConfiguration {
 	
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws Exception {
-		for (Class<?> clz : ClassUtils.getClassSet(Arrays.asList(
+		for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(Arrays.asList(
 				BeanUtils.getScanAnnotationPackageName(),
 				Constants.SYSTEM_PACKAGE_NAME))) {
 			if (!ReflectionUtils.isPresent(clz)) {

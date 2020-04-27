@@ -16,9 +16,9 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowired;
 import scw.core.Init;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.io.ResourceUtils;
 import scw.io.SerializerUtils;
 import scw.orm.MappingContext;
 import scw.orm.sql.TableChange;
@@ -83,7 +83,7 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 	}
 
 	public void createTable(String packageName, boolean registerManager) {
-		Collection<Class<?>> list = ClassUtils.getClassSet(packageName);
+		Collection<Class<?>> list = ResourceUtils.getPackageScan().getClasses(packageName);
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {

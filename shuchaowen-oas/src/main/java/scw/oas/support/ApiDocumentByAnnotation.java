@@ -8,9 +8,9 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
+import scw.io.ResourceUtils;
 import scw.lang.Nullable;
 import scw.oas.ApiInfo;
 import scw.oas.ApiParameter;
@@ -25,7 +25,7 @@ public class ApiDocumentByAnnotation extends SimpleApiDocument {
 
 	public ApiDocumentByAnnotation scann(String packageName, Mapper mapper) {
 		List<ApiInfo> list = new ArrayList<ApiInfo>();
-		for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
+		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(packageName)) {
 			list.addAll(getApiInfoList(clazz, mapper));
 		}
 		setApiInfoList(list);

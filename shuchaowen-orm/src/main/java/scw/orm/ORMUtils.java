@@ -4,9 +4,9 @@ import java.util.Collection;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.FieldSetterListenUtils;
 import scw.core.utils.StringUtils;
+import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.orm.sql.annotation.Table;
@@ -36,7 +36,7 @@ public final class ORMUtils {
 			logger.info("register proxy package:{}", pageName);
 		}
 
-		for (Class<?> type : ClassUtils.getClassSet(pageName)) {
+		for (Class<?> type : ResourceUtils.getPackageScan().getClasses(pageName)) {
 			Table table = type.getAnnotation(Table.class);
 			if (table == null) {
 				continue;

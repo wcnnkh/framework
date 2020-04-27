@@ -12,8 +12,8 @@ import scw.beans.BeanUtils;
 import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.instance.annotation.Configuration;
-import scw.core.utils.ClassUtils;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
+import scw.io.ResourceUtils;
 
 @Configuration(order=Integer.MIN_VALUE)
 @Bean(proxy=false)
@@ -25,7 +25,7 @@ public class WsServletContainerInitializerConfiguration implements ServletContai
 	}
 
 	public Set<Class<?>> getClassSet() {
-		return ClassUtils.getClassSet(Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName()));
+		return ResourceUtils.getPackageScan().getClasses(Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName()));
 	}
 
 
