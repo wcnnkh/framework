@@ -1,14 +1,16 @@
 package scw.beans.xml;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.BeanMethod;
 import scw.beans.BeansException;
+import scw.beans.ioc.IocProcessor;
+import scw.beans.ioc.MethodIocProcessor;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -130,22 +132,13 @@ public final class XmlBeanUtils {
 		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}
 
-	/**
-	 * 获取指定的方法
-	 * 
-	 * @param clz
-	 * @param nodeList
-	 * @param tagName
-	 * @return
-	 * @throws Exception
-	 */
-	public static List<BeanMethod> getBeanMethodList(Class<?> clz,
+	public static List<MethodIocProcessor> getMethodIocProcessos(Class<?> clz,
 			NodeList nodeList, String tagName) throws Exception {
-		List<BeanMethod> list = new ArrayList<BeanMethod>();
+		List<MethodIocProcessor> list = new ArrayList<MethodIocProcessor>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (tagName.equalsIgnoreCase(n.getNodeName())) {
-				XmlBeanMethod xmlBeanMethod = new XmlBeanMethod(
+				XmlMethodIocProcessor xmlBeanMethod = new XmlMethodIocProcessor(
 						clz, n);
 				list.add(xmlBeanMethod);
 			}
@@ -153,14 +146,14 @@ public final class XmlBeanUtils {
 		return list;
 	}
 
-	public static List<BeanMethod> getInitMethodList(Class<?> clz,
-			NodeList nodeList) throws Exception {
-		return XmlBeanUtils.getBeanMethodList(clz, nodeList, "init");
+	public static List<MethodIocProcessor> getInitMethodIocProcessors(
+			Class<?> clz, NodeList nodeList) throws Exception {
+		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "init");
 	}
 
-	public static List<BeanMethod> getDestroyMethodList(Class<?> clz,
-			NodeList nodeList) throws Exception {
-		return XmlBeanUtils.getBeanMethodList(clz, nodeList, "destroy");
+	public static List<MethodIocProcessor> getDestroyMethodIocProcessors(
+			Class<?> clz, NodeList nodeList) throws Exception {
+		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "destroy");
 	}
 
 	public static XmlBeanParameter[] getConstructorParameters(NodeList nodeList)
@@ -182,22 +175,24 @@ public final class XmlBeanUtils {
 								.size()]);
 	}
 
-	public static XmlBeanParameter[] getBeanProperties(NodeList nodeList)
-			throws Exception {
-		List<XmlBeanParameter> propertiesList = new ArrayList<XmlBeanParameter>();
+	public static Collection<IocProcessor> getBeanPropertiesIocProcessors(
+			Class<?> targetClass, NodeList nodeList)
+			throws ClassNotFoundException {
+		List<IocProcessor> iocProcessors = new ArrayList<IocProcessor>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("properties".equalsIgnoreCase(n.getNodeName())) {// Properties
 				List<XmlBeanParameter> list = XmlBeanUtils
 						.parseBeanParameterList(n);
 				if (list != null) {
-					propertiesList.addAll(list);
+					for (XmlBeanParameter xmlBeanParameter : list) {
+						iocProcessors.add(new XmlPropertiesIocProcessor(
+								targetClass, xmlBeanParameter));
+					}
 				}
 			}
 		}
-
-		return CollectionUtils.isEmpty(propertiesList) ? null : propertiesList
-				.toArray(new XmlBeanParameter[propertiesList.size()]);
+		return iocProcessors;
 	}
 
 	public static TimeUnit getTimeUnit(Node node) {

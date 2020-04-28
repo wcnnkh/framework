@@ -1,19 +1,21 @@
-package scw.beans;
+package scw.beans.ioc;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import scw.beans.BeanFactory;
 import scw.util.value.property.PropertyFactory;
 
-public class NoArgumentBeanMethod extends AbstractBeanMethod {
+public class NoArgumentMethodIocProcessor extends MethodIocProcessor {
 	private final Method method;
 
-	public NoArgumentBeanMethod(Method method) {
+	public NoArgumentMethodIocProcessor(Method method) {
 		this.method = method;
-		checkMethod(method);
+		checkMethod();
 	}
 
-	public Object invoke(Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
+	public Object process(Object bean, BeanFactory beanFactory,
+			PropertyFactory propertyFactory) throws Exception {
 		return noArgumentInvoke(bean);
 	}
 
@@ -26,6 +28,7 @@ public class NoArgumentBeanMethod extends AbstractBeanMethod {
 	}
 
 	public Object noArgumentInvoke(Object bean) throws Exception {
-		return method.invoke(Modifier.isStatic(method.getModifiers()) ? null : bean);
+		return method.invoke(Modifier.isStatic(method.getModifiers()) ? null
+				: bean);
 	}
 }

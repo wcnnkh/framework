@@ -7,8 +7,8 @@ import scw.aop.FilterChain;
 import scw.aop.InstanceFactoryFilterChain;
 import scw.aop.Proxy;
 import scw.beans.BeanFactory;
-import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
+import scw.beans.ioc.Ioc;
 import scw.core.instance.AbstractInstanceBuilder;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -21,8 +21,7 @@ public abstract class AbstractBeanBuilder extends
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
 	protected final LinkedList<String> filterNames = new LinkedList<String>();
-	protected final LinkedList<BeanMethod> initMethods = new LinkedList<BeanMethod>();
-	protected final LinkedList<BeanMethod> destroyMethods = new LinkedList<BeanMethod>();
+	protected final Ioc ioc = new Ioc();
 	protected FilterChain filterChain;
 
 	public AbstractBeanBuilder(LoaderContext context) {
@@ -82,14 +81,12 @@ public abstract class AbstractBeanBuilder extends
 	}
 
 	public void init(Object instance) throws Exception {
-		for (BeanMethod beanMethod : initMethods) {
-			beanMethod.invoke(instance, beanFactory, propertyFactory);
-		}
+		ioc.getAutowired().process(instance, beanFactory, propertyFactory,
+				false);
+		ioc.getInit().process(instance, beanFactory, propertyFactory, false);
 	}
 
 	public void destroy(Object instance) throws Exception {
-		for (BeanMethod method : destroyMethods) {
-			method.invoke(instance, beanFactory, propertyFactory);
-		}
+		ioc.getDestroy().process(instance, beanFactory, propertyFactory, false);
 	}
 }
