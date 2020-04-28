@@ -2,7 +2,7 @@ package scw.alibaba.dayu;
 
 import java.util.Map;
 
-import scw.result.Result;
+import scw.util.result.Result;
 
 public interface XmlPhoneVerificationCode extends AliDaYu{
 	Result sendMessage(int configIndex, String sms_param, String toPhones);

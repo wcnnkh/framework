@@ -7,9 +7,9 @@ import scw.mvc.Channel;
 import scw.mvc.View;
 import scw.net.MimeType;
 import scw.net.NetworkUtils;
-import scw.net.Text;
 import scw.net.message.Entity;
 import scw.net.message.InputMessage;
+import scw.net.message.Text;
 import scw.net.message.converter.MultiMessageConverter;
 import scw.net.message.converter.support.AllMessageConverter;
 

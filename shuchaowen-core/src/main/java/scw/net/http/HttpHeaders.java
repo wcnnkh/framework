@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -24,13 +23,13 @@ import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
-import scw.util.value.property.MapPropertyFactory;
+import scw.util.MapBuilder;
+import scw.util.value.Value;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -488,8 +487,7 @@ public class HttpHeaders extends Headers {
 	 * @see <a href="https://tools.ietf.org/html/rfc7232#section-2.3">Section
 	 *      2.3 of RFC 7232</a>
 	 */
-	private static final Pattern ETAG_HEADER_VALUE_PATTERN = Pattern
-			.compile("\\*|\\s*((W\\/)?(\"[^\"]*\"))\\s*,?");
+	private static final Pattern ETAG_HEADER_VALUE_PATTERN = Pattern.compile("\\*|\\s*((W\\/)?(\"[^\"]*\"))\\s*,?");
 
 	private static final TimeZone GMT = TimeZone.getTimeZone("GMT");
 
@@ -500,9 +498,8 @@ public class HttpHeaders extends Headers {
 	 *      "https://tools.ietf.org/html/rfc7231#section-7.1.1.1">Section
 	 *      7.1.1.1 of RFC 7231</a>
 	 */
-	private static final String[] DATE_FORMATS = new String[] {
-			"EEE, dd MMM yyyy HH:mm:ss zzz", "EEE, dd-MMM-yy HH:mm:ss zzz",
-			"EEE MMM dd HH:mm:ss yyyy" };
+	private static final String[] DATE_FORMATS = new String[] { "EEE, dd MMM yyyy HH:mm:ss zzz",
+			"EEE, dd-MMM-yy HH:mm:ss zzz", "EEE MMM dd HH:mm:ss yyyy" };
 
 	public static final String X_REQUESTED_WITH = "X-Requested-With";
 
@@ -510,16 +507,12 @@ public class HttpHeaders extends Headers {
 
 	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
-	private static final MapPropertyFactory AJAX_HEADERS = new MapPropertyFactory();
+	private static final MapBuilder AJAX_HEADERS = new MapBuilder();
 
 	static {
-		AJAX_HEADERS.loadProperties(ResourceUtils.getResourceOperations(),
-				"/scw/net/headers/ajax.headers.properties");
-		AJAX_HEADERS.loadProperties(
-				ResourceUtils.getResourceOperations(),
-				GlobalPropertyFactory.getInstance().getValue(
-						"scw.net.ajax.headers", String.class,
-						"/ajax-headers.properties"));
+		AJAX_HEADERS.loading("/scw/net/headers/ajax.headers.properties");
+		AJAX_HEADERS.loading(GlobalPropertyFactory.getInstance().getValue("scw.net.ajax.headers", String.class,
+				"/ajax-headers.properties"));
 	}
 
 	public HttpHeaders() {
@@ -528,10 +521,6 @@ public class HttpHeaders extends Headers {
 
 	public HttpHeaders(Map<String, List<String>> wrapperHeaders) {
 		super(wrapperHeaders, false);
-	}
-
-	public static MapPropertyFactory getAjaxHeaders() {
-		return AJAX_HEADERS;
 	}
 
 	/**
@@ -557,8 +546,7 @@ public class HttpHeaders extends Headers {
 	 * response header.
 	 */
 	public void setAccessControlAllowCredentials(boolean allowCredentials) {
-		set(ACCESS_CONTROL_ALLOW_CREDENTIALS,
-				Boolean.toString(allowCredentials));
+		set(ACCESS_CONTROL_ALLOW_CREDENTIALS, Boolean.toString(allowCredentials));
 	}
 
 	/**
@@ -574,8 +562,7 @@ public class HttpHeaders extends Headers {
 	 * header.
 	 */
 	public void setAccessControlAllowHeaders(List<String> allowedHeaders) {
-		set(ACCESS_CONTROL_ALLOW_HEADERS,
-				toCommaDelimitedString(allowedHeaders));
+		set(ACCESS_CONTROL_ALLOW_HEADERS, toCommaDelimitedString(allowedHeaders));
 	}
 
 	/**
@@ -591,8 +578,7 @@ public class HttpHeaders extends Headers {
 	 * header.
 	 */
 	public void setAccessControlAllowMethods(List<HttpMethod> allowedMethods) {
-		set(ACCESS_CONTROL_ALLOW_METHODS,
-				StringUtils.collectionToCommaDelimitedString(allowedMethods));
+		set(ACCESS_CONTROL_ALLOW_METHODS, StringUtils.collectionToCommaDelimitedString(allowedMethods));
 	}
 
 	/**
@@ -635,8 +621,7 @@ public class HttpHeaders extends Headers {
 	 * header.
 	 */
 	public void setAccessControlExposeHeaders(List<String> exposedHeaders) {
-		set(ACCESS_CONTROL_EXPOSE_HEADERS,
-				toCommaDelimitedString(exposedHeaders));
+		set(ACCESS_CONTROL_EXPOSE_HEADERS, toCommaDelimitedString(exposedHeaders));
 	}
 
 	/**
@@ -670,8 +655,7 @@ public class HttpHeaders extends Headers {
 	 * header.
 	 */
 	public void setAccessControlRequestHeaders(List<String> requestHeaders) {
-		set(ACCESS_CONTROL_REQUEST_HEADERS,
-				toCommaDelimitedString(requestHeaders));
+		set(ACCESS_CONTROL_REQUEST_HEADERS, toCommaDelimitedString(requestHeaders));
 	}
 
 	/**
@@ -704,8 +688,7 @@ public class HttpHeaders extends Headers {
 	 */
 	public void setAcceptCharset(List<Charset> acceptableCharsets) {
 		StringBuilder builder = new StringBuilder();
-		for (Iterator<Charset> iterator = acceptableCharsets.iterator(); iterator
-				.hasNext();) {
+		for (Iterator<Charset> iterator = acceptableCharsets.iterator(); iterator.hasNext();) {
 			Charset charset = iterator.next();
 			builder.append(charset.name().toLowerCase(Locale.ENGLISH));
 			if (iterator.hasNext()) {
@@ -845,8 +828,8 @@ public class HttpHeaders extends Headers {
 	 *            the filename (may be {@code null})
 	 * @param charset
 	 *            the charset used for the filename (may be {@code null})
-	 * @deprecated deprecated in 4.3.11 and removed from 5.0; as per <a
-	 *             link="https://tools.ietf.org/html/rfc7578#section-4.2">RFC
+	 * @deprecated deprecated in 4.3.11 and removed from 5.0; as per
+	 *             <a link="https://tools.ietf.org/html/rfc7578#section-4.2">RFC
 	 *             7578, Section 4.2</a>, an RFC 5987 style encoding should not
 	 *             be used for multipart/form-data requests. Furthermore there
 	 *             should be no reason for applications to set this header
@@ -854,8 +837,7 @@ public class HttpHeaders extends Headers {
 	 *             {@link #setContentDispositionFormData(String, String)}
 	 */
 	@Deprecated
-	public void setContentDispositionFormData(String name, String filename,
-			Charset charset) {
+	public void setContentDispositionFormData(String name, String filename, Charset charset) {
 		Assert.notNull(name, "'name' must not be null");
 		StringBuilder builder = new StringBuilder("form-data; name=\"");
 		builder.append(name).append('\"');
@@ -895,10 +877,8 @@ public class HttpHeaders extends Headers {
 	 * the {@code Content-Type} header.
 	 */
 	public void setContentType(MediaType mediaType) {
-		Assert.isTrue(!mediaType.isWildcardType(),
-				"Content-Type cannot contain wildcard type '*'");
-		Assert.isTrue(!mediaType.isWildcardSubtype(),
-				"Content-Type cannot contain wildcard subtype '*'");
+		Assert.isTrue(!mediaType.isWildcardType(), "Content-Type cannot contain wildcard type '*'");
+		Assert.isTrue(!mediaType.isWildcardSubtype(), "Content-Type cannot contain wildcard subtype '*'");
 		set(CONTENT_TYPE, mediaType.toString());
 	}
 
@@ -910,8 +890,7 @@ public class HttpHeaders extends Headers {
 	 */
 	public MediaType getContentType() {
 		String value = getFirst(CONTENT_TYPE);
-		return (StringUtils.hasLength(value) ? MediaType.parseMediaType(value)
-				: null);
+		return (StringUtils.hasLength(value) ? MediaType.parseMediaType(value) : null);
 	}
 
 	/**
@@ -945,10 +924,8 @@ public class HttpHeaders extends Headers {
 	 */
 	public void setETag(String etag) {
 		if (etag != null) {
-			Assert.isTrue(etag.startsWith("\"") || etag.startsWith("W/"),
-					"Invalid ETag: does not start with W/ or \"");
-			Assert.isTrue(etag.endsWith("\""),
-					"Invalid ETag: does not end with \"");
+			Assert.isTrue(etag.startsWith("\"") || etag.startsWith("W/"), "Invalid ETag: does not start with W/ or \"");
+			Assert.isTrue(etag.endsWith("\""), "Invalid ETag: does not end with \"");
 		}
 		set(ETAG, etag);
 	}
@@ -1206,8 +1183,7 @@ public class HttpHeaders extends Headers {
 	 * @since 3.2.4
 	 */
 	public void setDate(String headerName, long date) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMATS[0],
-				Locale.US);
+		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMATS[0], Locale.US);
 		dateFormat.setTimeZone(GMT);
 		set(headerName, dateFormat.format(new Date(date)));
 	}
@@ -1252,8 +1228,7 @@ public class HttpHeaders extends Headers {
 			// Let's only bother with SimpleDateFormat parsing for long enough
 			// values.
 			for (String dateFormat : DATE_FORMATS) {
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-						dateFormat, Locale.US);
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat, Locale.US);
 				simpleDateFormat.setTimeZone(GMT);
 				try {
 					return simpleDateFormat.parse(headerValue).getTime();
@@ -1263,8 +1238,8 @@ public class HttpHeaders extends Headers {
 			}
 		}
 		if (rejectInvalid) {
-			throw new IllegalArgumentException("Cannot parse date value \""
-					+ headerValue + "\" for \"" + headerName + "\" header");
+			throw new IllegalArgumentException(
+					"Cannot parse date value \"" + headerValue + "\" for \"" + headerName + "\" header");
 		}
 		return -1;
 	}
@@ -1301,8 +1276,7 @@ public class HttpHeaders extends Headers {
 					}
 					if (result.isEmpty()) {
 						throw new IllegalArgumentException(
-								"Could not parse header '" + headerName
-										+ "' with value '" + value + "'");
+								"Could not parse header '" + headerName + "' with value '" + value + "'");
 					}
 				}
 			}
@@ -1321,8 +1295,7 @@ public class HttpHeaders extends Headers {
 	 */
 	protected String getFieldValues(String headerName) {
 		List<String> headerValues = get(headerName);
-		return (headerValues != null ? toCommaDelimitedString(headerValues)
-				: null);
+		return (headerValues != null ? toCommaDelimitedString(headerValues) : null);
 	}
 
 	/**
@@ -1404,8 +1377,7 @@ public class HttpHeaders extends Headers {
 	}
 
 	public Map<String, String> toSingleValueMap() {
-		LinkedHashMap<String, String> singleValueMap = new LinkedHashMap<String, String>(
-				size());
+		LinkedHashMap<String, String> singleValueMap = new LinkedHashMap<String, String>(size());
 		for (Entry<String, List<String>> entry : entrySet()) {
 			singleValueMap.put(entry.getKey(), entry.getValue().get(0));
 		}
@@ -1413,10 +1385,9 @@ public class HttpHeaders extends Headers {
 	}
 
 	public boolean isAjax() {
-		Enumeration<String> enumeration = AJAX_HEADERS.enumerationKeys();
-		while (enumeration.hasMoreElements()) {
-			String key = enumeration.nextElement();
-			String[] values = AJAX_HEADERS.getObject(key, String[].class);
+		for (Entry<Object, Value> entry : AJAX_HEADERS.getValueMap().entrySet()) {
+			String key = entry.getKey().toString();
+			String[] values = entry.getValue().getAsObject(String[].class);
 			if (ArrayUtils.isEmpty(values)) {
 				continue;
 			}
@@ -1428,13 +1399,12 @@ public class HttpHeaders extends Headers {
 		return false;
 	}
 
-	private boolean matchHeaders(String name, List<String> values,
-			String[] matchs) {
+	private boolean matchHeaders(String name, List<String> values, String[] matchs) {
 		for (String match : matchs) {
-			if(match == null){
+			if (match == null) {
 				continue;
 			}
-			
+
 			if (values == null) {
 				if (matchHeader(name, null, match)) {
 					return true;
@@ -1453,9 +1423,7 @@ public class HttpHeaders extends Headers {
 	private boolean matchHeader(String name, String value, String match) {
 		boolean b = StringUtils.test(value, match);
 		if (logger.isDebugEnabled()) {
-			logger.debug(
-					"check ajax header name={}, value={}, match={}, result={}",
-					name, value, match, b);
+			logger.debug("check ajax header name={}, value={}, match={}, result={}", name, value, match, b);
 		}
 		return b;
 	}
@@ -1465,13 +1433,11 @@ public class HttpHeaders extends Headers {
 	}
 
 	public boolean isJsonContentType() {
-		return isCompatibleWithContentType(MediaType.APPLICATION_JSON,
-				MimeTypeUtils.TEXT_JSON);
+		return isCompatibleWithContentType(MediaType.APPLICATION_JSON, MimeTypeUtils.TEXT_JSON);
 	}
 
 	public boolean isXmlContentType() {
-		return isCompatibleWithContentType(MediaType.APPLICATION_XML,
-				MediaType.TEXT_XML);
+		return isCompatibleWithContentType(MediaType.APPLICATION_XML, MediaType.TEXT_XML);
 	}
 
 	public boolean isMultipartFormContentType() {
@@ -1512,9 +1478,7 @@ public class HttpHeaders extends Headers {
 		if (charset.name().equals("US-ASCII")) {
 			return input;
 		}
-		Assert.isTrue(
-				charset.name().equals("UTF-8")
-						|| charset.name().equals("ISO-8859-1"),
+		Assert.isTrue(charset.name().equals("UTF-8") || charset.name().equals("ISO-8859-1"),
 				"Charset should be UTF-8 or ISO-8859-1");
 		byte[] source = input.getBytes(charset);
 		int len = source.length;
@@ -1526,10 +1490,8 @@ public class HttpHeaders extends Headers {
 				sb.append((char) b);
 			} else {
 				sb.append('%');
-				char hex1 = Character.toUpperCase(Character.forDigit(
-						(b >> 4) & 0xF, 16));
-				char hex2 = Character.toUpperCase(Character.forDigit(b & 0xF,
-						16));
+				char hex1 = Character.toUpperCase(Character.forDigit((b >> 4) & 0xF, 16));
+				char hex2 = Character.toUpperCase(Character.forDigit(b & 0xF, 16));
 				sb.append(hex1);
 				sb.append(hex2);
 			}
@@ -1538,10 +1500,9 @@ public class HttpHeaders extends Headers {
 	}
 
 	private static boolean isRFC5987AttrChar(byte c) {
-		return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z')
-				|| (c >= 'A' && c <= 'Z') || c == '!' || c == '#' || c == '$'
-				|| c == '&' || c == '+' || c == '-' || c == '.' || c == '^'
-				|| c == '_' || c == '`' || c == '|' || c == '~';
+		return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '!' || c == '#'
+				|| c == '$' || c == '&' || c == '+' || c == '-' || c == '.' || c == '^' || c == '_' || c == '`'
+				|| c == '|' || c == '~';
 	}
 
 }

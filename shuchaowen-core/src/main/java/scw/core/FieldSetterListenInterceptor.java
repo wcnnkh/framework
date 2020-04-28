@@ -7,10 +7,10 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.aop.ProxyUtils;
 import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
 
 public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSetterListen, Serializable {
@@ -24,7 +24,7 @@ public class FieldSetterListenInterceptor implements MethodInterceptor, FieldSet
 
 	public final Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
 		if (source == null) {
-			source = ClassUtils.getUserClass(obj);
+			source = ProxyUtils.getProxyAdapter().getUserClass(obj.getClass());
 		}
 
 		if (args.length == 0) {

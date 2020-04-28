@@ -43,10 +43,13 @@ public class MainApplication extends CommonApplication implements Application {
 	}
 
 	public static void configuration(Class<?> mainClass, String[] args) {
-		Thread.currentThread()
-				.setContextClassLoader(mainClass.getClassLoader());
-		GlobalPropertyFactory.getInstance().setBasePackageName(
-				mainClass.getPackage().getName());
+		Thread.currentThread().setContextClassLoader(mainClass.getClassLoader());
+		BasePackage basePackage = mainClass.getAnnotation(BasePackage.class);
+		if (basePackage == null) {
+			GlobalPropertyFactory.getInstance().setBasePackageName(mainClass.getPackage().getName());
+		} else {
+			GlobalPropertyFactory.getInstance().setBasePackageName(basePackage.value());
+		}
 	}
 
 	public static void run(MainApplication application) {
@@ -57,26 +60,21 @@ public class MainApplication extends CommonApplication implements Application {
 		run.start();
 	}
 
-	public static MainApplication getAutoMainApplicationImpl(
-			Class<?> mainClass, String[] args) throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException {
-		Collection<Class<MainApplication>> impls = InstanceUtils
-				.getConfigurationClassList(MainApplication.class,
-						GlobalPropertyFactory.getInstance());
+	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, String[] args)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class,
+				GlobalPropertyFactory.getInstance());
 		if (!CollectionUtils.isEmpty(impls)) {
 			Iterator<Class<MainApplication>> iterator = impls.iterator();
 			while (iterator.hasNext()) {
-				Constructor<MainApplication> constructor = ReflectionUtils
-						.findConstructor(iterator.next(), false, Class.class,
-								String[].class);
+				Constructor<MainApplication> constructor = ReflectionUtils.findConstructor(iterator.next(), false,
+						Class.class, String[].class);
 				if (constructor != null) {
 					ReflectionUtils.setAccessibleConstructor(constructor);
 					return constructor.newInstance(mainClass, args);
 				}
 
-				constructor = ReflectionUtils.findConstructor(iterator.next(),
-						false, Class.class);
+				constructor = ReflectionUtils.findConstructor(iterator.next(), false, Class.class);
 				if (constructor != null) {
 					ReflectionUtils.setAccessibleConstructor(constructor);
 					return constructor.newInstance(mainClass);
@@ -99,8 +97,7 @@ public class MainApplication extends CommonApplication implements Application {
 			application = new MainApplication(mainClass, args);
 		}
 
-		FormatUtils.info(mainClass, "use application: {}", application.getClass()
-				.getName());
+		FormatUtils.info(mainClass, "use application: {}", application.getClass().getName());
 		run(application);
 	}
 

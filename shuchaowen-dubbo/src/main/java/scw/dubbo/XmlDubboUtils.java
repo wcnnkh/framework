@@ -23,10 +23,10 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.CloneUtils;
 import scw.core.reflect.PropertyMapper;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.IgnoreClassVerification;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
+import scw.io.ResourceUtils;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
@@ -102,7 +102,7 @@ public final class XmlDubboUtils {
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
 			IgnoreClassVerification ignoreClassVerification = new IgnoreClassVerification(true, true);
-			Collection<Class<?>> clazzList = ClassUtils.getClassSet(packageName);
+			Collection<Class<?>> clazzList = ResourceUtils.getPackageScan().getClasses(packageName);
 			for (Class<?> clz : clazzList) {
 				Service service = clz.getAnnotation(Service.class);
 				if (service != null) {
@@ -143,7 +143,7 @@ public final class XmlDubboUtils {
 
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
-			for (Class<?> clz : ClassUtils.getClassSet(packageName)) {
+			for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(packageName)) {
 				if (!clz.isInterface() || AnnotationUtils.isIgnore(clz)) {
 					continue;
 				}

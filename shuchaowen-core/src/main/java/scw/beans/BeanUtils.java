@@ -18,7 +18,6 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
@@ -103,6 +102,10 @@ public final class BeanUtils {
 		if (Modifier.isFinal(type.getModifiers())) {// final修饰的类无法代理
 			return false;
 		}
+		
+		if(type.getName().startsWith("java.") || type.getName().startsWith("javax.")){
+			return false;
+		}
 
 		if (Filter.class.isAssignableFrom(type) || BeanLifeCycle.class.isAssignableFrom(type)
 				|| BeanConfiguration.class.isAssignableFrom(type) || BeanBuilderLoader.class.isAssignableFrom(type)
@@ -112,12 +115,7 @@ public final class BeanUtils {
 		}
 
 		for (String name : DISABLE_PROXY_BEANS) {
-			Class<?> clazz = ClassUtils.forNameNullable(name);
-			if (clazz == null) {
-				continue;
-			}
-
-			if (clazz.isAssignableFrom(type)) {
+			if(StringUtils.test(type.getName(), name)){
 				return false;
 			}
 		}

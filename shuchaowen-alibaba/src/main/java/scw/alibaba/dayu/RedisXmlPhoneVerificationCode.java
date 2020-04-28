@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import scw.core.utils.XTime;
 import scw.data.redis.Redis;
-import scw.result.ResultFactory;
+import scw.util.result.ResultFactory;
 
 public final class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Redis redis;

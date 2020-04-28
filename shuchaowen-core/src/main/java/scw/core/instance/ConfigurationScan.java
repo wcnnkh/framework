@@ -14,6 +14,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
+import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.comparator.CompareUtils;
@@ -21,7 +22,7 @@ import scw.util.value.property.PropertyFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ConfigurationScan implements Comparator<Class<?>> {
-	protected Logger logger = LoggerUtils.getConsoleLogger(getClass());
+	protected Logger logger = LoggerUtils.getLogger(getClass());
 
 	public int compare(Class<?> o1, Class<?> o2) {
 		Configuration c1 = o1.getAnnotation(Configuration.class);
@@ -29,9 +30,9 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 		return CompareUtils.compare(c1.order(), c2.order(), true);
 	}
 
-	protected Collection<Class<?>> scan(Class<?> type, String packageName) {
+	protected Collection<Class<?>> scan(Class<?> type, Collection<String> packageNames) {
 		Set<Class<?>> list = new HashSet<Class<?>>();
-		for (Class<?> clazz : ClassUtils.getClassSet(packageName)) {
+		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(packageNames)) {
 			if (clazz == type) {
 				continue;
 			}
@@ -69,21 +70,19 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 	}
 
 	public <T> Collection<Class<T>> scan(Class<? extends T> type, PropertyFactory propertyFactory,
-			Collection<? extends Class> excludeTypes, Collection<? extends String> packageNames) {
+			Collection<? extends Class> excludeTypes, Collection<String> packageNames) {
 		Set<Class<T>> set = new LinkedHashSet<Class<T>>();
-		for (String packageName : packageNames) {
-			for (Class<?> clazz : scan(type, packageName)) {
-				Configuration configuration = clazz.getAnnotation(Configuration.class);
-				if (configuration == null) {
-					continue;
-				}
-
-				if (ClassUtils.isAssignable(excludeTypes, clazz)) {
-					continue;
-				}
-
-				set.add((Class<T>) clazz);
+		for (Class<?> clazz : scan(type, packageNames)) {
+			Configuration configuration = clazz.getAnnotation(Configuration.class);
+			if (configuration == null) {
+				continue;
 			}
+
+			if (ClassUtils.isAssignable(excludeTypes, clazz)) {
+				continue;
+			}
+
+			set.add((Class<T>) clazz);
 		}
 
 		List<Class<T>> list = new ArrayList<Class<T>>(set);

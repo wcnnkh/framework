@@ -11,7 +11,7 @@ import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
-import scw.core.utils.ClassUtils;
+import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.MVCUtils;
@@ -41,12 +41,11 @@ public class DefaultActionManager implements ActionManager {
 		this.propertyFactory = propertyFactory;
 		this.actionFilters = InstanceUtils.getConfigurationList(
 				ActionFilter.class, beanFactory, propertyFactory);
-		for (Class<?> clz : ClassUtils.getClassSet(
+		for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(
 				Constants.SYSTEM_PACKAGE_NAME, scanAnnotationPackageName)) {
 			if (!isSupport(clz)) {
 				continue;
 			}
-
 			for (Method method : clz.getDeclaredMethods()) {
 				if (!isSupport(method)) {
 					continue;

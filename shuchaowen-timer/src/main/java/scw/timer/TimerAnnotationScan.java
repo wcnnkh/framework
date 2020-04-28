@@ -12,7 +12,7 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
+import scw.io.ResourceUtils;
 import scw.timer.annotation.Crontab;
 import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
@@ -23,8 +23,7 @@ import scw.util.value.property.PropertyFactory;
 public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Timer timer = beanFactory.getInstance(Timer.class);
-		for (Class<?> clz : ClassUtils
-				.getClassSet(getScanAnnotationPackageName())) {
+		for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(getScanAnnotationPackageName())) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true,
 					true, Schedule.class)) {
 				Schedule schedule = method.getAnnotation(Schedule.class);

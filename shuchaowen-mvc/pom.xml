@@ -19,11 +19,6 @@
 		
 		<dependency>
 			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-result</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-db</artifactId>
 			<scope>provided</scope>
 		</dependency>

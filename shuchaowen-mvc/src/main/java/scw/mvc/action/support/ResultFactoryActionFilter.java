@@ -9,7 +9,7 @@ import scw.mvc.action.Action;
 import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.annotation.ResultFactory;
-import scw.result.Result;
+import scw.util.result.Result;
 
 @Configuration(order=Integer.MAX_VALUE)
 public final class ResultFactoryActionFilter implements ActionFilter{

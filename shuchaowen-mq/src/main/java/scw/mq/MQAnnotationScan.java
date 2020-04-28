@@ -8,7 +8,7 @@ import scw.beans.BeanUtils;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
-import scw.core.utils.ClassUtils;
+import scw.io.ResourceUtils;
 import scw.mq.amqp.Exchange;
 import scw.mq.annotation.AmqpConsumer;
 import scw.mq.annotation.Consumer;
@@ -20,8 +20,7 @@ public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws Exception {
-		for (Class<?> clazz : ClassUtils
-				.getClassSet(getScanAnnotationPackageName())) {
+		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(getScanAnnotationPackageName())) {
 			scanningConsumer(beanFactory, clazz);
 			scanningAMQPConsumer(beanFactory, clazz);
 		}

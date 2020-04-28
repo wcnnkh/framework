@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import scw.aop.ProxyUtils;
 import scw.core.FieldSetterListen;
 import scw.core.Pagination;
 import scw.core.utils.ClassUtils;
@@ -19,6 +20,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.IteratorCallback;
 import scw.core.utils.IteratorCallback.Row;
 import scw.core.utils.StringUtils;
+import scw.io.ResourceUtils;
 import scw.orm.IteratorMapping;
 import scw.orm.MappingContext;
 import scw.orm.ORMException;
@@ -172,7 +174,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public boolean save(Object bean, String tableName) {
-		Class<?> userClass = ClassUtils.getUserClass(bean);
+		Class<?> userClass = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
 		return orm(OperationType.SAVE, userClass, bean, getSqlDialect()
 				.getTableName(userClass, bean, tableName));
 	}
@@ -185,7 +187,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			}
 		}
 
-		Class<?> userClass = ClassUtils.getUserClass(bean);
+		Class<?> userClass = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
 		return orm(OperationType.UPDATE, userClass, bean, getSqlDialect()
 				.getTableName(userClass, bean, tableName));
 	}
@@ -195,7 +197,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public boolean delete(Object bean, String tableName) {
-		Class<?> userClass = ClassUtils.getUserClass(bean);
+		Class<?> userClass = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
 		return orm(OperationType.DELETE, userClass, bean, tableName);
 	}
 
@@ -225,7 +227,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public boolean saveOrUpdate(Object bean, String tableName) {
-		Class<?> userClass = ClassUtils.getUserClass(bean);
+		Class<?> userClass = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
 		return orm(OperationType.SAVE_OR_UPDATE, userClass, bean,
 				getSqlDialect().getTableName(userClass, bean, tableName));
 	}
@@ -314,7 +316,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public void createTable(String packageName) {
-		Collection<Class<?>> list = ClassUtils.getClassSet(packageName);
+		Collection<Class<?>> list = ResourceUtils.getPackageScan().getClasses(packageName);
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {

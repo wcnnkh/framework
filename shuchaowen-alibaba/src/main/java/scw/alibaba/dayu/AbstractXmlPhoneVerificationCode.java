@@ -14,8 +14,8 @@ import scw.core.utils.XTime;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.result.Result;
-import scw.result.ResultFactory;
+import scw.util.result.Result;
+import scw.util.result.ResultFactory;
 
 public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode, scw.core.Destroy {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import scw.aop.ProxyUtils;
 import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.annotation.Configuration;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.lang.AlreadyExistsException;
 import scw.lang.ParameterVerifyException;
@@ -96,7 +96,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 		}
 
 		return getColumnValueMapExcludeName(
-				mapper.getObjectRelationalMapping(ClassUtils.getUserClass(obj)),
+				mapper.getObjectRelationalMapping(ProxyUtils.getProxyAdapter().getUserClass(obj.getClass())),
 				obj, CollectionUtils.asSet(excludeNames));
 	}
 
@@ -107,7 +107,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 		}
 
 		return getColumnValueMapEffectiveName(
-				mapper.getObjectRelationalMapping(ClassUtils.getUserClass(obj)),
+				mapper.getObjectRelationalMapping(ProxyUtils.getProxyAdapter().getUserClass(obj.getClass())),
 				obj, effectiveNames);
 	}
 
@@ -180,8 +180,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 				continue;
 			}
 
-			return mapper.getObjectRelationalMapping(ClassUtils
-					.getUserClass(obj));
+			return mapper.getObjectRelationalMapping(ProxyUtils.getProxyAdapter().getUserClass(obj.getClass()));
 		}
 		return null;
 	}
@@ -339,8 +338,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 		} else if (obj.getClass().isArray()) {
 			Assert.isTrue(Array.getLength(obj) == 0);
 		} else {
-			verify(mapper.getObjectRelationalMapping(ClassUtils
-					.getUserClass(obj)), obj);
+			verify(mapper.getObjectRelationalMapping(ProxyUtils.getProxyAdapter().getUserClass(obj.getClass())), obj);
 		}
 	}
 

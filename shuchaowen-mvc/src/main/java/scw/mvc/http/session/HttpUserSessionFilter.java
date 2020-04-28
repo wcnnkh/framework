@@ -7,8 +7,8 @@ import scw.core.utils.StringUtils;
 import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.action.manager.HttpAction;
 import scw.mvc.http.HttpChannel;
-import scw.result.ResultFactory;
 import scw.security.session.UserSession;
+import scw.util.result.ResultFactory;
 
 @SuppressWarnings("rawtypes")
 public class HttpUserSessionFilter extends scw.mvc.action.filter.HttpActionFilter	{
