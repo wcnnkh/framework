@@ -21,7 +21,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public final class SystemPropertyUtils {
-	private static Logger logger = LoggerUtils.getConsoleLogger(SystemPropertyUtils.class);
+	private static Logger logger = LoggerUtils.getLogger(SystemPropertyUtils.class);
 	/** Prefix for system property placeholders: "${" */
 	public static final String PLACEHOLDER_PREFIX = "${";
 

@@ -39,9 +39,6 @@ public final class ClassUtils {
 	/** The inner class separator character: '$' */
 	private static final char INNER_CLASS_SEPARATOR = '$';
 
-	/** The CGLIB class separator: "$$" */
-	public static final String CGLIB_CLASS_SEPARATOR = "$$";
-
 	/** The ".class" file suffix */
 	public static final String CLASS_FILE_SUFFIX = ".class";
 
@@ -533,50 +530,6 @@ public final class ClassUtils {
 		return clzList;
 	}
 
-	public static String getProxyRealClassName(Class<?> clz) {
-		return getProxyRealClassName(clz.getName());
-	}
-
-	public static String getProxyRealClassName(String cglibName) {
-		int index = cglibName.indexOf(CGLIB_CLASS_SEPARATOR);
-		if (index == -1) {
-			return cglibName;
-		} else {
-			return cglibName.substring(0, index);
-		}
-	}
-
-	/**
-	 * Check whether the given object is a CGLIB proxy.
-	 * 
-	 * @param object
-	 *            the object to check
-	 * @see shuchaowen.spring.aop.support.AopUtils#isCglibProxy(Object)
-	 */
-	public static boolean isCglibProxy(Object object) {
-		return ClassUtils.isCglibProxyClass(object.getClass());
-	}
-
-	/**
-	 * Check whether the specified class is a CGLIB-generated class.
-	 * 
-	 * @param clazz
-	 *            the class to check
-	 */
-	public static boolean isCglibProxyClass(Class<?> clazz) {
-		return (clazz != null && isCglibProxyClassName(clazz.getName()));
-	}
-
-	/**
-	 * Check whether the specified class name is a CGLIB-generated class.
-	 * 
-	 * @param className
-	 *            the class name to check
-	 */
-	public static boolean isCglibProxyClassName(String className) {
-		return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
-	}
-
 	/**
 	 * Register the given common classes with the ClassUtils cache.
 	 */
@@ -660,6 +613,8 @@ public final class ClassUtils {
 			// ignore
 		} catch (NoClassDefFoundError e) {
 			// ignore
+		}catch (UnsupportedClassVersionError e) {
+			// ignore jdk版本不对
 		}
 		return clazz;
 	}
@@ -828,39 +783,6 @@ public final class ClassUtils {
 	}
 
 	/**
-	 * Return the user-defined class for the given instance: usually simply the
-	 * class of the given instance, but the original class in case of a
-	 * CGLIB-generated subclass.
-	 * 
-	 * @param instance
-	 *            the instance to check
-	 * @return the user-defined class
-	 */
-	public static Class<?> getUserClass(Object instance) {
-		Assert.notNull(instance, "Instance must not be null");
-		return getUserClass(instance.getClass());
-	}
-
-	/**
-	 * Return the user-defined class for the given class: usually simply the
-	 * given class, but the original class in case of a CGLIB-generated
-	 * subclass.
-	 * 
-	 * @param clazz
-	 *            the class to check
-	 * @return the user-defined class
-	 */
-	public static Class<?> getUserClass(Class<?> clazz) {
-		if (clazz != null && clazz.getName().contains(CGLIB_CLASS_SEPARATOR)) {
-			Class<?> superClass = clazz.getSuperclass();
-			if (superClass != null && !Object.class.equals(superClass)) {
-				return superClass;
-			}
-		}
-		return clazz;
-	}
-
-	/**
 	 * Check whether the given class is cache-safe in the given context, i.e.
 	 * whether it is loaded by the given ClassLoader or a parent of it.
 	 * 
@@ -900,11 +822,7 @@ public final class ClassUtils {
 	public static String getShortName(String className) {
 		Assert.hasLength(className, "Class name must not be empty");
 		int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR);
-		int nameEndIndex = className.indexOf(CGLIB_CLASS_SEPARATOR);
-		if (nameEndIndex == -1) {
-			nameEndIndex = className.length();
-		}
-		String shortName = className.substring(lastDotIndex + 1, nameEndIndex);
+		String shortName = className.substring(lastDotIndex + 1, className.length());
 		shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);
 		return shortName;
 	}

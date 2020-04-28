@@ -1,17 +1,21 @@
 package scw.io.support;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.classreading.SimpleMetadataReaderFactory;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Resource;
@@ -19,9 +23,12 @@ import scw.lang.Ignore;
 import scw.util.ConcurrentReferenceHashMap;
 
 public class PackageScan {
+	public static final String ALL = "*";
+	static final String CLASS_RESOURCE = "**/*.class";
 	private final ResourcePatternResolver resourcePatternResolver;
 	private final MetadataReaderFactory metadataReaderFactory;
 	private boolean useCache = true;
+	private String classDirectory;
 
 	public PackageScan(boolean useCache) {
 		this(new SimpleMetadataReaderFactory(), useCache);
@@ -46,10 +53,36 @@ public class PackageScan {
 		return metadataReaderFactory;
 	}
 
+	public String getClassDirectory() {
+		return classDirectory == null ? GlobalPropertyFactory.getInstance().getClassesDirectory() : classDirectory;
+	}
+
+	public void setClassDirectory(String classDirectory) {
+		this.classDirectory = classDirectory;
+	}
+
 	protected Collection<Class<?>> getClassesInternal(String packageName) throws IOException {
+		String usePackageName = packageName;
+		if (StringUtils.isEmpty(usePackageName) || usePackageName.equals(ALL)) {
+			usePackageName = ALL;
+			String classDirectory = getClassDirectory();
+			if (!StringUtils.isEmpty(classDirectory)) {
+				Collection<Class<?>> classes = getDirectoryClasses(classDirectory,
+						resourcePatternResolver.getClassLoader(), false);
+				return classes;
+			}
+			return Collections.emptyList();
+		} else {
+			usePackageName = usePackageName.replace(".", "/");
+		}
+
+		if (!usePackageName.endsWith("/")) {
+			usePackageName = usePackageName + "/";
+		}
+
 		List<Class<?>> classes = new LinkedList<Class<?>>();
-		for (Resource resource : resourcePatternResolver.getResources(
-				ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packageName.replace(".", "/") + "/**/*.class")) {
+		for (Resource resource : resourcePatternResolver
+				.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + usePackageName + CLASS_RESOURCE)) {
 			MetadataReader reader = metadataReaderFactory.getMetadataReader(resource);
 			if (reader == null) {
 				continue;
@@ -57,11 +90,6 @@ public class PackageScan {
 
 			if (reader.getAnnotationMetadata().hasAnnotation(Deprecated.class.getName())
 					|| reader.getAnnotationMetadata().hasAnnotation(Ignore.class.getName())) {
-				continue;
-			}
-
-			if (reader.getClassMetadata().getClassName().startsWith("java.")
-					|| reader.getClassMetadata().getClassName().startsWith("javax.")) {
 				continue;
 			}
 
@@ -136,5 +164,58 @@ public class PackageScan {
 			}
 		}
 		return sets;
+	}
+
+	/**
+	 * 获取目录下的class
+	 * 
+	 * @param directorey
+	 * @param prefix
+	 * @return
+	 */
+	protected final Collection<Class<?>> getDirectoryClasses(String directory, ClassLoader classLoader,
+			boolean initialize) {
+		List<Class<?>> list = new LinkedList<Class<?>>();
+		appendDirectoryClass(null, new File(directory), list, classLoader, initialize);
+		return list;
+	}
+
+	private Class<?> forFileName(String classFile, ClassLoader classLoader, boolean initialize) {
+		if (!classFile.endsWith(ClassUtils.CLASS_FILE_SUFFIX)) {
+			return null;
+		}
+
+		String name = classFile.substring(0, classFile.length() - 6);
+		name = name.replaceAll("\\\\", ".");
+		name = name.replaceAll("/", ".");
+		try {
+			return ClassUtils.forName(name, initialize, classLoader);
+		} catch (Throwable e) {
+		}
+		return null;
+	}
+
+	private void appendDirectoryClass(String rootPackage, File file, Collection<Class<?>> classList,
+			ClassLoader classLoader, boolean initialize) {
+		File[] files = file.listFiles();
+		if (ArrayUtils.isEmpty(files)) {
+			return;
+		}
+
+		for (File f : files) {
+			if (f.isDirectory()) {
+				appendDirectoryClass(
+						StringUtils.isEmpty(rootPackage) ? f.getName() + "." : rootPackage + f.getName() + ".", f,
+						classList, classLoader, initialize);
+			} else {
+				if (f.getName().endsWith(ClassUtils.CLASS_FILE_SUFFIX)) {
+					String classFile = StringUtils.isEmpty(rootPackage) ? f.getName() : rootPackage + f.getName();
+					Class<?> clz = forFileName(classFile, classLoader, initialize);
+					if (clz != null) {
+						classList.add(clz);
+					}
+				}
+			}
+		}
 	}
 }

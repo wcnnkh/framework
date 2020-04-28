@@ -18,7 +18,7 @@ import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
 public class AutoSource<T> {
-	private static Logger log = LoggerUtils.getConsoleLogger(AutoSource.class);
+	private static Logger log = LoggerUtils.getLogger(AutoSource.class);
 	private final Logger logger;
 	private final NoArgsInstanceFactory instanceFactory;
 	private final PropertyFactory propertyFactory;

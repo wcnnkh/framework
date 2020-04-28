@@ -41,15 +41,16 @@ public class ResourceOperations extends DefaultResourceLoader {
 
 	public List<String> getEnvironmentalResourceNameList(String resourceName) {
 		String[] suffixs = getResourceEnvironmentalSuffixs();
+		String resourceNameToUse = getPropertyFactory().format(resourceName, true);
 		if (ArrayUtils.isEmpty(suffixs)) {
-			return Arrays.asList(resourceName);
+			return Arrays.asList(resourceNameToUse);
 		}
 
 		List<String> list = new ArrayList<String>(suffixs.length + 1);
 		for (String name : suffixs) {
-			list.add(getTestFileName(resourceName, name));
+			list.add(getTestFileName(resourceNameToUse, name));
 		}
-		list.add(resourceName);
+		list.add(resourceNameToUse);
 		return list;
 	}
 

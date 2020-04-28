@@ -54,29 +54,13 @@ public final class LoggerUtils {
 		return new LazyLogger(name, placeholder);
 	}
 
-	public static Logger getConsoleLogger(Class<?> clazz) {
-		return CONSOLE_LOGGER_FACTORY.getLogger(clazz.getName());
-	}
-
-	public static Logger getConsoleLogger(Class<?> clazz, String placeholder) {
-		return CONSOLE_LOGGER_FACTORY.getLogger(clazz.getName(), placeholder);
-	}
-
-	public static Logger getConsoleLogger(String name) {
-		return CONSOLE_LOGGER_FACTORY.getLogger(name);
-	}
-
-	public static Logger getConsoleLogger(String name, String placeholder) {
-		return CONSOLE_LOGGER_FACTORY.getLogger(name, placeholder);
-	}
-
 	public static ILoggerFactory getILoggerFactory() {
 		ILoggerFactory loggerFactory = null;
 		try {
 			loggerFactory = (ILoggerFactory) I_LOGGER_FACTORY_METHOD.invoke(null);
 		} catch (Exception e) {
 		}
-		return I_LOGGER_FACTORY_METHOD == null ? CONSOLE_LOGGER_FACTORY : loggerFactory;
+		return loggerFactory == null ? CONSOLE_LOGGER_FACTORY : loggerFactory;
 	}
 
 	public static boolean isLoggerEnabled(Logger logger, Level level) {

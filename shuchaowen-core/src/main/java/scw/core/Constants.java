@@ -66,7 +66,7 @@ public class Constants {
 	 */
 	public static final int ASM_VERSION = StringUtils.parseInt(
 			GlobalPropertyFactory.getInstance().getString(
-					"constants.asm.version"), Opcodes.ASM5);
+					"constants.asm.version"), Opcodes.ASM7);
 
 	/**
 	 * 可用的处理器数量

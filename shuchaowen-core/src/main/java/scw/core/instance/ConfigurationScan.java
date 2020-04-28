@@ -22,7 +22,7 @@ import scw.util.value.property.PropertyFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ConfigurationScan implements Comparator<Class<?>> {
-	protected Logger logger = LoggerUtils.getConsoleLogger(getClass());
+	protected Logger logger = LoggerUtils.getLogger(getClass());
 
 	public int compare(Class<?> o1, Class<?> o2) {
 		Configuration c1 = o1.getAnnotation(Configuration.class);

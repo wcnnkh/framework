@@ -46,7 +46,6 @@ public class DefaultActionManager implements ActionManager {
 			if (!isSupport(clz)) {
 				continue;
 			}
-
 			for (Method method : clz.getDeclaredMethods()) {
 				if (!isSupport(method)) {
 					continue;

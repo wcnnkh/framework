@@ -1,20 +1,29 @@
-package scw.io;
+package scw.io.support;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
+import scw.core.GlobalPropertyFactory;
+import scw.core.utils.StringUtils;
+import scw.io.DefaultResourceLoader;
+import scw.io.FileSystemResource;
+import scw.io.Resource;
+
 public class FileSystemSearchResourceLoader extends DefaultResourceLoader {
 	private String rootPath;
+	private boolean compatible;
 	private boolean search;
 
-	public FileSystemSearchResourceLoader(boolean search) {
-		this(null, search);
+	public FileSystemSearchResourceLoader(boolean search, boolean compatible) {
+		this(null, search, compatible);
 	}
 
-	public FileSystemSearchResourceLoader(String rootPath, boolean search) {
-		this.rootPath = rootPath;
+	public FileSystemSearchResourceLoader(String rootPath, boolean search, boolean compatible) {
+		this.rootPath = StringUtils.cleanPath(
+				StringUtils.isEmpty(rootPath) ? GlobalPropertyFactory.getInstance().getWorkPath() : rootPath);
 		this.search = search;
+		this.compatible = compatible;
 	}
 
 	@Override
@@ -23,17 +32,24 @@ public class FileSystemSearchResourceLoader extends DefaultResourceLoader {
 			return null;
 		}
 
+		String path = StringUtils.cleanPath(resource);
+		if(compatible){
+			// 这样做是为了兼容老版本,但并不可靠
+			if (path.startsWith(rootPath)) {
+				path = path.substring(rootPath.length());
+			}
+		}
+
 		File file = null;
 		if (search) {
-			file = searchFile(resource, new File(rootPath == null ? "" : rootPath));
+			file = searchFile(path, new File(rootPath));
 		} else {
-			file = new File((rootPath == null ? "" : rootPath) + File.separator + resource);
+			file = new File(rootPath + File.separator + path);
 		}
 
 		if (file == null || !file.exists()) {
 			return null;
 		}
-
 		return new FileSystemResource(file);
 	}
 

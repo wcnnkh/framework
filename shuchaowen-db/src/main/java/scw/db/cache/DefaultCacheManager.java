@@ -2,8 +2,8 @@ package scw.db.cache;
 
 import java.util.Arrays;
 
+import scw.aop.ProxyUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
 import scw.data.Cache;
 import scw.data.TransactionContextCache;
 import scw.data.WrapperCache;
@@ -28,11 +28,11 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	}
 
 	public void save(Object bean) {
-		cache.add(getSqlMapper().getObjectKey(ClassUtils.getUserClass(bean), bean), bean);
+		cache.add(getSqlMapper().getObjectKey(ProxyUtils.getProxyAdapter().getUserClass(bean.getClass()), bean), bean);
 	}
 
 	public void update(Object bean) {
-		cache.set(getSqlMapper().getObjectKey(ClassUtils.getUserClass(bean), bean), bean);
+		cache.set(getSqlMapper().getObjectKey(ProxyUtils.getProxyAdapter().getUserClass(bean.getClass()), bean), bean);
 	}
 
 	public void saveOrUpdate(Object bean) {
@@ -61,6 +61,7 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	}
 
 	public void delete(Object bean) {
-		getCache().delete(getSqlMapper().getObjectKey(ClassUtils.getUserClass(bean), bean));
+		getCache()
+				.delete(getSqlMapper().getObjectKey(ProxyUtils.getProxyAdapter().getUserClass(bean.getClass()), bean));
 	}
 }

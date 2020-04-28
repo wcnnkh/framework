@@ -201,7 +201,7 @@ import scw.util.PathMatcher;
  */
 public class PathMatchingResourcePatternResolver implements ResourcePatternResolver {
 
-	private static final Logger logger = LoggerUtils.getConsoleLogger(PathMatchingResourcePatternResolver.class);
+	private static final Logger logger = LoggerUtils.getLogger(PathMatchingResourcePatternResolver.class);
 
 	private static Method equinoxResolveMethod;
 

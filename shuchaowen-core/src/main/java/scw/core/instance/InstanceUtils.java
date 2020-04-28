@@ -20,7 +20,7 @@ import scw.util.value.property.PropertyFactory;
 
 @SuppressWarnings("rawtypes")
 public final class InstanceUtils {
-	private static Logger logger = LoggerUtils.getConsoleLogger(InstanceUtils.class);
+	private static Logger logger = LoggerUtils.getLogger(InstanceUtils.class);
 
 	private InstanceUtils() {
 	};

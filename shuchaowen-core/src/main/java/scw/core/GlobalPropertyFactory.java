@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
 import scw.io.ResourceOperations;
+import scw.io.support.PackageScan;
 import scw.util.FormatUtils;
 import scw.util.MultiEnumeration;
 import scw.util.value.Value;
@@ -172,7 +173,7 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 	 * @return
 	 */
 	public String getBasePackageName() {
-		return getString(BASE_PACKAGE_NAME);
+		return getValue(BASE_PACKAGE_NAME, String.class, PackageScan.ALL);
 	}
 
 	public void setBasePackageName(String packageName) {

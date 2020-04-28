@@ -305,6 +305,10 @@ public final class ConfigUtils {
 	 */
 	public static void invokeSetterByProeprties(Object instance, Map<?, ?> properties, boolean propertieGetAndRemove,
 			boolean invokePublic, Collection<String> asNameList, boolean findAndRemove) {
+		if(properties == null){
+			return ;
+		}
+		
 		List<String> nameList = null;
 		if (!CollectionUtils.isEmpty(asNameList)) {
 			nameList = new ArrayList<String>(asNameList);
