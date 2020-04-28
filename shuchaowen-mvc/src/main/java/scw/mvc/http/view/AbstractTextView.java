@@ -6,7 +6,7 @@ import scw.mvc.http.HttpResponse;
 import scw.mvc.http.HttpView;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.net.Text;
+import scw.net.message.Text;
 
 public abstract class AbstractTextView extends HttpView implements Text {
 

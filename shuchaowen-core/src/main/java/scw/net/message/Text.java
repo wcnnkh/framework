@@ -1,5 +1,6 @@
-package scw.net;
+package scw.net.message;
 
+import scw.net.MimeType;
 
 /**
  * 对于文本的定义，这里只是一个定义，不做具体实现
