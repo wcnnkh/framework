@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 可用于装配的
+ * 全局配置
  * 
  * @author shuchaowen
  *
