@@ -1,4 +1,4 @@
-package scw.util;
+package scw.util.result;
 
 import java.io.Serializable;
 

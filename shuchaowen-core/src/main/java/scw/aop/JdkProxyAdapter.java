@@ -7,7 +7,7 @@ import java.util.Arrays;
 
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
-import scw.util.SimpleResult;
+import scw.util.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE + 100)
 public class JdkProxyAdapter extends AbstractProxyAdapter {

@@ -4,8 +4,8 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.lang.ParameterException;
 import scw.mvc.Channel;
-import scw.result.ResultFactory;
 import scw.security.authority.AuthorizationFailureException;
+import scw.util.result.ResultFactory;
 
 /**
  * 默认的异常处理

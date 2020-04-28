@@ -1,15 +1,13 @@
-package scw.result.support;
+package scw.util.result;
 
 import scw.beans.annotation.Bean;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.lang.Nullable;
-import scw.net.MimeType;
-import scw.net.MimeTypeUtils;
-import scw.result.ResultMessageFactory;
 
 @Bean(proxy = false)
 public class DefaultResultFactory extends AbstractResultFactory {
+	private ResultMessageFactory resultMessageFactory;
 	private final int defaultErrorCode;
 	private final int successCode;
 	private final int authorizationFailureCode;
@@ -20,32 +18,31 @@ public class DefaultResultFactory extends AbstractResultFactory {
 			@ParameterName("result.success.code") @DefaultValue("0") int successCode,
 			@ParameterName("result.authoriaztion.fail.code") @DefaultValue("-1") int authorizationFailureCode,
 			@ParameterName("result.parameter.error.code") @DefaultValue("2") int parameterErrorCode) {
-		this(resultMessageFactory, defaultErrorCode, successCode, authorizationFailureCode, parameterErrorCode,
-				MimeTypeUtils.APPLICATION_JSON);
-	}
-
-	public DefaultResultFactory(ResultMessageFactory resultMessageFactory, int defaultErrorCode, int successCode,
-			int authorizationFailureCode, int parameterErrorCode, MimeType mimeType) {
-		super(resultMessageFactory, mimeType);
+		this.resultMessageFactory = resultMessageFactory;
 		this.defaultErrorCode = defaultErrorCode;
 		this.successCode = successCode;
 		this.authorizationFailureCode = authorizationFailureCode;
 		this.parameterErrorCode = parameterErrorCode;
 	}
 
-	public int getDefaultErrorCode() {
+	public long getDefaultErrorCode() {
 		return defaultErrorCode;
 	}
 
-	public int getSuccessCode() {
+	public long getSuccessCode() {
 		return successCode;
 	}
 
-	public int getAuthorizationFailureCode() {
+	public long getAuthorizationFailureCode() {
 		return authorizationFailureCode;
 	}
 
-	public int getParamterErrorCode() {
+	public long getParamterErrorCode() {
 		return parameterErrorCode;
+	}
+
+	@Override
+	protected String getMsg(long code) {
+		return resultMessageFactory == null ? null : resultMessageFactory.getMessage(code);
 	}
 }

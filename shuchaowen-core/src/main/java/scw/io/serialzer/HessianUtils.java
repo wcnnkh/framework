@@ -1,4 +1,4 @@
-package scw.integration.serialzer;
+package scw.io.serialzer;
 
 import java.io.InputStream;
 import java.io.OutputStream;

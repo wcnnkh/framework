@@ -1,4 +1,4 @@
-package scw.integration.serialzer;
+package scw.io.serialzer;
 
 import com.caucho.hessian.io.AbstractSerializerFactory;
 import com.caucho.hessian.io.Deserializer;

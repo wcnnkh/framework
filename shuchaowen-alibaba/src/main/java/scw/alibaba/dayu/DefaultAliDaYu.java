@@ -10,9 +10,9 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.client.http.HttpUtils;
 import scw.net.http.MediaType;
-import scw.result.DataResult;
-import scw.result.ResultFactory;
 import scw.security.SignatureUtils;
+import scw.util.result.DataResult;
+import scw.util.result.ResultFactory;
 
 public final class DefaultAliDaYu implements AliDaYu {
 	private static Logger logger = LoggerFactory
