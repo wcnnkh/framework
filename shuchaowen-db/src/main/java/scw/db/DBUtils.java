@@ -25,7 +25,8 @@ import scw.util.ConfigUtils;
 public final class DBUtils {
 	private static final String IGNORE_SQL_START_WITH = StringUtils
 			.toString(GlobalPropertyFactory.getInstance().getString("db.file.sql.ignore.start.with"), "##");
-
+	public static final String DEFAULT_CONFIGURATION = "/db/db.properties";
+	
 	private DBUtils() {
 	};
 
