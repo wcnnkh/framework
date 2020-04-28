@@ -1416,7 +1416,7 @@ public abstract class ReflectionUtils {
 				return null;
 			}
 
-			getter.setAccessible(true);
+			setAccessibleMethod(getter);
 		}
 
 		return getter;
@@ -1454,7 +1454,8 @@ public abstract class ReflectionUtils {
 			if (Modifier.isPrivate(setter.getModifiers())) {
 				return null;
 			}
-			setter.setAccessible(true);
+			
+			setAccessibleMethod(setter);
 		}
 		return setter;
 	}

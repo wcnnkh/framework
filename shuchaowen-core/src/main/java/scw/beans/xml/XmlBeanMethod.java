@@ -5,18 +5,18 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
+import scw.beans.AbstractBeanMethod;
 import scw.beans.BeanFactory;
-import scw.beans.BeanMethod;
 import scw.beans.BeanUtils;
 import scw.beans.BeansException;
 import scw.json.JSONUtils;
 import scw.util.value.property.PropertyFactory;
 
-public class XmlBeanMethodInfo implements BeanMethod {
+public class XmlBeanMethod extends AbstractBeanMethod {
 	private Method method;
 	private XmlBeanParameter[] beanMethodParameters;
 
-	public XmlBeanMethodInfo(Class<?> type, Node node) throws Exception {
+	public XmlBeanMethod(Class<?> type, Node node) throws Exception {
 		if (node.getAttributes() == null) {
 			throw new BeansException("not found method name");
 		}
@@ -51,8 +51,11 @@ public class XmlBeanMethodInfo implements BeanMethod {
 		}
 
 		if (this.method == null) {
-			throw new BeansException(type.getName() + " not found method [" + name + "] parameterTypes " + JSONUtils.toJSONString(xmlBeanParameters));
+			throw new BeansException(type.getName() + " not found method [" + name + "] parameterTypes "
+					+ JSONUtils.toJSONString(xmlBeanParameters));
 		}
+
+		checkMethod(method);
 	}
 
 	public Object invoke(Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {

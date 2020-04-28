@@ -1,6 +1,7 @@
 package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +39,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.lang.Ignore;
@@ -393,6 +395,22 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, B
 			addBeanConfiguration(configuration);
 		}
 
+		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(BeanUtils.getScanAnnotationPackageName())) {
+			BeanMetadata metadata = new BeanMetadata(clazz);
+			for (BeanField beanField : metadata.getAutowritedBeanFields()) {
+				if (Modifier.isStatic(beanField.getFieldDefinition().getField().getModifiers())) {
+					beanField.wired(null, this, propertyFactory);
+					;
+				}
+			}
+
+			for (BeanMethod beanMethod : metadata.getInitMethods()) {
+				if (Modifier.isStatic(beanMethod.getMethod().getModifiers())) {
+					beanMethod.invoke(null, this, propertyFactory);
+				}
+			}
+		}
+
 		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class,
 				this, getPropertyFactory())) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
@@ -423,6 +441,15 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, B
 					beanDefinition.destroy(obj);
 				} catch (Throwable e) {
 					logger.error(e, "destroy error: {}", beanDefinition.getId());
+				}
+			}
+		}
+
+		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(BeanUtils.getScanAnnotationPackageName())) {
+			BeanMetadata metadata = new BeanMetadata(clazz);
+			for (BeanMethod beanMethod : metadata.getDestroyMethods()) {
+				if (Modifier.isStatic(beanMethod.getMethod().getModifiers())) {
+					beanMethod.invoke(null, this, propertyFactory);
 				}
 			}
 		}

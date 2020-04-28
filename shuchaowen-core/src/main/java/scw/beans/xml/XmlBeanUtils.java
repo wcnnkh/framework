@@ -145,9 +145,9 @@ public final class XmlBeanUtils {
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (tagName.equalsIgnoreCase(n.getNodeName())) {
-				XmlBeanMethodInfo xmlBeanMethodInfo = new XmlBeanMethodInfo(
+				XmlBeanMethod xmlBeanMethod = new XmlBeanMethod(
 						clz, n);
-				list.add(xmlBeanMethodInfo);
+				list.add(xmlBeanMethod);
 			}
 		}
 		return list;
