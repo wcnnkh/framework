@@ -7,21 +7,21 @@ import scw.core.parameter.annotation.DefaultValue;
 import scw.core.utils.XUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.db.DBUtils;
 import scw.db.DefaultDB;
-import scw.db.support.DBConfigConstants;
 
 @Bean(proxy = false)
-public class DruidDB extends DefaultDB implements DBConfigConstants, Destroy {
+public class DruidDB extends DefaultDB implements Destroy {
 
-	public DruidDB(Redis redis, @ResourceParameter @DefaultValue(DEFAULT_CONFIG) String propertiesFile) {
+	public DruidDB(Redis redis, @ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
 		super(new DruidDBConfig(propertiesFile, redis));
 	}
 
-	public DruidDB(Memcached memcached, @ResourceParameter @DefaultValue(DEFAULT_CONFIG) String propertiesFile) {
+	public DruidDB(Memcached memcached, @ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
 		super(new DruidDBConfig(propertiesFile, memcached));
 	}
 
-	public DruidDB(@ResourceParameter @DefaultValue(DEFAULT_CONFIG) String propertiesFile) {
+	public DruidDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
 		super(new DruidDBConfig(propertiesFile));
 	}
 

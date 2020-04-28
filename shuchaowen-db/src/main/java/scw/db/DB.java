@@ -1,7 +1,5 @@
 package scw.db;
 
-import java.sql.SQLException;
-
 import scw.db.cache.CacheManager;
 import scw.orm.sql.ORMOperations;
 import scw.sql.Sql;
@@ -16,8 +14,6 @@ public interface DB extends ORMOperations, SqlOperations {
 			boolean registerManager);
 
 	void createTable(String packageName, boolean registerManager);
-
-	void executeSqlByFile(String filePath, boolean lines) throws SQLException;
 
 	void asyncExecute(AsyncExecute asyncExecute);
 

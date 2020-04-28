@@ -9,9 +9,11 @@ import scw.beans.builder.BeanBuilder;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
+import scw.core.instance.annotation.Configuration;
 import scw.db.DBUtils;
 import scw.io.ResourceUtils;
 
+@Configuration(order=Integer.MIN_VALUE)
 public class DruidBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {

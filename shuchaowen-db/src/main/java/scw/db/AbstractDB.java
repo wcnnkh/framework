@@ -126,14 +126,6 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 
-	public void executeSqlByFile(String filePath, boolean lines)
-			throws SQLException {
-		Collection<Sql> sqls = DBUtils.getSqlByFile(filePath, lines);
-		for (Sql sql : sqls) {
-			execute(sql);
-		}
-	}
-
 	@Override
 	public boolean save(Object bean, String tableName) {
 		boolean b = super.save(bean, tableName);

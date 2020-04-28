@@ -31,7 +31,7 @@ import scw.util.queue.MemoryQueue;
 import scw.util.queue.MessageQueue;
 
 @SuppressWarnings("rawtypes")
-public abstract class AbstractDBConfig implements DBConfig, DBConfigConstants, Destroy {
+public abstract class AbstractDBConfig implements DBConfig, Destroy {
 	private String sannerTablePackage;
 	private SqlDialect sqlDialect;
 	private CacheManager cacheManager;
