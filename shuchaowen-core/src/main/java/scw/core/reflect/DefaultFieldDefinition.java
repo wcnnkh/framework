@@ -46,11 +46,12 @@ public final class DefaultFieldDefinition implements FieldDefinition {
 		}
 	}
 
-	public void set(Object obj, Object value) throws Exception {
+	public Object set(Object obj, Object value) throws Exception {
 		if (setter == null) {
 			field.set(Modifier.isStatic(field.getModifiers()) ? null : obj, value);
+			return null;
 		} else {
-			setter.invoke(Modifier.isStatic(setter.getModifiers()) ? null : obj, value);
+			return setter.invoke(Modifier.isStatic(setter.getModifiers()) ? null : obj, value);
 		}
 	}
 

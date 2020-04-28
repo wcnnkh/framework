@@ -1,6 +1,5 @@
 package scw.beans.xml;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,14 +12,12 @@ import scw.beans.builder.ConstructorBeanBuilder;
 import scw.core.instance.AutoConstructorBuilder;
 import scw.core.instance.ConstructorBuilder;
 import scw.core.parameter.ParameterUtils;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
 import scw.util.value.property.PropertyFactory;
 
 public class XmlBeanBuilder extends ConstructorBeanBuilder {
-	private final XmlBeanParameter[] properties;
 	private volatile ConstructorBuilder constructorBuilder;
 
 	public XmlBeanBuilder(BeanFactory beanFactory,
@@ -29,11 +26,18 @@ public class XmlBeanBuilder extends ConstructorBeanBuilder {
 		super(beanFactory, propertyFactory, targetClass);
 		filterNames.addAll(getFilters(beanNode));
 		NodeList nodeList = beanNode.getChildNodes();
-		initMethods.addAll(XmlBeanUtils.getInitMethodList(getTargetClass(),
-				nodeList));
-		this.destroyMethods.addAll(XmlBeanUtils.getDestroyMethodList(
-				getTargetClass(), nodeList));
-		this.properties = XmlBeanUtils.getBeanProperties(nodeList);
+		ioc.getInit()
+				.getIocProcessors()
+				.addAll(XmlBeanUtils.getInitMethodIocProcessors(
+						getTargetClass(), nodeList));
+		ioc.getDestroy()
+				.getIocProcessors()
+				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(
+						getTargetClass(), nodeList));
+		ioc.getAutowired()
+				.getIocProcessors()
+				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(
+						targetClass, nodeList));
 
 		if (!getTargetClass().isInterface()) {// 可能只是映射
 			XmlBeanParameter[] constructorParameters = XmlBeanUtils
@@ -58,24 +62,6 @@ public class XmlBeanBuilder extends ConstructorBeanBuilder {
 		}
 
 		return Arrays.asList(StringUtils.commonSplit(filters));
-	}
-
-	@Override
-	public void init(Object instance) throws Exception {
-		if (!ArrayUtils.isEmpty(properties)) {
-			for (XmlBeanParameter beanProperties : properties) {
-				Field field = ReflectionUtils.getField(getTargetClass(),
-						beanProperties.getDisplayName(), true);
-				if (field == null) {
-					continue;
-				}
-
-				ReflectionUtils.setFieldValue(getTargetClass(), field,
-						instance, beanProperties.parseValue(beanFactory,
-								propertyFactory, field.getGenericType()));
-			}
-		}
-		super.init(instance);
 	}
 
 	@Override

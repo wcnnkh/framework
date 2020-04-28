@@ -10,7 +10,7 @@ public interface FieldDefinition {
 
 	Object get(Object obj) throws Exception;
 
-	void set(Object obj, Object value) throws Exception;
+	Object set(Object obj, Object value) throws Exception;
 
 	Class<?> getDeclaringClass();
 
