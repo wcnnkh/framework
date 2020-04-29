@@ -7,7 +7,7 @@ import scw.logger.AbstractILoggerFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerLevelUtils;
 
-@Configuration(order=Integer.MIN_VALUE + 100)
+@Configuration(order=Integer.MIN_VALUE + 400)
 public class Log4j2LoggerFactory extends AbstractILoggerFactory {
 
 	static {
