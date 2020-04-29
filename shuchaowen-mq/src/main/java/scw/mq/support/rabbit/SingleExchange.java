@@ -11,7 +11,7 @@ import com.rabbitmq.client.Envelope;
 
 import scw.async.filter.Async;
 import scw.core.GlobalPropertyFactory;
-import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mq.amqp.AmqpQueueConfig;

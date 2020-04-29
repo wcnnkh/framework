@@ -6,7 +6,7 @@ import scw.async.AbstractAsyncExecutor;
 import scw.async.AsyncRunnable;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
-import scw.io.SerializerUtils;
+import scw.io.serialzer.SerializerUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

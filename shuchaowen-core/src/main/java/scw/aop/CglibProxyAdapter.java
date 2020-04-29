@@ -8,6 +8,7 @@ import scw.cglib.proxy.Enhancer;
 import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
 import scw.core.instance.annotation.Configuration;
+import scw.core.utils.ClassUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.util.result.SimpleResult;
 
@@ -22,32 +23,37 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 	}
 
 	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
-		return CglibProxy.createEnhancer(clazz,
-				mergeInterfaces(clazz, interfaces)).createClass();
+		return createEnhancer(clazz, interfaces).createClass();
 	}
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces,
-			FilterChain filterChain) {
-		return new CglibProxy(clazz, mergeInterfaces(clazz, interfaces),
-				new FiltersConvertCglibMethodInterceptor(clazz, filterChain));
+	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
+		return new CglibProxy(clazz, interfaces, new FiltersConvertCglibMethodInterceptor(clazz, filterChain));
 	}
 
-	private static final class FiltersConvertCglibMethodInterceptor implements
-			MethodInterceptor, Serializable {
+	private static Enhancer createEnhancer(Class<?> clazz, Class<?>[] interfaces) {
+		Enhancer enhancer = new Enhancer();
+		if (Serializable.class.isAssignableFrom(clazz)) {
+			enhancer.setSerialVersionUID(1L);
+		}
+		if (interfaces != null) {
+			enhancer.setInterfaces(interfaces);
+		}
+		enhancer.setSuperclass(clazz);
+		return enhancer;
+	}
+
+	private static final class FiltersConvertCglibMethodInterceptor implements MethodInterceptor, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final Class<?> targetClass;
 		private final FilterChain filterChain;
 
-		public FiltersConvertCglibMethodInterceptor(Class<?> targetClass,
-				FilterChain filterChain) {
+		public FiltersConvertCglibMethodInterceptor(Class<?> targetClass, FilterChain filterChain) {
 			this.targetClass = targetClass;
 			this.filterChain = filterChain;
 		}
 
-		public Object intercept(Object obj, Method method, Object[] args,
-				MethodProxy proxy) throws Throwable {
-			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(obj,
-					method, args);
+		public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(obj, method, args);
 			if (ignoreResult.isSuccess()) {
 				return ignoreResult.getData();
 			}
@@ -87,8 +93,7 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 	public static final class CglibProxy extends AbstractProxy {
 		private Enhancer enhancer;
 
-		public CglibProxy(Class<?> clazz, Class<?>[] interfaces,
-				MethodInterceptor methodInterceptor) {
+		public CglibProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor methodInterceptor) {
 			super(clazz);
 			this.enhancer = createEnhancer(clazz, interfaces);
 			this.enhancer.setCallback(methodInterceptor);
@@ -98,22 +103,21 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 			return enhancer.create();
 		}
 
-		public Object createInternal(Class<?>[] parameterTypes,
-				Object[] arguments) {
+		public Object createInternal(Class<?>[] parameterTypes, Object[] arguments) {
 			return enhancer.create(parameterTypes, arguments);
 		}
+	}
 
-		public static Enhancer createEnhancer(Class<?> clazz,
-				Class<?>[] interfaces) {
-			Enhancer enhancer = new Enhancer();
-			if (Serializable.class.isAssignableFrom(clazz)) {
-				enhancer.setSerialVersionUID(1L);
-			}
-			if (interfaces != null) {
-				enhancer.setInterfaces(interfaces);
-			}
-			enhancer.setSuperclass(clazz);
-			return enhancer;
-		}
+	/** The CGLIB class separator: "$$" */
+	public static final String CGLIB_CLASS_SEPARATOR = "$$";
+
+	public boolean isProxy(String className, ClassLoader classLoader) {
+		return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
+	}
+
+	public Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
+			throws ClassNotFoundException {
+		return ClassUtils.forName(className.substring(0, className.indexOf(CGLIB_CLASS_SEPARATOR)), initialize,
+				classLoader);
 	}
 }

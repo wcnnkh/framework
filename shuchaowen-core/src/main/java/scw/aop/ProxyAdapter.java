@@ -1,6 +1,5 @@
 package scw.aop;
 
-
 /**
  * 代理桥接器
  * 
@@ -9,7 +8,7 @@ package scw.aop;
  */
 public interface ProxyAdapter {
 	/**
-	 * 是否支持代理(桥接器)
+	 * 是否支持此类(桥接器)
 	 * 
 	 * @param clazz
 	 * @return
@@ -41,4 +40,8 @@ public interface ProxyAdapter {
 	 * @return
 	 */
 	Class<?> getUserClass(Class<?> clazz);
+
+	boolean isProxy(String className, ClassLoader classLoader);
+
+	Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException;
 }

@@ -2,7 +2,7 @@ package scw.data.redis;
 
 import java.io.IOException;
 
-import scw.io.Serializer;
+import scw.io.serialzer.Serializer;
 import scw.lang.NestedRuntimeException;
 import scw.lang.StringCodec;
 

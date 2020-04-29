@@ -1,7 +1,7 @@
 package scw.data.redis;
 
 import scw.data.cas.CASOperations;
-import scw.io.Serializer;
+import scw.io.serialzer.Serializer;
 import scw.lang.StringCodec;
 
 public class RedisImpl implements Redis {

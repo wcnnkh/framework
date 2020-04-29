@@ -1,4 +1,4 @@
-package scw.io;
+package scw.io.serialzer;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,8 +7,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
 import scw.core.instance.annotation.Configuration;
+import scw.io.IOUtils;
+import scw.io.UnsafeByteArrayInputStream;
+import scw.io.UnsafeByteArrayOutputStream;
 
-@Configuration(order=Integer.MIN_VALUE)
+@Configuration(order = Integer.MIN_VALUE)
 public class JavaSerializer extends Serializer {
 	public final static JavaSerializer SERIALIZER = new JavaSerializer();
 
@@ -28,7 +31,7 @@ public class JavaSerializer extends Serializer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T deserialize(byte[] data) throws IOException, ClassNotFoundException{
+	public <T> T deserialize(byte[] data) throws IOException, ClassNotFoundException {
 		UnsafeByteArrayInputStream bis = new UnsafeByteArrayInputStream(data);
 		ObjectInputStream ois = null;
 		try {
@@ -50,7 +53,7 @@ public class JavaSerializer extends Serializer {
 		}
 	}
 
-	public byte[] serialize(Object data) throws IOException{
+	public byte[] serialize(Object data) throws IOException {
 		UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {

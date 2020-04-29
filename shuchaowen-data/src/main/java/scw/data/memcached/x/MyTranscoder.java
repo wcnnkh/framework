@@ -3,7 +3,7 @@ package scw.data.memcached.x;
 import java.io.IOException;
 
 import net.rubyeye.xmemcached.transcoders.SerializingTranscoder;
-import scw.io.Serializer;
+import scw.io.serialzer.Serializer;
 import scw.lang.NestedRuntimeException;
 
 public class MyTranscoder extends SerializingTranscoder {

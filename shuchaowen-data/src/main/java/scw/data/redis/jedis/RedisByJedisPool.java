@@ -3,8 +3,8 @@ package scw.data.redis.jedis;
 import scw.core.instance.annotation.Configuration;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisImpl;
-import scw.io.Serializer;
-import scw.io.SerializerUtils;
+import scw.io.serialzer.Serializer;
+import scw.io.serialzer.SerializerUtils;
 import scw.lang.StringCodec;
 
 @Configuration(order = Integer.MIN_VALUE, value = Redis.class)
