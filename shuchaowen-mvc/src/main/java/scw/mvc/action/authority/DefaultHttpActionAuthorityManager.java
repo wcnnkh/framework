@@ -58,6 +58,7 @@ public class DefaultHttpActionAuthorityManager extends
 						classAuthority.value(),
 						getAttributeMap(classAuthority), null, null, false));
 			}
+			parentId = id;
 		}
 
 		Authority methodAuthority = action.getMethodAnnotatedElement()
@@ -78,7 +79,7 @@ public class DefaultHttpActionAuthorityManager extends
 		register(new DefaultHttpActionAuthority(id, parentId,
 				methodAuthority.value(), getAttributeMap(classAuthority,
 						methodAuthority), descriptor.getController(),
-				descriptor.getHttpMethod(), true));
+				descriptor.getHttpMethod(), methodAuthority.menuAction()));
 	}
 
 	public HttpActionAuthority getAuthority(HttpAction action) {
