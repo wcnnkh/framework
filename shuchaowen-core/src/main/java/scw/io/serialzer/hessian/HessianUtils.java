@@ -1,4 +1,4 @@
-package scw.io.serialzer;
+package scw.io.serialzer.hessian;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,10 +13,9 @@ import com.caucho.hessian.io.SerializerFactory;
 import com.caucho.hessian.io.StringValueSerializer;
 
 public final class HessianUtils {
-	private static final SerializerFactory SERIALIZER_FACTORY;
+	private static final SerializerFactory SERIALIZER_FACTORY = new SerializerFactory();
 
 	static {
-		SERIALIZER_FACTORY = new SerializerFactory();
 		SERIALIZER_FACTORY.addFactory(new HessianAddSerializerFactory(BigDecimal.class, new StringValueSerializer(),
 				new BigDecimalDeserializer()));
 	}

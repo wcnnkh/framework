@@ -9,8 +9,8 @@ import scw.async.AsyncException;
 import scw.async.AsyncRunnable;
 import scw.beans.BeanFactory;
 import scw.core.utils.ClassUtils;
-import scw.io.ObjectFileManager;
-import scw.io.ObjectFileManager.ObjectInfo;
+import scw.io.serialzer.ObjectFileManager;
+import scw.io.serialzer.ObjectFileManager.ObjectInfo;
 import scw.lang.NestedExceptionUtils;
 
 public class FileLocalAsyncExecutor extends ExecutorServiceAsyncExecutor {

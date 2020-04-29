@@ -1,4 +1,4 @@
-package scw.io;
+package scw.io.serialzer;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -14,6 +14,7 @@ import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.io.FileUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.comparator.CompareUtils;

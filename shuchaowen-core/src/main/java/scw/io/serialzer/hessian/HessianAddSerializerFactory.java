@@ -1,4 +1,4 @@
-package scw.io.serialzer;
+package scw.io.serialzer.hessian;
 
 import com.caucho.hessian.io.AbstractSerializerFactory;
 import com.caucho.hessian.io.Deserializer;
@@ -22,7 +22,6 @@ public class HessianAddSerializerFactory extends AbstractSerializerFactory {
 		if (cl == type) {
 			return serialzer;
 		}
-
 		return null;
 	}
 

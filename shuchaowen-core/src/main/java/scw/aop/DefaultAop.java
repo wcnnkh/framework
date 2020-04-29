@@ -31,7 +31,7 @@ public class DefaultAop extends Aop {
 	}
 
 	@Override
-	protected ProxyAdapter getProxyAdapter() {
+	public ProxyAdapter getProxyAdapter() {
 		return proxyAdapter;
 	}
 }

@@ -10,7 +10,7 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
-import scw.io.Serializer;
+import scw.io.serialzer.Serializer;
 import scw.lang.StringCodec;
 
 public class RedisCASOperations implements CASOperations {

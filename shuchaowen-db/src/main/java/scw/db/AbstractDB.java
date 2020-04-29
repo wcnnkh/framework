@@ -19,7 +19,7 @@ import scw.core.Init;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
-import scw.io.SerializerUtils;
+import scw.io.serialzer.SerializerUtils;
 import scw.orm.MappingContext;
 import scw.orm.sql.TableChange;
 import scw.orm.sql.annotation.Table;

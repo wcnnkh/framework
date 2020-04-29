@@ -1,4 +1,4 @@
-package scw.io.serialzer;
+package scw.io.serialzer.hessian;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,9 +8,9 @@ import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 
 import scw.core.instance.annotation.Configuration;
-import scw.io.Serializer;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
+import scw.io.serialzer.Serializer;
 
 @Configuration(order = Integer.MIN_VALUE + 200)
 public class Hessian2Serializer extends Serializer {

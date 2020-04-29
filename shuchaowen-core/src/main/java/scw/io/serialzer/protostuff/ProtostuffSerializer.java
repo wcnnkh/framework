@@ -1,12 +1,12 @@
-package scw.io.serialzer;
+package scw.io.serialzer.protostuff;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import scw.core.Bits;
-import scw.io.Serializer;
-import scw.io.SerializerUtils;
+import scw.io.serialzer.Serializer;
+import scw.io.serialzer.SerializerUtils;
 
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
