@@ -19,7 +19,7 @@ public class Hessian2Serializer extends Serializer {
 	public void serialize(OutputStream out, Object data) throws IOException {
 		Hessian2Output output = HessianUtils.createHessian2Output(out);
 		try {
-			HessianUtils.writeProxyObject(output, data);
+			output.writeObject(data);
 			output.completeMessage();
 		} finally {
 			output.close();
@@ -52,7 +52,7 @@ public class Hessian2Serializer extends Serializer {
 	public <T> T deserialize(InputStream input) throws IOException, ClassNotFoundException {
 		Hessian2Input hi = HessianUtils.createHessian2Input(input);
 		try {
-			return (T) HessianUtils.readProxyObject(hi, null);
+			return (T) hi.readObject();
 		} finally {
 			hi.close();
 		}

@@ -1,6 +1,6 @@
 package scw.aop.support;
 
-import java.io.Serializable;
+import java.io.ObjectStreamException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.LinkedHashMap;
@@ -12,7 +12,7 @@ import scw.aop.ProxyContext;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.TypeUtils;
 
-public class FieldSetterListenFilter implements FilterChain, FieldSetterListen, Serializable {
+public class FieldSetterListenFilter implements FilterChain, FieldSetterListen {
 	private static final long serialVersionUID = 1L;
 	private Map<String, Object> field_setter_map;
 
@@ -97,5 +97,9 @@ public class FieldSetterListenFilter implements FilterChain, FieldSetterListen, 
 			}
 		}
 		return invoker.invoke(context.getArgs());
+	}
+
+	public Object writeReplace() throws ObjectStreamException {
+		return this;
 	}
 }

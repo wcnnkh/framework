@@ -4,8 +4,9 @@ import java.lang.reflect.Field;
 import java.util.Map;
 
 import scw.aop.ProxyContext;
+import scw.aop.WriteReplaceInterface;
 
-public interface FieldSetterListen {
+public interface FieldSetterListen extends WriteReplaceInterface{
 	public static final String GET_CHANGE_MAP = "get_field_setter_map";
 	public static final String CLEAR_FIELD_LISTEN = "clear_field_setter_listen";
 

@@ -10,6 +10,8 @@ import scw.cglib.proxy.Factory;
 import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
 import scw.core.instance.annotation.Configuration;
+import scw.core.reflect.CloneUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.util.result.SimpleResult;
@@ -79,6 +81,15 @@ public class CglibProxyFactory implements ProxyFactory {
 			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(obj, method, args);
 			if (ignoreResult.isSuccess()) {
 				return ignoreResult.getData();
+			}
+
+			if (ArrayUtils.isEmpty(args) && obj instanceof Serializable
+					&& method.getName().equals(WriteReplaceInterface.WRITE_REPLACE_METHOD)) {
+				if (WriteReplaceInterface.class.isAssignableFrom(targetClass)) {
+					return proxy.invokeSuper(obj, args);
+				} else {
+					return CloneUtils.copy(obj, targetClass);
+				}
 			}
 
 			if (filterChain == null) {
