@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.FieldSetterListen;
+import scw.aop.support.FieldSetterListen;
 import scw.core.utils.TypeUtils;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;

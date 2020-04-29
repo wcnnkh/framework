@@ -19,7 +19,7 @@ public class Hessian2Serializer extends Serializer {
 	public void serialize(OutputStream out, Object data) throws IOException {
 		Hessian2Output output = HessianUtils.createHessian2Output(out);
 		try {
-			output.writeObject(data);
+			HessianUtils.writeProxyObject(output, data);
 			output.completeMessage();
 		} finally {
 			output.close();
@@ -38,7 +38,7 @@ public class Hessian2Serializer extends Serializer {
 	}
 
 	@Override
-	public <T> T deserialize(byte[] data) throws IOException {
+	public <T> T deserialize(byte[] data) throws IOException, ClassNotFoundException {
 		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
 		try {
 			return deserialize(input);
@@ -49,10 +49,10 @@ public class Hessian2Serializer extends Serializer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T deserialize(InputStream input) throws IOException {
+	public <T> T deserialize(InputStream input) throws IOException, ClassNotFoundException {
 		Hessian2Input hi = HessianUtils.createHessian2Input(input);
 		try {
-			return (T) hi.readObject();
+			return (T) HessianUtils.readProxyObject(hi, null);
 		} finally {
 			hi.close();
 		}

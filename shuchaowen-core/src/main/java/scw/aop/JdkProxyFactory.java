@@ -12,7 +12,7 @@ import scw.lang.NotSupportedException;
 import scw.util.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE + 100)
-public class JdkProxyAdapter extends AbstractProxyAdapter {
+public class JdkProxyFactory implements ProxyFactory {
 
 	public boolean isSupport(Class<?> clazz) {
 		return clazz.isInterface();
@@ -49,11 +49,11 @@ public class JdkProxyAdapter extends AbstractProxyAdapter {
 		}
 	}
 
-	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
+	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
 		return java.lang.reflect.Proxy.getProxyClass(clazz.getClassLoader(), mergeInterfaces(clazz, interfaces));
 	}
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
 		return new JdkProxy(clazz, mergeInterfaces(clazz, interfaces),
 				new FiltersInvocationHandler(clazz, filterChain));
 	}
@@ -73,7 +73,11 @@ public class JdkProxyAdapter extends AbstractProxyAdapter {
 			if (ignoreResult.isSuccess()) {
 				return ignoreResult.getData();
 			}
-
+			
+			if(filterChain == null){
+				throw new NotSupportedException(method.toString());
+			}
+			
 			ProxyContext context = new ProxyContext(proxy, targetClass, method, args, null);
 			Invoker invoker = new EmptyInvoker(method);
 			return filterChain.doFilter(invoker, context);

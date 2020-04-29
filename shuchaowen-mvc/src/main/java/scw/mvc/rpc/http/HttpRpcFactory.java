@@ -16,7 +16,7 @@ public class HttpRpcFactory extends HttpRpcProxy implements RPCProxyFactory {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getProxy(Class<T> clazz) {
-		return (T) beanFactory.getAop().proxy(clazz, null, this).create();
+		return (T) beanFactory.getAop().getProxy(clazz, null, this).create();
 	}
 
 }

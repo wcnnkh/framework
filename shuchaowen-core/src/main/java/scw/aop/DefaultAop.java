@@ -6,19 +6,19 @@ import java.util.Collections;
 
 public class DefaultAop extends Aop {
 	private final Collection<? extends Filter> filters;
-	private final ProxyAdapter proxyAdapter;
+	private final ProxyFactory proxyFactory;
 	
 	public DefaultAop(Filter ...filters) {
 		this(Arrays.asList(filters));
 	}
 
 	public DefaultAop(Collection<? extends Filter> filters) {
-		this(ProxyUtils.getProxyAdapter(), filters);
+		this(ProxyUtils.getProxyFactory(), filters);
 	}
 
-	public DefaultAop(ProxyAdapter proxyAdapter, Collection<? extends Filter> filters) {
+	public DefaultAop(ProxyFactory proxyFactory, Collection<? extends Filter> filters) {
 		this.filters = filters;
-		this.proxyAdapter = proxyAdapter;
+		this.proxyFactory = proxyFactory;
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class DefaultAop extends Aop {
 	}
 
 	@Override
-	public ProxyAdapter getProxyAdapter() {
-		return proxyAdapter;
+	public ProxyFactory getProxyFactory() {
+		return proxyFactory;
 	}
 }

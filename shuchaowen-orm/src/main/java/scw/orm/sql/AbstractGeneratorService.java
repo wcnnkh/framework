@@ -55,7 +55,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 						generatorContext.getBean(),
 						getSequenceId(generatorContext).getId());
 
-				Class<?> clazz = ProxyUtils.getProxyAdapter().getUserClass(
+				Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(
 						generatorContext.getBean().getClass());
 				ObjectRelationalMapping mapping = generatorContext
 						.getSqlMapper().getObjectRelationalMapping(clazz);

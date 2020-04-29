@@ -5,49 +5,49 @@ import java.util.LinkedList;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
 
-public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements ProxyAdapter {
+public class MultipleProxyFactory extends LinkedList<ProxyFactory> implements ProxyFactory {
 	private static final long serialVersionUID = 1L;
 
 	public boolean isSupport(Class<?> clazz) {
-		for (ProxyAdapter proxyAdapter : this) {
-			if (proxyAdapter.isSupport(clazz)) {
+		for (ProxyFactory proxyFactory : this) {
+			if (proxyFactory.isSupport(clazz)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
-		for (ProxyAdapter proxyAdapter : this) {
-			if (proxyAdapter.isSupport(clazz)) {
-				return proxyAdapter.getClass(clazz, interfaces);
+	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
+		for (ProxyFactory proxyFactory : this) {
+			if (proxyFactory.isSupport(clazz)) {
+				return proxyFactory.getProxyClass(clazz, interfaces);
 			}
 		}
 		throw new NotSupportedException(clazz.getName());
 	}
 
 	public boolean isProxy(Class<?> clazz) {
-		for (ProxyAdapter proxyAdapter : this) {
-			if (proxyAdapter.isProxy(clazz)) {
+		for (ProxyFactory proxyFactory : this) {
+			if (proxyFactory.isProxy(clazz)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
-		for (ProxyAdapter proxyAdapter : this) {
-			if (proxyAdapter.isSupport(clazz)) {
-				return proxyAdapter.proxy(clazz, interfaces, filterChain);
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
+		for (ProxyFactory proxyFactory : this) {
+			if (proxyFactory.isSupport(clazz)) {
+				return proxyFactory.getProxy(clazz, interfaces, filterChain);
 			}
 		}
 		throw new NotSupportedException(clazz.getName());
 	}
 
 	public Class<?> getUserClass(Class<?> proxyClass) {
-		for (ProxyAdapter proxyAdapter : this) {
-			if (proxyAdapter.isProxy(proxyClass)) {
-				return proxyAdapter.getUserClass(proxyClass);
+		for (ProxyFactory proxyFactory : this) {
+			if (proxyFactory.isProxy(proxyClass)) {
+				return proxyFactory.getUserClass(proxyClass);
 			}
 		}
 		return proxyClass;
@@ -55,8 +55,8 @@ public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements Pr
 
 	public boolean isProxy(String className, ClassLoader classLoader) {
 		ClassLoader classLoaderToUse = classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
-		for (ProxyAdapter proxyAdapter : this) {
-			if (proxyAdapter.isProxy(className, classLoaderToUse)) {
+		for (ProxyFactory proxyFactory : this) {
+			if (proxyFactory.isProxy(className, classLoaderToUse)) {
 				return true;
 			}
 		}
@@ -66,9 +66,9 @@ public class MultipleProxyAdapter extends LinkedList<ProxyAdapter> implements Pr
 	public Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		ClassLoader classLoaderToUse = classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
-		for (ProxyAdapter proxyAdapter : this) {
-			if (proxyAdapter.isProxy(className, classLoaderToUse)) {
-				return proxyAdapter.getUserClass(className, initialize, classLoaderToUse);
+		for (ProxyFactory proxyFactory : this) {
+			if (proxyFactory.isProxy(className, classLoaderToUse)) {
+				return proxyFactory.getUserClass(className, initialize, classLoaderToUse);
 			}
 		}
 		return ClassUtils.forName(className, initialize, classLoaderToUse);

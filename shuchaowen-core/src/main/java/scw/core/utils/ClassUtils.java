@@ -606,9 +606,13 @@ public final class ClassUtils {
 	}
 
 	public static Class<?> forNameNullable(String name) {
+		return forNameNullable(name, null);
+	}
+	
+	public static Class<?> forNameNullable(String name, ClassLoader classLoader) {
 		Class<?> clazz = null;
 		try {
-			clazz = forName(name);
+			clazz = forName(name, classLoader);
 		} catch (ClassNotFoundException e) {
 			// ignore
 		} catch (NoClassDefFoundError e) {

@@ -20,7 +20,7 @@ public class JavaSerializer extends Serializer {
 	public <T> T deserialize(InputStream input) throws IOException, ClassNotFoundException {
 		ObjectInputStream ois = null;
 		try {
-			ois = new ObjectInputStream(input);
+			ois = new ProxyObjectInputStream(input);
 			return (T) ois.readObject();
 		} finally {
 			if (ois != null) {
@@ -35,7 +35,7 @@ public class JavaSerializer extends Serializer {
 		UnsafeByteArrayInputStream bis = new UnsafeByteArrayInputStream(data);
 		ObjectInputStream ois = null;
 		try {
-			ois = new ObjectInputStream(bis);
+			ois = new ProxyObjectInputStream(bis);
 			return (T) ois.readObject();
 		} finally {
 			IOUtils.close(ois, bis);
@@ -45,7 +45,7 @@ public class JavaSerializer extends Serializer {
 	public void serialize(OutputStream out, Object data) throws IOException {
 		ObjectOutputStream oos = null;
 		try {
-			oos = new ObjectOutputStream(out);
+			oos = new ProxyObjectOutputStream(out);
 			oos.writeObject(data);
 			oos.flush();
 		} finally {
@@ -57,7 +57,7 @@ public class JavaSerializer extends Serializer {
 		UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream();
 		ObjectOutputStream oos = null;
 		try {
-			oos = new ObjectOutputStream(bos);
+			oos = new ProxyObjectOutputStream(bos);
 			oos.writeObject(data);
 			oos.flush();
 			return bos.toByteArray();

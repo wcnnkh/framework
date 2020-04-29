@@ -47,7 +47,7 @@ public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 	private Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
 		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null
 				: method.getParameterTypes()[0];
-		return new CrontabRunnable(beanFactory.getAop().proxyMethod(
+		return new CrontabRunnable(beanFactory.getAop().getProxyMethod(
 				beanFactory, clz, method, null), parameterType);
 	}
 
@@ -102,7 +102,5 @@ public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 
 	public void destroy(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws Exception {
-		// TODO Auto-generated method stub
-
 	}
 }

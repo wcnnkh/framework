@@ -11,33 +11,33 @@ import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.SerializableMethodHolder;
 import scw.lang.NestedExceptionUtils;
 
-public abstract class Aop implements ProxyAdapter {
+public abstract class Aop implements ProxyFactory {
 	public abstract Collection<Filter> getFilters();
 
-	public abstract ProxyAdapter getProxyAdapter();
+	public abstract ProxyFactory getProxyFactory();
 
 	public final boolean isSupport(Class<?> clazz) {
-		return getProxyAdapter().isSupport(clazz);
+		return getProxyFactory().isSupport(clazz);
 	}
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
-		return getProxyAdapter().proxy(clazz, interfaces, new DefaultFilterChain(getFilters(), filterChain));
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
+		return getProxyFactory().getProxy(clazz, interfaces, new DefaultFilterChain(getFilters(), filterChain));
 	}
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, Filter... filters) {
-		return proxy(clazz, interfaces, new DefaultFilterChain(Arrays.asList(filters)));
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Filter... filters) {
+		return getProxy(clazz, interfaces, new DefaultFilterChain(Arrays.asList(filters)));
 	}
 
-	public final Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
-		return getProxyAdapter().getClass(clazz, interfaces);
+	public final Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
+		return getProxyFactory().getProxyClass(clazz, interfaces);
 	}
 
 	public final boolean isProxy(Class<?> clazz) {
-		return getProxyAdapter().isProxy(clazz);
+		return getProxyFactory().isProxy(clazz);
 	}
 
 	public final Class<?> getUserClass(Class<?> clazz) {
-		return getProxyAdapter().getUserClass(clazz);
+		return getProxyFactory().getUserClass(clazz);
 	}
 
 	protected final LinkedList<Filter> mergeFilters(Filter... filters) {
@@ -55,31 +55,31 @@ public abstract class Aop implements ProxyAdapter {
 		return filterList;
 	}
 
-	public final <T> Proxy proxyInstance(Class<? extends T> clazz, T instance, Class<?>[] interfaces,
+	public final <T> Proxy getProxyInstance(Class<? extends T> clazz, T instance, Class<?>[] interfaces,
 			FilterChain filterChain) {
-		return getProxyAdapter().proxy(clazz, interfaces,
+		return getProxyFactory().getProxy(clazz, interfaces,
 				new DefaultFilterChain(mergeFilters(new InstanceFilter(instance)), filterChain));
 	}
 
-	public <T> MethodInvoker proxyMethod(Class<? extends T> targetClass, T instance, Method method,
+	public <T> MethodInvoker getProxyMethod(Class<? extends T> targetClass, T instance, Method method,
 			FilterChain filterChain) {
 		return new DefaultProxyInvoker(targetClass, instance, method,
 				new DefaultFilterChain(getFilters(), filterChain));
 	}
 
-	public final MethodInvoker proxyMethod(NoArgsInstanceFactory noArgsInstanceFactory, String instanceName,
+	public final MethodInvoker getProxyMethod(NoArgsInstanceFactory noArgsInstanceFactory, String instanceName,
 			Class<?> targetClass, Method method, FilterChain filterChain) {
 		return new InstanceFactoryProxyInvoker(noArgsInstanceFactory, instanceName, targetClass, method,
 				new DefaultFilterChain(getFilters(), filterChain));
 	}
 
-	public final MethodInvoker proxyMethod(NoArgsInstanceFactory noArgsInstanceFactory, Class<?> targetClass,
+	public final MethodInvoker getProxyMethod(NoArgsInstanceFactory noArgsInstanceFactory, Class<?> targetClass,
 			Method method, FilterChain filterChain) {
-		return proxyMethod(noArgsInstanceFactory, targetClass.getName(), targetClass, method,
+		return getProxyMethod(noArgsInstanceFactory, targetClass.getName(), targetClass, method,
 				new DefaultFilterChain(getFilters(), filterChain));
 	}
 
-	private static class InstanceFactoryProxyInvoker extends ProxyInvoker {
+	private final class InstanceFactoryProxyInvoker extends ProxyInvoker {
 		private static final long serialVersionUID = 1L;
 		private final NoArgsInstanceFactory noArgsInstanceFactory;
 		private final String instanceName;
@@ -96,7 +96,7 @@ public abstract class Aop implements ProxyAdapter {
 		}
 	}
 
-	private static class DefaultProxyInvoker extends ProxyInvoker {
+	private final class DefaultProxyInvoker extends ProxyInvoker {
 		private static final long serialVersionUID = 1L;
 		private final Object instance;
 
@@ -111,7 +111,7 @@ public abstract class Aop implements ProxyAdapter {
 		}
 	}
 
-	private static abstract class ProxyInvoker extends MethodHolderInvoker {
+	private abstract class ProxyInvoker extends MethodHolderInvoker {
 		private static final long serialVersionUID = 1L;
 		protected final FilterChain filterChain;
 
@@ -129,7 +129,7 @@ public abstract class Aop implements ProxyAdapter {
 					|| Modifier.isStatic(getMethod().getModifiers()) || Modifier.isFinal(getMethod().getModifiers())
 					|| Modifier.isNative(getMethod().getModifiers()));
 			if (isProxy) {
-				isProxy = instance != null && ProxyUtils.getProxyAdapter().isProxy(instance.getClass());
+				isProxy = instance != null && getProxyFactory().isProxy(instance.getClass());
 			}
 			return isProxy;
 		}
@@ -171,10 +171,10 @@ public abstract class Aop implements ProxyAdapter {
 
 	public Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
 			throws ClassNotFoundException {
-		return getProxyAdapter().getUserClass(className, initialize, classLoader);
+		return getProxyFactory().getUserClass(className, initialize, classLoader);
 	}
 
 	public boolean isProxy(String className, ClassLoader classLoader) {
-		return getProxyAdapter().isProxy(className, classLoader);
+		return getProxyFactory().isProxy(className, classLoader);
 	}
 }

@@ -96,7 +96,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 		}
 
 		return getColumnValueMapExcludeName(
-				mapper.getObjectRelationalMapping(ProxyUtils.getProxyAdapter().getUserClass(obj.getClass())),
+				mapper.getObjectRelationalMapping(ProxyUtils.getProxyFactory().getUserClass(obj.getClass())),
 				obj, CollectionUtils.asSet(excludeNames));
 	}
 
@@ -107,7 +107,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 		}
 
 		return getColumnValueMapEffectiveName(
-				mapper.getObjectRelationalMapping(ProxyUtils.getProxyAdapter().getUserClass(obj.getClass())),
+				mapper.getObjectRelationalMapping(ProxyUtils.getProxyFactory().getUserClass(obj.getClass())),
 				obj, effectiveNames);
 	}
 
@@ -180,7 +180,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 				continue;
 			}
 
-			return mapper.getObjectRelationalMapping(ProxyUtils.getProxyAdapter().getUserClass(obj.getClass()));
+			return mapper.getObjectRelationalMapping(ProxyUtils.getProxyFactory().getUserClass(obj.getClass()));
 		}
 		return null;
 	}
@@ -338,7 +338,7 @@ public class DefaultObjectOperations implements ObjectOperations {
 		} else if (obj.getClass().isArray()) {
 			Assert.isTrue(Array.getLength(obj) == 0);
 		} else {
-			verify(mapper.getObjectRelationalMapping(ProxyUtils.getProxyAdapter().getUserClass(obj.getClass())), obj);
+			verify(mapper.getObjectRelationalMapping(ProxyUtils.getProxyFactory().getUserClass(obj.getClass())), obj);
 		}
 	}
 

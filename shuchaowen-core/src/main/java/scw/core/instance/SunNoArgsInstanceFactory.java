@@ -8,7 +8,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 
 @Configuration(order = Integer.MIN_VALUE + 100)
-public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
+public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	private static final Constructor<?> CONSTRUCTOR;
 	private volatile IdentityHashMap<Class<?>, Constructor<?>> constructorMap = new IdentityHashMap<Class<?>, Constructor<?>>();
 	private static final Object INVOKE_INSTANCE;
@@ -69,24 +69,7 @@ public class SunNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name) {
-		return (T) getInstance(ClassUtils.forNameNullable(name));
-	}
-
-	public boolean isInstance(String name) {
-		return ClassUtils.forNameNullable(name) != null;
-	}
-
 	public boolean isInstance(Class<?> clazz) {
 		return clazz != null;
-	}
-
-	public boolean isSingleton(String name) {
-		return false;
-	}
-
-	public boolean isSingleton(Class<?> clazz) {
-		return false;
 	}
 }

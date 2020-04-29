@@ -1,7 +1,9 @@
-package scw.core;
+package scw.aop.support;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+
+import scw.aop.ProxyContext;
 
 public interface FieldSetterListen {
 	public static final String GET_CHANGE_MAP = "get_field_setter_map";
@@ -14,7 +16,7 @@ public interface FieldSetterListen {
 	 */
 	Map<String, Object> get_field_setter_map();
 
-	void field_setter(Object bean, Field field, Object oldValue);
+	void field_setter(ProxyContext context, Field field, Object oldValue);
 
 	/**
 	 * 清空监听数据

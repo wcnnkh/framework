@@ -12,22 +12,22 @@ import scw.util.result.SimpleResult;
 
 public final class ProxyUtils {
 
-	private static final MultipleProxyAdapter PROXY_ADAPTER = new MultipleProxyAdapter();
+	private static final MultipleProxyFactory PROXY_FACTORY = new MultipleProxyFactory();
 
 	public static final Collection<Class<Filter>> FILTERS = InstanceUtils
 			.getConfigurationClassList(Filter.class,
 					GlobalPropertyFactory.getInstance());
 
 	static {
-		PROXY_ADAPTER.addAll(InstanceUtils
-				.getSystemConfigurationList(ProxyAdapter.class));
+		PROXY_FACTORY.addAll(InstanceUtils
+				.getSystemConfigurationList(ProxyFactory.class));
 	}
 
 	private ProxyUtils() {
 	};
 
-	public static MultipleProxyAdapter getProxyAdapter() {
-		return PROXY_ADAPTER;
+	public static MultipleProxyFactory getProxyFactory() {
+		return PROXY_FACTORY;
 	}
 
 	private static int ignoreHashCode(Object obj) {
@@ -66,7 +66,7 @@ public final class ProxyUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T proxyIngoreMethod(Class<? extends T> clazz,
 			Object instance, Set<Method> ignoreMethods) {
-		Proxy proxy = getProxyAdapter().proxy(
+		Proxy proxy = getProxyFactory().getProxy(
 				clazz,
 				new Class<?>[] { IgnoreMethodTarget.class },
 				new DefaultFilterChain(Arrays.asList(new IgnoreMethodFilter(

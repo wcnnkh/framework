@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import scw.aop.ProxyUtils;
-import scw.core.FieldSetterListen;
+import scw.aop.support.FieldSetterListen;
 import scw.core.Pagination;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -174,7 +174,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public boolean save(Object bean, String tableName) {
-		Class<?> userClass = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
+		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
 		return orm(OperationType.SAVE, userClass, bean, getSqlDialect()
 				.getTableName(userClass, bean, tableName));
 	}
@@ -187,7 +187,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 			}
 		}
 
-		Class<?> userClass = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
+		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
 		return orm(OperationType.UPDATE, userClass, bean, getSqlDialect()
 				.getTableName(userClass, bean, tableName));
 	}
@@ -197,7 +197,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public boolean delete(Object bean, String tableName) {
-		Class<?> userClass = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
+		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
 		return orm(OperationType.DELETE, userClass, bean, tableName);
 	}
 
@@ -227,7 +227,7 @@ public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	}
 
 	public boolean saveOrUpdate(Object bean, String tableName) {
-		Class<?> userClass = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
+		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
 		return orm(OperationType.SAVE_OR_UPDATE, userClass, bean,
 				getSqlDialect().getTableName(userClass, bean, tableName));
 	}
