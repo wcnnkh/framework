@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.Map;
 
 import scw.core.Constants;
+import scw.core.Copy;
 import scw.core.GlobalPropertyFactory;
-import scw.core.parameter.DefaultParameterDescriptorFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
+import scw.lang.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.property.PropertyFactory;
@@ -39,13 +40,22 @@ public final class InstanceUtils {
 	public static final ConfigurationScan CONFIGURATION_SCAN = new ConfigurationScan();
 
 	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
-			GlobalPropertyFactory.getInstance(), new DefaultParameterDescriptorFactory());
+			GlobalPropertyFactory.getInstance());
 
 	/**
 	 * 不调用构造方法实例化对象
 	 */
 	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY = getSystemConfiguration(
 			NoArgsInstanceFactory.class);
+
+	private static final Copy DEFAULT_COPY = new Copy();
+	private static final Copy CLONE_COPY = new Copy();
+	private static final Copy INVOKER_SETTER_COPY = new Copy();
+
+	static {
+		CLONE_COPY.setClone(true);
+		INVOKER_SETTER_COPY.setInvokerSetter(true);
+	}
 
 	/**
 	 * 根据参数名来调用构造方法
@@ -183,5 +193,29 @@ public final class InstanceUtils {
 
 	public static <T> List<T> getSystemConfigurationList(Class<? extends T> type, Class... excludeTypes) {
 		return getConfigurationList(type, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(), excludeTypes);
+	}
+
+	public static <T> T clone(T source) {
+		try {
+			return CLONE_COPY.clone(source);
+		} catch (Exception e) {
+			throw new NestedRuntimeException("clone error", e);
+		}
+	}
+
+	public static <T> T copy(Class<? extends T> targetClass, Object source) {
+		try {
+			return DEFAULT_COPY.copy(targetClass, source);
+		} catch (Exception e) {
+			throw new NestedRuntimeException("copy error", e);
+		}
+	}
+
+	public static void copy(Object target, Object source) {
+		try {
+			INVOKER_SETTER_COPY.copy(target.getClass(), target, source);
+		} catch (Exception e) {
+			throw new NestedRuntimeException("copy error", e);
+		}
 	}
 }

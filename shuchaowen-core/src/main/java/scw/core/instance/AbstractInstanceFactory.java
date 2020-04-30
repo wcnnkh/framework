@@ -1,8 +1,13 @@
 package scw.core.instance;
 
+import scw.core.utils.ClassUtils;
+
 public abstract class AbstractInstanceFactory implements InstanceFactory {
 
 	protected <T> InstanceBuilder<T> getInstanceBuilder(Class<? extends T> clazz) {
+		if(isIgnoreClass(clazz)){
+			return null;
+		}
 		return getInstanceBuilder(clazz.getName());
 	}
 
@@ -25,6 +30,10 @@ public abstract class AbstractInstanceFactory implements InstanceFactory {
 		}
 	}
 
+	protected boolean isIgnoreClass(Class<?> clazz) {
+		return ClassUtils.isPrimitiveOrWrapper(clazz);
+	}
+
 	public boolean isInstance(String name) {
 		InstanceBuilder<?> instanceBuilder = getInstanceBuilder(name);
 		if (instanceBuilder == null) {
@@ -35,6 +44,10 @@ public abstract class AbstractInstanceFactory implements InstanceFactory {
 	}
 
 	public boolean isInstance(Class<?> clazz) {
+		if (isIgnoreClass(clazz)) {
+			return false;
+		}
+
 		return isInstance(clazz.getName());
 	}
 
@@ -71,11 +84,11 @@ public abstract class AbstractInstanceFactory implements InstanceFactory {
 	public <T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes, Object... params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
-	
+
 	public boolean isSingleton(Class<?> clazz) {
 		return false;
 	}
-	
+
 	public boolean isSingleton(String name) {
 		return false;
 	}

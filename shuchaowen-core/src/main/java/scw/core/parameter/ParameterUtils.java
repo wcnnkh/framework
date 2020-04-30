@@ -1,36 +1,86 @@
 package scw.core.parameter;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.parameter.field.DefaultFieldDescriptor;
 import scw.core.parameter.field.FieldDescriptor;
 import scw.core.parameter.field.NamePrefixFieldDescriptor;
 import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
 public final class ParameterUtils {
 	private static final LocalVariableTableParameterNameDiscoverer LVTPND = new LocalVariableTableParameterNameDiscoverer();
-	private static final ParameterDescriptorFactory PARAMETER_DESCRIPTOR_FACTORY = InstanceUtils
-			.getSystemConfiguration(ParameterDescriptorFactory.class);
 
 	private ParameterUtils() {
 	};
 
-	public static ParameterDescriptorFactory getParameterDescriptorFactory() {
-		return PARAMETER_DESCRIPTOR_FACTORY;
+	public static FieldDescriptor[] getFieldDescriptors(Class<?> clazz) {
+		List<FieldDescriptor> parameterConfigs = new LinkedList<FieldDescriptor>();
+		Class<?> clz = clazz;
+		while (clz != null && clz != Object.class) {
+			for (Field field : clz.getDeclaredFields()) {
+				if (Modifier.isStatic(field.getModifiers())) {
+					continue;
+				}
+
+				ReflectionUtils.setAccessibleField(field);
+				parameterConfigs.add(new DefaultFieldDescriptor(field));
+			}
+			clz = clz.getSuperclass();
+		}
+
+		if (parameterConfigs.isEmpty()) {
+			return FieldDescriptor.EMPTY_ARRAY;
+		}
+
+		return parameterConfigs.toArray(new FieldDescriptor[parameterConfigs.size()]);
 	}
 
 	public static ParameterDescriptor[] getParameterDescriptors(Constructor<?> constructor) {
-		return getParameterDescriptorFactory().getParameterDescriptors(constructor);
+		String[] names = ParameterUtils.getParameterName(constructor);
+		if (ArrayUtils.isEmpty(names)) {
+			return ParameterDescriptor.EMPTY_ARRAY;
+		}
+
+		Annotation[][] parameterAnnoatations = constructor.getParameterAnnotations();
+		Type[] parameterGenericTypes = constructor.getGenericParameterTypes();
+		Class<?>[] parameterTypes = constructor.getParameterTypes();
+		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
+		for (int i = 0; i < names.length; i++) {
+			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], parameterAnnoatations[i],
+					parameterTypes[i], parameterGenericTypes[i]);
+		}
+		return parameterDefinitions;
 	}
 
 	public static ParameterDescriptor[] getParameterDescriptors(Method method) {
-		return getParameterDescriptorFactory().getParameterDescriptors(method);
+		String[] names = ParameterUtils.getParameterName(method);
+		if (ArrayUtils.isEmpty(names)) {
+			return ParameterDescriptor.EMPTY_ARRAY;
+		}
+
+		Annotation[][] parameterAnnoatations = method.getParameterAnnotations();
+		Type[] parameterGenericTypes = method.getGenericParameterTypes();
+		Class<?>[] parameterTypes = method.getParameterTypes();
+		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
+		for (int i = 0; i < names.length; i++) {
+			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], parameterAnnoatations[i],
+					parameterTypes[i], parameterGenericTypes[i]);
+		}
+		return parameterDefinitions;
 	}
 
 	public static String[] getParameterName(Method method) {
@@ -54,41 +104,37 @@ public final class ParameterUtils {
 		return createObjectByParameter(parameterFactory, type, null);
 	}
 
-	public static Object createObjectByParameter(InstanceFactory instanceFactory,
-			ParameterDescriptorFactory parameterConfigFactory, ParameterFactory parameterFactory, Class<?> type)
-			throws Exception {
-		return createObjectByParameter(instanceFactory, parameterConfigFactory, parameterFactory, type, null);
+	public static Object createObjectByParameter(InstanceFactory instanceFactory, ParameterFactory parameterFactory,
+			Class<?> type) throws Exception {
+		return createObjectByParameter(instanceFactory, parameterFactory, type, null);
 	}
 
 	public static Object createObjectByParameter(ParameterFactory parameterFactory, Class<?> type, String name)
 			throws Exception {
-		return createObjectByParameterInternal(InstanceUtils.INSTANCE_FACTORY, getParameterDescriptorFactory(),
-				parameterFactory, type, StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
+		return createObjectByParameterInternal(InstanceUtils.INSTANCE_FACTORY, parameterFactory, type,
+				StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
 	}
 
-	public static Object createObjectByParameter(InstanceFactory instanceFactory,
-			ParameterDescriptorFactory parameterDescriptorFactory, ParameterFactory parameterFactory, Class<?> type,
-			String name) throws Exception {
-		return createObjectByParameterInternal(instanceFactory, parameterDescriptorFactory, parameterFactory, type,
+	public static Object createObjectByParameter(InstanceFactory instanceFactory, ParameterFactory parameterFactory,
+			Class<?> type, String name) throws Exception {
+		return createObjectByParameterInternal(instanceFactory, parameterFactory, type,
 				StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
 	}
 
 	private static Object createObjectByParameterInternal(InstanceFactory instanceFactory,
-			ParameterDescriptorFactory parameterConfigFactory, ParameterFactory parameterFactory, Class<?> type,
-			String prefix) throws Exception {
+			ParameterFactory parameterFactory, Class<?> type, String prefix) throws Exception {
 		if (!instanceFactory.isInstance(type)) {
 			return null;
 		}
 
 		Object obj = instanceFactory.getInstance(type);
-		setParameter(obj, instanceFactory, parameterConfigFactory, parameterFactory, type, prefix);
+		setParameter(obj, instanceFactory, parameterFactory, type, prefix);
 		return obj;
 	}
 
 	private static void setParameter(Object instance, InstanceFactory instanceFactory,
-			ParameterDescriptorFactory parameterConfigFactory, ParameterFactory parameterFactory, Class<?> type,
-			String prefix) throws Exception {
-		for (FieldDescriptor parameterConfig : parameterConfigFactory.getFieldDescriptors(type)) {
+			ParameterFactory parameterFactory, Class<?> type, String prefix) throws Exception {
+		for (FieldDescriptor parameterConfig : getFieldDescriptors(type)) {
 			if (!parameterConfig.getType().isPrimitive() && parameterConfig.getField().get(instance) != null) {
 				continue;
 			}
@@ -99,7 +145,7 @@ public final class ParameterUtils {
 					|| ClassUtils.isPrimitiveOrWrapper(fieldDescriptor.getType())) {
 				v = parameterFactory.getParameter(fieldDescriptor);
 			} else {
-				v = createObjectByParameterInternal(instanceFactory, parameterConfigFactory, parameterFactory, type,
+				v = createObjectByParameterInternal(instanceFactory, parameterFactory, type,
 						fieldDescriptor.getDisplayName() + ".");
 			}
 

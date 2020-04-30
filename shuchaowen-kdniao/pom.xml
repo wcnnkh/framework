@@ -12,10 +12,5 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-core</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-security</artifactId>
-		</dependency>
 	</dependencies>
 </project>

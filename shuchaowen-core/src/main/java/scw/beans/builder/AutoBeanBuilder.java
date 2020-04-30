@@ -3,7 +3,6 @@ package scw.beans.builder;
 import scw.beans.BeanFactory;
 import scw.core.instance.AutoConstructorBuilder;
 import scw.core.instance.ConstructorBuilder;
-import scw.core.parameter.ParameterUtils;
 import scw.util.value.property.PropertyFactory;
 
 public class AutoBeanBuilder extends ConstructorBeanBuilder {
@@ -18,8 +17,7 @@ public class AutoBeanBuilder extends ConstructorBeanBuilder {
 			PropertyFactory propertyFactory, Class<?> targetClass) {
 		super(beanFactory, propertyFactory, targetClass);
 		this.constructorBuilder = new AutoConstructorBuilder(beanFactory,
-				propertyFactory, getTargetClass(),
-				ParameterUtils.getParameterDescriptorFactory());
+				propertyFactory, getTargetClass());
 	}
 
 	@Override

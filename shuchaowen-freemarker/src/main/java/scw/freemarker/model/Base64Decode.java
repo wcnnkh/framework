@@ -5,7 +5,7 @@ import java.util.List;
 
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
-import scw.core.Base64;
+import scw.util.Base64;
 
 public class Base64Decode implements TemplateMethodModelEx{
 	@SuppressWarnings("rawtypes")

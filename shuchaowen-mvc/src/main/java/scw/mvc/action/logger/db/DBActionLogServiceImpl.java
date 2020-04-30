@@ -6,7 +6,7 @@ import java.util.List;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.Pagination;
-import scw.core.reflect.CloneUtils;
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
@@ -25,10 +25,9 @@ import scw.timer.Timer;
 import scw.timer.support.SimpleCrontabConfig;
 
 public class DBActionLogServiceImpl implements ActionLogService, Task {
-	private static Logger logger = LoggerUtils
-			.getLogger(DBActionLogServiceImpl.class);
-	private static final int LOG_EXPIRATION_TIME = GlobalPropertyFactory
-			.getInstance().getValue("mvc.logger.expire.time", Integer.class, 90);// 默认保存90天日志
+	private static Logger logger = LoggerUtils.getLogger(DBActionLogServiceImpl.class);
+	private static final int LOG_EXPIRATION_TIME = GlobalPropertyFactory.getInstance()
+			.getValue("mvc.logger.expire.time", Integer.class, 90);// 默认保存90天日志
 
 	private DB db;
 
@@ -36,8 +35,7 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 		this.db = db;
 		db.createTable(LogTable.class);
 		db.createTable(LogAttributeTable.class);
-		CrontabTaskConfig config = new SimpleCrontabConfig("清理网络请求过期日志", this,
-				null, null, null, null, null, null);
+		CrontabTaskConfig config = new SimpleCrontabConfig("清理网络请求过期日志", this, null, null, null, null, null, null);
 		timer.crontab(config);
 		if (logger.isDebugEnabled()) {
 			logger.debug("网络请求日志过期时间为：{}天", LOG_EXPIRATION_TIME);
@@ -60,12 +58,10 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 
 	public Collection<String> getAttributeNames() {
 		// 为了方便没有再去建立一个属性名称表
-		return db.select(String.class, new SimpleSql(
-				"select * from log_attribute_table group by name"));
+		return db.select(String.class, new SimpleSql("select * from log_attribute_table group by name"));
 	}
 
-	public Pagination<List<ActionLog>> getPagination(ActionLog logQuery,
-			long page, int limit) {
+	public Pagination<List<ActionLog>> getPagination(ActionLog logQuery, long page, int limit) {
 		WhereSql sql = new WhereSql();
 		if (logQuery != null) {
 			if (StringUtils.isNotEmpty(logQuery.getIdentification())) {
@@ -81,51 +77,42 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 				WhereSql attrSql = new WhereSql();
 				attrSql.in("a.name", logQuery.getAttributeMap().keySet());
 				attrSql.in("a.value", logQuery.getAttributeMap().values());
-				Sql attr = attrSql.assembleSql(
-						"select DISTINCT(a.logId) from log_attribute_table",
-						null);
+				Sql attr = attrSql.assembleSql("select DISTINCT(a.logId) from log_attribute_table", null);
 				sql.and("l.logId in (" + attr.getSql() + ")", attr.getParams());
 			}
 
 			if (StringUtils.isNotEmpty(logQuery.getController())) {
-				sql.and("l.controller like ?",
-						SqlUtils.toLikeValue(logQuery.getController()));
+				sql.and("l.controller like ?", SqlUtils.toLikeValue(logQuery.getController()));
 			}
 
 			if (StringUtils.isNotEmpty(logQuery.getRequestContentType())) {
-				sql.and("l.requestContentType like ?",
-						SqlUtils.toLikeValue(logQuery.getRequestContentType()));
+				sql.and("l.requestContentType like ?", SqlUtils.toLikeValue(logQuery.getRequestContentType()));
 			}
 
 			if (StringUtils.isNotEmpty(logQuery.getRequestBody())) {
-				sql.and("l.requestBody like ?",
-						SqlUtils.toLikeValue(logQuery.getRequestBody()));
+				sql.and("l.requestBody like ?", SqlUtils.toLikeValue(logQuery.getRequestBody()));
 			}
 
 			if (StringUtils.isNotEmpty(logQuery.getResponseContentType())) {
-				sql.and("l.responseContentType like ?",
-						SqlUtils.toLikeValue(logQuery.getResponseContentType()));
+				sql.and("l.responseContentType like ?", SqlUtils.toLikeValue(logQuery.getResponseContentType()));
 			}
 
 			if (StringUtils.isNotEmpty(logQuery.getResponseBody())) {
-				sql.and("l.responseBody l.like ?",
-						SqlUtils.toLikeValue(logQuery.getResponseBody()));
+				sql.and("l.responseBody l.like ?", SqlUtils.toLikeValue(logQuery.getResponseBody()));
 			}
 		}
 
-		Pagination<List<LogTable>> pagination = db.select(LogTable.class, page,
-				limit, sql.assembleSql("select * from log_table as l",
-						"order by l.createTime desc"));
+		Pagination<List<LogTable>> pagination = db.select(LogTable.class, page, limit,
+				sql.assembleSql("select * from log_table as l", "order by l.createTime desc"));
 		if (CollectionUtils.isEmpty(pagination.getData())) {
 			return Pagination.createEmptyListPagination(limit);
 		}
 
 		List<ActionLog> list = new ArrayList<ActionLog>();
 		for (LogTable logTable : pagination.getData()) {
-			list.add(CloneUtils.copy(logTable, ActionLog.class));
+			list.add(InstanceUtils.copy(ActionLog.class, logTable));
 		}
-		return new Pagination<List<ActionLog>>(pagination.getTotalCount(),
-				pagination.getLimit(), list);
+		return new Pagination<List<ActionLog>>(pagination.getTotalCount(), pagination.getLimit(), list);
 	}
 
 }

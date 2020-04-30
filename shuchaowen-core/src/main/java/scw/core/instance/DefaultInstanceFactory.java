@@ -1,19 +1,15 @@
 package scw.core.instance;
 
-import scw.core.parameter.ParameterDescriptorFactory;
 import scw.core.utils.ClassUtils;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.value.property.PropertyFactory;
 
 public class DefaultInstanceFactory extends AbstractInstanceFactory {
 	private final ConcurrentReferenceHashMap<String, InstanceBuilder<?>> builderMap = new ConcurrentReferenceHashMap<String, InstanceBuilder<?>>();
-	protected final ParameterDescriptorFactory parameterDescriptorFactory;
 	private final PropertyFactory propertyFactory;
 
-	public DefaultInstanceFactory(PropertyFactory propertyFactory,
-			ParameterDescriptorFactory parameterDescriptorFactory) {
+	public DefaultInstanceFactory(PropertyFactory propertyFactory) {
 		this.propertyFactory = propertyFactory;
-		this.parameterDescriptorFactory = parameterDescriptorFactory;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -26,6 +22,10 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 				return null;
 			}
 			
+			if(isIgnoreClass(clazz)){
+				return null;
+			}
+			
 			if(ClassUtils.isAssignableValue(clazz, this)){
 				return new InternalInstanceBuilder<T>(clazz, clazz.cast(this));
 			}
@@ -34,7 +34,7 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 				return new InternalInstanceBuilder<T>(clazz, clazz.cast(propertyFactory));
 			}
 
-			instanceBuilder = new AutoInstanceBuilder<T>(clazz, this, propertyFactory, parameterDescriptorFactory);
+			instanceBuilder = new AutoInstanceBuilder<T>(clazz, this, propertyFactory);
 		}
 
 		return instanceBuilder;

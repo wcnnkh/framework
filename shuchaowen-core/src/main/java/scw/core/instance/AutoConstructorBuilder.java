@@ -2,8 +2,8 @@ package scw.core.instance;
 
 import java.lang.reflect.Constructor;
 
-import scw.core.parameter.ParameterDescriptorFactory;
 import scw.core.parameter.ParameterFactory;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.util.value.property.PropertyFactory;
 
@@ -14,20 +14,18 @@ public final class AutoConstructorBuilder implements ConstructorBuilder {
 	private final Class<?> clazz;
 	private final ParameterFactory parameterFactory;
 	private AutoSource<Constructor<?>> autoSource;
-	private final ParameterDescriptorFactory parameterDescriptorFactory;
 
 	public AutoConstructorBuilder(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Class<?> clazz, ParameterDescriptorFactory parameterDescriptorFactory) {
-		this(instanceFactory, propertyFactory, clazz, parameterDescriptorFactory, null);
+			Class<?> clazz) {
+		this(instanceFactory, propertyFactory, clazz, null);
 	}
 
 	public AutoConstructorBuilder(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
-			Class<?> clazz, ParameterDescriptorFactory parameterDescriptorFactory, ParameterFactory parameterFactory) {
+			Class<?> clazz, ParameterFactory parameterFactory) {
 		this.parameterFactory = parameterFactory;
 		this.clazz = clazz;
 		this.propertyFactory = propertyFactory;
 		this.instanceFactory = instanceFactory;
-		this.parameterDescriptorFactory = parameterDescriptorFactory;
 	}
 
 	private ConstructorDescriptor getConstructorDescriptor() {
@@ -36,8 +34,8 @@ public final class AutoConstructorBuilder implements ConstructorBuilder {
 				if (constructorDescriptor == null) {
 					for (Constructor<?> constructor : ReflectionUtils.getConstructorOrderList(clazz)) {
 						this.autoSource = new AutoSource<Constructor<?>>(instanceFactory, propertyFactory,
-								parameterFactory, clazz,
-								parameterDescriptorFactory.getParameterDescriptors(constructor), constructor);
+								parameterFactory, clazz, ParameterUtils.getParameterDescriptors(constructor),
+								constructor);
 						if (autoSource.isAuto()) {
 							ReflectionUtils.setAccessibleConstructor(constructor);
 							this.constructorDescriptor = new ConstructorDescriptor(constructor,

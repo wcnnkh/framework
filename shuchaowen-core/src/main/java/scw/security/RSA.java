@@ -12,7 +12,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
 
-import scw.core.Base64;
+import scw.util.Base64;
 
 public final class RSA{
 	private RSA(){};
