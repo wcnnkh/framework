@@ -13,10 +13,10 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import scw.compatible.CompatibleUtils;
-import scw.core.Base64;
 import scw.json.JsonObject;
 import scw.tencent.wx.BaseResponse;
 import scw.tencent.wx.WeiXinUtils;
+import scw.util.Base64;
 
 public final class WeiXinMiniprogramUtils {
 	private WeiXinMiniprogramUtils() {

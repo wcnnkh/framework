@@ -4,7 +4,7 @@
  * author: shiqun.shi@alipay.com
  */
 
-package scw.core;
+package scw.util;
 
 public final class Base64 {
 

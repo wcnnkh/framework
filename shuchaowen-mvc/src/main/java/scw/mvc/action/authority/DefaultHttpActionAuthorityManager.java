@@ -5,7 +5,6 @@ import java.util.Map;
 
 import scw.beans.annotation.Bean;
 import scw.compatible.CompatibleUtils;
-import scw.core.Base64;
 import scw.core.Constants;
 import scw.core.Init;
 import scw.core.annotation.KeyValuePair;
@@ -18,6 +17,7 @@ import scw.mvc.annotation.Authority;
 import scw.mvc.annotation.AuthorityParent;
 import scw.net.http.HttpMethod;
 import scw.security.authority.http.DefaultHttpAuthorityManager;
+import scw.util.Base64;
 
 @Configuration(order = Integer.MIN_VALUE, value = HttpActionAuthorityManager.class)
 @Bean(proxy = false)

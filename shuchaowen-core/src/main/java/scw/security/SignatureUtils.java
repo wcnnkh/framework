@@ -14,8 +14,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 import scw.core.Assert;
-import scw.core.Base64;
 import scw.lang.NotSupportedException;
+import scw.util.Base64;
 
 public final class SignatureUtils {
 	private static final String DEFAULT_CONCAT = "&";

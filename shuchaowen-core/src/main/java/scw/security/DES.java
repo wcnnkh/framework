@@ -6,7 +6,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.IvParameterSpec;
 
-import scw.core.Base64;
+import scw.util.Base64;
  
 public class DES {
      

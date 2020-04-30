@@ -1,6 +1,4 @@
-package scw.core;
-
-import scw.lang.Ignore;
+package scw.lang;
 
 @Ignore
 public interface Cloneable extends java.lang.Cloneable {

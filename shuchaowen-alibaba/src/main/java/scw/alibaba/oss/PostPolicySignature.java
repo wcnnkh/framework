@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.json.JSONUtils;
-import scw.mvc.http.view.AbstractTextView;
+import scw.net.MimeType;
+import scw.net.http.MediaType;
+import scw.net.message.Text;
 
 /**
  * 请注意 由于历史遗留问题，导致字段和返回的json字符串名称不一致
@@ -13,7 +15,7 @@ import scw.mvc.http.view.AbstractTextView;
  * @author shuchaowen
  *
  */
-public final class PostPolicySignature extends AbstractTextView implements Serializable {
+public final class PostPolicySignature implements Text, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String accessId;
 	private String policy;
@@ -59,5 +61,9 @@ public final class PostPolicySignature extends AbstractTextView implements Seria
 		map.put("policy", policy);
 		map.put("Signature", signature);
 		return JSONUtils.toJSONString(map);
+	}
+
+	public MimeType getMimeType() {
+		return MediaType.APPLICATION_JSON;
 	}
 }

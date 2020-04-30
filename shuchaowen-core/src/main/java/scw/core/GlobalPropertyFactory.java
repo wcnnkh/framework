@@ -142,7 +142,7 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 		String systemOnlyId = getString(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {
-				systemOnlyId = scw.core.Base64
+				systemOnlyId = scw.util.Base64
 						.encode((getUserDir() + "&" + getWorkPath()).getBytes(Constants.DEFAULT_CHARSET_NAME));
 				if (systemOnlyId.endsWith("==")) {
 					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);

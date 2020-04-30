@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import scw.lang.Cloneable;
 import scw.lang.Nullable;
 
 public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable, Cloneable {

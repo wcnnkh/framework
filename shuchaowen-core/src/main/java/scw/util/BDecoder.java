@@ -1,4 +1,4 @@
-package scw.core;
+package scw.util;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;

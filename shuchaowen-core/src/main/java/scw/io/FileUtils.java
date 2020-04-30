@@ -34,9 +34,9 @@ import java.util.zip.Checksum;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import scw.core.Base64;
 import scw.core.GlobalPropertyFactory;
 import scw.lang.AlreadyExistsException;
+import scw.util.Base64;
 
 public final class FileUtils {
 
