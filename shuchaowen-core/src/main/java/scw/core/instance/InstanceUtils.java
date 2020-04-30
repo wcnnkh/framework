@@ -11,7 +11,6 @@ import java.util.Map;
 import scw.core.Constants;
 import scw.core.Copy;
 import scw.core.GlobalPropertyFactory;
-import scw.core.parameter.DefaultParameterDescriptorFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
@@ -41,7 +40,7 @@ public final class InstanceUtils {
 	public static final ConfigurationScan CONFIGURATION_SCAN = new ConfigurationScan();
 
 	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
-			GlobalPropertyFactory.getInstance(), new DefaultParameterDescriptorFactory());
+			GlobalPropertyFactory.getInstance());
 
 	/**
 	 * 不调用构造方法实例化对象

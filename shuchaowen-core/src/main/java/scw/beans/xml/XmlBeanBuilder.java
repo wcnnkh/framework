@@ -11,7 +11,6 @@ import scw.beans.BeanFactory;
 import scw.beans.builder.ConstructorBeanBuilder;
 import scw.core.instance.AutoConstructorBuilder;
 import scw.core.instance.ConstructorBuilder;
-import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XMLUtils;
@@ -44,8 +43,7 @@ public class XmlBeanBuilder extends ConstructorBeanBuilder {
 					.getConstructorParameters(nodeList);
 			if (ArrayUtils.isEmpty(constructorParameters)) {
 				this.constructorBuilder = new AutoConstructorBuilder(
-						beanFactory, propertyFactory, getTargetClass(),
-						ParameterUtils.getParameterDescriptorFactory());
+						beanFactory, propertyFactory, getTargetClass());
 			} else {
 				this.constructorBuilder = new XmlConstructorBuilder(
 						beanFactory, propertyFactory, getTargetClass(),

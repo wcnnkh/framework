@@ -9,6 +9,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.ReflectionUtils;
 
+@SuppressWarnings("unchecked")
 public class Copy {
 	static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 	private NoArgsInstanceFactory instanceFactory = InstanceUtils.INSTANCE_FACTORY;
@@ -128,6 +129,7 @@ public class Copy {
 			}
 		}
 
+		ReflectionUtils.setAccessibleField(targetField);
 		if (isInvokerSetter()) {
 			ReflectionUtils.setFieldValue(targetClass, targetField, target, value);
 		} else {
@@ -145,7 +147,6 @@ public class Copy {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T copy(Class<? extends T> targetClass, Object source) throws Exception {
 		if (!getInstanceFactory().isInstance(targetClass)) {
 			return (T) source;
@@ -160,7 +161,6 @@ public class Copy {
 		return target;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> T clone(T source) throws Exception {
 		if (source == null) {
 			return null;
