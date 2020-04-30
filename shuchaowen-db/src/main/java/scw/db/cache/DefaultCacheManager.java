@@ -28,11 +28,11 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	}
 
 	public void save(Object bean) {
-		cache.add(getSqlMapper().getObjectKey(ProxyUtils.getProxyAdapter().getUserClass(bean.getClass()), bean), bean);
+		cache.add(getSqlMapper().getObjectKey(ProxyUtils.getProxyFactory().getUserClass(bean.getClass()), bean), bean);
 	}
 
 	public void update(Object bean) {
-		cache.set(getSqlMapper().getObjectKey(ProxyUtils.getProxyAdapter().getUserClass(bean.getClass()), bean), bean);
+		cache.set(getSqlMapper().getObjectKey(ProxyUtils.getProxyFactory().getUserClass(bean.getClass()), bean), bean);
 	}
 
 	public void saveOrUpdate(Object bean) {
@@ -62,6 +62,6 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 
 	public void delete(Object bean) {
 		getCache()
-				.delete(getSqlMapper().getObjectKey(ProxyUtils.getProxyAdapter().getUserClass(bean.getClass()), bean));
+				.delete(getSqlMapper().getObjectKey(ProxyUtils.getProxyFactory().getUserClass(bean.getClass()), bean));
 	}
 }

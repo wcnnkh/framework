@@ -37,7 +37,7 @@ public class BeanAction extends AbstractAction {
 				beanFactory.getInstance(targetClass);
 			}
 		}
-		this.invoker = beanFactory.getAop().proxyMethod(beanFactory, targetClass, method, null);
+		this.invoker = beanFactory.getAop().getProxyMethod(beanFactory, targetClass, method, null);
 	}
 
 	public Invoker getInvoker() {

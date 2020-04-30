@@ -42,7 +42,7 @@ public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {
 					c.factory());
 			consumerFactory.bindConsumer(
 					c.name(),
-					new MqMethodConsumer(beanFactory.getAop().proxyMethod(
+					new MqMethodConsumer(beanFactory.getAop().getProxyMethod(
 							beanFactory, clz, method, null)));
 		}
 	}
@@ -63,7 +63,7 @@ public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {
 					c.durable(),
 					c.exclusive(),
 					c.autoDelete(),
-					new MqMethodConsumer(beanFactory.getAop().proxyMethod(
+					new MqMethodConsumer(beanFactory.getAop().getProxyMethod(
 							beanFactory, clz, method, null)));
 		}
 	}

@@ -52,7 +52,7 @@ public abstract class AbstractBeanBuilder extends
 	}
 
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
-		return beanFactory.getAop().proxy(
+		return beanFactory.getAop().getProxy(
 				targetClass,
 				interfaces,
 				new InstanceFactoryFilterChain(beanFactory, filterNames,
@@ -61,7 +61,7 @@ public abstract class AbstractBeanBuilder extends
 
 	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass,
 			Class<?>[] interfaces) {
-		return beanFactory.getAop().proxyInstance(
+		return beanFactory.getAop().getProxyInstance(
 				targetClass,
 				instance,
 				interfaces,

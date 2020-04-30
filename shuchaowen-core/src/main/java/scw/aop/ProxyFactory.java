@@ -6,7 +6,7 @@ package scw.aop;
  * @author shuchaowen
  *
  */
-public interface ProxyAdapter {
+public interface ProxyFactory {
 	/**
 	 * 是否支持此类(桥接器)
 	 * 
@@ -15,7 +15,7 @@ public interface ProxyAdapter {
 	 */
 	boolean isSupport(Class<?> clazz);
 
-	Proxy proxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain);
+	Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain);
 
 	/**
 	 * 获取代理类
@@ -23,7 +23,7 @@ public interface ProxyAdapter {
 	 * @param interfaceClass
 	 * @return
 	 */
-	Class<?> getClass(Class<?> clazz, Class<?>[] interfaces);
+	Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces);
 
 	/**
 	 * 是否是代理类

@@ -29,7 +29,7 @@ public class DefaultBeanLifeCycle implements BeanLifeCycle {
 			((BeanDefinitionAware) instance).setBeanDefinition(definition);
 		}
 
-		Class<?> instanceClass = ProxyUtils.getProxyAdapter().getUserClass(
+		Class<?> instanceClass = ProxyUtils.getProxyFactory().getUserClass(
 				instance.getClass());
 		getIoc(instanceClass).getAutowired().process(instance, beanFactory,
 				propertyFactory, false);
@@ -38,7 +38,7 @@ public class DefaultBeanLifeCycle implements BeanLifeCycle {
 	public void initAfter(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, BeanDefinition definition,
 			Object instance) throws Exception {
-		Class<?> instanceClass = ProxyUtils.getProxyAdapter().getUserClass(
+		Class<?> instanceClass = ProxyUtils.getProxyFactory().getUserClass(
 				instance.getClass());
 		getIoc(instanceClass).getInit().process(instance, beanFactory,
 				propertyFactory, false);
@@ -53,7 +53,7 @@ public class DefaultBeanLifeCycle implements BeanLifeCycle {
 	public void destroyAfter(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, BeanDefinition definition,
 			Object instance) throws Exception {
-		Class<?> instanceClass = ProxyUtils.getProxyAdapter().getUserClass(
+		Class<?> instanceClass = ProxyUtils.getProxyFactory().getUserClass(
 				instance.getClass());
 		getIoc(instanceClass).getDestroy().process(instance, beanFactory,
 				propertyFactory, false);

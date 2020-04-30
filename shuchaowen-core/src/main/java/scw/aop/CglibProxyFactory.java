@@ -3,17 +3,21 @@ package scw.aop;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 import scw.cglib.proxy.Enhancer;
+import scw.cglib.proxy.Factory;
 import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
 import scw.core.instance.annotation.Configuration;
+import scw.core.reflect.CloneUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.util.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE)
-public class CglibProxyAdapter extends AbstractProxyAdapter {
+public class CglibProxyFactory implements ProxyFactory {
 	public boolean isSupport(Class<?> clazz) {
 		return !Modifier.isFinal(clazz.getModifiers());
 	}
@@ -22,12 +26,32 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 		return Enhancer.isEnhanced(clazz);
 	}
 
-	public Class<?> getClass(Class<?> clazz, Class<?>[] interfaces) {
-		return createEnhancer(clazz, interfaces).createClass();
+	private Class<?>[] getInterfaces(Class<?> clazz, Class<?>[] interfaces) {
+		if (interfaces == null || interfaces.length == 0) {
+			return new Class<?>[0];
+		}
+
+		Class<?>[] interfacesToUse = new Class<?>[interfaces.length];
+		int index = 0;
+		for (Class<?> i : interfaces) {
+			if (i.isAssignableFrom(clazz) || Factory.class.isAssignableFrom(i)) {
+				continue;
+			}
+
+			interfacesToUse[index++] = i;
+		}
+		return Arrays.copyOf(interfacesToUse, index);
 	}
 
-	public Proxy proxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
-		return new CglibProxy(clazz, interfaces, new FiltersConvertCglibMethodInterceptor(clazz, filterChain));
+	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
+		Enhancer enhancer = createEnhancer(clazz, getInterfaces(clazz, interfaces));
+		enhancer.setCallbackType(FiltersConvertCglibMethodInterceptor.class);
+		return enhancer.createClass();
+	}
+
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
+		return new CglibProxy(clazz, getInterfaces(clazz, interfaces),
+				new FiltersConvertCglibMethodInterceptor(clazz, filterChain));
 	}
 
 	private static Enhancer createEnhancer(Class<?> clazz, Class<?>[] interfaces) {
@@ -39,6 +63,7 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 			enhancer.setInterfaces(interfaces);
 		}
 		enhancer.setSuperclass(clazz);
+		enhancer.setUseCache(true);
 		return enhancer;
 	}
 
@@ -56,6 +81,19 @@ public class CglibProxyAdapter extends AbstractProxyAdapter {
 			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(obj, method, args);
 			if (ignoreResult.isSuccess()) {
 				return ignoreResult.getData();
+			}
+
+			if (ArrayUtils.isEmpty(args) && obj instanceof Serializable
+					&& method.getName().equals(WriteReplaceInterface.WRITE_REPLACE_METHOD)) {
+				if (WriteReplaceInterface.class.isAssignableFrom(targetClass)) {
+					return proxy.invokeSuper(obj, args);
+				} else {
+					return CloneUtils.copy(obj, targetClass);
+				}
+			}
+
+			if (filterChain == null) {
+				return proxy.invokeSuper(obj, args);
 			}
 
 			ProxyContext context = new ProxyContext(obj, targetClass, method, args, null);

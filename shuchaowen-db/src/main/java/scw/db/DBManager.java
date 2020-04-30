@@ -41,7 +41,7 @@ public final class DBManager {
 	 * @return
 	 */
 	public static DB getDB(Class<?> tableClass) {
-		DB db = CLASS_TO_DB.get(ProxyUtils.getProxyAdapter().getUserClass(tableClass));
+		DB db = CLASS_TO_DB.get(ProxyUtils.getProxyFactory().getUserClass(tableClass));
 		if (db == null) {
 			throw new NullPointerException(tableClass + " not found db");
 		}

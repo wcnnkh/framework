@@ -7,12 +7,14 @@ import java.io.OutputStream;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 
+import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.io.serialzer.Serializer;
 
 @Configuration(order = Integer.MIN_VALUE + 200)
+@Bean(proxy=false)
 public class Hessian2Serializer extends Serializer {
 
 	@Override
@@ -38,7 +40,7 @@ public class Hessian2Serializer extends Serializer {
 	}
 
 	@Override
-	public <T> T deserialize(byte[] data) throws IOException {
+	public <T> T deserialize(byte[] data) throws IOException, ClassNotFoundException {
 		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
 		try {
 			return deserialize(input);
@@ -49,7 +51,7 @@ public class Hessian2Serializer extends Serializer {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T deserialize(InputStream input) throws IOException {
+	public <T> T deserialize(InputStream input) throws IOException, ClassNotFoundException {
 		Hessian2Input hi = HessianUtils.createHessian2Input(input);
 		try {
 			return (T) hi.readObject();

@@ -1,9 +1,12 @@
-package scw.core;
+package scw.aop.support;
 
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public interface FieldSetterListen {
+import scw.aop.ProxyContext;
+import scw.aop.WriteReplaceInterface;
+
+public interface FieldSetterListen extends WriteReplaceInterface{
 	public static final String GET_CHANGE_MAP = "get_field_setter_map";
 	public static final String CLEAR_FIELD_LISTEN = "clear_field_setter_listen";
 
@@ -14,7 +17,7 @@ public interface FieldSetterListen {
 	 */
 	Map<String, Object> get_field_setter_map();
 
-	void field_setter(Object bean, Field field, Object oldValue);
+	void field_setter(ProxyContext context, Field field, Object oldValue);
 
 	/**
 	 * 清空监听数据

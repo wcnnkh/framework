@@ -1,12 +1,11 @@
 package scw.core.instance;
 
 import scw.core.instance.annotation.Configuration;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.UnsafeUtils;
 import scw.lang.NotSupportedException;
 
 @Configuration(order = Integer.MIN_VALUE)
-public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
+public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	static {
 		if (!UnsafeUtils.isSupport()) {
 			throw new NotSupportedException("UnsafeNoArgsInstanceFactory");
@@ -25,15 +24,6 @@ public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name) {
-		return (T) getInstance(ClassUtils.forNameNullable(name));
-	}
-
-	public boolean isInstance(String name) {
-		return ClassUtils.forNameNullable(name) != null;
-	}
-
 	public boolean isInstance(Class<?> clazz) {
 		if (clazz == null) {
 			return false;
@@ -41,13 +31,4 @@ public class UnsafeNoArgsInstanceFactory implements NoArgsInstanceFactory {
 
 		return true;
 	}
-
-	public boolean isSingleton(String name) {
-		return false;
-	}
-
-	public boolean isSingleton(Class<?> clazz) {
-		return false;
-	}
-
 }

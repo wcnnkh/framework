@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.FieldSetterListen;
+import scw.aop.support.FieldSetterListen;
 import scw.core.utils.TypeUtils;
 import scw.orm.sql.support.ResultSetValueIndexMapping;
 import scw.sql.SqlUtils;

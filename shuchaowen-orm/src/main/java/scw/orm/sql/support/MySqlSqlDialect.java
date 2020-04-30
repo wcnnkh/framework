@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import scw.core.FieldSetterListen;
+import scw.aop.support.FieldSetterListen;
 import scw.core.utils.CollectionUtils;
 import scw.orm.sql.SqlMapper;
 import scw.orm.sql.SqlORMUtils;

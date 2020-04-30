@@ -52,7 +52,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	public void save(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
+		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
@@ -66,7 +66,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	public void update(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
+		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
@@ -76,7 +76,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	public void delete(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
+		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
@@ -103,7 +103,7 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	public void saveOrUpdate(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyAdapter().getUserClass(bean.getClass());
+		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;

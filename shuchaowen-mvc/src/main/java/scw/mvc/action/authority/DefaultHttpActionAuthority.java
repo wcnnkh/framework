@@ -8,17 +8,17 @@ import scw.security.authority.http.DefaultHttpAuthority;
 public class DefaultHttpActionAuthority extends DefaultHttpAuthority implements
 		HttpActionAuthority {
 	private static final long serialVersionUID = 1L;
-	private boolean action;
+	private boolean menuAction;
 
 	public DefaultHttpActionAuthority(String id, String parentId, String name,
 			Map<String, String> attributeMap, String path,
-			HttpMethod httpMethod, boolean action) {
+			HttpMethod httpMethod, boolean menuAction) {
 		super(id, parentId, name, attributeMap, path, httpMethod);
-		this.action = action;
+		this.menuAction = menuAction;
 	}
 
-	public boolean isAction() {
-		return action;
+	public boolean isMenuAction() {
+		return menuAction;
 	}
 
 }

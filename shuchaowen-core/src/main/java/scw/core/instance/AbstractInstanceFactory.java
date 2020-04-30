@@ -71,4 +71,12 @@ public abstract class AbstractInstanceFactory implements InstanceFactory {
 	public <T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes, Object... params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
+	
+	public boolean isSingleton(Class<?> clazz) {
+		return false;
+	}
+	
+	public boolean isSingleton(String name) {
+		return false;
+	}
 }

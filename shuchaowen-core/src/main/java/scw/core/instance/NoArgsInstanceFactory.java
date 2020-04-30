@@ -20,4 +20,8 @@ public interface NoArgsInstanceFactory {
 	 * @return
 	 */
 	boolean isInstance(Class<?> clazz);
+	
+	boolean isSingleton(String name);
+
+	boolean isSingleton(Class<?> clazz);
 }
