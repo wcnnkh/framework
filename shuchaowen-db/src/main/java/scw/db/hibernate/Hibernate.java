@@ -6,5 +6,5 @@ import org.hibernate.SessionFactory;
 public interface Hibernate {
 	SessionFactory getSessionFactory();
 	
-	Session getSession();
+	Session getTransactionSession();
 }

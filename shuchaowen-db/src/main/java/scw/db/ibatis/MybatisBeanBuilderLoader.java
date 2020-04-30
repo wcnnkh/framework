@@ -14,7 +14,7 @@ import scw.io.ResourceUtils;
 
 @Configuration(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
 @Bean(proxy=false)
-public class IbatisBeanBuilderLoader implements BeanBuilderLoader {
+public class MybatisBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanBuilder loading(LoaderContext context,
 			BeanBuilderLoaderChain loaderChain) {

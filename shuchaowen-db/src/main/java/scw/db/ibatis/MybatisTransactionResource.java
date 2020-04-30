@@ -7,12 +7,12 @@ import scw.transaction.TransactionException;
 import scw.transaction.TransactionResource;
 import scw.transaction.savepoint.Savepoint;
 
-public class IbatisTransactionResource implements TransactionResource {
+public class MybatisTransactionResource implements TransactionResource {
 	private final SqlSessionFactory sqlSessionFactory;
 	private final boolean isActive;
 	private SqlSession sqlSession;
 
-	public IbatisTransactionResource(SqlSessionFactory sqlSessionFactory,
+	public MybatisTransactionResource(SqlSessionFactory sqlSessionFactory,
 			boolean isActive) {
 		this.sqlSessionFactory = sqlSessionFactory;
 		this.isActive = isActive;
@@ -20,7 +20,7 @@ public class IbatisTransactionResource implements TransactionResource {
 
 	public SqlSession getSqlSession() {
 		if (sqlSession == null) {
-			sqlSession = IbatisUtils.proxySqlSession(sqlSessionFactory
+			sqlSession = MybatisUtils.proxySqlSession(sqlSessionFactory
 					.openSession(!isActive));
 		}
 		return sqlSession;
@@ -40,7 +40,7 @@ public class IbatisTransactionResource implements TransactionResource {
 
 	public void end() {
 		if(sqlSession != null){
-			IbatisUtils.closeSqlSessionProxy(sqlSession);
+			MybatisUtils.closeSqlSessionProxy(sqlSession);
 		}
 	}
 
