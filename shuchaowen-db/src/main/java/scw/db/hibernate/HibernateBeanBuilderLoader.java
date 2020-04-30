@@ -1,6 +1,7 @@
 package scw.db.hibernate;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
 import scw.beans.annotation.Bean;
@@ -10,6 +11,8 @@ import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.core.instance.annotation.Configuration;
+import scw.io.Resource;
+import scw.io.ResourceUtils;
 
 @Configuration(order = Integer.MIN_VALUE)
 @Bean(proxy = false)
@@ -65,11 +68,12 @@ public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 		}
 
 		public boolean isInstance() {
-			return true;
+			return ResourceUtils.getResourceOperations().isExist(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
 		}
 
 		public Object create() throws Exception {
-			return new org.hibernate.cfg.Configuration().configure();
+			Resource resource = ResourceUtils.getResourceOperations().getResource(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
+			return new org.hibernate.cfg.Configuration().configure(resource.getURL());
 		}
 	}
 

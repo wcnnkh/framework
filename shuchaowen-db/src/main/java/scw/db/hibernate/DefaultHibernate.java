@@ -19,7 +19,7 @@ public class DefaultHibernate implements Hibernate {
 		return sessionFactory;
 	}
 
-	public Session getSession() {
+	public Session getTransactionSession() {
 		return HibernateUtils.getTransactionSession(getSessionFactory());
 	}
 }

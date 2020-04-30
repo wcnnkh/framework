@@ -6,12 +6,12 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 
-@Configuration(order = Integer.MIN_VALUE, value = Ibatis.class)
+@Configuration(order = Integer.MIN_VALUE, value = Mybatis.class)
 @Bean(proxy = false)
-public class DefaultIbatis implements Ibatis {
+public class DefaultMybatis implements Mybatis {
 	private final SqlSessionFactory sqlSessionFactory;
 
-	public DefaultIbatis(SqlSessionFactory sqlSessionFactory) {
+	public DefaultMybatis(SqlSessionFactory sqlSessionFactory) {
 		this.sqlSessionFactory = sqlSessionFactory;
 	}
 
@@ -19,8 +19,8 @@ public class DefaultIbatis implements Ibatis {
 		return sqlSessionFactory;
 	}
 
-	public SqlSession getSqlSession() {
-		return IbatisUtils.getTransactionSqlSession(getSqlSessionFactory());
+	public SqlSession getTransactionSqlSession() {
+		return MybatisUtils.getTransactionSqlSession(getSqlSessionFactory());
 	}
 
 }

@@ -8,8 +8,8 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
 
-public final class IbatisUtils {
-	private IbatisUtils() {
+public final class MybatisUtils {
+	private MybatisUtils() {
 	};
 
 	public static SqlSession getTransactionSqlSession(
@@ -19,10 +19,10 @@ public final class IbatisUtils {
 			return sqlSessionFactory.openSession(true);
 		}
 
-		IbatisTransactionResource resource = (IbatisTransactionResource) transaction
+		MybatisTransactionResource resource = (MybatisTransactionResource) transaction
 				.getResource(sqlSessionFactory);
 		if (resource == null) {
-			resource = new IbatisTransactionResource(sqlSessionFactory,
+			resource = new MybatisTransactionResource(sqlSessionFactory,
 					transaction.isActive());
 			transaction.bindResource(sqlSessionFactory, resource);
 		}
