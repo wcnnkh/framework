@@ -23,7 +23,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import scw.core.Assert;
-import scw.core.SystemPropertyPlaceholderResolver;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -64,43 +63,6 @@ public class PropertyPlaceholderHelper {
 		wellKnownSimplePrefixes.put("}", "{");
 		wellKnownSimplePrefixes.put("]", "[");
 		wellKnownSimplePrefixes.put(")", "(");
-	}
-	
-	/**
-	 * Resolve ${...} placeholders in the given text, replacing them with
-	 * corresponding system property values.
-	 * 
-	 * @param text
-	 *            the String to resolve
-	 * @return the resolved String
-	 * @see #PLACEHOLDER_PREFIX
-	 * @see #PLACEHOLDER_SUFFIX
-	 * @throws IllegalArgumentException
-	 *             if there is an unresolvable placeholder
-	 */
-	public static String resolvePlaceholders(String text) {
-		return resolvePlaceholders(text, false);
-	}
-
-	/**
-	 * Resolve ${...} placeholders in the given text, replacing them with
-	 * corresponding system property values. Unresolvable placeholders with no
-	 * default value are ignored and passed through unchanged if the flag is set
-	 * to true.
-	 * 
-	 * @param text
-	 *            the String to resolve
-	 * @param ignoreUnresolvablePlaceholders
-	 *            flag to determine is unresolved placeholders are ignored
-	 * @return the resolved String
-	 * @see #PLACEHOLDER_PREFIX
-	 * @see #PLACEHOLDER_SUFFIX
-	 * @throws IllegalArgumentException
-	 *             if there is an unresolvable placeholder and the flag is false
-	 */
-	public static String resolvePlaceholders(String text, boolean ignoreUnresolvablePlaceholders) {
-		PropertyPlaceholderHelper helper = (ignoreUnresolvablePlaceholders ? nonStrictHelper : strictHelper);
-		return helper.replacePlaceholders(text, new SystemPropertyPlaceholderResolver(text));
 	}
 
 	private final String placeholderPrefix;

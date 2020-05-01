@@ -25,7 +25,7 @@ public class ServletEmbeddedApplication extends MainApplication {
 		}
 
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
-		dispatcherServlet.setCommonApplication(this);
+		dispatcherServlet.setApplication(this);
 		if (propertyFactory.getValue("servlet.service.startup", boolean.class,
 				true)) {
 			dispatcherServlet.setDefaultServletService(false);

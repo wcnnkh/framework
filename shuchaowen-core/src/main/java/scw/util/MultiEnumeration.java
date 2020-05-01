@@ -8,14 +8,14 @@ import java.util.Iterator;
 import scw.core.utils.CollectionUtils;
 
 public final class MultiEnumeration<E> implements Enumeration<E> {
-	private Iterator<Enumeration<? extends E>> iterator;
+	private Iterator<Enumeration<E>> iterator;
 	private Enumeration<? extends E> enumeration;
 	
-	public MultiEnumeration(Enumeration<? extends E> ...enumerations) {
+	public MultiEnumeration(Enumeration<E> ...enumerations) {
 		this(Arrays.asList(enumerations));
 	}
 
-	public MultiEnumeration(Collection<Enumeration<? extends E>> enumerations) {
+	public MultiEnumeration(Collection<Enumeration<E>> enumerations) {
 		this.iterator = CollectionUtils.isEmpty(enumerations) ? null
 				: enumerations.iterator();
 	}

@@ -48,17 +48,13 @@ public final class FastJsonObject extends JsonObject implements JSONAware {
 	public String toJsonString() {
 		return JSON.toJSONString(jsonObject, FastJSONBaseProperyFilter.BASE_PROPERY_FILTER);
 	}
-
-	public <T> T getObject(String key, Class<? extends T> type) {
+	
+	public <T> T getObjectSupport(String key, Class<? extends T> type) {
 		return jsonObject.getObject(key, type);
 	}
 
-	public Object getObject(String key, Type type) {
+	public Object getObjectSupport(String key, Type type) {
 		return jsonObject.getObject(key, type);
-	}
-
-	public String getString(String key) {
-		return jsonObject.getString(key);
 	}
 
 	@Override

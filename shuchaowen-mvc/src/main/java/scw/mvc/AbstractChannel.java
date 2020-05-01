@@ -32,12 +32,12 @@ import scw.mvc.annotation.RequestBody;
 import scw.mvc.beans.ChannelBeanFactory;
 import scw.mvc.beans.DefaultChannelBeanFactory;
 import scw.mvc.parameter.RequestBodyParse;
-import scw.util.value.AbstractValueFactory;
 import scw.util.value.DefaultValueDefinition;
 import scw.util.value.StringValue;
+import scw.util.value.SimpleValueFactory;
 import scw.util.value.Value;
 
-public abstract class AbstractChannel extends AbstractValueFactory<String> implements Channel, Destroy {
+public abstract class AbstractChannel extends SimpleValueFactory implements Channel, Destroy {
 	private final long createTime;
 	private final JSONSupport jsonSupport;
 	private final ChannelBeanFactory channelBeanFactory;
@@ -135,14 +135,14 @@ public abstract class AbstractChannel extends AbstractValueFactory<String> imple
 	};
 
 	public Value get(String key) {
-		String value = getString(key);
+		String value = getStringValue(key);
 		if (value == null) {
 			return null;
 		}
 		return parseValue(value);
 	}
 
-	public abstract String getString(String key);
+	protected abstract String getStringValue(String key);
 
 	public abstract String[] getStringArray(String key);
 
@@ -159,11 +159,6 @@ public abstract class AbstractChannel extends AbstractValueFactory<String> imple
 			Array.set(array, i, value.getAsObject(type));
 		}
 		return (E[]) array;
-	}
-
-	@Override
-	public final <T> T getObject(String key, Class<? extends T> type) {
-		return super.getObject(key, type);
 	}
 
 	@Override
@@ -186,10 +181,6 @@ public abstract class AbstractChannel extends AbstractValueFactory<String> imple
 		} catch (Exception e) {
 			throw new ParameterException("name=" + name + ", type=" + type, e);
 		}
-	}
-
-	public final Object getObject(String name, Type type) {
-		return super.getObject(name, type);
 	}
 
 	// 一般情况下建议重写止方法，因为默认的实现不支持泛型

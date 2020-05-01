@@ -3,8 +3,60 @@ package scw.util.value;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
-public abstract class AbstractValueFactory<K> implements ValueFactory<K> {
+import scw.core.utils.CollectionUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
+
+public class DefaultValueFactory<K> implements ValueFactory<K> {
+	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	private LinkedList<BaseValueFactory<K>> baseValueFactories;
+
+	public Value get(K key) {
+		if (baseValueFactories == null) {
+			return null;
+		}
+
+		for (BaseValueFactory<K> baseValueFactory : baseValueFactories) {
+			Value value = baseValueFactory.get(key);
+			if (value != null) {
+				return value;
+			}
+		}
+		return null;
+	}
+
+	protected Collection<BaseValueFactory<K>> getBaseValueFactories() {
+		if (baseValueFactories == null) {
+			return Collections.emptyList();
+		}
+
+		return Collections.unmodifiableList(baseValueFactories);
+	}
+
+	public void addBaseValueFactory(BaseValueFactory<K> baseValueFactory) {
+		if (baseValueFactory == null) {
+			baseValueFactories = new LinkedList<BaseValueFactory<K>>();
+		}
+		baseValueFactories.addFirst(baseValueFactory);
+	}
+
+	public void addBaseValueFactory(List<BaseValueFactory<K>> baseValueFactories) {
+		if (CollectionUtils.isEmpty(baseValueFactories)) {
+			return;
+		}
+
+		ListIterator<BaseValueFactory<K>> listIterator = baseValueFactories
+				.listIterator(baseValueFactories.size());
+		while (listIterator.hasPrevious()) {
+			addBaseValueFactory(listIterator.previous());
+		}
+	}
 
 	/**
 	 * 获取默认的值
@@ -13,141 +65,143 @@ public abstract class AbstractValueFactory<K> implements ValueFactory<K> {
 	 *            可能为空
 	 * @return
 	 */
-	protected abstract Value getDefaultValue(K key);
+	protected Value getDefaultValue(K key) {
+		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;
+	}
 
-	public Byte getByte(K key) {
+	public final Byte getByte(K key) {
 		Value value = get(key);
 		return value == null ? null : value.getAsByte();
 	}
 
-	public byte getByteValue(K key) {
+	public final byte getByteValue(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsByteValue() : value
 				.getAsByteValue();
 	}
 
-	public Short getShort(K key) {
+	public final Short getShort(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsShort() : value
 				.getAsShort();
 	}
 
-	public short getShortValue(K key) {
+	public final short getShortValue(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsShortValue() : value
 				.getAsShortValue();
 	}
 
-	public Integer getInteger(K key) {
+	public final Integer getInteger(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsInteger() : value
 				.getAsInteger();
 	}
 
-	public int getIntValue(K key) {
+	public final int getIntValue(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsIntValue() : value
 				.getAsIntValue();
 	}
 
-	public Long getLong(K key) {
+	public final Long getLong(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsLong() : value
 				.getAsLong();
 	}
 
-	public long getLongValue(K key) {
+	public final long getLongValue(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsLongValue() : value
 				.getAsLongValue();
 	}
 
-	public Boolean getBoolean(K key) {
+	public final Boolean getBoolean(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsBoolean() : value
 				.getAsBoolean();
 	}
 
-	public boolean getBooleanValue(K key) {
+	public final boolean getBooleanValue(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsBooleanValue() : value
 				.getAsBooleanValue();
 	}
 
-	public Float getFloat(K key) {
+	public final Float getFloat(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsFloat() : value
 				.getAsFloat();
 	}
 
-	public float getFloatValue(K key) {
+	public final float getFloatValue(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsFloatValue() : value
 				.getAsFloatValue();
 	}
 
-	public Double getDouble(K key) {
+	public final Double getDouble(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsDouble() : value
 				.getAsDouble();
 	}
 
-	public double getDoubleValue(K key) {
+	public final double getDoubleValue(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsDoubleValue() : value
 				.getAsDoubleValue();
 	}
 
-	public char getChar(K key) {
+	public final char getChar(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsChar() : value
 				.getAsChar();
 	}
 
-	public Character getCharacter(K key) {
+	public final Character getCharacter(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsCharacter() : value
 				.getAsCharacter();
 	}
 
-	public String getString(K key) {
+	public final String getString(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsString() : value
 				.getAsString();
 	}
 
-	public BigInteger getBigInteger(K key) {
+	public final BigInteger getBigInteger(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsBigInteger() : value
 				.getAsBigInteger();
 	}
 
-	public BigDecimal getBigDecimal(K key) {
+	public final BigDecimal getBigDecimal(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsBigDecimal() : value
 				.getAsBigDecimal();
 	}
 
-	public Number getNumber(K key) {
+	public final Number getNumber(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsNumber() : value
 				.getAsNumber();
 	}
 
-	public Class<?> getClass(K key) {
+	public final Class<?> getClass(K key) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsClass() : value
 				.getAsClass();
 	}
 
-	public Enum<?> getEnum(K key, Class<?> enumType) {
+	public final Enum<?> getEnum(K key, Class<?> enumType) {
 		Value value = get(key);
 		return value == null ? getDefaultValue(key).getAsEnum(enumType) : value
 				.getAsEnum(enumType);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getObject(K key, Class<? extends T> type) {
+	public final <T> T getObject(K key, Class<? extends T> type) {
 		Object value;
 		if (String.class == type) {
 			value = getString(key);
@@ -193,7 +247,7 @@ public abstract class AbstractValueFactory<K> implements ValueFactory<K> {
 			value = getClass(key);
 		} else if (type.isEnum()) {
 			value = getEnum(key, type);
-		} else if(type == Value.class){
+		} else if (type == Value.class) {
 			value = get(key);
 		} else {
 			value = getObjectSupport(key, type);
@@ -208,7 +262,7 @@ public abstract class AbstractValueFactory<K> implements ValueFactory<K> {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Object getObject(K key, Type type) {
+	public final Object getObject(K key, Type type) {
 		if (type instanceof Class) {
 			return getObject(key, (Class) type);
 		}

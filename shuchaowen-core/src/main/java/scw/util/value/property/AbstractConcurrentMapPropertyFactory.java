@@ -4,7 +4,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
-import scw.io.ResourceOperations;
+import scw.io.support.ResourceOperations;
 import scw.util.value.Value;
 
 public abstract class AbstractConcurrentMapPropertyFactory extends

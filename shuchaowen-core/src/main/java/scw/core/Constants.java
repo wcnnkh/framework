@@ -16,15 +16,13 @@
 
 package scw.core;
 
-import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 
 import scw.asm.Opcodes;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemUtils;
-import scw.util.value.StringValue;
-import scw.util.value.property.NotSupportEnumerationPropertyFactory;
 import scw.util.value.property.PropertyFactory;
+import scw.util.value.property.StaticFieldPropertyFactory;
 
 /**
  * This class can be used to parse other classes containing constant definitions
@@ -47,8 +45,6 @@ import scw.util.value.property.PropertyFactory;
  * @since 16.03.2003
  */
 public class Constants {
-	private static final String CONSTANTS_KEY_PREFIX = "constants.";
-
 	public static final String SYSTEM_PACKAGE_NAME = StringUtils.split(
 			Constants.class.getPackage().getName(), '.')[0];
 
@@ -84,27 +80,6 @@ public class Constants {
 
 	public static final Charset ISO_8859_1 = Charset.forName("iso-8859-1");
 
-	public static final PropertyFactory PROPERTY_FACTORY = new NotSupportEnumerationPropertyFactory() {
-
-		public scw.util.value.Value get(String key) {
-			String k = key.toUpperCase();
-			String value = null;
-			if (k.startsWith(CONSTANTS_KEY_PREFIX.toUpperCase())) {
-				k = k.substring(CONSTANTS_KEY_PREFIX.length());
-				try {
-					Field field = Constants.class.getField(k);
-					Object v = field.get(null);
-					value = v == null ? null : v.toString();
-				} catch (Exception e) {
-					// IGNORE
-				}
-			}
-			return value == null ? GlobalPropertyFactory.getInstance().get(key)
-					: new StringValue(value);
-		};
-
-		public java.util.Enumeration<String> enumerationKeys() {
-			return GlobalPropertyFactory.getInstance().enumerationKeys();
-		};
-	};
+	public static final PropertyFactory PROPERTY_FACTORY = new StaticFieldPropertyFactory(
+			Constants.class, "constants.", true);
 }

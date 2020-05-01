@@ -7,32 +7,17 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.util.comparator.CompareUtils;
-import scw.util.value.StringValue;
-import scw.util.value.property.NotSupportEnumerationPropertyFactory;
 import scw.util.value.property.PropertyFactory;
 
 public class LoggerLevelUtils {
 	private static final LinkedList<KeyValuePair<String, Level>> LOGGER_LEVEL_LIST = new LinkedList<KeyValuePair<String, Level>>();
-	public static final PropertyFactory PROPERTY_FACTORY = new NotSupportEnumerationPropertyFactory() {
-
-		public scw.util.value.Value get(String key) {
-			String value = null;
-			if (key.equalsIgnoreCase("default.logger.level")) {
-				value = DEFAULT_LEVEL.name();
-			} else if (key.equalsIgnoreCase("logger.rootPath")) {
-				value = GlobalPropertyFactory.getInstance().getWorkPath();
-			}
-			return value == null ? Constants.PROPERTY_FACTORY.get(key)
-					: new StringValue(value);
-		};
-	};
+	public static final PropertyFactory PROPERTY_FACTORY = new LoggerPropertyFactory();
 
 	public static final Level DEFAULT_LEVEL;
 
@@ -70,6 +55,10 @@ public class LoggerLevelUtils {
 	}
 
 	private static void reader(Properties properties) {
+		if(properties == null){
+			return ;
+		}
+		
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			Object key = entry.getKey();
 			if (key == null) {

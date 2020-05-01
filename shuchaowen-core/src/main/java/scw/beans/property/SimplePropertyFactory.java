@@ -12,11 +12,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.lang.AlreadyExistsException;
-import scw.util.value.StringValue;
-import scw.util.value.Value;
-import scw.util.value.property.AbstractPropertyFactory;
+import scw.util.value.property.StringValuePropertyFactory;
 
-public class SimplePropertyFactory extends AbstractPropertyFactory  {
+public class SimplePropertyFactory extends StringValuePropertyFactory {
 	private Map<String, Property> propertyMap = new HashMap<String, Property>();
 	private ArrayList<Properties> propertiesList = new ArrayList<Properties>();
 
@@ -53,12 +51,14 @@ public class SimplePropertyFactory extends AbstractPropertyFactory  {
 		return propertiesList;
 	}
 
-	public Enumeration<String> enumerationKeys() {
-		return Collections.enumeration(propertyMap.keySet());
+	@Override
+	protected String getStringValue(String key) {
+		Property property = propertyMap.get(key);
+		return property == null ? null : property.getValue();
 	}
 
-	public Value get(String key) {
-		Property property = propertyMap.get(key);
-		return property == null? null:new StringValue(property.getValue());
+	@Override
+	protected Enumeration<String> internalEnumerationKeys() {
+		return Collections.enumeration(propertyMap.keySet());
 	}
 }

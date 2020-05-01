@@ -83,24 +83,28 @@ public class PackageScan {
 		List<Class<?>> classes = new LinkedList<Class<?>>();
 		for (Resource resource : resourcePatternResolver
 				.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + usePackageName + CLASS_RESOURCE)) {
-			MetadataReader reader = metadataReaderFactory.getMetadataReader(resource);
-			if (reader == null) {
-				continue;
-			}
-
-			if (reader.getAnnotationMetadata().hasAnnotation(Deprecated.class.getName())
-					|| reader.getAnnotationMetadata().hasAnnotation(Ignore.class.getName())) {
-				continue;
-			}
-
-			Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName());
-			if (clazz == null) {
-				continue;
-			}
-
-			classes.add(clazz);
+			appendClass(resource, classes);
 		}
 		return classes;
+	}
+	
+	private void appendClass(Resource resource, Collection<Class<?>> classes) throws IOException{
+		MetadataReader reader = metadataReaderFactory.getMetadataReader(resource);
+		if (reader == null) {
+			return ;
+		}
+
+		if (reader.getAnnotationMetadata().hasAnnotation(Deprecated.class.getName())
+				|| reader.getAnnotationMetadata().hasAnnotation(Ignore.class.getName())) {
+			return ;
+		}
+
+		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName());
+		if (clazz == null) {
+			return ;
+		}
+
+		classes.add(clazz);
 	}
 
 	public final Set<Class<?>> getClasses(Collection<String> packageNames) {

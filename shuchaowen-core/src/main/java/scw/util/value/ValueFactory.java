@@ -4,9 +4,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public interface ValueFactory<K>{
-	Value get(K key);
-	
+public interface ValueFactory<K> extends BaseValueFactory<K>{
 	Byte getByte(K key);
 
 	byte getByteValue(K key);

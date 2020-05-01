@@ -9,23 +9,24 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import scw.application.Application;
 import scw.application.CommonApplication;
 import scw.core.GlobalPropertyFactory;
 import scw.servlet.ServletUtils;
 
 public class DispatcherServlet extends GenericServlet {
 	private static final long serialVersionUID = 1L;
-	private CommonApplication commonApplication;
+	private Application application;
 	private ServletService servletService;
 	private boolean reference = false;
 
-	public CommonApplication getCommonApplication() {
-		return commonApplication;
+	public Application getApplication() {
+		return application;
 	}
 
-	public void setCommonApplication(CommonApplication commonApplication) {
+	public void setApplication(Application application) {
 		this.reference = true;
-		this.commonApplication = commonApplication;
+		this.application = application;
 	}
 
 	public ServletService getServletService() {
@@ -35,11 +36,12 @@ public class DispatcherServlet extends GenericServlet {
 	public void setServletService(ServletService servletService) {
 		this.servletService = servletService;
 	}
-	
-	public void setDefaultServletService(boolean force){
-		if(getServletService() == null || force){
-			if(getCommonApplication() != null){
-				setServletService(getCommonApplication().getInstance(ServletService.class));
+
+	public void setDefaultServletService(boolean force) {
+		if (getServletService() == null || force) {
+			if (getApplication() != null) {
+				setServletService(getApplication().getBeanFactory()
+						.getInstance(ServletService.class));
 			}
 		}
 	}
@@ -59,26 +61,27 @@ public class DispatcherServlet extends GenericServlet {
 	public final void init(ServletConfig servletConfig) throws ServletException {
 		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(
 				servletConfig);
-		if (getCommonApplication() == null) {
-			GlobalPropertyFactory.getInstance().setWorkPath(servletConfig.getServletContext()
-					.getRealPath("/"));
-			this.commonApplication = new CommonApplication(
+		if (getApplication() == null) {
+			GlobalPropertyFactory.getInstance().setWorkPath(
+					servletConfig.getServletContext().getRealPath("/"));
+			this.application = new CommonApplication(
 					propertyFactory.getConfigXml());
 		}
 
-		getCommonApplication().getPropertyFactory().add(propertyFactory);
+		getApplication().getPropertyFactory().addBasePropertyFactory(
+				propertyFactory);
 
 		if (!reference) {
-			getCommonApplication().init();
+			getApplication().init();
 		}
-		
+
 		setDefaultServletService(false);
 	}
 
 	@Override
 	public void destroy() {
-		if (!reference && getCommonApplication() != null) {
-			getCommonApplication().destroy();
+		if (!reference && getApplication() != null) {
+			getApplication().destroy();
 		}
 		super.destroy();
 	}

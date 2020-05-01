@@ -93,14 +93,6 @@ public final class AutoRefreshPropertyFactory extends StringValuePropertyFactory
 		}
 	}
 
-	public String getValue(String key) {
-		if (propertyMap == null || propertyMap.isEmpty()) {
-			return null;
-		}
-
-		return propertyMap.get(key);
-	}
-
 	private final class RefreshPropertiesTask extends TimerTask {
 		private Properties properties;
 
@@ -125,7 +117,17 @@ public final class AutoRefreshPropertyFactory extends StringValuePropertyFactory
 		timer.cancel();
 	}
 
-	public Enumeration<String> enumerationKeys() {
+	@Override
+	protected String getStringValue(String key) {
+		if (propertyMap == null || propertyMap.isEmpty()) {
+			return null;
+		}
+
+		return propertyMap.get(key);
+	}
+
+	@Override
+	protected Enumeration<String> internalEnumerationKeys() {
 		return Collections.enumeration(propertyMap.keySet());
 	}
 }

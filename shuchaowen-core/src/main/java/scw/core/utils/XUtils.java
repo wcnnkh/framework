@@ -31,14 +31,6 @@ public final class XUtils {
 	private XUtils() {
 	};
 
-	public static boolean isWin() {
-		return System.getProperty("os.name").toLowerCase().startsWith("win");
-	}
-
-	public static boolean isMac() {
-		return System.getProperty("os.name").toLowerCase().startsWith("mac");
-	}
-
 	public static String getUUID() {
 		return StringUtils.removeChar(UUID.randomUUID().toString(), '-');
 	}
@@ -315,5 +307,14 @@ public final class XUtils {
 					entry.getValue() == null ? null : entry.getValue()
 							.toString());
 		}
+	}
+
+	public static <T> T use(T... objs) {
+		for (T obj : objs) {
+			if (obj != null) {
+				return obj;
+			}
+		}
+		return null;
 	}
 }

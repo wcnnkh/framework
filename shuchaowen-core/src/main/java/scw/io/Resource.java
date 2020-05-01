@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URL;
 
 public interface Resource extends InputStreamSource, OutputStreamSource {
+	public static final Resource NONEXISTENT_RESOURCE = new NonexistentResource();
 
 	/**
 	 * 是否存在
