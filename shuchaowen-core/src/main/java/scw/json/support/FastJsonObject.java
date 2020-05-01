@@ -1,5 +1,6 @@
 package scw.json.support;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
@@ -11,7 +12,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;
 import com.alibaba.fastjson.JSONObject;
 
-public final class FastJsonObject extends JsonObject implements JSONAware {
+public final class FastJsonObject extends JsonObject implements JSONAware, Serializable {
+	private static final long serialVersionUID = 1L;
 	private JSONObject jsonObject;
 
 	public FastJsonObject(JSONObject jsonObject) {
