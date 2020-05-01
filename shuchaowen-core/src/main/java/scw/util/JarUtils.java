@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +11,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import scw.core.Constants;
+import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 
 public abstract class JarUtils {

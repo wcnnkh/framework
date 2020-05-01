@@ -9,12 +9,9 @@ import java.util.Map;
 
 import scw.core.StringFormat;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.FormatterException;
-import scw.core.utils.PlaceholderFormatAppend;
-import scw.core.utils.StringAppend;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
-import scw.util.value.property.PropertyFactory;
+import scw.lang.FormatterException;
 
 public final class FormatUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
@@ -117,7 +114,7 @@ public final class FormatUtils {
 		return new SimpleDateFormat(formatter).format(date);
 	}
 	
-	public static String formatEL(String text, PropertyFactory propertyFactory){
+	public static String formatEL(String text, scw.util.value.ValueFactory<String> propertyFactory){
 		return StringFormat.format(text, "${", "}", propertyFactory);
 	}
 	
@@ -125,7 +122,7 @@ public final class FormatUtils {
 		return StringFormat.format(text, "${", "}", map);
 	}
 	
-	public static String format(String text, PropertyFactory propertyFactory){
+	public static String format(String text, scw.util.value.ValueFactory<String> propertyFactory){
 		return StringFormat.format(text, "{", "}", propertyFactory);
 	}
 	
@@ -133,7 +130,7 @@ public final class FormatUtils {
 		return StringFormat.format(text, "{", "}", map);
 	}
 	
-	public static String format(String text, PropertyFactory propertyFactory, boolean supportEL) {
+	public static String format(String text, scw.util.value.ValueFactory<String> propertyFactory, boolean supportEL) {
 		String newText = text;
 		if (supportEL) {
 			newText = formatEL(newText, propertyFactory);

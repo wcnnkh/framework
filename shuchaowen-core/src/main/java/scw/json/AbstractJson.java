@@ -1,8 +1,8 @@
 package scw.json;
 
-import scw.util.value.AbstractValueFactory;
+import scw.util.value.DefaultValueFactory;
 
-public abstract class AbstractJson<K> extends AbstractValueFactory<K> {
+public abstract class AbstractJson<K> extends DefaultValueFactory<K> {
 	
 	public abstract JsonElement get(K key);
 

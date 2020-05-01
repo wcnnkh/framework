@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.util;
 
 import scw.core.Append;
 

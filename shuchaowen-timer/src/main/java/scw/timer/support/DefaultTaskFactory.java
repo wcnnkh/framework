@@ -2,7 +2,7 @@ package scw.timer.support;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import scw.core.utils.IteratorCallback;
+import scw.core.IteratorCallback;
 import scw.timer.TaskConfig;
 import scw.timer.TaskFactory;
 

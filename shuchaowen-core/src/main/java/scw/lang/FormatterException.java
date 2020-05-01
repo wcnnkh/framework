@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.lang;
 
 public class FormatterException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 import scw.core.Destroy;
-import scw.core.utils.IteratorCallback;
+import scw.core.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.lang.AlreadyExistsException;

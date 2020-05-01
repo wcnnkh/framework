@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import scw.core.utils.ArrayUtils;
+import scw.core.utils.StringUtils;
 
 public final class CSVUtils {
 	private CSVUtils() {

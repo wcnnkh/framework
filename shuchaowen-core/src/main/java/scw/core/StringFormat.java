@@ -3,7 +3,6 @@ package scw.core;
 import java.util.Map;
 
 import scw.core.utils.StringUtils;
-import scw.util.value.property.PropertyFactory;
 
 public abstract class StringFormat {
 	private final char[] prefix;
@@ -84,30 +83,32 @@ public abstract class StringFormat {
 	}
 
 	public static String format(String text, String prefix, String suffix,
-			PropertyFactory propertyFactory) {
-		if(StringUtils.isEmpty(text)){
+			scw.util.value.ValueFactory<String> propertyFactory) {
+		if (StringUtils.isEmpty(text)) {
 			return text;
 		}
-		
+
 		return new StringFormat.PropertyFactoryStringFormat(prefix, suffix,
 				propertyFactory).format(text);
 	}
-	
-	public static String format(String text, String prefix, String suffix, Map<?, ?> map){
-		if(StringUtils.isEmpty(text)){
+
+	public static String format(String text, String prefix, String suffix,
+			Map<?, ?> map) {
+		if (StringUtils.isEmpty(text)) {
 			return text;
 		}
-		
-		return new StringFormat.MapStringFormat(prefix, suffix, map).format(text);
+
+		return new StringFormat.MapStringFormat(prefix, suffix, map)
+				.format(text);
 	}
 
 	protected abstract String getValue(String key);
 
 	public static class PropertyFactoryStringFormat extends StringFormat {
-		private PropertyFactory propertyFactory;
+		private scw.util.value.ValueFactory<String> propertyFactory;
 
 		public PropertyFactoryStringFormat(String prefix, String suffix,
-				PropertyFactory propertyFactory) {
+				scw.util.value.ValueFactory<String> propertyFactory) {
 			super(prefix, suffix);
 			this.propertyFactory = propertyFactory;
 		}
@@ -117,7 +118,7 @@ public abstract class StringFormat {
 			if (propertyFactory == null) {
 				return null;
 			}
-			
+
 			return propertyFactory.getString(key);
 		}
 	}

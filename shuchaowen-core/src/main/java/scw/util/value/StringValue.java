@@ -8,7 +8,7 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 
-public class StringValue extends AbstractValue implements Serializable {
+public class StringValue extends AbstractStringValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String value;
 	private transient JSONSupport jsonSupport;

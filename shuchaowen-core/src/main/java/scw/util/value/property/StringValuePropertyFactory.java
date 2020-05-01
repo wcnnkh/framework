@@ -1,20 +1,34 @@
 package scw.util.value.property;
 
-import scw.util.value.DefaultValueDefinition;
+import java.util.Enumeration;
+
+import scw.util.MultiEnumeration;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
 
+public abstract class StringValuePropertyFactory extends PropertyFactory {
 
-public abstract class StringValuePropertyFactory extends AbstractPropertyFactory{
-
+	@Override
 	public final Value get(String key) {
-		String value = getValue(key);
-		if(value == null){
-			return null;
+		String value = getStringValue(key);
+		if (value != null) {
+			return new StringValue(value, getDefaultValue(key));
 		}
-		
-		return new StringValue(value, DefaultValueDefinition.DEFAULT_VALUE_DEFINITION);
+		return super.get(key);
 	}
-	
-	protected abstract String getValue(String key);
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public final Enumeration<String> enumerationKeys() {
+		Enumeration<String> enumeration = internalEnumerationKeys();
+		if (enumeration == null) {
+			return super.enumerationKeys();
+		}
+		return new MultiEnumeration<String>(enumeration,
+				super.enumerationKeys());
+	}
+
+	protected abstract String getStringValue(String key);
+
+	protected abstract Enumeration<String> internalEnumerationKeys();
 }

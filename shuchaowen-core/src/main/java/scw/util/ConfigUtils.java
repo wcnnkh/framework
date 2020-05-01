@@ -26,13 +26,13 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
-import scw.core.utils.XMLUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.value.Value;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
+import scw.xml.XMLUtils;
 
 public final class ConfigUtils {
 	private ConfigUtils() {

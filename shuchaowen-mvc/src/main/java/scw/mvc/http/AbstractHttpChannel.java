@@ -60,7 +60,7 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 		}
 	}
 
-	public String getString(String name) {
+	public String getStringValue(String name) {
 		String v = request.getParameter(name);
 		if (v == null) {
 			MultiValueMap<String, String> restfulParameterMap = MVCUtils

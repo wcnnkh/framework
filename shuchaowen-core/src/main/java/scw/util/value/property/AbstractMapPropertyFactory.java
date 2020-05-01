@@ -7,24 +7,34 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.Assert;
-import scw.io.ResourceOperations;
+import scw.io.support.ResourceOperations;
+import scw.util.MultiEnumeration;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
 
-public abstract class AbstractMapPropertyFactory extends
-		AbstractPropertyFactory {
+public abstract class AbstractMapPropertyFactory extends PropertyFactory {
 	protected abstract Map<String, Value> getTargetMap();
 
 	public Map<String, Value> getUnmodifiableMap() {
 		return Collections.unmodifiableMap(getTargetMap());
 	}
 
+	@Override
 	public Value get(String key) {
-		return getTargetMap().get(key);
+		Value value = getTargetMap().get(key);
+		if (value != null) {
+			return value;
+		}
+		return super.get(key);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
 	public Enumeration<String> enumerationKeys() {
-		return Collections.enumeration(getTargetMap().keySet());
+		Enumeration<String> e1 = Collections.enumeration(getTargetMap()
+				.keySet());
+		Enumeration<String> e2 = super.enumerationKeys();
+		return new MultiEnumeration<String>(e1, e2);
 	}
 
 	public Value remove(String key) {
@@ -59,7 +69,8 @@ public abstract class AbstractMapPropertyFactory extends
 	public void loadProperties(ResourceOperations resourceOperations,
 			String resource) {
 		if (resourceOperations.isExist(resource)) {
-			Properties properties = resourceOperations.getFormattedProperties(resource);
+			Properties properties = resourceOperations
+					.getFormattedProperties(resource);
 			if (properties != null) {
 				loadProperties(properties);
 			}

@@ -11,7 +11,6 @@ import java.util.TimerTask;
 
 import scw.core.Constants;
 import scw.core.Destroy;
-import scw.core.GlobalPropertyFactory;
 import scw.core.Init;
 import scw.core.utils.CollectionUtils;
 import scw.data.ExpiredCache;
@@ -22,6 +21,7 @@ import scw.lang.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.client.http.HttpUtils;
+import scw.util.value.property.SystemPropertyFactory;
 
 @SuppressWarnings("unchecked")
 public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy {
@@ -36,7 +36,7 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 		this.exp = exp;
 		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
 		this.charsetName = Constants.DEFAULT_CHARSET_NAME;
-		this.cacheDirectory = GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator
+		this.cacheDirectory = SystemPropertyFactory.getInstance().getTempDirectoryPath() + File.separator
 				+ getClass().getName();
 	}
 
@@ -276,7 +276,7 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 
 	public static ExpiredCache create(String cacheDirectorySuffix, int exp) {
 		return new FileCache(exp,
-				GlobalPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
+				SystemPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
 	}
 
 	public void delete(Collection<String> keys) {

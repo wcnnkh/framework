@@ -8,13 +8,13 @@ import java.util.Map;
 import org.w3c.dom.Document;
 
 import scw.core.utils.TypeUtils;
-import scw.core.utils.XMLUtils;
 import scw.net.MimeType;
 import scw.net.http.MediaType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
+import scw.xml.XMLUtils;
 
 public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 	private static final long serialVersionUID = 1L;

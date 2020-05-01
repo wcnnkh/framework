@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.util;
 
 import java.util.ArrayList;
 import java.util.Collections;

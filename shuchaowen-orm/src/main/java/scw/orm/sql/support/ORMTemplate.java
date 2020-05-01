@@ -14,11 +14,11 @@ import java.util.Map;
 
 import scw.aop.ProxyUtils;
 import scw.aop.support.FieldSetterListen;
+import scw.core.IteratorCallback;
 import scw.core.Pagination;
+import scw.core.IteratorCallback.Row;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.IteratorCallback;
-import scw.core.utils.IteratorCallback.Row;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.orm.IteratorMapping;

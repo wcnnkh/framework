@@ -3,7 +3,7 @@ package scw.orm;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.core.utils.IteratorCallback;
+import scw.core.IteratorCallback;
 
 public interface Mapper extends ColumnFactory {
 

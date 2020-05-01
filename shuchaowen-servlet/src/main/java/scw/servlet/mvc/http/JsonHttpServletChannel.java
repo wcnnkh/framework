@@ -34,7 +34,7 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 	}
 
 	@Override
-	public String getString(String name) {
+	public String getStringValue(String name) {
 		return jsonObject == null ? null : jsonObject.getString(name);
 	}
 

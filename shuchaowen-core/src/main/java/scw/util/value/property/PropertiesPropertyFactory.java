@@ -5,30 +5,31 @@ import java.util.Properties;
 
 import scw.core.Converter;
 import scw.util.EnumerationConvert;
-import scw.util.value.StringValue;
-import scw.util.value.Value;
 
-public class PropertiesPropertyFactory extends AbstractPropertyFactory{
+public class PropertiesPropertyFactory extends StringValuePropertyFactory {
 	private Properties properties;
-	
-	public PropertiesPropertyFactory(Properties properties){
+
+	public PropertiesPropertyFactory(Properties properties) {
 		this.properties = properties;
 	}
-	
-	public Value get(String key) {
-		if(properties.contains(key)){
-			return new StringValue(properties.getProperty(key));
-		}
-		return null;
+
+	@Override
+	protected Enumeration<String> internalEnumerationKeys() {
+		return new EnumerationConvert<Object, String>(properties.keys(),
+				new Converter<Object, String>() {
+
+					public String convert(Object k) throws Exception {
+						return k.toString();
+					}
+				});
 	}
 
-	public Enumeration<String> enumerationKeys() {
-		return new EnumerationConvert<Object, String>(properties.keys(), new Converter<Object, String>() {
-
-			public String convert(Object k) throws Exception {
-				return k.toString();
-			}
-		});
+	@Override
+	protected String getStringValue(String key) {
+		if (properties.contains(key)) {
+			return properties.getProperty(key);
+		}
+		return null;
 	}
 
 }

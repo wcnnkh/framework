@@ -8,14 +8,14 @@ import java.util.Map;
 import org.w3c.dom.Node;
 
 import scw.core.instance.InstanceUtils;
-import scw.core.utils.RandomUtils;
-import scw.core.utils.XMLUtils;
 import scw.core.utils.XTime;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.RandomUtils;
 import scw.util.result.Result;
 import scw.util.result.ResultFactory;
+import scw.xml.XMLUtils;
 
 public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode, scw.core.Destroy {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());

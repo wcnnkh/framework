@@ -3,8 +3,8 @@ package scw.util.ip;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import scw.core.utils.RegexUtils;
 import scw.core.utils.StringUtils;
+import scw.util.RegexUtils;
 
 public final class IPUtils {
 	/**

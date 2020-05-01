@@ -1,4 +1,4 @@
-package scw.io;
+package scw.io.support;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,12 +12,19 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentMap;
 
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.io.DefaultResourceLoader;
+import scw.io.IOUtils;
+import scw.io.Resource;
+import scw.io.ResourceUtils;
+import scw.io.UnsafeByteArrayInputStream;
 import scw.lang.NestedRuntimeException;
+import scw.util.ConcurrentReferenceHashMap;
 import scw.util.FormatUtils;
 import scw.util.value.property.PropertyFactory;
 
@@ -25,41 +32,52 @@ public class ResourceOperations extends DefaultResourceLoader {
 	private static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 	private static final String RESOURCE_SUFFIX = "scw_res_suffix";
 	private final PropertyFactory propertyFactory;
+	private final boolean cacheEnable;
+	private final ConcurrentMap<String, Resource> resourceCache = new ConcurrentReferenceHashMap<String, Resource>();
 
-	public ResourceOperations(PropertyFactory propertyFactory) {
+	public ResourceOperations(PropertyFactory propertyFactory,
+			boolean cacheEnable) {
 		this.propertyFactory = propertyFactory;
+		this.cacheEnable = cacheEnable;
 	}
 
 	public PropertyFactory getPropertyFactory() {
 		return propertyFactory;
 	}
 
-	protected String[] getResourceEnvironmentalSuffixs() {
+	public boolean isCacheEnable() {
+		return cacheEnable;
+	}
+
+	protected String[] getResourceEnvironmentalNames() {
 		return getPropertyFactory().getValue(RESOURCE_SUFFIX, String[].class,
 				getPropertyFactory().getObject(CONFIG_SUFFIX, String[].class));
 	}
 
 	public List<String> getEnvironmentalResourceNameList(String resourceName) {
-		String[] suffixs = getResourceEnvironmentalSuffixs();
-		String resourceNameToUse = getPropertyFactory().format(resourceName, true);
+		String[] suffixs = getResourceEnvironmentalNames();
+		String resourceNameToUse = getPropertyFactory().format(resourceName,
+				true);
 		if (ArrayUtils.isEmpty(suffixs)) {
 			return Arrays.asList(resourceNameToUse);
 		}
 
 		List<String> list = new ArrayList<String>(suffixs.length + 1);
 		for (String name : suffixs) {
-			list.add(getTestFileName(resourceNameToUse, name));
+			list.add(getEnvironmentalResourceName(resourceNameToUse, name));
 		}
 		list.add(resourceNameToUse);
 		return list;
 	}
 
-	protected String getTestFileName(String resourceName, String str) {
+	protected String getEnvironmentalResourceName(String resourceName,
+			String evnironmental) {
 		int index = resourceName.lastIndexOf(".");
 		if (index == -1) {// 不存在
-			return resourceName + str;
+			return resourceName + evnironmental;
 		} else {
-			return resourceName.substring(0, index) + str + resourceName.substring(index);
+			return resourceName.substring(0, index) + evnironmental
+					+ resourceName.substring(index);
 		}
 	};
 
@@ -67,7 +85,8 @@ public class ResourceOperations extends DefaultResourceLoader {
 		List<String> nameList = getEnvironmentalResourceNameList(resource);
 		if (nameList.size() <= 1) {
 			for (String name : nameList) {
-				Resource res = super.getResource(name);
+				Resource res = isCacheEnable() ? getResourceByCache(name)
+						: super.getResource(name);
 				if (res == null || !res.exists()) {
 					return Collections.emptyList();
 				}
@@ -91,11 +110,29 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return resources;
 	}
 
+	protected Resource getResourceByCache(String location) {
+		Resource resource = resourceCache.get(location);
+		if (resource == null) {
+			resource = super.getResource(location);
+			Resource cache = resourceCache.putIfAbsent(location, resource);
+			if (cache != null) {
+				resource = cache;
+			}
+
+			if (resource == null) {
+				resourceCache.putIfAbsent(location,
+						Resource.NONEXISTENT_RESOURCE);
+			}
+		}
+		return resource;
+	}
+
 	@Override
 	public Resource getResource(String location) {
 		List<String> nameList = getEnvironmentalResourceNameList(location);
 		for (String name : nameList) {
-			Resource resource = super.getResource(name);
+			Resource resource = isCacheEnable() ? getResourceByCache(name)
+					: super.getResource(name);
 			if (resource == null || !resource.exists()) {
 				continue;
 			}
@@ -106,7 +143,8 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return null;
 	}
 
-	public void loadProperties(Properties properties, Resource resource, String charsetName) {
+	public void loadProperties(Properties properties, Resource resource,
+			String charsetName) {
 		if (!resource.exists()) {
 			return;
 		}
@@ -120,9 +158,11 @@ public class ResourceOperations extends DefaultResourceLoader {
 				if (StringUtils.isEmpty(charsetName)) {
 					properties.load(is);
 				} else {
-					Method method = ReflectionUtils.getMethod(Properties.class, "load", Reader.class);
+					Method method = ReflectionUtils.getMethod(Properties.class,
+							"load", Reader.class);
 					if (method == null) {
-						FormatUtils.warn(getClass(), "jdk1.6及以上的版本才支持指定字符集: {}" + resource.getDescription());
+						FormatUtils.warn(getClass(), "jdk1.6及以上的版本才支持指定字符集: {}"
+								+ resource.getDescription());
 						properties.load(is);
 					} else {
 						InputStreamReader isr = null;
@@ -142,7 +182,8 @@ public class ResourceOperations extends DefaultResourceLoader {
 		}
 	}
 
-	public void formatProperties(Properties properties, PropertyFactory propertyFactory) {
+	public void formatProperties(Properties properties,
+			PropertyFactory propertyFactory) {
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			Object value = entry.getValue();
 			if (value == null) {
@@ -164,7 +205,8 @@ public class ResourceOperations extends DefaultResourceLoader {
 		}
 
 		Properties properties = new Properties();
-		ListIterator<Resource> iterator = resources.listIterator(resources.size());
+		ListIterator<Resource> iterator = resources.listIterator(resources
+				.size());
 		while (iterator.hasPrevious()) {
 			loadProperties(properties, iterator.previous(), charsetName);
 		}
@@ -174,7 +216,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 	public String getContent(String resource, String charsetName) {
 		return ResourceUtils.getContent(getResource(resource), charsetName);
 	}
-	
+
 	public String getContent(String resource, Charset charset) {
 		return ResourceUtils.getContent(getResource(resource), charset);
 	}
@@ -192,8 +234,8 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return res != null && res.exists();
 	}
 
-	public Properties getFormattedProperties(String resource, String charsetName,
-			PropertyFactory formatPropertyFactory) {
+	public Properties getFormattedProperties(String resource,
+			String charsetName, PropertyFactory formatPropertyFactory) {
 		Properties properties = getProperties(resource, charsetName);
 		if (properties == null) {
 			return properties;
@@ -203,12 +245,14 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return properties;
 	}
 
-	public Properties getFormattedProperties(String resource, PropertyFactory formatPropertyFactory) {
+	public Properties getFormattedProperties(String resource,
+			PropertyFactory formatPropertyFactory) {
 		return getFormattedProperties(resource, null, formatPropertyFactory);
 	}
 
 	public Properties getFormattedProperties(String resource, String charsetName) {
-		return getFormattedProperties(resource, charsetName, getPropertyFactory());
+		return getFormattedProperties(resource, charsetName,
+				getPropertyFactory());
 	}
 
 	public Properties getFormattedProperties(String resource) {

@@ -12,18 +12,19 @@ public class ServletConfigPropertyFactory extends StringValuePropertyFactory {
 	public ServletConfigPropertyFactory(ServletConfig servletConfig) {
 		this.servletConfig = servletConfig;
 	}
-	
-	@Override
-	protected String getValue(String key) {
-		return servletConfig.getInitParameter(key);
-	}
 
 	public String getConfigXml() {
-		//兼容老版本
+		// 兼容老版本
 		return getString("shuchaowen");
 	}
 
-	public Enumeration<String> enumerationKeys() {
+	@Override
+	protected String getStringValue(String key) {
+		return servletConfig.getInitParameter(key);
+	}
+
+	@Override
+	protected Enumeration<String> internalEnumerationKeys() {
 		return servletConfig.getInitParameterNames();
 	}
 }

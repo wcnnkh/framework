@@ -2,15 +2,12 @@ package scw.core;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.Enumeration;
 
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
-import scw.io.ResourceOperations;
 import scw.io.support.PackageScan;
+import scw.io.support.ResourceOperations;
 import scw.util.FormatUtils;
-import scw.util.MultiEnumeration;
-import scw.util.value.Value;
 import scw.util.value.property.ConcurrentMapPropertyFactory;
 import scw.util.value.property.SystemPropertyFactory;
 
@@ -19,7 +16,6 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 	private static final String CLASSES_DIRECTORY = "classes.directory";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
 	private static final String BASE_PACKAGE_NAME = "scw.base.package";
-
 	private static GlobalPropertyFactory instance = new GlobalPropertyFactory();
 
 	public static GlobalPropertyFactory getInstance() {
@@ -27,49 +23,17 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 	}
 
 	private GlobalPropertyFactory() {
+		addBasePropertyFactory(SystemPropertyFactory.getInstance());
 		if (getWorkPath() == null) {
 			setWorkPath(getDefaultWorkPath());
 		}
-		
-		ResourceOperations operations = new ResourceOperations(this);
+
+		ResourceOperations operations = new ResourceOperations(this, false);
 		loadProperties(operations, "global.properties");
-		loadProperties(operations, getValue("scw.properties.private", String.class, "/private.properties"));
-	}
-
-	public Value get(String key) {
-		Assert.requiredArgument(key != null, "key");
-		Value v = super.get(key);
-		if (v == null) {
-			v = SystemPropertyFactory.getInstance().get(key);
-		}
-		return v;
-	}
-
-	public String getUserDir() {
-		return getString("user.dir");
-	}
-
-	public String getUserHome() {
-		return getString("user.home");
-	}
-
-	@SuppressWarnings("unchecked")
-	public Enumeration<String> enumerationKeys() {
-		return new MultiEnumeration<String>(super.enumerationKeys(),
-				SystemPropertyFactory.getInstance().enumerationKeys());
-	}
-
-	/**
-	 * 获取环境变量分割符
-	 * 
-	 * @return
-	 */
-	public String getPathSeparator() {
-		return getString("path.separator");
-	}
-
-	public String getJavaClassPath() {
-		return getString("java.class.path");
+		loadProperties(
+				operations,
+				getValue("scw.properties.private", String.class,
+						"/private.properties"));
 	}
 
 	public void setWorkPath(String path) {
@@ -81,8 +45,10 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 	}
 
 	public String getDefaultWorkPath() {
-		File file = FileUtils.searchDirectory(new File(getUserDir()), "WEB-INF");
-		return file == null ? getUserDir() : file.getParent();
+		File file = FileUtils.searchDirectory(new File(SystemPropertyFactory
+				.getInstance().getUserDir()), "WEB-INF");
+		return file == null ? SystemPropertyFactory.getInstance().getUserDir()
+				: file.getParent();
 	}
 
 	public String getWorkPath() {
@@ -142,10 +108,12 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 		String systemOnlyId = getString(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {
-				systemOnlyId = scw.util.Base64
-						.encode((getUserDir() + "&" + getWorkPath()).getBytes(Constants.DEFAULT_CHARSET_NAME));
+				systemOnlyId = scw.util.Base64.encode((SystemPropertyFactory
+						.getInstance().getUserDir() + "&" + getWorkPath())
+						.getBytes(Constants.DEFAULT_CHARSET_NAME));
 				if (systemOnlyId.endsWith("==")) {
-					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
+					systemOnlyId = systemOnlyId.substring(0,
+							systemOnlyId.length() - 2);
 				}
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
@@ -153,14 +121,6 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 			put(SYSTEM_ID_PROPERTY, systemOnlyId);
 		}
 		return systemOnlyId;
-	}
-
-	public String getMavenHome() {
-		return getString("maven.home");
-	}
-
-	public String getTempDirectoryPath() {
-		return getString("java.io.tmpdir");
 	}
 
 	public String format(String text, boolean supportEL) {

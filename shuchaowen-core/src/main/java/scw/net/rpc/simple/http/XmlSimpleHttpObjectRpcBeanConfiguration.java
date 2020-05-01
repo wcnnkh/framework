@@ -17,11 +17,11 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XMLUtils;
 import scw.io.ResourceUtils;
 import scw.io.serialzer.Serializer;
 import scw.io.serialzer.SerializerUtils;
 import scw.util.value.property.PropertyFactory;
+import scw.xml.XMLUtils;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfiguration {

@@ -1,10 +1,11 @@
 package scw.json.support;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 
 import scw.core.Converter;
-import scw.core.utils.IteratorConvert;
+import scw.core.IteratorConvert;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
@@ -13,7 +14,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONAware;
 
-public final class FastJsonArray extends JsonArray implements JSONAware {
+public final class FastJsonArray extends JsonArray implements JSONAware, Serializable {
+	private static final long serialVersionUID = 1L;
 	private JSONArray jsonArray;
 
 	public FastJsonArray(JSONArray jsonArray) {

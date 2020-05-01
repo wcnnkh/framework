@@ -1,6 +1,8 @@
-package scw.core.utils;
+package scw.util;
 
 import java.util.Random;
+
+import scw.core.utils.StringUtils;
 
 public final class RandomUtils {
 	private RandomUtils() {

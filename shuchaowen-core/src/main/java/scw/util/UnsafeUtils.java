@@ -1,10 +1,11 @@
-package scw.core.utils;
+package scw.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.ClassUtils;
 import scw.lang.NestedRuntimeException;
 
 public class UnsafeUtils {

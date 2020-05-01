@@ -3,7 +3,7 @@ package scw.json.support;
 import java.util.Iterator;
 
 import scw.core.Converter;
-import scw.core.utils.IteratorConvert;
+import scw.core.IteratorConvert;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.gson.Gson;
