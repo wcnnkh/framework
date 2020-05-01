@@ -1,8 +1,7 @@
-package scw.core.utils;
+package scw.core;
 
 import java.util.Iterator;
 
-import scw.core.Converter;
 import scw.lang.NestedRuntimeException;
 
 public class IteratorConvert<T, V> implements Iterator<V> {

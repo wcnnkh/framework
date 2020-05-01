@@ -11,8 +11,8 @@ import scw.beans.BeanFactoryLifeCycle;
 import scw.beans.DefaultBeanFactory;
 import scw.beans.property.XmlPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XMLUtils;
 import scw.io.ResourceUtils;
+import scw.xml.XMLUtils;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
 	private NodeList nodeList;

@@ -2,11 +2,11 @@ package scw.mvc.http.view;
 
 import java.util.LinkedList;
 
-import scw.core.utils.CSVUtils;
 import scw.mvc.Channel;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.http.HttpRequest;
 import scw.mvc.http.HttpResponse;
+import scw.util.CSVUtils;
 
 public final class CSVView extends LinkedList<Object[]> implements scw.mvc.View {
 	private static final long serialVersionUID = 1L;

@@ -11,9 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import scw.core.Constants;
-import scw.core.utils.RandomUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XMLUtils;
 import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.lang.NestedRuntimeException;
@@ -28,6 +26,8 @@ import scw.net.http.MediaType;
 import scw.net.ssl.SSLContexts;
 import scw.security.SignatureUtils;
 import scw.tencent.wx.pay.UnifiedOrderResponse;
+import scw.util.RandomUtils;
+import scw.xml.XMLUtils;
 
 public final class WeiXinPay {
 	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);

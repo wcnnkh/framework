@@ -10,8 +10,8 @@ import org.w3c.dom.Node;
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XMLUtils;
 import scw.util.value.property.PropertyFactory;
+import scw.xml.XMLUtils;
 
 public final class XmlBeanDefinition extends DefaultBeanDefinition {
 	private final LinkedList<String> names = new LinkedList<String>();

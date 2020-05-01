@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.IteratorCallback;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
 import scw.lang.Nullable;

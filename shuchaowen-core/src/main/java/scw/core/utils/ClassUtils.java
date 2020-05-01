@@ -43,6 +43,8 @@ public final class ClassUtils {
 	public static final String CLASS_FILE_SUFFIX = ".class";
 
 	public static final String GENERIC_PREFIX = "<";
+	
+	private static final Class<?>[] EMPTY_ARRAY = new Class<?>[0];
 
 	/**
 	 * Map with primitive wrapper type as key and corresponding primitive type
@@ -99,6 +101,11 @@ public final class ClassUtils {
 		registerCommonClasses(Throwable.class, Exception.class, RuntimeException.class, Error.class,
 				StackTraceElement.class, StackTraceElement[].class);
 		registerCommonClasses(Enum.class, Iterable.class, Cloneable.class, Comparable.class);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T>[] emptyArray(){
+		return (Class<T>[]) EMPTY_ARRAY;
 	}
 
 	/**

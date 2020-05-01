@@ -9,11 +9,9 @@ import java.util.Map;
 
 import scw.core.StringFormat;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.FormatterException;
-import scw.core.utils.PlaceholderFormatAppend;
-import scw.core.utils.StringAppend;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
+import scw.lang.FormatterException;
 
 public final class FormatUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";

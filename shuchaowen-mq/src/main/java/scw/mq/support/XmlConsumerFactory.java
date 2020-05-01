@@ -12,7 +12,6 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.reflect.PropertyMapper;
-import scw.core.utils.XMLUtils;
 import scw.io.ResourceUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
@@ -21,6 +20,7 @@ import scw.mq.ConsumerFactory;
 import scw.util.queue.Consumer;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
+import scw.xml.XMLUtils;
 
 public class XmlConsumerFactory implements ConsumerFactory {
 	private static Logger logger = LoggerUtils.getLogger(XmlConsumerFactory.class);

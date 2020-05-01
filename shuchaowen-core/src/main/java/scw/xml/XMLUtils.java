@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.xml;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,6 +42,7 @@ import scw.core.StringFormat;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;

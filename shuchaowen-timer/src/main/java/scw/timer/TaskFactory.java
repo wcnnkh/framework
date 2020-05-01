@@ -1,7 +1,7 @@
 package scw.timer;
 
 import scw.beans.annotation.AutoImpl;
-import scw.core.utils.IteratorCallback;
+import scw.core.IteratorCallback;
 import scw.timer.support.DefaultTaskFactory;
 
 @AutoImpl({ DefaultTaskFactory.class })

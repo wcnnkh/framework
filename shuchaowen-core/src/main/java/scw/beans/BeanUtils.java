@@ -4,6 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,9 +16,11 @@ import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
@@ -130,5 +133,17 @@ public final class BeanUtils {
 	public static String getScanAnnotationPackageName() {
 		return GlobalPropertyFactory.getInstance().getValue("scw.scan.beans.package", String.class,
 				InstanceUtils.getScanAnnotationPackageName());
+	}
+	
+	public static Class<?>[] getServiceInterfaces(Class<?> clazz){
+		List<Class<?>> list = new ArrayList<Class<?>>();
+		for (Class<?> i : clazz.getInterfaces()) {
+			if(AnnotationUtils.isIgnore(clazz) || i.getMethods().length == 0){
+				continue;
+			}
+			
+			list.add(i);
+		}
+		return list.isEmpty()? ClassUtils.emptyArray():list.toArray(new Class<?>[0]);
 	}
 }

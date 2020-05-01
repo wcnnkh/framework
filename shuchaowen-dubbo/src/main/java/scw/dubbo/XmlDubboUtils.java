@@ -17,17 +17,17 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.beans.annotation.Service;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.PropertyMapper;
-import scw.core.utils.IgnoreClassVerification;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XMLUtils;
 import scw.io.ResourceUtils;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
+import scw.xml.XMLUtils;
 
 public final class XmlDubboUtils {
 	private XmlDubboUtils() {
@@ -100,17 +100,20 @@ public final class XmlDubboUtils {
 
 		String packageName = XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
 		if (packageName != null) {
-			IgnoreClassVerification ignoreClassVerification = new IgnoreClassVerification(true, true);
 			Collection<Class<?>> clazzList = ResourceUtils.getPackageScan().getClasses(packageName);
 			for (Class<?> clz : clazzList) {
+				if(clz.isInterface()){
+					continue;
+				}
+				
 				Service service = clz.getAnnotation(Service.class);
 				if (service != null) {
+					Class<?>[] interfaces = BeanUtils.getServiceInterfaces(clz);
+					if(scw.core.utils.ArrayUtils.isEmpty(interfaces)){
+						continue;
+					}
 					Object ref = beanFactory.getInstance(clz);
-					for (Class<?> i : clz.getInterfaces()) {
-						if (ignoreClassVerification.verification(i)) {
-							continue;
-						}
-
+					for (Class<?> i : interfaces) {
 						@SuppressWarnings("unchecked")
 						ServiceConfig<Object> config = InstanceUtils.copy(ServiceConfig.class, serviceConfig);
 						config.setInterface(i);

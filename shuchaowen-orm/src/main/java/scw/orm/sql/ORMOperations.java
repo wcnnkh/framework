@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import scw.core.IteratorCallback;
 import scw.core.Pagination;
-import scw.core.utils.IteratorCallback;
-import scw.core.utils.IteratorCallback.Row;
+import scw.core.IteratorCallback.Row;
 import scw.sql.Sql;
 
 public interface ORMOperations {

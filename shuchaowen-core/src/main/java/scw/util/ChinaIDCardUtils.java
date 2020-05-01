@@ -3,8 +3,6 @@ package scw.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.core.utils.RegexUtils;
-
 /**
  * 中国身份证验证
  * 

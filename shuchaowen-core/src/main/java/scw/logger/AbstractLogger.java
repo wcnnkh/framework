@@ -1,6 +1,6 @@
 package scw.logger;
 
-import scw.core.utils.PlaceholderFormatAppend;
+import scw.util.PlaceholderFormatAppend;
 
 public abstract class AbstractLogger implements Logger {
 	private final String placeholder;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.core.utils;
+package scw.util;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import scw.core.Assert;
+import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

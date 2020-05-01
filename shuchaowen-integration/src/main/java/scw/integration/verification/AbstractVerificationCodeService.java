@@ -1,9 +1,9 @@
 package scw.integration.verification;
 
 import scw.core.Constants;
-import scw.core.utils.RandomUtils;
 import scw.core.utils.StringUtils;
 import scw.data.TemporaryCache;
+import scw.util.RandomUtils;
 import scw.util.result.Result;
 
 public abstract class AbstractVerificationCodeService<U> implements

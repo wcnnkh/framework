@@ -14,8 +14,8 @@ import scw.beans.ioc.MethodIocProcessor;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XMLUtils;
 import scw.util.value.property.PropertyFactory;
+import scw.xml.XMLUtils;
 
 public final class XmlBeanUtils {
 	private XmlBeanUtils() {

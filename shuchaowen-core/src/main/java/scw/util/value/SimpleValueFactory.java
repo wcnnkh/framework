@@ -1,8 +1,8 @@
 package scw.util.value;
 
 import scw.core.StringFormat;
-import scw.core.utils.PropertyPlaceholderHelper;
 import scw.util.FormatUtils;
+import scw.util.PropertyPlaceholderHelper;
 
 public class SimpleValueFactory extends DefaultValueFactory<String> {
 	/**

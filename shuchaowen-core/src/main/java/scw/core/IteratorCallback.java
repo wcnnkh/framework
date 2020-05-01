@@ -1,4 +1,4 @@
-package scw.core.utils;
+package scw.core;
 
 import java.io.Serializable;
 

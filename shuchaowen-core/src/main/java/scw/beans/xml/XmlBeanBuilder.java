@@ -13,8 +13,8 @@ import scw.core.instance.AutoConstructorBuilder;
 import scw.core.instance.ConstructorBuilder;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XMLUtils;
 import scw.util.value.property.PropertyFactory;
+import scw.xml.XMLUtils;
 
 public class XmlBeanBuilder extends ConstructorBeanBuilder {
 	private volatile ConstructorBuilder constructorBuilder;

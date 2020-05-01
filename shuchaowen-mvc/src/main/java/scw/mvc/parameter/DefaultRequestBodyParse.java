@@ -11,7 +11,6 @@ import org.xml.sax.InputSource;
 import scw.beans.annotation.Bean;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XMLUtils;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.json.JSONSupport;
@@ -20,6 +19,7 @@ import scw.logger.LoggerFactory;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
 import scw.util.MultiValueParameterFactory;
+import scw.xml.XMLUtils;
 
 @Bean(proxy = false)
 public class DefaultRequestBodyParse implements RequestBodyParse {

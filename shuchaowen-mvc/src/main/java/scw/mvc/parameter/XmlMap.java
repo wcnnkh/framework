@@ -11,8 +11,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import scw.beans.annotation.Bean;
-import scw.core.utils.XMLUtils;
 import scw.mvc.http.HttpRequest;
+import scw.xml.XMLUtils;
 
 @Bean(singleton = false)
 public final class XmlMap extends LinkedHashMap<String, String> {

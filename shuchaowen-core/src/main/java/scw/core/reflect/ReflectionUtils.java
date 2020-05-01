@@ -21,7 +21,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.security.AccessControlException;
 import java.sql.SQLException;
@@ -33,13 +32,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import scw.cglib.core.ReflectUtils;
 import scw.core.Assert;
-import scw.core.Verification;
 import scw.core.annotation.Order;
-import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -48,9 +44,7 @@ import scw.core.utils.TypeUtils;
 import scw.lang.Ignore;
 import scw.util.FormatUtils;
 import scw.util.comparator.CompareUtils;
-import scw.util.value.Value;
 import scw.util.value.ValueUtils;
-import scw.util.value.property.PropertyFactory;
 
 /**
  * Simple utility class for working with the reflection API and handling
@@ -810,88 +804,6 @@ public abstract class ReflectionUtils {
 			return (!method.isBridge() && method.getDeclaringClass() != Object.class);
 		}
 	};
-
-	public static void loadMethod(Object bean, String propertyPrefix, PropertyFactory propertyFactory,
-			final InstanceFactory instanceFactory, Set<String> ignoreNames) {
-		loadMethod(bean, Arrays.asList("set", "add"), propertyPrefix, propertyFactory, instanceFactory, ignoreNames,
-				null);
-	}
-
-	public static void loadMethod(Object bean, Collection<String> methodPrefixs, String propertyPrefix,
-			PropertyFactory propertyFactory, final InstanceFactory instanceFactory, final Set<String> ignoreName,
-			final Verification<Type> beanVerification) {
-		loadMethod(bean, methodPrefixs, propertyPrefix, propertyFactory, new PropertyMapper<Value>() {
-
-			public Object mapper(String name, Value value, Type type) throws Exception {
-				if (StringUtils.isEmpty(value.getAsString())) {
-					return null;
-				}
-
-				if (ignoreName != null && ignoreName.contains(name)) {
-					return null;
-				}
-
-				if (ValueUtils.isCommonType(type)) {
-					return value.getAsObject(type);
-				}
-
-				if (TypeUtils.isInterface(type) || TypeUtils.isAbstract(type)) {
-					String className = TypeUtils.getClassName(type);
-					return instanceFactory.isInstance(className) ? instanceFactory.getInstance(className) : null;
-				}
-
-				if (beanVerification == null) {
-					return value.getAsObject(type);
-				}
-
-				if (beanVerification.verification(type)) {
-					String className = TypeUtils.getClassName(type);
-					return instanceFactory.isInstance(className) ? instanceFactory.getInstance(className) : null;
-				} else {
-					return value.getAsObject(type);
-				}
-			}
-		});
-	}
-
-	public static void loadMethod(Object bean, Collection<String> methodPrefixs, String propertyPrefix,
-			PropertyFactory propertyFactory, PropertyMapper<Value> propertyMapper) {
-		if (CollectionUtils.isEmpty(methodPrefixs)) {
-			return;
-		}
-
-		for (Method method : bean.getClass().getDeclaredMethods()) {
-			Type[] types = method.getGenericParameterTypes();
-			if (types.length != 1) {
-				continue;
-			}
-
-			for (String methodPrefix : methodPrefixs) {
-				if (method.getName().startsWith(methodPrefix)) {
-					String name = method.getName().substring(methodPrefix.length());
-					name = StringUtils.toLowerCase(name, 0, 1);
-					String key = StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name);
-					Value value = propertyFactory.get(key);
-					if (value == null) {
-						continue;
-					}
-					Object v;
-					try {
-						v = propertyMapper.mapper(name, value, types[0]);
-						if (v != null) {
-							ReflectionUtils.setAccessibleMethod(method);
-							method.invoke(bean, v);
-						}
-					} catch (Exception e) {
-						FormatUtils.warn(ReflectionUtils.class, "向对象{}，插入name={},value={}时异常",
-								bean.getClass().getName(), name, value);
-						e.printStackTrace();
-					}
-					break;
-				}
-			}
-		}
-	}
 
 	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties,
 			PropertyMapper<V> mapper) {
