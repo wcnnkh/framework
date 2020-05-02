@@ -2,7 +2,6 @@ package scw.net.message.converter;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -12,13 +11,11 @@ import scw.net.message.OutputMessage;
 
 public final class JsonMessageConverter extends
 		AbstractMessageConverter<Object> {
-	private static final long serialVersionUID = 1L;
 	public static final MimeType JSON_ALL = new MimeType("application",
 			"*+json");
 
 	public JsonMessageConverter() {
-		addAll(Arrays
-				.asList(MimeTypeUtils.APPLICATION_JSON, JSON_ALL, TEXT_ALL));
+		supportMimeTypes.add(MimeTypeUtils.APPLICATION_JSON, JSON_ALL, TEXT_ALL);
 	}
 
 	@Override

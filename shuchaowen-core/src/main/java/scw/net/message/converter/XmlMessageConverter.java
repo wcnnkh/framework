@@ -17,12 +17,11 @@ import scw.util.value.Value;
 import scw.xml.XMLUtils;
 
 public class XmlMessageConverter extends AbstractMessageConverter<Object> {
-	private static final long serialVersionUID = 1L;
 	private static final String DEFAULT_ROOT_TAG_NAME = "xml";
 	private String rootTag = DEFAULT_ROOT_TAG_NAME;
 
 	public XmlMessageConverter() {
-		add(MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML,
+		supportMimeTypes.add(MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML,
 				MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_RSS_XML);
 	}
 

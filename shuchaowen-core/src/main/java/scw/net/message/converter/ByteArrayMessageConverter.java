@@ -8,14 +8,11 @@ import scw.net.MimeType;
 import scw.net.http.MediaType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.net.message.converter.MessageConvertException;
 
 public class ByteArrayMessageConverter extends AbstractMessageConverter<byte[]>{
-	private static final long serialVersionUID = 1L;
 	
 	public ByteArrayMessageConverter(){
-		add(MediaType.APPLICATION_OCTET_STREAM);
-		add(MediaType.ALL);
+		supportMimeTypes.add(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL);
 	}
 	
 	@Override

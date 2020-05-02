@@ -3,8 +3,6 @@ package scw.net.message.converter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.Enumeration;
 
 import scw.core.Constants;
 import scw.core.utils.TypeUtils;
@@ -22,23 +20,15 @@ import scw.net.message.InputMessage;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
 
-public abstract class AbstractMessageConverter<T> extends MimeTypes implements
-		MessageConverter {
-	private static final long serialVersionUID = 1L;
+public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
 	private Charset defaultCharset = Constants.DEFAULT_CHARSET;
 	private JSONSupport jsonSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
+	protected final MimeTypes supportMimeTypes = new MimeTypes();
 
-	public Enumeration<MimeType> enumerationSupportMimeTypes() {
-		return Collections.enumeration(this);
-	}
-
-	public AbstractMessageConverter<T> add(MimeType... mimeTypes) {
-		for (MimeType mimeType : mimeTypes) {
-			add(mimeType);
-		}
-		return this;
+	public final MimeTypes getSupportMimeTypes() {
+		return supportMimeTypes.readyOnly();
 	}
 
 	public JSONSupport getJsonSupport() {
@@ -62,9 +52,8 @@ public abstract class AbstractMessageConverter<T> extends MimeTypes implements
 			return true;
 		}
 
-		Enumeration<MimeType> enumeration = enumerationSupportMimeTypes();
-		while (enumeration.hasMoreElements()) {
-			if (enumeration.nextElement().includes(contentType)) {
+		for (MimeType mimeType : getSupportMimeTypes()) {
+			if (mimeType.includes(contentType)) {
 				return true;
 			}
 		}
@@ -77,9 +66,8 @@ public abstract class AbstractMessageConverter<T> extends MimeTypes implements
 			return true;
 		}
 
-		Enumeration<MimeType> enumeration = enumerationSupportMimeTypes();
-		while (enumeration.hasMoreElements()) {
-			if (enumeration.nextElement().isCompatibleWith(contentType)) {
+		for (MimeType mimeType : getSupportMimeTypes()) {
+			if (mimeType.isCompatibleWith(contentType)) {
 				return true;
 			}
 		}
@@ -145,7 +133,7 @@ public abstract class AbstractMessageConverter<T> extends MimeTypes implements
 	}
 
 	protected MimeType getDefaultContentType(T body) throws IOException {
-		return first();
+		return getSupportMimeTypes().getMimeTypes().first();
 	}
 
 	protected Long getContentLength(T body, MimeType contentType)
