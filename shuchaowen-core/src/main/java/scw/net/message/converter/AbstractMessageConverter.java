@@ -25,9 +25,9 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
 	private Charset defaultCharset = Constants.DEFAULT_CHARSET;
 	private JSONSupport jsonSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
-	private final MimeTypes supportMimeTypes = new MimeTypes();
+	protected final MimeTypes supportMimeTypes = new MimeTypes();
 
-	public MimeTypes getSupportMimeTypes() {
+	public final MimeTypes getSupportMimeTypes() {
 		return supportMimeTypes.readyOnly();
 	}
 

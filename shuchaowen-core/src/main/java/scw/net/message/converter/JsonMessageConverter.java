@@ -15,7 +15,7 @@ public final class JsonMessageConverter extends
 			"*+json");
 
 	public JsonMessageConverter() {
-		getSupportMimeTypes().add(MimeTypeUtils.APPLICATION_JSON, JSON_ALL, TEXT_ALL);
+		supportMimeTypes.add(MimeTypeUtils.APPLICATION_JSON, JSON_ALL, TEXT_ALL);
 	}
 
 	@Override

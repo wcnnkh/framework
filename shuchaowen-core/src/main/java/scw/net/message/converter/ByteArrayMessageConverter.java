@@ -12,7 +12,7 @@ import scw.net.message.OutputMessage;
 public class ByteArrayMessageConverter extends AbstractMessageConverter<byte[]>{
 	
 	public ByteArrayMessageConverter(){
-		getSupportMimeTypes().add(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL);
+		supportMimeTypes.add(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL);
 	}
 	
 	@Override

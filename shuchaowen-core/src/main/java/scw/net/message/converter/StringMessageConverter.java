@@ -12,7 +12,7 @@ import scw.util.value.StringValue;
 public class StringMessageConverter extends AbstractMessageConverter<Object> {
 
 	public StringMessageConverter() {
-		getSupportMimeTypes().add(MimeTypeUtils.TEXT_PLAIN, TEXT_ALL);
+		supportMimeTypes.add(MimeTypeUtils.TEXT_PLAIN, TEXT_ALL);
 	}
 
 	@Override

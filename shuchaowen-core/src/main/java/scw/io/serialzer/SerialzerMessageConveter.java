@@ -10,11 +10,11 @@ import scw.net.message.OutputMessage;
 import scw.net.message.converter.AbstractMessageConverter;
 import scw.net.message.converter.MessageConvertException;
 
-public class ObjectMessageConveter extends AbstractMessageConverter<Object> {
+public class SerialzerMessageConveter extends AbstractMessageConverter<Object> {
 	private Serializer serializer;
 
-	public ObjectMessageConveter(Serializer serializer) {
-		getSupportMimeTypes().add(MimeTypeUtils.APPLICATION_OCTET_STREAM, MimeTypeUtils.ALL);
+	public SerialzerMessageConveter(Serializer serializer) {
+		supportMimeTypes.add(MimeTypeUtils.APPLICATION_OCTET_STREAM, MimeTypeUtils.ALL);
 		this.serializer = serializer;
 	}
 

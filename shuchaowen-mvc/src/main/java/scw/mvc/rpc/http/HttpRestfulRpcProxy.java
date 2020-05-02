@@ -13,7 +13,7 @@ import scw.core.instance.InstanceFactory;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.io.serialzer.ObjectMessageConveter;
+import scw.io.serialzer.SerialzerMessageConveter;
 import scw.io.serialzer.Serializer;
 import scw.lang.Nullable;
 import scw.mvc.rpc.RpcConstants;
@@ -46,7 +46,7 @@ public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 		HttpRpcRequestFactory httpRpcRequestFactory = new HttpRestfulRpcRequestFactory(propertyFactory, host, cName,
 				shareHeaderSet.toArray(new String[0]));
 		this.httpRpcProxy = new HttpRpcProxy(propertyFactory, instanceFactory, httpRpcRequestFactory);
-		this.httpRpcProxy.add(new ObjectMessageConveter(serializer));
+		this.httpRpcProxy.add(new SerialzerMessageConveter(serializer));
 		this.httpRpcProxy.add(new AllMessageConverter());
 	}
 

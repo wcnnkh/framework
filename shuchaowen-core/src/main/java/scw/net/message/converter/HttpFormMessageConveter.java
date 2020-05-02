@@ -15,7 +15,7 @@ import scw.util.MultiValueMap;
 public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
 
 	public HttpFormMessageConveter() {
-		getSupportMimeTypes().add(MediaType.APPLICATION_FORM_URLENCODED);
+		supportMimeTypes.add(MediaType.APPLICATION_FORM_URLENCODED);
 	}
 
 	@Override

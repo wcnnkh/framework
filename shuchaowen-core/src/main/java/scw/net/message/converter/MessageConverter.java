@@ -9,6 +9,10 @@ import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 
 public interface MessageConverter{
+	/**
+	 * 返回只读的MimeTypes
+	 * @return
+	 */
 	MimeTypes getSupportMimeTypes();
 	
 	boolean canRead(Type type, MimeType mimeType);

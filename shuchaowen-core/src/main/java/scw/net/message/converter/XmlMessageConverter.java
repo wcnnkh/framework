@@ -21,7 +21,7 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 	private String rootTag = DEFAULT_ROOT_TAG_NAME;
 
 	public XmlMessageConverter() {
-		getSupportMimeTypes().add(MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML,
+		supportMimeTypes.add(MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML,
 				MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_RSS_XML);
 	}
 
