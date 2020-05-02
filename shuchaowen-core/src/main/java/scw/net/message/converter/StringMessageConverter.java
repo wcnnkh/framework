@@ -10,10 +10,9 @@ import scw.net.message.OutputMessage;
 import scw.util.value.StringValue;
 
 public class StringMessageConverter extends AbstractMessageConverter<Object> {
-	private static final long serialVersionUID = 1L;
 
 	public StringMessageConverter() {
-		add(MimeTypeUtils.TEXT_PLAIN, TEXT_ALL);
+		getSupportMimeTypes().add(MimeTypeUtils.TEXT_PLAIN, TEXT_ALL);
 	}
 
 	@Override

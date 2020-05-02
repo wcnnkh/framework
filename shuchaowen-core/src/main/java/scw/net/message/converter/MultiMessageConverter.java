@@ -3,18 +3,18 @@ package scw.net.message.converter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.TreeSet;
 
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;
+import scw.net.MimeTypes;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.util.MultiEnumeration;
 
 /**
  * add默认为addFirst行为
+ * 
  * @author shuchaowen
  *
  */
@@ -32,15 +32,10 @@ public class MultiMessageConverter extends TreeSet<MessageConverter> implements
 			Comparator<MessageConverter> {
 
 		public int compare(MessageConverter o1, MessageConverter o2) {
-			Enumeration<MimeType> supportMimeTypes1 = o1
-					.enumerationSupportMimeTypes();
-			while (supportMimeTypes1.hasMoreElements()) {
-				MimeType mimeType1 = supportMimeTypes1.nextElement();
-				Enumeration<MimeType> supportMimeTypes2 = o2
-						.enumerationSupportMimeTypes();
-				while (supportMimeTypes2.hasMoreElements()) {
-					MimeType mimeType2 = supportMimeTypes2.nextElement();
-					if (mimeType1.equals(mimeType2) ||  mimeType2.includes(mimeType1)) {
+			for (MimeType mimeType1 : o1.getSupportMimeTypes()) {
+				for (MimeType mimeType2 : o2.getSupportMimeTypes()) {
+					if (mimeType1.equals(mimeType2)
+							|| mimeType2.includes(mimeType1)) {
 						return -1;
 					}
 				}
@@ -106,13 +101,12 @@ public class MultiMessageConverter extends TreeSet<MessageConverter> implements
 		return false;
 	}
 
-	public Enumeration<MimeType> enumerationSupportMimeTypes() {
-		@SuppressWarnings("unchecked")
-		Enumeration<MimeType>[] enumerations = new Enumeration[size()];
-		int i = 0;
+	public MimeTypes getSupportMimeTypes() {
+		MimeTypes mimeTypes = new MimeTypes();
 		for (MessageConverter converter : this) {
-			enumerations[i++] = converter.enumerationSupportMimeTypes();
+			mimeTypes.getMimeTypes().addAll(
+					converter.getSupportMimeTypes().getMimeTypes());
 		}
-		return new MultiEnumeration<MimeType>(enumerations);
+		return mimeTypes.readyOnly();
 	}
 }

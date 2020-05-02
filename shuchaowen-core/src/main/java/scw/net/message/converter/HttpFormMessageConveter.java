@@ -13,10 +13,9 @@ import scw.net.message.OutputMessage;
 import scw.util.MultiValueMap;
 
 public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
-	private static final long serialVersionUID = 1L;
 
 	public HttpFormMessageConveter() {
-		add(MediaType.APPLICATION_FORM_URLENCODED);
+		getSupportMimeTypes().add(MediaType.APPLICATION_FORM_URLENCODED);
 	}
 
 	@Override
