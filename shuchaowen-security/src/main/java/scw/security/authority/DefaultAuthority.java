@@ -10,13 +10,15 @@ public class DefaultAuthority implements Authority, Serializable {
 	private final String parentId;
 	private final String name;
 	private final Map<String, String> attributeMap;
+	private final boolean menu;
 
 	public DefaultAuthority(String id, String parentId, String name,
-			Map<String, String> attributeMap) {
+			Map<String, String> attributeMap, boolean menu) {
 		this.id = id;
 		this.parentId = parentId;
 		this.name = name;
 		this.attributeMap = attributeMap;
+		this.menu = menu;
 	}
 
 	public String getId() {
@@ -35,5 +37,9 @@ public class DefaultAuthority implements Authority, Serializable {
 	public Map<String, String> getAttributeMap() {
 		return attributeMap == null ? Collections.EMPTY_MAP : Collections
 				.unmodifiableMap(attributeMap);
+	}
+
+	public boolean isMenu() {
+		return menu;
 	}
 }

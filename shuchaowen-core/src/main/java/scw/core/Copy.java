@@ -98,7 +98,7 @@ public class Copy {
 		}
 		return newArr;
 	}
-
+	
 	protected void copy(Class<?> targetClass, Field targetField, Object source, Object target) throws Exception {
 		if (isIgnoreStaticField() && Modifier.isStatic(targetField.getModifiers())) {
 			return;

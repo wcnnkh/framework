@@ -5,8 +5,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import scw.core.utils.CollectionUtils;
@@ -31,23 +33,51 @@ public class DefaultAuthorityManager<T extends Authority> implements
 		return authorityMap.get(id);
 	}
 
-	public Collection<T> getAuthoritys() {
-		return Collections.unmodifiableCollection(authorityMap.values());
+	public List<T> getAuthorityList(AuthorityFilter<T> authorityFilter) {
+		List<T> list = new ArrayList<T>(authorityMap.size());
+		for (Entry<String, T> entry : authorityMap.entrySet()) {
+			if (acceptInternal(entry.getValue(), authorityFilter)) {
+				list.add(entry.getValue());
+			}
+		}
+		return list;
 	}
 
-	public List<T> getAuthoritySubList(String id) {
-		if (id == null) {
-			// root
-			List<T> list = new ArrayList<T>(roots.size());
-			for (String subId : roots) {
-				T v = getAuthority(subId);
-				if (v == null) {
-					continue;
-				}
+	public List<T> getRootList(AuthorityFilter<T> authorityFilter) {
+		List<T> list = new ArrayList<T>(roots.size());
+		for (String subId : roots) {
+			T v = getAuthority(subId);
+			if (v == null) {
+				continue;
+			}
 
+			if (acceptInternal(v, authorityFilter)) {
 				list.add(v);
 			}
-			return list;
+		}
+		return list;
+	}
+
+	public List<AuthorityTree<T>> getAuthorityTreeList(
+			AuthorityFilter<T> authorityFilter) {
+		List<T> list = getRootList(authorityFilter);
+		if (CollectionUtils.isEmpty(list)) {
+			return Collections.emptyList();
+		}
+
+		List<AuthorityTree<T>> treeList = new ArrayList<AuthorityTree<T>>(
+				list.size());
+		for (T authority : list) {
+			treeList.add(new AuthorityTree<T>(authority, getAuthorityTreeList(
+					authority.getId(), authorityFilter)));
+		}
+		return treeList;
+	}
+
+	public List<T> getAuthoritySubList(String id,
+			AuthorityFilter<T> authorityFilter) {
+		if (id == null) {
+			return getRootList(authorityFilter);
 		}
 
 		Set<String> set = subListMap.get(id);
@@ -62,14 +92,21 @@ public class DefaultAuthorityManager<T extends Authority> implements
 				continue;
 			}
 
-			values.add(v);
+			if (acceptInternal(v, authorityFilter)) {
+				values.add(v);
+			}
 		}
 
 		return values;
 	}
 
-	public List<AuthorityTree<T>> getAuthorityTreeList(String id) {
-		List<T> list = getAuthoritySubList(id);
+	protected boolean acceptInternal(T authority, AuthorityFilter<T> authorityFilter) {
+		return authorityFilter == null || authorityFilter.accept(authority);
+	}
+
+	public List<AuthorityTree<T>> getAuthorityTreeList(String id,
+			AuthorityFilter<T> authorityFilter) {
+		List<T> list = getAuthoritySubList(id, authorityFilter);
 		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
@@ -77,8 +114,8 @@ public class DefaultAuthorityManager<T extends Authority> implements
 		List<AuthorityTree<T>> treeList = new ArrayList<AuthorityTree<T>>(
 				list.size());
 		for (T authority : list) {
-			treeList.add(new AuthorityTree<T>(authority,
-					getAuthorityTreeList(authority.getId())));
+			treeList.add(new AuthorityTree<T>(authority, getAuthorityTreeList(
+					authority.getId(), authorityFilter)));
 		}
 		return treeList;
 	}
@@ -114,5 +151,101 @@ public class DefaultAuthorityManager<T extends Authority> implements
 			set.add(authority.getId());
 			subListMap.put(authority.getParentId(), set);
 		}
+	}
+
+	public List<T> getParentList(String id, AuthorityFilter<T> authorityFilter) {
+		T t = getAuthority(id);
+		if (t == null) {
+			return Collections.emptyList();
+		}
+
+		List<T> list = new ArrayList<T>();
+		T p = getAuthority(t.getParentId());
+		while (p != null) {
+			if (acceptInternal(p, authorityFilter)) {
+				list.add(p);
+			}
+			p = getAuthority(p.getParentId());
+		}
+		return list;
+	}
+
+	public List<T> getRelationAuthorityList(Collection<String> ids,
+			AuthorityFilter<T> authorityFilter) {
+		Set<String> useIds = getRelationIds(ids, authorityFilter);
+		if (CollectionUtils.isEmpty(useIds)) {
+			return Collections.emptyList();
+		}
+
+		List<T> list = new ArrayList<T>();
+		for (String id : useIds) {
+			T t = getAuthority(id);
+			if (t != null && acceptInternal(t, authorityFilter)) {
+				list.add(t);
+			}
+		}
+		return list;
+	}
+
+	protected List<T> getRootList(Set<String> ids) {
+		List<T> list = new LinkedList<T>();
+		for (String id : ids) {
+			T t = getAuthority(id);
+			if (t == null) {
+				continue;
+			}
+
+			if (t.getParentId() == null || !ids.contains(t.getParentId())) {
+				list.add(t);
+			}
+		}
+		return list;
+	}
+
+	private Set<String> getRelationIds(Collection<String> ids,
+			AuthorityFilter<T> authorityFilter) {
+		LinkedHashSet<String> useIds = new LinkedHashSet<String>(ids);
+		for (String id : ids) {
+			List<T> list = getParentList(id, authorityFilter);
+			if (!CollectionUtils.isEmpty(list)) {
+				for (T t : list) {
+					useIds.add(t.getId());
+				}
+			}
+		}
+		return useIds;
+	}
+
+	public List<AuthorityTree<T>> getRelationAuthorityTreeList(
+			Collection<String> ids, AuthorityFilter<T> authorityFilter) {
+		Set<String> useIds = getRelationIds(ids, authorityFilter);
+		if (CollectionUtils.isEmpty(useIds)) {
+			return Collections.emptyList();
+		}
+
+		return getAuthorityTreeList(getRootList(useIds), useIds,
+				authorityFilter);
+	}
+
+	protected List<AuthorityTree<T>> getAuthorityTreeList(
+			Collection<T> rootList, final Set<String> ids,
+			final AuthorityFilter<T> authorityFilter) {
+		List<AuthorityTree<T>> list = new ArrayList<AuthorityTree<T>>();
+		for (T t : rootList) {
+			List<T> subList = getAuthoritySubList(t.getId(),
+					new AuthorityFilter<T>() {
+
+						public boolean accept(T authority) {
+							if (!ids.contains(authority.getId())) {
+								return false;
+							}
+							return acceptInternal(authority, authorityFilter);
+						}
+					});
+
+			list.add(new AuthorityTree<T>(t, getAuthorityTreeList(subList, ids,
+					authorityFilter)));
+		}
+		return list;
 	}
 }

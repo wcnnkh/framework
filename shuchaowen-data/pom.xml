@@ -22,5 +22,14 @@
 			<groupId>com.googlecode.xmemcached</groupId>
 			<artifactId>xmemcached</artifactId>
 		</dependency>
+
+		<!-- lucene相关 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- lucene相关 -->
 	</dependencies>
 </project>

@@ -4,5 +4,6 @@ import scw.mvc.action.manager.HttpAction;
 import scw.security.authority.http.HttpAuthorityManager;
 
 public interface HttpActionAuthorityManager extends
-		ActionAuthorityManager<HttpActionAuthority, HttpAction>, HttpAuthorityManager<HttpActionAuthority>{
+		ActionAuthorityManager<HttpActionAuthority, HttpAction>,
+		HttpAuthorityManager<HttpActionAuthority> {
 }

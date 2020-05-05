@@ -32,6 +32,7 @@
 		<guava.version>25.0-jre</guava.version>
 		<mysql-connector-java.version>8.0.16</mysql-connector-java.version>
 		<netty-version>4.1.45.Final</netty-version>
+		<lucene-version>8.5.1</lucene-version>
 	</properties>
 
 	<dependencyManagement>
@@ -425,6 +426,15 @@
 				<artifactId>mybatis</artifactId>
 				<version>3.4.6</version>
 			</dependency>
+
+			<!-- lucene相关 -->
+			<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-core</artifactId>
+				<version>${lucene-version}</version>
+			</dependency>
+			<!-- lucene相关 -->
 		</dependencies>
 	</dependencyManagement>
 

@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2012 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package scw.core.reflect;
 
 import java.lang.reflect.Constructor;
@@ -43,25 +27,40 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.lang.Ignore;
 import scw.util.FormatUtils;
+import scw.util.cache.LocalCacheType;
 import scw.util.comparator.CompareUtils;
 import scw.util.value.ValueUtils;
 
-/**
- * Simple utility class for working with the reflection API and handling
- * reflection exceptions.
- *
- * <p>
- * Only intended for internal use.
- *
- * @author Juergen Hoeller
- * @author Rob Harrop
- * @author Rod Johnson
- * @author Costin Leau
- * @author Sam Brannen
- * @author Chris Beams
- * @since 1.2.2
- */
+
 public abstract class ReflectionUtils {
+	private static final String BOOLEAN_GETTER_METHOD_PREFIX = "is";
+	private static final String DEFAULT_GETTER_METHOD_PREFIX = "get";
+	private static final String DEFAULT_SETTER_METHOD_PREFIX = "set";
+	private static final FieldFactory FIELD_FACTORY = new DefaultFieldFactory(
+			Arrays.asList(BOOLEAN_GETTER_METHOD_PREFIX,
+					DEFAULT_GETTER_METHOD_PREFIX),
+			Arrays.asList(DEFAULT_SETTER_METHOD_PREFIX),
+			LocalCacheType.CONCURRENT_REFERENCE_HASH_MAP);
+
+	public static FieldFactory getFieldFactory() {
+		return FIELD_FACTORY;
+	}
+
+	public static String getGetterMethodName(Field field, String name){
+		if (TypeUtils.isBoolean(field.getType())) {
+			if(name.length() > 2 && name.startsWith(BOOLEAN_GETTER_METHOD_PREFIX) && Character.isUpperCase(name.charAt(2))){
+				return name;
+			}
+			
+			return BOOLEAN_GETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
+		} else {
+			return DEFAULT_GETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
+		}
+	}
+
+	public static String getSetterMethodName(Field field, String name) {
+		return DEFAULT_SETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
+	}
 	/**
 	 * 此方法不是用classloader来判断的，这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
 	 * 

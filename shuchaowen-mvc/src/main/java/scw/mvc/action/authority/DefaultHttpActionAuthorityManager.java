@@ -9,6 +9,7 @@ import scw.core.Constants;
 import scw.core.Init;
 import scw.core.annotation.KeyValuePair;
 import scw.core.instance.annotation.Configuration;
+import scw.lang.NotSupportedException;
 import scw.mvc.action.Action;
 import scw.mvc.action.manager.ActionManager;
 import scw.mvc.action.manager.HttpAction;
@@ -54,9 +55,13 @@ public class DefaultHttpActionAuthorityManager extends
 			id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
 			HttpActionAuthority authority = getAuthority(id);
 			if (authority == null) {
+				boolean isMenu = classAuthority.menu();
+				if(isMenu){
+					checkIsMenu(parentId, action);
+				}
 				register(new DefaultHttpActionAuthority(id, parentId,
 						classAuthority.value(),
-						getAttributeMap(classAuthority), null, null, false));
+						getAttributeMap(classAuthority), null, null, isMenu));
 			}
 			parentId = id;
 		}
@@ -69,7 +74,13 @@ public class DefaultHttpActionAuthorityManager extends
 
 		ControllerDescriptor descriptor = getAuthorityControllerDescriptor(action);
 		if (descriptor == null) {
+			logger.warn("not found controller descriptor: {}", action);
 			return;
+		}
+		
+		boolean isMenu = methodAuthority.menu();
+		if(isMenu){
+			checkIsMenu(parentId, action);
 		}
 
 		String id = descriptor.getHttpMethod() + "&"
@@ -79,7 +90,16 @@ public class DefaultHttpActionAuthorityManager extends
 		register(new DefaultHttpActionAuthority(id, parentId,
 				methodAuthority.value(), getAttributeMap(classAuthority,
 						methodAuthority), descriptor.getController(),
-				descriptor.getHttpMethod(), methodAuthority.menuAction()));
+				descriptor.getHttpMethod(), isMenu));
+	}
+	
+	private void checkIsMenu(String parentId, Action action){
+		if(parentId != null){
+			HttpActionAuthority parent = getAuthority(parentId);
+			if(parent != null && !parent.isMenu()){
+				throw new NotSupportedException("标注为一个菜单,但父级并不是一个菜单: " + action);
+			}
+		}
 	}
 
 	public HttpActionAuthority getAuthority(HttpAction action) {
@@ -125,5 +145,4 @@ public class DefaultHttpActionAuthorityManager extends
 		}
 		return null;
 	}
-
 }

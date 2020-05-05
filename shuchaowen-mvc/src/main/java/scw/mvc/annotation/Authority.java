@@ -15,8 +15,8 @@ public @interface Authority {
 	public KeyValuePair[] attributes() default {};
 	
 	/**
-	 * 设置为false就说明这不是一个menu,默认为true(系统自动判定)
+	 * 这是不是一个菜单
 	 * @return
 	 */
-	public boolean menuAction() default true;
+	public boolean menu() default false;
 }
