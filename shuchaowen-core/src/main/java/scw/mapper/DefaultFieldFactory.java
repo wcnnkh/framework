@@ -21,7 +21,7 @@ public class DefaultFieldFactory extends FieldFactory {
 	
 	
 	@Override
-	protected CacheLoader<Class<?>, Collection<Field>> createCacheLoader(
+	protected CacheLoader<Class<?>, Field[]> createCacheLoader(
 			Class<?> clazz) {
 		return new DefaultFieldLoader(getterMethodPrefix, setterMethodPrefix);
 	}

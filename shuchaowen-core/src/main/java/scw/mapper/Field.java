@@ -3,7 +3,9 @@ package scw.mapper;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-public class Field implements Serializable {
+public class Field implements Serializable, Cloneable {
+	public static final Field[] EMPTY_ARRAY = new Field[0];
+	
 	private static final long serialVersionUID = 1L;
 	private final Getter getter;
 	private final Setter setter;
@@ -32,5 +34,10 @@ public class Field implements Serializable {
 
 	public boolean isSupportSetter() {
 		return setter != null;
+	}
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }

@@ -16,7 +16,7 @@ import scw.core.utils.StringUtils;
 import scw.util.cache.CacheLoader;
 
 public class DefaultFieldLoader implements
-		CacheLoader<Class<?>, Collection<scw.mapper.Field>> {
+		CacheLoader<Class<?>, scw.mapper.Field[]> {
 	private final Collection<String> getterMethodPrefix;
 	private final Collection<String> setterMethodPrefix;
 
@@ -169,12 +169,12 @@ public class DefaultFieldLoader implements
 		return fields;
 	}
 
-	public Collection<scw.mapper.Field> loader(Class<?> clazz)
+	public scw.mapper.Field[] loader(Class<?> clazz)
 			throws Exception {
 		Field[] fields = clazz.getDeclaredFields();
 		Method[] methods = clazz.getDeclaredMethods();
 		Collection<Getter> getters = getGetters(clazz, fields, methods);
 		Collection<Setter> setters = getSetters(clazz, fields, methods);
-		return toFields(getters, setters);
+		return toFields(getters, setters).toArray(new scw.mapper.Field[0]);
 	}
 }
