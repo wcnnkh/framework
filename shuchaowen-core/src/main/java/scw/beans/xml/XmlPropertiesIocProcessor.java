@@ -2,9 +2,9 @@ package scw.beans.xml;
 
 import scw.beans.BeanFactory;
 import scw.beans.ioc.IocProcessor;
-import scw.core.reflect.FieldContext;
-import scw.core.reflect.FieldFilterType;
-import scw.core.reflect.ReflectionUtils;
+import scw.mapper.FieldContext;
+import scw.mapper.FieldFilterType;
+import scw.mapper.MapperUtils;
 import scw.util.value.property.PropertyFactory;
 
 public class XmlPropertiesIocProcessor implements IocProcessor {
@@ -19,7 +19,7 @@ public class XmlPropertiesIocProcessor implements IocProcessor {
 
 	public Object process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
-		FieldContext fieldContext = ReflectionUtils.getFieldFactory().getFieldContext(targetClass, xmlBeanParameter.getDisplayName(), FieldFilterType.SUPPORT_SETTER);
+		FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(targetClass, xmlBeanParameter.getName(), FieldFilterType.SUPPORT_SETTER);
 		if(fieldContext == null){
 			return null;
 		}

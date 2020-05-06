@@ -1,4 +1,4 @@
-package scw.core;
+package scw.mapper;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -7,10 +7,6 @@ import java.lang.reflect.Modifier;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
-import scw.core.reflect.FieldContext;
-import scw.core.reflect.FieldContextFilter;
-import scw.core.reflect.FieldFactory;
-import scw.core.reflect.FieldFilterType;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NestedRuntimeException;
 
@@ -18,7 +14,7 @@ import scw.lang.NestedRuntimeException;
 public class Copy {
 	static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 	private NoArgsInstanceFactory instanceFactory = InstanceUtils.INSTANCE_FACTORY;
-	private FieldFactory fieldFactory = ReflectionUtils.getFieldFactory();
+	private FieldFactory fieldFactory = MapperUtils.getFieldFactory();
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
 	 */
@@ -102,12 +98,12 @@ public class Copy {
 
 			FieldContext sourceField = getSourceField(source.getClass(), fieldContext);
 			if (sourceField == null) {
-				return;
+				continue;
 			}
 
 			Object value = sourceField.getField().getGetter().get(source);
 			if (value == null) {
-				return;
+				continue;
 			}
 
 			if (isClone()) {

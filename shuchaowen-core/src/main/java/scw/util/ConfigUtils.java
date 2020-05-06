@@ -22,15 +22,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.core.StringFormat;
-import scw.core.reflect.FieldContext;
-import scw.core.reflect.FieldFilterType;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.FieldContext;
+import scw.mapper.FieldFilterType;
+import scw.mapper.MapperUtils;
 import scw.util.value.Value;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
@@ -46,12 +46,12 @@ public final class ConfigUtils {
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
-			FieldContext fieldContext = ReflectionUtils.getFieldFactory().getFieldContext(clz, entry.getKey(), FieldFilterType.SUPPORT_SETTER);
+			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(clz, entry.getKey(), FieldFilterType.SUPPORT_SETTER);
 			if (fieldContext == null) {
 				continue;
 			}
 
-			ReflectionUtils.setStringValue(fieldContext, t, entry.getValue());
+			MapperUtils.setStringValue(fieldContext, t, entry.getValue());
 		}
 		return t;
 	}
@@ -165,14 +165,14 @@ public final class ConfigUtils {
 		try {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				String key = stringFormat.format(entry.getKey().toString());
-				FieldContext fieldContext = ReflectionUtils.getFieldFactory().getFieldContext(obj.getClass(), key);
+				FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(obj.getClass(), key);
 				if (fieldContext == null) {
 					continue;
 				}
 
 				String value = entry.getValue() == null ? null : entry.getValue().toString();
 				value = stringFormat.format(value);
-				ReflectionUtils.setStringValue(fieldContext, obj, value);
+				MapperUtils.setStringValue(fieldContext, obj, value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

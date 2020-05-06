@@ -1,4 +1,4 @@
-package scw.core.reflect;
+package scw.mapper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,12 +10,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.core.Assert;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.util.cache.CacheLoader;
 
 public class DefaultFieldLoader implements
-		CacheLoader<Class<?>, Collection<scw.core.reflect.Field>> {
+		CacheLoader<Class<?>, Collection<scw.mapper.Field>> {
 	private final Collection<String> getterMethodPrefix;
 	private final Collection<String> setterMethodPrefix;
 
@@ -38,7 +39,7 @@ public class DefaultFieldLoader implements
 			Method getterMethod = ReflectionUtils
 					.getMethod(
 							currentClass,
-							ReflectionUtils.getGetterMethodName(field,
+							MapperUtils.getGetterMethodName(field,
 									field.getName()));
 			if (getterMethod != null
 					&& Modifier.isStatic(getterMethod.getModifiers())
@@ -85,7 +86,7 @@ public class DefaultFieldLoader implements
 			Method setterMethod = ReflectionUtils
 					.getMethod(
 							currentClass,
-							ReflectionUtils.getSetterMethodName(field,
+							MapperUtils.getSetterMethodName(field,
 									field.getName()));
 			if (setterMethod != null
 					&& Modifier.isStatic(setterMethod.getModifiers())
@@ -144,15 +145,15 @@ public class DefaultFieldLoader implements
 		return null;
 	}
 
-	protected Collection<scw.core.reflect.Field> toFields(
+	protected Collection<scw.mapper.Field> toFields(
 			Collection<Getter> getters, Collection<Setter> setters) {
-		List<scw.core.reflect.Field> fields = new LinkedList<scw.core.reflect.Field>();
+		List<scw.mapper.Field> fields = new LinkedList<scw.mapper.Field>();
 		Iterator<Getter> getterIterator = getters.iterator();
 		Iterator<Setter> setterIterator;
 		while (getterIterator.hasNext()) {
 			Getter getter = getterIterator.next();
 			Setter setter = metadataFindAndRemove(getter, setters);
-			scw.core.reflect.Field field = new scw.core.reflect.Field(getter,
+			scw.mapper.Field field = new scw.mapper.Field(getter,
 					setter);
 			fields.add(field);
 		}
@@ -161,14 +162,14 @@ public class DefaultFieldLoader implements
 		while (setterIterator.hasNext()) {
 			Setter setter = setterIterator.next();
 			Getter getter = metadataFindAndRemove(setter, getters);
-			scw.core.reflect.Field field = new scw.core.reflect.Field(getter,
+			scw.mapper.Field field = new scw.mapper.Field(getter,
 					setter);
 			fields.add(field);
 		}
 		return fields;
 	}
 
-	public Collection<scw.core.reflect.Field> loader(Class<?> clazz)
+	public Collection<scw.mapper.Field> loader(Class<?> clazz)
 			throws Exception {
 		Field[] fields = clazz.getDeclaredFields();
 		Method[] methods = clazz.getDeclaredMethods();

@@ -2,10 +2,10 @@ package scw.mvc.action.logger.db;
 
 import java.util.Map.Entry;
 
-import scw.core.Copy;
 import scw.core.utils.CollectionUtils;
 import scw.db.AsyncExecute;
 import scw.db.DB;
+import scw.mapper.Copy;
 import scw.mvc.action.logger.ActionLog;
 
 public class LogAsyncSave implements AsyncExecute {

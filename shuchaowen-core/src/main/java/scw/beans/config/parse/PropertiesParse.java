@@ -5,12 +5,12 @@ import java.util.Properties;
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
-import scw.core.reflect.FieldContext;
-import scw.core.reflect.FieldContextFilter;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
 import scw.io.ResourceUtils;
+import scw.mapper.FieldContext;
+import scw.mapper.FieldContextFilter;
+import scw.mapper.MapperUtils;
 import scw.util.value.StringValue;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
@@ -32,7 +32,7 @@ public final class PropertiesParse extends AbstractValueFormat implements Config
 			try {
 				Object obj = fieldType.newInstance();
 				for (final Object key : properties.keySet()) {
-					FieldContext field = ReflectionUtils.getFieldFactory().getFieldContext(fieldType, null,
+					FieldContext field = MapperUtils.getFieldFactory().getFieldContext(fieldType, null,
 							new FieldContextFilter() {
 
 								public boolean accept(FieldContext fieldContext) {

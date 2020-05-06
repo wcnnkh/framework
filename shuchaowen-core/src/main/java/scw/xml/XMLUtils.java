@@ -38,14 +38,13 @@ import org.xml.sax.SAXException;
 import scw.core.Converter;
 import scw.core.StringFormat;
 import scw.core.instance.NoArgsInstanceFactory;
-import scw.core.reflect.FieldContext;
-import scw.core.reflect.FieldFilterType;
-import scw.core.reflect.PropertyMapper;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
+import scw.mapper.FieldContext;
+import scw.mapper.FieldFilterType;
+import scw.mapper.MapperUtils;
 import scw.util.KeyValuePair;
 import scw.util.ToMap;
 import scw.util.value.property.PropertyFactory;
@@ -483,7 +482,7 @@ public final class XMLUtils {
 				continue;
 			}
 			
-			FieldContext fieldContext = ReflectionUtils.getFieldFactory().getFieldContext(type, n.getNodeName(), FieldFilterType.SUPPORT_SETTER, FieldFilterType.SETTER_IGNORE_STATIC);
+			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(type, n.getNodeName(), FieldFilterType.SUPPORT_SETTER, FieldFilterType.SETTER_IGNORE_STATIC);
 			if (fieldContext == null) {
 				continue;
 			}
@@ -497,7 +496,7 @@ public final class XMLUtils {
 				t = instanceFactory.getInstance(type);
 			}
 
-			ReflectionUtils.setStringValue(fieldContext, t, value);
+			MapperUtils.setStringValue(fieldContext, t, value);
 		}
 		return t;
 	}
@@ -606,27 +605,6 @@ public final class XMLUtils {
 			throw new NotFoundException("not found attribute " + name);
 		}
 		return value;
-	}
-
-	public static <T> T newInstanceLoadAttributeBySetter(NoArgsInstanceFactory instanceFactory, Class<T> type,
-			final PropertyFactory propertyFactory, Node node, final PropertyMapper<String> mapper) {
-		Map<String, Node> map = attributeAsMap(node);
-		try {
-			T t = instanceFactory.getInstance(type);
-			ReflectionUtils.setProperties(type, t, map, new PropertyMapper<Node>() {
-				public Object mapper(String name, Node value, Type type) throws Exception {
-					String v = formatNodeValue(propertyFactory, value, value.getNodeValue());
-					if (StringUtils.isEmpty(v)) {
-						return null;
-					}
-
-					return mapper.mapper(name, v, type);
-				}
-			});
-			return t;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 }
 

@@ -1,7 +1,7 @@
 package scw.orm;
 
-import scw.core.reflect.FieldContext;
-import scw.core.reflect.FieldContextFilter;
+import scw.mapper.FieldContext;
+import scw.mapper.FieldContextFilter;
 
 public class ORMFieldContextFilter implements FieldContextFilter{
 

@@ -1,4 +1,4 @@
-package scw.core.reflect;
+package scw.mapper;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -54,7 +54,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 		LinkedList<FieldContext> list = new LinkedList<FieldContext>();
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
-			for (scw.core.reflect.Field field : getFields(classToUse)) {
+			for (scw.mapper.Field field : getFields(classToUse)) {
 				FieldContext fieldContext = createFieldContext(parentContext, field, clazz);
 				if (acceptInternal(fieldContext, filter, fieldFilterTypes)) {
 					list.add(fieldContext);
@@ -73,7 +73,7 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 			FieldFilterType... fieldFilterTypes) {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
-			for (scw.core.reflect.Field field : getFields(classToUse)) {
+			for (scw.mapper.Field field : getFields(classToUse)) {
 				FieldContext fieldContext = createFieldContext(parentContext, field, clazz);
 				if (acceptInternal(fieldContext, filter, fieldFilterTypes)) {
 					return fieldContext;
@@ -101,18 +101,10 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 					if (fieldContext.getField().getGetter().getName().equals(name)) {
 						return true;
 					}
-
-					if (fieldContext.getField().getGetter().getDisplayName().equals(name)) {
-						return true;
-					}
 				}
 
 				if (fieldContext.getField().isSupportSetter()) {
 					if (fieldContext.getField().getSetter().getName().equals(name)) {
-						return true;
-					}
-
-					if (fieldContext.getField().getSetter().getDisplayName().equals(name)) {
 						return true;
 					}
 				}

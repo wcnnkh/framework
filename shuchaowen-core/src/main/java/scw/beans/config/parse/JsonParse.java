@@ -3,11 +3,11 @@ package scw.beans.config.parse;
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
-import scw.core.reflect.FieldContext;
 import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
+import scw.mapper.FieldContext;
 import scw.util.value.property.PropertyFactory;
 
 /**

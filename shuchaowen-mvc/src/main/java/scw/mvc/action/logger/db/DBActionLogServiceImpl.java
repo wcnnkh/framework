@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import scw.core.Copy;
 import scw.core.GlobalPropertyFactory;
 import scw.core.Pagination;
 import scw.core.utils.CollectionUtils;
@@ -13,6 +12,7 @@ import scw.core.utils.XTime;
 import scw.db.DB;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.Copy;
 import scw.mvc.action.logger.ActionLog;
 import scw.mvc.action.logger.ActionLogService;
 import scw.sql.SimpleSql;

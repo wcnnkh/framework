@@ -15,7 +15,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import scw.cglib.core.ReflectUtils;
 import scw.core.Assert;
@@ -27,40 +26,10 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.lang.Ignore;
 import scw.util.FormatUtils;
-import scw.util.cache.LocalCacheType;
 import scw.util.comparator.CompareUtils;
-import scw.util.value.ValueUtils;
 
 
 public abstract class ReflectionUtils {
-	private static final String BOOLEAN_GETTER_METHOD_PREFIX = "is";
-	private static final String DEFAULT_GETTER_METHOD_PREFIX = "get";
-	private static final String DEFAULT_SETTER_METHOD_PREFIX = "set";
-	private static final FieldFactory FIELD_FACTORY = new DefaultFieldFactory(
-			Arrays.asList(BOOLEAN_GETTER_METHOD_PREFIX,
-					DEFAULT_GETTER_METHOD_PREFIX),
-			Arrays.asList(DEFAULT_SETTER_METHOD_PREFIX),
-			LocalCacheType.CONCURRENT_REFERENCE_HASH_MAP);
-
-	public static FieldFactory getFieldFactory() {
-		return FIELD_FACTORY;
-	}
-
-	public static String getGetterMethodName(Field field, String name){
-		if (TypeUtils.isBoolean(field.getType())) {
-			if(name.length() > 2 && name.startsWith(BOOLEAN_GETTER_METHOD_PREFIX) && Character.isUpperCase(name.charAt(2))){
-				return name;
-			}
-			
-			return BOOLEAN_GETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
-		} else {
-			return DEFAULT_GETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
-		}
-	}
-
-	public static String getSetterMethodName(Field field, String name) {
-		return DEFAULT_SETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
-	}
 	/**
 	 * 此方法不是用classloader来判断的，这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
 	 * 
@@ -804,29 +773,6 @@ public abstract class ReflectionUtils {
 		}
 	};
 
-	public static <T, V> void setProperties(Class<T> type, T bean, Map<String, V> properties,
-			PropertyMapper<V> mapper) {
-		if (properties == null || properties.isEmpty()) {
-			return;
-		}
-
-		for (Entry<String, V> entry : properties.entrySet()) {
-			FieldContext fieldContext = getFieldFactory().getFieldContext(type, entry.getKey(), FieldFilterType.SUPPORT_SETTER);
-			if (fieldContext != null) {
-				Object value;
-				try {
-					value = mapper.mapper(entry.getKey(), entry.getValue(), type);
-					fieldContext.getField().getSetter().set(bean, value);
-				} catch (Exception e) {
-					FormatUtils.warn(ReflectUtils.class, "向对象{}，插入name={},value={}时异常", type.getName(), entry.getKey(),
-							entry.getValue());
-					e.printStackTrace();
-				}
-				continue;
-			}
-		}
-	}
-
 	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic) {
 		Constructor<T> constructor = null;
 		if (isPublic) {
@@ -1297,10 +1243,6 @@ public abstract class ReflectionUtils {
 			FormatUtils.warn(ReflectUtils.class, "向对象{}，插入field={}时异常", clz.getName(), field.getName());
 			throw e;
 		}
-	}
-
-	public static void setStringValue(FieldContext fieldContext, Object instance, String value) throws Exception{
-		fieldContext.getField().getSetter().set(instance, ValueUtils.parse(value, fieldContext.getField().getSetter().getGenericType()));
 	}
 
 	/**

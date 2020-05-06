@@ -2,7 +2,7 @@ package scw.beans.ioc;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Config;
-import scw.core.reflect.FieldContext;
+import scw.mapper.FieldContext;
 import scw.util.value.property.PropertyFactory;
 
 public class ConfigIocProcessor extends DefaultFieldIocProcessor {

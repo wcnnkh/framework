@@ -5,8 +5,8 @@ import java.util.List;
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
-import scw.core.reflect.FieldContext;
 import scw.io.ResourceUtils;
+import scw.mapper.FieldContext;
 import scw.util.value.property.PropertyFactory;
 
 public final class ContentParse extends AbstractValueFormat implements ConfigParse{

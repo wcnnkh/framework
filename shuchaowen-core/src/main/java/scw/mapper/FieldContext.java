@@ -1,8 +1,6 @@
-package scw.core.reflect;
+package scw.mapper;
 
 import java.io.Serializable;
-
-import scw.core.reflect.Field;
 
 public class FieldContext implements Serializable {
 	private static final long serialVersionUID = 1L;

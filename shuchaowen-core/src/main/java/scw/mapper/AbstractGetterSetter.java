@@ -1,4 +1,4 @@
-package scw.core.reflect;
+package scw.mapper;
 
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
@@ -7,6 +7,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import scw.core.annotation.MultiAnnotatedElement;
+import scw.core.reflect.ReflectionUtils;
+import scw.core.reflect.SerializableField;
+import scw.core.reflect.SerializableMethod;
 
 abstract class AbstractGetterSetter extends AbstractFieldMetadata
 		implements Serializable {

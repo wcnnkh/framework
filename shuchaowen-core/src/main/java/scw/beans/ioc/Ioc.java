@@ -9,9 +9,9 @@ import scw.beans.annotation.Config;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Value;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.reflect.FieldContext;
-import scw.core.reflect.FieldContextFilter;
-import scw.core.reflect.ReflectionUtils;
+import scw.mapper.FieldContext;
+import scw.mapper.FieldContextFilter;
+import scw.mapper.MapperUtils;
 
 public class Ioc {
 	private final IocMetadata init = new IocMetadata();
@@ -32,7 +32,7 @@ public class Ioc {
 			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		List<FieldContext> autowrites = ReflectionUtils.getFieldFactory().getFieldContexts(targetClass, null,
+		List<FieldContext> autowrites = MapperUtils.getFieldFactory().getFieldContexts(targetClass, null,
 				new FieldContextFilter() {
 
 					public boolean accept(FieldContext fieldContext) {

@@ -1,6 +1,5 @@
 package scw.mq.support;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,16 +8,13 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.instance.InstanceUtils;
 import scw.core.parameter.annotation.DefaultValue;
-import scw.core.reflect.PropertyMapper;
 import scw.io.ResourceUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mq.ConsumerFactory;
 import scw.util.queue.Consumer;
-import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
@@ -28,7 +24,7 @@ public class XmlConsumerFactory implements ConsumerFactory {
 	private Map<String, AmqpConfig> amqpMap = new HashMap<String, AmqpConfig>();
 
 	public XmlConsumerFactory(final BeanFactory beanFactory, PropertyFactory propertyFactory,
-			@DefaultValue("consumer.xml") String xmlPath) {
+			@DefaultValue("consumer.xml") String xmlPath) throws Exception {
 		if (ResourceUtils.getResourceOperations().isExist(xmlPath)) {
 			NodeList nodeList = XmlBeanUtils.getRootNodeList(xmlPath);
 			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
@@ -47,17 +43,9 @@ public class XmlConsumerFactory implements ConsumerFactory {
 				}
 
 				if (node.getNodeName().equals("consumer:amqp")) {
-					amqpMap.put(name, XMLUtils.newInstanceLoadAttributeBySetter(InstanceUtils.NO_ARGS_INSTANCE_FACTORY, AmqpConfig.class, propertyFactory, node,
-							new PropertyMapper<String>() {
-
-								public Object mapper(String name, String value, Type type) throws Exception {
-									if (name.equals("exchange")) {
-										return beanFactory.getInstance(value);
-									}
-
-									return ValueUtils.parse(value, type);
-								}
-							}));
+					XmlAmqpConfigMapper mapper = new XmlAmqpConfigMapper(beanFactory, propertyFactory, node);
+					AmqpConfig amqpConfig = mapper.mapping(AmqpConfig.class, null);
+					amqpMap.put(name, amqpConfig);
 				}
 			}
 		}

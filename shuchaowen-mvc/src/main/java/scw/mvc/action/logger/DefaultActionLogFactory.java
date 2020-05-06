@@ -27,7 +27,7 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 			@ParameterName("mvc.action.log.identification") @DefaultValue("uid") String identificationKey, @ParameterName("mvc.action.log.ip")@DefaultValue("false") boolean ipEnable) {
 		if (StringUtils.isNotEmpty(identificationKey)) {
 			this.identificationParameterConfig = new DefaultParameterDescriptor(
-					identificationKey, null, String.class, String.class);
+					identificationKey, String.class, String.class);
 		}
 		this.ipEnable = ipEnable;
 	}
@@ -69,7 +69,7 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	
 	protected String getAttirubteValue(Channel channel, String name){
 		return (String) channel.getParameter( new DefaultParameterDescriptor(
-				name, null, String.class, String.class));
+				name, String.class, String.class));
 	}
 	
 	protected String getIp(Action action, Channel channel){

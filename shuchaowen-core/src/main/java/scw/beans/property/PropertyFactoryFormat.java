@@ -2,7 +2,7 @@ package scw.beans.property;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.annotation.Configuration;
-import scw.core.reflect.FieldContext;
+import scw.mapper.FieldContext;
 import scw.util.value.Value;
 import scw.util.value.property.PropertyFactory;
 

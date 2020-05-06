@@ -1,4 +1,4 @@
-package scw.core.reflect;
+package scw.mapper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

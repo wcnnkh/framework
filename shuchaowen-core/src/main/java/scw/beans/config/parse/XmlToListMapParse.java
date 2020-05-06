@@ -3,7 +3,7 @@ package scw.beans.config.parse;
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
-import scw.core.reflect.FieldContext;
+import scw.mapper.FieldContext;
 import scw.util.ConfigUtils;
 import scw.util.value.property.PropertyFactory;
 

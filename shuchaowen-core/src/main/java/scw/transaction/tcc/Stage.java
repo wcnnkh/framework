@@ -62,12 +62,12 @@ public class Stage extends AbstractAsyncRunnable {
 				continue;
 			}
 
-			if (!parameterMap.containsKey(descriptor.getDisplayName())) {
+			if (!parameterMap.containsKey(descriptor.getName())) {
 				throw new TccException(
-						"Undefined parameter [" + descriptor.getDisplayName() + "] in method:" + method.toString());
+						"Undefined parameter [" + descriptor.getName() + "] in method:" + method.toString());
 			}
 
-			args[i] = parameterMap.get(descriptor.getDisplayName());
+			args[i] = parameterMap.get(descriptor.getName());
 		}
 		return args;
 	}

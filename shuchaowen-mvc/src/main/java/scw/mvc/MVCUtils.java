@@ -80,7 +80,7 @@ public final class MVCUtils implements MvcConstants {
 				args[i] = channel.getParameter(parameterDescriptors[i]);
 			} catch (Exception e) {
 				throw new ParameterException("Parameter error ["
-						+ parameterDescriptors[i].getDisplayName() + "]", e);
+						+ parameterDescriptors[i].getName() + "]", e);
 			}
 		}
 		return args;

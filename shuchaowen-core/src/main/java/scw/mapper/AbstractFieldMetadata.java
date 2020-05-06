@@ -1,10 +1,9 @@
-package scw.core.reflect;
+package scw.mapper;
 
-import scw.core.parameter.AbstractParameterDescriptor;
 import scw.lang.Description;
 import scw.lang.NotSupportedException;
 
-public abstract class AbstractFieldMetadata extends AbstractParameterDescriptor
+public abstract class AbstractFieldMetadata
 		implements FieldMetadata {
 	private final Class<?> declaringClass;
 

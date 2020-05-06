@@ -2,7 +2,7 @@ package scw.beans.ioc;
 
 import java.lang.reflect.Modifier;
 
-import scw.core.reflect.FieldContext;
+import scw.mapper.FieldContext;
 
 public abstract class FieldIocProcessor extends AbstractIocProcessor {
 

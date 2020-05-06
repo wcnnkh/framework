@@ -2,52 +2,23 @@ package scw.core.parameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.InstanceFactory;
-import scw.core.instance.InstanceUtils;
-import scw.core.parameter.field.DefaultFieldDescriptor;
-import scw.core.parameter.field.FieldDescriptor;
-import scw.core.parameter.field.NamePrefixFieldDescriptor;
-import scw.core.reflect.ReflectionUtils;
+import scw.core.parameter.annotation.DefaultValue;
+import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.util.value.StringValue;
+import scw.util.value.Value;
 
 public final class ParameterUtils {
 	private static final LocalVariableTableParameterNameDiscoverer LVTPND = new LocalVariableTableParameterNameDiscoverer();
 
 	private ParameterUtils() {
 	};
-
-	public static FieldDescriptor[] getFieldDescriptors(Class<?> clazz) {
-		List<FieldDescriptor> parameterConfigs = new LinkedList<FieldDescriptor>();
-		Class<?> clz = clazz;
-		while (clz != null && clz != Object.class) {
-			for (Field field : clz.getDeclaredFields()) {
-				if (Modifier.isStatic(field.getModifiers())) {
-					continue;
-				}
-
-				ReflectionUtils.setAccessibleField(field);
-				parameterConfigs.add(new DefaultFieldDescriptor(field));
-			}
-			clz = clz.getSuperclass();
-		}
-
-		if (parameterConfigs.isEmpty()) {
-			return FieldDescriptor.EMPTY_ARRAY;
-		}
-
-		return parameterConfigs.toArray(new FieldDescriptor[parameterConfigs.size()]);
-	}
 
 	public static ParameterDescriptor[] getParameterDescriptors(Constructor<?> constructor) {
 		String[] names = ParameterUtils.getParameterName(constructor);
@@ -100,61 +71,6 @@ public final class ParameterUtils {
 		return AnnotationUtils.isNullable(parameterConfig.getAnnotatedElement(), true);
 	}
 
-	public static Object createObjectByParameter(ParameterFactory parameterFactory, Class<?> type) throws Exception {
-		return createObjectByParameter(parameterFactory, type, null);
-	}
-
-	public static Object createObjectByParameter(InstanceFactory instanceFactory, ParameterFactory parameterFactory,
-			Class<?> type) throws Exception {
-		return createObjectByParameter(instanceFactory, parameterFactory, type, null);
-	}
-
-	public static Object createObjectByParameter(ParameterFactory parameterFactory, Class<?> type, String name)
-			throws Exception {
-		return createObjectByParameterInternal(InstanceUtils.INSTANCE_FACTORY, parameterFactory, type,
-				StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
-	}
-
-	public static Object createObjectByParameter(InstanceFactory instanceFactory, ParameterFactory parameterFactory,
-			Class<?> type, String name) throws Exception {
-		return createObjectByParameterInternal(instanceFactory, parameterFactory, type,
-				StringUtils.isEmpty(name) ? null : (name.endsWith(".") ? name : name + "."));
-	}
-
-	private static Object createObjectByParameterInternal(InstanceFactory instanceFactory,
-			ParameterFactory parameterFactory, Class<?> type, String prefix) throws Exception {
-		if (!instanceFactory.isInstance(type)) {
-			return null;
-		}
-
-		Object obj = instanceFactory.getInstance(type);
-		setParameter(obj, instanceFactory, parameterFactory, type, prefix);
-		return obj;
-	}
-
-	private static void setParameter(Object instance, InstanceFactory instanceFactory,
-			ParameterFactory parameterFactory, Class<?> type, String prefix) throws Exception {
-		for (FieldDescriptor parameterConfig : getFieldDescriptors(type)) {
-			if (!parameterConfig.getType().isPrimitive() && parameterConfig.getField().get(instance) != null) {
-				continue;
-			}
-
-			FieldDescriptor fieldDescriptor = new NamePrefixFieldDescriptor(parameterConfig, prefix);
-			Object v = null;
-			if (String.class.isAssignableFrom(fieldDescriptor.getType())
-					|| ClassUtils.isPrimitiveOrWrapper(fieldDescriptor.getType())) {
-				v = parameterFactory.getParameter(fieldDescriptor);
-			} else {
-				v = createObjectByParameterInternal(instanceFactory, parameterFactory, type,
-						fieldDescriptor.getDisplayName() + ".");
-			}
-
-			if (v != null) {
-				ReflectionUtils.setFieldValue(type, fieldDescriptor.getField(), instance, v);
-			}
-		}
-	}
-
 	public static LinkedHashMap<String, Object> getParameterMap(ParameterDescriptor[] parameterDescriptors,
 			Object[] args) {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(parameterDescriptors.length);
@@ -171,5 +87,21 @@ public final class ParameterUtils {
 
 	public static LinkedHashMap<String, Object> getParameterMap(Constructor<?> constructor, Object[] args) {
 		return getParameterMap(getParameterDescriptors(constructor), args);
+	}
+	
+	public static Value getDefaultValue(ParameterDescriptor parameterDescriptor){
+		DefaultValue defaultValue = parameterDescriptor.getAnnotatedElement().getAnnotation(DefaultValue.class);
+		if (defaultValue == null) {
+			return null;
+		}
+		return new StringValue(defaultValue.value());
+	}
+	
+	public static String getDisplayName(ParameterDescriptor parameterDescriptor){
+		ParameterName parameterName = parameterDescriptor.getAnnotatedElement().getAnnotation(ParameterName.class);
+		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
+			return parameterName.value();
+		}	
+		return parameterDescriptor.getName();
 	}
 }
