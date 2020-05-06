@@ -3,7 +3,7 @@ package scw.async.filter;
 import scw.aop.ProxyContext;
 import scw.async.AsyncExecutor;
 import scw.beans.BeanFactory;
-import scw.core.reflect.SerializableMethodHolder;
+import scw.core.reflect.SerializableMethod;
 import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
@@ -27,7 +27,7 @@ public abstract class AbstractAsyncService implements AsyncService {
 			throw new NotSupportedException(context.getMethod().toString());
 		}
 
-		return new DefaultAsyncRunnableMethod(new SerializableMethodHolder(
+		return new DefaultAsyncRunnableMethod(new SerializableMethod(
 				context.getTargetClass(), context.getMethod()), beanName,
 				context.getArgs());
 	}

@@ -42,11 +42,15 @@ abstract class AbstractGetterSetter extends AbstractFieldMetadata
 	
 	public int getModifiers() {
 		Method method = getMethod();
+		Field field = getField();
+		if(method != null && field != null){
+			return method.getModifiers() | field.getModifiers();
+		}
+		
 		if(method != null){
 			return method.getModifiers();
 		}
 		
-		Field field = getField();
 		if(field != null){
 			return field.getModifiers();
 		}
@@ -75,6 +79,7 @@ abstract class AbstractGetterSetter extends AbstractFieldMetadata
 			ReflectionUtils.setAccessibleMethod(method);
 			method.invoke(Modifier.isStatic(method.getModifiers()) ? null
 					: instance, value);
+			return ;
 		}
 
 		java.lang.reflect.Field field = getField();
@@ -83,6 +88,7 @@ abstract class AbstractGetterSetter extends AbstractFieldMetadata
 			field.set(
 					Modifier.isStatic(field.getModifiers()) ? null : instance,
 					value);
+			return ;
 		}
 		throw createNotSupportException();
 	}

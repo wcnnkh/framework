@@ -3,7 +3,7 @@ package scw.beans.config.parse;
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
-import scw.core.reflect.FieldDefinition;
+import scw.core.reflect.FieldContext;
 import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.json.JsonArray;
@@ -18,23 +18,23 @@ import scw.util.value.property.PropertyFactory;
  */
 public final class JsonParse extends AbstractValueFormat implements ConfigParse {
 
-	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition fieldDefinition, String filePath, String charset)
+	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext, String filePath, String charset)
 			throws Exception {
 		String content = ResourceUtils.getResourceOperations().getContent(filePath, charset);
-		if (JsonObject.class.isAssignableFrom(fieldDefinition.getField().getType())) {
+		if (JsonObject.class.isAssignableFrom(fieldContext.getField().getSetter().getType())) {
 			return JSONUtils.parseObject(content);
-		} else if (JsonArray.class.isAssignableFrom(fieldDefinition.getField().getType())) {
+		} else if (JsonArray.class.isAssignableFrom(fieldContext.getField().getSetter().getType())) {
 			return JSONUtils.parseArray(content);
-		} else if (String.class.isAssignableFrom(fieldDefinition.getField().getType())) {
+		} else if (String.class.isAssignableFrom(fieldContext.getField().getSetter().getType())) {
 			return content;
 		} else {
-			return JSONUtils.parseObject(content, fieldDefinition.getField().getType());
+			return JSONUtils.parseObject(content, fieldContext.getField().getSetter().getType());
 		}
 	}
 
-	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldDefinition field, String name)
+	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext, String name)
 			throws Exception {
-		return parse(beanFactory, propertyFactory, field, name, getCharsetName());
+		return parse(beanFactory, propertyFactory, fieldContext, name, getCharsetName());
 	}
 
 }

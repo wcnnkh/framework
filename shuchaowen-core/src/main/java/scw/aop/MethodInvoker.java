@@ -1,7 +1,9 @@
 package scw.aop;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
+import scw.core.reflect.ReflectionUtils;
 import scw.lang.NestedExceptionUtils;
 
 public abstract class MethodInvoker implements Invoker {
@@ -11,8 +13,10 @@ public abstract class MethodInvoker implements Invoker {
 	protected abstract Object getInstance();
 
 	public Object invoke(Object... args) throws Throwable {
+		Method method = getMethod();
+		ReflectionUtils.setAccessibleMethod(method);
 		try {
-			return getMethod().invoke(getInstance(), args);
+			return method.invoke(Modifier.isStatic(method.getModifiers()) ? null : getInstance(), args);
 		} catch (Throwable e) {
 			throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
 		}

@@ -2,37 +2,41 @@ package scw.beans.ioc;
 
 import java.lang.reflect.Modifier;
 
-import scw.core.reflect.FieldDefinition;
+import scw.core.reflect.FieldContext;
 
 public abstract class FieldIocProcessor extends AbstractIocProcessor {
 
-	public abstract FieldDefinition getFieldDefinition();
+	public abstract FieldContext getFieldContext();
 
 	public boolean isGlobal() {
 		return Modifier
-				.isStatic(getFieldDefinition().getField().getModifiers());
+				.isStatic(getFieldContext().getField().getSetter().getModifiers());
 	}
 
 	public void checkField() {
-		if (Modifier.isStatic(getFieldDefinition().getField().getModifiers())) {
+		if (Modifier.isStatic(getFieldContext().getField().getSetter().getModifiers())) {
 			logger.warn("class [{}] field [{}] is a static",
-					getFieldDefinition().getDeclaringClass(),
-					getFieldDefinition().getField().getName());
+					getFieldContext().getDeclaringClass(),
+					getFieldContext().getField().getSetter().getName());
 		}
 	}
 
 	protected void existDefaultValueWarnLog(Object obj) throws Exception {
 		if (checkExistDefaultValue(obj)) {
 			logger.warn("class[{}] fieldName[{}] existence default value",
-					getFieldDefinition().getDeclaringClass().getName(),
-					getFieldDefinition().getField().getName());
+					getFieldContext().getDeclaringClass().getName(),
+					getFieldContext().getField().getSetter().getName());
 		}
 	}
 
 	protected boolean checkExistDefaultValue(Object obj) throws Exception {
-		if (getFieldDefinition().getField().getType().isPrimitive()) {// 值类型一定是有默认值的,所以不用判断直接所回false
+		if(!getFieldContext().getField().isSupportGetter()){
 			return false;
 		}
-		return getFieldDefinition().get(obj) != null;
+		
+		if (getFieldContext().getField().getGetter().getType().isPrimitive()) {// 值类型一定是有默认值的,所以不用判断直接所回false
+			return false;
+		}
+		return getFieldContext().getField().getGetter().get(obj) != null;
 	}
 }

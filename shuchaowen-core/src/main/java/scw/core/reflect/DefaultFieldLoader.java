@@ -31,6 +31,10 @@ public class DefaultFieldLoader implements
 			Field[] fields, Method[] methods) {
 		LinkedHashSet<Getter> getters = new LinkedHashSet<Getter>();
 		for (Field field : fields) {
+			if(Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())){
+				continue;
+			}
+			
 			Method getterMethod = ReflectionUtils
 					.getMethod(
 							currentClass,
@@ -74,7 +78,7 @@ public class DefaultFieldLoader implements
 			Field[] fields, Method[] methods) {
 		LinkedHashSet<Setter> setters = new LinkedHashSet<Setter>();
 		for (Field field : fields) {
-			if (Modifier.isStatic(field.getModifiers())) {
+			if(Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())){
 				continue;
 			}
 

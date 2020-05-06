@@ -12,10 +12,8 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import scw.core.instance.InstanceUtils;
-import scw.core.reflect.FieldDefinition;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
-import scw.orm.sql.annotation.Index;
 import scw.orm.sql.dialect.SqlDialect;
 import scw.orm.sql.enums.OperationType;
 import scw.sql.Sql;
@@ -46,10 +44,6 @@ public final class SqlORMUtils {
 
 	public static Collection<SqlFilter> getSqlFilters() {
 		return SQL_FILTERS;
-	}
-
-	public static boolean isIndexColumn(FieldDefinition fieldDefinition) {
-		return fieldDefinition.getAnnotatedElement().getAnnotation(Index.class) != null;
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {

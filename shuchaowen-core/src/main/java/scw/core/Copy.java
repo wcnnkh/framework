@@ -7,15 +7,18 @@ import java.lang.reflect.Modifier;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.reflect.FieldContext;
+import scw.core.reflect.FieldContextFilter;
+import scw.core.reflect.FieldFactory;
+import scw.core.reflect.FieldFilterType;
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.NestedRuntimeException;
 
 @SuppressWarnings("unchecked")
 public class Copy {
 	static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 	private NoArgsInstanceFactory instanceFactory = InstanceUtils.INSTANCE_FACTORY;
-	private boolean ignoreStaticField = true;
-	private boolean ignoreTransient = false;
-	private boolean invokerSetter = false;
+	private FieldFactory fieldFactory = ReflectionUtils.getFieldFactory();
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
 	 */
@@ -38,12 +41,12 @@ public class Copy {
 		this.clone = clone;
 	}
 
-	public boolean isInvokerSetter() {
-		return invokerSetter;
+	public FieldFactory getFieldFactory() {
+		return fieldFactory;
 	}
 
-	public void setInvokerSetter(boolean invokerSetter) {
-		this.invokerSetter = invokerSetter;
+	public void setFieldFactory(FieldFactory fieldFactory) {
+		this.fieldFactory = fieldFactory;
 	}
 
 	public boolean isInvokeCloneableMethod() {
@@ -62,14 +65,6 @@ public class Copy {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public boolean isIgnoreStaticField() {
-		return ignoreStaticField;
-	}
-
-	public void setIgnoreStaticField(boolean ignoreStaticField) {
-		this.ignoreStaticField = ignoreStaticField;
-	}
-
 	public boolean isCloneTransientField() {
 		return cloneTransientField;
 	}
@@ -78,76 +73,59 @@ public class Copy {
 		this.cloneTransientField = cloneTransientField;
 	}
 
-	public boolean isIgnoreTransient() {
-		return ignoreTransient;
-	}
-
-	public void setIgnoreTransient(boolean ignoreTransient) {
-		this.ignoreTransient = ignoreTransient;
-	}
-
 	protected Field[] getFields(Class<?> clazz) {
 		return clazz.getDeclaredFields();
 	}
 
-	protected Object cloneArray(Class<?> sourceType, Object array) throws Exception {
+	protected Object cloneArray(Class<?> sourceType, Object array, FieldContext parentContext,
+			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) throws Exception {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(sourceType.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, clone(Array.get(array, i)));
+			Array.set(newArr, i, copy(Array.get(array, i), parentContext, filter, fieldFilterTypes));
 		}
 		return newArr;
 	}
-	
-	protected void copy(Class<?> targetClass, Field targetField, Object source, Object target) throws Exception {
-		if (isIgnoreStaticField() && Modifier.isStatic(targetField.getModifiers())) {
-			return;
-		}
 
-		if (isIgnoreTransient() && Modifier.isTransient(targetField.getModifiers())) {
-			return;
-		}
+	protected FieldContext getSourceField(Class<?> sourceClass, FieldContext targetFieldContext) {
+		return fieldFactory.getFieldContext(sourceClass, targetFieldContext.getField().getSetter().getName(),
+				FieldFilterType.SUPPORT_GETTER);
+	}
 
-		Field sourceField = ReflectionUtils.findField(source.getClass(), targetField.getName());
-		if (sourceField == null) {
-			return;
-		}
+	public <T> void copy(Class<? extends T> targetClass, T target, Object source, FieldContext parentContext,
+			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) throws Exception {
+		for (FieldContext fieldContext : fieldFactory.getFieldContexts(targetClass, parentContext, null,
+				fieldFilterTypes)) {
+			if (!fieldContext.getField().isSupportSetter()) {
+				continue;
+			}
 
-		ReflectionUtils.setAccessibleField(sourceField);
-		Object value = sourceField.get(source);
-		if (value == null) {
-			return;
-		}
+			FieldContext sourceField = getSourceField(source.getClass(), fieldContext);
+			if (sourceField == null) {
+				return;
+			}
 
-		if (isClone()) {
-			if (Modifier.isTransient(targetField.getModifiers())) {
-				if (isCloneTransientField()) {
-					value = clone(value);
+			Object value = sourceField.getField().getGetter().get(source);
+			if (value == null) {
+				return;
+			}
+
+			if (isClone()) {
+				if (Modifier.isTransient(fieldContext.getField().getSetter().getModifiers())) {
+					if (isCloneTransientField()) {
+						value = copy(value, fieldContext, filter, fieldFilterTypes);
+					}
+				} else {
+					value = copy(value, fieldContext, filter, fieldFilterTypes);
 				}
-			} else {
-				value = clone(value);
 			}
-		}
 
-		ReflectionUtils.setAccessibleField(targetField);
-		if (isInvokerSetter()) {
-			ReflectionUtils.setFieldValue(targetClass, targetField, target, value);
-		} else {
-			targetField.set(target, value);
+			fieldContext.getField().getSetter().set(target, value);
 		}
 	}
 
-	public <T> void copy(Class<? extends T> targetClass, T target, Object source) throws Exception {
-		Class<?> clazz = targetClass;
-		while (clazz != null && clazz != Object.class) {
-			for (Field field : getFields(clazz)) {
-				copy(targetClass, field, source, target);
-			}
-			clazz = clazz.getSuperclass();
-		}
-	}
-
-	public <T> T copy(Class<? extends T> targetClass, Object source) throws Exception {
+	public <T> T copy(Class<? extends T> targetClass, Object source, FieldContext parentContext,
+			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) throws Exception {
 		if (!getInstanceFactory().isInstance(targetClass)) {
 			return (T) source;
 		}
@@ -157,11 +135,12 @@ public class Copy {
 			return target;
 		}
 
-		copy(targetClass, target, source);
+		copy(targetClass, target, source, parentContext, filter, fieldFilterTypes);
 		return target;
 	}
 
-	public <T> T clone(T source) throws Exception {
+	public <T> T copy(T source, FieldContext parentContext, FieldContextFilter filter,
+			FieldFilterType... fieldFilterTypes) throws Exception {
 		if (source == null) {
 			return null;
 		}
@@ -178,10 +157,58 @@ public class Copy {
 		if (sourceClass.isPrimitive() || sourceClass.isEnum()) {
 			return source;
 		} else if (sourceClass.isArray()) {
-			return (T) cloneArray(sourceClass, source);
+			return (T) cloneArray(sourceClass, source, parentContext, filter, fieldFilterTypes);
 		} else if (isInvokeCloneableMethod() && source instanceof Cloneable) {
 			return (T) CLONE_METOHD.invoke(source);
 		}
-		return copy(sourceClass, source);
+		return copy(sourceClass, source, parentContext, filter, fieldFilterTypes);
+	}
+	
+	
+	private static final Copy DEFAULT_COPY = new Copy();
+	private static final Copy CLONE_COPY = new Copy();
+	private static final Copy INVOKER_SETTER_COPY = new Copy();
+
+	static {
+		CLONE_COPY.setClone(true);
+	}
+	
+	public static <T> T clone(T source, FieldContextFilter filter, FieldFilterType... fieldFilterTypes) {
+		try {
+			return CLONE_COPY.copy(source, null, filter, fieldFilterTypes);
+		} catch (Exception e) {
+			throw new NestedRuntimeException("clone error", e);
+		}
+	}
+
+	public static <T> T clone(T source) {
+		return clone(source, null, FieldFilterType.GETTER_IGNORE_STATIC, FieldFilterType.SETTER_IGNORE_STATIC);
+	}
+
+	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldContextFilter filter,
+			FieldFilterType... fieldFilterTypes) {
+		try {
+			return DEFAULT_COPY.copy(targetClass, source, null, filter, fieldFilterTypes);
+		} catch (Exception e) {
+			throw new NestedRuntimeException("copy error", e);
+		}
+	}
+
+	public static <T> T copy(Class<? extends T> targetClass, Object source) {
+		return copy(targetClass, source, null, FieldFilterType.GETTER_IGNORE_STATIC,
+				FieldFilterType.SETTER_IGNORE_STATIC);
+	}
+
+	public static void copy(Object target, Object source, FieldContextFilter filter,
+			FieldFilterType... fieldFilterTypes) {
+		try {
+			INVOKER_SETTER_COPY.copy(target.getClass(), target, source, null, filter, fieldFilterTypes);
+		} catch (Exception e) {
+			throw new NestedRuntimeException("copy error", e);
+		}
+	}
+
+	public static void copy(Object target, Object source) {
+		copy(target, source, null, FieldFilterType.GETTER_IGNORE_STATIC, FieldFilterType.SETTER_IGNORE_STATIC);
 	}
 }

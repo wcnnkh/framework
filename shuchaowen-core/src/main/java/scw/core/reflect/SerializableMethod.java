@@ -41,4 +41,9 @@ public class SerializableMethod implements Serializable {
 	public Class<?>[] getParameterTypes() {
 		return parameterTypes;
 	}
+	
+	@Override
+	public String toString() {
+		return getMethod().toString();
+	}
 }

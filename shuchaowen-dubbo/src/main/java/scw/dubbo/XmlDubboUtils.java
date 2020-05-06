@@ -20,6 +20,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Service;
 import scw.beans.xml.XmlBeanUtils;
+import scw.core.Copy;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.PropertyMapper;
@@ -49,7 +50,7 @@ public final class XmlDubboUtils {
 		List<RegistryConfig> list = new LinkedList<RegistryConfig>();
 		String[] addressArray = StringUtils.commonSplit(XmlBeanUtils.getAddress(propertyFactory, node));
 		for (String address : addressArray) {
-			RegistryConfig config = InstanceUtils.copy(RegistryConfig.class, registryConfig);
+			RegistryConfig config = Copy.copy(RegistryConfig.class, registryConfig);
 			config.setAddress(address);
 			list.add(config);
 		}
@@ -115,7 +116,7 @@ public final class XmlDubboUtils {
 					Object ref = beanFactory.getInstance(clz);
 					for (Class<?> i : interfaces) {
 						@SuppressWarnings("unchecked")
-						ServiceConfig<Object> config = InstanceUtils.copy(ServiceConfig.class, serviceConfig);
+						ServiceConfig<Object> config = Copy.copy(ServiceConfig.class, serviceConfig);
 						config.setInterface(i);
 						config.setRef(ref);
 						serviceConfigs.add(config);
@@ -150,7 +151,7 @@ public final class XmlDubboUtils {
 					continue;
 				}
 
-				ReferenceConfig<?> referenceConfig = InstanceUtils.copy(ReferenceConfig.class, config);
+				ReferenceConfig<?> referenceConfig = Copy.copy(ReferenceConfig.class, config);
 				referenceConfig.setInterface(clz);
 				referenceConfigs.add(referenceConfig);
 			}

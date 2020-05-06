@@ -2,7 +2,7 @@ package scw.beans.property;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.annotation.Configuration;
-import scw.core.reflect.FieldDefinition;
+import scw.core.reflect.FieldContext;
 import scw.util.value.Value;
 import scw.util.value.property.PropertyFactory;
 
@@ -10,13 +10,13 @@ import scw.util.value.property.PropertyFactory;
 public class PropertyFactoryFormat implements ValueFormat {
 
 	public Object format(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, FieldDefinition field, String name) {
+			PropertyFactory propertyFactory, FieldContext fieldContext, String name) {
 		Value value = propertyFactory.get(name);
 		if (value == null) {
 			return null;
 		}
 
-		return value.getAsObject(field.getField().getGenericType());
+		return value.getAsObject(fieldContext.getField().getSetter().getGenericType());
 	}
 
 }

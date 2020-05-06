@@ -2,7 +2,7 @@ package scw.mvc.action.logger.db;
 
 import java.util.Map.Entry;
 
-import scw.core.instance.InstanceUtils;
+import scw.core.Copy;
 import scw.core.utils.CollectionUtils;
 import scw.db.AsyncExecute;
 import scw.db.DB;
@@ -17,7 +17,7 @@ public class LogAsyncSave implements AsyncExecute {
 	}
 
 	public void execute(DB db) {
-		LogTable logTable = InstanceUtils.copy(LogTable.class, log);
+		LogTable logTable = Copy.copy(LogTable.class, log);
 		db.save(logTable);
 		
 		if(!CollectionUtils.isEmpty(log.getAttributeMap())){
