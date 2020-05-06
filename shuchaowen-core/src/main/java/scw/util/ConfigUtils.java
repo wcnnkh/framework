@@ -22,6 +22,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.core.StringFormat;
+import scw.core.reflect.FieldContext;
+import scw.core.reflect.FieldFilterType;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -44,12 +46,12 @@ public final class ConfigUtils {
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
-			Field field = ReflectionUtils.getField(clz, entry.getKey(), true);
-			if (field == null) {
+			FieldContext fieldContext = ReflectionUtils.getFieldFactory().getFieldContext(clz, entry.getKey(), FieldFilterType.SUPPORT_SETTER);
+			if (fieldContext == null) {
 				continue;
 			}
 
-			ReflectionUtils.setFieldValue(clz, field, t, ValueUtils.parse(entry.getValue(), field.getGenericType()));
+			ReflectionUtils.setStringValue(fieldContext, t, entry.getValue());
 		}
 		return t;
 	}
@@ -163,14 +165,14 @@ public final class ConfigUtils {
 		try {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				String key = stringFormat.format(entry.getKey().toString());
-				Field field = ReflectionUtils.getField(obj.getClass(), key, true);
-				if (field == null) {
+				FieldContext fieldContext = ReflectionUtils.getFieldFactory().getFieldContext(obj.getClass(), key);
+				if (fieldContext == null) {
 					continue;
 				}
 
 				String value = entry.getValue() == null ? null : entry.getValue().toString();
 				value = stringFormat.format(value);
-				ReflectionUtils.setFieldValueAutoType(obj.getClass(), field, obj, value);
+				ReflectionUtils.setStringValue(fieldContext, obj, value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

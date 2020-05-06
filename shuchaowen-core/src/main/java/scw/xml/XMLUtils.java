@@ -6,9 +6,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +38,8 @@ import org.xml.sax.SAXException;
 import scw.core.Converter;
 import scw.core.StringFormat;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.reflect.FieldContext;
+import scw.core.reflect.FieldFilterType;
 import scw.core.reflect.PropertyMapper;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
@@ -482,13 +482,9 @@ public final class XMLUtils {
 			if (ignoreNode(n)) {
 				continue;
 			}
-
-			Field field = ReflectionUtils.getField(type, n.getNodeName(), true);
-			if (field == null) {
-				continue;
-			}
-
-			if (Modifier.isStatic(field.getModifiers())) {
+			
+			FieldContext fieldContext = ReflectionUtils.getFieldFactory().getFieldContext(type, n.getNodeName(), FieldFilterType.SUPPORT_SETTER, FieldFilterType.SETTER_IGNORE_STATIC);
+			if (fieldContext == null) {
 				continue;
 			}
 
@@ -501,7 +497,7 @@ public final class XMLUtils {
 				t = instanceFactory.getInstance(type);
 			}
 
-			ReflectionUtils.setFieldValue(type, field, t, StringUtils.defaultAutoParse(value, field.getGenericType()));
+			ReflectionUtils.setStringValue(fieldContext, t, value);
 		}
 		return t;
 	}

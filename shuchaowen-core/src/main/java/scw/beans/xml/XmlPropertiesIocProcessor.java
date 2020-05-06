@@ -1,9 +1,9 @@
 package scw.beans.xml;
 
-import java.lang.reflect.Field;
-
 import scw.beans.BeanFactory;
 import scw.beans.ioc.IocProcessor;
+import scw.core.reflect.FieldContext;
+import scw.core.reflect.FieldFilterType;
 import scw.core.reflect.ReflectionUtils;
 import scw.util.value.property.PropertyFactory;
 
@@ -19,18 +19,14 @@ public class XmlPropertiesIocProcessor implements IocProcessor {
 
 	public Object process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
-		Field field = ReflectionUtils.getField(targetClass,
-				xmlBeanParameter.getDisplayName(), true);
-		if (field == null) {
+		FieldContext fieldContext = ReflectionUtils.getFieldFactory().getFieldContext(targetClass, xmlBeanParameter.getDisplayName(), FieldFilterType.SUPPORT_SETTER);
+		if(fieldContext == null){
 			return null;
 		}
 
-		return ReflectionUtils.setFieldValue(
-				targetClass,
-				field,
-				bean,
-				xmlBeanParameter.parseValue(beanFactory, propertyFactory,
-						field.getGenericType()));
+		fieldContext.getField().getSetter().set(bean, xmlBeanParameter.parseValue(beanFactory, propertyFactory,
+						fieldContext.getField().getSetter().getGenericType()));
+		return null;
 	}
 
 	public boolean isGlobal() {

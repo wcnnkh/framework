@@ -37,10 +37,11 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 		return Collections.unmodifiableCollection(fields);
 	}
 
-	protected boolean acceptInternal(FieldContext fieldContext, FieldContextFilter filter, FieldFilterType ...fieldFilterTypes) {
-		if(fieldFilterTypes != null && fieldFilterTypes.length != 0){
-			for(FieldFilterType fieldFilterType : fieldFilterTypes){
-				if(!fieldFilterType.getFilter().accept(fieldContext)){
+	protected boolean acceptInternal(FieldContext fieldContext, FieldContextFilter filter,
+			FieldFilterType... fieldFilterTypes) {
+		if (fieldFilterTypes != null && fieldFilterTypes.length != 0) {
+			for (FieldFilterType fieldFilterType : fieldFilterTypes) {
+				if (!fieldFilterType.getFilter().accept(fieldContext)) {
 					return false;
 				}
 			}
@@ -49,63 +50,69 @@ public abstract class AbstractFieldFactory implements FieldFactory {
 	}
 
 	public LinkedList<FieldContext> getFieldContexts(Class<?> clazz, FieldContext parentContext,
-			FieldContextFilter filter, FieldFilterType ...fieldFilterTypes) {
+			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) {
 		LinkedList<FieldContext> list = new LinkedList<FieldContext>();
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
 			for (scw.core.reflect.Field field : getFields(classToUse)) {
-				FieldContext fieldContext = new FieldContext(parentContext, field, clazz);
+				FieldContext fieldContext = createFieldContext(parentContext, field, clazz);
 				if (acceptInternal(fieldContext, filter, fieldFilterTypes)) {
 					list.add(fieldContext);
 				}
 			}
-			classToUse = clazz.getSuperclass();
+			classToUse = classToUse.getSuperclass();
 		}
 		return list;
 	}
 
-	public FieldContext getFieldContext(Class<?> clazz, FieldContext parentContext, FieldContextFilter filter, FieldFilterType ...fieldFilterTypes) {
+	protected FieldContext createFieldContext(FieldContext parentContext, Field field, Class<?> declaringClass) {
+		return new FieldContext(parentContext, field, declaringClass);
+	}
+
+	public FieldContext getFieldContext(Class<?> clazz, FieldContext parentContext, FieldContextFilter filter,
+			FieldFilterType... fieldFilterTypes) {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
 			for (scw.core.reflect.Field field : getFields(classToUse)) {
-				FieldContext fieldContext = new FieldContext(parentContext, field, clazz);
+				FieldContext fieldContext = createFieldContext(parentContext, field, clazz);
 				if (acceptInternal(fieldContext, filter, fieldFilterTypes)) {
 					return fieldContext;
 				}
 			}
-			classToUse = clazz.getSuperclass();
+			classToUse = classToUse.getSuperclass();
 		}
 		return null;
 	}
 
-	public FieldContext getFieldContext(Class<?> clazz, String name, FieldFilterType ...fieldFilterTypes) {
+	public FieldContext getFieldContext(Class<?> clazz, String name, FieldFilterType... fieldFilterTypes) {
 		return getFieldContext(clazz, name, null, fieldFilterTypes);
 	}
 
-	public FieldContext getFieldContext(Class<?> clazz, final String name, FieldContext parentContext, final FieldFilterType ...fieldFilterTypes) {
+	public FieldContext getFieldContext(Class<?> clazz, final String name, FieldContext parentContext,
+			final FieldFilterType... fieldFilterTypes) {
 		return getFieldContext(clazz, parentContext, new FieldContextFilter() {
-			
+
 			public boolean accept(FieldContext fieldContext) {
-				if(!acceptInternal(fieldContext, null, fieldFilterTypes)){
+				if (!acceptInternal(fieldContext, null, fieldFilterTypes)) {
 					return false;
 				}
-				
-				if(fieldContext.getField().isSupportGetter()){
-					if(fieldContext.getField().getGetter().getName().equals(name)){
+
+				if (fieldContext.getField().isSupportGetter()) {
+					if (fieldContext.getField().getGetter().getName().equals(name)) {
 						return true;
 					}
-					
-					if(fieldContext.getField().getGetter().getDisplayName().equals(name)){
+
+					if (fieldContext.getField().getGetter().getDisplayName().equals(name)) {
 						return true;
 					}
 				}
-				
-				if(fieldContext.getField().isSupportSetter()){
-					if(fieldContext.getField().getSetter().getName().equals(name)){
+
+				if (fieldContext.getField().isSupportSetter()) {
+					if (fieldContext.getField().getSetter().getName().equals(name)) {
 						return true;
 					}
-					
-					if(fieldContext.getField().getSetter().getDisplayName().equals(name)){
+
+					if (fieldContext.getField().getSetter().getDisplayName().equals(name)) {
 						return true;
 					}
 				}

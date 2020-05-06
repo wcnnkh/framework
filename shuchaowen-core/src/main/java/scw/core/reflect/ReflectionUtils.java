@@ -811,35 +811,18 @@ public abstract class ReflectionUtils {
 		}
 
 		for (Entry<String, V> entry : properties.entrySet()) {
-			Method[] methods = findSetterMethods(type, entry.getKey(), true);
-			if (methods == null) {
-				Field field = getField(type, entry.getKey(), true);
-				if (field == null) {
-					continue;
-				}
-
+			FieldContext fieldContext = getFieldFactory().getFieldContext(type, entry.getKey(), FieldFilterType.SUPPORT_SETTER);
+			if (fieldContext != null) {
 				Object value;
 				try {
 					value = mapper.mapper(entry.getKey(), entry.getValue(), type);
-					field.set(bean, value);
+					fieldContext.getField().getSetter().set(bean, value);
 				} catch (Exception e) {
 					FormatUtils.warn(ReflectUtils.class, "向对象{}，插入name={},value={}时异常", type.getName(), entry.getKey(),
 							entry.getValue());
 					e.printStackTrace();
 				}
 				continue;
-			}
-
-			for (Method method : methods) {
-				Object value;
-				try {
-					value = mapper.mapper(entry.getKey(), entry.getValue(), method.getParameterTypes()[0]);
-					method.invoke(bean, value);
-				} catch (Exception e) {
-					FormatUtils.warn(ReflectUtils.class, "向对象{}，插入name={},value={}时异常(调用set方法)", type.getName(),
-							entry.getKey(), entry.getValue());
-					e.printStackTrace();
-				}
 			}
 		}
 	}
@@ -1195,108 +1178,6 @@ public abstract class ReflectionUtils {
 		return null;
 	}
 
-	public static Method findGetterMethod(Class<?> clazz, String fieldName, boolean sup) {
-		Method find = null;
-		Class<?> clz = clazz;
-		while (clz != null && clz != Object.class) {
-			for (Method method : clz.getDeclaredMethods()) {
-				if (method.getParameterTypes().length != 0) {
-					continue;
-				}
-
-				if (TypeUtils.isBoolean(method.getReturnType())) {
-					String methodNameSuffix = fieldName;
-					if (fieldName.startsWith("is")) {
-						methodNameSuffix = fieldName.substring(2);
-					}
-
-					if (method.getName().equals("is" + StringUtils.toUpperCase(methodNameSuffix, 0, 1))) {
-						find = method;
-					} else if (method.getName().equals("is" + StringUtils.toUpperCase(fieldName, 0, 1))) {
-						find = method;
-					}
-
-					if (find != null && fieldName.startsWith("is")) {
-						FormatUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
-								fieldName);
-					}
-				} else {
-					if (method.getName().equals("get" + StringUtils.toUpperCase(fieldName, 0, 1))) {
-						find = method;
-					}
-				}
-
-				if (find != null) {
-					find.setAccessible(true);
-					break;
-				}
-			}
-
-			if (find != null) {
-				break;
-			}
-
-			if (sup) {
-				clz = clz.getSuperclass();
-			} else {
-				break;
-			}
-		}
-		return find;
-	}
-
-	public static Method[] findSetterMethods(Class<?> clazz, String fieldName, boolean sup) {
-		LinkedList<Method> methods = new LinkedList<Method>();
-		Class<?> clz = clazz;
-		while (clz != null && clz != Object.class) {
-			for (Method method : clz.getDeclaredMethods()) {
-				if (method.getParameterTypes().length != 1) {
-					continue;
-				}
-
-				Method find = null;
-				if (TypeUtils.isBoolean(method.getParameterTypes()[0])) {
-					String methodNameSuffix = fieldName;
-					if (fieldName.startsWith("is")) {
-						methodNameSuffix = fieldName.substring(2);
-					}
-
-					if (method.getName().equals("set" + StringUtils.toUpperCase(methodNameSuffix, 0, 1))) {
-						find = method;
-					} else if (method.getName().equals("set" + StringUtils.toUpperCase(fieldName, 0, 1))) {
-						find = method;
-					}
-
-					if (find != null && fieldName.startsWith("is")) {
-						FormatUtils.warn(ReflectUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
-								fieldName);
-					}
-				} else {
-					if (method.getName().equals("set" + StringUtils.toUpperCase(fieldName, 0, 1))) {
-						find = method;
-					}
-				}
-
-				if (find != null) {
-					find.setAccessible(true);
-					methods.add(find);
-				}
-			}
-
-			if (sup) {
-				clz = clz.getSuperclass();
-			} else {
-				break;
-			}
-		}
-		return methods.isEmpty() ? null : methods.toArray(new Method[methods.size()]);
-	}
-
-	public static Method findSetterMethod(Class<?> clz, String fieldName, boolean sup) {
-		Method[] methods = findSetterMethods(clz, fieldName, sup);
-		return methods == null ? null : methods[0];
-	}
-
 	public static Method getGetterMethod(Class<?> clazz, Field field) {
 		Method getter = null;
 		Class<?> clz = clazz;
@@ -1418,23 +1299,8 @@ public abstract class ReflectionUtils {
 		}
 	}
 
-	public static Object getFieldValue(Class<?> clz, Object obj, Field field) throws Exception {
-		Method method = getGetterMethod(clz, field);
-		try {
-			if (method == null) {
-				setAccessibleField(field);
-				return field.get(obj);
-			} else {
-				return method.invoke(obj);
-			}
-		} catch (Exception e) {
-			FormatUtils.warn(ReflectUtils.class, "获取对象{}中field={}时值时异常", clz.getName(), field.getName());
-			throw e;
-		}
-	}
-
-	public static Object setFieldValueAutoType(Class<?> clz, Field field, Object obj, String value) throws Exception {
-		return setFieldValue(clz, field, obj, ValueUtils.parse(value, field.getGenericType()));
+	public static void setStringValue(FieldContext fieldContext, Object instance, String value) throws Exception{
+		fieldContext.getField().getSetter().set(instance, ValueUtils.parse(value, fieldContext.getField().getSetter().getGenericType()));
 	}
 
 	/**
@@ -1466,53 +1332,12 @@ public abstract class ReflectionUtils {
 		return true;
 	}
 
-	public static Long getSerialVersionUID(Class<?> clz) {
-		Field field;
-		try {
-			field = clz.getDeclaredField("serialVersionUID");
-			if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
-				field.setAccessible(true);
-				return field.getLong(null);
-			}
-		} catch (Exception ex) {
-		}
-		return null;
-	}
-
-	public static Field[] getDeclaredFields(Class<?> clazz) {
-		return getFields(clazz, true);
-	}
-
-	public static Field[] getFields(Class<?> clazz, boolean declared) {
-		Field[] fields = null;
-		try {
-			fields = declared ? clazz.getDeclaredFields() : clazz.getFields();
-		} catch (Throwable e) {
-			// ingore
-		}
-
-		if (fields == null) {
-			fields = new Field[0];
-		}
-		return fields;
-	}
-
 	public static Method[] getMethods(Class<?> clazz, boolean declared) {
-		Method[] methods = null;
-		try {
-			methods = declared ? clazz.getDeclaredMethods() : clazz.getMethods();
-		} catch (Throwable e) {
-			// ingore
-		}
-
+		Method[] methods = declared ? clazz.getDeclaredMethods() : clazz.getMethods();
 		if (methods == null) {
 			methods = new Method[0];
 		}
 		return methods;
-	}
-
-	public static Method[] getDeclaredMethods(Class<?> clazz) {
-		return getMethods(clazz, true);
 	}
 
 	public static Object invokeStaticMethod(Class<?> clazz, String name, Class<?>[] parameterTypes, Object... params)

@@ -20,7 +20,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -32,7 +31,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -2716,7 +2714,7 @@ public abstract class AnnotationUtils {
 
 	private static void appendAnnoationMethod(Map<String, Method> methodMap, Class<?> type,
 			Class<? extends Annotation> annotationClass) {
-		for (Method method : ReflectionUtils.getDeclaredMethods(type)) {
+		for (Method method : ReflectionUtils.getMethods(type, true)) {
 			if (isDeprecated(method)) {
 				continue;
 			}
@@ -2748,32 +2746,6 @@ public abstract class AnnotationUtils {
 
 	public static boolean isDeprecated(AnnotatedElement annotatedElement) {
 		return annotatedElement.getAnnotation(Deprecated.class) != null;
-	}
-
-	public static LinkedList<Field> getAnnotationFieldList(Class<?> clazz, boolean isDeclared, boolean sup,
-			Class<? extends Annotation> annotationClass) {
-		Class<?> clz = clazz;
-		LinkedList<Field> fieldList = new LinkedList<Field>();
-		while (clz != null && clz != Object.class) {
-			for (Field field : ReflectionUtils.getFields(clz, isDeclared)) {
-				if (isDeprecated(field)) {
-					continue;
-				}
-
-				Annotation annotation = field.getAnnotation(annotationClass);
-				if (annotation == null) {
-					continue;
-				}
-
-				fieldList.add(field);
-				if (sup) {
-					clz = clz.getSuperclass();
-				} else {
-					break;
-				}
-			}
-		}
-		return fieldList;
 	}
 
 	@SuppressWarnings("unchecked")

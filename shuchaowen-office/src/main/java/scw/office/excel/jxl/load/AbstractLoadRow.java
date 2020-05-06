@@ -1,11 +1,12 @@
 package scw.office.excel.jxl.load;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import scw.core.instance.InstanceUtils;
+import scw.core.reflect.FieldContext;
+import scw.core.reflect.FieldFilterType;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.AlreadyExistsException;
@@ -56,17 +57,17 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 			try {
 				T obj = InstanceUtils.NO_ARGS_INSTANCE_FACTORY.getInstance(type);
 				for (Entry<String, Integer> entry : nameMapping.entrySet()) {
-					Field field = ReflectionUtils.getField(type, entry.getKey(), true);
-					if (field == null) {
+					FieldContext fieldContext = ReflectionUtils.getFieldFactory().getFieldContext(type, entry.getKey(), FieldFilterType.SUPPORT_SETTER);
+					if (fieldContext == null) {
 						continue;
 					}
 
-					Object value = format(entry.getKey(), contents[entry.getValue()], field.getGenericType());
+					Object value = format(entry.getKey(), contents[entry.getValue()], fieldContext.getField().getSetter().getGenericType());
 					if (value == null) {
 						continue;
 					}
 
-					ReflectionUtils.setFieldValue(type, field, obj, value);
+					fieldContext.getField().getSetter().set(obj, value);
 				}
 
 				if (obj == null) {
