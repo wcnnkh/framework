@@ -6,7 +6,7 @@ import scw.core.Assert;
 import scw.util.cache.CacheLoader;
 import scw.util.cache.LocalCacheType;
 
-public class DefaultFieldFactory extends AbstractFieldFactory {
+public class DefaultFieldFactory extends FieldFactory {
 	private Collection<String> getterMethodPrefix;
 	private Collection<String> setterMethodPrefix;
 

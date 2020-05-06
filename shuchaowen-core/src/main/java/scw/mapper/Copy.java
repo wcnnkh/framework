@@ -73,10 +73,10 @@ public class Copy {
 		return clazz.getDeclaredFields();
 	}
 
-	protected Object cloneArray(Class<?> sourceType, Object array, FieldContext parentContext,
+	protected Object cloneArray(Class<?> sourceClass, Object array, FieldContext parentContext,
 			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) throws Exception {
 		int size = Array.getLength(array);
-		Object newArr = Array.newInstance(sourceType.getComponentType(), size);
+		Object newArr = Array.newInstance(sourceClass.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
 			Array.set(newArr, i, copy(Array.get(array, i), parentContext, filter, fieldFilterTypes));
 		}
@@ -88,7 +88,7 @@ public class Copy {
 				FieldFilterType.SUPPORT_GETTER);
 	}
 
-	public <T> void copy(Class<? extends T> targetClass, T target, Object source, FieldContext parentContext,
+	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source, FieldContext parentContext,
 			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) throws Exception {
 		for (FieldContext fieldContext : fieldFactory.getFieldContexts(targetClass, parentContext, null,
 				fieldFilterTypes)) {
@@ -96,7 +96,7 @@ public class Copy {
 				continue;
 			}
 
-			FieldContext sourceField = getSourceField(source.getClass(), fieldContext);
+			FieldContext sourceField = getSourceField(targetClass, fieldContext);
 			if (sourceField == null) {
 				continue;
 			}
@@ -120,7 +120,7 @@ public class Copy {
 		}
 	}
 
-	public <T> T copy(Class<? extends T> targetClass, Object source, FieldContext parentContext,
+	public <T, S> T copy(Class<? extends T> targetClass, Class<? extends S> sourceClass, S source, FieldContext parentContext,
 			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) throws Exception {
 		if (!getInstanceFactory().isInstance(targetClass)) {
 			return (T) source;
@@ -131,7 +131,7 @@ public class Copy {
 			return target;
 		}
 
-		copy(targetClass, target, source, parentContext, filter, fieldFilterTypes);
+		copy(targetClass, target, sourceClass, source, parentContext, filter, fieldFilterTypes);
 		return target;
 	}
 
@@ -157,7 +157,7 @@ public class Copy {
 		} else if (isInvokeCloneableMethod() && source instanceof Cloneable) {
 			return (T) CLONE_METOHD.invoke(source);
 		}
-		return copy(sourceClass, source, parentContext, filter, fieldFilterTypes);
+		return copy(sourceClass, sourceClass, source, parentContext, filter, fieldFilterTypes);
 	}
 	
 	
@@ -184,7 +184,7 @@ public class Copy {
 	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldContextFilter filter,
 			FieldFilterType... fieldFilterTypes) {
 		try {
-			return DEFAULT_COPY.copy(targetClass, source, null, filter, fieldFilterTypes);
+			return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null, filter, fieldFilterTypes);
 		} catch (Exception e) {
 			throw new NestedRuntimeException("copy error", e);
 		}
@@ -198,7 +198,7 @@ public class Copy {
 	public static void copy(Object target, Object source, FieldContextFilter filter,
 			FieldFilterType... fieldFilterTypes) {
 		try {
-			INVOKER_SETTER_COPY.copy(target.getClass(), target, source, null, filter, fieldFilterTypes);
+			INVOKER_SETTER_COPY.copy(target.getClass(), target, source.getClass(), source, null, filter, fieldFilterTypes);
 		} catch (Exception e) {
 			throw new NestedRuntimeException("copy error", e);
 		}

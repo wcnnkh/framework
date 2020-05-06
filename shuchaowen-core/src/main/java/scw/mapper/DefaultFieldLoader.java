@@ -122,8 +122,8 @@ public class DefaultFieldLoader implements
 		return setters;
 	}
 
-	protected <T extends FieldMetadata> T metadataFindAndRemove(
-			FieldMetadata fieldMetadata, Collection<T> metadatas) {
+	protected <T extends FieldDescriptor> T metadataFindAndRemove(
+			FieldDescriptor fieldMetadata, Collection<T> metadatas) {
 		Iterator<T> iterator = metadatas.iterator();
 		while (iterator.hasNext()) {
 			T t = iterator.next();

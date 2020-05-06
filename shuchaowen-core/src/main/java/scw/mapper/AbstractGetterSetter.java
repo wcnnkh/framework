@@ -1,6 +1,5 @@
 package scw.mapper;
 
-import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -11,8 +10,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.reflect.SerializableField;
 import scw.core.reflect.SerializableMethod;
 
-abstract class AbstractGetterSetter extends AbstractFieldMetadata
-		implements Serializable {
+abstract class AbstractGetterSetter extends AbstractFieldDescriptor{
 	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final SerializableField field;

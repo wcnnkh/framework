@@ -3,11 +3,12 @@ package scw.mapper;
 import scw.lang.Description;
 import scw.lang.NotSupportedException;
 
-public abstract class AbstractFieldMetadata
-		implements FieldMetadata {
+public abstract class AbstractFieldDescriptor
+		implements FieldDescriptor {
+	private static final long serialVersionUID = 1L;
 	private final Class<?> declaringClass;
 
-	public AbstractFieldMetadata(Class<?> declaringClass) {
+	public AbstractFieldDescriptor(Class<?> declaringClass) {
 		this.declaringClass = declaringClass;
 	}
 
@@ -36,9 +37,9 @@ public abstract class AbstractFieldMetadata
 			return true;
 		}
 
-		if (obj instanceof FieldMetadata) {
-			return ((FieldMetadata) obj).getType() == getType()
-					&& ((FieldMetadata) obj).getName().equals(
+		if (obj instanceof FieldDescriptor) {
+			return ((FieldDescriptor) obj).getType() == getType()
+					&& ((FieldDescriptor) obj).getName().equals(
 							getName());
 		}
 		return false;

@@ -1,11 +1,11 @@
 package scw.mapper;
 
+import java.io.Serializable;
+
 import scw.core.parameter.ParameterDescriptor;
 
-public interface FieldMetadata extends ParameterDescriptor{
+public interface FieldDescriptor extends ParameterDescriptor, Serializable{
 	Class<?> getDeclaringClass();
-	
-	String getDescription();
 	
 	boolean equals(Object obj);
 	

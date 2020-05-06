@@ -70,7 +70,7 @@ public abstract class AbstractMapper implements Mapper {
 
 	protected abstract Object getValue(FieldContext fieldContext);
 
-	protected String getDisplayName(FieldMetadata fieldMetadata) {
+	protected String getDisplayName(FieldDescriptor fieldMetadata) {
 		return ParameterUtils.getDisplayName(fieldMetadata);
 	}
 
@@ -79,7 +79,7 @@ public abstract class AbstractMapper implements Mapper {
 			return getDisplayName(fieldContext.getField().getSetter());
 		}
 
-		LinkedList<FieldMetadata> fieldMetadatas = new LinkedList<FieldMetadata>();
+		LinkedList<FieldDescriptor> fieldMetadatas = new LinkedList<FieldDescriptor>();
 		FieldContext parent = fieldContext;
 		while (parent != null) {
 			fieldMetadatas.add(parent.getField().getSetter());
@@ -87,9 +87,9 @@ public abstract class AbstractMapper implements Mapper {
 		}
 
 		StringBuilder sb = new StringBuilder();
-		ListIterator<FieldMetadata> iterator = fieldMetadatas.listIterator(fieldMetadatas.size());
+		ListIterator<FieldDescriptor> iterator = fieldMetadatas.listIterator(fieldMetadatas.size());
 		while (iterator.hasPrevious()) {
-			FieldMetadata fieldMetadata = iterator.next();
+			FieldDescriptor fieldMetadata = iterator.next();
 			sb.append(getDisplayName(fieldMetadata));
 			if (iterator.hasPrevious()) {
 				sb.append(".");
