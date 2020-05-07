@@ -30,6 +30,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;
+import scw.embed.annotation.ErrorCodeController;
 import scw.embed.servlet.FilterConfiguration;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
 import scw.embed.servlet.ServletEmbedded;
@@ -37,6 +38,11 @@ import scw.embed.servlet.support.RootServletContainerInitializerConfiguration;
 import scw.embed.servlet.support.ServletRootFilterConfiguration;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mvc.action.Action;
+import scw.mvc.action.manager.ActionManager;
+import scw.mvc.action.manager.HttpAction;
+import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
+import scw.net.http.HttpMethod;
 import scw.servlet.MultiFilter;
 import scw.util.value.property.PropertyFactory;
 
@@ -102,11 +108,46 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 						propertyFactory)) {
 			addFilter(context, filterConfiguration);
 		}
-		
-		for(ErrorPage errorPage : InstanceUtils.getConfigurationList(ErrorPage.class, beanFactory, propertyFactory)){
-			context.addErrorPage(errorPage);
-		}
+
+		addErrorPage(context, beanFactory, propertyFactory);
 		return context;
+	}
+	
+	private void addErrorPage(Context context, BeanFactory beanFactory, PropertyFactory propertyFactory){
+		if(beanFactory.isInstance(ActionManager.class)){
+			for(Action action : beanFactory.getInstance(ActionManager.class).getActions()){
+				if(!(action instanceof HttpAction)){
+					continue;
+				}
+				
+				HttpAction httpAction = (HttpAction) action;
+				ErrorCodeController errorCodeController = httpAction.getMethodAnnotatedElement().getAnnotation(ErrorCodeController.class);
+				if(errorCodeController == null){
+					continue;
+				}
+				
+				ControllerDescriptor controllerDescriptorToUse = null;
+				for(ControllerDescriptor controllerDescriptor : httpAction.getControllerDescriptors()){
+					if(controllerDescriptor.getHttpMethod() == HttpMethod.GET && !controllerDescriptor.getRestful().isRestful()){
+						controllerDescriptorToUse = controllerDescriptor;
+					}
+				}
+				
+				if(controllerDescriptorToUse == null){
+					logger.warn("not support error controller action: {}", action);
+					continue;
+				}
+				
+				if(errorCodeController != null){
+					for(int code : errorCodeController.value()){
+						ErrorPage errorPage = new ErrorPage();
+						errorPage.setErrorCode(code);
+						errorPage.setLocation(controllerDescriptorToUse.getController());
+						context.addErrorPage(errorPage);
+					}
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
