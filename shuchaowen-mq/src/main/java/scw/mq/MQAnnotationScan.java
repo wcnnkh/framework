@@ -38,7 +38,7 @@ public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {
 			Consumer c = method.getAnnotation(Consumer.class);
 			ConsumerFactory consumerFactory = beanFactory.getInstance(c
 					.factory());
-			logger.info("添加消费者：{}, name={}, factory={}", method, c.name(),
+			logger.info("add Consumer：{}, name={}, factory={}", method, c.name(),
 					c.factory());
 			consumerFactory.bindConsumer(
 					c.name(),
@@ -54,7 +54,7 @@ public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {
 			AmqpConsumer c = method.getAnnotation(AmqpConsumer.class);
 			Exchange mq = beanFactory.getInstance(c.exchangeService());
 			logger.info(
-					"添加消费者：{}, amqp routingKey={}, queueName={}, durable={}, exclusive={}, autoDelete={}",
+					"add AmqpConsumer：{}, amqp routingKey={}, queueName={}, durable={}, exclusive={}, autoDelete={}",
 					method, c.routingKey(), c.queueName(), c.durable(),
 					c.exclusive(), c.autoDelete());
 			mq.bindConsumer(
