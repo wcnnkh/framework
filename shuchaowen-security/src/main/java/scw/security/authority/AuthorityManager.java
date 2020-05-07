@@ -4,13 +4,23 @@ import java.util.Collection;
 import java.util.List;
 
 public interface AuthorityManager<T extends Authority> {
+	void register(T authority);
+	
 	T getAuthority(String id);
 
-	Collection<T> getAuthoritys();
+	List<T> getAuthorityList(AuthorityFilter<T> authorityFilter);
+	
+	List<T> getRootList(AuthorityFilter<T> authorityFilter);
+	
+	List<AuthorityTree<T>> getAuthorityTreeList(AuthorityFilter<T> authorityFilter);
 
-	List<T> getAuthoritySubList(String id);
+	List<T> getAuthoritySubList(String id, AuthorityFilter<T> authorityFilter);
+	
+	List<T> getParentList(String id, AuthorityFilter<T> authorityFilter);
 
-	List<AuthorityTree<T>> getAuthorityTreeList(String id);
+	List<AuthorityTree<T>> getAuthorityTreeList(String id, AuthorityFilter<T> authorityFilter);
 
-	void register(T authority);
+	List<AuthorityTree<T>> getRelationAuthorityTreeList(Collection<String> ids, AuthorityFilter<T> authorityFilter);
+	
+	List<T> getRelationAuthorityList(Collection<String> ids, AuthorityFilter<T> authorityFilter);
 }

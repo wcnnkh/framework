@@ -16,6 +16,7 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.JarScanner;
+import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 
@@ -100,6 +101,10 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 				.getConfigurationList(FilterConfiguration.class, beanFactory,
 						propertyFactory)) {
 			addFilter(context, filterConfiguration);
+		}
+		
+		for(ErrorPage errorPage : InstanceUtils.getConfigurationList(ErrorPage.class, beanFactory, propertyFactory)){
+			context.addErrorPage(errorPage);
 		}
 		return context;
 	}

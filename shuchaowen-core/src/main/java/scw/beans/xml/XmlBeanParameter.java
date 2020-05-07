@@ -11,14 +11,14 @@ import org.w3c.dom.Node;
 
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.instance.InstanceFactory;
-import scw.core.parameter.AbstractParameterDescriptor;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
 import scw.util.value.StringValue;
 import scw.util.value.Value;
 import scw.util.value.property.PropertyFactory;
 
-public final class XmlBeanParameter extends AbstractParameterDescriptor implements Cloneable, Serializable {
+public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final EParameterType parameterType;
 	private Class<?> type;

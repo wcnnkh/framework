@@ -24,6 +24,7 @@ import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
+import scw.mapper.support.ParameterFactoryMapper;
 import scw.mvc.annotation.Attribute;
 import scw.mvc.annotation.BigDecimalMultiply;
 import scw.mvc.annotation.DateFormat;
@@ -33,8 +34,8 @@ import scw.mvc.beans.ChannelBeanFactory;
 import scw.mvc.beans.DefaultChannelBeanFactory;
 import scw.mvc.parameter.RequestBodyParse;
 import scw.util.value.DefaultValueDefinition;
-import scw.util.value.StringValue;
 import scw.util.value.SimpleValueFactory;
+import scw.util.value.StringValue;
 import scw.util.value.Value;
 
 public abstract class AbstractChannel extends SimpleValueFactory implements Channel, Destroy {
@@ -176,8 +177,9 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 	}
 
 	protected Object getObjectIsNotBean(String name, Class<?> type) {
+		ParameterFactoryMapper mapper = new ParameterFactoryMapper(this, true, name);
 		try {
-			return ParameterUtils.createObjectByParameter(this, type, name);
+			return mapper.mapping(type, null);
 		} catch (Exception e) {
 			throw new ParameterException("name=" + name + ", type=" + type, e);
 		}
@@ -209,7 +211,7 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 			try {
 				return requestBodyParse.requestBodyParse(this, getJsonSupport(), parameterDescriptor);
 			} catch (Exception e) {
-				throw ParameterException.createError(parameterDescriptor.getDisplayName(), e);
+				throw ParameterException.createError(parameterDescriptor.getName(), e);
 			}
 		}
 
@@ -229,17 +231,17 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 		if (dateFormat != null) {
 			return dateFormat(dateFormat, parameterDescriptor);
 		}
-		
-		Value value = parameterDescriptor.getDefaultValue();
-		if(value != null){
+
+		Value value = ParameterUtils.getDefaultValue(parameterDescriptor);
+		if (value != null) {
 			return value.getAsObject(parameterDescriptor.getGenericType());
 		}
-		return getObject(parameterDescriptor.getDisplayName(), parameterDescriptor.getGenericType());
+		return getObject(parameterDescriptor.getName(), parameterDescriptor.getGenericType());
 	}
 
-	protected Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterConfig) {
-		String value = getString(parameterConfig.getDisplayName());
-		if (TypeUtils.isString(parameterConfig.getType())) {
+	protected Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterDescriptor) {
+		String value = getString(parameterDescriptor.getName());
+		if (TypeUtils.isString(parameterDescriptor.getType())) {
 			return StringUtils.isEmpty(value) ? value
 					: new SimpleDateFormat(dateFormat.value()).format(StringUtils.parseLong(value));
 		}
@@ -254,29 +256,30 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 			}
 		}
 
-		if (Date.class.isAssignableFrom(parameterConfig.getType())) {
+		if (Date.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return new Date(time);
-		} else if (TypeUtils.isLong(parameterConfig.getType())) {
+		} else if (TypeUtils.isLong(parameterDescriptor.getType())) {
 			return time;
-		} else if (TypeUtils.isInt(parameterConfig.getType())) {
+		} else if (TypeUtils.isInt(parameterDescriptor.getType())) {
 			return time / 1000;
-		} else if (Calendar.class == parameterConfig.getType()) {
+		} else if (Calendar.class == parameterDescriptor.getType()) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.setTimeInMillis(time);
 			return calendar;
 		}
-		throw new ParameterException("not support type [" + parameterConfig.getType() + "]");
+		throw new ParameterException("not support type [" + parameterDescriptor.getType() + "]");
 	}
 
-	protected Object bigDecimalMultiply(ParameterDescriptor parameterConfig, BigDecimalMultiply bigDecimalMultiply) {
-		String value = getString(parameterConfig.getDisplayName());
+	protected Object bigDecimalMultiply(ParameterDescriptor parameterDescriptor,
+			BigDecimalMultiply bigDecimalMultiply) {
+		String value = getString(parameterDescriptor.getName());
 		if (StringUtils.isEmpty(value)) {
-			return castBigDecimal(null, parameterConfig.getType());
+			return castBigDecimal(null, parameterDescriptor.getType());
 		}
 
 		BigDecimal a = new BigDecimal(value);
 		BigDecimal b = new BigDecimal(bigDecimalMultiply.value());
-		return castBigDecimal(a.multiply(b), parameterConfig.getType());
+		return castBigDecimal(a.multiply(b), parameterDescriptor.getType());
 	}
 
 	private Object castBigDecimal(BigDecimal bigDecimal, Class<?> type) {

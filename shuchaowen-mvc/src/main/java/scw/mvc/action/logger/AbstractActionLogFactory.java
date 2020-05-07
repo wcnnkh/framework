@@ -15,12 +15,10 @@ import scw.mvc.http.HttpRequest;
 public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	protected abstract String getIdentification(Action action, Channel channel);
 
-	protected abstract Map<String, String> getAttributeMap(Action action,
-			Channel channel);
+	protected abstract Map<String, String> getAttributeMap(Action action, Channel channel);
 
 	protected String getAttirubteValue(Channel channel, String name) {
-		return (String) channel.getParameter(new DefaultParameterDescriptor(name,
-				null, String.class, String.class));
+		return (String) channel.getParameter(new DefaultParameterDescriptor(name, String.class, String.class));
 	}
 
 	protected String getIp(Action action, Channel channel) {
@@ -31,18 +29,17 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 
 		return null;
 	}
-	
-	protected String getController(Channel channel, Action action){
-		if(action instanceof HttpAction){
-			for(ControllerDescriptor descriptor : ((HttpAction) action).getControllerDescriptors()){
+
+	protected String getController(Channel channel, Action action) {
+		if (action instanceof HttpAction) {
+			for (ControllerDescriptor descriptor : ((HttpAction) action).getControllerDescriptors()) {
 				return descriptor.getController();
 			}
 		}
 		return null;
 	}
-	
-	public ActionLog createActionLog(Action action, Channel channel,
-			Object response, Throwable error) {
+
+	public ActionLog createActionLog(Action action, Channel channel, Object response, Throwable error) {
 		ActionLogConfig logConfig = action.getAnnotatedElement().getAnnotation(ActionLogConfig.class);
 		if (logConfig != null && !logConfig.enable()) {
 			return null;
@@ -73,17 +70,15 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 		return log;
 	}
 
-	protected void setResponse(ActionLogConfig logConfig, Action action,
-			Channel channel, ActionLog log, Object response) {
+	protected void setResponse(ActionLogConfig logConfig, Action action, Channel channel, ActionLog log,
+			Object response) {
 		try {
 			if (logConfig != null && logConfig.response()) {
 				log.setResponseContentType(log.getResponseContentType());
-				log.setResponseBody(response == null ? null : JSONUtils
-						.toJSONString(response));
+				log.setResponseBody(response == null ? null : JSONUtils.toJSONString(response));
 			}
 		} catch (Throwable e) {
-			channel.getLogger().error(e, "logger response error:{}",
-					JSONUtils.toJSONString(log));
+			channel.getLogger().error(e, "logger response error:{}", JSONUtils.toJSONString(log));
 		}
 	}
 }

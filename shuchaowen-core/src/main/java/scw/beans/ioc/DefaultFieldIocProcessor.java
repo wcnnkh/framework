@@ -1,17 +1,17 @@
 package scw.beans.ioc;
 
-import scw.core.reflect.FieldDefinition;
+import scw.mapper.FieldContext;
 
 public abstract class DefaultFieldIocProcessor extends FieldIocProcessor {
-	private final FieldDefinition fieldDefinition;
+	private final FieldContext fieldContext;
 
-	public DefaultFieldIocProcessor(FieldDefinition fieldDefinition) {
-		this.fieldDefinition = fieldDefinition;
+	public DefaultFieldIocProcessor(FieldContext fieldContext) {
+		this.fieldContext = fieldContext;
 	}
 
 	@Override
-	public FieldDefinition getFieldDefinition() {
-		return fieldDefinition;
+	public FieldContext getFieldContext() {
+		return fieldContext;
 	}
 
 }

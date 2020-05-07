@@ -2,32 +2,32 @@ package scw.beans.ioc;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Config;
-import scw.core.reflect.FieldDefinition;
+import scw.mapper.FieldContext;
 import scw.util.value.property.PropertyFactory;
 
 public class ConfigIocProcessor extends DefaultFieldIocProcessor {
 
-	public ConfigIocProcessor(FieldDefinition fieldDefinition) {
-		super(fieldDefinition);
+	public ConfigIocProcessor(FieldContext fieldContext) {
+		super(fieldContext);
 	}
 
 	public Object process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
-		Config config = getFieldDefinition().getAnnotatedElement()
+		Config config = getFieldContext().getField().getSetter().getAnnotatedElement()
 				.getAnnotation(Config.class);
 		if (config != null) {
 			Object value = null;
 			try {
 				existDefaultValueWarnLog(bean);
 				value = beanFactory.getInstance(config.parse()).parse(
-						beanFactory, propertyFactory, getFieldDefinition(),
+						beanFactory, propertyFactory, getFieldContext(),
 						config.value(), config.charset());
-				return getFieldDefinition().set(bean, value);
+				getFieldContext().getField().getSetter().set(bean, value);
 			} catch (Exception e) {
 				logger.error("clz="
-						+ getFieldDefinition().getDeclaringClass().getName()
+						+ getFieldContext().getDeclaringClass().getName()
 						+ ",fieldName="
-						+ getFieldDefinition().getField().getName());
+						+ getFieldContext().getField().getSetter().getName());
 				throw e;
 			}
 		}

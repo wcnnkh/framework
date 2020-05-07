@@ -22,13 +22,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.core.StringFormat;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.FieldContext;
+import scw.mapper.FilterFeature;
+import scw.mapper.MapperUtils;
 import scw.util.value.Value;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
@@ -44,12 +46,12 @@ public final class ConfigUtils {
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
-			Field field = ReflectionUtils.getField(clz, entry.getKey(), true);
-			if (field == null) {
+			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(clz, entry.getKey(), FilterFeature.SUPPORT_SETTER);
+			if (fieldContext == null) {
 				continue;
 			}
 
-			ReflectionUtils.setFieldValue(clz, field, t, ValueUtils.parse(entry.getValue(), field.getGenericType()));
+			MapperUtils.setStringValue(fieldContext, t, entry.getValue());
 		}
 		return t;
 	}
@@ -163,14 +165,14 @@ public final class ConfigUtils {
 		try {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				String key = stringFormat.format(entry.getKey().toString());
-				Field field = ReflectionUtils.getField(obj.getClass(), key, true);
-				if (field == null) {
+				FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(obj.getClass(), key);
+				if (fieldContext == null) {
 					continue;
 				}
 
 				String value = entry.getValue() == null ? null : entry.getValue().toString();
 				value = stringFormat.format(value);
-				ReflectionUtils.setFieldValueAutoType(obj.getClass(), field, obj, value);
+				MapperUtils.setStringValue(fieldContext, obj, value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

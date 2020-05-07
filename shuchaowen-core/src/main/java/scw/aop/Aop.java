@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import scw.core.instance.NoArgsInstanceFactory;
-import scw.core.reflect.SerializableMethodHolder;
+import scw.core.reflect.SerializableMethod;
 import scw.lang.NestedExceptionUtils;
 
 public abstract class Aop implements ProxyFactory {
@@ -111,13 +111,15 @@ public abstract class Aop implements ProxyFactory {
 		}
 	}
 
-	private abstract class ProxyInvoker extends MethodHolderInvoker {
+	private abstract class ProxyInvoker extends SerializableMethodInvoker {
 		private static final long serialVersionUID = 1L;
 		protected final FilterChain filterChain;
+		private final Class<?> targetClass;
 
 		public ProxyInvoker(Class<?> targetClass, Method method, FilterChain filterChain) {
-			super(new SerializableMethodHolder(targetClass, method));
+			super(new SerializableMethod(targetClass, method));
 			this.filterChain = filterChain;
+			this.targetClass = targetClass;
 		}
 
 		protected Invoker getInvoker(Object instance) {
@@ -144,7 +146,7 @@ public abstract class Aop implements ProxyFactory {
 				}
 			}
 
-			ProxyContext context = new ProxyContext(bean, getMethodHolder().getBelongClass(), getMethod(), args, null);
+			ProxyContext context = new ProxyContext(bean, targetClass, getMethod(), args, null);
 			return filterChain.doFilter(getInvoker(bean), context);
 		}
 	}

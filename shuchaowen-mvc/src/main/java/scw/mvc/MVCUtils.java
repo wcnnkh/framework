@@ -12,7 +12,9 @@ import scw.beans.BeanUtils;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
+import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
+import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -76,11 +78,13 @@ public final class MVCUtils implements MvcConstants {
 			throws ParameterException {
 		Object[] args = new Object[parameterDescriptors.length];
 		for (int i = 0; i < parameterDescriptors.length; i++) {
+			ParameterDescriptor parameterDescriptor = parameterDescriptors[i];
+			parameterDescriptor = new DefaultParameterDescriptor(ParameterUtils.getDisplayName(parameterDescriptor), parameterDescriptor);
 			try {
-				args[i] = channel.getParameter(parameterDescriptors[i]);
+				args[i] = channel.getParameter(parameterDescriptor);
 			} catch (Exception e) {
 				throw new ParameterException("Parameter error ["
-						+ parameterDescriptors[i].getDisplayName() + "]", e);
+						+ parameterDescriptor.getName() + "]", e);
 			}
 		}
 		return args;

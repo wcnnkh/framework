@@ -8,6 +8,12 @@ public interface Authority {
 	String getParentId();
 
 	String getName();
+	
+	/**
+	 * 是否是菜单
+	 * @return
+	 */
+	boolean isMenu();
 
 	Map<String, String> getAttributeMap();
 }

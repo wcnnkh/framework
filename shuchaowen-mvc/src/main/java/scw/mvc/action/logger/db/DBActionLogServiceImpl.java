@@ -6,13 +6,13 @@ import java.util.List;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.Pagination;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.db.DB;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.Copy;
 import scw.mvc.action.logger.ActionLog;
 import scw.mvc.action.logger.ActionLogService;
 import scw.sql.SimpleSql;
@@ -110,7 +110,7 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 
 		List<ActionLog> list = new ArrayList<ActionLog>();
 		for (LogTable logTable : pagination.getData()) {
-			list.add(InstanceUtils.copy(ActionLog.class, logTable));
+			list.add(Copy.copy(ActionLog.class, logTable));
 		}
 		return new Pagination<List<ActionLog>>(pagination.getTotalCount(), pagination.getLimit(), list);
 	}

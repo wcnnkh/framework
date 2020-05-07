@@ -8,6 +8,7 @@ import scw.core.instance.annotation.PropertyParameter;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Level;
@@ -99,17 +100,18 @@ public class AutoSource<T> {
 	}
 
 	protected String getDefaultName(Class<?> clazz, ParameterDescriptor parameterDescriptor) {
-		if (parameterDescriptor.getName().equals(parameterDescriptor.getDisplayName())) {
-			return clazz.getClass().getName() + "." + parameterDescriptor.getDisplayName();
+		String displayName = ParameterUtils.getDisplayName(parameterDescriptor);
+		if (parameterDescriptor.getName().equals(displayName)) {
+			return clazz.getClass().getName() + "." + displayName;
 		}
-		return parameterDescriptor.getDisplayName();
+		return displayName;
 	}
 
 	protected Value getProperty(ParameterDescriptor parameterDescriptor) {
 		String name = getDefaultName(targetClass, parameterDescriptor);
 		Value value = propertyFactory.get(name);
 		if (value == null) {
-			value = parameterDescriptor.getDefaultValue();
+			value = ParameterUtils.getDefaultValue(parameterDescriptor);
 		}
 
 		if (value != null) {
@@ -186,7 +188,7 @@ public class AutoSource<T> {
 				}
 			} catch (StackOverflowError e) {
 				logger.error(e, "There are circular references clazz [{}] parameterName [{}] in [{}]", targetClass,
-						parameterDescriptor.getDisplayName(), source);
+						parameterDescriptor.getName(), source);
 				return false;
 			}
 		}

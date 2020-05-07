@@ -12,8 +12,8 @@ public class DefaultHttpAuthority extends DefaultAuthority implements
 	private final HttpMethod httpMethod;
 
 	public DefaultHttpAuthority(String id, String parentId, String name,
-			Map<String, String> attributeMap, String path, HttpMethod httpMethod) {
-		super(id, parentId, name, attributeMap);
+			Map<String, String> attributeMap, boolean menu, String path, HttpMethod httpMethod) {
+		super(id, parentId, name, attributeMap, menu);
 		this.path = path;
 		this.httpMethod = httpMethod;
 	}

@@ -9,17 +9,15 @@ import scw.cglib.proxy.Enhancer;
 import scw.cglib.proxy.Factory;
 import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
-import scw.core.Copy;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NestedExceptionUtils;
+import scw.mapper.Copy;
 import scw.util.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class CglibProxyFactory implements ProxyFactory {
-	private static final Copy COPY = new Copy();
-	
 	public boolean isSupport(Class<?> clazz) {
 		return !Modifier.isFinal(clazz.getModifiers());
 	}
@@ -90,7 +88,7 @@ public class CglibProxyFactory implements ProxyFactory {
 				if (WriteReplaceInterface.class.isAssignableFrom(targetClass)) {
 					return proxy.invokeSuper(obj, args);
 				} else {
-					return COPY.copy(targetClass, obj);
+					return Copy.copy(targetClass, obj);
 				}
 			}
 

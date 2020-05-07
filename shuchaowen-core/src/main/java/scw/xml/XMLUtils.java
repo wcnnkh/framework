@@ -6,9 +6,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,12 +38,13 @@ import org.xml.sax.SAXException;
 import scw.core.Converter;
 import scw.core.StringFormat;
 import scw.core.instance.NoArgsInstanceFactory;
-import scw.core.reflect.PropertyMapper;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
+import scw.mapper.FieldContext;
+import scw.mapper.FilterFeature;
+import scw.mapper.MapperUtils;
 import scw.util.KeyValuePair;
 import scw.util.ToMap;
 import scw.util.value.property.PropertyFactory;
@@ -482,13 +481,9 @@ public final class XMLUtils {
 			if (ignoreNode(n)) {
 				continue;
 			}
-
-			Field field = ReflectionUtils.getField(type, n.getNodeName(), true);
-			if (field == null) {
-				continue;
-			}
-
-			if (Modifier.isStatic(field.getModifiers())) {
+			
+			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(type, n.getNodeName(), FilterFeature.SUPPORT_SETTER, FilterFeature.SETTER_IGNORE_STATIC);
+			if (fieldContext == null) {
 				continue;
 			}
 
@@ -501,7 +496,7 @@ public final class XMLUtils {
 				t = instanceFactory.getInstance(type);
 			}
 
-			ReflectionUtils.setFieldValue(type, field, t, StringUtils.defaultAutoParse(value, field.getGenericType()));
+			MapperUtils.setStringValue(fieldContext, t, value);
 		}
 		return t;
 	}
@@ -610,27 +605,6 @@ public final class XMLUtils {
 			throw new NotFoundException("not found attribute " + name);
 		}
 		return value;
-	}
-
-	public static <T> T newInstanceLoadAttributeBySetter(NoArgsInstanceFactory instanceFactory, Class<T> type,
-			final PropertyFactory propertyFactory, Node node, final PropertyMapper<String> mapper) {
-		Map<String, Node> map = attributeAsMap(node);
-		try {
-			T t = instanceFactory.getInstance(type);
-			ReflectionUtils.setProperties(type, t, map, new PropertyMapper<Node>() {
-				public Object mapper(String name, Node value, Type type) throws Exception {
-					String v = formatNodeValue(propertyFactory, value, value.getNodeValue());
-					if (StringUtils.isEmpty(v)) {
-						return null;
-					}
-
-					return mapper.mapper(name, v, type);
-				}
-			});
-			return t;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 }
 
