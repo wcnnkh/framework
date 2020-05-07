@@ -154,6 +154,10 @@ public abstract class Mapper {
 		}
 		return entity;
 	}
+	
+	public final <T> T mapping(Class<? extends T> entityClass, Mapping mapping) throws Exception{
+		return mapping(entityClass, null, mapping);
+	}
 
 	public final EntityMapping getEntityMapping(Class<?> entityClass, FieldContext parentContext, EntityResolver entityResolver) {
 		if (entityClass == null || entityClass == Object.class) {
@@ -179,5 +183,9 @@ public abstract class Mapper {
 		}
 		return new EntityMapping(columns,
 				getEntityMapping(entityClass.getSuperclass(), parentContext, entityResolver));
+	}
+	
+	public final EntityMapping getEntityMapping(Class<?> entityClass, EntityResolver entityResolver){
+		return getEntityMapping(entityClass, null, entityResolver);
 	}
 }
