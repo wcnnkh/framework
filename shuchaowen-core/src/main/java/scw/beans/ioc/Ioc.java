@@ -32,7 +32,7 @@ public class Ioc {
 			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		List<FieldContext> autowrites = MapperUtils.getFieldFactory().getFieldContexts(targetClass, null,
+		List<FieldContext> autowrites = MapperUtils.getMapper().getFieldContexts(targetClass, null,
 				new FieldContextFilter() {
 
 					public boolean accept(FieldContext fieldContext) {

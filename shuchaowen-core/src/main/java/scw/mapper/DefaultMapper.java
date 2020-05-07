@@ -6,11 +6,11 @@ import scw.core.Assert;
 import scw.util.cache.CacheLoader;
 import scw.util.cache.LocalCacheType;
 
-public class DefaultFieldFactory extends FieldFactory {
+public class DefaultMapper extends Mapper {
 	private Collection<String> getterMethodPrefix;
 	private Collection<String> setterMethodPrefix;
 
-	public DefaultFieldFactory(Collection<String> getterMethodPrefix,
+	public DefaultMapper(Collection<String> getterMethodPrefix,
 			Collection<String> setterMethodPrefix, LocalCacheType localCacheType) {
 		super(localCacheType);
 		Assert.notEmpty(getterMethodPrefix);

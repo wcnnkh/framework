@@ -57,7 +57,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 			try {
 				T obj = InstanceUtils.NO_ARGS_INSTANCE_FACTORY.getInstance(type);
 				for (Entry<String, Integer> entry : nameMapping.entrySet()) {
-					FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(type, entry.getKey(), null, FilterFeature.SUPPORT_SETTER);
+					FieldContext fieldContext = MapperUtils.getMapper().getFieldContext(type, entry.getKey(), null, FilterFeature.SUPPORT_SETTER);
 					if (fieldContext == null) {
 						continue;
 					}

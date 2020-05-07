@@ -13,7 +13,7 @@ import scw.lang.NestedRuntimeException;
 public class Copy {
 	static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 	private NoArgsInstanceFactory instanceFactory = InstanceUtils.INSTANCE_FACTORY;
-	private FieldFactory fieldFactory = MapperUtils.getFieldFactory();
+	private Mapper mapper = MapperUtils.getMapper();
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
 	 */
@@ -36,12 +36,12 @@ public class Copy {
 		this.clone = clone;
 	}
 
-	public final FieldFactory getFieldFactory() {
-		return fieldFactory;
+	public final Mapper getMapper() {
+		return mapper;
 	}
 
-	public void setFieldFactory(FieldFactory fieldFactory) {
-		this.fieldFactory = fieldFactory;
+	public void setMapper(Mapper mapper) {
+		this.mapper = mapper;
 	}
 
 	public final boolean isInvokeCloneableMethod() {
@@ -83,7 +83,7 @@ public class Copy {
 			return null;
 		}
 
-		return fieldFactory.getFieldContext(sourceClass, null, new FieldContextFilter() {
+		return mapper.getFieldContext(sourceClass, null, new FieldContextFilter() {
 
 			public boolean accept(FieldContext fieldContext) {
 				if (!fieldContext.getField().isSupportSetter()) {
@@ -111,7 +111,7 @@ public class Copy {
 
 	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source,
 			FieldContext parentContext, FieldContextFilter filter, FilterFeature... fieldFilterTypes) throws Exception {
-		for (FieldContext fieldContext : fieldFactory.getFieldContexts(targetClass, parentContext, filter,
+		for (FieldContext fieldContext : mapper.getFieldContexts(targetClass, parentContext, filter,
 				fieldFilterTypes)) {
 			if (!fieldContext.getField().isSupportSetter()) {
 				continue;

@@ -5,15 +5,15 @@ import java.util.Map;
 import org.w3c.dom.Node;
 
 import scw.mapper.FieldContext;
-import scw.mapper.support.AbstractMapper;
+import scw.mapper.support.AbstractMapping;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
-public class XmlMapper extends AbstractMapper {
+public class XmlMapping extends AbstractMapping {
 	private final PropertyFactory propertyFactory;
 	private final Map<String, Node> nodeMap;
 
-	public XmlMapper(PropertyFactory propertyFactory, Map<String, Node> nodeMap) {
+	public XmlMapping(PropertyFactory propertyFactory, Map<String, Node> nodeMap) {
 		this.propertyFactory = propertyFactory;
 		this.nodeMap = nodeMap;
 	}
