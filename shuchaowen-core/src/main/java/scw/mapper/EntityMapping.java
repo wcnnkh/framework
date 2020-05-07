@@ -1,25 +1,20 @@
 package scw.mapper;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 public final class EntityMapping implements Serializable, java.lang.Cloneable {
 	private static final long serialVersionUID = 1L;
-	private final Column[] columns;
-	private final Class<?> entityClass;
+	private final Collection<Column> columns;
 	private final EntityMapping superEntityMapping;
 
-	public EntityMapping(Class<?> entityClass, Column[] columns, EntityMapping superEntityMapping) {
-		this.entityClass = entityClass;
+	public EntityMapping(Collection<Column> columns, EntityMapping superEntityMapping) {
 		this.columns = columns;
 		this.superEntityMapping = superEntityMapping;
 	}
 
-	public Column[] getColumns() {
+	public Collection<Column> getColumns() {
 		return columns;
-	}
-
-	public Class<?> getEntityClass() {
-		return entityClass;
 	}
 
 	public EntityMapping getSuperEntityMapping() {

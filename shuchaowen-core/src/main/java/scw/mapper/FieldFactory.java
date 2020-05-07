@@ -1,6 +1,7 @@
 package scw.mapper;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import scw.mapper.EntityMapping.Column;
 import scw.util.cache.CacheLoader;
@@ -53,7 +54,7 @@ public abstract class FieldFactory {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
 			for (scw.mapper.Field field : getFields(classToUse)) {
-				FieldContext fieldContext = createFieldContext(parentContext, field, clazz);
+				FieldContext fieldContext = createFieldContext(parentContext, field);
 				if (acceptInternal(fieldContext, filter, fieldFilterTypes)) {
 					list.add(fieldContext);
 				}
@@ -68,8 +69,8 @@ public abstract class FieldFactory {
 		return list;
 	}
 
-	protected FieldContext createFieldContext(FieldContext parentContext, Field field, Class<?> declaringClass) {
-		return new FieldContext(parentContext, field, declaringClass);
+	protected FieldContext createFieldContext(FieldContext parentContext, Field field) {
+		return new FieldContext(parentContext, field);
 	}
 
 	public final FieldContext getFieldContext(Class<?> clazz, boolean useSuperClass, FieldContext parentContext,
@@ -77,7 +78,7 @@ public abstract class FieldFactory {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
 			for (scw.mapper.Field field : getFields(classToUse)) {
-				FieldContext fieldContext = createFieldContext(parentContext, field, clazz);
+				FieldContext fieldContext = createFieldContext(parentContext, field);
 				if (acceptInternal(fieldContext, filter, fieldFilterTypes)) {
 					return fieldContext;
 				}
@@ -154,30 +155,30 @@ public abstract class FieldFactory {
 		return entity;
 	}
 
-	public final EntityMapping getEntityMapping(Class<?> entityClass, FieldContext parentContext, Mapper mapper) {
+	public final EntityMapping getEntityMapping(Class<?> entityClass, FieldContext parentContext, EntityResolver entityResolver) {
 		if (entityClass == null || entityClass == Object.class) {
 			return null;
 		}
 
-		LinkedList<FieldContext> fieldContexts = getFieldContexts(entityClass, false, parentContext, mapper);
-		Column[] columns = new Column[fieldContexts.size()];
-		int index = 0;
-		for (FieldContext fieldContext : fieldContexts) {
-			EntityMapping getterEntityMapping = null;
-			if (fieldContext.getField().isSupportGetter() && mapper.isEntity(fieldContext.getField().getGetter())) {
-				getterEntityMapping = getEntityMapping(fieldContext.getField().getGetter().getType(), fieldContext,
-						mapper);
+		List<Column> columns = new LinkedList<EntityMapping.Column>();
+		for(Field field : getFields(entityClass)){
+			FieldContext fieldContext = createFieldContext(parentContext, field);
+			if(acceptInternal(fieldContext, entityResolver)){
+				EntityMapping getterEntityMapping = null;
+				if (field.isSupportGetter() && entityResolver.isEntity(field.getGetter())) {
+					getterEntityMapping = getEntityMapping(field.getGetter().getType(), fieldContext,
+							entityResolver);
+				}
+				EntityMapping setterEntityMapping = null;
+				if (field.isSupportSetter() && entityResolver.isEntity(field.getSetter())) {
+					setterEntityMapping = getEntityMapping(field.getSetter().getType(), fieldContext,
+							entityResolver);
+				}
+				columns.add(new Column(fieldContext, getterEntityMapping, setterEntityMapping));
 			}
-			EntityMapping setterEntityMapping = null;
-			if (fieldContext.getField().isSupportSetter() && mapper.isEntity(fieldContext.getField().getSetter())) {
-				setterEntityMapping = getEntityMapping(fieldContext.getField().getSetter().getType(), fieldContext,
-						mapper);
-			}
-
-			columns[index++] = new Column(fieldContext, getterEntityMapping, setterEntityMapping);
 		}
-		return new EntityMapping(entityClass, columns,
-				getEntityMapping(entityClass.getSuperclass(), parentContext, mapper));
+		return new EntityMapping(columns,
+				getEntityMapping(entityClass.getSuperclass(), parentContext, entityResolver));
 	}
 
 	public final <T> T mapping(Class<? extends T> entityClass, FieldContext parentContext, Mapper mapper)
