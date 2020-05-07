@@ -24,7 +24,8 @@ import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
-import scw.mapper.support.ParameterFactoryMapper;
+import scw.mapper.MapperUtils;
+import scw.mapper.support.ParameterFactoryMapping;
 import scw.mvc.annotation.Attribute;
 import scw.mvc.annotation.BigDecimalMultiply;
 import scw.mvc.annotation.DateFormat;
@@ -177,9 +178,9 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 	}
 
 	protected Object getObjectIsNotBean(String name, Class<?> type) {
-		ParameterFactoryMapper mapper = new ParameterFactoryMapper(this, true, name);
+		ParameterFactoryMapping mapper = new ParameterFactoryMapping(this, true, name);
 		try {
-			return mapper.mapping(type, null);
+			return MapperUtils.getMapper().mapping(type, null, mapper);
 		} catch (Exception e) {
 			throw new ParameterException("name=" + name + ", type=" + type, e);
 		}

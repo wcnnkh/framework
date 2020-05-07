@@ -24,6 +24,7 @@ import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.mapper.Copy;
 import scw.mapper.FieldContext;
+import scw.mapper.MapperUtils;
 import scw.util.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
@@ -33,7 +34,7 @@ public final class XmlDubboUtils {
 
 	private static List<RegistryConfig> parseRegistryConfig(PropertyFactory propertyFactory, BeanFactory beanFactory,
 			Node node) throws Exception {
-		XmlDubboMapper mapper = new XmlDubboMapper(beanFactory, propertyFactory, node) {
+		XmlDubboMapping mapper = new XmlDubboMapping(beanFactory, propertyFactory, node) {
 			@Override
 			protected Object getNodeValue(String name, String value, Class<?> type, FieldContext fieldContext,
 					Node node) {
@@ -44,7 +45,7 @@ public final class XmlDubboUtils {
 			}
 		};
 		
-		RegistryConfig registryConfig = mapper.mapping(RegistryConfig.class, null);
+		RegistryConfig registryConfig = MapperUtils.getMapper().mapping(RegistryConfig.class, null, mapper);
 		List<RegistryConfig> list = new LinkedList<RegistryConfig>();
 		String[] addressArray = StringUtils.commonSplit(XmlBeanUtils.getAddress(propertyFactory, node));
 		for (String address : addressArray) {
@@ -65,7 +66,7 @@ public final class XmlDubboUtils {
 
 	private static List<ProtocolConfig> parseProtocolConfig(PropertyFactory propertyFactory, BeanFactory beanFactory,
 			Node node, final boolean root) throws Exception {
-		XmlDubboMapper mapper = new XmlDubboMapper(beanFactory, propertyFactory, node) {
+		XmlDubboMapping mapper = new XmlDubboMapping(beanFactory, propertyFactory, node) {
 			@Override
 			protected Object getNodeValue(String name, String value, Class<?> type, FieldContext fieldContext,
 					Node node) {
@@ -75,7 +76,7 @@ public final class XmlDubboUtils {
 				return super.getNodeValue(name, value, type, fieldContext, node);
 			}
 		};
-		ProtocolConfig config = mapper.mapping(ProtocolConfig.class, null);
+		ProtocolConfig config = MapperUtils.getMapper().mapping(ProtocolConfig.class, null, mapper);
 		List<ProtocolConfig> list = new LinkedList<ProtocolConfig>();
 		list.add(config);
 		NodeList nodeList = node.getChildNodes();
@@ -90,8 +91,8 @@ public final class XmlDubboUtils {
 
 	private static List<ServiceConfig<?>> parseServiceConfig(PropertyFactory propertyFactory,
 			final BeanFactory beanFactory, Node node) throws Exception {
-		XmlDubboMapper mapper = new XmlDubboMapper(beanFactory, propertyFactory, node);
-		ServiceConfig<?> serviceConfig = mapper.mapping(ServiceConfig.class, null);
+		XmlDubboMapping mapper = new XmlDubboMapping(beanFactory, propertyFactory, node);
+		ServiceConfig<?> serviceConfig = MapperUtils.getMapper().mapping(ServiceConfig.class, null, mapper);
 		List<ServiceConfig<?>> serviceConfigs = new LinkedList<ServiceConfig<?>>();
 		if (serviceConfig.getInterface() != null) {
 			serviceConfigs.add(serviceConfig);
@@ -135,8 +136,8 @@ public final class XmlDubboUtils {
 
 	private static List<ReferenceConfig<?>> parseReferenceConfig(PropertyFactory propertyFactory,
 			final BeanFactory beanFactory, Node node) throws Exception {
-		XmlDubboMapper mapper = new XmlDubboMapper(beanFactory, propertyFactory, node);
-		ReferenceConfig<?> config = mapper.mapping(ReferenceConfig.class, null);
+		XmlDubboMapping mapper = new XmlDubboMapping(beanFactory, propertyFactory, node);
+		ReferenceConfig<?> config = MapperUtils.getMapper().mapping(ReferenceConfig.class, null, mapper);
 		List<ReferenceConfig<?>> referenceConfigs = new LinkedList<ReferenceConfig<?>>();
 		if (config.getInterface() != null) {
 			referenceConfigs.add(config);
@@ -207,17 +208,17 @@ public final class XmlDubboUtils {
 				return;
 			}
 
-			XmlDubboMapper mapper = new XmlDubboMapper(beanFactory, propertyFactory, node);
+			XmlDubboMapping mapper = new XmlDubboMapping(beanFactory, propertyFactory, node);
 			if (DubboUtils.isApplicationNode(node)) {
 				Optional<ApplicationConfig> optional = ConfigManager.getInstance().getApplication();
 				if (!optional.isPresent()) {
-					ApplicationConfig config = mapper.mapping(ApplicationConfig.class, null);
+					ApplicationConfig config = MapperUtils.getMapper().mapping(ApplicationConfig.class, null, mapper);
 					ConfigManager.getInstance().setApplication(config);
 				}
 			} else if (DubboUtils.isConfigCenterNode(node)) {
 				Optional<ConfigCenterConfig> optional = ConfigManager.getInstance().getConfigCenter();
 				if (!optional.isPresent()) {
-					ConfigCenterConfig configCenterConfig = mapper.mapping(ConfigCenterConfig.class, null);
+					ConfigCenterConfig configCenterConfig = MapperUtils.getMapper().mapping(ConfigCenterConfig.class, null, mapper);
 					ConfigManager.getInstance().setConfigCenter(configCenterConfig);
 				}
 			}

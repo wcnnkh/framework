@@ -13,6 +13,7 @@ import scw.io.ResourceUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.MapperUtils;
 import scw.mq.ConsumerFactory;
 import scw.util.queue.Consumer;
 import scw.util.value.property.PropertyFactory;
@@ -43,8 +44,8 @@ public class XmlConsumerFactory implements ConsumerFactory {
 				}
 
 				if (node.getNodeName().equals("consumer:amqp")) {
-					XmlAmqpConfigMapper mapper = new XmlAmqpConfigMapper(beanFactory, propertyFactory, node);
-					AmqpConfig amqpConfig = mapper.mapping(AmqpConfig.class, null);
+					XmlAmqpConfigMapping mapper = new XmlAmqpConfigMapping(beanFactory, propertyFactory, node);
+					AmqpConfig amqpConfig = MapperUtils.getMapper().mapping(AmqpConfig.class, null, mapper);
 					amqpMap.put(name, amqpConfig);
 				}
 			}

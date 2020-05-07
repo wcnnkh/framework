@@ -16,7 +16,7 @@ public abstract class FieldIocProcessor extends AbstractIocProcessor {
 	public void checkField() {
 		if (Modifier.isStatic(getFieldContext().getField().getSetter().getModifiers())) {
 			logger.warn("class [{}] field [{}] is a static",
-					getFieldContext().getDeclaringClass(),
+					getFieldContext().getField().getSetter().getDeclaringClass(),
 					getFieldContext().getField().getSetter().getName());
 		}
 	}
@@ -24,7 +24,7 @@ public abstract class FieldIocProcessor extends AbstractIocProcessor {
 	protected void existDefaultValueWarnLog(Object obj) throws Exception {
 		if (checkExistDefaultValue(obj)) {
 			logger.warn("class[{}] fieldName[{}] existence default value",
-					getFieldContext().getDeclaringClass().getName(),
+					getFieldContext().getField().getSetter().getDeclaringClass().getName(),
 					getFieldContext().getField().getSetter().getName());
 		}
 	}

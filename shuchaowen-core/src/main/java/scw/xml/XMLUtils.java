@@ -482,7 +482,7 @@ public final class XMLUtils {
 				continue;
 			}
 			
-			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(type, n.getNodeName(), FilterFeature.SUPPORT_SETTER, FilterFeature.SETTER_IGNORE_STATIC);
+			FieldContext fieldContext = MapperUtils.getMapper().getFieldContext(type, n.getNodeName(), null, FilterFeature.SUPPORT_SETTER, FilterFeature.SETTER_IGNORE_STATIC);
 			if (fieldContext == null) {
 				continue;
 			}

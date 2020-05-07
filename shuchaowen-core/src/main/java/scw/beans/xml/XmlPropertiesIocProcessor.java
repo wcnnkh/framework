@@ -19,7 +19,7 @@ public class XmlPropertiesIocProcessor implements IocProcessor {
 
 	public Object process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
-		FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(targetClass, xmlBeanParameter.getName(), FilterFeature.SUPPORT_SETTER);
+		FieldContext fieldContext = MapperUtils.getMapper().getFieldContext(targetClass, xmlBeanParameter.getName(), null, FilterFeature.SUPPORT_SETTER);
 		if(fieldContext == null){
 			return null;
 		}

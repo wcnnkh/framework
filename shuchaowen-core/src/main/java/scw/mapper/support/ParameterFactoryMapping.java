@@ -7,12 +7,12 @@ import scw.core.utils.StringUtils;
 import scw.mapper.FieldContext;
 import scw.mapper.Setter;
 
-public class ParameterFactoryMapper extends AbstractMapper {
+public class ParameterFactoryMapping extends AbstractMapping {
 	private String basePrefix;
 	private boolean nestingName;
 	private ParameterFactory parameterFactory;
 
-	public ParameterFactoryMapper(ParameterFactory parameterFactory, boolean nestingName, String basePrefix) {
+	public ParameterFactoryMapping(ParameterFactory parameterFactory, boolean nestingName, String basePrefix) {
 		this.parameterFactory = parameterFactory;
 		this.nestingName = nestingName;
 		this.basePrefix = basePrefix;

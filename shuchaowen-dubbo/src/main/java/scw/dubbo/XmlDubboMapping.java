@@ -6,18 +6,18 @@ import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
 import scw.mapper.FieldContext;
 import scw.util.value.property.PropertyFactory;
-import scw.xml.XmlAttributeMapper;
+import scw.xml.XmlAttributeMapping;
 
-public class XmlDubboMapper extends XmlAttributeMapper {
+public class XmlDubboMapping extends XmlAttributeMapping {
 	private BeanFactory beanFactory;
 
-	public XmlDubboMapper(BeanFactory beanFactory, PropertyFactory propertyFactory, Node node) {
+	public XmlDubboMapping(BeanFactory beanFactory, PropertyFactory propertyFactory, Node node) {
 		super(propertyFactory, node);
 		this.beanFactory = beanFactory;
 	}
 	
 	@Override
-	protected <T> T newInstance(Class<? extends T> type) {
+	public <T> T newInstance(Class<? extends T> type) {
 		return InstanceUtils.NO_ARGS_INSTANCE_FACTORY.getInstance(type);
 	}
 

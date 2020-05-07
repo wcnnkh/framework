@@ -32,7 +32,7 @@ public final class PropertiesParse extends AbstractValueFormat implements Config
 			try {
 				Object obj = fieldType.newInstance();
 				for (final Object key : properties.keySet()) {
-					FieldContext field = MapperUtils.getFieldFactory().getFieldContext(fieldType, null,
+					FieldContext field = MapperUtils.getMapper().getFieldContext(fieldType, null,
 							new FieldContextFilter() {
 
 								public boolean accept(FieldContext fieldContext) {

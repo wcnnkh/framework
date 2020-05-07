@@ -5,12 +5,12 @@ import org.w3c.dom.Node;
 import scw.beans.BeanFactory;
 import scw.mapper.FieldContext;
 import scw.util.value.property.PropertyFactory;
-import scw.xml.XmlAttributeMapper;
+import scw.xml.XmlAttributeMapping;
 
-public class XmlAmqpConfigMapper extends XmlAttributeMapper{
+public class XmlAmqpConfigMapping extends XmlAttributeMapping{
 	private BeanFactory beanFactory;
 	
-	public XmlAmqpConfigMapper(BeanFactory beanFactory, PropertyFactory propertyFactory, Node node) {
+	public XmlAmqpConfigMapping(BeanFactory beanFactory, PropertyFactory propertyFactory, Node node) {
 		super(propertyFactory, node);
 		this.beanFactory = beanFactory;
 	}

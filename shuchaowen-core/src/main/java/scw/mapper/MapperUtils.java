@@ -12,7 +12,7 @@ public class MapperUtils {
 	private static final String BOOLEAN_GETTER_METHOD_PREFIX = "is";
 	private static final String DEFAULT_GETTER_METHOD_PREFIX = "get";
 	private static final String DEFAULT_SETTER_METHOD_PREFIX = "set";
-	private static final FieldFactory FIELD_FACTORY = new DefaultFieldFactory(
+	private static final Mapper MAPPER = new DefaultMapper(
 			Arrays.asList(BOOLEAN_GETTER_METHOD_PREFIX,
 					DEFAULT_GETTER_METHOD_PREFIX),
 			Arrays.asList(DEFAULT_SETTER_METHOD_PREFIX),
@@ -20,8 +20,8 @@ public class MapperUtils {
 	
 	private MapperUtils(){};
 
-	public static FieldFactory getFieldFactory() {
-		return FIELD_FACTORY;
+	public static Mapper getMapper() {
+		return MAPPER;
 	}
 
 	public static String getGetterMethodName(Field field, String name){

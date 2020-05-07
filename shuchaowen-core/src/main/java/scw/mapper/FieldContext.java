@@ -6,13 +6,10 @@ public class FieldContext implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final FieldContext parentContext;
 	private final Field field;
-	private final Class<?> declaringClass;
 
-	public FieldContext(FieldContext parentContext, Field field,
-			Class<?> declaringClass) {
+	public FieldContext(FieldContext parentContext, Field field) {
 		this.parentContext = parentContext;
 		this.field = field;
-		this.declaringClass = declaringClass;
 	}
 
 	public FieldContext getParentContext() {
@@ -21,9 +18,5 @@ public class FieldContext implements Serializable {
 
 	public Field getField() {
 		return field;
-	}
-
-	public Class<?> getDeclaringClass() {
-		return declaringClass;
 	}
 }

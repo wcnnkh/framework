@@ -108,7 +108,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 			throw new AlreadyExistsException("已经存在此任务:" + config.getTaskId());
 		}
 
-		logger.info("添加任务：name={},delay={},period={},timeunit={}", config.getTaskId(), config.getDelay(),
+		logger.info("add Schedule：name={},delay={},period={},timeunit={}", config.getTaskId(), config.getDelay(),
 				config.getPeriod(), config.getTimeUnit());
 		return privateSchedule(config, true);
 	}
@@ -130,7 +130,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 			throw new AlreadyExistsException("已经存在此任务:" + config.getTaskId());
 		}
 
-		logger.info("添加任务： name={},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", config.getTaskId(),
+		logger.info("add crontab： name={},dayOfWeek={},month={},dayOfMonth={},hour={},minute={}", config.getTaskId(),
 				config.getDayOfWeek(), config.getMonth(), config.getDayOfMonth(), config.getHour(), config.getMinute());
 		return privateCrontab(config, true);
 	}

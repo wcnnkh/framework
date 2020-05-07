@@ -16,15 +16,8 @@ import scw.net.http.HttpHeaders;
 import scw.servlet.mvc.http.MyHttpServletRequest;
 
 public final class ServletUtils {
-	private static boolean asyncSupport = true;// 是否支持异步处理
-
-	static {
-		try {
-			ClassUtils.forName("javax.servlet.AsyncContext");
-		} catch (Throwable e) {
-			asyncSupport = false;// 不支持
-		}
-	}
+	private static final boolean asyncSupport = ClassUtils.isPresent("javax.servlet.AsyncContext");// 是否支持异步处理
+	public static final String ATTRIBUTE_FORWARD_REQUEST_URI = "javax.servlet.forward.request_uri";
 
 	private ServletUtils() {
 	};
@@ -99,14 +92,19 @@ public final class ServletUtils {
 	public static boolean isAjaxRequest(HttpServletRequest request) {
 		return "XMLHttpRequest".equals(request.getHeader(HttpHeaders.X_REQUESTED_WITH));
 	}
-	
+
 	/**
 	 * 判断是不是一个weboskcet请求
+	 * 
 	 * @param httpServletRequest
 	 * @return
 	 */
-	public static boolean isWebSocketRequest(HttpServletRequest httpServletRequest){
+	public static boolean isWebSocketRequest(HttpServletRequest httpServletRequest) {
 		String value = httpServletRequest.getHeader(HttpHeaders.UPGRADE);
 		return StringUtils.equals(value, "websocket", true);
+	}
+
+	public static String getForwardRequestUri(ServletRequest servletRequest) {
+		return (String) servletRequest.getAttribute(ATTRIBUTE_FORWARD_REQUEST_URI);
 	}
 }

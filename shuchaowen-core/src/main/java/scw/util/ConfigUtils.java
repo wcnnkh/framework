@@ -46,7 +46,7 @@ public final class ConfigUtils {
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
-			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(clz, entry.getKey(), FilterFeature.SUPPORT_SETTER);
+			FieldContext fieldContext = MapperUtils.getMapper().getFieldContext(clz, entry.getKey(), null, FilterFeature.SUPPORT_SETTER);
 			if (fieldContext == null) {
 				continue;
 			}
@@ -165,7 +165,7 @@ public final class ConfigUtils {
 		try {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				String key = stringFormat.format(entry.getKey().toString());
-				FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(obj.getClass(), key);
+				FieldContext fieldContext = MapperUtils.getMapper().getFieldContext(obj.getClass(), key, null);
 				if (fieldContext == null) {
 					continue;
 				}
