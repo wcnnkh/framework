@@ -25,14 +25,14 @@ public final class XmlDubboServiceExport extends XmlBeanFactoryLifeCycle {
 			}
 
 			if (DubboUtils.isServiceNode(node)) {
-				logger.info(new SplitLineAppend("开始注册dubbo服务"));
+				logger.info(new SplitLineAppend("Start to register Dubbo service"));
 				List<ServiceConfig<?>> serviceConfigs = XmlDubboUtils
 						.getServiceConfigList(propertyFactory, beanFactory,
 								node);
 				for (ServiceConfig<?> serviceConfig : serviceConfigs) {
 					serviceConfig.export();
 				}
-				logger.info(new SplitLineAppend("dubbo服务注册完成"));
+				logger.info(new SplitLineAppend("Dubbo service registration completed"));
 			}
 		}
 

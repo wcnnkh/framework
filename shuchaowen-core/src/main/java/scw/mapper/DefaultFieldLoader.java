@@ -87,7 +87,7 @@ public class DefaultFieldLoader implements
 					.getMethod(
 							currentClass,
 							MapperUtils.getSetterMethodName(field,
-									field.getName()));
+									field.getName()), field.getType());
 			if (setterMethod != null
 					&& Modifier.isStatic(setterMethod.getModifiers())
 					&& !Modifier.isStatic(field.getModifiers())) {

@@ -28,7 +28,7 @@ public class DefaultSetter extends AbstractGetterSetter implements Setter{
 	public Type getGenericType() {
 		Method method = getMethod();
 		if (method != null) {
-			return method.getGenericExceptionTypes()[0];
+			return method.getGenericParameterTypes()[0];
 		}
 
 		Field field = getField();
