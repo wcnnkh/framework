@@ -1,7 +1,6 @@
 package scw.mapper;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
@@ -69,12 +68,8 @@ public class Copy {
 		this.cloneTransientField = cloneTransientField;
 	}
 
-	protected Field[] getFields(Class<?> clazz) {
-		return clazz.getDeclaredFields();
-	}
-
 	protected Object cloneArray(Class<?> sourceClass, Object array, FieldContext parentContext,
-			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) throws Exception {
+			FieldContextFilter filter, FilterFeature... fieldFilterTypes) throws Exception {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(sourceClass.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
@@ -85,11 +80,11 @@ public class Copy {
 
 	protected FieldContext getSourceField(Class<?> sourceClass, FieldContext targetFieldContext) {
 		return fieldFactory.getFieldContext(sourceClass, targetFieldContext.getField().getSetter().getName(),
-				FieldFilterType.SUPPORT_GETTER);
+				FilterFeature.SUPPORT_GETTER);
 	}
 
 	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source, FieldContext parentContext,
-			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) throws Exception {
+			FieldContextFilter filter, FilterFeature... fieldFilterTypes) throws Exception {
 		for (FieldContext fieldContext : fieldFactory.getFieldContexts(targetClass, parentContext, null,
 				fieldFilterTypes)) {
 			if (!fieldContext.getField().isSupportSetter()) {
@@ -121,7 +116,7 @@ public class Copy {
 	}
 
 	public <T, S> T copy(Class<? extends T> targetClass, Class<? extends S> sourceClass, S source, FieldContext parentContext,
-			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) throws Exception {
+			FieldContextFilter filter, FilterFeature... fieldFilterTypes) throws Exception {
 		if (!getInstanceFactory().isInstance(targetClass)) {
 			return (T) source;
 		}
@@ -136,13 +131,13 @@ public class Copy {
 	}
 
 	public <T> T copy(T source, FieldContext parentContext, FieldContextFilter filter,
-			FieldFilterType... fieldFilterTypes) throws Exception {
+			FilterFeature... fieldFilterTypes) throws Exception {
 		if (source == null) {
 			return null;
 		}
 
-		if (source instanceof scw.lang.Cloneable) {
-			return (T) ((scw.lang.Cloneable) source).clone();
+		if (source instanceof scw.mapper.Cloneable) {
+			return (T) ((scw.mapper.Cloneable) source).clone();
 		}
 
 		Class<T> sourceClass = (Class<T>) source.getClass();
@@ -169,7 +164,7 @@ public class Copy {
 		CLONE_COPY.setClone(true);
 	}
 	
-	public static <T> T clone(T source, FieldContextFilter filter, FieldFilterType... fieldFilterTypes) {
+	public static <T> T clone(T source, FieldContextFilter filter, FilterFeature... fieldFilterTypes) {
 		try {
 			return CLONE_COPY.copy(source, null, filter, fieldFilterTypes);
 		} catch (Exception e) {
@@ -178,11 +173,11 @@ public class Copy {
 	}
 
 	public static <T> T clone(T source) {
-		return clone(source, null, FieldFilterType.GETTER_IGNORE_STATIC, FieldFilterType.SETTER_IGNORE_STATIC);
+		return clone(source, null, FilterFeature.GETTER_IGNORE_STATIC, FilterFeature.SETTER_IGNORE_STATIC);
 	}
 
 	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldContextFilter filter,
-			FieldFilterType... fieldFilterTypes) {
+			FilterFeature... fieldFilterTypes) {
 		try {
 			return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null, filter, fieldFilterTypes);
 		} catch (Exception e) {
@@ -191,12 +186,12 @@ public class Copy {
 	}
 
 	public static <T> T copy(Class<? extends T> targetClass, Object source) {
-		return copy(targetClass, source, null, FieldFilterType.GETTER_IGNORE_STATIC,
-				FieldFilterType.SETTER_IGNORE_STATIC);
+		return copy(targetClass, source, null, FilterFeature.GETTER_IGNORE_STATIC,
+				FilterFeature.SETTER_IGNORE_STATIC);
 	}
 
 	public static void copy(Object target, Object source, FieldContextFilter filter,
-			FieldFilterType... fieldFilterTypes) {
+			FilterFeature... fieldFilterTypes) {
 		try {
 			INVOKER_SETTER_COPY.copy(target.getClass(), target, source.getClass(), source, null, filter, fieldFilterTypes);
 		} catch (Exception e) {
@@ -204,7 +199,12 @@ public class Copy {
 		}
 	}
 
+	/**
+	 * 推荐使用此方法
+	 * @param target
+	 * @param source
+	 */
 	public static void copy(Object target, Object source) {
-		copy(target, source, null, FieldFilterType.GETTER_IGNORE_STATIC, FieldFilterType.SETTER_IGNORE_STATIC);
+		copy(target, source, null, FilterFeature.GETTER_IGNORE_STATIC, FilterFeature.SETTER_IGNORE_STATIC);
 	}
 }

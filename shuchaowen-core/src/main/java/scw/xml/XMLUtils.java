@@ -43,7 +43,7 @@ import scw.io.IOUtils;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
 import scw.mapper.FieldContext;
-import scw.mapper.FieldFilterType;
+import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.KeyValuePair;
 import scw.util.ToMap;
@@ -482,7 +482,7 @@ public final class XMLUtils {
 				continue;
 			}
 			
-			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(type, n.getNodeName(), FieldFilterType.SUPPORT_SETTER, FieldFilterType.SETTER_IGNORE_STATIC);
+			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(type, n.getNodeName(), FilterFeature.SUPPORT_SETTER, FilterFeature.SETTER_IGNORE_STATIC);
 			if (fieldContext == null) {
 				continue;
 			}

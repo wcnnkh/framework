@@ -4,8 +4,8 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import scw.mapper.AbstractMapper;
 import scw.mapper.FieldContext;
+import scw.mapper.support.AbstractMapper;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 

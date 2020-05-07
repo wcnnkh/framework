@@ -1,4 +1,4 @@
-package scw.mapper;
+package scw.mapper.support;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -6,11 +6,17 @@ import java.util.ListIterator;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
+import scw.mapper.FieldContext;
+import scw.mapper.FieldContextFilter;
+import scw.mapper.FieldDescriptor;
+import scw.mapper.FieldFactory;
+import scw.mapper.FilterFeature;
+import scw.mapper.MapperUtils;
 
 public abstract class AbstractMapper implements Mapper {
 	private FieldFactory fieldFactory = MapperUtils.getFieldFactory();
 	private FieldContextFilter fieldContextFilter;
-	private FieldFilterType[] fieldFilterTypes = new FieldFilterType[] { FieldFilterType.GETTER_IGNORE_STATIC };
+	private FilterFeature[] filterFeatures = new FilterFeature[] { FilterFeature.GETTER_IGNORE_STATIC };
 
 	public FieldFactory getFieldFactory() {
 		return fieldFactory;
@@ -28,12 +34,12 @@ public abstract class AbstractMapper implements Mapper {
 		this.fieldContextFilter = fieldContextFilter;
 	}
 
-	public FieldFilterType[] getFieldFilterTypes() {
-		return fieldFilterTypes;
+	public FilterFeature[] getFieldFilterTypes() {
+		return filterFeatures;
 	}
 
-	public void setFieldFilterTypes(FieldFilterType[] fieldFilterTypes) {
-		this.fieldFilterTypes = fieldFilterTypes;
+	public void setFieldFilterTypes(FilterFeature[] fieldFilterTypes) {
+		this.filterFeatures = fieldFilterTypes;
 	}
 
 	protected <T> T newInstance(Class<? extends T> type) {

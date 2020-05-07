@@ -36,10 +36,10 @@ public abstract class FieldFactory {
 	}
 
 	protected boolean acceptInternal(FieldContext fieldContext,
-			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) {
+			FieldContextFilter filter, FilterFeature... fieldFilterTypes) {
 		if (fieldFilterTypes != null && fieldFilterTypes.length != 0) {
-			for (FieldFilterType fieldFilterType : fieldFilterTypes) {
-				if (!fieldFilterType.getFilter().accept(fieldContext)) {
+			for (FilterFeature filterFeature : fieldFilterTypes) {
+				if (!filterFeature.getFilter().accept(fieldContext)) {
 					return false;
 				}
 			}
@@ -49,7 +49,7 @@ public abstract class FieldFactory {
 
 	public final LinkedList<FieldContext> getFieldContexts(Class<?> clazz,
 			boolean useSuperClass, FieldContext parentContext,
-			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) {
+			FieldContextFilter filter, FilterFeature... fieldFilterTypes) {
 		LinkedList<FieldContext> list = new LinkedList<FieldContext>();
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
@@ -77,7 +77,7 @@ public abstract class FieldFactory {
 
 	public final FieldContext getFieldContext(Class<?> clazz,
 			boolean useSuperClass, FieldContext parentContext,
-			FieldContextFilter filter, FieldFilterType... fieldFilterTypes) {
+			FieldContextFilter filter, FilterFeature... fieldFilterTypes) {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
 			for (scw.mapper.Field field : getFields(classToUse)) {
@@ -98,7 +98,7 @@ public abstract class FieldFactory {
 
 	public final FieldContext getFieldContext(Class<?> clazz,
 			boolean useSuperClass, String name,
-			FieldFilterType... fieldFilterTypes) {
+			FilterFeature... fieldFilterTypes) {
 		return getFieldContext(clazz, useSuperClass, name, null,
 				fieldFilterTypes);
 	}
@@ -106,7 +106,7 @@ public abstract class FieldFactory {
 	public final FieldContext getFieldContext(Class<?> clazz,
 			boolean useSuperClass, final String name,
 			FieldContext parentContext,
-			final FieldFilterType... fieldFilterTypes) {
+			final FilterFeature... fieldFilterTypes) {
 		return getFieldContext(clazz, useSuperClass, parentContext,
 				new FieldContextFilter() {
 
@@ -136,41 +136,26 @@ public abstract class FieldFactory {
 
 	public final FieldContext getFieldContext(Class<?> clazz,
 			FieldContext parentContext, FieldContextFilter filter,
-			FieldFilterType... fieldFilterTypes) {
+			FilterFeature... fieldFilterTypes) {
 		return getFieldContext(clazz, true, parentContext, filter,
 				fieldFilterTypes);
 	}
 
 	public final FieldContext getFieldContext(Class<?> clazz, String name,
-			FieldContext parentContext, FieldFilterType... fieldFilterTypes) {
+			FieldContext parentContext, FilterFeature... fieldFilterTypes) {
 		return getFieldContext(clazz, true, name, parentContext,
 				fieldFilterTypes);
 	}
 
 	public final LinkedList<FieldContext> getFieldContexts(Class<?> clazz,
 			FieldContext parentContext, FieldContextFilter filter,
-			FieldFilterType... fieldFilterTypes) {
+			FilterFeature... fieldFilterTypes) {
 		return getFieldContexts(clazz, true, parentContext, filter,
 				fieldFilterTypes);
 	}
 
 	public final FieldContext getFieldContext(Class<?> clazz, String name,
-			FieldFilterType... fieldFilterTypes) {
+			FilterFeature... fieldFilterTypes) {
 		return getFieldContext(clazz, true, name, fieldFilterTypes);
-	}
-
-	public final EntityMapping getEntityMapping(Class<?> entityClass,
-			boolean useSuperClass) {
-		if (useSuperClass) {
-			Class<?> classToUse = entityClass.getSuperclass();
-			if (classToUse == null || classToUse == Object.class) {
-				return getEntityMapping(entityClass, false);
-			} else {
-				return new EntityMapping(entityClass, getFields(entityClass),
-						getEntityMapping(classToUse, useSuperClass));
-			}
-		} else {
-			return new EntityMapping(entityClass, getFields(entityClass), null);
-		}
 	}
 }

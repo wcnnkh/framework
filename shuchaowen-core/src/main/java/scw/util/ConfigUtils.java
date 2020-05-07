@@ -29,7 +29,7 @@ import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.FieldContext;
-import scw.mapper.FieldFilterType;
+import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.value.Value;
 import scw.util.value.ValueUtils;
@@ -46,7 +46,7 @@ public final class ConfigUtils {
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
 		T t = clz.newInstance();
 		for (Entry<String, String> entry : map.entrySet()) {
-			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(clz, entry.getKey(), FieldFilterType.SUPPORT_SETTER);
+			FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(clz, entry.getKey(), FilterFeature.SUPPORT_SETTER);
 			if (fieldContext == null) {
 				continue;
 			}

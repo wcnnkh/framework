@@ -8,7 +8,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.AlreadyExistsException;
 import scw.mapper.FieldContext;
-import scw.mapper.FieldFilterType;
+import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.value.ValueUtils;
 
@@ -57,7 +57,7 @@ public abstract class AbstractLoadRow<T> implements LoadRow {
 			try {
 				T obj = InstanceUtils.NO_ARGS_INSTANCE_FACTORY.getInstance(type);
 				for (Entry<String, Integer> entry : nameMapping.entrySet()) {
-					FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(type, entry.getKey(), FieldFilterType.SUPPORT_SETTER);
+					FieldContext fieldContext = MapperUtils.getFieldFactory().getFieldContext(type, entry.getKey(), FilterFeature.SUPPORT_SETTER);
 					if (fieldContext == null) {
 						continue;
 					}

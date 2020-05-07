@@ -4,7 +4,6 @@ import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.core.utils.StringUtils;
-import scw.mapper.AbstractMapper;
 import scw.mapper.FieldContext;
 import scw.mapper.Setter;
 

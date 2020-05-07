@@ -3,7 +3,7 @@ package scw.mapper;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-public class Field implements Serializable, Cloneable {
+public class Field implements Serializable, java.lang.Cloneable {
 	public static final Field[] EMPTY_ARRAY = new Field[0];
 	
 	private static final long serialVersionUID = 1L;

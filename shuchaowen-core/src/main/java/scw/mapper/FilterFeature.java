@@ -2,7 +2,7 @@ package scw.mapper;
 
 import java.lang.reflect.Modifier;
 
-public enum FieldFilterType {
+public enum FilterFeature {
 	SUPPORT_GETTER(new SupportGetterFieldContextFilter()), 
 	SUPPORT_SETTER(new SupportSetterFieldContextFilter()),
 	GETTER_PUBLIC(new GetterPublicFieldContextFilter()),
@@ -15,7 +15,7 @@ public enum FieldFilterType {
 
 	private final FieldContextFilter filter;
 
-	private FieldFilterType(FieldContextFilter filter) {
+	private FilterFeature(FieldContextFilter filter) {
 		this.filter = filter;
 	}
 
