@@ -26,6 +26,15 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 		this.type = type;
 		this.genericType = genericType;
 	}
+	
+	/**
+	 * 重新取个名字
+	 * @param name
+	 * @param parameterDescriptor
+	 */
+	public DefaultParameterDescriptor(String name, ParameterDescriptor parameterDescriptor) {
+		this(name, parameterDescriptor.getAnnotatedElement(), parameterDescriptor.getType(), parameterDescriptor.getGenericType());
+	}
 
 	public String getName() {
 		return name;

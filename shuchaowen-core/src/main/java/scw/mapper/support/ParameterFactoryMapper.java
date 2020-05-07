@@ -26,8 +26,7 @@ public class ParameterFactoryMapper extends AbstractMapper {
 			name = basePrefix + "." + name;
 		}
 		
-		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name, setter.getAnnotatedElement(),
-				setter.getType(), setter.getGenericType());
+		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name, setter);
 		return parameterFactory.getParameter(parameterDescriptor);
 	}
 

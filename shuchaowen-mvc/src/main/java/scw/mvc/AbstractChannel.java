@@ -236,7 +236,7 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 		if (value != null) {
 			return value.getAsObject(parameterDescriptor.getGenericType());
 		}
-		return getObject(ParameterUtils.getDisplayName(parameterDescriptor), parameterDescriptor.getGenericType());
+		return getObject(parameterDescriptor.getName(), parameterDescriptor.getGenericType());
 	}
 
 	protected Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterDescriptor) {
