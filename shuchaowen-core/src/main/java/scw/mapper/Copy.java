@@ -28,7 +28,7 @@ public class Copy {
 	 */
 	private boolean clone = false;
 
-	public boolean isClone() {
+	public final boolean isClone() {
 		return clone;
 	}
 
@@ -36,7 +36,7 @@ public class Copy {
 		this.clone = clone;
 	}
 
-	public FieldFactory getFieldFactory() {
+	public final FieldFactory getFieldFactory() {
 		return fieldFactory;
 	}
 
@@ -44,7 +44,7 @@ public class Copy {
 		this.fieldFactory = fieldFactory;
 	}
 
-	public boolean isInvokeCloneableMethod() {
+	public final boolean isInvokeCloneableMethod() {
 		return invokeCloneableMethod;
 	}
 
@@ -52,7 +52,7 @@ public class Copy {
 		this.invokeCloneableMethod = invokeCloneableMethod;
 	}
 
-	public NoArgsInstanceFactory getInstanceFactory() {
+	public final NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory;
 	}
 
