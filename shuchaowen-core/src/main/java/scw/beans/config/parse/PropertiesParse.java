@@ -8,47 +8,45 @@ import scw.beans.property.AbstractValueFormat;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
 import scw.io.ResourceUtils;
-import scw.mapper.FieldContext;
-import scw.mapper.FieldContextFilter;
+import scw.mapper.Field;
+import scw.mapper.FieldFilter;
 import scw.mapper.MapperUtils;
-import scw.util.value.StringValue;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class PropertiesParse extends AbstractValueFormat implements ConfigParse {
 
-	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext,
+	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field,
 			String filePath, String charset) throws Exception {
 		Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(filePath, charset,
 				propertyFactory);
-		if (ClassUtils.isPrimitiveOrWrapper(fieldContext.getField().getSetter().getType())
-				|| TypeUtils.isString(fieldContext.getField().getSetter().getType())) {
-			return ValueUtils.parse(properties.getProperty(fieldContext.getField().getSetter().getName()),
-					fieldContext.getField().getSetter().getGenericType());
-		} else if (Properties.class.isAssignableFrom(fieldContext.getField().getSetter().getType())) {
+		if (ClassUtils.isPrimitiveOrWrapper(field.getSetter().getType())
+				|| TypeUtils.isString(field.getSetter().getType())) {
+			return ValueUtils.parse(properties.getProperty(field.getSetter().getName()),
+					field.getSetter().getGenericType());
+		} else if (Properties.class.isAssignableFrom(field.getSetter().getType())) {
 			return properties;
 		} else {
-			Class<?> fieldType = fieldContext.getField().getSetter().getType();
+			Class<?> fieldType = field.getSetter().getType();
 			try {
 				Object obj = fieldType.newInstance();
 				for (final Object key : properties.keySet()) {
-					FieldContext field = MapperUtils.getMapper().getFieldContext(fieldType, null,
-							new FieldContextFilter() {
+					Field keyField = MapperUtils.getMapper().getField(fieldType,
+							new FieldFilter() {
 
-								public boolean accept(FieldContext fieldContext) {
-									if (fieldContext.getField().isSupportSetter()) {
-										return fieldContext.getField().getSetter().getName().equals(key.toString());
+								public boolean accept(Field field) {
+									if (field.isSupportSetter()) {
+										return field.getSetter().getName().equals(key.toString());
 									}
 									return false;
 								}
 							});
-					if (field == null) {
+					if (keyField == null) {
 						continue;
 					}
 
-					String value = properties.getProperty(field.getField().getSetter().getName());
-					field.getField().getSetter().set(obj,
-							new StringValue(value).getAsObject(field.getField().getSetter().getGenericType()));
+					String value = properties.getProperty(keyField.getSetter().getName());
+					MapperUtils.setStringValue(keyField, obj, value);
 				}
 				return obj;
 			} catch (Exception e) {
@@ -58,8 +56,8 @@ public final class PropertiesParse extends AbstractValueFormat implements Config
 		return null;
 	}
 
-	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext, String name)
+	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
-		return parse(beanFactory, propertyFactory, fieldContext, name, getCharsetName());
+		return parse(beanFactory, propertyFactory, field, name, getCharsetName());
 	}
 }

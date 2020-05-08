@@ -70,13 +70,13 @@ public class MainApplication extends CommonApplication implements Application {
 				Constructor<MainApplication> constructor = ReflectionUtils.findConstructor(iterator.next(), false,
 						Class.class, String[].class);
 				if (constructor != null) {
-					ReflectionUtils.setAccessibleConstructor(constructor);
+					ReflectionUtils.makeAccessible(constructor);
 					return constructor.newInstance(mainClass, args);
 				}
 
 				constructor = ReflectionUtils.findConstructor(iterator.next(), false, Class.class);
 				if (constructor != null) {
-					ReflectionUtils.setAccessibleConstructor(constructor);
+					ReflectionUtils.makeAccessible(constructor);
 					return constructor.newInstance(mainClass);
 				}
 			}

@@ -11,7 +11,7 @@ public final class ReflectInvoker extends MethodInvoker {
 	public ReflectInvoker(Object obj, Method method) {
 		this.obj = obj;
 		this.method = method;
-		ReflectionUtils.setAccessibleMethod(method);
+		ReflectionUtils.makeAccessible(method);
 	}
 
 	@Override

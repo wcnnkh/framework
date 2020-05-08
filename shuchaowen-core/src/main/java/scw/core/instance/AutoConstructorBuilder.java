@@ -37,7 +37,7 @@ public final class AutoConstructorBuilder implements ConstructorBuilder {
 								parameterFactory, clazz, ParameterUtils.getParameterDescriptors(constructor),
 								constructor);
 						if (autoSource.isAuto()) {
-							ReflectionUtils.setAccessibleConstructor(constructor);
+							ReflectionUtils.makeAccessible(constructor);
 							this.constructorDescriptor = new ConstructorDescriptor(constructor,
 									autoSource.getParameterDescriptors());
 							break;

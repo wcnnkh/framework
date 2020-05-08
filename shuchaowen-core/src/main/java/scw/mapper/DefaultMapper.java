@@ -21,7 +21,7 @@ public class DefaultMapper extends Mapper {
 	
 	
 	@Override
-	protected CacheLoader<Class<?>, Field[]> createCacheLoader(
+	protected CacheLoader<Class<?>, FieldMetadata[]> createCacheLoader(
 			Class<?> clazz) {
 		return new DefaultFieldLoader(getterMethodPrefix, setterMethodPrefix);
 	}

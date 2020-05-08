@@ -185,7 +185,7 @@ public abstract class ReflectionUtils {
 			for (Method method : methods) {
 				if (name.equals(method.getName())
 						&& (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()))) {
-					setAccessibleMethod(method);
+					makeAccessible(method);
 					return method;
 				}
 			}
@@ -429,17 +429,6 @@ public abstract class ReflectionUtils {
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * Determine whether the given field is a "public static final" constant.
-	 * 
-	 * @param field
-	 *            the field to check
-	 */
-	public static boolean isPublicStaticFinal(Field field) {
-		int modifiers = field.getModifiers();
-		return (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers));
 	}
 
 	/**
@@ -1154,7 +1143,7 @@ public abstract class ReflectionUtils {
 				return null;
 			}
 
-			setAccessibleMethod(getter);
+			makeAccessible(getter);
 		}
 
 		return getter;
@@ -1193,56 +1182,9 @@ public abstract class ReflectionUtils {
 				return null;
 			}
 			
-			setAccessibleMethod(setter);
+			makeAccessible(setter);
 		}
 		return setter;
-	}
-
-	public static void setAccessibleField(Field field) {
-		if (!field.isAccessible()
-				&& (Modifier.isPrivate(field.getModifiers()) || Modifier.isProtected(field.getModifiers()))) {
-			field.setAccessible(true);
-		}
-	}
-
-	public static void setAccessibleMethod(Method method) {
-		if (!method.isAccessible()
-				&& (Modifier.isPrivate(method.getModifiers()) || Modifier.isProtected(method.getModifiers()))) {
-			method.setAccessible(true);
-		}
-	}
-
-	public static void setAccessibleConstructor(Constructor<?> constructor) {
-		if (!constructor.isAccessible() && (Modifier.isPrivate(constructor.getModifiers())
-				|| Modifier.isProtected(constructor.getModifiers()))) {
-			constructor.setAccessible(true);
-		}
-	}
-
-	/**
-	 * 尝试查找同类型的set方法，如果不存在则直接插入
-	 * 
-	 * @param clz
-	 * @param field
-	 * @param obj
-	 * @param value
-	 * @return
-	 * @throws Exception
-	 */
-	public static Object setFieldValue(Class<?> clz, Field field, Object obj, Object value) throws Exception {
-		Method method = getSetterMethod(clz, field);
-		try {
-			if (method == null) {
-				setAccessibleField(field);
-				field.set(obj, value);
-				return null;
-			} else {
-				return method.invoke(obj, value);
-			}
-		} catch (Exception e) {
-			FormatUtils.warn(ReflectUtils.class, "向对象{}，插入field={}时异常", clz.getName(), field.getName());
-			throw e;
-		}
 	}
 
 	/**

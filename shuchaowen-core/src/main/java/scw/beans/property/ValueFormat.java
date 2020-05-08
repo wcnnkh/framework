@@ -1,9 +1,9 @@
 package scw.beans.property;
 
 import scw.beans.BeanFactory;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.util.value.property.PropertyFactory;
 
 public interface ValueFormat {
-	Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext, String name) throws Exception;
+	Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name) throws Exception;
 }

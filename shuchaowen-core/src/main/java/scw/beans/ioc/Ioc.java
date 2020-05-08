@@ -9,8 +9,8 @@ import scw.beans.annotation.Config;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Value;
 import scw.core.annotation.AnnotationUtils;
-import scw.mapper.FieldContext;
-import scw.mapper.FieldContextFilter;
+import scw.mapper.Field;
+import scw.mapper.FieldFilter;
 import scw.mapper.MapperUtils;
 
 public class Ioc {
@@ -32,15 +32,15 @@ public class Ioc {
 			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		List<FieldContext> autowrites = MapperUtils.getMapper().getFieldContexts(targetClass, null,
-				new FieldContextFilter() {
+		List<Field> autowrites = MapperUtils.getMapper().getFields(targetClass, null,
+				new FieldFilter() {
 
-					public boolean accept(FieldContext fieldContext) {
-						if (!fieldContext.getField().isSupportSetter()) {
+					public boolean accept(Field field) {
+						if (!field.isSupportSetter()) {
 							return false;
 						}
 
-						AnnotatedElement annotatedElement = fieldContext.getField().getSetter().getAnnotatedElement();
+						AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
 						if (AnnotationUtils.isDeprecated(annotatedElement)) {
 							return false;
 						}
@@ -48,21 +48,21 @@ public class Ioc {
 					}
 				});
 
-		for (FieldContext fieldContext : autowrites) {
-			AnnotatedElement annotatedElement = fieldContext.getField().getSetter().getAnnotatedElement();
+		for (Field field : autowrites) {
+			AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
 			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
 			if (autowired != null) {
-				this.autowired.getIocProcessors().add(new AutowiredIocProcessor(fieldContext));
+				this.autowired.getIocProcessors().add(new AutowiredIocProcessor(field));
 			}
 
 			Config config = annotatedElement.getAnnotation(Config.class);
 			if (config != null) {
-				this.autowired.getIocProcessors().add(new ConfigIocProcessor(fieldContext));
+				this.autowired.getIocProcessors().add(new ConfigIocProcessor(field));
 			}
 
 			Value value = annotatedElement.getAnnotation(Value.class);
 			if (value != null) {
-				this.autowired.getIocProcessors().add(new ValueIocProcessor(fieldContext));
+				this.autowired.getIocProcessors().add(new ValueIocProcessor(field));
 			}
 		}
 	}

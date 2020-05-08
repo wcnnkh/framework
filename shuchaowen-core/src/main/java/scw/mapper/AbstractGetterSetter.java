@@ -58,39 +58,36 @@ abstract class AbstractGetterSetter extends AbstractFieldDescriptor{
 		throw createNotSupportException();
 	}
 	
-	public Object get(Object instance) throws Exception {
+	public Object get(Object instance) {
 		Method method = getMethod();
 		if (method != null) {
-			ReflectionUtils.setAccessibleMethod(method);
-			return method
-					.invoke(Modifier.isStatic(method.getModifiers()) ? null
-							: instance);
+			ReflectionUtils.makeAccessible(method);
+			return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null
+					: instance);
 		}
 
 		java.lang.reflect.Field field = getField();
 		if (field != null) {
-			ReflectionUtils.setAccessibleField(field);
-			return field.get(Modifier.isStatic(field.getModifiers()) ? null
+			ReflectionUtils.makeAccessible(field);
+			return ReflectionUtils.getField(field, Modifier.isStatic(field.getModifiers()) ? null
 					: instance);
 		}
 		throw createNotSupportException();
 	}
 
-	public void set(Object instance, Object value) throws Exception {
+	public void set(Object instance, Object value) {
 		Method method = getMethod();
 		if (method != null) {
-			ReflectionUtils.setAccessibleMethod(method);
-			method.invoke(Modifier.isStatic(method.getModifiers()) ? null
+			ReflectionUtils.makeAccessible(method);
+			ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null
 					: instance, value);
 			return ;
 		}
 
 		java.lang.reflect.Field field = getField();
 		if (field != null) {
-			ReflectionUtils.setAccessibleField(field);
-			field.set(
-					Modifier.isStatic(field.getModifiers()) ? null : instance,
-					value);
+			ReflectionUtils.makeAccessible(field);
+			ReflectionUtils.setField(field, Modifier.isStatic(field.getModifiers()) ? null : instance, value);
 			return ;
 		}
 		throw createNotSupportException();

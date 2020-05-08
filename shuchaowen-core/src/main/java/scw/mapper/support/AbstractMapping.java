@@ -6,10 +6,10 @@ import java.util.ListIterator;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.Mapper;
 import scw.mapper.FilterFeature;
+import scw.mapper.Mapper;
 import scw.mapper.Mapping;
 
 public abstract class AbstractMapping implements Mapping {
@@ -18,41 +18,41 @@ public abstract class AbstractMapping implements Mapping {
 		return InstanceUtils.INSTANCE_FACTORY.getInstance(type);
 	}
 
-	public Object mapping(Class<?> entityClass, FieldContext fieldContext,
+	public Object mapping(Class<?> entityClass, Field field,
 			Mapper fieldFactory) throws Exception{
-		if (isNesting(fieldContext)) {
-			return fieldFactory.mapping(fieldContext.getField().getSetter()
-					.getType(), fieldContext, this);
+		if (isNesting(field)) {
+			return fieldFactory.mapping(field.getSetter()
+					.getType(), field, this);
 		} else {
-			return getValue(fieldContext);
+			return getValue(field);
 		}
 	}
 	
-	public boolean accept(FieldContext fieldContext) {
-		return FilterFeature.GETTER_IGNORE_STATIC.getFilter().accept(fieldContext);
+	public boolean accept(Field field) {
+		return FilterFeature.GETTER_IGNORE_STATIC.getFilter().accept(field);
 	}
 
-	protected boolean isNesting(FieldContext fieldContext) {
-		Class<?> type = fieldContext.getField().getSetter().getType();
+	protected boolean isNesting(Field field) {
+		Class<?> type = field.getSetter().getType();
 		return !(type == String.class || ClassUtils.isPrimitiveOrWrapper(type));
 	}
 
-	protected abstract Object getValue(FieldContext fieldContext);
+	protected abstract Object getValue(Field field);
 
 	protected String getDisplayName(FieldDescriptor fieldMetadata) {
 		return ParameterUtils.getDisplayName(fieldMetadata);
 	}
 
-	protected final String getNestingDisplayName(FieldContext fieldContext) {
-		if (fieldContext.getParentContext() == null) {
-			return getDisplayName(fieldContext.getField().getSetter());
+	protected final String getNestingDisplayName(Field field) {
+		if (field.getParentField() == null) {
+			return getDisplayName(field.getSetter());
 		}
 
 		LinkedList<FieldDescriptor> fieldMetadatas = new LinkedList<FieldDescriptor>();
-		FieldContext parent = fieldContext;
+		Field parent = field;
 		while (parent != null) {
-			fieldMetadatas.add(parent.getField().getSetter());
-			parent = parent.getParentContext();
+			fieldMetadatas.add(parent.getSetter());
+			parent = parent.getParentField();
 		}
 
 		StringBuilder sb = new StringBuilder();

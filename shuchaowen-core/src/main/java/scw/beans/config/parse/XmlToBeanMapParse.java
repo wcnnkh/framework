@@ -4,15 +4,15 @@ import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
 import scw.core.utils.ClassUtils;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.util.ConfigUtils;
 import scw.util.value.property.PropertyFactory;
 
 public final class XmlToBeanMapParse extends AbstractValueFormat implements ConfigParse {
 
-	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext, String filePath, String charset)
+	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String filePath, String charset)
 			throws Exception {
-		String type = fieldContext.getField().getSetter().getGenericType().toString();
+		String type = field.getSetter().getGenericType().toString();
 		type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));
 		String valueType = type.split(",")[1].trim();
 
@@ -25,8 +25,8 @@ public final class XmlToBeanMapParse extends AbstractValueFormat implements Conf
 		return null;
 	}
 
-	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext, String name)
+	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
-		return parse(beanFactory, propertyFactory, fieldContext, name, getCharsetName());
+		return parse(beanFactory, propertyFactory, field, name, getCharsetName());
 	}
 }

@@ -23,7 +23,7 @@ public abstract class FieldColumnFactory implements ColumnFactory {
 				continue;
 			}
 
-			ReflectionUtils.setAccessibleField(field);
+			ReflectionUtils.makeAccessible(field);
 			Column column = analysisField(clazz, field);
 			if (map.containsKey(column.getName())) {
 				throw new AlreadyExistsException("Class " + clazz.getName() + " column " + column.getName());

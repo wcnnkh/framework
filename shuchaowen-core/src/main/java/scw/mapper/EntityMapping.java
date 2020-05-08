@@ -28,18 +28,18 @@ public final class EntityMapping implements Serializable, java.lang.Cloneable {
 	
 	public static final class Column implements Serializable, java.lang.Cloneable {
 		private static final long serialVersionUID = 1L;
-		private final FieldContext fieldContext;
+		private final Field field;
 		private final EntityMapping setterEntityMapping;
 		private final EntityMapping getterEntityMapping;
 
-		public Column(FieldContext fieldContext, EntityMapping getterEntityMapping, EntityMapping setterEntityMapping) {
-			this.fieldContext = fieldContext;
+		public Column(Field field, EntityMapping getterEntityMapping, EntityMapping setterEntityMapping) {
+			this.field = field;
 			this.setterEntityMapping = setterEntityMapping;
 			this.getterEntityMapping = getterEntityMapping;
 		}
 
-		public FieldContext getFieldContext() {
-			return fieldContext;
+		public Field getField() {
+			return field;
 		}
 
 		public EntityMapping getSetterEntityMapping() {

@@ -47,7 +47,7 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 	}
 
 	private Object invoke(Method method, Object[] args) throws Exception {
-		ReflectionUtils.setAccessibleMethod(method);
+		ReflectionUtils.makeAccessible(method);
 		Object bean = method.invoke(
 				Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), args);
 

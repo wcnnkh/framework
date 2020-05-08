@@ -27,15 +27,15 @@ public class DefaultMethodColumn extends AbstractColumn implements MethodColumn 
 		this.field = field;
 		this.name = name;
 		if (field != null) {
-			ReflectionUtils.setAccessibleField(field);
+			ReflectionUtils.makeAccessible(field);
 		}
 
 		if (setter != null) {
-			ReflectionUtils.setAccessibleMethod(setter);
+			ReflectionUtils.makeAccessible(setter);
 		}
 
 		if (getter != null) {
-			ReflectionUtils.setAccessibleMethod(getter);
+			ReflectionUtils.makeAccessible(getter);
 		}
 		
 		this.annotatedElement = MultiAnnotatedElement.forAnnotatedElements(true, field, getter, setter);
