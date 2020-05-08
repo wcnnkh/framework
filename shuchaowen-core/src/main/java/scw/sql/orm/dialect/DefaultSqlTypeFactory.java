@@ -80,7 +80,7 @@ public class DefaultSqlTypeFactory implements SqlTypeFactory {
 		} else if ("NUMERIC".equals(sqlType)) {
 			return NUMERIC;
 		} else {
-			return new DefaultSqlType(sqlType, 0);
+			return new SqlType(sqlType, 0);
 		}
 	}
 }
