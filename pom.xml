@@ -153,12 +153,6 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-oas</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-tencent</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -455,7 +449,6 @@
 	</build>
 	<modules>
 		<module>shuchaowen-core</module>
-		<module>shuchaowen-oas</module>
 		<module>shuchaowen-integration</module>
 		<module>shuchaowen-alibaba</module>
 		<module>shuchaowen-mail</module>

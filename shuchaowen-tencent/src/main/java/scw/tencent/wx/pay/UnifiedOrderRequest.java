@@ -8,7 +8,6 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.lang.Nullable;
-import scw.orm.ORMUtils;
 import scw.util.ToMap;
 
 @Nullable(false)
@@ -52,7 +51,6 @@ public final class UnifiedOrderRequest implements Serializable,
 	private SceneInfo sceneInfo;
 
 	public Map<String, String> toMap() {
-		ORMUtils.getObjectOperations().verify(this);
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("appid", appId);
 		map.put("mch_id", mchId);

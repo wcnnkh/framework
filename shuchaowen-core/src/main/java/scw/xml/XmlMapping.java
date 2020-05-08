@@ -5,6 +5,7 @@ import java.util.Map;
 import org.w3c.dom.Node;
 
 import scw.mapper.Field;
+import scw.mapper.FieldDescriptor;
 import scw.mapper.support.AbstractMapping;
 import scw.util.value.ValueUtils;
 import scw.util.value.property.PropertyFactory;
@@ -23,7 +24,7 @@ public class XmlMapping extends AbstractMapping {
 	}
 	
 	@Override
-	protected boolean isNesting(Field field) {
+	protected boolean isNesting(FieldDescriptor fieldDescriptor) {
 		return false;
 	}
 

@@ -1,8 +1,18 @@
 package scw.mapper;
 
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import scw.aop.ProxyUtils;
+import scw.core.utils.CollectionUtils;
+import scw.lang.NotFoundException;
 import scw.mapper.EntityMapping.Column;
 import scw.util.cache.CacheLoader;
 import scw.util.cache.CacheOperations;
@@ -10,7 +20,7 @@ import scw.util.cache.CacheUtils;
 import scw.util.cache.LocalCacheType;
 
 public abstract class Mapper {
-	private final CacheOperations<Class<?>, FieldMetadata[]> cacheOperations;
+	private transient final CacheOperations<Class<?>, FieldMetadata[]> cacheOperations;
 
 	public Mapper(LocalCacheType localCacheType) {
 		this.cacheOperations = CacheUtils.createLocalCache(localCacheType);
@@ -67,7 +77,7 @@ public abstract class Mapper {
 		}
 		return list;
 	}
-	
+
 	public final LinkedList<Field> getFields(Class<?> clazz, Field parentField, FieldFilter filter,
 			FilterFeature... filterFeatures) {
 		return getFields(clazz, true, parentField, filter, filterFeatures);
@@ -95,9 +105,8 @@ public abstract class Mapper {
 		}
 		return null;
 	}
-	
-	public final Field getField(Class<?> clazz, FieldFilter filter,
-			FilterFeature... filterFeatures) {
+
+	public final Field getField(Class<?> clazz, FieldFilter filter, FilterFeature... filterFeatures) {
 		return getField(clazz, true, null, filter, filterFeatures);
 	}
 
@@ -127,30 +136,12 @@ public abstract class Mapper {
 			}
 		});
 	}
-	
+
 	public final Field getField(Class<?> clazz, String name, Class<?> type, FilterFeature... filterFeatures) {
 		return getField(clazz, true, name, type, null, filterFeatures);
 	}
 
-	public final <T> T mapping(Class<? extends T> entityClass, Field parentField, Mapping mapping) throws Exception {
-		T entity = mapping.newInstance(entityClass);
-		for (Field field : getFields(entityClass, parentField, mapping, FilterFeature.SUPPORT_SETTER)) {
-			Object value = mapping.mapping(entityClass, field, this);
-			if (value == null) {
-				continue;
-			}
-
-			field.getSetter().set(entity, value);
-		}
-		return entity;
-	}
-
-	public final <T> T mapping(Class<? extends T> entityClass, Mapping mapping) throws Exception {
-		return mapping(entityClass, null, mapping);
-	}
-
-	public final EntityMapping getEntityMapping(Class<?> entityClass, Field parentField,
-			EntityResolver entityResolver) {
+	public final EntityMapping getEntityMapping(Class<?> entityClass, Field parentField, EntityResolver entityResolver) {
 		if (entityClass == null || entityClass == Object.class) {
 			return null;
 		}
@@ -175,5 +166,119 @@ public abstract class Mapper {
 
 	public final EntityMapping getEntityMapping(Class<?> entityClass, EntityResolver entityResolver) {
 		return getEntityMapping(entityClass, null, entityResolver);
+	}
+
+	public final Map<String, Object> getFieldValueMap(Object entity, final FieldFilter fieldFilter) {
+		if (entity == null) {
+			return Collections.emptyMap();
+		}
+
+		final Map<String, Object> map = new LinkedHashMap<String, Object>();
+		for (Field field : getFields(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), null,
+				new FieldFilter() {
+
+					public boolean accept(Field field) {
+						return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
+								&& !map.containsKey(field.getGetter().getName()) && acceptInternal(field, fieldFilter);
+					}
+				})) {
+			Object value = field.getGetter().get(entity);
+			if (value == null) {
+				continue;
+			}
+
+			map.put(field.getGetter().getName(), value);
+		}
+		return map;
+	}
+
+	public final Map<String, Object> getFieldValueMap(Object entity) {
+		return getFieldValueMap(entity, null);
+	}
+
+	/**
+	 * @param entity
+	 * @param excludeNames
+	 *            要排除的字段
+	 * @return
+	 */
+	public final Map<String, Object> getFieldValueMapExcludeName(Object entity, final Set<String> excludeNames) {
+		return getFieldValueMap(entity, new FieldFilter() {
+
+			public boolean accept(Field field) {
+				return CollectionUtils.isEmpty(excludeNames) || !excludeNames.contains(field.getGetter().getName());
+			}
+		});
+	}
+
+	/**
+	 * 
+	 * @param entity
+	 * @param effectiveNames
+	 *            要保留的字段
+	 * @return
+	 */
+	public final Map<String, Object> getFieldValueMapEffectiveName(Object entity, final Set<String> effectiveNames) {
+		return getFieldValueMap(entity, new FieldFilter() {
+
+			public boolean accept(Field field) {
+				return !CollectionUtils.isEmpty(effectiveNames) && effectiveNames.contains(field.getGetter().getName());
+			}
+		});
+	}
+
+	@SuppressWarnings("rawtypes")
+	public final <T> List<T> getFieldValueList(Collection entitys, final String fieldName) {
+		return getFieldValueList(entitys, fieldName, null);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public final <T> List<T> getFieldValueList(Collection entitys, final String fieldName,
+			final Class<? extends T> type) {
+		if (CollectionUtils.isEmpty(entitys)) {
+			return Collections.emptyList();
+		}
+
+		Field field = null;
+		List<T> list = new ArrayList<T>(entitys.size());
+		for (Object entity : entitys) {
+			if (entity == null) {
+				continue;
+			}
+
+			if (field == null) {
+				field = getField(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), new FieldFilter() {
+
+					public boolean accept(Field field) {
+						return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
+								&& field.getGetter().getName().equals(fieldName)
+								&& (type == null || type == field.getGetter().getType());
+					}
+				});
+
+				if (field == null) {
+					throw new NotFoundException(entity.getClass() + " [" + fieldName + "]");
+				}
+			}
+
+			Object value = field.getGetter().get(entity);
+			if (value == null) {
+				continue;
+			}
+
+			list.add((T) value);
+		}
+		return list;
+	}
+
+	public final <T> T mapping(Class<? extends T> entityClass, Field parentField, Mapping mapping)
+			throws Exception {
+		return mapping.mapping(entityClass,
+				getFields(entityClass, parentField, mapping), this);
+	}
+	
+	public final <T> T mapping(Class<? extends T> entityClass, Mapping mapping) 
+			throws Exception {
+		return mapping(entityClass, null, mapping);
 	}
 }

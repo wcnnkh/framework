@@ -1,8 +1,7 @@
 package scw.mapper;
 
-public interface Mapping extends FieldFilter{
-	
-	<T> T newInstance(Class<? extends T> entityClass) throws Exception;
-	
-	Object mapping(Class<?> entityClass, Field field, Mapper mapper) throws Exception;
+import java.util.Collection;
+
+public interface Mapping extends FieldFilter {
+	<T> T mapping(Class<? extends T> entityClass, Collection<Field> fields, Mapper mapper) throws Exception;
 }

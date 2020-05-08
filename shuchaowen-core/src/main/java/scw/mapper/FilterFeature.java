@@ -11,6 +11,7 @@ public enum FilterFeature {
 	SETTER_IGNORE_STATIC(new IgnoreSetterStaticFieldFilter()),
 	GETTER_IGNORE_TRANSIENT(new IgnoreGetterTransientFieldFilter()),
 	SETTER_IGNORE_TRANSIENT(new IgnoreSetterTransientFieldFilter()),
+	IGNORE_STATIC(new IgnoreStaticFieldFilter())
 	;
 
 	private final FieldFilter filter;
@@ -21,6 +22,21 @@ public enum FilterFeature {
 
 	public FieldFilter getFilter() {
 		return filter;
+	}
+	
+	private static final class IgnoreStaticFieldFilter implements FieldFilter{
+
+		public boolean accept(Field field) {
+			if(field.isSupportGetter() && Modifier.isStatic(field.getGetter().getModifiers())){
+				return false;
+			}
+			
+			if(field.isSupportSetter() && Modifier.isStatic(field.getSetter().getModifiers())){
+				return false;
+			}
+			return true;
+		}
+		
 	}
 	
 	private static final class IgnoreGetterTransientFieldFilter implements FieldFilter {

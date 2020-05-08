@@ -5,6 +5,7 @@ import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.core.utils.StringUtils;
 import scw.mapper.Field;
+import scw.mapper.FieldDescriptor;
 import scw.mapper.Setter;
 
 public class ParameterFactoryMapping extends AbstractMapping {
@@ -31,11 +32,11 @@ public class ParameterFactoryMapping extends AbstractMapping {
 	}
 
 	@Override
-	protected boolean isNesting(Field field) {
+	protected boolean isNesting(FieldDescriptor fieldDescriptor) {
 		if (!nestingName) {
 			return false;
 		}
 		
-		return super.isNesting(field);
+		return super.isNesting(fieldDescriptor);
 	}
 }
