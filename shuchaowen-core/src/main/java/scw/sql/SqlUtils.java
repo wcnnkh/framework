@@ -1,24 +1,42 @@
 package scw.sql;
 
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
+import scw.core.instance.InstanceUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
+import scw.sql.orm.ObjectRelationalMapping;
 
 public final class SqlUtils {
 	private static final String IGNORE_SQL_START_WITH = StringUtils
 			.toString(GlobalPropertyFactory.getInstance().getString("db.file.sql.ignore.start.with"), "##");
+	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING = InstanceUtils
+			.getSystemConfiguration(ObjectRelationalMapping.class);
 
 	private SqlUtils() {
 	};
+
+	public static ObjectRelationalMapping getObjectRelationalMapping() {
+		return OBJECT_RELATIONAL_MAPPING;
+	}
 
 	public static String getSqlId(Sql sql) {
 		Object[] params = sql.getParams();
@@ -220,5 +238,20 @@ public final class SqlUtils {
 			}
 		}
 		return list;
+	}
+	
+	public static boolean isDataBaseType(Class<?> type) {
+		return ClassUtils.isPrimitiveOrWrapper(type)
+				|| String.class.isAssignableFrom(type)
+				|| Date.class.isAssignableFrom(type)
+				|| java.util.Date.class.isAssignableFrom(type)
+				|| Time.class.isAssignableFrom(type)
+				|| Timestamp.class.isAssignableFrom(type)
+				|| Array.class.isAssignableFrom(type)
+				|| Blob.class.isAssignableFrom(type)
+				|| Clob.class.isAssignableFrom(type)
+				|| BigDecimal.class.isAssignableFrom(type)
+				|| Reader.class.isAssignableFrom(type)
+				|| NClob.class.isAssignableFrom(type);
 	}
 }
