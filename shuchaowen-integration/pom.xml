@@ -35,11 +35,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-generator</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
