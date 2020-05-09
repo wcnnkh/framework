@@ -4,16 +4,16 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import scw.lang.ParameterException;
-import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
+import scw.sql.orm.ObjectRelationalMapping;
 
 public class DeleteByIdSql extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public DeleteByIdSql(Class<?> clazz, String tableName, Object[] parimayKeys) {
-		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
+	public DeleteByIdSql(ObjectRelationalMapping objectRelationalMapping, Class<?> clazz, String tableName, Object[] parimayKeys) {
+		Collection<Column> primaryKeys = objectRelationalMapping.getPrimaryKeys(clazz);
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}

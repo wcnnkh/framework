@@ -3,15 +3,13 @@ package scw.sql.orm.dialect;
 import java.util.Collection;
 
 import scw.sql.Sql;
-import scw.sql.orm.TableNameResolver;
+import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.enums.TableStructureResultField;
 
 public interface SqlDialect {
-	TableNameResolver getTableNameResolver();
+	ObjectRelationalMapping getObjectRelationalMapping();
 	
-	String getTableName(Class<?> clazz, String tableName);
-
-	String getTableName(Class<?> clazz, Object obj, String tableName);
+	SqlTypeFactory getSqlTypeFactory();
 
 	Sql toCreateTableSql(Class<?> clazz, String tableName) throws SqlDialectException;
 

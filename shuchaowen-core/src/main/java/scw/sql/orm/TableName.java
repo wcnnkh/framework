@@ -1,4 +1,4 @@
-package scw.sql.orm.dialect;
+package scw.sql.orm;
 
 public interface TableName {
 	String getTableName();

@@ -8,8 +8,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Year;
 
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.TypeUtils;
 
+@Configuration
 public class DefaultSqlTypeFactory implements SqlTypeFactory {
 	
 	public SqlType getSqlType(Class<?> type) {

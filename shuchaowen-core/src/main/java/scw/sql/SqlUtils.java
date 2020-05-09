@@ -24,18 +24,24 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.sql.orm.ObjectRelationalMapping;
+import scw.sql.orm.dialect.SqlTypeFactory;
 
 public final class SqlUtils {
 	private static final String IGNORE_SQL_START_WITH = StringUtils
 			.toString(GlobalPropertyFactory.getInstance().getString("db.file.sql.ignore.start.with"), "##");
 	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING = InstanceUtils
 			.getSystemConfiguration(ObjectRelationalMapping.class);
-
+	private static final SqlTypeFactory SQL_TYPE_FACTORY = InstanceUtils.getSystemConfiguration(SqlTypeFactory.class);
+	
 	private SqlUtils() {
 	};
 
 	public static ObjectRelationalMapping getObjectRelationalMapping() {
 		return OBJECT_RELATIONAL_MAPPING;
+	}
+
+	public static SqlTypeFactory getSqlTypeFactory() {
+		return SQL_TYPE_FACTORY;
 	}
 
 	public static String getSqlId(Sql sql) {

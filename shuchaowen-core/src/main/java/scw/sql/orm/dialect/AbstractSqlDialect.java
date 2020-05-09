@@ -1,12 +1,21 @@
 package scw.sql.orm.dialect;
 
 import scw.core.Pagination;
-import scw.core.utils.StringUtils;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
+import scw.sql.SqlUtils;
+import scw.sql.orm.ObjectRelationalMapping;
 
 public abstract class AbstractSqlDialect implements SqlDialect {
-
+	
+	public ObjectRelationalMapping getObjectRelationalMapping() {
+		return SqlUtils.getObjectRelationalMapping();
+	}
+	
+	public SqlTypeFactory getSqlTypeFactory() {
+		return SqlUtils.getSqlTypeFactory();
+	}
+	
 	public PaginationSql toPaginationSql(Sql sql, long page, int limit) throws SqlDialectException {
 		String str = sql.getSql();
 		int fromIndex = str.indexOf(" from ");// ignore select
@@ -41,20 +50,5 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 		sb.append("CREATE TABLE IF NOT EXISTS `").append(newTableName).append("`");
 		sb.append(" like `").append(oldTableName).append("`");
 		return new SimpleSql(sb.toString());
-	}
-
-	public String getTableName(Class<?> clazz, Object obj, String tableName) {
-		String tName = tableName;
-		if (StringUtils.isEmpty(tName)) {
-			if (obj instanceof TableName) {
-				tName = ((TableName) obj).getTableName();
-			}
-		}
-		return StringUtils.isEmpty(tName) ? getTableNameResolver().getTableName(clazz) : tName;
-	}
-
-	public String getTableName(Class<?> clazz, String tableName) {
-		return (tableName == null || tableName.length() == 0) ? getTableNameResolver().getTableName(clazz)
-				: tableName;
 	}
 }

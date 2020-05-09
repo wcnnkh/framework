@@ -36,25 +36,20 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 * 默认对象主键的连接符
 	 */
 	public static final char PRIMARY_KEY_CONNECTOR_CHARACTER = StringUtils
-			.parseChar(
-					GlobalPropertyFactory.getInstance().getString(
-							"orm.primary.key.connector.character"), ':');
+			.parseChar(GlobalPropertyFactory.getInstance().getString("orm.primary.key.connector.character"), ':');
 
 	public Mapper getMapper() {
 		return MapperUtils.getMapper();
 	}
 
-	protected void appendObjectKeyByValue(StringBuilder appendable,
-			Column column, Object value) {
+	protected void appendObjectKeyByValue(StringBuilder appendable, Column column, Object value) {
 		appendable.append(PRIMARY_KEY_CONNECTOR_CHARACTER);
-		appendable.append(StringUtils.transferredMeaning(value == null ? null
-				: value.toString(), PRIMARY_KEY_CONNECTOR_CHARACTER));
+		appendable.append(StringUtils.transferredMeaning(value == null ? null : value.toString(),
+				PRIMARY_KEY_CONNECTOR_CHARACTER));
 	}
 
-	public Enumeration<Column> enumeration(Class<?> entityClass,
-			Field parentField) {
-		return new EnumerationColumn(getMapper().enumeration(entityClass, true,
-				parentField, this));
+	public Enumeration<Column> enumeration(Class<?> entityClass, Field parentField) {
+		return new EnumerationColumn(getMapper().enumeration(entityClass, true, parentField, this));
 	}
 
 	public final Enumeration<Column> enumeration(Class<?> entityClass) {
@@ -75,14 +70,12 @@ public class ObjectRelationalMapping implements FieldFilter {
 		return columns;
 	}
 
-	public final Collection<Column> getPrimaryKeys(
-			Class<?> entityClass) {
+	public final Collection<Column> getPrimaryKeys(Class<?> entityClass) {
 		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
 		Enumeration<Column> enumeration = enumeration(entityClass);
 		while (enumeration.hasMoreElements()) {
 			Column column = enumeration.nextElement();
-			if (!column.isPrimaryKey() || column.isEntity()
-					|| columns.contains(column)) {
+			if (!column.isPrimaryKey() || column.isEntity() || columns.contains(column)) {
 				continue;
 			}
 
@@ -91,14 +84,12 @@ public class ObjectRelationalMapping implements FieldFilter {
 		return columns;
 	}
 
-	public final Collection<Column> getNotPrimaryKeys(
-			Class<?> entityClass) {
+	public final Collection<Column> getNotPrimaryKeys(Class<?> entityClass) {
 		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
 		Enumeration<Column> enumeration = enumeration(entityClass);
 		while (enumeration.hasMoreElements()) {
 			Column column = enumeration.nextElement();
-			if (column.isPrimaryKey() || column.isEntity()
-					|| columns.contains(column)) {
+			if (column.isPrimaryKey() || column.isEntity() || columns.contains(column)) {
 				continue;
 			}
 
@@ -122,24 +113,21 @@ public class ObjectRelationalMapping implements FieldFilter {
 		return sb.toString();
 	}
 
-	public final String getObjectKeyById(Class<?> clazz,
-			Collection<Object> primaryKeys) {
+	public final String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(clazz.getName());
-		Iterator<Column> columnIterator = getPrimaryKeys(clazz)
-				.iterator();
+		Iterator<Column> columnIterator = getPrimaryKeys(clazz).iterator();
 		Iterator<Object> valueIterator = primaryKeys.iterator();
 		while (columnIterator.hasNext() && valueIterator.hasNext()) {
 			Column column = columnIterator.next();
-			appendObjectKeyByValue(sb, column,
-					column.toDataBaseValue(valueIterator.next()));
+			appendObjectKeyByValue(sb, column, column.toDataBaseValue(valueIterator.next()));
 		}
 		return sb.toString();
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <K> Map<String, K> getInIdKeyMap(Class<?> clazz,
-			Collection<? extends K> lastPrimaryKeys, Object[] primaryKeys) {
+	public final <K> Map<String, K> getInIdKeyMap(Class<?> clazz, Collection<? extends K> lastPrimaryKeys,
+			Object[] primaryKeys) {
 		if (CollectionUtils.isEmpty(lastPrimaryKeys)) {
 			return Collections.EMPTY_MAP;
 		}
@@ -161,16 +149,17 @@ public class ObjectRelationalMapping implements FieldFilter {
 		}
 		return keyMap;
 	}
-	
-	public Column getColumn(Class<?> entityClass, String name){
+
+	public Column getColumn(Class<?> entityClass, String name) {
 		Enumeration<Column> enumeration = enumeration(entityClass);
 		while (enumeration.hasMoreElements()) {
 			Column column = enumeration.nextElement();
 			if (column.isEntity()) {
 				continue;
 			}
-			
-			if(column.getName().equals(name) || column.getField().getGetter().getName().equals(name) || column.getField().getSetter().getName().equals(name)){
+
+			if (column.getName().equals(name) || column.getField().getGetter().getName().equals(name)
+					|| column.getField().getSetter().getName().equals(name)) {
 				return column;
 			}
 		}
@@ -185,8 +174,8 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 * 必须满足的条件
 	 */
 	public boolean accept(Field field) {
-		if (!(field.isSupportGetter() && field.isSupportSetter() && FilterFeature.IGNORE_STATIC
-				.getFilter().accept(field))) {
+		if (!(field.isSupportGetter() && field.isSupportSetter()
+				&& FilterFeature.IGNORE_STATIC.getFilter().accept(field))) {
 			return false;
 		}
 
@@ -195,8 +184,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 			return false;
 		}
 
-		NotColumn exclude = field.getAnnotatedElement().getAnnotation(
-				NotColumn.class);
+		NotColumn exclude = field.getAnnotatedElement().getAnnotation(NotColumn.class);
 		if (exclude != null) {
 			return false;
 		}
@@ -218,23 +206,37 @@ public class ObjectRelationalMapping implements FieldFilter {
 			return createColumn(enumeration.nextElement());
 		}
 	}
-	
-	public Map<IndexInfo, List<IndexInfo>> getIndexInfoMap(Class<?> entityClass){
+
+	public Map<IndexInfo, List<IndexInfo>> getIndexInfoMap(Class<?> entityClass) {
 		Map<IndexInfo, List<IndexInfo>> indexMap = new LinkedHashMap<IndexInfo, List<IndexInfo>>();
-		for(Column column : getColumns(entityClass)){
-			scw.sql.orm.annotation.Index index = column.getField().getAnnotatedElement().getAnnotation(scw.sql.orm.annotation.Index.class);
+		for (Column column : getColumns(entityClass)) {
+			scw.sql.orm.annotation.Index index = column.getField().getAnnotatedElement()
+					.getAnnotation(scw.sql.orm.annotation.Index.class);
 			if (index == null) {
 				continue;
 			}
-			
-			IndexInfo indexInfo = new IndexInfo(column, index.name(), index.type(), index.length(), index.method(), index.order());
+
+			IndexInfo indexInfo = new IndexInfo(column, index.name(), index.type(), index.length(), index.method(),
+					index.order());
 			List<IndexInfo> list = indexMap.get(indexInfo);
-			if(list == null){
+			if (list == null) {
 				list = new ArrayList<IndexInfo>();
 				indexMap.put(indexInfo, list);
 			}
 			list.add(indexInfo);
 		}
 		return indexMap;
+	}
+
+	public String getTableName(Class<?> tableClass) {
+		Table table = tableClass.getAnnotation(Table.class);
+		if (table == null) {
+			return StringUtils.humpNamingReplacement(tableClass.getSimpleName(), "_");
+		}
+
+		if (StringUtils.isEmpty(table.name())) {
+			return StringUtils.humpNamingReplacement(tableClass.getSimpleName(), "_");
+		}
+		return table.name();
 	}
 }
