@@ -1,10 +1,10 @@
 package scw.tencent.wx.token;
 
 import scw.core.parameter.annotation.ParameterName;
+import scw.data.locks.MemcachedLockFactory;
 import scw.data.memcached.Memcached;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.locks.MemcachedLockFactory;
 import scw.tencent.wx.AccessToken;
 import scw.tencent.wx.WeiXinUtils;
 

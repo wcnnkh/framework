@@ -34,6 +34,7 @@ import scw.sql.orm.ResultSet;
 import scw.sql.orm.TableChange;
 import scw.sql.orm.TableName;
 import scw.sql.orm.annotation.Table;
+import scw.sql.orm.cache.CacheManager;
 import scw.sql.orm.dialect.PaginationSql;
 import scw.sql.orm.dialect.SqlDialect;
 import scw.sql.orm.enums.OperationType;
@@ -41,6 +42,8 @@ import scw.sql.orm.enums.TableStructureResultField;
 
 public abstract class AbstractEntityOperations extends SqlTemplate implements EntityOperations {
 	public abstract SqlDialect getSqlDialect();
+	
+	public abstract CacheManager getCacheManager();
 
 	public final String getTableName(Class<?> clazz, Object obj, String tableName) {
 		String tName = tableName;

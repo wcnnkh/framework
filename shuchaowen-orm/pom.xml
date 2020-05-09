@@ -19,11 +19,6 @@
 		</dependency>
 		<dependency>
 			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-locks</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-data</artifactId>
 			<scope>provided</scope>
 		</dependency>

@@ -99,12 +99,6 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-locks</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-mq</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -460,7 +454,6 @@
 		<module>shuchaowen-zookeeper</module>
 		<module>shuchaowen-embed</module>
 		<module>shuchaowen-dubbo</module>
-		<module>shuchaowen-locks</module>
 		<module>shuchaowen-timer</module>
 		<module>shuchaowen-orm</module>
 		<module>shuchaowen-generator</module>

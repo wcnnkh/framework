@@ -1,10 +1,14 @@
-package scw.locks;
+package scw.data.locks;
 
 import java.util.concurrent.TimeUnit;
 
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.XUtils;
 import scw.data.memcached.Memcached;
+import scw.locks.AbstractLockFactory;
+import scw.locks.Lock;
 
+@Configuration(order=Integer.MIN_VALUE + 1)
 public final class MemcachedLockFactory extends AbstractLockFactory {
 	private final Memcached memcached;
 

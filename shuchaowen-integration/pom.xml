@@ -75,11 +75,6 @@
 
 		<dependency>
 			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-locks</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-mq</artifactId>
 		</dependency>
 	</dependencies>

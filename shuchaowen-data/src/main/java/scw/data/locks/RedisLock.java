@@ -1,10 +1,11 @@
-package scw.locks;
+package scw.data.locks;
 
 import java.util.Collections;
 
 import scw.data.redis.Redis;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
+import scw.locks.AbstractLock;
 
 public final class RedisLock extends AbstractLock {
 	private static final String UNLOCK_SCRIPT = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
