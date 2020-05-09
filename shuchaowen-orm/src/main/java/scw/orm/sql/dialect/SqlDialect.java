@@ -3,8 +3,8 @@ package scw.orm.sql.dialect;
 import java.util.Collection;
 
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.enums.TableStructureResultField;
 import scw.sql.Sql;
+import scw.sql.orm.enums.TableStructureResultField;
 
 public interface SqlDialect {
 	SqlMapper getSqlMapper();

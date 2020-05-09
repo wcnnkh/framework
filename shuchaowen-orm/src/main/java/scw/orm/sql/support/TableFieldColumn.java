@@ -3,8 +3,8 @@ package scw.orm.sql.support;
 import java.lang.reflect.Field;
 
 import scw.core.utils.StringUtils;
-import scw.orm.sql.annotation.Column;
 import scw.orm.support.DefaultFieldColumn;
+import scw.sql.orm.annotation.Column;
 
 public class TableFieldColumn extends DefaultFieldColumn {
 	private String name;

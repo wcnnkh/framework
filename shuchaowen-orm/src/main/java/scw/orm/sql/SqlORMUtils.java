@@ -15,8 +15,8 @@ import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
 import scw.orm.sql.dialect.SqlDialect;
-import scw.orm.sql.enums.OperationType;
 import scw.sql.Sql;
+import scw.sql.orm.enums.OperationType;
 
 public final class SqlORMUtils {
 	private static final TableNameMapping TABLE_NAME_MAPPING = InstanceUtils

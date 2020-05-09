@@ -2,7 +2,7 @@ package scw.orm.sql;
 
 import scw.orm.Mapper;
 import scw.orm.MappingContext;
-import scw.orm.sql.enums.CasType;
+import scw.sql.orm.enums.CasType;
 
 public interface SqlMapper extends Mapper{
 	TableNameMapping getTableNameMapping();

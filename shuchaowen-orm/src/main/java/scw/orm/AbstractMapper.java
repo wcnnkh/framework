@@ -18,14 +18,13 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
 import scw.lang.Nullable;
-import scw.orm.annotation.Entity;
-import scw.orm.annotation.NotColumn;
-import scw.orm.annotation.PrimaryKey;
 import scw.orm.sql.SqlMapper;
 import scw.orm.support.DefaultGetterFilterChain;
 import scw.orm.support.DefaultObjectRelationalMapping;
 import scw.orm.support.DefaultSetterFilterChain;
 import scw.orm.support.SimpleGetter;
+import scw.sql.orm.annotation.NotColumn;
+import scw.sql.orm.annotation.PrimaryKey;
 
 public abstract class AbstractMapper implements Mapper {
 	public abstract char getPrimaryKeyConnectorCharacter();
@@ -216,8 +215,7 @@ public abstract class AbstractMapper implements Mapper {
 	}
 
 	public boolean isEntity(MappingContext context) {
-		return context.getColumn().getAnnotatedElement().getAnnotation(Entity.class) != null
-				|| context.getColumn().getType().getAnnotation(Entity.class) != null;
+		return false;
 	}
 
 	public Collection<MappingContext> getNotPrimaryKeys(MappingContext supperContext, Class<?> clazz) {

@@ -3,7 +3,7 @@ package scw.orm.sql.support;
 import scw.orm.MappingContext;
 import scw.orm.sql.ORMOperations;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.enums.OperationType;
+import scw.sql.orm.enums.OperationType;
 import scw.util.attribute.SimpleAttributes;
 
 @SuppressWarnings("serial")

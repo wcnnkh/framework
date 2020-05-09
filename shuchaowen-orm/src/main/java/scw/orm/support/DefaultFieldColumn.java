@@ -8,14 +8,12 @@ import java.lang.reflect.Type;
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.StringUtils;
 import scw.orm.AbstractColumn;
 import scw.orm.Column;
 import scw.orm.ORMException;
 
 public class DefaultFieldColumn extends AbstractColumn implements Column {
 	private Field field;
-	private String name;
 	private AnnotatedElement annotatedElement;
 	private Method getter;
 	private Method setter;
@@ -35,11 +33,6 @@ public class DefaultFieldColumn extends AbstractColumn implements Column {
 		}
 
 		this.annotatedElement = MultiAnnotatedElement.forAnnotatedElements(true, this.field, this.getter, this.setter);
-		scw.orm.annotation.ColumnName columnName = getAnnotatedElement()
-				.getAnnotation(scw.orm.annotation.ColumnName.class);
-		if (columnName != null && !StringUtils.isEmpty(columnName.value())) {
-			this.name = columnName.value();
-		}
 	}
 
 	public final Field getField() {
@@ -84,7 +77,7 @@ public class DefaultFieldColumn extends AbstractColumn implements Column {
 	}
 
 	public String getName() {
-		return name == null ? field.getName() : name;
+		return field.getName();
 	}
 
 	public boolean isSupportGet() {

@@ -16,9 +16,9 @@ import scw.orm.Column;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.annotation.Counter;
-import scw.orm.sql.enums.CasType;
 import scw.orm.support.SimpleGetter;
+import scw.sql.orm.annotation.Counter;
+import scw.sql.orm.enums.CasType;
 
 public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private static Logger logger = LoggerUtils.getLogger(UpdateSQLByBeanListen.class);

@@ -22,11 +22,11 @@ import scw.io.ResourceUtils;
 import scw.io.serialzer.SerializerUtils;
 import scw.orm.MappingContext;
 import scw.orm.sql.TableChange;
-import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.SqlDialect;
-import scw.orm.sql.enums.OperationType;
 import scw.orm.sql.support.ORMTemplate;
 import scw.sql.Sql;
+import scw.sql.orm.annotation.Table;
+import scw.sql.orm.enums.OperationType;
 import scw.transaction.sql.SqlTransactionUtils;
 import scw.util.queue.Consumer;
 

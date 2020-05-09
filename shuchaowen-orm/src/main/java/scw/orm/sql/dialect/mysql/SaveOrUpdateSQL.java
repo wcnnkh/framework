@@ -9,7 +9,7 @@ import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.annotation.Counter;
+import scw.sql.orm.annotation.Counter;
 import scw.util.MultiIterator;
 
 public class SaveOrUpdateSQL extends MysqlDialectSql {

@@ -9,11 +9,11 @@ import scw.logger.LoggerUtils;
 import scw.orm.MappingContext;
 import scw.orm.ORMException;
 import scw.orm.ObjectRelationalMapping;
-import scw.orm.sql.annotation.CreateTime;
-import scw.orm.sql.annotation.UUID;
-import scw.orm.sql.annotation.UpdateTime;
-import scw.orm.sql.enums.OperationType;
 import scw.orm.sql.support.GeneratorContext;
+import scw.sql.orm.enums.OperationType;
+import scw.sql.orm.support.generation.annotation.CreateTime;
+import scw.sql.orm.support.generation.annotation.UUID;
+import scw.sql.orm.support.generation.annotation.UpdateTime;
 
 public abstract class AbstractGeneratorService implements GeneratorService {
 	protected Logger logger = LoggerUtils.getLogger(getClass());
@@ -46,9 +46,9 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 				return;
 			}
 
-			scw.orm.sql.annotation.SequenceId sequenceId = generatorContext
+			scw.sql.orm.support.generation.annotation.SequenceId sequenceId = generatorContext
 					.getMappingContext().getColumn().getAnnotatedElement()
-					.getAnnotation(scw.orm.sql.annotation.SequenceId.class);
+					.getAnnotation(scw.sql.orm.support.generation.annotation.SequenceId.class);
 			if (sequenceId != null) {
 				generatorContext.getSqlMapper().setter(
 						generatorContext.getMappingContext(),

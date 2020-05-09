@@ -4,7 +4,7 @@ import scw.aop.support.FieldSetterListenUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.orm.ORMInstanceFactory;
-import scw.orm.sql.annotation.Table;
+import scw.sql.orm.annotation.Table;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class TableInstanceFactory implements ORMInstanceFactory {

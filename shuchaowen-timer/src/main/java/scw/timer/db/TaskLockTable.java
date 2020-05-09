@@ -2,8 +2,8 @@ package scw.timer.db;
 
 import java.io.Serializable;
 
-import scw.orm.annotation.PrimaryKey;
-import scw.orm.sql.annotation.Table;
+import scw.sql.orm.annotation.PrimaryKey;
+import scw.sql.orm.annotation.Table;
 
 @Table
 public class TaskLockTable implements Serializable {

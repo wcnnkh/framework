@@ -12,15 +12,15 @@ import scw.core.utils.StringUtils;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.annotation.Column;
-import scw.orm.sql.annotation.Index;
-import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.DefaultSqlType;
 import scw.orm.sql.dialect.DefaultSqlTypeFactory;
 import scw.orm.sql.dialect.SqlType;
 import scw.orm.sql.dialect.SqlTypeFactory;
-import scw.orm.sql.enums.IndexMethod;
-import scw.orm.sql.enums.IndexOrder;
+import scw.sql.orm.annotation.Column;
+import scw.sql.orm.annotation.Index;
+import scw.sql.orm.annotation.Table;
+import scw.sql.orm.enums.IndexMethod;
+import scw.sql.orm.enums.IndexOrder;
 import scw.util.MultiIterator;
 
 public class CreateTableSql extends MysqlDialectSql {

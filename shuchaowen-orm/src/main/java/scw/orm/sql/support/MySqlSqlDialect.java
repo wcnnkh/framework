@@ -21,9 +21,9 @@ import scw.orm.sql.dialect.mysql.SelectByIdSQL;
 import scw.orm.sql.dialect.mysql.SelectInIdSQL;
 import scw.orm.sql.dialect.mysql.UpdateSQL;
 import scw.orm.sql.dialect.mysql.UpdateSQLByBeanListen;
-import scw.orm.sql.enums.TableStructureResultField;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
+import scw.sql.orm.enums.TableStructureResultField;
 
 public class MySqlSqlDialect extends AbstractSqlDialect {
 	public SqlMapper getSqlMapper() {

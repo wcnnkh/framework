@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
 import scw.orm.AbstractColumn;
 import scw.orm.MethodColumn;
@@ -39,10 +38,6 @@ public class DefaultMethodColumn extends AbstractColumn implements MethodColumn 
 		}
 		
 		this.annotatedElement = MultiAnnotatedElement.forAnnotatedElements(true, field, getter, setter);
-		scw.orm.annotation.ColumnName columnName = getAnnotatedElement().getAnnotation(scw.orm.annotation.ColumnName.class);
-		if (columnName != null && !StringUtils.isEmpty(columnName.value())) {
-			this.name = columnName.value();
-		}
 	}
 	
 	public AnnotatedElement getAnnotatedElement() {

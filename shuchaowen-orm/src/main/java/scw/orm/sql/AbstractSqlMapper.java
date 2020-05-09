@@ -2,11 +2,11 @@ package scw.orm.sql;
 
 import scw.orm.AbstractMapper;
 import scw.orm.MappingContext;
-import scw.orm.sql.annotation.AutoIncrement;
-import scw.orm.sql.annotation.Column;
-import scw.orm.sql.annotation.Index;
-import scw.orm.sql.annotation.Table;
-import scw.orm.sql.enums.CasType;
+import scw.sql.orm.annotation.AutoIncrement;
+import scw.sql.orm.annotation.Column;
+import scw.sql.orm.annotation.Index;
+import scw.sql.orm.annotation.Table;
+import scw.sql.orm.enums.CasType;
 
 public abstract class AbstractSqlMapper extends AbstractMapper implements SqlMapper {
 	public boolean isTable(Class<?> clazz) {

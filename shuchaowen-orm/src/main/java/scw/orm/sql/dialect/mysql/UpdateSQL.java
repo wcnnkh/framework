@@ -7,7 +7,7 @@ import java.util.List;
 import scw.orm.MappingContext;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.SqlMapper;
-import scw.orm.sql.enums.CasType;
+import scw.sql.orm.enums.CasType;
 
 public class UpdateSQL extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;

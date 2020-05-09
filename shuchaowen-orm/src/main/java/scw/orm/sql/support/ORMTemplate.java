@@ -32,19 +32,19 @@ import scw.orm.sql.ResultSet;
 import scw.orm.sql.SqlMapper;
 import scw.orm.sql.SqlORMUtils;
 import scw.orm.sql.TableChange;
-import scw.orm.sql.annotation.Generator;
-import scw.orm.sql.annotation.Table;
 import scw.orm.sql.dialect.MysqlSelect;
 import scw.orm.sql.dialect.PaginationSql;
 import scw.orm.sql.dialect.Select;
 import scw.orm.sql.dialect.SqlDialect;
-import scw.orm.sql.enums.OperationType;
-import scw.orm.sql.enums.TableStructureResultField;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.Sql;
 import scw.sql.SqlTemplate;
 import scw.sql.SqlUtils;
+import scw.sql.orm.annotation.Table;
+import scw.sql.orm.enums.OperationType;
+import scw.sql.orm.enums.TableStructureResultField;
+import scw.sql.orm.support.generation.annotation.Generator;
 
 public abstract class ORMTemplate extends SqlTemplate implements ORMOperations {
 	public abstract GeneratorService getGeneratorService();
