@@ -11,7 +11,7 @@ import java.time.Year;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.TypeUtils;
 
-@Configuration
+@Configuration(order=Integer.MIN_VALUE)
 public class DefaultSqlTypeFactory implements SqlTypeFactory {
 	
 	public SqlType getSqlType(Class<?> type) {

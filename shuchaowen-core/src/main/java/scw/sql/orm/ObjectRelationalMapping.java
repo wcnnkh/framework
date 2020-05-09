@@ -30,7 +30,7 @@ import scw.sql.orm.annotation.Table;
  * @author shuchaowen
  *
  */
-@Configuration(order = Integer.MIN_VALUE)
+@Configuration(order = Integer.MIN_VALUE, value=ObjectRelationalMapping.class)
 public class ObjectRelationalMapping implements FieldFilter {
 	/**
 	 * 默认对象主键的连接符
