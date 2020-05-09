@@ -1,7 +1,7 @@
 package scw.orm.sql.support;
 
-import scw.data.RedisDataTemplete;
 import scw.data.redis.Redis;
+import scw.data.redis.RedisDataTemplete;
 import scw.generator.id.SequenceIdGenerator;
 import scw.locks.RedisLockFactory;
 

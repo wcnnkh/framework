@@ -39,7 +39,7 @@ import scw.sql.orm.dialect.SqlDialect;
 import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.enums.TableStructureResultField;
 
-public abstract class AbstractObjectOperations extends SqlTemplate implements EntityOperations {
+public abstract class AbstractEntityOperations extends SqlTemplate implements EntityOperations {
 	public abstract SqlDialect getSqlDialect();
 
 	public final String getTableName(Class<?> clazz, Object obj, String tableName) {

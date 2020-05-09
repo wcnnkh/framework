@@ -1,12 +1,11 @@
-package scw.data;
+package scw.data.redis;
 
 import java.util.Collection;
 import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
+import scw.data.DataTemplete;
 import scw.data.cas.CASOperations;
-import scw.data.redis.Redis;
-import scw.data.redis.RedisUtils;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
 

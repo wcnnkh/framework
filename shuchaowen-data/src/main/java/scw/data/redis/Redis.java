@@ -1,8 +1,9 @@
 package scw.data.redis;
 
+import scw.data.DataTemplete;
 import scw.data.cas.CASOperations;
 
-public interface Redis {
+public interface Redis extends DataTemplete{
 	RedisOperations<String, String> getStringOperations();
 
 	RedisOperations<byte[], byte[]> getBinaryOperations();

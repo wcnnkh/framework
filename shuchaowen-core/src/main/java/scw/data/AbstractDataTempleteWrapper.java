@@ -3,80 +3,74 @@ package scw.data;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.data.memcached.Memcached;
-
-public class DataTempleteWrapper implements DataTemplete {
-	private final DataTemplete cacheService;
-
-	public DataTempleteWrapper(Memcached cacheService) {
-		this.cacheService = cacheService;
-	}
+public abstract class AbstractDataTempleteWrapper implements DataTemplete {
+	public abstract DataTemplete getDataTemplete();
 
 	public <T> T get(String key) {
-		return cacheService.get(key);
+		return getDataTemplete().get(key);
 	}
 
 	public <T> T getAndTouch(String key, int newExp) {
-		return cacheService.getAndTouch(key, newExp);
+		return getDataTemplete().getAndTouch(key, newExp);
 	}
 
 	public void set(String key, Object value) {
-		cacheService.set(key, value);
+		getDataTemplete().set(key, value);
 	}
 
 	public void set(String key, int exp, Object value) {
-		cacheService.set(key, exp, value);
+		getDataTemplete().set(key, exp, value);
 	}
 
 	public boolean add(String key, Object value) {
-		return cacheService.add(key, value);
+		return getDataTemplete().add(key, value);
 	}
 
 	public boolean add(String key, int exp, Object value) {
-		return cacheService.add(key, exp, value);
+		return getDataTemplete().add(key, exp, value);
 	}
 
 	public boolean touch(String key, int exp) {
-		return cacheService.touch(key, exp);
+		return getDataTemplete().touch(key, exp);
 	}
 
 	public <T> Map<String, T> get(Collection<String> keyCollections) {
-		return cacheService.get(keyCollections);
+		return getDataTemplete().get(keyCollections);
 	}
 
 	public boolean delete(String key) {
-		return cacheService.delete(key);
+		return getDataTemplete().delete(key);
 	}
 
 	public boolean isExist(String key) {
-		return cacheService.isExist(key);
+		return getDataTemplete().isExist(key);
 	}
 
 	public long incr(String key, long delta) {
-		return cacheService.incr(key, delta);
+		return getDataTemplete().incr(key, delta);
 	}
 
 	public long incr(String key, long delta, long initialValue) {
-		return cacheService.incr(key, delta, initialValue);
+		return getDataTemplete().incr(key, delta, initialValue);
 	}
 
 	public long incr(String key, long delta, long initialValue, int exp) {
-		return cacheService.incr(key, delta, initialValue, exp);
+		return getDataTemplete().incr(key, delta, initialValue, exp);
 	}
 
 	public long decr(String key, long delta) {
-		return cacheService.decr(key, delta);
+		return getDataTemplete().decr(key, delta);
 	}
 
 	public long decr(String key, long delta, long initialValue) {
-		return cacheService.decr(key, delta, initialValue);
+		return getDataTemplete().decr(key, delta, initialValue);
 	}
 
 	public long decr(String key, long delta, long initialValue, int exp) {
-		return cacheService.decr(key, delta, initialValue, exp);
+		return getDataTemplete().decr(key, delta, initialValue, exp);
 	}
 
 	public void delete(Collection<String> keys) {
-		cacheService.delete(keys);
+		getDataTemplete().delete(keys);
 	}
 }
