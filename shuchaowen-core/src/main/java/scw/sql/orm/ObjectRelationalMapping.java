@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import scw.core.GlobalPropertyFactory;
-import scw.core.instance.annotation.Configuration;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
@@ -30,7 +29,6 @@ import scw.sql.orm.annotation.Table;
  * @author shuchaowen
  *
  */
-@Configuration(order = Integer.MIN_VALUE, value=ObjectRelationalMapping.class)
 public class ObjectRelationalMapping implements FieldFilter {
 	/**
 	 * 默认对象主键的连接符

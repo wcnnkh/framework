@@ -32,10 +32,15 @@ import scw.sql.orm.enums.OperationType;
 public final class SqlUtils {
 	private static final String IGNORE_SQL_START_WITH = StringUtils
 			.toString(GlobalPropertyFactory.getInstance().getString("db.file.sql.ignore.start.with"), "##");
-	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING = InstanceUtils
-			.getSystemConfiguration(ObjectRelationalMapping.class);
 	private static final SqlTypeFactory SQL_TYPE_FACTORY = InstanceUtils.getSystemConfiguration(SqlTypeFactory.class);
-	
+	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING;
+	static {
+		ObjectRelationalMapping objectRelationalMapping = InstanceUtils
+				.getSystemConfiguration(ObjectRelationalMapping.class);
+		OBJECT_RELATIONAL_MAPPING = objectRelationalMapping == null ? new ObjectRelationalMapping()
+				: objectRelationalMapping;
+	}
+
 	private SqlUtils() {
 	};
 
@@ -248,23 +253,18 @@ public final class SqlUtils {
 		}
 		return list;
 	}
-	
+
 	public static boolean isDataBaseType(Class<?> type) {
-		return ClassUtils.isPrimitiveOrWrapper(type)
-				|| String.class.isAssignableFrom(type)
-				|| Date.class.isAssignableFrom(type)
-				|| java.util.Date.class.isAssignableFrom(type)
-				|| Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type)
-				|| Array.class.isAssignableFrom(type)
-				|| Blob.class.isAssignableFrom(type)
-				|| Clob.class.isAssignableFrom(type)
-				|| BigDecimal.class.isAssignableFrom(type)
-				|| Reader.class.isAssignableFrom(type)
-				|| NClob.class.isAssignableFrom(type);
+		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
+				|| Date.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
+				|| Time.class.isAssignableFrom(type) || Timestamp.class.isAssignableFrom(type)
+				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
+				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
+				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
 	}
-	
-	public static Sql toSql(OperationType operationType, SqlDialect sqlDialect, Class<?> clazz, Object bean, String tableName) {
+
+	public static Sql toSql(OperationType operationType, SqlDialect sqlDialect, Class<?> clazz, Object bean,
+			String tableName) {
 		switch (operationType) {
 		case SAVE:
 			return sqlDialect.toInsertSql(bean, clazz, tableName);
