@@ -23,8 +23,11 @@ import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
+import scw.lang.NotSupportedException;
 import scw.sql.orm.ObjectRelationalMapping;
+import scw.sql.orm.dialect.SqlDialect;
 import scw.sql.orm.dialect.SqlTypeFactory;
+import scw.sql.orm.enums.OperationType;
 
 public final class SqlUtils {
 	private static final String IGNORE_SQL_START_WITH = StringUtils
@@ -259,5 +262,20 @@ public final class SqlUtils {
 				|| BigDecimal.class.isAssignableFrom(type)
 				|| Reader.class.isAssignableFrom(type)
 				|| NClob.class.isAssignableFrom(type);
+	}
+	
+	public static Sql toSql(OperationType operationType, SqlDialect sqlDialect, Class<?> clazz, Object bean, String tableName) {
+		switch (operationType) {
+		case SAVE:
+			return sqlDialect.toInsertSql(bean, clazz, tableName);
+		case DELETE:
+			return sqlDialect.toDeleteSql(bean, clazz, tableName);
+		case SAVE_OR_UPDATE:
+			return sqlDialect.toSaveOrUpdateSql(bean, clazz, tableName);
+		case UPDATE:
+			return sqlDialect.toUpdateSql(bean, clazz, tableName);
+		default:
+			throw new NotSupportedException(operationType.name());
+		}
 	}
 }

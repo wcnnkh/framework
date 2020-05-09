@@ -1,4 +1,4 @@
-package scw.orm.sql.dialect;
+package scw.db;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,11 +11,10 @@ import java.util.Map.Entry;
 
 import scw.core.Pagination;
 import scw.lang.ParameterException;
-import scw.orm.MappingContext;
-import scw.orm.sql.ORMOperations;
-import scw.orm.sql.ResultSet;
-import scw.orm.sql.dialect.mysql.MysqlDialectSql;
 import scw.sql.Sql;
+import scw.sql.orm.Column;
+import scw.sql.orm.ResultSet;
+import scw.sql.orm.dialect.mysql.MysqlDialectSql;
 
 /**
  * 暂不支持分表
@@ -28,12 +27,10 @@ public abstract class Select extends MysqlDialectSql {
 	private static final long serialVersionUID = 1L;
 	private Map<String, String> associationWhereMap;
 	private HashSet<String> selectTableSet;
-	protected ORMOperations orm;
-	protected SqlDialect sqlDialect;
+	protected AbstractDB abstractDB;
 
-	public Select(ORMOperations orm, SqlDialect sqlDialect) {
-		this.orm = orm;
-		this.sqlDialect = sqlDialect;
+	public Select(AbstractDB abstractDB) {
+		this.abstractDB = abstractDB;
 	}
 
 	public Select from(Class<?> tableClass) {
@@ -70,7 +67,7 @@ public abstract class Select extends MysqlDialectSql {
 	}
 
 	public String getTableName(Class<?> tableClass) {
-		return sqlDialect.getSqlMapper().getTableNameMapping().getTableName(tableClass);
+		return abstractDB.getTableName(tableClass, null);
 	}
 
 	protected void addSelectTable(String tableName) {
@@ -129,8 +126,8 @@ public abstract class Select extends MysqlDialectSql {
 		return false;
 	}
 
-	public ORMOperations getORMOperations() {
-		return orm;
+	public AbstractDB getAbstractDB() {
+		return abstractDB;
 	}
 
 	public abstract Sql toSQL(String select, boolean order);
@@ -149,8 +146,8 @@ public abstract class Select extends MysqlDialectSql {
 			associationWhereMap = new HashMap<String, String>();
 		}
 
-		Collection<MappingContext> t1 = sqlDialect.getSqlMapper().getPrimaryKeys(tableClass1);
-		Collection<MappingContext> t2 = sqlDialect.getSqlMapper().getPrimaryKeys(tableClass2);
+		Collection<Column> t1 = abstractDB.getSqlDialect().getObjectRelationalMapping().getPrimaryKeys(tableClass1);
+		Collection<Column> t2 = abstractDB.getSqlDialect().getObjectRelationalMapping().getPrimaryKeys(tableClass2);
 		String tName1 = getTableName(tableClass1);
 		String tName2 = getTableName(tableClass2);
 		if (table2Columns == null || table2Columns.length == 0) {
@@ -159,13 +156,13 @@ public abstract class Select extends MysqlDialectSql {
 				throw new ParameterException("primary key count atypism");
 			}
 
-			Iterator<MappingContext> iterator1 = t1.iterator();
-			Iterator<MappingContext> iterator2 = t2.iterator();
+			Iterator<Column> iterator1 = t1.iterator();
+			Iterator<Column> iterator2 = t2.iterator();
 			while (iterator1.hasNext() && iterator2.hasNext()) {
-				MappingContext c1 = iterator1.next();
-				MappingContext c2 = iterator2.next();
-				String n1 = getSqlName(tName1, c1.getColumn().getName());
-				String n2 = getSqlName(tName2, c2.getColumn().getName());
+				Column c1 = iterator1.next();
+				Column c2 = iterator2.next();
+				String n1 = getSqlName(tName1, c1.getName());
+				String n2 = getSqlName(tName2, c2.getName());
 				if (checkWhere(associationWhereMap, n1, n2)) {
 					continue;
 				}
@@ -178,14 +175,14 @@ public abstract class Select extends MysqlDialectSql {
 				throw new ParameterException("primary key count atypism");
 			}
 
-			Iterator<MappingContext> iterator1 = t1.iterator();
-			Iterator<MappingContext> iterator2 = t2.iterator();
+			Iterator<Column> iterator1 = t1.iterator();
+			Iterator<Column> iterator2 = t2.iterator();
 			while (iterator1.hasNext() && iterator2.hasNext())
 				for (int i = 0; i < table2Columns.length; i++) {
-					MappingContext c1 = iterator1.next();
-					MappingContext c2 = iterator2.next();
-					String n1 = getSqlName(tName2, c2.getColumn().getName());
-					String n2 = getSqlName(tName1, c1.getColumn().getName());
+					Column c1 = iterator1.next();
+					Column c2 = iterator2.next();
+					String n1 = getSqlName(tName2, c2.getName());
+					String n2 = getSqlName(tName1, c1.getName());
 					if (checkWhere(associationWhereMap, n1, n2)) {
 						continue;
 					}

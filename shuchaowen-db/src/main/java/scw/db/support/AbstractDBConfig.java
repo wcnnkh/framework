@@ -15,17 +15,15 @@ import scw.data.redis.Redis;
 import scw.data.redis.RedisDataTemplete;
 import scw.db.AsyncExecute;
 import scw.db.DBConfig;
-import scw.db.cache.CacheManager;
-import scw.db.cache.DefaultCacheManager;
-import scw.db.cache.TemporaryCacheManager;
-import scw.orm.sql.GeneratorService;
-import scw.orm.sql.SqlMapper;
-import scw.orm.sql.SqlORMUtils;
-import scw.orm.sql.dialect.SqlDialect;
-import scw.orm.sql.support.MemcachedGeneratorService;
-import scw.orm.sql.support.MemoryGeneratorService;
-import scw.orm.sql.support.MySqlSqlDialect;
-import scw.orm.sql.support.RedisGeneratorService;
+import scw.db.MemcachedGeneratorService;
+import scw.db.MemoryGeneratorService;
+import scw.db.RedisGeneratorService;
+import scw.sql.orm.cache.CacheManager;
+import scw.sql.orm.cache.DefaultCacheManager;
+import scw.sql.orm.cache.TemporaryCacheManager;
+import scw.sql.orm.dialect.MySqlSqlDialect;
+import scw.sql.orm.dialect.SqlDialect;
+import scw.sql.orm.support.generation.GeneratorService;
 import scw.util.queue.MemoryMessageQueue;
 import scw.util.queue.MemoryQueue;
 import scw.util.queue.MessageQueue;
@@ -61,13 +59,13 @@ public abstract class AbstractDBConfig implements DBConfig, Destroy {
 	}
 
 	public void initByMemcached(Map properties, Memcached memcached) {
-		this.cacheManager = createCacheManager(properties, memcached, SqlORMUtils.getSqlMapper());
+		this.cacheManager = createCacheManager(properties, memcached);
 		this.asyncQueue = createAsyncQueue(properties, memcached);
 		this.generatorService = createMemcachedGeneratorService(properties, memcached);
 	}
 
 	public void initByRedis(Map properties, Redis redis) {
-		this.cacheManager = createCacheManager(properties, redis, SqlORMUtils.getSqlMapper());
+		this.cacheManager = createCacheManager(properties, redis);
 		this.asyncQueue = createAsyncQueue(properties, redis);
 		this.generatorService = createRedisGeneratorService(properties, redis);
 	}
@@ -95,14 +93,14 @@ public abstract class AbstractDBConfig implements DBConfig, Destroy {
 		return new RedisGeneratorService(redis);
 	}
 
-	public static CacheManager createCacheManager(Map properties, Memcached memcached, SqlMapper mappingOperations) {
+	public static CacheManager createCacheManager(Map properties, Memcached memcached) {
 		String cachePrefix = StringUtils.toString(properties.get("cache.prefix"), Constants.DEFAULT_PREFIX);
-		return new TemporaryCacheManager(mappingOperations, memcached, true, cachePrefix);
+		return new TemporaryCacheManager(memcached, true, cachePrefix);
 	}
 
-	public static CacheManager createCacheManager(Map properties, Redis redis, SqlMapper mappingOperations) {
+	public static CacheManager createCacheManager(Map properties, Redis redis) {
 		String cachePrefix = StringUtils.toString(properties.get("cache.prefix"), Constants.DEFAULT_PREFIX);
-		return new TemporaryCacheManager(mappingOperations, new RedisDataTemplete(redis), true, cachePrefix);
+		return new TemporaryCacheManager(new RedisDataTemplete(redis), true, cachePrefix);
 	}
 
 	public static MessageQueue<AsyncExecute> createAsyncQueue(Map properties, Memcached memcached) {

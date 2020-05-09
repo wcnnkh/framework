@@ -10,6 +10,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.XTime;
 import scw.data.TemporaryCache;
 import scw.data.WrapperTemporaryCache;
+import scw.sql.orm.cache.annotation.TemporaryCacheEnable;
 
 public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> {
 	private static final String KEY = "key:";

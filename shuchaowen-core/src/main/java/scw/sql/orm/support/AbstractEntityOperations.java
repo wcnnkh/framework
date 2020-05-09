@@ -2,6 +2,7 @@ package scw.sql.orm.support;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import scw.aop.ProxyUtils;
 import scw.aop.support.FieldSetterListen;
@@ -20,7 +22,6 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
-import scw.lang.NotSupportedException;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.Sql;
@@ -39,11 +40,16 @@ import scw.sql.orm.dialect.PaginationSql;
 import scw.sql.orm.dialect.SqlDialect;
 import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.enums.TableStructureResultField;
+import scw.sql.orm.support.generation.GeneratorContext;
+import scw.sql.orm.support.generation.GeneratorService;
+import scw.sql.orm.support.generation.annotation.Generator;
 
 public abstract class AbstractEntityOperations extends SqlTemplate implements EntityOperations {
 	public abstract SqlDialect getSqlDialect();
-	
+
 	public abstract CacheManager getCacheManager();
+
+	public abstract GeneratorService getGeneratorService();
 
 	public final String getTableName(Class<?> clazz, Object obj, String tableName) {
 		String tName = tableName;
@@ -60,11 +66,11 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 				? getSqlDialect().getObjectRelationalMapping().getTableName(clazz) : tableName;
 	}
 
-	public <T> T getById(Class<? extends T> type, Object... params) {
+	public final <T> T getById(Class<? extends T> type, Object... params) {
 		return getById(null, type, params);
 	}
 
-	public <T> List<T> getByIdList(Class<? extends T> type, Object... params) {
+	public final <T> List<T> getByIdList(Class<? extends T> type, Object... params) {
 		return getByIdList(null, type, params);
 	}
 
@@ -72,10 +78,19 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
-
-		String tName = getTableName(type, tableName);
-		ResultSet resultSet = select(getSqlDialect().toSelectByIdSql(type, tName, params));
-		return resultSet.getFirst().get(type, tName);
+		
+		T t = getCacheManager().getById(type, params);
+		if(t == null){
+			if(getCacheManager().isSearchDB(type, params)){
+				String tName = getTableName(type, tableName);
+				ResultSet resultSet = select(getSqlDialect().toSelectByIdSql(type, tName, params));
+				t = resultSet.getFirst().get(type, tName);
+				if (t != null) {
+					getCacheManager().save(t);
+				}
+			}
+		}
+		return t;
 	}
 
 	public <T> List<T> getByIdList(String tableName, Class<? extends T> type, Object... params) {
@@ -100,24 +115,23 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 		});
 	}
 
-	public Sql toSql(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
-		switch (operationType) {
-		case SAVE:
-			return getSqlDialect().toInsertSql(bean, clazz, tableName);
-		case DELETE:
-			return getSqlDialect().toDeleteSql(bean, clazz, tableName);
-		case SAVE_OR_UPDATE:
-			return getSqlDialect().toSaveOrUpdateSql(bean, clazz, tableName);
-		case UPDATE:
-			return getSqlDialect().toUpdateSql(bean, clazz, tableName);
-		default:
-			throw new NotSupportedException(operationType.name());
+	protected void generator(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
+		GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean,
+				getSqlDialect().getObjectRelationalMapping(), tableName);
+		for (Column column : getSqlDialect().getObjectRelationalMapping().getPrimaryKeys(clazz)) {
+			Generator generator = column.getAnnotatedElement().getAnnotation(Generator.class);
+			if (generator == null) {
+				return;
+			}
+
+			generatorContext.setColumn(column);
+			getGeneratorService().process(generatorContext);
 		}
 	}
 
 	protected boolean orm(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
 		String tName = getTableName(clazz, bean, tableName);
-		Sql sql = toSql(operationType, clazz, bean, tName);
+		Sql sql = SqlUtils.toSql(operationType, getSqlDialect(), clazz, bean, tName);
 		Connection connection = null;
 		try {
 			connection = getUserConnection();
@@ -152,7 +166,11 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 
 	public boolean save(Object bean, String tableName) {
 		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
-		return orm(OperationType.SAVE, userClass, bean, getTableName(userClass, bean, tableName));
+		if (orm(OperationType.SAVE, userClass, bean, getTableName(userClass, bean, tableName))) {
+			getCacheManager().save(bean);
+			return true;
+		}
+		return false;
 	}
 
 	public boolean update(Object bean, String tableName) {
@@ -164,16 +182,29 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 		}
 
 		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
-		return orm(OperationType.UPDATE, userClass, bean, getTableName(userClass, bean, tableName));
-	}
-
-	public boolean delete(Object bean) {
-		return delete(bean, null);
+		if (orm(OperationType.UPDATE, userClass, bean, getTableName(userClass, bean, tableName))) {
+			getCacheManager().update(bean);
+			return true;
+		}
+		return false;
 	}
 
 	public boolean delete(Object bean, String tableName) {
 		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
-		return orm(OperationType.DELETE, userClass, bean, tableName);
+		if (orm(OperationType.DELETE, userClass, bean, tableName)) {
+			getCacheManager().delete(bean);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean saveOrUpdate(Object bean, String tableName) {
+		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
+		if (orm(OperationType.SAVE_OR_UPDATE, userClass, bean, getTableName(userClass, bean, tableName))) {
+			getCacheManager().saveOrUpdate(bean);
+			return true;
+		}
+		return false;
 	}
 
 	public boolean deleteById(Class<?> type, Object... params) {
@@ -182,28 +213,51 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 
 	public boolean deleteById(String tableName, Class<?> type, Object... params) {
 		Sql sql = getSqlDialect().toDeleteByIdSql(type, getTableName(type, tableName), params);
-		return update(sql) != 0;
+		if (update(sql) != 0) {
+			getCacheManager().deleteById(type, params);
+			return true;
+		}
+		return false;
 	}
 
-	public boolean save(Object bean) {
+	public final boolean save(Object bean) {
 		return save(bean, null);
 	}
 
-	public boolean update(Object bean) {
+	public final boolean update(Object bean) {
 		return update(bean, null);
 	}
-
-	public boolean saveOrUpdate(Object bean) {
-		return saveOrUpdate(bean, null);
+	
+	public final boolean delete(Object bean) {
+		return delete(bean, null);
 	}
 
-	public boolean saveOrUpdate(Object bean, String tableName) {
-		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
-		return orm(OperationType.SAVE_OR_UPDATE, userClass, bean, getTableName(userClass, bean, tableName));
+	public final boolean saveOrUpdate(Object bean) {
+		return saveOrUpdate(bean, null);
+	}
+	
+	protected <K, V> Map<K, V> getInIdListInternal(Class<? extends V> type, String tableName,
+			Collection<? extends K> inPrimaryKeys, Object... primaryKeys){
+		String tName = getTableName(type, tableName);
+		Sql sql = getSqlDialect().toSelectInIdSql(type, tName, primaryKeys, inPrimaryKeys);
+		ResultSet resultSet = select(sql);
+		List<V> list = resultSet.getList(type, tName);
+		if (list == null || list.isEmpty()) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, K> keyMap = getSqlDialect().getObjectRelationalMapping().getInIdKeyMap(type, inPrimaryKeys,
+				primaryKeys);
+		Map<K, V> map = new LinkedHashMap<K, V>();
+		for (V v : list) {
+			String key = getSqlDialect().getObjectRelationalMapping().getObjectKey(type, v);
+			map.put(keyMap.get(key), v);
+		}
+		return map;
 	}
 
 	@SuppressWarnings("unchecked")
-	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, String tableName,
+	public final <K, V> Map<K, V> getInIdList(Class<? extends V> type, String tableName,
 			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		if (CollectionUtils.isEmpty(inPrimaryKeys)) {
 			return Collections.EMPTY_MAP;
@@ -218,25 +272,51 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
 		}
 
-		String tName = getTableName(type, tableName);
-		Sql sql = getSqlDialect().toSelectInIdSql(type, tName, primaryKeys, inPrimaryKeys);
-		ResultSet resultSet = select(sql);
-		List<V> list = resultSet.getList(type, tName);
-		if (list == null || list.isEmpty()) {
-			return Collections.EMPTY_MAP;
+		Map<K, V> map = getCacheManager().getInIdList(type, inPrimaryKeys, primaryKeys);
+		if (CollectionUtils.isEmpty(map)) {
+			Map<K, V> valueMap = getInIdListInternal(type, tableName, inPrimaryKeys,
+					primaryKeys);
+			if (!CollectionUtils.isEmpty(valueMap)) {
+				for (Entry<K, V> entry : valueMap.entrySet()) {
+					getCacheManager().save(entry.getValue());
+				}
+			}
+			return valueMap;
 		}
 
-		Map<String, K> keyMap = getSqlDialect().getObjectRelationalMapping().getInIdKeyMap(type, inPrimaryKeys,
-				primaryKeys);
-		Map<K, V> map = new LinkedHashMap<K, V>();
-		for (V v : list) {
-			String key = getSqlDialect().getObjectRelationalMapping().getObjectKey(type, v);
-			map.put(keyMap.get(key), v);
+		if (map.size() == inPrimaryKeys.size()) {
+			return map;
+		}
+
+		List<K> notFoundList = new ArrayList<K>(inPrimaryKeys.size());
+		for (K k : inPrimaryKeys) {
+			if (k == null) {
+				continue;
+			}
+
+			if (map.containsKey(k)) {
+				continue;
+			}
+
+			notFoundList.add(k);
+		}
+
+		if (!CollectionUtils.isEmpty(notFoundList)) {
+			Map<K, V> dbMap = getInIdListInternal(type, tableName, notFoundList,
+					primaryKeys);
+			if (dbMap == null || dbMap.isEmpty()) {
+				return map;
+			}
+
+			for (Entry<K, V> entry : dbMap.entrySet()) {
+				getCacheManager().save(entry.getValue());
+			}
+			map.putAll(dbMap);
 		}
 		return map;
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIdList, Object... params) {
+	public final <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIdList, Object... params) {
 		return getInIdList(type, null, inIdList, params);
 	}
 

@@ -15,7 +15,7 @@ public final class GeneratorContext extends SimpleAttributes<Object, Object> {
 	private final ObjectRelationalMapping objectRelationalMapping;
 	private final String tableName;// ORM 入参，并非实际表名
 
-	protected GeneratorContext(EntityOperations entityOperations, OperationType operationType, Object bean,
+	public GeneratorContext(EntityOperations entityOperations, OperationType operationType, Object bean,
 			ObjectRelationalMapping objectRelationalMapping, String tableName) {
 		this.entityOperations = entityOperations;
 		this.operationType = operationType;

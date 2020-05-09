@@ -45,12 +45,6 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-orm</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-dubbo</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -455,7 +449,6 @@
 		<module>shuchaowen-embed</module>
 		<module>shuchaowen-dubbo</module>
 		<module>shuchaowen-timer</module>
-		<module>shuchaowen-orm</module>
 		<module>shuchaowen-generator</module>
 		<module>shuchaowen-db</module>
 		<module>shuchaowen-mq</module>

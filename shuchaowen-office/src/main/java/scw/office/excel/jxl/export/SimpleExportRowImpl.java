@@ -1,6 +1,6 @@
 package scw.office.excel.jxl.export;
 
-import scw.orm.sql.ResultMapping;
+import scw.sql.orm.ResultMapping;
 
 public class SimpleExportRowImpl implements SqlExportRow {
 	private int colCount;

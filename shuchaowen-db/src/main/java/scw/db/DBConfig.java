@@ -1,9 +1,9 @@
 package scw.db;
 
-import scw.db.cache.CacheManager;
 import scw.db.database.DataBase;
-import scw.orm.sql.GeneratorService;
 import scw.sql.ConnectionFactory;
+import scw.sql.orm.cache.CacheManager;
+import scw.sql.orm.support.generation.GeneratorService;
 import scw.util.queue.MessageQueue;
 
 public interface DBConfig extends ConnectionFactory {

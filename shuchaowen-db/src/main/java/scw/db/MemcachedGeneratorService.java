@@ -1,8 +1,9 @@
-package scw.orm.sql.support;
+package scw.db;
 
+import scw.data.generation.SequenceIdGenerator;
 import scw.data.locks.MemcachedLockFactory;
 import scw.data.memcached.Memcached;
-import scw.generator.id.SequenceIdGenerator;
+import scw.sql.orm.support.generation.DefaultGeneratorService;
 
 public class MemcachedGeneratorService extends DefaultGeneratorService {
 

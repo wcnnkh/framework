@@ -8,9 +8,9 @@ import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-import scw.orm.sql.ResultMapping;
-import scw.orm.sql.support.DefaultResultMapping;
 import scw.sql.ResultSetCallback;
+import scw.sql.orm.ResultMapping;
+import scw.sql.orm.support.DefaultResultMapping;
 
 public class ResultSetToExeclRowCall implements ResultSetCallback{
 	// 创建Excel工作薄

@@ -1,8 +1,9 @@
-package scw.orm.sql.support;
+package scw.db;
 
 import scw.data.Counter;
-import scw.generator.id.SequenceIdGenerator;
+import scw.data.generation.SequenceIdGenerator;
 import scw.locks.JdkLockFactory;
+import scw.sql.orm.support.generation.DefaultGeneratorService;
 
 public class MemoryGeneratorService extends DefaultGeneratorService {
 

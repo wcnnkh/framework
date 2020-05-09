@@ -1,6 +1,7 @@
 package scw.sql.orm.cache;
 
 import scw.core.utils.XTime;
+import scw.sql.orm.cache.annotation.TemporaryCacheEnable;
 
 final class TemporaryCacheConfig {
 	private final int exp;
