@@ -1,4 +1,4 @@
-package scw.data.generation;
+package scw.data.generator;
 
 /**
  * ID生成器

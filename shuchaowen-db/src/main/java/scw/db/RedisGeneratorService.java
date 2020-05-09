@@ -1,6 +1,6 @@
 package scw.db;
 
-import scw.data.generation.SequenceIdGenerator;
+import scw.data.generator.SequenceIdGenerator;
 import scw.data.locks.RedisLockFactory;
 import scw.data.redis.Redis;
 import scw.data.redis.RedisDataTemplete;

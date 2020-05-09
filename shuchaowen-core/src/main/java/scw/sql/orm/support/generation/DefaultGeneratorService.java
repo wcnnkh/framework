@@ -3,8 +3,8 @@ package scw.sql.orm.support.generation;
 import scw.aop.ProxyUtils;
 import scw.core.Constants;
 import scw.data.Counter;
-import scw.data.generation.IdGenerator;
-import scw.data.generation.SequenceId;
+import scw.data.generator.IdGenerator;
+import scw.data.generator.SequenceId;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
 

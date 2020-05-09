@@ -1,4 +1,4 @@
-package scw.data.generation;
+package scw.data.generator;
 
 import java.util.concurrent.atomic.AtomicLong;
 

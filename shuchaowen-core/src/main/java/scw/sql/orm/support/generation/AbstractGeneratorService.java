@@ -2,7 +2,7 @@ package scw.sql.orm.support.generation;
 
 import scw.aop.ProxyUtils;
 import scw.core.utils.XUtils;
-import scw.data.generation.SequenceId;
+import scw.data.generator.SequenceId;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
