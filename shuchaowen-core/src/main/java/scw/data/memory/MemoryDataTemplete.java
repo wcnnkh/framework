@@ -5,12 +5,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.CollectionUtils;
 import scw.data.DataTemplete;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 
 @SuppressWarnings("unchecked")
+@Configuration(order=Integer.MIN_VALUE)
 public final class MemoryDataTemplete implements DataTemplete {
 	private final MemoryDataManager memoryDataManager;
 	private final MemoryCasOperations memoryCasOperations;

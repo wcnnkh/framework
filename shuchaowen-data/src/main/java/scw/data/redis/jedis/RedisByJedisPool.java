@@ -6,7 +6,7 @@ import scw.io.serialzer.Serializer;
 import scw.io.serialzer.SerializerUtils;
 import scw.lang.StringCodec;
 
-@Configuration(order = Integer.MIN_VALUE)
+@Configuration(order = Integer.MIN_VALUE + 200)
 public final class RedisByJedisPool extends RedisImpl {
 
 	public RedisByJedisPool(JedisResourceFactory jedisResourceFactory) {
