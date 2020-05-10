@@ -1,24 +1,56 @@
 package scw.sql;
 
+import java.io.Reader;
+import java.math.BigDecimal;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.Date;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
+import scw.core.instance.InstanceUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
+import scw.lang.NotSupportedException;
+import scw.sql.orm.ObjectRelationalMapping;
+import scw.sql.orm.dialect.SqlDialect;
+import scw.sql.orm.dialect.SqlTypeFactory;
+import scw.sql.orm.enums.OperationType;
 
 public final class SqlUtils {
 	private static final String IGNORE_SQL_START_WITH = StringUtils
 			.toString(GlobalPropertyFactory.getInstance().getString("db.file.sql.ignore.start.with"), "##");
+	private static final SqlTypeFactory SQL_TYPE_FACTORY = InstanceUtils.getSystemConfiguration(SqlTypeFactory.class);
+	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING;
+	static {
+		ObjectRelationalMapping objectRelationalMapping = InstanceUtils
+				.getSystemConfiguration(ObjectRelationalMapping.class);
+		OBJECT_RELATIONAL_MAPPING = objectRelationalMapping == null ? new ObjectRelationalMapping()
+				: objectRelationalMapping;
+	}
 
 	private SqlUtils() {
 	};
+
+	public static ObjectRelationalMapping getObjectRelationalMapping() {
+		return OBJECT_RELATIONAL_MAPPING;
+	}
+
+	public static SqlTypeFactory getSqlTypeFactory() {
+		return SQL_TYPE_FACTORY;
+	}
 
 	public static String getSqlId(Sql sql) {
 		Object[] params = sql.getParams();
@@ -220,5 +252,30 @@ public final class SqlUtils {
 			}
 		}
 		return list;
+	}
+
+	public static boolean isDataBaseType(Class<?> type) {
+		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
+				|| Date.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
+				|| Time.class.isAssignableFrom(type) || Timestamp.class.isAssignableFrom(type)
+				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
+				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
+				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
+	}
+
+	public static Sql toSql(OperationType operationType, SqlDialect sqlDialect, Class<?> clazz, Object bean,
+			String tableName) {
+		switch (operationType) {
+		case SAVE:
+			return sqlDialect.toInsertSql(bean, clazz, tableName);
+		case DELETE:
+			return sqlDialect.toDeleteSql(bean, clazz, tableName);
+		case SAVE_OR_UPDATE:
+			return sqlDialect.toSaveOrUpdateSql(bean, clazz, tableName);
+		case UPDATE:
+			return sqlDialect.toUpdateSql(bean, clazz, tableName);
+		default:
+			throw new NotSupportedException(operationType.name());
+		}
 	}
 }

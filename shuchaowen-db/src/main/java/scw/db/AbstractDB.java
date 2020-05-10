@@ -2,14 +2,10 @@ package scw.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
@@ -20,17 +16,17 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.io.serialzer.SerializerUtils;
-import scw.orm.MappingContext;
-import scw.orm.sql.TableChange;
-import scw.orm.sql.annotation.Table;
-import scw.orm.sql.dialect.SqlDialect;
-import scw.orm.sql.enums.OperationType;
-import scw.orm.sql.support.ORMTemplate;
 import scw.sql.Sql;
+import scw.sql.orm.Column;
+import scw.sql.orm.TableChange;
+import scw.sql.orm.annotation.Table;
+import scw.sql.orm.dialect.SqlDialect;
+import scw.sql.orm.enums.OperationType;
+import scw.sql.orm.support.AbstractEntityOperations;
 import scw.transaction.sql.SqlTransactionUtils;
 import scw.util.queue.Consumer;
 
-public abstract class AbstractDB extends ORMTemplate implements DB,
+public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 		Consumer<AsyncExecute>, DBConfig, Init {
 	@Autowired
 	private BeanFactory beanFactory;
@@ -102,21 +98,21 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 	protected void checkTableChange(Class<?> tableClass) {
 		TableChange tableChange = getTableChange(tableClass);
 		List<String> addList = new LinkedList<String>();
-		if (!CollectionUtils.isEmpty(tableChange.getAddMappingContexts())) {
-			for (MappingContext mappingContext : tableChange
-					.getAddMappingContexts()) {
-				addList.add(mappingContext.getColumn().getName());
+		if (!CollectionUtils.isEmpty(tableChange.getAddColumnss())) {
+			for (Column column : tableChange
+					.getAddColumnss()) {
+				addList.add(column.getName());
 			}
 		}
-
-		if (!CollectionUtils.isEmpty(tableChange.getDeleteNames())
+		
+		if (!CollectionUtils.isEmpty(tableChange.getDeleteColumns())
 				|| !CollectionUtils.isEmpty(addList)) {
 			// 如果存在字段变量
 			if (logger.isWarnEnabled()) {
 				logger.warn("存在字段变更class={}, addList={}, deleteList={}",
 						tableClass.getName(),
 						Arrays.toString(addList.toArray()),
-						Arrays.toString(tableChange.getDeleteNames().toArray()));
+						Arrays.toString(tableChange.getDeleteColumns().toArray()));
 			}
 		}
 	}
@@ -124,117 +120,6 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 	@Override
 	public Connection getUserConnection() throws SQLException {
 		return SqlTransactionUtils.getTransactionConnection(this);
-	}
-
-	@Override
-	public boolean save(Object bean, String tableName) {
-		boolean b = super.save(bean, tableName);
-		if (b) {
-			getCacheManager().save(bean);
-		}
-		return b;
-	}
-
-	@Override
-	public boolean update(Object bean, String tableName) {
-		boolean b = super.update(bean, tableName);
-		if (b) {
-			getCacheManager().update(bean);
-		}
-		return b;
-	}
-
-	@Override
-	public boolean delete(Object bean, String tableName) {
-		boolean b = super.delete(bean, tableName);
-		if (b) {
-			getCacheManager().delete(bean);
-		}
-		return b;
-	}
-
-	@Override
-	public boolean deleteById(String tableName, Class<?> type, Object... params) {
-		boolean b = super.deleteById(tableName, type, params);
-		if (b) {
-			getCacheManager().deleteById(type, params);
-		}
-		return b;
-	}
-
-	@Override
-	public boolean saveOrUpdate(Object bean, String tableName) {
-		boolean b = super.saveOrUpdate(bean, tableName);
-		if (b) {
-			getCacheManager().saveOrUpdate(bean);
-		}
-		return b;
-	}
-
-	@Override
-	public <T> T getById(String tableName, Class<? extends T> type, Object... params) {
-		T t = getCacheManager().getById(type, params);
-		if (t == null) {
-			if (getCacheManager().isSearchDB(type, params)) {
-				t = super.getById(tableName, type, params);
-				if (t != null) {
-					getCacheManager().save(t);
-				}
-			}
-		}
-		return t;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, String tableName,
-			Collection<? extends K> inIds, Object... params) {
-		if (inIds == null || inIds.isEmpty()) {
-			return Collections.EMPTY_MAP;
-		}
-
-		Map<K, V> map = getCacheManager().getInIdList(type, inIds, params);
-		if (CollectionUtils.isEmpty(map)) {
-			Map<K, V> valueMap = super.getInIdList(type, tableName, inIds,
-					params);
-			if (!CollectionUtils.isEmpty(valueMap)) {
-				for (Entry<K, V> entry : valueMap.entrySet()) {
-					getCacheManager().save(entry.getValue());
-				}
-			}
-			return valueMap;
-		}
-
-		if (map.size() == inIds.size()) {
-			return map;
-		}
-
-		List<K> notFoundList = new ArrayList<K>(inIds.size());
-		for (K k : inIds) {
-			if (k == null) {
-				continue;
-			}
-
-			if (map.containsKey(k)) {
-				continue;
-			}
-
-			notFoundList.add(k);
-		}
-
-		if (!CollectionUtils.isEmpty(notFoundList)) {
-			Map<K, V> dbMap = super.getInIdList(type, tableName, notFoundList,
-					params);
-			if (dbMap == null || dbMap.isEmpty()) {
-				return map;
-			}
-
-			for (Entry<K, V> entry : dbMap.entrySet()) {
-				getCacheManager().save(entry.getValue());
-			}
-			map.putAll(dbMap);
-		}
-		return map;
 	}
 
 	public final void asyncDelete(Object... objs) {
@@ -279,5 +164,10 @@ public abstract class AbstractDB extends ORMTemplate implements DB,
 
 	public final void asyncExecute(AsyncExecute asyncExecute) {
 		getAsyncQueue().push(SerializerUtils.clone(asyncExecute));
+	}
+	
+	@Deprecated
+	public Select createSelect(){
+		return new MysqlSelect(this);
 	}
 }

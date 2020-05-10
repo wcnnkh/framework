@@ -9,10 +9,6 @@
   <dependencies>
   	<dependency>
   		<groupId>shuchaowen</groupId>
-  		<artifactId>shuchaowen-locks</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>shuchaowen</groupId>
   		<artifactId>shuchaowen-data</artifactId>
   		<scope>provided</scope>
   	</dependency>

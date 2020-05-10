@@ -4,11 +4,10 @@ import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
-import scw.data.MemcachedDataTemplete;
-import scw.data.RedisDataTemplete;
 import scw.data.TemporaryCache;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.data.redis.RedisDataTemplete;
 
 @Bean(proxy = false)
 public class DefaultLoginService<T> extends AbstractLoginService<T> {
@@ -25,7 +24,7 @@ public class DefaultLoginService<T> extends AbstractLoginService<T> {
 	}
 
 	public DefaultLoginService(Memcached memcached, int exp, String prefix) {
-		this(new MemcachedDataTemplete(memcached), exp, prefix);
+		this((TemporaryCache)memcached, exp, prefix);
 	}
 
 	public DefaultLoginService(Redis redis, int exp, String prefix) {

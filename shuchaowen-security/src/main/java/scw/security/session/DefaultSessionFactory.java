@@ -1,7 +1,5 @@
 package scw.security.session;
 
-import scw.data.MemcachedDataTemplete;
-import scw.data.RedisDataTemplete;
 import scw.data.TemporaryCache;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
@@ -15,11 +13,11 @@ public class DefaultSessionFactory extends AbstractSessionFactory {
 	}
 
 	public DefaultSessionFactory(int defaultMaxInactiveInterval, Memcached memcached) {
-		this(defaultMaxInactiveInterval, new MemcachedDataTemplete(memcached));
+		this(defaultMaxInactiveInterval, (TemporaryCache) memcached);
 	}
 
 	public DefaultSessionFactory(int defaultMaxInactiveInterval, Redis redis) {
-		this(defaultMaxInactiveInterval, new RedisDataTemplete(redis));
+		this(defaultMaxInactiveInterval, (TemporaryCache) redis);
 	}
 
 	protected String getKey(String sessionId) {

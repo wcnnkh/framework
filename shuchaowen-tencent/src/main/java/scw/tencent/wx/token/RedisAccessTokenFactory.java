@@ -1,10 +1,10 @@
 package scw.tencent.wx.token;
 
 import scw.core.parameter.annotation.ParameterName;
+import scw.data.locks.RedisLockFactory;
 import scw.data.redis.Redis;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.locks.RedisLockFactory;
 import scw.tencent.wx.AccessToken;
 import scw.tencent.wx.WeiXinUtils;
 

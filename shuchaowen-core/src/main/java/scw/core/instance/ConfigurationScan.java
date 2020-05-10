@@ -33,10 +33,10 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 	protected Collection<Class<?>> scan(Class<?> type, Collection<String> packageNames) {
 		Set<Class<?>> list = new HashSet<Class<?>>();
 		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(packageNames)) {
-			if (clazz == type) {
+			if (clazz == type) {//防止死循环
 				continue;
 			}
-
+			
 			if (!ClassUtils.isAssignable(type, clazz)) {
 				continue;
 			}

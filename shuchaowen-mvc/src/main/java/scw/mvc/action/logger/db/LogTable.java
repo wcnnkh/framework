@@ -3,14 +3,14 @@ package scw.mvc.action.logger.db;
 import java.io.Serializable;
 import java.util.Map;
 
-import scw.db.cache.TemporaryCacheEnable;
 import scw.net.http.HttpMethod;
-import scw.orm.annotation.PrimaryKey;
-import scw.orm.sql.annotation.Column;
-import scw.orm.sql.annotation.CreateTime;
-import scw.orm.sql.annotation.Generator;
-import scw.orm.sql.annotation.SequenceId;
-import scw.orm.sql.annotation.Table;
+import scw.sql.orm.annotation.Column;
+import scw.sql.orm.annotation.PrimaryKey;
+import scw.sql.orm.annotation.Table;
+import scw.sql.orm.cache.annotation.TemporaryCacheEnable;
+import scw.sql.orm.support.generation.annotation.CreateTime;
+import scw.sql.orm.support.generation.annotation.Generator;
+import scw.sql.orm.support.generation.annotation.SequenceId;
 
 @Table
 @TemporaryCacheEnable(false)

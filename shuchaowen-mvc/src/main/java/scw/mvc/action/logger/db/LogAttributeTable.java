@@ -2,7 +2,7 @@ package scw.mvc.action.logger.db;
 
 import java.io.Serializable;
 
-import scw.orm.annotation.PrimaryKey;
+import scw.sql.orm.annotation.PrimaryKey;
 
 public class LogAttributeTable implements Serializable{
 	private static final long serialVersionUID = 1L;

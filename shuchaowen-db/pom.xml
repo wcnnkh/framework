@@ -10,17 +10,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-orm</artifactId>
-		</dependency>
-
-		<!-- <dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-async</artifactId>
-			<scope>provided</scope>
-		</dependency> -->
-
-		<dependency>
-			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-mq</artifactId>
 		</dependency>
 
