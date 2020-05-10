@@ -1,9 +1,5 @@
 package scw.aop.support;
 
-import java.io.ObjectStreamException;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.aop.ProxyContext;
@@ -11,45 +7,21 @@ import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 
-public class FieldSetterListenFilter implements FilterChain, FieldSetterListen {
+public class FieldSetterListenFilter extends FieldSetterListenImpl implements FilterChain {
 	private static final long serialVersionUID = 1L;
-	private Map<String, Object> field_setter_map;
-
+	
+	private Field getField(Class<?> clazz, String name, Class<?> type){
+		return MapperUtils.getMapper().getField(clazz, name, type, FilterFeature.SUPPORT_GETTER, FilterFeature.IGNORE_STATIC);
+	}
+	
 	private final Object change(Invoker invoker, ProxyContext context, Field field) throws Throwable {
-		Object rtn;
-		Object oldValue = null;
-		oldValue = field.getGetter().get(context.getProxy());
-		rtn = invoker.invoke(context.getArgs());
+		Object oldValue = field.getGetter().get(context.getProxy());
 		if (FieldSetterListen.class.isAssignableFrom(context.getTargetClass())) {
 			((FieldSetterListen) context.getProxy()).field_setter(context, field, oldValue);
 		} else {
 			field_setter(context, field, oldValue);
 		}
-		return rtn;
-	}
-
-	public Map<String, Object> get_field_setter_map() {
-		return field_setter_map;
-	}
-
-	public void field_setter(ProxyContext context, Field field, Object oldValue) {
-		if (field_setter_map == null) {
-			field_setter_map = new LinkedHashMap<String, Object>(8);
-		}
-
-		if (field_setter_map.containsKey(field.getGetter().getName())) {
-			return;
-		}
-
-		field_setter_map.put(field.getGetter().getName(), oldValue);
-	}
-
-	public void clear_field_setter_listen() {
-		field_setter_map = null;
-	}
-	
-	private Field getField(Class<?> clazz, String name, Class<?> type){
-		return MapperUtils.getMapper().getField(clazz, name, type, FilterFeature.SUPPORT_GETTER, FilterFeature.IGNORE_STATIC);
+		return invoker.invoke(context.getArgs());
 	}
 
 	public Object doFilter(Invoker invoker, ProxyContext context) throws Throwable {
@@ -90,15 +62,10 @@ public class FieldSetterListenFilter implements FilterChain, FieldSetterListen {
 						return change(invoker, context, field);
 					}
 				}
-				
 			} else {
 				return change(invoker, context, field);
 			}
 		}
 		return invoker.invoke(context.getArgs());
-	}
-
-	public Object writeReplace() throws ObjectStreamException {
-		return this;
 	}
 }
