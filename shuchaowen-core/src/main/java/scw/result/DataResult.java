@@ -1,4 +1,4 @@
-package scw.util.result;
+package scw.result;
 
 public class DataResult<T> extends Result {
 	private static final long serialVersionUID = 1L;

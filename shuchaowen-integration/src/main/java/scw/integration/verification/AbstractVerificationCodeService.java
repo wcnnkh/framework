@@ -3,8 +3,8 @@ package scw.integration.verification;
 import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.data.TemporaryCache;
+import scw.result.Result;
 import scw.util.RandomUtils;
-import scw.util.result.Result;
 
 public abstract class AbstractVerificationCodeService<U> implements
 		VerificationCodeService<U> {

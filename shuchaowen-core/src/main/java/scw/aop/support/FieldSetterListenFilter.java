@@ -1,60 +1,27 @@
 package scw.aop.support;
 
-import java.io.ObjectStreamException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.aop.ProxyContext;
-import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.TypeUtils;
+import scw.mapper.Field;
+import scw.mapper.FilterFeature;
+import scw.mapper.MapperUtils;
 
-public class FieldSetterListenFilter implements FilterChain, FieldSetterListen {
+public class FieldSetterListenFilter extends FieldSetterListenImpl implements FilterChain {
 	private static final long serialVersionUID = 1L;
-	private Map<String, Object> field_setter_map;
-
-	protected boolean checkField(Field field) {
-		if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())
-				|| Modifier.isFinal(field.getModifiers())) {
-			return false;
-		}
-		return true;
+	
+	private Field getField(Class<?> clazz, String name, Class<?> type){
+		return MapperUtils.getMapper().getField(clazz, name, type, FilterFeature.SUPPORT_GETTER, FilterFeature.IGNORE_STATIC);
 	}
-
+	
 	private final Object change(Invoker invoker, ProxyContext context, Field field) throws Throwable {
-		Object rtn;
-		Object oldValue = null;
-		oldValue = field.get(context.getProxy());
-		rtn = invoker.invoke(context.getArgs());
+		Object oldValue = field.getGetter().get(context.getProxy());
 		if (FieldSetterListen.class.isAssignableFrom(context.getTargetClass())) {
 			((FieldSetterListen) context.getProxy()).field_setter(context, field, oldValue);
 		} else {
 			field_setter(context, field, oldValue);
 		}
-		return rtn;
-	}
-
-	public Map<String, Object> get_field_setter_map() {
-		return field_setter_map;
-	}
-
-	public void field_setter(ProxyContext context, Field field, Object oldValue) {
-		if (field_setter_map == null) {
-			field_setter_map = new LinkedHashMap<String, Object>(8);
-		}
-
-		if (field_setter_map.containsKey(field.getName())) {
-			return;
-		}
-
-		field_setter_map.put(field.getName(), oldValue);
-	}
-
-	public void clear_field_setter_listen() {
-		field_setter_map = null;
+		return invoker.invoke(context.getArgs());
 	}
 
 	public Object doFilter(Invoker invoker, ProxyContext context) throws Throwable {
@@ -77,29 +44,28 @@ public class FieldSetterListenFilter implements FilterChain, FieldSetterListen {
 
 		FieldSetter fieldSetter = context.getMethod().getAnnotation(FieldSetter.class);
 		if (fieldSetter != null) {
-			Field field = ReflectionUtils.getField(context.getTargetClass(), fieldSetter.value(), true);
-			if (field != null && checkField(field)) {
+			Field field = getField(context.getTargetClass(), fieldSetter.value(), null);
+			if (field != null) {
 				return change(invoker, context, field);
 			}
 		} else if (context.getArgs().length == 1 && context.getMethod().getName().startsWith("set")) {
 			char[] chars = new char[context.getMethod().getName().length() - 3];
 			chars[0] = Character.toLowerCase(context.getMethod().getName().charAt(3));
 			context.getMethod().getName().getChars(4, context.getMethod().getName().length(), chars, 1);
-			Field field = ReflectionUtils.getField(context.getTargetClass(), new String(chars), true);
+			Class<?> type = context.getMethod().getParameterTypes()[0];
+			Field field = getField(context.getTargetClass(), new String(chars), type);
 			if (field == null) {
-				chars[0] = Character.toUpperCase(chars[0]);
-				field = ReflectionUtils.getField(context.getTargetClass(), "is" + new String(chars), true);
-				if (field != null && TypeUtils.isBoolean(field.getType()) && checkField(field)) {
-					return change(invoker, context, field);
+				if(type == boolean.class){
+					chars[0] = Character.toUpperCase(chars[0]);
+					field = getField(context.getTargetClass(), "is" + new String(chars), boolean.class);
+					if (field != null) {
+						return change(invoker, context, field);
+					}
 				}
-			} else if (checkField(field)) {
+			} else {
 				return change(invoker, context, field);
 			}
 		}
 		return invoker.invoke(context.getArgs());
-	}
-
-	public Object writeReplace() throws ObjectStreamException {
-		return this;
 	}
 }

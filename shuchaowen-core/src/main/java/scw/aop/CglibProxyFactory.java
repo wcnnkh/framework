@@ -14,7 +14,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.mapper.Copy;
-import scw.util.result.SimpleResult;
+import scw.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class CglibProxyFactory implements ProxyFactory {

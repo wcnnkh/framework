@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import scw.core.utils.XTime;
 import scw.data.memcached.Memcached;
-import scw.util.result.ResultFactory;
+import scw.result.ResultFactory;
 
 public final class MemcachedXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Memcached memcached;

@@ -2,7 +2,7 @@ package scw.integration.sms.alidayu;
 
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
-import scw.util.result.Result;
+import scw.result.Result;
 
 /**
  * 发送短信返回结果

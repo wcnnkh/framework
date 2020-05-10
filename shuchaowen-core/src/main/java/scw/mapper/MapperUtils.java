@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
 import scw.util.cache.LocalCacheType;
 import scw.util.value.ValueUtils;
 
@@ -24,8 +23,9 @@ public class MapperUtils {
 		return MAPPER;
 	}
 
-	public static String getGetterMethodName(Field field, String name){
-		if (TypeUtils.isBoolean(field.getType())) {
+	public static String getGetterMethodName(Field field){
+		String name = field.getName();
+		if (field.getType() == boolean.class) {
 			if(name.length() > 2 && name.startsWith(BOOLEAN_GETTER_METHOD_PREFIX) && Character.isUpperCase(name.charAt(2))){
 				return name;
 			}
@@ -36,7 +36,13 @@ public class MapperUtils {
 		}
 	}
 
-	public static String getSetterMethodName(Field field, String name) {
+	public static String getSetterMethodName(Field field) {
+		String name = field.getName();
+		if(field.getType() == boolean.class){
+			if(name.length() > 2 &&  name.startsWith(BOOLEAN_GETTER_METHOD_PREFIX) && Character.isUpperCase(name.charAt(2))){
+				return name.substring(2);
+			}
+		}
 		return DEFAULT_SETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
 	}
 	

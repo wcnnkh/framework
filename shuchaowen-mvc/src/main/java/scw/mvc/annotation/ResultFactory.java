@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ResultFactory {
-	public Class<? extends scw.util.result.ResultFactory> value() default scw.util.result.ResultFactory.class;
+	public Class<? extends scw.result.ResultFactory> value() default scw.result.ResultFactory.class;
 
 	public boolean enable() default true;
 }

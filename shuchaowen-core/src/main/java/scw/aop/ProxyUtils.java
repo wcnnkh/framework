@@ -8,7 +8,7 @@ import java.util.Set;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
-import scw.util.result.SimpleResult;
+import scw.result.SimpleResult;
 
 public final class ProxyUtils {
 

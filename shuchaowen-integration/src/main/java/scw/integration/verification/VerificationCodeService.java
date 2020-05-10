@@ -1,6 +1,6 @@
 package scw.integration.verification;
 
-import scw.util.result.Result;
+import scw.result.Result;
 
 public interface VerificationCodeService<U> {
 	Result send(int type, U user);

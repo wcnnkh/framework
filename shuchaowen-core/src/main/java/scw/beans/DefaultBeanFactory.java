@@ -581,6 +581,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter,
 				context.getTargetClass(), context.getPropertyFactory())) {
 			BeanBuilder beanBuilder = loading(new LoaderContext(impl, context));
 			if (beanBuilder != null && beanBuilder.isInstance()) {
+				logger.info("Configuration {} impl {}", context.getTargetClass(), impl);
 				return beanBuilder;
 			}
 		}
