@@ -40,7 +40,7 @@ public class MapperUtils {
 		return DEFAULT_SETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
 	}
 	
-	public static void setStringValue(FieldContext fieldContext, Object instance, String value) throws Exception{
-		fieldContext.getField().getSetter().set(instance, ValueUtils.parse(value, fieldContext.getField().getSetter().getGenericType()));
+	public static void setStringValue(scw.mapper.Field field, Object instance, String value){
+		field.getSetter().set(instance, ValueUtils.parse(value, field.getSetter().getGenericType()));
 	}
 }

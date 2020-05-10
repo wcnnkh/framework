@@ -1,43 +1,47 @@
 package scw.mapper;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
 
-public class Field implements Serializable, java.lang.Cloneable {
-	public static final Field[] EMPTY_ARRAY = new Field[0];
-	
+public class Field extends FieldMetadata implements java.lang.Cloneable {
 	private static final long serialVersionUID = 1L;
-	private final Getter getter;
-	private final Setter setter;
+	private final Field parentField;
 	
-	public Field(Class<?> declaringClass, String name, java.lang.reflect.Field field, Method getter, Method setter) {
-		this(new DefaultGetter(declaringClass, name, field, getter),
+	public Field(Field parentField, Class<?> declaringClass, String name, java.lang.reflect.Field field, Method getter, Method setter) {
+		this(parentField, new DefaultGetter(declaringClass, name, field, getter),
 				new DefaultSetter(declaringClass, name, field, setter));
 	}
 
-	public Field(Getter getter, Setter setter) {
-		this.getter = getter;
-		this.setter = setter;
+	public Field(Field parentField, Getter getter, Setter setter) {
+		super(getter, setter);
+		this.parentField = parentField;
 	}
-
-	public Getter getGetter() {
-		return getter;
-	}
-
-	public Setter getSetter() {
-		return setter;
-	}
-
-	public boolean isSupportGetter() {
-		return getter != null;
-	}
-
-	public boolean isSupportSetter() {
-		return setter != null;
+	
+	public Field getParentField() {
+		return parentField;
 	}
 	
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	public String toString() {
+		if(isSupportGetter() && isSupportSetter()){
+			return "getter {" + getGetter() + "} setter {" + getSetter() + "}";
+		}
+		
+		if(isSupportGetter()){
+			return "getter {" + getGetter() + "}";
+		}
+		
+		if(isSupportSetter()){
+			return "setter {" + getSetter() + "}";
+		}
+		return super.toString();
+	}
+
+	@Override
+	public Field clone() {
+		try {
+			return (Field) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

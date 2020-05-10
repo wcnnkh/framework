@@ -74,7 +74,7 @@ public class Stage extends AbstractAsyncRunnable {
 
 	public Object call() throws Exception {
 		Method method = getMethod();
-		ReflectionUtils.setAccessibleMethod(method);
+		ReflectionUtils.makeAccessible(method);
 		MethodInvoker methodInvoker = getBeanFactory().getAop().getProxyMethod(getBeanFactory(), beanName,
 				tryInfo.getTargetClass(), method, null);
 		try {

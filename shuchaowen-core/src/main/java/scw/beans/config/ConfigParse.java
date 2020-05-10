@@ -1,7 +1,7 @@
 package scw.beans.config;
 
 import scw.beans.BeanFactory;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.util.value.property.PropertyFactory;
 
 /**
@@ -11,5 +11,5 @@ import scw.util.value.property.PropertyFactory;
  *
  */
 public interface ConfigParse {
-	Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext, String filePath, String charset) throws Exception;
+	Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String filePath, String charset) throws Exception;
 }

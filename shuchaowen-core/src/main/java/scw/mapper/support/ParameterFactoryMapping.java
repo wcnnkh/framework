@@ -4,7 +4,8 @@ import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.core.utils.StringUtils;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
+import scw.mapper.FieldDescriptor;
 import scw.mapper.Setter;
 
 public class ParameterFactoryMapping extends AbstractMapping {
@@ -19,9 +20,9 @@ public class ParameterFactoryMapping extends AbstractMapping {
 	}
 
 	@Override
-	protected Object getValue(FieldContext fieldContext) {
-		Setter setter = fieldContext.getField().getSetter();
-		String name = nestingName ? getNestingDisplayName(fieldContext) : getDisplayName(setter);
+	protected Object getValue(Field field) {
+		Setter setter = field.getSetter();
+		String name = nestingName ? getNestingDisplayName(field) : getDisplayName(setter);
 		if(!StringUtils.isEmpty(basePrefix)){
 			name = basePrefix + "." + name;
 		}
@@ -31,11 +32,11 @@ public class ParameterFactoryMapping extends AbstractMapping {
 	}
 
 	@Override
-	protected boolean isNesting(FieldContext fieldContext) {
+	protected boolean isNesting(FieldDescriptor fieldDescriptor) {
 		if (!nestingName) {
 			return false;
 		}
 		
-		return super.isNesting(fieldContext);
+		return super.isNesting(fieldDescriptor);
 	}
 }

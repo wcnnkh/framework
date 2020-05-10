@@ -1,13 +1,10 @@
 package scw.db;
 
-import scw.db.cache.CacheManager;
-import scw.orm.sql.ORMOperations;
 import scw.sql.Sql;
 import scw.sql.SqlOperations;
+import scw.sql.orm.EntityOperations;
 
-public interface DB extends ORMOperations, SqlOperations {
-	CacheManager getCacheManager();
-	
+public interface DB extends EntityOperations, SqlOperations {
 	void createTable(Class<?> tableClass, boolean registerManager);
 
 	void createTable(Class<?> tableClass, String tableName,

@@ -6,7 +6,6 @@ import java.lang.reflect.Modifier;
 
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
-import scw.lang.NestedRuntimeException;
 
 public class UnsafeUtils {
 	private static final Object UNSAFE;
@@ -47,16 +46,8 @@ public class UnsafeUtils {
 	}
 
 	public static Object invoke(Method method, Object... args) {
-		ReflectionUtils.setAccessibleMethod(method);
-		try {
-			if (Modifier.isStatic(method.getModifiers())) {
-				return method.invoke(null, args);
-			} else {
-				return method.invoke(UNSAFE, args);
-			}
-		} catch (Exception e) {
-			throw new NestedRuntimeException(method.toString(), e);
-		}
+		ReflectionUtils.makeAccessible(method);
+		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers())? null:UNSAFE, args);
 	}
 	
 	public static Object allocateInstance(Class<?> type) {

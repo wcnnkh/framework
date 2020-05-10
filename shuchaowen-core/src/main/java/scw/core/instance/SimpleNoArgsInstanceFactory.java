@@ -19,7 +19,7 @@ public class SimpleNoArgsInstanceFactory implements NoArgsInstanceFactory {
 		Constructor<? extends T> constructor = null;
 		try {
 			constructor = clazz.getConstructor();
-			ReflectionUtils.setAccessibleConstructor(constructor);
+			ReflectionUtils.makeAccessible(constructor);
 		} catch (NoSuchMethodException e) {
 		}
 		return constructor;

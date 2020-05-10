@@ -23,7 +23,7 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.mapper.Copy;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.mapper.MapperUtils;
 import scw.util.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
@@ -36,12 +36,12 @@ public final class XmlDubboUtils {
 			Node node) throws Exception {
 		XmlDubboMapping mapper = new XmlDubboMapping(beanFactory, propertyFactory, node) {
 			@Override
-			protected Object getNodeValue(String name, String value, Class<?> type, FieldContext fieldContext,
+			protected Object getNodeValue(String name, String value, Class<?> type, Field field,
 					Node node) {
 				if ("address".equals(name)) {
 					return null;
 				}
-				return super.getNodeValue(name, value, type, fieldContext, node);
+				return super.getNodeValue(name, value, type, field, node);
 			}
 		};
 		
@@ -68,12 +68,12 @@ public final class XmlDubboUtils {
 			Node node, final boolean root) throws Exception {
 		XmlDubboMapping mapper = new XmlDubboMapping(beanFactory, propertyFactory, node) {
 			@Override
-			protected Object getNodeValue(String name, String value, Class<?> type, FieldContext fieldContext,
+			protected Object getNodeValue(String name, String value, Class<?> type, Field field,
 					Node node) {
 				if (root && "name".equals(name)) {
 					return null;
 				}
-				return super.getNodeValue(name, value, type, fieldContext, node);
+				return super.getNodeValue(name, value, type, field, node);
 			}
 		};
 		ProtocolConfig config = MapperUtils.getMapper().mapping(ProtocolConfig.class, null, mapper);

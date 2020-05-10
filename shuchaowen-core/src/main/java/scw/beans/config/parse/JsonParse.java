@@ -7,7 +7,7 @@ import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.util.value.property.PropertyFactory;
 
 /**
@@ -18,23 +18,23 @@ import scw.util.value.property.PropertyFactory;
  */
 public final class JsonParse extends AbstractValueFormat implements ConfigParse {
 
-	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext, String filePath, String charset)
+	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String filePath, String charset)
 			throws Exception {
 		String content = ResourceUtils.getResourceOperations().getContent(filePath, charset);
-		if (JsonObject.class.isAssignableFrom(fieldContext.getField().getSetter().getType())) {
+		if (JsonObject.class.isAssignableFrom(field.getSetter().getType())) {
 			return JSONUtils.parseObject(content);
-		} else if (JsonArray.class.isAssignableFrom(fieldContext.getField().getSetter().getType())) {
+		} else if (JsonArray.class.isAssignableFrom(field.getSetter().getType())) {
 			return JSONUtils.parseArray(content);
-		} else if (String.class.isAssignableFrom(fieldContext.getField().getSetter().getType())) {
+		} else if (String.class.isAssignableFrom(field.getSetter().getType())) {
 			return content;
 		} else {
-			return JSONUtils.parseObject(content, fieldContext.getField().getSetter().getType());
+			return JSONUtils.parseObject(content, field.getSetter().getType());
 		}
 	}
 
-	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, FieldContext fieldContext, String name)
+	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)
 			throws Exception {
-		return parse(beanFactory, propertyFactory, fieldContext, name, getCharsetName());
+		return parse(beanFactory, propertyFactory, field, name, getCharsetName());
 	}
 
 }

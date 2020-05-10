@@ -7,7 +7,6 @@ import java.lang.reflect.Modifier;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.ReflectionUtils;
-import scw.lang.NestedRuntimeException;
 
 @SuppressWarnings("unchecked")
 public class Copy {
@@ -68,85 +67,85 @@ public class Copy {
 		this.cloneTransientField = cloneTransientField;
 	}
 
-	protected Object cloneArray(Class<?> sourceClass, Object array, FieldContext parentContext,
-			FieldContextFilter filter, FilterFeature... fieldFilterTypes) throws Exception {
+	protected Object cloneArray(Class<?> sourceClass, Object array, Field parentField,
+			FieldFilter filter, FilterFeature... filterFeatures) {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(sourceClass.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, copy(Array.get(array, i), parentContext, filter, fieldFilterTypes));
+			Array.set(newArr, i, copy(Array.get(array, i), parentField, filter, filterFeatures));
 		}
 		return newArr;
 	}
 
-	protected FieldContext getSourceField(Class<?> sourceClass, final FieldContext targetFieldContext) {
-		if (!targetFieldContext.getField().isSupportGetter()) {
+	protected Field getSourceField(Class<?> sourceClass, final Field targetField) {
+		if (!targetField.isSupportGetter()) {
 			return null;
 		}
 
-		return mapper.getFieldContext(sourceClass, null, new FieldContextFilter() {
+		return mapper.getField(sourceClass, new FieldFilter() {
 
-			public boolean accept(FieldContext fieldContext) {
-				if (!fieldContext.getField().isSupportSetter()) {
+			public boolean accept(Field field) {
+				if (!field.isSupportSetter()) {
 					return false;
 				}
 
-				if (targetFieldContext.getField().getGetter().getGenericType() != fieldContext.getField().getSetter()
+				if (targetField.getGetter().getGenericType() != field.getSetter()
 						.getGenericType()) {
 					return false;
 				}
 
-				if (!targetFieldContext.getField().getGetter().getName()
-						.equals(fieldContext.getField().getSetter().getName())) {
+				if (!targetField.getGetter().getName()
+						.equals(field.getSetter().getName())) {
 					return false;
 				}
 
-				if (Modifier.isStatic(targetFieldContext.getField().getGetter().getModifiers())) {
-					return Modifier.isStatic(fieldContext.getField().getSetter().getModifiers());
+				if (Modifier.isStatic(targetField.getGetter().getModifiers())) {
+					return Modifier.isStatic(field.getSetter().getModifiers());
 				} else {
-					return !Modifier.isStatic(fieldContext.getField().getSetter().getModifiers());
+					return !Modifier.isStatic(field.getSetter().getModifiers());
 				}
 			}
 		});
 	}
 
 	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source,
-			FieldContext parentContext, FieldContextFilter filter, FilterFeature... fieldFilterTypes) throws Exception {
-		for (FieldContext fieldContext : mapper.getFieldContexts(targetClass, parentContext, filter,
-				fieldFilterTypes)) {
-			if (!fieldContext.getField().isSupportSetter()) {
+			Field parentField, FieldFilter filter, FilterFeature... filterFeatures) {
+		for (Field field : mapper.getFields(targetClass, parentField, filter,
+				filterFeatures)) {
+			if (!field.isSupportSetter()) {
 				continue;
 			}
 
-			FieldContext sourceField = getSourceField(sourceClass, fieldContext);
+			Field sourceField = getSourceField(sourceClass, field);
 			if (sourceField == null) {
 				continue;
 			}
 
-			if (!sourceField.getField().isSupportGetter()) {
+			if (!sourceField.isSupportGetter()) {
 				continue;
 			}
 
-			Object value = sourceField.getField().getGetter().get(source);
+			Object value = sourceField.getGetter().get(source);
 			if (value == null) {
 				continue;
 			}
 
 			if (isClone()) {
-				if (Modifier.isTransient(fieldContext.getField().getSetter().getModifiers())) {
+				if (Modifier.isTransient(field.getSetter().getModifiers())) {
 					if (isCloneTransientField()) {
-						value = copy(value, fieldContext, filter, fieldFilterTypes);
+						value = copy(value, field, filter, filterFeatures);
 					}
 				} else {
-					value = copy(value, fieldContext, filter, fieldFilterTypes);
+					value = copy(value, field, filter, filterFeatures);
 				}
 			}
 
-			fieldContext.getField().getSetter().set(target, value);
+			field.getSetter().set(target, value);
 		}
 	}
 
 	public <T, S> T copy(Class<? extends T> targetClass, Class<? extends S> sourceClass, S source,
-			FieldContext parentContext, FieldContextFilter filter, FilterFeature... fieldFilterTypes) throws Exception {
+			Field parentField, FieldFilter filter, FilterFeature... filterFeatures) {
 		if (!getInstanceFactory().isInstance(targetClass)) {
 			return (T) source;
 		}
@@ -156,12 +155,12 @@ public class Copy {
 			return target;
 		}
 
-		copy(targetClass, target, sourceClass, source, parentContext, filter, fieldFilterTypes);
+		copy(targetClass, target, sourceClass, source, parentField, filter, filterFeatures);
 		return target;
 	}
 
-	public <T> T copy(T source, FieldContext parentContext, FieldContextFilter filter,
-			FilterFeature... fieldFilterTypes) throws Exception {
+	public <T> T copy(T source, Field parentField, FieldFilter filter,
+			FilterFeature... filterFeatures) {
 		if (source == null) {
 			return null;
 		}
@@ -178,11 +177,11 @@ public class Copy {
 		if (sourceClass.isPrimitive() || sourceClass.isEnum()) {
 			return source;
 		} else if (sourceClass.isArray()) {
-			return (T) cloneArray(sourceClass, source, parentContext, filter, fieldFilterTypes);
+			return (T) cloneArray(sourceClass, source, parentField, filter, filterFeatures);
 		} else if (isInvokeCloneableMethod() && source instanceof Cloneable) {
-			return (T) CLONE_METOHD.invoke(source);
+			return (T) ReflectionUtils.invokeMethod(CLONE_METOHD, source);
 		}
-		return copy(sourceClass, sourceClass, source, parentContext, filter, fieldFilterTypes);
+		return copy(sourceClass, sourceClass, source, parentField, filter, filterFeatures);
 	}
 
 	private static final Copy DEFAULT_COPY = new Copy();
@@ -193,39 +192,26 @@ public class Copy {
 		CLONE_COPY.setClone(true);
 	}
 
-	public static <T> T clone(T source, FieldContextFilter filter, FilterFeature... fieldFilterTypes) {
-		try {
-			return CLONE_COPY.copy(source, null, filter, fieldFilterTypes);
-		} catch (Exception e) {
-			throw new NestedRuntimeException("clone error", e);
-		}
+	public static <T> T clone(T source, FieldFilter filter, FilterFeature... filterFeatures) {
+		return CLONE_COPY.copy(source, null, filter, filterFeatures);
 	}
 
 	public static <T> T clone(T source) {
 		return clone(source, null, FilterFeature.GETTER_IGNORE_STATIC, FilterFeature.SETTER_IGNORE_STATIC);
 	}
 
-	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldContextFilter filter,
-			FilterFeature... fieldFilterTypes) {
-		try {
-			return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null, filter, fieldFilterTypes);
-		} catch (Exception e) {
-			throw new NestedRuntimeException("copy error", e);
-		}
+	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldFilter filter,
+			FilterFeature... filterFeatures) {
+		return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null, filter, filterFeatures);
 	}
 
 	public static <T> T copy(Class<? extends T> targetClass, Object source) {
 		return copy(targetClass, source, null, FilterFeature.GETTER_IGNORE_STATIC, FilterFeature.SETTER_IGNORE_STATIC);
 	}
 
-	public static void copy(Object target, Object source, FieldContextFilter filter,
-			FilterFeature... fieldFilterTypes) {
-		try {
-			INVOKER_SETTER_COPY.copy(target.getClass(), target, source.getClass(), source, null, filter,
-					fieldFilterTypes);
-		} catch (Exception e) {
-			throw new NestedRuntimeException("copy error", e);
-		}
+	public static void copy(Object target, Object source, FieldFilter filter,
+			FilterFeature... filterFeatures) {
+		INVOKER_SETTER_COPY.copy(target.getClass(), target, source.getClass(), source, null, filter, filterFeatures);
 	}
 
 	/**

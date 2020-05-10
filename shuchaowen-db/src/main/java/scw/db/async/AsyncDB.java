@@ -5,8 +5,8 @@ import scw.async.AsyncExecutorWrapper;
 import scw.async.AsyncLifeCycle;
 import scw.async.AsyncRunnable;
 import scw.db.DB;
-import scw.orm.sql.enums.OperationType;
 import scw.sql.Sql;
+import scw.sql.orm.enums.OperationType;
 
 public class AsyncDB extends AsyncExecutorWrapper {
 	private DB db;

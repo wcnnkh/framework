@@ -1,62 +1,77 @@
 package scw.mapper;
 
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
-import scw.mapper.EntityMapping.Column;
+import scw.aop.ProxyUtils;
+import scw.core.utils.CollectionUtils;
+import scw.lang.NotFoundException;
 import scw.util.cache.CacheLoader;
 import scw.util.cache.CacheOperations;
 import scw.util.cache.CacheUtils;
 import scw.util.cache.LocalCacheType;
 
 public abstract class Mapper {
-	private final CacheOperations<Class<?>, Field[]> cacheOperations;
+	private transient final CacheOperations<Class<?>, FieldMetadata[]> cacheOperations;
 
 	public Mapper(LocalCacheType localCacheType) {
 		this.cacheOperations = CacheUtils.createLocalCache(localCacheType);
 	}
 
-	protected abstract CacheLoader<Class<?>, Field[]> createCacheLoader(Class<?> clazz);
+	protected abstract CacheLoader<Class<?>, FieldMetadata[]> createCacheLoader(
+			Class<?> clazz);
 
-	protected final Field[] getFields(Class<?> clazz) {
-		Field[] fields;
+	public final FieldMetadata[] getFieldMetadatas(Class<?> clazz) {
+		FieldMetadata[] fieldMetadatas;
 		try {
 			if (cacheOperations.isExist(clazz)) {
-				fields = cacheOperations.get(clazz);
+				fieldMetadatas = cacheOperations.get(clazz);
 			} else {
-				fields = cacheOperations.get(clazz, createCacheLoader(clazz));
+				fieldMetadatas = cacheOperations.get(clazz,
+						createCacheLoader(clazz));
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 
-		if (fields == null || fields.length == 0) {
-			return Field.EMPTY_ARRAY;
+		if (fieldMetadatas == null || fieldMetadatas.length == 0) {
+			return FieldMetadata.EMPTY_ARRAY;
 		}
-		return fields.clone();
+		return fieldMetadatas.clone();
 	}
 
-	protected boolean acceptInternal(FieldContext fieldContext, FieldContextFilter filter,
-			FilterFeature... fieldFilterTypes) {
-		if (fieldFilterTypes != null && fieldFilterTypes.length != 0) {
-			for (FilterFeature filterFeature : fieldFilterTypes) {
-				if (!filterFeature.getFilter().accept(fieldContext)) {
+	protected boolean acceptInternal(Field field, FieldFilter filter,
+			FilterFeature... filterFeatures) {
+		if (filterFeatures != null && filterFeatures.length != 0) {
+			for (FilterFeature filterFeature : filterFeatures) {
+				if (!filterFeature.getFilter().accept(field)) {
 					return false;
 				}
 			}
 		}
-		return filter == null || filter.accept(fieldContext);
+		return filter == null || filter.accept(field);
 	}
 
-	public final LinkedList<FieldContext> getFieldContexts(Class<?> clazz, boolean useSuperClass,
-			FieldContext parentContext, FieldContextFilter filter, FilterFeature... fieldFilterTypes) {
-		LinkedList<FieldContext> list = new LinkedList<FieldContext>();
+	public final LinkedList<Field> getFields(Class<?> clazz,
+			boolean useSuperClass, Field parentField, FieldFilter filter,
+			FilterFeature... filterFeatures) {
+		LinkedList<Field> list = new LinkedList<Field>();
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
-			for (scw.mapper.Field field : getFields(classToUse)) {
-				FieldContext fieldContext = createFieldContext(parentContext, field);
-				if (acceptInternal(fieldContext, filter, fieldFilterTypes)) {
-					list.add(fieldContext);
+			for (FieldMetadata fieldMetadata : getFieldMetadatas(classToUse)) {
+				Field field = createField(parentField, fieldMetadata);
+				if (acceptInternal(field, filter, filterFeatures)) {
+					list.add(field);
 				}
 			}
 
@@ -69,18 +84,25 @@ public abstract class Mapper {
 		return list;
 	}
 
-	protected FieldContext createFieldContext(FieldContext parentContext, Field field) {
-		return new FieldContext(parentContext, field);
+	public final LinkedList<Field> getFields(Class<?> clazz, Field parentField,
+			FieldFilter filter, FilterFeature... filterFeatures) {
+		return getFields(clazz, true, parentField, filter, filterFeatures);
 	}
 
-	public final FieldContext getFieldContext(Class<?> clazz, boolean useSuperClass, FieldContext parentContext,
-			FieldContextFilter filter, FilterFeature... fieldFilterTypes) {
+	protected Field createField(Field parentField, FieldMetadata fieldMetadata) {
+		return new Field(parentField, fieldMetadata.getGetter(),
+				fieldMetadata.getSetter());
+	}
+
+	public final Field getField(Class<?> clazz, boolean useSuperClass,
+			Field parentField, FieldFilter filter,
+			FilterFeature... filterFeatures) {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
-			for (scw.mapper.Field field : getFields(classToUse)) {
-				FieldContext fieldContext = createFieldContext(parentContext, field);
-				if (acceptInternal(fieldContext, filter, fieldFilterTypes)) {
-					return fieldContext;
+			for (FieldMetadata fieldMetadata : getFieldMetadatas(classToUse)) {
+				Field field = createField(parentField, fieldMetadata);
+				if (acceptInternal(field, filter, filterFeatures)) {
+					return field;
 				}
 			}
 
@@ -92,28 +114,31 @@ public abstract class Mapper {
 		return null;
 	}
 
-	public final FieldContext getFieldContext(Class<?> clazz, boolean useSuperClass, String name, Class<?> type,
-			FilterFeature... fieldFilterTypes) {
-		return getFieldContext(clazz, useSuperClass, name, type, null, fieldFilterTypes);
+	public final Field getField(Class<?> clazz, FieldFilter filter,
+			FilterFeature... filterFeatures) {
+		return getField(clazz, true, null, filter, filterFeatures);
 	}
 
-	public final FieldContext getFieldContext(Class<?> clazz, boolean useSuperClass, final String name, final Class<?> type,
-			FieldContext parentContext, final FilterFeature... fieldFilterTypes) {
-		return getFieldContext(clazz, useSuperClass, parentContext, new FieldContextFilter() {
+	public final Field getField(Class<?> clazz, boolean useSuperClass,
+			final String name, final Class<?> type, Field parentField,
+			final FilterFeature... filterFeatures) {
+		return getField(clazz, useSuperClass, parentField, new FieldFilter() {
 
-			public boolean accept(FieldContext fieldContext) {
-				if (!acceptInternal(fieldContext, null, fieldFilterTypes)) {
+			public boolean accept(Field field) {
+				if (!acceptInternal(field, null, filterFeatures)) {
 					return false;
 				}
 
-				if (fieldContext.getField().isSupportGetter()) {
-					if ((type == null || fieldContext.getField().getGetter().getType() == type) && fieldContext.getField().getGetter().getName().equals(name)) {
+				if (field.isSupportGetter()) {
+					if ((type == null || field.getGetter().getType() == type)
+							&& field.getGetter().getName().equals(name)) {
 						return true;
 					}
 				}
 
-				if (fieldContext.getField().isSupportSetter()) {
-					if ((type == null || fieldContext.getField().getSetter().getType() == type) && fieldContext.getField().getSetter().getName().equals(name)) {
+				if (field.isSupportSetter()) {
+					if ((type == null || field.getSetter().getType() == type)
+							&& field.getSetter().getName().equals(name)) {
 						return true;
 					}
 				}
@@ -122,62 +147,232 @@ public abstract class Mapper {
 		});
 	}
 
-	public final FieldContext getFieldContext(Class<?> clazz, FieldContext parentContext, FieldContextFilter filter,
-			FilterFeature... fieldFilterTypes) {
-		return getFieldContext(clazz, true, parentContext, filter, fieldFilterTypes);
+	public final Field getField(Class<?> clazz, String name, Class<?> type,
+			FilterFeature... filterFeatures) {
+		return getField(clazz, true, name, type, null, filterFeatures);
 	}
 
-	public final FieldContext getFieldContext(Class<?> clazz, String name, Class<?> type, FieldContext parentContext,
-			FilterFeature... fieldFilterTypes) {
-		return getFieldContext(clazz, true, name, type, parentContext, fieldFilterTypes);
-	}
+	public final Map<String, Object> getFieldValueMap(Object entity,
+			final FieldFilter fieldFilter) {
+		if (entity == null) {
+			return Collections.emptyMap();
+		}
 
-	public final LinkedList<FieldContext> getFieldContexts(Class<?> clazz, FieldContext parentContext,
-			FieldContextFilter filter, FilterFeature... fieldFilterTypes) {
-		return getFieldContexts(clazz, true, parentContext, filter, fieldFilterTypes);
-	}
+		final Map<String, Object> map = new LinkedHashMap<String, Object>();
+		for (Field field : getFields(
+				ProxyUtils.getProxyFactory().getUserClass(entity.getClass()),
+				null, new FieldFilter() {
 
-	public final FieldContext getFieldContext(Class<?> clazz, String name, Class<?> type, FilterFeature... fieldFilterTypes) {
-		return getFieldContext(clazz, true, name, type, fieldFilterTypes);
-	}
-
-	public final <T> T mapping(Class<? extends T> entityClass, FieldContext parentContext, Mapping mapping) throws Exception {
-		T entity = mapping.newInstance(entityClass);
-		for (FieldContext fieldContext : getFieldContexts(entityClass, parentContext, mapping,
-				FilterFeature.SUPPORT_SETTER)) {
-			Object value = mapping.mapping(entityClass, fieldContext, this);
+					public boolean accept(Field field) {
+						return field.isSupportGetter()
+								&& !Modifier.isStatic(field.getGetter()
+										.getModifiers())
+								&& !map.containsKey(field.getGetter().getName())
+								&& acceptInternal(field, fieldFilter);
+					}
+				})) {
+			Object value = field.getGetter().get(entity);
 			if (value == null) {
 				continue;
 			}
 
-			fieldContext.getField().getSetter().set(entity, value);
+			map.put(field.getGetter().getName(), value);
 		}
-		return entity;
+		return map;
 	}
 
-	public final EntityMapping getEntityMapping(Class<?> entityClass, FieldContext parentContext, EntityResolver entityResolver) {
-		if (entityClass == null || entityClass == Object.class) {
-			return null;
+	public final Map<String, Object> getFieldValueMap(Object entity) {
+		return getFieldValueMap(entity, null);
+	}
+
+	/**
+	 * @param entity
+	 * @param excludeNames
+	 *            要排除的字段
+	 * @return
+	 */
+	public final Map<String, Object> getFieldValueMapExcludeName(Object entity,
+			final Set<String> excludeNames) {
+		return getFieldValueMap(entity, new FieldFilter() {
+
+			public boolean accept(Field field) {
+				return CollectionUtils.isEmpty(excludeNames)
+						|| !excludeNames.contains(field.getGetter().getName());
+			}
+		});
+	}
+
+	/**
+	 * 
+	 * @param entity
+	 * @param effectiveNames
+	 *            要保留的字段
+	 * @return
+	 */
+	public final Map<String, Object> getFieldValueMapEffectiveName(
+			Object entity, final Set<String> effectiveNames) {
+		return getFieldValueMap(entity, new FieldFilter() {
+
+			public boolean accept(Field field) {
+				return !CollectionUtils.isEmpty(effectiveNames)
+						&& effectiveNames.contains(field.getGetter().getName());
+			}
+		});
+	}
+
+	@SuppressWarnings("rawtypes")
+	public final <T> List<T> getFieldValueList(Collection entitys,
+			final String fieldName) {
+		return getFieldValueList(entitys, fieldName, null);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public final <T> List<T> getFieldValueList(Collection entitys,
+			final String fieldName, final Class<? extends T> type) {
+		if (CollectionUtils.isEmpty(entitys)) {
+			return Collections.emptyList();
 		}
 
-		List<Column> columns = new LinkedList<EntityMapping.Column>();
-		for(Field field : getFields(entityClass)){
-			FieldContext fieldContext = createFieldContext(parentContext, field);
-			if(acceptInternal(fieldContext, entityResolver)){
-				EntityMapping getterEntityMapping = null;
-				if (field.isSupportGetter() && entityResolver.isEntity(field.getGetter())) {
-					getterEntityMapping = getEntityMapping(field.getGetter().getType(), fieldContext,
-							entityResolver);
+		Field field = null;
+		List<T> list = new ArrayList<T>(entitys.size());
+		for (Object entity : entitys) {
+			if (entity == null) {
+				continue;
+			}
+
+			if (field == null) {
+				field = getField(
+						ProxyUtils.getProxyFactory().getUserClass(
+								entity.getClass()), new FieldFilter() {
+
+							public boolean accept(Field field) {
+								return field.isSupportGetter()
+										&& !Modifier.isStatic(field.getGetter()
+												.getModifiers())
+										&& field.getGetter().getName()
+												.equals(fieldName)
+										&& (type == null || type == field
+												.getGetter().getType());
+							}
+						});
+
+				if (field == null) {
+					throw new NotFoundException(entity.getClass() + " ["
+							+ fieldName + "]");
 				}
-				EntityMapping setterEntityMapping = null;
-				if (field.isSupportSetter() && entityResolver.isEntity(field.getSetter())) {
-					setterEntityMapping = getEntityMapping(field.getSetter().getType(), fieldContext,
-							entityResolver);
+			}
+
+			Object value = field.getGetter().get(entity);
+			if (value == null) {
+				continue;
+			}
+
+			list.add((T) value);
+		}
+		return list;
+	}
+
+	public final <T> T mapping(Class<? extends T> entityClass,
+			Field parentField, Mapping mapping) throws Exception {
+		return mapping.mapping(entityClass,
+				getFields(entityClass, parentField, mapping, FilterFeature.SUPPORT_SETTER), this);
+	}
+
+	public final <T> T mapping(Class<? extends T> entityClass, Mapping mapping)
+			throws Exception {
+		return mapping(entityClass, null, mapping);
+	}
+
+	public final Enumeration<Field> enumeration(Class<?> entityClass,
+			boolean useSuperClass, Field parentField,
+			Collection<FieldFilter> fieldFilters) {
+		return new EnumerationField(entityClass, useSuperClass, parentField,
+				fieldFilters);
+	}
+
+	public final Enumeration<Field> enumeration(Class<?> entityClass,
+			boolean useSuperClass, Field parentField,
+			FieldFilter... fieldFilters) {
+		return enumeration(entityClass, useSuperClass, parentField,
+				Arrays.asList(fieldFilters));
+	}
+
+	private final class EnumerationField implements Enumeration<Field>,
+			FieldFilter {
+		private Class<?> entityClass;
+		private final boolean useSuperClass;
+		private final Collection<FieldFilter> fieldFilters;
+		private final Field parentField;
+		private Enumeration<FieldMetadata> enumeration;
+		private Field currentField;
+
+		public EnumerationField(Class<?> entityClass, boolean useSuperClass,
+				Field parentField, Collection<FieldFilter> fieldFilters) {
+			this.entityClass = entityClass;
+			this.fieldFilters = fieldFilters;
+			this.useSuperClass = useSuperClass;
+			this.parentField = parentField;
+			this.enumeration = Collections.enumeration(Arrays
+					.asList(getFieldMetadatas(entityClass)));
+		}
+
+		public boolean accept(Field field) {
+			if (fieldFilters == null || fieldFilters.size() == 0) {
+				return true;
+			}
+
+			for (FieldFilter filter : fieldFilters) {
+				if (!filter.accept(field)) {
+					return false;
 				}
-				columns.add(new Column(fieldContext, getterEntityMapping, setterEntityMapping));
+			}
+			return true;
+		}
+
+		public boolean hasMoreElements() {
+			if (currentField != null) {
+				return true;
+			}
+			
+			while(enumeration.hasMoreElements()){
+				FieldMetadata fieldMetadata = enumeration.nextElement();
+				Field field = createField(parentField, fieldMetadata);
+				if(EnumerationField.this.accept(field)){
+					this.currentField = field;
+					return true;
+				}
+			}
+			
+			if (useSuperClass) {
+				this.entityClass = entityClass.getSuperclass();
+				if (entityClass == null || entityClass == Object.class) {
+					return false;
+				}
+
+				this.enumeration = Collections.enumeration(Arrays
+						.asList(getFieldMetadatas(entityClass)));
+				while(enumeration.hasMoreElements()){
+					FieldMetadata fieldMetadata = enumeration.nextElement();
+					Field field = createField(parentField, fieldMetadata);
+					if(EnumerationField.this.accept(field)){
+						this.currentField = field;
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		public Field nextElement() {
+			if(currentField == null && !hasMoreElements()){
+				throw new NoSuchElementException();
+			}
+			
+			try {
+				return currentField.clone();	
+			}finally{
+				this.currentField = null;
 			}
 		}
-		return new EntityMapping(columns,
-				getEntityMapping(entityClass.getSuperclass(), parentContext, entityResolver));
 	}
 }

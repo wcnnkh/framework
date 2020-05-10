@@ -2,26 +2,26 @@ package scw.beans.ioc;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Config;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.util.value.property.PropertyFactory;
 
 public class ConfigIocProcessor extends DefaultFieldIocProcessor {
 
-	public ConfigIocProcessor(FieldContext fieldContext) {
-		super(fieldContext);
+	public ConfigIocProcessor(Field field) {
+		super(field);
 	}
 
 	public Object process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
-		Config config = getFieldContext().getField().getSetter()
+		Config config = getField().getSetter()
 				.getAnnotatedElement().getAnnotation(Config.class);
 		if (config != null) {
 			Object value = null;
 			existDefaultValueWarnLog(bean);
 			value = beanFactory.getInstance(config.parse()).parse(beanFactory,
-					propertyFactory, getFieldContext(), config.value(),
+					propertyFactory, getField(), config.value(),
 					config.charset());
-			getFieldContext().getField().getSetter().set(bean, value);
+			getField().getSetter().set(bean, value);
 		}
 		return null;
 	}

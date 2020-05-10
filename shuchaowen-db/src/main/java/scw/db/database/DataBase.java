@@ -1,7 +1,7 @@
 package scw.db.database;
 
-import scw.orm.sql.dialect.SqlDialect;
 import scw.sql.ConnectionFactory;
+import scw.sql.orm.dialect.SqlDialect;
 
 /**
  * 数据库

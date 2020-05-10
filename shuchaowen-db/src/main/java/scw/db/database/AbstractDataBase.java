@@ -6,11 +6,11 @@ import java.sql.SQLException;
 
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.orm.sql.dialect.SqlDialect;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.SqlUtils;
+import scw.sql.orm.dialect.SqlDialect;
 
 public abstract class AbstractDataBase implements DataBase {
 	private Logger logger = LoggerUtils.getLogger(this.getClass());

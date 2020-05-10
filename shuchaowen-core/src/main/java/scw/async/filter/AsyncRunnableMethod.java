@@ -18,7 +18,7 @@ public abstract class AsyncRunnableMethod extends AbstractAsyncRunnable {
 	public final Object call() throws Exception {
 		AsyncFilter.startAsync();
 		Method method = getMethod();
-		ReflectionUtils.setAccessibleMethod(method);
+		ReflectionUtils.makeAccessible(method);
 		if (Modifier.isStatic(method.getModifiers())) {
 			return method.invoke(null, getArgs());
 		} else {

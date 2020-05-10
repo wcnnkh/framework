@@ -3,7 +3,7 @@ package scw.mq.support;
 import org.w3c.dom.Node;
 
 import scw.beans.BeanFactory;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.util.value.property.PropertyFactory;
 import scw.xml.XmlAttributeMapping;
 
@@ -16,10 +16,10 @@ public class XmlAmqpConfigMapping extends XmlAttributeMapping{
 	}
 
 	@Override
-	protected Object getNodeValue(String name, String value, Class<?> type, FieldContext fieldContext, Node node) {
+	protected Object getNodeValue(String name, String value, Class<?> type, Field field, Node node) {
 		if (name.equals("exchange")) {
 			return beanFactory.getInstance(value);
 		}
-		return super.getNodeValue(name, value, type, fieldContext, node);
+		return super.getNodeValue(name, value, type, field, node);
 	}
 }

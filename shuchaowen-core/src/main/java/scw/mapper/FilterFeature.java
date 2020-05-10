@@ -3,81 +3,97 @@ package scw.mapper;
 import java.lang.reflect.Modifier;
 
 public enum FilterFeature {
-	SUPPORT_GETTER(new SupportGetterFieldContextFilter()), 
-	SUPPORT_SETTER(new SupportSetterFieldContextFilter()),
-	GETTER_PUBLIC(new GetterPublicFieldContextFilter()),
-	SETTER_PUBLIC(new SetterPublicFieldContextFilter()),
-	GETTER_IGNORE_STATIC(new IgnoreGetterStaticFieldContextFilter()),
-	SETTER_IGNORE_STATIC(new IgnoreSetterStaticFieldContextFilter()),
-	GETTER_IGNORE_TRANSIENT(new IgnoreGetterTransientFieldContextFilter()),
-	SETTER_IGNORE_TRANSIENT(new IgnoreSetterTransientFieldContextFilter()),
+	SUPPORT_GETTER(new SupportGetterFieldFilter()), 
+	SUPPORT_SETTER(new SupportSetterFieldFilter()),
+	GETTER_PUBLIC(new GetterPublicFieldFilter()),
+	SETTER_PUBLIC(new SetterPublicFieldFilter()),
+	GETTER_IGNORE_STATIC(new IgnoreGetterStaticFieldFilter()),
+	SETTER_IGNORE_STATIC(new IgnoreSetterStaticFieldFilter()),
+	GETTER_IGNORE_TRANSIENT(new IgnoreGetterTransientFieldFilter()),
+	SETTER_IGNORE_TRANSIENT(new IgnoreSetterTransientFieldFilter()),
+	IGNORE_STATIC(new IgnoreStaticFieldFilter())
 	;
 
-	private final FieldContextFilter filter;
+	private final FieldFilter filter;
 
-	private FilterFeature(FieldContextFilter filter) {
+	private FilterFeature(FieldFilter filter) {
 		this.filter = filter;
 	}
 
-	public FieldContextFilter getFilter() {
+	public FieldFilter getFilter() {
 		return filter;
 	}
 	
-	private static final class IgnoreGetterTransientFieldContextFilter implements FieldContextFilter {
+	private static final class IgnoreStaticFieldFilter implements FieldFilter{
 
-		public boolean accept(FieldContext fieldContext) {
-			return fieldContext.getField().isSupportGetter() && !Modifier.isTransient(fieldContext.getField().getGetter().getModifiers());
+		public boolean accept(Field field) {
+			if(field.isSupportGetter() && Modifier.isStatic(field.getGetter().getModifiers())){
+				return false;
+			}
+			
+			if(field.isSupportSetter() && Modifier.isStatic(field.getSetter().getModifiers())){
+				return false;
+			}
+			return true;
+		}
+		
+	}
+	
+	private static final class IgnoreGetterTransientFieldFilter implements FieldFilter {
+
+		public boolean accept(Field field) {
+			return field.isSupportGetter() && !Modifier.isTransient(field.getGetter().getModifiers());
 		}
 	}
 	
-	private static final class IgnoreSetterTransientFieldContextFilter implements FieldContextFilter {
+	private static final class IgnoreSetterTransientFieldFilter implements FieldFilter {
 
-		public boolean accept(FieldContext fieldContext) {
-			return fieldContext.getField().isSupportSetter() && !Modifier.isTransient(fieldContext.getField().getSetter().getModifiers());
+		public boolean accept(Field field) {
+			return field.isSupportSetter() && !Modifier.isTransient(field.getSetter().getModifiers());
 		}
 	}
 	
-	private static final class IgnoreGetterStaticFieldContextFilter implements FieldContextFilter {
+	private static final class IgnoreGetterStaticFieldFilter implements FieldFilter {
 
-		public boolean accept(FieldContext fieldContext) {
-			return fieldContext.getField().isSupportGetter() && !Modifier.isStatic(fieldContext.getField().getGetter().getModifiers());
+		public boolean accept(Field field) {
+			return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers());
 		}
 	}
 	
-	private static final class IgnoreSetterStaticFieldContextFilter implements FieldContextFilter {
+	private static final class IgnoreSetterStaticFieldFilter implements FieldFilter {
 
-		public boolean accept(FieldContext fieldContext) {
-			return fieldContext.getField().isSupportSetter() && !Modifier.isStatic(fieldContext.getField().getSetter().getModifiers());
+		public boolean accept(Field field) {
+			return field.isSupportSetter() && !Modifier.isStatic(field.getSetter().getModifiers());
 		}
 	}
 
-	private static final class SupportGetterFieldContextFilter implements FieldContextFilter {
+	private static final class SupportGetterFieldFilter implements FieldFilter {
 
-		public boolean accept(FieldContext fieldContext) {
-			return fieldContext.getField().isSupportGetter();
+		public boolean accept(Field field) {
+			return field.isSupportGetter();
 		}
 	}
 
-	private static final class SupportSetterFieldContextFilter implements FieldContextFilter {
+	private static final class SupportSetterFieldFilter implements FieldFilter {
 
-		public boolean accept(FieldContext fieldContext) {
-			return fieldContext.getField().isSupportSetter();
+		public boolean accept(Field field) {
+			return field.isSupportSetter();
 		}
 	}
 
-	private static final class SetterPublicFieldContextFilter implements FieldContextFilter {
+	private static final class SetterPublicFieldFilter implements FieldFilter {
 
-		public boolean accept(FieldContext fieldContext) {
-			return fieldContext.getField().isSupportSetter()
-					&& Modifier.isPublic(fieldContext.getField().getSetter().getModifiers());
+		public boolean accept(Field field) {
+			return field.isSupportSetter()
+					&& Modifier.isPublic(field.getSetter().getModifiers());
 		}
 	}
 
-	private static final class GetterPublicFieldContextFilter implements FieldContextFilter {
+	private static final class GetterPublicFieldFilter implements FieldFilter {
 
-		public boolean accept(FieldContext fieldContext) {
-			return fieldContext.getField().isSupportGetter()
-					&& Modifier.isPublic(fieldContext.getField().getGetter().getModifiers());
+		public boolean accept(Field field) {
+			return field.isSupportGetter()
+					&& Modifier.isPublic(field.getGetter().getModifiers());
 		}
 	}
 }

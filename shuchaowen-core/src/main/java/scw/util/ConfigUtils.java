@@ -1,10 +1,8 @@
 package scw.util;
 
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,13 +20,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.core.StringFormat;
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.value.Value;
@@ -43,15 +42,16 @@ public final class ConfigUtils {
 	private static Logger logger = LoggerUtils.getLogger(ConfigUtils.class);
 	private static final String LOG_MESSAGE = "Property {} on target {} set value {}";
 
-	public static <T> T parseObject(Map<String, String> map, Class<T> clz) throws Exception {
-		T t = clz.newInstance();
+	public static <T> T parseObject(Map<String, String> map, Class<T> clz) {
+		T t = InstanceUtils.INSTANCE_FACTORY.getInstance(clz);
 		for (Entry<String, String> entry : map.entrySet()) {
-			FieldContext fieldContext = MapperUtils.getMapper().getFieldContext(clz, entry.getKey(), null, FilterFeature.SUPPORT_SETTER);
-			if (fieldContext == null) {
+			scw.mapper.Field field = MapperUtils.getMapper().getField(clz, entry.getKey(), null,
+					FilterFeature.SUPPORT_SETTER);
+			if (field == null) {
 				continue;
 			}
 
-			MapperUtils.setStringValue(fieldContext, t, entry.getValue());
+			MapperUtils.setStringValue(field, t, entry.getValue());
 		}
 		return t;
 	}
@@ -125,58 +125,37 @@ public final class ConfigUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, InputStream inputStream) {
-		try {
-			Field keyField = null;
-			for (Field f : valueType.getDeclaredFields()) {
-				if (Modifier.isStatic(f.getModifiers())) {
-					continue;
-				}
-
-				keyField = f;
-				break;
-			}
-
-			if (keyField == null) {
-				throw new NullPointerException("打不到主键字段");
-			}
-
-			List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
-			Map<K, V> map = new HashMap<K, V>();
-			for (Map<String, String> tempMap : list) {
-				Object obj = ConfigUtils.parseObject(tempMap, valueType);
-				keyField.setAccessible(true);
-				Object kV = keyField.get(obj);
-				keyField.setAccessible(false);
-				if (map.containsKey(kV)) {
-					throw new NullPointerException("已经存在的key=" + keyField.getName() + ",value=" + kV);
-				}
-				map.put((K) kV, (V) obj);
-			}
-
-			return map;
-		} catch (Exception e) {
-			e.printStackTrace();
+		Field keyField = MapperUtils.getMapper().getField(valueType, null, FilterFeature.SETTER_IGNORE_STATIC, FilterFeature.SUPPORT_GETTER);
+		if (keyField == null) {
+			throw new NullPointerException("打不到主键字段");
 		}
-		return null;
+
+		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
+		Map<K, V> map = new HashMap<K, V>();
+		for (Map<String, String> tempMap : list) {
+			Object obj = ConfigUtils.parseObject(tempMap, valueType);
+			Object kV = keyField.getGetter().get(obj);
+			if (map.containsKey(kV)) {
+				throw new NullPointerException("已经存在的key=" + keyField.getGetter().getName() + ",value=" + kV);
+			}
+			map.put((K) kV, (V) obj);
+		}
+
+		return map;
 	}
 
 	public static <T> T setProperties(Object obj, Properties properties, StringFormat stringFormat) {
 		T t = null;
-		try {
-			for (Entry<Object, Object> entry : properties.entrySet()) {
-				String key = stringFormat.format(entry.getKey().toString());
-				FieldContext fieldContext = MapperUtils.getMapper().getFieldContext(obj.getClass(), key, null);
-				if (fieldContext == null) {
-					continue;
-				}
-
-				String value = entry.getValue() == null ? null : entry.getValue().toString();
-				value = stringFormat.format(value);
-				MapperUtils.setStringValue(fieldContext, obj, value);
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			String key = stringFormat.format(entry.getKey().toString());
+			scw.mapper.Field fieldContext = MapperUtils.getMapper().getField(obj.getClass(), key, null);
+			if (fieldContext == null) {
+				continue;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			t = null;
+
+			String value = entry.getValue() == null ? null : entry.getValue().toString();
+			value = stringFormat.format(value);
+			MapperUtils.setStringValue(fieldContext, obj, value);
 		}
 		return t;
 	}
@@ -201,7 +180,8 @@ public final class ConfigUtils {
 	}
 
 	public static void loadProperties(Object instance, String propertiesFile, Collection<String> asNameList) {
-		loadProperties(instance, ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile), asNameList);
+		loadProperties(instance, ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile),
+				asNameList);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -307,10 +287,10 @@ public final class ConfigUtils {
 	 */
 	public static void invokeSetterByProeprties(Object instance, Map<?, ?> properties, boolean propertieGetAndRemove,
 			boolean invokePublic, Collection<String> asNameList, boolean findAndRemove) {
-		if(properties == null){
-			return ;
+		if (properties == null) {
+			return;
 		}
-		
+
 		List<String> nameList = null;
 		if (!CollectionUtils.isEmpty(asNameList)) {
 			nameList = new ArrayList<String>(asNameList);

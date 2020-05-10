@@ -42,7 +42,7 @@ import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
-import scw.mapper.FieldContext;
+import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.KeyValuePair;
@@ -482,8 +482,8 @@ public final class XMLUtils {
 				continue;
 			}
 			
-			FieldContext fieldContext = MapperUtils.getMapper().getFieldContext(type, n.getNodeName(), null, FilterFeature.SUPPORT_SETTER, FilterFeature.SETTER_IGNORE_STATIC);
-			if (fieldContext == null) {
+			Field field = MapperUtils.getMapper().getField(type, n.getNodeName(), null, FilterFeature.SUPPORT_SETTER, FilterFeature.SETTER_IGNORE_STATIC);
+			if (field == null) {
 				continue;
 			}
 
@@ -496,7 +496,7 @@ public final class XMLUtils {
 				t = instanceFactory.getInstance(type);
 			}
 
-			MapperUtils.setStringValue(fieldContext, t, value);
+			MapperUtils.setStringValue(field, t, value);
 		}
 		return t;
 	}

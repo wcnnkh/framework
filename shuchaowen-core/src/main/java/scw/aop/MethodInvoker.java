@@ -14,7 +14,7 @@ public abstract class MethodInvoker implements Invoker {
 
 	public Object invoke(Object... args) throws Throwable {
 		Method method = getMethod();
-		ReflectionUtils.setAccessibleMethod(method);
+		ReflectionUtils.makeAccessible(method);
 		try {
 			return method.invoke(Modifier.isStatic(method.getModifiers()) ? null : getInstance(), args);
 		} catch (Throwable e) {
