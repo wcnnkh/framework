@@ -275,7 +275,7 @@ public abstract class Mapper {
 	public final <T> T mapping(Class<? extends T> entityClass,
 			Field parentField, Mapping mapping) throws Exception {
 		return mapping.mapping(entityClass,
-				getFields(entityClass, parentField, mapping), this);
+				getFields(entityClass, parentField, mapping, FilterFeature.SUPPORT_SETTER), this);
 	}
 
 	public final <T> T mapping(Class<? extends T> entityClass, Mapping mapping)
@@ -289,19 +289,22 @@ public abstract class Mapper {
 		return new EnumerationField(entityClass, useSuperClass, parentField,
 				fieldFilters);
 	}
-	
+
 	public final Enumeration<Field> enumeration(Class<?> entityClass,
 			boolean useSuperClass, Field parentField,
 			FieldFilter... fieldFilters) {
-		return enumeration(entityClass, useSuperClass, parentField, Arrays.asList(fieldFilters));
+		return enumeration(entityClass, useSuperClass, parentField,
+				Arrays.asList(fieldFilters));
 	}
 
-	private final class EnumerationField implements Enumeration<Field> {
+	private final class EnumerationField implements Enumeration<Field>,
+			FieldFilter {
 		private Class<?> entityClass;
 		private final boolean useSuperClass;
 		private final Collection<FieldFilter> fieldFilters;
 		private final Field parentField;
 		private Enumeration<FieldMetadata> enumeration;
+		private Field currentField;
 
 		public EnumerationField(Class<?> entityClass, boolean useSuperClass,
 				Field parentField, Collection<FieldFilter> fieldFilters) {
@@ -313,11 +316,33 @@ public abstract class Mapper {
 					.asList(getFieldMetadatas(entityClass)));
 		}
 
-		public boolean hasMoreElements() {
-			if (enumeration.hasMoreElements()) {
+		public boolean accept(Field field) {
+			if (fieldFilters == null || fieldFilters.size() == 0) {
 				return true;
 			}
 
+			for (FieldFilter filter : fieldFilters) {
+				if (!filter.accept(field)) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		public boolean hasMoreElements() {
+			if (currentField != null) {
+				return true;
+			}
+			
+			while(enumeration.hasMoreElements()){
+				FieldMetadata fieldMetadata = enumeration.nextElement();
+				Field field = createField(parentField, fieldMetadata);
+				if(EnumerationField.this.accept(field)){
+					this.currentField = field;
+					return true;
+				}
+			}
+			
 			if (useSuperClass) {
 				this.entityClass = entityClass.getSuperclass();
 				if (entityClass == null || entityClass == Object.class) {
@@ -326,28 +351,28 @@ public abstract class Mapper {
 
 				this.enumeration = Collections.enumeration(Arrays
 						.asList(getFieldMetadatas(entityClass)));
-				return enumeration.hasMoreElements();
+				while(enumeration.hasMoreElements()){
+					FieldMetadata fieldMetadata = enumeration.nextElement();
+					Field field = createField(parentField, fieldMetadata);
+					if(EnumerationField.this.accept(field)){
+						this.currentField = field;
+						return true;
+					}
+				}
 			}
-
 			return false;
 		}
 
 		public Field nextElement() {
-			FieldMetadata fieldMetadata = enumeration.nextElement();
-			Field field = createField(parentField, fieldMetadata);
-			if (!CollectionUtils.isEmpty(fieldFilters)) {
-				for (FieldFilter filter : fieldFilters) {
-					if (!filter.accept(field)) {
-						if (hasMoreElements()) {
-							return nextElement();
-						} else {
-							throw new NoSuchElementException();
-						}
-					}
-				}
+			if(currentField == null && !hasMoreElements()){
+				throw new NoSuchElementException();
 			}
-			return field;
+			
+			try {
+				return currentField.clone();	
+			}finally{
+				this.currentField = null;
+			}
 		}
-
 	}
 }

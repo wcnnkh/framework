@@ -1,6 +1,5 @@
 package scw.mapper;
 
-import scw.lang.Description;
 import scw.lang.NotSupportedException;
 
 public abstract class AbstractFieldDescriptor
@@ -19,12 +18,6 @@ public abstract class AbstractFieldDescriptor
 	
 	public Class<?> getDeclaringClass() {
 		return declaringClass;
-	}
-
-	public String getDescription() {
-		Description description = getAnnotatedElement().getAnnotation(
-				Description.class);
-		return description == null ? null : description.value();
 	}
 
 	@Override
@@ -48,5 +41,10 @@ public abstract class AbstractFieldDescriptor
 	@Override
 	public int hashCode() {
 		return getName().hashCode() + getType().hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return "declaringClass [" + getDeclaringClass() + "] name [" + getName() + "]";
 	}
 }

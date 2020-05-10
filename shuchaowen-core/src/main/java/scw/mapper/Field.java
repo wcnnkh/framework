@@ -19,9 +19,29 @@ public class Field extends FieldMetadata implements java.lang.Cloneable {
 	public Field getParentField() {
 		return parentField;
 	}
+	
+	@Override
+	public String toString() {
+		if(isSupportGetter() && isSupportSetter()){
+			return "getter {" + getGetter() + "} setter {" + getSetter() + "}";
+		}
+		
+		if(isSupportGetter()){
+			return "getter {" + getGetter() + "}";
+		}
+		
+		if(isSupportSetter()){
+			return "setter {" + getSetter() + "}";
+		}
+		return super.toString();
+	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
-		return super.clone();
+	public Field clone() {
+		try {
+			return (Field) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

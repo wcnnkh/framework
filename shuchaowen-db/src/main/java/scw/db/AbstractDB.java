@@ -105,22 +105,14 @@ public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 			}
 		}
 		
-		List<String> deleteList = new LinkedList<String>();
-		if (!CollectionUtils.isEmpty(tableChange.getDeleteColumns())) {
-			for (Column column : tableChange
-					.getDeleteColumns()) {
-				deleteList.add(column.getName());
-			}
-		}
-
-		if (!CollectionUtils.isEmpty(deleteList)
+		if (!CollectionUtils.isEmpty(tableChange.getDeleteColumns())
 				|| !CollectionUtils.isEmpty(addList)) {
 			// 如果存在字段变量
 			if (logger.isWarnEnabled()) {
 				logger.warn("存在字段变更class={}, addList={}, deleteList={}",
 						tableClass.getName(),
 						Arrays.toString(addList.toArray()),
-						Arrays.toString(deleteList.toArray()));
+						Arrays.toString(tableChange.getDeleteColumns().toArray()));
 			}
 		}
 	}

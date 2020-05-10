@@ -510,13 +510,13 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 		Sql sql = getSqlDialect().toTableStructureSql(tableClass, tName, Arrays.asList(TableStructureResultField.NAME));
 		List<String[]> list = select(String[].class, sql);
 		HashSet<String> hashSet = new HashSet<String>();
-		List<Column> deleteList = new LinkedList<Column>();
+		List<String> deleteList = new LinkedList<String>();
 		for (String[] names : list) {
 			String name = names[0];
 			hashSet.add(name);
 			Column column = getSqlDialect().getObjectRelationalMapping().getColumn(tableClass, name);
 			if (column == null) {// 在现在的表结构中不存在，应该删除
-				deleteList.add(column);
+				deleteList.add(name);
 			}
 		}
 
