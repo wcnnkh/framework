@@ -9,7 +9,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
-import scw.util.result.SimpleResult;
+import scw.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE + 100)
 public class JdkProxyFactory implements ProxyFactory {

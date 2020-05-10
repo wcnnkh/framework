@@ -120,12 +120,12 @@ public abstract class Mapper {
 	}
 
 	public final Field getField(Class<?> clazz, boolean useSuperClass,
-			final String name, final Class<?> type, Field parentField,
+			final String name, final Class<?> type, Field parentField, final FieldFilter filter,
 			final FilterFeature... filterFeatures) {
 		return getField(clazz, useSuperClass, parentField, new FieldFilter() {
 
 			public boolean accept(Field field) {
-				if (!acceptInternal(field, null, filterFeatures)) {
+				if (!acceptInternal(field, filter, filterFeatures)) {
 					return false;
 				}
 
@@ -149,7 +149,7 @@ public abstract class Mapper {
 
 	public final Field getField(Class<?> clazz, String name, Class<?> type,
 			FilterFeature... filterFeatures) {
-		return getField(clazz, true, name, type, null, filterFeatures);
+		return getField(clazz, true, name, type, null, null, filterFeatures);
 	}
 
 	public final Map<String, Object> getFieldValueMap(Object entity,

@@ -3,16 +3,19 @@ package scw.mvc.action.support;
 import scw.beans.BeanFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.json.JSONUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mvc.Channel;
 import scw.mvc.View;
 import scw.mvc.action.Action;
 import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.action.filter.ActionFilterChain;
 import scw.mvc.annotation.ResultFactory;
-import scw.util.result.Result;
+import scw.result.Result;
 
 @Configuration(order=Integer.MAX_VALUE)
 public final class ResultFactoryActionFilter implements ActionFilter{
+	private static Logger logger = LoggerUtils.getLogger(ResultFactoryActionFilter.class);
 	private BeanFactory beanFactory;
 	
 	public ResultFactoryActionFilter(BeanFactory beanFactory){
@@ -27,7 +30,7 @@ public final class ResultFactoryActionFilter implements ActionFilter{
 		}
 		
 		if (value != null && channel.getLogger().isErrorEnabled() && value instanceof Result && ((Result) value).isError()) {
-			channel.getLogger().error("fail:{}, result={}", channel.toString(), JSONUtils.toJSONString(value));
+			logger.error("fail:{}, result={}", channel.toString(), JSONUtils.toJSONString(value));
 		}
 		
 		ResultFactory resultFactory = action.getAnnotatedElement().getAnnotation(ResultFactory.class);

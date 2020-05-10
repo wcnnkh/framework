@@ -1,4 +1,4 @@
-package scw.util.result;
+package scw.result;
 
 public abstract class AbstractResultFactory implements ResultFactory {
 	protected abstract String getMsg(long code);

@@ -1,10 +1,10 @@
 package scw.aop.support;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 
 import scw.aop.ProxyContext;
 import scw.aop.WriteReplaceInterface;
+import scw.mapper.Field;
 
 public interface FieldSetterListen extends WriteReplaceInterface{
 	public static final String GET_CHANGE_MAP = "get_field_setter_map";
