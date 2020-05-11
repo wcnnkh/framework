@@ -1,6 +1,7 @@
 package scw.mvc.http;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterDescriptor;
@@ -74,6 +75,23 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 			v = decodeGETParameter(v);
 		}
 		return v;
+	}
+	
+	@Override
+	public String[] getStringArray(String key) {
+		String[] array = getRequest().getParameterValues(key);
+		MultiValueMap<String, String> restfulParameterMap = MVCUtils
+				.getRestfulParameterMap(this);
+		if (restfulParameterMap != null) {
+			List<String> values = restfulParameterMap.get(key);
+			if(values != null && values.size() != 0){
+				String[] newArray = new String[array == null? values.size():(array.length + values.size())];
+				values.toArray(newArray);
+				System.arraycopy(array, 0, newArray, values.size(), array.length);
+				return newArray;
+			}
+		}
+		return array;
 	}
 
 	@SuppressWarnings("unchecked")

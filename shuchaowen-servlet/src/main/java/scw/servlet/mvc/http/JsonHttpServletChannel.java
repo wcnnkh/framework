@@ -9,7 +9,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.parameter.Body;
 import scw.net.http.HttpMethod;
-import scw.util.value.Value;
 
 @SuppressWarnings("unchecked")
 public class JsonHttpServletChannel extends HttpServletChannel {
@@ -35,18 +34,17 @@ public class JsonHttpServletChannel extends HttpServletChannel {
 
 	@Override
 	public String getStringValue(String name) {
-		return jsonObject == null ? null : jsonObject.getString(name);
+		String value = super.getStringValue(name);
+		if(value == null && jsonObject != null){
+			value = jsonObject.getString(name);
+		}
+		return value;
 	}
 
 	public Logger getLogger() {
 		return logger;
 	}
 	
-	@Override
-	public Value get(String key) {
-		return jsonObject == null? null:jsonObject.get(key);
-	}
-
 	@Override
 	protected Object getObjectIsNotBean(String name, Class<?> type) {
 		return jsonObject == null ? null : jsonObject.getObject(name, type);
