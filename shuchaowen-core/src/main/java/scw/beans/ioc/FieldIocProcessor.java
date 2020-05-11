@@ -37,6 +37,7 @@ public abstract class FieldIocProcessor extends AbstractIocProcessor {
 		if (getField().getGetter().getType().isPrimitive()) {// 值类型一定是有默认值的,所以不用判断直接所回false
 			return false;
 		}
+		
 		return getField().getGetter().get(obj) != null;
 	}
 }
