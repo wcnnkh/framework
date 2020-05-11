@@ -139,7 +139,7 @@ public class DefaultAuthorityManager<T extends Authority> implements
 		}
 
 		authorityMap.put(authority.getId(), authority);
-		if (authority.getParentId() == null) {// root
+		if (authority.getParentId() == null || !authorityMap.containsKey(authority.getParentId())) {// root
 			roots.add(authority.getId());
 		} else {
 			Set<String> set = subListMap.get(authority.getParentId());
