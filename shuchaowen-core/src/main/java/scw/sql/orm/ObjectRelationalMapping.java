@@ -173,7 +173,11 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 */
 	public boolean accept(Field field) {
 		if (!(field.isSupportGetter() && field.isSupportSetter()
-				&& FilterFeature.IGNORE_STATIC.getFilter().accept(field)) && field.getGetter().getField() == null && field.getSetter().getField() == null) {
+				&& FilterFeature.IGNORE_STATIC.getFilter().accept(field))) {
+			return false;
+		}
+		
+		if(field.getSetter().getField() == null || field.getGetter().getField() == null){
 			return false;
 		}
 
