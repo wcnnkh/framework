@@ -128,6 +128,10 @@ public class DefaultAuthorityManager<T extends Authority> implements
 		if (authorityMap.containsKey(authority.getId())) {
 			throw new AlreadyExistsException(JSONUtils.toJSONString(authority));
 		}
+		
+		if(authority.getId().equals(authority.getParentId())){
+			throw new RuntimeException("ID and parentid cannot be the same：" + JSONUtils.toJSONString(authority));
+		}
 
 		if (logger.isTraceEnabled()) {
 			logger.trace("register authority:{}",

@@ -19,7 +19,12 @@ public abstract class AbstractInstanceBuilder<T> implements InstanceBuilder<T> {
 	protected T createInternal(Class<?> targetClass,
 			Constructor<? extends T> constructor, Object[] params)
 			throws Exception {
-		return constructor.newInstance(params);
+		try {
+			return constructor.newInstance(params);
+		} catch (Exception e) {
+			ReflectionUtils.handleReflectionException(e);
+		}
+		throw new IllegalStateException("Should never get here");
 	}
 
 	public T create(Object... params) throws Exception {

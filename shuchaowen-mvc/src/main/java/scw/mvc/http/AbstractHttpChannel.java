@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import scw.beans.BeanFactory;
+import scw.compatible.CompatibleUtils;
+import scw.core.Constants;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.json.JSONSupport;
@@ -20,7 +22,6 @@ import scw.util.ip.SimpleIP;
 
 public abstract class AbstractHttpChannel extends AbstractChannel implements
 		HttpChannel {
-	private static final String GET_DEFAULT_CHARSET_ANME = "ISO-8859-1";
 	private final HttpRequest request;
 	private final HttpResponse response;
 
@@ -53,7 +54,7 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 		}
 
 		try {
-			return new String(value.getBytes(GET_DEFAULT_CHARSET_ANME),
+			return new String(CompatibleUtils.getStringOperations().getBytes(value, Constants.ISO_8859_1),
 					request.getCharacterEncoding());
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

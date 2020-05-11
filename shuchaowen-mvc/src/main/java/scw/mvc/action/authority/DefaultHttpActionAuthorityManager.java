@@ -1,5 +1,6 @@
 package scw.mvc.action.authority;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,9 +23,8 @@ import scw.util.Base64;
 
 @Configuration(order = Integer.MIN_VALUE, value = HttpActionAuthorityManager.class)
 @Bean(proxy = false)
-public class DefaultHttpActionAuthorityManager extends
-		DefaultHttpAuthorityManager<HttpActionAuthority> implements
-		HttpActionAuthorityManager, Init {
+public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpActionAuthority>
+		implements HttpActionAuthorityManager, Init {
 	private final ActionManager actionManager;
 
 	public DefaultHttpActionAuthorityManager(ActionManager actionManager) {
@@ -39,35 +39,33 @@ public class DefaultHttpActionAuthorityManager extends
 		}
 	}
 
-	public void register(HttpAction action) {
-		AuthorityParent authorityParent = action.getAnnotatedElement()
-				.getAnnotation(AuthorityParent.class);
-		String parentId = authorityParent == null ? null : authorityParent
-				.value().getName();
-		if(parentId != null){
+	private String getParentId(AnnotatedElement annotatedElement, String defaultId) {
+		AuthorityParent authorityParent = annotatedElement.getAnnotation(AuthorityParent.class);
+		String parentId = authorityParent == null ? defaultId : authorityParent.value().getName();
+		if (parentId != null) {
 			parentId = Base64.encode(CompatibleUtils.getStringOperations().getBytes(parentId, Constants.ISO_8859_1));
 		}
-		
-		Authority classAuthority = action.getTargetClassAnnotatedElement()
-				.getAnnotation(Authority.class);
+		return parentId;
+	}
+
+	public void register(HttpAction action) {
+		Authority classAuthority = action.getTargetClassAnnotatedElement().getAnnotation(Authority.class);
 		if (classAuthority != null) {// 如果在类上存在此注解说明这是一个菜单
 			String id = action.getTargetClass().getName();
 			id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
 			HttpActionAuthority authority = getAuthority(id);
 			if (authority == null) {
+				String parentId = getParentId(action.getTargetClassAnnotatedElement(), null);
 				boolean isMenu = classAuthority.menu();
-				if(isMenu){
+				if (isMenu) {
 					checkIsMenu(parentId, action);
 				}
-				register(new DefaultHttpActionAuthority(id, parentId,
-						classAuthority.value(),
+				register(new DefaultHttpActionAuthority(id, parentId, classAuthority.value(),
 						getAttributeMap(classAuthority), null, null, isMenu));
 			}
-			parentId = id;
 		}
 
-		Authority methodAuthority = action.getMethodAnnotatedElement()
-				.getAnnotation(Authority.class);
+		Authority methodAuthority = action.getMethodAnnotatedElement().getAnnotation(Authority.class);
 		if (methodAuthority == null) {
 			return;
 		}
@@ -78,35 +76,33 @@ public class DefaultHttpActionAuthorityManager extends
 			return;
 		}
 		
+		
+		String parentId = getParentId(action.getAnnotatedElement(), action.getTargetClass().getName());
 		boolean isMenu = methodAuthority.menu();
-		if(isMenu){
+		if (isMenu) {
 			checkIsMenu(parentId, action);
 		}
 
-		String id = descriptor.getHttpMethod() + "&"
-				+ descriptor.getController();
+		String id = descriptor.getHttpMethod() + "&" + descriptor.getController();
 		id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
-		
-		register(new DefaultHttpActionAuthority(id, parentId,
-				methodAuthority.value(), getAttributeMap(classAuthority,
-						methodAuthority), descriptor.getController(),
+
+		register(new DefaultHttpActionAuthority(id, parentId, methodAuthority.value(),
+				getAttributeMap(classAuthority, methodAuthority), descriptor.getController(),
 				descriptor.getHttpMethod(), isMenu));
 	}
-	
-	private void checkIsMenu(String parentId, Action action){
-		if(parentId != null){
+
+	private void checkIsMenu(String parentId, Action action) {
+		if (parentId != null) {
 			HttpActionAuthority parent = getAuthority(parentId);
-			if(parent != null && !parent.isMenu()){
+			if (parent != null && !parent.isMenu()) {
 				throw new NotSupportedException("标注为一个菜单,但父级并不是一个菜单: " + action);
 			}
 		}
 	}
 
 	public HttpActionAuthority getAuthority(HttpAction action) {
-		for (ControllerDescriptor descriptor : action
-				.getControllerDescriptors()) {
-			HttpActionAuthority authority = getAuthority(
-					descriptor.getController(), descriptor.getHttpMethod());
+		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
+			HttpActionAuthority authority = getAuthority(descriptor.getController(), descriptor.getHttpMethod());
 			if (authority != null) {
 				return authority;
 			}
@@ -130,17 +126,14 @@ public class DefaultHttpActionAuthorityManager extends
 		return attributeMap.isEmpty() ? null : attributeMap;
 	}
 
-	protected ControllerDescriptor getAuthorityControllerDescriptor(
-			HttpAction action) {
-		for (ControllerDescriptor descriptor : action
-				.getControllerDescriptors()) {
+	protected ControllerDescriptor getAuthorityControllerDescriptor(HttpAction action) {
+		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
 			if (descriptor.getHttpMethod() == HttpMethod.GET) {
 				return descriptor;
 			}
 		}
 
-		for (ControllerDescriptor descriptor : action
-				.getControllerDescriptors()) {
+		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
 			return descriptor;
 		}
 		return null;
