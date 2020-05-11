@@ -156,8 +156,8 @@ public class ObjectRelationalMapping implements FieldFilter {
 				continue;
 			}
 
-			if (column.getName().equals(name) || column.getField().getGetter().getName().equals(name)
-					|| column.getField().getSetter().getName().equals(name)) {
+			if (column.getName().equals(name) || column.getField().getGetter().getName().equalsIgnoreCase(name)
+					|| column.getField().getSetter().getName().equalsIgnoreCase(name)) {
 				return column;
 			}
 		}
@@ -173,7 +173,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 */
 	public boolean accept(Field field) {
 		if (!(field.isSupportGetter() && field.isSupportSetter()
-				&& FilterFeature.IGNORE_STATIC.getFilter().accept(field))) {
+				&& FilterFeature.IGNORE_STATIC.getFilter().accept(field)) && field.getGetter().getField() == null && field.getSetter().getField() == null) {
 			return false;
 		}
 

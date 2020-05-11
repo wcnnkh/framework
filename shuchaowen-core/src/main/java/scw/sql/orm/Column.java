@@ -200,7 +200,7 @@ public class Column implements Serializable{
 
 	@Override
 	public final int hashCode() {
-		return getName().hashCode();
+		return getName().toLowerCase().hashCode();
 	}
 
 	@Override
@@ -214,7 +214,7 @@ public class Column implements Serializable{
 		}
 
 		if (obj instanceof Column) {
-			return ((Column) obj).getName().equals(getName());
+			return ((Column) obj).getName().equalsIgnoreCase(getName());
 		}
 		return false;
 	}
