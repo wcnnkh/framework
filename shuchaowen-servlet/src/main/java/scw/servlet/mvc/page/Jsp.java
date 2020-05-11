@@ -38,7 +38,7 @@ public class Jsp extends AbstractPage {
 			attributeMap.remove(enumeration.nextElement());
 		}
 
-		for (Entry<String, Object> entry : attributeMap.entrySet()) {
+		for (java.util.Map.Entry<String, Object> entry : attributeMap.entrySet()) {
 			request.setAttribute(entry.getKey(), entry.getValue());
 		}
 

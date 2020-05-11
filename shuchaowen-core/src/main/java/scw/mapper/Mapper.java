@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 
 import scw.aop.ProxyUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.lang.NotFoundException;
 import scw.util.cache.CacheLoader;
@@ -28,8 +30,7 @@ public abstract class Mapper {
 		this.cacheOperations = CacheUtils.createLocalCache(localCacheType);
 	}
 
-	protected abstract CacheLoader<Class<?>, FieldMetadata[]> createCacheLoader(
-			Class<?> clazz);
+	protected abstract CacheLoader<Class<?>, FieldMetadata[]> createCacheLoader(Class<?> clazz);
 
 	public final FieldMetadata[] getFieldMetadatas(Class<?> clazz) {
 		FieldMetadata[] fieldMetadatas;
@@ -37,8 +38,7 @@ public abstract class Mapper {
 			if (cacheOperations.isExist(clazz)) {
 				fieldMetadatas = cacheOperations.get(clazz);
 			} else {
-				fieldMetadatas = cacheOperations.get(clazz,
-						createCacheLoader(clazz));
+				fieldMetadatas = cacheOperations.get(clazz, createCacheLoader(clazz));
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -50,8 +50,7 @@ public abstract class Mapper {
 		return fieldMetadatas.clone();
 	}
 
-	protected boolean acceptInternal(Field field, FieldFilter filter,
-			FilterFeature... filterFeatures) {
+	protected boolean acceptInternal(Field field, FieldFilter filter, FilterFeature... filterFeatures) {
 		if (filterFeatures != null && filterFeatures.length != 0) {
 			for (FilterFeature filterFeature : filterFeatures) {
 				if (!filterFeature.getFilter().accept(field)) {
@@ -62,9 +61,8 @@ public abstract class Mapper {
 		return filter == null || filter.accept(field);
 	}
 
-	public final LinkedList<Field> getFields(Class<?> clazz,
-			boolean useSuperClass, Field parentField, FieldFilter filter,
-			FilterFeature... filterFeatures) {
+	public final LinkedList<Field> getFields(Class<?> clazz, boolean useSuperClass, Field parentField,
+			FieldFilter filter, FilterFeature... filterFeatures) {
 		LinkedList<Field> list = new LinkedList<Field>();
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
@@ -84,18 +82,16 @@ public abstract class Mapper {
 		return list;
 	}
 
-	public final LinkedList<Field> getFields(Class<?> clazz, Field parentField,
-			FieldFilter filter, FilterFeature... filterFeatures) {
+	public final LinkedList<Field> getFields(Class<?> clazz, Field parentField, FieldFilter filter,
+			FilterFeature... filterFeatures) {
 		return getFields(clazz, true, parentField, filter, filterFeatures);
 	}
 
 	protected Field createField(Field parentField, FieldMetadata fieldMetadata) {
-		return new Field(parentField, fieldMetadata.getGetter(),
-				fieldMetadata.getSetter());
+		return new Field(parentField, fieldMetadata.getGetter(), fieldMetadata.getSetter());
 	}
 
-	public final Field getField(Class<?> clazz, boolean useSuperClass,
-			Field parentField, FieldFilter filter,
+	public final Field getField(Class<?> clazz, boolean useSuperClass, Field parentField, FieldFilter filter,
 			FilterFeature... filterFeatures) {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
@@ -114,14 +110,12 @@ public abstract class Mapper {
 		return null;
 	}
 
-	public final Field getField(Class<?> clazz, FieldFilter filter,
-			FilterFeature... filterFeatures) {
+	public final Field getField(Class<?> clazz, FieldFilter filter, FilterFeature... filterFeatures) {
 		return getField(clazz, true, null, filter, filterFeatures);
 	}
 
-	public final Field getField(Class<?> clazz, boolean useSuperClass,
-			final String name, final Class<?> type, Field parentField, final FieldFilter filter,
-			final FilterFeature... filterFeatures) {
+	public final Field getField(Class<?> clazz, boolean useSuperClass, final String name, final Class<?> type,
+			Field parentField, final FieldFilter filter, final FilterFeature... filterFeatures) {
 		return getField(clazz, useSuperClass, parentField, new FieldFilter() {
 
 			public boolean accept(Field field) {
@@ -147,28 +141,22 @@ public abstract class Mapper {
 		});
 	}
 
-	public final Field getField(Class<?> clazz, String name, Class<?> type,
-			FilterFeature... filterFeatures) {
+	public final Field getField(Class<?> clazz, String name, Class<?> type, FilterFeature... filterFeatures) {
 		return getField(clazz, true, name, type, null, null, filterFeatures);
 	}
 
-	public final Map<String, Object> getFieldValueMap(Object entity,
-			final FieldFilter fieldFilter) {
+	public final Map<String, Object> getFieldValueMap(Object entity, final FieldFilter fieldFilter) {
 		if (entity == null) {
 			return Collections.emptyMap();
 		}
 
 		final Map<String, Object> map = new LinkedHashMap<String, Object>();
-		for (Field field : getFields(
-				ProxyUtils.getProxyFactory().getUserClass(entity.getClass()),
-				null, new FieldFilter() {
+		for (Field field : getFields(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), null,
+				new FieldFilter() {
 
 					public boolean accept(Field field) {
-						return field.isSupportGetter()
-								&& !Modifier.isStatic(field.getGetter()
-										.getModifiers())
-								&& !map.containsKey(field.getGetter().getName())
-								&& acceptInternal(field, fieldFilter);
+						return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
+								&& !map.containsKey(field.getGetter().getName()) && acceptInternal(field, fieldFilter);
 					}
 				})) {
 			Object value = field.getGetter().get(entity);
@@ -191,15 +179,23 @@ public abstract class Mapper {
 	 *            要排除的字段
 	 * @return
 	 */
-	public final Map<String, Object> getFieldValueMapExcludeName(Object entity,
-			final Set<String> excludeNames) {
+	public final Map<String, Object> getFieldValueMapExcludeName(Object entity, final Set<String> excludeNames) {
 		return getFieldValueMap(entity, new FieldFilter() {
 
 			public boolean accept(Field field) {
-				return CollectionUtils.isEmpty(excludeNames)
-						|| !excludeNames.contains(field.getGetter().getName());
+				return CollectionUtils.isEmpty(excludeNames) || !excludeNames.contains(field.getGetter().getName());
 			}
 		});
+	}
+
+	public final Map<String, Object> getFieldValueMapExcludeName(Object entity, String... excludeNames) {
+		Set<String> names;
+		if (ArrayUtils.isEmpty(excludeNames)) {
+			names = Collections.emptySet();
+		} else {
+			names = new HashSet<String>(Arrays.asList(excludeNames));
+		}
+		return getFieldValueMapExcludeName(entity, names);
 	}
 
 	/**
@@ -209,26 +205,33 @@ public abstract class Mapper {
 	 *            要保留的字段
 	 * @return
 	 */
-	public final Map<String, Object> getFieldValueMapEffectiveName(
-			Object entity, final Set<String> effectiveNames) {
+	public final Map<String, Object> getFieldValueMapEffectiveName(Object entity, final Set<String> effectiveNames) {
 		return getFieldValueMap(entity, new FieldFilter() {
 
 			public boolean accept(Field field) {
-				return !CollectionUtils.isEmpty(effectiveNames)
-						&& effectiveNames.contains(field.getGetter().getName());
+				return !CollectionUtils.isEmpty(effectiveNames) && effectiveNames.contains(field.getGetter().getName());
 			}
 		});
 	}
 
+	public final Map<String, Object> getFieldValueMapEffectiveName(Object entity, String... effectiveNames) {
+		Set<String> names;
+		if (ArrayUtils.isEmpty(effectiveNames)) {
+			names = Collections.emptySet();
+		} else {
+			names = new HashSet<String>(Arrays.asList(effectiveNames));
+		}
+		return getFieldValueMapEffectiveName(entity, names);
+	}
+
 	@SuppressWarnings("rawtypes")
-	public final <T> List<T> getFieldValueList(Collection entitys,
-			final String fieldName) {
+	public final <T> List<T> getFieldValueList(Collection entitys, final String fieldName) {
 		return getFieldValueList(entitys, fieldName, null);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public final <T> List<T> getFieldValueList(Collection entitys,
-			final String fieldName, final Class<? extends T> type) {
+	public final <T> List<T> getFieldValueList(Collection entitys, final String fieldName,
+			final Class<? extends T> type) {
 		if (CollectionUtils.isEmpty(entitys)) {
 			return Collections.emptyList();
 		}
@@ -241,24 +244,17 @@ public abstract class Mapper {
 			}
 
 			if (field == null) {
-				field = getField(
-						ProxyUtils.getProxyFactory().getUserClass(
-								entity.getClass()), new FieldFilter() {
+				field = getField(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), new FieldFilter() {
 
-							public boolean accept(Field field) {
-								return field.isSupportGetter()
-										&& !Modifier.isStatic(field.getGetter()
-												.getModifiers())
-										&& field.getGetter().getName()
-												.equals(fieldName)
-										&& (type == null || type == field
-												.getGetter().getType());
-							}
-						});
+					public boolean accept(Field field) {
+						return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
+								&& field.getGetter().getName().equals(fieldName)
+								&& (type == null || type == field.getGetter().getType());
+					}
+				});
 
 				if (field == null) {
-					throw new NotFoundException(entity.getClass() + " ["
-							+ fieldName + "]");
+					throw new NotFoundException(entity.getClass() + " [" + fieldName + "]");
 				}
 			}
 
@@ -272,33 +268,26 @@ public abstract class Mapper {
 		return list;
 	}
 
-	public final <T> T mapping(Class<? extends T> entityClass,
-			Field parentField, Mapping mapping) throws Exception {
-		return mapping.mapping(entityClass,
-				getFields(entityClass, parentField, mapping, FilterFeature.SUPPORT_SETTER), this);
+	public final <T> T mapping(Class<? extends T> entityClass, Field parentField, Mapping mapping) throws Exception {
+		return mapping.mapping(entityClass, getFields(entityClass, parentField, mapping, FilterFeature.SUPPORT_SETTER),
+				this);
 	}
 
-	public final <T> T mapping(Class<? extends T> entityClass, Mapping mapping)
-			throws Exception {
+	public final <T> T mapping(Class<? extends T> entityClass, Mapping mapping) throws Exception {
 		return mapping(entityClass, null, mapping);
 	}
 
-	public final Enumeration<Field> enumeration(Class<?> entityClass,
-			boolean useSuperClass, Field parentField,
+	public final Enumeration<Field> enumeration(Class<?> entityClass, boolean useSuperClass, Field parentField,
 			Collection<FieldFilter> fieldFilters) {
-		return new EnumerationField(entityClass, useSuperClass, parentField,
-				fieldFilters);
+		return new EnumerationField(entityClass, useSuperClass, parentField, fieldFilters);
 	}
 
-	public final Enumeration<Field> enumeration(Class<?> entityClass,
-			boolean useSuperClass, Field parentField,
+	public final Enumeration<Field> enumeration(Class<?> entityClass, boolean useSuperClass, Field parentField,
 			FieldFilter... fieldFilters) {
-		return enumeration(entityClass, useSuperClass, parentField,
-				Arrays.asList(fieldFilters));
+		return enumeration(entityClass, useSuperClass, parentField, Arrays.asList(fieldFilters));
 	}
 
-	private final class EnumerationField implements Enumeration<Field>,
-			FieldFilter {
+	private final class EnumerationField implements Enumeration<Field>, FieldFilter {
 		private Class<?> entityClass;
 		private final boolean useSuperClass;
 		private final Collection<FieldFilter> fieldFilters;
@@ -306,14 +295,13 @@ public abstract class Mapper {
 		private Enumeration<FieldMetadata> enumeration;
 		private Field currentField;
 
-		public EnumerationField(Class<?> entityClass, boolean useSuperClass,
-				Field parentField, Collection<FieldFilter> fieldFilters) {
+		public EnumerationField(Class<?> entityClass, boolean useSuperClass, Field parentField,
+				Collection<FieldFilter> fieldFilters) {
 			this.entityClass = entityClass;
 			this.fieldFilters = fieldFilters;
 			this.useSuperClass = useSuperClass;
 			this.parentField = parentField;
-			this.enumeration = Collections.enumeration(Arrays
-					.asList(getFieldMetadatas(entityClass)));
+			this.enumeration = Collections.enumeration(Arrays.asList(getFieldMetadatas(entityClass)));
 		}
 
 		public boolean accept(Field field) {
@@ -333,28 +321,27 @@ public abstract class Mapper {
 			if (currentField != null) {
 				return true;
 			}
-			
-			while(enumeration.hasMoreElements()){
+
+			while (enumeration.hasMoreElements()) {
 				FieldMetadata fieldMetadata = enumeration.nextElement();
 				Field field = createField(parentField, fieldMetadata);
-				if(EnumerationField.this.accept(field)){
+				if (EnumerationField.this.accept(field)) {
 					this.currentField = field;
 					return true;
 				}
 			}
-			
+
 			if (useSuperClass) {
 				this.entityClass = entityClass.getSuperclass();
 				if (entityClass == null || entityClass == Object.class) {
 					return false;
 				}
 
-				this.enumeration = Collections.enumeration(Arrays
-						.asList(getFieldMetadatas(entityClass)));
-				while(enumeration.hasMoreElements()){
+				this.enumeration = Collections.enumeration(Arrays.asList(getFieldMetadatas(entityClass)));
+				while (enumeration.hasMoreElements()) {
 					FieldMetadata fieldMetadata = enumeration.nextElement();
 					Field field = createField(parentField, fieldMetadata);
-					if(EnumerationField.this.accept(field)){
+					if (EnumerationField.this.accept(field)) {
 						this.currentField = field;
 						return true;
 					}
@@ -364,13 +351,13 @@ public abstract class Mapper {
 		}
 
 		public Field nextElement() {
-			if(currentField == null && !hasMoreElements()){
+			if (currentField == null && !hasMoreElements()) {
 				throw new NoSuchElementException();
 			}
-			
+
 			try {
-				return currentField.clone();	
-			}finally{
+				return currentField.clone();
+			} finally {
 				this.currentField = null;
 			}
 		}
