@@ -7,6 +7,6 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AuthorityParent {
+public @interface ActionAuthorityParent {
 	public Class<?> value();
 }

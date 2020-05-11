@@ -85,12 +85,12 @@ public abstract class AbstractAction implements Action {
 	}
 
 	@Override
-	public int hashCode() {
+	public final int hashCode() {
 		return method.hashCode();
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public final boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
 		}

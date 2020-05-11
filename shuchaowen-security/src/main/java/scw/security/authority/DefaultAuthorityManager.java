@@ -12,18 +12,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public class DefaultAuthorityManager<T extends Authority> implements
-		AuthorityManager<T> {
+public class DefaultAuthorityManager<T extends Authority> implements AuthorityManager<T> {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
-
 	public Map<String, T> authorityMap = new HashMap<String, T>();
-	public Map<String, Set<String>> subListMap = new HashMap<String, Set<String>>();
-	public List<String> roots = new ArrayList<String>();
 
 	public T getAuthority(String id) {
 		if (id == null) {
@@ -44,59 +41,44 @@ public class DefaultAuthorityManager<T extends Authority> implements
 	}
 
 	public List<T> getRootList(AuthorityFilter<T> authorityFilter) {
-		List<T> list = new ArrayList<T>(roots.size());
-		for (String subId : roots) {
-			T v = getAuthority(subId);
-			if (v == null) {
-				continue;
-			}
-
-			if (acceptInternal(v, authorityFilter)) {
-				list.add(v);
+		List<T> list = new ArrayList<T>();
+		for (Entry<String, T> entry : authorityMap.entrySet()) {
+			String parentId = entry.getValue().getParentId();
+			if (parentId == null || !authorityMap.containsKey(parentId)) {
+				if (acceptInternal(entry.getValue(), authorityFilter)) {
+					list.add(entry.getValue());
+				}
 			}
 		}
 		return list;
 	}
 
-	public List<AuthorityTree<T>> getAuthorityTreeList(
-			AuthorityFilter<T> authorityFilter) {
+	public List<AuthorityTree<T>> getAuthorityTreeList(AuthorityFilter<T> authorityFilter) {
 		List<T> list = getRootList(authorityFilter);
 		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
 
-		List<AuthorityTree<T>> treeList = new ArrayList<AuthorityTree<T>>(
-				list.size());
+		List<AuthorityTree<T>> treeList = new ArrayList<AuthorityTree<T>>(list.size());
 		for (T authority : list) {
-			treeList.add(new AuthorityTree<T>(authority, getAuthorityTreeList(
-					authority.getId(), authorityFilter)));
+			treeList.add(new AuthorityTree<T>(authority, getAuthorityTreeList(authority.getId(), authorityFilter)));
 		}
 		return treeList;
 	}
 
-	public List<T> getAuthoritySubList(String id,
-			AuthorityFilter<T> authorityFilter) {
+	public List<T> getAuthoritySubList(String id, AuthorityFilter<T> authorityFilter) {
 		if (id == null) {
 			return getRootList(authorityFilter);
 		}
 
-		Set<String> set = subListMap.get(id);
-		if (CollectionUtils.isEmpty(set)) {
-			return Collections.emptyList();
-		}
-
-		List<T> values = new ArrayList<T>(set.size());
-		for (String subId : set) {
-			T v = getAuthority(subId);
-			if (v == null) {
-				continue;
-			}
-
-			if (acceptInternal(v, authorityFilter)) {
-				values.add(v);
+		List<T> values = new ArrayList<T>();
+		for (Entry<String, T> entry : authorityMap.entrySet()) {
+			if (StringUtils.equals(id, entry.getValue().getParentId())) {
+				if (acceptInternal(entry.getValue(), authorityFilter)) {
+					values.add(entry.getValue());
+				}
 			}
 		}
-
 		return values;
 	}
 
@@ -104,18 +86,15 @@ public class DefaultAuthorityManager<T extends Authority> implements
 		return authorityFilter == null || authorityFilter.accept(authority);
 	}
 
-	public List<AuthorityTree<T>> getAuthorityTreeList(String id,
-			AuthorityFilter<T> authorityFilter) {
+	public List<AuthorityTree<T>> getAuthorityTreeList(String id, AuthorityFilter<T> authorityFilter) {
 		List<T> list = getAuthoritySubList(id, authorityFilter);
 		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
 
-		List<AuthorityTree<T>> treeList = new ArrayList<AuthorityTree<T>>(
-				list.size());
+		List<AuthorityTree<T>> treeList = new ArrayList<AuthorityTree<T>>(list.size());
 		for (T authority : list) {
-			treeList.add(new AuthorityTree<T>(authority, getAuthorityTreeList(
-					authority.getId(), authorityFilter)));
+			treeList.add(new AuthorityTree<T>(authority, getAuthorityTreeList(authority.getId(), authorityFilter)));
 		}
 		return treeList;
 	}
@@ -128,33 +107,16 @@ public class DefaultAuthorityManager<T extends Authority> implements
 		if (authorityMap.containsKey(authority.getId())) {
 			throw new AlreadyExistsException(JSONUtils.toJSONString(authority));
 		}
-		
-		if(authority.getId().equals(authority.getParentId())){
+
+		if (authority.getId().equals(authority.getParentId())) {
 			throw new RuntimeException("ID and parentid cannot be the same：" + JSONUtils.toJSONString(authority));
 		}
 
 		if (logger.isTraceEnabled()) {
-			logger.trace("register authority:{}",
-					JSONUtils.toJSONString(authority));
+			logger.trace("register authority:{}", JSONUtils.toJSONString(authority));
 		}
 
 		authorityMap.put(authority.getId(), authority);
-		if (authority.getParentId() == null || !authorityMap.containsKey(authority.getParentId())) {// root
-			roots.add(authority.getId());
-		} else {
-			Set<String> set = subListMap.get(authority.getParentId());
-			if (set == null) {
-				set = new LinkedHashSet<String>();
-			}
-
-			if (set.contains(authority.getId())) {
-				throw new AlreadyExistsException(
-						JSONUtils.toJSONString(authority));
-			}
-
-			set.add(authority.getId());
-			subListMap.put(authority.getParentId(), set);
-		}
 	}
 
 	public List<T> getParentList(String id, AuthorityFilter<T> authorityFilter) {
@@ -174,8 +136,7 @@ public class DefaultAuthorityManager<T extends Authority> implements
 		return list;
 	}
 
-	public List<T> getRelationAuthorityList(Collection<String> ids,
-			AuthorityFilter<T> authorityFilter) {
+	public List<T> getRelationAuthorityList(Collection<String> ids, AuthorityFilter<T> authorityFilter) {
 		Set<String> useIds = getRelationIds(ids, authorityFilter);
 		if (CollectionUtils.isEmpty(useIds)) {
 			return Collections.emptyList();
@@ -206,8 +167,7 @@ public class DefaultAuthorityManager<T extends Authority> implements
 		return list;
 	}
 
-	private Set<String> getRelationIds(Collection<String> ids,
-			AuthorityFilter<T> authorityFilter) {
+	private Set<String> getRelationIds(Collection<String> ids, AuthorityFilter<T> authorityFilter) {
 		LinkedHashSet<String> useIds = new LinkedHashSet<String>(ids);
 		for (String id : ids) {
 			List<T> list = getParentList(id, authorityFilter);
@@ -220,35 +180,31 @@ public class DefaultAuthorityManager<T extends Authority> implements
 		return useIds;
 	}
 
-	public List<AuthorityTree<T>> getRelationAuthorityTreeList(
-			Collection<String> ids, AuthorityFilter<T> authorityFilter) {
+	public List<AuthorityTree<T>> getRelationAuthorityTreeList(Collection<String> ids,
+			AuthorityFilter<T> authorityFilter) {
 		Set<String> useIds = getRelationIds(ids, authorityFilter);
 		if (CollectionUtils.isEmpty(useIds)) {
 			return Collections.emptyList();
 		}
 
-		return getAuthorityTreeList(getRootList(useIds), useIds,
-				authorityFilter);
+		return getAuthorityTreeList(getRootList(useIds), useIds, authorityFilter);
 	}
 
-	protected List<AuthorityTree<T>> getAuthorityTreeList(
-			Collection<T> rootList, final Set<String> ids,
+	protected List<AuthorityTree<T>> getAuthorityTreeList(Collection<T> rootList, final Set<String> ids,
 			final AuthorityFilter<T> authorityFilter) {
 		List<AuthorityTree<T>> list = new ArrayList<AuthorityTree<T>>();
 		for (T t : rootList) {
-			List<T> subList = getAuthoritySubList(t.getId(),
-					new AuthorityFilter<T>() {
+			List<T> subList = getAuthoritySubList(t.getId(), new AuthorityFilter<T>() {
 
-						public boolean accept(T authority) {
-							if (!ids.contains(authority.getId())) {
-								return false;
-							}
-							return acceptInternal(authority, authorityFilter);
-						}
-					});
+				public boolean accept(T authority) {
+					if (!ids.contains(authority.getId())) {
+						return false;
+					}
+					return acceptInternal(authority, authorityFilter);
+				}
+			});
 
-			list.add(new AuthorityTree<T>(t, getAuthorityTreeList(subList, ids,
-					authorityFilter)));
+			list.add(new AuthorityTree<T>(t, getAuthorityTreeList(subList, ids, authorityFilter)));
 		}
 		return list;
 	}
