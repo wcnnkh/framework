@@ -150,7 +150,7 @@ public final class Restful {
 					&& path.endsWith(PLACEHOLDER_END);
 			this.wildcard = StringUtils.isSupportTestMatching(path);
 			this.path = placeholder ? path.substring(
-					PLACEHOLDER_BEGIN.length(), PLACEHOLDER_END.length())
+					PLACEHOLDER_BEGIN.length(), path.length() - PLACEHOLDER_END.length())
 					: path;
 		}
 

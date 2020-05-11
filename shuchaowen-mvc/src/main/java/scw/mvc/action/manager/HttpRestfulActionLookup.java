@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
+import scw.core.utils.StringUtils;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
 import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
@@ -53,7 +54,7 @@ public class HttpRestfulActionLookup extends HttpActionLookup {
 			return null;
 		}
 
-		String[] pathArr = channel.getRequest().getController().split("/");
+		String[] pathArr = StringUtils.split(channel.getRequest().getController(), '/');
 		for (Entry<Restful, HttpAction> entry : map.entrySet()) {
 			Restful restful = entry.getKey();
 			RestfulMatchingResult result = restful.matching(pathArr);

@@ -403,6 +403,13 @@
 				<version>3.4.6</version>
 			</dependency>
 
+			<!-- https://mvnrepository.com/artifact/org.apache.derby/derby -->
+			<dependency>
+				<groupId>org.apache.derby</groupId>
+				<artifactId>derby</artifactId>
+				<version>10.14.2.0</version>
+			</dependency>
+
 			<!-- lucene相关 -->
 			<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
 			<dependency>

@@ -41,9 +41,4 @@ public class FormHttpServletChannel extends HttpServletChannel {
 	public AsyncControl getAsyncControl() {
 		return super.getAsyncControl();
 	}
-	
-	@Override
-	public String[] getStringArray(String key) {
-		return getRequest().getParameterValues(key);
-	}
 }
