@@ -3,7 +3,7 @@ package scw.mvc.http.cors;
 import scw.beans.annotation.Bean;
 import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Bean(proxy=false)
 public class DefaultCorsConfigFactory implements CorsConfigFactory{

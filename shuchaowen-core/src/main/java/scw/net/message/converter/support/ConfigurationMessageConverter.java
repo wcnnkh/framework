@@ -4,7 +4,7 @@ import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MultiMessageConverter;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class ConfigurationMessageConverter extends MultiMessageConverter{
 	private static final long serialVersionUID = 1L;

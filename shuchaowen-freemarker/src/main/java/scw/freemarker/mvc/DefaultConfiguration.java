@@ -8,7 +8,7 @@ import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.freemarker.MultiTemplateLoader;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.TemplateLoader;

@@ -34,7 +34,7 @@ import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
 import scw.util.ip.IP;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public final class MVCUtils implements MvcConstants {
 	private static final String[] IP_HEADERS = GlobalPropertyFactory

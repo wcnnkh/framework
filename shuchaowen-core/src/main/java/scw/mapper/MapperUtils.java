@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import scw.core.utils.StringUtils;
 import scw.util.cache.LocalCacheType;
-import scw.util.value.ValueUtils;
+import scw.value.ValueUtils;
 
 public class MapperUtils {
 	private static final String BOOLEAN_GETTER_METHOD_PREFIX = "is";

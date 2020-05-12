@@ -19,7 +19,7 @@ import scw.lang.Nullable;
 import scw.mvc.rpc.RpcConstants;
 import scw.net.http.HttpHeaders;
 import scw.net.message.converter.support.AllMessageConverter;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class HttpRestfulRpcProxy implements Filter, RpcConstants {
 	private static final String[] DEFAULT_SHARE_HEADERS = new String[] { HttpHeaders.CONTENT_TYPE, HttpHeaders.COOKIE,

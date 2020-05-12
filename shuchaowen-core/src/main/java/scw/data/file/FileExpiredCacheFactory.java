@@ -7,7 +7,7 @@ import scw.data.AbstractExpireCacheFactory;
 import scw.data.ExpiredCache;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.io.serialzer.SerializerUtils;
-import scw.util.value.property.SystemPropertyFactory;
+import scw.value.property.SystemPropertyFactory;
 
 public class FileExpiredCacheFactory extends AbstractExpireCacheFactory{
 	protected final NoTypeSpecifiedSerializer serializer;

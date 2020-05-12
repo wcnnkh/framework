@@ -26,7 +26,7 @@ import scw.io.UnsafeByteArrayInputStream;
 import scw.lang.NestedRuntimeException;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.FormatUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class ResourceOperations extends DefaultResourceLoader {
 	private static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";

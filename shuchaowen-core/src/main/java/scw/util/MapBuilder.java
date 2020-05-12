@@ -8,8 +8,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.io.ResourceUtils;
-import scw.util.value.StringValue;
-import scw.util.value.Value;
+import scw.value.StringValue;
+import scw.value.Value;
 
 public class MapBuilder implements Serializable {
 	private static final long serialVersionUID = 1L;

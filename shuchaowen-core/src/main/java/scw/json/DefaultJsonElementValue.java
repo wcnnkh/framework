@@ -1,6 +1,6 @@
 package scw.json;
 
-import scw.util.value.DefaultValueDefinition;
+import scw.value.DefaultValueDefinition;
 
 public class DefaultJsonElementValue extends DefaultValueDefinition implements JsonElement {
 	private static final long serialVersionUID = 1L;

@@ -2,7 +2,7 @@ package scw.beans.property;
 
 import org.w3c.dom.Node;
 
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public abstract class AbstractProperties implements Properties {
 	private final PropertyFactory propertyFactory;

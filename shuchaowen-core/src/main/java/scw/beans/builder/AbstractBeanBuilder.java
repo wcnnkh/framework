@@ -12,7 +12,7 @@ import scw.beans.ioc.Ioc;
 import scw.core.instance.AbstractInstanceBuilder;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public abstract class AbstractBeanBuilder extends
 		AbstractInstanceBuilder<Object> implements BeanBuilder {

@@ -5,7 +5,7 @@ import scw.io.IOUtils;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.service.FilterChain;
 import scw.mvc.service.HttpFilter;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order = ResourceFilter.ORDER)
 public final class ResourceFilter extends HttpFilter {

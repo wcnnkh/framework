@@ -20,7 +20,7 @@ import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.io.serialzer.Serializer;
 import scw.io.serialzer.SerializerUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
 @Configuration(order = Integer.MIN_VALUE)

@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 import scw.json.AbstractJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
-import scw.util.value.Value;
+import scw.value.Value;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;

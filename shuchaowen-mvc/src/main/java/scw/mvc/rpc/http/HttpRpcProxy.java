@@ -15,7 +15,7 @@ import scw.net.client.http.ClientHttpRequest;
 import scw.net.client.http.ClientHttpResponse;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MultiMessageConverter;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class HttpRpcProxy extends MultiMessageConverter implements Filter {
 	private static final long serialVersionUID = 1L;

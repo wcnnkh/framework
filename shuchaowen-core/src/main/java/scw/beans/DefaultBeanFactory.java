@@ -46,8 +46,8 @@ import scw.lang.Ignore;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.value.property.BasePropertyFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.BasePropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter,
 		BeanBuilderLoaderChain {

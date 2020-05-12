@@ -8,7 +8,7 @@ import scw.json.JSONUtils;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.mapper.Field;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 /**
  * 将内容解析为json

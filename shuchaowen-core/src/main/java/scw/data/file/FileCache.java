@@ -21,7 +21,7 @@ import scw.lang.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.client.http.HttpUtils;
-import scw.util.value.property.SystemPropertyFactory;
+import scw.value.property.SystemPropertyFactory;
 
 @SuppressWarnings("unchecked")
 public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy {

@@ -5,7 +5,7 @@ import java.lang.reflect.Constructor;
 import scw.core.parameter.ParameterFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public final class AutoConstructorBuilder implements ConstructorBuilder {
 	private volatile ConstructorDescriptor constructorDescriptor;

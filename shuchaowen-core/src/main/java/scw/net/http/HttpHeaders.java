@@ -29,7 +29,7 @@ import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
 import scw.util.MapBuilder;
-import scw.util.value.Value;
+import scw.value.Value;
 
 /**
  * A data structure representing HTTP request or response headers, mapping

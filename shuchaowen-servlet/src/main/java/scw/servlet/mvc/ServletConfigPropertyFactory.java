@@ -4,7 +4,7 @@ import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 
-import scw.util.value.property.StringValuePropertyFactory;
+import scw.value.property.StringValuePropertyFactory;
 
 public class ServletConfigPropertyFactory extends StringValuePropertyFactory {
 	private final ServletConfig servletConfig;

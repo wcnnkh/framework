@@ -11,7 +11,7 @@ import javax.servlet.ServletResponse;
 import scw.beans.BeanFactory;
 import scw.mvc.service.ChannelService;
 import scw.servlet.mvc.http.HttpServletChannelFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class AsyncServletService extends DefaultServletService implements scw.core.Destroy {
 	private final ThreadPoolExecutor threadPoolExecutor;

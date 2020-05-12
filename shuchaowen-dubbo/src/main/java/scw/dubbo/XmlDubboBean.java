@@ -4,7 +4,7 @@ import org.apache.dubbo.config.ReferenceConfig;
 
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public final class XmlDubboBean extends DefaultBeanDefinition {
 

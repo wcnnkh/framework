@@ -13,7 +13,7 @@ import scw.io.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.util.comparator.CompareUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class LoggerLevelUtils {
 	private static final LinkedList<KeyValuePair<String, Level>> LOGGER_LEVEL_LIST = new LinkedList<KeyValuePair<String, Level>>();

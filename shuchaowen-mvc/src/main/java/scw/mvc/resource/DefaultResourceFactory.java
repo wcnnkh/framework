@@ -11,7 +11,7 @@ import scw.mvc.MVCUtils;
 import scw.mvc.Request;
 import scw.mvc.http.HttpRequest;
 import scw.net.http.HttpMethod;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class DefaultResourceFactory implements ResourceFactory {
 	private static Logger logger = LoggerUtils.getLogger(DefaultResourceFactory.class);

@@ -25,7 +25,7 @@ import scw.io.ResourceUtils;
 import scw.mapper.Copy;
 import scw.mapper.Field;
 import scw.mapper.MapperUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
 public final class XmlDubboUtils {

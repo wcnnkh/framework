@@ -6,7 +6,7 @@ import scw.beans.property.AbstractValueFormat;
 import scw.core.utils.ClassUtils;
 import scw.mapper.Field;
 import scw.util.ConfigUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 /**
  * xml解析

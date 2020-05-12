@@ -15,8 +15,8 @@ import scw.core.utils.StringUtils;
 import scw.data.redis.RedisConstants;
 import scw.io.ResourceUtils;
 import scw.util.ConfigUtils;
-import scw.util.value.property.PropertiesPropertyFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertiesPropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
 public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants {

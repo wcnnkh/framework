@@ -2,7 +2,7 @@ package scw.websocket;
 
 import java.nio.ByteBuffer;
 
-import scw.util.message.BinaryMessage;
+import scw.messageing.BinaryMessage;
 
 public class PingMessage extends BinaryMessage {
 	private static final long serialVersionUID = 1L;

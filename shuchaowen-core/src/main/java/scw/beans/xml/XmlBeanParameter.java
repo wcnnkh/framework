@@ -14,9 +14,9 @@ import scw.core.instance.InstanceFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
-import scw.util.value.StringValue;
-import scw.util.value.Value;
-import scw.util.value.property.PropertyFactory;
+import scw.value.StringValue;
+import scw.value.Value;
+import scw.value.property.PropertyFactory;
 
 public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, Serializable {
 	private static final long serialVersionUID = 1L;
