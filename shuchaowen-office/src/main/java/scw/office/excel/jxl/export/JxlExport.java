@@ -9,7 +9,7 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import scw.db.DB;
-import scw.mvc.http.HttpResponse;
+import scw.mvc.http.ServerHttpResponse;
 import scw.sql.Sql;
 
 /**
@@ -33,7 +33,7 @@ public class JxlExport {
 	 * @throws Exception
 	 */
 	public static void exportExcel(String fileName, String title[], List<Object[]> tempList,
-			HttpResponse response) throws Exception {
+			ServerHttpResponse response) throws Exception {
 		String oldFileName = fileName;
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 
@@ -89,7 +89,7 @@ public class JxlExport {
 		wwb.close();
 	}
 
-	public static void sqlResultSetToExcel(String fileName, String title[], DB db, HttpResponse response,
+	public static void sqlResultSetToExcel(String fileName, String title[], DB db, ServerHttpResponse response,
 			SqlExportRow exportRow, Sql... sqls) throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
@@ -101,7 +101,7 @@ public class JxlExport {
 	}
 
 	public static void sqlResultSetToExcel(String fileName, String title[], DB db, List<Sql> sqlList,
-			HttpResponse response, SqlExportRow exportRow) throws Exception {
+			ServerHttpResponse response, SqlExportRow exportRow) throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
 		response.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName + ".xls");

@@ -2,11 +2,12 @@ package scw.mvc.http;
 
 import java.io.IOException;
 
-import scw.mvc.Response;
+import scw.mvc.ServerResponse;
 import scw.net.http.HttpCookie;
 import scw.net.http.HttpHeaders;
+import scw.net.http.HttpStatus;
 
-public interface HttpResponse extends Response{
+public interface ServerHttpResponse extends ServerResponse{
     void addCookie(HttpCookie cookie);
     
     void addCookie(String name, String value);
@@ -17,7 +18,7 @@ public interface HttpResponse extends Response{
 
     void sendRedirect(String location) throws IOException;
 
-    void setStatus(int sc);
+    void setStatusCode(HttpStatus httpStatus) throws IOException;
 
     int getStatus();
 

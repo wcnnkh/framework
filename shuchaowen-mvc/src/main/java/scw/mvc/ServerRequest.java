@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import scw.net.message.InputMessage;
 
-public interface Request extends InputMessage {
+public interface ServerRequest extends InputMessage {
 	String getController();
 	
 	String getRawContentType();

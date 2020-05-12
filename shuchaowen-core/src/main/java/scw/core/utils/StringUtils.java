@@ -2455,7 +2455,7 @@ public final class StringUtils {
 	}
 
 	public static Object defaultAutoParse(final String text, final Type type) {
-		return defaultAutoParse(text, type, JSONUtils.DEFAULT_JSON_SUPPORT);
+		return defaultAutoParse(text, type, JSONUtils.getJsonSupport());
 	}
 
 	public static Object defaultAutoParse(final String text, final Type type,
@@ -2470,13 +2470,13 @@ public final class StringUtils {
 	public static Object parseArray(String text, Class<?> componentType,
 			String[] splitFilter) {
 		return parseArray(text, componentType, splitFilter,
-				JSONUtils.DEFAULT_JSON_SUPPORT);
+				JSONUtils.getJsonSupport());
 	}
 
 	public static Object parseArray(String text, Class<?> componentType,
 			char[] splitFilter) {
 		return parseArray(text, componentType, splitFilter,
-				JSONUtils.DEFAULT_JSON_SUPPORT);
+				JSONUtils.getJsonSupport());
 	}
 
 	public static Object parseArray(String text, Class<?> componentType,

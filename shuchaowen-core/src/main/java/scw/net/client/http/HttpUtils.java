@@ -12,18 +12,24 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.Assert;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.lang.NotSupportedException;
+import scw.net.http.HttpHeaders;
 import scw.net.http.HttpMethod;
+import scw.net.http.HttpRequest;
 import scw.net.http.MediaType;
+import scw.net.uri.UriComponents;
+import scw.net.uri.UriComponentsBuilder;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.ToMap;
@@ -32,34 +38,27 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	public static final int DEFAULT_CONNECT_TIMEOUT = StringUtils.parseInt(
-			GlobalPropertyFactory.getInstance().getString(
-					"scw.http.client.connect.timeout"), 10000);
-	public static final int DEFAULT_READ_TIMEOUT = StringUtils.parseInt(
-			GlobalPropertyFactory.getInstance().getString(
-					"scw.http.client.read.timeout"), 10000);
+	public static final int DEFAULT_CONNECT_TIMEOUT = StringUtils
+			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.connect.timeout"), 10000);
+	public static final int DEFAULT_READ_TIMEOUT = StringUtils
+			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.read.timeout"), 10000);
 
-	private static final HttpClient HTTP_CLIENT = InstanceUtils
-			.getSystemConfiguration(HttpClient.class);
+	private static final HttpClient HTTP_CLIENT = InstanceUtils.getSystemConfiguration(HttpClient.class);
 
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;
 	}
 
-	public static ClientHttpRequest createRequest(String url,
-			HttpMethod httpMethod, MediaType contentType,
-			ClientHttpRequestFactory clientHttpRequestFactory)
-			throws IOException {
+	public static ClientHttpRequest createRequest(String url, HttpMethod httpMethod, MediaType contentType,
+			ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
 		URI uri;
 		try {
 			uri = new URI(url);
 		} catch (URISyntaxException e) {
-			throw new IllegalStateException(
-					"Could not get HttpURLConnection URI: " + e.getMessage(), e);
+			throw new IllegalStateException("Could not get HttpURLConnection URI: " + e.getMessage(), e);
 		}
 
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri,
-				httpMethod);
+		ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, httpMethod);
 		request.setContentType(contentType);
 		return request;
 	}
@@ -70,8 +69,7 @@ public final class HttpUtils {
 			return null;
 		}
 
-		if (body instanceof String
-				|| TypeUtils.isPrimitiveOrWrapper(body.getClass())) {
+		if (body instanceof String || TypeUtils.isPrimitiveOrWrapper(body.getClass())) {
 			return body.toString();
 		} else if (body instanceof ToMap) {
 			return jsonSupport.toJSONString(XUtils.toMap((ToMap) body));
@@ -81,14 +79,13 @@ public final class HttpUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static String toFormString(Object body, String charsetName,
-			JSONSupport jsonSupport) throws UnsupportedEncodingException {
+	public static String toFormString(Object body, String charsetName, JSONSupport jsonSupport)
+			throws UnsupportedEncodingException {
 		if (body == null) {
 			return null;
 		}
 
-		if (body instanceof String
-				|| TypeUtils.isPrimitiveOrWrapper(body.getClass())) {
+		if (body instanceof String || TypeUtils.isPrimitiveOrWrapper(body.getClass())) {
 			return body.toString();
 		} else if (body instanceof ToMap) {
 			return toFormBody(((ToMap) body).toMap(), charsetName);
@@ -101,8 +98,8 @@ public final class HttpUtils {
 		}
 	}
 
-	public static String toFormBody(String key, Collection<?> values,
-			String charsetName) throws UnsupportedEncodingException {
+	public static String toFormBody(String key, Collection<?> values, String charsetName)
+			throws UnsupportedEncodingException {
 		if (StringUtils.isEmpty(key) || CollectionUtils.isEmpty(values)) {
 			return null;
 		}
@@ -143,8 +140,7 @@ public final class HttpUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static String toFormBody(Map<?, ?> parameterMap, String charsetName)
-			throws UnsupportedEncodingException {
+	public static String toFormBody(Map<?, ?> parameterMap, String charsetName) throws UnsupportedEncodingException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			return null;
 		}
@@ -179,8 +175,8 @@ public final class HttpUtils {
 		return sb.toString();
 	}
 
-	public static String appendParameters(String url, Map<String, ?> paramMap,
-			String charsetName) throws UnsupportedEncodingException {
+	public static String appendParameters(String url, Map<String, ?> paramMap, String charsetName)
+			throws UnsupportedEncodingException {
 		if (paramMap == null || paramMap.isEmpty()) {
 			return url;
 		}
@@ -234,8 +230,7 @@ public final class HttpUtils {
 		return decode(value, Constants.DEFAULT_CHARSET_NAME);
 	}
 
-	public static String decode(String content, String charsetName, int count)
-			throws UnsupportedEncodingException {
+	public static String decode(String content, String charsetName, int count) throws UnsupportedEncodingException {
 		if (count <= 0) {
 			return content;
 		}
@@ -247,8 +242,7 @@ public final class HttpUtils {
 		return newContent;
 	}
 
-	public static String encode(Object content, String charsetName, int count)
-			throws UnsupportedEncodingException {
+	public static String encode(Object content, String charsetName, int count) throws UnsupportedEncodingException {
 		if (count <= 0 || content == null) {
 			return content == null ? null : content.toString();
 		}
@@ -272,5 +266,55 @@ public final class HttpUtils {
 			}
 		}
 		return map;
+	}
+	
+	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {
+		Assert.notNull(request, "Request must not be null");
+		Assert.notNull(allowedOrigins, "Allowed origins must not be null");
+
+		String origin = request.getHeaders().getOrigin();
+		if (origin == null || allowedOrigins.contains("*")) {
+			return true;
+		}
+		else if (CollectionUtils.isEmpty(allowedOrigins)) {
+			return isSameOrigin(request);
+		}
+		else {
+			return allowedOrigins.contains(origin);
+		}
+	}
+
+	/**
+	 * 是否是同一个origin
+	 * @param request
+	 * @return
+	 */
+	public static boolean isSameOrigin(HttpRequest request) {
+		HttpHeaders headers = request.getHeaders();
+		String origin = headers.getOrigin();
+		if (origin == null) {
+			return true;
+		}
+
+		URI uri = request.getURI();
+		String scheme = uri.getScheme();
+		String host = uri.getHost();
+		int port = uri.getPort();
+
+		UriComponents originUrl = UriComponentsBuilder.fromOriginHeader(origin).build();
+		return (ObjectUtils.nullSafeEquals(scheme, originUrl.getScheme())
+				&& ObjectUtils.nullSafeEquals(host, originUrl.getHost())
+				&& getPort(scheme, port) == getPort(originUrl.getScheme(), originUrl.getPort()));
+	}
+
+	private static int getPort(String scheme, int port) {
+		if (port == -1) {
+			if ("http".equals(scheme) || "ws".equals(scheme)) {
+				port = 80;
+			} else if ("https".equals(scheme) || "wss".equals(scheme)) {
+				port = 443;
+			}
+		}
+		return port;
 	}
 }

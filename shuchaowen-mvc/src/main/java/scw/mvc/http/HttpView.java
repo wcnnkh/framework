@@ -6,12 +6,12 @@ import scw.mvc.View;
 
 public abstract class HttpView implements View {
 
-	protected void beforRender(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse)
+	protected void beforRender(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse)
 			throws Throwable {
 		// ignore
 	}
 
-	protected void afterRender(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse)
+	protected void afterRender(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse)
 			throws Throwable {
 		// ignore
 	}
@@ -27,6 +27,6 @@ public abstract class HttpView implements View {
 		throw new NotSupportedException(channel.toString());
 	}
 
-	public abstract void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse)
+	public abstract void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse)
 			throws Throwable;
 }

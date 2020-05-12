@@ -6,14 +6,15 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.mvc.http.HttpResponse;
+import scw.mvc.http.ServerHttpResponse;
 import scw.net.MimeType;
 import scw.net.http.HttpCookie;
 import scw.net.http.HttpHeaders;
+import scw.net.http.HttpStatus;
 import scw.net.message.AbstractOutputMessage;
 
 public class MyHttpServletResponse extends AbstractOutputMessage implements
-		HttpResponse {
+		ServerHttpResponse {
 	private HttpServletResponse httpServletResponse;
 	private HttpServletResponseHeaders headers;
 	private boolean bodyUse = false;
@@ -101,6 +102,10 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 
 	public void setStatus(int sc) {
 		httpServletResponse.setStatus(sc);
+	}
+	
+	public void setStatusCode(HttpStatus httpStatus) throws IOException {
+		httpServletResponse.sendError(httpStatus.value(), httpStatus.getReasonPhrase());
 	}
 
 	public int getStatus() {

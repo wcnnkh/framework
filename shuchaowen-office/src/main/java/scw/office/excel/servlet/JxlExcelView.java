@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import scw.db.DB;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
+import scw.mvc.http.ServerHttpRequest;
+import scw.mvc.http.ServerHttpResponse;
 import scw.mvc.http.HttpView;
 import scw.office.excel.jxl.export.JxlExport;
 import scw.office.excel.jxl.export.SimpleExportRowImpl;
@@ -32,11 +32,11 @@ public class JxlExcelView extends HttpView {
 	}
 
 	@Override
-	public void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) throws Throwable {
-		if (httpResponse.getContentType() == null) {
-			httpResponse.setContentType("text/html;charset=" + httpResponse.getCharacterEncoding());
+	public void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
+		if (serverHttpResponse.getContentType() == null) {
+			serverHttpResponse.setContentType("text/html;charset=" + serverHttpResponse.getCharacterEncoding());
 		}
 
-		JxlExport.sqlResultSetToExcel(fileName, titles, db, Arrays.asList(sql), httpResponse, sqlExportRow);
+		JxlExport.sqlResultSetToExcel(fileName, titles, db, Arrays.asList(sql), serverHttpResponse, sqlExportRow);
 	}
 }

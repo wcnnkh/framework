@@ -5,12 +5,12 @@ import java.util.Map;
 import scw.core.parameter.DefaultParameterDescriptor;
 import scw.json.JSONUtils;
 import scw.mvc.Channel;
-import scw.mvc.Request;
+import scw.mvc.ServerRequest;
 import scw.mvc.action.Action;
 import scw.mvc.action.logger.annotation.ActionLogConfig;
 import scw.mvc.action.manager.HttpAction;
 import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
-import scw.mvc.http.HttpRequest;
+import scw.mvc.http.ServerHttpRequest;
 
 public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	protected abstract String getIdentification(Action action, Channel channel);
@@ -22,9 +22,9 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	}
 
 	protected String getIp(Action action, Channel channel) {
-		Request request = channel.getRequest();
-		if (request instanceof HttpRequest) {
-			return ((HttpRequest) request).getIP();
+		ServerRequest serverRequest = channel.getRequest();
+		if (serverRequest instanceof ServerHttpRequest) {
+			return ((ServerHttpRequest) serverRequest).getIP();
 		}
 
 		return null;
@@ -51,8 +51,8 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 		log.setController(getController(channel, action));
 		log.setIdentification(getIdentification(action, channel));
 		log.setRequestController(channel.getRequest().getController());
-		if (channel.getRequest() instanceof HttpRequest) {
-			log.setHttpMethod(((HttpRequest) channel.getRequest()).getMethod());
+		if (channel.getRequest() instanceof ServerHttpRequest) {
+			log.setHttpMethod(((ServerHttpRequest) channel.getRequest()).getMethod());
 		}
 
 		log.setRequestContentType(channel.getRequest().getRawContentType());

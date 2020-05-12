@@ -14,7 +14,7 @@ import scw.net.message.converter.MultiMessageConverter;
 import scw.net.message.converter.support.AllMessageConverter;
 
 public abstract class AbstractOutput<C extends Channel, T> implements Output {
-	private JSONSupport jsonSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
+	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	private final MultiMessageConverter messageConverter = new MultiMessageConverter();
 	
 	public AbstractOutput(){

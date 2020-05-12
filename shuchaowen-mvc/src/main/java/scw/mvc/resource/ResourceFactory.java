@@ -1,7 +1,7 @@
 package scw.mvc.resource;
 
-import scw.mvc.Request;
+import scw.mvc.ServerRequest;
 
 public interface ResourceFactory {
-	Resource getResource(Request request);
+	Resource getResource(ServerRequest serverRequest);
 }

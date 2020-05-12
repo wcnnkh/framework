@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Map;
 
@@ -14,20 +16,20 @@ import javax.servlet.http.HttpSession;
 
 import scw.core.utils.StringUtils;
 import scw.mvc.MVCUtils;
-import scw.mvc.http.HttpRequest;
+import scw.mvc.http.ServerHttpRequest;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpCookie;
 import scw.net.http.HttpHeaders;
+import scw.net.http.HttpMethod;
 import scw.net.http.InvalidMediaTypeException;
 import scw.net.http.MediaType;
-import scw.net.http.HttpMethod;
 import scw.net.message.AbstractInputMessage;
 import scw.security.session.Session;
 import scw.servlet.ServletUtils;
 import scw.util.LinkedCaseInsensitiveMap;
 
 public class MyHttpServletRequest extends AbstractInputMessage implements
-		HttpRequest {
+		ServerHttpRequest {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 
@@ -78,6 +80,18 @@ public class MyHttpServletRequest extends AbstractInputMessage implements
 	public Session getHttpSession(boolean create) {
 		HttpSession httpSession = httpServletRequest.getSession(create);
 		return new HttpServletSession(httpSession);
+	}
+	
+	public Principal getPrincipal() {
+		return httpServletRequest.getUserPrincipal();
+	}
+	
+	public InetSocketAddress getLocalAddress() {
+		return new InetSocketAddress(this.httpServletRequest.getLocalName(), this.httpServletRequest.getLocalPort());
+	}
+	
+	public InetSocketAddress getRemoteAddress() {
+		return new InetSocketAddress(this.httpServletRequest.getRemoteHost(), this.httpServletRequest.getRemotePort());
 	}
 
 	public String getIP() {

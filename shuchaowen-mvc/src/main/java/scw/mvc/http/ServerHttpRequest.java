@@ -1,11 +1,14 @@
 package scw.mvc.http;
 
+import java.net.InetSocketAddress;
+import java.security.Principal;
+
 import scw.net.http.HttpCookie;
 import scw.security.session.Session;
 import scw.util.MultiValueParameterFactory;
 import scw.util.ip.IP;
 
-public interface HttpRequest extends scw.net.http.HttpRequest, scw.mvc.Request, MultiValueParameterFactory, IP {
+public interface ServerHttpRequest extends scw.net.http.HttpRequest, scw.mvc.ServerRequest, MultiValueParameterFactory, IP {
 	String getRawMethod();
 
 	HttpCookie getCookie(String name);
@@ -27,4 +30,16 @@ public interface HttpRequest extends scw.net.http.HttpRequest, scw.mvc.Request, 
 	Session getHttpSession();
 
 	Session getHttpSession(boolean create);
+	
+	Principal getPrincipal();
+	
+	/**
+	 * Return the address on which the request was received.
+	 */
+	InetSocketAddress getLocalAddress();
+
+	/**
+	 * Return the address of the remote client.
+	 */
+	InetSocketAddress getRemoteAddress();
 }

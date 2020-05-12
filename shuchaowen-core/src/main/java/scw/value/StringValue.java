@@ -23,8 +23,7 @@ public class StringValue extends AbstractStringValue implements Serializable {
 	}
 
 	public JSONSupport getJsonSupport() {
-		return jsonSupport == null ? JSONUtils.DEFAULT_JSON_SUPPORT
-				: jsonSupport;
+		return jsonSupport == null ? JSONUtils.getJsonSupport() : jsonSupport;
 	}
 
 	public void setJsonSupport(JSONSupport jsonSupport) {

@@ -23,8 +23,8 @@ import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.ParameterException;
 import scw.mvc.action.Action;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
+import scw.mvc.http.ServerHttpRequest;
+import scw.mvc.http.ServerHttpResponse;
 import scw.mvc.http.cors.CorsConfig;
 import scw.mvc.http.cors.CorsConfigFactory;
 import scw.mvc.http.cors.DefaultCorsConfigFactory;
@@ -109,36 +109,36 @@ public final class MVCUtils implements MvcConstants {
 	/**
 	 * 判断是否是json请求
 	 * 
-	 * @param request
+	 * @param serverRequest
 	 * @return
 	 */
-	public static boolean isJsonRequest(Request request) {
-		return isDesignatedContentType(request,
+	public static boolean isJsonRequest(ServerRequest serverRequest) {
+		return isDesignatedContentType(serverRequest,
 				MimeTypeUtils.APPLICATION_JSON_VALUE)
-				|| isDesignatedContentType(request,
+				|| isDesignatedContentType(serverRequest,
 						MimeTypeUtils.TEXT_JSON_VALUE);
 	}
 
-	public static boolean isXmlRequeset(Request request) {
-		return isDesignatedContentType(request,
+	public static boolean isXmlRequeset(ServerRequest serverRequest) {
+		return isDesignatedContentType(serverRequest,
 				MimeTypeUtils.APPLICATION_XML_VALUE)
-				|| isDesignatedContentType(request,
+				|| isDesignatedContentType(serverRequest,
 						MimeTypeUtils.TEXT_XML_VALUE);
 	}
 
-	public static boolean isFormRequest(Request request) {
-		return isDesignatedContentType(request,
+	public static boolean isFormRequest(ServerRequest serverRequest) {
+		return isDesignatedContentType(serverRequest,
 				MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
 	}
 
-	public static boolean isMultipartRequest(Request request) {
-		return isDesignatedContentType(request,
+	public static boolean isMultipartRequest(ServerRequest serverRequest) {
+		return isDesignatedContentType(serverRequest,
 				MimeTypeUtils.MULTIPART_FORM_DATA_VALUE);
 	}
 
-	public static boolean isDesignatedContentType(Request request,
+	public static boolean isDesignatedContentType(ServerRequest serverRequest,
 			String contentType) {
-		return StringUtils.contains(request.getRawContentType(), contentType,
+		return StringUtils.contains(serverRequest.getRawContentType(), contentType,
 				true);
 	}
 
@@ -182,20 +182,20 @@ public final class MVCUtils implements MvcConstants {
 	 * @param request
 	 * @return
 	 */
-	public static String getUntreatedIp(HttpRequest httpRequest) {
+	public static String getUntreatedIp(ServerHttpRequest serverHttpRequest) {
 		for (String header : IP_HEADERS) {
-			String ip = httpRequest.getHeaders().getFirst(header);
+			String ip = serverHttpRequest.getHeaders().getFirst(header);
 			if (ip == null) {
 				continue;
 			}
 
 			return ip;
 		}
-		return httpRequest.getRemoteAddr();
+		return serverHttpRequest.getRemoteAddr();
 	}
 
-	public static String getIP(HttpRequest httpRequest) {
-		String ip = getUntreatedIp(httpRequest);
+	public static String getIP(ServerHttpRequest serverHttpRequest) {
+		String ip = getUntreatedIp(serverHttpRequest);
 		if (USE_IP_MODEL == 1) {// 使用第一个
 			String[] ipArray = StringUtils.commonSplit(ip);
 			if (ArrayUtils.isEmpty(ipArray)) {
@@ -240,7 +240,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static MultiValueMap<String, String> getRequestParameters(
-			HttpRequest request) {
+			ServerHttpRequest request) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (requestParams == null || requestParams.isEmpty()) {
 			return null;
@@ -265,7 +265,7 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static Map<String, String> getRequestParameterAndAppendValues(
-			HttpRequest request, CharSequence appendValueChars) {
+			ServerHttpRequest request, CharSequence appendValueChars) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (CollectionUtils.isEmpty(requestParams)) {
 			return null;
@@ -302,36 +302,36 @@ public final class MVCUtils implements MvcConstants {
 	}
 
 	public static void responseCrossDomain(CorsConfig config,
-			HttpResponse httpResponse) {
+			ServerHttpResponse serverHttpResponse) {
 		/* 允许跨域的主机地址 */
 		if (StringUtils.isNotEmpty(config.getOrigin())) {
-			httpResponse.getHeaders()
+			serverHttpResponse.getHeaders()
 					.set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
 							config.getOrigin());
 		}
 
 		/* 允许跨域的请求方法GET, POST, HEAD 等 */
 		if (StringUtils.isNotEmpty(config.getMethods())) {
-			httpResponse.getHeaders().set(
+			serverHttpResponse.getHeaders().set(
 					HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
 					config.getMethods());
 		}
 
 		/* 重新预检验跨域的缓存时间 (s) */
 		if (config.getMaxAge() > 0) {
-			httpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_MAX_AGE,
+			serverHttpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_MAX_AGE,
 					config.getMaxAge() + "");
 		}
 
 		/* 允许跨域的请求头 */
 		if (StringUtils.isNotEmpty(config.getHeaders())) {
-			httpResponse.getHeaders().set(
+			serverHttpResponse.getHeaders().set(
 					HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
 					config.getHeaders());
 		}
 
 		/* 是否携带cookie */
-		httpResponse.getHeaders().set(
+		serverHttpResponse.getHeaders().set(
 				HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
 				config.isCredentials() + "");
 	}
@@ -361,7 +361,7 @@ public final class MVCUtils implements MvcConstants {
 		JSONSupport jsonSupport;
 		String jsonSupportBeanName = propertyFactory.getString("mvc.json");
 		if (StringUtils.isEmpty(jsonSupportBeanName)) {
-			jsonSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
+			jsonSupport = JSONUtils.getJsonSupport();
 		} else {
 			jsonSupport = instanceFactory.getInstance(jsonSupportBeanName);
 		}

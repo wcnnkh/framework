@@ -8,8 +8,8 @@ import java.nio.file.Files;
 
 import scw.io.IOUtils;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
+import scw.mvc.http.ServerHttpRequest;
+import scw.mvc.http.ServerHttpResponse;
 import scw.mvc.http.HttpView;
 
 public final class DownFileView extends HttpView {
@@ -25,18 +25,18 @@ public final class DownFileView extends HttpView {
 	}
 
 	@Override
-	public void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) throws Throwable {
+	public void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
 		if (encoding != null) {
-			httpResponse.setCharacterEncoding(encoding);
+			serverHttpResponse.setCharacterEncoding(encoding);
 		}
 
-		httpResponse.setContentType(Files.probeContentType(file.toPath()));
-		setResponseFileDisposition(file.getName(), httpResponse);
+		serverHttpResponse.setContentType(Files.probeContentType(file.toPath()));
+		setResponseFileDisposition(file.getName(), serverHttpResponse);
 
 		FileInputStream fis = null;
 		OutputStream os = null;
 		try {
-			os = httpResponse.getBody();
+			os = serverHttpResponse.getBody();
 			fis = new FileInputStream(file);
 			IOUtils.write(fis, os, 1024);
 		} finally {
@@ -44,8 +44,8 @@ public final class DownFileView extends HttpView {
 		}
 	}
 	
-	public static void setResponseFileDisposition(String fileName, HttpResponse httpResponse) throws UnsupportedEncodingException{
+	public static void setResponseFileDisposition(String fileName, ServerHttpResponse serverHttpResponse) throws UnsupportedEncodingException{
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
-		httpResponse.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName);
+		serverHttpResponse.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName);
 	}
 }

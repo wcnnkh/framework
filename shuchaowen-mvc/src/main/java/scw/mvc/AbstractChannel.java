@@ -193,9 +193,9 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 	}
 
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
-		if (Request.class.isAssignableFrom(parameterDescriptor.getType())) {
+		if (ServerRequest.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return getRequest();
-		} else if (Response.class.isAssignableFrom(parameterDescriptor.getType())) {
+		} else if (ServerResponse.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return getResponse();
 		} else if (Channel.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return this;

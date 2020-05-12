@@ -77,26 +77,6 @@ public interface WebSocketSession extends Session {
 	String getAcceptedProtocol();
 
 	/**
-	 * Configure the maximum size for an incoming text message.
-	 */
-	void setTextMessageSizeLimit(int messageSizeLimit);
-
-	/**
-	 * Get the configured maximum size for an incoming text message.
-	 */
-	int getTextMessageSizeLimit();
-
-	/**
-	 * Configure the maximum size for an incoming binary message.
-	 */
-	void setBinaryMessageSizeLimit(int messageSizeLimit);
-
-	/**
-	 * Get the configured maximum size for an incoming binary message.
-	 */
-	int getBinaryMessageSizeLimit();
-
-	/**
 	 * Determine the negotiated extensions.
 	 * 
 	 * @return the list of extensions, or an empty list if no extension was

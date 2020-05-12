@@ -24,7 +24,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
 	private Charset defaultCharset = Constants.DEFAULT_CHARSET;
-	private JSONSupport jsonSupport = JSONUtils.DEFAULT_JSON_SUPPORT;
+	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	protected final MimeTypes supportMimeTypes = new MimeTypes();
 
 	public final MimeTypes getSupportMimeTypes() {

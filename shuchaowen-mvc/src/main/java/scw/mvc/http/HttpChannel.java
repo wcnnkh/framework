@@ -4,8 +4,8 @@ import scw.mvc.Channel;
 
 public interface HttpChannel extends Channel {
 	@SuppressWarnings("unchecked")
-	HttpRequest getRequest();
+	ServerHttpRequest getRequest();
 
 	@SuppressWarnings("unchecked")
-	HttpResponse getResponse();
+	ServerHttpResponse getResponse();
 }

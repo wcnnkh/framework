@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 
 import scw.net.message.OutputMessage;
 
-public interface Response extends OutputMessage, Flushable{
+public interface ServerResponse extends OutputMessage, Flushable{
 	String getRawContentType();
 	
 	void setContentType(String contentType);

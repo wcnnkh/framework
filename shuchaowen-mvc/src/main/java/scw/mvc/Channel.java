@@ -9,9 +9,9 @@ import scw.value.ValueFactory;
 public interface Channel extends LogService, Attributes<String, Object>, ParameterFactory, ValueFactory<String>, ChannelBeanFactory {
 	long getCreateTime();
 
-	<T extends Request> T getRequest();
+	<T extends ServerRequest> T getRequest();
 
-	<T extends Response> T getResponse();
+	<T extends ServerResponse> T getResponse();
 
 	boolean isSupportAsyncControl();
 

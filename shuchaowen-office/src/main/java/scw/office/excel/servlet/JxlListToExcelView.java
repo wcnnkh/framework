@@ -2,11 +2,11 @@ package scw.office.excel.servlet;
 
 import java.util.List;
 
-import scw.mvc.Request;
-import scw.mvc.Response;
+import scw.mvc.ServerRequest;
+import scw.mvc.ServerResponse;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
+import scw.mvc.http.ServerHttpRequest;
+import scw.mvc.http.ServerHttpResponse;
 import scw.mvc.http.HttpView;
 import scw.office.excel.jxl.export.JxlExport;
 
@@ -21,17 +21,17 @@ public class JxlListToExcelView extends HttpView {
 		this.list = list;
 	}
 
-	public void render(Request request, Response response) throws Exception {
+	public void render(ServerRequest serverRequest, ServerResponse serverResponse) throws Exception {
 
 	}
 
 	@Override
-	public void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) throws Throwable {
-		if (httpResponse.getContentType() == null) {
-			httpResponse.setContentType("text/html;charset=" + httpResponse.getCharacterEncoding());
+	public void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
+		if (serverHttpResponse.getContentType() == null) {
+			serverHttpResponse.setContentType("text/html;charset=" + serverHttpResponse.getCharacterEncoding());
 		}
 
-		JxlExport.exportExcel(fileName, titles, list, httpResponse);
+		JxlExport.exportExcel(fileName, titles, list, serverHttpResponse);
 	}
 
 }

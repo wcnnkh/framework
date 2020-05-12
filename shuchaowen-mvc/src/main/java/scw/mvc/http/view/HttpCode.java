@@ -1,8 +1,8 @@
 package scw.mvc.http.view;
 
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
+import scw.mvc.http.ServerHttpRequest;
+import scw.mvc.http.ServerHttpResponse;
 import scw.mvc.http.HttpView;
 
 public class HttpCode extends HttpView {
@@ -15,15 +15,15 @@ public class HttpCode extends HttpView {
 	}
 
 	@Override
-	public void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) throws Throwable {
-		if (httpResponse.getContentType() == null) {
-			httpResponse.setContentType("text/html;charset=" + httpResponse.getCharacterEncoding());
+	public void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
+		if (serverHttpResponse.getContentType() == null) {
+			serverHttpResponse.setContentType("text/html;charset=" + serverHttpResponse.getCharacterEncoding());
 		}
 
 		if (channel.isLogEnabled()) {
-			channel.log("path={},method={},status={},msg={}", httpRequest.getController(), httpRequest.getMethod(),
+			channel.log("path={},method={},status={},msg={}", serverHttpRequest.getController(), serverHttpRequest.getMethod(),
 					status, msg);
 		}
-		httpResponse.sendError(status, msg);
+		serverHttpResponse.sendError(status, msg);
 	}
 }

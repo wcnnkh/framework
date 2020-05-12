@@ -12,10 +12,10 @@ import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.mvc.Channel;
-import scw.mvc.Request;
+import scw.mvc.ServerRequest;
 import scw.mvc.action.Action;
 import scw.mvc.action.logger.annotation.ActionLogAttributeConfig;
-import scw.mvc.http.HttpRequest;
+import scw.mvc.http.ServerHttpRequest;
 
 @Configuration(order=Integer.MIN_VALUE)
 public class DefaultActionLogFactory extends AbstractActionLogFactory{
@@ -73,9 +73,9 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	}
 	
 	protected String getIp(Action action, Channel channel){
-		Request request = channel.getRequest();
-		if(request instanceof HttpRequest){
-			return ((HttpRequest) request).getIP();
+		ServerRequest serverRequest = channel.getRequest();
+		if(serverRequest instanceof ServerHttpRequest){
+			return ((ServerHttpRequest) serverRequest).getIP();
 		}
 		
 		return null;

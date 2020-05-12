@@ -16,7 +16,6 @@ import javax.websocket.Session;
 
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.XUtils;
 import scw.lang.Nullable;
 import scw.messageing.BinaryMessage;
 import scw.messageing.TextMessage;
@@ -28,8 +27,6 @@ import scw.websocket.WebSocketExtension;
 import scw.websocket.adapter.AbstractWebSocketSession;
 
 public class StandardWebSocketSession extends AbstractWebSocketSession<Session> {
-
-	private final String id;
 
 	@Nullable
 	private URI uri;
@@ -80,7 +77,6 @@ public class StandardWebSocketSession extends AbstractWebSocketSession<Session> 
 			@Nullable Principal user) {
 
 		super(attributes);
-		this.id = XUtils.getUUID();
 		headers = (headers != null ? headers : new HttpHeaders());
 		this.handshakeHeaders = new HttpHeaders(headers);
 		this.handshakeHeaders.readyOnly();
@@ -91,7 +87,8 @@ public class StandardWebSocketSession extends AbstractWebSocketSession<Session> 
 
 
 	public String getId() {
-		return this.id;
+		checkNativeSessionInitialized();
+		return getNativeSession().getId();
 	}
 
 	@Nullable

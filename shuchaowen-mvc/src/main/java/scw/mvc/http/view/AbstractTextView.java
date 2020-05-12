@@ -1,8 +1,8 @@
 package scw.mvc.http.view;
 
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
+import scw.mvc.http.ServerHttpRequest;
+import scw.mvc.http.ServerHttpResponse;
 import scw.mvc.http.HttpView;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -11,16 +11,16 @@ import scw.net.message.Text;
 public abstract class AbstractTextView extends HttpView implements Text {
 
 	@Override
-	public void render(HttpChannel channel, HttpRequest httpRequest, HttpResponse httpResponse) throws Throwable {
+	public void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
 		String content = getTextContent();
 		MimeType mimeType = getMimeType();
 		if (mimeType != null) {
-			httpResponse.setContentType(mimeType);
+			serverHttpResponse.setContentType(mimeType);
 		} else {
-			httpResponse.setContentType(MimeTypeUtils.TEXT_HTML);
+			serverHttpResponse.setContentType(MimeTypeUtils.TEXT_HTML);
 		}
 
-		httpResponse.getWriter().write(content);
+		serverHttpResponse.getWriter().write(content);
 		if (channel.isLogEnabled()) {
 			channel.log(content);
 		}

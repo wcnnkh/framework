@@ -6,7 +6,7 @@ import java.io.Serializable;
 public class TextMessage extends AbstractMessage<String> implements Serializable{
 	private static final long serialVersionUID = 1L;
 
-	TextMessage(String payload) {
+	public TextMessage(String payload) {
 		super(payload);
 	}
 

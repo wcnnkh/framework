@@ -22,12 +22,12 @@ import scw.util.ip.SimpleIP;
 
 public abstract class AbstractHttpChannel extends AbstractChannel implements
 		HttpChannel {
-	private final HttpRequest request;
-	private final HttpResponse response;
+	private final ServerHttpRequest request;
+	private final ServerHttpResponse response;
 
 	public AbstractHttpChannel(BeanFactory beanFactory,
-			JSONSupport jsonParseSupport, HttpRequest request,
-			HttpResponse response) {
+			JSONSupport jsonParseSupport, ServerHttpRequest request,
+			ServerHttpResponse response) {
 		super(beanFactory, jsonParseSupport);
 		this.request = request;
 		this.response = response;
@@ -96,12 +96,12 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 	}
 
 	@SuppressWarnings("unchecked")
-	public HttpRequest getRequest() {
+	public ServerHttpRequest getRequest() {
 		return request;
 	}
 
 	@SuppressWarnings("unchecked")
-	public HttpResponse getResponse() {
+	public ServerHttpResponse getResponse() {
 		return response;
 	}
 

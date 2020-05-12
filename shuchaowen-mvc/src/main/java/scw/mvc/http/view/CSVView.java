@@ -4,8 +4,8 @@ import java.util.LinkedList;
 
 import scw.mvc.Channel;
 import scw.mvc.http.HttpChannel;
-import scw.mvc.http.HttpRequest;
-import scw.mvc.http.HttpResponse;
+import scw.mvc.http.ServerHttpRequest;
+import scw.mvc.http.ServerHttpResponse;
 import scw.util.CSVUtils;
 
 public final class CSVView extends LinkedList<Object[]> implements scw.mvc.View {
@@ -48,7 +48,7 @@ public final class CSVView extends LinkedList<Object[]> implements scw.mvc.View 
 		return new String(fileName.getBytes(), "ISO-8859-1");
 	}
 
-	public void render(HttpRequest request, HttpResponse response) throws Exception {
+	public void render(ServerHttpRequest request, ServerHttpResponse response) throws Exception {
 		response.setContentType("text/csv");
 		response.getHeaders().set("Content-Disposition",
 				"attachment;filename=" + fileNameConver(getFileName()) + ".csv");
@@ -57,7 +57,7 @@ public final class CSVView extends LinkedList<Object[]> implements scw.mvc.View 
 
 	public void render(Channel channel) throws Throwable {
 		HttpChannel httpChannel = (HttpChannel) channel;
-		render((HttpRequest) httpChannel.getRequest(), (HttpResponse) httpChannel.getResponse());
+		render((ServerHttpRequest) httpChannel.getRequest(), (ServerHttpResponse) httpChannel.getResponse());
 	}
 
 }

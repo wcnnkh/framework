@@ -3,9 +3,9 @@ package scw.freemarker.mvc;
 import java.util.Enumeration;
 
 import scw.mvc.Channel;
-import scw.mvc.Request;
-import scw.mvc.Response;
-import scw.mvc.http.HttpRequest;
+import scw.mvc.ServerRequest;
+import scw.mvc.ServerResponse;
+import scw.mvc.http.ServerHttpRequest;
 import scw.mvc.page.AbstractPage;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -37,13 +37,13 @@ public class FreemarkerPage extends AbstractPage {
 	}
 
 	public void render(Channel channel) throws Throwable {
-		Request request = channel.getRequest();
-		Response response = channel.getResponse();
+		ServerRequest serverRequest = channel.getRequest();
+		ServerResponse serverResponse = channel.getResponse();
 
 		if (getMimeType() != null) {
-			response.setContentType(getMimeType());
+			serverResponse.setContentType(getMimeType());
 		} else {
-			response.setContentType(MimeTypeUtils.TEXT_HTML);
+			serverResponse.setContentType(MimeTypeUtils.TEXT_HTML);
 		}
 
 		Enumeration<String> enumeration = channel.getAttributeNames();
@@ -56,9 +56,9 @@ public class FreemarkerPage extends AbstractPage {
 			put(key, channel.getAttribute(key));
 		}
 
-		if (request instanceof HttpRequest) {
-			HttpRequest httpRequest = (HttpRequest) request;
-			for (Entry<String, String[]> entry : httpRequest.getParameterMap()
+		if (serverRequest instanceof ServerHttpRequest) {
+			ServerHttpRequest serverHttpRequest = (ServerHttpRequest) serverRequest;
+			for (Entry<String, String[]> entry : serverHttpRequest.getParameterMap()
 					.entrySet()) {
 				String key = entry.getKey();
 				if (key == null || containsKey(key)) {
@@ -71,8 +71,8 @@ public class FreemarkerPage extends AbstractPage {
 
 		String page = getPage();
 		Template template = configuration.getTemplate(page,
-				request.getCharacterEncoding());
-		template.process(this, response.getWriter());
+				serverRequest.getCharacterEncoding());
+		template.process(this, serverResponse.getWriter());
 
 		if (channel.isLogEnabled()) {
 			channel.log("freemarker:{}", page);
