@@ -3,7 +3,7 @@ package scw.beans.ioc;
 import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class IocMetadata {
 	protected final LinkedList<IocProcessor> iocProcessors = new LinkedList<IocProcessor>();

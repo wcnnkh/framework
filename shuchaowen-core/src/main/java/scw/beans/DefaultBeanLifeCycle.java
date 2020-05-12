@@ -7,7 +7,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.XUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
 @Bean(proxy = false)

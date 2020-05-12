@@ -10,7 +10,7 @@ import scw.beans.builder.AutoBeanBuilder;
 import scw.core.Init;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class ServiceBeanDefinition extends DefaultBeanDefinition {
 

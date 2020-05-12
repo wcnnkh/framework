@@ -1,6 +1,6 @@
 package scw.beans;
 
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public interface BeanLifeCycle {
 	void initBefore(BeanFactory beanFactory, PropertyFactory propertyFactory,

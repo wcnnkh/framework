@@ -16,7 +16,7 @@ import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.service.ChannelService;
 import scw.servlet.mvc.http.HttpServletChannelFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MIN_VALUE)
 @Bean(proxy = false)

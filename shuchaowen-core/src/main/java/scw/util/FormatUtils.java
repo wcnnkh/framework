@@ -114,7 +114,7 @@ public final class FormatUtils {
 		return new SimpleDateFormat(formatter).format(date);
 	}
 	
-	public static String formatEL(String text, scw.util.value.ValueFactory<String> propertyFactory){
+	public static String formatEL(String text, scw.value.ValueFactory<String> propertyFactory){
 		return StringFormat.format(text, "${", "}", propertyFactory);
 	}
 	
@@ -122,7 +122,7 @@ public final class FormatUtils {
 		return StringFormat.format(text, "${", "}", map);
 	}
 	
-	public static String format(String text, scw.util.value.ValueFactory<String> propertyFactory){
+	public static String format(String text, scw.value.ValueFactory<String> propertyFactory){
 		return StringFormat.format(text, "{", "}", propertyFactory);
 	}
 	
@@ -130,7 +130,7 @@ public final class FormatUtils {
 		return StringFormat.format(text, "{", "}", map);
 	}
 	
-	public static String format(String text, scw.util.value.ValueFactory<String> propertyFactory, boolean supportEL) {
+	public static String format(String text, scw.value.ValueFactory<String> propertyFactory, boolean supportEL) {
 		String newText = text;
 		if (supportEL) {
 			newText = formatEL(newText, propertyFactory);

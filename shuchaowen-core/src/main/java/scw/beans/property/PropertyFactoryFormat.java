@@ -3,8 +3,8 @@ package scw.beans.property;
 import scw.beans.BeanFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.mapper.Field;
-import scw.util.value.Value;
-import scw.util.value.property.PropertyFactory;
+import scw.value.Value;
+import scw.value.property.PropertyFactory;
 
 @Configuration
 public class PropertyFactoryFormat implements ValueFormat {

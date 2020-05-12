@@ -7,7 +7,7 @@ import scw.mvc.Channel;
 import scw.mvc.http.HttpChannel;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public abstract class HttpOutput<T> extends AbstractOutput<HttpChannel, T> {
 	private static final String JSONP_RESP_PREFIX = "(";

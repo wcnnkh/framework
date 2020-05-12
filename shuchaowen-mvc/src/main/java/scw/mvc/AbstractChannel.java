@@ -34,10 +34,10 @@ import scw.mvc.annotation.RequestBody;
 import scw.mvc.beans.ChannelBeanFactory;
 import scw.mvc.beans.DefaultChannelBeanFactory;
 import scw.mvc.parameter.RequestBodyParse;
-import scw.util.value.DefaultValueDefinition;
-import scw.util.value.SimpleValueFactory;
-import scw.util.value.StringValue;
-import scw.util.value.Value;
+import scw.value.DefaultValueDefinition;
+import scw.value.SimpleValueFactory;
+import scw.value.StringValue;
+import scw.value.Value;
 
 public abstract class AbstractChannel extends SimpleValueFactory implements Channel, Destroy {
 	private final long createTime;

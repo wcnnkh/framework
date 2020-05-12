@@ -18,7 +18,7 @@ import scw.mvc.MVCUtils;
 import scw.mvc.action.Action;
 import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.annotation.Controller;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
 @Bean(proxy = false)

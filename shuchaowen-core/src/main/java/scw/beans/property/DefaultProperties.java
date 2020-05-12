@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import org.w3c.dom.Node;
 
 import scw.core.utils.StringUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
 public final class DefaultProperties extends AbstractProperties {

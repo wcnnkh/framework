@@ -8,7 +8,7 @@ import java.util.Collections;
 import scw.beans.annotation.Bean;
 import scw.beans.builder.BeanBuilder;
 import scw.core.utils.StringUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public abstract class AbstractBeanDefinition implements BeanDefinition {
 	protected final BeanFactory beanFactory;

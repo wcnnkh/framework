@@ -11,8 +11,8 @@ import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.util.value.StringValue;
-import scw.util.value.Value;
+import scw.value.StringValue;
+import scw.value.Value;
 
 public final class ParameterUtils {
 	private static final LocalVariableTableParameterNameDiscoverer LVTPND = new LocalVariableTableParameterNameDiscoverer();

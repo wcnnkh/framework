@@ -6,7 +6,7 @@ import scw.mvc.MVCUtils;
 import scw.mvc.http.HttpChannel;
 import scw.mvc.service.FilterChain;
 import scw.mvc.service.HttpFilter;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order=CorsFilter.ORDER)
 public final class CorsFilter extends HttpFilter{

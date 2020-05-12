@@ -1,7 +1,7 @@
 package scw.beans.ioc;
 
 import scw.beans.BeanFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public interface IocProcessor {
 	Object process(Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception;

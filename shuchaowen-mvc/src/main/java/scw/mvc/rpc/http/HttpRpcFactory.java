@@ -2,7 +2,7 @@ package scw.mvc.rpc.http;
 
 import scw.beans.BeanFactory;
 import scw.mvc.rpc.RPCProxyFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class HttpRpcFactory extends HttpRpcProxy implements RPCProxyFactory {
 	private static final long serialVersionUID = 1L;

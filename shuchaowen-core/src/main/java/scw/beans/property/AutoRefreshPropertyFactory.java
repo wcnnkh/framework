@@ -15,8 +15,8 @@ import scw.core.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.util.FormatUtils;
-import scw.util.value.property.PropertyFactory;
-import scw.util.value.property.StringValuePropertyFactory;
+import scw.value.property.PropertyFactory;
+import scw.value.property.StringValuePropertyFactory;
 
 public final class AutoRefreshPropertyFactory extends StringValuePropertyFactory implements Destroy {
 	private static final int DEFAULT_REFRESH_PERIOD = StringUtils

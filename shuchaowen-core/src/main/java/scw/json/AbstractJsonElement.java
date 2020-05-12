@@ -1,7 +1,7 @@
 package scw.json;
 
-import scw.util.value.AbstractStringValue;
-import scw.util.value.Value;
+import scw.value.AbstractStringValue;
+import scw.value.Value;
 
 public abstract class AbstractJsonElement extends AbstractStringValue implements JsonElement {
 

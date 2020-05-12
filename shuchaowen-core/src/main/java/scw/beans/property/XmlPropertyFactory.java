@@ -9,8 +9,8 @@ import scw.beans.xml.XmlBeanUtils;
 import scw.core.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.io.ResourceUtils;
-import scw.util.value.Value;
-import scw.util.value.property.BasePropertyFactory;
+import scw.value.Value;
+import scw.value.property.BasePropertyFactory;
 
 public class XmlPropertyFactory implements BasePropertyFactory, Destroy {
 	private AutoRefreshPropertyFactory autoRefreshPropertyFactory;

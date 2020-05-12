@@ -83,7 +83,7 @@ public abstract class StringFormat {
 	}
 
 	public static String format(String text, String prefix, String suffix,
-			scw.util.value.ValueFactory<String> propertyFactory) {
+			scw.value.ValueFactory<String> propertyFactory) {
 		if (StringUtils.isEmpty(text)) {
 			return text;
 		}
@@ -105,10 +105,10 @@ public abstract class StringFormat {
 	protected abstract String getValue(String key);
 
 	public static class PropertyFactoryStringFormat extends StringFormat {
-		private scw.util.value.ValueFactory<String> propertyFactory;
+		private scw.value.ValueFactory<String> propertyFactory;
 
 		public PropertyFactoryStringFormat(String prefix, String suffix,
-				scw.util.value.ValueFactory<String> propertyFactory) {
+				scw.value.ValueFactory<String> propertyFactory) {
 			super(prefix, suffix);
 			this.propertyFactory = propertyFactory;
 		}

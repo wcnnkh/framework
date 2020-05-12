@@ -44,7 +44,7 @@ import scw.mvc.action.manager.HttpAction;
 import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
 import scw.net.http.HttpMethod;
 import scw.servlet.MultiFilter;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE + 1000)
 public final class TomcatServletEmbedded implements ServletEmbedded {

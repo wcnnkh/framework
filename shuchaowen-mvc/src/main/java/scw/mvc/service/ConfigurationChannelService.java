@@ -7,7 +7,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.mvc.exception.ExceptionHandlerChain;
 import scw.mvc.output.Output;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MIN_VALUE)
 public final class ConfigurationChannelService extends DefaultChannelService {

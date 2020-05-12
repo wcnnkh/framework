@@ -25,7 +25,7 @@ import scw.core.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.util.value.property.SystemPropertyFactory;
+import scw.value.property.SystemPropertyFactory;
 
 /**
  * {@link Resource} implementation for class path resources. Uses either a given

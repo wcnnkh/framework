@@ -9,7 +9,7 @@ import scw.mvc.service.Filter;
 import scw.mvc.service.FilterChain;
 import scw.net.http.HttpMethod;
 import scw.net.rpc.RpcService;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order = RPCFilter.ORDER)
 public final class RPCFilter implements Filter {

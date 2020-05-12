@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import scw.aop.FilterChain;
 import scw.beans.BeanFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class ProxyBeanBuilder extends AutoBeanBuilder {
 

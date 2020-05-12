@@ -5,7 +5,7 @@ import org.w3c.dom.Node;
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
 import scw.mapper.Field;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 import scw.xml.XmlAttributeMapping;
 
 public class XmlDubboMapping extends XmlAttributeMapping {

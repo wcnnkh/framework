@@ -1,7 +1,7 @@
 package scw.mvc.http.cors;
 
 import scw.core.utils.StringUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public final class CorsConfig {
 	private static String DEFAULT_HEADERS = "X-Requested-With,Content-Type,X-Forwarded-For,Cookie";

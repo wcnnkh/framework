@@ -5,7 +5,7 @@ import org.apache.dubbo.config.ReferenceConfig;
 import scw.beans.BeanFactory;
 import scw.beans.builder.ConstructorBeanBuilder;
 import scw.core.instance.ConstructorBuilder;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class DubboBeanBuilder extends ConstructorBeanBuilder {
 	private final ReferenceConfig<?> referenceConfig;

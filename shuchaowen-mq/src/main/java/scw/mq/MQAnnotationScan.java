@@ -13,7 +13,7 @@ import scw.mq.amqp.Exchange;
 import scw.mq.annotation.AmqpConsumer;
 import scw.mq.annotation.Consumer;
 import scw.mq.support.MqMethodConsumer;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class MQAnnotationScan extends AbstractBeanFactoryLifeCycle {

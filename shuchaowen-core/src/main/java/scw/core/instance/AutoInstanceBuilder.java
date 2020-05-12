@@ -2,7 +2,7 @@ package scw.core.instance;
 
 import java.lang.reflect.Constructor;
 
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class AutoInstanceBuilder<T> extends AbstractInstanceBuilder<T> {
 	private ConstructorBuilder constructorBuilder;

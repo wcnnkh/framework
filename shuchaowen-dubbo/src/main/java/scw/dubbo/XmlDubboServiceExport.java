@@ -10,7 +10,7 @@ import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanFactoryLifeCycle;
 import scw.core.instance.annotation.Configuration;
 import scw.logger.SplitLineAppend;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class XmlDubboServiceExport extends XmlBeanFactoryLifeCycle {

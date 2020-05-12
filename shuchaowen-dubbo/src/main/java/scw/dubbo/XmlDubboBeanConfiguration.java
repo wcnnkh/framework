@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.core.instance.annotation.Configuration;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MIN_VALUE)
 public final class XmlDubboBeanConfiguration extends XmlBeanConfiguration {

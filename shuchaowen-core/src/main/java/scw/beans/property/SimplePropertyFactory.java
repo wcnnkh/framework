@@ -12,7 +12,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.lang.AlreadyExistsException;
-import scw.util.value.property.StringValuePropertyFactory;
+import scw.value.property.StringValuePropertyFactory;
 
 public class SimplePropertyFactory extends StringValuePropertyFactory {
 	private Map<String, Property> propertyMap = new HashMap<String, Property>();

@@ -5,7 +5,7 @@ import scw.beans.ioc.IocProcessor;
 import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class XmlPropertiesIocProcessor implements IocProcessor {
 	private XmlBeanParameter xmlBeanParameter;

@@ -9,7 +9,7 @@ import scw.mvc.output.HttpOutput;
 import scw.mvc.output.MultiOutput;
 import scw.mvc.output.Output;
 import scw.net.message.converter.MessageConverter;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Bean(proxy=false)
 public class ConfigurationOutput extends MultiOutput {

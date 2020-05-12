@@ -18,7 +18,7 @@ import scw.net.client.http.HttpUtils;
 import scw.net.client.http.accessor.HttpAccessor;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRpcRequestFactory {
 	private String charsetName;

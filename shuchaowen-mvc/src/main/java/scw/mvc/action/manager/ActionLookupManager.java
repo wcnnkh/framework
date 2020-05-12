@@ -5,7 +5,7 @@ import scw.core.Init;
 import scw.core.instance.InstanceUtils;
 import scw.mvc.Channel;
 import scw.mvc.action.Action;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class ActionLookupManager implements Init {
 	private final MultiActionLookup multiActionLookup = new MultiActionLookup();

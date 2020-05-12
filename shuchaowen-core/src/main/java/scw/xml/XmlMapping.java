@@ -7,8 +7,8 @@ import org.w3c.dom.Node;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.support.AbstractMapping;
-import scw.util.value.ValueUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.ValueUtils;
+import scw.value.property.PropertyFactory;
 
 public class XmlMapping extends AbstractMapping {
 	private final PropertyFactory propertyFactory;
