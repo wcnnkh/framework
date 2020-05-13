@@ -2,6 +2,7 @@ package scw.mvc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 import scw.net.message.InputMessage;
 
@@ -14,17 +15,15 @@ public interface ServerRequest extends InputMessage {
 
 	String getCharacterEncoding();
 
-	void setCharacterEncoding(String env);
-
 	BufferedReader getReader() throws IOException;
 
 	/**
-	 * Returns the Internet Protocol (IP) address of the client or last proxy
-	 * that sent the request. For HTTP servlets, same as the value of the CGI
-	 * variable <code>REMOTE_ADDR</code>.
-	 *
-	 * @return a <code>String</code> containing the IP address of the client
-	 *         that sent the request
+	 * Return the address on which the request was received.
 	 */
-	String getRemoteAddr();
+	InetSocketAddress getLocalAddress();
+
+	/**
+	 * Return the address of the remote client.
+	 */
+	InetSocketAddress getRemoteAddress();
 }

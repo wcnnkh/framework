@@ -13,7 +13,7 @@ public interface ServerResponse extends OutputMessage, Flushable{
 	
 	String getCharacterEncoding();
 
-	void setCharacterEncoding(String env);
-
 	PrintWriter getWriter() throws IOException;
+	
+	boolean isCommitted();
 }

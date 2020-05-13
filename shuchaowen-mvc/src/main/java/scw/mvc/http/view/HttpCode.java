@@ -1,9 +1,9 @@
 package scw.mvc.http.view;
 
 import scw.mvc.http.HttpChannel;
+import scw.mvc.http.HttpView;
 import scw.mvc.http.ServerHttpRequest;
 import scw.mvc.http.ServerHttpResponse;
-import scw.mvc.http.HttpView;
 
 public class HttpCode extends HttpView {
 	private int status;
@@ -24,6 +24,6 @@ public class HttpCode extends HttpView {
 			channel.log("path={},method={},status={},msg={}", serverHttpRequest.getController(), serverHttpRequest.getMethod(),
 					status, msg);
 		}
-		serverHttpResponse.sendError(status, msg);
+		serverHttpResponse.sendError(status);
 	}
 }

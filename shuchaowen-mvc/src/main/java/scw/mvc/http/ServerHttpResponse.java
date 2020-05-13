@@ -12,13 +12,15 @@ public interface ServerHttpResponse extends ServerResponse{
     
     void addCookie(String name, String value);
 
-    void sendError(int sc, String msg) throws IOException;
-
     void sendError(int sc) throws IOException;
+    
+    void sendError(int sc, String msg) throws IOException;
 
     void sendRedirect(String location) throws IOException;
 
-    void setStatusCode(HttpStatus httpStatus) throws IOException;
+    void setStatusCode(HttpStatus httpStatus);
+    
+    void setStatus(int sc);
 
     int getStatus();
 

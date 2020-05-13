@@ -8,9 +8,10 @@ import java.nio.file.Files;
 
 import scw.io.IOUtils;
 import scw.mvc.http.HttpChannel;
+import scw.mvc.http.HttpView;
 import scw.mvc.http.ServerHttpRequest;
 import scw.mvc.http.ServerHttpResponse;
-import scw.mvc.http.HttpView;
+import scw.net.http.MediaType;
 
 public final class DownFileView extends HttpView {
 	private String encoding;
@@ -26,11 +27,11 @@ public final class DownFileView extends HttpView {
 
 	@Override
 	public void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
-		if (encoding != null) {
-			serverHttpResponse.setCharacterEncoding(encoding);
+		MediaType mediaType = MediaType.parseMediaType(Files.probeContentType(file.toPath()));
+		if(mediaType.getCharset() == null && encoding != null){
+			mediaType = new MediaType(mediaType, encoding);
 		}
-
-		serverHttpResponse.setContentType(Files.probeContentType(file.toPath()));
+		serverHttpResponse.setContentType(mediaType);
 		setResponseFileDisposition(file.getName(), serverHttpResponse);
 
 		FileInputStream fis = null;

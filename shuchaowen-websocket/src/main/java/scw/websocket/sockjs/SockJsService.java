@@ -16,8 +16,7 @@
 
 package scw.websocket.sockjs;
 
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
+import scw.mvc.http.HttpChannel;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.ExceptionWebSocketHandlerDecorator;
 
@@ -55,7 +54,7 @@ public interface SockJsService {
 	 * The former is automatically added when using
 	 * {@link scw.websocket.sockjs.support.SockJsHttpRequestHandler}.
 	 */
-	void handleRequest(ServerHttpRequest request, ServerHttpResponse response, String sockJsPath,
+	void handleRequest(HttpChannel httpChannel, String sockJsPath,
 			WebSocketHandler handler) throws SockJsException;
 
 }

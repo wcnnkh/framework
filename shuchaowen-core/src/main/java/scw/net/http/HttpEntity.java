@@ -100,7 +100,7 @@ public class HttpEntity<T> {
 		if (headers != null) {
 			tempHeaders.putAll(headers);
 		}
-		this.headers = new HttpHeaders(tempHeaders);
+		this.headers = tempHeaders;
 		this.headers.readyOnly();
 	}
 

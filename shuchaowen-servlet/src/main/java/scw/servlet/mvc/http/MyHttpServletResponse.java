@@ -13,8 +13,7 @@ import scw.net.http.HttpHeaders;
 import scw.net.http.HttpStatus;
 import scw.net.message.AbstractOutputMessage;
 
-public class MyHttpServletResponse extends AbstractOutputMessage implements
-		ServerHttpResponse {
+public class MyHttpServletResponse extends AbstractOutputMessage implements ServerHttpResponse {
 	private HttpServletResponse httpServletResponse;
 	private HttpServletResponseHeaders headers;
 	private boolean bodyUse = false;
@@ -29,7 +28,7 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 		headers.write();
 		return httpServletResponse.getOutputStream();
 	}
-	
+
 	public PrintWriter getWriter() throws IOException {
 		bodyUse = true;
 		headers.write();
@@ -44,29 +43,41 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 		return httpServletResponse.getCharacterEncoding();
 	}
 
+	public boolean isCommitted() {
+		return httpServletResponse.isCommitted();
+	}
+
 	public void setCharacterEncoding(String env) {
 		httpServletResponse.setCharacterEncoding(env);
 	}
-	
+
 	@Override
 	public void setContentType(MimeType contentType) {
 		setContentType(contentType.toString());
 	}
-	
+
 	@Override
 	public void setContentLength(long contentLength) {
-		httpServletResponse.setContentLength((int)contentLength);
+		httpServletResponse.setContentLength((int) contentLength);
 	}
-	
+
+	public void sendError(int sc, String msg) throws IOException {
+		try {
+			httpServletResponse.sendError(sc, msg);
+		} catch (IllegalStateException ex) {
+			// Possibly on Tomcat when called too late: fall back to silent
+			// setStatus
+			httpServletResponse.setStatus(sc);
+		}
+	}
+
 	public void addCookie(HttpCookie cookie) {
 		if (cookie instanceof HttpServletCookie) {
-			httpServletResponse.addCookie(((HttpServletCookie) cookie)
-					.getCookie());
+			httpServletResponse.addCookie(((HttpServletCookie) cookie).getCookie());
 		} else if (cookie instanceof javax.servlet.http.Cookie) {
 			httpServletResponse.addCookie((javax.servlet.http.Cookie) cookie);
 		} else {
-			javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(
-					cookie.getName(), cookie.getValue());
+			javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
 
 			if (cookie.getMaxAge() >= 0) {
 				c.setMaxAge(cookie.getMaxAge());
@@ -84,12 +95,7 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 	}
 
 	public void addCookie(String name, String value) {
-		httpServletResponse
-				.addCookie(new javax.servlet.http.Cookie(name, value));
-	}
-
-	public void sendError(int sc, String msg) throws IOException {
-		httpServletResponse.sendError(sc, msg);
+		httpServletResponse.addCookie(new javax.servlet.http.Cookie(name, value));
 	}
 
 	public void sendError(int sc) throws IOException {
@@ -103,9 +109,9 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 	public void setStatus(int sc) {
 		httpServletResponse.setStatus(sc);
 	}
-	
-	public void setStatusCode(HttpStatus httpStatus) throws IOException {
-		httpServletResponse.sendError(httpStatus.value(), httpStatus.getReasonPhrase());
+
+	public void setStatusCode(HttpStatus httpStatus) {
+		httpServletResponse.setStatus(httpStatus.value());
 	}
 
 	public int getStatus() {
@@ -122,7 +128,7 @@ public class MyHttpServletResponse extends AbstractOutputMessage implements
 
 	public void flush() throws IOException {
 		headers.write();
-		if(bodyUse){
+		if (bodyUse) {
 			httpServletResponse.flushBuffer();
 		}
 	}

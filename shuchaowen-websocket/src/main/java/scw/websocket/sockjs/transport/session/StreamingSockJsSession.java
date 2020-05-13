@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import scw.core.Assert;
+import scw.mvc.http.HttpChannel;
 import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsTransportFailureException;
 import scw.websocket.sockjs.frame.SockJsFrame;
@@ -62,13 +62,13 @@ public abstract class StreamingSockJsSession extends AbstractHttpSockJsSession {
 
 
 	@Override
-	protected void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response,
+	protected void handleRequestInternal(HttpChannel httpChannel,
 			boolean initialRequest) throws IOException {
 
-		byte[] prelude = getPrelude(request);
+		byte[] prelude = getPrelude(httpChannel.getRequest());
 		Assert.state(prelude != null, "Prelude expected");
-		response.getBody().write(prelude);
-		response.flush();
+		httpChannel.getResponse().getBody().write(prelude);
+		httpChannel.getResponse().flush();
 
 		if (initialRequest) {
 			writeFrame(SockJsFrame.openFrame());

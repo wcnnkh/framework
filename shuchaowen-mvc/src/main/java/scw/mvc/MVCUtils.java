@@ -191,7 +191,7 @@ public final class MVCUtils implements MvcConstants {
 
 			return ip;
 		}
-		return serverHttpRequest.getRemoteAddr();
+		return serverHttpRequest.getRemoteAddress().getHostName();
 	}
 
 	public static String getIP(ServerHttpRequest serverHttpRequest) {

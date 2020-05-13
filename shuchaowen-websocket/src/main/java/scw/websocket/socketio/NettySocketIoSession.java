@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.protocol.Packet;
-import com.corundumstudio.socketio.protocol.PacketType;
 
 import scw.messageing.BinaryMessage;
 import scw.messageing.TextMessage;
