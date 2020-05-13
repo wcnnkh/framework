@@ -40,4 +40,12 @@ public final class BuiltInGsonElement extends AbstractJsonElement {
 	public JsonObject getAsJsonObject() {
 		return new BuiltInGsonJsonObject(gsonJsonElement.getAsJsonObject(), gson);
 	}
+
+	public boolean isJsonArray() {
+		return gsonJsonElement.isJsonArray();
+	}
+
+	public boolean isJsonObject() {
+		return gsonJsonElement.isJsonObject();
+	}
 }

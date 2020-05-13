@@ -6,4 +6,8 @@ public interface JsonElement extends Value {
 	JsonArray getAsJsonArray();
 
 	JsonObject getAsJsonObject();
+	
+	boolean isJsonArray();
+	
+	boolean isJsonObject();
 }

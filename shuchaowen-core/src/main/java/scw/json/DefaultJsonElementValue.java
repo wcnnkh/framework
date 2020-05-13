@@ -13,4 +13,12 @@ public class DefaultJsonElementValue extends DefaultValueDefinition implements J
 	public JsonObject getAsJsonObject() {
 		return null;
 	}
+
+	public boolean isJsonArray() {
+		return false;
+	}
+
+	public boolean isJsonObject() {
+		return false;
+	}
 }

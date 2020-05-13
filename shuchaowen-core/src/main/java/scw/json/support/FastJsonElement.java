@@ -46,4 +46,12 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	public String toJSONString() {
 		return text;
 	}
+
+	public boolean isJsonArray() {
+		return text == null ? false : JSON.isValidArray(text);
+	}
+
+	public boolean isJsonObject() {
+		return text == null ? false : JSON.isValidObject(text);
+	}
 }
