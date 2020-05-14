@@ -11,11 +11,10 @@ import javax.servlet.http.HttpSession;
 import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.json.JSONSupport;
+import scw.mvc.AbstractChannel;
 import scw.mvc.AsyncControl;
-import scw.mvc.http.AbstractHttpChannel;
 
-@SuppressWarnings("unchecked")
-public abstract class HttpServletChannel extends AbstractHttpChannel {
+public abstract class HttpServletChannel extends AbstractChannel {
 	
 	public HttpServletChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport,
 			MyHttpServletRequest request, MyHttpServletResponse response) {

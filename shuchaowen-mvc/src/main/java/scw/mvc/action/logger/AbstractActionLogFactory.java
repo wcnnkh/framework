@@ -5,12 +5,10 @@ import java.util.Map;
 import scw.core.parameter.DefaultParameterDescriptor;
 import scw.json.JSONUtils;
 import scw.mvc.Channel;
-import scw.mvc.ServerRequest;
 import scw.mvc.action.Action;
+import scw.mvc.action.Action.ControllerDescriptor;
 import scw.mvc.action.logger.annotation.ActionLogConfig;
-import scw.mvc.action.manager.HttpAction;
-import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
-import scw.mvc.http.ServerHttpRequest;
+import scw.net.http.server.ServerHttpRequest;
 
 public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	protected abstract String getIdentification(Action action, Channel channel);
@@ -22,19 +20,13 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	}
 
 	protected String getIp(Action action, Channel channel) {
-		ServerRequest serverRequest = channel.getRequest();
-		if (serverRequest instanceof ServerHttpRequest) {
-			return ((ServerHttpRequest) serverRequest).getIP();
-		}
-
-		return null;
+		ServerHttpRequest serverRequest = channel.getRequest();
+		return serverRequest.getIP();
 	}
 
 	protected String getController(Channel channel, Action action) {
-		if (action instanceof HttpAction) {
-			for (ControllerDescriptor descriptor : ((HttpAction) action).getControllerDescriptors()) {
-				return descriptor.getController();
-			}
+		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
+			return descriptor.getController();
 		}
 		return null;
 	}

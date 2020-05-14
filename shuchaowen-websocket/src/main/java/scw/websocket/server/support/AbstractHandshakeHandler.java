@@ -30,11 +30,11 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
+import scw.mvc.Channel;
 import scw.net.http.HttpMethod;
 import scw.net.http.HttpStatus;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.SubProtocolCapable;
 import scw.websocket.WebSocketExtension;
 import scw.websocket.WebSocketHandler;
@@ -184,13 +184,13 @@ public abstract class AbstractHandshakeHandler implements HandshakeHandler {
 	}
 
 
-	public final boolean doHandshake(HttpChannel httpChannel,
+	public final boolean doHandshake(Channel channel,
 			WebSocketHandler wsHandler, Map<String, Object> attributes) throws HandshakeFailureException {
-		ServerHttpRequest request = httpChannel.getRequest();
-		ServerHttpResponse response = httpChannel.getResponse();
-		WebSocketHttpHeaders headers = new WebSocketHttpHeaders(httpChannel.getRequest().getHeaders());
+		ServerHttpRequest request = channel.getRequest();
+		ServerHttpResponse response = channel.getResponse();
+		WebSocketHttpHeaders headers = new WebSocketHttpHeaders(channel.getRequest().getHeaders());
 		if (logger.isTraceEnabled()) {
-			logger.trace("Processing request " + httpChannel.getRequest().getURI() + " with headers=" + headers);
+			logger.trace("Processing request " + channel.getRequest().getURI() + " with headers=" + headers);
 		}
 		try {
 			if (HttpMethod.GET != request.getMethod()) {

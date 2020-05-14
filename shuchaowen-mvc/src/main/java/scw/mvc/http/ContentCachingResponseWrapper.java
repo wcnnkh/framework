@@ -26,6 +26,8 @@ import java.io.UnsupportedEncodingException;
 import scw.core.Constants;
 import scw.io.FastByteArrayOutputStream;
 import scw.net.http.HttpStatus;
+import scw.net.http.server.ServerHttpResponse;
+import scw.net.http.server.ServerHttpResponseWrapper;
 
 /**
  * {@link javax.servlet.http.HttpServletResponse} wrapper that caches all content written to

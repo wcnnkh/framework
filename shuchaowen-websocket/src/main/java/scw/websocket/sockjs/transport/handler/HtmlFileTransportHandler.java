@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.Map;
 
 import scw.core.utils.StringUtils;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
+import scw.mvc.Channel;
 import scw.net.http.HttpStatus;
 import scw.net.http.JavaScriptUtils;
 import scw.net.http.MediaType;
+import scw.net.http.server.ServerHttpRequest;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsException;
@@ -100,14 +100,14 @@ public class HtmlFileTransportHandler extends AbstractHttpSendingTransportHandle
 	}
 
 	@Override
-	public void handleRequestInternal(HttpChannel httpChannel,
+	public void handleRequestInternal(Channel channel,
 			AbstractHttpSockJsSession sockJsSession) throws SockJsException {
 
-		String callback = getCallbackParam(httpChannel.getRequest());
+		String callback = getCallbackParam(channel.getRequest());
 		if (!StringUtils.hasText(callback)) {
-			httpChannel.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+			channel.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
 			try {
-				httpChannel.getResponse().getBody().write("\"callback\" parameter required".getBytes(UTF8_CHARSET));
+				channel.getResponse().getBody().write("\"callback\" parameter required".getBytes(UTF8_CHARSET));
 			}
 			catch (IOException ex) {
 				sockJsSession.tryCloseWithSockJsTransportError(ex, CloseStatus.SERVER_ERROR);
@@ -116,7 +116,7 @@ public class HtmlFileTransportHandler extends AbstractHttpSendingTransportHandle
 			return;
 		}
 
-		super.handleRequestInternal(httpChannel, sockJsSession);
+		super.handleRequestInternal(channel, sockJsSession);
 	}
 
 	@Override

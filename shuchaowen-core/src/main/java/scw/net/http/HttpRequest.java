@@ -1,11 +1,15 @@
 package scw.net.http;
 
-import scw.net.Request;
+import java.net.URI;
 
-public interface HttpRequest extends Request {
+import scw.net.message.Message;
+
+public interface HttpRequest extends Message {
 	HttpHeaders getHeaders();
 
 	HttpMethod getMethod();
 	
 	MediaType getContentType();
+	
+	URI getURI();
 }

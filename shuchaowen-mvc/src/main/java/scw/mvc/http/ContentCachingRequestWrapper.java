@@ -30,6 +30,8 @@ import java.util.Map;
 
 import scw.core.Constants;
 import scw.net.http.HttpMethod;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpRequestWrapper;
 
 /**
  * {@link javax.servlet.http.HttpServletRequest} wrapper that caches all content read from

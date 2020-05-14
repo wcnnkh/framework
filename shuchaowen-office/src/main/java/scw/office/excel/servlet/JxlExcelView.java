@@ -3,10 +3,10 @@ package scw.office.excel.servlet;
 import java.util.Arrays;
 
 import scw.db.DB;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
+import scw.mvc.Channel;
 import scw.mvc.http.HttpView;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.office.excel.jxl.export.JxlExport;
 import scw.office.excel.jxl.export.SimpleExportRowImpl;
 import scw.office.excel.jxl.export.SqlExportRow;
@@ -32,7 +32,7 @@ public class JxlExcelView extends HttpView {
 	}
 
 	@Override
-	public void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
+	public void render(Channel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
 		if (serverHttpResponse.getContentType() == null) {
 			serverHttpResponse.setContentType("text/html;charset=" + serverHttpResponse.getCharacterEncoding());
 		}

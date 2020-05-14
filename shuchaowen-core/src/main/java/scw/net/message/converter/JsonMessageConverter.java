@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.net.client.http.HttpUtils;
+import scw.net.http.HttpUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 

@@ -7,11 +7,11 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 
 import scw.io.IOUtils;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.Channel;
 import scw.mvc.http.HttpView;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
 import scw.net.http.MediaType;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 
 public final class DownFileView extends HttpView {
 	private String encoding;
@@ -26,7 +26,7 @@ public final class DownFileView extends HttpView {
 	}
 
 	@Override
-	public void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
+	public void render(Channel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
 		MediaType mediaType = MediaType.parseMediaType(Files.probeContentType(file.toPath()));
 		if(mediaType.getCharset() == null && encoding != null){
 			mediaType = new MediaType(mediaType, encoding);

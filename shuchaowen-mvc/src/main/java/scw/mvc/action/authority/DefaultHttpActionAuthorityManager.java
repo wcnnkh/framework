@@ -11,9 +11,8 @@ import scw.core.annotation.KeyValuePair;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
 import scw.mvc.action.Action;
+import scw.mvc.action.Action.ControllerDescriptor;
 import scw.mvc.action.manager.ActionManager;
-import scw.mvc.action.manager.HttpAction;
-import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
 import scw.mvc.annotation.ActionAuthority;
 import scw.mvc.annotation.ActionAuthorityParent;
 import scw.net.http.HttpMethod;
@@ -29,9 +28,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 
 	public DefaultHttpActionAuthorityManager(ActionManager actionManager) {
 		for (Action action : actionManager.getActions()) {
-			if (action instanceof HttpAction) {
-				register((HttpAction) action);
-			}
+				register(action);
 		}
 	}
 
@@ -44,7 +41,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		return parentId;
 	}
 
-	public void register(HttpAction action) {
+	public void register(Action action) {
 		ActionAuthority classAuthority = action.getTargetClassAnnotatedElement().getAnnotation(ActionAuthority.class);
 		if (classAuthority != null) {// 如果在类上存在此注解说明这是一个菜单
 			String id = action.getTargetClass().getName();
@@ -96,7 +93,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		}
 	}
 
-	public HttpAuthority getAuthority(HttpAction action) {
+	public HttpAuthority getAuthority(Action action) {
 		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
 			HttpAuthority authority = getAuthority(descriptor.getController(), descriptor.getHttpMethod());
 			if (authority != null) {
@@ -122,7 +119,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		return attributeMap.isEmpty() ? null : attributeMap;
 	}
 
-	protected ControllerDescriptor getAuthorityControllerDescriptor(HttpAction action) {
+	protected ControllerDescriptor getAuthorityControllerDescriptor(Action action) {
 		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
 			if (descriptor.getHttpMethod() == HttpMethod.GET) {
 				return descriptor;

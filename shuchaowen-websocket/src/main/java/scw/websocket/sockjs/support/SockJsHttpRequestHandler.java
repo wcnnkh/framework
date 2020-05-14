@@ -19,7 +19,7 @@ package scw.websocket.sockjs.support;
 import java.io.IOException;
 
 import scw.core.Assert;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.Channel;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.ExceptionWebSocketHandlerDecorator;
 import scw.websocket.handler.LoggingWebSocketHandlerDecorator;
@@ -73,18 +73,18 @@ public class SockJsHttpRequestHandler {
 	}
 
 
-	public void handleRequest(HttpChannel httpChannel)
+	public void handleRequest(Channel channel)
 			throws IOException {
 		try {
-			this.sockJsService.handleRequest(httpChannel, getSockJsPath(httpChannel), this.webSocketHandler);
+			this.sockJsService.handleRequest(channel, getSockJsPath(channel), this.webSocketHandler);
 		}
 		catch (Throwable ex) {
-			throw new SockJsException("Uncaught failure in SockJS request, uri=" + httpChannel.getRequest().getURI(), ex);
+			throw new SockJsException("Uncaught failure in SockJS request, uri=" + channel.getRequest().getURI(), ex);
 		}
 	}
 
-	private String getSockJsPath(HttpChannel httpChannel) {
-		String path = (String) httpChannel.getAttribute(PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+	private String getSockJsPath(Channel channel) {
+		String path = (String) channel.getAttribute(PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 		return (path.length() > 0 && path.charAt(0) != '/' ? "/" + path : path);
 	}
 }

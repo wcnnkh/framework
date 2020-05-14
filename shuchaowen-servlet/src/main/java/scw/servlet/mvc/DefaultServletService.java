@@ -12,8 +12,8 @@ import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
-import scw.mvc.http.HttpChannel;
 import scw.mvc.service.ChannelService;
 import scw.servlet.mvc.http.HttpServletChannelFactory;
 import scw.value.property.PropertyFactory;
@@ -58,13 +58,13 @@ public class DefaultServletService implements ServletService {
 
 		if (req instanceof HttpServletRequest
 				&& resp instanceof HttpServletResponse) {
-			HttpChannel httpChannel = httpServletChannelFactory.getHttpChannel(
+			Channel channel = httpServletChannelFactory.getHttpChannel(
 					(HttpServletRequest) req, (HttpServletResponse) resp);
-			if (httpChannel == null) {
+			if (channel == null) {
 				return;
 			}
 
-			channelService.service(httpChannel);
+			channelService.service(channel);
 		}
 	}
 }

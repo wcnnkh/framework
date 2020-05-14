@@ -11,7 +11,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import scw.beans.annotation.Bean;
-import scw.mvc.http.ServerHttpRequest;
+import scw.net.http.server.ServerHttpRequest;
 import scw.xml.XMLUtils;
 
 @Bean(singleton = false)

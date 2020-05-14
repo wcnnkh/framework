@@ -18,8 +18,8 @@ package scw.websocket.sockjs.transport.handler;
 
 import java.util.Map;
 
-import scw.mvc.http.ServerHttpRequest;
 import scw.net.http.MediaType;
+import scw.net.http.server.ServerHttpRequest;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.frame.DefaultSockJsFrameFormat;
 import scw.websocket.sockjs.frame.SockJsFrameFormat;

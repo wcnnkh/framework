@@ -25,9 +25,9 @@ import java.util.Map;
 import scw.core.Assert;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
+import scw.mvc.Channel;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.ExceptionWebSocketHandlerDecorator;
 import scw.websocket.handler.LoggingWebSocketHandlerDecorator;
@@ -100,31 +100,31 @@ public class WebSocketHttpRequestHandler {
 		return this.interceptors;
 	}
 
-	public void handleRequest(HttpChannel httpChannel)
+	public void handleRequest(Channel channel)
 			throws IOException {
 		HandshakeInterceptorChain chain = new HandshakeInterceptorChain(this.interceptors, this.wsHandler);
 		HandshakeFailureException failure = null;
 
 		try {
 			if (logger.isDebugEnabled()) {
-				logger.debug(httpChannel.getRequest().getMethod() + " " + httpChannel.getRequest().getURI());
+				logger.debug(channel.getRequest().getMethod() + " " + channel.getRequest().getURI());
 			}
 			Map<String, Object> attributes = new HashMap<String, Object>();
-			if (!chain.applyBeforeHandshake(httpChannel, attributes)) {
+			if (!chain.applyBeforeHandshake(channel, attributes)) {
 				return;
 			}
-			this.handshakeHandler.doHandshake(httpChannel, this.wsHandler, attributes);
-			chain.applyAfterHandshake(httpChannel, null);
+			this.handshakeHandler.doHandshake(channel, this.wsHandler, attributes);
+			chain.applyAfterHandshake(channel, null);
 		}
 		catch (HandshakeFailureException ex) {
 			failure = ex;
 		}
 		catch (Throwable ex) {
-			failure = new HandshakeFailureException("Uncaught failure for request " + httpChannel.getRequest().getURI(), ex);
+			failure = new HandshakeFailureException("Uncaught failure for request " + channel.getRequest().getURI(), ex);
 		}
 		finally {
 			if (failure != null) {
-				chain.applyAfterHandshake(httpChannel, failure);
+				chain.applyAfterHandshake(channel, failure);
 				throw failure;
 			}
 		}

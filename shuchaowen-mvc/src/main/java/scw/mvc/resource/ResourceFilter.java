@@ -2,13 +2,13 @@ package scw.mvc.resource;
 
 import scw.core.instance.annotation.Configuration;
 import scw.io.IOUtils;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.Channel;
+import scw.mvc.service.Filter;
 import scw.mvc.service.FilterChain;
-import scw.mvc.service.HttpFilter;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = ResourceFilter.ORDER)
-public final class ResourceFilter extends HttpFilter {
+public final class ResourceFilter implements Filter {
 	public static final int ORDER = 800;
 
 	private ResourceFactory resourceFactory;
@@ -21,8 +21,7 @@ public final class ResourceFilter extends HttpFilter {
 		this.resourceFactory = resourceFactory;
 	}
 
-	@Override
-	protected Object doHttpFilter(HttpChannel channel, FilterChain chain)
+	public Object doFilter(Channel channel, FilterChain chain)
 			throws Throwable {
 		Resource resource = resourceFactory.getResource(channel.getRequest());
 		if (resource == null || resource.exists()) {

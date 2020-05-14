@@ -18,7 +18,7 @@ package scw.websocket.server;
 
 import java.util.Map;
 
-import scw.mvc.http.HttpChannel;
+import scw.mvc.Channel;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.PerConnectionWebSocketHandler;
 
@@ -49,7 +49,7 @@ public interface HandshakeHandler {
 	 * complete due to an internal, unrecoverable error, i.e. a server error as
 	 * opposed to a failure to successfully negotiate the handshake.
 	 */
-	boolean doHandshake(HttpChannel httpChannel, WebSocketHandler wsHandler,
+	boolean doHandshake(Channel channel, WebSocketHandler wsHandler,
 			Map<String, Object> attributes) throws HandshakeFailureException;
 
 }

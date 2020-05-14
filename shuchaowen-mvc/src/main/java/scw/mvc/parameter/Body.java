@@ -4,13 +4,12 @@ import java.io.IOException;
 
 import scw.beans.annotation.Bean;
 import scw.io.IOUtils;
-import scw.mvc.ServerRequest;
-import scw.mvc.http.ServerHttpRequest;
+import scw.net.http.server.ServerHttpRequest;
 
 @Bean(singleton = false)
 public final class Body {
 	private String body;
-	private ServerRequest serverRequest;
+	private ServerHttpRequest serverRequest;
 
 	public Body(ServerHttpRequest request) throws IOException {
 		this.serverRequest = request;

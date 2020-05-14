@@ -20,7 +20,7 @@ import scw.io.serialzer.SerializerUtils;
 import scw.lang.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.client.http.HttpUtils;
+import scw.net.http.HttpUtils;
 import scw.value.property.SystemPropertyFactory;
 
 @SuppressWarnings("unchecked")

@@ -1,10 +1,10 @@
 package scw.mvc.http.view;
 
 import scw.core.utils.StringUtils;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
+import scw.mvc.Channel;
 import scw.mvc.http.HttpView;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 
 public class Redirect extends HttpView {
 	private static final String ROOT_PATH = "/";
@@ -16,7 +16,7 @@ public class Redirect extends HttpView {
 	}
 
 	@Override
-	public void render(HttpChannel channel, ServerHttpRequest serverHttpRequest,
+	public void render(Channel channel, ServerHttpRequest serverHttpRequest,
 			ServerHttpResponse serverHttpResponse) throws Throwable {
 		String redirect = url;
 		if(StringUtils.isEmpty(redirect) || ROOT_PATH.equals(url)){

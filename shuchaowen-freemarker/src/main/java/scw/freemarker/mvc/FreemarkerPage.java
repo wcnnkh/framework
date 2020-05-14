@@ -2,15 +2,14 @@ package scw.freemarker.mvc;
 
 import java.util.Enumeration;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import scw.mvc.Channel;
-import scw.mvc.ServerRequest;
-import scw.mvc.ServerResponse;
-import scw.mvc.http.ServerHttpRequest;
 import scw.mvc.page.AbstractPage;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -21,8 +20,7 @@ public class FreemarkerPage extends AbstractPage {
 		this(configuration, page, null);
 	}
 
-	public FreemarkerPage(Configuration configuration, String page,
-			MimeType mimeType) {
+	public FreemarkerPage(Configuration configuration, String page, MimeType mimeType) {
 		super(page);
 		this.configuration = configuration;
 		this.mimeType = mimeType;
@@ -37,8 +35,8 @@ public class FreemarkerPage extends AbstractPage {
 	}
 
 	public void render(Channel channel) throws Throwable {
-		ServerRequest serverRequest = channel.getRequest();
-		ServerResponse serverResponse = channel.getResponse();
+		ServerHttpRequest serverRequest = channel.getRequest();
+		ServerHttpResponse serverResponse = channel.getResponse();
 
 		if (getMimeType() != null) {
 			serverResponse.setContentType(getMimeType());
@@ -56,22 +54,18 @@ public class FreemarkerPage extends AbstractPage {
 			put(key, channel.getAttribute(key));
 		}
 
-		if (serverRequest instanceof ServerHttpRequest) {
-			ServerHttpRequest serverHttpRequest = (ServerHttpRequest) serverRequest;
-			for (Entry<String, String[]> entry : serverHttpRequest.getParameterMap()
-					.entrySet()) {
-				String key = entry.getKey();
-				if (key == null || containsKey(key)) {
-					continue;
-				}
-
-				put(key, entry.getValue());
+		ServerHttpRequest serverHttpRequest = (ServerHttpRequest) serverRequest;
+		for (java.util.Map.Entry<String, String[]> entry : serverHttpRequest.getParameterMap().entrySet()) {
+			String key = entry.getKey();
+			if (key == null || containsKey(key)) {
+				continue;
 			}
+
+			put(key, entry.getValue());
 		}
 
 		String page = getPage();
-		Template template = configuration.getTemplate(page,
-				serverRequest.getCharacterEncoding());
+		Template template = configuration.getTemplate(page, serverRequest.getCharacterEncoding());
 		template.process(this, serverResponse.getWriter());
 
 		if (channel.isLogEnabled()) {

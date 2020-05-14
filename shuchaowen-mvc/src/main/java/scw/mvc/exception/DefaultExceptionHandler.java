@@ -4,6 +4,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.lang.ParameterException;
 import scw.mvc.Channel;
+import scw.net.http.server.exception.ErrorMessage;
 import scw.result.ResultFactory;
 import scw.security.authority.AuthorizationFailureException;
 

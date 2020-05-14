@@ -3,9 +3,8 @@ package scw.mvc.http.view;
 import java.util.LinkedList;
 
 import scw.mvc.Channel;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.util.CSVUtils;
 
 public final class CSVView extends LinkedList<Object[]> implements scw.mvc.View {
@@ -56,8 +55,7 @@ public final class CSVView extends LinkedList<Object[]> implements scw.mvc.View 
 	}
 
 	public void render(Channel channel) throws Throwable {
-		HttpChannel httpChannel = (HttpChannel) channel;
-		render((ServerHttpRequest) httpChannel.getRequest(), (ServerHttpResponse) httpChannel.getResponse());
+		render((ServerHttpRequest) channel.getRequest(), (ServerHttpResponse) channel.getResponse());
 	}
 
 }

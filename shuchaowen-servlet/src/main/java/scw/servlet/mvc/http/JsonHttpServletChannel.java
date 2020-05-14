@@ -10,7 +10,6 @@ import scw.logger.LoggerFactory;
 import scw.mvc.parameter.Body;
 import scw.net.http.HttpMethod;
 
-@SuppressWarnings("unchecked")
 public class JsonHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(JsonHttpServletChannel.class);
 	private JsonObject jsonObject;

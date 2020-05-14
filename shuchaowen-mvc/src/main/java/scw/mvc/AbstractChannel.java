@@ -1,5 +1,6 @@
 package scw.mvc;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -11,9 +12,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
+import scw.compatible.CompatibleUtils;
+import scw.core.Constants;
 import scw.core.Destroy;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
@@ -34,6 +38,13 @@ import scw.mvc.annotation.RequestBody;
 import scw.mvc.beans.ChannelBeanFactory;
 import scw.mvc.beans.DefaultChannelBeanFactory;
 import scw.mvc.parameter.RequestBodyParse;
+import scw.net.http.HttpMethod;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
+import scw.security.session.Session;
+import scw.util.MultiValueMap;
+import scw.util.ip.IP;
+import scw.util.ip.SimpleIP;
 import scw.value.DefaultValueDefinition;
 import scw.value.SimpleValueFactory;
 import scw.value.StringValue;
@@ -44,13 +55,18 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 	private final JSONSupport jsonSupport;
 	private final ChannelBeanFactory channelBeanFactory;
 	private boolean completed = false;
+	private final ServerHttpRequest request;
+	private final ServerHttpResponse response;
 
-	public AbstractChannel(BeanFactory beanFactory, JSONSupport jsonSupport) {
+	public AbstractChannel(BeanFactory beanFactory, JSONSupport jsonSupport, ServerHttpRequest request,
+			ServerHttpResponse response) {
 		this.createTime = System.currentTimeMillis();
 		this.jsonSupport = jsonSupport;
+		this.request = request;
+		this.response = response;
 		this.channelBeanFactory = new DefaultChannelBeanFactory(beanFactory, this);
 	}
-
+	
 	private Map<String, Object> attributeMap;
 
 	public Object getAttribute(String name) {
@@ -144,9 +160,21 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 		return parseValue(value);
 	}
 
-	protected abstract String getStringValue(String key);
-
-	public abstract String[] getStringArray(String key);
+	public String[] getStringArray(String key){
+		String[] array = getRequest().getParameterValues(key);
+		MultiValueMap<String, String> restfulParameterMap = MVCUtils
+				.getRestfulParameterMap(this);
+		if (restfulParameterMap != null) {
+			List<String> values = restfulParameterMap.get(key);
+			if(values != null && values.size() != 0){
+				String[] newArray = new String[array == null? values.size():(array.length + values.size())];
+				values.toArray(newArray);
+				System.arraycopy(array, 0, newArray, values.size(), array.length);
+				return newArray;
+			}
+		}
+		return array;
+	}
 
 	@SuppressWarnings("unchecked")
 	public <E> E[] getArray(String name, Class<? extends E> type) {
@@ -193,14 +221,18 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 	}
 
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
-		if (ServerRequest.class.isAssignableFrom(parameterDescriptor.getType())) {
+		if (ServerHttpRequest.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return getRequest();
-		} else if (ServerResponse.class.isAssignableFrom(parameterDescriptor.getType())) {
+		} else if (ServerHttpResponse.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return getResponse();
 		} else if (Channel.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return this;
+		}else if (Session.class == parameterDescriptor.getType()) {
+			return getRequest().getSession();
+		} else if (IP.class == parameterDescriptor.getType()) {
+			return new SimpleIP(request.getIP());
 		}
-
+		
 		Attribute attribute = parameterDescriptor.getAnnotatedElement().getAnnotation(Attribute.class);
 		if (attribute != null) {
 			return getAttribute(attribute.value());
@@ -302,5 +334,53 @@ public abstract class AbstractChannel extends SimpleValueFactory implements Chan
 	@Override
 	protected Value getDefaultValue(String key) {
 		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;
+	}
+	
+	protected String decodeGETParameter(String value) {
+		if (StringUtils.containsChinese(value)) {
+			return value;
+		}
+
+		try {
+			return new String(CompatibleUtils.getStringOperations().getBytes(value, Constants.ISO_8859_1),
+					request.getCharacterEncoding());
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			return value;
+		}
+	}
+
+	protected String getStringValue(String name) {
+		String v = request.getParameter(name);
+		if (v == null) {
+			MultiValueMap<String, String> restfulParameterMap = MVCUtils
+					.getRestfulParameterMap(this);
+			if (restfulParameterMap != null) {
+				v = restfulParameterMap.getFirst(name);
+			}
+		}
+
+		if (v != null && HttpMethod.GET == request.getMethod()) {
+			v = decodeGETParameter(v);
+		}
+		return v;
+	}
+	
+	public ServerHttpRequest getRequest() {
+		return request;
+	}
+
+	public ServerHttpResponse getResponse() {
+		return response;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder appendable = new StringBuilder();
+		appendable.append("path=").append(getRequest().getController());
+		appendable.append(",method=").append(getRequest().getMethod());
+		appendable.append(",").append(
+				getJsonSupport().toJSONString(getRequest().getParameterMap()));
+		return appendable.toString();
 	}
 }

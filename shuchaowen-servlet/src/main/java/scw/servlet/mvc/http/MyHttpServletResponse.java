@@ -6,11 +6,11 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.mvc.http.ServerHttpResponse;
 import scw.net.MimeType;
 import scw.net.http.HttpCookie;
 import scw.net.http.HttpHeaders;
 import scw.net.http.HttpStatus;
+import scw.net.http.server.ServerHttpResponse;
 import scw.net.message.AbstractOutputMessage;
 
 public class MyHttpServletResponse extends AbstractOutputMessage implements ServerHttpResponse {

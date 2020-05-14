@@ -35,14 +35,14 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
-import scw.net.client.http.HttpUtils;
+import scw.mvc.Channel;
 import scw.net.http.HttpMethod;
 import scw.net.http.HttpStatus;
+import scw.net.http.HttpUtils;
 import scw.net.http.InvalidMediaTypeException;
 import scw.net.http.MediaType;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.util.DigestUtils;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsException;
@@ -321,10 +321,10 @@ public abstract class AbstractSockJsService implements SockJsService {
 	 * This method determines the SockJS path and handles SockJS static URLs.
 	 * Session URLs and raw WebSocket requests are delegated to abstract methods.
 	 */
-	public final void handleRequest(HttpChannel httpChannel,
+	public final void handleRequest(Channel channel,
 			String sockJsPath, WebSocketHandler wsHandler) throws SockJsException {
-		ServerHttpRequest request = httpChannel.getRequest();
-		ServerHttpResponse response = httpChannel.getResponse();
+		ServerHttpRequest request = channel.getRequest();
+		ServerHttpResponse response = channel.getResponse();
 		
 		if (sockJsPath == null) {
 			if (logger.isWarnEnabled()) {
@@ -383,7 +383,7 @@ public abstract class AbstractSockJsService implements SockJsService {
 					if (requestInfo != null) {
 						logger.debug("Processing transport request: " + requestInfo);
 					}
-					handleRawWebSocketRequest(httpChannel, wsHandler);
+					handleRawWebSocketRequest(channel, wsHandler);
 				}
 				else if (requestInfo != null) {
 					logger.debug("WebSocket disabled. Ignoring transport request: " + requestInfo);
@@ -425,7 +425,7 @@ public abstract class AbstractSockJsService implements SockJsService {
 				if (requestInfo != null) {
 					logger.debug("Processing transport request: " + requestInfo);
 				}
-				handleTransportRequest(httpChannel, wsHandler, sessionId, transport);
+				handleTransportRequest(channel, wsHandler, sessionId, transport);
 			}
 			//TODO response.close();
 		}
@@ -502,12 +502,12 @@ public abstract class AbstractSockJsService implements SockJsService {
 	/**
 	 * Handle request for raw WebSocket communication, i.e. without any SockJS message framing.
 	 */
-	protected abstract void handleRawWebSocketRequest(HttpChannel httpChannel, WebSocketHandler webSocketHandler) throws IOException;
+	protected abstract void handleRawWebSocketRequest(Channel channel, WebSocketHandler webSocketHandler) throws IOException;
 
 	/**
 	 * Handle a SockJS session URL (i.e. transport-specific request).
 	 */
-	protected abstract void handleTransportRequest(HttpChannel httpChannel,
+	protected abstract void handleTransportRequest(Channel channel,
 			WebSocketHandler webSocketHandler, String sessionId, String transport) throws SockJsException;
 
 

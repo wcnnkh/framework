@@ -1,19 +1,19 @@
 package scw.mvc.output.support;
 
 import scw.core.utils.ClassUtils;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.output.HttpOutput;
+import scw.mvc.Channel;
+import scw.mvc.output.AbstractOutput;
 import scw.net.http.MediaType;
 
-public class DefaultHttpOutput extends HttpOutput<Object> {
+public class DefaultHttpOutput extends AbstractOutput<Object> {
 
 	@Override
-	protected boolean canWriteInternal(HttpChannel httpChannel, Object body) {
+	protected boolean canWriteInternal(Channel channel, Object body) {
 		return true;
 	}
 	
 	@Override
-	protected void writeBodyBefore(HttpChannel channel, Object body)
+	protected void writeBodyBefore(Channel channel, Object body)
 			throws Throwable {
 		if(channel.getResponse().getContentType() == null){
 			if(body instanceof String){
@@ -26,7 +26,7 @@ public class DefaultHttpOutput extends HttpOutput<Object> {
 	}
 
 	@Override
-	protected void writeBody(HttpChannel channel, Object body)
+	protected void writeBody(Channel channel, Object body)
 			throws Throwable {
 		String content;
 		if ((body instanceof String)

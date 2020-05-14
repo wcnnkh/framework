@@ -16,6 +16,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.action.Action;
+import scw.mvc.action.DefaultHttpAction;
 import scw.mvc.action.filter.ActionFilter;
 import scw.mvc.annotation.Controller;
 import scw.value.property.PropertyFactory;
@@ -93,7 +94,7 @@ public class DefaultActionManager implements ActionManager {
 
 	protected Action builder(Class<?> clazz, Method method) {
 		if (isSupport(clazz) && isSupport(method)) {
-			return new ControllerHttpAction(getBeanFactory(), clazz, method,
+			return new DefaultHttpAction(getBeanFactory(), clazz, method,
 					getActionFilters());
 		}
 		return null;

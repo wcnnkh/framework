@@ -16,13 +16,13 @@ import javax.servlet.http.HttpSession;
 
 import scw.core.utils.StringUtils;
 import scw.mvc.MVCUtils;
-import scw.mvc.http.ServerHttpRequest;
 import scw.net.NetworkUtils;
 import scw.net.http.HttpCookie;
 import scw.net.http.HttpHeaders;
 import scw.net.http.HttpMethod;
 import scw.net.http.InvalidMediaTypeException;
 import scw.net.http.MediaType;
+import scw.net.http.server.ServerHttpRequest;
 import scw.net.message.AbstractInputMessage;
 import scw.security.session.Session;
 import scw.servlet.ServletUtils;
@@ -72,12 +72,12 @@ public class MyHttpServletRequest extends AbstractInputMessage implements
 		return values;
 	}
 
-	public Session getHttpSession() {
+	public Session getSession() {
 		HttpSession session = httpServletRequest.getSession();
 		return session == null ? null : new HttpServletSession(session);
 	}
 
-	public Session getHttpSession(boolean create) {
+	public Session getSession(boolean create) {
 		HttpSession httpSession = httpServletRequest.getSession(create);
 		return new HttpServletSession(httpSession);
 	}

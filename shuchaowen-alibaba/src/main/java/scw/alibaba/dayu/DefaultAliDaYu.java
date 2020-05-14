@@ -8,7 +8,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.client.http.HttpUtils;
+import scw.net.http.HttpUtils;
 import scw.net.http.MediaType;
 import scw.result.DataResult;
 import scw.result.ResultFactory;

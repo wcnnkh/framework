@@ -27,10 +27,10 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.mvc.AsyncControl;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
+import scw.mvc.Channel;
 import scw.net.http.HttpHeaders;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketExtension;
 import scw.websocket.WebSocketHandler;
@@ -164,10 +164,10 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 	 * @param response the current response
 	 * @param frameFormat the transport-specific SocksJS frame format to use
 	 */
-	public void handleInitialRequest(HttpChannel httpChannel,
+	public void handleInitialRequest(Channel channel,
 			SockJsFrameFormat frameFormat) throws SockJsException {
-		ServerHttpRequest request = httpChannel.getRequest();
-		ServerHttpResponse response = httpChannel.getResponse();
+		ServerHttpRequest request = channel.getRequest();
+		ServerHttpResponse response = channel.getResponse();
 		this.uri = request.getURI();
 		this.handshakeHeaders = request.getHeaders();
 		this.principal = request.getPrincipal();
@@ -188,14 +188,14 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 			try {
 				this.response = response;
 				this.frameFormat = frameFormat;
-				if(httpChannel.isSupportAsyncControl()){
-					this.asyncControl = httpChannel.getAsyncControl();
+				if(channel.isSupportAsyncControl()){
+					this.asyncControl = channel.getAsyncControl();
 					this.asyncControl.start();
 				}
 				disableShallowEtagHeaderFilter(request);
 				// Let "our" handler know before sending the open frame to the remote handler
 				delegateConnectionEstablished();
-				handleRequestInternal(httpChannel, true);
+				handleRequestInternal(channel, true);
 				// Request might have been reset (e.g. polling sessions do after writing)
 				this.readyToSend = isActive();
 			}
@@ -218,7 +218,7 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 	 * @param response the current response
 	 * @param frameFormat the transport-specific SocksJS frame format to use
 	 */
-	public void handleSuccessiveRequest(HttpChannel httpChannel,
+	public void handleSuccessiveRequest(Channel channel,
 			SockJsFrameFormat frameFormat) throws SockJsException {
 
 		synchronized (this.responseLock) {
@@ -229,12 +229,12 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 				}
 				this.response = response;
 				this.frameFormat = frameFormat;
-				if(httpChannel.isSupportAsyncControl()){
-					this.asyncControl = httpChannel.getAsyncControl();
+				if(channel.isSupportAsyncControl()){
+					this.asyncControl = channel.getAsyncControl();
 					this.asyncControl.start();
 				}
-				disableShallowEtagHeaderFilter(httpChannel.getRequest());
-				handleRequestInternal(httpChannel, false);
+				disableShallowEtagHeaderFilter(channel.getRequest());
+				handleRequestInternal(channel, false);
 				this.readyToSend = isActive();
 			}
 			catch (Throwable ex) {
@@ -257,7 +257,7 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 	 * @param response the current response
 	 * @param initialRequest whether it is the first request for the session
 	 */
-	protected abstract void handleRequestInternal(HttpChannel httpChannel,
+	protected abstract void handleRequestInternal(Channel channel,
 			boolean initialRequest) throws IOException;
 
 	@Override

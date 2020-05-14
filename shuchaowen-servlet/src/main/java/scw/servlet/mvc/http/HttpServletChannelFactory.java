@@ -4,9 +4,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.annotation.AutoImpl;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.Channel;
 
 @AutoImpl(ConfigurationHttpServletChannelFactory.class)
 public interface HttpServletChannelFactory {
-	HttpChannel getHttpChannel(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
+	Channel getHttpChannel(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse);
 }

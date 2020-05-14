@@ -3,11 +3,10 @@ package scw.mvc.rpc;
 import scw.core.instance.annotation.Configuration;
 import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
-import scw.mvc.ServerRequest;
-import scw.mvc.http.ServerHttpRequest;
 import scw.mvc.service.Filter;
 import scw.mvc.service.FilterChain;
 import scw.net.http.HttpMethod;
+import scw.net.http.server.ServerHttpRequest;
 import scw.net.rpc.RpcService;
 import scw.value.property.PropertyFactory;
 
@@ -36,7 +35,7 @@ public final class RPCFilter implements Filter {
 		return chain.doFilter(channel);
 	}
 
-	protected final boolean checkRPCEnable(ServerRequest serverRequest) {
+	protected final boolean checkRPCEnable(ServerHttpRequest serverRequest) {
 		if (!serverRequest.getController().equals(rpcPath)) {
 			return false;
 		}

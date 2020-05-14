@@ -39,9 +39,8 @@ import scw.embed.servlet.support.ServletRootFilterConfiguration;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
+import scw.mvc.action.Action.ControllerDescriptor;
 import scw.mvc.action.manager.ActionManager;
-import scw.mvc.action.manager.HttpAction;
-import scw.mvc.action.manager.HttpAction.ControllerDescriptor;
 import scw.net.http.HttpMethod;
 import scw.servlet.MultiFilter;
 import scw.value.property.PropertyFactory;
@@ -116,18 +115,13 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	private void addErrorPage(Context context, BeanFactory beanFactory, PropertyFactory propertyFactory){
 		if(beanFactory.isInstance(ActionManager.class)){
 			for(Action action : beanFactory.getInstance(ActionManager.class).getActions()){
-				if(!(action instanceof HttpAction)){
-					continue;
-				}
-				
-				HttpAction httpAction = (HttpAction) action;
-				ErrorCodeController errorCodeController = httpAction.getMethodAnnotatedElement().getAnnotation(ErrorCodeController.class);
+				ErrorCodeController errorCodeController = action.getMethodAnnotatedElement().getAnnotation(ErrorCodeController.class);
 				if(errorCodeController == null){
 					continue;
 				}
 				
 				ControllerDescriptor controllerDescriptorToUse = null;
-				for(ControllerDescriptor controllerDescriptor : httpAction.getControllerDescriptors()){
+				for(ControllerDescriptor controllerDescriptor : action.getControllerDescriptors()){
 					if(controllerDescriptor.getHttpMethod() == HttpMethod.GET && !controllerDescriptor.getRestful().isRestful()){
 						controllerDescriptorToUse = controllerDescriptor;
 					}

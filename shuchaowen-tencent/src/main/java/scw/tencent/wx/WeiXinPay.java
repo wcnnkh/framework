@@ -21,7 +21,7 @@ import scw.lang.SignatureException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.MimeTypeUtils;
-import scw.net.client.http.HttpUtils;
+import scw.net.http.HttpUtils;
 import scw.net.http.MediaType;
 import scw.net.ssl.SSLContexts;
 import scw.security.SignatureUtils;

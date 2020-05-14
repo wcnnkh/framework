@@ -20,7 +20,7 @@ import scw.core.utils.XTime;
 import scw.core.utils.XUtils;
 import scw.json.JSONUtils;
 import scw.lang.ParameterException;
-import scw.mvc.ServerRequest;
+import scw.net.http.server.ServerHttpRequest;
 import scw.util.Base64;
 
 public final class KindEditorUpload implements Upload {
@@ -54,7 +54,7 @@ public final class KindEditorUpload implements Upload {
 		}
 	}
 
-	protected String getSavePath(ServerRequest serverRequest) {
+	protected String getSavePath(ServerHttpRequest serverHttpRequest) {
 		return rootPath;
 	}
 

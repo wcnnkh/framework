@@ -22,7 +22,7 @@ import java.util.Map;
 
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.Channel;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.server.HandshakeInterceptor;
 
@@ -49,16 +49,16 @@ public class HandshakeInterceptorChain {
 	}
 
 
-	public boolean applyBeforeHandshake(HttpChannel httpChannel,
+	public boolean applyBeforeHandshake(Channel channel,
 			Map<String, Object> attributes) throws Exception {
 
 		for (int i = 0; i < this.interceptors.size(); i++) {
 			HandshakeInterceptor interceptor = this.interceptors.get(i);
-			if (!interceptor.beforeHandshake(httpChannel, this.wsHandler, attributes)) {
+			if (!interceptor.beforeHandshake(channel, this.wsHandler, attributes)) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(interceptor + " returns false from beforeHandshake - precluding handshake");
 				}
-				applyAfterHandshake(httpChannel, null);
+				applyAfterHandshake(channel, null);
 				return false;
 			}
 			this.interceptorIndex = i;
@@ -67,11 +67,11 @@ public class HandshakeInterceptorChain {
 	}
 
 
-	public void applyAfterHandshake(HttpChannel httpChannel, Exception failure) {
+	public void applyAfterHandshake(Channel channel, Exception failure) {
 		for (int i = this.interceptorIndex; i >= 0; i--) {
 			HandshakeInterceptor interceptor = this.interceptors.get(i);
 			try {
-				interceptor.afterHandshake(httpChannel, this.wsHandler, failure);
+				interceptor.afterHandshake(channel, this.wsHandler, failure);
 			}
 			catch (Throwable ex) {
 				if (logger.isWarnEnabled()) {

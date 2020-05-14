@@ -5,7 +5,7 @@ import java.util.Map;
 
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
-import scw.net.client.http.HttpUtils;
+import scw.net.http.HttpUtils;
 import scw.net.http.MediaType;
 
 public final class QQUtils {

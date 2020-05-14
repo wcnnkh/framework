@@ -21,9 +21,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
 
 import scw.core.utils.StringUtils;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
+import scw.mvc.Channel;
 import scw.net.http.MediaType;
+import scw.net.http.server.ServerHttpRequest;
 import scw.net.uri.UriComponentsBuilder;
 import scw.net.uri.UriUtils;
 import scw.util.MultiValueMap;
@@ -50,7 +50,7 @@ public abstract class AbstractHttpSendingTransportHandler extends AbstractTransp
 	private static final Pattern CALLBACK_PARAM_PATTERN = Pattern.compile("[0-9A-Za-z_\\.]*");
 
 
-	public final void handleRequest(HttpChannel httpChannel,
+	public final void handleRequest(Channel channel,
 			WebSocketHandler wsHandler, SockJsSession wsSession) throws SockJsException {
 
 		AbstractHttpSockJsSession sockJsSession = (AbstractHttpSockJsSession) wsSession;
@@ -59,19 +59,19 @@ public abstract class AbstractHttpSendingTransportHandler extends AbstractTransp
 		sockJsSession.setAcceptedProtocol(protocol);
 
 		// Set content type before writing
-		httpChannel.getResponse().getHeaders().setContentType(getContentType());
+		channel.getResponse().getHeaders().setContentType(getContentType());
 
-		handleRequestInternal(httpChannel, sockJsSession);
+		handleRequestInternal(channel, sockJsSession);
 	}
 
-	protected void handleRequestInternal(HttpChannel httpChannel,
+	protected void handleRequestInternal(Channel channel,
 			AbstractHttpSockJsSession sockJsSession) throws SockJsException {
 
 		if (sockJsSession.isNew()) {
 			if (logger.isDebugEnabled()) {
-				logger.debug(httpChannel.getRequest().getMethod() + " " + httpChannel.getRequest().getURI());
+				logger.debug(channel.getRequest().getMethod() + " " + channel.getRequest().getURI());
 			}
-			sockJsSession.handleInitialRequest(httpChannel, getFrameFormat(httpChannel.getRequest()));
+			sockJsSession.handleInitialRequest(channel, getFrameFormat(channel.getRequest()));
 		}
 		else if (sockJsSession.isClosed()) {
 			if (logger.isDebugEnabled()) {
@@ -79,7 +79,7 @@ public abstract class AbstractHttpSendingTransportHandler extends AbstractTransp
 			}
 			SockJsFrame frame = SockJsFrame.closeFrameGoAway();
 			try {
-				httpChannel.getResponse().getBody().write(frame.getContentBytes());
+				channel.getResponse().getBody().write(frame.getContentBytes());
 			}
 			catch (IOException ex) {
 				throw new SockJsException("Failed to send " + frame, sockJsSession.getId(), ex);
@@ -89,15 +89,15 @@ public abstract class AbstractHttpSendingTransportHandler extends AbstractTransp
 			if (logger.isTraceEnabled()) {
 				logger.trace("Starting " + getTransportType() + " async request.");
 			}
-			sockJsSession.handleSuccessiveRequest(httpChannel, getFrameFormat(httpChannel.getRequest()));
+			sockJsSession.handleSuccessiveRequest(channel, getFrameFormat(channel.getRequest()));
 		}
 		else {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Another " + getTransportType() + " connection still open for " + sockJsSession);
 			}
-			String formattedFrame = getFrameFormat(httpChannel.getRequest()).format(SockJsFrame.closeFrameAnotherConnectionOpen());
+			String formattedFrame = getFrameFormat(channel.getRequest()).format(SockJsFrame.closeFrameAnotherConnectionOpen());
 			try {
-				httpChannel.getResponse().getBody().write(formattedFrame.getBytes(SockJsFrame.CHARSET));
+				channel.getResponse().getBody().write(formattedFrame.getBytes(SockJsFrame.CHARSET));
 			}
 			catch (IOException ex) {
 				throw new SockJsException("Failed to send " + formattedFrame, sockJsSession.getId(), ex);

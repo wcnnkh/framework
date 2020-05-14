@@ -2,32 +2,31 @@ package scw.mvc.http.cors;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.annotation.Configuration;
+import scw.mvc.Channel;
 import scw.mvc.MVCUtils;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.service.Filter;
 import scw.mvc.service.FilterChain;
-import scw.mvc.service.HttpFilter;
+import scw.net.http.server.cors.CorsConfig;
+import scw.net.http.server.cors.CorsConfigFactory;
 import scw.value.property.PropertyFactory;
 
-@Configuration(order=CorsFilter.ORDER)
-public final class CorsFilter extends HttpFilter{
+@Configuration(order = CorsFilter.ORDER)
+public final class CorsFilter implements Filter {
 	public static final int ORDER = 1000;
-	
+
 	private final CorsConfigFactory crossDomainDefinitionFactory;
-	
-	public CorsFilter(BeanFactory beanFactory, PropertyFactory propertyFactory){
+
+	public CorsFilter(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		this(MVCUtils.getCorsConfigFactory(beanFactory, propertyFactory));
 	}
-	
-	public CorsFilter(CorsConfigFactory crossDomainDefinitionFactory){
+
+	public CorsFilter(CorsConfigFactory crossDomainDefinitionFactory) {
 		this.crossDomainDefinitionFactory = crossDomainDefinitionFactory;
 	}
-	
-	@Override
-	protected Object doHttpFilter(HttpChannel channel, FilterChain chain)
-			throws Throwable {
-		if(crossDomainDefinitionFactory != null){
-			CorsConfig corsConfig = crossDomainDefinitionFactory
-					.getCorsConfig(channel);
+
+	public Object doFilter(Channel channel, FilterChain chain) throws Throwable {
+		if (crossDomainDefinitionFactory != null) {
+			CorsConfig corsConfig = crossDomainDefinitionFactory.getCorsConfig(channel.getRequest());
 			if (corsConfig != null) {
 				MVCUtils.responseCrossDomain(corsConfig, channel.getResponse());
 			}

@@ -25,11 +25,11 @@ import java.util.Set;
 import scw.core.Assert;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
-import scw.net.client.http.HttpUtils;
+import scw.mvc.Channel;
 import scw.net.http.HttpStatus;
+import scw.net.http.HttpUtils;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.server.HandshakeInterceptor;
 
@@ -86,10 +86,10 @@ public class OriginHandshakeInterceptor implements HandshakeInterceptor {
 	}
 
 
-	public boolean beforeHandshake(HttpChannel httpChannel,
+	public boolean beforeHandshake(Channel channel,
 			WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-		ServerHttpRequest request = httpChannel.getRequest();
-		ServerHttpResponse response = httpChannel.getResponse();
+		ServerHttpRequest request = channel.getRequest();
+		ServerHttpResponse response = channel.getResponse();
 		if (!HttpUtils.isSameOrigin(request) && !HttpUtils.isValidOrigin(request, this.allowedOrigins)) {
 			response.setStatusCode(HttpStatus.FORBIDDEN);
 			if (logger.isDebugEnabled()) {
@@ -101,7 +101,7 @@ public class OriginHandshakeInterceptor implements HandshakeInterceptor {
 		return true;
 	}
 
-	public void afterHandshake(HttpChannel httpChannel,
+	public void afterHandshake(Channel channel,
 			WebSocketHandler wsHandler, Exception exception) {
 	}
 

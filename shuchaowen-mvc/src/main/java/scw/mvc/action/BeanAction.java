@@ -11,7 +11,7 @@ import scw.core.utils.CollectionUtils;
 import scw.lang.NotSupportedException;
 import scw.mvc.action.filter.ActionFilter;
 
-public class BeanAction extends AbstractAction {
+public abstract class BeanAction extends AbstractAction {
 	private final BeanFactory beanFactory;
 	private final Invoker invoker;
 

@@ -7,7 +7,7 @@ import java.util.Map;
 import scw.core.utils.XUtils;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
-import scw.net.client.http.HttpUtils;
+import scw.net.http.HttpUtils;
 import scw.net.http.MediaType;
 import scw.security.SignType;
 import scw.security.SignatureUtils;

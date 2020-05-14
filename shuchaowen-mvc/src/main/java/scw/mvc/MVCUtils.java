@@ -23,13 +23,12 @@ import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.ParameterException;
 import scw.mvc.action.Action;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
-import scw.mvc.http.cors.CorsConfig;
-import scw.mvc.http.cors.CorsConfigFactory;
 import scw.mvc.http.cors.DefaultCorsConfigFactory;
-import scw.net.MimeTypeUtils;
 import scw.net.http.HttpHeaders;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
+import scw.net.http.server.cors.CorsConfig;
+import scw.net.http.server.cors.CorsConfigFactory;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
@@ -104,42 +103,6 @@ public final class MVCUtils implements MvcConstants {
 
 	public static boolean isRestfulParameterMapAttributeName(String name) {
 		return RESTURL_PATH_PARAMETER.equals(name);
-	}
-
-	/**
-	 * 判断是否是json请求
-	 * 
-	 * @param serverRequest
-	 * @return
-	 */
-	public static boolean isJsonRequest(ServerRequest serverRequest) {
-		return isDesignatedContentType(serverRequest,
-				MimeTypeUtils.APPLICATION_JSON_VALUE)
-				|| isDesignatedContentType(serverRequest,
-						MimeTypeUtils.TEXT_JSON_VALUE);
-	}
-
-	public static boolean isXmlRequeset(ServerRequest serverRequest) {
-		return isDesignatedContentType(serverRequest,
-				MimeTypeUtils.APPLICATION_XML_VALUE)
-				|| isDesignatedContentType(serverRequest,
-						MimeTypeUtils.TEXT_XML_VALUE);
-	}
-
-	public static boolean isFormRequest(ServerRequest serverRequest) {
-		return isDesignatedContentType(serverRequest,
-				MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
-	}
-
-	public static boolean isMultipartRequest(ServerRequest serverRequest) {
-		return isDesignatedContentType(serverRequest,
-				MimeTypeUtils.MULTIPART_FORM_DATA_VALUE);
-	}
-
-	public static boolean isDesignatedContentType(ServerRequest serverRequest,
-			String contentType) {
-		return StringUtils.contains(serverRequest.getRawContentType(), contentType,
-				true);
 	}
 
 	public static String getExistActionErrMsg(Action action, Action oldAction) {

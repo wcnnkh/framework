@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import scw.core.utils.StringUtils;
 import scw.net.MimeType;
-import scw.net.client.http.HttpUtils;
+import scw.net.http.HttpUtils;
 import scw.net.http.MediaType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;

@@ -5,7 +5,7 @@ import java.util.List;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Bean;
 import scw.core.instance.InstanceUtils;
-import scw.mvc.output.HttpOutput;
+import scw.mvc.output.AbstractOutput;
 import scw.mvc.output.MultiOutput;
 import scw.mvc.output.Output;
 import scw.net.message.converter.MessageConverter;
@@ -23,7 +23,7 @@ public class ConfigurationOutput extends MultiOutput {
 				.getConfigurationList(MessageConverter.class, beanFactory,
 						propertyFactory);
 		DefaultHttpOutput output = new DefaultHttpOutput();
-		output.setJsonp(HttpOutput.getJsonp(propertyFactory));
+		output.setJsonp(AbstractOutput.getJsonp(propertyFactory));
 		output.getMessageConverter().addAll(messageConverters);
 		add(output);
 	}

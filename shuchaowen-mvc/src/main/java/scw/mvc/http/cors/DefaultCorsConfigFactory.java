@@ -1,11 +1,15 @@
 package scw.mvc.http.cors;
 
 import scw.beans.annotation.Bean;
+import scw.core.instance.annotation.Configuration;
 import scw.mvc.MVCUtils;
-import scw.mvc.http.HttpChannel;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.cors.CorsConfig;
+import scw.net.http.server.cors.CorsConfigFactory;
 import scw.value.property.PropertyFactory;
 
 @Bean(proxy=false)
+@Configuration(order=Integer.MIN_VALUE)
 public class DefaultCorsConfigFactory implements CorsConfigFactory{
 	private CorsConfig defaultConfig;
 	
@@ -15,7 +19,7 @@ public class DefaultCorsConfigFactory implements CorsConfigFactory{
 		}
 	}
 	
-	public CorsConfig getCorsConfig(HttpChannel httpChannel) {
+	public CorsConfig getCorsConfig(ServerHttpRequest request) {
 		return defaultConfig;
 	}
 

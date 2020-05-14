@@ -19,7 +19,7 @@ package scw.websocket.sockjs.transport.handler;
 import java.util.Map;
 
 import scw.core.Assert;
-import scw.mvc.http.HttpChannel;
+import scw.mvc.Channel;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.server.HandshakeFailureException;
@@ -71,12 +71,12 @@ public class WebSocketTransportHandler extends AbstractTransportHandler
 		return new WebSocketServerSockJsSession(id, getServiceConfig(), handler, attrs);
 	}
 
-	public void handleRequest(HttpChannel httpChannel,
+	public void handleRequest(Channel channel,
 			WebSocketHandler wsHandler, SockJsSession wsSession) throws SockJsException {
 		WebSocketServerSockJsSession sockJsSession = (WebSocketServerSockJsSession) wsSession;
 		try {
 			wsHandler = new SockJsWebSocketHandler(getServiceConfig(), wsHandler, sockJsSession);
-			this.handshakeHandler.doHandshake(httpChannel, wsHandler, sockJsSession.getAttributes());
+			this.handshakeHandler.doHandshake(channel, wsHandler, sockJsSession.getAttributes());
 		}
 		catch (Throwable ex) {
 			sockJsSession.tryCloseWithSockJsTransportError(ex, CloseStatus.SERVER_ERROR);
@@ -84,8 +84,8 @@ public class WebSocketTransportHandler extends AbstractTransportHandler
 		}
 	}
 	
-	public boolean doHandshake(HttpChannel httpChannel,
+	public boolean doHandshake(Channel channel,
 			WebSocketHandler handler, Map<String, Object> attributes) throws HandshakeFailureException {
-		return this.handshakeHandler.doHandshake(httpChannel, handler, attributes);
+		return this.handshakeHandler.doHandshake(channel, handler, attributes);
 	}
 }

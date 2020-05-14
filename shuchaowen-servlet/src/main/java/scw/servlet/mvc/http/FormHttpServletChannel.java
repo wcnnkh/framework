@@ -7,7 +7,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.AsyncControl;
 
-@SuppressWarnings("unchecked")
 public class FormHttpServletChannel extends HttpServletChannel {
 	private static Logger logger = LoggerFactory.getLogger(FormHttpServletChannel.class);
 

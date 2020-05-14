@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import scw.core.Assert;
-import scw.mvc.http.HttpChannel;
-import scw.mvc.http.ServerHttpRequest;
-import scw.mvc.http.ServerHttpResponse;
+import scw.mvc.Channel;
 import scw.net.http.HttpStatus;
 import scw.net.http.MediaType;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsException;
 import scw.websocket.sockjs.transport.SockJsSession;
@@ -42,17 +42,17 @@ public abstract class AbstractHttpReceivingTransportHandler extends AbstractTran
 		return (session instanceof AbstractHttpSockJsSession);
 	}
 
-	public final void handleRequest(HttpChannel httpChannel, WebSocketHandler wsHandler, SockJsSession wsSession)
+	public final void handleRequest(Channel channel, WebSocketHandler wsHandler, SockJsSession wsSession)
 			throws SockJsException {
 		Assert.notNull(wsSession, "No session");
 		AbstractHttpSockJsSession sockJsSession = (AbstractHttpSockJsSession) wsSession;
-		handleRequestInternal(httpChannel, wsHandler, sockJsSession);
+		handleRequestInternal(channel, wsHandler, sockJsSession);
 	}
 
-	protected void handleRequestInternal(HttpChannel httpChannel, WebSocketHandler wsHandler,
+	protected void handleRequestInternal(Channel channel, WebSocketHandler wsHandler,
 			AbstractHttpSockJsSession sockJsSession) throws SockJsException {
-		ServerHttpRequest request = httpChannel.getRequest();
-		ServerHttpResponse response = httpChannel.getResponse();
+		ServerHttpRequest request = channel.getRequest();
+		ServerHttpResponse response = channel.getResponse();
 		String[] messages;
 		try {
 			messages = readMessages(request);

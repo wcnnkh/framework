@@ -8,9 +8,8 @@ import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.MVCUtils;
-import scw.mvc.ServerRequest;
-import scw.mvc.http.ServerHttpRequest;
 import scw.net.http.HttpMethod;
+import scw.net.http.server.ServerHttpRequest;
 import scw.value.property.PropertyFactory;
 
 public class DefaultResourceFactory implements ResourceFactory {
@@ -33,18 +32,18 @@ public class DefaultResourceFactory implements ResourceFactory {
 		}
 	}
 
-	public Resource getResource(ServerRequest serverRequest) {
+	public Resource getResource(ServerHttpRequest serverRequest) {
 		if (ArrayUtils.isEmpty(resourcePath)) {
 			return null;
 		}
-
-		if (serverRequest instanceof ServerHttpRequest) {
-			if (HttpMethod.GET != ((ServerHttpRequest) serverRequest).getMethod()) {
-				return null;
-			}
+	
+		if (HttpMethod.GET != ((ServerHttpRequest) serverRequest).getMethod()) {
+			return null;
 		}
 
-		for (String p : resourcePath) {
+		for (
+
+		String p : resourcePath) {
 			if (StringUtils.test(serverRequest.getController(), p)) {
 				return new FileResource(resourceRoot + serverRequest.getController());
 			}

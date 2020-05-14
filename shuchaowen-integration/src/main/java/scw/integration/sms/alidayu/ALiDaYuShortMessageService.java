@@ -13,7 +13,7 @@ import scw.integration.sms.SmsException;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.client.http.HttpUtils;
+import scw.net.http.HttpUtils;
 import scw.net.http.MediaType;
 import scw.security.SignatureUtils;
 import scw.util.phone.PhoneNumber;

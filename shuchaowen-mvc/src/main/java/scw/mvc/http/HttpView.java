@@ -1,32 +1,29 @@
 package scw.mvc.http;
 
-import scw.lang.NotSupportedException;
 import scw.mvc.Channel;
 import scw.mvc.View;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 
 public abstract class HttpView implements View {
 
-	protected void beforRender(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse)
-			throws Throwable {
+	protected void beforRender(Channel channel, ServerHttpRequest serverHttpRequest,
+			ServerHttpResponse serverHttpResponse) throws Throwable {
 		// ignore
 	}
 
-	protected void afterRender(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse)
-			throws Throwable {
+	protected void afterRender(Channel channel, ServerHttpRequest serverHttpRequest,
+			ServerHttpResponse serverHttpResponse) throws Throwable {
 		// ignore
 	}
 
 	public final void render(Channel channel) throws Throwable {
-		if (channel instanceof HttpChannel) {
-			HttpChannel httpChannel = (HttpChannel) channel;
-			beforRender(httpChannel, httpChannel.getRequest(), httpChannel.getResponse());
-			render(httpChannel, httpChannel.getRequest(), httpChannel.getResponse());
-			afterRender(httpChannel, httpChannel.getRequest(), httpChannel.getResponse());
-			return ;
-		}
-		throw new NotSupportedException(channel.toString());
+		beforRender(channel, channel.getRequest(), channel.getResponse());
+		render(channel, channel.getRequest(), channel.getResponse());
+		afterRender(channel, channel.getRequest(), channel.getResponse());
+		return;
 	}
 
-	public abstract void render(HttpChannel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse)
-			throws Throwable;
+	public abstract void render(Channel channel, ServerHttpRequest serverHttpRequest,
+			ServerHttpResponse serverHttpResponse) throws Throwable;
 }

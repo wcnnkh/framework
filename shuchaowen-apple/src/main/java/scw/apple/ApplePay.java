@@ -7,7 +7,7 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.client.http.HttpUtils;
+import scw.net.http.HttpUtils;
 import scw.net.http.MediaType;
 
 public final class ApplePay {
