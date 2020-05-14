@@ -11,10 +11,7 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONSupport;
 import scw.mvc.AbstractChannel;
 import scw.mvc.MVCUtils;
-import scw.mvc.http.session.HttpChannelAuthorization;
-import scw.mvc.http.session.HttpChannelUserSessionFactory;
 import scw.net.http.HttpMethod;
-import scw.security.session.Authorization;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
 import scw.util.ip.IP;
@@ -33,15 +30,10 @@ public abstract class AbstractHttpChannel extends AbstractChannel implements
 		this.response = response;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Object getParameter(ParameterDescriptor parameterConfig) {
 		if (Session.class == parameterConfig.getType()) {
 			return getRequest().getHttpSession();
-		} else if (Authorization.class == parameterConfig.getType()) {
-			HttpChannelUserSessionFactory httpChannelUserSessionFactory = getBean(HttpChannelUserSessionFactory.class);
-			return new HttpChannelAuthorization(this,
-					httpChannelUserSessionFactory);
 		} else if (IP.class == parameterConfig.getType()) {
 			return new SimpleIP(request.getIP());
 		}

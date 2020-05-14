@@ -1,6 +1,6 @@
 package scw.security.session;
 
-import scw.security.token.UserToken;
+import scw.security.login.UserToken;
 
 /**
  * 授权

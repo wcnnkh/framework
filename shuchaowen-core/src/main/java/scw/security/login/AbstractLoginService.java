@@ -5,8 +5,6 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 import scw.data.TemporaryCache;
-import scw.security.token.SimpleUserToken;
-import scw.security.token.UserToken;
 
 public abstract class AbstractLoginService<T> implements LoginService<T> {
 	private final TemporaryCache cacheService;
@@ -35,7 +33,7 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 			return null;
 		}
 		cacheService.touch(formatUid(uid), exp);
-		return new SimpleUserToken<T>(token, uid);
+		return new UserToken<T>(token, uid);
 	}
 
 	public UserToken<T> getUserTokenByUid(T uid) {
@@ -49,7 +47,7 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 		}
 
 		cacheService.touch(token, exp);
-		return new SimpleUserToken<T>(token, uid);
+		return new UserToken<T>(token, uid);
 	}
 
 	public boolean cancelLogin(String token) {
@@ -87,7 +85,7 @@ public abstract class AbstractLoginService<T> implements LoginService<T> {
 		String token = generatorToken(uid);
 		cacheService.set(token, exp, uid);
 		cacheService.set(formatUid(uid), exp, token);
-		return new SimpleUserToken<T>(token, uid);
+		return new UserToken<T>(token, uid);
 	}
 
 	public boolean verification(String token, T uid) {

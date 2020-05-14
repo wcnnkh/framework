@@ -1,7 +1,6 @@
 package scw.security.login;
 
 import scw.beans.annotation.AutoImpl;
-import scw.security.token.UserToken;
 
 @AutoImpl(DefaultLoginService.class)
 public interface LoginService<T> {

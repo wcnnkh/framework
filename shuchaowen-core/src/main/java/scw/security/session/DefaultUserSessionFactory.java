@@ -4,9 +4,6 @@ import scw.core.annotation.Order;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.data.TemporaryCache;
-import scw.data.memcached.Memcached;
-import scw.data.redis.Redis;
-import scw.data.redis.RedisDataTemplete;
 
 public final class DefaultUserSessionFactory<T> extends AbstractUserSessionFactory<T> {
 	private TemporaryCache temporaryCache;
@@ -18,14 +15,6 @@ public final class DefaultUserSessionFactory<T> extends AbstractUserSessionFacto
 			TemporaryCache temporaryCache) {
 		this.sessionFactory = new DefaultSessionFactory(defaultMaxInactiveInterval, temporaryCache);
 		this.temporaryCache = temporaryCache;
-	}
-
-	public DefaultUserSessionFactory(int defaultMaxInactiveInterval, Memcached memcached) {
-		this(defaultMaxInactiveInterval, (TemporaryCache) memcached);
-	}
-
-	public DefaultUserSessionFactory(int defaultMaxInactiveInterval, Redis redis) {
-		this(defaultMaxInactiveInterval, new RedisDataTemplete(redis));
 	}
 
 	@Override

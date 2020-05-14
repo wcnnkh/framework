@@ -17,12 +17,7 @@
 			<artifactId>shuchaowen-mvc</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-security</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
+		
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>

@@ -5,9 +5,6 @@ import scw.core.Constants;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.data.TemporaryCache;
-import scw.data.memcached.Memcached;
-import scw.data.redis.Redis;
-import scw.data.redis.RedisDataTemplete;
 
 @Bean(proxy = false)
 public class DefaultLoginService<T> extends AbstractLoginService<T> {
@@ -21,14 +18,6 @@ public class DefaultLoginService<T> extends AbstractLoginService<T> {
 	public DefaultLoginService(TemporaryCache temporaryCache, int exp, String prefix) {
 		super(temporaryCache, exp);
 		this.prefix = prefix;
-	}
-
-	public DefaultLoginService(Memcached memcached, int exp, String prefix) {
-		this((TemporaryCache)memcached, exp, prefix);
-	}
-
-	public DefaultLoginService(Redis redis, int exp, String prefix) {
-		this(new RedisDataTemplete(redis), exp, prefix);
 	}
 
 	@Override

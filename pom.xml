@@ -57,12 +57,6 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-security</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-timer</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -453,7 +447,6 @@
 		<module>shuchaowen-db</module>
 		<module>shuchaowen-mq</module>
 		<module>shuchaowen-data</module>
-		<module>shuchaowen-security</module>
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>
 		<module>shuchaowen-servlet</module>
