@@ -147,12 +147,6 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-servlet</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-embed</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -449,7 +443,6 @@
 		<module>shuchaowen-data</module>
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>
-		<module>shuchaowen-servlet</module>
 		<module>shuchaowen-office</module>
 	</modules>
 </project>

@@ -7,10 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
@@ -19,11 +15,12 @@ import freemarker.template.Version;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
-import scw.mvc.Channel;
-import scw.mvc.MVCUtils;
 import scw.mvc.page.AbstractPage;
+import scw.mvc.servlet.page.Jsp;
+import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.servlet.ServletUtils;
+import scw.net.http.server.mvc.HttpChannel;
+import scw.net.http.server.mvc.MVCUtils;
 
 /**
  * 不再推荐使用，下个版本弃用
@@ -69,8 +66,8 @@ public class Page extends AbstractPage {
 		}
 
 		try {
-			freemarkerConfiguration.setDirectoryForTemplateLoading(
-					new File(StringUtils.isNull(rootPath) ? workPath : GlobalPropertyFactory.getInstance().format(rootPath, true)));
+			freemarkerConfiguration.setDirectoryForTemplateLoading(new File(StringUtils.isNull(rootPath) ? workPath
+					: GlobalPropertyFactory.getInstance().format(rootPath, true)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -136,10 +133,10 @@ public class Page extends AbstractPage {
 		return this;
 	}
 
-	private void render(Channel channel, ServletRequest request, ServletResponse response) throws Throwable {
+	public void render(HttpChannel httpChannel) throws IOException {
 		String realPage = getPage();
-		if (StringUtils.isEmpty(realPage) && request instanceof HttpServletRequest) {
-			realPage = ((HttpServletRequest) request).getServletPath();
+		if (StringUtils.isEmpty(realPage)) {
+			realPage = httpChannel.getRequest().getController();
 		}
 
 		Iterator<String> iterator = suffixMap.keySet().iterator();
@@ -153,34 +150,32 @@ public class Page extends AbstractPage {
 		}
 
 		if (pageType == null) {
-			channel.getLogger().error("not found page type :" + realPage);
+			httpChannel.getLogger().error("not found page type :" + realPage);
 			return;
 		}
 
 		switch (pageType) {
 		case JSP:
-			if (response.getContentType() == null) {
-				response.setContentType(MimeTypeUtils.TEXT_HTML_VALUE);
+			if (httpChannel.getResponse().getContentType() == null) {
+				httpChannel.getResponse().setContentType(MimeTypeUtils.TEXT_HTML_VALUE);
 			}
 
-			for (Entry<String, Object> entry : entrySet()) {
-				request.setAttribute(entry.getKey(), entry.getValue());
-			}
-
-			ServletUtils.jsp(request, response, realPage);
+			Jsp jsp = new Jsp(realPage);
+			jsp.putAll(this);
+			jsp.render(httpChannel);
 			break;
 		case FREEMARKER:
 			if (freemarkerConfiguration == null) {
 				defaultInitFreemarker();
 			}
 
-			response.setCharacterEncoding(freemarker_default_encoding);
-			if (response.getContentType() == null) {
-				response.setContentType(MimeTypeUtils.TEXT_HTML_VALUE);
+			if (httpChannel.getResponse().getContentType() == null) {
+				httpChannel.getResponse()
+						.setContentType(new MimeType(MimeTypeUtils.TEXT_HTML_VALUE, freemarker_default_encoding));
 			}
 
 			if (freemarkerAppendAttrs) {
-				Enumeration<?> enumeration = request.getAttributeNames();
+				Enumeration<?> enumeration = httpChannel.getRequest().getAttributeNames();
 				while (enumeration.hasMoreElements()) {
 					Object obj = enumeration.nextElement();
 					if (obj != null) {
@@ -189,18 +184,18 @@ public class Page extends AbstractPage {
 							continue;
 						}
 
-						put(name, request.getAttribute(name));
+						put(name, httpChannel.getRequest().getAttribute(name));
 					}
 				}
 			}
 
 			if (appendParams) {
-				putAll(request.getParameterMap());
+				putAll(httpChannel.getRequest().getParameterMap());
 			}
 
 			Template template = freemarkerConfiguration.getTemplate(realPage);
 			try {
-				template.process(this, response.getWriter());
+				template.process(this, httpChannel.getResponse().getWriter());
 			} catch (TemplateException e) {
 				e.printStackTrace();
 			}
@@ -209,14 +204,8 @@ public class Page extends AbstractPage {
 			break;
 		}
 
-		if (channel.isLogEnabled()) {
-			channel.log("{}:{}", pageType, realPage);
-		}
-	}
-
-	public void render(Channel channel) throws Throwable {
-		if (channel.getRequest() instanceof ServletRequest && channel.getResponse() instanceof ServletResponse) {
-			render(channel, (ServletRequest) channel.getRequest(), (ServletResponse) channel.getResponse());
+		if (httpChannel.isLogEnabled()) {
+			httpChannel.log("{}:{}", pageType, realPage);
 		}
 	}
 }

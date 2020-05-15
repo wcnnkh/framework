@@ -1,9 +1,7 @@
 package scw.net.http;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -24,9 +22,9 @@ import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.lang.NotSupportedException;
-import scw.net.http.client.ClientHttpRequest;
-import scw.net.http.client.ClientHttpRequestFactory;
 import scw.net.http.client.HttpClient;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ip.ServerHttpRequestIpGetter;
 import scw.net.uri.UriComponents;
 import scw.net.uri.UriComponentsBuilder;
 import scw.util.LinkedMultiValueMap;
@@ -41,25 +39,15 @@ public final class HttpUtils {
 			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.connect.timeout"), 10000);
 	public static final int DEFAULT_READ_TIMEOUT = StringUtils
 			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.read.timeout"), 10000);
-
 	private static final HttpClient HTTP_CLIENT = InstanceUtils.getSystemConfiguration(HttpClient.class);
-
+	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils.getSystemConfiguration(ServerHttpRequestIpGetter.class);
+	
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;
 	}
-
-	public static ClientHttpRequest createRequest(String url, HttpMethod httpMethod, MediaType contentType,
-			ClientHttpRequestFactory clientHttpRequestFactory) throws IOException {
-		URI uri;
-		try {
-			uri = new URI(url);
-		} catch (URISyntaxException e) {
-			throw new IllegalStateException("Could not get HttpURLConnection URI: " + e.getMessage(), e);
-		}
-
-		ClientHttpRequest request = clientHttpRequestFactory.createRequest(uri, httpMethod);
-		request.setContentType(contentType);
-		return request;
+	
+	public static ServerHttpRequestIpGetter getServerHttpRequestIpGetter() {
+		return SERVER_HTTP_REQUEST_IP_GETTER;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -266,7 +254,7 @@ public final class HttpUtils {
 		}
 		return map;
 	}
-	
+
 	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {
 		Assert.notNull(request, "Request must not be null");
 		Assert.notNull(allowedOrigins, "Allowed origins must not be null");
@@ -274,17 +262,16 @@ public final class HttpUtils {
 		String origin = request.getHeaders().getOrigin();
 		if (origin == null || allowedOrigins.contains("*")) {
 			return true;
-		}
-		else if (CollectionUtils.isEmpty(allowedOrigins)) {
+		} else if (CollectionUtils.isEmpty(allowedOrigins)) {
 			return isSameOrigin(request);
-		}
-		else {
+		} else {
 			return allowedOrigins.contains(origin);
 		}
 	}
 
 	/**
 	 * 是否是同一个origin
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -315,5 +302,36 @@ public final class HttpUtils {
 			}
 		}
 		return port;
+	}
+
+	/**
+	 * 从cookie中获取数据
+	 * 
+	 * @param request
+	 * 
+	 * @param name
+	 *            cookie中的名字
+	 * @return
+	 */
+	public static HttpCookie getCookie(ServerHttpRequest request, String name) {
+		if (name == null) {
+			return null;
+		}
+
+		HttpCookie[] cookies = request.getCookies();
+		if (cookies == null || cookies.length == 0) {
+			return null;
+		}
+
+		for (HttpCookie cookie : cookies) {
+			if (cookie == null) {
+				continue;
+			}
+
+			if (name.equals(cookie.getName())) {
+				return cookie;
+			}
+		}
+		return null;
 	}
 }

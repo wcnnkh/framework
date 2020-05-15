@@ -25,7 +25,6 @@ import java.util.Map;
 import scw.core.Assert;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.Channel;
 import scw.net.http.server.ServerHttpRequest;
 import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
@@ -100,31 +99,31 @@ public class WebSocketHttpRequestHandler {
 		return this.interceptors;
 	}
 
-	public void handleRequest(Channel channel)
+	public void handleRequest(ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException {
 		HandshakeInterceptorChain chain = new HandshakeInterceptorChain(this.interceptors, this.wsHandler);
 		HandshakeFailureException failure = null;
 
 		try {
 			if (logger.isDebugEnabled()) {
-				logger.debug(channel.getRequest().getMethod() + " " + channel.getRequest().getURI());
+				logger.debug(request.getMethod() + " " + request.getURI());
 			}
 			Map<String, Object> attributes = new HashMap<String, Object>();
-			if (!chain.applyBeforeHandshake(channel, attributes)) {
+			if (!chain.applyBeforeHandshake(request, response, attributes)) {
 				return;
 			}
-			this.handshakeHandler.doHandshake(channel, this.wsHandler, attributes);
-			chain.applyAfterHandshake(channel, null);
+			this.handshakeHandler.doHandshake(request, response, this.wsHandler, attributes);
+			chain.applyAfterHandshake(request, response, null);
 		}
 		catch (HandshakeFailureException ex) {
 			failure = ex;
 		}
 		catch (Throwable ex) {
-			failure = new HandshakeFailureException("Uncaught failure for request " + channel.getRequest().getURI(), ex);
+			failure = new HandshakeFailureException("Uncaught failure for request " + request.getURI(), ex);
 		}
 		finally {
 			if (failure != null) {
-				chain.applyAfterHandshake(channel, failure);
+				chain.applyAfterHandshake(request, response, failure);
 				throw failure;
 			}
 		}

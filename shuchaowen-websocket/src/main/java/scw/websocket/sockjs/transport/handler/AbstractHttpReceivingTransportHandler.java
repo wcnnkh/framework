@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import scw.core.Assert;
-import scw.mvc.Channel;
 import scw.net.http.HttpStatus;
 import scw.net.http.MediaType;
 import scw.net.http.server.ServerHttpRequest;
@@ -42,17 +41,15 @@ public abstract class AbstractHttpReceivingTransportHandler extends AbstractTran
 		return (session instanceof AbstractHttpSockJsSession);
 	}
 
-	public final void handleRequest(Channel channel, WebSocketHandler wsHandler, SockJsSession wsSession)
+	public final void handleRequest(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, SockJsSession wsSession)
 			throws SockJsException {
 		Assert.notNull(wsSession, "No session");
 		AbstractHttpSockJsSession sockJsSession = (AbstractHttpSockJsSession) wsSession;
-		handleRequestInternal(channel, wsHandler, sockJsSession);
+		handleRequestInternal(request, response, wsHandler, sockJsSession);
 	}
 
-	protected void handleRequestInternal(Channel channel, WebSocketHandler wsHandler,
+	protected void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
 			AbstractHttpSockJsSession sockJsSession) throws SockJsException {
-		ServerHttpRequest request = channel.getRequest();
-		ServerHttpResponse response = channel.getResponse();
 		String[] messages;
 		try {
 			messages = readMessages(request);

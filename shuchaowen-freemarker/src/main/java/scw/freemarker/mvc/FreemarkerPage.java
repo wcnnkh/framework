@@ -1,15 +1,17 @@
 package scw.freemarker.mvc;
 
+import java.io.IOException;
 import java.util.Enumeration;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import scw.mvc.Channel;
+import freemarker.template.TemplateException;
 import scw.mvc.page.AbstractPage;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.http.server.ServerHttpRequest;
 import scw.net.http.server.ServerHttpResponse;
+import scw.net.http.server.mvc.HttpChannel;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -34,9 +36,9 @@ public class FreemarkerPage extends AbstractPage {
 		this.mimeType = mimeType;
 	}
 
-	public void render(Channel channel) throws Throwable {
-		ServerHttpRequest serverRequest = channel.getRequest();
-		ServerHttpResponse serverResponse = channel.getResponse();
+	public void render(HttpChannel httpChannel) throws IOException {
+		ServerHttpRequest serverRequest = httpChannel.getRequest();
+		ServerHttpResponse serverResponse = httpChannel.getResponse();
 
 		if (getMimeType() != null) {
 			serverResponse.setContentType(getMimeType());
@@ -44,14 +46,14 @@ public class FreemarkerPage extends AbstractPage {
 			serverResponse.setContentType(MimeTypeUtils.TEXT_HTML);
 		}
 
-		Enumeration<String> enumeration = channel.getAttributeNames();
+		Enumeration<String> enumeration = httpChannel.getRequest().getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();
 			if (key == null || containsKey(key)) {
 				continue;
 			}
 
-			put(key, channel.getAttribute(key));
+			put(key, httpChannel.getRequest().getAttribute(key));
 		}
 
 		ServerHttpRequest serverHttpRequest = (ServerHttpRequest) serverRequest;
@@ -66,10 +68,13 @@ public class FreemarkerPage extends AbstractPage {
 
 		String page = getPage();
 		Template template = configuration.getTemplate(page, serverRequest.getCharacterEncoding());
-		template.process(this, serverResponse.getWriter());
-
-		if (channel.isLogEnabled()) {
-			channel.log("freemarker:{}", page);
+		try {
+			template.process(this, serverResponse.getWriter());
+			if (httpChannel.isLogEnabled()) {
+				httpChannel.log("freemarker:{}", page);
+			}
+		} catch (TemplateException e) {
+			httpChannel.getLogger().error(e, "freemarker:{}", page);
 		}
 	}
 }

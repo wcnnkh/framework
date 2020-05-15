@@ -10,7 +10,6 @@ import scw.beans.builder.ProxyBeanBuilder;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.mvc.rpc.annotation.Host;
-import scw.mvc.rpc.http.HttpRestfulRpcProxy;
 
 @Configuration(order=Integer.MIN_VALUE)
 public final class RpcAutoBeanService implements BeanBuilderLoader {

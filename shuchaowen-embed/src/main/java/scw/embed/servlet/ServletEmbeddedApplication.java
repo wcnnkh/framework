@@ -4,7 +4,7 @@ import scw.application.MainApplication;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
-import scw.servlet.mvc.DispatcherServlet;
+import scw.mvc.servlet.DispatcherServlet;
 import scw.util.FormatUtils;
 
 @Configuration(MainApplication.class)

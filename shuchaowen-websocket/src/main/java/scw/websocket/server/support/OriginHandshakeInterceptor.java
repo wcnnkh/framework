@@ -25,7 +25,6 @@ import java.util.Set;
 import scw.core.Assert;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.Channel;
 import scw.net.http.HttpStatus;
 import scw.net.http.HttpUtils;
 import scw.net.http.server.ServerHttpRequest;
@@ -86,10 +85,8 @@ public class OriginHandshakeInterceptor implements HandshakeInterceptor {
 	}
 
 
-	public boolean beforeHandshake(Channel channel,
+	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-		ServerHttpRequest request = channel.getRequest();
-		ServerHttpResponse response = channel.getResponse();
 		if (!HttpUtils.isSameOrigin(request) && !HttpUtils.isValidOrigin(request, this.allowedOrigins)) {
 			response.setStatusCode(HttpStatus.FORBIDDEN);
 			if (logger.isDebugEnabled()) {
@@ -101,7 +98,7 @@ public class OriginHandshakeInterceptor implements HandshakeInterceptor {
 		return true;
 	}
 
-	public void afterHandshake(Channel channel,
+	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler wsHandler, Exception exception) {
 	}
 

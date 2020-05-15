@@ -21,7 +21,7 @@ public class StringValue extends AbstractStringValue implements Serializable {
 		super(defaultValue);
 		this.value = value;
 	}
-
+	
 	public JSONSupport getJsonSupport() {
 		return jsonSupport == null ? JSONUtils.getJsonSupport() : jsonSupport;
 	}

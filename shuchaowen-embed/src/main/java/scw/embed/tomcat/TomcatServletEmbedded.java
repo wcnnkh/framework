@@ -32,17 +32,17 @@ import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;
 import scw.embed.annotation.ErrorCodeController;
 import scw.embed.servlet.FilterConfiguration;
+import scw.embed.servlet.MultiFilter;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
 import scw.embed.servlet.ServletEmbedded;
 import scw.embed.servlet.support.RootServletContainerInitializerConfiguration;
 import scw.embed.servlet.support.ServletRootFilterConfiguration;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.action.Action;
-import scw.mvc.action.Action.ControllerDescriptor;
-import scw.mvc.action.manager.ActionManager;
 import scw.net.http.HttpMethod;
-import scw.servlet.MultiFilter;
+import scw.net.http.server.mvc.action.Action;
+import scw.net.http.server.mvc.action.ActionManager;
+import scw.net.http.server.mvc.action.Action.ControllerDescriptor;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE + 1000)

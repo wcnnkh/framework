@@ -19,11 +19,11 @@ package scw.websocket.sockjs.transport.handler;
 import java.util.Map;
 
 import scw.core.utils.StringUtils;
-import scw.mvc.Channel;
 import scw.net.http.HttpStatus;
 import scw.net.http.JavaScriptUtils;
 import scw.net.http.MediaType;
 import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsException;
@@ -64,14 +64,14 @@ public class JsonpPollingTransportHandler extends AbstractHttpSendingTransportHa
 		return new PollingSockJsSession(sessionId, getServiceConfig(), handler, attributes);
 	}
 
-	public void handleRequestInternal(Channel channel,
+	public void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response,
 			AbstractHttpSockJsSession sockJsSession) throws SockJsException {
 
 		try {
-			String callback = getCallbackParam(channel.getRequest());
+			String callback = getCallbackParam(request);
 			if (!StringUtils.hasText(callback)) {
-				channel.getResponse().setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
-				channel.getResponse().getBody().write("\"callback\" parameter required".getBytes(UTF8_CHARSET));
+				response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+				response.getBody().write("\"callback\" parameter required".getBytes(UTF8_CHARSET));
 				return;
 			}
 		}
@@ -80,7 +80,7 @@ public class JsonpPollingTransportHandler extends AbstractHttpSendingTransportHa
 			throw new SockJsTransportFailureException("Failed to send error", sockJsSession.getId(), ex);
 		}
 
-		super.handleRequestInternal(channel, sockJsSession);
+		super.handleRequestInternal(request, response, sockJsSession);
 	}
 
 	@Override

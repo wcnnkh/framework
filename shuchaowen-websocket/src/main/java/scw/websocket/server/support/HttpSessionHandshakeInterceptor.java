@@ -21,7 +21,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 
-import scw.mvc.Channel;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.security.session.Session;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.WebSocketSession;
@@ -138,9 +139,9 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 	}
 
 
-	public boolean beforeHandshake(Channel channel,
+	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-		Session session = channel.getRequest().getSession(isCreateSession());
+		Session session = request.getSession(isCreateSession());
 		if (session != null) {
 			if (isCopyHttpSessionId()) {
 				attributes.put(HTTP_SESSION_ID_ATTR_NAME, session.getId());
@@ -156,7 +157,7 @@ public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 		return true;
 	}
 
-	public void afterHandshake(Channel channel,
+	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler wsHandler, Exception ex) {
 	}
 

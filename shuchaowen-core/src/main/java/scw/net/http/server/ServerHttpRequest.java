@@ -10,9 +10,9 @@ import scw.net.http.HttpRequest;
 import scw.net.message.InputMessage;
 import scw.security.session.Session;
 import scw.util.MultiValueParameterFactory;
-import scw.util.ip.IP;
+import scw.util.attribute.Attributes;
 
-public interface ServerHttpRequest extends InputMessage, HttpRequest, IP, MultiValueParameterFactory {
+public interface ServerHttpRequest extends Attributes<String, Object>, InputMessage, HttpRequest, MultiValueParameterFactory {
 	String getController();
 	
 	String getRawContentType();
@@ -35,8 +35,6 @@ public interface ServerHttpRequest extends InputMessage, HttpRequest, IP, MultiV
 	
 	String getRawMethod();
 
-	HttpCookie getCookie(String name);
-
 	HttpCookie[] getCookies();
 
 	Session getSession();
@@ -44,4 +42,10 @@ public interface ServerHttpRequest extends InputMessage, HttpRequest, IP, MultiV
 	Session getSession(boolean create);
 
 	Principal getPrincipal();
+	
+	boolean isSupportAsyncControl();
+
+	ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response);
+	
+	String getIp();
 }

@@ -16,7 +16,8 @@
 
 package scw.websocket.sockjs.transport;
 
-import scw.mvc.Channel;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsException;
 import scw.websocket.sockjs.SockJsService;
@@ -62,7 +63,7 @@ public interface TransportHandler {
 	 * @throws SockJsException raised when request processing fails as
 	 * explained in {@link SockJsService}
 	 */
-	void handleRequest(Channel channel,
+	void handleRequest(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler handler, SockJsSession session) throws SockJsException;
 
 }

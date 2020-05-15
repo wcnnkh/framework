@@ -19,7 +19,8 @@ package scw.websocket.sockjs.transport.session;
 import java.io.IOException;
 import java.util.Map;
 
-import scw.mvc.Channel;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsTransportFailureException;
 import scw.websocket.sockjs.frame.SockJsFrame;
@@ -40,7 +41,7 @@ public class PollingSockJsSession extends AbstractHttpSockJsSession {
 		super(sessionId, config, wsHandler, attributes);
 	}
 
-	protected void handleRequestInternal(Channel channel,
+	protected void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response,
 			boolean initialRequest) throws IOException {
 
 		if (initialRequest) {

@@ -30,7 +30,6 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.Channel;
 import scw.net.http.HttpMethod;
 import scw.net.http.HttpStatus;
 import scw.net.http.server.ServerHttpRequest;
@@ -184,13 +183,11 @@ public abstract class AbstractHandshakeHandler implements HandshakeHandler {
 	}
 
 
-	public final boolean doHandshake(Channel channel,
+	public final boolean doHandshake(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler wsHandler, Map<String, Object> attributes) throws HandshakeFailureException {
-		ServerHttpRequest request = channel.getRequest();
-		ServerHttpResponse response = channel.getResponse();
-		WebSocketHttpHeaders headers = new WebSocketHttpHeaders(channel.getRequest().getHeaders());
+		WebSocketHttpHeaders headers = new WebSocketHttpHeaders(request.getHeaders());
 		if (logger.isTraceEnabled()) {
-			logger.trace("Processing request " + channel.getRequest().getURI() + " with headers=" + headers);
+			logger.trace("Processing request " + request.getURI() + " with headers=" + headers);
 		}
 		try {
 			if (HttpMethod.GET != request.getMethod()) {

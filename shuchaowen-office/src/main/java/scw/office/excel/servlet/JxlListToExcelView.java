@@ -1,16 +1,13 @@
 package scw.office.excel.servlet;
 
+import java.io.IOException;
 import java.util.List;
 
-import scw.mvc.Channel;
-import scw.mvc.http.HttpView;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.net.http.server.mvc.HttpChannel;
+import scw.net.http.server.mvc.view.View;
 import scw.office.excel.jxl.export.JxlExport;
 
-public class JxlListToExcelView extends HttpView {
+public class JxlListToExcelView implements View {
 	private String fileName;
 	private String[] titles;
 	private List<Object[]> list;
@@ -21,17 +18,12 @@ public class JxlListToExcelView extends HttpView {
 		this.list = list;
 	}
 
-	public void render(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Exception {
-
-	}
-
-	@Override
-	public void render(Channel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
-		if (serverHttpResponse.getContentType() == null) {
-			serverHttpResponse.setContentType("text/html;charset=" + serverHttpResponse.getCharacterEncoding());
+	public void render(HttpChannel httpChannel) throws IOException {
+		if (httpChannel.getResponse().getContentType() == null) {
+			httpChannel.getResponse().setContentType("text/html;charset=" + httpChannel.getResponse().getCharacterEncoding());
 		}
 
-		JxlExport.exportExcel(fileName, titles, list, serverHttpResponse);
+		JxlExport.exportExcel(fileName, titles, list, httpChannel.getResponse());
 	}
 
 }

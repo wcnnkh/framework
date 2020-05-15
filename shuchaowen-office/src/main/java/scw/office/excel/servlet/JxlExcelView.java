@@ -1,18 +1,17 @@
 package scw.office.excel.servlet;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import scw.db.DB;
-import scw.mvc.Channel;
-import scw.mvc.http.HttpView;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.net.http.server.mvc.HttpChannel;
+import scw.net.http.server.mvc.view.View;
 import scw.office.excel.jxl.export.JxlExport;
 import scw.office.excel.jxl.export.SimpleExportRowImpl;
 import scw.office.excel.jxl.export.SqlExportRow;
 import scw.sql.Sql;
 
-public class JxlExcelView extends HttpView {
+public class JxlExcelView implements View {
 	private Sql sql;
 	private DB db;
 	private String fileName;
@@ -31,12 +30,13 @@ public class JxlExcelView extends HttpView {
 		this.sqlExportRow = sqlExportRow;
 	}
 
-	@Override
-	public void render(Channel channel, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) throws Throwable {
-		if (serverHttpResponse.getContentType() == null) {
-			serverHttpResponse.setContentType("text/html;charset=" + serverHttpResponse.getCharacterEncoding());
+	public void render(HttpChannel httpChannel) throws IOException {
+		if (httpChannel.getResponse().getContentType() == null) {
+			httpChannel.getResponse()
+					.setContentType("text/html;charset=" + httpChannel.getResponse().getCharacterEncoding());
 		}
 
-		JxlExport.sqlResultSetToExcel(fileName, titles, db, Arrays.asList(sql), serverHttpResponse, sqlExportRow);
+		JxlExport.sqlResultSetToExcel(fileName, titles, db, Arrays.asList(sql), httpChannel.getResponse(),
+				sqlExportRow);
 	}
 }

@@ -26,9 +26,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import scw.mvc.AsyncControl;
-import scw.mvc.Channel;
 import scw.net.http.HttpHeaders;
+import scw.net.http.server.ServerHttpAsyncControl;
 import scw.net.http.server.ServerHttpRequest;
 import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.CloseStatus;
@@ -66,7 +65,7 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 
 	private volatile SockJsFrameFormat frameFormat;
 
-	private volatile AsyncControl asyncControl;
+	private volatile ServerHttpAsyncControl asyncControl;
 
 	private boolean readyToSend;
 
@@ -127,7 +126,7 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 	}
 
 	public boolean isActive() {
-		AsyncControl control = this.asyncControl;
+		ServerHttpAsyncControl control = this.asyncControl;
 		return (control != null && !control.isCompleted());
 	}
 
@@ -164,10 +163,8 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 	 * @param response the current response
 	 * @param frameFormat the transport-specific SocksJS frame format to use
 	 */
-	public void handleInitialRequest(Channel channel,
+	public void handleInitialRequest(ServerHttpRequest request, ServerHttpResponse response,
 			SockJsFrameFormat frameFormat) throws SockJsException {
-		ServerHttpRequest request = channel.getRequest();
-		ServerHttpResponse response = channel.getResponse();
 		this.uri = request.getURI();
 		this.handshakeHeaders = request.getHeaders();
 		this.principal = request.getPrincipal();
@@ -188,14 +185,14 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 			try {
 				this.response = response;
 				this.frameFormat = frameFormat;
-				if(channel.isSupportAsyncControl()){
-					this.asyncControl = channel.getAsyncControl();
+				if(request.isSupportAsyncControl()){
+					this.asyncControl = request.getAsyncControl(response);
 					this.asyncControl.start();
 				}
 				disableShallowEtagHeaderFilter(request);
 				// Let "our" handler know before sending the open frame to the remote handler
 				delegateConnectionEstablished();
-				handleRequestInternal(channel, true);
+				handleRequestInternal(request, response, true);
 				// Request might have been reset (e.g. polling sessions do after writing)
 				this.readyToSend = isActive();
 			}
@@ -218,7 +215,7 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 	 * @param response the current response
 	 * @param frameFormat the transport-specific SocksJS frame format to use
 	 */
-	public void handleSuccessiveRequest(Channel channel,
+	public void handleSuccessiveRequest(ServerHttpRequest request, ServerHttpResponse response,
 			SockJsFrameFormat frameFormat) throws SockJsException {
 
 		synchronized (this.responseLock) {
@@ -229,12 +226,12 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 				}
 				this.response = response;
 				this.frameFormat = frameFormat;
-				if(channel.isSupportAsyncControl()){
-					this.asyncControl = channel.getAsyncControl();
+				if(request.isSupportAsyncControl()){
+					this.asyncControl = request.getAsyncControl(response);
 					this.asyncControl.start();
 				}
-				disableShallowEtagHeaderFilter(channel.getRequest());
-				handleRequestInternal(channel, false);
+				disableShallowEtagHeaderFilter(request);
+				handleRequestInternal(request, response, false);
 				this.readyToSend = isActive();
 			}
 			catch (Throwable ex) {
@@ -257,7 +254,7 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 	 * @param response the current response
 	 * @param initialRequest whether it is the first request for the session
 	 */
-	protected abstract void handleRequestInternal(Channel channel,
+	protected abstract void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response,
 			boolean initialRequest) throws IOException;
 
 	@Override
@@ -305,7 +302,7 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 
 	protected void resetRequest() {
 		synchronized (this.responseLock) {
-			AsyncControl control = this.asyncControl;
+			ServerHttpAsyncControl control = this.asyncControl;
 			this.asyncControl = null;
 			this.readyToSend = false;
 			this.response = null;

@@ -18,7 +18,8 @@ package scw.websocket.server;
 
 import java.util.Map;
 
-import scw.mvc.Channel;
+import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 
 /**	
@@ -42,7 +43,7 @@ public interface HandshakeInterceptor {
 	 * session; the provided attributes are copied, the original map is not used.
 	 * @return whether to proceed with the handshake ({@code true}) or abort ({@code false})
 	 */
-	boolean beforeHandshake(Channel channel,
+	boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception;
 
 	/**
@@ -53,7 +54,7 @@ public interface HandshakeInterceptor {
 	 * @param wsHandler the target WebSocket handler
 	 * @param exception an exception raised during the handshake, or {@code null} if none
 	 */
-	void afterHandshake(Channel channel,
+	void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler wsHandler, Exception exception);
 
 }

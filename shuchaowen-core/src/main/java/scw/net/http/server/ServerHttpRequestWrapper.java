@@ -21,7 +21,7 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest {
 	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest) {
 		this.targetRequest = targetRequest;
 	}
-	
+
 	public InputStream getBody() throws IOException {
 		return targetRequest.getBody();
 	}
@@ -77,29 +77,21 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest {
 	public String getParameter(String name) {
 		return targetRequest.getParameter(name);
 	}
-	
+
 	public Enumeration<String> getParameterNames() {
 		return targetRequest.getParameterNames();
 	}
-	
+
 	public Map<String, String[]> getParameterMap() {
 		return targetRequest.getParameterMap();
 	}
-	
+
 	public String[] getParameterValues(String name) {
 		return targetRequest.getParameterValues(name);
 	}
 
-	public String getIP() {
-		return targetRequest.getIP();
-	}
-
 	public String getRawMethod() {
 		return targetRequest.getRawMethod();
-	}
-
-	public HttpCookie getCookie(String name) {
-		return targetRequest.getCookie(name);
 	}
 
 	public HttpCookie[] getCookies() {
@@ -116,5 +108,33 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest {
 
 	public Principal getPrincipal() {
 		return targetRequest.getPrincipal();
+	}
+
+	public void setAttribute(String name, Object o) {
+		targetRequest.setAttribute(name, o);
+	}
+
+	public void removeAttribute(String name) {
+		targetRequest.removeAttribute(name);
+	}
+
+	public Object getAttribute(String name) {
+		return targetRequest.getAttribute(name);
+	}
+
+	public Enumeration<String> getAttributeNames() {
+		return targetRequest.getAttributeNames();
+	}
+
+	public boolean isSupportAsyncControl() {
+		return targetRequest.isSupportAsyncControl();
+	}
+
+	public ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response) {
+		return targetRequest.getAsyncControl(response);
+	}
+
+	public String getIp() {
+		return targetRequest.getIp();
 	}
 }

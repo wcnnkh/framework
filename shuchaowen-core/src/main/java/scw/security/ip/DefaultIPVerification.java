@@ -6,7 +6,7 @@ import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
-import scw.util.ip.IPUtils;
+import scw.net.IPUtils;
 
 public class DefaultIPVerification implements IPVerification {
 	private final BlacklistIPVerification blacklistIPVerification;

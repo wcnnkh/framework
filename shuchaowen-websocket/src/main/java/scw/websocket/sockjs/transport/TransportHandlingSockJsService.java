@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import scw.core.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.mvc.Channel;
 import scw.net.http.HttpMethod;
 import scw.net.http.HttpStatus;
 import scw.net.http.server.ServerHttpRequest;
@@ -154,13 +153,13 @@ public class TransportHandlingSockJsService extends AbstractSockJsService implem
 	}
 
 
-	protected void handleRawWebSocketRequest(Channel channel,
+	protected void handleRawWebSocketRequest(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler handler) throws IOException {
 
 		TransportHandler transportHandler = this.handlers.get(TransportType.WEBSOCKET);
 		if (!(transportHandler instanceof HandshakeHandler)) {
 			logger.error("No handler configured for raw WebSocket messages");
-			channel.getResponse().setStatusCode(HttpStatus.NOT_FOUND);
+			response.setStatusCode(HttpStatus.NOT_FOUND);
 			return;
 		}
 
@@ -169,49 +168,47 @@ public class TransportHandlingSockJsService extends AbstractSockJsService implem
 
 		try {
 			Map<String, Object> attributes = new HashMap<String, Object>();
-			if (!chain.applyBeforeHandshake(channel, attributes)) {
+			if (!chain.applyBeforeHandshake(request, response, attributes)) {
 				return;
 			}
-			((HandshakeHandler) transportHandler).doHandshake(channel, handler, attributes);
-			chain.applyAfterHandshake(channel, null);
+			((HandshakeHandler) transportHandler).doHandshake(request, response, handler, attributes);
+			chain.applyAfterHandshake(request, response, null);
 		}
 		catch (HandshakeFailureException ex) {
 			failure = ex;
 		}
 		catch (Throwable ex) {
-			failure = new HandshakeFailureException("Uncaught failure for request " + channel.getRequest().getURI(), ex);
+			failure = new HandshakeFailureException("Uncaught failure for request " + request.getURI(), ex);
 		}
 			finally {
 			if (failure != null) {
-				chain.applyAfterHandshake(channel, failure);
+				chain.applyAfterHandshake(request, response, failure);
 				throw failure;
 			}
 		}
 	}
 
-	protected void handleTransportRequest(Channel channel,
+	protected void handleTransportRequest(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler handler, String sessionId, String transport) throws SockJsException {
 
 		TransportType transportType = TransportType.fromValue(transport);
 		if (transportType == null) {
 			if (logger.isWarnEnabled()) {
-				logger.warn("Unknown transport type for " + channel.getRequest().getURI());
+				logger.warn("Unknown transport type for " +  request.getURI());
 			}
-			channel.getResponse().setStatusCode(HttpStatus.NOT_FOUND);
+			response.setStatusCode(HttpStatus.NOT_FOUND);
 			return;
 		}
 
 		TransportHandler transportHandler = this.handlers.get(transportType);
 		if (transportHandler == null) {
 			if (logger.isWarnEnabled()) {
-				logger.warn("No TransportHandler for " + channel.getRequest().getURI());
+				logger.warn("No TransportHandler for " + request.getURI());
 			}
-			channel.getResponse().setStatusCode(HttpStatus.NOT_FOUND);
+			response.setStatusCode(HttpStatus.NOT_FOUND);
 			return;
 		}
 
-		ServerHttpRequest request = channel.getRequest();
-		ServerHttpResponse response = channel.getResponse();
 		SockJsException failure = null;
 		HandshakeInterceptorChain chain = new HandshakeInterceptorChain(this.interceptors, handler);
 
@@ -237,7 +234,7 @@ public class TransportHandlingSockJsService extends AbstractSockJsService implem
 			if (session == null) {
 				if (transportHandler instanceof SockJsSessionFactory) {
 					Map<String, Object> attributes = new HashMap<String, Object>();
-					if (!chain.applyBeforeHandshake(channel, attributes)) {
+					if (!chain.applyBeforeHandshake(request, response, attributes)) {
 						return;
 					}
 					SockJsSessionFactory sessionFactory = (SockJsSessionFactory) transportHandler;
@@ -279,10 +276,10 @@ public class TransportHandlingSockJsService extends AbstractSockJsService implem
 			}
 
 
-			transportHandler.handleRequest(channel, handler, session);
+			transportHandler.handleRequest(request, response, handler, session);
 
 
-			chain.applyAfterHandshake(channel, null);
+			chain.applyAfterHandshake(request, response, null);
 		}
 		catch (SockJsException ex) {
 			failure = ex;
@@ -292,7 +289,7 @@ public class TransportHandlingSockJsService extends AbstractSockJsService implem
 		}
 		finally {
 			if (failure != null) {
-				chain.applyAfterHandshake(channel, failure);
+				chain.applyAfterHandshake(request, response, failure);
 				throw failure;
 			}
 		}

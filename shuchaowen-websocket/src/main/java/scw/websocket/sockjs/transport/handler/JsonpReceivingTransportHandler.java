@@ -19,10 +19,11 @@ package scw.websocket.sockjs.transport.handler;
 import java.io.IOException;
 
 import scw.core.utils.StringUtils;
-import scw.mvc.Channel;
 import scw.net.http.HttpStatus;
 import scw.net.http.MediaType;
 import scw.net.http.server.ServerHttpRequest;
+import scw.net.http.server.ServerHttpResponse;
+import scw.net.http.server.mvc.HttpChannel;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsException;
 import scw.websocket.sockjs.frame.SockJsMessageCodec;
@@ -44,12 +45,12 @@ public class JsonpReceivingTransportHandler extends AbstractHttpReceivingTranspo
 	}
 
 	@Override
-	public void handleRequestInternal(Channel channel,
+	public void handleRequestInternal(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler wsHandler, AbstractHttpSockJsSession sockJsSession) throws SockJsException {
 
-		super.handleRequestInternal(channel, wsHandler, sockJsSession);
+		super.handleRequestInternal(request, response, wsHandler, sockJsSession);
 		try {
-			channel.getResponse().getBody().write("ok".getBytes(UTF8_CHARSET));
+			response.getBody().write("ok".getBytes(UTF8_CHARSET));
 		}
 		catch (IOException ex) {
 			throw new SockJsException("Failed to write to the response body", sockJsSession.getId(), ex);
