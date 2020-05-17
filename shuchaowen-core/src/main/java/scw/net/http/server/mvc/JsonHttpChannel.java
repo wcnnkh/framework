@@ -20,11 +20,11 @@ public class JsonHttpChannel<R extends ServerHttpRequest, P extends ServerHttpRe
 			R request, P response) {
 		super(beanFactory, jsonParseSupport, request, response);
 		if (HttpMethod.GET.name().equals(request.getMethod())) {
-			logger.warn("servletPath={},method={}不能使用JSON类型的请求", request.getController(), request.getMethod());
+			logger.warn("path={},method={}不能使用JSON类型的请求", request.getPath(), request.getMethod());
 		} else {
 			String content = getHttpChannelBeanManager().getBean(Body.class).getBody();
 			if (isLogEnabled()) {
-				log("requestPath={},method={},{}", request.getController(), request.getMethod(), content);
+				log("path={},method={},{}", request.getPath(), request.getMethod(), content);
 			}
 
 			if (content != null) {
@@ -59,7 +59,7 @@ public class JsonHttpChannel<R extends ServerHttpRequest, P extends ServerHttpRe
 	@Override
 	public String toString() {
 		StringBuilder appendable = new StringBuilder();
-		appendable.append("requestPath=").append(getRequest().getController());
+		appendable.append("path=").append(getRequest().getPath());
 		appendable.append(",method=").append(getRequest().getMethod());
 		if (jsonObject != null) {
 			appendable.append(",").append(jsonObject.toJsonString());

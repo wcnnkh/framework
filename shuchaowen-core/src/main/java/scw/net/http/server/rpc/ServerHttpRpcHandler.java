@@ -21,7 +21,7 @@ public final class ServerHttpRpcHandler implements HttpServiceHandler {
 	}
 
 	public boolean accept(ServerHttpRequest request) {
-		if (!request.getController().equals(rpcPath)) {
+		if (!request.getPath().equals(rpcPath)) {
 			return false;
 		}
 

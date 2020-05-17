@@ -19,7 +19,7 @@ public class HttpPathActionLookup implements ActionLookup {
 
 	public Action lookup(HttpChannel httpChannel) {
 		Map<HttpMethod, Action> map = actionMap.get(httpChannel
-				.getRequest().getController());
+				.getRequest().getPath());
 		if (map == null) {
 			return null;
 		}

@@ -136,7 +136,7 @@ public class Page extends AbstractPage {
 	public void render(HttpChannel httpChannel) throws IOException {
 		String realPage = getPage();
 		if (StringUtils.isEmpty(realPage)) {
-			realPage = httpChannel.getRequest().getController();
+			realPage = httpChannel.getRequest().getPath();
 		}
 
 		Iterator<String> iterator = suffixMap.keySet().iterator();

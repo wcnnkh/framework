@@ -24,10 +24,6 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 		this.resultFactory = resultFactory;
 	}
 
-	public boolean accept(HttpChannel httpChannel, Action action, Throwable error) {
-		return true;
-	}
-
 	public Object doHandle(HttpChannel httpChannel, Action action, Throwable error) throws IOException {
 		if (error instanceof ParameterException) {
 			return resultFactory.parameterError();

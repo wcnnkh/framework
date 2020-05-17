@@ -42,7 +42,7 @@ public class ServletServerHttpRequest extends AbstractInputMessage implements Se
 		return httpServletRequest;
 	}
 
-	public String getRequestPath() {
+	public String getPath() {
 		return httpServletRequest.getServletPath();
 	}
 

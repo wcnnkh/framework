@@ -336,7 +336,7 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 	@Override
 	public String toString() {
 		StringBuilder appendable = new StringBuilder();
-		appendable.append("path=").append(getRequest().getController());
+		appendable.append("path=").append(getRequest().getPath());
 		appendable.append(",method=").append(getRequest().getMethod());
 		appendable.append(",").append(getJsonSupport().toJSONString(getRequest().getParameterMap()));
 		return appendable.toString();

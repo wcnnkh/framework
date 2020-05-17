@@ -31,7 +31,7 @@ public class HttpParameterActionLookup implements ActionLookup {
 			return null;
 		}
 
-		Map<HttpMethod, Map<String, Action>> map = actionMap.get(httpChannel.getRequest().getController());
+		Map<HttpMethod, Map<String, Action>> map = actionMap.get(httpChannel.getRequest().getPath());
 		if (map == null) {
 			return null;
 		}

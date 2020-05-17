@@ -38,8 +38,8 @@ public class DefaultResourceFactory implements ResourceFactory {
 		for (
 
 		String p : resourcePath) {
-			if (StringUtils.test(serverRequest.getController(), p)) {
-				return new FileResource(resourceRoot + serverRequest.getController());
+			if (StringUtils.test(serverRequest.getPath(), p)) {
+				return new FileResource(resourceRoot + serverRequest.getPath());
 			}
 		}
 		return null;

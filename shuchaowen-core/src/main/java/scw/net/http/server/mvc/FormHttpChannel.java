@@ -16,7 +16,7 @@ public class FormHttpChannel<R extends ServerHttpRequest, P extends ServerHttpRe
 			R request, P response) {
 		super(beanFactory, jsonParseSupport, request, response);
 		if (isLogEnabled()) {
-			log("controller={},method={},{}", getRequest().getController(), getRequest().getMethod(),
+			log("controller={},method={},{}", getRequest().getPath(), getRequest().getMethod(),
 					JSONUtils.toJSONString(getRequest().getParameterMap()));
 		}
 	}

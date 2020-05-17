@@ -30,8 +30,8 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest {
 		return targetRequest.getContentLength();
 	}
 
-	public String getController() {
-		return targetRequest.getController();
+	public String getPath() {
+		return targetRequest.getPath();
 	}
 
 	public String getRawContentType() {

@@ -52,7 +52,7 @@ public class HttpRestfulActionLookup implements ActionLookup {
 			return null;
 		}
 
-		String[] pathArr = StringUtils.split(httpChannel.getRequest().getController(), '/');
+		String[] pathArr = StringUtils.split(httpChannel.getRequest().getPath(), '/');
 		for (Entry<Restful, Action> entry : map.entrySet()) {
 			Restful restful = entry.getKey();
 			RestfulMatchingResult result = restful.matching(pathArr);

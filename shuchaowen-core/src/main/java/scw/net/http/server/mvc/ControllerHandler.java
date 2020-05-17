@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
+import scw.core.instance.InstanceUtils;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
@@ -20,9 +22,11 @@ import scw.net.http.server.mvc.action.ActionLookupManager;
 import scw.net.http.server.mvc.action.ActionService;
 import scw.net.http.server.mvc.context.ContextManager;
 import scw.net.http.server.mvc.exception.ExceptionHandler;
+import scw.net.http.server.mvc.output.DefaultHttpOutput;
 import scw.net.http.server.mvc.output.Output;
+import scw.value.property.PropertyFactory;
 
-public class Controller implements ActionService, HttpServiceHandler {
+public class ControllerHandler implements ActionService, HttpServiceHandler {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final Collection<ActionFilter> filters;
 	private final ExceptionHandler exceptionHandler;
@@ -31,8 +35,17 @@ public class Controller implements ActionService, HttpServiceHandler {
 	private final Output output;
 	private final BeanFactory beanFactory;
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
+	
+	public ControllerHandler(BeanFactory beanFactory, PropertyFactory propertyFactory){
+		this.beanFactory = beanFactory;
+		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)? null:beanFactory.getInstance(ExceptionHandler.class);
+		this.actionLookupManager = new ActionLookupManager(beanFactory, propertyFactory);
+		this.notFoundService = beanFactory.isInstance(NotFoundService.class)? new DefaultNotfoundService():beanFactory.getInstance(NotFoundService.class);
+		this.output = beanFactory.isInstance(Output.class)? new DefaultHttpOutput():beanFactory.getInstance(Output.class);
+		this.filters = new LinkedList<ActionFilter>();
+	}
 
-	public Controller(BeanFactory beanFactory, ActionLookupManager actionLookupManager, NotFoundService notFoundService,
+	public ControllerHandler(BeanFactory beanFactory, ActionLookupManager actionLookupManager, NotFoundService notFoundService,
 			Output output, ExceptionHandler exceptionHandler, Collection<ActionFilter> filters) {
 		this.exceptionHandler = exceptionHandler;
 		this.actionLookupManager = actionLookupManager;
@@ -91,7 +104,7 @@ public class Controller implements ActionService, HttpServiceHandler {
 	}
 
 	protected Object doError(HttpChannel httpChannel, Action action, Throwable error) throws IOException {
-		if (exceptionHandler.accept(httpChannel, action, error)) {
+		if (exceptionHandler != null) {
 			return exceptionHandler.doHandle(httpChannel, action, error);
 		}
 

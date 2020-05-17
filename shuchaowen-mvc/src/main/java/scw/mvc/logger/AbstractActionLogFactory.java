@@ -37,7 +37,7 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 		log.setAttributeMap(attributeMap);
 		log.setController(getController(httpChannel, action));
 		log.setIdentification(getIdentification(action, httpChannel));
-		log.setRequestController(httpChannel.getRequest().getController());
+		log.setRequestController(httpChannel.getRequest().getPath());
 		if (httpChannel.getRequest() instanceof ServerHttpRequest) {
 			log.setHttpMethod(((ServerHttpRequest) httpChannel.getRequest()).getMethod());
 		}

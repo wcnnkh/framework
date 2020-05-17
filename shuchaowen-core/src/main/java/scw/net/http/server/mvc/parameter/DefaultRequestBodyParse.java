@@ -18,7 +18,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.NetworkUtils;
 import scw.net.http.server.mvc.HttpChannel;
-import scw.util.MultiValueParameterFactory;
 import scw.xml.XMLUtils;
 
 @Bean(proxy = false)
@@ -34,9 +33,8 @@ public class DefaultRequestBodyParse implements RequestBodyParse {
 			Document document = XMLUtils.parse(new InputSource(httpChannel.getRequest().getReader()));
 			Element element = document.getDocumentElement();
 			body = jsonParseSupport.toJSONString(XMLUtils.toRecursionMap(element));
-		} else if (httpChannel.getRequest() instanceof MultiValueParameterFactory) {
-			MultiValueParameterFactory multiValueParameterFactory = httpChannel.getRequest();
-			Map<String, String[]> parameterMap = multiValueParameterFactory.getParameterMap();
+		} else {
+			Map<String, String[]> parameterMap = httpChannel.getRequest().getParameterMap();
 			if (parameterMap != null) {
 				Map<String, Object> map = new HashMap<String, Object>(parameterMap.size());
 				for (Entry<String, String[]> entry : parameterMap.entrySet()) {
