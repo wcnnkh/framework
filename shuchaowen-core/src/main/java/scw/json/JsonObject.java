@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import scw.util.value.property.BasePropertyFactory;
+import scw.value.property.BasePropertyFactory;
 
 public abstract class JsonObject extends AbstractJson<String> implements BasePropertyFactory {
 

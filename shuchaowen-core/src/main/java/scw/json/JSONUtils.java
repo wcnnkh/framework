@@ -12,42 +12,35 @@ public final class JSONUtils {
 	/**
 	 * 默认的json序列化工具
 	 */
-	public static final JSONSupport DEFAULT_JSON_SUPPORT = InstanceUtils.getSystemConfiguration(JSONSupport.class);
+	public static final JSONSupport JSON_SUPPORT = InstanceUtils.getSystemConfiguration(JSONSupport.class);
 
 	static {
-		if (DEFAULT_JSON_SUPPORT != null) {
-			FormatUtils.info(JSONUtils.class, "default json parse：{}", DEFAULT_JSON_SUPPORT.getClass().getName());
+		if (JSON_SUPPORT != null) {
+			FormatUtils.info(JSONUtils.class, "default json parse：{}", JSON_SUPPORT.getClass().getName());
 		}
+	}
+
+	public static JSONSupport getJsonSupport() {
+		return JSON_SUPPORT;
 	}
 
 	public static String toJSONString(Object obj) {
-		return DEFAULT_JSON_SUPPORT.toJSONString(obj);
+		return JSON_SUPPORT.toJSONString(obj);
 	}
 
 	public static JsonObject parseObject(String text) {
-		return DEFAULT_JSON_SUPPORT.parseObject(text);
+		return JSON_SUPPORT.parseObject(text);
 	}
 
 	public static JsonArray parseArray(String text) {
-		return DEFAULT_JSON_SUPPORT.parseArray(text);
+		return JSON_SUPPORT.parseArray(text);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> T parseObject(String text, Class<T> type) {
-		if (type == JsonObject.class) {
-			return (T) parseObject(text);
-		} else if (type == JsonArray.class) {
-			return (T) parseArray(text);
-		}
-		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
+		return JSON_SUPPORT.parseObject(text, type);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> T parseObject(String text, Type type) {
-		if (type instanceof Class) {
-			return parseObject(text, (Class<T>) type);
-		}
-
-		return DEFAULT_JSON_SUPPORT.parseObject(text, type);
+		return JSON_SUPPORT.parseObject(text, type);
 	}
 }

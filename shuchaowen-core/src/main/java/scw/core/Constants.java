@@ -21,8 +21,8 @@ import java.nio.charset.Charset;
 import scw.asm.Opcodes;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemUtils;
-import scw.util.value.property.PropertyFactory;
-import scw.util.value.property.StaticFieldPropertyFactory;
+import scw.value.property.PropertyFactory;
+import scw.value.property.StaticFieldPropertyFactory;
 
 /**
  * This class can be used to parse other classes containing constant definitions

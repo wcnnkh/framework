@@ -7,7 +7,7 @@ import scw.core.instance.ConstructorBuilder;
 import scw.core.instance.InstanceFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class XmlConstructorBuilder implements ConstructorBuilder {
 	private final InstanceFactory instanceFactory;

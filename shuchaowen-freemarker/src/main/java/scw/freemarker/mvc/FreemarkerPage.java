@@ -1,16 +1,17 @@
 package scw.freemarker.mvc;
 
+import java.io.IOException;
 import java.util.Enumeration;
 
-import scw.mvc.Channel;
-import scw.mvc.Request;
-import scw.mvc.Response;
-import scw.mvc.http.HttpRequest;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
+import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -21,8 +22,7 @@ public class FreemarkerPage extends AbstractPage {
 		this(configuration, page, null);
 	}
 
-	public FreemarkerPage(Configuration configuration, String page,
-			MimeType mimeType) {
+	public FreemarkerPage(Configuration configuration, String page, MimeType mimeType) {
 		super(page);
 		this.configuration = configuration;
 		this.mimeType = mimeType;
@@ -36,46 +36,45 @@ public class FreemarkerPage extends AbstractPage {
 		this.mimeType = mimeType;
 	}
 
-	public void render(Channel channel) throws Throwable {
-		Request request = channel.getRequest();
-		Response response = channel.getResponse();
+	public void render(HttpChannel httpChannel) throws IOException {
+		ServerHttpRequest serverRequest = httpChannel.getRequest();
+		ServerHttpResponse serverResponse = httpChannel.getResponse();
 
 		if (getMimeType() != null) {
-			response.setContentType(getMimeType());
+			serverResponse.setContentType(getMimeType());
 		} else {
-			response.setContentType(MimeTypeUtils.TEXT_HTML);
+			serverResponse.setContentType(MimeTypeUtils.TEXT_HTML);
 		}
 
-		Enumeration<String> enumeration = channel.getAttributeNames();
+		Enumeration<String> enumeration = httpChannel.getRequest().getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();
 			if (key == null || containsKey(key)) {
 				continue;
 			}
 
-			put(key, channel.getAttribute(key));
+			put(key, httpChannel.getRequest().getAttribute(key));
 		}
 
-		if (request instanceof HttpRequest) {
-			HttpRequest httpRequest = (HttpRequest) request;
-			for (Entry<String, String[]> entry : httpRequest.getParameterMap()
-					.entrySet()) {
-				String key = entry.getKey();
-				if (key == null || containsKey(key)) {
-					continue;
-				}
-
-				put(key, entry.getValue());
+		ServerHttpRequest serverHttpRequest = (ServerHttpRequest) serverRequest;
+		for (java.util.Map.Entry<String, String[]> entry : serverHttpRequest.getParameterMap().entrySet()) {
+			String key = entry.getKey();
+			if (key == null || containsKey(key)) {
+				continue;
 			}
+
+			put(key, entry.getValue());
 		}
 
 		String page = getPage();
-		Template template = configuration.getTemplate(page,
-				request.getCharacterEncoding());
-		template.process(this, response.getWriter());
-
-		if (channel.isLogEnabled()) {
-			channel.log("freemarker:{}", page);
+		Template template = configuration.getTemplate(page, serverRequest.getCharacterEncoding());
+		try {
+			template.process(this, serverResponse.getWriter());
+			if (httpChannel.isLogEnabled()) {
+				httpChannel.log("freemarker:{}", page);
+			}
+		} catch (TemplateException e) {
+			httpChannel.getLogger().error(e, "freemarker:{}", page);
 		}
 	}
 }

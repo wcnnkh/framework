@@ -4,21 +4,13 @@ import java.nio.charset.Charset;
 
 import scw.core.Constants;
 import scw.core.utils.StringUtils;
+import scw.http.HttpHeaders;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.net.http.HttpHeaders;
 
 public abstract class AbstractMessage implements Message {
-	protected String getContentLengthHeaderName() {
-		return HttpHeaders.CONTENT_LENGTH;
-	}
-
-	protected String getContentTypeHeaderName() {
-		return HttpHeaders.CONTENT_TYPE;
-	}
-
 	public long getContentLength() {
-		String len = getHeaders().getFirst(getContentLengthHeaderName());
+		String len = getHeaders().getFirst(HttpHeaders.CONTENT_LENGTH);
 		return StringUtils.hasLength(len) ? StringUtils.parseLong(len) : -1;
 	}
 
@@ -28,7 +20,7 @@ public abstract class AbstractMessage implements Message {
 	}
 
 	public String getRawContentType() {
-		return getHeaders().getFirst(getContentTypeHeaderName());
+		return getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
 	}
 
 	public Charset getDefaultCharset() {

@@ -13,6 +13,11 @@
 			<artifactId>shuchaowen-core</artifactId>
 		</dependency>
 		
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-mvc</artifactId>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
 		<dependency>
 			<groupId>javax.websocket</groupId>
@@ -71,5 +76,18 @@
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/io.socket/socket.io-client -->
+		<dependency>
+			<groupId>io.socket</groupId>
+			<artifactId>socket.io-client</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+
+		<!-- https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/websocket-server -->
+		<!-- <dependency> <groupId>org.eclipse.jetty.websocket</groupId> <artifactId>websocket-server</artifactId> 
+			<version>9.4.28.v20200408</version> <scope>provided</scope> </dependency> -->
 	</dependencies>
 </project>

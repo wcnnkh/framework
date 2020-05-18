@@ -1,5 +1,6 @@
 package scw.office.excel.jxl.export;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +10,8 @@ import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import scw.db.DB;
-import scw.mvc.http.HttpResponse;
+import scw.http.server.ServerHttpResponse;
+import scw.lang.NestedRuntimeException;
 import scw.sql.Sql;
 
 /**
@@ -33,7 +35,7 @@ public class JxlExport {
 	 * @throws Exception
 	 */
 	public static void exportExcel(String fileName, String title[], List<Object[]> tempList,
-			HttpResponse response) throws Exception {
+			ServerHttpResponse response) throws IOException {
 		String oldFileName = fileName;
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 
@@ -61,7 +63,11 @@ public class JxlExport {
 					// 在Label对象的子对象中指明单元格的位置和内容
 					label = new Label(i, 0, title[i]);
 					// 将定义好的单元格添加到工作表中
-					sheet.addCell(label);
+					try {
+						sheet.addCell(label);
+					} catch (Exception e) {
+						new NestedRuntimeException(e);
+					}
 				}
 
 				int formListIndex = (j - 1) * maxCount;
@@ -77,7 +83,11 @@ public class JxlExport {
 						if (obj != null) {
 							String centent = String.valueOf(obj[c]);
 							label = new Label(c, r, centent);
-							sheet.addCell(label);
+							try {
+								sheet.addCell(label);
+							} catch (Exception e) {
+								new NestedRuntimeException(e);
+							}
 						}
 					}
 				}
@@ -89,7 +99,7 @@ public class JxlExport {
 		wwb.close();
 	}
 
-	public static void sqlResultSetToExcel(String fileName, String title[], DB db, HttpResponse response,
+	public static void sqlResultSetToExcel(String fileName, String title[], DB db, ServerHttpResponse response,
 			SqlExportRow exportRow, Sql... sqls) throws Exception {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
@@ -101,7 +111,7 @@ public class JxlExport {
 	}
 
 	public static void sqlResultSetToExcel(String fileName, String title[], DB db, List<Sql> sqlList,
-			HttpResponse response, SqlExportRow exportRow) throws Exception {
+			ServerHttpResponse response, SqlExportRow exportRow) throws IOException {
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		response.setContentType("application/vnd.ms-excel");
 		response.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName + ".xls");
@@ -112,7 +122,7 @@ public class JxlExport {
 	}
 
 	public static void sqlResultSetToExcel(String title[], DB db, List<Sql> sqlList, OutputStream os,
-			SqlExportRow exportRow) throws Exception {
+			SqlExportRow exportRow) throws IOException {
 		// 创建Excel工作薄
 		WritableWorkbook wwb = Workbook.createWorkbook(os);
 		for (Sql sql : sqlList) {

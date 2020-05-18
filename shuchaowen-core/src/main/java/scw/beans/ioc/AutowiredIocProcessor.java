@@ -3,7 +3,7 @@ package scw.beans.ioc;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowired;
 import scw.mapper.Field;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class AutowiredIocProcessor extends DefaultFieldIocProcessor {
 

@@ -1,9 +1,12 @@
 package scw.mvc.exception;
 
+import java.io.IOException;
+
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.lang.ParameterException;
-import scw.mvc.Channel;
+import scw.mvc.HttpChannel;
+import scw.mvc.action.Action;
 import scw.result.ResultFactory;
 import scw.security.authority.AuthorizationFailureException;
 
@@ -13,7 +16,7 @@ import scw.security.authority.AuthorizationFailureException;
  * @author shuchaowen
  *
  */
-@Configuration(order=Integer.MIN_VALUE)
+@Configuration(order = Integer.MIN_VALUE)
 public final class DefaultExceptionHandler implements ExceptionHandler {
 	private ResultFactory resultFactory;
 
@@ -21,8 +24,7 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 		this.resultFactory = resultFactory;
 	}
 
-	public Object doHandler(Channel channel, Throwable error,
-			ExceptionHandlerChain chain) {
+	public Object doHandle(HttpChannel httpChannel, Action action, Throwable error) throws IOException {
 		if (error instanceof ParameterException) {
 			return resultFactory.parameterError();
 		} else if (error instanceof AuthorizationFailureException) {

@@ -15,7 +15,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @SuppressWarnings("rawtypes")
 public final class InstanceUtils {

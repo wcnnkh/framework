@@ -11,10 +11,10 @@ import scw.core.Destroy;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;
-import scw.mvc.MVCUtils;
-import scw.servlet.ServletUtils;
-import scw.servlet.mvc.http.MyHttpServletResponse;
-import scw.util.value.property.PropertyFactory;
+import scw.http.server.cors.CorsUtils;
+import scw.http.server.servlet.ServletServerHttpRequest;
+import scw.http.server.servlet.ServletServerHttpResponse;
+import scw.value.property.PropertyFactory;
 
 public final class ShutdownHttpServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -46,10 +46,11 @@ public final class ShutdownHttpServlet extends HttpServlet {
 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		MyHttpServletResponse response = new MyHttpServletResponse(resp);
-		MVCUtils.responseCrossDomain(scw.mvc.http.cors.CorsConfig.DEFAULT, response);
+		ServletServerHttpRequest request = new ServletServerHttpRequest(req);
+		ServletServerHttpResponse response = new ServletServerHttpResponse(resp);
+		CorsUtils.write(scw.http.server.cors.CorsConfig.DEFAULT, response);
 		if (!ArrayUtils.isEmpty(ips)) {
-			String requestIp = ServletUtils.getIP(req);
+			String requestIp = request.getIp();
 			if (!checkIp(requestIp)) {
 				resp.getWriter().write("Illegal IP [" + requestIp + "]");
 				return;

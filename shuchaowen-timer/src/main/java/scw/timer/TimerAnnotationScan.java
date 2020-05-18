@@ -17,7 +17,7 @@ import scw.timer.annotation.Crontab;
 import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MIN_VALUE)
 public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {

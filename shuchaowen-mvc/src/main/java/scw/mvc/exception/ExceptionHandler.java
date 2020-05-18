@@ -1,7 +1,10 @@
 package scw.mvc.exception;
 
-import scw.mvc.Channel;
+import java.io.IOException;
+
+import scw.mvc.HttpChannel;
+import scw.mvc.action.Action;
 
 public interface ExceptionHandler {
-	Object doHandler(Channel channel, Throwable error, ExceptionHandlerChain chain);
+	Object doHandle(HttpChannel httpChannel, Action action, Throwable error) throws IOException;
 }

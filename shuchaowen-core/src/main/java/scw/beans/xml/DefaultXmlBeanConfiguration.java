@@ -4,7 +4,7 @@ import org.w3c.dom.Node;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class DefaultXmlBeanConfiguration extends XmlBeanConfiguration {
 	private static final String TAG_NAME = "bean";

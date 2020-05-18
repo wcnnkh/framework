@@ -18,7 +18,7 @@ import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.comparator.CompareUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ConfigurationScan implements Comparator<Class<?>> {

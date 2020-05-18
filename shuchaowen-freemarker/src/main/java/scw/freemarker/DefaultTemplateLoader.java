@@ -2,7 +2,7 @@ package scw.freemarker;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 import freemarker.cache.TemplateLoader;
 
 public class DefaultTemplateLoader extends MultiTemplateLoader {

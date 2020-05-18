@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 import scw.json.AbstractJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
-import scw.util.value.Value;
+import scw.value.Value;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;
@@ -45,5 +45,13 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 
 	public String toJSONString() {
 		return text;
+	}
+
+	public boolean isJsonArray() {
+		return text == null ? false : JSON.isValidArray(text);
+	}
+
+	public boolean isJsonObject() {
+		return text == null ? false : JSON.isValidObject(text);
 	}
 }

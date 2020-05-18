@@ -2,7 +2,7 @@ package scw.xml;
 
 import org.w3c.dom.Node;
 
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class XmlAttributeMapping extends XmlMapping {
 

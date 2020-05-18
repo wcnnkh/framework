@@ -4,7 +4,7 @@ import java.util.Enumeration;
 
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
-import scw.util.value.property.StringValuePropertyFactory;
+import scw.value.property.StringValuePropertyFactory;
 
 public class LoggerPropertyFactory extends StringValuePropertyFactory {
 

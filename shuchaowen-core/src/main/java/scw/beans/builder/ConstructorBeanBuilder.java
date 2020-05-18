@@ -3,7 +3,7 @@ package scw.beans.builder;
 import scw.beans.BeanFactory;
 import scw.core.instance.ConstructorBuilder;
 import scw.lang.NotSupportedException;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public abstract class ConstructorBeanBuilder extends AbstractBeanBuilder {
 	

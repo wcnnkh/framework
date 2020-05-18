@@ -5,7 +5,7 @@ import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
 import scw.mapper.Field;
 import scw.util.ConfigUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public final class XmlToListMapParse extends AbstractValueFormat
 		implements ConfigParse {

@@ -1,6 +1,6 @@
 package scw.beans;
 
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 /**
  * 此类的实例会在beanFactory状态变化时调用

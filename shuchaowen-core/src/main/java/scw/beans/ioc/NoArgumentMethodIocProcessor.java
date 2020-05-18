@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import scw.beans.BeanFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class NoArgumentMethodIocProcessor extends MethodIocProcessor {
 	private final Method method;

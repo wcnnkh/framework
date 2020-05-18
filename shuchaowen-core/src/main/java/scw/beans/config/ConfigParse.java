@@ -2,7 +2,7 @@ package scw.beans.config;
 
 import scw.beans.BeanFactory;
 import scw.mapper.Field;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 /**
  * 解析配置文件

@@ -3,23 +3,22 @@ package scw.mvc.parameter;
 import java.io.IOException;
 
 import scw.beans.annotation.Bean;
+import scw.http.server.ServerHttpRequest;
 import scw.io.IOUtils;
-import scw.mvc.Request;
-import scw.mvc.http.HttpRequest;
 
 @Bean(singleton = false)
 public final class Body {
 	private String body;
-	private Request request;
+	private ServerHttpRequest serverRequest;
 
-	public Body(HttpRequest request) throws IOException {
-		this.request = request;
+	public Body(ServerHttpRequest request) throws IOException {
+		this.serverRequest = request;
 	}
 
 	public String getBody() {
 		if (body == null) {
 			try {
-				body = IOUtils.read(request.getReader(), 0);
+				body = IOUtils.read(serverRequest.getReader(), 0);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

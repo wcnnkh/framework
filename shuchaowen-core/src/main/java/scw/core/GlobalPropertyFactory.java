@@ -8,8 +8,8 @@ import scw.io.FileUtils;
 import scw.io.support.PackageScan;
 import scw.io.support.ResourceOperations;
 import scw.util.FormatUtils;
-import scw.util.value.property.ConcurrentMapPropertyFactory;
-import scw.util.value.property.SystemPropertyFactory;
+import scw.value.property.ConcurrentMapPropertyFactory;
+import scw.value.property.SystemPropertyFactory;
 
 public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 	private static final String WEB_ROOT = "web.root";

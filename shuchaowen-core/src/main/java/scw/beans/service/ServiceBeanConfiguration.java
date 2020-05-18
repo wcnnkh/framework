@@ -11,7 +11,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 /**
  * 扫描service注解

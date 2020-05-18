@@ -6,8 +6,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.mvc.action.filter.ActionFilter;
-import scw.net.http.HttpMethod;
+import scw.http.HttpMethod;
+import scw.mvc.action.ActionFilter;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)

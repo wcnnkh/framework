@@ -2,7 +2,7 @@ package scw.core.instance;
 
 import scw.core.utils.ClassUtils;
 import scw.util.ConcurrentReferenceHashMap;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class DefaultInstanceFactory extends AbstractInstanceFactory {
 	private final ConcurrentReferenceHashMap<String, InstanceBuilder<?>> builderMap = new ConcurrentReferenceHashMap<String, InstanceBuilder<?>>();

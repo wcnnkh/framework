@@ -8,13 +8,13 @@ import java.util.Map;
 
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
+import scw.http.HttpUtils;
+import scw.http.MediaType;
 import scw.integration.sms.ShortMessageService;
 import scw.integration.sms.SmsException;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.client.http.HttpUtils;
-import scw.net.http.MediaType;
 import scw.security.SignatureUtils;
 import scw.util.phone.PhoneNumber;
 

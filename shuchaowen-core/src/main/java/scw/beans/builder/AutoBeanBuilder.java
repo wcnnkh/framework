@@ -3,7 +3,7 @@ package scw.beans.builder;
 import scw.beans.BeanFactory;
 import scw.core.instance.AutoConstructorBuilder;
 import scw.core.instance.ConstructorBuilder;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class AutoBeanBuilder extends ConstructorBeanBuilder {
 	private final AutoConstructorBuilder constructorBuilder;

@@ -9,7 +9,7 @@ import javax.servlet.Filter;
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
 import scw.embed.servlet.FilterConfiguration;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class ServletRootFilterConfiguration implements FilterConfiguration {
 	private List<Filter> filters;

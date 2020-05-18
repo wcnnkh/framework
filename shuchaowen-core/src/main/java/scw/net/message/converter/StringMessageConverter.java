@@ -7,7 +7,7 @@ import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.util.value.StringValue;
+import scw.value.StringValue;
 
 public class StringMessageConverter extends AbstractMessageConverter<Object> {
 

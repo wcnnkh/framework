@@ -9,8 +9,8 @@ import java.util.List;
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.io.ResourceUtils;
-import scw.util.value.StringValue;
-import scw.util.value.Value;
+import scw.value.StringValue;
+import scw.value.Value;
 
 public class CollectionBuilder implements Serializable {
 	private static final long serialVersionUID = 1L;

@@ -12,7 +12,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class MethodBeanBuilder extends AbstractBeanBuilder {
 	private Method method;

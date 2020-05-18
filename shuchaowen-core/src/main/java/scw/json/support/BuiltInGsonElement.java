@@ -7,7 +7,7 @@ import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.json.gson.Gson;
 import scw.json.gson.GsonJsonElement;
-import scw.util.value.Value;
+import scw.value.Value;
 
 public final class BuiltInGsonElement extends AbstractJsonElement {
 	private GsonJsonElement gsonJsonElement;
@@ -39,5 +39,13 @@ public final class BuiltInGsonElement extends AbstractJsonElement {
 
 	public JsonObject getAsJsonObject() {
 		return new BuiltInGsonJsonObject(gsonJsonElement.getAsJsonObject(), gson);
+	}
+
+	public boolean isJsonArray() {
+		return gsonJsonElement.isJsonArray();
+	}
+
+	public boolean isJsonObject() {
+		return gsonJsonElement.isJsonObject();
 	}
 }

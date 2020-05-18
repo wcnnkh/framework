@@ -21,11 +21,7 @@ public final class Message implements StringAppend {
 	}
 
 	public Message(Level level, String name, Object msg, Object[] args, Throwable throwable, String placeholder) {
-		this.cts = System.currentTimeMillis();
-		this.level = level;
-		this.throwable = throwable;
-		this.name = name;
-		this.msg = new PlaceholderFormatAppend(msg, placeholder, args);
+		this(level, name, new PlaceholderFormatAppend(msg, placeholder, args), throwable);
 	}
 
 	public long getCts() {

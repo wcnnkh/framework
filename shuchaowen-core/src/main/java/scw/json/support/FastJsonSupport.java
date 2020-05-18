@@ -2,16 +2,16 @@ package scw.json.support;
 
 import java.lang.reflect.Type;
 
-import scw.core.instance.annotation.Configuration;
-import scw.json.JSONSupport;
-import scw.json.JsonObject;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.parser.Feature;
 
-@Configuration(order=Integer.MIN_VALUE + 10000)
-public final class FastJsonSupport implements JSONSupport {
+import scw.core.instance.annotation.Configuration;
+import scw.json.AbstractJSONSupport;
+import scw.json.JsonObject;
+
+@Configuration(order = Integer.MIN_VALUE + 10000)
+public final class FastJsonSupport extends AbstractJSONSupport {
 
 	public scw.json.JsonArray parseArray(String text) {
 		JSONArray jArray = com.alibaba.fastjson.JSONArray.parseArray(text);
@@ -27,11 +27,13 @@ public final class FastJsonSupport implements JSONSupport {
 		return JSON.toJSONString(obj, FastJSONBaseProperyFilter.BASE_PROPERY_FILTER);
 	}
 
-	public <T> T parseObject(String text, Class<T> type) {
+	@Override
+	protected <T> T parseObjectInternal(String text, Class<T> type) {
 		return JSON.parseObject(text, type, Feature.SupportNonPublicField);
 	}
 
-	public <T> T parseObject(String text, Type type) {
+	@Override
+	protected <T> T parseObjectInternal(String text, Type type) {
 		return JSON.parseObject(text, type, Feature.SupportNonPublicField);
 	}
 }

@@ -16,7 +16,7 @@ import scw.logger.LoggerUtils;
 import scw.mapper.MapperUtils;
 import scw.mq.ConsumerFactory;
 import scw.util.queue.Consumer;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
 public class XmlConsumerFactory implements ConsumerFactory {

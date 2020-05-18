@@ -12,10 +12,6 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-security</artifactId>
-		</dependency>
 		
 		<dependency>
 			<groupId>shuchaowen</groupId>
@@ -25,6 +21,17 @@
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-timer</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

@@ -11,8 +11,8 @@ import scw.io.ResourceUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
 import scw.mapper.MapperUtils;
-import scw.util.value.ValueUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.ValueUtils;
+import scw.value.property.PropertyFactory;
 
 public final class PropertiesParse extends AbstractValueFormat implements ConfigParse {
 

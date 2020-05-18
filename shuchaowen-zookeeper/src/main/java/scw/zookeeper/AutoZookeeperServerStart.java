@@ -4,7 +4,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryLifeCycle;
 import scw.core.instance.annotation.Configuration;
 import scw.io.ResourceUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 @Configuration(order=Integer.MAX_VALUE)
 public final class AutoZookeeperServerStart implements BeanFactoryLifeCycle{

@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import scw.beans.BeanFactory;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class ThreadPoolExecutorBeanBuilder extends AutoBeanBuilder {
 	private static final int DEFAULT_CORE_POOL_SIZE = StringUtils.parseInt(

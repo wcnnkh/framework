@@ -49,19 +49,16 @@ public final class NetworkUtils {
 		} catch (KeyManagementException e) {
 			e.printStackTrace();
 		}
-		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc
-				.getSocketFactory();
-		
-		MESSAGE_CONVERTERS.addAll(InstanceUtils
-				.getSystemConfigurationList(MessageConverter.class));
+		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
+
+		MESSAGE_CONVERTERS.addAll(InstanceUtils.getSystemConfigurationList(MessageConverter.class));
 	}
 
 	public static MultiMessageConverter getMessageConverters() {
 		return MESSAGE_CONVERTERS;
 	}
 
-	public static List<InetSocketAddress> parseInetSocketAddressList(
-			String address) {
+	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {
 		List<InetSocketAddress> addresses = new ArrayList<InetSocketAddress>();
 		String[] arr = StringUtils.commonSplit(address);
 		for (String a : arr) {
@@ -104,8 +101,7 @@ public final class NetworkUtils {
 		}
 	}
 
-	public static void writeHeader(Message inputMessage,
-			OutputMessage outputMessage) throws IOException {
+	public static void writeHeader(Message inputMessage, OutputMessage outputMessage) throws IOException {
 		long len = outputMessage.getContentLength();
 		if (len >= 0) {
 			outputMessage.setContentLength(len);
@@ -124,5 +120,37 @@ public final class NetworkUtils {
 				}
 			}
 		}
+	}
+
+	/**
+	 * 判断是否是json消息
+	 * 
+	 * @param serverRequest
+	 * @return
+	 */
+	public static boolean isJsonMessage(Message message) {
+		return isDesignatedContentTypeMessage(message, MimeTypeUtils.APPLICATION_JSON_VALUE)
+				|| isDesignatedContentTypeMessage(message, MimeTypeUtils.TEXT_JSON_VALUE);
+	}
+
+	public static boolean isXmlMessage(Message message) {
+		return isDesignatedContentTypeMessage(message, MimeTypeUtils.APPLICATION_XML_VALUE)
+				|| isDesignatedContentTypeMessage(message, MimeTypeUtils.TEXT_XML_VALUE);
+	}
+
+	public static boolean isFormMessage(Message message) {
+		return isDesignatedContentTypeMessage(message, MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
+	}
+
+	public static boolean isMultipartMessage(Message message) {
+		return isDesignatedContentTypeMessage(message, MimeTypeUtils.MULTIPART_FORM_DATA_VALUE);
+	}
+
+	public static boolean isDesignatedContentTypeMessage(Message message, String contentType) {
+		MimeType mimeType = message.getContentType();
+		if(mimeType == null){
+			return false;
+		}
+		return StringUtils.contains(mimeType.toString(), contentType, true);
 	}
 }

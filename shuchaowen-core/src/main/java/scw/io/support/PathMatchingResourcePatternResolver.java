@@ -52,7 +52,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.AntPathMatcher;
 import scw.util.PathMatcher;
-import scw.util.value.property.SystemPropertyFactory;
+import scw.value.property.SystemPropertyFactory;
 
 /**
  * A {@link ResourcePatternResolver} implementation that is able to resolve a

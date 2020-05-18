@@ -3,10 +3,10 @@ package scw.tencent.qq;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.http.HttpUtils;
+import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
-import scw.net.client.http.HttpUtils;
-import scw.net.http.MediaType;
 
 public final class QQUtils {
 	private static final String callbackPrefix = "callback( ";

@@ -1,7 +1,7 @@
 package scw.embed;
 
 import scw.core.utils.StringUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public final class EmbeddedUtils {
 	private EmbeddedUtils() {

@@ -29,7 +29,7 @@ public abstract class DefaultContextManager extends AbstractContextManager<Defau
 	}
 
 	@Override
-	public DefaultContext getContext(Propagation propagation) throws Throwable {
+	public DefaultContext getContext(Propagation propagation) {
 		DefaultContext context = getContext();
 		switch (propagation) {
 		case REQUIRED:

@@ -30,9 +30,9 @@ import scw.logger.LoggerUtils;
 import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
-import scw.util.value.Value;
-import scw.util.value.ValueUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.Value;
+import scw.value.ValueUtils;
+import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
 public final class ConfigUtils {

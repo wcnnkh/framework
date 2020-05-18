@@ -10,7 +10,7 @@ import scw.lang.AlreadyExistsException;
 import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
-import scw.util.value.ValueUtils;
+import scw.value.ValueUtils;
 
 public abstract class AbstractLoadRow<T> implements LoadRow {
 	private final int nameMappingIndex;

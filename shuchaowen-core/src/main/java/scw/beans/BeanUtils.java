@@ -24,7 +24,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public final class BeanUtils {
 	private static final List<String> DISABLE_PROXY_BEANS = ResourceUtils.getResourceOperations()

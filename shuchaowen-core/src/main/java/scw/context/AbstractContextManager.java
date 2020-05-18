@@ -26,7 +26,7 @@ public abstract class AbstractContextManager<T extends Context> implements Conte
 		context.addContextLifeCycle(contextLifeCycle);
 	}
 
-	public abstract T getContext(Propagation propagation) throws Throwable;
+	public abstract T getContext(Propagation propagation);
 
 	public void after(Context context) {
 		if (context instanceof ContextResource) {

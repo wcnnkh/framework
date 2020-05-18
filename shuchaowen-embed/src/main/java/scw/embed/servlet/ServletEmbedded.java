@@ -3,7 +3,7 @@ package scw.embed.servlet;
 import javax.servlet.Servlet;
 
 import scw.beans.BeanFactory;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public interface ServletEmbedded {
 	void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet destroy, Servlet service,

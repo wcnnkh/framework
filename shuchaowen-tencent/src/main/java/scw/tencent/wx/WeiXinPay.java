@@ -12,6 +12,8 @@ import org.w3c.dom.Element;
 
 import scw.core.Constants;
 import scw.core.utils.StringUtils;
+import scw.http.HttpUtils;
+import scw.http.MediaType;
 import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.lang.NestedRuntimeException;
@@ -21,8 +23,6 @@ import scw.lang.SignatureException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.MimeTypeUtils;
-import scw.net.client.http.HttpUtils;
-import scw.net.http.MediaType;
 import scw.net.ssl.SSLContexts;
 import scw.security.SignatureUtils;
 import scw.tencent.wx.pay.UnifiedOrderResponse;

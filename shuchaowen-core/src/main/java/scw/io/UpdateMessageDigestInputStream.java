@@ -27,7 +27,7 @@ import java.security.MessageDigest;
  * @author Craig Andrews
  * @since 4.2
  */
-abstract class UpdateMessageDigestInputStream extends InputStream {
+public abstract class UpdateMessageDigestInputStream extends InputStream {
 
 	/**
 	 * Update the message digest with the rest of the bytes in this stream.

@@ -42,7 +42,7 @@
 			<artifactId>protostuff-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
+		
 		<!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-runtime -->
 		<dependency>
 			<groupId>com.dyuproject.protostuff</groupId>
@@ -58,6 +58,12 @@
 					<artifactId>protostuff-api</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>

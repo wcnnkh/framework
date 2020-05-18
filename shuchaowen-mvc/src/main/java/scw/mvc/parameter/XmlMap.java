@@ -11,14 +11,14 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import scw.beans.annotation.Bean;
-import scw.mvc.http.HttpRequest;
+import scw.http.server.ServerHttpRequest;
 import scw.xml.XMLUtils;
 
 @Bean(singleton = false)
 public final class XmlMap extends LinkedHashMap<String, String> {
 	private static final long serialVersionUID = 1L;
 
-	public XmlMap(HttpRequest request) throws IOException {
+	public XmlMap(ServerHttpRequest request) throws IOException {
 		BufferedReader reader = request.getReader();
 		Document document = XMLUtils.parse(new InputSource(reader));
 		Element element = document.getDocumentElement();

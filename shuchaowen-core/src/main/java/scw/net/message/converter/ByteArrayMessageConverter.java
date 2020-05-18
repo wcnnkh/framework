@@ -3,9 +3,9 @@ package scw.net.message.converter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+import scw.http.MediaType;
 import scw.io.IOUtils;
 import scw.net.MimeType;
-import scw.net.http.MediaType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 

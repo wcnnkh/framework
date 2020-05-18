@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
-import scw.util.value.property.PropertyFactory;
+import scw.value.property.PropertyFactory;
 
 public class MethodBeanDefinition extends DefaultBeanDefinition {
 	private Method method;
