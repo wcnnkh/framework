@@ -85,7 +85,6 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		}
 
 		XUtils.destroy(httpChannelBeanManager);
-		getResponse().flush();
 	}
 
 	public boolean isLogEnabled() {

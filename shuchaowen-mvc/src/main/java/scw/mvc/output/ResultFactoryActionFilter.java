@@ -1,4 +1,4 @@
-package scw.mvc.security;
+package scw.mvc.output;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.annotation.Configuration;

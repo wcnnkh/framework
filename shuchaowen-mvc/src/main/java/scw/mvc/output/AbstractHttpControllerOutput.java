@@ -18,11 +18,11 @@ import scw.net.message.Text;
 import scw.net.message.converter.MultiMessageConverter;
 import scw.net.message.converter.support.AllMessageConverter;
 
-public abstract class AbstractControllerOutput<T> implements ControllerOutput {
+public abstract class AbstractHttpControllerOutput<T> implements HttpControllerOutput {
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	private final MultiMessageConverter messageConverter = new MultiMessageConverter();
 
-	public AbstractControllerOutput() {
+	public AbstractHttpControllerOutput() {
 		messageConverter.add(new AllMessageConverter());
 	}
 

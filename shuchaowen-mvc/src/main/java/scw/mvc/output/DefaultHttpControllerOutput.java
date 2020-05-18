@@ -6,7 +6,7 @@ import scw.core.utils.ClassUtils;
 import scw.http.MediaType;
 import scw.mvc.HttpChannel;
 
-public class DefaultControllerOutput extends AbstractControllerOutput<Object> {
+public class DefaultHttpControllerOutput extends AbstractHttpControllerOutput<Object> {
 
 	@Override
 	protected boolean canWriteInternal(HttpChannel httpChannel, Object body) {
