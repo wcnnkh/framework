@@ -1,10 +1,14 @@
 package scw.value;
 
 import scw.core.StringFormat;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.util.FormatUtils;
 import scw.util.PropertyPlaceholderHelper;
 
 public class SimpleValueFactory extends DefaultValueFactory<String> {
+	private static Logger logger = LoggerUtils.getLogger(SimpleValueFactory.class);
+	
 	/**
 	 * Resolve {@code $ ...} placeholders in the given text, replacing them with
 	 * corresponding system property values.
@@ -50,9 +54,8 @@ public class SimpleValueFactory extends DefaultValueFactory<String> {
 	 * PlaceholderResolver implementation that resolves against system
 	 * properties and system environment variables.
 	 */
-	private class PropertyPlaceholderResolver implements
+	private final class PropertyPlaceholderResolver implements
 			PropertyPlaceholderHelper.PlaceholderResolver {
-
 		private final String text;
 
 		public PropertyPlaceholderResolver(String text) {
