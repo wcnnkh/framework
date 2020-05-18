@@ -92,7 +92,7 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		XUtils.destroy(httpChannelBeanManager);
 
 		long useTime = System.currentTimeMillis() - createTime;
-		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.DEBUG;
+		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.TRACE;
 		if (LoggerUtils.isLoggerEnabled(getLogger(), level)) {
 			LoggerUtils.logger(getLogger(), level, "execute：{}, use time:{}ms", toString(), useTime);
 		}
