@@ -15,6 +15,7 @@ import scw.beans.BeanFactory;
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
 import scw.core.Destroy;
+import scw.core.GlobalPropertyFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
@@ -27,6 +28,8 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
+import scw.logger.Level;
+import scw.logger.LoggerUtils;
 import scw.mapper.MapperUtils;
 import scw.mapper.support.ParameterFactoryMapping;
 import scw.mvc.annotation.Attribute;
@@ -47,6 +50,8 @@ import scw.value.Value;
 
 public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends ServerHttpResponse>
 		extends SimpleValueFactory implements HttpChannel, Destroy {
+	private static final long WARN_TIMEOUT = GlobalPropertyFactory.getInstance().getValue("mvc.warn-execute-time",
+			long.class, 100L);
 	private final long createTime;
 	private final JSONSupport jsonSupport;
 	private final HttpChannelBeanManager httpChannelBeanManager;
@@ -85,6 +90,16 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		}
 
 		XUtils.destroy(httpChannelBeanManager);
+
+		long useTime = System.currentTimeMillis() - createTime;
+		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.DEBUG;
+		if (LoggerUtils.isLoggerEnabled(getLogger(), level)) {
+			LoggerUtils.logger(getLogger(), level, "execute：{}, use time:{}ms", toString(), useTime);
+		}
+	}
+
+	protected long getExecuteWarnTime() {
+		return WARN_TIMEOUT;
 	}
 
 	public boolean isLogEnabled() {

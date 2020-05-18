@@ -9,27 +9,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.BeanUtils;
-import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
-import scw.core.instance.InstanceFactory;
 import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
-import scw.http.HttpHeaders;
 import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
-import scw.http.server.cors.CorsConfig;
-import scw.json.JSONSupport;
-import scw.json.JSONUtils;
 import scw.lang.ParameterException;
 import scw.mvc.action.Action;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
-import scw.value.property.PropertyFactory;
 
 public final class MVCUtils {
 	private static final String RESTURL_PATH_PARAMETER = "_scw_resturl_path_parameter";
@@ -100,16 +91,6 @@ public final class MVCUtils {
 		return sb.toString();
 	}
 
-	public static String getCharsetName(PropertyFactory propertyFactory) {
-		String charsetName = propertyFactory.getString("mvc.charsetName");
-		return StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName;
-	}
-
-	public static String getHttpParameterActionKey(PropertyFactory propertyFactory) {
-		String actionKey = propertyFactory.getString("mvc.http.actionKey");
-		return StringUtils.isEmpty(actionKey) ? "action" : actionKey;
-	}
-
 	public static MultiValueMap<String, String> getRequestParameters(ServerHttpRequest request) {
 		Map<String, String[]> requestParams = request.getParameterMap();
 		if (requestParams == null || requestParams.isEmpty()) {
@@ -169,31 +150,6 @@ public final class MVCUtils {
 		return params;
 	}
 
-	public static void responseCrossDomain(CorsConfig config, ServerHttpResponse serverHttpResponse) {
-		/* 允许跨域的主机地址 */
-		if (StringUtils.isNotEmpty(config.getOrigin())) {
-			serverHttpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, config.getOrigin());
-		}
-
-		/* 允许跨域的请求方法GET, POST, HEAD 等 */
-		if (StringUtils.isNotEmpty(config.getMethods())) {
-			serverHttpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, config.getMethods());
-		}
-
-		/* 重新预检验跨域的缓存时间 (s) */
-		if (config.getMaxAge() > 0) {
-			serverHttpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_MAX_AGE, config.getMaxAge() + "");
-		}
-
-		/* 允许跨域的请求头 */
-		if (StringUtils.isNotEmpty(config.getHeaders())) {
-			serverHttpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, config.getHeaders());
-		}
-
-		/* 是否携带cookie */
-		serverHttpResponse.getHeaders().set(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, config.isCredentials() + "");
-	}
-
 	/**
 	 * 是否支持servlet
 	 * 
@@ -201,17 +157,6 @@ public final class MVCUtils {
 	 */
 	public static boolean isSupperServlet() {
 		return SUPPORT_SERVLET;
-	}
-
-	public static JSONSupport getJsonSupport(InstanceFactory instanceFactory, PropertyFactory propertyFactory) {
-		JSONSupport jsonSupport;
-		String jsonSupportBeanName = propertyFactory.getString("mvc.json");
-		if (StringUtils.isEmpty(jsonSupportBeanName)) {
-			jsonSupport = JSONUtils.getJsonSupport();
-		} else {
-			jsonSupport = instanceFactory.getInstance(jsonSupportBeanName);
-		}
-		return jsonSupport;
 	}
 
 	public static String getScanAnnotationPackageName() {

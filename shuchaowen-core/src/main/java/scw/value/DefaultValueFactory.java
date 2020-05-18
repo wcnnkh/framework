@@ -10,11 +10,8 @@ import java.util.List;
 import java.util.ListIterator;
 
 import scw.core.utils.CollectionUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 
 public class DefaultValueFactory<K> implements ValueFactory<K> {
-	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	private LinkedList<BaseValueFactory<K>> baseValueFactories;
 
 	public Value get(K key) {
