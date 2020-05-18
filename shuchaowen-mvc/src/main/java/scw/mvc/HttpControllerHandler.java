@@ -25,15 +25,15 @@ import scw.mvc.action.ActionLookup;
 import scw.mvc.action.ActionService;
 import scw.mvc.action.DefaultNotfoundActionService;
 import scw.mvc.action.NotFoundActionService;
-import scw.mvc.context.RequestContextManager;
 import scw.mvc.exception.ExceptionHandler;
 import scw.mvc.output.DefaultHttpControllerOutput;
 import scw.mvc.output.HttpControllerOutput;
 import scw.net.NetworkUtils;
 import scw.net.message.converter.MessageConverter;
+import scw.result.Result;
 import scw.value.property.PropertyFactory;
 
-public class HttpControllerHandler implements ActionService, HttpServiceHandler {
+public class HttpControllerHandler implements HttpServiceHandler {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final LinkedList<ActionLookup> actionLookups = new LinkedList<ActionLookup>();
 	protected final LinkedList<ActionFilter> actionFilters = new LinkedList<ActionFilter>();
@@ -101,7 +101,7 @@ public class HttpControllerHandler implements ActionService, HttpServiceHandler 
 				}
 			} else {
 				try {
-					message = doAction(httpChannel, action);
+					message = new FitlerActionService(actionFilters).doAction(httpChannel, action);
 				} catch (Throwable e) {
 					message = doError(httpChannel, action, e);
 				}
@@ -109,6 +109,11 @@ public class HttpControllerHandler implements ActionService, HttpServiceHandler 
 
 			if (message == null) {
 				return;
+			}
+
+			if (message != null && httpChannel.getLogger().isErrorEnabled() && message instanceof Result
+					&& ((Result) message).isError()) {
+				logger.error("fail:{}, result={}", httpChannel.toString(), JSONUtils.toJSONString(message));
 			}
 
 			for (HttpControllerOutput httpControllerOutput : httpControllerOutputs) {
@@ -154,16 +159,11 @@ public class HttpControllerHandler implements ActionService, HttpServiceHandler 
 		}
 	}
 
-	public Object doAction(HttpChannel httpChannel, Action action) throws Throwable {
-		return RequestContextManager.doAction(httpChannel, action, new FitlerActionService(actionFilters));
-	}
-
 	protected Object doError(HttpChannel httpChannel, Action action, Throwable error) throws IOException {
+		httpChannel.getLogger().error(error, httpChannel.toString());
 		if (exceptionHandler != null) {
 			return exceptionHandler.doHandle(httpChannel, action, error);
 		}
-
-		httpChannel.getLogger().error(error, httpChannel.toString());
 		httpChannel.getResponse().sendError(500, "system error");
 		return null;
 	}
@@ -181,7 +181,7 @@ public class HttpControllerHandler implements ActionService, HttpServiceHandler 
 
 		public Object doAction(HttpChannel httpChannel, Action action) throws Throwable {
 			if (iterator.hasNext()) {
-				return RequestContextManager.doFilter(httpChannel, action, iterator.next(), FitlerActionService.this);
+				return iterator.next().doFilter(httpChannel, action, FitlerActionService.this);
 			} else {
 				return action.doAction(httpChannel);
 			}
