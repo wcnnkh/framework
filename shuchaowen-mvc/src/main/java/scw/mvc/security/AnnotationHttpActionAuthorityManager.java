@@ -7,10 +7,10 @@ import java.util.Map;
 
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
-import scw.net.http.HttpMethod;
-import scw.net.http.server.mvc.action.Action;
-import scw.net.http.server.mvc.action.ActionManager;
-import scw.net.http.server.mvc.action.Action.ControllerDescriptor;
+import scw.http.HttpMethod;
+import scw.mvc.action.Action;
+import scw.mvc.action.ActionManager;
+import scw.mvc.action.Action.ControllerDescriptor;
 import scw.security.authority.annotation.AnnotationAuthorityManager;
 import scw.security.authority.http.DefaultHttpAuthority;
 import scw.security.authority.http.HttpAuthority;

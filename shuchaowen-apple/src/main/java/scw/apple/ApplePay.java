@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.core.utils.StringUtils;
+import scw.http.HttpUtils;
+import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.http.HttpUtils;
-import scw.net.http.MediaType;
 
 public final class ApplePay {
 	private static Logger logger = LoggerFactory.getLogger(ApplePay.class);

@@ -3,9 +3,9 @@ package scw.mvc;
 import java.io.IOException;
 
 import scw.core.utils.XUtils;
-import scw.net.http.server.ServerHttpAsyncEvent;
-import scw.net.http.server.ServerHttpAsyncListener;
-import scw.net.http.server.mvc.HttpChannel;
+import scw.http.server.ServerHttpAsyncEvent;
+import scw.http.server.ServerHttpAsyncListener;
+import scw.mvc.HttpChannel;
 
 public class HttpChannelAsyncListener implements ServerHttpAsyncListener {
 	private HttpChannel httpChannel;

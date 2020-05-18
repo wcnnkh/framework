@@ -20,8 +20,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import scw.core.Assert;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsTransportFailureException;
 import scw.websocket.sockjs.frame.SockJsFrame;

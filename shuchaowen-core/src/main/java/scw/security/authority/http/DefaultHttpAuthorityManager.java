@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.core.utils.StringUtils;
+import scw.http.HttpMethod;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
-import scw.net.http.HttpMethod;
 import scw.security.authority.DefaultAuthorityManager;
 
 public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends

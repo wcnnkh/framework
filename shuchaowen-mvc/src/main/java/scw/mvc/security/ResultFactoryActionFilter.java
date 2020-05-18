@@ -5,12 +5,12 @@ import scw.core.instance.annotation.Configuration;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.net.http.server.mvc.HttpChannel;
-import scw.net.http.server.mvc.action.Action;
-import scw.net.http.server.mvc.action.ActionFilter;
-import scw.net.http.server.mvc.action.ActionService;
-import scw.net.http.server.mvc.annotation.ResultFactory;
-import scw.net.http.server.mvc.view.View;
+import scw.mvc.HttpChannel;
+import scw.mvc.action.Action;
+import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionService;
+import scw.mvc.annotation.ResultFactory;
+import scw.mvc.view.View;
 import scw.result.Result;
 
 @Configuration(order=Integer.MAX_VALUE)

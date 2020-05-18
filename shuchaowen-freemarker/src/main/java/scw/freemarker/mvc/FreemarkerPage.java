@@ -6,12 +6,12 @@ import java.util.Enumeration;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
+import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
-import scw.net.http.server.mvc.HttpChannel;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;

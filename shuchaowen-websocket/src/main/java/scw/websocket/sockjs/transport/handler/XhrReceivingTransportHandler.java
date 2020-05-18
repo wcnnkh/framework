@@ -18,8 +18,8 @@ package scw.websocket.sockjs.transport.handler;
 
 import java.io.IOException;
 
-import scw.net.http.HttpStatus;
-import scw.net.http.server.ServerHttpRequest;
+import scw.http.HttpStatus;
+import scw.http.server.ServerHttpRequest;
 import scw.websocket.sockjs.transport.TransportHandler;
 import scw.websocket.sockjs.transport.TransportType;
 

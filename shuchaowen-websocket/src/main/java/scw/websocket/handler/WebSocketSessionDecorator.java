@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import scw.core.Assert;
+import scw.http.HttpHeaders;
 import scw.messageing.Message;
-import scw.net.http.HttpHeaders;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketExtension;
 import scw.websocket.WebSocketSession;

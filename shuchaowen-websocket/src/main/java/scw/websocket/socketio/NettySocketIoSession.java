@@ -10,9 +10,9 @@ import java.util.Map.Entry;
 
 import com.corundumstudio.socketio.SocketIOClient;
 
+import scw.http.HttpHeaders;
 import scw.messageing.BinaryMessage;
 import scw.messageing.TextMessage;
-import scw.net.http.HttpHeaders;
 import scw.websocket.CloseStatus;
 import scw.websocket.PingMessage;
 import scw.websocket.PongMessage;

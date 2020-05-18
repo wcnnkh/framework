@@ -3,7 +3,7 @@ package scw.mvc.logger;
 import java.io.Serializable;
 import java.util.Map;
 
-import scw.net.http.HttpMethod;
+import scw.http.HttpMethod;
 
 public class ActionLog implements Serializable {
 	private static final long serialVersionUID = 1L;

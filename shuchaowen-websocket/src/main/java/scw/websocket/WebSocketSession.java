@@ -7,12 +7,12 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
+import scw.http.HttpHeaders;
 import scw.lang.Nullable;
 import scw.messageing.BinaryMessage;
 import scw.messageing.Message;
 import scw.messageing.TextMessage;
 import scw.messageing.session.Session;
-import scw.net.http.HttpHeaders;
 
 public interface WebSocketSession extends Session {
 

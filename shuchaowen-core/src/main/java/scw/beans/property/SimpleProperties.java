@@ -7,8 +7,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.core.utils.StringUtils;
+import scw.http.HttpUtils;
 import scw.io.ResourceUtils;
-import scw.net.http.HttpUtils;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 

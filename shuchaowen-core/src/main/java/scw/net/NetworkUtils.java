@@ -147,6 +147,10 @@ public final class NetworkUtils {
 	}
 
 	public static boolean isDesignatedContentTypeMessage(Message message, String contentType) {
-		return StringUtils.contains(message.getContentType().toString(), contentType, true);
+		MimeType mimeType = message.getContentType();
+		if(mimeType == null){
+			return false;
+		}
+		return StringUtils.contains(mimeType.toString(), contentType, true);
 	}
 }

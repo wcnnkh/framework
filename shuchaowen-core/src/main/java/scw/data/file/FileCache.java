@@ -14,13 +14,13 @@ import scw.core.Destroy;
 import scw.core.Init;
 import scw.core.utils.CollectionUtils;
 import scw.data.ExpiredCache;
+import scw.http.HttpUtils;
 import scw.io.FileUtils;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.io.serialzer.SerializerUtils;
 import scw.lang.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.http.HttpUtils;
 import scw.value.property.SystemPropertyFactory;
 
 @SuppressWarnings("unchecked")

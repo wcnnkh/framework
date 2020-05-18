@@ -5,9 +5,9 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 
 import scw.core.utils.StringUtils;
+import scw.http.HttpUtils;
+import scw.http.MediaType;
 import scw.net.MimeType;
-import scw.net.http.HttpUtils;
-import scw.net.http.MediaType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 import scw.util.MultiValueMap;

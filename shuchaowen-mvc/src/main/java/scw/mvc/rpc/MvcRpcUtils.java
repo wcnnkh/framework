@@ -14,8 +14,8 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
-import scw.net.http.server.mvc.HttpChannel;
-import scw.net.http.server.mvc.context.ContextManager;
+import scw.mvc.HttpChannel;
+import scw.mvc.context.RequestContextManager;
 import scw.net.message.Message;
 
 public final class MvcRpcUtils {
@@ -23,7 +23,7 @@ public final class MvcRpcUtils {
 	};
 
 	private static ShareData privateGetShareData() {
-		Context context = ContextManager.getInstance().getContext();
+		Context context = RequestContextManager.getInstance().getContext();
 		if (context == null) {
 			return null;
 		}
@@ -32,7 +32,7 @@ public final class MvcRpcUtils {
 	}
 
 	public static ShareData getShareData() {
-		Context context = ContextManager.getInstance().getContext();
+		Context context = RequestContextManager.getInstance().getContext();
 		if (context == null) {
 			throw new NotSupportedException("不存在MVC的上下文");
 		}
@@ -46,7 +46,7 @@ public final class MvcRpcUtils {
 	}
 
 	public static String getIP() {
-		HttpChannel httpChannel = ContextManager.getCurrentChannel();
+		HttpChannel httpChannel = RequestContextManager.getCurrentChannel();
 		if (httpChannel == null) {
 			return null;
 		}
@@ -90,7 +90,7 @@ public final class MvcRpcUtils {
 			return null;
 		}
 
-		HttpChannel httpChannel = ContextManager.getCurrentChannel();
+		HttpChannel httpChannel = RequestContextManager.getCurrentChannel();
 		if (httpChannel == null) {
 			return null;
 		}

@@ -5,36 +5,30 @@ import java.util.Map;
 
 import scw.core.Callable;
 import scw.core.instance.annotation.Configuration;
-import scw.core.parameter.DefaultParameterDescriptor;
-import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
+import scw.mvc.HttpChannel;
+import scw.mvc.action.Action;
 import scw.mvc.logger.annotation.ActionLogAttributeConfig;
-import scw.net.http.server.mvc.HttpChannel;
-import scw.net.http.server.mvc.action.Action;
 
 @Configuration(order=Integer.MIN_VALUE)
 public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	private static final Callable<HashMap<String, String>> ATTRIBUTE_MAP_CALLABLE = CollectionUtils.hashMapCallable(8);
-	private ParameterDescriptor identificationParameterConfig;
+	private String identificationKey;
 	private boolean ipEnable;
 
 	public DefaultActionLogFactory(
 			@ParameterName("mvc.action.log.identification") @DefaultValue("uid") String identificationKey, @ParameterName("mvc.action.log.ip")@DefaultValue("false") boolean ipEnable) {
-		if (StringUtils.isNotEmpty(identificationKey)) {
-			this.identificationParameterConfig = new DefaultParameterDescriptor(
-					identificationKey, String.class, String.class);
-		}
+		this.identificationKey = identificationKey;
 		this.ipEnable = ipEnable;
 	}
 
 	public String getIdentification(Action action, HttpChannel httpChannel) {
-		if(identificationParameterConfig == null){
+		if(identificationKey == null){
 			return null;
 		}
-		return (String) httpChannel.getParameter(identificationParameterConfig);
+		return httpChannel.getString(identificationKey);
 	}
 
 	public Map<String, String> getAttributeMap(Action action, HttpChannel httpChannel) {
@@ -66,7 +60,6 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	}
 	
 	protected String getAttirubteValue(HttpChannel httpChannel, String name){
-		return (String) httpChannel.getParameter( new DefaultParameterDescriptor(
-				name, String.class, String.class));
+		return httpChannel.getString(name);
 	}
 }

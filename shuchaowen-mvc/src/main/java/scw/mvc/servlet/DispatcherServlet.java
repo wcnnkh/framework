@@ -2,22 +2,21 @@ package scw.mvc.servlet;
 
 import java.io.IOException;
 
-import javax.servlet.GenericServlet;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import scw.application.Application;
 import scw.application.CommonApplication;
 import scw.core.GlobalPropertyFactory;
-import scw.net.http.server.servlet.ServletUtils;
+import scw.http.server.servlet.HttpServletService;
 
-public class DispatcherServlet extends GenericServlet {
+public class DispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Application application;
-	private ServletService servletService;
+	private HttpServletService httpServletService;
 	private boolean reference = false;
 
 	public Application getApplication() {
@@ -29,34 +28,19 @@ public class DispatcherServlet extends GenericServlet {
 		this.application = application;
 	}
 
-	public ServletService getServletService() {
-		return servletService;
+	public HttpServletService getServletService() {
+		return httpServletService;
 	}
 
-	public void setServletService(ServletService servletService) {
-		this.servletService = servletService;
+	public void setHttpServletService(HttpServletService httpServletService) {
+		this.httpServletService = httpServletService;
 	}
-
-	public void setDefaultServletService(boolean force) {
-		if (getServletService() == null || force) {
-			if (getApplication() != null) {
-				setServletService(getApplication().getBeanFactory()
-						.getInstance(ServletService.class));
-			}
-		}
-	}
-
+	
 	@Override
-	public void service(ServletRequest req, ServletResponse resp)
-			throws ServletException, IOException {
-		if (req instanceof HttpServletRequest) {
-			if (ServletUtils.isWebSocketRequest((HttpServletRequest) req)) {
-				return;
-			}
-		}
+	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		getServletService().service(req, resp);
 	}
-
+	
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
 		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(
@@ -64,6 +48,7 @@ public class DispatcherServlet extends GenericServlet {
 		if (getApplication() == null) {
 			GlobalPropertyFactory.getInstance().setWorkPath(
 					servletConfig.getServletContext().getRealPath("/"));
+			reference = false;
 			this.application = new CommonApplication(
 					propertyFactory.getConfigXml());
 		}
@@ -74,8 +59,10 @@ public class DispatcherServlet extends GenericServlet {
 		if (!reference) {
 			getApplication().init();
 		}
-
-		setDefaultServletService(false);
+		
+		if(httpServletService == null && getApplication() != null){
+			this.httpServletService = getApplication().getBeanFactory().getInstance(HttpServletService.class);
+		}
 	}
 
 	@Override

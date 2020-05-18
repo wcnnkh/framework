@@ -19,8 +19,8 @@ package scw.websocket.sockjs.support;
 import java.io.IOException;
 
 import scw.core.Assert;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.ExceptionWebSocketHandlerDecorator;
 import scw.websocket.handler.LoggingWebSocketHandlerDecorator;

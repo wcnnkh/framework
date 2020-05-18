@@ -8,14 +8,14 @@ import scw.core.StringFormat;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.http.HttpUtils;
+import scw.http.client.ClientHttpRequest;
+import scw.http.client.accessor.HttpAccessor;
 import scw.mvc.rpc.annotation.Host;
 import scw.mvc.rpc.annotation.RequestContentType;
 import scw.mvc.rpc.annotation.RequestContentType.ContentType;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.net.http.HttpUtils;
-import scw.net.http.client.ClientHttpRequest;
-import scw.net.http.client.accessor.HttpAccessor;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.value.property.PropertyFactory;
@@ -50,8 +50,8 @@ public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRp
 			host = "http://127.0.0.1";
 		}
 
-		KeyValuePair<scw.net.http.HttpMethod, String> requestMethod = AnnotationUtils.getHttpMethodAnnotation(method);
-		scw.net.http.HttpMethod httpMethod = scw.net.http.HttpMethod.GET;
+		KeyValuePair<scw.http.HttpMethod, String> requestMethod = AnnotationUtils.getHttpMethodAnnotation(method);
+		scw.http.HttpMethod httpMethod = scw.http.HttpMethod.GET;
 		if (requestMethod != null) {
 			httpMethod = requestMethod.getKey();
 			if (StringUtils.isNotEmpty(requestMethod.getValue())) {
@@ -74,7 +74,7 @@ public class HttpRestfulRpcRequestFactory extends HttpAccessor implements HttpRp
 		host = stringFormat.format(host);
 		host = FormatUtils.format(host, propertyFactory);
 
-		host = httpMethod == scw.net.http.HttpMethod.GET ? HttpUtils.appendParameters(host, parameterMap, charsetName)
+		host = httpMethod == scw.http.HttpMethod.GET ? HttpUtils.appendParameters(host, parameterMap, charsetName)
 				: host;
 
 		ClientHttpRequest clientHttpRequest = createRequest(new URI(host), httpMethod);

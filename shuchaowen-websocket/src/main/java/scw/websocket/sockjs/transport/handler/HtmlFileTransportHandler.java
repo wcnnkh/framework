@@ -20,11 +20,11 @@ import java.io.IOException;
 import java.util.Map;
 
 import scw.core.utils.StringUtils;
-import scw.net.http.HttpStatus;
-import scw.net.http.JavaScriptUtils;
-import scw.net.http.MediaType;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.http.HttpStatus;
+import scw.http.JavaScriptUtils;
+import scw.http.MediaType;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsException;

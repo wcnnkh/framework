@@ -6,10 +6,10 @@ import java.util.Map;
 
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
+import scw.http.HttpUtils;
+import scw.http.MediaType;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.http.HttpUtils;
-import scw.net.http.MediaType;
 import scw.result.DataResult;
 import scw.result.ResultFactory;
 import scw.security.SignatureUtils;

@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.security.session.Session;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.WebSocketSession;

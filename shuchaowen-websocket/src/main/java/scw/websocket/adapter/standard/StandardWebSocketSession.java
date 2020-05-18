@@ -16,10 +16,10 @@ import javax.websocket.Session;
 
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
+import scw.http.HttpHeaders;
 import scw.lang.Nullable;
 import scw.messageing.BinaryMessage;
 import scw.messageing.TextMessage;
-import scw.net.http.HttpHeaders;
 import scw.websocket.CloseStatus;
 import scw.websocket.PingMessage;
 import scw.websocket.PongMessage;

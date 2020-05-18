@@ -26,10 +26,10 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import scw.net.http.HttpHeaders;
-import scw.net.http.server.ServerHttpAsyncControl;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.http.HttpHeaders;
+import scw.http.server.ServerHttpAsyncControl;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketExtension;
 import scw.websocket.WebSocketHandler;

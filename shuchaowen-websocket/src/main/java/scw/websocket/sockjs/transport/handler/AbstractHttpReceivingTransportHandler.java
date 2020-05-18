@@ -20,10 +20,10 @@ import java.io.IOException;
 import java.util.Arrays;
 
 import scw.core.Assert;
-import scw.net.http.HttpStatus;
-import scw.net.http.MediaType;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.http.HttpStatus;
+import scw.http.MediaType;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsException;
 import scw.websocket.sockjs.transport.SockJsSession;

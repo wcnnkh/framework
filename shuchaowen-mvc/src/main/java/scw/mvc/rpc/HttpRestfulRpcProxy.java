@@ -13,10 +13,10 @@ import scw.core.instance.InstanceFactory;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.http.HttpHeaders;
 import scw.io.serialzer.SerialzerMessageConveter;
 import scw.io.serialzer.Serializer;
 import scw.lang.Nullable;
-import scw.net.http.HttpHeaders;
 import scw.net.message.converter.support.AllMessageConverter;
 import scw.value.property.PropertyFactory;
 

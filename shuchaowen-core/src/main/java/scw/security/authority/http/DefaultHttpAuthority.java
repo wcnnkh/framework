@@ -2,7 +2,7 @@ package scw.security.authority.http;
 
 import java.util.Map;
 
-import scw.net.http.HttpMethod;
+import scw.http.HttpMethod;
 import scw.security.authority.DefaultAuthority;
 
 public class DefaultHttpAuthority extends DefaultAuthority implements

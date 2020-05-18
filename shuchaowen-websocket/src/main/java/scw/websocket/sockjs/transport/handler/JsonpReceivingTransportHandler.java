@@ -16,14 +16,13 @@
 
 package scw.websocket.sockjs.transport.handler;
 
-import java.io.IOException;
+import java.io.IOException;	
 
 import scw.core.utils.StringUtils;
-import scw.net.http.HttpStatus;
-import scw.net.http.MediaType;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
-import scw.net.http.server.mvc.HttpChannel;
+import scw.http.HttpStatus;
+import scw.http.MediaType;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.sockjs.SockJsException;
 import scw.websocket.sockjs.frame.SockJsMessageCodec;

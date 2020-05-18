@@ -37,12 +37,12 @@ import scw.embed.servlet.ServletContainerInitializerConfiguration;
 import scw.embed.servlet.ServletEmbedded;
 import scw.embed.servlet.support.RootServletContainerInitializerConfiguration;
 import scw.embed.servlet.support.ServletRootFilterConfiguration;
+import scw.http.HttpMethod;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.net.http.HttpMethod;
-import scw.net.http.server.mvc.action.Action;
-import scw.net.http.server.mvc.action.ActionManager;
-import scw.net.http.server.mvc.action.Action.ControllerDescriptor;
+import scw.mvc.action.Action;
+import scw.mvc.action.ActionManager;
+import scw.mvc.action.Action.ControllerDescriptor;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE + 1000)

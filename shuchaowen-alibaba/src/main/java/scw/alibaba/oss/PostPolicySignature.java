@@ -4,9 +4,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.net.MimeType;
-import scw.net.http.MediaType;
 import scw.net.message.Text;
 
 /**

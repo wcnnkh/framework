@@ -4,11 +4,11 @@ import scw.beans.BeanFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.http.server.mvc.HttpChannel;
-import scw.net.http.server.mvc.action.Action;
-import scw.net.http.server.mvc.action.ActionFilter;
-import scw.net.http.server.mvc.action.ActionService;
-import scw.net.http.server.mvc.annotation.IPSecurity;
+import scw.mvc.HttpChannel;
+import scw.mvc.action.Action;
+import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionService;
+import scw.mvc.annotation.IPSecurity;
 import scw.security.ip.IPValidationFailedException;
 import scw.security.ip.IPVerification;
 

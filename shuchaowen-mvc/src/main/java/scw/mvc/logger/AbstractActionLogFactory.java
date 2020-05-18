@@ -2,13 +2,12 @@ package scw.mvc.logger;
 
 import java.util.Map;
 
-import scw.core.parameter.DefaultParameterDescriptor;
+import scw.http.server.ServerHttpRequest;
 import scw.json.JSONUtils;
+import scw.mvc.HttpChannel;
+import scw.mvc.action.Action;
+import scw.mvc.action.Action.ControllerDescriptor;
 import scw.mvc.logger.annotation.ActionLogConfig;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.mvc.HttpChannel;
-import scw.net.http.server.mvc.action.Action;
-import scw.net.http.server.mvc.action.Action.ControllerDescriptor;
 
 public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	protected abstract String getIdentification(Action action, HttpChannel httpChannel);
@@ -16,7 +15,7 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	protected abstract Map<String, String> getAttributeMap(Action action, HttpChannel httpChannel);
 
 	protected String getAttirubteValue(HttpChannel httpChannel, String name) {
-		return (String) httpChannel.getParameter(new DefaultParameterDescriptor(name, String.class, String.class));
+		return httpChannel.getString(name);
 	}
 
 	protected String getController(HttpChannel httpChannel, Action action) {

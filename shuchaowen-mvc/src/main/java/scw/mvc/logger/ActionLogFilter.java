@@ -2,10 +2,10 @@ package scw.mvc.logger;
 
 import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
-import scw.net.http.server.mvc.HttpChannel;
-import scw.net.http.server.mvc.action.Action;
-import scw.net.http.server.mvc.action.ActionFilter;
-import scw.net.http.server.mvc.action.ActionService;
+import scw.mvc.HttpChannel;
+import scw.mvc.action.Action;
+import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionService;
 
 @Configuration(order = Integer.MAX_VALUE)
 @Bean(proxy = false)

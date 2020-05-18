@@ -18,9 +18,9 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.core.utils.XUtils;
+import scw.http.server.ServerHttpRequest;
 import scw.json.JSONUtils;
 import scw.lang.ParameterException;
-import scw.net.http.server.ServerHttpRequest;
 import scw.util.Base64;
 
 public final class KindEditorUpload implements Upload {

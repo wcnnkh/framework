@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.Set;
 
 import scw.core.Assert;
+import scw.http.HttpStatus;
+import scw.http.HttpUtils;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.net.http.HttpStatus;
-import scw.net.http.HttpUtils;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.server.HandshakeInterceptor;
 

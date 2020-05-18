@@ -27,8 +27,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
+import scw.http.HttpHeaders;
 import scw.messageing.TextMessage;
-import scw.net.http.HttpHeaders;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketExtension;
 import scw.websocket.WebSocketHandler;

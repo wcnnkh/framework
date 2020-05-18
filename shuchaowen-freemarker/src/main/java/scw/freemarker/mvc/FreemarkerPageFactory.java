@@ -1,8 +1,8 @@
 package scw.freemarker.mvc;
 
 import scw.core.utils.StringUtils;
+import scw.http.MediaType;
 import scw.net.MimeType;
-import scw.net.http.MediaType;
 import freemarker.template.Configuration;
 
 @scw.core.instance.annotation.Configuration(order = Integer.MIN_VALUE)

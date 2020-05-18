@@ -21,9 +21,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
 
 import scw.core.utils.StringUtils;
-import scw.net.http.MediaType;
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.http.MediaType;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.net.uri.UriComponentsBuilder;
 import scw.net.uri.UriUtils;
 import scw.util.MultiValueMap;

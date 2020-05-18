@@ -16,8 +16,8 @@
 
 package scw.websocket.sockjs;
 
-import scw.net.http.server.ServerHttpRequest;
-import scw.net.http.server.ServerHttpResponse;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.ExceptionWebSocketHandlerDecorator;
 

@@ -3,7 +3,7 @@ package scw.mvc.logger.db;
 import java.io.Serializable;
 import java.util.Map;
 
-import scw.net.http.HttpMethod;
+import scw.http.HttpMethod;
 import scw.sql.orm.annotation.Column;
 import scw.sql.orm.annotation.PrimaryKey;
 import scw.sql.orm.annotation.Table;

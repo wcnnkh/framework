@@ -11,11 +11,11 @@ import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
+import scw.http.HttpMethod;
 import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.http.HttpMethod;
 import scw.xml.XMLUtils;
 
 @Bean(proxy = false)

@@ -8,8 +8,8 @@ import java.util.Map;
 import org.w3c.dom.Document;
 
 import scw.core.utils.TypeUtils;
+import scw.http.MediaType;
 import scw.net.MimeType;
-import scw.net.http.MediaType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 import scw.value.StringValue;

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
+import scw.http.HttpHeaders;
 import scw.lang.Nullable;
-import scw.net.http.HttpHeaders;
 
 public class WebSocketHttpHeaders extends HttpHeaders {
 

@@ -3,8 +3,8 @@ package scw.office.excel.servlet;
 import java.io.IOException;
 import java.util.List;
 
-import scw.net.http.server.mvc.HttpChannel;
-import scw.net.http.server.mvc.view.View;
+import scw.mvc.HttpChannel;
+import scw.mvc.view.View;
 import scw.office.excel.jxl.export.JxlExport;
 
 public class JxlListToExcelView implements View {

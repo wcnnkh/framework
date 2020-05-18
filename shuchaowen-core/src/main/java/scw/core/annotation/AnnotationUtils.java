@@ -2779,25 +2779,25 @@ public abstract class AnnotationUtils {
 		return getAnnotation(annotations[index], type);
 	}
 
-	public static KeyValuePair<scw.net.http.HttpMethod, String> getHttpMethodAnnotation(AnnotatedElement annotatedElement) {
+	public static KeyValuePair<scw.http.HttpMethod, String> getHttpMethodAnnotation(AnnotatedElement annotatedElement) {
 		GET get = annotatedElement.getAnnotation(GET.class);
 		if (get != null) {
-			return new KeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.GET, get.value());
+			return new KeyValuePair<scw.http.HttpMethod, String>(scw.http.HttpMethod.GET, get.value());
 		}
 
 		POST post = annotatedElement.getAnnotation(POST.class);
 		if (post != null) {
-			return new KeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.POST, post.value());
+			return new KeyValuePair<scw.http.HttpMethod, String>(scw.http.HttpMethod.POST, post.value());
 		}
 
 		DELETE delete = annotatedElement.getAnnotation(DELETE.class);
 		if (delete != null) {
-			return new KeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.DELETE, delete.value());
+			return new KeyValuePair<scw.http.HttpMethod, String>(scw.http.HttpMethod.DELETE, delete.value());
 		}
 
 		PUT put = annotatedElement.getAnnotation(PUT.class);
 		if (put != null) {
-			return new KeyValuePair<scw.net.http.HttpMethod, String>(scw.net.http.HttpMethod.PUT, put.value());
+			return new KeyValuePair<scw.http.HttpMethod, String>(scw.http.HttpMethod.PUT, put.value());
 		}
 
 		return null;

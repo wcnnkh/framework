@@ -15,12 +15,12 @@ import freemarker.template.Version;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
+import scw.mvc.HttpChannel;
+import scw.mvc.MVCUtils;
 import scw.mvc.page.AbstractPage;
-import scw.mvc.servlet.page.Jsp;
+import scw.mvc.servlet.Jsp;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.net.http.server.mvc.HttpChannel;
-import scw.net.http.server.mvc.MVCUtils;
 
 /**
  * 不再推荐使用，下个版本弃用
