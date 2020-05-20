@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HttpRpc {
+public @interface HttpClient {
 	public String value();
 
 	public ContentType requestContentType() default ContentType.AUTO;

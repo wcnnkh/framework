@@ -1,10 +1,14 @@
 package scw.data;
 
+import scw.beans.annotation.Bean;
+
 /**
  * 计数器
  * @author shuchaowen
  *
  */
+
+@Bean(proxy=false)
 public interface Counter {
 	boolean isExist(String key);
 	

@@ -3,12 +3,16 @@ package scw.data;
 import java.util.Collection;
 import java.util.Map;
 
+import scw.beans.annotation.Bean;
+
 /**
  * 缓存<br/>
  * 只是定义为缓存，并不表示缓存是否是会过期的,由实现方决定
  * @author shuchaowen
  *
  */
+
+@Bean(proxy=false)
 public interface Cache {
 	<T> T get(String key);
 

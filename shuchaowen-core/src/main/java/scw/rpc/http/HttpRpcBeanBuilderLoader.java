@@ -8,15 +8,15 @@ import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.beans.builder.ProxyBeanBuilder;
 import scw.core.instance.annotation.Configuration;
-import scw.rpc.http.annotation.HttpRpc;
+import scw.rpc.http.annotation.HttpClient;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class HttpRpcBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain serviceChain) {
 		// Host注解
-		HttpRpc httpRpc = context.getTargetClass().getAnnotation(HttpRpc.class);
-		if (httpRpc != null) {
+		HttpClient httpClient = context.getTargetClass().getAnnotation(HttpClient.class);
+		if (httpClient != null) {
 			String proxyName = HttpRpcProxyFilter.class.getName();
 			if (context.getBeanFactory().isInstance(proxyName)) {
 				return new ProxyBeanBuilder(context, Arrays.asList(proxyName));
