@@ -203,7 +203,7 @@ public final class ConfigUtils {
 		loadProperties(instance, properties, asNameList, null);
 	}
 
-	public static void invokeSetterByProeprties(Object instance, PropertyFactory propertyFactory, Collection<String> asNameList) {
+	public static void loadProperties(Object instance, PropertyFactory propertyFactory, Collection<String> asNameList) {
 		loadProperties(instance, propertyFactory, asNameList, null);
 	}
 
