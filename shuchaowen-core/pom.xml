@@ -77,6 +77,12 @@
 			<artifactId>log4j-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- begin 可以不强制依赖, 但默认使用 -->
 		<dependency>
@@ -89,13 +95,6 @@
 			<groupId>com.caucho</groupId>
 			<artifactId>hessian</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		
 		<!-- end 可以不强制依赖, 但默认使用 -->
 	</dependencies>
 </project>
