@@ -1,9 +1,6 @@
 package scw.util;
 
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,7 +20,6 @@ import scw.core.StringFormat;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -31,7 +27,6 @@ import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.value.Value;
-import scw.value.ValueUtils;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
@@ -45,8 +40,8 @@ public final class ConfigUtils {
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) {
 		T t = InstanceUtils.INSTANCE_FACTORY.getInstance(clz);
 		for (Entry<String, String> entry : map.entrySet()) {
-			scw.mapper.Field field = MapperUtils.getMapper().getField(clz, entry.getKey(), null,
-					FilterFeature.SUPPORT_SETTER);
+			scw.mapper.Field field = MapperUtils.getMapper().getField(clz,
+					entry.getKey(), null, FilterFeature.SUPPORT_SETTER);
 			if (field == null) {
 				continue;
 			}
@@ -56,8 +51,10 @@ public final class ConfigUtils {
 		return t;
 	}
 
-	public static List<Map<String, String>> getDefaultXmlContent(String path, final String rootTag) {
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path);
+	public static List<Map<String, String>> getDefaultXmlContent(String path,
+			final String rootTag) {
+		InputStream inputStream = ResourceUtils.getResourceOperations()
+				.getInputStream(path);
 		if (inputStream == null) {
 			return Collections.emptyList();
 		}
@@ -65,7 +62,8 @@ public final class ConfigUtils {
 		return getDefaultXmlContent(inputStream, rootTag);
 	}
 
-	public static List<Map<String, String>> getDefaultXmlContent(InputStream inputStream, String rootTag) {
+	public static List<Map<String, String>> getDefaultXmlContent(
+			InputStream inputStream, String rootTag) {
 		if (rootTag == null) {
 			throw new NullPointerException("rootTag is null");
 		}
@@ -92,7 +90,8 @@ public final class ConfigUtils {
 	}
 
 	public static <T> List<T> xmlToList(final Class<T> type, String path) {
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path);
+		InputStream inputStream = ResourceUtils.getResourceOperations()
+				.getInputStream(path);
 		if (inputStream == null) {
 			return Collections.emptyList();
 		}
@@ -101,7 +100,8 @@ public final class ConfigUtils {
 	}
 
 	public static <T> List<T> xmlToList(Class<T> type, InputStream inputStream) {
-		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
+		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(
+				inputStream, "config");
 		List<T> objList = new ArrayList<T>();
 		try {
 			for (Map<String, String> map : list) {
@@ -114,8 +114,10 @@ public final class ConfigUtils {
 		return null;
 	}
 
-	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType, String path) {
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path);
+	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType,
+			String path) {
+		InputStream inputStream = ResourceUtils.getResourceOperations()
+				.getInputStream(path);
 		if (inputStream == null) {
 			return Collections.emptyMap();
 		}
@@ -124,19 +126,24 @@ public final class ConfigUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, InputStream inputStream) {
-		Field keyField = MapperUtils.getMapper().getField(valueType, null, FilterFeature.SETTER_IGNORE_STATIC, FilterFeature.SUPPORT_GETTER);
+	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType,
+			InputStream inputStream) {
+		Field keyField = MapperUtils.getMapper().getField(valueType, null,
+				FilterFeature.SETTER_IGNORE_STATIC,
+				FilterFeature.SUPPORT_GETTER);
 		if (keyField == null) {
 			throw new NullPointerException("打不到主键字段");
 		}
 
-		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
+		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(
+				inputStream, "config");
 		Map<K, V> map = new HashMap<K, V>();
 		for (Map<String, String> tempMap : list) {
 			Object obj = ConfigUtils.parseObject(tempMap, valueType);
 			Object kV = keyField.getGetter().get(obj);
 			if (map.containsKey(kV)) {
-				throw new NullPointerException("已经存在的key=" + keyField.getGetter().getName() + ",value=" + kV);
+				throw new NullPointerException("已经存在的key="
+						+ keyField.getGetter().getName() + ",value=" + kV);
 			}
 			map.put((K) kV, (V) obj);
 		}
@@ -144,16 +151,19 @@ public final class ConfigUtils {
 		return map;
 	}
 
-	public static <T> T setProperties(Object obj, Properties properties, StringFormat stringFormat) {
+	public static <T> T setProperties(Object obj, Properties properties,
+			StringFormat stringFormat) {
 		T t = null;
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			String key = stringFormat.format(entry.getKey().toString());
-			scw.mapper.Field fieldContext = MapperUtils.getMapper().getField(obj.getClass(), key, null);
+			scw.mapper.Field fieldContext = MapperUtils.getMapper().getField(
+					obj.getClass(), key, null);
 			if (fieldContext == null) {
 				continue;
 			}
 
-			String value = entry.getValue() == null ? null : entry.getValue().toString();
+			String value = entry.getValue() == null ? null : entry.getValue()
+					.toString();
 			value = stringFormat.format(value);
 			MapperUtils.setStringValue(fieldContext, obj, value);
 		}
@@ -174,53 +184,42 @@ public final class ConfigUtils {
 		return null;
 	}
 
-	public static String getProperty(Properties properties, Object defaultValue, String... key) {
+	public static String getProperty(Properties properties,
+			Object defaultValue, String... key) {
 		String v = getProperty(properties, key);
-		return v == null ? (defaultValue == null ? null : defaultValue.toString()) : v;
+		return v == null ? (defaultValue == null ? null : defaultValue
+				.toString()) : v;
 	}
 
-	public static void loadProperties(Object instance, String propertiesFile, Collection<String> asNameList) {
-		loadProperties(instance, ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile),
-				asNameList);
+	public static void loadProperties(Object instance, String propertiesFile,
+			Collection<String> asNameList) {
+		loadProperties(instance, ResourceUtils.getResourceOperations()
+				.getFormattedProperties(propertiesFile), asNameList, null);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static void loadProperties(Object instance, Map properties, Collection<String> asNameList) {
-		invokeSetterByProeprties(instance, properties, true, true, asNameList, true);
+	public static void loadProperties(Object instance, Map properties,
+			Collection<String> asNameList) {
+		loadProperties(instance, properties, asNameList, null);
 	}
 
-	public static void invokeSetterByProeprties(Object instance, String propertyPrefix,
-			PropertyFactory propertyFactory) {
-		invokeSetterByProeprties(instance, propertyPrefix, propertyFactory, true, null, true);
+	public static void invokeSetterByProeprties(Object instance, PropertyFactory propertyFactory, Collection<String> asNameList) {
+		loadProperties(instance, propertyFactory, asNameList, null);
 	}
 
-	public static void invokeSetterByProeprties(Object instance, String propertyPrefix, PropertyFactory propertyFactory,
-			boolean invokePublic, Collection<String> asNameList, boolean findAndRemove) {
+	public static void loadProperties(Object instance,
+			PropertyFactory propertyFactory, Collection<String> asNameList,
+			String propertyPrefix) {
 		List<String> nameList = null;
 		if (!CollectionUtils.isEmpty(asNameList)) {
 			nameList = new ArrayList<String>(asNameList);
 		}
 
-		for (Method method : invokePublic ? instance.getClass().getMethods()
-				: instance.getClass().getDeclaredMethods()) {
-			Type[] parameterTypes = method.getGenericParameterTypes();
-			if (!(parameterTypes.length == 1 && method.getName().startsWith("set"))) {
-				continue;
-			}
-
-			Type parameterType = parameterTypes[0];
-			if (!(TypeUtils.isPrimitiveOrWrapper(parameterType) || parameterType == String.class)) {
-				continue;
-			}
-
-			String name = method.getName().substring(3);
-			if (name.length() == 1) {
-				name = name.toLowerCase();
-			} else {
-				name = name.substring(0, 1).toLowerCase() + name.substring(1);
-			}
-
-			Value value = propertyFactory.get(StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
+		for (Field field : MapperUtils.getMapper().getFields(
+				instance.getClass(), null, null, FilterFeature.SETTER)) {
+			String name = field.getSetter().getName();
+			Value value = propertyFactory.get(StringUtils
+					.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
 			if (value == null && nameList != null) {
 				Iterator<String> iterator = nameList.iterator();
 				while (iterator.hasNext()) {
@@ -234,8 +233,9 @@ public final class ConfigUtils {
 					for (String asName : names) {
 						if (asName.equals(name)) {
 							for (String n : names) {
-								value = propertyFactory
-										.get(StringUtils.isEmpty(propertyPrefix) ? n : (propertyPrefix + n));
+								value = propertyFactory.get(StringUtils
+										.isEmpty(propertyPrefix) ? n
+										: (propertyPrefix + n));
 								if (value != null) {
 									break;
 								}
@@ -245,9 +245,7 @@ public final class ConfigUtils {
 					}
 
 					if (value != null) {
-						if (findAndRemove) {
-							iterator.remove();
-						}
+						iterator.remove();
 						break;
 					}
 				}
@@ -257,18 +255,10 @@ public final class ConfigUtils {
 				continue;
 			}
 
-			method.setAccessible(false);
-			logger.info("Property {} on target {} set value {}", name, instance.getClass().getName(), value);
-
-			try {
-				method.invoke(instance, value.getAsObject(parameterType));
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalArgumentException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
+			logger.info("Property {} on target {} set value {}", name, instance
+					.getClass().getName(), value);
+			field.getSetter().set(instance,
+					value.getAsObject(field.getSetter().getGenericType()));
 		}
 	}
 
@@ -285,8 +275,9 @@ public final class ConfigUtils {
 	 * @param findAndRemove
 	 * @param log
 	 */
-	public static void invokeSetterByProeprties(Object instance, Map<?, ?> properties, boolean propertieGetAndRemove,
-			boolean invokePublic, Collection<String> asNameList, boolean findAndRemove) {
+	public static void loadProperties(Object instance,
+			Map<?, ?> properties, Collection<String> asNameList,
+			String propertyPrefix) {
 		if (properties == null) {
 			return;
 		}
@@ -306,26 +297,11 @@ public final class ConfigUtils {
 			map.put(key.toString(), value.toString());
 		}
 
-		for (Method method : invokePublic ? instance.getClass().getMethods()
-				: instance.getClass().getDeclaredMethods()) {
-			Type[] parameterTypes = method.getGenericParameterTypes();
-			if (!(parameterTypes.length == 1 && method.getName().startsWith("set"))) {
-				continue;
-			}
-
-			Type parameterType = parameterTypes[0];
-			if (!(TypeUtils.isPrimitiveOrWrapper(parameterType) || parameterType == String.class)) {
-				continue;
-			}
-
-			String name = method.getName().substring(3);
-			if (name.length() == 1) {
-				name = name.toLowerCase();
-			} else {
-				name = name.substring(0, 1).toLowerCase() + name.substring(1);
-			}
-
-			String value = map.get(name);
+		for (Field field : MapperUtils.getMapper().getFields(
+				instance.getClass(), null, null, FilterFeature.SETTER)) {
+			String name = field.getSetter().getName();
+			String value = map.get(StringUtils.isEmpty(propertyPrefix) ? name
+					: (propertyPrefix + name));
 			if (value == null && nameList != null) {
 				Iterator<String> iterator = nameList.iterator();
 				while (iterator.hasNext()) {
@@ -339,11 +315,12 @@ public final class ConfigUtils {
 					for (String asName : names) {
 						if (asName.equals(name)) {
 							for (String n : names) {
-								value = map.get(n);
+								String useName = StringUtils
+										.isEmpty(propertyPrefix) ? n
+										: (propertyPrefix + n);
+								value = map.get(useName);
 								if (value != null) {
-									if (propertieGetAndRemove) {
-										map.remove(n);
-									}
+									map.remove(useName);
 									break;
 								}
 							}
@@ -352,9 +329,7 @@ public final class ConfigUtils {
 					}
 
 					if (value != null) {
-						if (findAndRemove) {
-							iterator.remove();
-						}
+						iterator.remove();
 						break;
 					}
 				}
@@ -364,19 +339,8 @@ public final class ConfigUtils {
 				continue;
 			}
 
-			method.setAccessible(false);
-
 			logger.info(LOG_MESSAGE, name, instance.getClass().getName(), value);
-
-			try {
-				method.invoke(instance, ValueUtils.parse(value, parameterType));
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalArgumentException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
+			MapperUtils.setStringValue(field, instance, value);
 		}
 	}
 }
