@@ -11,6 +11,7 @@ import scw.logger.LoggerLevelUtils;
 public class Log4jLoggerFactory extends AbstractILoggerFactory {
 
 	static {
+		org.apache.log4j.Logger.class.getName();
 		Log4jUtils.defaultInit();
 	}
 
