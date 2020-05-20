@@ -45,7 +45,7 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-dubbo</artifactId>
+				<artifactId>shuchaowen-cloud</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 
@@ -436,7 +436,6 @@
 		<module>shuchaowen-apple</module>
 		<module>shuchaowen-zookeeper</module>
 		<module>shuchaowen-embed</module>
-		<module>shuchaowen-dubbo</module>
 		<module>shuchaowen-timer</module>
 		<module>shuchaowen-db</module>
 		<module>shuchaowen-mq</module>
@@ -444,5 +443,6 @@
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>
 		<module>shuchaowen-office</module>
+		<module>shuchaowen-cloud</module>
 	</modules>
 </project>
