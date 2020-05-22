@@ -1,6 +1,7 @@
 package scw.transaction.tcc;
 
 import scw.aop.ProxyContext;
+import scw.complete.Complete;
 import scw.transaction.tcc.annotation.Tcc;
 
 public interface TccService {
@@ -8,5 +9,5 @@ public interface TccService {
 
 	Stage createCancel(ProxyContext context, Object tryResult, Tcc tcc);
 
-	void execute(Stage stage);
+	Complete registerComplete(Stage stage) throws Exception;
 }

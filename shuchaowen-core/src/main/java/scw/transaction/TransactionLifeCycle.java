@@ -15,7 +15,7 @@ public interface TransactionLifeCycle {
 	/**
 	 * 在执行之后调用
 	 */
-	void afterProcess();
+	void afterProcess() throws Throwable;
 
 	/**
 	 * 在事务回滚前调用

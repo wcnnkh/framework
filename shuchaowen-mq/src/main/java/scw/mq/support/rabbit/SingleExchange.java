@@ -9,7 +9,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
-import scw.async.filter.Async;
+import scw.complete.method.async.Async;
 import scw.core.GlobalPropertyFactory;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;

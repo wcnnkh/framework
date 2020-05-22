@@ -11,7 +11,7 @@ final class TransactionLifeCycleCollection extends LinkedList<TransactionLifeCyc
 		}
 	}
 
-	public void afterProcess() {
+	public void afterProcess() throws Throwable{
 		for (TransactionLifeCycle lifeCycle : this) {
 			lifeCycle.afterProcess();
 		}

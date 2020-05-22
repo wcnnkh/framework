@@ -1,4 +1,4 @@
-package scw.async.filter;
+package scw.complete.method.async;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * 异步执行此方法，具体效果由执行实现者决定
+ * 
  * @author shuchaowen
  *
  */
@@ -29,5 +30,5 @@ public @interface Async {
 	 * 
 	 * @return
 	 */
-	public Class<? extends AsyncService> service() default AsyncService.class;
+	public Class<? extends AsyncMethodService> service() default AsyncMethodService.class;
 }
