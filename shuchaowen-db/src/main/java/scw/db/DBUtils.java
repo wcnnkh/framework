@@ -17,15 +17,17 @@ import scw.util.ConfigUtils;
 
 public final class DBUtils {
 	public static final String DEFAULT_CONFIGURATION = "/db/db.properties";
-	
+
 	private DBUtils() {
 	};
 
 	@SuppressWarnings("rawtypes")
 	public static void loadProperties(Object instance, Map properties) {
-		ConfigUtils.loadProperties(instance, properties,
-				Arrays.asList("jdbcUrl,url,host", "username,user", "password", "minSize,initialSize,minimumIdle",
-						"maxSize,maxActive,maximumPoolSize", "driver,driverClass,driverClassName"));
+		ConfigUtils.loadProperties(instance, properties, Arrays.asList(
+				"jdbcUrl,url,host", "username,user", "password",
+				"minSize,initialSize,minimumIdle",
+				"maxSize,maxActive,maximumPoolSize",
+				"driver,driverClass,driverClassName"), null);
 	}
 
 	/**
@@ -38,7 +40,8 @@ public final class DBUtils {
 	 * @return
 	 * @throws NotSupportedException
 	 */
-	public static DataBase automaticRecognition(String driverClassName, String url, String username, String password)
+	public static DataBase automaticRecognition(String driverClassName,
+			String url, String username, String password)
 			throws NotSupportedException {
 		if (StringUtils.isEmpty(driverClassName) && StringUtils.isEmpty(url)) {
 			throw new NotSupportedException("driverClassName和url至少要存在一个有效的参数");
@@ -46,11 +49,14 @@ public final class DBUtils {
 
 		if (StringUtils.isEmpty(driverClassName)) {// 没有驱动名，只能根据URL来判断
 			if (url.startsWith("jdbc:mysql:")) {
-				return new MysqlDataBase(driverClassName, url, username, password);
+				return new MysqlDataBase(driverClassName, url, username,
+						password);
 			} else if (url.startsWith("jdbc:microsoft:sqlserver:")) {
-				return new SqlServerDataBase(driverClassName, url, username, password);
+				return new SqlServerDataBase(driverClassName, url, username,
+						password);
 			} else if (url.startsWith("jdbc:oracle:thin:")) {
-				return new OracleDataBase(driverClassName, url, username, password);
+				return new OracleDataBase(driverClassName, url, username,
+						password);
 			} else if (url.startsWith("jdbc:db2:")) {
 			} else if (url.startsWith("jdbc:sybase:")) {
 			} else if (url.startsWith("jdbc:informix-sqli:")) {
@@ -58,16 +64,23 @@ public final class DBUtils {
 			}
 
 		} else {// 根据驱动名称来判断
-			if (driverClassName.equals("com.mysql.jdbc.Driver") || driverClassName.equals("com.mysql.cj.jdbc.Driver")) {
-				return new MysqlDataBase(driverClassName, url, username, password);
-			} else if (driverClassName.equals("oracle.jdbc.driver.OracleDriver")) {
-				return new OracleDataBase(driverClassName, url, username, password);
-			} else if (driverClassName.equals("com.microsoft.jdbc.sqlserver.SQLServerDriver")) {
-				return new SqlServerDataBase(driverClassName, url, username, password);
+			if (driverClassName.equals("com.mysql.jdbc.Driver")
+					|| driverClassName.equals("com.mysql.cj.jdbc.Driver")) {
+				return new MysqlDataBase(driverClassName, url, username,
+						password);
+			} else if (driverClassName
+					.equals("oracle.jdbc.driver.OracleDriver")) {
+				return new OracleDataBase(driverClassName, url, username,
+						password);
+			} else if (driverClassName
+					.equals("com.microsoft.jdbc.sqlserver.SQLServerDriver")) {
+				return new SqlServerDataBase(driverClassName, url, username,
+						password);
 			}
 		}
 
-		throw new NotSupportedException("不支持的数据库类型,driver=" + driverClassName + ",url=" + url);
+		throw new NotSupportedException("不支持的数据库类型,driver=" + driverClassName
+				+ ",url=" + url);
 	}
 
 	public static void deregisterDriver() {

@@ -1,4 +1,4 @@
-package scw.rabbit;
+package scw.rabbitmq;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +36,7 @@ public class Message {
 		return delay == null ? 0 : StringUtils.parseLong(delay.toString());
 	}
 
-	public void setDelay(long delay, TimeUnit timeUnit) {
+	public Message setDelay(long delay, TimeUnit timeUnit) {
 		if (delay <= 0) {
 			removeHeader(RABBIT_DELAY_MESSAGE);
 			if (properties != null) {
@@ -51,9 +51,10 @@ public class Message {
 					.expiration("" + timeUnit.toMillis(delay)).build();
 			setHeader(RABBIT_DELAY_MESSAGE, timeUnit.toMillis(delay));
 		}
+		return this;
 	}
 
-	public void setHeader(String name, Object value) {
+	public Message setHeader(String name, Object value) {
 		if (properties == null) {
 			this.properties = new BasicProperties();
 		}
@@ -66,6 +67,7 @@ public class Message {
 		}
 		headerMap.put(name, value);
 		this.properties = properties.builder().headers(headerMap).build();
+		return this;
 	}
 
 	public Object getHeader(String name) {
@@ -80,18 +82,15 @@ public class Message {
 		return null;
 	}
 
-	public void removeHeader(String name) {
-		if (properties == null) {
-			return;
+	public Message removeHeader(String name) {
+		if (properties != null) {
+			Map<String, Object> headerMap = properties.getHeaders();
+			if (headerMap != null) {
+				headerMap = new HashMap<String, Object>(headerMap);
+				headerMap.remove(name);
+				this.properties = properties.builder().headers(headerMap).build();
+			}
 		}
-
-		Map<String, Object> headerMap = properties.getHeaders();
-		if (headerMap == null) {
-			return;
-		}
-		
-		headerMap = new HashMap<String, Object>(headerMap);
-		headerMap.remove(name);
-		properties.builder().headers(headerMap).build();
+		return this;
 	}
 }

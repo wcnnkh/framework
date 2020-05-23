@@ -23,8 +23,7 @@ public class AutowiredIocProcessor extends DefaultFieldIocProcessor {
 			}
 
 			existDefaultValueWarnLog(bean);
-			Object instance = beanFactory.getInstance(name);
-			getField().getSetter().set(bean, instance);
+			getField().getSetter().set(bean, beanFactory.getInstance(name));
 		}
 		return null;
 	}

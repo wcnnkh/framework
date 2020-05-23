@@ -1,4 +1,4 @@
-package scw.rabbit;
+package scw.rabbitmq;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -38,7 +38,11 @@ public class Exchange {
 	}
 
 	public Exchange(final Connection connection, String exchangeName,
-			BuiltinExchangeType exchangeType) throws IOException,
+            BuiltinExchangeType type,
+            boolean durable,
+            boolean autoDelete,
+            boolean internal,
+            Map<String, Object> arguments) throws IOException,
 			TimeoutException {
 		checkName(exchangeName);
 
@@ -58,16 +62,20 @@ public class Exchange {
 		this.dixExchangeName = DIX_PREFIX + exchangeName;
 		this.delayExchangeName = DELAY_PREFIX + exchangeName;
 
-		exchangeDeclare(exchangeName, exchangeType);
-		exchangeDeclare(dixExchangeName, exchangeType);
-		exchangeDeclare(delayExchangeName, exchangeType);
+		exchangeDeclare(exchangeName, type, durable, autoDelete, internal, arguments);
+		exchangeDeclare(dixExchangeName, type, durable, autoDelete, internal, arguments);
+		exchangeDeclare(delayExchangeName, type, durable, autoDelete, internal, arguments);
 	}
 
-	private void exchangeDeclare(String exchangeName,
-			BuiltinExchangeType exchangeType) throws IOException {
+	private void exchangeDeclare(String exchange,
+            BuiltinExchangeType type,
+            boolean durable,
+            boolean autoDelete,
+            boolean internal,
+            Map<String, Object> arguments) throws IOException {
 		Channel channel = connection.createChannel();
-		channel.exchangeDelete(exchangeName);
-		channel.exchangeDeclare(exchangeName, exchangeType, true);
+		channel.exchangeDelete(exchange);
+		channel.exchangeDeclare(exchange, type, durable, autoDelete, internal, arguments);
 	}
 
 	private void queueDeclare(String queueName, String exchangeName,
@@ -106,7 +114,7 @@ public class Exchange {
 		checkName(queueName);
 
 		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("x-dead-letter-exchange", dixExchangeName);// 死信路由就是自身
+		params.put("x-dead-letter-exchange", dixExchangeName);
 		if (props != null) {
 			params.putAll(props);
 		}
@@ -152,15 +160,6 @@ public class Exchange {
 
 	protected boolean isMultiple() {
 		return false;
-	}
-
-	/**
-	 * 最大重试次数，-1表示永久
-	 * 
-	 * @return
-	 */
-	protected int getMaxRetryCount() {
-		return -1;
 	}
 
 	protected long getRetryDelay() {

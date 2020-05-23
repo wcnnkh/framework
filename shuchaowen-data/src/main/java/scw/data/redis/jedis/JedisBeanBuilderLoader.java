@@ -109,7 +109,8 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null);
+			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null,
+					null);
 			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null,
 					"redis.");
 			return jedisPoolConfig;

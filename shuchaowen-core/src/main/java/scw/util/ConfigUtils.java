@@ -18,12 +18,14 @@ import org.w3c.dom.NodeList;
 
 import scw.core.StringFormat;
 import scw.core.instance.InstanceUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
+import scw.mapper.FieldFilter;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.value.Value;
@@ -191,32 +193,40 @@ public final class ConfigUtils {
 				.toString()) : v;
 	}
 
-	public static void loadProperties(Object instance, String propertiesFile,
-			Collection<String> asNameList) {
-		loadProperties(instance, ResourceUtils.getResourceOperations()
-				.getFormattedProperties(propertiesFile), asNameList, null);
+	public static void loadProperties(Object instance,
+			PropertyFactory propertyFactory, Collection<String> asNameList,
+			String propertyPrefix) {
+		loadProperties(instance, propertyFactory, asNameList, propertyPrefix,
+				new FieldFilter() {
+
+					public boolean accept(Field field) {
+						return isCommonConfigType(field.getSetter().getType());
+					}
+				});
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static void loadProperties(Object instance, Map properties,
-			Collection<String> asNameList) {
-		loadProperties(instance, properties, asNameList, null);
-	}
+	public static boolean isCommonConfigType(Class<?> type) {
+		if (String.class == type || ClassUtils.isPrimitiveOrWrapper(type)
+				|| type == Class.class) {
+			return true;
+		}
 
-	public static void loadProperties(Object instance, PropertyFactory propertyFactory, Collection<String> asNameList) {
-		loadProperties(instance, propertyFactory, asNameList, null);
+		if (type.isArray()) {
+			return isCommonConfigType(type.getComponentType());
+		}
+		return false;
 	}
 
 	public static void loadProperties(Object instance,
 			PropertyFactory propertyFactory, Collection<String> asNameList,
-			String propertyPrefix) {
+			String propertyPrefix, FieldFilter fieldFilter) {
 		List<String> nameList = null;
 		if (!CollectionUtils.isEmpty(asNameList)) {
 			nameList = new ArrayList<String>(asNameList);
 		}
 
 		for (Field field : MapperUtils.getMapper().getFields(
-				instance.getClass(), null, null, FilterFeature.SETTER)) {
+				instance.getClass(), null, fieldFilter, FilterFeature.SETTER)) {
 			String name = field.getSetter().getName();
 			Value value = propertyFactory.get(StringUtils
 					.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
@@ -262,22 +272,20 @@ public final class ConfigUtils {
 		}
 	}
 
-	/**
-	 * 调用对象的set方法
-	 * 
-	 * @param type
-	 * @param instance
-	 * @param properties
-	 * @param propertieGetAndRemove
-	 * @param invokePublic
-	 * @param asNameList
-	 *            别名
-	 * @param findAndRemove
-	 * @param log
-	 */
-	public static void loadProperties(Object instance,
-			Map<?, ?> properties, Collection<String> asNameList,
-			String propertyPrefix) {
+	public static void loadProperties(Object instance, Map<?, ?> properties,
+			Collection<String> asNameList, String propertyPrefix) {
+		loadProperties(instance, properties, asNameList, propertyPrefix,
+				new FieldFilter() {
+
+					public boolean accept(Field field) {
+						return isCommonConfigType(field.getSetter().getType());
+					}
+				});
+	}
+
+	public static void loadProperties(Object instance, Map<?, ?> properties,
+			Collection<String> asNameList, String propertyPrefix,
+			FieldFilter fieldFilter) {
 		if (properties == null) {
 			return;
 		}
@@ -298,7 +306,7 @@ public final class ConfigUtils {
 		}
 
 		for (Field field : MapperUtils.getMapper().getFields(
-				instance.getClass(), null, null, FilterFeature.SETTER)) {
+				instance.getClass(), null, fieldFilter, FilterFeature.SETTER)) {
 			String name = field.getSetter().getName();
 			String value = map.get(StringUtils.isEmpty(propertyPrefix) ? name
 					: (propertyPrefix + name));

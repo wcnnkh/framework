@@ -144,6 +144,10 @@ public class AutoSource<T> {
 		if (!require) {
 			return true;
 		}
+		
+		if (parameterDescriptor.getType() == targetClass) {
+			return false;
+		}
 
 		if (parameterFactory != null) {
 			Object value = parameterFactory.getParameter(parameterDescriptor);
@@ -160,10 +164,6 @@ public class AutoSource<T> {
 				return false;
 			}
 		} else {
-			if (parameterDescriptor.getType().isAssignableFrom(targetClass)) {
-				return false;
-			}
-			
 			String name = getInstanceName(parameterDescriptor);
 			if (name == null) {
 				return false;

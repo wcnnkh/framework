@@ -3,6 +3,9 @@ package scw.sql;
 import java.util.Collection;
 import java.util.List;
 
+import scw.beans.annotation.Bean;
+
+@Bean(proxy=false)
 public interface SqlOperations {
 	/**
 	 * 执行一条sql语句

@@ -1,4 +1,4 @@
-package scw.rabbit;
+package scw.rabbitmq;
 
 import com.rabbitmq.client.Envelope;
 

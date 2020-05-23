@@ -31,7 +31,7 @@ public enum FilterFeature {
 	private static final class SetterFieldFilter implements FieldFilter{
 
 		public boolean accept(Field field) {
-			return field.isSupportGetter() && !Modifier.isStatic(field.getSetter().getModifiers()) && !Modifier.isFinal(field.getSetter().getModifiers());
+			return field.isSupportSetter() && !Modifier.isStatic(field.getSetter().getModifiers()) && !Modifier.isFinal(field.getSetter().getModifiers());
 		}
 	}
 	
