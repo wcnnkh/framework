@@ -1,12 +1,12 @@
 package scw.feign;
 
-import feign.Feign;
-import feign.codec.Decoder;
-import feign.codec.Encoder;
 import scw.beans.builder.ConstructorBeanBuilder;
 import scw.beans.builder.LoaderContext;
 import scw.core.instance.ConstructorBuilder;
 import scw.net.NetworkUtils;
+import feign.Feign;
+import feign.codec.Decoder;
+import feign.codec.Encoder;
 
 public class FeignBeanBuilder extends ConstructorBeanBuilder {
 	private scw.feign.annotation.FeignClient feignClient;

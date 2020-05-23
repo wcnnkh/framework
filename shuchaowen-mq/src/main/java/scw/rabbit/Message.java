@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import scw.core.utils.StringUtils;
+
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AMQP.BasicProperties;
-
-import scw.core.utils.StringUtils;
 
 public class Message {
 	private static final String RABBIT_DELAY_MESSAGE = "scw.rabbit.delay.message";
@@ -31,25 +31,26 @@ public class Message {
 		return properties;
 	}
 
-	public boolean isDelay() {
-		return StringUtils.parseBoolean(getHeader(RABBIT_DELAY_MESSAGE));
+	public long getDelay() {
+		Object delay = getHeader(RABBIT_DELAY_MESSAGE);
+		return delay == null ? 0 : StringUtils.parseLong(delay.toString());
 	}
 
 	public void setDelay(long delay, TimeUnit timeUnit) {
 		if (delay <= 0) {
-			return;
+			removeHeader(RABBIT_DELAY_MESSAGE);
+			if (properties != null) {
+				properties.builder().expiration(null).build();
+			}
+			setHeader(RABBIT_DELAY_MESSAGE, timeUnit.toMillis(delay));
+		} else {
+			if (properties == null) {
+				this.properties = new BasicProperties();
+			}
+			this.properties = properties.builder()
+					.expiration("" + timeUnit.toMillis(delay)).build();
+			setHeader(RABBIT_DELAY_MESSAGE, timeUnit.toMillis(delay));
 		}
-
-		if (properties == null) {
-			this.properties = new BasicProperties();
-		}
-
-		this.properties = properties.builder().expiration("" + timeUnit.toMillis(delay)).build();
-		setDelay(true);
-	}
-
-	public void setDelay(boolean delay) {
-		setHeader(RABBIT_DELAY_MESSAGE, true);
 	}
 
 	public void setHeader(String name, Object value) {
@@ -60,6 +61,8 @@ public class Message {
 		Map<String, Object> headerMap = properties.getHeaders();
 		if (headerMap == null) {
 			headerMap = new HashMap<String, Object>();
+		}else{
+			headerMap = new HashMap<String, Object>(headerMap);
 		}
 		headerMap.put(name, value);
 		this.properties = properties.builder().headers(headerMap).build();
@@ -86,7 +89,9 @@ public class Message {
 		if (headerMap == null) {
 			return;
 		}
-
+		
+		headerMap = new HashMap<String, Object>(headerMap);
 		headerMap.remove(name);
+		properties.builder().headers(headerMap).build();
 	}
 }
