@@ -308,9 +308,11 @@ public final class ConfigUtils {
 		for (Field field : MapperUtils.getMapper().getFields(
 				instance.getClass(), null, fieldFilter, FilterFeature.SETTER)) {
 			String name = field.getSetter().getName();
-			String value = map.get(StringUtils.isEmpty(propertyPrefix) ? name
-					: (propertyPrefix + name));
-			if (value == null && nameList != null) {
+			String value = null;
+			if (CollectionUtils.isEmpty(nameList)) {
+				value = map.get(StringUtils.isEmpty(propertyPrefix) ? name
+						: (propertyPrefix + name));
+			} else {
 				Iterator<String> iterator = nameList.iterator();
 				while (iterator.hasNext()) {
 					String asNames = iterator.next();
@@ -329,20 +331,16 @@ public final class ConfigUtils {
 								value = map.get(useName);
 								if (value != null) {
 									map.remove(useName);
+									iterator.remove();
 									break;
 								}
 							}
 							break;
 						}
 					}
-
-					if (value != null) {
-						iterator.remove();
-						break;
-					}
 				}
 			}
-
+			
 			if (value == null) {
 				continue;
 			}

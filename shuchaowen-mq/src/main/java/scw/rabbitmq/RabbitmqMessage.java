@@ -9,16 +9,16 @@ import scw.core.utils.StringUtils;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AMQP.BasicProperties;
 
-public class Message {
+public class RabbitmqMessage {
 	private static final String RABBIT_DELAY_MESSAGE = "scw.rabbit.delay.message";
 	private byte[] body;
 	private AMQP.BasicProperties properties;
 
-	public Message(byte[] body) {
+	public RabbitmqMessage(byte[] body) {
 		this(body, null);
 	}
 
-	public Message(byte[] body, AMQP.BasicProperties properties) {
+	public RabbitmqMessage(byte[] body, AMQP.BasicProperties properties) {
 		this.body = body;
 		this.properties = properties;
 	}
@@ -36,7 +36,7 @@ public class Message {
 		return delay == null ? 0 : StringUtils.parseLong(delay.toString());
 	}
 
-	public Message setDelay(long delay, TimeUnit timeUnit) {
+	public RabbitmqMessage setDelay(long delay, TimeUnit timeUnit) {
 		if (delay <= 0) {
 			removeHeader(RABBIT_DELAY_MESSAGE);
 			if (properties != null) {
@@ -54,7 +54,7 @@ public class Message {
 		return this;
 	}
 
-	public Message setHeader(String name, Object value) {
+	public RabbitmqMessage setHeader(String name, Object value) {
 		if (properties == null) {
 			this.properties = new BasicProperties();
 		}
@@ -82,7 +82,7 @@ public class Message {
 		return null;
 	}
 
-	public Message removeHeader(String name) {
+	public RabbitmqMessage removeHeader(String name) {
 		if (properties != null) {
 			Map<String, Object> headerMap = properties.getHeaders();
 			if (headerMap != null) {

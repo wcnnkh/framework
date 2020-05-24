@@ -27,7 +27,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 			return new ConnectionFactoryBeanBuilder(context);
 		} else if (context.getTargetClass() == Connection.class) {
 			return new ConnectionBeanBuilder(context);
-		}else if(context.getTargetClass() == Exchange.class){
+		}else if(context.getTargetClass() == RabbitmqExchange.class){
 			return new ExchangeBeanBuilder(context); 
 		}
 		return loaderChain.loading(context);
@@ -132,7 +132,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 			
 			String exchangeName = getDefaultExchangeName(properties);
 			BuiltinExchangeType type = getDefaultExchangeType(properties);
-			return new Exchange(beanFactory.getInstance(Connection.class), exchangeName, type, true, false, false, null);
+			return new RabbitmqExchange(beanFactory.getInstance(Connection.class), exchangeName, type, true, false, false, null);
 		}
 	}
 }

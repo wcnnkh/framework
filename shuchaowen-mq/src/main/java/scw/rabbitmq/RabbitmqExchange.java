@@ -19,11 +19,12 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 
-public class Exchange {
+public class RabbitmqExchange {
 	private static final String DIX_PREFIX = "scw.dix.";
 	private static final String DELAY_PREFIX = "scw.delay.";
 
-	private static Logger logger = LoggerUtils.getLogger(Exchange.class);
+	private static Logger logger = LoggerUtils
+			.getLogger(RabbitmqExchange.class);
 	private ThreadLocal<Channel> channelThreadLocal;
 	private String exchangeName;
 	private Connection connection;
@@ -32,18 +33,14 @@ public class Exchange {
 
 	private void checkName(String name) {
 		Assert.requiredArgument(
-				StringUtils.isNotEmpty(name)
-						&& !name.startsWith(DIX_PREFIX)
+				StringUtils.isNotEmpty(name) && !name.startsWith(DIX_PREFIX)
 						&& !name.startsWith(DELAY_PREFIX), name);
 	}
 
-	public Exchange(final Connection connection, String exchangeName,
-            BuiltinExchangeType type,
-            boolean durable,
-            boolean autoDelete,
-            boolean internal,
-            Map<String, Object> arguments) throws IOException,
-			TimeoutException {
+	public RabbitmqExchange(final Connection connection, String exchangeName,
+			BuiltinExchangeType type, boolean durable, boolean autoDelete,
+			boolean internal, Map<String, Object> arguments)
+			throws IOException, TimeoutException {
 		checkName(exchangeName);
 
 		channelThreadLocal = new ThreadLocal<Channel>() {
@@ -62,26 +59,27 @@ public class Exchange {
 		this.dixExchangeName = DIX_PREFIX + exchangeName;
 		this.delayExchangeName = DELAY_PREFIX + exchangeName;
 
-		exchangeDeclare(exchangeName, type, durable, autoDelete, internal, arguments);
-		exchangeDeclare(dixExchangeName, type, durable, autoDelete, internal, arguments);
-		exchangeDeclare(delayExchangeName, type, durable, autoDelete, internal, arguments);
+		exchangeDeclare(exchangeName, type, durable, autoDelete, internal,
+				arguments);
+		exchangeDeclare(dixExchangeName, type, durable, autoDelete, internal,
+				arguments);
+		exchangeDeclare(delayExchangeName, type, durable, autoDelete, internal,
+				arguments);
 	}
 
-	private void exchangeDeclare(String exchange,
-            BuiltinExchangeType type,
-            boolean durable,
-            boolean autoDelete,
-            boolean internal,
-            Map<String, Object> arguments) throws IOException {
+	private void exchangeDeclare(String exchange, BuiltinExchangeType type,
+			boolean durable, boolean autoDelete, boolean internal,
+			Map<String, Object> arguments) throws IOException {
 		Channel channel = connection.createChannel();
 		channel.exchangeDelete(exchange);
-		channel.exchangeDeclare(exchange, type, durable, autoDelete, internal, arguments);
+		channel.exchangeDeclare(exchange, type, durable, autoDelete, internal,
+				arguments);
 	}
 
 	private void queueDeclare(String queueName, String exchangeName,
 			String routingKey, boolean durable, boolean exclusive,
-			boolean autoDelete, Map<String, Object> params, Consumer consumer)
-			throws IOException {
+			boolean autoDelete, Map<String, Object> params,
+			RabbitmqConsumer consumer) throws IOException {
 		Channel channel = connection.createChannel();
 		channel.queueDelete(queueName);
 		channel.queueDeclare(queueName, durable, exclusive, autoDelete, params);
@@ -97,20 +95,21 @@ public class Exchange {
 	}
 
 	public void bindConsumer(String routingKey, String queueName,
-			Consumer consumer) throws IOException {
+			RabbitmqConsumer consumer) throws IOException {
 		bindConsumer(routingKey, queueName, true, false, false, null, consumer);
 	}
 
 	public void bindConsumer(String routingKey, String queueName,
 			boolean durable, boolean exclusive, boolean autoDelete,
-			Consumer consumer) throws IOException {
+			RabbitmqConsumer consumer) throws IOException {
 		bindConsumer(routingKey, queueName, durable, exclusive, autoDelete,
 				null, consumer);
 	}
 
 	public void bindConsumer(String routingKey, String queueName,
 			boolean durable, boolean exclusive, boolean autoDelete,
-			Map<String, Object> props, Consumer consumer) throws IOException {
+			Map<String, Object> props, RabbitmqConsumer consumer)
+			throws IOException {
 		checkName(queueName);
 
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -135,8 +134,8 @@ public class Exchange {
 	 * @throws IOException
 	 * @throws TimeoutException
 	 */
-	public void push(String routingKey, Message message) throws IOException,
-			TimeoutException {
+	public void push(String routingKey, RabbitmqMessage message)
+			throws IOException {
 		Channel channel = channelThreadLocal.get();
 		if (channel == null) {
 			throw new RuntimeException("Unable to get rabbitmq channel");
@@ -144,7 +143,7 @@ public class Exchange {
 		push(channel, routingKey, message);
 	}
 
-	public void push(Channel channel, String routingKey, Message message)
+	public void push(Channel channel, String routingKey, RabbitmqMessage message)
 			throws IOException {
 		if (logger.isTraceEnabled()) {
 			logger.trace("push: {}", JSONUtils.toJSONString(message));
@@ -167,9 +166,9 @@ public class Exchange {
 	}
 
 	private final class ConsumerInternal extends DefaultConsumer {
-		private final Consumer consumer;
+		private final RabbitmqConsumer consumer;
 
-		public ConsumerInternal(Channel channel, Consumer consumer) {
+		public ConsumerInternal(Channel channel, RabbitmqConsumer consumer) {
 			super(channel);
 			this.consumer = consumer;
 		}
@@ -178,7 +177,7 @@ public class Exchange {
 		public void handleDelivery(String consumerTag, Envelope envelope,
 				AMQP.BasicProperties properties, byte[] body)
 				throws IOException {
-			Message message = new Message(body, properties);
+			RabbitmqMessage message = new RabbitmqMessage(body, properties);
 			if (logger.isTraceEnabled()) {
 				logger.trace("handleDelivery: {}",
 						JSONUtils.toJSONString(message));
@@ -197,8 +196,8 @@ public class Exchange {
 					return;
 				}
 
-				consumer.handleDelivery(Exchange.this, consumerTag, envelope,
-						message);
+				consumer.handleDelivery(RabbitmqExchange.this, consumerTag,
+						envelope, message);
 				getChannel().basicAck(envelope.getDeliveryTag(), isMultiple());
 			} catch (Throwable e) {
 				logger.error(e,

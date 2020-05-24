@@ -137,7 +137,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 			Generator generator = column.getAnnotatedElement().getAnnotation(
 					Generator.class);
 			if (generator == null) {
-				continue ;
+				continue;
 			}
 
 			generatorContext.setColumn(column);
@@ -443,6 +443,15 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 	}
 
 	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
+		if (limit <= 0 || page <= 0) {
+			throw new RuntimeException("page=" + page + ", limit=" + limit);
+		}
+
+		if (limit > SqlUtils.MAX_PAGINATION_LIMIT) {
+			throw new RuntimeException("Limit too large: " + limit + ", max="
+					+ SqlUtils.MAX_PAGINATION_LIMIT);
+		}
+
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql,
 				page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
