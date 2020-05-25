@@ -9,6 +9,7 @@ import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.io.serialzer.ObjectFileManager;
 import scw.io.serialzer.ObjectFileManager.ObjectInfo;
@@ -22,6 +23,8 @@ import scw.logger.LoggerUtils;
  * @author shuchaowen
  *
  */
+
+@Configuration(order = Integer.MIN_VALUE, value = CompleteService.class)
 public class LocalCompleteService implements CompleteService, Destroy {
 	private static Logger logger = LoggerUtils.getLogger(LocalCompleteService.class);
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
@@ -29,6 +32,10 @@ public class LocalCompleteService implements CompleteService, Destroy {
 	private final long delayMillis;
 	private final TimeUnit delayTimeUnit;
 	private final BeanFactory beanFactory;
+
+	public LocalCompleteService(BeanFactory beanFactory) {
+		this(beanFactory, "complete", 1, TimeUnit.SECONDS);
+	}
 
 	public LocalCompleteService(BeanFactory beanFactory, String suffix, long delayMillis, TimeUnit delayTimeUnit) {
 		this(beanFactory, new ObjectFileManager(suffix), delayMillis, delayTimeUnit);

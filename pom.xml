@@ -81,12 +81,6 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-mq</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-db</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -428,7 +422,6 @@
 		<module>shuchaowen-core</module>
 		<module>shuchaowen-integration</module>
 		<module>shuchaowen-alibaba</module>
-		<module>shuchaowen-mail</module>
 		<module>shuchaowen-kdniao</module>
 		<module>shuchaowen-upload</module>
 		<module>shuchaowen-freemarker</module>
@@ -438,7 +431,6 @@
 		<module>shuchaowen-embed</module>
 		<module>shuchaowen-timer</module>
 		<module>shuchaowen-db</module>
-		<module>shuchaowen-mq</module>
 		<module>shuchaowen-data</module>
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>

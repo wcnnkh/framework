@@ -6,13 +6,16 @@ import scw.complete.Complete;
 import scw.complete.CompleteService;
 
 public abstract class AbstractAsyncMethodService implements AsyncMethodService {
+	private Executor executor;
 
-	public abstract Executor getExecutor();
+	public AbstractAsyncMethodService(Executor executor) {
+		this.executor = executor;
+	}
 
 	public abstract CompleteService getCompleteService();
 
 	public void service(AsyncMethodCompleteTask asyncComplete) throws Exception {
 		Complete complete = getCompleteService().register(asyncComplete);
-		getExecutor().execute(complete);
+		executor.execute(complete);
 	}
 }

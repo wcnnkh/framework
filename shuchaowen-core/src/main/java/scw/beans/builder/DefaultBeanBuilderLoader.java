@@ -2,7 +2,6 @@ package scw.beans.builder;
 
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
-import java.util.concurrent.ExecutorService;
 
 import scw.aop.Filter;
 import scw.beans.annotation.Proxy;
@@ -13,46 +12,30 @@ import scw.logger.LoggerUtils;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
-	private static Logger logger = LoggerUtils
-			.getLogger(DefaultBeanBuilderLoader.class);
+	private static Logger logger = LoggerUtils.getLogger(DefaultBeanBuilderLoader.class);
 
-	public BeanBuilder loading(LoaderContext context,
-			BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == ExecutorService.class) {
-			return new ThreadPoolExecutorBeanBuilder(context.getBeanFactory(),
-					context.getPropertyFactory());
-		}
-
+	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		// 未注解service时接口默认实现
 		if (context.getTargetClass().isInterface()) {
 			String name = context.getTargetClass().getName() + "Impl";
-			if (ClassUtils.isPresent(name)
-					&& context.getBeanFactory().isInstance(name)) {
-				logger.info("{} reference {}", context.getTargetClass()
-						.getName(), name);
-				return new AutoBeanBuilder(context.getBeanFactory(),
-						context.getPropertyFactory(),
+			if (ClassUtils.isPresent(name) && context.getBeanFactory().isInstance(name)) {
+				logger.info("{} reference {}", context.getTargetClass().getName(), name);
+				return new AutoBeanBuilder(context.getBeanFactory(), context.getPropertyFactory(),
 						ClassUtils.forNameNullable(name));
 			} else {
 				int index = context.getTargetClass().getName().lastIndexOf(".");
 				name = index == -1 ? (context.getTargetClass().getName() + "Impl")
-						: (context.getTargetClass().getName()
-								.substring(0, index)
-								+ ".impl."
+						: (context.getTargetClass().getName().substring(0, index) + ".impl."
 								+ context.getTargetClass().getSimpleName() + "Impl");
-				if (ClassUtils.isPresent(name)
-						&& context.getBeanFactory().isInstance(name)) {
-					logger.info("{} reference {}", context.getTargetClass()
-							.getName(), name);
-					return new AutoBeanBuilder(context.getBeanFactory(),
-							context.getPropertyFactory(),
+				if (ClassUtils.isPresent(name) && context.getBeanFactory().isInstance(name)) {
+					logger.info("{} reference {}", context.getTargetClass().getName(), name);
+					return new AutoBeanBuilder(context.getBeanFactory(), context.getPropertyFactory(),
 							ClassUtils.forNameNullable(name));
 				}
 			}
 		}
 
-		if (context.getTargetClass().isInterface()
-				|| Modifier.isAbstract(context.getTargetClass().getModifiers())) {
+		if (context.getTargetClass().isInterface() || Modifier.isAbstract(context.getTargetClass().getModifiers())) {
 			Proxy proxy = context.getTargetClass().getAnnotation(Proxy.class);
 			if (proxy != null) {
 				return new ProxyBeanBuilder(context, getProxyNames(proxy));

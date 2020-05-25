@@ -138,6 +138,24 @@
 			</exclusions>
 		</dependency>
 		
+		<dependency>
+			<groupId>com.rabbitmq</groupId>
+			<artifactId>amqp-client</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-client -->
+		<dependency>
+			<groupId>org.apache.activemq</groupId>
+			<artifactId>activemq-client</artifactId>
+			<version>5.15.12</version>
+		</dependency>
+		
 		<!-- https://mvnrepository.com/artifact/com.netflix.ribbon/ribbon-eureka -->
 		<!-- <dependency>
 		    <groupId>com.netflix.ribbon</groupId>
