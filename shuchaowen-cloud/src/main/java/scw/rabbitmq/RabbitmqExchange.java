@@ -69,11 +69,8 @@ public class RabbitmqExchange extends TransactionPushExchange {
 
 	private void declare(Channel channel, ExchangeDeclare exchangeDeclare, QueueDeclare queueDeclare)
 			throws IOException {
-		channel.exchangeDelete(exchangeDeclare.getName());
 		channel.exchangeDeclare(exchangeDeclare.getName(), exchangeDeclare.getType(), exchangeDeclare.isDurable(),
 				exchangeDeclare.isAutoDelete(), exchangeDeclare.isInternal(), exchangeDeclare.getArguments());
-
-		channel.queueDelete(queueDeclare.getName());
 		channel.queueDeclare(queueDeclare.getName(), queueDeclare.isDurable(), queueDeclare.isExclusive(),
 				queueDeclare.isAutoDelete(), queueDeclare.getArguments());
 	}
