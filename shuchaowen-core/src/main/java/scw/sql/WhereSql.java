@@ -28,7 +28,7 @@ public class WhereSql implements Sql {
 		checkAnd();
 		privateWhere(whereSql, params);
 	}
-
+	
 	public void or(String whereSql, Object... params) {
 		checkOr();
 		privateWhere(whereSql, params);

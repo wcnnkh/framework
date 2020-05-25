@@ -105,8 +105,8 @@ public final class BeanUtils {
 		if (Modifier.isFinal(type.getModifiers())) {// final修饰的类无法代理
 			return false;
 		}
-		
-		if(type.getName().startsWith("java.") || type.getName().startsWith("javax.")){
+
+		if (type.getName().startsWith("java.") || type.getName().startsWith("javax.")) {
 			return false;
 		}
 
@@ -118,32 +118,48 @@ public final class BeanUtils {
 		}
 
 		for (String name : DISABLE_PROXY_BEANS) {
-			if(StringUtils.test(type.getName(), name)){
+			if (StringUtils.test(type.getName(), name)) {
 				return false;
 			}
 		}
 
 		Bean bean = annotatedElement.getAnnotation(Bean.class);
-		if (bean == null) {
-			return true;
+		if (bean != null) {
+			return bean.proxy();
 		}
-		return bean.proxy();
+
+		Class<?> useClass = type;
+		while (useClass != null && useClass != Object.class) {
+			bean = useClass.getAnnotation(Bean.class);
+			if (bean != null && !bean.proxy()) {
+				return false;
+			}
+
+			for (Class<?> interfaceClass : useClass.getInterfaces()) {
+				bean = interfaceClass.getAnnotation(Bean.class);
+				if (bean != null && !bean.proxy()) {
+					return false;
+				}
+			}
+			useClass = useClass.getSuperclass();
+		}
+		return true;
 	}
 
 	public static String getScanAnnotationPackageName() {
 		return GlobalPropertyFactory.getInstance().getValue("scw.scan.beans.package", String.class,
 				InstanceUtils.getScanAnnotationPackageName());
 	}
-	
-	public static Class<?>[] getServiceInterfaces(Class<?> clazz){
+
+	public static Class<?>[] getServiceInterfaces(Class<?> clazz) {
 		List<Class<?>> list = new ArrayList<Class<?>>();
 		for (Class<?> i : clazz.getInterfaces()) {
-			if(AnnotationUtils.isIgnore(clazz) || i.getMethods().length == 0){
+			if (AnnotationUtils.isIgnore(clazz) || i.getMethods().length == 0) {
 				continue;
 			}
-			
+
 			list.add(i);
 		}
-		return list.isEmpty()? ClassUtils.emptyArray():list.toArray(new Class<?>[0]);
+		return list.isEmpty() ? ClassUtils.emptyArray() : list.toArray(new Class<?>[0]);
 	}
 }

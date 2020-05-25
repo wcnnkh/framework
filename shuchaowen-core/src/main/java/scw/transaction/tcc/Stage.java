@@ -4,15 +4,15 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 
 import scw.aop.MethodInvoker;
-import scw.async.AbstractAsyncRunnable;
 import scw.beans.BeanFactory;
+import scw.complete.RelyOnBeanFactoryCompleteTask;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.transaction.tcc.annotation.TryResult;
 
-public class Stage extends AbstractAsyncRunnable {
-	private static final long serialVersionUID = 1L;
+public class Stage extends RelyOnBeanFactoryCompleteTask {
+	private static final long serialVersionUID = 1L;	
 	private final TryInfo tryInfo;
 	private final String beanName;
 	private final String stageName;
@@ -72,21 +72,17 @@ public class Stage extends AbstractAsyncRunnable {
 		return args;
 	}
 
-	public Object call() throws Exception {
+	public Object process() throws Throwable {
 		Method method = getMethod();
 		ReflectionUtils.makeAccessible(method);
 		MethodInvoker methodInvoker = getBeanFactory().getAop().getProxyMethod(getBeanFactory(), beanName,
 				tryInfo.getTargetClass(), method, null);
-		try {
-			return methodInvoker.invoke(getArgs(method));
-		} catch (Throwable e) {
-			throw new TccException(method.toString(), e);
-		}
+		return methodInvoker.invoke(getArgs(method));
 	}
 
 	@Override
 	public String toString() {
 		Method method = getMethod();
-		return "beanName=" + beanName + " stage=" + stageName + ", method=" + (method == null? null:method);
+		return "beanName=" + beanName + " stage=" + stageName + ", method=" + (method == null ? null : method);
 	}
 }

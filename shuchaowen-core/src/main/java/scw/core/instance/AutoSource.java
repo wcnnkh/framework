@@ -144,7 +144,7 @@ public class AutoSource<T> {
 		if (!require) {
 			return true;
 		}
-
+		
 		if (parameterDescriptor.getType() == targetClass) {
 			return false;
 		}

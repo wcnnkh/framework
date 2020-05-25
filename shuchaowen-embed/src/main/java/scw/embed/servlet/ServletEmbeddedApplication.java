@@ -6,7 +6,6 @@ import scw.core.instance.annotation.Configuration;
 import scw.http.server.servlet.HttpServletService;
 import scw.lang.NotSupportedException;
 import scw.mvc.servlet.DispatcherServlet;
-import scw.util.FormatUtils;
 
 @Configuration(MainApplication.class)
 public class ServletEmbeddedApplication extends MainApplication {
@@ -35,7 +34,7 @@ public class ServletEmbeddedApplication extends MainApplication {
 
 	@Override
 	protected void destroyInternal() {
-		FormatUtils.info(ServletEmbeddedApplication.class, "---------------shutdown---------------");
+		getLogger().info(ServletEmbeddedApplication.class, "---------------shutdown---------------");
 		if (embedded != null) {
 			embedded.destroy();
 		}

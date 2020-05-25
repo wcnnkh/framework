@@ -1,24 +1,64 @@
 package scw.transaction.tcc;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.lang.reflect.Method;
 
-import scw.async.AsyncExecutor;
-import scw.async.local.FileLocalAsyncExecutor;
+import scw.aop.ProxyContext;
 import scw.beans.BeanFactory;
+import scw.complete.Complete;
+import scw.complete.CompleteService;
 import scw.core.instance.annotation.Configuration;
+import scw.core.utils.StringUtils;
+import scw.transaction.tcc.annotation.Tcc;
 
 @Configuration(order = Integer.MIN_VALUE, value = TccService.class)
-public class DefaultTccService extends AbstractTccService {
-	private AsyncExecutor asyncExecutor;
+public class DefaultTccService implements TccService {
+	private BeanFactory beanFactory;
+	private CompleteService completeService;
 
-	public DefaultTccService(BeanFactory beanFactory) throws IOException, ClassNotFoundException {
-		super(beanFactory);
-		this.asyncExecutor = new FileLocalAsyncExecutor(beanFactory, "tcc", 1, TimeUnit.MINUTES);
+	public DefaultTccService(BeanFactory beanFactory, CompleteService completeService) {
+		this.beanFactory = beanFactory;
+		this.completeService = completeService;
 	}
 
-	public void execute(Stage stage) {
-		asyncExecutor.execute(stage);
+	private Stage createStage(TryInfo tryInfo, Tcc tcc, String stageName) {
+		return new Stage(beanFactory,
+				StringUtils.isEmpty(tcc.beanName()) ? tryInfo.getTargetClass().getName() : tcc.beanName(), tryInfo,
+				stageName);
 	}
 
+	public Stage createConfirm(TryInfo tryInfo, Method tryMethod, Tcc tcc) {
+		if (StringUtils.isEmpty(tcc.confirm())) {
+			return null;
+		}
+
+		return createStage(tryInfo, tcc, tcc.confirm());
+	}
+
+	public Stage createConfirm(ProxyContext context, Object tryResult, Tcc tcc) {
+		if (StringUtils.isEmpty(tcc.confirm())) {
+			return null;
+		}
+
+		return createStage(new TryInfo(context, tryResult), tcc, tcc.confirm());
+	}
+
+	public Stage createCancel(ProxyContext context, Object tryResult, Tcc tcc) {
+		if (StringUtils.isEmpty(tcc.cancel())) {
+			return null;
+		}
+
+		return createStage(new TryInfo(context, tryResult), tcc, tcc.cancel());
+	}
+
+	public Stage createCancel(TryInfo tryInfo, Method tryMethod, Tcc tcc) {
+		if (StringUtils.isEmpty(tcc.cancel())) {
+			return null;
+		}
+
+		return createStage(tryInfo, tcc, tcc.cancel());
+	}
+
+	public Complete registerComplete(Stage stage) throws Exception {
+		return completeService.register(stage);
+	}
 }

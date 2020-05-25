@@ -19,7 +19,7 @@
 		<amqp-client.version>5.7.3</amqp-client.version>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
-		<tomcat.version>8.5.51</tomcat.version>
+		<tomcat.version>8.5.55</tomcat.version>
 
 		<!-- 非core的引用 -->
 		<!-- 注意，此版本号需要jdk1.8以上的版本 -->
@@ -45,7 +45,7 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-dubbo</artifactId>
+				<artifactId>shuchaowen-cloud</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 
@@ -76,12 +76,6 @@
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-kdniao</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
-			</dependency>
-
-			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-mq</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 
@@ -428,7 +422,6 @@
 		<module>shuchaowen-core</module>
 		<module>shuchaowen-integration</module>
 		<module>shuchaowen-alibaba</module>
-		<module>shuchaowen-mail</module>
 		<module>shuchaowen-kdniao</module>
 		<module>shuchaowen-upload</module>
 		<module>shuchaowen-freemarker</module>
@@ -436,13 +429,12 @@
 		<module>shuchaowen-apple</module>
 		<module>shuchaowen-zookeeper</module>
 		<module>shuchaowen-embed</module>
-		<module>shuchaowen-dubbo</module>
 		<module>shuchaowen-timer</module>
 		<module>shuchaowen-db</module>
-		<module>shuchaowen-mq</module>
 		<module>shuchaowen-data</module>
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>
 		<module>shuchaowen-office</module>
+		<module>shuchaowen-cloud</module>
 	</modules>
 </project>

@@ -426,22 +426,27 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter,
 
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
-		beanBuilderLoaders
-				.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, getPropertyFactory()));
-		propertyFactory.addBasePropertyFactory(InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, getPropertyFactory()));
-		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
-				getPropertyFactory())) {
+		beanBuilderLoaders.addAll(InstanceUtils.getConfigurationList(
+				BeanBuilderLoader.class, this, getPropertyFactory()));
+		propertyFactory.addBasePropertyFactory(InstanceUtils
+				.getConfigurationList(BasePropertyFactory.class, this,
+						getPropertyFactory()));
+		for (BeanConfiguration configuration : InstanceUtils
+				.getConfigurationList(BeanConfiguration.class, this,
+						getPropertyFactory())) {
 			addBeanConfiguration(configuration);
 		}
 
-		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(BeanUtils.getScanAnnotationPackageName())) {
+		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(
+				BeanUtils.getScanAnnotationPackageName())) {
 			Ioc ioc = new Ioc(clazz);
 			ioc.getAutowired().process(null, this, propertyFactory, true);
 			ioc.getInit().process(null, this, propertyFactory, true);
 		}
 
-		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class,
-				this, getPropertyFactory())) {
+		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils
+				.getConfigurationList(BeanFactoryLifeCycle.class, this,
+						getPropertyFactory())) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
 	}
@@ -581,7 +586,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter,
 				context.getTargetClass(), context.getPropertyFactory())) {
 			BeanBuilder beanBuilder = loading(new LoaderContext(impl, context));
 			if (beanBuilder != null && beanBuilder.isInstance()) {
-				logger.info("Configuration {} impl {}", context.getTargetClass(), impl);
+				logger.info("Configuration {} impl {}",
+						context.getTargetClass(), impl);
 				return beanBuilder;
 			}
 		}

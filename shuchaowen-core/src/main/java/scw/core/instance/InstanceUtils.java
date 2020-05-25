@@ -121,7 +121,7 @@ public final class InstanceUtils {
 			PropertyFactory propertyFactory, Collection<? extends Class> excludeTypes,
 			Collection<String> packageNames) {
 		List<T> list = new ArrayList<T>();
-		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory, excludeTypes, packageNames)) {
+		for (Class<? extends T> clazz : getConfigurationClassList(type, propertyFactory, excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
 				logger.debug("factory [{}] not create {} in instance: {}", instanceFactory.getClass(), type, clazz);
 				continue;
@@ -145,7 +145,7 @@ public final class InstanceUtils {
 	public static <T> T getConfiguration(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
 			PropertyFactory propertyFactory, Collection<? extends Class> excludeTypes,
 			Collection<String> packageNames) {
-		for (Class<T> clazz : getConfigurationClassList(type, propertyFactory, excludeTypes, packageNames)) {
+		for (Class<? extends T> clazz : getConfigurationClassList(type, propertyFactory, excludeTypes, packageNames)) {
 			if (!instanceFactory.isInstance(clazz)) {
 				logger.debug("factory [{}] not create {} in instance: {}", instanceFactory.getClass(), type, clazz);
 				continue;

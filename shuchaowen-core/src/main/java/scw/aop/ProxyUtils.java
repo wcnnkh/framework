@@ -3,7 +3,6 @@ package scw.aop;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Set;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
@@ -58,6 +57,7 @@ public final class ProxyUtils {
 
 	/**
 	 * 代理一个对象并忽略其指定的方法
+	 * 
 	 * @param clazz
 	 * @param instance
 	 * @param ignoreMethods
@@ -65,26 +65,27 @@ public final class ProxyUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T proxyIngoreMethod(Class<? extends T> clazz,
-			Object instance, Set<Method> ignoreMethods) {
+			T instance, IgnoreMethodAccept ignoreMethodAccept) {
 		Proxy proxy = getProxyFactory().getProxy(
 				clazz,
 				new Class<?>[] { IgnoreMethodTarget.class },
 				new DefaultFilterChain(Arrays.asList(new IgnoreMethodFilter(
-						instance, ignoreMethods))));
+						instance, ignoreMethodAccept))));
 		return (T) proxy.create();
 	}
 
 	public static interface IgnoreMethodTarget {
-		<T> T getIgnoreMethodTarget();
+		Object getIgnoreMethodTarget();
 	}
 
 	private static final class IgnoreMethodFilter implements Filter {
 		private final Object object;
-		private final Set<Method> ignoreMethods;
+		private final IgnoreMethodAccept ignoreMethodAccept;
 
-		public IgnoreMethodFilter(Object object, Set<Method> ignoreMethods) {
+		public IgnoreMethodFilter(Object object,
+				IgnoreMethodAccept ignoreMethodAccept) {
 			this.object = object;
-			this.ignoreMethods = ignoreMethods;
+			this.ignoreMethodAccept = ignoreMethodAccept;
 		}
 
 		public Object doFilter(Invoker invoker, ProxyContext context,
@@ -94,11 +95,16 @@ public final class ProxyUtils {
 				return object;
 			}
 
-			if (ignoreMethods.contains(context.getMethod())) {
+			if (ignoreMethodAccept != null
+					&& ignoreMethodAccept.accept(context.getMethod())) {
 				return null;
 			}
 
 			return filterChain.doFilter(invoker, context);
 		}
+	}
+
+	public static interface IgnoreMethodAccept {
+		boolean accept(Method method);
 	}
 }

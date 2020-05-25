@@ -23,10 +23,10 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-timer</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-dubbo</artifactId>
+			<artifactId>shuchaowen-cloud</artifactId>
 		</dependency>
 
 		<dependency>
@@ -38,7 +38,7 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-embed</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-freemarker</artifactId>
@@ -59,9 +59,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>shuchaowen</groupId>
-			<artifactId>shuchaowen-mq</artifactId>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>

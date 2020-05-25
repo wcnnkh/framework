@@ -4,11 +4,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import scw.beans.annotation.Bean;
 import scw.core.IteratorCallback;
 import scw.core.Pagination;
 import scw.core.IteratorCallback.Row;
 import scw.sql.Sql;
 
+@Bean(proxy=false)
 public interface EntityOperations {
 	<T> T getById(Class<? extends T> type, Object... params);
 

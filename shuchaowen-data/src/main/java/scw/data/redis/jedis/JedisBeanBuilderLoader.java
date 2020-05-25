@@ -19,9 +19,11 @@ import scw.value.property.PropertiesPropertyFactory;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
-public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants {
+public class JedisBeanBuilderLoader implements BeanBuilderLoader,
+		RedisConstants {
 
-	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
+	public BeanBuilder loading(LoaderContext context,
+			BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == JedisPool.class) {
 			return new JedisPoolBeanBuilder(context);
 		} else if (context.getTargetClass() == JedisPoolConfig.class) {
@@ -31,7 +33,8 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 	}
 
 	private static String getConfigName(PropertyFactory propertyFactory) {
-		return propertyFactory.getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
+		return propertyFactory.getValue(CONFIG_KEY, String.class,
+				DEFAULT_CONFIG);
 	}
 
 	private static final class JedisPoolBeanBuilder extends AbstractBeanBuilder {
@@ -49,11 +52,12 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 			if (host == null) {
 				String config = getConfigName(propertyFactory);
 				if (ResourceUtils.getResourceOperations().isExist(config)) {
-					Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(config,
-							Constants.DEFAULT_CHARSET_NAME);
+					Properties properties = ResourceUtils
+							.getResourceOperations().getFormattedProperties(
+									config, Constants.DEFAULT_CHARSET_NAME);
 					host = properties.getProperty(HOST_CONFIG_KEY);
-					if(host == null){
-						host = properties.getProperty("host");//兼容老版本
+					if (host == null) {
+						host = properties.getProperty("host");// 兼容老版本
 					}
 				}
 			}
@@ -63,7 +67,8 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 		public Object create() throws Exception {
 			String host = getHost();
 			if (beanFactory.isInstance(JedisPoolConfig.class)) {
-				return new JedisPool(beanFactory.getInstance(JedisPoolConfig.class), host);
+				return new JedisPool(
+						beanFactory.getInstance(JedisPoolConfig.class), host);
 			} else {
 				return new JedisPool(host);
 			}
@@ -80,19 +85,23 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 		}
 	}
 
-	private static final class JedisPoolConfigBeanBuilder extends AbstractBeanBuilder {
+	private static final class JedisPoolConfigBeanBuilder extends
+			AbstractBeanBuilder {
 		public JedisPoolConfigBeanBuilder(LoaderContext context) {
 			super(context);
 		}
 
 		public boolean isInstance() {
-			return ResourceUtils.getResourceOperations().isExist(getConfigName(propertyFactory));
+			return ResourceUtils.getResourceOperations().isExist(
+					getConfigName(propertyFactory));
 		}
 
 		public Object create() throws Exception {
 			Properties properties = ResourceUtils.getResourceOperations()
-					.getFormattedProperties(getConfigName(propertyFactory), Constants.DEFAULT_CHARSET_NAME);
-			PropertyFactory propertyFactory = new PropertiesPropertyFactory(properties);
+					.getFormattedProperties(getConfigName(propertyFactory),
+							Constants.DEFAULT_CHARSET_NAME);
+			PropertyFactory propertyFactory = new PropertiesPropertyFactory(
+					properties);
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);
 			if (StringUtils.isEmpty(host)) {
 				host = "127.0.0.1";
@@ -100,8 +109,10 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, null, propertyFactory);
-			ConfigUtils.invokeSetterByProeprties(jedisPoolConfig, "redis.", propertyFactory);
+			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null,
+					null);
+			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null,
+					"redis.");
 			return jedisPoolConfig;
 		}
 	}

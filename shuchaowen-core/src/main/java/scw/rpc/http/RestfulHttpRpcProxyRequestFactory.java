@@ -13,8 +13,8 @@ import scw.http.client.ClientHttpRequest;
 import scw.http.client.accessor.HttpAccessor;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.rpc.http.annotation.HttpRpc;
-import scw.rpc.http.annotation.HttpRpc.ContentType;
+import scw.rpc.http.annotation.HttpClient;
+import scw.rpc.http.annotation.HttpClient.ContentType;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.value.property.PropertyFactory;
@@ -37,7 +37,7 @@ public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements H
 	}
 
 	public ClientHttpRequest getClientHttpRequest(ProxyContext proxyContext) throws Exception {
-		HttpRpc rpc = AnnotationUtils.getAnnotation(HttpRpc.class, proxyContext.getTargetClass(),
+		HttpClient rpc = AnnotationUtils.getAnnotation(HttpClient.class, proxyContext.getTargetClass(),
 				proxyContext.getMethod());
 		if (rpc == null) {
 			return null;
@@ -77,7 +77,7 @@ public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements H
 				: host;
 
 		ClientHttpRequest clientHttpRequest = createRequest(new URI(host), httpMethod);
-		if (rpc.requestContentType() == scw.rpc.http.annotation.HttpRpc.ContentType.FORM) {
+		if (rpc.requestContentType() == scw.rpc.http.annotation.HttpClient.ContentType.FORM) {
 			clientHttpRequest
 					.setContentType(new MimeType(MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED, charsetName));
 		} else if (rpc.requestContentType() == ContentType.JSON) {

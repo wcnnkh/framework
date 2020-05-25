@@ -4,6 +4,7 @@ import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.aop.ProxyContext;
+import scw.complete.Complete;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
@@ -45,24 +46,33 @@ public class TccFilter implements Filter {
 			throw new TccException("tcc definition error:" + context.getMethod());
 		}
 
+		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚
+		final Complete cancelComplete = cancel == null ? null : tccService.registerComplete(cancel);
 		TransactionManager.transactionLifeCycle(new TransactionLifeCycle() {
 
 			public void complete() {
 			}
 
 			public void beforeRollback() {
-				tccService.execute(cancel);
 			}
 
 			public void beforeProcess() throws Throwable {
-				tccService.execute(confirm);
 			}
 
 			public void afterRollback() {
-
+				if (cancelComplete != null) {
+					cancelComplete.run();
+				}
 			}
 
-			public void afterProcess() {
+			public void afterProcess() throws Throwable {
+				if (cancelComplete != null) {
+					cancelComplete.cancel();
+				}
+
+				if (confirm != null) {
+					tccService.registerComplete(confirm).run();
+				}
 			}
 		});
 		return result;

@@ -9,9 +9,11 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
-import scw.util.FormatUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public class MainApplication extends CommonApplication implements Application {
+	private final Logger logger;
 	private final Class<?> mainClass;
 	private final String[] args;
 
@@ -20,6 +22,7 @@ public class MainApplication extends CommonApplication implements Application {
 		this.mainClass = mainClass;
 		this.args = args;
 		configuration(mainClass, args);
+		this.logger = LoggerUtils.getLogger(mainClass);
 	}
 
 	public Class<?> getMainClass() {
@@ -42,13 +45,20 @@ public class MainApplication extends CommonApplication implements Application {
 		}
 	}
 
+	public final Logger getLogger() {
+		return logger;
+	}
+
 	public static void configuration(Class<?> mainClass, String[] args) {
-		Thread.currentThread().setContextClassLoader(mainClass.getClassLoader());
+		Thread.currentThread()
+				.setContextClassLoader(mainClass.getClassLoader());
 		BasePackage basePackage = mainClass.getAnnotation(BasePackage.class);
 		if (basePackage == null) {
-			GlobalPropertyFactory.getInstance().setBasePackageName(mainClass.getPackage().getName());
+			GlobalPropertyFactory.getInstance().setBasePackageName(
+					mainClass.getPackage().getName());
 		} else {
-			GlobalPropertyFactory.getInstance().setBasePackageName(basePackage.value());
+			GlobalPropertyFactory.getInstance().setBasePackageName(
+					basePackage.value());
 		}
 	}
 
@@ -60,21 +70,26 @@ public class MainApplication extends CommonApplication implements Application {
 		run.start();
 	}
 
-	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, String[] args)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class,
-				GlobalPropertyFactory.getInstance());
+	public static MainApplication getAutoMainApplicationImpl(
+			Class<?> mainClass, String[] args) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException {
+		Collection<Class<MainApplication>> impls = InstanceUtils
+				.getConfigurationClassList(MainApplication.class,
+						GlobalPropertyFactory.getInstance());
 		if (!CollectionUtils.isEmpty(impls)) {
 			Iterator<Class<MainApplication>> iterator = impls.iterator();
 			while (iterator.hasNext()) {
-				Constructor<MainApplication> constructor = ReflectionUtils.findConstructor(iterator.next(), false,
-						Class.class, String[].class);
+				Constructor<MainApplication> constructor = ReflectionUtils
+						.findConstructor(iterator.next(), false, Class.class,
+								String[].class);
 				if (constructor != null) {
 					ReflectionUtils.makeAccessible(constructor);
 					return constructor.newInstance(mainClass, args);
 				}
 
-				constructor = ReflectionUtils.findConstructor(iterator.next(), false, Class.class);
+				constructor = ReflectionUtils.findConstructor(iterator.next(),
+						false, Class.class);
 				if (constructor != null) {
 					ReflectionUtils.makeAccessible(constructor);
 					return constructor.newInstance(mainClass);
@@ -97,7 +112,8 @@ public class MainApplication extends CommonApplication implements Application {
 			application = new MainApplication(mainClass, args);
 		}
 
-		FormatUtils.info(mainClass, "use application: {}", application.getClass().getName());
+		application.getLogger().info("use application: {}",
+				application.getClass().getName());
 		run(application);
 	}
 
