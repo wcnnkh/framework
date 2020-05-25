@@ -1,8 +1,6 @@
-package scw.amqp.support;
+package scw.amqp;
 
 import java.io.Serializable;
-
-import scw.amqp.MessageProperties;
 
 public class MethodMessage extends MessageProperties implements Serializable {
 	private static final long serialVersionUID = 1L;

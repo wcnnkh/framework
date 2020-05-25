@@ -34,7 +34,7 @@ public class LocalCompleteService implements CompleteService, Destroy {
 	private final BeanFactory beanFactory;
 
 	public LocalCompleteService(BeanFactory beanFactory) {
-		this(beanFactory, "complete", 1, TimeUnit.SECONDS);
+		this(beanFactory, "complete", 1, TimeUnit.MINUTES);
 	}
 
 	public LocalCompleteService(BeanFactory beanFactory, String suffix, long delayMillis, TimeUnit delayTimeUnit) {

@@ -10,7 +10,8 @@ import scw.core.utils.StringUtils;
 
 public class MessageProperties implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private static final String RABBIT_DELAY_MESSAGE = "scw.rabbit.delay.message";
+	private static final String DELAY_MESSAGE = "scw.delay";
+	private static final String RETRY_COUNT = "scw.retry.count";
 
 	private String contentType;
 	private String contentEncoding;
@@ -144,17 +145,17 @@ public class MessageProperties implements Serializable {
 	}
 
 	public long getDelay() {
-		Object delay = getHeader(RABBIT_DELAY_MESSAGE);
+		Object delay = getHeader(DELAY_MESSAGE);
 		return delay == null ? 0 : StringUtils.parseLong(delay.toString());
 	}
 
 	public MessageProperties setDelay(long delay, TimeUnit timeUnit) {
 		if (delay <= 0) {
-			removeHeader(RABBIT_DELAY_MESSAGE);
-			setExpiration((String)null);
+			removeHeader(DELAY_MESSAGE);
+			setExpiration((String) null);
 		} else {
 			setExpiration(timeUnit.toMillis(delay));
-			setHeader(RABBIT_DELAY_MESSAGE, getExpiration());
+			setHeader(DELAY_MESSAGE, getExpiration());
 		}
 		return this;
 	}
@@ -181,5 +182,21 @@ public class MessageProperties implements Serializable {
 			headers.remove(name);
 		}
 		return this;
+	}
+
+	public int getRetryCount() {
+		if (headers == null) {
+			return 0;
+		}
+
+		Object count = headers.get(RETRY_COUNT);
+		if (count != null) {
+			return StringUtils.parseInt(count.toString());
+		}
+		return 0;
+	}
+
+	public void incrRetryCount() {
+		setHeader(RETRY_COUNT, getRetryCount() + 1);
 	}
 }

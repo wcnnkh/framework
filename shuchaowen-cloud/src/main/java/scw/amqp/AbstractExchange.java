@@ -1,11 +1,7 @@
-package scw.amqp.support;
+package scw.amqp;
 
 import java.io.IOException;
 
-import scw.amqp.Message;
-import scw.amqp.MessageListener;
-import scw.amqp.MessageProperties;
-import scw.amqp.QueueDeclare;
 import scw.aop.MethodInvoker;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;

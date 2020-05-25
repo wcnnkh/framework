@@ -310,7 +310,7 @@ public final class ConfigUtils {
 			String name = field.getSetter().getName();
 			String value = null;
 			if (CollectionUtils.isEmpty(nameList)) {
-				value = map.get(StringUtils.isEmpty(propertyPrefix) ? name
+				value = map.remove(StringUtils.isEmpty(propertyPrefix) ? name
 						: (propertyPrefix + name));
 			} else {
 				Iterator<String> iterator = nameList.iterator();

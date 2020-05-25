@@ -6,8 +6,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ConnectionFactoryConfigurator;
 
+import scw.amqp.Exchange;
 import scw.amqp.ExchangeDeclare;
-import scw.amqp.support.Exchange;
 import scw.beans.builder.AbstractBeanBuilder;
 import scw.beans.builder.BeanBuilder;
 import scw.beans.builder.BeanBuilderLoader;

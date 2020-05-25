@@ -3,13 +3,6 @@ package scw.rabbitmq;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.AMQP.BasicProperties;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
-
 import scw.amqp.ExchangeDeclare;
 import scw.amqp.Message;
 import scw.amqp.MessageListener;
@@ -24,6 +17,13 @@ import scw.io.serialzer.SerializerUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AMQP.BasicProperties;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.DefaultConsumer;
+import com.rabbitmq.client.Envelope;
 
 public class RabbitmqExchange extends TransactionPushExchange {
 	private static final String DIX_PREFIX = "scw.dix.";
@@ -69,9 +69,11 @@ public class RabbitmqExchange extends TransactionPushExchange {
 
 	private void declare(Channel channel, ExchangeDeclare exchangeDeclare, QueueDeclare queueDeclare)
 			throws IOException {
+		channel.exchangeDelete(exchangeDeclare.getName());
 		channel.exchangeDeclare(exchangeDeclare.getName(), exchangeDeclare.getType(), exchangeDeclare.isDurable(),
 				exchangeDeclare.isAutoDelete(), exchangeDeclare.isInternal(), exchangeDeclare.getArguments());
 
+		channel.queueDelete(queueDeclare.getName());
 		channel.queueDeclare(queueDeclare.getName(), queueDeclare.isDurable(), queueDeclare.isExclusive(),
 				queueDeclare.isAutoDelete(), queueDeclare.getArguments());
 	}
@@ -131,6 +133,10 @@ public class RabbitmqExchange extends TransactionPushExchange {
 
 	protected void push(Channel channel, String routingKey, MessageProperties messageProperties, byte[] body)
 			throws IOException {
+		if(logger.isTraceEnabled()){
+			logger.trace("push routingKey={}, properties={}, body={}", routingKey, JSONUtils.toJSONString(messageProperties), body);
+		}
+		
 		if (messageProperties.getDelay() > 0) {
 			channel.basicPublish(delayExchangeDeclare.getName(), routingKey, toBasicProperties(messageProperties),
 					body);

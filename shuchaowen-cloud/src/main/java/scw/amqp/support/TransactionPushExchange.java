@@ -2,6 +2,7 @@ package scw.amqp.support;
 
 import java.util.concurrent.TimeUnit;
 
+import scw.amqp.AbstractExchange;
 import scw.amqp.Message;
 import scw.amqp.MessageListener;
 import scw.amqp.MessageProperties;

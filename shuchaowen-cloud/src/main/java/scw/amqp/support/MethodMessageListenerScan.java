@@ -3,6 +3,7 @@ package scw.amqp.support;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import scw.amqp.Exchange;
 import scw.amqp.QueueDeclare;
 import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.BeanFactory;

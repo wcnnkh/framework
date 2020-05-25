@@ -1,8 +1,5 @@
-package scw.amqp.support;
+package scw.amqp;
 
-import scw.amqp.Message;
-import scw.amqp.MessageListener;
-import scw.amqp.QueueDeclare;
 import scw.aop.MethodInvoker;
 
 public interface Exchange {
