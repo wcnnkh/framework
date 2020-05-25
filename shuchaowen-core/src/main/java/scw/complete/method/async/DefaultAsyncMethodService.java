@@ -2,20 +2,40 @@ package scw.complete.method.async;
 
 import java.util.concurrent.Executor;
 
+import scw.complete.Complete;
 import scw.complete.CompleteService;
 import scw.core.instance.annotation.Configuration;
+import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.TransactionManager;
 
 @Configuration(order = Integer.MIN_VALUE)
-public class DefaultAsyncMethodService extends AbstractAsyncMethodService {
+public class DefaultAsyncMethodService implements AsyncMethodService {
+	private Executor executor;
 	private CompleteService completeService;
 
-	public DefaultAsyncMethodService(CompleteService completeService, Executor executor) throws Exception {
-		super(executor);
+	public DefaultAsyncMethodService(Executor executor,
+			CompleteService completeService) {
+		this.executor = executor;
 		this.completeService = completeService;
 	}
 
-	@Override
-	public CompleteService getCompleteService() {
-		return completeService;
+	public void service(AsyncMethodCompleteTask asyncComplete) throws Exception {
+		final Complete complete = completeService.register(asyncComplete);
+		if (TransactionManager.hasTransaction()) {
+			TransactionManager
+					.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+						@Override
+						public void afterRollback() {
+							complete.cancel();
+						}
+
+						@Override
+						public void afterProcess() {
+							executor.execute(complete);
+						}
+					});
+		} else {
+			executor.execute(complete);
+		}
 	}
 }
