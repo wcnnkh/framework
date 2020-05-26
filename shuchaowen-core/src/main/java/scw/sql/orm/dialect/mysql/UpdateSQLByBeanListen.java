@@ -125,7 +125,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
-			paramList.add(value);
+			paramList.add(column.toDataBaseValue(value));
 		}
 
 		sb.append(WHERE);
