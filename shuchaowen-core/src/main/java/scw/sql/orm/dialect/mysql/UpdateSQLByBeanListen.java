@@ -73,7 +73,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			}
 			
 			Object oldValue = changeMap.get(column.getField().getSetter().getName());
-			Object value = column.get(beanFieldListen);
+			Object value = column.getField().getGetter().get(beanFieldListen);
 			CounterInfo counterInfo = column.getCounterInfo();
 			if (counterInfo != null && TypeUtils.isNumber(column.getField().getSetter().getType())) {
 				if (oldValue != null && value != null) {

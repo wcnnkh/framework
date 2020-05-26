@@ -51,6 +51,11 @@ public class Column implements Serializable{
 		return getField().getGetter().getName();
 	}
 
+	/**
+	 * 将值转换为对象的类型
+	 * @param value
+	 * @return
+	 */
 	public Object toColumnValue(Object value) {
 		if (value == null) {
 			return value;
@@ -109,14 +114,30 @@ public class Column implements Serializable{
 		}
 	}
 	
+	/**
+	 * 将数据库的值插入到对象
+	 * @param entity
+	 * @param value
+	 */
 	public final void set(Object entity, Object value){
 		field.getSetter().set(entity, toColumnValue(value));
 	}
 	
+	/**
+	 * 获取插入到数据库的值
+	 * @param entity
+	 * @return
+	 */
 	public final Object get(Object entity){
-		return field.getGetter().get(entity);
+		Object value = field.getGetter().get(entity);
+		return value == null? null:toDataBaseValue(value);
 	}
 
+	/**
+	 * 将值转换成数据库类型
+	 * @param value
+	 * @return
+	 */
 	public Object toDataBaseValue(Object value) {
 		Class<?> type = field.getGetter().getType();
 		if (type.isEnum()) {

@@ -35,7 +35,7 @@ public final class RegexUtils {
 	 * Regex of telephone number.
 	 */
 	private static final String REGEX_TEL = "^0\\d{2,3}[- ]?\\d{7,8}";
-	
+
 	/**
 	 * Regex of email.
 	 */
@@ -114,7 +114,7 @@ public final class RegexUtils {
 	 * Regex of negative float.
 	 */
 	public static final String REGEX_NEGATIVE_FLOAT = "^-[1-9]\\d*\\.\\d*|-0\\.\\d*[1-9]\\d*$";
-	
+
 	private RegexUtils() {
 	};
 
@@ -141,7 +141,7 @@ public final class RegexUtils {
 	public static boolean isMobileExact(final CharSequence input) {
 		return isMatch(REGEX_MOBILE_EXACT, input);
 	}
-	
+
 	/**
 	 * Return whether input matches regex of telephone number.
 	 *
@@ -235,8 +235,7 @@ public final class RegexUtils {
 	 *         {@code false}: no
 	 */
 	public static boolean isMatch(final String regex, final CharSequence input) {
-		return input != null && input.length() > 0
-				&& Pattern.matches(regex, input);
+		return input != null && input.length() > 0 && Pattern.matches(regex, input);
 	}
 
 	/**
@@ -248,8 +247,7 @@ public final class RegexUtils {
 	 *            The input.
 	 * @return the list of input matches the regex
 	 */
-	public static List<String> getMatches(final String regex,
-			final CharSequence input) {
+	public static List<String> getMatches(final String regex, final CharSequence input) {
 		if (input == null)
 			return Collections.emptyList();
 		List<String> matches = new ArrayList<String>();
@@ -291,8 +289,7 @@ public final class RegexUtils {
 	 *         subsequence by the replacement string, substituting captured
 	 *         subsequences as needed
 	 */
-	public static String getReplaceFirst(final String input,
-			final String regex, final String replacement) {
+	public static String getReplaceFirst(final String input, final String regex, final String replacement) {
 		if (input == null)
 			return "";
 		return Pattern.compile(regex).matcher(input).replaceFirst(replacement);
@@ -312,8 +309,7 @@ public final class RegexUtils {
 	 *         the replacement string, substituting captured subsequences as
 	 *         needed
 	 */
-	public static String getReplaceAll(final String input, final String regex,
-			final String replacement) {
+	public static String getReplaceAll(final String input, final String regex, final String replacement) {
 		if (input == null)
 			return "";
 		return Pattern.compile(regex).matcher(input).replaceAll(replacement);

@@ -3,18 +3,13 @@ package scw.amqp.support;
 import java.util.concurrent.TimeUnit;
 
 import scw.amqp.AbstractExchange;
-import scw.amqp.Message;
-import scw.amqp.MessageListener;
 import scw.amqp.MessageProperties;
 import scw.beans.BeanFactoryAccessor;
 import scw.complete.Complete;
 import scw.complete.CompleteService;
 import scw.complete.CompleteTask;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
-import scw.json.JSONUtils;
-import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.DefaultTransactionLifeCycle;
-import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
 
 public abstract class TransactionPushExchange extends AbstractExchange {
@@ -80,20 +75,5 @@ public abstract class TransactionPushExchange extends AbstractExchange {
 
 	protected long getRetryDelay() {
 		return TimeUnit.SECONDS.toMillis(10);
-	}
-
-	protected void onMessageInternal(String exchange, String routingKey, Message message,
-			MessageListener messageListener) {
-		Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
-		try {
-			messageListener.onMessage(exchange, routingKey, message);
-			TransactionManager.commit(transaction);
-		} catch (Throwable e) {
-			TransactionManager.rollback(transaction);
-			logger.error(e, "retry delay: {}, exchange={}, properties={}", getRetryDelay(), exchange,
-					JSONUtils.toJSONString(message));
-			message.setDelay(getRetryDelay(), TimeUnit.MILLISECONDS);
-			push(routingKey, message);
-		}
 	}
 }

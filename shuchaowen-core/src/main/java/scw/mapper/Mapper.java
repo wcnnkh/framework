@@ -347,17 +347,17 @@ public abstract class Mapper {
 		}
 
 		public boolean accept(Field field) {
-			if (fieldFilters != null && fieldFilters.size() != 0) {
-				for (FieldFilter filter : fieldFilters) {
-					if (filter != null && !filter.accept(field)) {
+			if (filterFeatures != null && filterFeatures.length != 0) {
+				for (FilterFeature feature : filterFeatures) {
+					if (feature != null && !feature.getFilter().accept(field)) {
 						return false;
 					}
 				}
 			}
-
-			if (filterFeatures != null && filterFeatures.length != 0) {
-				for (FilterFeature feature : filterFeatures) {
-					if (feature != null && !feature.getFilter().accept(field)) {
+			
+			if (fieldFilters != null && fieldFilters.size() != 0) {
+				for (FieldFilter filter : fieldFilters) {
+					if (filter != null && !filter.accept(field)) {
 						return false;
 					}
 				}

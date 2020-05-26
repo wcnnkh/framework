@@ -1,17 +1,22 @@
 package scw.amqp;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import scw.core.utils.StringUtils;
+import scw.script.MathScriptEngine;
 
 public class MessageProperties implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final String DELAY_MESSAGE = "scw.delay";
 	private static final String RETRY_COUNT = "scw.retry.count";
+	private static final String MAX_RETRY_COUNT = "scw.retry.max.count";
+	private static final String RETRY_DELAY = "scw.retry.delay";
+	private static final String RETRY_DELAY_SCRIPT = "scw.retry.delay";
 
 	private String contentType;
 	private String contentEncoding;
@@ -165,7 +170,11 @@ public class MessageProperties implements Serializable {
 			headers = new HashMap<String, Object>();
 		}
 
-		headers.put(name, value);
+		if (value == null) {
+			headers.remove(name);
+		} else {
+			headers.put(name, value);
+		}
 		return this;
 	}
 
@@ -185,18 +194,64 @@ public class MessageProperties implements Serializable {
 	}
 
 	public int getRetryCount() {
-		if (headers == null) {
-			return 0;
-		}
-
-		Object count = headers.get(RETRY_COUNT);
-		if (count != null) {
-			return StringUtils.parseInt(count.toString());
-		}
-		return 0;
+		Integer value = getIntegerHeader(RETRY_COUNT);
+		return value == null ? 0 : value;
 	}
 
 	public void incrRetryCount() {
 		setHeader(RETRY_COUNT, getRetryCount() + 1);
+	}
+
+	public Integer getIntegerHeader(String name) {
+		Object value = getHeader(name);
+		if (value == null) {
+			return null;
+		}
+
+		return StringUtils.parseInt(value.toString(), null);
+	}
+
+	/**
+	 * 0表示没的最大重试次数，-1表示不重试
+	 * 
+	 * @return
+	 */
+	public int getMaxRetryCount() {
+		Integer value = getIntegerHeader(MAX_RETRY_COUNT);
+		return value == null ? 0 : value;
+	}
+
+	public void setMaxRetryCount(int maxRetryCount) {
+		setHeader(MAX_RETRY_COUNT, maxRetryCount);
+	}
+
+	public Long getLongHeader(String name) {
+		Object value = getHeader(name);
+		if (value == null) {
+			return null;
+		}
+
+		return StringUtils.parseLong(value.toString(), null);
+	}
+
+	public long getRetryDelay() {
+		Object script = getHeader(RETRY_DELAY_SCRIPT);
+		if (script == null) {
+			Long value = getLongHeader(RETRY_DELAY);
+			return value == null ? 0 : value;
+		}
+
+		MathScriptEngine mathScriptEngine = new MathScriptEngine();
+		mathScriptEngine.getScriptResolvers().add(new MathScriptEngine.ObjectFieldScriptResolver(this));
+		BigDecimal value = mathScriptEngine.eval(script.toString());
+		return value == null ? null : value.longValue();
+	}
+
+	public void setRetryDelayScript(String script) {
+		setHeader(RETRY_DELAY_SCRIPT, script);
+	}
+
+	public void setRetryDelay(long delay, TimeUnit timeUnit) {
+		setHeader(RETRY_DELAY, timeUnit.toMillis(delay));
 	}
 }

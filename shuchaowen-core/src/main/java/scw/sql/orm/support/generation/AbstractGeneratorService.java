@@ -16,7 +16,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 	protected Logger logger = LoggerUtils.getLogger(getClass());
 
 	protected boolean isGenerator(Object bean, Column column) {
-		Object v = column.get(bean);
+		Object v = column.getField().getGetter().get(bean);
 		if (v != null) {// 已经存在值了
 			if (column.getField().getSetter().getType().isPrimitive()) {
 				return ((Number) v).intValue() == 0;
