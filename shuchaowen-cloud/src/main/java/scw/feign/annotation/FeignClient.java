@@ -8,5 +8,9 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface FeignClient {
-	public String host();
+	/**
+	 * 默认不指明host，会去从配置文件中去查找feign.host
+	 * @return
+	 */
+	public String host() default "";
 }

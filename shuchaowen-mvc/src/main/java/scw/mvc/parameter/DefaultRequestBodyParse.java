@@ -10,12 +10,12 @@ import org.xml.sax.InputSource;
 
 import scw.beans.annotation.Bean;
 import scw.core.parameter.ParameterDescriptor;
-import scw.core.utils.StringUtils;
 import scw.json.JSONSupport;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
 import scw.net.NetworkUtils;
+import scw.value.StringValue;
 import scw.xml.XMLUtils;
 
 @Bean(proxy = false)
@@ -52,6 +52,8 @@ public class DefaultRequestBodyParse implements RequestBodyParse {
 			return null;
 		}
 
-		return StringUtils.defaultAutoParse(body, parameterDescriptor.getGenericType(), jsonParseSupport);
+		StringValue value = new StringValue(body);
+		value.setJsonSupport(jsonParseSupport);
+		return value.getAsObject(parameterDescriptor.getGenericType());
 	}
 }

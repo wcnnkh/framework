@@ -12,6 +12,7 @@ import scw.cglib.proxy.MethodProxy;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
+import scw.io.WriteReplaceInterface;
 import scw.lang.NestedExceptionUtils;
 import scw.mapper.Copy;
 import scw.result.SimpleResult;

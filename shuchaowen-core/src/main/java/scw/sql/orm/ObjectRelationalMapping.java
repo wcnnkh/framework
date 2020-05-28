@@ -104,8 +104,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 		final StringBuilder sb = new StringBuilder(128);
 		sb.append(clazz.getName());
 		for (Column column : getPrimaryKeys(clazz)) {
-			Object value = column.getField().getGetter().get(bean);
-			value = column.toDataBaseValue(value);
+			Object value = column.get(bean);
 			appendObjectKeyByValue(sb, column, value);
 		}
 		return sb.toString();

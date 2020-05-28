@@ -1,12 +1,13 @@
 package scw.feign;
 
-import scw.beans.builder.ConstructorBeanBuilder;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.ConstructorBuilder;
-import scw.net.NetworkUtils;
 import feign.Feign;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import scw.beans.builder.ConstructorBeanBuilder;
+import scw.beans.builder.LoaderContext;
+import scw.core.instance.ConstructorBuilder;
+import scw.core.utils.StringUtils;
+import scw.net.NetworkUtils;
 
 public class FeignBeanBuilder extends ConstructorBeanBuilder {
 	private scw.feign.annotation.FeignClient feignClient;
@@ -20,9 +21,19 @@ public class FeignBeanBuilder extends ConstructorBeanBuilder {
 	protected ConstructorBuilder getConstructorBuilder() {
 		return null;
 	}
+	
+	private String getHost(){
+		String host = feignClient.host();
+		if(StringUtils.isEmpty(host)){
+			host = propertyFactory.getString("feign.host");
+		}else{
+			host = propertyFactory.format(host, true);
+		}
+		return host;
+	}
 
 	public boolean isInstance() {
-		return true;
+		return StringUtils.isNotEmpty(getHost());
 	}
 
 	@Override
@@ -30,7 +41,7 @@ public class FeignBeanBuilder extends ConstructorBeanBuilder {
 		FeignCodec codec = new FeignCodec(NetworkUtils.getMessageConverters());
 		Encoder encoder = beanFactory.isInstance(Encoder.class) ? beanFactory.getInstance(Encoder.class) : codec;
 		Decoder decoder = beanFactory.isInstance(Decoder.class) ? beanFactory.getInstance(Decoder.class) : codec;
-		Object proxy = Feign.builder().encoder(encoder).decoder(decoder).target(getTargetClass(), feignClient.host());
+		Object proxy = Feign.builder().encoder(encoder).decoder(decoder).target(getTargetClass(), getHost());
 		return beanFactory.getAop().getProxyInstance(getTargetClass(), proxy, null, null).create();
 	}
 }

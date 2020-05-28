@@ -73,7 +73,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			}
 			
 			Object oldValue = changeMap.get(column.getField().getSetter().getName());
-			Object value = column.get(beanFieldListen);
+			Object value = column.getField().getGetter().get(beanFieldListen);
 			CounterInfo counterInfo = column.getCounterInfo();
 			if (counterInfo != null && TypeUtils.isNumber(column.getField().getSetter().getType())) {
 				if (oldValue != null && value != null) {
@@ -125,7 +125,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 			keywordProcessing(sb, column.getName());
 			sb.append("=?");
-			paramList.add(value);
+			paramList.add(column.toDataBaseValue(value));
 		}
 
 		sb.append(WHERE);
