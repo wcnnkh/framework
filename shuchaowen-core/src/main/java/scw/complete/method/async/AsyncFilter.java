@@ -46,7 +46,7 @@ public final class AsyncFilter implements Filter {
 		}
 
 		String beanName = StringUtils.isEmpty(async.beanName()) ? context.getTargetClass().getName() : async.beanName();
-		if (instanceFactory.isInstance(beanName)) {
+		if (!instanceFactory.isInstance(beanName)) {
 			throw new NotSupportedException(context.getMethod() + " --> beanName: " + beanName);
 		}
 

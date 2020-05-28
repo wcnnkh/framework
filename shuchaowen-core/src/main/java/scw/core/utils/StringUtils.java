@@ -4,10 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.Type;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
@@ -33,13 +29,10 @@ import java.util.zip.GZIPOutputStream;
 
 import scw.compatible.CompatibleUtils;
 import scw.core.Assert;
-import scw.core.Callable;
 import scw.io.UnsafeByteArrayOutputStream;
-import scw.json.JSONSupport;
-import scw.json.JSONUtils;
 import scw.lang.ParameterException;
-import scw.lang.NotSupportedException;
 import scw.util.FormatUtils;
+import scw.util.KeyValuePair;
 
 public final class StringUtils {
 	private static final String FOLDER_SEPARATOR = "/";
@@ -2252,18 +2245,6 @@ public final class StringUtils {
 		return Double.parseDouble(v);
 	}
 
-	public static char parseChar(String text) {
-		return parseChar(text, (char) 0);
-	}
-
-	public static Character parseChar(String text, Character defaultValue) {
-		if (isEmpty(text)) {
-			return defaultValue;
-		}
-
-		return text.charAt(0);
-	}
-
 	public static String toString(Object value, Object defaultValue) {
 		return toString(value, defaultValue, true);
 	}
@@ -2285,41 +2266,6 @@ public final class StringUtils {
 			return defaultValue;
 		}
 		return text.charAt(0);
-	}
-
-	public static Class<?> parseClass(String text) {
-		try {
-			return ClassUtils.forName(text, ClassUtils.getDefaultClassLoader());
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static Enum<?> parseEnum(String text, Class<?> enumType) {
-		if (StringUtils.isEmpty(text)) {
-			return null;
-		}
-
-		return Enum.valueOf((Class<? extends Enum>) enumType, text);
-	}
-
-	public static BigInteger parseBigInteger(String text, int radix, BigInteger defaultValue) {
-		String v = formatNumberText(text);
-		if (isEmpty(v)) {
-			return defaultValue;
-		}
-
-		return new BigInteger(v, radix);
-	}
-
-	public static BigDecimal parseBigDecimal(String text, BigDecimal defaultValue) {
-		String v = formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
-			return defaultValue;
-		}
-
-		return new BigDecimal(v);
 	}
 
 	/**
@@ -2390,266 +2336,6 @@ public final class StringUtils {
 
 		}
 		return outBuffer.toString();
-	}
-
-	public static BigInteger parseBigInteger(String text) {
-		String v = StringUtils.formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
-			return null;
-		}
-
-		return new BigInteger(v);
-	}
-
-	public static BigDecimal parseBigDecimal(String text) {
-		String v = StringUtils.formatNumberText(text);
-		if (StringUtils.isEmpty(v)) {
-			return null;
-		}
-
-		return new BigDecimal(text);
-	}
-
-	public static boolean isCommonType(Type type) {
-		if (TypeUtils.isPrimitiveOrWrapper(type)) {
-			return true;
-		}
-
-		if (TypeUtils.isClass(type)) {
-			return isCommonType((Class<?>) type);
-		}
-
-		try {
-			return isCommonType(ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()));
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	private static boolean isCommonType(Class<?> type) {
-		return type.isArray() || type.isEnum() || Collection.class.isAssignableFrom(type)
-				|| Map.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
-				|| BigInteger.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type);
-	}
-
-	public static Object defaultAutoParse(final String text, final Type type) {
-		return defaultAutoParse(text, type, JSONUtils.getJsonSupport());
-	}
-
-	public static Object defaultAutoParse(final String text, final Type type, JSONSupport jsonParseSupport) {
-		return autoParse(text, type, DEFAULT_SPLIT_CHARS, jsonParseSupport);
-	}
-
-	public static Object parseArray(String text, Class<?> componentType) {
-		return parseArray(text, componentType, DEFAULT_SPLIT_CHARS);
-	}
-
-	public static Object parseArray(String text, Class<?> componentType, String[] splitFilter) {
-		return parseArray(text, componentType, splitFilter, JSONUtils.getJsonSupport());
-	}
-
-	public static Object parseArray(String text, Class<?> componentType, char[] splitFilter) {
-		return parseArray(text, componentType, splitFilter, JSONUtils.getJsonSupport());
-	}
-
-	public static Object parseArray(String text, Class<?> componentType, String[] splitFilter,
-			final JSONSupport jsonParseSupport) {
-		if (text == null) {
-			return null;
-		}
-
-		String[] array = StringUtils.split(text, splitFilter);
-		Object values = Array.newInstance(componentType, array.length);
-		for (int i = 0; i < array.length; i++) {
-			Array.set(values, i, autoParse(array[i], componentType, splitFilter, jsonParseSupport));
-		}
-		return values;
-	}
-
-	public static Object parseArray(String text, Class<?> componentType, char[] splitFilter,
-			final JSONSupport jsonParseSupport) {
-		if (text == null) {
-			return null;
-		}
-
-		String[] array = StringUtils.split(text, splitFilter);
-		Object values = Array.newInstance(componentType, array.length);
-		for (int i = 0; i < array.length; i++) {
-			Array.set(values, i, autoParse(array[i], componentType, splitFilter, jsonParseSupport));
-		}
-		return values;
-	}
-
-	public static Object parseArray(String text, Class<?> componentType, String[] splitFilter,
-			Callable<Object> notFoundTypeCallable) {
-		if (StringUtils.isEmpty(text)) {
-			return null;
-		}
-
-		String[] array = StringUtils.split(text, splitFilter);
-		Object values = Array.newInstance(componentType, array.length);
-		for (int i = 0; i < array.length; i++) {
-			Array.set(values, i, autoParse(text, componentType, splitFilter, notFoundTypeCallable));
-		}
-		return values;
-	}
-
-	public static Object parseArray(String text, Class<?> componentType, char[] splitFilter,
-			Callable<Object> notFoundTypeCallable) {
-		if (StringUtils.isEmpty(text)) {
-			return null;
-		}
-
-		String[] array = StringUtils.split(text, splitFilter);
-		Object values = Array.newInstance(componentType, array.length);
-		for (int i = 0; i < array.length; i++) {
-			Array.set(values, i, autoParse(text, componentType, splitFilter, notFoundTypeCallable));
-		}
-		return values;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static Object autoParse(final String text, final Type type, char[] splitFilter,
-			final JSONSupport jsonParseSupport) {
-		if (TypeUtils.isClass(type)) {
-			return autoParse(text, (Class) type, splitFilter, new Callable<Object>() {
-
-				public Object call() {
-					return jsonParseSupport.parseObject(text, type);
-				}
-			});
-		}
-
-		return jsonParseSupport.parseObject(text, type);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static Object autoParse(final String text, final Type type, String[] splitFilter,
-			final JSONSupport jsonParseSupport) {
-		if (TypeUtils.isClass(type)) {
-			return autoParse(text, (Class) type, splitFilter, new Callable<Object>() {
-
-				public Object call() {
-					return jsonParseSupport.parseObject(text, type);
-				}
-			});
-		}
-
-		return jsonParseSupport.parseObject(text, type);
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static Object autoParse(String text, Class type, Callable<Object> notFoundTypeCallable) {
-		if (String.class == type) {
-			return text;
-		} else if (int.class == type) {
-			return parseInt(text);
-		} else if (Integer.class == type) {
-			return parseInt(text, null);
-		} else if (long.class == type) {
-			return parseLong(text);
-		} else if (Long.class == type) {
-			return parseLong(text, null);
-		} else if (float.class == type) {
-			return parseFloat(text);
-		} else if (Float.class == type) {
-			return parseFloat(text, null);
-		} else if (double.class == type) {
-			return parseDouble(text);
-		} else if (Double.class == type) {
-			return parseDouble(text, null);
-		} else if (short.class == type) {
-			return parseShort(text);
-		} else if (Short.class == type) {
-			return parseShort(text, null);
-		} else if (boolean.class == type) {
-			return parseBoolean(text);
-		} else if (Boolean.class == type) {
-			return parseBoolean(text, null);
-		} else if (byte.class == type) {
-			return parseByte(text);
-		} else if (Byte.class == type) {
-			return parseByte(text, null);
-		} else if (char.class == type) {
-			return parseChar(text);
-		} else if (Character.class == type) {
-			return parseChar(text, null);
-		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			return parseBigDecimal(text);
-		} else if (BigInteger.class.isAssignableFrom(type)) {
-			return parseBigInteger(text);
-		} else if (Class.class == type) {
-			return parseClass(text);
-		} else if (type.isEnum()) {
-			return parseEnum(text, type);
-		} else {
-			if (notFoundTypeCallable == null) {
-				throw new NotSupportedException("不支持的类型：" + type);
-			}
-
-			return notFoundTypeCallable.call();
-		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static Object autoParse(final String text, final Class type, final String[] splitFilter,
-			final Callable<Object> notFoundTypeCallable) {
-		return autoParse(text, type, new Callable<Object>() {
-
-			public Object call() {
-				if (!ArrayUtils.isEmpty(splitFilter)) {
-					if (type.isArray()) {
-						String[] arr = split(text, splitFilter);
-						if (arr == null) {
-							return null;
-						}
-
-						Object values = Array.newInstance(type.getComponentType(), arr.length);
-						for (int i = 0; i < arr.length; i++) {
-							Array.set(values, i,
-									autoParse(arr[i], type.getComponentType(), splitFilter, notFoundTypeCallable));
-						}
-					}
-				}
-
-				if (notFoundTypeCallable == null) {
-					throw new NotSupportedException("不支持的类型：" + type);
-				}
-
-				return notFoundTypeCallable.call();
-			}
-		});
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static Object autoParse(final String text, final Class type, final char[] splitFilter,
-			final Callable<Object> notFoundTypeCallable) {
-		return autoParse(text, type, new Callable<Object>() {
-
-			public Object call() {
-				if (!ArrayUtils.isEmpty(splitFilter)) {
-					if (type.isArray()) {
-						String[] arr = split(text, splitFilter);
-						if (arr == null) {
-							return null;
-						}
-
-						Object values = Array.newInstance(type.getComponentType(), arr.length);
-						for (int i = 0; i < arr.length; i++) {
-							Array.set(values, i,
-									autoParse(arr[i], type.getComponentType(), splitFilter, notFoundTypeCallable));
-						}
-					}
-				}
-
-				if (notFoundTypeCallable == null) {
-					throw new NotSupportedException("不支持的类型：" + type);
-				}
-
-				return notFoundTypeCallable.call();
-			}
-		});
 	}
 
 	public static void replace(char[] chars, char replace, char newChar) {
@@ -2893,5 +2579,91 @@ public final class StringUtils {
 			cs[index++] = v;
 		}
 		return new String(cs, 0, index);
+	}
+
+	public static int indexOf(String text, String index, int beginIndex, int endIndex) {
+		for (int i = beginIndex; i < endIndex; i++) {
+			boolean find = true;
+			for (int a = i, b = 0; b < index.length() && a < endIndex; a++, b++) {
+				if (text.charAt(a) != index.charAt(b)) {
+					find = false;
+					break;
+				}
+			}
+
+			if (find) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	public static int lastIndexOf(String text, String index, int beginIndex, int endIndex) {
+		for (int i = endIndex - 1; i >= beginIndex; i--) {
+			boolean find = true;
+			for (int a = i, b = index.length() - 1; b >= 0 && a >= beginIndex; a--, b--) {
+				if (text.charAt(a) != index.charAt(b)) {
+					find = false;
+					break;
+				}
+			}
+
+			if (find) {
+				return i;
+			}
+		}
+		return -1;
+	}
+	
+	/**
+	 * 从左边开始获取字符串组合第一次出现的位置, prefix和suffix必须是成对出现的，允许嵌套
+	 * @param text
+	 * @param prefix
+	 * @param suffix
+	 * @return
+	 */
+	public static KeyValuePair<Integer, Integer> indexOf(String text, String prefix, String suffix) {
+		int begin = text.indexOf(prefix);
+		if (begin == -1) {
+			return null;
+		}
+
+		int end = text.indexOf(suffix, begin + prefix.length());
+		if (end == -1) {
+			return null;
+		}
+
+		int tempBegin = begin;
+		int tempEnd = end;
+		while (true) {//重复查找是否存在嵌套,直到找到最外层的{suffix}
+			int nestingLevel = 0;// 嵌套了多少层
+			while (true) {
+				int index = indexOf(text, prefix, tempBegin + prefix.length(), tempEnd);
+				if (index == -1) {
+					break;
+				}
+				nestingLevel++;
+				tempBegin = index;
+			}
+
+			if (nestingLevel == 0) {
+				break;
+			}
+
+			//prefix嵌套了多少层就将suffix向外移多少层
+			for (int i = 0; i < nestingLevel; i++) {
+				tempEnd = indexOf(text, suffix, tempEnd + suffix.length(), text.length());
+				if (tempEnd == -1) {// 两边的符号嵌套层级不一至
+					return null;
+				}
+			}
+		}
+		return new KeyValuePair<Integer, Integer>(begin, tempEnd);
+	}
+
+	public static void main(String[] args) {
+		String s = "(((sd(fa)ds)adfassdf((sdsd))a)dsf))";
+		KeyValuePair<Integer, Integer> keyValuePair = indexOf(s, "(", ")");
+		System.out.println(keyValuePair);
 	}
 }

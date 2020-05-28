@@ -2,6 +2,8 @@ package scw.script;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import scw.core.utils.StringUtils;
@@ -9,37 +11,141 @@ import scw.mapper.Field;
 import scw.mapper.FieldFilter;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
+import scw.util.KeyValuePair;
 
-public class MathScriptEngine implements ScriptEngine<BigDecimal> {
-	private final LinkedList<Function> functions = new LinkedList<Function>();
-	private final LinkedList<Operator> operators = new LinkedList<Operator>();
-	private final LinkedList<ScriptResolver<BigDecimal>> scriptResolvers = new LinkedList<ScriptResolver<BigDecimal>>();
+/**
+ * 实现单简单的数学计算
+ * 
+ * @author shuchaowen
+ *
+ */
+public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
+	static final Function[] FUNCTIONS = new Function[] { new MaxFunction(), new MinFunction(), new MeaninglessFunction("{", "}"),
+			new MeaninglessFunction("[", "]"), new MeaninglessFunction("(", ")"), new AbsoluteValueFunction() };
+	static final Operator[] OPERATORS = new Operator[] { new PowOperator(), new MultiplicationOperator(),
+			new DivisionOperator(), new RemainderOperator(), new AdditionOperator(), new SubtractionOperator() };
 
-	public MathScriptEngine() {
-		scriptResolvers.add(new NumberScriptResolver());
+	private void resolve(Collection<Fragment> fragments, String script) {
+		int begin = -1;
+		Function functionToUse = null;
+		for (Function function : FUNCTIONS) {
+			int index = script.indexOf(function.getPrefix());
+			if (index == -1) {
+				continue;
+			}
 
-		functions.add(new MeaninglessFunction("{", "}"));
-		functions.add(new MeaninglessFunction("[", "]"));
-		functions.add(new MeaninglessFunction("(", ")"));
-		functions.add(new AbsoluteValueFunction());
+			if (index == 0) {
+				functionToUse = function;
+				break;
+			}
 
-		operators.add(new MultiplicationOperator());
-		operators.add(new DivisionOperator());
-		operators.add(new AdditionOperator());
-		operators.add(new SubtractionOperator());
-		operators.add(new RemainderOperator());
+			if (begin == -1 || index < begin) {
+				begin = index;
+				functionToUse = function;
+			}
+		}
+
+		if (functionToUse != null) {
+			KeyValuePair<Integer, Integer> indexPair = StringUtils.indexOf(script, functionToUse.getPrefix(),
+					functionToUse.getSuffix());
+			if (indexPair != null) {
+				resolveFunction(fragments, functionToUse, indexPair, script);
+				return;
+			}
+		}
+		resolveOperator(fragments, script);
 	}
 
-	public LinkedList<Function> getFunctions() {
-		return functions;
+	private void resolveFunction(Collection<Fragment> fragments, Function function,
+			KeyValuePair<Integer, Integer> indexPair, String script) {
+		int begin = indexPair.getKey();
+		int end = indexPair.getValue();
+		int prefixLength = function.getPrefix().length();
+		int suffixLength = function.getSuffix().length();
+		int scriptLength = script.length();
+		String left = begin == 0 ? null : script.substring(0, begin);
+		String center = script.substring(begin + prefixLength, end - suffixLength + 1);
+		String right = end == (scriptLength - suffixLength) ? null : script.substring(end + suffixLength, scriptLength);
+		if (left != null) {
+			char operator = left.charAt(left.length() - 1);
+			left = left.substring(0, left.length() - 1);
+			fragments.add(new ScriptFragment(left).setOperator(getOperator(left, operator)));
+		}
+
+		Fragment centerFragment = new ValueFragment(function.eval(this, center));
+		if (right == null) {
+			fragments.add(centerFragment);
+			return;
+		}
+
+		char operator = right.charAt(0);
+		right = right.substring(1);
+		centerFragment.setOperator(getOperator(right, operator));
+		fragments.add(centerFragment);
+
+		LinkedList<Fragment> rigthFragments = new LinkedList<MathScriptEngine.Fragment>();
+		resolve(rigthFragments, right);
+		if (rigthFragments.isEmpty()) {
+			fragments.add(new ScriptFragment(right));
+		} else {
+			fragments.addAll(rigthFragments);
+		}
 	}
 
-	public LinkedList<Operator> getOperators() {
-		return operators;
+	private Fragment operator(Fragment left, Fragment right) {
+		BigDecimal value = left.getOperator().operation(left.getValue(), right.getValue());
+		Fragment valueFragment = new ValueFragment(value);
+		valueFragment.setOperator(right.getOperator());
+		return valueFragment;
 	}
 
-	public LinkedList<ScriptResolver<BigDecimal>> getScriptResolvers() {
-		return scriptResolvers;
+	private BigDecimal eval(Collection<Fragment> fragments) {
+		if (fragments == null || fragments.isEmpty()) {
+			return null;
+		}
+
+		for (Operator operator : OPERATORS) {
+			LinkedList<Fragment> nextFragments = new LinkedList<Fragment>();
+			Iterator<Fragment> iterator = fragments.iterator();
+			while (iterator.hasNext()) {
+				Fragment fragment = iterator.next();
+				// 不处理最后一个
+				if (iterator.hasNext() && fragment.getOperator() != null
+						&& fragment.getOperator().getOperator() == operator.getOperator()) {
+					Fragment value = operator(fragment, iterator.next());
+					nextFragments.add(value);
+				} else {
+					nextFragments.add(fragment);
+				}
+			}
+
+			if (nextFragments.size() != fragments.size()) {
+				return eval(nextFragments);
+			}
+		}
+
+		if (fragments.size() == 1) {
+			return fragments.iterator().next().getValue();
+		}
+
+		// 不应该到这里
+		throw new RuntimeException("Should never get here");
+	}
+
+	private void resolveOperator(Collection<Fragment> fragments, String script) {
+		int lastIndex = 0;
+		for (int i = 0, len = script.length(); i < len; i++) {
+			char c = script.charAt(i);
+			for (Operator operator : OPERATORS) {
+				if (c == operator.getOperator()) {
+					String s = script.substring(lastIndex, i);
+					fragments.add(new ScriptFragment(s).setOperator(operator));
+					lastIndex = i + 1;
+					break;
+				}
+			}
+		}
+		fragments.add(new ScriptFragment(script.substring(lastIndex)));
 	}
 
 	public BigDecimal eval(String script) {
@@ -47,74 +153,39 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 		if (StringUtils.isEmpty(scriptToUse)) {
 			return null;
 		}
-		
-		for (ScriptResolver<BigDecimal> resolver : getScriptResolvers()) {
-			if (resolver.isSupport(scriptToUse)) {
-				return resolver.eval(this, scriptToUse);
-			}
+
+		if (StringUtils.isNumeric(scriptToUse)) {
+			return new BigDecimal(scriptToUse);
 		}
-		
-		int scriptLength = scriptToUse.length();
-		for (Function function : getFunctions()) {
-			int begin = scriptToUse.indexOf(function.getPrefix());
-			if (begin == -1) {
+		return super.eval(scriptToUse);
+	}
+
+	@Override
+	protected BigDecimal evalInternal(String script) throws ScriptException {
+		for (Function function : FUNCTIONS) {
+			KeyValuePair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(),
+					function.getSuffix());
+			if (indexPair == null) {
 				continue;
 			}
 
-			int end = scriptToUse.lastIndexOf(function.getSuffix());
-			if (end == -1 || begin >= end) {
-				throw new ScriptException(scriptToUse);
-			}
-
-			int prefixLength = function.getPrefix().length();
-			int suffixLength = function.getSuffix().length();
-			if (begin == 0) {
-				if (end == scriptLength - suffixLength) {
-					return function.call(eval(scriptToUse.substring(prefixLength, scriptLength - suffixLength)));
-				} else {
-					String center = scriptToUse.substring(prefixLength, end);
-					String right = scriptToUse.substring(end + suffixLength, scriptLength);
-					char operatorChar = right.charAt(0);
-					return getOperator(scriptToUse, operatorChar).operation(function.call(eval(center)),
-							eval(right.substring(1)));
-				}
-			} else {
-				if (end == scriptLength - suffixLength) {
-					String left = scriptToUse.substring(prefixLength, begin);
-					String center = scriptToUse.substring(begin + suffixLength);
-					char operatorChar = left.charAt(end);
-					return getOperator(scriptToUse, operatorChar).operation(eval(left.substring(0, begin - 1)),
-							function.call(eval(center)));
-				} else {
-					String left = scriptToUse.substring(0, begin);
-					String center = scriptToUse.substring(begin + prefixLength, end - suffixLength);
-					String right = scriptToUse.substring(end + suffixLength, scriptLength);
-					char leftOperatorChar = left.charAt(begin - 1);
-					char rightOperatorChar = right.charAt(0);
-					
-					BigDecimal leftValue = eval(left.substring(begin - 1));
-					return getOperator(scriptToUse, leftOperatorChar).operation(leftValue,
-							getOperator(scriptToUse, rightOperatorChar).operation(function.call(eval(center)),
-									eval(right.substring(1))));
-				}
+			if (indexPair.getKey() == 0 && indexPair.getValue() == script.length() - 1) {
+				String scriptToUse = script.substring(function.getPrefix().length(), script.length() - function.getSuffix().length());
+				return function.eval(this, scriptToUse);
 			}
 		}
 
-		for (Operator operator : getOperators()) {
-			for (int i = 0; i < scriptLength; i++) {
-				char operatorChar = scriptToUse.charAt(i);
-				if (operator.isSupport(operatorChar)) {
-					return operator.operation(eval(scriptToUse.substring(0, i)), eval(scriptToUse.substring(i + 1)));
-				}
-			}
+		LinkedList<Fragment> fragments = new LinkedList<Fragment>();
+		resolve(fragments, script);
+		if (!fragments.isEmpty()) {
+			return eval(fragments);
 		}
-		
-		throw new ScriptException(scriptToUse);
+		return super.evalInternal(script);
 	}
 
 	private Operator getOperator(String script, char operatorChar) throws ScriptException {
-		for (Operator operator : getOperators()) {
-			if (operator.isSupport(operatorChar)) {
+		for (Operator operator : OPERATORS) {
+			if (operator.getOperator() == operatorChar) {
 				return operator;
 			}
 		}
@@ -123,6 +194,7 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 
 	/**
 	 * 将对象的属性值做为参数来替换
+	 * 
 	 * @author shuchaowen
 	 *
 	 */
@@ -167,33 +239,60 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 		}
 	}
 
-	static final class NumberScriptResolver implements ScriptResolver<BigDecimal> {
+	abstract class Fragment {
+		private Operator operator;
 
-		public boolean isSupport(String script) {
-			return StringUtils.isNumeric(script);
+		public abstract BigDecimal getValue();
+
+		public Operator getOperator() {
+			return operator;
 		}
 
-		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
-			System.out.println("resolver:" + script);
-			return new BigDecimal(script);
+		public Fragment setOperator(Operator operator) {
+			this.operator = operator;
+			return this;
 		}
 	}
 
-	/**
-	 * 函数计算
-	 * 
-	 * @author shuchaowen
-	 *
-	 */
-	public static interface Function {
-		String getPrefix();
+	final class ScriptFragment extends Fragment {
+		private final String script;
 
-		String getSuffix();
+		public ScriptFragment(String script) {
+			this.script = script;
+		}
 
-		BigDecimal call(BigDecimal value);
+		public BigDecimal getValue() {
+			return eval(script);
+		}
+
+		@Override
+		public String toString() {
+			return script;
+		}
 	}
 
-	static class MeaninglessFunction implements Function {
+	final class ValueFragment extends Fragment {
+		private final BigDecimal value;
+
+		public ValueFragment(BigDecimal value) {
+			this.value = value;
+		}
+
+		@Override
+		public BigDecimal getValue() {
+			return value;
+		}
+
+		@Override
+		public String toString() {
+			return value == null ? null : value.toString();
+		}
+	}
+
+	static interface Function extends ScriptFunction<BigDecimal> {
+	}
+
+	static final class MeaninglessFunction implements Function {
 		private String prefix;
 		private String suffix;
 
@@ -210,8 +309,8 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 			return suffix;
 		}
 
-		public BigDecimal call(BigDecimal value) {
-			return value;
+		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
+			return engine.eval(script);
 		}
 	}
 
@@ -225,8 +324,58 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 			return "|";
 		}
 
-		public BigDecimal call(BigDecimal value) {
+		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
+			BigDecimal value = engine.eval(script);
 			return value.abs();
+		}
+	}
+
+	static final class MaxFunction implements Function {
+
+		public String getPrefix() {
+			return "max(";
+		}
+
+		public String getSuffix() {
+			return ")";
+		}
+
+		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
+			int index = script.indexOf(",");
+			if (index == -1) {
+				throw new ScriptException(script);
+			}
+
+			String left = script.substring(0, index);
+			String right = script.substring(index + 1);
+			BigDecimal leftValue = engine.eval(left);
+			BigDecimal rightValue = engine.eval(right);
+			return leftValue.max(rightValue);
+		}
+
+	}
+
+	static final class MinFunction implements Function {
+
+		public String getPrefix() {
+			return "min(";
+		}
+
+		public String getSuffix() {
+			return ")";
+		}
+
+		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
+			int index = script.indexOf(",");
+			if (index == -1) {
+				throw new ScriptException(script);
+			}
+
+			String left = script.substring(0, index);
+			String right = script.substring(index + 1);
+			BigDecimal leftValue = engine.eval(left);
+			BigDecimal rightValue = engine.eval(right);
+			return leftValue.min(rightValue);
 		}
 
 	}
@@ -237,22 +386,22 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 	 * @author shuchaowen
 	 *
 	 */
-	public static interface Operator {
-		boolean isSupport(char operator);
+	static interface Operator {
+		char getOperator();
 
 		BigDecimal operation(BigDecimal left, BigDecimal right);
 	}
-	
+
 	/**
 	 * 乘法
 	 * 
 	 * @author shuchaowen
 	 *
 	 */
-	static class MultiplicationOperator implements Operator {
+	static final class MultiplicationOperator implements Operator {
 
-		public boolean isSupport(char operator) {
-			return operator == '*';
+		public char getOperator() {
+			return '*';
 		}
 
 		public BigDecimal operation(BigDecimal left, BigDecimal right) {
@@ -266,10 +415,10 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 	 * @author shuchaowen
 	 *
 	 */
-	static class DivisionOperator implements Operator {
+	static final class DivisionOperator implements Operator {
 
-		public boolean isSupport(char operator) {
-			return operator == '/';
+		public char getOperator() {
+			return '/';
 		}
 
 		public BigDecimal operation(BigDecimal left, BigDecimal right) {
@@ -283,10 +432,10 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 	 * @author shuchaowen
 	 *
 	 */
-	static class AdditionOperator implements Operator {
+	static final class AdditionOperator implements Operator {
 
-		public boolean isSupport(char operator) {
-			return operator == '+';
+		public char getOperator() {
+			return '+';
 		}
 
 		public BigDecimal operation(BigDecimal left, BigDecimal right) {
@@ -300,10 +449,10 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 	 * @author shuchaowen
 	 *
 	 */
-	static class SubtractionOperator implements Operator {
+	static final class SubtractionOperator implements Operator {
 
-		public boolean isSupport(char operator) {
-			return operator == '-';
+		public char getOperator() {
+			return '-';
 		}
 
 		public BigDecimal operation(BigDecimal left, BigDecimal right) {
@@ -317,14 +466,31 @@ public class MathScriptEngine implements ScriptEngine<BigDecimal> {
 	 * @author shuchaowen
 	 *
 	 */
-	static class RemainderOperator implements Operator {
+	static final class RemainderOperator implements Operator {
 
-		public boolean isSupport(char operator) {
-			return operator == '%';
+		public char getOperator() {
+			return '%';
 		}
 
 		public BigDecimal operation(BigDecimal left, BigDecimal right) {
 			return left.remainder(right);
+		}
+	}
+
+	/**
+	 * 指数运算
+	 * 
+	 * @author shuchaowen
+	 *
+	 */
+	static final class PowOperator implements Operator {
+
+		public char getOperator() {
+			return '^';
+		}
+
+		public BigDecimal operation(BigDecimal left, BigDecimal right) {
+			return new BigDecimal(Math.pow(left.doubleValue(), right.doubleValue()));
 		}
 	}
 }

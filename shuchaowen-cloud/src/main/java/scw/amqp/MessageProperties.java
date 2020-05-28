@@ -9,6 +9,8 @@ import java.util.concurrent.TimeUnit;
 
 import scw.core.utils.StringUtils;
 import scw.script.MathScriptEngine;
+import scw.value.StringValue;
+import scw.value.Value;
 
 public class MessageProperties implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -17,6 +19,7 @@ public class MessageProperties implements Serializable {
 	private static final String MAX_RETRY_COUNT = "scw.retry.max.count";
 	private static final String RETRY_DELAY = "scw.retry.delay";
 	private static final String RETRY_DELAY_SCRIPT = "scw.retry.delay";
+	private static final String RETRY_DELAY_MULTIPLE = "scw.retry.delay.multiple";
 
 	private String contentType;
 	private String contentEncoding;
@@ -194,21 +197,20 @@ public class MessageProperties implements Serializable {
 	}
 
 	public int getRetryCount() {
-		Integer value = getIntegerHeader(RETRY_COUNT);
-		return value == null ? 0 : value;
+		Value value = getHeaderValue(RETRY_COUNT);
+		return value == null ? 0 : value.getAsIntValue();
 	}
 
 	public void incrRetryCount() {
 		setHeader(RETRY_COUNT, getRetryCount() + 1);
 	}
 
-	public Integer getIntegerHeader(String name) {
+	public Value getHeaderValue(String name) {
 		Object value = getHeader(name);
 		if (value == null) {
 			return null;
 		}
-
-		return StringUtils.parseInt(value.toString(), null);
+		return new StringValue(value.toString());
 	}
 
 	/**
@@ -217,32 +219,52 @@ public class MessageProperties implements Serializable {
 	 * @return
 	 */
 	public int getMaxRetryCount() {
-		Integer value = getIntegerHeader(MAX_RETRY_COUNT);
-		return value == null ? 0 : value;
+		Value value = getHeaderValue(MAX_RETRY_COUNT);
+		return value == null ? 0 : value.getAsIntValue();
 	}
 
 	public void setMaxRetryCount(int maxRetryCount) {
 		setHeader(MAX_RETRY_COUNT, maxRetryCount);
 	}
 
-	public Long getLongHeader(String name) {
-		Object value = getHeader(name);
-		if (value == null) {
-			return null;
-		}
+	/**
+	 * 重试时间的倍数 0表示没有倍数
+	 * 
+	 * @return
+	 */
+	public double getRetryDelayMultiple() {
+		Value multiple = getHeaderValue(RETRY_DELAY_MULTIPLE);
+		return multiple == null ? 0 : multiple.getAsDoubleValue();
+	}
 
-		return StringUtils.parseLong(value.toString(), null);
+	/**
+	 * 设置重试时间的倍数
+	 * 
+	 * @return
+	 */
+	public MessageProperties setRetryDelayMultiple(double multiple) {
+		if (multiple <= 0) {
+			removeHeader(RETRY_DELAY_MULTIPLE);
+		} else {
+			setHeader(RETRY_DELAY_MULTIPLE, multiple);
+		}
+		return this;
 	}
 
 	public long getRetryDelay() {
 		Object script = getHeader(RETRY_DELAY_SCRIPT);
 		if (script == null) {
-			Long value = getLongHeader(RETRY_DELAY);
-			return value == null ? 0 : value;
+			;
+			Value value = getHeaderValue(RETRY_DELAY);
+			if (value == null) {
+				return 0;
+			}
+
+			return value.getAsLongValue();
 		}
 
 		MathScriptEngine mathScriptEngine = new MathScriptEngine();
-		mathScriptEngine.getScriptResolvers().add(new MathScriptEngine.ObjectFieldScriptResolver(this));
+		mathScriptEngine.getResolvers().add(new MathScriptEngine.ObjectFieldScriptResolver(this));
 		BigDecimal value = mathScriptEngine.eval(script.toString());
 		return value == null ? null : value.longValue();
 	}

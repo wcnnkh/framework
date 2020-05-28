@@ -47,6 +47,7 @@ import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.KeyValuePair;
 import scw.util.ToMap;
+import scw.value.ValueUtils;
 import scw.value.property.PropertyFactory;
 
 public final class XMLUtils {
@@ -418,7 +419,7 @@ public final class XMLUtils {
 		if (value == null) {
 			return defaultValue;
 		} else {
-			return (T) StringUtils.defaultAutoParse(value, basicType);
+			return (T) ValueUtils.parse(value, basicType);
 		}
 	}
 
@@ -481,8 +482,9 @@ public final class XMLUtils {
 			if (ignoreNode(n)) {
 				continue;
 			}
-			
-			Field field = MapperUtils.getMapper().getField(type, n.getNodeName(), null, FilterFeature.SUPPORT_SETTER, FilterFeature.SETTER_IGNORE_STATIC);
+
+			Field field = MapperUtils.getMapper().getField(type, n.getNodeName(), null, FilterFeature.SUPPORT_SETTER,
+					FilterFeature.SETTER_IGNORE_STATIC);
 			if (field == null) {
 				continue;
 			}

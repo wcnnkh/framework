@@ -92,9 +92,17 @@ public abstract class AbstractExchange implements Exchange {
 			TransactionManager.commit(transaction);
 		} catch (Throwable e) {
 			TransactionManager.rollback(transaction);
+			message.incrRetryCount();
 			long retryDelay = message.getRetryDelay();
 			if (retryDelay == 0) {
 				retryDelay = getDefaultRetryDelay();
+			}
+			
+			if(retryDelay != 0){
+				double retryDelayMultiple = message.getRetryDelayMultiple();
+				if(retryDelayMultiple > 0){
+					retryDelay = (long) (retryDelay * retryDelayMultiple * message.getRetryCount());
+				}
 			}
 
 			int maxRetryCount = message.getMaxRetryCount();
@@ -109,7 +117,6 @@ public abstract class AbstractExchange implements Exchange {
 				logger.error(e, "retry delay: {}, exchange={}, properties={}", retryDelay, exchange,
 						JSONUtils.toJSONString(message));
 				message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
-				message.incrRetryCount();
 				push(routingKey, message);
 			}
 		}
