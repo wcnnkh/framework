@@ -2660,10 +2660,4 @@ public final class StringUtils {
 		}
 		return new KeyValuePair<Integer, Integer>(begin, tempEnd);
 	}
-
-	public static void main(String[] args) {
-		String s = "(((sd(fa)ds)adfassdf((sdsd))a)dsf))";
-		KeyValuePair<Integer, Integer> keyValuePair = indexOf(s, "(", ")");
-		System.out.println(keyValuePair);
-	}
 }

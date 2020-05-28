@@ -120,7 +120,16 @@ public class Column implements Serializable{
 	 * @param value
 	 */
 	public final void set(Object entity, Object value){
-		field.getSetter().set(entity, toColumnValue(value));
+		if(value == null){
+			return ;
+		}
+		
+		Object v = toColumnValue(value);
+		if(v == null){
+			return ;
+		}
+		
+		field.getSetter().set(entity, v);
 	}
 	
 	/**
