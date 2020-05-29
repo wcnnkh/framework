@@ -2,6 +2,7 @@ package scw.sql.orm.cache;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ import scw.data.TemporaryCache;
 import scw.data.WrapperTemporaryCache;
 import scw.sql.orm.cache.annotation.TemporaryCacheEnable;
 
-public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> {
+public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> {
 	private static final String KEY = "key:";
 	private static final TemporaryCacheConfig DEFAULT_CONFIG = new TemporaryCacheConfig(
 			(int) (XTime.ONE_DAY * 2 / 1000), false, true);
@@ -114,7 +115,12 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return null;
 		}
 
-		return cache.getAndTouch(getObjectRelationalMapping().getObjectKeyById(type, Arrays.asList(params)), config.getExp());
+		try {
+			return cache.getAndTouch(getObjectRelationalMapping().getObjectKeyById(type, Arrays.asList(params)), config.getExp());
+		} catch (Exception e) {
+			logger.warn(e, type);
+		}
+		return null;
 	}
 
 	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIds, Object... params) {
@@ -123,7 +129,12 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return null;
 		}
 
-		return super.getInIdList(type, inIds, params);
+		try {
+			return super.getInIdList(type, inIds, params);
+		} catch (Exception e) {
+			logger.warn(e, type);
+		}
+		return Collections.emptyMap();
 	}
 
 	@Override

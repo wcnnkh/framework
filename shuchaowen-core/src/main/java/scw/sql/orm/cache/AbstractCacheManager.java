@@ -6,10 +6,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.data.Cache;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.sql.SqlUtils;
 import scw.sql.orm.ObjectRelationalMapping;
 
 public abstract class AbstractCacheManager<C extends Cache> implements CacheManager {
+	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	
 	public abstract C getCache();
 
 	public ObjectRelationalMapping getObjectRelationalMapping() {
