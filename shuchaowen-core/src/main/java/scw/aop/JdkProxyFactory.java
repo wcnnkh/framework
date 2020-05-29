@@ -9,7 +9,6 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
-import scw.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE + 100)
 public class JdkProxyFactory implements ProxyFactory {
@@ -69,18 +68,35 @@ public class JdkProxyFactory implements ProxyFactory {
 		}
 
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(proxy, method, args);
-			if (ignoreResult.isSuccess()) {
-				return ignoreResult.getData();
-			}
-			
-			if(filterChain == null){
+			if (filterChain == null) {
 				throw new NotSupportedException(method.toString());
 			}
-			
-			ProxyContext context = new ProxyContext(proxy, targetClass, method, args, null);
-			Invoker invoker = new EmptyInvoker(method);
+
+			ProxyContext context = new ProxyContext(proxy, targetClass, method, args);
+			Invoker invoker = new JdkProxyInvoker(context);
 			return filterChain.doFilter(invoker, context);
+		}
+	}
+
+	private static class JdkProxyInvoker implements Invoker {
+		private ProxyContext context;
+
+		public JdkProxyInvoker(ProxyContext context) {
+			this.context = context;
+		}
+
+		public Object invoke(Object... args) throws Throwable {
+			//如果filter中没有拦截这些方法，那么使用默认的调用
+			if (context.isIgnoreMethod()) {
+				return context.invokeIgnoreMethod();
+			}
+
+			throw new UnsupportedOperationException(toString());
+		}
+
+		@Override
+		public String toString() {
+			return context.getMethod().toString();
 		}
 	}
 

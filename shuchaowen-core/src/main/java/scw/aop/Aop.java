@@ -146,7 +146,7 @@ public abstract class Aop implements ProxyFactory {
 				}
 			}
 
-			ProxyContext context = new ProxyContext(bean, targetClass, getMethod(), args, null);
+			ProxyContext context = new ProxyContext(bean, targetClass, getMethod(), args);
 			return filterChain.doFilter(getInvoker(bean), context);
 		}
 	}

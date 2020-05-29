@@ -10,12 +10,8 @@ import scw.cglib.proxy.Factory;
 import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
 import scw.core.instance.annotation.Configuration;
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.io.WriteReplaceInterface;
 import scw.lang.NestedExceptionUtils;
-import scw.mapper.Copy;
-import scw.result.SimpleResult;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class CglibProxyFactory implements ProxyFactory {
@@ -79,25 +75,11 @@ public class CglibProxyFactory implements ProxyFactory {
 		}
 
 		public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-			SimpleResult<Object> ignoreResult = ProxyUtils.ignoreMethod(obj, method, args);
-			if (ignoreResult.isSuccess()) {
-				return ignoreResult.getData();
-			}
-
-			if (ArrayUtils.isEmpty(args) && obj instanceof Serializable
-					&& method.getName().equals(WriteReplaceInterface.WRITE_REPLACE_METHOD)) {
-				if (WriteReplaceInterface.class.isAssignableFrom(targetClass)) {
-					return proxy.invokeSuper(obj, args);
-				} else {
-					return Copy.copy(targetClass, obj);
-				}
-			}
-
 			if (filterChain == null) {
 				return proxy.invokeSuper(obj, args);
 			}
 
-			ProxyContext context = new ProxyContext(obj, targetClass, method, args, null);
+			ProxyContext context = new ProxyContext(obj, targetClass, method, args);
 			Invoker invoker = new CglibInvoker(proxy, obj);
 			return filterChain.doFilter(invoker, context);
 		}

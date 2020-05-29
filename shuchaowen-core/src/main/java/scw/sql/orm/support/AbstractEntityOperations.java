@@ -205,7 +205,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 	public boolean update(Object bean, String tableName) {
 		if (bean instanceof FieldSetterListen) {
 			if (((FieldSetterListen) bean).get_field_setter_map() == null) {
-				logger.warn("更新对象[{}]不存在数据变更", bean.getClass().getName());
+				logger.warn("更新对象[{}]不存在数据变更", bean);
 				return false;
 			}
 		}
