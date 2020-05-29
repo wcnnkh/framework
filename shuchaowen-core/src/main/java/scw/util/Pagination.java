@@ -1,9 +1,11 @@
-package scw.core;
+package scw.util;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 /**
- * 可用于分页
+ * 分页数据
  * 
  * @author shuchaowen
  * @param <T>
@@ -12,13 +14,13 @@ public class Pagination<T> implements Serializable {
 	private static final long serialVersionUID = 1511962074546668955L;
 	private final int limit;
 	private long totalCount;
-	private T data;
+	private List<T> data;
 
 	public Pagination(int limit) {
 		this.limit = limit;
 	}
 
-	public Pagination(long total, int limit, T data) {
+	public Pagination(long total, int limit, List<T> data) {
 		this.totalCount = total;
 		this.limit = limit;
 		this.data = data;
@@ -44,6 +46,9 @@ public class Pagination<T> implements Serializable {
 	}
 
 	public long getLongTotalCount() {
+		if(totalCount == 0 && data != null){
+			return data.size();
+		}
 		return totalCount;
 	}
 
@@ -52,7 +57,7 @@ public class Pagination<T> implements Serializable {
 		return this;
 	}
 
-	public T getData() {
+	public List<T> getData() {
 		return data;
 	}
 
@@ -63,13 +68,21 @@ public class Pagination<T> implements Serializable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public <D> Pagination<D> setData(D data) {
+	public <D> Pagination<D> setData(List<D> data) {
 		Pagination<D> pagination = new Pagination<D>(limit);
 		pagination.setTotalCount(getTotalCount());
 		pagination.data = data;
 		if (getClass().isInstance(pagination)) {
-			this.data = (T) data;
+			this.data = (List<T>) data;
 		}
+		return pagination;
+	}
+	
+	public <D> Pagination<D> emptyData(){
+		this.data = Collections.emptyList();
+		Pagination<D> pagination = new Pagination<D>(limit);
+		pagination.setTotalCount(getTotalCount());
+		pagination.data = Collections.emptyList();
 		return pagination;
 	}
 

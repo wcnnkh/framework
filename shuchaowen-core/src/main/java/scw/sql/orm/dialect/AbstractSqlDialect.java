@@ -1,10 +1,10 @@
 package scw.sql.orm.dialect;
 
-import scw.core.Pagination;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.sql.orm.ObjectRelationalMapping;
+import scw.util.Pagination;
 
 public abstract class AbstractSqlDialect implements SqlDialect {
 	

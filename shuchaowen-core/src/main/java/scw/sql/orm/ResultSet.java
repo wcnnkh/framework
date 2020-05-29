@@ -36,4 +36,6 @@ public interface ResultSet extends Serializable, Iterable<ResultMapping> {
 	ResultMapping getLast();
 
 	boolean isEmpty();
+	
+	List<ResultMapping> toResultMappingList();
 }

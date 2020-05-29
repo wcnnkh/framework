@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 
 import scw.core.GlobalPropertyFactory;
-import scw.core.Pagination;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
@@ -23,6 +22,7 @@ import scw.timer.CrontabTaskConfig;
 import scw.timer.Task;
 import scw.timer.Timer;
 import scw.timer.support.SimpleCrontabConfig;
+import scw.util.Pagination;
 
 public class DBActionLogServiceImpl implements ActionLogService, Task {
 	private static Logger logger = LoggerUtils.getLogger(DBActionLogServiceImpl.class);
@@ -61,7 +61,7 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 		return db.select(String.class, new SimpleSql("select * from log_attribute_table group by name"));
 	}
 
-	public Pagination<List<ActionLog>> getPagination(ActionLog logQuery, long page, int limit) {
+	public Pagination<ActionLog> getPagination(ActionLog logQuery, long page, int limit) {
 		WhereSql sql = new WhereSql();
 		if (logQuery != null) {
 			if (StringUtils.isNotEmpty(logQuery.getIdentification())) {
@@ -102,7 +102,7 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 			}
 		}
 
-		Pagination<List<LogTable>> pagination = db.select(LogTable.class, page, limit,
+		Pagination<LogTable> pagination = db.select(LogTable.class, page, limit,
 				sql.assembleSql("select * from log_table as l", "order by l.createTime desc"));
 		List<ActionLog> list = new ArrayList<ActionLog>();
 		for (LogTable logTable : pagination.getData()) {
