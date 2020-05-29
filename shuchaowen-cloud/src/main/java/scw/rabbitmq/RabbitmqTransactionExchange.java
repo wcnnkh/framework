@@ -2,19 +2,14 @@ package scw.rabbitmq;
 
 import java.io.IOException;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.DefaultConsumer;
-import com.rabbitmq.client.Envelope;
 
 import scw.amqp.ExchangeDeclare;
-import scw.amqp.Message;
 import scw.amqp.MessageListener;
 import scw.amqp.MessageProperties;
 import scw.amqp.QueueDeclare;
-import scw.amqp.support.TransactionPushExchange;
+import scw.amqp.support.TransactionExchange;
 import scw.complete.CompleteService;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
@@ -24,12 +19,12 @@ import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public class RabbitmqExchange extends TransactionPushExchange {
+public class RabbitmqTransactionExchange extends TransactionExchange {
 	private static final String DIX_PREFIX = "scw.dix.";
 	private static final String DELAY_PREFIX = "scw.delay.";
 	private static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
 
-	private static Logger logger = LoggerUtils.getLogger(RabbitmqExchange.class);
+	private static Logger logger = LoggerUtils.getLogger(RabbitmqTransactionExchange.class);
 	private ThreadLocal<Channel> channelThreadLocal;
 	private ExchangeDeclare exchangeDeclare;
 	private ExchangeDeclare dixExchangeDeclare;
@@ -41,7 +36,7 @@ public class RabbitmqExchange extends TransactionPushExchange {
 				StringUtils.isNotEmpty(name) && !name.startsWith(DIX_PREFIX) && !name.startsWith(DELAY_PREFIX), name);
 	}
 
-	public RabbitmqExchange(NoTypeSpecifiedSerializer serializer, final Connection connection,
+	public RabbitmqTransactionExchange(NoTypeSpecifiedSerializer serializer, final Connection connection,
 			ExchangeDeclare exchangeDeclare, CompleteService completeService, String beanId) throws IOException {
 		super(serializer, completeService, beanId);
 		checkName(exchangeDeclare.getName());
@@ -84,15 +79,17 @@ public class RabbitmqExchange extends TransactionPushExchange {
 		declare(channel, exchangeDeclare, queueDeclare);
 		channel.queueBind(queueDeclare.getName(), exchangeDeclare.getName(), routingKey);
 		if (messageListener != null) {
-			channel.basicConsume(queueDeclare.getName(), false, new ConsumerInternal(channel, messageListener));
+			channel.basicConsume(queueDeclare.getName(), false,
+					new RabbitmqMessageListener(channel, messageListener, isMultiple()));
 		}
 	}
 
 	protected boolean isRequeue() {
 		return false;
 	}
-
-	public void bind(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener) {
+	
+	@Override
+	protected void bindInternal(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener) {
 		checkName(queueDeclare.getName());
 		try {
 			QueueDeclare dixQueueDeclare = SerializerUtils.clone(queueDeclare)
@@ -115,7 +112,7 @@ public class RabbitmqExchange extends TransactionPushExchange {
 		}
 	}
 
-	protected final void basePush(String routingKey, MessageProperties messageProperties, byte[] body) {
+	protected void basePush(String routingKey, MessageProperties messageProperties, byte[] body) {
 		Channel channel = channelThreadLocal.get();
 		if (channel == null) {
 			throw new RuntimeException("Unable to get rabbitmq channel");
@@ -135,62 +132,15 @@ public class RabbitmqExchange extends TransactionPushExchange {
 		}
 
 		if (messageProperties.getDelay() > 0) {
-			channel.basicPublish(delayExchangeDeclare.getName(), routingKey, toBasicProperties(messageProperties),
-					body);
+			channel.basicPublish(delayExchangeDeclare.getName(), routingKey,
+					RabbitmqUitls.toBasicProperties(messageProperties), body);
 			return;
 		}
-		channel.basicPublish(exchangeDeclare.getName(), routingKey, toBasicProperties(messageProperties), body);
-	}
-
-	protected BasicProperties toBasicProperties(MessageProperties messageProperties) {
-		return new BasicProperties().builder().appId(messageProperties.getAppId())
-				.clusterId(messageProperties.getClusterId()).contentEncoding(messageProperties.getContentEncoding())
-				.contentType(messageProperties.getContentType()).correlationId(messageProperties.getCorrelationId())
-				.deliveryMode(messageProperties.getDeliveryMode())
-				.expiration(messageProperties.getExpiration() == null ? null : ("" + messageProperties.getExpiration()))
-				.headers(messageProperties.getHeaders()).messageId(messageProperties.getMessageId())
-				.priority(messageProperties.getPriority()).replyTo(messageProperties.getReplyTo())
-				.timestamp(messageProperties.getTimestamp()).type(messageProperties.getType())
-				.userId(messageProperties.getUserId()).build();
-	}
-
-	protected Message toMessage(com.rabbitmq.client.AMQP.BasicProperties basicProperties, byte[] body) {
-		Message message = new Message(body);
-		message.setAppId(basicProperties.getAppId());
-		message.setClusterId(basicProperties.getClusterId());
-		message.setContentEncoding(basicProperties.getContentEncoding());
-		message.setContentType(basicProperties.getContentType());
-		message.setCorrelationId(basicProperties.getCorrelationId());
-		message.setDeliveryMode(basicProperties.getDeliveryMode());
-		message.setExpiration(basicProperties.getExpiration());
-		message.setHeaders(basicProperties.getHeaders());
-		message.setMessageId(basicProperties.getMessageId());
-		message.setPriority(basicProperties.getPriority());
-		message.setReplyTo(basicProperties.getReplyTo());
-		message.setTimestamp(basicProperties.getTimestamp());
-		message.setType(basicProperties.getType());
-		message.setUserId(basicProperties.getUserId());
-		return message;
+		channel.basicPublish(exchangeDeclare.getName(), routingKey, RabbitmqUitls.toBasicProperties(messageProperties),
+				body);
 	}
 
 	protected boolean isMultiple() {
 		return false;
-	}
-
-	private final class ConsumerInternal extends DefaultConsumer {
-		private final MessageListener messageListener;
-
-		public ConsumerInternal(Channel channel, MessageListener messageListener) {
-			super(channel);
-			this.messageListener = messageListener;
-		}
-
-		@Override
-		public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
-				throws IOException {
-			Message message = toMessage(properties, body);
-			onMessageInternal(envelope.getExchange(), envelope.getRoutingKey(), message, messageListener);
-			getChannel().basicAck(envelope.getDeliveryTag(), isMultiple());
-		}
 	}
 }

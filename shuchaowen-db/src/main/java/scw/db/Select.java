@@ -9,12 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.Pagination;
 import scw.lang.ParameterException;
 import scw.sql.Sql;
 import scw.sql.orm.Column;
+import scw.sql.orm.ResultMapping;
 import scw.sql.orm.ResultSet;
 import scw.sql.orm.dialect.mysql.MysqlDialectSql;
+import scw.util.Pagination;
 
 /**
  * 暂不支持分表
@@ -271,9 +272,8 @@ public abstract class Select extends MysqlDialectSql {
 		return getResultSet(begin, limit).getList(type);
 	}
 
-	public Pagination<ResultSet> getResultSetPagination(long page, int limit) {
-		Pagination<ResultSet> pagination = new Pagination<ResultSet>();
-		pagination.setLimit(limit);
+	public Pagination<ResultMapping> getResultSetPagination(long page, int limit) {
+		Pagination<ResultMapping> pagination = new Pagination<ResultMapping>(limit);
 		if (page <= 0 || limit <= 0) {
 			return pagination;
 		}
@@ -284,13 +284,12 @@ public abstract class Select extends MysqlDialectSql {
 		}
 
 		pagination.setTotalCount(count);
-		pagination.setData(getResultSet((page - 1) * limit, limit));
+		pagination.setData(getResultSet((page - 1) * limit, limit).toResultMappingList());
 		return pagination;
 	}
 
-	public <T> Pagination<List<T>> getPagination(Class<T> type, long page, int limit) {
-		Pagination<List<T>> pagination = new Pagination<List<T>>();
-		pagination.setLimit(limit);
+	public <T> Pagination<T> getPagination(Class<T> type, long page, int limit) {
+		Pagination<T> pagination = new Pagination<T>(limit);
 		if (page <= 0 || limit <= 0) {
 			return pagination;
 		}

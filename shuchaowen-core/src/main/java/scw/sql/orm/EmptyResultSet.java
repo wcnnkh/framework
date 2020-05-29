@@ -43,4 +43,8 @@ public final class EmptyResultSet implements ResultSet {
 	public boolean isEmpty() {
 		return true;
 	}
+
+	public List<ResultMapping> toResultMappingList() {
+		return Collections.emptyList();
+	}
 }

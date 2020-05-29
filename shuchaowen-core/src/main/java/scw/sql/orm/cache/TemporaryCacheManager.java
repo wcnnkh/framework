@@ -12,7 +12,7 @@ import scw.data.TemporaryCache;
 import scw.data.WrapperTemporaryCache;
 import scw.sql.orm.cache.annotation.TemporaryCacheEnable;
 
-public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> {
+public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> {
 	private static final String KEY = "key:";
 	private static final TemporaryCacheConfig DEFAULT_CONFIG = new TemporaryCacheConfig(
 			(int) (XTime.ONE_DAY * 2 / 1000), false, true);
@@ -24,7 +24,8 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			synchronized (configMap) {
 				config = configMap.get(tableClass);
 				if (config == null) {
-					TemporaryCacheEnable temporaryCacheEnable = tableClass.getAnnotation(TemporaryCacheEnable.class);
+					TemporaryCacheEnable temporaryCacheEnable = tableClass
+							.getAnnotation(TemporaryCacheEnable.class);
 					if (temporaryCacheEnable == null) {
 						config = DEFAULT_CONFIG;
 					} else {
@@ -39,18 +40,21 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 
 	private final TemporaryCache cache;
 
-	public TemporaryCacheManager(TemporaryCache cache, boolean transaction, String keyPrefix) {
+	public TemporaryCacheManager(TemporaryCache cache, boolean transaction,
+			String keyPrefix) {
 		this.cache = new WrapperTemporaryCache(cache, transaction, keyPrefix);
 	}
 
 	public void save(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
+		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(
+				bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
 
-		String objectKey = getObjectRelationalMapping().getObjectKey(clazz, bean);
+		String objectKey = getObjectRelationalMapping().getObjectKey(clazz,
+				bean);
 		cache.set(objectKey, config.getExp(), bean);
 		if (config.isKeys()) {
 			cache.add(KEY + objectKey, "");
@@ -58,23 +62,27 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	public void update(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
+		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(
+				bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
 
-		cache.set(getObjectRelationalMapping().getObjectKey(clazz, bean), config.getExp(), bean);
+		cache.set(getObjectRelationalMapping().getObjectKey(clazz, bean),
+				config.getExp(), bean);
 	}
 
 	public void delete(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
+		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(
+				bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
 
-		String objectKey = getObjectRelationalMapping().getObjectKey(clazz, bean);
+		String objectKey = getObjectRelationalMapping().getObjectKey(clazz,
+				bean);
 		if (config.isKeys()) {
 			cache.delete(KEY + objectKey);
 		}
@@ -87,7 +95,8 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return;
 		}
 
-		String objectKey = getObjectRelationalMapping().getObjectKeyById(type, Arrays.asList(params));
+		String objectKey = getObjectRelationalMapping().getObjectKeyById(type,
+				Arrays.asList(params));
 		if (config.isKeys()) {
 			cache.delete(KEY + objectKey);
 		}
@@ -95,13 +104,15 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 	}
 
 	public void saveOrUpdate(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
+		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(
+				bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
 
-		String objectKey = getObjectRelationalMapping().getObjectKey(clazz, bean);
+		String objectKey = getObjectRelationalMapping().getObjectKey(clazz,
+				bean);
 		cache.set(objectKey, config.getExp(), bean);
 		if (config.isKeys()) {
 			cache.set(KEY + objectKey, "");
@@ -114,10 +125,13 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 			return null;
 		}
 
-		return cache.getAndTouch(getObjectRelationalMapping().getObjectKeyById(type, Arrays.asList(params)), config.getExp());
+		return cache.getAndTouch(
+				getObjectRelationalMapping().getObjectKeyById(type,
+						Arrays.asList(params)), config.getExp());
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type,
+			Collection<? extends K> inIds, Object... params) {
 		TemporaryCacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return null;
@@ -143,7 +157,8 @@ public final class TemporaryCacheManager extends AbstractCacheManager<TemporaryC
 				return true;
 			}
 
-			String key = getObjectRelationalMapping().getObjectKeyById(type, Arrays.asList(params));
+			String key = getObjectRelationalMapping().getObjectKeyById(type,
+					Arrays.asList(params));
 			return getCache().isExist(KEY + key);
 		}
 		return true;

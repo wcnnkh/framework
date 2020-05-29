@@ -28,7 +28,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 			return new ConnectionFactoryBeanBuilder(context);
 		} else if (context.getTargetClass() == Connection.class) {
 			return new ConnectionBeanBuilder(context);
-		} else if (context.getTargetClass() == Exchange.class) {
+		} else if (Exchange.class == context.getTargetClass()) {
 			return new ExchangeBeanBuilder(context);
 		} else if (context.getTargetClass() == ExchangeDeclare.class) {
 			return new ExchangeDeclareBeanBuilder(context);
@@ -90,7 +90,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		}
 
 		public Object create() throws Exception {
-			return new RabbitmqExchange(SerializerUtils.DEFAULT_SERIALIZER, beanFactory.getInstance(Connection.class),
+			return new RabbitmqTransactionExchange(SerializerUtils.DEFAULT_SERIALIZER, beanFactory.getInstance(Connection.class),
 					beanFactory.getInstance(ExchangeDeclare.class), beanFactory.getInstance(CompleteService.class),
 					getTargetClass().getName());
 		}

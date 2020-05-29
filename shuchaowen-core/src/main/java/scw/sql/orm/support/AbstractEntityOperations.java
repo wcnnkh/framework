@@ -17,7 +17,6 @@ import scw.aop.ProxyUtils;
 import scw.aop.support.FieldSetterListen;
 import scw.core.IteratorCallback;
 import scw.core.IteratorCallback.Row;
-import scw.core.Pagination;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -44,6 +43,7 @@ import scw.sql.orm.enums.TableStructureResultField;
 import scw.sql.orm.support.generation.GeneratorContext;
 import scw.sql.orm.support.generation.GeneratorService;
 import scw.sql.orm.support.generation.annotation.Generator;
+import scw.util.Pagination;
 
 public abstract class AbstractEntityOperations extends SqlTemplate implements
 		EntityOperations {
@@ -418,31 +418,33 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 			}
 		}
 	}
+	
+	public <T> Pagination<T> select(Class<? extends T> type, int page,
+			int limit, Sql sql) {
+		return select(type, (long)page, limit, sql);
+	}
 
-	@SuppressWarnings("unchecked")
-	public <T> Pagination<List<T>> select(Class<? extends T> type, long page,
+	public <T> Pagination<T> select(Class<? extends T> type, long page,
 			int limit, Sql sql) {
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql,
 				page, limit);
 		Long count = select(paginationSql.getCountSql()).getFirst().get(0);
-		if (count == null) {
-			count = 0L;
+		Pagination<T> pagination = new Pagination<T>(limit);
+		if (count == null || count == 0) {
+			pagination.setData(Collections.emptyList());
+		}else{
+			pagination.setTotalCount(count);
+			pagination.setData(select(type,
+					paginationSql.getResultSql()));
 		}
-
-		if (count == 0) {
-			return new Pagination<List<T>>(0, limit, Collections.EMPTY_LIST);
-		}
-
-		return new Pagination<List<T>>(count, limit, select(type,
-				paginationSql.getResultSql()));
+		return pagination;
+	}
+	
+	public Pagination<ResultMapping> select(int page, int limit, Sql sql) {
+		return select((long)page, limit, sql);
 	}
 
-	public <T> Pagination<List<T>> select(Class<? extends T> type, int page,
-			int limit, Sql sql) {
-		return select(type, (long) page, limit, sql);
-	}
-
-	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
+	public Pagination<ResultMapping> select(long page, int limit, Sql sql) {
 		if (limit <= 0 || page <= 0) {
 			throw new RuntimeException("page=" + page + ", limit=" + limit);
 		}
@@ -455,21 +457,16 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql,
 				page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
-		if (count == null) {
-			count = 0L;
+		Pagination<ResultMapping> pagination = new Pagination<ResultMapping>(limit);
+		if (count == null || count == 0) {
+			pagination.emptyData();
+			return pagination;
+		}else{
+			pagination.setTotalCount(count);
+			pagination.setData(select(paginationSql.getResultSql()).toResultMappingList());
+			
 		}
-
-		if (count == 0) {
-			return new Pagination<ResultSet>(0, limit,
-					ResultSet.EMPTY_RESULT_SET);
-		}
-
-		return new Pagination<ResultSet>(count, limit,
-				select(paginationSql.getResultSql()));
-	}
-
-	public Pagination<ResultSet> select(int page, int limit, Sql sql) {
-		return select((long) page, limit, sql);
+		return pagination;
 	}
 
 	/**

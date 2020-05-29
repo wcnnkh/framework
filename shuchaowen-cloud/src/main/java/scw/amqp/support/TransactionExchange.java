@@ -1,8 +1,7 @@
 package scw.amqp.support;
 
-import java.util.concurrent.TimeUnit;
-
 import scw.amqp.AbstractExchange;
+import scw.amqp.Exchange;
 import scw.amqp.MessageProperties;
 import scw.beans.BeanFactoryAccessor;
 import scw.complete.Complete;
@@ -12,20 +11,18 @@ import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
-public abstract class TransactionPushExchange extends AbstractExchange {
+public abstract class TransactionExchange extends AbstractExchange {
 	private CompleteService completeService;
 	private String beanId;
 
-	public TransactionPushExchange(NoTypeSpecifiedSerializer serializer, CompleteService completeService,
-			String beanId) {
+	public TransactionExchange(NoTypeSpecifiedSerializer serializer, CompleteService completeService, String beanId) {
 		super(serializer);
 		this.completeService = completeService;
 		this.beanId = beanId;
 	}
 
-	@Override
-	protected void push(String routingKey, MessageProperties messageProperties, byte[] body) {
-		if (TransactionManager.hasTransaction()) {
+	public void push(String routingKey, MessageProperties messageProperties, byte[] body, boolean transaction) {
+		if (transaction && TransactionManager.hasTransaction()) {
 			try {
 				final Complete complete = completeService
 						.register(new PushCompleteTask(beanId, routingKey, messageProperties, body));
@@ -49,6 +46,11 @@ public abstract class TransactionPushExchange extends AbstractExchange {
 		}
 	}
 
+	@Override
+	public void push(String routingKey, MessageProperties messageProperties, byte[] body) {
+		push(routingKey, messageProperties, body, true);
+	}
+
 	protected abstract void basePush(String routingKey, MessageProperties messageProperties, byte[] body);
 
 	private static class PushCompleteTask extends BeanFactoryAccessor implements CompleteTask {
@@ -67,13 +69,9 @@ public abstract class TransactionPushExchange extends AbstractExchange {
 		}
 
 		public Object process() throws Throwable {
-			TransactionPushExchange exchange = getBeanFactory().getInstance(rabbitExchangeBeanId);
-			exchange.basePush(routingKey, messageProperties, body);
+			Exchange exchange = getBeanFactory().getInstance(rabbitExchangeBeanId);
+			exchange.push(routingKey, messageProperties, body, false);
 			return null;
 		}
-	}
-
-	protected long getRetryDelay() {
-		return TimeUnit.SECONDS.toMillis(10);
 	}
 }

@@ -1,6 +1,5 @@
 package scw.amqp.support;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
 
 import scw.amqp.Exchange;
@@ -16,27 +15,38 @@ import scw.value.property.PropertyFactory;
 @Configuration(order = Integer.MIN_VALUE)
 public final class MethodMessageListenerScan extends AbstractBeanFactoryLifeCycle {
 
+	@SuppressWarnings("unchecked")
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
 		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(getScanAnnotationPackageName())) {
-			scanningAMQPConsumer(beanFactory, clazz);
+			if (scw.amqp.MessageListener.class.isAssignableFrom(clazz)) {
+				MessageListener messageListener = clazz.getAnnotation(MessageListener.class);
+				if (messageListener != null) {
+					Exchange exchange = beanFactory.getInstance(messageListener.exchange());
+					scw.amqp.MessageListener listener = beanFactory
+							.getInstance((Class<scw.amqp.MessageListener>) clazz);
+					exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener), listener);
+				}
+			}
+
+			for (Method method : AnnotationUtils.getAnnoationMethods(clazz, true, true, MessageListener.class)) {
+				MessageListener messageListener = method.getAnnotation(MessageListener.class);
+				Exchange exchange = beanFactory.getInstance(messageListener.exchange());
+				exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener),
+						beanFactory.getAop().getProxyMethod(beanFactory, clazz, method, null));
+			}
 		}
+	}
+
+	private QueueDeclare createQueueDeclare(MessageListener messageListener) {
+		QueueDeclare queueDeclare = new QueueDeclare(messageListener.queueName());
+		queueDeclare.setDurable(messageListener.durable());
+		queueDeclare.setExclusive(messageListener.exclusive());
+		queueDeclare.setAutoDelete(messageListener.autoDelete());
+		return queueDeclare;
 	}
 
 	public String getScanAnnotationPackageName() {
 		return BeanUtils.getScanAnnotationPackageName();
-	}
-
-	private void scanningAMQPConsumer(BeanFactory beanFactory, Class<?> clz) throws IOException {
-		for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, MessageListener.class)) {
-			MessageListener messageListener = method.getAnnotation(MessageListener.class);
-			Exchange exchange = beanFactory.getInstance(messageListener.exchange());
-			QueueDeclare queueDeclare = new QueueDeclare(messageListener.queueName());
-			queueDeclare.setDurable(messageListener.durable());
-			queueDeclare.setExclusive(messageListener.exclusive());
-			queueDeclare.setAutoDelete(messageListener.autoDelete());
-			exchange.bind(messageListener.routingKey(), queueDeclare,
-					beanFactory.getAop().getProxyMethod(beanFactory, clz, method, null));
-		}
 	}
 
 	public void destroy(BeanFactory beanFactory, PropertyFactory propertyFactory) {

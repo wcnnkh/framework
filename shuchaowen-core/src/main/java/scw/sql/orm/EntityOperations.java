@@ -6,9 +6,9 @@ import java.util.Map;
 
 import scw.beans.annotation.Bean;
 import scw.core.IteratorCallback;
-import scw.core.Pagination;
 import scw.core.IteratorCallback.Row;
 import scw.sql.Sql;
+import scw.util.Pagination;
 
 @Bean(proxy=false)
 public interface EntityOperations {
@@ -75,13 +75,13 @@ public interface EntityOperations {
 
 	void createTable(String packageName);
 
-	<T> Pagination<List<T>> select(Class<? extends T> type, long page, int limit, Sql sql);
+	<T> Pagination<T> select(Class<? extends T> type, long page, int limit, Sql sql);
 
-	Pagination<ResultSet> select(long page, int limit, Sql sql);
+	Pagination<ResultMapping> select(long page, int limit, Sql sql);
+	
+	<T> Pagination<T> select(Class<? extends T> type, int page, int limit, Sql sql);
 
-	Pagination<ResultSet> select(int page, int limit, Sql sql);
-
-	<T> Pagination<List<T>> select(Class<? extends T> type, int page, int limit, Sql sql);
+	Pagination<ResultMapping> select(int page, int limit, Sql sql);
 
 	<T> void iterator(Class<? extends T> tableClass, IteratorCallback<T> iterator);
 

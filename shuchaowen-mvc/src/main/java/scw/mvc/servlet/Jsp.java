@@ -8,11 +8,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.http.server.servlet.ServletServerHttpRequest;
-import scw.http.server.servlet.ServletServerHttpResponse;
-import scw.http.server.servlet.ServletUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
+import scw.servlet.ServletUtils;
+import scw.servlet.http.ServletServerHttpRequest;
+import scw.servlet.http.ServletServerHttpResponse;
 
 public class Jsp extends AbstractPage {
 	private static final long serialVersionUID = 1L;

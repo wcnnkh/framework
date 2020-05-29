@@ -12,8 +12,8 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;
 import scw.http.server.cors.CorsUtils;
-import scw.http.server.servlet.ServletServerHttpRequest;
-import scw.http.server.servlet.ServletServerHttpResponse;
+import scw.servlet.http.ServletServerHttpRequest;
+import scw.servlet.http.ServletServerHttpResponse;
 import scw.value.property.PropertyFactory;
 
 public final class ShutdownHttpServlet extends HttpServlet {

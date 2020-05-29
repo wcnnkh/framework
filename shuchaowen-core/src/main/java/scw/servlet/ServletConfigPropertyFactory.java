@@ -1,4 +1,4 @@
-package scw.http.server.servlet;
+package scw.servlet;
 
 import java.util.Enumeration;
 

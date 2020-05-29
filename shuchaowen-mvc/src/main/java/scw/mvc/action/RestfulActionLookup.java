@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
@@ -17,7 +16,6 @@ import scw.net.Restful;
 import scw.net.Restful.RestfulMatchingResult;
 
 @Configuration(order = Integer.MIN_VALUE)
-@Bean(proxy = false)
 public class RestfulActionLookup implements ActionLookup {
 	private final EnumMap<HttpMethod, Map<Restful, Action>> restMap = new EnumMap<HttpMethod, Map<Restful, Action>>(
 			HttpMethod.class);

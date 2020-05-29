@@ -17,7 +17,8 @@ public abstract class AbstractResultSet implements ResultSet {
 	protected ResultSetResolver resultSetResolver;
 	protected LinkedList<Object[]> dataList;
 
-	public AbstractResultSet(ResultSetResolver resultSetResolver, LinkedList<Object[]> dataList) {
+	public AbstractResultSet(ResultSetResolver resultSetResolver,
+			LinkedList<Object[]> dataList) {
 		this.resultSetResolver = resultSetResolver;
 		this.dataList = dataList;
 	}
@@ -25,11 +26,13 @@ public abstract class AbstractResultSet implements ResultSet {
 	public AbstractResultSet(java.sql.ResultSet resultSet) throws SQLException {
 		while (resultSet.next()) {
 			if (resultSetResolver == null) {// 第一次
-				resultSetResolver = new ResultSetResolver(resultSet.getMetaData());
+				resultSetResolver = new ResultSetResolver(
+						resultSet.getMetaData());
 				dataList = new LinkedList<Object[]>();
 			}
 
-			dataList.add(SqlUtils.getRowValues(resultSet, resultSetResolver.getColumnCount()));
+			dataList.add(SqlUtils.getRowValues(resultSet,
+					resultSetResolver.getColumnCount()));
 		}
 	}
 
@@ -51,7 +54,8 @@ public abstract class AbstractResultSet implements ResultSet {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> List<T> getList(Class<? extends T> clazz, TableNameMapping tableNameMapping) {
+	public <T> List<T> getList(Class<? extends T> clazz,
+			TableNameMapping tableNameMapping) {
 		if (isEmpty()) {
 			return Collections.EMPTY_LIST;
 		}
@@ -95,11 +99,24 @@ public abstract class AbstractResultSet implements ResultSet {
 	}
 
 	public final boolean isEmpty() {
-		return resultSetResolver == null || dataList == null || dataList.isEmpty();
+		return resultSetResolver == null || dataList == null
+				|| dataList.isEmpty();
 	}
 
 	public final Iterator<ResultMapping> iterator() {
 		return new ResultIterator();
+	}
+
+	public List<ResultMapping> toResultMappingList() {
+		if (isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<ResultMapping> list = new ArrayList<ResultMapping>();
+		for (ResultMapping resultMapping : this) {
+			list.add(resultMapping);
+		}
+		return list;
 	}
 
 	final class ResultIterator implements Iterator<ResultMapping> {

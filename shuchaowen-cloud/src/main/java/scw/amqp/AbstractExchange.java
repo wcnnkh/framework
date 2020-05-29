@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import scw.aop.MethodInvoker;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.json.JSONUtils;
+import scw.lang.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.transaction.DefaultTransactionDefinition;
@@ -14,28 +15,37 @@ import scw.transaction.TransactionManager;
 
 public abstract class AbstractExchange implements Exchange {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
-	private NoTypeSpecifiedSerializer serializer;
+	private final NoTypeSpecifiedSerializer serializer;
 
 	public AbstractExchange(NoTypeSpecifiedSerializer serializer) {
 		this.serializer = serializer;
 	}
 
+	public final NoTypeSpecifiedSerializer getSerializer() {
+		return serializer;
+	}
+
 	@Override
 	public void bind(String routingKey, QueueDeclare queueDeclare, MethodInvoker methodInvoker) {
-		logger.info("add message listener：{}, routingKey={}, queueDeclare={}", methodInvoker.getMethod(), routingKey,
-				queueDeclare);
 		bind(routingKey, queueDeclare, new MethodMessageListener(methodInvoker));
 	}
 
 	@Override
-	public void push(String routingKey, Message message) {
+	public final void bind(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener) {
+		logger.info("add message listener：{}, routingKey={}, queueDeclare={}", messageListener, routingKey,
+				queueDeclare);
+		bindInternal(routingKey, queueDeclare, new MessageListenerInternal(messageListener));
+	}
+
+	protected abstract void bindInternal(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener);
+
+	@Override
+	public final void push(String routingKey, Message message) {
 		push(routingKey, message, message.getBody());
 	}
 
-	protected abstract void push(String routingKey, MessageProperties messageProperties, byte[] body);
-
 	@Override
-	public void push(String routingKey, MethodMessage methodMessage) {
+	public final void push(String routingKey, MethodMessage methodMessage) {
 		try {
 			push(routingKey, methodMessage, serializer.serialize(methodMessage.getArgs()));
 		} catch (IOException e) {
@@ -51,9 +61,18 @@ public abstract class AbstractExchange implements Exchange {
 		}
 
 		@Override
-		public void onMessage(String exchange, String routingKey, Message message) throws Throwable {
-			Object[] args = serializer.deserialize(message.getBody());
-			invoker.invoke(args);
+		public void onMessage(String exchange, String routingKey, Message message) throws IOException {
+			try {
+				Object[] args = serializer.deserialize(message.getBody());
+				invoker.invoke(args);
+			} catch (Throwable e) {
+				throw new NestedRuntimeException(e);
+			}
+		}
+
+		@Override
+		public String toString() {
+			return invoker.toString();
 		}
 	}
 
@@ -70,55 +89,108 @@ public abstract class AbstractExchange implements Exchange {
 		return 0;
 	}
 
-	protected void onMessageInternal(String exchange, String routingKey, Message message,
-			MessageListener messageListener) {
-		if (logger.isTraceEnabled()) {
-			logger.trace("handleDelivery: {}", JSONUtils.toJSONString(message));
+	/**
+	 * 转发消息时会调用此方法
+	 * 
+	 * @param routingKey
+	 * @param messageProperties
+	 * @param body
+	 */
+	protected void forwardPush(String routingKey, MessageProperties messageProperties, byte[] body) throws IOException {
+		push(routingKey, messageProperties, body, false);
+	}
+
+	/**
+	 * 失败重试时会调用此方法
+	 * 
+	 * @param routingKey
+	 * @param messageProperties
+	 * @param body
+	 */
+	protected void retryPush(String routingKey, MessageProperties messageProperties, byte[] body) throws IOException {
+		push(routingKey, messageProperties, body);
+	}
+
+	private class MessageListenerInternal implements MessageListener {
+		private final MessageListener messageListener;
+
+		MessageListenerInternal(MessageListener messageListener) {
+			this.messageListener = messageListener;
 		}
 
-		if (message.getDelay() > 0) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("delay message forward properties: {}", JSONUtils.toJSONString(message));
+		@Override
+		public void onMessage(String exchange, String routingKey, Message message) throws IOException {
+			if (logger.isTraceEnabled()) {
+				logger.trace("handleDelivery: {}", JSONUtils.toJSONString(message));
 			}
 
-			message.setDelay(0, TimeUnit.SECONDS);
-			push(routingKey, message, message.getBody());
-			return;
-		}
+			if (message.getDelay() > 0) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("delay message forward properties: {}", JSONUtils.toJSONString(message));
+				}
 
-		Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
-		try {
-			messageListener.onMessage(exchange, routingKey, message);
-			TransactionManager.commit(transaction);
-		} catch (Throwable e) {
-			TransactionManager.rollback(transaction);
-			message.incrRetryCount();
-			long retryDelay = message.getRetryDelay();
-			if (retryDelay == 0) {
-				retryDelay = getDefaultRetryDelay();
+				message.setDelay(0, TimeUnit.SECONDS);
+				forwardPush(routingKey, message, message.getBody());
+				return;
 			}
-			
-			if(retryDelay != 0){
-				double retryDelayMultiple = message.getRetryDelayMultiple();
-				if(retryDelayMultiple > 0){
-					retryDelay = (long) (retryDelay * retryDelayMultiple * message.getRetryCount());
+
+			Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
+			try {
+				messageListener.onMessage(exchange, routingKey, message);
+				TransactionManager.commit(transaction);
+			} catch (Throwable e) {
+				TransactionManager.rollback(transaction);
+				message.incrRetryCount();
+				long retryDelay = message.getRetryDelay();
+				if (retryDelay == 0) {
+					retryDelay = getDefaultRetryDelay();
+				}
+
+				if (retryDelay != 0) {
+					double retryDelayMultiple = message.getRetryDelayMultiple();
+					if (retryDelayMultiple > 0) {
+						retryDelay = (long) (retryDelay * retryDelayMultiple * message.getRetryCount());
+					}
+				}
+
+				int maxRetryCount = message.getMaxRetryCount();
+				if (maxRetryCount == 0) {
+					maxRetryCount = getMaxRetryCount();
+				}
+
+				if (retryDelay < 0 || maxRetryCount < 0
+						|| (maxRetryCount > 0 && message.getRetryCount() > maxRetryCount)) {// 不重试
+					logger.error(e, "Don't try again: exchange={}, properties={}", exchange,
+							JSONUtils.toJSONString(message));
+				} else {
+					logger.error(e, "retry delay: {}, exchange={}, properties={}", retryDelay, exchange,
+							JSONUtils.toJSONString(message));
+					message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
+					retryPush(routingKey, message, message.getBody());
 				}
 			}
+		}
+	}
 
-			int maxRetryCount = message.getMaxRetryCount();
-			if (maxRetryCount == 0) {
-				maxRetryCount = getMaxRetryCount();
-			}
+	@Override
+	public void push(String routingKey, MessageProperties messageProperties, byte[] body, boolean transaction) {
+		if (transaction) {
+			throw new UnsupportedOperationException("transactoin push");
+		}
+		push(routingKey, messageProperties, body);
+	}
 
-			if (retryDelay < 0 || maxRetryCount < 0 || (maxRetryCount > 0 && message.getRetryCount() > maxRetryCount)) {// 不重试
-				logger.error(e, "Don't try again: exchange={}, properties={}", exchange,
-						JSONUtils.toJSONString(message));
-			} else {
-				logger.error(e, "retry delay: {}, exchange={}, properties={}", retryDelay, exchange,
-						JSONUtils.toJSONString(message));
-				message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
-				push(routingKey, message);
-			}
+	@Override
+	public final void push(String routingKey, Message message, boolean transaction) {
+		push(routingKey, message, message.getBody(), transaction);
+	}
+
+	@Override
+	public final void push(String routingKey, MethodMessage message, boolean transaction) {
+		try {
+			push(routingKey, message, serializer.serialize(message.getArgs()), transaction);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
