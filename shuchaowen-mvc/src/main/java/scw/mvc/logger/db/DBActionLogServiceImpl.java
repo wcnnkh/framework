@@ -104,15 +104,11 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 
 		Pagination<List<LogTable>> pagination = db.select(LogTable.class, page, limit,
 				sql.assembleSql("select * from log_table as l", "order by l.createTime desc"));
-		if (CollectionUtils.isEmpty(pagination.getData())) {
-			return Pagination.createEmptyListPagination(limit);
-		}
-
 		List<ActionLog> list = new ArrayList<ActionLog>();
 		for (LogTable logTable : pagination.getData()) {
 			list.add(Copy.copy(ActionLog.class, logTable));
 		}
-		return new Pagination<List<ActionLog>>(pagination.getTotalCount(), pagination.getLimit(), list);
+		return pagination.setData(list);
 	}
 
 }

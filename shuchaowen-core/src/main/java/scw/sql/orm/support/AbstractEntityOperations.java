@@ -419,22 +419,20 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public <T> Pagination<List<T>> select(Class<? extends T> type, long page,
 			int limit, Sql sql) {
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql,
 				page, limit);
 		Long count = select(paginationSql.getCountSql()).getFirst().get(0);
-		if (count == null) {
-			count = 0L;
+		Pagination<List<T>> pagination = new Pagination<List<T>>(limit);
+		if (count == null || count == 0) {
+			pagination.setData(Collections.emptyList());
+		}else{
+			pagination.setTotalCount(count);
+			pagination.setData(select(type,
+					paginationSql.getResultSql()));
 		}
-
-		if (count == 0) {
-			return new Pagination<List<T>>(0, limit, Collections.EMPTY_LIST);
-		}
-
-		return new Pagination<List<T>>(count, limit, select(type,
-				paginationSql.getResultSql()));
+		return pagination;
 	}
 
 	public <T> Pagination<List<T>> select(Class<? extends T> type, int page,
@@ -442,6 +440,9 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 		return select(type, (long) page, limit, sql);
 	}
 
+	/* (non-Javadoc)
+	 * @see scw.sql.orm.EntityOperations#select(long, int, scw.sql.Sql)
+	 */
 	public Pagination<ResultSet> select(long page, int limit, Sql sql) {
 		if (limit <= 0 || page <= 0) {
 			throw new RuntimeException("page=" + page + ", limit=" + limit);
@@ -455,17 +456,16 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql,
 				page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
-		if (count == null) {
-			count = 0L;
+		Pagination<ResultSet> pagination = new Pagination<ResultSet>(limit);
+		if (count == null || count == 0) {
+			pagination.setData(ResultSet.EMPTY_RESULT_SET);
+			return pagination;
+		}else{
+			pagination.setTotalCount(count);
+			pagination.setData(select(paginationSql.getResultSql()));
+			
 		}
-
-		if (count == 0) {
-			return new Pagination<ResultSet>(0, limit,
-					ResultSet.EMPTY_RESULT_SET);
-		}
-
-		return new Pagination<ResultSet>(count, limit,
-				select(paginationSql.getResultSql()));
+		return pagination;
 	}
 
 	public Pagination<ResultSet> select(int page, int limit, Sql sql) {

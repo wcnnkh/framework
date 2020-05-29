@@ -1,8 +1,6 @@
 package scw.core;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * 可用于分页
@@ -12,12 +10,13 @@ import java.util.List;
  */
 public class Pagination<T> implements Serializable {
 	private static final long serialVersionUID = 1511962074546668955L;
-	private int limit;
+	private final int limit;
 	private long totalCount;
 	private T data;
 
-	public Pagination() {
-	};
+	public Pagination(int limit) {
+		this.limit = limit;
+	}
 
 	public Pagination(long total, int limit, T data) {
 		this.totalCount = total;
@@ -30,18 +29,14 @@ public class Pagination<T> implements Serializable {
 	}
 
 	public long getLongMaxPage() {
-		if (totalCount <= limit) {
+		if (getTotalCount() <= limit) {
 			return 1;
 		}
-		return (long) Math.ceil(((double) totalCount) / limit);
+		return (long) Math.ceil(((double) getTotalCount()) / limit);
 	}
 
-	public int getLimit() {
+	public final int getLimit() {
 		return limit;
-	}
-
-	public void setLimit(int limit) {
-		this.limit = limit;
 	}
 
 	public int getTotalCount() {
@@ -52,16 +47,30 @@ public class Pagination<T> implements Serializable {
 		return totalCount;
 	}
 
-	public void setTotalCount(long totalCount) {
+	public Pagination<T> setTotalCount(long totalCount) {
 		this.totalCount = totalCount;
+		return this;
 	}
 
 	public T getData() {
 		return data;
 	}
 
-	public void setData(T data) {
-		this.data = data;
+	/**
+	 * 注意：此方法会改变泛型的实际类型，造成泛型不安全，当调用此方法后泛型的类型已经被改变为指定类型
+	 * 
+	 * @param data
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <D> Pagination<D> setData(D data) {
+		Pagination<D> pagination = new Pagination<D>(limit);
+		pagination.setTotalCount(getTotalCount());
+		pagination.data = data;
+		if (getClass().isInstance(pagination)) {
+			this.data = (T) data;
+		}
+		return pagination;
 	}
 
 	public static int getBegin(long page, int limit) {
@@ -70,10 +79,5 @@ public class Pagination<T> implements Serializable {
 
 	public static long getLongBegin(long page, int limit) {
 		return Math.max(0, (page - 1)) * limit;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> Pagination<List<T>> createEmptyListPagination(int limit){
-		return new Pagination<List<T>>(0, limit, (List<T>)Collections.EMPTY_LIST);
 	}
 }

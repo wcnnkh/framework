@@ -272,8 +272,7 @@ public abstract class Select extends MysqlDialectSql {
 	}
 
 	public Pagination<ResultSet> getResultSetPagination(long page, int limit) {
-		Pagination<ResultSet> pagination = new Pagination<ResultSet>();
-		pagination.setLimit(limit);
+		Pagination<ResultSet> pagination = new Pagination<ResultSet>(limit);
 		if (page <= 0 || limit <= 0) {
 			return pagination;
 		}
@@ -289,8 +288,7 @@ public abstract class Select extends MysqlDialectSql {
 	}
 
 	public <T> Pagination<List<T>> getPagination(Class<T> type, long page, int limit) {
-		Pagination<List<T>> pagination = new Pagination<List<T>>();
-		pagination.setLimit(limit);
+		Pagination<List<T>> pagination = new Pagination<List<T>>(limit);
 		if (page <= 0 || limit <= 0) {
 			return pagination;
 		}
