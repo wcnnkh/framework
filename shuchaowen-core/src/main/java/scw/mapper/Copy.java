@@ -139,7 +139,7 @@ public class Copy {
 						return false;
 					}
 				} else {
-					if (targetField.getGetter().getType().equals(field.getSetter().getType())) {
+					if (!targetField.getGetter().getType().equals(field.getSetter().getType())) {
 						return false;
 					}
 				}

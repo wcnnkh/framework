@@ -15,12 +15,14 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 	private final Class<?> targetClass;
 	private final Method method;
 	private final Object[] args;
+	private final long createTime;
 
 	public ProxyContext(Object proxy, Class<?> targetClass, Method method, Object[] args) {
 		this.proxy = proxy;
 		this.targetClass = targetClass;
 		this.method = method;
 		this.args = args;
+		this.createTime = System.currentTimeMillis();
 	}
 
 	public final Object getProxy() {
@@ -37,6 +39,10 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 
 	public final Object[] getArgs() {
 		return args;
+	}
+
+	public final long getCreateTime() {
+		return createTime;
 	}
 
 	@Override

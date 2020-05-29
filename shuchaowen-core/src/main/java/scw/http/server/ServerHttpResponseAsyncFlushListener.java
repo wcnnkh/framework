@@ -10,22 +10,18 @@ public class ServerHttpResponseAsyncFlushListener implements ServerHttpAsyncList
 	}
 	
 	public void onComplete(ServerHttpAsyncEvent event) throws IOException {
-		response.flush();
+		if(!response.isCommitted()){
+			response.flush();
+		}
 	}
 
 	public void onTimeout(ServerHttpAsyncEvent event) throws IOException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void onError(ServerHttpAsyncEvent event) throws IOException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void onStartAsync(ServerHttpAsyncEvent event) throws IOException {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
