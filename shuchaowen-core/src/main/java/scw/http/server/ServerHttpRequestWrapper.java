@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
@@ -14,6 +13,7 @@ import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.MediaType;
+import scw.net.InetAddress;
 import scw.security.session.Session;
 
 public class ServerHttpRequestWrapper implements ServerHttpRequest {
@@ -51,11 +51,11 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest {
 		return targetRequest.getReader();
 	}
 
-	public InetSocketAddress getLocalAddress() {
+	public InetAddress getLocalAddress() {
 		return targetRequest.getLocalAddress();
 	}
 
-	public InetSocketAddress getRemoteAddress() {
+	public InetAddress getRemoteAddress() {
 		return targetRequest.getRemoteAddress();
 	}
 

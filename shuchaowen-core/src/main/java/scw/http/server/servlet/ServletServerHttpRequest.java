@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.Principal;
@@ -24,6 +23,7 @@ import scw.http.MediaType;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.net.InetAddress;
 import scw.net.NetworkUtils;
 import scw.net.message.AbstractInputMessage;
 import scw.security.session.Session;
@@ -73,12 +73,12 @@ public class ServletServerHttpRequest extends AbstractInputMessage implements Se
 		return httpServletRequest.getUserPrincipal();
 	}
 
-	public InetSocketAddress getLocalAddress() {
-		return new InetSocketAddress(this.httpServletRequest.getLocalName(), this.httpServletRequest.getLocalPort());
+	public InetAddress getLocalAddress() {
+		return new InetAddress(this.httpServletRequest.getLocalName(), this.httpServletRequest.getLocalPort());
 	}
 
-	public InetSocketAddress getRemoteAddress() {
-		return new InetSocketAddress(this.httpServletRequest.getRemoteHost(), this.httpServletRequest.getRemotePort());
+	public InetAddress getRemoteAddress() {
+		return new InetAddress(this.httpServletRequest.getRemoteHost(), this.httpServletRequest.getRemotePort());
 	}
 
 	public void setCharacterEncoding(String enc) {
@@ -145,7 +145,7 @@ public class ServletServerHttpRequest extends AbstractInputMessage implements Se
 
 	public MediaType getContentType() {
 		String contentType = httpServletRequest.getContentType();
-		return contentType == null? null:MediaType.parseMediaType(contentType);
+		return contentType == null ? null : MediaType.parseMediaType(contentType);
 	}
 
 	public URI getURI() {

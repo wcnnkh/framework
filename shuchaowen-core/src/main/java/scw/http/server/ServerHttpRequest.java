@@ -3,13 +3,13 @@ package scw.http.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
 import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Map;
 
 import scw.http.HttpCookie;
 import scw.http.HttpRequest;
+import scw.net.InetAddress;
 import scw.net.message.InputMessage;
 import scw.security.session.Session;
 import scw.util.attribute.Attributes;
@@ -30,12 +30,12 @@ public interface ServerHttpRequest extends Attributes<String, Object>, InputMess
 	/**
 	 * Return the address on which the request was received.
 	 */
-	InetSocketAddress getLocalAddress();
+	InetAddress getLocalAddress();
 
 	/**
 	 * Return the address of the remote client.
 	 */
-	InetSocketAddress getRemoteAddress();
+	InetAddress getRemoteAddress();
 	
 	String getRawMethod();
 

@@ -15,10 +15,12 @@ public class HttpChannelAsyncListener implements ServerHttpAsyncListener {
 	}
 
 	public void onComplete(ServerHttpAsyncEvent event) throws IOException {
-		try {
-			XUtils.destroy(httpChannel);
-		} catch (Exception e) {
-			e.printStackTrace();
+		if(!httpChannel.isCompleted()){
+			try {
+				XUtils.destroy(httpChannel);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

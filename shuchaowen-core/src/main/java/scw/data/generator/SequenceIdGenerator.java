@@ -17,7 +17,7 @@ public final class SequenceIdGenerator implements IdGenerator<SequenceId> {
 	private final String time_format;
 
 	public SequenceIdGenerator() {
-		this(new LongIdGenerator());
+		this(new AtomicLongIdGenerator());
 	}
 
 	public SequenceIdGenerator(IdGenerator<Long> idGenerator) {
