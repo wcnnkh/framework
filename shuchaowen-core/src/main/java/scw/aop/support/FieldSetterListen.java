@@ -3,7 +3,7 @@ package scw.aop.support;
 import java.util.Map;
 
 import scw.aop.ProxyContext;
-import scw.io.WriteReplaceInterface;
+import scw.aop.WriteReplaceInterface;
 import scw.mapper.Field;
 
 public interface FieldSetterListen extends WriteReplaceInterface{

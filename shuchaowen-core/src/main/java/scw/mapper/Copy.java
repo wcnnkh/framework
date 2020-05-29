@@ -97,8 +97,8 @@ public class Copy {
 					return false;
 				}
 
-				if (targetField.getGetter().getGenericType() != field
-						.getSetter().getGenericType()) {
+				if (!targetField.getGetter().getGenericType().equals(field
+						.getSetter().getGenericType())) {
 					return false;
 				}
 

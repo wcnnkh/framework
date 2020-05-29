@@ -3,17 +3,19 @@ package scw.aop.support;
 import scw.aop.FilterChain;
 import scw.aop.Invoker;
 import scw.aop.ProxyContext;
+import scw.mapper.Copy;
 import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 
 public class FieldSetterListenFilter extends FieldSetterListenImpl implements FilterChain {
 	private static final long serialVersionUID = 1L;
-	
-	private Field getField(Class<?> clazz, String name, Class<?> type){
-		return MapperUtils.getMapper().getField(clazz, name, type, FilterFeature.SUPPORT_GETTER, FilterFeature.IGNORE_STATIC);
+
+	private Field getField(Class<?> clazz, String name, Class<?> type) {
+		return MapperUtils.getMapper().getField(clazz, name, type, FilterFeature.SUPPORT_GETTER,
+				FilterFeature.IGNORE_STATIC);
 	}
-	
+
 	private final Object change(Invoker invoker, ProxyContext context, Field field) throws Throwable {
 		Object oldValue = field.getGetter().get(context.getProxy());
 		if (FieldSetterListen.class.isAssignableFrom(context.getTargetClass())) {
@@ -25,6 +27,10 @@ public class FieldSetterListenFilter extends FieldSetterListenImpl implements Fi
 	}
 
 	public Object doFilter(Invoker invoker, ProxyContext context) throws Throwable {
+		if (context.isWriteReplaceMethod(false)) {
+			return Copy.copy(context.getTargetClass(), context.getProxy());
+		}
+
 		if (context.getArgs().length == 0) {
 			if (FieldSetterListen.CLEAR_FIELD_LISTEN.equals(context.getMethod().getName())) {
 				if (FieldSetterListen.class.isAssignableFrom(context.getTargetClass())) {
@@ -55,7 +61,7 @@ public class FieldSetterListenFilter extends FieldSetterListenImpl implements Fi
 			Class<?> type = context.getMethod().getParameterTypes()[0];
 			Field field = getField(context.getTargetClass(), new String(chars), type);
 			if (field == null) {
-				if(type == boolean.class){
+				if (type == boolean.class) {
 					chars[0] = Character.toUpperCase(chars[0]);
 					field = getField(context.getTargetClass(), "is" + new String(chars), boolean.class);
 					if (field != null) {

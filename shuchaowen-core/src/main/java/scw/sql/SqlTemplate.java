@@ -11,7 +11,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public abstract class SqlTemplate implements SqlOperations {
-	protected static Logger logger = LoggerFactory.getLogger(SqlTemplate.class);
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public abstract Connection getUserConnection() throws SQLException;
 

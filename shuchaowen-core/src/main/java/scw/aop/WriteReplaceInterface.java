@@ -1,4 +1,4 @@
-package scw.io;
+package scw.aop;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;

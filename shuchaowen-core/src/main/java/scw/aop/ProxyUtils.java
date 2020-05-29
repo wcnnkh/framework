@@ -7,7 +7,6 @@ import java.util.Collection;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
-import scw.result.SimpleResult;
 
 public final class ProxyUtils {
 
@@ -27,32 +26,6 @@ public final class ProxyUtils {
 
 	public static MultipleProxyFactory getProxyFactory() {
 		return PROXY_FACTORY;
-	}
-
-	private static int ignoreHashCode(Object obj) {
-		return System.identityHashCode(obj);
-	}
-
-	private static String ignoreToString(Object obj) {
-		return obj.getClass().getName() + "@"
-				+ Integer.toHexString(ignoreHashCode(obj));
-	}
-
-	public static SimpleResult<Object> ignoreMethod(Object obj, Method method,
-			Object[] args) {
-		if (args == null || args.length == 0) {
-			if (method.getName().equals("hashCode")) {
-				return new SimpleResult<Object>(true, ignoreHashCode(obj));
-			} else if (method.getName().equals("toString")) {
-				return new SimpleResult<Object>(true, ignoreToString(obj));
-			}
-		}
-
-		if (args != null && args.length == 1
-				&& method.getName().equals("equals")) {
-			return new SimpleResult<Object>(true, obj == args[0]);
-		}
-		return new SimpleResult<Object>(false, null);
 	}
 
 	/**
