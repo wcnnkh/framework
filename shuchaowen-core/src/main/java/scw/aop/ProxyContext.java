@@ -23,10 +23,6 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 		this.args = args;
 	}
 
-	public ProxyContext(ProxyContext context) {
-		this(context.getProxy(), context.getTargetClass(), context.getMethod(), context.getArgs());
-	}
-
 	public final Object getProxy() {
 		return proxy;
 	}
