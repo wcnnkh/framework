@@ -3,9 +3,9 @@ package scw.embed.servlet;
 import scw.application.MainApplication;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
-import scw.http.server.servlet.HttpServletService;
 import scw.lang.NotSupportedException;
-import scw.mvc.servlet.DispatcherServlet;
+import scw.servlet.DispatcherServlet;
+import scw.servlet.http.HttpServletService;
 
 @Configuration(MainApplication.class)
 public class ServletEmbeddedApplication extends MainApplication {

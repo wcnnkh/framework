@@ -1,4 +1,4 @@
-package scw.http.server.servlet;
+package scw.servlet;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpHeaders;
-import scw.http.server.servlet.ServletServerHttpRequest;
+import scw.servlet.http.ServletServerHttpRequest;
 
 public final class ServletUtils {
 	private static final boolean asyncSupport = ClassUtils.isPresent("javax.servlet.AsyncContext");// 是否支持异步处理

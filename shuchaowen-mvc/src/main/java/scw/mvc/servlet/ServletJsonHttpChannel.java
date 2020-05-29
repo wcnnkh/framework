@@ -5,10 +5,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterDescriptor;
-import scw.http.server.servlet.ServletServerHttpRequest;
-import scw.http.server.servlet.ServletServerHttpResponse;
 import scw.json.JSONSupport;
 import scw.mvc.JsonHttpChannel;
+import scw.servlet.http.ServletServerHttpRequest;
+import scw.servlet.http.ServletServerHttpResponse;
 
 public class ServletJsonHttpChannel extends JsonHttpChannel<ServletServerHttpRequest, ServletServerHttpResponse>{
 

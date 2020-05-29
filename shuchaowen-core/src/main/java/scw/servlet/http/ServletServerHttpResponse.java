@@ -1,4 +1,4 @@
-package scw.http.server.servlet;
+package scw.servlet.http;
 
 import java.io.IOException;
 import java.io.OutputStream;

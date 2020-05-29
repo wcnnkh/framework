@@ -4,7 +4,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
 import scw.lang.AlreadyExistsException;
@@ -13,7 +12,6 @@ import scw.mvc.MVCUtils;
 import scw.mvc.action.Action.ControllerDescriptor;
 
 @Configuration(order=Integer.MIN_VALUE + 2)
-@Bean(proxy=false)
 public class PathActionLookup implements ActionLookup {
 	private final Map<String, EnumMap<HttpMethod, Action>> actionMap = new HashMap<String, EnumMap<HttpMethod, Action>>();
 

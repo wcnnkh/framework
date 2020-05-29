@@ -1,4 +1,4 @@
-package scw.http.server.servlet;
+package scw.servlet.http;
 
 import java.util.ArrayList;
 import java.util.Collection;
