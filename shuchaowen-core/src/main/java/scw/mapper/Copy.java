@@ -166,6 +166,13 @@ public class Copy {
 			if (!field.isSupportSetter()) {
 				continue;
 			}
+			
+			/**
+			 * 目标字段应该存在实际的java.lang.Field
+			 */
+			if(field.getSetter().getField() == null){
+				continue;
+			}
 
 			Field sourceField = getSourceField(sourceClass, field);
 			if (sourceField == null) {

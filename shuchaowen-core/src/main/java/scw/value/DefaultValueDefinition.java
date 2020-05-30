@@ -5,15 +5,18 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class DefaultValueDefinition implements Value, Serializable {
+public class DefaultValueDefinition extends AbstractValue implements
+		Serializable {
 	private static final long serialVersionUID = 1L;
 	public static final DefaultValueDefinition DEFAULT_VALUE_DEFINITION = new DefaultValueDefinition();
 
-	public <T> T getAsObject(Class<? extends T> type) {
+	@Override
+	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
 		return null;
 	}
 
-	public Object getAsObject(Type type) {
+	@Override
+	protected <T> T getAsObjectNotSupport(Type type) {
 		return null;
 	}
 

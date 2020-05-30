@@ -1290,4 +1290,23 @@ public abstract class ReflectionUtils {
 		autoList.addAll(defList);
 		return autoList;
 	}
+	
+	/**
+     * Returns {@code true} if this method is a default
+     * method; returns {@code false} otherwise.
+     *
+     * A default method is a public non-abstract instance method, that
+     * is, a non-static method with a body, declared in an interface
+     * type.
+     *
+     * @return true if and only if this method is a default
+     * method as defined by the Java Language Specification.
+     * @since 1.8
+     */
+    public boolean isDefault(Method method) {
+        // Default methods are public non-abstract instance methods
+        // declared in an interface.
+        return ((method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) ==
+                Modifier.PUBLIC) && method.getDeclaringClass().isInterface();
+    }
 }

@@ -7,17 +7,6 @@ import java.math.BigInteger;
 import scw.lang.NotSupportedException;
 
 public abstract class AbstractValue implements Value {
-	private final Value defaultValue;
-
-	public AbstractValue(Value defaultValue) {
-		this.defaultValue = defaultValue;
-	}
-
-	protected Value getDefaultValue() {
-		return defaultValue;
-	}
-	
-
 	@SuppressWarnings("unchecked")
 	public <T> T getAsObject(Class<? extends T> type) {
 		Object v = null;
@@ -65,12 +54,12 @@ public abstract class AbstractValue implements Value {
 			v = getAsClass();
 		} else if (type.isEnum()) {
 			v = getAsEnum(type);
-		} else if(type == Value.class){
+		} else if (type == Value.class) {
 			v = this;
 		} else {
 			v = getAsObjectNotSupport(type);
 		}
-		return (T) (v == null ? getDefaultValue().getAsObject(type) : v);
+		return (T) v;
 	}
 
 	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
@@ -87,7 +76,6 @@ public abstract class AbstractValue implements Value {
 			return getAsObject((Class) type);
 		}
 
-		Object v = getAsObjectNotSupport(type);
-		return v == null ? getDefaultValue().getAsObject(type) : v;
+		return getAsObjectNotSupport(type);
 	}
 }
