@@ -5,7 +5,7 @@ import java.math.BigInteger;
 
 import scw.core.utils.ClassUtils;
 
-public abstract class AbstractStringValue extends AbstractValue {
+public abstract class AbstractStringValue extends SupportDefaultValue {
 	
 	public AbstractStringValue(Value defaultValue) {
 		super(defaultValue);
