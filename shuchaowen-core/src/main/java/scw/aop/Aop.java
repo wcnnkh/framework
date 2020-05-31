@@ -24,17 +24,17 @@ public abstract class Aop implements ProxyFactory {
 		return getProxyFactory().getProxy(clazz, interfaces,
 				mergeFilters(filters));
 	}
-	
+
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces,
 			Collection<Filter> filters) {
-		return getProxyFactory().getProxy(clazz, interfaces,
-				new MultiFilter(filters));
+		return getProxy(clazz, interfaces, new MultiFilter(filters));
 	}
 
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces,
 			NoArgsInstanceFactory instanceFactory,
 			Collection<String> filterNames) {
-		return getProxy(clazz, interfaces, new MultiFilter(instanceFactory, filterNames));
+		return getProxy(clazz, interfaces, new MultiFilter(instanceFactory,
+				filterNames));
 	}
 
 	public final Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
@@ -69,17 +69,19 @@ public abstract class Aop implements ProxyFactory {
 		return getProxyFactory().getProxy(clazz, interfaces,
 				new InstanceFilter(instance, mergeFilters(filters)));
 	}
-	
+
 	public final <T> Proxy getProxyInstance(Class<? extends T> clazz,
 			T instance, Class<?>[] interfaces, Collection<Filter> filters) {
-		return getProxy(clazz, interfaces, new MultiFilter(filters));
+		return getProxyInstance(clazz, instance, interfaces, new MultiFilter(
+				filters));
 	}
 
 	public final <T> Proxy getProxyInstance(Class<? extends T> clazz,
 			T instance, Class<?>[] interfaces,
 			NoArgsInstanceFactory instanceFactory,
 			Collection<String> filterNames) {
-		return getProxyInstance(clazz, instance, interfaces, new MultiFilter(instanceFactory, filterNames));
+		return getProxyInstance(clazz, instance, interfaces, new MultiFilter(
+				instanceFactory, filterNames));
 	}
 
 	public <T> MethodInvoker getProxyMethod(Class<? extends T> targetClass,
@@ -89,10 +91,19 @@ public abstract class Aop implements ProxyFactory {
 	}
 
 	public final MethodInvoker getProxyMethod(
-			NoArgsInstanceFactory noArgsInstanceFactory, String instanceName,
+			NoArgsInstanceFactory instanceFactory, String instanceName,
 			Class<?> targetClass, Method method, Filter... filters) {
-		return new InstanceFactoryProxyInvoker(noArgsInstanceFactory,
-				instanceName, targetClass, method, mergeFilters(filters));
+		if (Modifier.isStatic(method.getModifiers())) {
+			return getProxyMethod(targetClass, null, method, filters);
+		}
+
+		if (instanceFactory.isSingleton(instanceName)) {
+			return getProxyMethod(targetClass,
+					instanceFactory.getInstance(instanceName), method, filters);
+		}
+
+		return new InstanceFactoryProxyInvoker(instanceFactory, instanceName,
+				targetClass, method, mergeFilters(filters));
 	}
 
 	public final MethodInvoker getProxyMethod(
