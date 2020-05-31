@@ -72,31 +72,30 @@ public class JdkProxyFactory implements ProxyFactory {
 				throw new NotSupportedException(method.toString());
 			}
 
-			ProxyContext context = new ProxyContext(proxy, targetClass, method, args);
-			Invoker invoker = new JdkProxyInvoker(context);
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(new JdkProxyInvoker(proxy, targetClass, method), args);
 		}
 	}
 
-	private static class JdkProxyInvoker implements Invoker {
-		private ProxyContext context;
-
-		public JdkProxyInvoker(ProxyContext context) {
-			this.context = context;
+	private static class JdkProxyInvoker extends ProxyInvoker {
+		private Object proxy;
+		
+		JdkProxyInvoker(Object proxy, Class<?> targetClass, Method method) {
+			super(targetClass, method);
+			this.proxy = proxy;
+		}
+		
+		@Override
+		public Object getProxy() {
+			return proxy;
 		}
 
 		public Object invoke(Object... args) throws Throwable {
 			//如果filter中没有拦截这些方法，那么使用默认的调用
-			if (context.isIgnoreMethod()) {
-				return context.invokeIgnoreMethod();
+			if(isIgnoreMethod()){
+				return invokeIgnoreMethod(args);
 			}
 
 			throw new UnsupportedOperationException(toString());
-		}
-
-		@Override
-		public String toString() {
-			return context.getMethod().toString();
 		}
 	}
 

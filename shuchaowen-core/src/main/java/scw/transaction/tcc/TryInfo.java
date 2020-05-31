@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.StringUtils;
 import scw.transaction.tcc.annotation.TccStage;
@@ -15,9 +15,9 @@ public class TryInfo implements Serializable {
 	private final Object tryResult;
 	private final LinkedHashMap<String, Object> parameterMap;
 
-	public TryInfo(ProxyContext context, Object tryResult) {
-		this(context.getTargetClass(), tryResult,
-				ParameterUtils.getParameterMap(context.getMethod(), context.getArgs()));
+	public TryInfo(ProxyInvoker invoker, Object[] args, Object tryResult) {
+		this(invoker.getTargetClass(), tryResult,
+				ParameterUtils.getParameterMap(invoker.getMethod(), args));
 	}
 
 	public TryInfo(Class<?> targetClass, Object tryResult, LinkedHashMap<String, Object> parameterMap) {

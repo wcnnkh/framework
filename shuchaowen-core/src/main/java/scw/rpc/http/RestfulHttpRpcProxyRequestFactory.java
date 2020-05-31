@@ -3,7 +3,7 @@ package scw.rpc.http;
 import java.net.URI;
 import java.util.Map;
 
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.core.StringFormat;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterUtils;
@@ -36,9 +36,9 @@ public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements H
 		this.charsetName = charsetName;
 	}
 
-	public ClientHttpRequest getClientHttpRequest(ProxyContext proxyContext) throws Exception {
-		HttpClient rpc = AnnotationUtils.getAnnotation(HttpClient.class, proxyContext.getTargetClass(),
-				proxyContext.getMethod());
+	public ClientHttpRequest getClientHttpRequest(ProxyInvoker invoker, Object[] args) throws Exception {
+		HttpClient rpc = AnnotationUtils.getAnnotation(HttpClient.class, invoker.getTargetClass(),
+				invoker.getMethod());
 		if (rpc == null) {
 			return null;
 		}
@@ -48,7 +48,7 @@ public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements H
 		}
 
 		KeyValuePair<scw.http.HttpMethod, String> requestMethod = AnnotationUtils
-				.getHttpMethodAnnotation(proxyContext.getMethod());
+				.getHttpMethodAnnotation(invoker.getMethod());
 		scw.http.HttpMethod httpMethod = scw.http.HttpMethod.GET;
 		if (requestMethod != null) {
 			httpMethod = requestMethod.getKey();
@@ -61,8 +61,8 @@ public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements H
 			}
 		}
 
-		final Map<String, Object> parameterMap = ParameterUtils.getParameterMap(proxyContext.getMethod(),
-				proxyContext.getArgs());
+		final Map<String, Object> parameterMap = ParameterUtils.getParameterMap(invoker.getMethod(),
+				args);
 		StringFormat stringFormat = new StringFormat("{", "}") {
 			public String getValue(String key) {
 				Object value = parameterMap.remove(key);

@@ -61,19 +61,19 @@ public final class ProxyUtils {
 			this.ignoreMethodAccept = ignoreMethodAccept;
 		}
 
-		public Object doFilter(Invoker invoker, ProxyContext context,
+		public Object doFilter(ProxyInvoker invoker, Object[] args,
 				FilterChain filterChain) throws Throwable {
-			if (ArrayUtils.isEmpty(context.getArgs())
-					&& context.getMethod().equals("getIgnoreMethodTarget")) {
+			if (ArrayUtils.isEmpty(args)
+					&& invoker.getMethod().equals("getIgnoreMethodTarget")) {
 				return object;
 			}
 
 			if (ignoreMethodAccept != null
-					&& ignoreMethodAccept.accept(context.getMethod())) {
+					&& ignoreMethodAccept.accept(invoker.getMethod())) {
 				return null;
 			}
 
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(invoker, args);
 		}
 	}
 

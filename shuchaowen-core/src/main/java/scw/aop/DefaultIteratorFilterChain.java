@@ -13,7 +13,7 @@ final class DefaultIteratorFilterChain extends AbstractIteratorFilterChain {
 	}
 
 	@Override
-	protected Filter getNextFilter(Invoker invoker, ProxyContext context)
+	protected Filter getNextFilter(ProxyInvoker invoker, Object[] args)
 			throws Throwable {
 		if (iterator.hasNext()) {
 			return iterator.next();

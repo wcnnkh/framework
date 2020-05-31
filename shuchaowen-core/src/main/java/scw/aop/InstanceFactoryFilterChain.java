@@ -24,10 +24,10 @@ public final class InstanceFactoryFilterChain implements FilterChain {
 		this.filterChain = filterChain;
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context) throws Throwable {
+	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
 		InstanceFactoryIteratorFilterChain chain = new InstanceFactoryIteratorFilterChain(
 				instanceFactory, filterNames, filterChain);
-		return chain.doFilter(invoker, context);
+		return chain.doFilter(invoker, args);
 	}
 
 }

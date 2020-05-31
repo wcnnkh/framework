@@ -5,8 +5,7 @@ import java.net.URI;
 
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.http.client.ClientHttpRequest;
 import scw.http.client.ClientHttpResponse;
 import scw.http.client.accessor.HttpAccessor;
@@ -31,14 +30,14 @@ public class SimpleHttpObjectRpcServiceFilter extends HttpAccessor implements Fi
 		this.host = host;
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
-		if (!Modifier.isAbstract(context.getMethod().getModifiers())) {
-			return filterChain.doFilter(invoker, context);
+	public Object doFilter(ProxyInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+		if (!Modifier.isAbstract(invoker.getMethod().getModifiers())) {
+			return filterChain.doFilter(invoker, args);
 		}
 
 		long cts = System.currentTimeMillis();
-		final SimpleObjectRequestMessage requestMessage = new SimpleObjectRequestMessage(context.getTargetClass(),
-				context.getMethod(), context.getArgs());
+		final SimpleObjectRequestMessage requestMessage = new SimpleObjectRequestMessage(invoker.getTargetClass(),
+				invoker.getMethod(), args);
 		requestMessage.setAttribute("t", cts);
 		requestMessage.setAttribute("sign",
 				(SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + sign)))));

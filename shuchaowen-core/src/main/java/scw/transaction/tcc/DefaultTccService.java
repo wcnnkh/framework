@@ -2,7 +2,7 @@ package scw.transaction.tcc;
 
 import java.lang.reflect.Method;
 
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.beans.BeanFactory;
 import scw.complete.Complete;
 import scw.complete.CompleteService;
@@ -34,20 +34,20 @@ public class DefaultTccService implements TccService {
 		return createStage(tryInfo, tcc, tcc.confirm());
 	}
 
-	public Stage createConfirm(ProxyContext context, Object tryResult, Tcc tcc) {
+	public Stage createConfirm(ProxyInvoker invoker, Object[] args, Object tryResult, Tcc tcc) {
 		if (StringUtils.isEmpty(tcc.confirm())) {
 			return null;
 		}
 
-		return createStage(new TryInfo(context, tryResult), tcc, tcc.confirm());
+		return createStage(new TryInfo(invoker, args, tryResult), tcc, tcc.confirm());
 	}
 
-	public Stage createCancel(ProxyContext context, Object tryResult, Tcc tcc) {
+	public Stage createCancel(ProxyInvoker invoker, Object[] args, Object tryResult, Tcc tcc) {
 		if (StringUtils.isEmpty(tcc.cancel())) {
 			return null;
 		}
 
-		return createStage(new TryInfo(context, tryResult), tcc, tcc.cancel());
+		return createStage(new TryInfo(invoker, args, tryResult), tcc, tcc.cancel());
 	}
 
 	public Stage createCancel(TryInfo tryInfo, Method tryMethod, Tcc tcc) {

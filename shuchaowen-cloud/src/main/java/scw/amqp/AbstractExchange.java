@@ -26,8 +26,8 @@ public abstract class AbstractExchange implements Exchange {
 	}
 
 	@Override
-	public void bind(String routingKey, QueueDeclare queueDeclare, MethodInvoker methodInvoker) {
-		bind(routingKey, queueDeclare, new MethodMessageListener(methodInvoker));
+	public void bind(String routingKey, QueueDeclare queueDeclare, MethodInvoker invoker) {
+		bind(routingKey, queueDeclare, new MethodMessageListener(invoker));
 	}
 
 	@Override

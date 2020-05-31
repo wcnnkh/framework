@@ -42,13 +42,13 @@ public class CglibProxyFactory implements ProxyFactory {
 
 	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
 		Enhancer enhancer = createEnhancer(clazz, getInterfaces(clazz, interfaces));
-		enhancer.setCallbackType(FiltersConvertCglibMethodInterceptor.class);
+		enhancer.setCallbackType(CglibMethodInterceptor.class);
 		return enhancer.createClass();
 	}
 
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
 		return new CglibProxy(clazz, getInterfaces(clazz, interfaces),
-				new FiltersConvertCglibMethodInterceptor(clazz, filterChain));
+				new CglibMethodInterceptor(clazz, filterChain));
 	}
 
 	private static Enhancer createEnhancer(Class<?> clazz, Class<?>[] interfaces) {
@@ -64,12 +64,12 @@ public class CglibProxyFactory implements ProxyFactory {
 		return enhancer;
 	}
 
-	private static final class FiltersConvertCglibMethodInterceptor implements MethodInterceptor, Serializable {
+	private static final class CglibMethodInterceptor implements MethodInterceptor, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final Class<?> targetClass;
 		private final FilterChain filterChain;
 
-		public FiltersConvertCglibMethodInterceptor(Class<?> targetClass, FilterChain filterChain) {
+		public CglibMethodInterceptor(Class<?> targetClass, FilterChain filterChain) {
 			this.targetClass = targetClass;
 			this.filterChain = filterChain;
 		}
@@ -79,24 +79,29 @@ public class CglibProxyFactory implements ProxyFactory {
 				return proxy.invokeSuper(obj, args);
 			}
 
-			ProxyContext context = new ProxyContext(obj, targetClass, method, args);
-			Invoker invoker = new CglibInvoker(proxy, obj);
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(new CglibProxyInvoker(obj, targetClass, method, proxy), args);
 		}
 	}
 
-	private static final class CglibInvoker implements Invoker {
-		private final MethodProxy proxy;
-		private final Object obj;
-
-		public CglibInvoker(MethodProxy proxy, Object obj) {
+	private static final class CglibProxyInvoker extends ProxyInvoker {
+		private final MethodProxy methodProxy;
+		private Object proxy;
+		
+		public CglibProxyInvoker(Object proxy, Class<?> targetClass,
+				Method method, MethodProxy methodProxy) {
+			super(targetClass, method);
+			this.methodProxy = methodProxy;
 			this.proxy = proxy;
-			this.obj = obj;
 		}
+		
+		@Override
+		public Object getProxy() {
+			return proxy;
+		};
 
 		public Object invoke(Object... args) throws Throwable {
 			try {
-				return proxy.invokeSuper(obj, args);
+				return methodProxy.invokeSuper(getProxy(), args);
 			} catch (Throwable e) {
 				throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
 			}

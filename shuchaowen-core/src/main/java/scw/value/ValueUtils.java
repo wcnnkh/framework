@@ -54,7 +54,7 @@ public final class ValueUtils {
 		return false;
 	}
 
-	private static boolean isCommonType(Class<?> type) {
+	public static boolean isCommonType(Class<?> type) {
 		return ClassUtils.isPrimitiveOrWrapper(type) || type.isEnum()
 				|| type == Class.class || type == String.class
 				|| BigInteger.class.isAssignableFrom(type)

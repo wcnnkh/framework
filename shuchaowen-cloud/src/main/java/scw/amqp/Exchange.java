@@ -11,7 +11,7 @@ public interface Exchange {
 
 	void push(String routingKey, MessageProperties messageProperties, byte[] body);
 
-	void bind(String routingKey, QueueDeclare queueDeclare, MethodInvoker methodInvoker);
+	void bind(String routingKey, QueueDeclare queueDeclare, MethodInvoker invoker);
 
 	void push(String routingKey, MethodMessage message);
 

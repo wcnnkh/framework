@@ -23,7 +23,7 @@ final class InstanceFactoryIteratorFilterChain extends
 	}
 
 	@Override
-	protected Filter getNextFilter(Invoker invoker, ProxyContext context)
+	protected Filter getNextFilter(ProxyInvoker invoker, Object[] args)
 			throws Throwable {
 		if (iterator.hasNext()) {
 			String name = iterator.next();
@@ -33,7 +33,7 @@ final class InstanceFactoryIteratorFilterChain extends
 				if (logger.isDebugEnabled()) {
 					logger.debug("{}无法被实例化，已忽略使用此filter", name);
 				}
-				return getNextFilter(invoker, context);
+				return getNextFilter(invoker, args);
 			}
 		}
 		return null;

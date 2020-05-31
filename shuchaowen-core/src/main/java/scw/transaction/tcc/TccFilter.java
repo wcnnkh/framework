@@ -2,8 +2,7 @@ package scw.transaction.tcc;
 
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.complete.Complete;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
@@ -20,30 +19,30 @@ public class TccFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
-		final Tcc tcc = context.getMethod().getAnnotation(Tcc.class);
+	public Object doFilter(ProxyInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+		final Tcc tcc = invoker.getMethod().getAnnotation(Tcc.class);
 		if (tcc == null) {
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(invoker, args);
 		}
 
 		if (!instanceFactory.isInstance(tcc.service())) {
-			throw new NotSupportedException("not support tcc: " + context.getMethod().toString());
+			throw new NotSupportedException("not support tcc: " + invoker.getMethod().toString());
 		}
 
 		if (!TransactionManager.hasTransaction()) {
 			throw new NotSupportedException("not exist transaction");
 		}
 
-		Object result = filterChain.doFilter(invoker, context);
+		Object result = filterChain.doFilter(invoker, args);
 		final TccService tccService = instanceFactory.getInstance(tcc.service());
-		final Stage confirm = tccService.createConfirm(context, result, tcc);
-		final Stage cancel = tccService.createCancel(context, result, tcc);
+		final Stage confirm = tccService.createConfirm(invoker, args, result, tcc);
+		final Stage cancel = tccService.createCancel(invoker, args, result, tcc);
 		if (confirm == null && cancel == null) {
-			throw new TccException("confirm or cancel At least one: " + context.getMethod().toString());
+			throw new TccException("confirm or cancel At least one: " + invoker.getMethod().toString());
 		}
 
 		if ((confirm != null && !confirm.isActive()) || (cancel != null && !cancel.isActive())) {
-			throw new TccException("tcc definition error:" + context.getMethod());
+			throw new TccException("tcc definition error:" + invoker.getMethod());
 		}
 
 		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚

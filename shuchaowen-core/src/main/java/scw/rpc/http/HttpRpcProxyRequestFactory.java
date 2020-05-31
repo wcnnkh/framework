@@ -1,8 +1,8 @@
 package scw.rpc.http;
 
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.http.client.ClientHttpRequest;
 
 public interface HttpRpcProxyRequestFactory {
-	ClientHttpRequest getClientHttpRequest(ProxyContext proxyContext) throws Exception;
+	ClientHttpRequest getClientHttpRequest(ProxyInvoker invoker, Object[] args) throws Exception;
 }

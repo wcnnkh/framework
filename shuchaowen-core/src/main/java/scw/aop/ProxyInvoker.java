@@ -4,30 +4,20 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 
 import scw.core.utils.ArrayUtils;
-import scw.util.attribute.SimpleAttributes;
 
-public class ProxyContext extends SimpleAttributes<Object, Object> {
+public abstract class ProxyInvoker implements MethodInvoker{
 	private static final String HASH_CODE_METHOD = "hashCode";
 	private static final String TO_STRING_METHOD = "toString";
 	private static final String EQUALS_METHOD = "equals";
-	private static final long serialVersionUID = 1L;
-	private final Object proxy;
 	private final Class<?> targetClass;
 	private final Method method;
-	private final Object[] args;
-	private final long createTime;
 
-	public ProxyContext(Object proxy, Class<?> targetClass, Method method, Object[] args) {
-		this.proxy = proxy;
+	ProxyInvoker(Class<?> targetClass, Method method) {
 		this.targetClass = targetClass;
 		this.method = method;
-		this.args = args;
-		this.createTime = System.currentTimeMillis();
 	}
 
-	public final Object getProxy() {
-		return proxy;
-	}
+	public abstract Object getProxy();
 
 	public final Class<?> getTargetClass() {
 		return targetClass;
@@ -36,30 +26,23 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 	public final Method getMethod() {
 		return method;
 	}
-
-	public final Object[] getArgs() {
-		return args;
-	}
-
-	public final long getCreateTime() {
-		return createTime;
-	}
-
+	
 	@Override
 	public String toString() {
 		return method.toString();
 	}
 
 	public boolean isHashCodeMethod() {
-		return ArrayUtils.isEmpty(args) && method.getName().equals(HASH_CODE_METHOD);
+		return ArrayUtils.isEmpty(method.getParameterTypes()) && method.getName().equals(HASH_CODE_METHOD);
 	}
 
 	public boolean isToStringMethod() {
-		return ArrayUtils.isEmpty(args) && method.getName().equals(TO_STRING_METHOD);
+		return ArrayUtils.isEmpty(method.getParameterTypes()) && method.getName().equals(TO_STRING_METHOD);
 	}
 
 	public boolean isEqualsMethod() {
-		if (args != null && args.length == 1 && method.getName().equals(EQUALS_METHOD)) {
+		Class<?>[] types = method.getParameterTypes();
+		if (types.length == 1 && method.getName().equals(EQUALS_METHOD)) {
 			return method.getParameterTypes()[0] == Object.class;
 		}
 		return false;
@@ -75,22 +58,22 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 	}
 
 	public int invokeHashCode() {
-		return System.identityHashCode(proxy);
+		return System.identityHashCode(getProxy());
 	}
 
 	public String invokeToString() {
-		return proxy.getClass().getName() + "@" + Integer.toHexString(invokeHashCode());
+		return getProxy().getClass().getName() + "@" + Integer.toHexString(invokeHashCode());
 	}
 
-	public boolean invokeEquals() {
+	public boolean invokeEquals(Object[] args) {
 		if (args == null || args[0] == null) {
 			return false;
 		}
 
-		return args[0].equals(proxy);
+		return args[0].equals(getProxy());
 	}
 
-	public Object invokeIgnoreMethod() {
+	public Object invokeIgnoreMethod(Object[] args) {
 		if (isHashCodeMethod()) {
 			return invokeHashCode();
 		}
@@ -100,7 +83,7 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 		}
 
 		if (isEqualsMethod()) {
-			return invokeEquals();
+			return invokeEquals(args);
 		}
 
 		throw new UnsupportedOperationException(method.toString());
@@ -112,7 +95,7 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 	 * @return
 	 */
 	public boolean isWriteReplaceMethod() {
-		return ArrayUtils.isEmpty(args) && proxy instanceof Serializable
+		return ArrayUtils.isEmpty(method.getParameterTypes()) && getProxy() instanceof Serializable
 				&& method.getName().equals(WriteReplaceInterface.WRITE_REPLACE_METHOD);
 	}
 
@@ -133,4 +116,5 @@ public class ProxyContext extends SimpleAttributes<Object, Object> {
 		}
 		return false;
 	}
+
 }

@@ -17,9 +17,9 @@ public final class DefaultFilterChain implements FilterChain{
 		this.filterChain = filterChain;
 	}
 	
-	public Object doFilter(Invoker invoker, ProxyContext context) throws Throwable {
+	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
 		DefaultIteratorFilterChain chain = new DefaultIteratorFilterChain(filters, filterChain);
-		return chain.doFilter(invoker, context);
+		return chain.doFilter(invoker, args);
 	}
 
 }

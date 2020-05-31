@@ -4,8 +4,7 @@ import java.lang.reflect.Modifier;
 
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.beans.BeanFactory;
 import scw.core.Constants;
 import scw.core.instance.InstanceUtils;
@@ -36,21 +35,21 @@ public class HttpRpcProxyFilter implements Filter {
 		this.messageConverter = messageConverter;
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
-		if (Modifier.isAbstract(context.getMethod().getModifiers())
-				|| Modifier.isInterface(context.getMethod().getModifiers())) {
-			ClientHttpRequest request = httpRpcProxyRequestFactory.getClientHttpRequest(context);
+	public Object doFilter(ProxyInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+		if (Modifier.isAbstract(invoker.getMethod().getModifiers())
+				|| Modifier.isInterface(invoker.getMethod().getModifiers())) {
+			ClientHttpRequest request = httpRpcProxyRequestFactory.getClientHttpRequest(invoker, args);
 			if (request != null) {
 				ClientHttpResponse response = null;
 				try {
 					response = request.execute();
-					if (!messageConverter.canRead(context.getMethod().getGenericReturnType(),
+					if (!messageConverter.canRead(invoker.getMethod().getGenericReturnType(),
 							response.getContentType())) {
-						throw new NotSupportedException("type=" + context.getMethod().getGenericReturnType().toString()
+						throw new NotSupportedException("type=" + invoker.getMethod().getGenericReturnType().toString()
 								+ ", contentType=" + response.getContentType());
 					}
 
-					return messageConverter.read(context.getMethod().getGenericReturnType(), response);
+					return messageConverter.read(invoker.getMethod().getGenericReturnType(), response);
 				} finally {
 					if (response != null) {
 						response.close();
@@ -58,7 +57,7 @@ public class HttpRpcProxyFilter implements Filter {
 				}
 			}
 		}
-		return invoker.invoke(context.getArgs());
+		return filterChain.doFilter(invoker, args);
 	}
 
 }

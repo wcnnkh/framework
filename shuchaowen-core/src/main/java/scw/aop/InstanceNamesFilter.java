@@ -14,14 +14,14 @@ public class InstanceNamesFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context,
+	public Object doFilter(ProxyInvoker invoker, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		if (filterNames == null || filterNames.isEmpty()) {
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(invoker, args);
 		}
 
 		return new InstanceFactoryIteratorFilterChain(instanceFactory,
-				filterNames, filterChain).doFilter(invoker, context);
+				filterNames, filterChain).doFilter(invoker, args);
 	}
 
 }

@@ -17,8 +17,7 @@ import scw.aop.DefaultAop;
 import scw.aop.Filter;
 import scw.aop.FilterChain;
 import scw.aop.InstanceFactoryFilterChain;
-import scw.aop.Invoker;
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.aop.ProxyUtils;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.builder.BeanBuilder;
@@ -551,11 +550,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter,
 		}
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context,
+	public Object doFilter(ProxyInvoker invoker, Object[] args,
 			FilterChain filterChain) throws Throwable {
 		InstanceFactoryFilterChain chain = new InstanceFactoryFilterChain(this,
 				filterNameList, filterChain);
-		return chain.doFilter(invoker, context);
+		return chain.doFilter(invoker, args);
 	}
 
 	public BeanBuilder loading(LoaderContext context) {

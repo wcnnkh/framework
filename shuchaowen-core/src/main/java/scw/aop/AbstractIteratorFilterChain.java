@@ -8,14 +8,14 @@ abstract class AbstractIteratorFilterChain implements FilterChain {
 		this.chain = chain;
 	}
 
-	public final Object doFilter(Invoker invoker, ProxyContext context) throws Throwable {
-		Filter filter = getNextFilter(invoker, context);
+	public final Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+		Filter filter = getNextFilter(invoker, args);
 		if (filter == null) {
-			return chain == null ? invoker.invoke(context.getArgs()) : chain.doFilter(invoker, context);
+			return chain == null ? invoker.invoke(args) : chain.doFilter(invoker, args);
 		}
 
-		return filter.doFilter(invoker, context, this);
+		return filter.doFilter(invoker, args, this);
 	}
 
-	protected abstract Filter getNextFilter(Invoker invoker, ProxyContext context) throws Throwable;
+	protected abstract Filter getNextFilter(ProxyInvoker invoker, Object[] args) throws Throwable;
 }

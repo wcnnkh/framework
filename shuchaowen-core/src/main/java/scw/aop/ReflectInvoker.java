@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import scw.core.reflect.ReflectionUtils;
 
-public final class ReflectInvoker extends MethodInvoker {
+public final class ReflectInvoker extends InstanceInvoker {
 	private final Object obj;
 	private final Method method;
 
@@ -14,7 +14,6 @@ public final class ReflectInvoker extends MethodInvoker {
 		ReflectionUtils.makeAccessible(method);
 	}
 
-	@Override
 	public Method getMethod() {
 		return method;
 	}

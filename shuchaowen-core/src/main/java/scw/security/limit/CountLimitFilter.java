@@ -2,8 +2,7 @@ package scw.security.limit;
 
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.annotation.Configuration;
@@ -26,11 +25,11 @@ public final class CountLimitFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
+	public Object doFilter(ProxyInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
 		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
-				context.getMethod(), context.getTargetClass());
+				invoker.getMethod(), invoker.getTargetClass());
 		if (countLimitSecurity == null) {
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(invoker, args);
 		}
 
 		if (!instanceFactory.isInstance(countLimitSecurity.value())) {
@@ -39,10 +38,10 @@ public final class CountLimitFilter implements Filter {
 		}
 
 		CountLimitConfigFactory countLimitConfigFactory = instanceFactory.getInstance(countLimitSecurity.value());
-		CountLimitConfig config = countLimitConfigFactory.getCountLimitConfig(context.getTargetClass(),
-				context.getMethod(), context.getArgs());
+		CountLimitConfig config = countLimitConfigFactory.getCountLimitConfig(invoker.getTargetClass(),
+				invoker.getMethod(), args);
 		if (config == null) {
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(invoker, args);
 		}
 
 		if (!instanceFactory.isInstance(countLimitSecurity.factory())) {
@@ -54,15 +53,15 @@ public final class CountLimitFilter implements Filter {
 		long count = countLimitFactory.incrAndGet(config.getName(), config.getTimeout(), config.getTimeUnit());
 		boolean b = count <= config.getMaxCount();
 		if (logger.isDebugEnabled()) {
-			logger.debug("count limit key={}, method={}, max={}, count={}", config.getName(), context.getMethod(),
+			logger.debug("count limit key={}, method={}, max={}, count={}", config.getName(), invoker.getMethod(),
 					config.getMaxCount(), count);
 		}
 
 		if (b) {
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(invoker, args);
 		}
 		logger.warn("Too frequent operation max={}, count={}, method={}", config.getMaxCount(), count,
-				context.getMethod());
+				invoker.getMethod());
 		throw new CountLimitException("操作过于频繁");
 	}
 

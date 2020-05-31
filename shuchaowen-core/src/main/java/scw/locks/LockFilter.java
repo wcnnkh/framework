@@ -2,8 +2,7 @@ package scw.locks;
 
 import scw.aop.Filter;
 import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.core.parameter.ParameterDescriptor;
@@ -30,16 +29,16 @@ public final class LockFilter implements Filter {
 		this.lockFactory = lockFactory;
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context,
+	public Object doFilter(ProxyInvoker invoker, Object[] args,
 			FilterChain filterChain) throws Throwable {
-		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, context.getMethod(), context.getTargetClass());
+		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getTargetClass());
 		if (lockConfig == null) {
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(invoker, args);
 		}
 
 		StringBuilder sb = new StringBuilder(128);
-		sb.append(context.getMethod().toString());
-		ParameterDescriptor[] configs = ParameterUtils.getParameterDescriptors(context.getMethod());
+		sb.append(invoker.getMethod().toString());
+		ParameterDescriptor[] configs = ParameterUtils.getParameterDescriptors(invoker.getMethod());
 		for (int i = 0; i < configs.length; i++) {
 			ParameterDescriptor config = configs[i];
 			boolean b = lockConfig.all();
@@ -52,7 +51,7 @@ public final class LockFilter implements Filter {
 				sb.append(i == 0 ? "?" : "&");
 				sb.append(config.getName());
 				sb.append("=");
-				sb.append(JSONUtils.toJSONString(context.getArgs()[i]));
+				sb.append(JSONUtils.toJSONString(args[i]));
 			}
 		}
 
@@ -65,7 +64,7 @@ public final class LockFilter implements Filter {
 				throw new HasBeenLockedException(lockKey);
 			}
 
-			return filterChain.doFilter(invoker, context);
+			return filterChain.doFilter(invoker, args);
 		} finally {
 			lock.unlock();
 		}
