@@ -1,15 +1,15 @@
 package scw.aop;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Collection;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 
 public final class ProxyUtils {
-
 	private static final MultipleProxyFactory PROXY_FACTORY = new MultipleProxyFactory();
 
 	public static final Collection<Class<Filter>> FILTERS = InstanceUtils
@@ -37,13 +37,11 @@ public final class ProxyUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T proxyIngoreMethod(Class<? extends T> clazz,
-			T instance, IgnoreMethodAccept ignoreMethodAccept) {
-		Proxy proxy = getProxyFactory().getProxy(
-				clazz,
+	public static <T> T proxyIngoreMethod(Class<? extends T> clazz, T instance,
+			IgnoreMethodAccept ignoreMethodAccept) {
+		Proxy proxy = getProxyFactory().getProxy(clazz,
 				new Class<?>[] { IgnoreMethodTarget.class },
-				new DefaultFilterChain(Arrays.asList(new IgnoreMethodFilter(
-						instance, ignoreMethodAccept))));
+				new IgnoreMethodFilter(instance, ignoreMethodAccept));
 		return (T) proxy.create();
 	}
 
@@ -61,8 +59,8 @@ public final class ProxyUtils {
 			this.ignoreMethodAccept = ignoreMethodAccept;
 		}
 
-		public Object doFilter(ProxyInvoker invoker, Object[] args,
-				FilterChain filterChain) throws Throwable {
+		public Object doFilter(ProxyInvoker invoker, Object[] args)
+				throws Throwable {
 			if (ArrayUtils.isEmpty(args)
 					&& invoker.getMethod().equals("getIgnoreMethodTarget")) {
 				return object;
@@ -73,11 +71,83 @@ public final class ProxyUtils {
 				return null;
 			}
 
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		}
 	}
 
 	public static interface IgnoreMethodAccept {
 		boolean accept(Method method);
+	}
+
+	public static boolean isIgnoreMethod(Method method) {
+		return ReflectionUtils.isHashCodeMethod(method)
+				&& ReflectionUtils.isToStringMethod(method)
+				&& ReflectionUtils.isEqualsMethod(method);
+	}
+
+	public static int invokeHashCode(ProxyInvoker invoker) {
+		return System.identityHashCode(invoker.getProxy());
+	}
+
+	public static String invokeToString(ProxyInvoker invoker) {
+		return invoker.getProxy().getClass().getName() + "@"
+				+ Integer.toHexString(invokeHashCode(invoker));
+	}
+
+	public static boolean invokeEquals(ProxyInvoker invoker, Object[] args) {
+		if (args == null || args[0] == null) {
+			return false;
+		}
+
+		return args[0].equals(invoker.getProxy());
+	}
+
+	public static Object invokeIgnoreMethod(ProxyInvoker invoker, Object[] args) {
+		if (ReflectionUtils.isHashCodeMethod(invoker.getMethod())) {
+			return invokeHashCode(invoker);
+		}
+
+		if (ReflectionUtils.isToStringMethod(invoker.getMethod())) {
+			return invokeToString(invoker);
+		}
+
+		if (ReflectionUtils.isEqualsMethod(invoker.getMethod())) {
+			return invokeEquals(invoker, args);
+		}
+
+		throw new UnsupportedOperationException(invoker.getMethod().toString());
+	}
+
+	/**
+	 * 是否是ObjectStream中的WriteReplaceMethod
+	 * 
+	 * @return
+	 */
+	public static boolean isWriteReplaceMethod(ProxyInvoker invoker) {
+		return ArrayUtils.isEmpty(invoker.getMethod().getParameterTypes())
+				&& invoker.getProxy() instanceof Serializable
+				&& invoker.getMethod().getName()
+						.equals(WriteReplaceInterface.WRITE_REPLACE_METHOD);
+	}
+
+	/**
+	 * 是否是ObjectStream中的WriteReplaceMethod
+	 * 
+	 * @param writeReplaceInterface
+	 *            原始类型是否应该实现{@see WriteReplaceInterface}
+	 * @return
+	 */
+	public static boolean isWriteReplaceMethod(ProxyInvoker invoker,
+			boolean writeReplaceInterface) {
+		if (isWriteReplaceMethod(invoker)) {
+			if (writeReplaceInterface) {
+				return WriteReplaceInterface.class.isAssignableFrom(invoker
+						.getTargetClass());
+			} else {
+				return !WriteReplaceInterface.class.isAssignableFrom(invoker
+						.getTargetClass());
+			}
+		}
+		return false;
 	}
 }

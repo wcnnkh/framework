@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import scw.aop.Invoker;
-import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.lang.NotSupportedException;
 
@@ -15,17 +14,20 @@ public abstract class BeanAction extends AbstractAction {
 	public BeanAction(BeanFactory beanFactory, Class<?> targetClass, Method method) {
 		super(targetClass, method);
 		this.beanFactory = beanFactory;
-		if (!Modifier.isStatic(method.getModifiers())) {
-			BeanDefinition definition = beanFactory.getDefinition(targetClass);
-			if (definition == null || !definition.isInstance()) {
+		
+		if(Modifier.isStatic(method.getModifiers())){
+			this.invoker = beanFactory.getAop().getProxyMethod(targetClass, null, method);
+		}else{
+			if(!beanFactory.isInstance(targetClass)){
 				throw new NotSupportedException("action class: " + targetClass.getName());
 			}
-
-			if (definition.isSingleton()) {// 如果是单例，先进行预初始化
-				beanFactory.getInstance(targetClass);
+			
+			if(beanFactory.isSingleton(targetClass)){
+				this.invoker = beanFactory.getAop().getProxyMethod(targetClass, beanFactory.getInstance(targetClass), method);
+			}else{
+				this.invoker = beanFactory.getAop().getProxyMethod(beanFactory, targetClass, method);
 			}
 		}
-		this.invoker = beanFactory.getAop().getProxyMethod(beanFactory, targetClass, method, null);
 	}
 
 	public Invoker getInvoker() {

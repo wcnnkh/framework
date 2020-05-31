@@ -1,13 +1,14 @@
 package scw.aop.support;
 
-import scw.aop.FilterChain;
+import scw.aop.Filter;
 import scw.aop.ProxyInvoker;
+import scw.aop.ProxyUtils;
 import scw.mapper.Copy;
 import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 
-public class FieldSetterListenFilter extends FieldSetterListenImpl implements FilterChain {
+public class FieldSetterListenFilter extends FieldSetterListenImpl implements Filter {
 	private static final long serialVersionUID = 1L;
 
 	private Field getField(Class<?> clazz, String name, Class<?> type) {
@@ -26,7 +27,7 @@ public class FieldSetterListenFilter extends FieldSetterListenImpl implements Fi
 	}
 
 	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
-		if (invoker.isWriteReplaceMethod(false)) {
+		if (ProxyUtils.isWriteReplaceMethod(invoker, false)) {
 			return Copy.copy(invoker.getTargetClass(), invoker.getProxy());
 		}
 

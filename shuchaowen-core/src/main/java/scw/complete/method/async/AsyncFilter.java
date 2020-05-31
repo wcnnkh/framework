@@ -1,7 +1,6 @@
 package scw.complete.method.async;
 
 import scw.aop.Filter;
-import scw.aop.FilterChain;
 import scw.aop.ProxyInvoker;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
@@ -30,14 +29,14 @@ public final class AsyncFilter implements Filter {
 		TAG_THREAD_LOCAL.set(false);
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
 		Async async = invoker.getMethod().getAnnotation(Async.class);
 		if (async == null) {
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		if (isStartAsync()) {
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		if (!instanceFactory.isInstance(async.service())) {

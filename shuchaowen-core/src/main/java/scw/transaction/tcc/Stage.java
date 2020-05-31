@@ -76,7 +76,7 @@ public class Stage extends RelyOnBeanFactoryCompleteTask {
 		Method method = getMethod();
 		ReflectionUtils.makeAccessible(method);
 		MethodInvoker methodInvoker = getBeanFactory().getAop().getProxyMethod(getBeanFactory(), beanName,
-				tryInfo.getTargetClass(), method, null);
+				tryInfo.getTargetClass(), method);
 		return methodInvoker.invoke(getArgs(method));
 	}
 

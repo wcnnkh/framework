@@ -1,7 +1,6 @@
 package scw.transaction.tcc;
 
 import scw.aop.Filter;
-import scw.aop.FilterChain;
 import scw.aop.ProxyInvoker;
 import scw.complete.Complete;
 import scw.core.instance.NoArgsInstanceFactory;
@@ -19,10 +18,10 @@ public class TccFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
 		final Tcc tcc = invoker.getMethod().getAnnotation(Tcc.class);
 		if (tcc == null) {
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		if (!instanceFactory.isInstance(tcc.service())) {
@@ -33,7 +32,7 @@ public class TccFilter implements Filter {
 			throw new NotSupportedException("not exist transaction");
 		}
 
-		Object result = filterChain.doFilter(invoker, args);
+		Object result = invoker.invoke(args);
 		final TccService tccService = instanceFactory.getInstance(tcc.service());
 		final Stage confirm = tccService.createConfirm(invoker, args, result, tcc);
 		final Stage cancel = tccService.createCancel(invoker, args, result, tcc);

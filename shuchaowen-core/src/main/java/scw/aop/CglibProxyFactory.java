@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
 
+import scw.aop.ProxyInvoker.AbstractInstanceProxyInvoker;
 import scw.cglib.proxy.Enhancer;
 import scw.cglib.proxy.Factory;
 import scw.cglib.proxy.MethodInterceptor;
@@ -46,9 +49,9 @@ public class CglibProxyFactory implements ProxyFactory {
 		return enhancer.createClass();
 	}
 
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Filter ...filters) {
 		return new CglibProxy(clazz, getInterfaces(clazz, interfaces),
-				new CglibMethodInterceptor(clazz, filterChain));
+				new CglibMethodInterceptor(clazz, filters));
 	}
 
 	private static Enhancer createEnhancer(Class<?> clazz, Class<?>[] interfaces) {
@@ -67,39 +70,35 @@ public class CglibProxyFactory implements ProxyFactory {
 	private static final class CglibMethodInterceptor implements MethodInterceptor, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final Class<?> targetClass;
-		private final FilterChain filterChain;
+		private final Filter[] filters;
 
-		public CglibMethodInterceptor(Class<?> targetClass, FilterChain filterChain) {
+		public CglibMethodInterceptor(Class<?> targetClass, Filter[] filters) {
 			this.targetClass = targetClass;
-			this.filterChain = filterChain;
+			this.filters = filters;
 		}
 
-		public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
-			if (filterChain == null) {
-				return proxy.invokeSuper(obj, args);
-			}
-
-			return filterChain.doFilter(new CglibProxyInvoker(obj, targetClass, method, proxy), args);
+		public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+			Enumeration<Filter> enumeration = filters == null? null:Collections.enumeration(Arrays.asList(filters));
+			return new CglibProxyInvoker(obj, targetClass, method, methodProxy, enumeration).invoke(args);
 		}
 	}
 
-	private static final class CglibProxyInvoker extends ProxyInvoker {
+	private static final class CglibProxyInvoker extends AbstractInstanceProxyInvoker {
 		private final MethodProxy methodProxy;
-		private Object proxy;
+		private final Enumeration<Filter> filters;
 		
 		public CglibProxyInvoker(Object proxy, Class<?> targetClass,
-				Method method, MethodProxy methodProxy) {
-			super(targetClass, method);
+				Method method, MethodProxy methodProxy, Enumeration<Filter> filters) {
+			super(proxy, targetClass, method);
 			this.methodProxy = methodProxy;
-			this.proxy = proxy;
+			this.filters = filters;
 		}
 		
-		@Override
-		public Object getProxy() {
-			return proxy;
-		};
-
 		public Object invoke(Object... args) throws Throwable {
+			if(filters.hasMoreElements()){
+				return filters.nextElement().doFilter(this, args);
+			}
+			
 			try {
 				return methodProxy.invokeSuper(getProxy(), args);
 			} catch (Throwable e) {

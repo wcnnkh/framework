@@ -3,8 +3,7 @@ package scw.beans.builder;
 import java.lang.reflect.Constructor;
 import java.util.LinkedList;
 
-import scw.aop.FilterChain;
-import scw.aop.InstanceFactoryFilterChain;
+import scw.aop.Filter;
 import scw.aop.Proxy;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
@@ -20,9 +19,8 @@ public abstract class AbstractBeanBuilder extends
 
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
-	protected final LinkedList<String> filterNames = new LinkedList<String>();
 	protected final Ioc ioc = new Ioc();
-	protected FilterChain filterChain;
+	protected final LinkedList<Filter> filters = new LinkedList<Filter>();
 
 	public AbstractBeanBuilder(LoaderContext context) {
 		this(context.getBeanFactory(), context.getPropertyFactory(), context
@@ -52,11 +50,7 @@ public abstract class AbstractBeanBuilder extends
 	}
 
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
-		return beanFactory.getAop().getProxy(
-				targetClass,
-				interfaces,
-				new InstanceFactoryFilterChain(beanFactory, filterNames,
-						filterChain));
+		return beanFactory.getAop().getProxy(targetClass, interfaces, filters);
 	}
 
 	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass,
@@ -64,15 +58,12 @@ public abstract class AbstractBeanBuilder extends
 		return beanFactory.getAop().getProxyInstance(
 				targetClass,
 				instance,
-				interfaces,
-				new InstanceFactoryFilterChain(beanFactory, filterNames,
-						filterChain));
+				interfaces, filters);
 	}
 
 	protected Object createProxyInstance(Class<?> targetClass,
 			Class<?>[] parameterTypes, Object[] args) {
-		if (getTargetClass().isInterface() && filterNames.isEmpty()
-				&& filterChain == null) {
+		if (getTargetClass().isInterface() && filters.isEmpty()) {
 			logger.warn("empty filter: {}", getTargetClass().getName());
 		}
 

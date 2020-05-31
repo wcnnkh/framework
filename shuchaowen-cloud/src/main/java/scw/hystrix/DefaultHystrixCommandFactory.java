@@ -1,6 +1,5 @@
 package scw.hystrix;
 
-import scw.aop.FilterChain;
 import scw.aop.ProxyInvoker;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.hystrix.annotation.Hystrix;
@@ -20,7 +19,7 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 	}
 
 	@Override
-	public HystrixCommand<?> getHystrixCommandFactory(ProxyInvoker invoker, Object[] args, FilterChain filterChain)
+	public HystrixCommand<?> getHystrixCommandFactory(ProxyInvoker invoker, Object[] args)
 			throws Exception {
 		Hystrix hystrix = invoker.getTargetClass().getAnnotation(Hystrix.class);
 		if (hystrix == null) {
@@ -32,7 +31,7 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 		afterSetter(setter);
 		Object fallback = invoker.getTargetClass().isAssignableFrom(hystrix.fallback())
 				? instanceFactory.getInstance(hystrix.fallback()) : null;
-		return new HystrixFilterCommand(setter, fallback, invoker, args, filterChain);
+		return new HystrixFilterCommand(setter, fallback, invoker, args);
 	}
 
 	protected void afterSetter(Setter setter) {

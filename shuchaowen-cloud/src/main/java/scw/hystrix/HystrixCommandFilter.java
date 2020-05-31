@@ -1,7 +1,6 @@
 package scw.hystrix;
 
 import scw.aop.Filter;
-import scw.aop.FilterChain;
 import scw.aop.ProxyInvoker;
 import scw.core.instance.annotation.Configuration;
 
@@ -16,10 +15,10 @@ public class HystrixCommandFilter implements Filter {
 	}
 
 	@Override
-	public Object doFilter(ProxyInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
-		HystrixCommand<?> command = hystrixCommandFactory.getHystrixCommandFactory(invoker, args, filterChain);
+	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+		HystrixCommand<?> command = hystrixCommandFactory.getHystrixCommandFactory(invoker, args);
 		if (command == null) {
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		}
 		return command.execute();
 	}

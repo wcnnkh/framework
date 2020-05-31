@@ -1,7 +1,6 @@
 package scw.security.limit;
 
 import scw.aop.Filter;
-import scw.aop.FilterChain;
 import scw.aop.ProxyInvoker;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
@@ -25,11 +24,11 @@ public final class CountLimitFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
 		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
 				invoker.getMethod(), invoker.getTargetClass());
 		if (countLimitSecurity == null) {
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		if (!instanceFactory.isInstance(countLimitSecurity.value())) {
@@ -41,7 +40,7 @@ public final class CountLimitFilter implements Filter {
 		CountLimitConfig config = countLimitConfigFactory.getCountLimitConfig(invoker.getTargetClass(),
 				invoker.getMethod(), args);
 		if (config == null) {
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		if (!instanceFactory.isInstance(countLimitSecurity.factory())) {
@@ -58,7 +57,7 @@ public final class CountLimitFilter implements Filter {
 		}
 
 		if (b) {
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		}
 		logger.warn("Too frequent operation max={}, count={}, method={}", config.getMaxCount(), count,
 				invoker.getMethod());

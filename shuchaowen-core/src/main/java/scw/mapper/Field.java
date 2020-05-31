@@ -2,7 +2,7 @@ package scw.mapper;
 
 import java.lang.reflect.Method;
 
-public class Field extends FieldMetadata implements java.lang.Cloneable {
+public final class Field extends FieldMetadata implements java.lang.Cloneable {
 	private static final long serialVersionUID = 1L;
 	private final Field parentField;
 	
@@ -38,10 +38,6 @@ public class Field extends FieldMetadata implements java.lang.Cloneable {
 
 	@Override
 	public Field clone() {
-		try {
-			return (Field) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
+		return new Field(parentField, getGetter(), getSetter());
 	}
 }

@@ -4,7 +4,6 @@ import java.lang.reflect.Modifier;
 import java.net.URI;
 
 import scw.aop.Filter;
-import scw.aop.FilterChain;
 import scw.aop.ProxyInvoker;
 import scw.http.client.ClientHttpRequest;
 import scw.http.client.ClientHttpResponse;
@@ -30,9 +29,9 @@ public class SimpleHttpObjectRpcServiceFilter extends HttpAccessor implements Fi
 		this.host = host;
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
 		if (!Modifier.isAbstract(invoker.getMethod().getModifiers())) {
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		long cts = System.currentTimeMillis();

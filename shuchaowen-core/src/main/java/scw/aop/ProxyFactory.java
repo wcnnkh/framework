@@ -1,5 +1,6 @@
 package scw.aop;
 
+
 /**
  * 代理桥接器
  * 
@@ -15,7 +16,7 @@ public interface ProxyFactory {
 	 */
 	boolean isSupport(Class<?> clazz);
 
-	Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain);
+	Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Filter ...filters);
 
 	/**
 	 * 获取代理类

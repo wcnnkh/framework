@@ -1,6 +1,5 @@
 package scw.hystrix;
 
-import scw.aop.FilterChain;
 import scw.aop.ProxyInvoker;
 import scw.lang.NestedRuntimeException;
 
@@ -10,21 +9,18 @@ public class HystrixFilterCommand extends HystrixCommand<Object> {
 	private Object fallback;
 	private ProxyInvoker invoker;
 	private Object[] args;
-	private FilterChain filterChain;
 
-	protected HystrixFilterCommand(Setter setter, Object fallback, ProxyInvoker invoker, Object[] args,
-			FilterChain filterChain) {
+	protected HystrixFilterCommand(Setter setter, Object fallback, ProxyInvoker invoker, Object[] args) {
 		super(setter);
 		this.fallback = fallback;
 		this.invoker = invoker;
 		this.args = args;
-		this.filterChain = filterChain;
 	}
 
 	@Override
 	protected Object run() throws Exception {
 		try {
-			return filterChain.doFilter(invoker, args);
+			return invoker.invoke(args);
 		} catch (Throwable e) {
 			throw new NestedRuntimeException(e);
 		}
