@@ -9,6 +9,7 @@ import scw.aop.ProxyInvoker.AbstractProxyInvoker;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
+import scw.lang.NotSupportedException;
 
 public abstract class Aop implements ProxyFactory {
 	public abstract Filter[] getFilters();
@@ -19,22 +20,17 @@ public abstract class Aop implements ProxyFactory {
 		return getProxyFactory().isSupport(clazz);
 	}
 
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces,
-			Filter... filters) {
-		return getProxyFactory().getProxy(clazz, interfaces,
-				mergeFilters(filters));
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Filter... filters) {
+		return getProxyFactory().getProxy(clazz, interfaces, mergeFilters(filters));
 	}
 
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces,
-			Collection<Filter> filters) {
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Collection<Filter> filters) {
 		return getProxy(clazz, interfaces, new MultiFilter(filters));
 	}
 
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces,
-			NoArgsInstanceFactory instanceFactory,
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, NoArgsInstanceFactory instanceFactory,
 			Collection<String> filterNames) {
-		return getProxy(clazz, interfaces, new MultiFilter(instanceFactory,
-				filterNames));
+		return getProxy(clazz, interfaces, new MultiFilter(instanceFactory, filterNames));
 	}
 
 	public final Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
@@ -55,70 +51,97 @@ public abstract class Aop implements ProxyFactory {
 		}
 
 		Filter[] globalFilters = getFilters();
-		Filter[] filtersToUse = new Filter[globalFilters.length
-				+ filters.length];
-		System.arraycopy(globalFilters, 0, filtersToUse, 0,
-				globalFilters.length);
-		System.arraycopy(filters, 0, filtersToUse, globalFilters.length,
-				filters.length);
+		Filter[] filtersToUse = new Filter[globalFilters.length + filters.length];
+		System.arraycopy(globalFilters, 0, filtersToUse, 0, globalFilters.length);
+		System.arraycopy(filters, 0, filtersToUse, globalFilters.length, filters.length);
 		return filtersToUse;
 	}
 
-	public final <T> Proxy getProxyInstance(Class<? extends T> clazz,
-			T instance, Class<?>[] interfaces, Filter... filters) {
-		return getProxyFactory().getProxy(clazz, interfaces,
-				new InstanceFilter(instance, mergeFilters(filters)));
+	public final <T> Proxy getProxyInstance(Class<? extends T> clazz, T instance, Class<?>[] interfaces,
+			Filter... filters) {
+		return getProxyFactory().getProxy(clazz, interfaces, new InstanceFilter(instance, mergeFilters(filters)));
 	}
 
-	public final <T> Proxy getProxyInstance(Class<? extends T> clazz,
-			T instance, Class<?>[] interfaces, Collection<Filter> filters) {
-		return getProxyInstance(clazz, instance, interfaces, new MultiFilter(
-				filters));
+	public final <T> Proxy getProxyInstance(Class<? extends T> clazz, T instance, Class<?>[] interfaces,
+			Collection<Filter> filters) {
+		return getProxyInstance(clazz, instance, interfaces, new MultiFilter(filters));
 	}
 
-	public final <T> Proxy getProxyInstance(Class<? extends T> clazz,
-			T instance, Class<?>[] interfaces,
-			NoArgsInstanceFactory instanceFactory,
-			Collection<String> filterNames) {
-		return getProxyInstance(clazz, instance, interfaces, new MultiFilter(
-				instanceFactory, filterNames));
+	public final <T> Proxy getProxyInstance(Class<? extends T> clazz, T instance, Class<?>[] interfaces,
+			NoArgsInstanceFactory instanceFactory, Collection<String> filterNames) {
+		return getProxyInstance(clazz, instance, interfaces, new MultiFilter(instanceFactory, filterNames));
 	}
 
-	public <T> MethodInvoker getProxyMethod(Class<? extends T> targetClass,
-			T instance, Method method, Filter... filters) {
-		return new DefaultProxyInvoker(targetClass, instance, method,
-				mergeFilters(filters));
+	/**
+	 * 代理一个方法 ，如果被{@see #isProxyMethod(Object, Method)}方法判定为true那么就不会被代理
+	 * 
+	 * @param targetClass
+	 * @param instance
+	 * @param method
+	 * @param filters
+	 * @return
+	 */
+	public <T> MethodInvoker getProxyMethod(Class<? extends T> targetClass, T instance, Method method,
+			Filter... filters) {
+		return new DefaultProxyInvoker(targetClass, instance, method, mergeFilters(filters));
 	}
 
-	public final MethodInvoker getProxyMethod(
-			NoArgsInstanceFactory instanceFactory, String instanceName,
+	/**
+	 * 代理一个方法 ，如果被{@see #isProxyMethod(Object, Method)}方法判定为true那么就不会被代理
+	 * 
+	 * @param instanceFactory
+	 * @param instanceName
+	 * @param targetClass
+	 * @param method
+	 * @param filters
+	 * @return
+	 */
+	public final MethodInvoker getProxyMethod(NoArgsInstanceFactory instanceFactory, String instanceName,
 			Class<?> targetClass, Method method, Filter... filters) {
 		if (Modifier.isStatic(method.getModifiers())) {
 			return getProxyMethod(targetClass, null, method, filters);
 		}
 
-		if (instanceFactory.isSingleton(instanceName)) {
-			return getProxyMethod(targetClass,
-					instanceFactory.getInstance(instanceName), method, filters);
+		if (!instanceFactory.isInstance(instanceName)) {
+			throw new NotSupportedException("instanceName:" + instanceName + ", method:" + method.toString());
 		}
 
-		return new InstanceFactoryProxyInvoker(instanceFactory, instanceName,
-				targetClass, method, mergeFilters(filters));
+		if (instanceFactory.isSingleton(instanceName)) {
+			return getProxyMethod(targetClass, instanceFactory.getInstance(instanceName), method, filters);
+		}
+
+		return new InstanceFactoryProxyInvoker(instanceFactory, instanceName, targetClass, method,
+				mergeFilters(filters));
 	}
 
-	public final MethodInvoker getProxyMethod(
-			NoArgsInstanceFactory noArgsInstanceFactory, Class<?> targetClass,
+	/**
+	 * 代理一个方法 ，如果被{@see #isProxyMethod(Object, Method)}方法判定为true那么就不会被代理
+	 * 
+	 * @param noArgsInstanceFactory
+	 * @param targetClass
+	 * @param method
+	 * @param filters
+	 * @return
+	 */
+	public final MethodInvoker getProxyMethod(NoArgsInstanceFactory noArgsInstanceFactory, Class<?> targetClass,
 			Method method, Filter... filters) {
-		return getProxyMethod(noArgsInstanceFactory, targetClass.getName(),
-				targetClass, method, filters);
+		return getProxyMethod(noArgsInstanceFactory, targetClass.getName(), targetClass, method, filters);
+	}
+
+	public boolean isProxyMethod(Object instance, Method method) {
+		boolean isProxy = !(Modifier.isPrivate(method.getModifiers()) || Modifier.isStatic(method.getModifiers())
+				|| Modifier.isFinal(method.getModifiers()) || Modifier.isNative(method.getModifiers()));
+		if (isProxy) {
+			isProxy = instance != null && getProxyFactory().isProxy(instance.getClass());
+		}
+		return isProxy;
 	}
 
 	private final class InstanceFactoryProxyInvoker extends MethodProxyInvoker {
 		private final NoArgsInstanceFactory instanceFactory;
 		private final String instanceName;
 
-		public InstanceFactoryProxyInvoker(
-				NoArgsInstanceFactory instanceFactory, String instanceName,
+		public InstanceFactoryProxyInvoker(NoArgsInstanceFactory instanceFactory, String instanceName,
 				Class<?> targetClass, Method method, Filter[] filters) {
 			super(targetClass, method, filters);
 			this.instanceFactory = instanceFactory;
@@ -133,8 +156,7 @@ public abstract class Aop implements ProxyFactory {
 	private final class DefaultProxyInvoker extends MethodProxyInvoker {
 		private final Object instance;
 
-		public <T> DefaultProxyInvoker(Class<? extends T> targetClass,
-				T instance, Method method, Filter[] filters) {
+		public <T> DefaultProxyInvoker(Class<? extends T> targetClass, T instance, Method method, Filter[] filters) {
 			super(targetClass, method, filters);
 			this.instance = instance;
 		}
@@ -147,8 +169,7 @@ public abstract class Aop implements ProxyFactory {
 	private static class InstanceProxyInvoker extends AbstractProxyInvoker {
 		private Object instance;
 
-		InstanceProxyInvoker(Object instance, Class<?> targetClass,
-				Method method) {
+		InstanceProxyInvoker(Object instance, Class<?> targetClass, Method method) {
 			super(targetClass, method);
 			this.instance = instance;
 		}
@@ -158,38 +179,23 @@ public abstract class Aop implements ProxyFactory {
 		}
 
 		public Object invoke(Object... args) throws Throwable {
-			return ReflectionUtils.invokeMethod(getMethod(), Modifier
-					.isStatic(getMethod().getModifiers()) ? null : instance,
-					args);
+			return ReflectionUtils.invokeMethod(getMethod(),
+					Modifier.isStatic(getMethod().getModifiers()) ? null : instance, args);
 		}
 	}
 
 	private abstract class MethodProxyInvoker extends AbstractProxyInvoker {
 		protected final Filter[] filters;
 
-		public MethodProxyInvoker(Class<?> targetClass, Method method,
-				Filter[] filters) {
+		public MethodProxyInvoker(Class<?> targetClass, Method method, Filter[] filters) {
 			super(targetClass, method);
 			this.filters = filters;
 		}
 
-		protected boolean isProxy(Object instance) {
-			boolean isProxy = !(Modifier.isPrivate(getMethod().getModifiers())
-					|| Modifier.isStatic(getMethod().getModifiers())
-					|| Modifier.isFinal(getMethod().getModifiers()) || Modifier
-					.isNative(getMethod().getModifiers()));
-			if (isProxy) {
-				isProxy = instance != null
-						&& getProxyFactory().isProxy(instance.getClass());
-			}
-			return isProxy;
-		}
-
 		public Object invoke(Object... args) throws Throwable {
 			Object instance = getProxy();
-			InstanceProxyInvoker invoker = new InstanceProxyInvoker(getProxy(),
-					getTargetClass(), getMethod());
-			if (isProxy(instance)) {
+			InstanceProxyInvoker invoker = new InstanceProxyInvoker(getProxy(), getTargetClass(), getMethod());
+			if (isProxyMethod(instance, getMethod())) {
 				return invoker.invoke(args);
 			}
 
@@ -207,19 +213,16 @@ public abstract class Aop implements ProxyFactory {
 			this.filters = filters;
 		}
 
-		public Object doFilter(ProxyInvoker invoker, Object[] args)
-				throws Throwable {
-			ProxyInvoker instanceInvoker = new InstanceProxyInvoker(instance,
-					invoker.getTargetClass(), invoker.getMethod());
-			return new FilterProxyInvoker(instanceInvoker, filters)
-					.invoke(args);
+		public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+			ProxyInvoker instanceInvoker = new InstanceProxyInvoker(instance, invoker.getTargetClass(),
+					invoker.getMethod());
+			return new FilterProxyInvoker(instanceInvoker, filters).invoke(args);
 		}
 	}
 
-	public Class<?> getUserClass(String className, boolean initialize,
-			ClassLoader classLoader) throws ClassNotFoundException {
-		return getProxyFactory().getUserClass(className, initialize,
-				classLoader);
+	public Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
+			throws ClassNotFoundException {
+		return getProxyFactory().getUserClass(className, initialize, classLoader);
 	}
 
 	public boolean isProxy(String className, ClassLoader classLoader) {
