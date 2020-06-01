@@ -6,7 +6,6 @@ import java.lang.reflect.Modifier;
 
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NestedExceptionUtils;
-import scw.lang.NestedRuntimeException;
 
 abstract class AbstractGetterSetter extends AbstractFieldDescriptor {
 	private static final long serialVersionUID = 1L;
@@ -24,7 +23,7 @@ abstract class AbstractGetterSetter extends AbstractFieldDescriptor {
 			try {
 				return method.invoke(Modifier.isStatic(method.getModifiers()) ? null : instance);
 			} catch (Exception e) {
-				throw new NestedRuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+				throw new RuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
 			}
 		}
 
@@ -34,7 +33,7 @@ abstract class AbstractGetterSetter extends AbstractFieldDescriptor {
 			try {
 				return field.get(Modifier.isStatic(field.getModifiers()) ? null : instance);
 			} catch (Exception e) {
-				throw new NestedRuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+				throw new RuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
 			}
 		}
 		throw createNotSupportException();
@@ -47,7 +46,7 @@ abstract class AbstractGetterSetter extends AbstractFieldDescriptor {
 			try {
 				method.invoke(Modifier.isStatic(method.getModifiers()) ? null : instance, value);
 			} catch (Exception e) {
-				throw new NestedRuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+				throw new RuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
 			}
 			return;
 		}
@@ -58,7 +57,7 @@ abstract class AbstractGetterSetter extends AbstractFieldDescriptor {
 			try {
 				field.set(Modifier.isStatic(field.getModifiers()) ? null : instance, value);
 			} catch (Exception e) {
-				throw new NestedRuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+				throw new RuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
 			}
 			return;
 		}
