@@ -5,13 +5,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.NestedExceptionUtils;
+import scw.lang.NestedRuntimeException;
 
-abstract class AbstractGetterSetter extends AbstractFieldDescriptor{
+abstract class AbstractGetterSetter extends AbstractFieldDescriptor {
 	private static final long serialVersionUID = 1L;
 	private final String name;
 
-	public AbstractGetterSetter(Class<?> declaringClass, String name,
-			Field field, Method method) {
+	public AbstractGetterSetter(Class<?> declaringClass, String name, Field field, Method method) {
 		super(declaringClass, field, method);
 		this.name = name;
 	}
@@ -20,15 +21,21 @@ abstract class AbstractGetterSetter extends AbstractFieldDescriptor{
 		Method method = getMethod();
 		if (method != null) {
 			ReflectionUtils.makeAccessible(method);
-			return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null
-					: instance);
+			try {
+				return method.invoke(Modifier.isStatic(method.getModifiers()) ? null : instance);
+			} catch (Exception e) {
+				throw new NestedRuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+			}
 		}
 
 		java.lang.reflect.Field field = getField();
 		if (field != null) {
 			ReflectionUtils.makeAccessible(field);
-			return ReflectionUtils.getField(field, Modifier.isStatic(field.getModifiers()) ? null
-					: instance);
+			try {
+				return field.get(Modifier.isStatic(field.getModifiers()) ? null : instance);
+			} catch (Exception e) {
+				throw new NestedRuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+			}
 		}
 		throw createNotSupportException();
 	}
@@ -37,16 +44,23 @@ abstract class AbstractGetterSetter extends AbstractFieldDescriptor{
 		Method method = getMethod();
 		if (method != null) {
 			ReflectionUtils.makeAccessible(method);
-			ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null
-					: instance, value);
-			return ;
+			try {
+				method.invoke(Modifier.isStatic(method.getModifiers()) ? null : instance, value);
+			} catch (Exception e) {
+				throw new NestedRuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+			}
+			return;
 		}
 
 		java.lang.reflect.Field field = getField();
 		if (field != null) {
 			ReflectionUtils.makeAccessible(field);
-			ReflectionUtils.setField(field, Modifier.isStatic(field.getModifiers()) ? null : instance, value);
-			return ;
+			try {
+				field.set(Modifier.isStatic(field.getModifiers()) ? null : instance, value);
+			} catch (Exception e) {
+				throw new NestedRuntimeException(toString(), NestedExceptionUtils.excludeInvalidNestedExcpetion(e));
+			}
+			return;
 		}
 		throw createNotSupportException();
 	}

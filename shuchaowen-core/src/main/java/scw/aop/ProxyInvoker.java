@@ -2,6 +2,8 @@ package scw.aop;
 
 import java.lang.reflect.Method;
 
+import scw.core.reflect.ReflectionUtils;
+
 public interface ProxyInvoker extends MethodInvoker {
 	Object getProxy();
 
@@ -10,6 +12,7 @@ public interface ProxyInvoker extends MethodInvoker {
 		private final Method method;
 
 		public AbstractProxyInvoker(Class<?> targetClass, Method method) {
+			ReflectionUtils.makeAccessible(method);
 			this.method = method;
 			this.targetClass = targetClass;
 		}
