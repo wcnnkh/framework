@@ -1,17 +1,15 @@
 package scw.hystrix;
 
+import scw.aop.ProxyInvoker;
+import scw.core.instance.NoArgsInstanceFactory;
+import scw.hystrix.annotation.Hystrix;
+
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommand.Setter;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
-
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.ProxyContext;
-import scw.core.instance.NoArgsInstanceFactory;
-import scw.hystrix.annotation.Hystrix;
 
 public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 	private NoArgsInstanceFactory instanceFactory;
@@ -21,19 +19,19 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 	}
 
 	@Override
-	public HystrixCommand<?> getHystrixCommandFactory(ProxyContext context, Invoker invoker, FilterChain filterChain)
+	public HystrixCommand<?> getHystrixCommandFactory(ProxyInvoker invoker, Object[] args)
 			throws Exception {
-		Hystrix hystrix = context.getTargetClass().getAnnotation(Hystrix.class);
+		Hystrix hystrix = invoker.getTargetClass().getAnnotation(Hystrix.class);
 		if (hystrix == null) {
 			return null;
 		}
 
-		Setter setter = Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(context.getTargetClass().getName()))
-				.andCommandKey(HystrixCommandKey.Factory.asKey(context.getMethod().toString()));
+		Setter setter = Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(invoker.getTargetClass().getName()))
+				.andCommandKey(HystrixCommandKey.Factory.asKey(invoker.getMethod().toString()));
 		afterSetter(setter);
-		Object fallback = context.getTargetClass().isAssignableFrom(hystrix.fallback())
+		Object fallback = invoker.getTargetClass().isAssignableFrom(hystrix.fallback())
 				? instanceFactory.getInstance(hystrix.fallback()) : null;
-		return new HystrixFilterCommand(setter, fallback, context, invoker, filterChain);
+		return new HystrixFilterCommand(setter, fallback, invoker, args);
 	}
 
 	protected void afterSetter(Setter setter) {

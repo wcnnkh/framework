@@ -35,10 +35,10 @@ public class MultipleProxyFactory extends LinkedList<ProxyFactory> implements Pr
 		return false;
 	}
 
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Filter ...filters) {
 		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isSupport(clazz)) {
-				return proxyFactory.getProxy(clazz, interfaces, filterChain);
+				return proxyFactory.getProxy(clazz, interfaces, filters);
 			}
 		}
 		throw new NotSupportedException(clazz.getName());

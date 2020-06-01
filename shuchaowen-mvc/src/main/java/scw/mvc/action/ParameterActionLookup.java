@@ -1,9 +1,11 @@
 package scw.mvc.action;
 
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
@@ -36,14 +38,12 @@ public class ParameterActionLookup implements ActionLookup {
 			return null;
 		}
 
-		Map<HttpMethod, Map<String, Action>> map = actionMap.get(httpChannel
-				.getRequest().getPath());
+		Map<HttpMethod, Map<String, Action>> map = actionMap.get(httpChannel.getRequest().getPath());
 		if (map == null) {
 			return null;
 		}
 
-		Map<String, Action> methodMap = map.get(httpChannel.getRequest()
-				.getMethod());
+		Map<String, Action> methodMap = map.get(httpChannel.getRequest().getMethod());
 		if (methodMap == null) {
 			return null;
 		}
@@ -55,13 +55,11 @@ public class ParameterActionLookup implements ActionLookup {
 		return methodMap.get(action);
 	}
 
-	protected final void register(HttpMethod httpMethod, String classController,
-			String methodController, Action action) {
-		EnumMap<HttpMethod, Map<String, Action>> clzMap = actionMap
-				.get(classController);
+	protected final void register(HttpMethod httpMethod, String classController, String methodController,
+			Action action) {
+		EnumMap<HttpMethod, Map<String, Action>> clzMap = actionMap.get(classController);
 		if (clzMap == null) {
-			clzMap = new EnumMap<HttpMethod, Map<String, Action>>(
-					HttpMethod.class);
+			clzMap = new EnumMap<HttpMethod, Map<String, Action>>(HttpMethod.class);
 		}
 
 		Map<String, Action> map = clzMap.get(httpMethod);
@@ -70,8 +68,7 @@ public class ParameterActionLookup implements ActionLookup {
 		}
 
 		if (map.containsKey(methodController)) {
-			throw new AlreadyExistsException(MVCUtils.getExistActionErrMsg(
-					action, map.get(methodController)));
+			throw new AlreadyExistsException(MVCUtils.getExistActionErrMsg(action, map.get(methodController)));
 		}
 
 		map.put(methodController, action);
@@ -79,29 +76,23 @@ public class ParameterActionLookup implements ActionLookup {
 		actionMap.put(classController, clzMap);
 	}
 
-	public void register(Action action) {
-		for (ControllerDescriptor classControllerDescriptor : action
-				.getTargetClassControllerDescriptors()) {
-			if (classControllerDescriptor.getRestful().isRestful()) {
+	private Set<String> toControllerSet(Collection<ControllerDescriptor> controllerDescriptors) {
+		HashSet<String> actions = new HashSet<String>();
+		for (ControllerDescriptor methodControllerDescriptor : controllerDescriptors) {
+			if (methodControllerDescriptor.getRestful().isRestful()) {
 				continue;
 			}
 
-			HashSet<String> actions = new HashSet<String>();
-			for (ControllerDescriptor methodControllerDescriptor : action
-					.getMethodControllerDescriptors()) {
-				if (methodControllerDescriptor.getRestful().isRestful()) {
-					continue;
-				}
+			actions.add(methodControllerDescriptor.getController());
+		}
+		return actions;
+	}
 
-				actions.add(methodControllerDescriptor.getController());
-			}
-
-			for (String actionName : actions) {
-				for (ControllerDescriptor descriptor : action
-						.getControllerDescriptors()) {
-					register(descriptor.getHttpMethod(),
-							classControllerDescriptor.getController(),
-							actionName, action);
+	public void register(Action action) {
+		for (String classController : toControllerSet(action.getTargetClassControllerDescriptors())) {
+			for (String methodController : toControllerSet(action.getMethodControllerDescriptors())) {
+				for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
+					register(descriptor.getHttpMethod(), classController, methodController, action);
 				}
 			}
 		}

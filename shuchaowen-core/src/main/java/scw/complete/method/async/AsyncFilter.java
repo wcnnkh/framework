@@ -1,9 +1,7 @@
 package scw.complete.method.async;
 
 import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
@@ -31,27 +29,27 @@ public final class AsyncFilter implements Filter {
 		TAG_THREAD_LOCAL.set(false);
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
-		Async async = context.getMethod().getAnnotation(Async.class);
+	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+		Async async = invoker.getMethod().getAnnotation(Async.class);
 		if (async == null) {
-			return filterChain.doFilter(invoker, context);
+			return invoker.invoke(args);
 		}
 
 		if (isStartAsync()) {
-			return filterChain.doFilter(invoker, context);
+			return invoker.invoke(args);
 		}
 
 		if (!instanceFactory.isInstance(async.service())) {
-			throw new NotSupportedException("not support async: " + context.getMethod());
+			throw new NotSupportedException("not support async: " + invoker.getMethod());
 		}
 
-		String beanName = StringUtils.isEmpty(async.beanName()) ? context.getTargetClass().getName() : async.beanName();
+		String beanName = StringUtils.isEmpty(async.beanName()) ? invoker.getTargetClass().getName() : async.beanName();
 		if (!instanceFactory.isInstance(beanName)) {
-			throw new NotSupportedException(context.getMethod() + " --> beanName: " + beanName);
+			throw new NotSupportedException(invoker.getMethod() + " --> beanName: " + beanName);
 		}
 
-		AsyncMethodCompleteTask asyncMethodCompleteTask = new AsyncMethodCompleteTask(context.getTargetClass(),
-				context.getMethod(), beanName, context.getArgs());
+		AsyncMethodCompleteTask asyncMethodCompleteTask = new AsyncMethodCompleteTask(invoker.getTargetClass(),
+				invoker.getMethod(), beanName, args);
 		AsyncMethodService asyncService = instanceFactory.getInstance(async.service());
 		startAsync();
 		try {

@@ -1,37 +1,23 @@
 package scw.beans.builder;
 
-import java.util.Collection;
-
-import scw.aop.FilterChain;
+import scw.aop.Filter;
 import scw.beans.BeanFactory;
 import scw.value.property.PropertyFactory;
 
 public class ProxyBeanBuilder extends AutoBeanBuilder {
 
-	public ProxyBeanBuilder(LoaderContext context, Collection<String> proxyNames) {
-		this(context, proxyNames, null);
-	}
-
-	public ProxyBeanBuilder(LoaderContext context,
-			Collection<String> proxyNames, FilterChain filterChain) {
+	public ProxyBeanBuilder(LoaderContext context, Filter... filters) {
 		this(context.getBeanFactory(), context.getPropertyFactory(), context
-				.getTargetClass(), proxyNames, filterChain);
+				.getTargetClass(), filters);
 	}
 
 	public ProxyBeanBuilder(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Class<?> targetClass,
-			Collection<String> proxyNames) {
-		this(beanFactory, propertyFactory, targetClass, proxyNames, null);
-	}
-
-	public ProxyBeanBuilder(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> targetClass,
-			Collection<String> proxyNames, FilterChain filterChain) {
+			Filter... filters) {
 		super(beanFactory, propertyFactory, targetClass);
-		if (proxyNames != null) {
-			filterNames.addAll(proxyNames);
+		for (Filter filter : filters) {
+			super.filters.add(filter);
 		}
-		this.filterChain = filterChain;
 	}
 
 	@Override

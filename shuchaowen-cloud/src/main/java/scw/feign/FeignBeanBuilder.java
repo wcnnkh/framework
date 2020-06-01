@@ -1,13 +1,13 @@
 package scw.feign;
 
-import feign.Feign;
-import feign.codec.Decoder;
-import feign.codec.Encoder;
 import scw.beans.builder.ConstructorBeanBuilder;
 import scw.beans.builder.LoaderContext;
 import scw.core.instance.ConstructorBuilder;
 import scw.core.utils.StringUtils;
 import scw.net.NetworkUtils;
+import feign.Feign;
+import feign.codec.Decoder;
+import feign.codec.Encoder;
 
 public class FeignBeanBuilder extends ConstructorBeanBuilder {
 	private scw.feign.annotation.FeignClient feignClient;
@@ -42,6 +42,6 @@ public class FeignBeanBuilder extends ConstructorBeanBuilder {
 		Encoder encoder = beanFactory.isInstance(Encoder.class) ? beanFactory.getInstance(Encoder.class) : codec;
 		Decoder decoder = beanFactory.isInstance(Decoder.class) ? beanFactory.getInstance(Decoder.class) : codec;
 		Object proxy = Feign.builder().encoder(encoder).decoder(decoder).target(getTargetClass(), getHost());
-		return beanFactory.getAop().getProxyInstance(getTargetClass(), proxy, null, null).create();
+		return beanFactory.getAop().getProxyInstance(getTargetClass(), proxy, null).create();
 	}
 }

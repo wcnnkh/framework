@@ -1,8 +1,6 @@
 package scw.mvc;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,7 +20,7 @@ import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
 import scw.mvc.action.ActionLookup;
-import scw.mvc.action.ActionService;
+import scw.mvc.action.ActionWrapper;
 import scw.mvc.action.DefaultNotfoundActionService;
 import scw.mvc.action.NotFoundActionService;
 import scw.mvc.exception.ExceptionHandler;
@@ -101,7 +99,7 @@ public class HttpControllerHandler implements HttpServiceHandler {
 				}
 			} else {
 				try {
-					message = new FitlerActionService(actionFilters).doAction(httpChannel, action);
+					message = new FitlerAction(action).doAction(httpChannel);
 				} catch (Throwable e) {
 					message = doError(httpChannel, action, e);
 				}
@@ -168,23 +166,20 @@ public class HttpControllerHandler implements HttpServiceHandler {
 		return null;
 	}
 
-	private final class FitlerActionService implements ActionService {
-		private Iterator<ActionFilter> iterator;
+	private final class FitlerAction extends ActionWrapper {
+		private Iterator<ActionFilter> iterator = actionFilters.iterator();
 
-		public FitlerActionService(Collection<ActionFilter> filters) {
-			if (filters == null) {
-				this.iterator = Collections.emptyIterator();
-			} else {
-				this.iterator = filters.iterator();
-			}
+		public FitlerAction(Action action) {
+			super(action);
 		}
 
-		public Object doAction(HttpChannel httpChannel, Action action) throws Throwable {
+		@Override
+		public Object doAction(HttpChannel httpChannel) throws Throwable {
 			if (iterator.hasNext()) {
-				return iterator.next().doFilter(httpChannel, action, FitlerActionService.this);
-			} else {
-				return action.doAction(httpChannel);
+				return iterator.next().doFilter(this, httpChannel);
 			}
+
+			return super.doAction(httpChannel);
 		}
 	}
 }

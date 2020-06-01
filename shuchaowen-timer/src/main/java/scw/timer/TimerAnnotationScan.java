@@ -48,7 +48,7 @@ public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null
 				: method.getParameterTypes()[0];
 		return new CrontabRunnable(beanFactory.getAop().getProxyMethod(
-				beanFactory, clz, method, null), parameterType);
+				beanFactory, clz, method), parameterType);
 	}
 
 	private void schedule(BeanFactory beanFactory, Class<?> clz, Method method,

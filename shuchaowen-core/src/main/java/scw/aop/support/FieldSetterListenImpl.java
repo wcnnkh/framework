@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.mapper.Field;
 
 public class FieldSetterListenImpl implements FieldSetterListen, Serializable {
@@ -15,7 +15,7 @@ public class FieldSetterListenImpl implements FieldSetterListen, Serializable {
 		return field_setter_map;
 	}
 
-	public void field_setter(ProxyContext context, Field field, Object oldValue) {
+	public void field_setter(ProxyInvoker invoker, Field field, Object oldValue) {
 		if (field_setter_map == null) {
 			field_setter_map = new LinkedHashMap<String, Object>(8);
 		}

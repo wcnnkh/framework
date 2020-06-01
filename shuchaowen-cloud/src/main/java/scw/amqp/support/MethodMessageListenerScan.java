@@ -32,7 +32,7 @@ public final class MethodMessageListenerScan extends AbstractBeanFactoryLifeCycl
 				MessageListener messageListener = method.getAnnotation(MessageListener.class);
 				Exchange exchange = beanFactory.getInstance(messageListener.exchange());
 				exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener),
-						beanFactory.getAop().getProxyMethod(beanFactory, clazz, method, null));
+						beanFactory.getAop().getProxyMethod(beanFactory, clazz, method));
 			}
 		}
 	}

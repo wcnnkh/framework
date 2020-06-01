@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.aop.support.FieldSetterListen;
-import scw.core.utils.TypeUtils;
 import scw.sql.SqlUtils;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.ResultMapping;
 import scw.sql.orm.TableNameMapping;
+import scw.value.ValueUtils;
 
 public abstract class AbstractResultMapping implements ResultMapping {
 	private static final long serialVersionUID = 1L;
@@ -35,7 +35,7 @@ public abstract class AbstractResultMapping implements ResultMapping {
 			return null;
 		}
 
-		if (TypeUtils.isPrimitiveOrWrapper(clazz)) {
+		if (ValueUtils.isBaseType(clazz)) {
 			return get(clazz, 0);
 		}
 

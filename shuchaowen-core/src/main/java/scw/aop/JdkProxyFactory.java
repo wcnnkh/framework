@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
 
+import scw.aop.ProxyInvoker.AbstractInstanceProxyInvoker;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -21,7 +24,8 @@ public class JdkProxyFactory implements ProxyFactory {
 		return java.lang.reflect.Proxy.isProxyClass(clazz);
 	}
 
-	protected final Class<?>[] mergeInterfaces(Class<?> clazz, Class<?>[] interfaces) {
+	protected final Class<?>[] mergeInterfaces(Class<?> clazz,
+			Class<?>[] interfaces) {
 		if (ArrayUtils.isEmpty(interfaces)) {
 			if (clazz.isInterface()) {
 				return new Class<?>[] { clazz };
@@ -49,54 +53,54 @@ public class JdkProxyFactory implements ProxyFactory {
 	}
 
 	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
-		return java.lang.reflect.Proxy.getProxyClass(clazz.getClassLoader(), mergeInterfaces(clazz, interfaces));
+		return java.lang.reflect.Proxy.getProxyClass(clazz.getClassLoader(),
+				mergeInterfaces(clazz, interfaces));
 	}
 
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, FilterChain filterChain) {
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces,
+			Filter... filters) {
 		return new JdkProxy(clazz, mergeInterfaces(clazz, interfaces),
-				new FiltersInvocationHandler(clazz, filterChain));
+				new FiltersInvocationHandler(clazz, filters));
 	}
 
-	private static final class FiltersInvocationHandler implements InvocationHandler, Serializable {
+	private static final class FiltersInvocationHandler implements
+			InvocationHandler, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final Class<?> targetClass;
-		private final FilterChain filterChain;
+		private final Filter[] filters;
 
-		public FiltersInvocationHandler(Class<?> targetClass, FilterChain filterChain) {
+		public FiltersInvocationHandler(Class<?> targetClass, Filter[] filters) {
 			this.targetClass = targetClass;
-			this.filterChain = filterChain;
+			this.filters = filters;
 		}
 
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			if (filterChain == null) {
-				throw new NotSupportedException(method.toString());
-			}
-
-			ProxyContext context = new ProxyContext(proxy, targetClass, method, args);
-			Invoker invoker = new JdkProxyInvoker(context);
-			return filterChain.doFilter(invoker, context);
+		public Object invoke(Object proxy, Method method, Object[] args)
+				throws Throwable {
+			Enumeration<Filter> enumeration = filters == null? null:Collections.enumeration(Arrays.asList(filters));
+			return new JdkProxyInvoker(proxy, targetClass, method, enumeration).invoke(args);
 		}
 	}
 
-	private static class JdkProxyInvoker implements Invoker {
-		private ProxyContext context;
+	private static class JdkProxyInvoker extends AbstractInstanceProxyInvoker {
+		private final Enumeration<Filter> filters;
 
-		public JdkProxyInvoker(ProxyContext context) {
-			this.context = context;
+		JdkProxyInvoker(Object proxy, Class<?> targetClass, Method method,
+				Enumeration<Filter> filters) {
+			super(proxy, targetClass, method);
+			this.filters = filters;
 		}
 
 		public Object invoke(Object... args) throws Throwable {
-			//如果filter中没有拦截这些方法，那么使用默认的调用
-			if (context.isIgnoreMethod()) {
-				return context.invokeIgnoreMethod();
+			if (filters.hasMoreElements()) {
+				return filters.nextElement().doFilter(this, args);
+			}
+
+			// 如果filter中没有拦截这些方法，那么使用默认的调用
+			if (ProxyUtils.isIgnoreMethod(getMethod())) {
+				return ProxyUtils.invokeIgnoreMethod(this, args);
 			}
 
 			throw new UnsupportedOperationException(toString());
-		}
-
-		@Override
-		public String toString() {
-			return context.getMethod().toString();
 		}
 	}
 
@@ -108,19 +112,23 @@ public class JdkProxyFactory implements ProxyFactory {
 		private Class<?>[] interfaces;
 		private InvocationHandler invocationHandler;
 
-		public JdkProxy(Class<?> clazz, Class<?>[] interfaces, InvocationHandler invocationHandler) {
+		public JdkProxy(Class<?> clazz, Class<?>[] interfaces,
+				InvocationHandler invocationHandler) {
 			super(clazz);
 			this.interfaces = interfaces;
 			this.invocationHandler = invocationHandler;
 		}
 
 		public Object create() {
-			return java.lang.reflect.Proxy.newProxyInstance(getTargetClass().getClassLoader(),
-					interfaces == null ? new Class<?>[0] : interfaces, invocationHandler);
+			return java.lang.reflect.Proxy.newProxyInstance(getTargetClass()
+					.getClassLoader(), interfaces == null ? new Class<?>[0]
+					: interfaces, invocationHandler);
 		}
 
-		public Object createInternal(Class<?>[] parameterTypes, Object[] arguments) {
-			throw new NotSupportedException(getTargetClass().getName() + "," + Arrays.toString(parameterTypes));
+		public Object createInternal(Class<?>[] parameterTypes,
+				Object[] arguments) {
+			throw new NotSupportedException(getTargetClass().getName() + ","
+					+ Arrays.toString(parameterTypes));
 		}
 	}
 
@@ -134,8 +142,9 @@ public class JdkProxyFactory implements ProxyFactory {
 		return className.startsWith(PROXY_NAME_PREFIX);
 	}
 
-	public Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
-			throws ClassNotFoundException {
-		return getUserClass(ClassUtils.forName(className, initialize, classLoader));
+	public Class<?> getUserClass(String className, boolean initialize,
+			ClassLoader classLoader) throws ClassNotFoundException {
+		return getUserClass(ClassUtils.forName(className, initialize,
+				classLoader));
 	}
 }

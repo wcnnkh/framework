@@ -7,11 +7,13 @@ import java.util.Collections;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.aop.MultiFilter;
 import scw.beans.BeanFactory;
 import scw.beans.builder.ConstructorBeanBuilder;
 import scw.core.instance.AutoConstructorBuilder;
 import scw.core.instance.ConstructorBuilder;
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
@@ -23,7 +25,11 @@ public class XmlBeanBuilder extends ConstructorBeanBuilder {
 			PropertyFactory propertyFactory, Class<?> targetClass, Node beanNode)
 			throws Exception {
 		super(beanFactory, propertyFactory, targetClass);
-		filterNames.addAll(getFilters(beanNode));
+		Collection<String> filterNames = getFilters(beanNode);
+		if(!CollectionUtils.isEmpty(filterNames)){
+			filters.add(new MultiFilter(beanFactory, getFilters(beanNode)));
+		}
+		
 		NodeList nodeList = beanNode.getChildNodes();
 		ioc.getInit()
 				.getIocProcessors()

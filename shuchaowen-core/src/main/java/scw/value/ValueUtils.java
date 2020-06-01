@@ -40,13 +40,18 @@ public final class ValueUtils {
 		return new StringValue(text).getAsObject(type);
 	}
 
-	public static boolean isCommonType(Type type) {
+	/**
+	 * 这并不是基本数据类型，这是指Value可以直接转换的类型
+	 * @param type
+	 * @return
+	 */
+	public static boolean isBaseType(Type type) {
 		if (TypeUtils.isClass(type)) {
-			return isCommonType((Class<?>) type);
+			return isBaseType((Class<?>) type);
 		}
 
 		try {
-			return isCommonType(ClassUtils.forName(type.toString(),
+			return isBaseType(ClassUtils.forName(type.toString(),
 					ClassUtils.getDefaultClassLoader()));
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
@@ -54,7 +59,12 @@ public final class ValueUtils {
 		return false;
 	}
 
-	private static boolean isCommonType(Class<?> type) {
+	/**
+	 * 这并不是基本数据类型，这是指Value可以直接转换的类型
+	 * @param type
+	 * @return
+	 */
+	public static boolean isBaseType(Class<?> type) {
 		return ClassUtils.isPrimitiveOrWrapper(type) || type.isEnum()
 				|| type == Class.class || type == String.class
 				|| BigInteger.class.isAssignableFrom(type)

@@ -5,5 +5,5 @@ import scw.mvc.HttpChannel;
 
 @Bean(proxy=false)
 public interface ActionFilter {
-	Object doFilter(HttpChannel httpChannel, Action action, ActionService service) throws Throwable;
+	Object doFilter(Action action, HttpChannel httpChannel) throws Throwable;
 }

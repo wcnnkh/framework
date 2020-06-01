@@ -84,7 +84,7 @@ public class AutoSource<T> {
 				.getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
 			Class<?> type = parameterConfig.getType();
-			if(ValueUtils.isCommonType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
+			if(ValueUtils.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
 					|| Map.class.isAssignableFrom(type)){
 				return true;
 			}

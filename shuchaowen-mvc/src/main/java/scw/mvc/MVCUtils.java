@@ -1,9 +1,7 @@
 package scw.mvc;
 
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,7 +18,6 @@ import scw.lang.ParameterException;
 import scw.mvc.action.Action;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
-import scw.util.attribute.Attributes;
 
 public final class MVCUtils {
 	private static final String RESTURL_PATH_PARAMETER = "_scw_resturl_path_parameter";
@@ -28,25 +25,6 @@ public final class MVCUtils {
 
 	private MVCUtils() {
 	};
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static Map<String, Object> getAttributeMap(Attributes attributes) {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
-		Enumeration<String> enumeration = attributes.getAttributeNames();
-		while (enumeration.hasMoreElements()) {
-			String name = enumeration.nextElement();
-			if (name != null || isSystemAttribute(name)) {
-				continue;
-			}
-
-			Object value = attributes.getAttribute(name);
-			if (value == null) {
-				continue;
-			}
-			map.put(name, value);
-		}
-		return map;
-	}
 
 	public static boolean isSystemAttribute(String name) {
 		return RESTURL_PATH_PARAMETER.equals(name);

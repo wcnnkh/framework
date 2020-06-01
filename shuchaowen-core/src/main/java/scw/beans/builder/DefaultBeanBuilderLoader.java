@@ -4,6 +4,7 @@ import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 
 import scw.aop.Filter;
+import scw.aop.MultiFilter;
 import scw.beans.annotation.Proxy;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
@@ -38,7 +39,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 		if (context.getTargetClass().isInterface() || Modifier.isAbstract(context.getTargetClass().getModifiers())) {
 			Proxy proxy = context.getTargetClass().getAnnotation(Proxy.class);
 			if (proxy != null) {
-				return new ProxyBeanBuilder(context, getProxyNames(proxy));
+				return new ProxyBeanBuilder(context, new MultiFilter(context.getBeanFactory(), getProxyNames(proxy)));
 			}
 		}
 		return loaderChain.loading(context);

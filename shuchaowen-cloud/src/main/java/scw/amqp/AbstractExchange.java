@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import scw.aop.MethodInvoker;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.json.JSONUtils;
-import scw.lang.NestedRuntimeException;
+import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.transaction.DefaultTransactionDefinition;
@@ -26,8 +26,8 @@ public abstract class AbstractExchange implements Exchange {
 	}
 
 	@Override
-	public void bind(String routingKey, QueueDeclare queueDeclare, MethodInvoker methodInvoker) {
-		bind(routingKey, queueDeclare, new MethodMessageListener(methodInvoker));
+	public void bind(String routingKey, QueueDeclare queueDeclare, MethodInvoker invoker) {
+		bind(routingKey, queueDeclare, new MethodMessageListener(invoker));
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public abstract class AbstractExchange implements Exchange {
 				Object[] args = serializer.deserialize(message.getBody());
 				invoker.invoke(args);
 			} catch (Throwable e) {
-				throw new NestedRuntimeException(e);
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -160,10 +160,10 @@ public abstract class AbstractExchange implements Exchange {
 
 				if (retryDelay < 0 || maxRetryCount < 0
 						|| (maxRetryCount > 0 && message.getRetryCount() > maxRetryCount)) {// 不重试
-					logger.error(e, "Don't try again: exchange={}, properties={}", exchange,
+					logger.error(NestedExceptionUtils.getRootCause(e), "Don't try again: exchange={}, properties={}", exchange,
 							JSONUtils.toJSONString(message));
 				} else {
-					logger.error(e, "retry delay: {}, exchange={}, properties={}", retryDelay, exchange,
+					logger.error(NestedExceptionUtils.getRootCause(e), "retry delay: {}, exchange={}, properties={}", retryDelay, exchange,
 							JSONUtils.toJSONString(message));
 					message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
 					retryPush(routingKey, message, message.getBody());

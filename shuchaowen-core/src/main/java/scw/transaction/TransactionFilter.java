@@ -1,9 +1,7 @@
 package scw.transaction;
 
 import scw.aop.Filter;
-import scw.aop.FilterChain;
-import scw.aop.Invoker;
-import scw.aop.ProxyContext;
+import scw.aop.ProxyInvoker;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.logger.Logger;
@@ -28,20 +26,20 @@ public final class TransactionFilter implements Filter {
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	private Object defaultTransaction(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
+	private Object defaultTransaction(ProxyInvoker invoker, Object[] args) throws Throwable {
 		if (TransactionManager.hasTransaction()) {
-			return result(invoker, context, filterChain);
+			return result(invoker, args);
 		}
 
-		return transaction(invoker, context, filterChain, transactionDefinition);
+		return transaction(invoker, args, transactionDefinition);
 	}
 
-	private Object transaction(Invoker invoker, ProxyContext context, FilterChain filterChain,
+	private Object transaction(ProxyInvoker invoker, Object[] args,
 			TransactionDefinition transactionDefinition) throws Throwable {
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
 		Object v;
 		try {
-			v = result(invoker, context, filterChain);
+			v = result(invoker, args);
 			TransactionManager.commit(transaction);
 			return v;
 		} catch (Throwable e) {
@@ -50,27 +48,27 @@ public final class TransactionFilter implements Filter {
 		}
 	}
 
-	private Object result(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
-		Object rtn = filterChain.doFilter(invoker, context);
+	private Object result(ProxyInvoker invoker, Object[] args) throws Throwable {
+		Object rtn = invoker.invoke(args);
 		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
 			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
 			if (result.isRollbackOnly()) {
 				TransactionManager.setRollbackOnly();
 				if (logger.isDebugEnabled()) {
-					logger.debug("rollback only in {}", context.getMethod());
+					logger.debug("rollback only in {}", invoker.getMethod());
 				}
 			}
 		}
 		return rtn;
 	}
 
-	public Object doFilter(Invoker invoker, ProxyContext context, FilterChain filterChain) throws Throwable {
-		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, context.getTargetClass(),
-				context.getMethod());
+	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getTargetClass(),
+				invoker.getMethod());
 		if (tx == null) {
-			return defaultTransaction(invoker, context, filterChain);
+			return defaultTransaction(invoker, args);
 		}
 
-		return transaction(invoker, context, filterChain, new AnnotationTransactionDefinition(tx));
+		return transaction(invoker, args, new AnnotationTransactionDefinition(tx));
 	}
 }
