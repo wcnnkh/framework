@@ -122,36 +122,38 @@ public class Copy {
 		return newArr;
 	}
 
+	/**
+	 * 获取对应的数据来源字段
+	 * @param sourceClass 数据来源
+	 * @param targetField 要插入的字段
+	 * @return
+	 */
 	protected Field getSourceField(Class<?> sourceClass, final Field targetField) {
-		if (!targetField.isSupportGetter()) {
-			return null;
-		}
-
 		return mapper.getField(sourceClass, new FieldFilter() {
 
 			public boolean accept(Field field) {
-				if (!field.isSupportSetter()) {
+				if (!field.isSupportGetter()) {
+					return false;
+				}
+				
+				if (!targetField.getSetter().getName().equals(field.getGetter().getName())) {
 					return false;
 				}
 
 				if (isGenericTypeEqual()) {
-					if (!targetField.getGetter().getGenericType().equals(field.getSetter().getGenericType())) {
+					if (!targetField.getSetter().getGenericType().equals(field.getGetter().getGenericType())) {
 						return false;
 					}
 				} else {
-					if (!targetField.getGetter().getType().equals(field.getSetter().getType())) {
+					if (!targetField.getSetter().getType().equals(field.getGetter().getType())) {
 						return false;
 					}
 				}
 
-				if (!targetField.getGetter().getName().equals(field.getSetter().getName())) {
-					return false;
-				}
-
-				if (Modifier.isStatic(targetField.getGetter().getModifiers())) {
-					return Modifier.isStatic(field.getSetter().getModifiers());
+				if (Modifier.isStatic(targetField.getSetter().getModifiers())) {
+					return Modifier.isStatic(field.getGetter().getModifiers());
 				} else {
-					return !Modifier.isStatic(field.getSetter().getModifiers());
+					return !Modifier.isStatic(field.getGetter().getModifiers());
 				}
 			}
 		});
@@ -176,10 +178,6 @@ public class Copy {
 
 			Field sourceField = getSourceField(sourceClass, field);
 			if (sourceField == null) {
-				continue;
-			}
-
-			if (!sourceField.isSupportGetter()) {
 				continue;
 			}
 
