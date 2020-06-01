@@ -35,7 +35,7 @@ public abstract class AbstractResultMapping implements ResultMapping {
 			return null;
 		}
 
-		if (ValueUtils.isCommonType(clazz)) {
+		if (ValueUtils.isBaseType(clazz)) {
 			return get(clazz, 0);
 		}
 

@@ -59,11 +59,7 @@ public abstract class AbstractAction implements Action {
 	public abstract Invoker getInvoker();
 
 	public Object doAction(HttpChannel httpChannel) throws Throwable {
-		return new InternalActionService().doAction(httpChannel, this);
-	}
-
-	protected Object doActionInternal(HttpChannel httpChannel) throws Throwable {
-		return getInvoker().invoke(MVCUtils.getParameterValues(httpChannel, parameterDescriptors));
+		return new InternalAction(this).doAction(httpChannel);
 	}
 
 	@Override
@@ -92,19 +88,20 @@ public abstract class AbstractAction implements Action {
 		return getInvoker().toString();
 	}
 
-	private final class InternalActionService implements ActionService {
+	private final class InternalAction extends ActionWrapper {
 		private Iterator<ActionFilter> iterator = actionFilters.iterator();
 
-		public Object doAction(HttpChannel httpChannel, Action action) throws Throwable {
+		public InternalAction(Action action) {
+			super(action);
+		}
+
+		@Override
+		public Object doAction(HttpChannel httpChannel) throws Throwable {
 			if (iterator.hasNext()) {
-				return iterator.next().doFilter(httpChannel, action, this);
-			} else {
-				if (action instanceof AbstractAction) {
-					return ((AbstractAction) action).doActionInternal(httpChannel);
-				} else {
-					return action.doAction(httpChannel);
-				}
+				return iterator.next().doFilter(this, httpChannel);
 			}
+
+			return getInvoker().invoke(MVCUtils.getParameterValues(httpChannel, parameterDescriptors));
 		}
 	}
 }

@@ -5,7 +5,6 @@ import scw.core.instance.annotation.Configuration;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
-import scw.mvc.action.ActionService;
 
 @Configuration(order = Integer.MAX_VALUE)
 @Bean(proxy = false)
@@ -19,11 +18,10 @@ public class ActionLogFilter implements ActionFilter {
 		this.actionLogService = actionLogService;
 	}
 
-	public Object doFilter(HttpChannel httpChannel, Action action,
-			ActionService service) throws Throwable {
+	public Object doFilter(Action action, HttpChannel httpChannel) throws Throwable {
 		ActionLog log = null;
 		try {
-			Object response = service.doAction(httpChannel, action);
+			Object response = action.doAction(httpChannel);
 			log = actionLogFactory.createActionLog(action, httpChannel, response,
 					null);
 			return response;
