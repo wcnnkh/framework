@@ -22,12 +22,14 @@
 		<dependency>
 			<groupId>javax.websocket</groupId>
 			<artifactId>javax.websocket-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.corundumstudio.socketio/netty-socketio -->
 		<dependency>
 			<groupId>com.corundumstudio.socketio</groupId>
 			<artifactId>netty-socketio</artifactId>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>io.netty</groupId>
@@ -44,10 +46,6 @@
 				<exclusion>
 					<groupId>io.netty</groupId>
 					<artifactId>netty-handler</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty-codec-http</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>io.netty</groupId>
@@ -70,11 +68,6 @@
 					<artifactId>jackson-databind</artifactId>
 				</exclusion>
 			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/io.socket/socket.io-client -->
