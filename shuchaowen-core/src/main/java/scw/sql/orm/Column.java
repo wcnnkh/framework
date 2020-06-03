@@ -148,11 +148,11 @@ public class Column implements Serializable{
 	 * @return
 	 */
 	public Object toDataBaseValue(Object value) {
-		Class<?> type = field.getGetter().getType();
-		if (type.isEnum()) {
-			return value == null ? null : value.toString();
+		if(value != null && value instanceof Enum){
+			return ((Enum<?>) value).name();
 		}
-
+		
+		Class<?> type = field.getGetter().getType();
 		if (boolean.class == type) {
 			boolean b = value == null ? false : (Boolean) value;
 			return b ? 1 : 0;
