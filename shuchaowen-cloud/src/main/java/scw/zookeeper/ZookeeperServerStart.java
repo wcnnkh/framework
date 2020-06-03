@@ -71,7 +71,7 @@ public class ZookeeperServerStart extends Thread {
 		}
 		try {
 			zooKeeperServerMain.runFromConfig(serverConfig);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			logger.error(e, "start zookeeper server error: {}",
 					JSONUtils.toJSONString(serverConfig));
 		}

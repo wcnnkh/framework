@@ -13,10 +13,14 @@ public enum FilterFeature {
 	SETTER_IGNORE_TRANSIENT(new IgnoreSetterTransientFieldFilter()),
 	IGNORE_STATIC(new IgnoreStaticFieldFilter()),
 	/**
-	 * 支持对象setter，忽略static和final字段
+	 * 对象公有的setter字段，忽略static, final字段,必须存在实际的java.lang.Field
 	 */
-	SETTER(new SetterFieldFilter())
-	;
+	SETTER(new SetterFieldFilter()),
+
+	/**
+	 * 对象公有的getter字段,忽略static字段
+	 */
+	GETTER(new GetterFieldFilter());
 
 	private final FieldFilter filter;
 
@@ -27,50 +31,58 @@ public enum FilterFeature {
 	public FieldFilter getFilter() {
 		return filter;
 	}
-	
-	private static final class SetterFieldFilter implements FieldFilter{
 
+	private static final class GetterFieldFilter implements FieldFilter {
 		public boolean accept(Field field) {
-			return field.isSupportSetter() && !Modifier.isStatic(field.getSetter().getModifiers()) && !Modifier.isFinal(field.getSetter().getModifiers());
+			return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
+					&& Modifier.isPublic(field.getGetter().getModifiers());
 		}
 	}
-	
-	private static final class IgnoreStaticFieldFilter implements FieldFilter{
+
+	private static final class SetterFieldFilter implements FieldFilter {
 
 		public boolean accept(Field field) {
-			if(field.isSupportGetter() && Modifier.isStatic(field.getGetter().getModifiers())){
+			return field.isSupportSetter() && field.getSetter().getField() != null && !Modifier.isStatic(field.getSetter().getField().getModifiers())
+					&& !Modifier.isFinal(field.getSetter().getField().getModifiers());
+		}
+	}
+
+	private static final class IgnoreStaticFieldFilter implements FieldFilter {
+
+		public boolean accept(Field field) {
+			if (field.isSupportGetter() && Modifier.isStatic(field.getGetter().getModifiers())) {
 				return false;
 			}
-			
-			if(field.isSupportSetter() && Modifier.isStatic(field.getSetter().getModifiers())){
+
+			if (field.isSupportSetter() && Modifier.isStatic(field.getSetter().getModifiers())) {
 				return false;
 			}
 			return true;
 		}
-		
+
 	}
-	
+
 	private static final class IgnoreGetterTransientFieldFilter implements FieldFilter {
 
 		public boolean accept(Field field) {
 			return field.isSupportGetter() && !Modifier.isTransient(field.getGetter().getModifiers());
 		}
 	}
-	
+
 	private static final class IgnoreSetterTransientFieldFilter implements FieldFilter {
 
 		public boolean accept(Field field) {
 			return field.isSupportSetter() && !Modifier.isTransient(field.getSetter().getModifiers());
 		}
 	}
-	
+
 	private static final class IgnoreGetterStaticFieldFilter implements FieldFilter {
 
 		public boolean accept(Field field) {
 			return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers());
 		}
 	}
-	
+
 	private static final class IgnoreSetterStaticFieldFilter implements FieldFilter {
 
 		public boolean accept(Field field) {
@@ -95,16 +107,14 @@ public enum FilterFeature {
 	private static final class SetterPublicFieldFilter implements FieldFilter {
 
 		public boolean accept(Field field) {
-			return field.isSupportSetter()
-					&& Modifier.isPublic(field.getSetter().getModifiers());
+			return field.isSupportSetter() && Modifier.isPublic(field.getSetter().getModifiers());
 		}
 	}
 
 	private static final class GetterPublicFieldFilter implements FieldFilter {
 
 		public boolean accept(Field field) {
-			return field.isSupportGetter()
-					&& Modifier.isPublic(field.getGetter().getModifiers());
+			return field.isSupportGetter() && Modifier.isPublic(field.getGetter().getModifiers());
 		}
 	}
 }

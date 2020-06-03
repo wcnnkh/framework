@@ -1,8 +1,6 @@
 package scw.application;
 
-import scw.lang.NestedRuntimeException;
-
-public class ApplicationException extends NestedRuntimeException{
+public class ApplicationException extends RuntimeException{
 	private static final long serialVersionUID = 1L;
 	
 	public ApplicationException(String message) {
