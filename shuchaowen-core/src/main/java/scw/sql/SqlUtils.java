@@ -97,7 +97,13 @@ public final class SqlUtils {
 			Object[] args) throws SQLException {
 		if (args != null && args.length != 0) {
 			for (int i = 0; i < args.length; i++) {
-				preparedStatement.setObject(i + 1, args[i]);
+				Object value = args[i];
+				if(value != null){
+					if(value instanceof Enum){
+						value = ((Enum<?>) value).name();
+					}
+				}
+				preparedStatement.setObject(i + 1, value);
 			}
 		}
 	}
