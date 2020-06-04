@@ -61,6 +61,12 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-security</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-data</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
@@ -386,5 +392,6 @@
 		<module>shuchaowen-websocket</module>
 		<module>shuchaowen-office</module>
 		<module>shuchaowen-cloud</module>
+		<module>shuchaowen-security</module>
 	</modules>
 </project>

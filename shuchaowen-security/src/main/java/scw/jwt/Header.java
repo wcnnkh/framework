@@ -1,4 +1,4 @@
-package scw.security.jwt;
+package scw.jwt;
 
 /**
  * jwt头

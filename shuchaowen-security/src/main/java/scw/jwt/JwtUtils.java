@@ -1,4 +1,5 @@
-package scw.security.jwt;
+package scw.jwt;
+
 
 //TODO 还未完成
 public final class JwtUtils {

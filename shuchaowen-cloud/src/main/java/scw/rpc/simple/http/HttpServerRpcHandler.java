@@ -1,8 +1,9 @@
-package scw.http.server.rpc;
+package scw.rpc.simple.http;
 
 import java.io.IOException;
 
 import scw.beans.BeanFactory;
+import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
 import scw.http.server.HttpServiceHandler;
@@ -11,6 +12,7 @@ import scw.http.server.ServerHttpResponse;
 import scw.rpc.RpcService;
 import scw.value.property.PropertyFactory;
 
+@Configuration(order=Integer.MAX_VALUE)
 public final class HttpServerRpcHandler implements HttpServiceHandler {
 	private final String rpcPath;
 	private final RpcService rpcService;
