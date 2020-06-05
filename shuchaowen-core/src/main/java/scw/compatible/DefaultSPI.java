@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import scw.core.instance.annotation.Configuration;
 
-@Configuration
+@Configuration(order=Integer.MIN_VALUE + 1)
 public class DefaultSPI implements SPI {
 
 	public <S> ServiceLoader<S> load(Class<S> service, ClassLoader loader) {

@@ -2,10 +2,16 @@ package scw.script;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
+import scw.compatible.CompatibleUtils;
+import scw.compatible.ServiceLoader;
+import scw.core.instance.InstanceUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
@@ -20,10 +26,27 @@ import scw.util.KeyValuePair;
  *
  */
 public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
-	static final Function[] FUNCTIONS = new Function[] { new MaxFunction(), new MinFunction(), new MeaninglessFunction("{", "}"),
-			new MeaninglessFunction("[", "]"), new MeaninglessFunction("(", ")"), new AbsoluteValueFunction() };
+	static final Function[] FUNCTIONS;
 	static final Operator[] OPERATORS = new Operator[] { new PowOperator(), new MultiplicationOperator(),
 			new DivisionOperator(), new RemainderOperator(), new AdditionOperator(), new SubtractionOperator() };
+
+	static {
+		List<Function> functions = new ArrayList<MathScriptEngine.Function>();
+		ServiceLoader<Function> serviceLoader = CompatibleUtils.getSpi().load(Function.class,
+				ClassUtils.getDefaultClassLoader());
+		for (Function function : serviceLoader) {
+			functions.add(function);
+		}
+
+		functions.addAll(InstanceUtils.getSystemConfigurationList(Function.class));
+		functions.add(new MaxFunction());
+		functions.add(new MinFunction());
+		functions.add(new MeaninglessFunction("{", "}"));
+		functions.add(new MeaninglessFunction("[", "]"));
+		functions.add(new MeaninglessFunction("(", ")"));
+		functions.add(new AbsoluteValueFunction());
+		FUNCTIONS = functions.toArray(new Function[0]);
+	}
 
 	private void resolve(Collection<Fragment> fragments, String script) {
 		int begin = -1;
@@ -170,7 +193,8 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			}
 
 			if (indexPair.getKey() == 0 && indexPair.getValue() == script.length() - 1) {
-				String scriptToUse = script.substring(function.getPrefix().length(), script.length() - function.getSuffix().length());
+				String scriptToUse = script.substring(function.getPrefix().length(),
+						script.length() - function.getSuffix().length());
 				return function.eval(this, scriptToUse);
 			}
 		}
@@ -289,7 +313,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 		}
 	}
 
-	static interface Function extends ScriptFunction<BigDecimal> {
+	public static interface Function extends ScriptFunction<BigDecimal> {
 	}
 
 	static final class MeaninglessFunction implements Function {
