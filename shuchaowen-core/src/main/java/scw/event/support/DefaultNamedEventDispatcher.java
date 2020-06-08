@@ -21,7 +21,7 @@ public class DefaultNamedEventDispatcher extends DefaultEventDispatcher implemen
 		Assert.requiredArgument(eventListener != null, "eventListener");
 		
 		if (eventListener instanceof NamedEventListener) {
-			return registerListener((NamedEventListener<NamedEvent>) eventListener);
+			return registerListener((NamedEventListener<Event>) eventListener);
 		}
 
 		return super.registerListener(eventListener);
@@ -54,11 +54,19 @@ public class DefaultNamedEventDispatcher extends DefaultEventDispatcher implemen
 		namedEventListenerMap.remove(name);
 	}
 
-	public EventRegistration registerListener(NamedEventListener<? extends NamedEvent> eventListener) {
-		EventDispatcher eventDispatcher = namedEventListenerMap.get(eventListener.getName());
+	public EventRegistration registerListener(NamedEventListener<? extends Event> eventListener) {
+		return registerListener(eventListener.getName(), eventListener);
+	}
+
+	public void publishEvent(NamedEvent event) {
+		publishEvent(event.getName(), event);
+	}
+
+	public EventRegistration registerListener(String name, EventListener<? extends Event> eventListener) {
+		EventDispatcher eventDispatcher = namedEventListenerMap.get(name);
 		if (eventDispatcher == null) {
 			eventDispatcher = new DefaultEventDispatcher();
-			EventDispatcher dispatcher = namedEventListenerMap.putIfAbsent(eventListener.getName(), eventDispatcher);
+			EventDispatcher dispatcher = namedEventListenerMap.putIfAbsent(name, eventDispatcher);
 			if (dispatcher != null) {
 				eventDispatcher = dispatcher;
 			}
@@ -68,8 +76,8 @@ public class DefaultNamedEventDispatcher extends DefaultEventDispatcher implemen
 		return new NamedEventRegistration(registration);
 	}
 
-	public void publishEvent(NamedEvent event) {
-		EventDispatcher dispatcher = namedEventListenerMap.get(event.getName());
+	public void publishEvent(String name, Event event) {
+		EventDispatcher dispatcher = namedEventListenerMap.get(name);
 		if (dispatcher == null) {
 			return;
 		}

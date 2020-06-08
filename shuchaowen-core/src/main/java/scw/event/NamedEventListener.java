@@ -1,5 +1,5 @@
 package scw.event;
 
-public interface NamedEventListener<T extends NamedEvent> extends EventListener<T>{
+public interface NamedEventListener<T extends Event> extends EventListener<T>{
 	String getName();
 }
