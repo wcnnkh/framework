@@ -3,7 +3,7 @@ package scw.logger;
 import java.io.IOException;
 import java.io.Serializable;
 
-import scw.lang.StringAppend;
+import scw.util.StringAppend;
 
 public final class SplitLineAppend implements Serializable, StringAppend {
 	private static final long serialVersionUID = 1L;

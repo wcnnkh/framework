@@ -2,8 +2,6 @@ package scw.util;
 
 import java.io.IOException;
 
-import scw.lang.StringAppend;
-
 public final class PlaceholderFormatAppend implements StringAppend {
 	private final Object msg;
 	private final Object[] args;

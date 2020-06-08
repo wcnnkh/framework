@@ -1,4 +1,4 @@
-package scw.lang;
+package scw.util;
 
 /**
  * string编解码器

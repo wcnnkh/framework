@@ -1,4 +1,4 @@
-package scw.lang;
+package scw.util;
 
 import java.io.IOException;
 

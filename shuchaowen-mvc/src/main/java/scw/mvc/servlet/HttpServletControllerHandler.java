@@ -9,7 +9,7 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.mvc.HttpChannel;
 import scw.mvc.HttpControllerHandler;
-import scw.net.NetworkUtils;
+import scw.net.InetUtils;
 import scw.servlet.http.ServletServerHttpRequest;
 import scw.servlet.http.ServletServerHttpResponse;
 import scw.value.property.PropertyFactory;
@@ -30,7 +30,7 @@ public class HttpServletControllerHandler extends HttpControllerHandler {
 	protected HttpChannel createHttpChannel(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		ServletServerHttpRequest servletServerHttpRequest = (ServletServerHttpRequest) request;
 		ServletServerHttpResponse servletServerHttpResponse = (ServletServerHttpResponse) response;
-		if (NetworkUtils.isJsonMessage(request)) {
+		if (InetUtils.isJsonMessage(request)) {
 			return new ServletJsonHttpChannel(beanFactory, getJsonSupport(), servletServerHttpRequest,
 					servletServerHttpResponse);
 		} else {

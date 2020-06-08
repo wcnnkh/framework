@@ -1,4 +1,4 @@
-package scw.util;
+package scw.io.support;
 
 import java.io.Serializable;
 import java.util.Collection;

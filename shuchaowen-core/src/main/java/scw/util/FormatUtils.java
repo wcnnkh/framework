@@ -13,7 +13,6 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.lang.FormatterException;
-import scw.lang.StringAppend;
 
 public final class FormatUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";

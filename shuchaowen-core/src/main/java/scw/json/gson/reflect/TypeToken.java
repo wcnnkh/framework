@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2008 Google Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package scw.json.gson.reflect;
 
 import java.lang.reflect.ParameterizedType;
@@ -36,10 +20,6 @@ import scw.json.gson.internal.$Gson$Types;
  *
  * <p>This syntax cannot be used to create type literals that have wildcard
  * parameters, such as {@code Class<?>} or {@code List<? extends CharSequence>}.
- *
- * @author Bob Lee
- * @author Sven Mawson
- * @author Jesse Wilson
  */
 public class TypeToken<T> {
   final Class<? super T> rawType;

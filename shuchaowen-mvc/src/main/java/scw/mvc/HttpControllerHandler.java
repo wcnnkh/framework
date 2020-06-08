@@ -26,7 +26,7 @@ import scw.mvc.action.NotFoundActionService;
 import scw.mvc.exception.ExceptionHandler;
 import scw.mvc.output.DefaultHttpControllerOutput;
 import scw.mvc.output.HttpControllerOutput;
-import scw.net.NetworkUtils;
+import scw.net.InetUtils;
 import scw.net.message.converter.MessageConverter;
 import scw.result.Result;
 import scw.value.property.PropertyFactory;
@@ -148,7 +148,7 @@ public class HttpControllerHandler implements HttpServiceHandler {
 	}
 
 	protected HttpChannel createHttpChannel(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		if (NetworkUtils.isJsonMessage(request)) {
+		if (InetUtils.isJsonMessage(request)) {
 			return new JsonHttpChannel<ServerHttpRequest, ServerHttpResponse>(beanFactory, jsonSupport, request,
 					response);
 		} else {

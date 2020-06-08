@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import scw.io.serialzer.Serializer;
 import scw.lang.NestedRuntimeException;
-import scw.lang.StringCodec;
+import scw.util.StringCodec;
 
 public final class ObjectOperations extends AbstractRedisOperationsWrapper<String, byte[], Object, byte[]> {
 	private final RedisOperations<byte[], byte[]> redisOperations;

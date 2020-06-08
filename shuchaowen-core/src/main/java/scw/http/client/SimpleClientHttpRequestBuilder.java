@@ -9,12 +9,12 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.Assert;
 import scw.http.HttpMethod;
 import scw.http.HttpUtils;
-import scw.net.NetworkUtils;
+import scw.net.InetUtils;
 
 public class SimpleClientHttpRequestBuilder implements ClientHttpRequestBuilder {
 	private final URI uri;
 	private final HttpMethod method;
-	private SSLSocketFactory sslSocketFactory = NetworkUtils.TRUSE_ALL_SSL_SOCKET_FACTORY;
+	private SSLSocketFactory sslSocketFactory = InetUtils.TRUSE_ALL_SSL_SOCKET_FACTORY;
 	private int connectTimeout = HttpUtils.DEFAULT_CONNECT_TIMEOUT;
 	private int readTimeout = HttpUtils.DEFAULT_READ_TIMEOUT;
 	private Proxy proxy;
@@ -29,7 +29,7 @@ public class SimpleClientHttpRequestBuilder implements ClientHttpRequestBuilder 
 	public SimpleClientHttpRequestBuilder(String url, HttpMethod method) {
 		Assert.notNull(url, "'uri' must not be null");
 		Assert.notNull(method, "'method' must not be null");
-		this.uri = NetworkUtils.toURI(url);
+		this.uri = InetUtils.toURI(url);
 		this.method = method;
 	}
 

@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package scw.util;
 
 import java.lang.ref.ReferenceQueue;
@@ -36,37 +20,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import scw.core.Assert;
 import scw.core.utils.ObjectUtils;
 
-/**
- * A {@link ConcurrentHashMap} that uses {@link ReferenceType#SOFT soft} or
- * {@linkplain ReferenceType#WEAK weak} references for both {@code keys} and
- * {@code values}.
- *
- * <p>
- * This class can be used as an alternative to
- * {@code Collections.synchronizedMap(new WeakHashMap<K, Reference<V>>())} in
- * order to support better performance when accessed concurrently. This
- * implementation follows the same design constraints as
- * {@link ConcurrentHashMap} with the exception that {@code null} values and
- * {@code null} keys are supported.
- *
- * <p>
- * <b>NOTE:</b> The use of references means that there is no guarantee that
- * items placed into the map will be subsequently available. The garbage
- * collector may discard references at any time, so it may appear that an
- * unknown thread is silently removing entries.
- *
- * <p>
- * If not explicitly specified, this implementation will use
- * {@linkplain SoftReference soft entry references}.
- *
- * @author Phillip Webb
- * @author Juergen Hoeller
- * @since 3.2
- * @param <K>
- *            the key type
- * @param <V>
- *            the value type
- */
 public class ConcurrentReferenceHashMap<K, V> extends AbstractMap<K, V> implements ConcurrentMap<K, V> {
 
 	private static final int DEFAULT_INITIAL_CAPACITY = 16;

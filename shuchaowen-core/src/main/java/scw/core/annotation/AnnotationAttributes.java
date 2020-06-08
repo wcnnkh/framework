@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2017 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package scw.core.annotation;
 
 import java.lang.annotation.Annotation;
@@ -32,16 +16,12 @@ import scw.core.utils.StringUtils;
  * {@link LinkedHashMap} subclass representing annotation attribute
  * <em>key-value</em> pairs as read by {@link AnnotationUtils},
  * {@link AnnotatedElementUtils}, and Spring's reflection- and ASM-based
- * {@link org.springframework.core.type.AnnotationMetadata} implementations.
+ * {@link scw.core.type.AnnotationMetadata} implementations.
  *
  * <p>Provides 'pseudo-reification' to avoid noisy Map generics in the calling
  * code as well as convenience methods for looking up annotation attributes
  * in a type-safe fashion.
  *
- * @author Chris Beams
- * @author Sam Brannen
- * @author Juergen Hoeller
- * @since 3.1.1
  * @see AnnotationUtils#getAnnotationAttributes
  * @see AnnotatedElementUtils
  */

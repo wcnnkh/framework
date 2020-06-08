@@ -15,7 +15,7 @@ import scw.io.IOUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;
-import scw.net.NetworkUtils;
+import scw.net.InetUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.converter.MultiMessageConverter;
 
@@ -25,7 +25,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
 
 	public AbstractHttpClient() {
-		messageConverter.addAll(NetworkUtils.getMessageConverters());
+		messageConverter.addAll(InetUtils.getMessageConverters());
 	}
 
 	public MultiMessageConverter getMessageConverter() {
@@ -68,7 +68,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 		return execute(builder, new ClientHttpRequestCallback() {
 
 			public void callback(ClientHttpRequest clientRequest) throws IOException {
-				NetworkUtils.writeHeader(inputMessage, clientRequest);
+				InetUtils.writeHeader(inputMessage, clientRequest);
 				IOUtils.write(inputMessage.getBody(), clientRequest.getBody());
 			}
 		}, new ClientHttpResponseExtractor<SerializableHttpInputMessage>() {

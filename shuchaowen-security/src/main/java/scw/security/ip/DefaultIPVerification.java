@@ -6,7 +6,7 @@ import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
-import scw.net.IPUtils;
+import scw.net.InetUtils;
 
 public class DefaultIPVerification implements IPVerification {
 	private final BlacklistIPVerification blacklistIPVerification;
@@ -30,11 +30,11 @@ public class DefaultIPVerification implements IPVerification {
 	}
 
 	protected boolean check(String ip) {
-		if (IPUtils.isLocalIP(ip)) {
+		if (InetUtils.isLocalIP(ip)) {
 			return true;
 		}
 
-		if (ignoreInnerIp && IPUtils.isInnerIP(ip)) {
+		if (ignoreInnerIp && InetUtils.isInnerIP(ip)) {
 			return true;
 		}
 

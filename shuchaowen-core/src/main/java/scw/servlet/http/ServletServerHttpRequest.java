@@ -24,7 +24,7 @@ import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.net.InetAddress;
-import scw.net.NetworkUtils;
+import scw.net.InetUtils;
 import scw.net.message.AbstractInputMessage;
 import scw.security.session.Session;
 import scw.util.LinkedCaseInsensitiveMap;
@@ -149,7 +149,7 @@ public class ServletServerHttpRequest extends AbstractInputMessage implements Se
 	}
 
 	public URI getURI() {
-		return NetworkUtils.toURI(httpServletRequest.getRequestURI());
+		return InetUtils.toURI(httpServletRequest.getRequestURI());
 	}
 
 	public long getContentLength() {

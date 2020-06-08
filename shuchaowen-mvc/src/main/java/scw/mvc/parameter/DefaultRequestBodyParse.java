@@ -14,7 +14,7 @@ import scw.json.JSONSupport;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
-import scw.net.NetworkUtils;
+import scw.net.InetUtils;
 import scw.value.StringValue;
 import scw.xml.XMLUtils;
 
@@ -25,9 +25,9 @@ public class DefaultRequestBodyParse implements RequestBodyParse {
 	public Object requestBodyParse(HttpChannel httpChannel, JSONSupport jsonParseSupport,
 			ParameterDescriptor parameterDescriptor) throws Exception {
 		String body = null;
-		if (NetworkUtils.isJsonMessage(httpChannel.getRequest())) {
+		if (InetUtils.isJsonMessage(httpChannel.getRequest())) {
 			body = httpChannel.getHttpChannelBeanManager().getBean(Body.class).getBody();
-		} else if (NetworkUtils.isXmlMessage(httpChannel.getRequest())) {
+		} else if (InetUtils.isXmlMessage(httpChannel.getRequest())) {
 			Document document = XMLUtils.parse(new InputSource(httpChannel.getRequest().getReader()));
 			Element element = document.getDocumentElement();
 			body = jsonParseSupport.toJSONString(XMLUtils.toRecursionMap(element));

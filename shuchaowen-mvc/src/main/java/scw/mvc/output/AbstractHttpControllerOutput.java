@@ -11,7 +11,7 @@ import scw.mvc.HttpChannel;
 import scw.mvc.view.View;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.net.NetworkUtils;
+import scw.net.InetUtils;
 import scw.net.message.Entity;
 import scw.net.message.InputMessage;
 import scw.net.message.Text;
@@ -82,7 +82,7 @@ public abstract class AbstractHttpControllerOutput<T> implements HttpControllerO
 
 		T b = (T) body;
 		if (body instanceof InputMessage) {
-			NetworkUtils.writeHeader((InputMessage) body, httpChannel.getResponse());
+			InetUtils.writeHeader((InputMessage) body, httpChannel.getResponse());
 			writeBodyBefore(httpChannel, b);
 			IOUtils.write(((InputMessage) body).getBody(), httpChannel.getResponse().getBody());
 		} else if (body instanceof Text) {
@@ -93,7 +93,7 @@ public abstract class AbstractHttpControllerOutput<T> implements HttpControllerO
 			writeBodyBefore(httpChannel, b);
 			httpChannel.getResponse().getWriter().write(((Text) body).getTextContent());
 		} else if (body instanceof Entity) {
-			NetworkUtils.writeHeader((Entity<?>) body, httpChannel.getResponse());
+			InetUtils.writeHeader((Entity<?>) body, httpChannel.getResponse());
 			writeBodyBefore(httpChannel, b);
 			getMessageConverter().write(((Entity<?>) body).getBody(), ((Entity<?>) body).getContentType(),
 					httpChannel.getResponse());

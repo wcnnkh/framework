@@ -16,7 +16,6 @@ import scw.sql.orm.annotation.Table;
 import scw.sql.orm.dialect.SqlType;
 import scw.sql.orm.dialect.SqlTypeFactory;
 import scw.sql.orm.enums.CasType;
-import scw.util.EnumUtils;
 
 /**
  * 名称相同视为同一字段
@@ -56,6 +55,7 @@ public class Column implements Serializable{
 	 * @param value
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object toColumnValue(Object value) {
 		if (value == null) {
 			return value;
@@ -107,7 +107,7 @@ public class Column implements Serializable{
 				return StringUtils.parseShort(value.toString());
 			}
 		} else if (type.isEnum()) {
-			return EnumUtils.valueOf(type, value.toString());
+			return Enum.valueOf((Class<? extends Enum>) type, value.toString());
 		} else {
 			return JSONUtils.parseObject(value.toString(), field.getSetter()
 					.getGenericType());

@@ -16,7 +16,7 @@ public class DefaultValueDefinition extends AbstractValue implements
 	}
 
 	@Override
-	protected <T> T getAsObjectNotSupport(Type type) {
+	protected Object getAsObjectNotSupport(Type type) {
 		return null;
 	}
 

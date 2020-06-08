@@ -3,9 +3,9 @@ package scw.logger;
 import java.io.IOException;
 
 import scw.core.UnsafeStringBuffer;
-import scw.lang.StringAppend;
 import scw.util.FormatUtils;
 import scw.util.PlaceholderFormatAppend;
+import scw.util.StringAppend;
 
 public final class Message implements StringAppend {
 	private final long cts;
