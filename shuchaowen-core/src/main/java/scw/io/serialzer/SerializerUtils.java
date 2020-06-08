@@ -5,9 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import scw.core.Bits;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
+import scw.io.Bits;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.lang.NestedRuntimeException;

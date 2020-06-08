@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import scw.core.Bits;
+import scw.io.Bits;
 import scw.io.serialzer.Serializer;
 import scw.io.serialzer.SerializerUtils;
 

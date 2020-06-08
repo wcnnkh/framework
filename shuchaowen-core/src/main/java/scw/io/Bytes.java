@@ -16,8 +16,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
-import scw.core.Bits;
-
 public final class Bytes {
 	private Bytes() {
 	};

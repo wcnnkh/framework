@@ -1,4 +1,4 @@
-package scw.core;
+package scw.io;
 
 /**
  * 取自jdk的实现
