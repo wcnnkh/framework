@@ -1,5 +1,7 @@
 package scw.event.support;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import scw.core.Assert;
@@ -10,7 +12,17 @@ import scw.event.EventRegistration;
 import scw.lang.AlreadyExistsException;
 
 public class DefaultEventDispatcher implements EventDispatcher {
-	private CopyOnWriteArraySet<EventRegistrationInternal> eventListeners = new CopyOnWriteArraySet<EventRegistrationInternal>();
+	private final Collection<EventRegistrationInternal> eventListeners;
+	private final boolean concurrent;
+
+	public DefaultEventDispatcher(boolean concurrent){
+		this.concurrent = concurrent;
+		this.eventListeners = concurrent? new CopyOnWriteArraySet<EventRegistrationInternal>():new LinkedHashSet<DefaultEventDispatcher.EventRegistrationInternal>();
+	}
+	
+	public final boolean isConcurrent() {
+		return concurrent;
+	}
 
 	public EventRegistration registerListener(EventListener<? extends Event> eventListener) {
 		Assert.requiredArgument(eventListener != null, "eventListener");

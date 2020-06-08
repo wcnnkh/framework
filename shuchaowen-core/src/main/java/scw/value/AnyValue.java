@@ -8,7 +8,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.TypeUtils;
 
-public class AnyValue extends SupportDefaultValue {
+public class AnyValue extends SupportDefaultValue{
 	private Object value;
 
 	public AnyValue(Object value) {
@@ -360,7 +360,11 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof BigInteger) {
 			return (BigInteger) value;
 		}
-
+		
+		if (value instanceof BigDecimal) {
+			return ((BigDecimal) value).toBigInteger();
+		}
+		
 		if (value instanceof Value) {
 			return ((Value) value).getAsBigInteger();
 		}
@@ -375,6 +379,14 @@ public class AnyValue extends SupportDefaultValue {
 
 		if (value instanceof BigDecimal) {
 			return (BigDecimal) value;
+		}
+		
+		if(value instanceof BigInteger){
+			return new BigDecimal((BigInteger)value);
+		}
+		
+		if(value instanceof Number){
+			return new BigDecimal(((Number) value).doubleValue());
 		}
 
 		if (value instanceof Value) {
@@ -477,11 +489,27 @@ public class AnyValue extends SupportDefaultValue {
 		if (value == null) {
 			return false;
 		}
+		
+		if(obj == this){
+			return true;
+		}
 
 		if (obj instanceof AnyValue) {
 			return ObjectUtils.equals(value, ((AnyValue) obj).value);
 		}
 
 		return obj.equals(value);
+	}
+	
+	public boolean isNull(){
+		return value == null;
+	}
+	
+	public boolean isNotNull(){
+		return value != null;
+	}
+	
+	public boolean isNumber(){
+		return isNotNull() && value instanceof Number;
 	}
 }

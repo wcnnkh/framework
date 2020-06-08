@@ -1,8 +1,11 @@
 package scw.event.support;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import scw.compatible.CompatibleUtils;
+import scw.compatible.map.CompatibleMap;
 import scw.core.Assert;
 import scw.event.Event;
 import scw.event.EventDispatcher;
@@ -12,14 +15,24 @@ import scw.event.NamedEvent;
 import scw.event.NamedEventDispatcher;
 import scw.event.NamedEventListener;
 
-public class DefaultNamedEventDispatcher extends DefaultEventDispatcher implements NamedEventDispatcher {
-	private Map<String, EventDispatcher> namedEventListenerMap = new ConcurrentHashMap<String, EventDispatcher>();
+public class DefaultNamedEventDispatcher extends DefaultEventDispatcher
+		implements NamedEventDispatcher {
+	private final CompatibleMap<String, EventDispatcher> namedEventListenerMap;
+
+	public DefaultNamedEventDispatcher(boolean concurrent) {
+		super(concurrent);
+		Map<String, EventDispatcher> map = concurrent ? new ConcurrentHashMap<String, EventDispatcher>()
+				: new HashMap<String, EventDispatcher>();
+		this.namedEventListenerMap = CompatibleUtils.getMapCompatible()
+				.wrapper(map);
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public EventRegistration registerListener(EventListener<? extends Event> eventListener) {
+	public EventRegistration registerListener(
+			EventListener<? extends Event> eventListener) {
 		Assert.requiredArgument(eventListener != null, "eventListener");
-		
+
 		if (eventListener instanceof NamedEventListener) {
 			return registerListener((NamedEventListener<Event>) eventListener);
 		}
@@ -30,7 +43,7 @@ public class DefaultNamedEventDispatcher extends DefaultEventDispatcher implemen
 	@Override
 	public void publishEvent(Event event) {
 		Assert.requiredArgument(event != null, "event");
-		
+
 		if (event instanceof NamedEvent) {
 			publishEvent((NamedEvent) event);
 			return;
@@ -54,7 +67,8 @@ public class DefaultNamedEventDispatcher extends DefaultEventDispatcher implemen
 		namedEventListenerMap.remove(name);
 	}
 
-	public EventRegistration registerListener(NamedEventListener<? extends Event> eventListener) {
+	public EventRegistration registerListener(
+			NamedEventListener<? extends Event> eventListener) {
 		return registerListener(eventListener.getName(), eventListener);
 	}
 
@@ -62,17 +76,20 @@ public class DefaultNamedEventDispatcher extends DefaultEventDispatcher implemen
 		publishEvent(event.getName(), event);
 	}
 
-	public EventRegistration registerListener(String name, EventListener<? extends Event> eventListener) {
+	public EventRegistration registerListener(String name,
+			EventListener<? extends Event> eventListener) {
 		EventDispatcher eventDispatcher = namedEventListenerMap.get(name);
 		if (eventDispatcher == null) {
-			eventDispatcher = new DefaultEventDispatcher();
-			EventDispatcher dispatcher = namedEventListenerMap.putIfAbsent(name, eventDispatcher);
+			eventDispatcher = new DefaultEventDispatcher(isConcurrent());
+			EventDispatcher dispatcher = namedEventListenerMap.putIfAbsent(
+					name, eventDispatcher);
 			if (dispatcher != null) {
 				eventDispatcher = dispatcher;
 			}
 		}
 
-		EventRegistration registration = eventDispatcher.registerListener(eventListener);
+		EventRegistration registration = eventDispatcher
+				.registerListener(eventListener);
 		return new NamedEventRegistration(registration);
 	}
 
