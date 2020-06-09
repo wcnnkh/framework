@@ -1,13 +1,13 @@
 package scw.amqp;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import scw.core.utils.StringUtils;
+import scw.math.NumberHolder;
 import scw.script.MathScriptEngine;
 import scw.value.StringValue;
 import scw.value.Value;
@@ -265,8 +265,8 @@ public class MessageProperties implements Serializable {
 
 		MathScriptEngine mathScriptEngine = new MathScriptEngine();
 		mathScriptEngine.getResolvers().add(new MathScriptEngine.ObjectFieldScriptResolver(this));
-		BigDecimal value = mathScriptEngine.eval(script.toString());
-		return value == null ? null : value.longValue();
+		NumberHolder value = mathScriptEngine.eval(script.toString());
+		return value == null ? null : value.toBigDecimal().longValue();
 	}
 
 	public void setRetryDelayScript(String script) {

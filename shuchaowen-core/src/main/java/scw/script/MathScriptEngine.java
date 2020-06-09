@@ -1,7 +1,6 @@
 package scw.script;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,15 +16,18 @@ import scw.mapper.Field;
 import scw.mapper.FieldFilter;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
+import scw.math.BigDecimalHolder;
+import scw.math.FractionHolder;
+import scw.math.NumberHolder;
 import scw.util.KeyValuePair;
 
 /**
- * 实现单简单的数学计算
+ * 实现单简单的数学计算(并不成熟，不推荐在复杂的计算)
  * 
  * @author shuchaowen
  *
  */
-public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
+public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	static final Function[] FUNCTIONS;
 	static final Operator[] OPERATORS = new Operator[] { new PowOperator(), new MultiplicationOperator(),
 			new DivisionOperator(), new RemainderOperator(), new AdditionOperator(), new SubtractionOperator() };
@@ -116,13 +118,13 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 	}
 
 	private Fragment operator(Fragment left, Fragment right) {
-		BigDecimal value = left.getOperator().operation(left.getValue(), right.getValue());
+		NumberHolder value = left.getOperator().operation(left.getValue(), right.getValue());
 		Fragment valueFragment = new ValueFragment(value);
 		valueFragment.setOperator(right.getOperator());
 		return valueFragment;
 	}
 
-	private BigDecimal eval(Collection<Fragment> fragments) {
+	private NumberHolder eval(Collection<Fragment> fragments) {
 		if (fragments == null || fragments.isEmpty()) {
 			return null;
 		}
@@ -171,20 +173,20 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 		fragments.add(new ScriptFragment(script.substring(lastIndex)));
 	}
 
-	public BigDecimal eval(String script) {
+	public NumberHolder eval(String script) {
 		String scriptToUse = StringUtils.replace(script, " ", "");
 		if (StringUtils.isEmpty(scriptToUse)) {
 			return null;
 		}
 
 		if (StringUtils.isNumeric(scriptToUse)) {
-			return new BigDecimal(scriptToUse);
+			return new BigDecimalHolder(scriptToUse);
 		}
 		return super.eval(scriptToUse);
 	}
 
 	@Override
-	protected BigDecimal evalInternal(String script) throws ScriptException {
+	protected NumberHolder evalInternal(String script) throws ScriptException {
 		for (Function function : FUNCTIONS) {
 			KeyValuePair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(),
 					function.getSuffix());
@@ -222,7 +224,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 	 * @author shuchaowen
 	 *
 	 */
-	public static final class ObjectFieldScriptResolver implements ScriptResolver<BigDecimal> {
+	public static final class ObjectFieldScriptResolver implements ScriptResolver<NumberHolder> {
 		private Object instance;
 
 		public ObjectFieldScriptResolver(Object instance) {
@@ -246,19 +248,19 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			}, FilterFeature.SUPPORT_GETTER);
 		}
 
-		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			Field field = getField(script);
 			Object value = field.getGetter().get(instance);
 			if (value == null) {
 				throw new ScriptException(script);
 			}
 
-			if (value instanceof BigInteger) {
-				return new BigDecimal((BigInteger) value);
-			} else if (value instanceof BigDecimal) {
-				return (BigDecimal) value;
+			if (value instanceof BigDecimal) {
+				return new BigDecimalHolder((BigDecimal)value);
+			} else if (value instanceof NumberHolder) {
+				return (NumberHolder) value;
 			} else {
-				return new BigDecimal(value.toString());
+				return new BigDecimalHolder(value.toString());
 			}
 		}
 	}
@@ -266,7 +268,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 	abstract class Fragment {
 		private Operator operator;
 
-		public abstract BigDecimal getValue();
+		public abstract NumberHolder getValue();
 
 		public Operator getOperator() {
 			return operator;
@@ -285,7 +287,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			this.script = script;
 		}
 
-		public BigDecimal getValue() {
+		public NumberHolder getValue() {
 			return eval(script);
 		}
 
@@ -296,14 +298,14 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 	}
 
 	final class ValueFragment extends Fragment {
-		private final BigDecimal value;
+		private final NumberHolder value;
 
-		public ValueFragment(BigDecimal value) {
+		public ValueFragment(NumberHolder value) {
 			this.value = value;
 		}
 
 		@Override
-		public BigDecimal getValue() {
+		public NumberHolder getValue() {
 			return value;
 		}
 
@@ -313,7 +315,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 		}
 	}
 
-	public static interface Function extends ScriptFunction<BigDecimal> {
+	public static interface Function extends ScriptFunction<NumberHolder> {
 	}
 
 	static final class MeaninglessFunction implements Function {
@@ -333,7 +335,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return suffix;
 		}
 
-		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			return engine.eval(script);
 		}
 	}
@@ -348,8 +350,8 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return "|";
 		}
 
-		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
-			BigDecimal value = engine.eval(script);
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
+			NumberHolder value = engine.eval(script);
 			return value.abs();
 		}
 	}
@@ -364,7 +366,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return ")";
 		}
 
-		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			int index = script.indexOf(",");
 			if (index == -1) {
 				throw new ScriptException(script);
@@ -372,9 +374,9 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 
 			String left = script.substring(0, index);
 			String right = script.substring(index + 1);
-			BigDecimal leftValue = engine.eval(left);
-			BigDecimal rightValue = engine.eval(right);
-			return leftValue.max(rightValue);
+			NumberHolder leftValue = engine.eval(left);
+			NumberHolder rightValue = engine.eval(right);
+			return leftValue.compareTo(rightValue) > 0? leftValue:rightValue;
 		}
 
 	}
@@ -389,7 +391,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return ")";
 		}
 
-		public BigDecimal eval(ScriptEngine<BigDecimal> engine, String script) throws ScriptException {
+		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
 			int index = script.indexOf(",");
 			if (index == -1) {
 				throw new ScriptException(script);
@@ -397,9 +399,9 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 
 			String left = script.substring(0, index);
 			String right = script.substring(index + 1);
-			BigDecimal leftValue = engine.eval(left);
-			BigDecimal rightValue = engine.eval(right);
-			return leftValue.min(rightValue);
+			NumberHolder leftValue = engine.eval(left);
+			NumberHolder rightValue = engine.eval(right);
+			return leftValue.compareTo(rightValue) < 0? leftValue:rightValue;
 		}
 
 	}
@@ -413,7 +415,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 	static interface Operator {
 		char getOperator();
 
-		BigDecimal operation(BigDecimal left, BigDecimal right);
+		NumberHolder operation(NumberHolder left, NumberHolder right);
 	}
 
 	/**
@@ -428,7 +430,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return '*';
 		}
 
-		public BigDecimal operation(BigDecimal left, BigDecimal right) {
+		public NumberHolder operation(NumberHolder left, NumberHolder right) {
 			return left.multiply(right);
 		}
 	}
@@ -445,8 +447,8 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return '/';
 		}
 
-		public BigDecimal operation(BigDecimal left, BigDecimal right) {
-			return left.divide(right);
+		public NumberHolder operation(NumberHolder left, NumberHolder right) {
+			return new FractionHolder(left, right);
 		}
 	}
 
@@ -462,7 +464,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return '+';
 		}
 
-		public BigDecimal operation(BigDecimal left, BigDecimal right) {
+		public NumberHolder operation(NumberHolder left, NumberHolder right) {
 			return left.add(right);
 		}
 	}
@@ -479,7 +481,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return '-';
 		}
 
-		public BigDecimal operation(BigDecimal left, BigDecimal right) {
+		public NumberHolder operation(NumberHolder left, NumberHolder right) {
 			return left.subtract(right);
 		}
 	}
@@ -496,7 +498,7 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return '%';
 		}
 
-		public BigDecimal operation(BigDecimal left, BigDecimal right) {
+		public NumberHolder operation(NumberHolder left, NumberHolder right) {
 			return left.remainder(right);
 		}
 	}
@@ -513,8 +515,8 @@ public class MathScriptEngine extends AbstractScriptEngine<BigDecimal> {
 			return '^';
 		}
 
-		public BigDecimal operation(BigDecimal left, BigDecimal right) {
-			return new BigDecimal(Math.pow(left.doubleValue(), right.doubleValue()));
+		public NumberHolder operation(NumberHolder left, NumberHolder right) {
+			return left.pow(right);
 		}
 	}
 }
