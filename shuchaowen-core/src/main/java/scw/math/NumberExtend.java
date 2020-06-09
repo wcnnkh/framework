@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 /**
  * 数字扩展
+ * 
  * @author shuchaowen
  *
  */
@@ -39,16 +40,18 @@ public interface NumberExtend {
 	 * @return
 	 */
 	NumberExtend divide(NumberExtend numberExtend);
-	
+
 	/**
 	 * 余数
+	 * 
 	 * @param numberExtend
 	 * @return
 	 */
 	NumberExtend remainder(NumberExtend numberExtend);
-	
+
 	/**
 	 * 指数运算
+	 * 
 	 * @param numberExtend
 	 * @return
 	 */
