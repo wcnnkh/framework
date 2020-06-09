@@ -2581,64 +2581,111 @@ public final class StringUtils {
 		return new String(cs, 0, index);
 	}
 
-	public static int indexOf(String text, String index, int beginIndex, int endIndex) {
-		for (int i = beginIndex; i < endIndex; i++) {
-			boolean find = true;
-			for (int a = i, b = 0; b < index.length() && a < endIndex; a++, b++) {
-				if (text.charAt(a) != index.charAt(b)) {
-					find = false;
-					break;
-				}
+	public static int indexOf(String text, String index, int fromIndex, int endIndex) {
+		return indexOf(text.toCharArray(), index.toCharArray(), fromIndex, endIndex);
+	}
+
+	public static int indexOf(char[] source, char[] target, int fromIndex, int endIndex) {
+		int index = indexOf(source, fromIndex, endIndex - fromIndex, target, 0, target.length, 0);
+		return index == -1 ? -1 : index + fromIndex;
+	}
+
+	/**
+	 * Code shared by String and StringBuffer to do searches. The source is the
+	 * character array being searched, and the target is the string being
+	 * searched for.
+	 *
+	 * @param source
+	 *            the characters being searched.
+	 * @param sourceOffset
+	 *            offset of the source string.
+	 * @param sourceCount
+	 *            count of the source string.
+	 * @param target
+	 *            the characters being searched for.
+	 * @param targetOffset
+	 *            offset of the target string.
+	 * @param targetCount
+	 *            count of the target string.
+	 * @param fromIndex
+	 *            the index to begin searching from.
+	 */
+	public static int indexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset,
+			int targetCount, int fromIndex) {
+		if (fromIndex >= sourceCount) {
+			return (targetCount == 0 ? sourceCount : -1);
+		}
+		if (fromIndex < 0) {
+			fromIndex = 0;
+		}
+		if (targetCount == 0) {
+			return fromIndex;
+		}
+
+		char first = target[targetOffset];
+		int max = sourceOffset + (sourceCount - targetCount);
+
+		for (int i = sourceOffset + fromIndex; i <= max; i++) {
+			/* Look for first character. */
+			if (source[i] != first) {
+				while (++i <= max && source[i] != first)
+					;
 			}
 
-			if (find) {
-				return i;
+			/* Found first character, now look at the rest of v2 */
+			if (i <= max) {
+				int j = i + 1;
+				int end = j + targetCount - 1;
+				for (int k = targetOffset + 1; j < end && source[j] == target[k]; j++, k++)
+					;
+
+				if (j == end) {
+					/* Found whole string. */
+					return i - sourceOffset;
+				}
 			}
 		}
 		return -1;
 	}
 
-	public static int lastIndexOf(String text, String index, int beginIndex, int endIndex) {
-		for (int i = endIndex - 1; i >= beginIndex; i--) {
-			boolean find = true;
-			for (int a = i, b = index.length() - 1; b >= 0 && a >= beginIndex; a--, b--) {
-				if (text.charAt(a) != index.charAt(b)) {
-					find = false;
-					break;
-				}
-			}
-
-			if (find) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	
 	/**
 	 * 从左边开始获取字符串组合第一次出现的位置, prefix和suffix必须是成对出现的，允许嵌套
+	 * 
 	 * @param text
 	 * @param prefix
 	 * @param suffix
 	 * @return
 	 */
 	public static KeyValuePair<Integer, Integer> indexOf(String text, String prefix, String suffix) {
-		int begin = text.indexOf(prefix);
+		return indexOf(text.toCharArray(), prefix.toCharArray(), suffix.toCharArray(), 0, text.length());
+	}
+	
+	/**
+	 * 从左边开始获取组合第一次出现的位置, prefix和suffix必须是成对出现的，允许嵌套
+	 * @param source
+	 * @param prefix
+	 * @param suffix
+	 * @param fromIndex
+	 * @param endIndex
+	 * @return
+	 */
+	public static KeyValuePair<Integer, Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex, int endIndex) {
+		int begin = indexOf(source, prefix, 0, endIndex);
 		if (begin == -1) {
 			return null;
 		}
 
-		int end = text.indexOf(suffix, begin + prefix.length());
+		int end = indexOf(source, suffix, begin + prefix.length, endIndex);
 		if (end == -1) {
 			return null;
 		}
 
 		int tempBegin = begin;
 		int tempEnd = end;
-		while (true) {//重复查找是否存在嵌套,直到找到最外层的{suffix}
+		while (true) {// 重复查找是否存在嵌套,直到找到最外层的{suffix}
 			int nestingLevel = 0;// 嵌套了多少层
 			while (true) {
-				int index = indexOf(text, prefix, tempBegin + prefix.length(), tempEnd);
+				int index = indexOf(source, prefix, tempBegin + prefix.length, tempEnd);
 				if (index == -1) {
 					break;
 				}
@@ -2650,14 +2697,88 @@ public final class StringUtils {
 				break;
 			}
 
-			//prefix嵌套了多少层就将suffix向外移多少层
+			// prefix嵌套了多少层就将suffix向外移多少层
 			for (int i = 0; i < nestingLevel; i++) {
-				tempEnd = indexOf(text, suffix, tempEnd + suffix.length(), text.length());
+				tempEnd = indexOf(source, suffix, tempEnd + suffix.length, endIndex);
 				if (tempEnd == -1) {// 两边的符号嵌套层级不一至
 					return null;
 				}
 			}
 		}
 		return new KeyValuePair<Integer, Integer>(begin, tempEnd);
+	}
+
+	public static int lastIndexOf(String text, String index, int beginIndex, int endIndex) {
+		return lastIndexOf(text.toCharArray(), index.toCharArray(), beginIndex, endIndex);
+	}
+
+	public static int lastIndexOf(char[] source, char[] target, int fromIndex, int endIndex) {
+		int sourceCount = Math.min(fromIndex, source.length) - endIndex;
+		int index = lastIndexOf(source, endIndex, sourceCount, target, 0, target.length, sourceCount);
+		return index == -1? -1: index + endIndex;
+	}
+
+	/**
+	 * Code shared by String and StringBuffer to do searches. The source is the
+	 * character array being searched, and the target is the string being
+	 * searched for.
+	 *
+	 * @param source
+	 *            the characters being searched.
+	 * @param sourceOffset
+	 *            offset of the source string.
+	 * @param sourceCount
+	 *            count of the source string.
+	 * @param target
+	 *            the characters being searched for.
+	 * @param targetOffset
+	 *            offset of the target string.
+	 * @param targetCount
+	 *            count of the target string.
+	 * @param fromIndex
+	 *            the index to begin searching from.
+	 */
+	public static int lastIndexOf(char[] source, int sourceOffset, int sourceCount, char[] target, int targetOffset,
+			int targetCount, int fromIndex) {
+		/*
+		 * Check arguments; return immediately where possible. For consistency,
+		 * don't check for null str.
+		 */
+		int rightIndex = sourceCount - targetCount;
+		if (fromIndex < 0) {
+			return -1;
+		}
+		if (fromIndex > rightIndex) {
+			fromIndex = rightIndex;
+		}
+		/* Empty string always matches. */
+		if (targetCount == 0) {
+			return fromIndex;
+		}
+
+		int strLastIndex = targetOffset + targetCount - 1;
+		char strLastChar = target[strLastIndex];
+		int min = sourceOffset + targetCount - 1;
+		int i = min + fromIndex;
+
+		startSearchForLastChar: while (true) {
+			while (i >= min && source[i] != strLastChar) {
+				i--;
+			}
+			if (i < min) {
+				return -1;
+			}
+			int j = i - 1;
+			int start = j - (targetCount - 1);
+			int k = strLastIndex - 1;
+
+			while (j > start) {
+				if (source[j--] != target[k--]) {
+					i--;
+					continue startSearchForLastChar;
+				}
+			}
+			return start - sourceOffset + 1;
+		}
 	}
 }

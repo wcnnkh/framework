@@ -59,6 +59,10 @@ public class Pagination<T> implements Serializable {
 	}
 
 	public List<T> getData() {
+		if(data == null){
+			return Collections.emptyList();
+		}
+		
 		return data;
 	}
 
