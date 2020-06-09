@@ -8,10 +8,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import scw.core.GlobalPropertyFactory;
+import scw.core.annotation.UseJavaVersion;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.classreading.SimpleMetadataReaderFactory;
@@ -21,6 +23,8 @@ import scw.core.utils.StringUtils;
 import scw.io.Resource;
 import scw.lang.Ignore;
 import scw.util.ConcurrentReferenceHashMap;
+import scw.util.JavaVersion;
+import scw.value.AnyValue;
 
 public class PackageScan {
 	public static final String ALL = "*";
@@ -97,6 +101,20 @@ public class PackageScan {
 		if (reader.getAnnotationMetadata().hasAnnotation(Deprecated.class.getName())
 				|| reader.getAnnotationMetadata().hasAnnotation(Ignore.class.getName())) {
 			return ;
+		}
+		
+		Map<String, Object> useJavaVersoinAttribute = reader.getAnnotationMetadata().getAnnotationAttributes(UseJavaVersion.class.getName());
+		if(useJavaVersoinAttribute != null){
+			Object version = useJavaVersoinAttribute.get("value");
+			if(version != null){
+				AnyValue anyValue = new AnyValue(version);
+				/**
+				 * 如果java主版本号小于要求的版本号那么忽略该类
+				 */
+				if(JavaVersion.INSTANCE.getMasterVersion() < anyValue.getAsNumber().intValue()){
+					return ;
+				}
+			}
 		}
 
 		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName());

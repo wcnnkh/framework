@@ -108,4 +108,12 @@ public class DefaultValueDefinition extends AbstractValue implements
 		return null;
 	}
 
+	public boolean isNull() {
+		return true;
+	}
+
+	public boolean isNumber() {
+		return false;
+	}
+
 }

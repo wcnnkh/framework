@@ -5,6 +5,7 @@ import java.math.BigInteger;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
+import scw.core.utils.StringUtils;
 
 public abstract class AbstractStringValue extends SupportDefaultValue {
 
@@ -235,15 +236,20 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 		if (obj == null) {
 			return false;
 		}
-		
-		if(obj == this){
+
+		if (obj == this) {
 			return true;
 		}
 
 		if (obj instanceof Value) {
 			return ObjectUtils.equals(getAsString(), ((Value) obj).getAsString());
 		}
-		
+
 		return super.equals(obj);
+	}
+
+	public boolean isNumber() {
+		String value = getAsString();
+		return StringUtils.isNotEmpty(value) && StringUtils.isNumeric(value);
 	}
 }

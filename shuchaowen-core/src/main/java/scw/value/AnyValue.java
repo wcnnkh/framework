@@ -1,5 +1,6 @@
 package scw.value;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -8,7 +9,8 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.TypeUtils;
 
-public class AnyValue extends SupportDefaultValue{
+public class AnyValue extends SupportDefaultValue implements Serializable{
+	private static final long serialVersionUID = 1L;
 	private Object value;
 
 	public AnyValue(Object value) {
