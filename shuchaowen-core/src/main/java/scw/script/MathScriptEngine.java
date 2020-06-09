@@ -92,9 +92,19 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		String center = script.substring(begin + prefixLength, end - suffixLength + 1);
 		String right = end == (scriptLength - suffixLength) ? null : script.substring(end + suffixLength, scriptLength);
 		if (left != null) {
-			char operator = left.charAt(left.length() - 1);
-			left = left.substring(0, left.length() - 1);
-			fragments.add(new ScriptFragment(left).setOperator(getOperator(left, operator)));
+			Operator leftOperator = null;
+			for(Operator operator : OPERATORS){
+				if(left.endsWith(operator.getOperator())){
+					leftOperator = operator;
+				}
+			}
+			
+			if(leftOperator == null){
+				throw new ScriptException(script);
+			}
+			
+			left = left.substring(0, left.length() - leftOperator.getOperator().length());
+			fragments.add(new ScriptFragment(left).setOperator(leftOperator));
 		}
 
 		Fragment centerFragment = new ValueFragment(function.eval(this, center));
@@ -103,9 +113,19 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return;
 		}
 
-		char operator = right.charAt(0);
-		right = right.substring(1);
-		centerFragment.setOperator(getOperator(right, operator));
+		Operator rightOperator = null;
+		for(Operator operator : OPERATORS){
+			if(right.startsWith(operator.getOperator())){
+				rightOperator = operator;
+			}
+		}
+		
+		if(rightOperator == null){
+			throw new ScriptException(script);
+		}
+		
+		right = right.substring(rightOperator.getOperator().length());
+		centerFragment.setOperator(rightOperator);
 		fragments.add(centerFragment);
 
 		LinkedList<Fragment> rigthFragments = new LinkedList<MathScriptEngine.Fragment>();
@@ -159,21 +179,21 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 	private void resolveOperator(Collection<Fragment> fragments, String script) {
 		int lastIndex = 0;
-		for (int i = 0, len = script.length(); i < len; i++) {
-			char c = script.charAt(i);
-			for (Operator operator : OPERATORS) {
-				if (c == operator.getOperator()) {
-					String s = script.substring(lastIndex, i);
-					fragments.add(new ScriptFragment(s).setOperator(operator));
-					lastIndex = i + 1;
-					break;
-				}
+		for (Operator operator : OPERATORS) {
+			int index = StringUtils.indexOf(script, operator.getOperator(), lastIndex, script.length());
+			if(index != -1){
+				String s = script.substring(lastIndex, index);
+				fragments.add(new ScriptFragment(s).setOperator(operator));
+				lastIndex = index + operator.getOperator().length();
+				break;
 			}
 		}
+		
 		fragments.add(new ScriptFragment(script.substring(lastIndex)));
 	}
 
 	public NumberHolder eval(String script) {
+		System.out.println("script:" + script);
 		String scriptToUse = StringUtils.replace(script, " ", "");
 		if (StringUtils.isEmpty(scriptToUse)) {
 			return null;
@@ -207,15 +227,6 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return eval(fragments);
 		}
 		return super.evalInternal(script);
-	}
-
-	private Operator getOperator(String script, char operatorChar) throws ScriptException {
-		for (Operator operator : OPERATORS) {
-			if (operator.getOperator() == operatorChar) {
-				return operator;
-			}
-		}
-		throw new ScriptException("operator:" + operatorChar + ", script=" + script);
 	}
 
 	/**
@@ -413,7 +424,7 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 *
 	 */
 	static interface Operator {
-		char getOperator();
+		String getOperator();
 
 		NumberHolder operation(NumberHolder left, NumberHolder right);
 	}
@@ -426,8 +437,8 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 */
 	static final class MultiplicationOperator implements Operator {
 
-		public char getOperator() {
-			return '*';
+		public String getOperator() {
+			return "*";
 		}
 
 		public NumberHolder operation(NumberHolder left, NumberHolder right) {
@@ -443,8 +454,8 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 */
 	static final class DivisionOperator implements Operator {
 
-		public char getOperator() {
-			return '/';
+		public String getOperator() {
+			return "/";
 		}
 
 		public NumberHolder operation(NumberHolder left, NumberHolder right) {
@@ -460,8 +471,8 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 */
 	static final class AdditionOperator implements Operator {
 
-		public char getOperator() {
-			return '+';
+		public String getOperator() {
+			return "+";
 		}
 
 		public NumberHolder operation(NumberHolder left, NumberHolder right) {
@@ -477,8 +488,8 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 */
 	static final class SubtractionOperator implements Operator {
 
-		public char getOperator() {
-			return '-';
+		public String getOperator() {
+			return "-";
 		}
 
 		public NumberHolder operation(NumberHolder left, NumberHolder right) {
@@ -494,8 +505,8 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 */
 	static final class RemainderOperator implements Operator {
 
-		public char getOperator() {
-			return '%';
+		public String getOperator() {
+			return "%";
 		}
 
 		public NumberHolder operation(NumberHolder left, NumberHolder right) {
@@ -511,8 +522,8 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 */
 	static final class PowOperator implements Operator {
 
-		public char getOperator() {
-			return '^';
+		public String getOperator() {
+			return "^";
 		}
 
 		public NumberHolder operation(NumberHolder left, NumberHolder right) {

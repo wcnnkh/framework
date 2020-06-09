@@ -167,5 +167,6 @@ public class FractionHolder extends AbstractNumberHolder {
 		}else{
 			return compareTo(toFractionNumberHolder(o));
 		}
+		
 	}
 }
