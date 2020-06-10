@@ -82,8 +82,7 @@ public class Fraction implements NumberHolder {
 		if (numberHolder instanceof Fraction) {
 			Fraction summand = (Fraction) numberHolder;
 			// 分数相加，将分数转为同分母，分子相加
-			return new Fraction(
-					molecule.multiply(summand.denominator).add(summand.molecule.multiply(denominator)),
+			return new Fraction(molecule.multiply(summand.denominator).add(summand.molecule.multiply(denominator)),
 					denominator.multiply(summand.denominator)).reduction();
 		} else {
 			return add(toFractionNumberHolder(numberHolder));
@@ -94,8 +93,7 @@ public class Fraction implements NumberHolder {
 		if (numberHolder instanceof Fraction) {
 			Fraction minuend = (Fraction) numberHolder;
 			// 分数相减，将分数转为同分母，分子相减
-			return new Fraction(
-					molecule.multiply(minuend.denominator).subtract(minuend.molecule.multiply(denominator)),
+			return new Fraction(molecule.multiply(minuend.denominator).subtract(minuend.molecule.multiply(denominator)),
 					denominator.multiply(minuend.denominator)).reduction();
 		} else {
 			return subtract(toFractionNumberHolder(numberHolder));
@@ -134,6 +132,7 @@ public class Fraction implements NumberHolder {
 
 	/**
 	 * 将分子分母相除，取余
+	 * 
 	 * @return
 	 */
 	public NumberHolder remainder() {
@@ -175,9 +174,13 @@ public class Fraction implements NumberHolder {
 		return new Fraction(molecule.abs(), denominator.abs());
 	}
 
+	private String toString(NumberHolder numberHolder) {
+		return (numberHolder instanceof Fraction) ? ("(" + numberHolder + ")") : numberHolder.toString();
+	}
+
 	@Override
 	public String toString() {
-		return molecule + "/" + denominator;
+		return toString(molecule) + "/" + toString(denominator);
 	}
 
 	public int compareTo(NumberHolder o) {
@@ -195,14 +198,14 @@ public class Fraction implements NumberHolder {
 	 * @return
 	 */
 	public Fraction reduction() {
-		if(molecule instanceof Fraction){
-			return ((Fraction)molecule).divide(denominator).reduction();
+		if (molecule instanceof Fraction) {
+			return ((Fraction) molecule).divide(denominator).reduction();
 		}
-		
-		if(denominator instanceof Fraction){
-			return toFractionNumberHolder(molecule).divide((Fraction)denominator).reciprocal();
+
+		if (denominator instanceof Fraction) {
+			return toFractionNumberHolder(molecule).divide((Fraction) denominator).reciprocal();
 		}
-		
+
 		BigDecimal molecule = this.molecule.toBigDecimal();
 		if (molecule.doubleValue() == 0) {
 			return ZERO;
@@ -218,7 +221,6 @@ public class Fraction implements NumberHolder {
 			return this;
 		}
 
-		return new Fraction(new BigDecimalHolder(molecule.divide(gcd)),
-				new BigDecimalHolder(denominator.divide(gcd)));
+		return new Fraction(new BigDecimalHolder(molecule.divide(gcd)), new BigDecimalHolder(denominator.divide(gcd)));
 	}
 }

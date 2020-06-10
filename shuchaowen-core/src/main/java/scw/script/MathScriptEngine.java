@@ -22,15 +22,16 @@ import scw.math.NumberHolder;
 import scw.util.KeyValuePair;
 
 /**
- * 实现单简单的数学计算(并不成熟，不推荐使用)
+ * 实现单简单的数学计算(并不成熟，不推荐进行复杂计算)
  * 
  * @author shuchaowen
  *
  */
-public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
+public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	static final Function[] FUNCTIONS;
-	static final Operator[] OPERATORS = new Operator[] { new PowOperator(), new MultiplicationOperator(),
-			new DivisionOperator(), new RemainderOperator(), new AdditionOperator(), new SubtractionOperator() };
+	static final Operator[][] OPERATORS = new Operator[][] { { new PowOperator() },
+			{ new MultiplicationOperator(), new DivisionOperator(), new RemainderOperator() },
+			{ new AdditionOperator(), new SubtractionOperator() } };
 
 	static {
 		List<Function> functions = new ArrayList<MathScriptEngine.Function>();
@@ -50,91 +51,93 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		FUNCTIONS = functions.toArray(new Function[0]);
 	}
 
-	private void resolve(Collection<Fragment> fragments, String script) {
-		int begin = -1;
-		Function functionToUse = null;
+	private void resolve(Collection<Fragment> fragments, String script, Operator lastOperator) {
 		for (Function function : FUNCTIONS) {
-			int index = script.indexOf(function.getPrefix());
-			if (index == -1) {
+			KeyValuePair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(),
+					function.getSuffix());
+			if (indexPair == null) {
 				continue;
 			}
 
-			if (index == 0) {
-				functionToUse = function;
-				break;
-			}
-
-			if (begin == -1 || index < begin) {
-				begin = index;
-				functionToUse = function;
-			}
-		}
-
-		if (functionToUse != null) {
-			KeyValuePair<Integer, Integer> indexPair = StringUtils.indexOf(script, functionToUse.getPrefix(),
-					functionToUse.getSuffix());
-			if (indexPair != null) {
-				resolveFunction(fragments, functionToUse, indexPair, script);
-				return;
-			}
-		}
-		resolveOperator(fragments, script);
-	}
-
-	private void resolveFunction(Collection<Fragment> fragments, Function function,
-			KeyValuePair<Integer, Integer> indexPair, String script) {
-		int begin = indexPair.getKey();
-		int end = indexPair.getValue();
-		int prefixLength = function.getPrefix().length();
-		int suffixLength = function.getSuffix().length();
-		int scriptLength = script.length();
-		String left = begin == 0 ? null : script.substring(0, begin);
-		String center = script.substring(begin + prefixLength, end - suffixLength + 1);
-		String right = end == (scriptLength - suffixLength) ? null : script.substring(end + suffixLength, scriptLength);
-		if (left != null) {
-			Operator leftOperator = null;
-			for(Operator operator : OPERATORS){
-				if(left.endsWith(operator.getOperator())){
-					leftOperator = operator;
+			int begin = indexPair.getKey();
+			int end = indexPair.getValue();
+			int prefixLength = function.getPrefix().length();
+			int suffixLength = function.getSuffix().length();
+			int scriptLength = script.length();
+			String left = begin == 0 ? null : script.substring(0, begin);
+			String center = script.substring(begin + prefixLength, end - suffixLength + 1);
+			String right = end == (scriptLength - suffixLength) ? null
+					: script.substring(end + suffixLength, scriptLength);
+			if (left != null) {
+				Operator leftOperator = null;
+				for (Operator[] operators : OPERATORS) {
+					for (Operator operator : operators) {
+						if (left.endsWith(operator.getOperator())) {
+							leftOperator = operator;
+							break;
+						}
+					}
 				}
-			}
-			
-			if(leftOperator == null){
-				throw new ScriptException(script);
-			}
-			
-			left = left.substring(0, left.length() - leftOperator.getOperator().length());
-			fragments.add(new ScriptFragment(left).setOperator(leftOperator));
-		}
 
-		Fragment centerFragment = new ValueFragment(function.eval(this, center));
-		if (right == null) {
-			fragments.add(centerFragment);
+				if (leftOperator == null) {
+					throw new ScriptException(script);
+				}
+
+				left = left.substring(0, left.length() - leftOperator.getOperator().length());
+				resolve(fragments, left, leftOperator);
+			}
+
+			Operator centerOperator = null;
+			if (right != null) {
+				Operator rightOperator = null;
+				for (Operator[] operators : OPERATORS) {
+					for (Operator operator : operators) {
+						if (right.startsWith(operator.getOperator())) {
+							rightOperator = operator;
+							break;
+						}
+					}
+				}
+
+				if (rightOperator == null) {
+					throw new ScriptException(script);
+				}
+
+				right = right.substring(rightOperator.getOperator().length());
+				centerOperator = rightOperator;
+			}
+
+			Fragment centerFragment = new ValueFragment(function.eval(this, center));
+			if (centerOperator != null) {
+				centerFragment.setOperator(centerOperator);
+				fragments.add(centerFragment);
+			} else {// 说明右边没有表达示了
+				centerFragment.setOperator(lastOperator);
+				fragments.add(centerFragment);
+			}
+
+			if (right != null) {
+				resolve(fragments, right, lastOperator);
+			}
 			return;
 		}
 
-		Operator rightOperator = null;
-		for(Operator operator : OPERATORS){
-			if(right.startsWith(operator.getOperator())){
-				rightOperator = operator;
+		for (Operator[] operators : OPERATORS) {
+			for (Operator operator : operators) {
+				int index = script.indexOf(operator.getOperator());
+				if (index != -1) {
+					String s = script.substring(0, index);
+					resolve(fragments, s, operator);
+					String right = script.substring(index + operator.getOperator().length());
+					if (StringUtils.isNotEmpty(right)) {
+						resolve(fragments, right, lastOperator);
+					}
+					return;
+				}
 			}
 		}
-		
-		if(rightOperator == null){
-			throw new ScriptException(script);
-		}
-		
-		right = right.substring(rightOperator.getOperator().length());
-		centerFragment.setOperator(rightOperator);
-		fragments.add(centerFragment);
 
-		LinkedList<Fragment> rigthFragments = new LinkedList<MathScriptEngine.Fragment>();
-		resolve(rigthFragments, right);
-		if (rigthFragments.isEmpty()) {
-			fragments.add(new ScriptFragment(right));
-		} else {
-			fragments.addAll(rigthFragments);
-		}
+		fragments.add(new ScriptFragment(script).setOperator(lastOperator));
 	}
 
 	private Fragment operator(Fragment left, Fragment right) {
@@ -144,28 +147,52 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		return valueFragment;
 	}
 
+	private int indexOf(Operator operator, Collection<Fragment> fragments){
+		Iterator<Fragment> iterator = fragments.iterator();
+		int index = 0;
+		while(iterator.hasNext()){
+			Fragment fragment = iterator.next();
+			if(iterator.hasNext() && fragment.getOperator().getOperator().equals(operator.getOperator())){//不是最后一个
+				return index;
+			}
+			index ++;
+		}
+		return -1;
+	}
+	
 	private NumberHolder eval(Collection<Fragment> fragments) {
 		if (fragments == null || fragments.isEmpty()) {
 			return null;
 		}
-
-		for (Operator operator : OPERATORS) {
-			LinkedList<Fragment> nextFragments = new LinkedList<Fragment>();
-			Iterator<Fragment> iterator = fragments.iterator();
-			while (iterator.hasNext()) {
-				Fragment fragment = iterator.next();
-				// 不处理最后一个
-				if (iterator.hasNext() && fragment.getOperator() != null
-						&& fragment.getOperator().getOperator() == operator.getOperator()) {
-					Fragment value = operator(fragment, iterator.next());
-					nextFragments.add(value);
-				} else {
-					nextFragments.add(fragment);
+		
+		for(Operator[] operators : OPERATORS){
+			int indexToUse = -1;
+			//找到同个一个运算优先级中最左边的片段
+			for(Operator operator : operators){
+				int index = indexOf(operator, fragments);
+				if(index != -1 && (indexToUse == -1 || index < indexToUse)){
+					indexToUse = index;
 				}
 			}
+			
+			if(indexToUse != -1){
+				LinkedList<Fragment> nextFragments = new LinkedList<Fragment>();
+				int index = 0;
+				Iterator<Fragment> iterator = fragments.iterator();
+				while(iterator.hasNext()){
+					Fragment fragment = iterator.next();
+					if(index == indexToUse){
+						Fragment value = operator(fragment, iterator.next());
+						nextFragments.add(value);
+					}else{
+						nextFragments.add(fragment);
+					}
+					index ++;
+				}
 
-			if (nextFragments.size() != fragments.size()) {
-				return eval(nextFragments);
+				if (nextFragments.size() != fragments.size()) {
+					return eval(nextFragments);
+				}
 			}
 		}
 
@@ -175,22 +202,6 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 		// 不应该到这里
 		throw new RuntimeException("Should never get here");
-	}
-
-	private void resolveOperator(Collection<Fragment> fragments, String script) {
-		int lastIndex = 0;
-		for(int i=OPERATORS.length - 1; i>=0; i--){
-			Operator operator = OPERATORS[i];
-			int index = StringUtils.indexOf(script, operator.getOperator(), lastIndex, script.length());
-			if(index != -1){
-				String s = script.substring(lastIndex, index);
-				fragments.add(new ScriptFragment(s).setOperator(operator));
-				lastIndex = index + operator.getOperator().length();
-				break;
-			}
-		}
-		
-		fragments.add(new ScriptFragment(script.substring(lastIndex)));
 	}
 
 	public NumberHolder eval(String script) {
@@ -222,7 +233,7 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		}
 
 		LinkedList<Fragment> fragments = new LinkedList<Fragment>();
-		resolve(fragments, script);
+		resolve(fragments, script, null);
 		if (!fragments.isEmpty()) {
 			return eval(fragments);
 		}
@@ -267,7 +278,7 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			}
 
 			if (value instanceof BigDecimal) {
-				return new BigDecimalHolder((BigDecimal)value);
+				return new BigDecimalHolder((BigDecimal) value);
 			} else if (value instanceof NumberHolder) {
 				return (NumberHolder) value;
 			} else {
@@ -304,7 +315,7 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 		@Override
 		public String toString() {
-			return script;
+			return "(" + script + ")" + (getOperator() == null ? "" : getOperator().getOperator());
 		}
 	}
 
@@ -322,7 +333,8 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 		@Override
 		public String toString() {
-			return value == null ? null : value.toString();
+			return "(" + (value == null ? null : value.toString()) + ")"
+					+ (getOperator() == null ? "" : getOperator().getOperator());
 		}
 	}
 
@@ -387,7 +399,7 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			String right = script.substring(index + 1);
 			NumberHolder leftValue = engine.eval(left);
 			NumberHolder rightValue = engine.eval(right);
-			return leftValue.compareTo(rightValue) > 0? leftValue:rightValue;
+			return leftValue.compareTo(rightValue) > 0 ? leftValue : rightValue;
 		}
 
 	}
@@ -412,7 +424,7 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			String right = script.substring(index + 1);
 			NumberHolder leftValue = engine.eval(left);
 			NumberHolder rightValue = engine.eval(right);
-			return leftValue.compareTo(rightValue) < 0? leftValue:rightValue;
+			return leftValue.compareTo(rightValue) < 0 ? leftValue : rightValue;
 		}
 
 	}

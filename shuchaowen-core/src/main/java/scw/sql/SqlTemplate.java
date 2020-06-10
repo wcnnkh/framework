@@ -12,6 +12,12 @@ import scw.logger.LoggerFactory;
 
 public abstract class SqlTemplate implements SqlOperations {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	
+	protected void logger(Sql sql){
+		if (logger.isDebugEnabled()) {
+			logger.debug(SqlUtils.getSqlId(sql));
+		}
+	}
 
 	public abstract Connection getUserConnection() throws SQLException;
 
@@ -26,9 +32,7 @@ public abstract class SqlTemplate implements SqlOperations {
 	}
 
 	protected boolean execute(Sql sql, Connection connection) throws SQLException {
-		if (logger.isDebugEnabled()) {
-			logger.debug(SqlUtils.getSqlId(sql));
-		}
+		logger(sql);
 
 		PreparedStatement statement = null;
 		try {
@@ -66,9 +70,7 @@ public abstract class SqlTemplate implements SqlOperations {
 	}
 
 	protected void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
-		if (logger.isDebugEnabled()) {
-			logger.debug(SqlUtils.getSqlId(sql));
-		}
+		logger(sql);
 
 		PreparedStatement statement = null;
 		try {
@@ -118,9 +120,7 @@ public abstract class SqlTemplate implements SqlOperations {
 	}
 
 	protected <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		if (logger.isDebugEnabled()) {
-			logger.debug(SqlUtils.getSqlId(sql));
-		}
+		logger(sql);
 
 		PreparedStatement statement = null;
 		try {
@@ -166,12 +166,9 @@ public abstract class SqlTemplate implements SqlOperations {
 
 		});
 	}
-
+	
 	protected int update(Sql sql, Connection connection) throws SQLException {
-		if (logger.isDebugEnabled()) {
-			logger.debug(SqlUtils.getSqlId(sql));
-		}
-
+		logger(sql);
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);

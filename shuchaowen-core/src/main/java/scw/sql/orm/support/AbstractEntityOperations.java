@@ -133,7 +133,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 				operationType, bean, getSqlDialect()
 						.getObjectRelationalMapping(), tableName);
 		for (Column column : getSqlDialect().getObjectRelationalMapping()
-				.getPrimaryKeys(clazz)) {
+				.getColumns(clazz)) {
 			Generator generator = column.getAnnotatedElement().getAnnotation(
 					Generator.class);
 			if (generator == null) {
@@ -173,7 +173,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 				if (operationType == OperationType.SAVE
 						|| operationType == OperationType.SAVE_OR_UPDATE) {
 					if (count == 0) {
-						logger.warn("执行{{}}更新行数为0，无法获取到主键自增编号",
+						logger.warn("Number of rows affected is 0, execute: {}",
 								SqlUtils.getSqlId(sql));
 					} else if (count == 1) {
 						if (operationType == OperationType.SAVE
@@ -205,7 +205,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements
 	public boolean update(Object bean, String tableName) {
 		if (bean instanceof FieldSetterListen) {
 			if (((FieldSetterListen) bean).get_field_setter_map() == null) {
-				logger.warn("更新对象[{}]不存在数据变更", bean);
+				logger.warn("No change: {}", bean);
 				return false;
 			}
 		}

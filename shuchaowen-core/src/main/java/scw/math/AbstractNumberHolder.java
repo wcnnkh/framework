@@ -8,7 +8,7 @@ public abstract class AbstractNumberHolder implements NumberHolder {
 
 	// 将当前值变为同分母分数
 	private Fraction toFractionNumberHolder(Fraction numberHolder) {
-		return new Fraction(numberHolder.multiply(numberHolder.getDenominator()), numberHolder.getDenominator());
+		return new Fraction(multiply(numberHolder.getDenominator()), numberHolder.getDenominator());
 	}
 
 	public final NumberHolder add(NumberHolder numberHolder) {
@@ -34,7 +34,8 @@ public abstract class AbstractNumberHolder implements NumberHolder {
 	protected abstract NumberHolder subtractInternal(NumberHolder numberHolder);
 
 	public Fraction subtract(Fraction numberHolder) {
-		return toFractionNumberHolder(numberHolder).subtract(numberHolder);
+		Fraction fraction = toFractionNumberHolder(numberHolder);
+		return fraction.subtract(numberHolder);
 	}
 
 	public final NumberHolder multiply(NumberHolder numberHolder) {

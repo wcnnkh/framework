@@ -19,9 +19,9 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 		Object v = column.getField().getGetter().get(bean);
 		if (v != null) {// 已经存在值了
 			if (column.getField().getSetter().getType().isPrimitive()) {
-				return ((Number) v).intValue() == 0;
+				return ((Number) v).doubleValue() == 0;
 			} else if (v instanceof Number) {
-				if (((Number) v).intValue() == 0) {
+				if (((Number) v).doubleValue() == 0) {
 					return true;
 				}
 			}
