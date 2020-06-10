@@ -11,11 +11,11 @@ import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
-public abstract class TransactionExchange extends AbstractExchange {
+public abstract class LocalTransactionExchange extends AbstractExchange {
 	private CompleteService completeService;
 	private String beanId;
 
-	public TransactionExchange(NoTypeSpecifiedSerializer serializer, CompleteService completeService, String beanId) {
+	public LocalTransactionExchange(NoTypeSpecifiedSerializer serializer, CompleteService completeService, String beanId) {
 		super(serializer);
 		this.completeService = completeService;
 		this.beanId = beanId;

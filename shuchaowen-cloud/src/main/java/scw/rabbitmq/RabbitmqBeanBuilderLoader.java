@@ -90,7 +90,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		}
 
 		public Object create() throws Exception {
-			return new RabbitmqTransactionExchange(SerializerUtils.DEFAULT_SERIALIZER, beanFactory.getInstance(Connection.class),
+			return new RabbitmqExchange(SerializerUtils.DEFAULT_SERIALIZER, beanFactory.getInstance(Connection.class),
 					beanFactory.getInstance(ExchangeDeclare.class), beanFactory.getInstance(CompleteService.class),
 					getTargetClass().getName());
 		}

@@ -34,10 +34,19 @@ public abstract class AbstractExchange implements Exchange {
 	public final void bind(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener) {
 		logger.info("add message listener：{}, routingKey={}, queueDeclare={}", messageListener, routingKey,
 				queueDeclare);
-		bindInternal(routingKey, queueDeclare, new MessageListenerInternal(messageListener));
+		try {
+			bindInternal(routingKey, queueDeclare, new MessageListenerInternal(messageListener));
+		} catch (IOException e) {
+			logger.error(e, "bind error, Try again in 10 seconds");
+			try {
+				Thread.sleep(10000);
+				bind(routingKey, queueDeclare, messageListener);
+			} catch (InterruptedException e1) {
+			}
+		}
 	}
 
-	protected abstract void bindInternal(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener);
+	protected abstract void bindInternal(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener) throws IOException;
 
 	@Override
 	public final void push(String routingKey, Message message) {
@@ -121,12 +130,12 @@ public abstract class AbstractExchange implements Exchange {
 		@Override
 		public void onMessage(String exchange, String routingKey, Message message) throws IOException {
 			if (logger.isTraceEnabled()) {
-				logger.trace("handleDelivery: {}", JSONUtils.toJSONString(message));
+				logger.trace("handleDelivery exchange:{}, routingKey:{}, message:{}", exchange, routingKey, JSONUtils.toJSONString(message));
 			}
 
 			if (message.getDelay() > 0) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("delay message forward properties: {}", JSONUtils.toJSONString(message));
+					logger.debug("delay message forward exchange:{}, routingKey:{}, message:{}", exchange, routingKey, JSONUtils.toJSONString(message));
 				}
 
 				message.setDelay(0, TimeUnit.SECONDS);
