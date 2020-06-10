@@ -31,10 +31,11 @@ public class Pagination<T> implements Serializable {
 	}
 
 	public long getLongMaxPage() {
-		if (getTotalCount() <= limit) {
+		if (getTotalCount() <= getLimit() || getLimit() <= 0) {
 			return 1;
 		}
-		return (long) Math.ceil(((double) getTotalCount()) / limit);
+
+		return (long) Math.ceil(((double) getTotalCount()) / getLimit());
 	}
 
 	public final int getLimit() {
@@ -46,7 +47,7 @@ public class Pagination<T> implements Serializable {
 	}
 
 	public long getLongTotalCount() {
-		if(totalCount == 0 && data != null){
+		if (totalCount == 0 && data != null) {
 			return data.size();
 		}
 		return totalCount;
@@ -58,6 +59,10 @@ public class Pagination<T> implements Serializable {
 	}
 
 	public List<T> getData() {
+		if(data == null){
+			return Collections.emptyList();
+		}
+		
 		return data;
 	}
 
@@ -72,13 +77,11 @@ public class Pagination<T> implements Serializable {
 		Pagination<D> pagination = new Pagination<D>(limit);
 		pagination.setTotalCount(getTotalCount());
 		pagination.data = data;
-		if (getClass().isInstance(pagination)) {
-			this.data = (List<T>) data;
-		}
+		this.data = (List<T>) data;
 		return pagination;
 	}
-	
-	public <D> Pagination<D> emptyData(){
+
+	public <D> Pagination<D> emptyData() {
 		this.data = Collections.emptyList();
 		Pagination<D> pagination = new Pagination<D>(limit);
 		pagination.setTotalCount(getTotalCount());

@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import scw.core.utils.ClassUtils;
+import scw.core.utils.ObjectUtils;
+import scw.core.utils.StringUtils;
 
 public abstract class AbstractStringValue extends SupportDefaultValue {
-	
+
 	public AbstractStringValue(Value defaultValue) {
 		super(defaultValue);
 	}
@@ -108,8 +110,8 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 	}
 
 	protected boolean parseBooleanValue(String value) {
-		return "1".equals(value) || "true".equalsIgnoreCase(value)
-				|| "yes".equalsIgnoreCase(value) || "T".equalsIgnoreCase(value);
+		return "1".equals(value) || "true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value)
+				|| "T".equalsIgnoreCase(value);
 	}
 
 	public Boolean getAsBoolean() {
@@ -224,7 +226,30 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 	}
 
 	@Override
-	public String toString() {
-		return getAsString();
+	public int hashCode() {
+		String value = getAsString();
+		return value == null ? super.hashCode() : value.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj == this) {
+			return true;
+		}
+
+		if (obj instanceof Value) {
+			return ObjectUtils.equals(getAsString(), ((Value) obj).getAsString());
+		}
+
+		return super.equals(obj);
+	}
+
+	public boolean isNumber() {
+		String value = getAsString();
+		return StringUtils.isNotEmpty(value) && StringUtils.isNumeric(value);
 	}
 }

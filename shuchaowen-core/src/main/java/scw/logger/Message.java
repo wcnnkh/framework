@@ -1,5 +1,7 @@
 package scw.logger;
 
+import java.io.IOException;
+
 import scw.core.UnsafeStringBuffer;
 import scw.util.FormatUtils;
 import scw.util.PlaceholderFormatAppend;
@@ -44,7 +46,7 @@ public final class Message implements StringAppend {
 		return throwable;
 	}
 
-	public void appendTo(Appendable appendable) throws Exception {
+	public void appendTo(Appendable appendable) throws IOException{
 		FormatUtils.loggerAppend(appendable, cts, level.name(), name, msg);
 	}
 

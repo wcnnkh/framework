@@ -1,5 +1,6 @@
 package scw.util;
 
+import java.io.IOException;
 
 public final class PlaceholderFormatAppend implements StringAppend {
 	private final Object msg;
@@ -12,7 +13,7 @@ public final class PlaceholderFormatAppend implements StringAppend {
 		this.args = args;
 	}
 
-	public void appendTo(Appendable appendable) throws Exception {
+	public void appendTo(Appendable appendable) throws IOException {
 		FormatUtils.formatPlaceholder(appendable, msg, placeholder, args);
 	}
 

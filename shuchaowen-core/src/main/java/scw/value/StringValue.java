@@ -78,7 +78,7 @@ public class StringValue extends AbstractStringValue implements Serializable {
 	}
 
 	@Override
-	protected <T> T getAsObjectNotSupport(Type type) {
+	protected Object getAsObjectNotSupport(Type type) {
 		return getJsonSupport().parseObject(getAsString(), type);
 	}
 }

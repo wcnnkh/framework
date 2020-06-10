@@ -54,6 +54,11 @@ public class ObjectRelationalMapping implements FieldFilter {
 		return enumeration(entityClass, null);
 	}
 
+	/**
+	 * 获取数据库字段
+	 * @param entityClass
+	 * @return
+	 */
 	public final Collection<Column> getColumns(Class<?> entityClass) {
 		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
 		Enumeration<Column> enumeration = enumeration(entityClass);
@@ -68,6 +73,11 @@ public class ObjectRelationalMapping implements FieldFilter {
 		return columns;
 	}
 
+	/**
+	 * 获取主键字段
+	 * @param entityClass
+	 * @return
+	 */
 	public final Collection<Column> getPrimaryKeys(Class<?> entityClass) {
 		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
 		Enumeration<Column> enumeration = enumeration(entityClass);
@@ -82,6 +92,11 @@ public class ObjectRelationalMapping implements FieldFilter {
 		return columns;
 	}
 
+	/**
+	 * 获取非主键字段
+	 * @param entityClass
+	 * @return
+	 */
 	public final Collection<Column> getNotPrimaryKeys(Class<?> entityClass) {
 		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
 		Enumeration<Column> enumeration = enumeration(entityClass);

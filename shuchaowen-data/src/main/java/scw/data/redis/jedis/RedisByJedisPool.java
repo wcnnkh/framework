@@ -4,7 +4,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.data.redis.RedisImpl;
 import scw.io.serialzer.Serializer;
 import scw.io.serialzer.SerializerUtils;
-import scw.lang.StringCodec;
+import scw.util.StringCodec;
 
 @Configuration(order = Integer.MIN_VALUE + 200)
 public final class RedisByJedisPool extends RedisImpl {

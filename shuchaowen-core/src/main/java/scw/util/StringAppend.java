@@ -1,6 +1,7 @@
 package scw.util;
 
-import scw.core.Append;
+import java.io.IOException;
 
-public interface StringAppend extends Append<Appendable> {
+public interface StringAppend{
+	void appendTo(Appendable appendable) throws IOException;
 }

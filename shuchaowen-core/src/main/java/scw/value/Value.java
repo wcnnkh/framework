@@ -48,6 +48,8 @@ public interface Value {
 	BigDecimal getAsBigDecimal();
 
 	Number getAsNumber();
+	
+	boolean isNumber();
 
 	Class<?> getAsClass();
 

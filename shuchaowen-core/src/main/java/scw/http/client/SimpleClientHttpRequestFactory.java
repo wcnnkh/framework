@@ -12,7 +12,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.http.HttpMethod;
 import scw.http.HttpUtils;
-import scw.net.NetworkUtils;
+import scw.net.InetUtils;
 
 public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory {
 	private static final int DEFAULT_CHUNK_SIZE = 4096;
@@ -29,7 +29,7 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory 
 
 	private boolean outputStreaming = true;
 
-	private SSLSocketFactory sslSocketFactory = NetworkUtils.TRUSE_ALL_SSL_SOCKET_FACTORY;
+	private SSLSocketFactory sslSocketFactory = InetUtils.TRUSE_ALL_SSL_SOCKET_FACTORY;
 
 	/**
 	 * Set the {@link Proxy} to use for this request factory.

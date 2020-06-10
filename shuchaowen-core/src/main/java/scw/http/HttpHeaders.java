@@ -23,12 +23,12 @@ import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.io.support.MapBuilder;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
-import scw.util.MapBuilder;
 import scw.value.Value;
 
 /**

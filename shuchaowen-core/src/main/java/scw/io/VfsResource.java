@@ -1,19 +1,3 @@
-/*
- * Copyright 2002-2018 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package scw.io;
 
 import java.io.File;
@@ -28,16 +12,9 @@ import scw.lang.NestedIOException;
 /**
  * JBoss VFS based {@link Resource} implementation.
  *
- * <p>
- * As of Spring 4.0, this class supports VFS 3.x on JBoss AS 6+ (package
+ * <p>this class supports VFS 3.x on JBoss AS 6+ (package
  * {@code org.jboss.vfs}) and is in particular compatible with JBoss AS 7 and
  * WildFly 8+.
- *
- * @author Ales Justin
- * @author Juergen Hoeller
- * @author Costin Leau
- * @author Sam Brannen
- * @since 3.0
  * @see org.jboss.vfs.VirtualFile
  */
 public class VfsResource extends AbstractResource {

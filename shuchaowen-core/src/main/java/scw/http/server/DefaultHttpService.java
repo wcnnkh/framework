@@ -10,7 +10,6 @@ import scw.http.server.cors.CorsFilter;
 import scw.http.server.resource.DefaultHttpServerResourceFactory;
 import scw.http.server.resource.HttpServerResourceFactory;
 import scw.http.server.resource.HttpServerResourceHandler;
-import scw.http.server.rpc.HttpServerRpcHandler;
 import scw.value.property.PropertyFactory;
 
 public class DefaultHttpService implements HttpService {
@@ -26,8 +25,6 @@ public class DefaultHttpService implements HttpService {
 				: new DefaultHttpServerResourceFactory(propertyFactory);
 		HttpServerResourceHandler resourceHandler = new HttpServerResourceHandler(httpServerResourceFactory);
 		handlers.add(resourceHandler);
-		handlers.add(new HttpServerRpcHandler(beanFactory, propertyFactory));
-
 		filters.add(new CorsFilter(beanFactory, propertyFactory));
 		filters.addAll(InstanceUtils.getConfigurationList(HttpServiceFilter.class, beanFactory, propertyFactory));
 		handlers.addAll(InstanceUtils.getConfigurationList(HttpServiceHandler.class, beanFactory, propertyFactory));

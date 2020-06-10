@@ -16,7 +16,7 @@ public class DefaultValueDefinition extends AbstractValue implements
 	}
 
 	@Override
-	protected <T> T getAsObjectNotSupport(Type type) {
+	protected Object getAsObjectNotSupport(Type type) {
 		return null;
 	}
 
@@ -106,6 +106,14 @@ public class DefaultValueDefinition extends AbstractValue implements
 
 	public Enum<?> getAsEnum(Class<?> enumType) {
 		return null;
+	}
+
+	public boolean isNull() {
+		return true;
+	}
+
+	public boolean isNumber() {
+		return false;
 	}
 
 }

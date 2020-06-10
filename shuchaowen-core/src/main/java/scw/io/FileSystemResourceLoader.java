@@ -29,11 +29,6 @@ package scw.io;
  * <p>{@link org.springframework.context.support.FileSystemXmlApplicationContext}
  * is a full-fledged ApplicationContext implementation that provides
  * the same resource path resolution strategy.
- *
- * @author Juergen Hoeller
- * @since 1.1.3
- * @see DefaultResourceLoader
- * @see org.springframework.context.support.FileSystemXmlApplicationContext
  */
 public class FileSystemResourceLoader extends DefaultResourceLoader {
 

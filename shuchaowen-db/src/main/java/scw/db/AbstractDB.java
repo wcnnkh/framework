@@ -107,9 +107,9 @@ public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 		
 		if (!CollectionUtils.isEmpty(tableChange.getDeleteColumns())
 				|| !CollectionUtils.isEmpty(addList)) {
-			// 如果存在字段变量
+			// 如果存在字段变更
 			if (logger.isWarnEnabled()) {
-				logger.warn("存在字段变更class={}, addList={}, deleteList={}",
+				logger.warn("There are field changes class={}, addList={}, deleteList={}",
 						tableClass.getName(),
 						Arrays.toString(addList.toArray()),
 						Arrays.toString(tableChange.getDeleteColumns().toArray()));

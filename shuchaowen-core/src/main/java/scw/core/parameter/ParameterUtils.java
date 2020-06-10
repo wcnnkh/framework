@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 
+import scw.core.LocalVariableTableParameterNameDiscoverer;
+import scw.core.ParameterNameDiscoverer;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
@@ -15,10 +17,14 @@ import scw.value.StringValue;
 import scw.value.Value;
 
 public final class ParameterUtils {
-	private static final LocalVariableTableParameterNameDiscoverer LVTPND = new LocalVariableTableParameterNameDiscoverer();
+	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new LocalVariableTableParameterNameDiscoverer();
 
 	private ParameterUtils() {
 	};
+
+	public static ParameterNameDiscoverer getParameterNameDiscoverer() {
+		return PARAMETER_NAME_DISCOVERER;
+	}
 
 	public static ParameterDescriptor[] getParameterDescriptors(Constructor<?> constructor) {
 		String[] names = ParameterUtils.getParameterName(constructor);
@@ -55,12 +61,12 @@ public final class ParameterUtils {
 	}
 
 	public static String[] getParameterName(Method method) {
-		return LVTPND.getParameterNames(method);
+		return getParameterNameDiscoverer().getParameterNames(method);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static String[] getParameterName(Constructor constructor) {
-		return LVTPND.getParameterNames(constructor);
+		return getParameterNameDiscoverer().getParameterNames(constructor);
 	}
 
 	public static boolean isNullAble(ParameterDescriptor parameterConfig) {

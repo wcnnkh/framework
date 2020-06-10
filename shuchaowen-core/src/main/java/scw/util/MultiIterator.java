@@ -1,6 +1,5 @@
 package scw.util;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -14,10 +13,6 @@ import java.util.Iterator;
 public final class MultiIterator<E> implements Iterator<E> {
 	private Iterator<Iterator<? extends E>> iteratorIterator;
 	private Iterator<? extends E> iterator;
-
-	public MultiIterator(Iterator<? extends E> ...iterators) {
-		this(Arrays.asList(iterators));
-	}
 
 	public MultiIterator(Collection<Iterator<? extends E>> iterators) {
 		if (iterators != null) {

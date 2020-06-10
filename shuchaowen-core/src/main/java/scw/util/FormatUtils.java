@@ -1,5 +1,6 @@
 package scw.util;
 
+import java.io.IOException;
 import java.nio.CharBuffer;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -31,7 +32,7 @@ public final class FormatUtils {
 	}
 
 	public static void formatPlaceholder(Appendable appendable, Object format, String placeholder, Object... args)
-			throws Exception {
+			throws IOException {
 		String text = format == null ? null : format.toString();
 		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {
 			appendable.append(text);
@@ -147,7 +148,7 @@ public final class FormatUtils {
 	}
 
 	public static void loggerAppend(Appendable appendable, String time, String level, String tag,
-			StringAppend stringAppend) throws Exception {
+			StringAppend stringAppend) throws IOException {
 		boolean b = false;
 		if (!StringUtils.isEmpty(time)) {
 			appendable.append(time);
@@ -182,12 +183,12 @@ public final class FormatUtils {
 	}
 
 	public static void loggerAppend(Appendable appendable, long time, String level, String tag,
-			StringAppend stringAppend) throws Exception {
+			StringAppend stringAppend) throws IOException {
 		loggerAppend(appendable, XTime.format(time, TIME_FORMAT), level, tag, stringAppend);
 	}
 
 	public static void loggerAppend(Appendable appendable, long time, String level, String tag, String placeholder,
-			Object msg, Object... args) throws Exception {
+			Object msg, Object... args) throws IOException {
 		StringAppend loggerAppend = new PlaceholderFormatAppend(msg, placeholder, args);
 		loggerAppend(appendable, time, level, tag, loggerAppend);
 	}

@@ -4,7 +4,7 @@ import scw.data.AbstractDataTempleteWrapper;
 import scw.data.DataTemplete;
 import scw.data.cas.CASOperations;
 import scw.io.serialzer.Serializer;
-import scw.lang.StringCodec;
+import scw.util.StringCodec;
 
 public class RedisImpl extends AbstractDataTempleteWrapper implements Redis {
 	private final RedisOperations<byte[], byte[]> binaryOperations;

@@ -26,30 +26,7 @@ public final class TransactionFilter implements Filter {
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	private Object defaultTransaction(ProxyInvoker invoker, Object[] args) throws Throwable {
-		if (TransactionManager.hasTransaction()) {
-			return result(invoker, args);
-		}
-
-		return transaction(invoker, args, transactionDefinition);
-	}
-
-	private Object transaction(ProxyInvoker invoker, Object[] args,
-			TransactionDefinition transactionDefinition) throws Throwable {
-		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
-		Object v;
-		try {
-			v = result(invoker, args);
-			TransactionManager.commit(transaction);
-			return v;
-		} catch (Throwable e) {
-			TransactionManager.rollback(transaction);
-			throw e;
-		}
-	}
-
-	private Object result(ProxyInvoker invoker, Object[] args) throws Throwable {
-		Object rtn = invoker.invoke(args);
+	private void invokerAfter(Object rtn, ProxyInvoker invoker) {
 		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
 			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
 			if (result.isRollbackOnly()) {
@@ -59,16 +36,29 @@ public final class TransactionFilter implements Filter {
 				}
 			}
 		}
-		return rtn;
 	}
 
 	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
 		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getTargetClass(),
 				invoker.getMethod());
-		if (tx == null) {
-			return defaultTransaction(invoker, args);
+		if (tx == null && TransactionManager.hasTransaction()) {
+			Object rtn = invoker.invoke(args);
+			invokerAfter(rtn, invoker);
+			return rtn;
 		}
 
-		return transaction(invoker, args, new AnnotationTransactionDefinition(tx));
+		TransactionDefinition transactionDefinition = tx == null ? this.transactionDefinition
+				: new AnnotationTransactionDefinition(tx);
+		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
+		Object v;
+		try {
+			v = invoker.invoke(args);
+			invokerAfter(v, invoker);
+			TransactionManager.commit(transaction);
+			return v;
+		} catch (Throwable e) {
+			TransactionManager.rollback(transaction);
+			throw e;
+		}
 	}
 }

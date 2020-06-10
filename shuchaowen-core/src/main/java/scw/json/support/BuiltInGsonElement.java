@@ -29,7 +29,7 @@ public final class BuiltInGsonElement extends AbstractJsonElement {
 	}
 
 	@Override
-	protected <T> T getAsObjectNotSupport(Type type) {
+	protected Object getAsObjectNotSupport(Type type) {
 		return gson.fromJson(gsonJsonElement, type);
 	}
 

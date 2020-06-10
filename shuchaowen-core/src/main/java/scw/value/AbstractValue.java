@@ -4,8 +4,6 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import scw.lang.NotSupportedException;
-
 public abstract class AbstractValue implements Value {
 	@SuppressWarnings("unchecked")
 	public <T> T getAsObject(Class<? extends T> type) {
@@ -62,13 +60,9 @@ public abstract class AbstractValue implements Value {
 		return (T) v;
 	}
 
-	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		throw new NotSupportedException(type.toString());
-	}
+	protected abstract <T> T getAsObjectNotSupport(Class<? extends T> type);
 
-	protected <T> T getAsObjectNotSupport(Type type) {
-		throw new NotSupportedException(type.toString());
-	}
+	protected abstract Object getAsObjectNotSupport(Type type);
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object getAsObject(Type type) {
@@ -77,5 +71,10 @@ public abstract class AbstractValue implements Value {
 		}
 
 		return getAsObjectNotSupport(type);
+	}
+	
+	@Override
+	public String toString() {
+		return getAsString();
 	}
 }

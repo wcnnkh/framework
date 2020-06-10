@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map.Entry;
@@ -49,11 +48,20 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return cacheEnable;
 	}
 
+	/**
+	 * 可使用的资源别名，使用优先级从左到右
+	 * @return
+	 */
 	protected String[] getResourceEnvironmentalNames() {
 		return getPropertyFactory().getValue(RESOURCE_SUFFIX, String[].class,
 				getPropertyFactory().getObject(CONFIG_SUFFIX, String[].class));
 	}
 
+	/**
+	 * 可使用的资源列表，使用优先级从左到右
+	 * @param resourceName
+	 * @return
+	 */
 	public List<String> getEnvironmentalResourceNameList(String resourceName) {
 		String[] suffixs = getResourceEnvironmentalNames();
 		String resourceNameToUse = getPropertyFactory().format(resourceName,
@@ -63,8 +71,8 @@ public class ResourceOperations extends DefaultResourceLoader {
 		}
 
 		List<String> list = new ArrayList<String>(suffixs.length + 1);
-		for (String name : suffixs) {
-			list.add(getEnvironmentalResourceName(resourceNameToUse, name));
+		for(int i=suffixs.length - 1; i>=0; i--){
+			list.add(getEnvironmentalResourceName(resourceNameToUse, suffixs[i]));
 		}
 		list.add(resourceNameToUse);
 		return list;
@@ -81,24 +89,17 @@ public class ResourceOperations extends DefaultResourceLoader {
 		}
 	};
 
+	/**
+	 * 可使用的资源列表，使用优先级从左到右
+	 * @param resource
+	 * @return
+	 */
 	public List<Resource> getResources(String resource) {
 		List<String> nameList = getEnvironmentalResourceNameList(resource);
-		if (nameList.size() <= 1) {
-			for (String name : nameList) {
-				Resource res = isCacheEnable() ? getResourceByCache(name)
-						: super.getResource(name);
-				if (res == null || !res.exists()) {
-					return Collections.emptyList();
-				}
-
-				return Arrays.asList(res);
-			}
-			return Collections.emptyList();
-		}
-
 		List<Resource> resources = new ArrayList<Resource>(nameList.size());
 		for (String name : nameList) {
-			Resource res = super.getResource(name);
+			Resource res = isCacheEnable() ? getResourceByCache(name)
+					: super.getResource(name);
 			if (res == null) {
 				continue;
 			}

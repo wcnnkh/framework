@@ -1,5 +1,6 @@
 package scw.logger;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 import scw.util.StringAppend;
@@ -24,7 +25,7 @@ public final class SplitLineAppend implements Serializable, StringAppend {
 		return sb.toString();
 	}
 
-	public void appendTo(Appendable appendable) throws Exception {
+	public void appendTo(Appendable appendable) throws IOException {
 		appendable.append(DIVIDING_LINE);
 		appendable.append(msg.toString());
 		appendable.append(DIVIDING_LINE);

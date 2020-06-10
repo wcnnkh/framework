@@ -13,7 +13,7 @@ import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.core.instance.annotation.Configuration;
 import scw.io.serialzer.SerializerUtils;
-import scw.net.NetworkUtils;
+import scw.net.InetUtils;
 
 @Configuration(order = Integer.MIN_VALUE)
 @Bean(proxy = false)
@@ -69,7 +69,7 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 
 		public Object create() throws Exception {
 			XMemcachedClientBuilder builder = new XMemcachedClientBuilder(
-					NetworkUtils.parseInetSocketAddressList(getHosts()));
+					InetUtils.parseInetSocketAddressList(getHosts()));
 			builderDefault(builder);
 			return builder;
 		}
