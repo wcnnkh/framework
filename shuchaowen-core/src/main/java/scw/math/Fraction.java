@@ -195,6 +195,14 @@ public class Fraction implements NumberHolder {
 	 * @return
 	 */
 	public Fraction reduction() {
+		if(molecule instanceof Fraction){
+			return ((Fraction)molecule).divide(denominator).reduction();
+		}
+		
+		if(denominator instanceof Fraction){
+			return toFractionNumberHolder(molecule).divide((Fraction)denominator).reciprocal();
+		}
+		
 		BigDecimal molecule = this.molecule.toBigDecimal();
 		if (molecule.doubleValue() == 0) {
 			return ZERO;

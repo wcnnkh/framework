@@ -40,13 +40,13 @@ import scw.xml.XMLUtils;
 
 public final class XmlDubboUtils {
 	private static final String TAG_NAME_PREFIX = "dubbo:";
-	
+
 	private static final String DUBBO_SERVICE_REF = "ref";
-	
+
 	private static final String DUBBO_SCAN_PACKAGE = "package";
-	
+
 	private static final String DEFAULT_PROTOCOL_NAME = "dubbo";
-	
+
 	private static Logger logger = LoggerUtils.getLogger(XmlDubboUtils.class);
 
 	private XmlDubboUtils() {
@@ -70,21 +70,20 @@ public final class XmlDubboUtils {
 	}
 
 	private static List<MethodConfig> parseMethodConfigList(final PropertyFactory propertyFactory, NodeList nodeList) {
-		return parseConfigList(MethodConfig.class, propertyFactory, nodeList, null,
-				new ConfigFilter<MethodConfig>() {
-					@Override
-					public boolean doFilter(List<MethodConfig> list, Node node, MethodConfig config) {
-						if (config.isValid()) {
-							List<ArgumentConfig> argumentConfigs = parseArgumentConfigList(propertyFactory,
-									node.getChildNodes());
-							if (!argumentConfigs.isEmpty()) {
-								config.setArguments(argumentConfigs);
-							}
-							return true;
-						}
-						return false;
+		return parseConfigList(MethodConfig.class, propertyFactory, nodeList, null, new ConfigFilter<MethodConfig>() {
+			@Override
+			public boolean doFilter(List<MethodConfig> list, Node node, MethodConfig config) {
+				if (config.isValid()) {
+					List<ArgumentConfig> argumentConfigs = parseArgumentConfigList(propertyFactory,
+							node.getChildNodes());
+					if (!argumentConfigs.isEmpty()) {
+						config.setArguments(argumentConfigs);
 					}
-				});
+					return true;
+				}
+				return false;
+			}
+		});
 	}
 
 	private static List<ArgumentConfig> parseArgumentConfigList(PropertyFactory propertyFactory, NodeList nodeList) {
@@ -93,8 +92,7 @@ public final class XmlDubboUtils {
 
 	public static List<MetadataReportConfig> parseMetadataReportConfigList(PropertyFactory propertyFactory,
 			NodeList nodeList, MetadataReportConfig defaultConfig) {
-		return parseConfigList(MetadataReportConfig.class, propertyFactory, nodeList,
-				defaultConfig);
+		return parseConfigList(MetadataReportConfig.class, propertyFactory, nodeList, defaultConfig);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -163,15 +161,16 @@ public final class XmlDubboUtils {
 
 	public static List<ProtocolConfig> parseProtocolConfigList(PropertyFactory propertyFactory, NodeList nodeList,
 			ProtocolConfig defaultConfig) {
-		return parseConfigList(ProtocolConfig.class, propertyFactory, nodeList, defaultConfig, new ConfigFilter<ProtocolConfig>() {
-			@Override
-			public boolean doFilter(List<ProtocolConfig> list, Node node, ProtocolConfig config) {
-				if(StringUtils.isEmpty(config.getName())){
-					config.setName(DEFAULT_PROTOCOL_NAME);
-				}
-				return config.isValid();
-			}
-		});
+		return parseConfigList(ProtocolConfig.class, propertyFactory, nodeList, defaultConfig,
+				new ConfigFilter<ProtocolConfig>() {
+					@Override
+					public boolean doFilter(List<ProtocolConfig> list, Node node, ProtocolConfig config) {
+						if (StringUtils.isEmpty(config.getName())) {
+							config.setName(DEFAULT_PROTOCOL_NAME);
+						}
+						return config.isValid();
+					}
+				});
 	}
 
 	public static List<RegistryConfig> parseRegistryConfigList(PropertyFactory propertyFactory, NodeList nodeList,
@@ -237,7 +236,7 @@ public final class XmlDubboUtils {
 			if (StringUtils.isEmpty(value)) {
 				continue;
 			}
-			
+
 			value = propertyFactory.format(value, true);
 			Field field = MapperUtils.getMapper().getField(instance.getClass(), name, null, FilterFeature.SETTER);
 			if (field == null) {
@@ -246,12 +245,11 @@ public final class XmlDubboUtils {
 			}
 
 			if (MapperUtils.isDescription(field.getSetter())) {
-				if(logger.isDebugEnabled()){
-					logger.debug("{} description field: {}", instance.getClass(), field);
-				}
+				logger.warn("{} set value={} description field: {}", instance.getClass(), value, field);
 			}
-			if(logger.isTraceEnabled()){
-				logger.trace("{} set name={}, value={}", instance.getClass(), name, value);
+			
+			if (logger.isDebugEnabled()) {
+				logger.debug("{} set name={}, value={}", instance.getClass(), name, value);
 			}
 			MapperUtils.setStringValue(field, instance, value);
 		}
@@ -293,7 +291,7 @@ public final class XmlDubboUtils {
 				if (config instanceof AbstractConfig) {
 					if (((AbstractConfig) config).isValid()) {
 						list.add(config);
-					}else{
+					} else {
 						logger.error(config);
 					}
 				} else {

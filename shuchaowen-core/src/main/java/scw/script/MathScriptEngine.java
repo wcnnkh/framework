@@ -22,7 +22,7 @@ import scw.math.NumberHolder;
 import scw.util.KeyValuePair;
 
 /**
- * 实现单简单的数学计算(并不成熟，不推荐复杂的计算)
+ * 实现单简单的数学计算(并不成熟，不推荐使用)
  * 
  * @author shuchaowen
  *
