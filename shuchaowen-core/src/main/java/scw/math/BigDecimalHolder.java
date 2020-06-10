@@ -7,8 +7,9 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public class BigDecimalHolder extends AbstractNumberHolder {
-	private static Logger logger = LoggerUtils
-			.getLogger(BigDecimalHolder.class);
+	public static final BigDecimalHolder ZERO = new BigDecimalHolder(BigDecimal.ZERO);
+	
+	private static Logger logger = LoggerUtils.getLogger(BigDecimalHolder.class);
 	private static final int DEFAULT_SCALE = 64;
 	private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 
@@ -28,8 +29,7 @@ public class BigDecimalHolder extends AbstractNumberHolder {
 		this(bigDecimal, DEFAULT_SCALE, ROUNDING_MODE);
 	}
 
-	public BigDecimalHolder(BigDecimal bigDecimal, int scale,
-			RoundingMode roundingMode) {
+	public BigDecimalHolder(BigDecimal bigDecimal, int scale, RoundingMode roundingMode) {
 		this.bigDecimal = bigDecimal;
 		this.roundingMode = roundingMode;
 		this.scale = scale;
@@ -43,48 +43,19 @@ public class BigDecimalHolder extends AbstractNumberHolder {
 		return roundingMode;
 	}
 
-	// 将当前值变为同分母分数
-	private FractionHolder toFractionNumberHolder(FractionHolder numberHolder) {
-		return new FractionHolder(numberHolder.multiply(numberHolder.getDenominator()),
-				numberHolder.getDenominator());
+	protected NumberHolder addInternal(NumberHolder numberHolder) {
+		return new BigDecimalHolder(toBigDecimal().add(numberHolder.toBigDecimal()), scale, roundingMode);
 	}
 
-	public NumberHolder add(NumberHolder numberHolder) {
-		if (numberHolder instanceof FractionHolder) {// 如果是分数
-			FractionHolder fractionHolder = (FractionHolder)numberHolder;
-			return toFractionNumberHolder(fractionHolder).add(fractionHolder);
-		}
-
-		return new BigDecimalHolder(toBigDecimal().add(
-				numberHolder.toBigDecimal()), scale, roundingMode);
+	protected NumberHolder subtractInternal(NumberHolder numberHolder) {
+		return new BigDecimalHolder(toBigDecimal().subtract(numberHolder.toBigDecimal()), scale, roundingMode);
 	}
 
-	public NumberHolder subtract(NumberHolder numberHolder) {
-		if (numberHolder instanceof FractionHolder) {// 如果是分数
-			FractionHolder fractionHolder = (FractionHolder)numberHolder;
-			return toFractionNumberHolder(fractionHolder).subtract(fractionHolder);
-		}
-		
-		return new BigDecimalHolder(toBigDecimal().subtract(
-				numberHolder.toBigDecimal()), scale, roundingMode);
+	protected NumberHolder multiplyInternal(NumberHolder numberHolder) {
+		return new BigDecimalHolder(toBigDecimal().multiply(numberHolder.toBigDecimal()), scale, roundingMode);
 	}
 
-	public NumberHolder multiply(NumberHolder numberHolder) {
-		if (numberHolder instanceof FractionHolder) {// 如果是分数
-			FractionHolder fractionHolder = (FractionHolder)numberHolder;
-			return toFractionNumberHolder(fractionHolder).multiply(fractionHolder);
-		}
-		
-		return new BigDecimalHolder(toBigDecimal().multiply(
-				numberHolder.toBigDecimal()), scale, roundingMode);
-	}
-
-	public NumberHolder divide(NumberHolder numberHolder) {
-		if (numberHolder instanceof FractionHolder) {// 如果是分数
-			FractionHolder fractionHolder = (FractionHolder)numberHolder;
-			return toFractionNumberHolder(fractionHolder).divide(fractionHolder);
-		}
-		
+	protected NumberHolder divideInternal(NumberHolder numberHolder) {
 		BigDecimal left = toBigDecimal();
 		BigDecimal right = numberHolder.toBigDecimal();
 		BigDecimal bigDecimal;
@@ -92,42 +63,27 @@ public class BigDecimalHolder extends AbstractNumberHolder {
 			bigDecimal = left.divide(right);
 		} catch (ArithmeticException e) {
 			bigDecimal = left.divide(right, scale, roundingMode);
-			logger.error("{}/{} Compulsory use value {} error:{}", left, right,
-					bigDecimal, e.getMessage());
+			logger.error("{}/{} Compulsory use value {} error:{}", left, right, bigDecimal, e.getMessage());
 		}
 		return new BigDecimalHolder(bigDecimal, scale, roundingMode);
 	}
 
-	public NumberHolder divide(NumberHolder numberHolder, int scale,
-			RoundingMode roundingMode) {
-		if (numberHolder instanceof FractionHolder) {// 如果是分数
-			FractionHolder fractionHolder = (FractionHolder)numberHolder;
-			return toFractionNumberHolder(fractionHolder).divide(fractionHolder);
+	public NumberHolder divide(NumberHolder numberHolder, int scale, RoundingMode roundingMode) {
+		if (numberHolder instanceof Fraction) {// 如果是分数
+			return divide((Fraction) numberHolder);
 		}
-		
-		return new BigDecimalHolder(toBigDecimal().divide(
-				numberHolder.toBigDecimal(), scale, roundingMode), scale,
+
+		return new BigDecimalHolder(toBigDecimal().divide(numberHolder.toBigDecimal(), scale, roundingMode), scale,
 				roundingMode);
 	}
 
-	public NumberHolder remainder(NumberHolder numberHolder) {
-		if (numberHolder instanceof FractionHolder) {// 如果是分数
-			FractionHolder fractionHolder = (FractionHolder)numberHolder;
-			return toFractionNumberHolder(fractionHolder).remainder(fractionHolder);
-		}
-		
-		return new BigDecimalHolder(toBigDecimal().remainder(
-				numberHolder.toBigDecimal()), scale, roundingMode);
+	protected NumberHolder remainderInternal(NumberHolder numberHolder) {
+		return new BigDecimalHolder(toBigDecimal().remainder(numberHolder.toBigDecimal()), scale, roundingMode);
 	}
 
-	public NumberHolder pow(NumberHolder numberHolder) {
-		if (numberHolder instanceof FractionHolder) {// 如果是分数
-			FractionHolder fractionHolder = (FractionHolder)numberHolder;
-			return toFractionNumberHolder(fractionHolder).remainder(fractionHolder);
-		}
-		
-		return new BigDecimalHolder(toBigDecimal().pow(
-				numberHolder.toBigDecimal().intValue()), scale, roundingMode);
+	protected NumberHolder powInternal(NumberHolder numberHolder) {
+		return new BigDecimalHolder(toBigDecimal().pow(numberHolder.toBigDecimal().intValueExact()), scale,
+				roundingMode);
 	}
 
 	public BigDecimal toBigDecimal() {
@@ -142,5 +98,5 @@ public class BigDecimalHolder extends AbstractNumberHolder {
 	public NumberHolder abs() {
 		return new BigDecimalHolder(bigDecimal.abs());
 	}
-	
+
 }

@@ -17,7 +17,7 @@ import scw.mapper.FieldFilter;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.math.BigDecimalHolder;
-import scw.math.FractionHolder;
+import scw.math.Fraction;
 import scw.math.NumberHolder;
 import scw.util.KeyValuePair;
 
@@ -179,7 +179,8 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 	private void resolveOperator(Collection<Fragment> fragments, String script) {
 		int lastIndex = 0;
-		for (Operator operator : OPERATORS) {
+		for(int i=OPERATORS.length - 1; i>=0; i--){
+			Operator operator = OPERATORS[i];
 			int index = StringUtils.indexOf(script, operator.getOperator(), lastIndex, script.length());
 			if(index != -1){
 				String s = script.substring(lastIndex, index);
@@ -193,7 +194,6 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	}
 
 	public NumberHolder eval(String script) {
-		System.out.println("script:" + script);
 		String scriptToUse = StringUtils.replace(script, " ", "");
 		if (StringUtils.isEmpty(scriptToUse)) {
 			return null;
@@ -459,7 +459,7 @@ public class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		}
 
 		public NumberHolder operation(NumberHolder left, NumberHolder right) {
-			return new FractionHolder(left, right);
+			return new Fraction(left, right);
 		}
 	}
 

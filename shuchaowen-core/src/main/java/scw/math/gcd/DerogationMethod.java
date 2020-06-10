@@ -1,6 +1,9 @@
 package scw.math.gcd;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+
+import scw.math.NumberHolder;
 
 /**
  * 更相减损法
@@ -34,4 +37,27 @@ public class DerogationMethod implements GreatestCommonDivisor {
 		return a;
 	}
 
+	public BigDecimal gcd(BigDecimal m, BigDecimal n) {
+		BigDecimal a = m.abs();
+		BigDecimal b = n.abs();
+		while (!a.equals(b)) {
+			if (a.compareTo(b) > 0)
+				a = a.subtract(b);
+			else
+				b = b.subtract(a);
+		}
+		return a;
+	}
+
+	public NumberHolder gcd(NumberHolder m, NumberHolder n) {
+		NumberHolder a = m.abs();
+		NumberHolder b = n.abs();
+		while (!a.equals(b)) {
+			if (a.compareTo(b) > 0)
+				a = a.subtract(b);
+			else
+				b = b.subtract(a);
+		}
+		return a;
+	}
 }
