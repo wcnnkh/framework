@@ -151,7 +151,32 @@ public class MessageProperties implements Serializable {
 	public void setClusterId(String clusterId) {
 		this.clusterId = clusterId;
 	}
+	
+	public Object getHeader(String name) {
+		if (headers == null) {
+			return null;
+		}
 
+		return headers.get(name);
+	}
+	
+	public Value getHeaderValue(String name) {
+		Object value = getHeader(name);
+		if (value == null) {
+			return null;
+		}
+		return new StringValue(value.toString());
+	}
+
+	public MessageProperties removeHeader(String name) {
+		if (headers != null) {
+			headers.remove(name);
+		}
+		return this;
+	}
+
+	/**====================以下为框架支持的方法，并非AMQP协议内容==========================**/
+	
 	public long getDelay() {
 		Object delay = getHeader(DELAY_MESSAGE);
 		return delay == null ? 0 : StringUtils.parseLong(delay.toString());
@@ -181,21 +206,6 @@ public class MessageProperties implements Serializable {
 		return this;
 	}
 
-	public Object getHeader(String name) {
-		if (headers == null) {
-			return null;
-		}
-
-		return headers.get(name);
-	}
-
-	public MessageProperties removeHeader(String name) {
-		if (headers != null) {
-			headers.remove(name);
-		}
-		return this;
-	}
-
 	public int getRetryCount() {
 		Value value = getHeaderValue(RETRY_COUNT);
 		return value == null ? 0 : value.getAsIntValue();
@@ -203,14 +213,6 @@ public class MessageProperties implements Serializable {
 
 	public void incrRetryCount() {
 		setHeader(RETRY_COUNT, getRetryCount() + 1);
-	}
-
-	public Value getHeaderValue(String name) {
-		Object value = getHeader(name);
-		if (value == null) {
-			return null;
-		}
-		return new StringValue(value.toString());
 	}
 
 	/**

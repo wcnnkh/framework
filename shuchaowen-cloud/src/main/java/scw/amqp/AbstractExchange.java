@@ -129,10 +129,6 @@ public abstract class AbstractExchange implements Exchange {
 
 		@Override
 		public void onMessage(String exchange, String routingKey, Message message) throws IOException {
-			if (logger.isTraceEnabled()) {
-				logger.trace("handleDelivery exchange:{}, routingKey:{}, message:{}", exchange, routingKey, JSONUtils.toJSONString(message));
-			}
-
 			if (message.getDelay() > 0) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("delay message forward exchange:{}, routingKey:{}, message:{}", exchange, routingKey, JSONUtils.toJSONString(message));
@@ -141,6 +137,10 @@ public abstract class AbstractExchange implements Exchange {
 				message.setDelay(0, TimeUnit.SECONDS);
 				forwardPush(routingKey, message, message.getBody());
 				return;
+			}
+			
+			if (logger.isDebugEnabled()) {
+				logger.debug("handleDelivery exchange:{}, routingKey:{}, message:{}", exchange, routingKey, JSONUtils.toJSONString(message));
 			}
 
 			Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
