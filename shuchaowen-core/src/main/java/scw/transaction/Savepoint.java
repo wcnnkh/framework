@@ -1,6 +1,4 @@
-package scw.transaction.savepoint;
-
-import scw.transaction.TransactionException;
+package scw.transaction;
 
 public interface Savepoint {
 

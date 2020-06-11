@@ -8,26 +8,12 @@ final class TransactionSynchronizationCollection extends LinkedList<TransactionS
 		implements TransactionSynchronization {
 	private static final long serialVersionUID = 1L;
 
-	public void process() throws Throwable {
+	public void commit() throws Throwable {
 		Iterator<TransactionSynchronization> iterator = iterator();
 		while (iterator.hasNext()) {
 			TransactionSynchronization transaction = iterator.next();
 			if (transaction != null) {
-				transaction.process();
-			}
-		}
-	}
-
-	public void end() {
-		ListIterator<TransactionSynchronization> iterator = listIterator(size());
-		while (iterator.hasPrevious()) {
-			TransactionSynchronization transaction = iterator.previous();
-			if (transaction != null) {
-				try {
-					transaction.end();
-				} catch (Throwable e) {
-					e.printStackTrace();
-				}
+				transaction.commit();
 			}
 		}
 	}
@@ -39,6 +25,20 @@ final class TransactionSynchronizationCollection extends LinkedList<TransactionS
 			if (transaction != null) {
 				try {
 					transaction.rollback();
+				} catch (Throwable e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public void completion() {
+		ListIterator<TransactionSynchronization> iterator = listIterator(size());
+		while (iterator.hasPrevious()) {
+			TransactionSynchronization transaction = iterator.previous();
+			if (transaction != null) {
+				try {
+					transaction.completion();
 				} catch (Throwable e) {
 					e.printStackTrace();
 				}

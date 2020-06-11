@@ -10,17 +10,17 @@ final class TransactionSynchronizationLifeCycle implements TransactionSynchroniz
 		this.transactionSynchronization = transactionSynchronization;
 	}
 
-	public void process() throws Throwable {
+	public void commit() throws Throwable {
 		if (transactionLifeCycle != null) {
-			transactionLifeCycle.beforeProcess();
+			transactionLifeCycle.beforeCommit();
 		}
 
 		if (transactionSynchronization != null) {
-			transactionSynchronization.process();
+			transactionSynchronization.commit();
 		}
 
 		if (transactionLifeCycle != null) {
-			transactionLifeCycle.afterProcess();
+			transactionLifeCycle.afterCommit();
 		}
 	}
 
@@ -38,14 +38,14 @@ final class TransactionSynchronizationLifeCycle implements TransactionSynchroniz
 		}
 	}
 
-	public void end() {
+	public void completion() {
 		try {
 			if(transactionSynchronization != null){
-				transactionSynchronization.end();
+				transactionSynchronization.completion();
 			}
 		} finally {
 			if (transactionLifeCycle != null) {
-				transactionLifeCycle.complete();
+				transactionLifeCycle.completion();
 			}
 		}
 	}

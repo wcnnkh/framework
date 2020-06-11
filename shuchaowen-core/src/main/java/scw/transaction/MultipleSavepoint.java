@@ -1,10 +1,7 @@
-package scw.transaction.savepoint;
+package scw.transaction;
 
 import java.util.Collection;
 import java.util.LinkedList;
-
-import scw.transaction.TransactionException;
-import scw.transaction.TransactionResource;
 
 public class MultipleSavepoint extends LinkedList<Savepoint> implements Savepoint {
 	private static final long serialVersionUID = 1L;

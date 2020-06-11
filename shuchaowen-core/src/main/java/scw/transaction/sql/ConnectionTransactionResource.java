@@ -50,16 +50,8 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 		return connectionFactory;
 	}
 
-	public void end() {
+	public void completion() {
 		if (hasConnection()) {
-			try {
-				if (!connection.getAutoCommit()) {
-					connection.commit();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-
 			if (isActive()) {
 				try {
 					connection.setAutoCommit(true);

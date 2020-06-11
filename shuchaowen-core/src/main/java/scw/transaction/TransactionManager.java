@@ -62,7 +62,7 @@ public final class TransactionManager {
 			} else {
 				if (transaction.isActive()) {
 					transaction = new Transaction(transaction, transactionDefinition);
-					transaction.createTempSavePoint();
+					transaction.createTempSavepoint();
 				} else {
 					transaction = new Transaction(transaction, transactionDefinition);
 				}
@@ -98,9 +98,9 @@ public final class TransactionManager {
 		if (transaction.isRollbackOnly()) {// 直接回滚
 			rollback(transaction);
 		} else {
-			transaction.process();
+			transaction.commit();
 			try {
-				transaction.end();
+				transaction.completion();
 			} finally {
 				changeLocal(transaction);
 			}
@@ -124,7 +124,7 @@ public final class TransactionManager {
 			transaction.rollback();
 		} finally {
 			try {
-				transaction.end();
+				transaction.completion();
 			} finally {
 				changeLocal(transaction);
 			}

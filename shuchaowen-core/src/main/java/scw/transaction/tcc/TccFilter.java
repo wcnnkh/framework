@@ -6,7 +6,7 @@ import scw.complete.Complete;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
-import scw.transaction.TransactionLifeCycle;
+import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 import scw.transaction.tcc.annotation.Tcc;
 
@@ -46,30 +46,23 @@ public class TccFilter implements Filter {
 
 		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚
 		final Complete cancelComplete = cancel == null ? null : tccService.registerComplete(cancel);
-		TransactionManager.transactionLifeCycle(new TransactionLifeCycle() {
-
-			public void complete() {
-			}
-
-			public void beforeRollback() {
-			}
-
-			public void beforeProcess() throws Throwable {
-			}
-
+		final Complete confirmComplete = cancel == null ? null : tccService.registerComplete(cancel);
+		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle(){
+			@Override
 			public void afterRollback() {
 				if (cancelComplete != null) {
 					cancelComplete.run();
 				}
 			}
-
-			public void afterProcess() throws Throwable {
+			
+			@Override
+			public void afterCommit() {
 				if (cancelComplete != null) {
 					cancelComplete.cancel();
 				}
-
-				if (confirm != null) {
-					tccService.registerComplete(confirm).run();
+				
+				if(confirmComplete != null){
+					confirmComplete.run();
 				}
 			}
 		});
