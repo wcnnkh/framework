@@ -1,4 +1,4 @@
-package scw.transaction.tcc;
+package scw.tcc;
 
 import scw.aop.Filter;
 import scw.aop.ProxyInvoker;
@@ -6,9 +6,9 @@ import scw.complete.Complete;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
+import scw.tcc.annotation.Tcc;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
-import scw.transaction.tcc.annotation.Tcc;
 
 @Configuration(order = Integer.MAX_VALUE)
 public class TccFilter implements Filter {

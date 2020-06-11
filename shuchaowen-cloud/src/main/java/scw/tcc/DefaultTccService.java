@@ -1,4 +1,4 @@
-package scw.transaction.tcc;
+package scw.tcc;
 
 import java.lang.reflect.Method;
 
@@ -8,7 +8,7 @@ import scw.complete.Complete;
 import scw.complete.CompleteService;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
-import scw.transaction.tcc.annotation.Tcc;
+import scw.tcc.annotation.Tcc;
 
 @Configuration(order = Integer.MIN_VALUE, value = TccService.class)
 public class DefaultTccService implements TccService {

@@ -1,4 +1,4 @@
-package scw.transaction.tcc;
+package scw.tcc;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
@@ -7,7 +7,7 @@ import java.util.LinkedHashMap;
 import scw.aop.ProxyInvoker;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.StringUtils;
-import scw.transaction.tcc.annotation.TccStage;
+import scw.tcc.annotation.TccStage;
 
 public class TryInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
