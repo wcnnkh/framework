@@ -44,7 +44,7 @@ public class TccFilter implements Filter {
 			throw new TccException("tcc definition error:" + invoker.getMethod());
 		}
 
-		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚
+		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚,但是如果存在confirm的情况下还会执行confirm，所以应该在业务中判断如果已经cancel了那么confirm无效
 		final Complete cancelComplete = cancel == null ? null : tccService.registerComplete(cancel);
 		final Complete confirmComplete = confirm == null ? null : tccService.registerComplete(confirm);
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle(){

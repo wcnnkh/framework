@@ -8,8 +8,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 /**
- * 必须要在BeanFactory中管理
- * 
+ * 以aop的方式管理事务
  * @author shuchaowen
  *
  */
