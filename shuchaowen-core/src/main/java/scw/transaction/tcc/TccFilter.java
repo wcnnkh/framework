@@ -46,10 +46,14 @@ public class TccFilter implements Filter {
 
 		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚
 		final Complete cancelComplete = cancel == null ? null : tccService.registerComplete(cancel);
-		final Complete confirmComplete = cancel == null ? null : tccService.registerComplete(cancel);
+		final Complete confirmComplete = confirm == null ? null : tccService.registerComplete(confirm);
 		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle(){
 			@Override
 			public void afterRollback() {
+				if(confirmComplete != null){
+					confirmComplete.cancel();
+				}
+				
 				if (cancelComplete != null) {
 					cancelComplete.run();
 				}
