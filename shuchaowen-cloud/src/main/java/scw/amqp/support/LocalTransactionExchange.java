@@ -28,7 +28,7 @@ public abstract class LocalTransactionExchange extends AbstractExchange {
 						.register(new PushCompleteTask(beanId, routingKey, messageProperties, body));
 				TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
 					@Override
-					public void complete() {
+					public void afterCommit() {
 						complete.run();
 					}
 

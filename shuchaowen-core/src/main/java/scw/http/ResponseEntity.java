@@ -62,7 +62,6 @@ import scw.util.MultiValueMap;
  *
  * @author Arjen Poutsma
  * @author Brian Clozel
- * @since 3.0.2
  * @param <T> the body type
  * @see #getStatusCode()
  */
@@ -138,7 +137,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	/**
 	 * Return the HTTP status code of the response.
 	 * @return the HTTP status as an int value
-	 * @since 4.3
 	 */
 	public int getStatusCodeValue() {
 		if (this.status instanceof HttpStatus) {
@@ -198,7 +196,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * Create a builder with the given status.
 	 * @param status the response status
 	 * @return the created builder
-	 * @since 4.1
 	 */
 	public static BodyBuilder status(HttpStatus status) {
 		Assert.notNull(status, "HttpStatus must not be null");
@@ -209,7 +206,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * Create a builder with the given status.
 	 * @param status the response status
 	 * @return the created builder
-	 * @since 4.1
 	 */
 	public static BodyBuilder status(int status) {
 		return new DefaultBuilder(status);
@@ -218,7 +214,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	/**
 	 * Create a builder with the status set to {@linkplain HttpStatus#OK OK}.
 	 * @return the created builder
-	 * @since 4.1
 	 */
 	public static BodyBuilder ok() {
 		return status(HttpStatus.OK);
@@ -228,7 +223,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * A shortcut for creating a {@code ResponseEntity} with the given body and
 	 * the status set to {@linkplain HttpStatus#OK OK}.
 	 * @return the created {@code ResponseEntity}
-	 * @since 4.1
 	 */
 	public static <T> ResponseEntity<T> ok(T body) {
 		BodyBuilder builder = ok();
@@ -240,7 +234,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * and a location header set to the given URI.
 	 * @param location the location URI
 	 * @return the created builder
-	 * @since 4.1
 	 */
 	public static BodyBuilder created(URI location) {
 		BodyBuilder builder = status(HttpStatus.CREATED);
@@ -250,7 +243,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	/**
 	 * Create a builder with an {@linkplain HttpStatus#ACCEPTED ACCEPTED} status.
 	 * @return the created builder
-	 * @since 4.1
 	 */
 	public static BodyBuilder accepted() {
 		return status(HttpStatus.ACCEPTED);
@@ -259,7 +251,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	/**
 	 * Create a builder with a {@linkplain HttpStatus#NO_CONTENT NO_CONTENT} status.
 	 * @return the created builder
-	 * @since 4.1
 	 */
 	public static HeadersBuilder<?> noContent() {
 		return status(HttpStatus.NO_CONTENT);
@@ -268,7 +259,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	/**
 	 * Create a builder with a {@linkplain HttpStatus#BAD_REQUEST BAD_REQUEST} status.
 	 * @return the created builder
-	 * @since 4.1
 	 */
 	public static BodyBuilder badRequest() {
 		return status(HttpStatus.BAD_REQUEST);
@@ -277,7 +267,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	/**
 	 * Create a builder with a {@linkplain HttpStatus#NOT_FOUND NOT_FOUND} status.
 	 * @return the created builder
-	 * @since 4.1
 	 */
 	public static HeadersBuilder<?> notFound() {
 		return status(HttpStatus.NOT_FOUND);
@@ -287,7 +276,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * Create a builder with an
 	 * {@linkplain HttpStatus#UNPROCESSABLE_ENTITY UNPROCESSABLE_ENTITY} status.
 	 * @return the created builder
-	 * @since 4.1.3
 	 */
 	public static BodyBuilder unprocessableEntity() {
 		return status(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -296,7 +284,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 
 	/**
 	 * Defines a builder that adds headers to the response entity.
-	 * @since 4.1
 	 * @param <B> the builder subclass
 	 */
 	public interface HeadersBuilder<B extends HeadersBuilder<B>> {
@@ -314,7 +301,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 		 * Copy the given headers into the entity's headers map.
 		 * @param headers the existing HttpHeaders to copy from
 		 * @return this builder
-		 * @since 4.1.2
 		 * @see HttpHeaders#add(String, String)
 		 */
 		B headers(HttpHeaders headers);
@@ -362,7 +348,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 		 * {@code CacheControl.maxAge(3600).cachePublic().noTransform()}.
 		 * @param cacheControl a builder for cache-related HTTP response headers
 		 * @return this builder
-		 * @since 4.2
 		 * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.2">RFC-7234 Section 5.2</a>
 		 */
 		B cacheControl(CacheControl cacheControl);
@@ -374,7 +359,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 		 * given request headers. The configured request header names are added only
 		 * if not already present in the response "Vary" header.
 		 * @param requestHeaders request header names
-		 * @since 4.3
 		 */
 		B varyBy(String... requestHeaders);
 
@@ -389,7 +373,6 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 
 	/**
 	 * Defines a builder that adds a body to the response entity.
-	 * @since 4.1
 	 */
 	public interface BodyBuilder extends HeadersBuilder<BodyBuilder> {
 

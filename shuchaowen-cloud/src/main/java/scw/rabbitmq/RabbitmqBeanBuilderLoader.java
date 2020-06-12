@@ -85,12 +85,12 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		}
 
 		public boolean isInstance() {
-			return beanFactory.isInstance(Connection.class) && beanFactory.isInstance(ExchangeDeclare.class)
+			return beanFactory.isInstance(ChannelFactory.class) && beanFactory.isInstance(ExchangeDeclare.class)
 					&& beanFactory.isInstance(CompleteService.class);
 		}
 
 		public Object create() throws Exception {
-			return new RabbitmqExchange(SerializerUtils.DEFAULT_SERIALIZER, beanFactory.getInstance(Connection.class),
+			return new RabbitmqExchange(SerializerUtils.DEFAULT_SERIALIZER, beanFactory.getInstance(ChannelFactory.class),
 					beanFactory.getInstance(ExchangeDeclare.class), beanFactory.getInstance(CompleteService.class),
 					getTargetClass().getName());
 		}

@@ -1,11 +1,11 @@
-package scw.transaction.tcc.annotation;
+package scw.tcc.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.transaction.tcc.TccService;
+import scw.tcc.TccService;
 
 /**
  * 声明一个TCC事务

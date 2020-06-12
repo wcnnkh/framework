@@ -1,4 +1,4 @@
-package scw.transaction.tcc;
+package scw.tcc;
 
 import scw.aop.Filter;
 import scw.aop.ProxyInvoker;
@@ -6,9 +6,9 @@ import scw.complete.Complete;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
-import scw.transaction.TransactionLifeCycle;
+import scw.tcc.annotation.Tcc;
+import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
-import scw.transaction.tcc.annotation.Tcc;
 
 @Configuration(order = Integer.MAX_VALUE)
 public class TccFilter implements Filter {
@@ -44,32 +44,29 @@ public class TccFilter implements Filter {
 			throw new TccException("tcc definition error:" + invoker.getMethod());
 		}
 
-		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚
+		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚,但是如果存在confirm的情况下还会执行confirm，所以应该在业务中判断如果已经cancel了那么confirm无效
 		final Complete cancelComplete = cancel == null ? null : tccService.registerComplete(cancel);
-		TransactionManager.transactionLifeCycle(new TransactionLifeCycle() {
-
-			public void complete() {
-			}
-
-			public void beforeRollback() {
-			}
-
-			public void beforeProcess() throws Throwable {
-			}
-
+		final Complete confirmComplete = confirm == null ? null : tccService.registerComplete(confirm);
+		TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle(){
+			@Override
 			public void afterRollback() {
+				if(confirmComplete != null){
+					confirmComplete.cancel();
+				}
+				
 				if (cancelComplete != null) {
 					cancelComplete.run();
 				}
 			}
-
-			public void afterProcess() throws Throwable {
+			
+			@Override
+			public void afterCommit() {
 				if (cancelComplete != null) {
 					cancelComplete.cancel();
 				}
-
-				if (confirm != null) {
-					tccService.registerComplete(confirm).run();
+				
+				if(confirmComplete != null){
+					confirmComplete.run();
 				}
 			}
 		});

@@ -3,9 +3,9 @@ package scw.db.ibatis;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
+import scw.transaction.Savepoint;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionResource;
-import scw.transaction.savepoint.Savepoint;
 
 public class MybatisTransactionResource implements TransactionResource {
 	private final SqlSessionFactory sqlSessionFactory;
@@ -26,7 +26,7 @@ public class MybatisTransactionResource implements TransactionResource {
 		return sqlSession;
 	}
 
-	public void process() throws Throwable {
+	public void commit() throws Throwable {
 		if(sqlSession != null){
 			sqlSession.commit();
 		}
@@ -38,7 +38,7 @@ public class MybatisTransactionResource implements TransactionResource {
 		}
 	}
 
-	public void end() {
+	public void completion() {
 		if(sqlSession != null){
 			MybatisUtils.closeSqlSessionProxy(sqlSession);
 		}

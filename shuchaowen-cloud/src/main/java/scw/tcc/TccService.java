@@ -1,8 +1,8 @@
-package scw.transaction.tcc;
+package scw.tcc;
 
 import scw.aop.ProxyInvoker;
 import scw.complete.Complete;
-import scw.transaction.tcc.annotation.Tcc;
+import scw.tcc.annotation.Tcc;
 
 public interface TccService {
 	Stage createConfirm(ProxyInvoker invoker, Object[] args, Object tryResult, Tcc tcc);

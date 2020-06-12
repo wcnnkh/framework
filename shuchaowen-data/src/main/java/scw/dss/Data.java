@@ -1,18 +1,31 @@
 package scw.dss;
 
+import java.io.IOException;
 import java.io.InputStream;
 
-import scw.net.message.InputMessage;
-
-public interface Data extends InputMessage {
+public interface Data {
+	/**
+	 * 数据的key
+	 * @return
+	 */
+	String getKey();
+	
 	/**
 	 * 获取数据内容
+	 * @return
+	 * @throws IOException
 	 */
-	public InputStream getBody();
+	InputStream getBody() throws IOException;
+	
+	/**
+	 * 获取内容长度
+	 * @return
+	 */
+	long getContentLength();
 
 	/**
 	 * 最后一次修改时间
 	 * @return
 	 */
-	long lastModified();
+	long lastModified() throws IOException;
 }

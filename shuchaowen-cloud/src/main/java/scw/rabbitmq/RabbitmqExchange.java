@@ -2,6 +2,8 @@ package scw.rabbitmq;
 
 import java.io.IOException;
 
+import com.rabbitmq.client.Channel;
+
 import scw.amqp.ExchangeDeclare;
 import scw.amqp.MessageListener;
 import scw.amqp.MessageProperties;
@@ -13,18 +15,14 @@ import scw.core.Assert;
 import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
-import scw.io.serialzer.SerializerUtils;
 import scw.json.JSONUtils;
-
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
 
 public class RabbitmqExchange extends LocalTransactionExchange {
 	private static final String DIX_PREFIX = "scw.dix.";
 	private static final String DELAY_PREFIX = "scw.delay.";
 	private static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
 
-	private ThreadLocal<Channel> channelThreadLocal;
+	private final ChannelFactory channelFactory;
 	private final ExchangeDeclare exchangeDeclare;
 	private final ExchangeDeclare dixExchangeDeclare;
 	private final ExchangeDeclare delayExchangeDeclare;
@@ -36,61 +34,42 @@ public class RabbitmqExchange extends LocalTransactionExchange {
 				StringUtils.isNotEmpty(name) && !name.startsWith(DIX_PREFIX) && !name.startsWith(DELAY_PREFIX), name);
 	}
 
-	public RabbitmqExchange(NoTypeSpecifiedSerializer serializer, final Connection connection,
+	public RabbitmqExchange(NoTypeSpecifiedSerializer serializer, ChannelFactory channelFactory,
 			ExchangeDeclare exchangeDeclare, CompleteService completeService, String beanId) throws IOException {
 		super(serializer, completeService, beanId);
 		checkName(exchangeDeclare.getName());
+		this.channelFactory = channelFactory;
 		//死信路由
-		this.dixExchangeDeclare = SerializerUtils.clone(exchangeDeclare)
-				.setName(DIX_PREFIX + exchangeDeclare.getName());
+		this.dixExchangeDeclare = new ExchangeDeclare(DIX_PREFIX + exchangeDeclare.getName());
 		
 		//死信队列
 		this.dixQueueDeclare = new QueueDeclare(dixExchangeDeclare.getName() + ".queue");
 		
+		//声明死信路由和队列
+		declare(dixExchangeDeclare, dixQueueDeclare);
+		
 		//延迟消息路由
-		this.delayExchangeDeclare = SerializerUtils.clone(exchangeDeclare)
-				.setName(DELAY_PREFIX + exchangeDeclare.getName());
+		this.delayExchangeDeclare = new ExchangeDeclare(DELAY_PREFIX + exchangeDeclare.getName());
 		
 		//延迟消息队列
 		this.delayQueueDeclare = new QueueDeclare(delayExchangeDeclare.getName() + ".queue");
 		//设置延迟消息的死信队列(注意: 不要给此队列绑定消费者，这样在消息过期后会进入死信队列，在死信队列中将消息发给指定队列那么就实现了消息的延迟发送)
 		delayQueueDeclare.setArgument(X_DEAD_LETTER_EXCHANGE, dixExchangeDeclare.getName());
 
-		
-		this.exchangeDeclare = SerializerUtils.clone(exchangeDeclare);
-		
-
-		channelThreadLocal = new ThreadLocal<Channel>() {
-			@Override
-			protected Channel initialValue() {
-				try {
-					return connection.createChannel();
-				} catch (IOException e) {
-					logger.error(e, "create channel error");
-					return null;
-				}
-			}
-		};
-		
-		//声明死信路由和队列
-		declare(dixExchangeDeclare, dixQueueDeclare);
-		
 		//声明延迟消息路由和队列
 		declare(exchangeDeclare, delayQueueDeclare);
-	}
-	
-	protected final Channel getChannel(){
-		return channelThreadLocal.get();
+		
+		this.exchangeDeclare = exchangeDeclare;
 	}
 
 	private void declare(ExchangeDeclare exchangeDeclare, QueueDeclare queueDeclare)
 			throws IOException {
 		if(exchangeDeclare != null){
-			getChannel().exchangeDeclare(exchangeDeclare.getName(), exchangeDeclare.getType(), exchangeDeclare.isDurable(),
+			channelFactory.getChannel().exchangeDeclare(exchangeDeclare.getName(), exchangeDeclare.getType(), exchangeDeclare.isDurable(),
 					exchangeDeclare.isAutoDelete(), exchangeDeclare.isInternal(), exchangeDeclare.getArguments());
 		}
 		if(queueDeclare != null){
-			getChannel().queueDeclare(queueDeclare.getName(), queueDeclare.isDurable(), queueDeclare.isExclusive(),
+			channelFactory.getChannel().queueDeclare(queueDeclare.getName(), queueDeclare.isDurable(), queueDeclare.isExclusive(),
 					queueDeclare.isAutoDelete(), queueDeclare.getArguments());
 		}
 	}
@@ -103,10 +82,10 @@ public class RabbitmqExchange extends LocalTransactionExchange {
 		}
 		
 		declare(exchangeDeclare, queueDeclare);
-		getChannel().queueBind(queueDeclare.getName(), exchangeDeclare.getName(), routingKey);
+		channelFactory.getChannel().queueBind(queueDeclare.getName(), exchangeDeclare.getName(), routingKey);
 		if (messageListener != null) {
-			getChannel().basicConsume(queueDeclare.getName(), false,
-					new RabbitmqMessageListener(getChannel(), messageListener, isMultiple()));
+			channelFactory.getChannel().basicConsume(queueDeclare.getName(), false,
+					new RabbitmqMessageListener(channelFactory.getChannel(), messageListener, isMultiple()));
 		}
 	}
 
@@ -126,12 +105,8 @@ public class RabbitmqExchange extends LocalTransactionExchange {
 	}
 
 	protected void basePush(String routingKey, MessageProperties messageProperties, byte[] body) {
-		Channel channel = channelThreadLocal.get();
-		if (channel == null) {
-			throw new RuntimeException("Unable to get rabbitmq channel");
-		}
 		try {
-			push(channel, routingKey, messageProperties, body);
+			push(channelFactory.getChannel(), routingKey, messageProperties, body);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

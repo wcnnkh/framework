@@ -1,4 +1,4 @@
-package scw.transaction.tcc;
+package scw.tcc;
 
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
@@ -9,7 +9,7 @@ import scw.complete.RelyOnBeanFactoryCompleteTask;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
-import scw.transaction.tcc.annotation.TryResult;
+import scw.tcc.annotation.TryResult;
 
 public class Stage extends RelyOnBeanFactoryCompleteTask {
 	private static final long serialVersionUID = 1L;	

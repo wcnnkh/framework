@@ -8,14 +8,14 @@ package scw.transaction;
  */
 public interface TransactionLifeCycle {
 	/**
-	 * 在执行之前调用
+	 * 在commit之前调用
 	 */
-	void beforeProcess() throws Throwable;
+	void beforeCommit() throws Throwable;
 
 	/**
-	 * 在执行之后调用
+	 * 在commit之后调用
 	 */
-	void afterProcess() throws Throwable;
+	void afterCommit();
 
 	/**
 	 * 在事务回滚前调用
@@ -34,5 +34,5 @@ public interface TransactionLifeCycle {
 	/**
 	 * 事务结束后调用
 	 */
-	void complete();
+	void completion();
 }

@@ -1,4 +1,4 @@
-package scw.transaction.savepoint;
+package scw.transaction.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -6,7 +6,7 @@ import java.sql.Savepoint;
 
 import scw.transaction.TransactionException;
 
-public class ConnectionSavepoint implements scw.transaction.savepoint.Savepoint {
+public class ConnectionSavepoint implements scw.transaction.Savepoint {
 	private Connection connection;
 	private Savepoint savepoint;
 

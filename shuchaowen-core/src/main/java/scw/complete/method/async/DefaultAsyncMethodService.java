@@ -13,8 +13,7 @@ public class DefaultAsyncMethodService implements AsyncMethodService {
 	private Executor executor;
 	private CompleteService completeService;
 
-	public DefaultAsyncMethodService(Executor executor,
-			CompleteService completeService) {
+	public DefaultAsyncMethodService(Executor executor, CompleteService completeService) {
 		this.executor = executor;
 		this.completeService = completeService;
 	}
@@ -22,18 +21,17 @@ public class DefaultAsyncMethodService implements AsyncMethodService {
 	public void service(AsyncMethodCompleteTask asyncComplete) throws Exception {
 		final Complete complete = completeService.register(asyncComplete);
 		if (TransactionManager.hasTransaction()) {
-			TransactionManager
-					.transactionLifeCycle(new DefaultTransactionLifeCycle() {
-						@Override
-						public void afterRollback() {
-							complete.cancel();
-						}
+			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+				@Override
+				public void afterRollback() {
+					complete.cancel();
+				}
 
-						@Override
-						public void afterProcess() {
-							executor.execute(complete);
-						}
-					});
+				@Override
+				public void afterCommit() {
+					executor.execute(complete);
+				}
+			});
 		} else {
 			executor.execute(complete);
 		}

@@ -36,7 +36,6 @@ import scw.io.Resource;
  *
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 1.2.6
  * @see Resource#getInputStream()
  * @see java.io.Reader
  * @see java.nio.charset.Charset

@@ -4,9 +4,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
+import scw.transaction.Savepoint;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionResource;
-import scw.transaction.savepoint.Savepoint;
 
 public class HibernateTransactionResource implements TransactionResource {
 	private final SessionFactory sessionFactory;
@@ -35,7 +35,7 @@ public class HibernateTransactionResource implements TransactionResource {
 		return session;
 	}
 
-	public void process() throws Throwable {
+	public void commit() throws Throwable {
 		if (transaction != null) {
 			transaction.commit();
 		}
@@ -47,7 +47,7 @@ public class HibernateTransactionResource implements TransactionResource {
 		}
 	}
 
-	public void end() {
+	public void completion() {
 		if (session != null) {
 			HibernateUtils.closeProxySession(session);
 		}

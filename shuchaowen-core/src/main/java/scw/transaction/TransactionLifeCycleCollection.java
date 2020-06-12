@@ -5,15 +5,15 @@ import java.util.LinkedList;
 final class TransactionLifeCycleCollection extends LinkedList<TransactionLifeCycle> implements TransactionLifeCycle {
 	private static final long serialVersionUID = 1L;
 
-	public void beforeProcess() throws Throwable {
+	public void beforeCommit() throws Throwable {
 		for (TransactionLifeCycle lifeCycle : this) {
-			lifeCycle.beforeProcess();
+			lifeCycle.beforeCommit();
 		}
 	}
 
-	public void afterProcess() throws Throwable{
+	public void afterCommit(){
 		for (TransactionLifeCycle lifeCycle : this) {
-			lifeCycle.afterProcess();
+			lifeCycle.afterCommit();
 		}
 	}
 
@@ -29,9 +29,9 @@ final class TransactionLifeCycleCollection extends LinkedList<TransactionLifeCyc
 		}
 	}
 
-	public void complete() {
+	public void completion() {
 		for (TransactionLifeCycle lifeCycle : this) {
-			lifeCycle.complete();
+			lifeCycle.completion();
 		}
 	}
 

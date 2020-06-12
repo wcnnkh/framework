@@ -1,57 +1,34 @@
 package scw.dss;
 
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 /**
  * 数据存储系统
+ * 
  * @author shuchaowen
  *
  */
 public interface DataStorageSystem {
 	/**
 	 * 获取数据
+	 * 
 	 * @param key
 	 * @return
 	 * @throws DataStorageSystemException
 	 */
-	Data get(String key) throws DataStorageSystemException;
+	Data get(String key) throws DataStorageSystemException, IOException;
 
 	/**
 	 * 保存数据
 	 * 
 	 * @param key
 	 *            数据的key
-	 * @param data
-	 *            数据
-	 * @param cover
-	 *            如果数据存在是否覆盖
-	 * @return 是否保存成功(例如：如果cover为false, 此时数据已经存在那么返回false)
+	 * @param input 输入数据
 	 * @throws DataStorageSystemException
 	 */
-	boolean set(String key, Data data, boolean cover)
-			throws DataStorageSystemException;
-
-	/**
-	 * 为数据设置过期时间
-	 * 
-	 * @param key
-	 * @param expire
-	 *            多久后过期
-	 * @param timeUnit
-	 *            过期时间单位
-	 * @return 设置成功返回treu 设置失败返回false
-	 * @throws DataStorageSystemException
-	 */
-	boolean setExpire(String key, long expire, TimeUnit expireTimeUnit)
-			throws DataStorageSystemException;
-
-	/**
-	 * 获取数据的过期时间
-	 * 
-	 * @param key
-	 * @return 单位:毫秒
-	 */
-	long getExpire(String key);
+	boolean put(String key, InputStream input) throws DataStorageSystemException, IOException;
 
 	/**
 	 * 数据是否存在
@@ -60,5 +37,22 @@ public interface DataStorageSystem {
 	 * @return
 	 * @throws DataStorageSystemException
 	 */
-	boolean isExist(String key) throws DataStorageSystemException;
+	boolean isExist(String key) throws DataStorageSystemException, IOException;
+
+	/**
+	 * 获取数据列表
+	 * @param keyPrefix key的前缀
+	 * @param marker 指定key之后的数据
+	 * @param limit 一次最多返回多少数据
+	 * @return
+	 */
+	List<Data> getList(String keyPrefix, String marker, int limit) throws DataStorageSystemException, IOException;
+	
+	/**
+	 * 删除数据
+	 * @param key
+	 * @return
+	 * @throws DataStorageSystemException
+	 */
+	boolean delete(String key) throws DataStorageSystemException, IOException;
 }

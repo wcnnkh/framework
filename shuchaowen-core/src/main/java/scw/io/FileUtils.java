@@ -325,7 +325,6 @@ public final class FileUtils {
 	 *         false otherwise
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 2.2
 	 * @see IOUtils#contentEqualsIgnoreEOL(Reader, Reader)
 	 */
 	public static boolean contentEqualsIgnoreEOL(File file1, File file2,
@@ -468,7 +467,6 @@ public final class FileUtils {
 	 *             if any file is not a URL file
 	 * @throws IllegalArgumentException
 	 *             if any file is incorrectly encoded
-	 * @since 1.1
 	 */
 	public static File[] toFiles(URL[] urls, Charset charset) {
 		if (urls == null || urls.length == 0) {
@@ -572,7 +570,6 @@ public final class FileUtils {
 	 * @throws IOException
 	 *             if an IO error occurs during copying
 	 * @see #copyFile(File, File, boolean)
-	 * @since 1.3
 	 */
 	public static void copyFileToDirectory(File srcFile, File destDir,
 			boolean preserveFileDate, long bufSize) throws IOException {
@@ -698,7 +695,6 @@ public final class FileUtils {
 	 *             if the input or output is null
 	 * @throws IOException
 	 *             if an I/O error occurs
-	 * @since 2.1
 	 */
 	public static long copyFile(File input, OutputStream output)
 			throws IOException {
@@ -789,7 +785,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs during copying
-	 * @since 1.2
 	 */
 	public static void copyDirectoryToDirectory(File srcDir, File destDir,
 			long bufSize) throws IOException {
@@ -838,7 +833,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs during copying
-	 * @since 1.1
 	 */
 	public static void copyDirectory(File srcDir, File destDir, long bufSize)
 			throws IOException {
@@ -875,7 +869,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs during copying
-	 * @since 1.1
 	 */
 	public static void copyDirectory(File srcDir, File destDir,
 			boolean preserveFileDate, long bufSize) throws IOException {
@@ -934,7 +927,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs during copying
-	 * @since 1.4
 	 */
 	public static void copyDirectory(File srcDir, File destDir,
 			FileFilter filter, long bufSize) throws IOException {
@@ -996,7 +988,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs during copying
-	 * @since 1.4
 	 */
 	public static void copyDirectory(File srcDir, File destDir,
 			FileFilter filter, boolean preserveFileDate, long bufSize)
@@ -1055,7 +1046,6 @@ public final class FileUtils {
 	 *            null
 	 * @throws IOException
 	 *             if an error occurs
-	 * @since 1.1
 	 */
 	private static void doCopyDirectory(File srcDir, File destDir,
 			FileFilter filter, boolean preserveFileDate,
@@ -1163,7 +1153,6 @@ public final class FileUtils {
 	 *             if <code>destination</code> needs creating but can't be
 	 * @throws IOException
 	 *             if an IO error occurs during copying
-	 * @since 2.0
 	 */
 	public static void copyURLToFile(URL source, File destination,
 			int connectionTimeout, int readTimeout) throws IOException {
@@ -1194,7 +1183,6 @@ public final class FileUtils {
 	 *             if <code>destination</code> needs creating but can't be
 	 * @throws IOException
 	 *             if an IO error occurs during copying
-	 * @since 2.0
 	 */
 	public static void copyInputStreamToFile(InputStream source,
 			File destination) throws IOException {
@@ -1251,7 +1239,6 @@ public final class FileUtils {
 	 * @return <code>true</code> if the file or directory was deleted, otherwise
 	 *         <code>false</code>
 	 *
-	 * @since 1.4
 	 */
 	public static boolean deleteQuietly(File file) {
 		if (file == null) {
@@ -1296,7 +1283,6 @@ public final class FileUtils {
 	 *         False otherwise.
 	 * @throws IOException
 	 *             if an IO error occurs while checking the files.
-	 * @since 2.2
 	 * @see FilenameUtils#directoryContains(String, String)
 	 */
 	public static boolean directoryContains(final File directory,
@@ -1434,7 +1420,6 @@ public final class FileUtils {
 	 * @return the file contents, never <code>null</code>
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 1.3.1
 	 */
 	public static String readFileToString(File file) throws IOException {
 		return readFileToString(file, null);
@@ -1449,7 +1434,6 @@ public final class FileUtils {
 	 * @return the file contents, never <code>null</code>
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 1.1
 	 */
 	public static byte[] readFileToByteArray(File file) throws IOException {
 		InputStream in = null;
@@ -1475,7 +1459,6 @@ public final class FileUtils {
 	 *             in case of an I/O error
 	 * @throws java.io.UnsupportedEncodingException
 	 *             if the encoding is not supported by the VM
-	 * @since 1.1
 	 */
 	public static List<String> readLines(File file, String encoding)
 			throws IOException {
@@ -1498,7 +1481,6 @@ public final class FileUtils {
 	 *         <code>null</code>
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 1.3
 	 */
 	public static List<String> readLines(File file) throws IOException {
 		return readLines(file, null);
@@ -1543,7 +1525,6 @@ public final class FileUtils {
 	 *             in case of an I/O error
 	 * @throws java.io.UnsupportedEncodingException
 	 *             if the encoding is not supported by the VM
-	 * @since 2.1
 	 */
 	public static void writeStringToFile(File file, String data,
 			String encoding, boolean append) throws IOException {
@@ -1587,7 +1568,6 @@ public final class FileUtils {
 	 *            of the file rather than overwriting
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 2.1
 	 */
 	public static void writeStringToFile(File file, String data, boolean append)
 			throws IOException {
@@ -1604,7 +1584,6 @@ public final class FileUtils {
 	 *            the content to write to the file
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 2.0
 	 */
 	public static void write(File file, CharSequence data) throws IOException {
 		write(file, data, null, false);
@@ -1623,7 +1602,6 @@ public final class FileUtils {
 	 *            of the file rather than overwriting
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 2.1
 	 */
 	public static void write(File file, CharSequence data, boolean append)
 			throws IOException {
@@ -1643,7 +1621,6 @@ public final class FileUtils {
 	 *             in case of an I/O error
 	 * @throws java.io.UnsupportedEncodingException
 	 *             if the encoding is not supported by the VM
-	 * @since 2.0
 	 */
 	public static void write(File file, CharSequence data, String encoding)
 			throws IOException {
@@ -1666,7 +1643,6 @@ public final class FileUtils {
 	 *             in case of an I/O error
 	 * @throws java.io.UnsupportedEncodingException
 	 *             if the encoding is not supported by the VM
-	 * @since IO 2.1
 	 */
 	public static void write(File file, CharSequence data, String encoding,
 			boolean append) throws IOException {
@@ -1686,7 +1662,6 @@ public final class FileUtils {
 	 *            the content to write to the file
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 1.1
 	 */
 	public static void writeByteArrayToFile(File file, byte[] data)
 			throws IOException {
@@ -1705,7 +1680,6 @@ public final class FileUtils {
 	 *            the file rather than overwriting
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since IO 2.1
 	 */
 	public static void writeByteArrayToFile(File file, byte[] data,
 			boolean append) throws IOException {
@@ -1739,7 +1713,6 @@ public final class FileUtils {
 	 *             in case of an I/O error
 	 * @throws java.io.UnsupportedEncodingException
 	 *             if the encoding is not supported by the VM
-	 * @since 1.1
 	 */
 	public static void writeLines(File file, String encoding,
 			Collection<?> lines) throws IOException {
@@ -1765,7 +1738,6 @@ public final class FileUtils {
 	 *             in case of an I/O error
 	 * @throws java.io.UnsupportedEncodingException
 	 *             if the encoding is not supported by the VM
-	 * @since 2.1
 	 */
 	public static void writeLines(File file, String encoding,
 			Collection<?> lines, boolean append) throws IOException {
@@ -1784,7 +1756,6 @@ public final class FileUtils {
 	 *            lines
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 1.3
 	 */
 	public static void writeLines(File file, Collection<?> lines)
 			throws IOException {
@@ -1806,7 +1777,6 @@ public final class FileUtils {
 	 *            of the file rather than overwriting
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 2.1
 	 */
 	public static void writeLines(File file, Collection<?> lines, boolean append)
 			throws IOException {
@@ -1834,7 +1804,6 @@ public final class FileUtils {
 	 *             in case of an I/O error
 	 * @throws java.io.UnsupportedEncodingException
 	 *             if the encoding is not supported by the VM
-	 * @since 1.1
 	 */
 	public static void writeLines(File file, String encoding,
 			Collection<?> lines, String lineEnding) throws IOException {
@@ -1862,7 +1831,6 @@ public final class FileUtils {
 	 *             in case of an I/O error
 	 * @throws java.io.UnsupportedEncodingException
 	 *             if the encoding is not supported by the VM
-	 * @since 2.1
 	 */
 	public static void writeLines(File file, String encoding,
 			Collection<?> lines, String lineEnding, boolean append)
@@ -1892,7 +1860,6 @@ public final class FileUtils {
 	 *            the line separator to use, <code>null</code> is system default
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 1.3
 	 */
 	public static void writeLines(File file, Collection<?> lines,
 			String lineEnding) throws IOException {
@@ -1916,7 +1883,6 @@ public final class FileUtils {
 	 *            of the file rather than overwriting
 	 * @throws IOException
 	 *             in case of an I/O error
-	 * @since 2.1
 	 */
 	public static void writeLines(File file, Collection<?> lines,
 			String lineEnding, boolean append) throws IOException {
@@ -2094,7 +2060,6 @@ public final class FileUtils {
 	 * @throws IllegalArgumentException
 	 *             if the file does not exist.
 	 * 
-	 * @since 2.0
 	 */
 	public static long sizeOf(File file) {
 
@@ -2313,7 +2278,6 @@ public final class FileUtils {
 	 *             if the file is a directory
 	 * @throws IOException
 	 *             if an IO error occurs reading the file
-	 * @since 1.3
 	 */
 	public static long checksumCRC32(File file) throws IOException {
 		CRC32 crc = new CRC32();
@@ -2341,7 +2305,6 @@ public final class FileUtils {
 	 *             if the file is a directory
 	 * @throws IOException
 	 *             if an IO error occurs reading the file
-	 * @since 1.3
 	 */
 	public static Checksum checksum(File file, Checksum checksum)
 			throws IOException {
@@ -2377,7 +2340,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs moving the file
-	 * @since 1.4
 	 */
 	public static void moveDirectory(File srcDir, File destDir, long bufSize)
 			throws IOException {
@@ -2432,7 +2394,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs moving the file
-	 * @since 1.4
 	 */
 	public static void moveDirectoryToDirectory(File src, File destDir,
 			boolean createDestDir, long bufSize) throws IOException {
@@ -2475,7 +2436,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs moving the file
-	 * @since 1.4
 	 */
 	public static void moveFile(File srcFile, File destFile, long bufSize)
 			throws IOException {
@@ -2529,7 +2489,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs moving the file
-	 * @since 1.4
 	 */
 	public static void moveFileToDirectory(File srcFile, File destDir,
 			boolean createDestDir, long bufSize) throws IOException {
@@ -2574,7 +2533,6 @@ public final class FileUtils {
 	 *             if source or destination is invalid
 	 * @throws IOException
 	 *             if an IO error occurs moving the file
-	 * @since 1.4
 	 */
 	public static void moveToDirectory(File src, File destDir,
 			boolean createDestDir, long bufSize) throws IOException {
@@ -2611,7 +2569,6 @@ public final class FileUtils {
 	 * @return true if the file is a Symbolic Link
 	 * @throws IOException
 	 *             if an IO error occurs while checking the file
-	 * @since 2.0
 	 */
 	public static boolean isSymlink(File file) throws IOException {
 		if (file == null) {

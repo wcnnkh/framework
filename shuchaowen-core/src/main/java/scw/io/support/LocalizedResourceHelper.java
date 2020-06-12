@@ -28,7 +28,6 @@ import scw.io.ResourceLoader;
  * specified through name, extension and current locale.
  *
  * @author Juergen Hoeller
- * @since 1.2.5
  */
 public class LocalizedResourceHelper {
 

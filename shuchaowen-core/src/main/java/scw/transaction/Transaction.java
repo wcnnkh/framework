@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.lang.AlreadyExistsException;
-import scw.transaction.savepoint.MultipleSavepoint;
-import scw.transaction.savepoint.Savepoint;
 
 public final class Transaction {
 	private final Transaction parent;
@@ -19,7 +17,7 @@ public final class Transaction {
 
 	private Map<Object, Object> resourceMap;
 	private TransactionLifeCycleCollection tlcc;
-	private Savepoint savepoint;
+	private Savepoint tempSavepoint;
 	private boolean complete;
 	private boolean rollbackOnly;// 此事务直接回滚，不再提供服务
 
@@ -90,8 +88,12 @@ public final class Transaction {
 		resourceMap.put(name, resource);
 	}
 
-	protected void createTempSavePoint() {
-		this.savepoint = createSavepoint();
+	protected void createTempSavepoint() {
+		if(hasSavepoint()){
+			throw new TransactionException("一个事务不能存在多个savepoint");
+		}
+		
+		this.tempSavepoint = createSavepoint();
 	}
 
 	private TransactionSynchronizationLifeCycle tslc;
@@ -122,25 +124,6 @@ public final class Transaction {
 		tslc = new TransactionSynchronizationLifeCycle(stsc, tlcc);
 	}
 
-	protected void process() throws Throwable {
-		if (isComplete()) {
-			return;
-		}
-
-		if (isRollbackOnly()) {
-			return;
-		}
-
-		if (!isNewTransaction()) {
-			return;
-		}
-
-		init();
-		if (tslc != null) {
-			tslc.process();
-		}
-	}
-
 	public boolean isRollbackOnly() {
 		return rollbackOnly;
 	}
@@ -148,67 +131,18 @@ public final class Transaction {
 	public void setRollbackOnly(boolean rollbackOnly) {
 		this.rollbackOnly = rollbackOnly;
 	}
-
-	protected void rollback() throws TransactionException {
-		if (complete) {
-			return;
-		}
-
-		if (savepoint != null) {
-			savepoint.rollback();
-		}
-
-		if (!newTransaction) {
-			return;
-		}
-
-		init();
-		if (tslc != null) {
-			tslc.rollback();
-		}
-	}
-
-	protected void end() {
-		if (complete) {
-			return;
-		}
-
-		complete = true;
-
-		if (savepoint != null) {
-			try {
-				savepoint.release();
-			} finally {
-				savepoint = null;
-			}
-		}
-
-		if (!newTransaction) {
-			return;
-		}
-
-		init();
-		if (tslc != null) {
-			tslc.end();
-		}
-	}
-
-	private Savepoint createSavepoint() throws TransactionException {
+	
+	public Savepoint createSavepoint(){
 		checkStatus();
-
 		if (resourceMap == null) {
-			return null;
+			return new EmptySavepoint();
 		}
 
 		return new MultipleSavepoint(getTransactionResources());
 	}
 
 	public boolean hasSavepoint() {
-		return savepoint != null;
-	}
-
-	public Object getSavepoint() {
-		return savepoint;
+		return tempSavepoint != null;
 	}
 
 	public boolean isNewTransaction() {
@@ -229,5 +163,68 @@ public final class Transaction {
 
 	public boolean isComplete() {
 		return complete;
+	}
+	
+	protected void commit() throws Throwable {
+		if (isComplete()) {
+			return;
+		}
+
+		if (isRollbackOnly()) {
+			return;
+		}
+
+		if (!isNewTransaction()) {
+			return;
+		}
+
+		init();
+		if (tslc != null) {
+			tslc.commit();
+		}
+	}
+
+	protected void rollback() throws TransactionException {
+		if (complete) {
+			return;
+		}
+
+		if (tempSavepoint != null) {
+			tempSavepoint.rollback();
+		}
+
+		if (!newTransaction) {
+			return;
+		}
+
+		init();
+		if (tslc != null) {
+			tslc.rollback();
+		}
+	}
+
+	protected void completion() {
+		if (complete) {
+			return;
+		}
+
+		complete = true;
+
+		if (tempSavepoint != null) {
+			try {
+				tempSavepoint.release();
+			} finally {
+				tempSavepoint = null;
+			}
+		}
+
+		if (!newTransaction) {
+			return;
+		}
+
+		init();
+		if (tslc != null) {
+			tslc.completion();
+		}
 	}
 }

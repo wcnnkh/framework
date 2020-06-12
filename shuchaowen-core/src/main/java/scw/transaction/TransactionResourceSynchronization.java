@@ -7,12 +7,12 @@ class TransactionResourceSynchronization implements TransactionSynchronization {
 		this.transactionResource = transactionResource;
 	}
 
-	public void process() throws Throwable {
+	public void commit() throws Throwable {
 		if (transactionResource == null) {
 			return;
 		}
 
-		transactionResource.process();
+		transactionResource.commit();
 	}
 
 	public void rollback() {
@@ -23,12 +23,12 @@ class TransactionResourceSynchronization implements TransactionSynchronization {
 		transactionResource.rollback();
 	}
 
-	public void end() {
+	public void completion() {
 		if (transactionResource == null) {
 			return;
 		}
 
-		transactionResource.end();
+		transactionResource.completion();
 	}
 
 }
