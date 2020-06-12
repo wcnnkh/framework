@@ -28,7 +28,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 			return new ConnectionFactoryBeanBuilder(context);
 		} else if (context.getTargetClass() == Connection.class) {
 			return new ConnectionBeanBuilder(context);
-		} else if (Exchange.class == context.getTargetClass()) {
+		} else if (Exchange.class == context.getTargetClass() || RabbitmqExchange.class == context.getTargetClass()) {
 			return new ExchangeBeanBuilder(context);
 		} else if (context.getTargetClass() == ExchangeDeclare.class) {
 			return new ExchangeDeclareBeanBuilder(context);
