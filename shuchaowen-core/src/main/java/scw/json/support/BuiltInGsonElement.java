@@ -48,4 +48,8 @@ public final class BuiltInGsonElement extends AbstractJsonElement {
 	public boolean isJsonObject() {
 		return gsonJsonElement.isJsonObject();
 	}
+
+	public boolean isEmpty() {
+		return gsonJsonElement.isJsonNull();
+	}
 }

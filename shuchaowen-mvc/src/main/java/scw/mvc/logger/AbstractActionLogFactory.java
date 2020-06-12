@@ -15,7 +15,7 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	protected abstract Map<String, String> getAttributeMap(Action action, HttpChannel httpChannel);
 
 	protected String getAttirubteValue(HttpChannel httpChannel, String name) {
-		return httpChannel.getString(name);
+		return httpChannel.getValue(name).getAsString();
 	}
 
 	protected String getController(HttpChannel httpChannel, Action action) {

@@ -43,13 +43,13 @@ import scw.mvc.beans.HttpChannelBeanManager;
 import scw.mvc.parameter.RequestBodyParse;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
+import scw.value.AbstractStringValue;
 import scw.value.DefaultValueDefinition;
-import scw.value.SimpleValueFactory;
 import scw.value.StringValue;
 import scw.value.Value;
 
 public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends ServerHttpResponse>
-		extends SimpleValueFactory implements HttpChannel, Destroy {
+		implements HttpChannel, Destroy {
 	private static final long WARN_TIMEOUT = GlobalPropertyFactory.getInstance().getValue("mvc.warn-execute-time",
 			long.class, 100L);
 	private final long createTime;
@@ -112,24 +112,17 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		}
 	}
 
-	public long getCreateTime() {
+	public final long getCreateTime() {
 		return createTime;
 	}
 
-	protected Value parseValue(String value) {
-		return new StringValue(value, getDefaultValue());
+	public final Value getValue(String name) {
+		return getValue(name, DefaultValueDefinition.DEFAULT_VALUE_DEFINITION);
 	}
 
-	protected Value getDefaultValue() {
-		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;
-	};
-
-	public Value get(String key) {
-		String value = getStringValue(key);
-		if (value == null) {
-			return null;
-		}
-		return parseValue(value);
+	public final Value getValue(String name, Value defaultValue) {
+		return new RequestValue(name,
+				defaultValue == null ? DefaultValueDefinition.DEFAULT_VALUE_DEFINITION : defaultValue);
 	}
 
 	public String[] getStringArray(String key) {
@@ -148,7 +141,7 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E> E[] getArray(String name, Class<? extends E> type) {
+	public final <E> E[] getArray(String name, Class<? extends E> type) {
 		String[] values = getStringArray(name);
 		if (values == null) {
 			return (E[]) Array.newInstance(type, 0);
@@ -156,14 +149,13 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 
 		Object array = Array.newInstance(type, values.length);
 		for (int i = 0; i < values.length; i++) {
-			Value value = parseValue(values[i]);
+			Value value = new StringValue(values[i]);
 			Array.set(array, i, value.getAsObject(type));
 		}
 		return (E[]) array;
 	}
 
-	@Override
-	protected Object getObjectSupport(String key, Class<?> type) {
+	private final Object getObjectSupport(String key, Class<?> type) {
 		if (type.isArray()) {
 			return getArray(key, type.getComponentType());
 		}
@@ -186,7 +178,6 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 	}
 
 	// 一般情况下建议重写止方法，因为默认的实现不支持泛型
-	@Override
 	protected Object getObjectSupport(String key, Type type) {
 		return getObjectSupport(key, TypeUtils.toClass(type));
 	}
@@ -228,26 +219,24 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 					: getHttpChannelBeanManager().getBean(requestBean.value());
 		}
 
+		Value defaultValue = ParameterUtils.getDefaultValue(parameterDescriptor);
 		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor.getAnnotatedElement()
 				.getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
-			return bigDecimalMultiply(parameterDescriptor, bigDecimalMultiply);
+			return bigDecimalMultiply(parameterDescriptor, bigDecimalMultiply, defaultValue);
 		}
 
 		DateFormat dateFormat = parameterDescriptor.getAnnotatedElement().getAnnotation(DateFormat.class);
 		if (dateFormat != null) {
-			return dateFormat(dateFormat, parameterDescriptor);
+			return dateFormat(dateFormat, parameterDescriptor, defaultValue);
 		}
 
-		Value value = ParameterUtils.getDefaultValue(parameterDescriptor);
-		if (value != null) {
-			return value.getAsObject(parameterDescriptor.getGenericType());
-		}
-		return getObject(parameterDescriptor.getName(), parameterDescriptor.getGenericType());
+		Value value = getValue(parameterDescriptor.getName(), defaultValue);
+		return value.getAsObject(parameterDescriptor.getGenericType());
 	}
 
-	protected Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterDescriptor) {
-		String value = getString(parameterDescriptor.getName());
+	private Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterDescriptor, Value defaultValue) {
+		String value = getValue(parameterDescriptor.getName(), defaultValue).getAsString();
 		if (TypeUtils.isString(parameterDescriptor.getType())) {
 			return StringUtils.isEmpty(value) ? value
 					: new SimpleDateFormat(dateFormat.value()).format(StringUtils.parseLong(value));
@@ -277,9 +266,9 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		throw new ParameterException("not support type [" + parameterDescriptor.getType() + "]");
 	}
 
-	protected Object bigDecimalMultiply(ParameterDescriptor parameterDescriptor,
-			BigDecimalMultiply bigDecimalMultiply) {
-		String value = getString(parameterDescriptor.getName());
+	private Object bigDecimalMultiply(ParameterDescriptor parameterDescriptor, BigDecimalMultiply bigDecimalMultiply,
+			Value defaultValue) {
+		String value = getValue(parameterDescriptor.getName(), defaultValue).getAsString();
 		if (StringUtils.isEmpty(value)) {
 			return castBigDecimal(null, parameterDescriptor.getType());
 		}
@@ -305,12 +294,7 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		return NumberUtils.converPrimitive(bigDecimal, type);
 	}
 
-	@Override
-	protected Value getDefaultValue(String key) {
-		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;
-	}
-
-	protected String decodeGETParameter(String value) {
+	protected final String decodeGETParameter(String value) {
 		if (StringUtils.containsChinese(value)) {
 			return value;
 		}
@@ -354,5 +338,29 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		appendable.append(",method=").append(getRequest().getMethod());
 		appendable.append(",").append(getJsonSupport().toJSONString(getRequest().getParameterMap()));
 		return appendable.toString();
+	}
+
+	private final class RequestValue extends AbstractStringValue {
+		private final String name;
+
+		public RequestValue(String name, Value defaultValue) {
+			super(defaultValue);
+			this.name = name;
+		}
+
+		public String getAsString() {
+			return AbstractHttpChannel.this.getStringValue(name);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
+			return (T) AbstractHttpChannel.this.getObjectSupport(name, type);
+		}
+
+		@Override
+		protected Object getAsObjectNotSupport(Type type) {
+			return AbstractHttpChannel.this.getObjectSupport(name, type);
+		}
 	}
 }

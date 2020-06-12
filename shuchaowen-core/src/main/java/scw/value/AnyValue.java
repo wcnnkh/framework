@@ -7,6 +7,7 @@ import java.math.BigInteger;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
+import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 
 public class AnyValue extends SupportDefaultValue implements Serializable{
@@ -503,15 +504,30 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 		return obj.equals(value);
 	}
 	
-	public boolean isNull(){
-		return value == null;
-	}
-	
-	public boolean isNotNull(){
-		return value != null;
+	public boolean isEmpty() {
+		if(value == null){
+			return true;
+		}
+		
+		if(value instanceof CharSequence){
+			return StringUtils.isEmpty((CharSequence)value);
+		}
+		return false;
 	}
 	
 	public boolean isNumber(){
-		return isNotNull() && value instanceof Number;
+		if(isEmpty()){
+			return false;
+		}
+		
+		if(value instanceof Number){
+			return true;
+		}
+		
+		if(value instanceof CharSequence){
+			return StringUtils.isNumeric((CharSequence)value);
+		}
+		
+		return false;
 	}
 }

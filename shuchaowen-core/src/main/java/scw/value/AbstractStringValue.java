@@ -252,4 +252,8 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 		String value = getAsString();
 		return StringUtils.isNotEmpty(value) && StringUtils.isNumeric(value);
 	}
+	
+	public boolean isEmpty() {
+		return StringUtils.isEmpty(getAsString());
+	}
 }

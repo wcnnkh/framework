@@ -5,9 +5,9 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.logger.LogService;
 import scw.mvc.beans.HttpChannelBeanManager;
-import scw.value.ValueFactory;
+import scw.value.Value;
 
-public interface HttpChannel extends LogService, ParameterFactory, ValueFactory<String> {
+public interface HttpChannel extends LogService, ParameterFactory {
 	long getCreateTime();
 	
 	ServerHttpRequest getRequest();
@@ -19,4 +19,8 @@ public interface HttpChannel extends LogService, ParameterFactory, ValueFactory<
 	boolean isCompleted();
 	
 	HttpChannelBeanManager getHttpChannelBeanManager();
+	
+	Value getValue(String name);
+	
+	Value getValue(String name, Value defaultValue);
 }

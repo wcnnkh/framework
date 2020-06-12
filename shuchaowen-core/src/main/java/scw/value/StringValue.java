@@ -81,4 +81,8 @@ public class StringValue extends AbstractStringValue implements Serializable {
 	protected Object getAsObjectNotSupport(Type type) {
 		return getJsonSupport().parseObject(getAsString(), type);
 	}
+	
+	public boolean isEmpty() {
+		return StringUtils.isEmpty(value);
+	}
 }
