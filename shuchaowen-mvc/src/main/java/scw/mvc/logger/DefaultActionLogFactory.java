@@ -28,7 +28,7 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 		if(identificationKey == null){
 			return null;
 		}
-		return httpChannel.getString(identificationKey);
+		return httpChannel.getValue(identificationKey).getAsString();
 	}
 
 	public Map<String, String> getAttributeMap(Action action, HttpChannel httpChannel) {
@@ -60,6 +60,6 @@ public class DefaultActionLogFactory extends AbstractActionLogFactory{
 	}
 	
 	protected String getAttirubteValue(HttpChannel httpChannel, String name){
-		return httpChannel.getString(name);
+		return httpChannel.getValue(name).getAsString();
 	}
 }

@@ -1562,7 +1562,7 @@ public final class StringUtils {
 	 * @param str
 	 * @return
 	 */
-	public static boolean isNumeric(String str) {
+	public static boolean isNumeric(CharSequence str) {
 		if (isEmpty(str)) {
 			return false;
 		}

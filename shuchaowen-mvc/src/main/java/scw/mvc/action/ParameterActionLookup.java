@@ -48,7 +48,7 @@ public class ParameterActionLookup implements ActionLookup {
 			return null;
 		}
 
-		String action = httpChannel.getString(key);
+		String action = httpChannel.getValue(key).getAsString();
 		if (action == null) {
 			return null;
 		}

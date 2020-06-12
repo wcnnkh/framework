@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.dss.Data;
 import scw.dss.DataStorageSystem;
@@ -33,12 +34,18 @@ public class DirectoryDataStorageSystem implements DataStorageSystem {
 	}
 
 	public boolean put(String key, InputStream input) throws DataStorageSystemException, IOException {
-		FileUtils.copyInputStreamToFile(input, getFile(key));
+		File file = getFile(key);
+		if(!file.exists()){
+			file.createNewFile();
+		}
+		
+		FileUtils.copyInputStreamToFile(input, file);
 		return true;
 	}
 
 	public boolean isExist(String key) {
-		return getFile(key).exists();
+		File file = getFile(key);
+		return file.exists() && file.isFile();
 	}
 
 	private final class ListFileFilter implements FileFilter {
@@ -85,7 +92,9 @@ public class DirectoryDataStorageSystem implements DataStorageSystem {
 	private String getKey(File file) {
 		String key = file.getPath();
 		key = StringUtils.cleanPath(key);
-		return key.substring(directory.length());
+		Assert.isTrue(key.startsWith(directory));
+		key = key.substring(directory.length());
+		return key.startsWith("/")? key.substring(1):key;
 	}
 
 	public List<Data> getList(String keyPrefix, String marker, int limit) {

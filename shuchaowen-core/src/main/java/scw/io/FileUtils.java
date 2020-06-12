@@ -2754,6 +2754,11 @@ public final class FileUtils {
 		return null;
 	}
 
+	/**
+	 * 获取目录下所有的文件
+	 * @param rootPath
+	 * @return
+	 */
 	public static List<String> getFileList(String rootPath) {
 		rootPath = replaceSeparator(rootPath);
 		List<String> list = new ArrayList<String>();

@@ -15,7 +15,7 @@ import scw.io.UnsafeByteArrayOutputStream;
 @Configuration(order = Integer.MIN_VALUE)
 @Bean(proxy=false)
 public class JavaSerializer extends Serializer {
-	public final static JavaSerializer SERIALIZER = new JavaSerializer();
+	public final static JavaSerializer INSTANCE = new JavaSerializer();
 
 	@SuppressWarnings("unchecked")
 	@Override

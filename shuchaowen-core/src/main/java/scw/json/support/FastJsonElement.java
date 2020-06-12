@@ -3,14 +3,15 @@ package scw.json.support;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONAware;
+import com.alibaba.fastjson.parser.Feature;
+
+import scw.core.utils.StringUtils;
 import scw.json.AbstractJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.value.Value;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONAware;
-import com.alibaba.fastjson.parser.Feature;
 
 public final class FastJsonElement extends AbstractJsonElement implements JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -53,5 +54,9 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 
 	public boolean isJsonObject() {
 		return text == null ? false : JSON.isValidObject(text);
+	}
+
+	public boolean isEmpty() {
+		return StringUtils.isEmpty(text);
 	}
 }

@@ -1,6 +1,7 @@
 package scw.complete;
 
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -9,10 +10,11 @@ import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.core.Destroy;
+import scw.core.GlobalPropertyFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
-import scw.io.serialzer.ObjectFileManager;
-import scw.io.serialzer.ObjectFileManager.ObjectInfo;
+import scw.io.support.LocalLogger.Record;
+import scw.io.support.SystemLocalLogger;
 import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -25,36 +27,32 @@ import scw.logger.LoggerUtils;
  */
 
 @Configuration(order = Integer.MIN_VALUE, value = CompleteService.class)
-public class LocalCompleteService implements CompleteService, Destroy {
+public final class LocalCompleteService implements CompleteService, Destroy {
 	private static Logger logger = LoggerUtils.getLogger(LocalCompleteService.class);
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
-	private final ObjectFileManager objectFileManager;
+	private final SystemLocalLogger<CompleteTask> systemLocalLogger = new SystemLocalLogger<CompleteTask>(
+			GlobalPropertyFactory.getInstance().getValue("scw.local.complete.name", String.class, "complete_service"));
 	private final long delayMillis;
 	private final TimeUnit delayTimeUnit;
 	private final BeanFactory beanFactory;
 
 	public LocalCompleteService(BeanFactory beanFactory) {
-		this(beanFactory, "complete", 1, TimeUnit.MINUTES);
+		this(beanFactory, 1, TimeUnit.MINUTES);
 	}
 
-	public LocalCompleteService(BeanFactory beanFactory, String suffix, long delayMillis, TimeUnit delayTimeUnit) {
-		this(beanFactory, new ObjectFileManager(suffix), delayMillis, delayTimeUnit);
-	}
-
-	public LocalCompleteService(BeanFactory beanFactory, ObjectFileManager objectFileManager, long delayMillis,
-			TimeUnit delayTimeUnit) {
+	public LocalCompleteService(BeanFactory beanFactory, long delayMillis, TimeUnit delayTimeUnit) {
 		this.beanFactory = beanFactory;
-		this.objectFileManager = objectFileManager;
 		this.delayMillis = delayMillis;
 		this.delayTimeUnit = delayTimeUnit;
 	}
 
 	public void init() throws Exception {
 		// 对意外结束的任务重新执行
-		for (ObjectInfo objectInfo : objectFileManager.getObjectList()) {
-			CompleteTask completeTask = (CompleteTask) objectInfo.getInstance();
-			Complete complete = new InternalComplete(completeTask, objectInfo.getIndex());
-			logger.info("add internal runnable: " + completeTask);
+		Enumeration<Record<CompleteTask>> enumeration = systemLocalLogger.enumeration();
+		while (enumeration.hasMoreElements()) {
+			Record<CompleteTask> record = enumeration.nextElement();
+			Complete complete = new InternalComplete(record);
+			logger.info("add internal runnable: " + record.getData());
 			getExecutorService().execute(complete);
 		}
 	}
@@ -64,35 +62,31 @@ public class LocalCompleteService implements CompleteService, Destroy {
 	}
 
 	public Complete register(CompleteTask completeTask) throws IOException {
-		long index = objectFileManager.writeObject(completeTask);
-		return new InternalComplete(completeTask, index);
+		Record<CompleteTask> record = systemLocalLogger.create(completeTask);
+		return new InternalComplete(record);
 	}
 
 	public Object processTask(CompleteTask completeTask) throws Throwable {
-		BeanDefinition beanDefinition = beanFactory
-				.getDefinition(ProxyUtils.getProxyFactory().getUserClass(completeTask.getClass()));
+		BeanDefinition beanDefinition = beanFactory == null ? null
+				: beanFactory.getDefinition(ProxyUtils.getProxyFactory().getUserClass(completeTask.getClass()));
 		if (beanDefinition != null) {
 			beanDefinition.init(completeTask);
 		}
 		try {
 			return completeTask.process();
 		} finally {
-			beanDefinition.destroy(completeTask);
+			if (beanDefinition != null) {
+				beanDefinition.destroy(completeTask);
+			}
 		}
 	}
 
-	public ObjectFileManager getObjectFileManager() {
-		return objectFileManager;
-	}
-
 	final class InternalComplete implements Complete {
-		private final CompleteTask completeTask;
-		private final long index;
+		private final Record<CompleteTask> record;
 		private boolean cancel = false;
 
-		public InternalComplete(CompleteTask completeTask, long index) {
-			this.completeTask = completeTask;
-			this.index = index;
+		public InternalComplete(Record<CompleteTask> record) {
+			this.record = record;
 		}
 
 		public void cancel() {
@@ -100,7 +94,7 @@ public class LocalCompleteService implements CompleteService, Destroy {
 				return;
 			}
 
-			objectFileManager.delete(index);
+			systemLocalLogger.getLocalLogger().delete(record.getId());
 			cancel = true;
 		}
 
@@ -115,7 +109,7 @@ public class LocalCompleteService implements CompleteService, Destroy {
 
 			Object rtn;
 			try {
-				rtn = processTask(completeTask);
+				rtn = processTask(record.getData());
 				if (rtn != null && ClassUtils.isAssignableValue(boolean.class, rtn)) {
 					if (!((Boolean) rtn).booleanValue()) {
 						retry();
@@ -125,7 +119,7 @@ public class LocalCompleteService implements CompleteService, Destroy {
 				cancel();
 			} catch (Throwable e) {
 				retry();
-				logger.error(NestedExceptionUtils.getRootCause(e), "execute error retry soon [{}]", completeTask);
+				logger.error(NestedExceptionUtils.getRootCause(e), "execute error retry soon: {}", record.getId());
 			}
 		}
 

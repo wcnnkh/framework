@@ -49,6 +49,8 @@ public interface Value {
 
 	Number getAsNumber();
 	
+	boolean isEmpty();
+	
 	boolean isNumber();
 
 	Class<?> getAsClass();
