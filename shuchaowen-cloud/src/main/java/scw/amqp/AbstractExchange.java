@@ -1,32 +1,88 @@
 package scw.amqp;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
 import scw.aop.MethodInvoker;
+import scw.core.Init;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
+import scw.io.support.LocalLogger.Record;
+import scw.io.support.SystemLocalLogger;
 import scw.json.JSONUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.transaction.DefaultTransactionDefinition;
+import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
 
-public abstract class AbstractExchange implements Exchange {
+/**
+ * 此实现保证消息一定发送成功，但不保证消息多次发送，为保证生产者性能，消息的幂等性需要消费端自行处理
+ * @author shuchaowen
+ *
+ */
+public abstract class AbstractExchange implements Exchange, Init {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	private final NoTypeSpecifiedSerializer serializer;
+	private final ExchangeDeclare exchangeDeclare;
+	private final SystemLocalLogger<MessageLog> systemLocalLogger;
 
-	public AbstractExchange(NoTypeSpecifiedSerializer serializer) {
+	public AbstractExchange(NoTypeSpecifiedSerializer serializer, ExchangeDeclare exchangeDeclare) {
 		this.serializer = serializer;
+		this.exchangeDeclare = exchangeDeclare;
+		this.systemLocalLogger = new SystemLocalLogger<AbstractExchange.MessageLog>(
+				"scw_rabbitmq_" + exchangeDeclare.getName());
 	}
 
 	public final NoTypeSpecifiedSerializer getSerializer() {
 		return serializer;
 	}
 
+	public final ExchangeDeclare getExchangeDeclare() {
+		return exchangeDeclare;
+	}
+
 	@Override
-	public void bind(String routingKey, QueueDeclare queueDeclare, MethodInvoker invoker) {
+	public void init() throws Exception {
+		//将因意外发送失败的消息补发
+		Enumeration<Record<MessageLog>> enumeration = systemLocalLogger.enumeration();
+		while(enumeration.hasMoreElements()){
+			Record<MessageLog> record = enumeration.nextElement();
+			basicPublish(record.getData());
+			systemLocalLogger.getLocalLogger().delete(record.getId());
+		}
+	}
+
+	protected static final class MessageLog implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private final String routingKey;
+		private final MessageProperties messageProperties;
+		private final byte[] body;
+
+		public MessageLog(String routingKey, MessageProperties messageProperties, byte[] body) {
+			this.routingKey = routingKey;
+			this.messageProperties = messageProperties;
+			this.body = body;
+		}
+
+		public String getRoutingKey() {
+			return routingKey;
+		}
+
+		public MessageProperties getMessageProperties() {
+			return messageProperties;
+		}
+
+		public byte[] getBody() {
+			return body;
+		}
+	}
+
+	@Override
+	public final void bind(String routingKey, QueueDeclare queueDeclare, MethodInvoker invoker) {
 		bind(routingKey, queueDeclare, new MethodMessageListener(invoker));
 	}
 
@@ -46,7 +102,8 @@ public abstract class AbstractExchange implements Exchange {
 		}
 	}
 
-	protected abstract void bindInternal(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener) throws IOException;
+	protected abstract void bindInternal(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener)
+			throws IOException;
 
 	@Override
 	public final void push(String routingKey, Message message) {
@@ -55,12 +112,54 @@ public abstract class AbstractExchange implements Exchange {
 
 	@Override
 	public final void push(String routingKey, MethodMessage methodMessage) {
+		byte[] body;
 		try {
-			push(routingKey, methodMessage, serializer.serialize(methodMessage.getArgs()));
+			body = serializer.serialize(methodMessage.getArgs());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		push(routingKey, methodMessage, body);
 	}
+
+	@Override
+	public final void push(String routingKey, MessageProperties messageProperties, byte[] body) {
+		final MessageLog log = new MessageLog(routingKey, messageProperties, body);
+		if(TransactionManager.hasTransaction()){
+			final Record<MessageLog> record = systemLocalLogger.create(log);
+			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle(){
+				@Override
+				public void afterCommit() {
+					//同步重试3次
+					for(int i=0; i<3; i++){
+						if(systemLocalLogger.getLocalLogger().isExist(record.getId())){
+							try {
+								basicPublish(log);
+								systemLocalLogger.getLocalLogger().delete(record.getId());
+								break;
+							} catch (IOException e) {
+								logger.error(e, record.getId());
+							}
+						}
+					}
+				}
+				
+				@Override
+				public void afterRollback() {
+					systemLocalLogger.getLocalLogger().delete(record.getId());
+				}
+			});
+		}else{
+			//不存在事务，直接发送
+			try {
+				basicPublish(log);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	protected abstract void basicPublish(MessageLog message)
+			throws IOException;
 
 	private final class MethodMessageListener implements MessageListener {
 		private MethodInvoker invoker;
@@ -106,7 +205,7 @@ public abstract class AbstractExchange implements Exchange {
 	 * @param body
 	 */
 	protected void forwardPush(String routingKey, MessageProperties messageProperties, byte[] body) throws IOException {
-		push(routingKey, messageProperties, body, false);
+		basicPublish(new MessageLog(routingKey, messageProperties, body));
 	}
 
 	/**
@@ -117,7 +216,7 @@ public abstract class AbstractExchange implements Exchange {
 	 * @param body
 	 */
 	protected void retryPush(String routingKey, MessageProperties messageProperties, byte[] body) throws IOException {
-		push(routingKey, messageProperties, body);
+		basicPublish(new MessageLog(routingKey, messageProperties, body));
 	}
 
 	private class MessageListenerInternal implements MessageListener {
@@ -131,16 +230,18 @@ public abstract class AbstractExchange implements Exchange {
 		public void onMessage(String exchange, String routingKey, Message message) throws IOException {
 			if (message.getDelay() > 0) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("delay message forward exchange:{}, routingKey:{}, message:{}", exchange, routingKey, JSONUtils.toJSONString(message));
+					logger.debug("delay message forward exchange:{}, routingKey:{}, message:{}", exchange, routingKey,
+							JSONUtils.toJSONString(message));
 				}
 
 				message.setDelay(0, TimeUnit.SECONDS);
 				forwardPush(routingKey, message, message.getBody());
 				return;
 			}
-			
+
 			if (logger.isDebugEnabled()) {
-				logger.debug("handleDelivery exchange:{}, routingKey:{}, message:{}", exchange, routingKey, JSONUtils.toJSONString(message));
+				logger.debug("handleDelivery exchange:{}, routingKey:{}, message:{}", exchange, routingKey,
+						JSONUtils.toJSONString(message));
 			}
 
 			Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
@@ -169,37 +270,15 @@ public abstract class AbstractExchange implements Exchange {
 
 				if (retryDelay < 0 || maxRetryCount < 0
 						|| (maxRetryCount > 0 && message.getRetryCount() > maxRetryCount)) {// 不重试
-					logger.error(NestedExceptionUtils.getRootCause(e), "Don't try again: exchange={}, properties={}", exchange,
-							JSONUtils.toJSONString(message));
+					logger.error(NestedExceptionUtils.getRootCause(e), "Don't try again: exchange={}, properties={}",
+							exchange, JSONUtils.toJSONString(message));
 				} else {
-					logger.error(NestedExceptionUtils.getRootCause(e), "retry delay: {}, exchange={}, properties={}", retryDelay, exchange,
-							JSONUtils.toJSONString(message));
+					logger.error(NestedExceptionUtils.getRootCause(e), "retry delay: {}, exchange={}, properties={}",
+							retryDelay, exchange, JSONUtils.toJSONString(message));
 					message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
 					retryPush(routingKey, message, message.getBody());
 				}
 			}
-		}
-	}
-
-	@Override
-	public void push(String routingKey, MessageProperties messageProperties, byte[] body, boolean transaction) {
-		if (transaction) {
-			throw new UnsupportedOperationException("transactoin push");
-		}
-		push(routingKey, messageProperties, body);
-	}
-
-	@Override
-	public final void push(String routingKey, Message message, boolean transaction) {
-		push(routingKey, message, message.getBody(), transaction);
-	}
-
-	@Override
-	public final void push(String routingKey, MethodMessage message, boolean transaction) {
-		try {
-			push(routingKey, message, serializer.serialize(message.getArgs()), transaction);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		}
 	}
 }
