@@ -28,7 +28,6 @@ package scw.http;
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Rossen Stoyanchev
- * @since 1.1.1
  */
 public class JavaScriptUtils {
 

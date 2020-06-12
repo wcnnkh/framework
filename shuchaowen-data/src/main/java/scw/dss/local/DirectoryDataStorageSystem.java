@@ -13,10 +13,10 @@ import scw.dss.DataStorageSystem;
 import scw.dss.DataStorageSystemException;
 import scw.io.FileUtils;
 
-public class DirectoryFileDataStorageSystem implements DataStorageSystem {
+public class DirectoryDataStorageSystem implements DataStorageSystem {
 	private String directory;
 
-	public DirectoryFileDataStorageSystem(String directory) {
+	public DirectoryDataStorageSystem(String directory) {
 		this.directory = StringUtils.cleanPath(directory);
 	}
 
@@ -24,7 +24,7 @@ public class DirectoryFileDataStorageSystem implements DataStorageSystem {
 		return new File(directory + StringUtils.cleanPath(key));
 	}
 
-	public Data get(String key) {
+	public FileData get(String key) {
 		File file = getFile(key);
 		if (file.exists() && file.isFile()) {
 			return new FileData(file, key);

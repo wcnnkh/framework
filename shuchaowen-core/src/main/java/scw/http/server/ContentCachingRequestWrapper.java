@@ -38,11 +38,9 @@ import scw.http.server.ServerHttpRequestWrapper;
  * the {@linkplain #getInputStream() input stream} and {@linkplain #getReader() reader},
  * and allows this content to be retrieved via a {@link #getContentAsByteArray() byte array}.
  *
- * <p>Used e.g. by {@link org.springframework.web.filter.AbstractRequestLoggingFilter}.
  *
  * @author Juergen Hoeller
  * @author Brian Clozel
- * @since 4.1.3
  * @see ContentCachingResponseWrapper
  */
 public class ContentCachingRequestWrapper extends ServerHttpRequestWrapper{

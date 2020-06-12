@@ -195,10 +195,9 @@ import scw.value.property.SystemPropertyFactory;
  * @author Marius Bogoevici
  * @author Costin Leau
  * @author Phillip Webb
- * @since 1.0.2
  * @see #CLASSPATH_ALL_URL_PREFIX
- * @see org.springframework.util.AntPathMatcher
- * @see org.springframework.core.io.ResourceLoader#getResource(String)
+ * @see scw.util.AntPathMatcher
+ * @see scw.io.ResourceLoader#getResource(String)
  * @see ClassLoader#getResources(String)
  */
 public class PathMatchingResourcePatternResolver implements
@@ -366,7 +365,6 @@ public class PathMatchingResourcePatternResolver implements
 	 * @param path
 	 *            the absolute path within the classpath (never a leading slash)
 	 * @return a mutable Set of matching Resource instances
-	 * @since 4.1.1
 	 */
 	protected Set<Resource> doFindAllClassPathResources(String path)
 			throws IOException {
@@ -439,7 +437,6 @@ public class PathMatchingResourcePatternResolver implements
 	 *            the ClassLoader to search (including its ancestors)
 	 * @param result
 	 *            the set of resources to add jar roots to
-	 * @since 4.1.1
 	 */
 	protected void addAllClassLoaderJarRoots(ClassLoader classLoader,
 			Set<Resource> result) {
@@ -498,7 +495,6 @@ public class PathMatchingResourcePatternResolver implements
 	 * 
 	 * @param result
 	 *            the set of resources to add jar roots to
-	 * @since 4.3
 	 */
 	protected void addClassPathManifestEntries(Set<Resource> result) {
 		try {
@@ -705,9 +701,8 @@ public class PathMatchingResourcePatternResolver implements
 	 * @return a mutable Set of matching Resource instances
 	 * @throws IOException
 	 *             in case of I/O errors
-	 * @since 4.3
 	 * @see java.net.JarURLConnection
-	 * @see org.springframework.util.PathMatcher
+	 * @see scw.util.PathMatcher
 	 */
 	protected Set<Resource> doFindPathMatchingJarResources(
 			Resource rootDirResource, URL rootDirURL, String subPattern)

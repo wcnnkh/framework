@@ -1,4 +1,4 @@
-package scw.http;
+package scw.net;
 
 import scw.core.utils.StringUtils;
 
@@ -6,8 +6,7 @@ public enum ProtocolType {
 	HTTP("http://"),
 	HTTPS("https://"),
 	/**
-	 * 此类型只能用于浏览器
-	 * 因为浏览器可以自动识别当前网页是https还是http
+	 * 自动识别当前网页是https还是http
 	 */
 	AUTO("//"),
 	;

@@ -34,7 +34,6 @@ import scw.util.PropertiesPersister;
  * configurable overriding.
  *
  * @author Juergen Hoeller
- * @since 1.2.2
  */
 public abstract class PropertiesLoaderSupport {
 

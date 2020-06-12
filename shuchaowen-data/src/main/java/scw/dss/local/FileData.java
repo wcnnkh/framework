@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import scw.dss.Data;
+import scw.io.FileUtils;
 
 public final class FileData implements Data {
 	private final File file;
@@ -34,5 +35,9 @@ public final class FileData implements Data {
 
 	public File getFile() {
 		return file;
+	}
+
+	public byte[] getByteArray() throws IOException {
+		return FileUtils.readFileToByteArray(file);
 	}
 }
