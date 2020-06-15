@@ -74,11 +74,12 @@ public class ServletServerHttpRequest extends AbstractInputMessage implements Se
 	}
 
 	public InetAddress getLocalAddress() {
-		return new InetAddress(this.httpServletRequest.getLocalName(), this.httpServletRequest.getLocalPort());
+		
+		return new InetAddress.DefaultInetAddress(this.httpServletRequest.getLocalName(), this.httpServletRequest.getLocalPort());
 	}
 
 	public InetAddress getRemoteAddress() {
-		return new InetAddress(this.httpServletRequest.getRemoteHost(), this.httpServletRequest.getRemotePort());
+		return new InetAddress.DefaultInetAddress(this.httpServletRequest.getRemoteHost(), this.httpServletRequest.getRemotePort());
 	}
 
 	public void setCharacterEncoding(String enc) {

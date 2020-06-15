@@ -1,12 +1,20 @@
-package scw.amqp;
+package scw.amqp.support;
 
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.concurrent.TimeUnit;
 
+import scw.amqp.Exchange;
+import scw.amqp.ExchangeDeclare;
+import scw.amqp.Message;
+import scw.amqp.MessageListener;
+import scw.amqp.MessageProperties;
+import scw.amqp.MethodMessage;
+import scw.amqp.QueueDeclare;
 import scw.aop.MethodInvoker;
 import scw.core.Init;
+import scw.core.utils.StringUtils;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.io.support.LocalLogger.Record;
 import scw.io.support.SystemLocalLogger;
@@ -17,10 +25,12 @@ import scw.logger.LoggerUtils;
 import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.Transaction;
+import scw.transaction.TransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
 /**
- * 此实现保证消息一定发送成功，但不保证消息多次发送，为保证生产者性能，消息的幂等性需要消费端自行处理
+ * 此实现通过重试来保证消息的可靠消费
+ * 
  * @author shuchaowen
  *
  */
@@ -28,13 +38,24 @@ public abstract class AbstractExchange implements Exchange, Init {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	private final NoTypeSpecifiedSerializer serializer;
 	private final ExchangeDeclare exchangeDeclare;
-	private final SystemLocalLogger<MessageLog> systemLocalLogger;
+	private SystemLocalLogger<MessageLog> systemLocalLogger;
+	private final boolean enableLocalTransaction;
 
-	public AbstractExchange(NoTypeSpecifiedSerializer serializer, ExchangeDeclare exchangeDeclare) {
+	/**
+	 * @param serializer
+	 * @param exchangeDeclare
+	 * @param enableLocalTransaction
+	 *            是否开启本地事务, 此实现保证消息一定发送成功，但不保证消息多次发送，为保证生产者性能，消息的幂等性需要消费端自行处理
+	 */
+	public AbstractExchange(NoTypeSpecifiedSerializer serializer, ExchangeDeclare exchangeDeclare,
+			boolean enableLocalTransaction) {
 		this.serializer = serializer;
 		this.exchangeDeclare = exchangeDeclare;
-		this.systemLocalLogger = new SystemLocalLogger<AbstractExchange.MessageLog>(
-				"scw_rabbitmq_" + exchangeDeclare.getName());
+		this.enableLocalTransaction = enableLocalTransaction;
+		if (enableLocalTransaction) {
+			this.systemLocalLogger = new SystemLocalLogger<AbstractExchange.MessageLog>(
+					"scw_rabbitmq_" + exchangeDeclare.getName());
+		}
 	}
 
 	public final NoTypeSpecifiedSerializer getSerializer() {
@@ -47,37 +68,14 @@ public abstract class AbstractExchange implements Exchange, Init {
 
 	@Override
 	public void init() throws Exception {
-		//将因意外发送失败的消息补发
-		Enumeration<Record<MessageLog>> enumeration = systemLocalLogger.enumeration();
-		while(enumeration.hasMoreElements()){
-			Record<MessageLog> record = enumeration.nextElement();
-			basicPublish(record.getData());
-			systemLocalLogger.getLocalLogger().delete(record.getId());
-		}
-	}
-
-	protected static final class MessageLog implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private final String routingKey;
-		private final MessageProperties messageProperties;
-		private final byte[] body;
-
-		public MessageLog(String routingKey, MessageProperties messageProperties, byte[] body) {
-			this.routingKey = routingKey;
-			this.messageProperties = messageProperties;
-			this.body = body;
-		}
-
-		public String getRoutingKey() {
-			return routingKey;
-		}
-
-		public MessageProperties getMessageProperties() {
-			return messageProperties;
-		}
-
-		public byte[] getBody() {
-			return body;
+		if (enableLocalTransaction) {
+			// 将因意外发送失败的消息补发
+			Enumeration<Record<MessageLog>> enumeration = systemLocalLogger.enumeration();
+			while (enumeration.hasMoreElements()) {
+				Record<MessageLog> record = enumeration.nextElement();
+				basicPublish(record.getData());
+				systemLocalLogger.getLocalLogger().delete(record.getId());
+			}
 		}
 	}
 
@@ -120,46 +118,6 @@ public abstract class AbstractExchange implements Exchange, Init {
 		}
 		push(routingKey, methodMessage, body);
 	}
-
-	@Override
-	public final void push(String routingKey, MessageProperties messageProperties, byte[] body) {
-		final MessageLog log = new MessageLog(routingKey, messageProperties, body);
-		if(TransactionManager.hasTransaction()){
-			final Record<MessageLog> record = systemLocalLogger.create(log);
-			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle(){
-				@Override
-				public void afterCommit() {
-					//同步重试3次
-					for(int i=0; i<3; i++){
-						if(systemLocalLogger.getLocalLogger().isExist(record.getId())){
-							try {
-								basicPublish(log);
-								systemLocalLogger.getLocalLogger().delete(record.getId());
-								break;
-							} catch (IOException e) {
-								logger.error(e, record.getId());
-							}
-						}
-					}
-				}
-				
-				@Override
-				public void afterRollback() {
-					systemLocalLogger.getLocalLogger().delete(record.getId());
-				}
-			});
-		}else{
-			//不存在事务，直接发送
-			try {
-				basicPublish(log);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
-
-	protected abstract void basicPublish(MessageLog message)
-			throws IOException;
 
 	private final class MethodMessageListener implements MessageListener {
 		private MethodInvoker invoker;
@@ -219,15 +177,20 @@ public abstract class AbstractExchange implements Exchange, Init {
 		basicPublish(new MessageLog(routingKey, messageProperties, body));
 	}
 
-	private class MessageListenerInternal implements MessageListener {
+	protected class MessageListenerInternal implements MessageListener {
 		private final MessageListener messageListener;
 
-		MessageListenerInternal(MessageListener messageListener) {
+		public MessageListenerInternal(MessageListener messageListener) {
 			this.messageListener = messageListener;
 		}
 
 		@Override
 		public void onMessage(String exchange, String routingKey, Message message) throws IOException {
+			String routingKeyToUse = message.getPublishRoutingKey();
+			if (StringUtils.isEmpty(routingKeyToUse)) {
+				routingKeyToUse = routingKey;
+			}
+
 			if (message.getDelay() > 0) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("delay message forward exchange:{}, routingKey:{}, message:{}", exchange, routingKey,
@@ -235,18 +198,25 @@ public abstract class AbstractExchange implements Exchange, Init {
 				}
 
 				message.setDelay(0, TimeUnit.SECONDS);
-				forwardPush(routingKey, message, message.getBody());
+				forwardPush(routingKeyToUse, message, message.getBody());
 				return;
 			}
 
+			if (messageListener == null) {
+				logger.info("Unable to consume exchange:{}, routingKey:{}, message:{}", exchange, routingKeyToUse,
+						JSONUtils.toJSONString(message));
+				// 不应该到这里
+				throw new RuntimeException("Should never get here");
+			}
+
 			if (logger.isDebugEnabled()) {
-				logger.debug("handleDelivery exchange:{}, routingKey:{}, message:{}", exchange, routingKey,
+				logger.debug("handleDelivery exchange:{}, routingKey:{}, message:{}", exchange, routingKeyToUse,
 						JSONUtils.toJSONString(message));
 			}
 
 			Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
 			try {
-				messageListener.onMessage(exchange, routingKey, message);
+				messageListener.onMessage(exchange, routingKeyToUse, message);
 				TransactionManager.commit(transaction);
 			} catch (Throwable e) {
 				TransactionManager.rollback(transaction);
@@ -270,15 +240,98 @@ public abstract class AbstractExchange implements Exchange, Init {
 
 				if (retryDelay < 0 || maxRetryCount < 0
 						|| (maxRetryCount > 0 && message.getRetryCount() > maxRetryCount)) {// 不重试
-					logger.error(NestedExceptionUtils.getRootCause(e), "Don't try again: exchange={}, properties={}",
-							exchange, JSONUtils.toJSONString(message));
+					logger.error(NestedExceptionUtils.getRootCause(e),
+							"Don't try again: exchange={}, routingKey={}, message={}", exchange, routingKeyToUse,
+							JSONUtils.toJSONString(message));
 				} else {
-					logger.error(NestedExceptionUtils.getRootCause(e), "retry delay: {}, exchange={}, properties={}",
-							retryDelay, exchange, JSONUtils.toJSONString(message));
+					logger.error(NestedExceptionUtils.getRootCause(e),
+							"retry delay: {}, exchange={}, routingKey={}, message={}", retryDelay, exchange,
+							routingKeyToUse, JSONUtils.toJSONString(message));
 					message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
-					retryPush(routingKey, message, message.getBody());
+					retryPush(routingKeyToUse, message, message.getBody());
 				}
 			}
+		}
+	}
+
+	@Override
+	public final void push(String routingKey, MessageProperties messageProperties, byte[] body) {
+		messageProperties.setPublishRoutingKey(routingKey);
+		final MessageLog log = new MessageLog(routingKey, messageProperties, body);
+		if (TransactionManager.hasTransaction()) {
+			TransactionLifeCycle transactionLifeCycle;
+			//是否开启本地事务
+			Boolean enableLocalTransaction = messageProperties.isEnableLocalTransaction();
+			if(enableLocalTransaction == null){
+				enableLocalTransaction = this.enableLocalTransaction;
+			}
+			
+			if (enableLocalTransaction) {
+				final Record<MessageLog> record = systemLocalLogger.create(log);
+				transactionLifeCycle = new DefaultTransactionLifeCycle() {
+					@Override
+					public void afterCommit() {
+						if (systemLocalLogger.getLocalLogger().isExist(record.getId())) {
+							try {
+								basicPublish(log);
+							} catch (IOException e) {
+								logger.error(e, JSONUtils.toJSONString(log));
+							}
+						}
+						systemLocalLogger.getLocalLogger().delete(record.getId());
+					}
+
+					@Override
+					public void afterRollback() {
+						systemLocalLogger.getLocalLogger().delete(record.getId());
+					}
+				};
+			} else {
+				transactionLifeCycle = new DefaultTransactionLifeCycle() {
+					public void afterCommit() {
+						try {
+							basicPublish(log);
+						} catch (IOException e) {
+							logger.error(e, JSONUtils.toJSONString(log));
+						}
+					};
+				};
+			}
+			TransactionManager.transactionLifeCycle(transactionLifeCycle);
+		} else {
+			// 不存在事务，直接发送
+			try {
+				basicPublish(log);
+			} catch (IOException e) {
+				throw new RuntimeException(JSONUtils.toJSONString(log), e);
+			}
+		}
+	}
+
+	public abstract void basicPublish(MessageLog messageLog) throws IOException;
+
+	public static final class MessageLog implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private final String routingKey;
+		private final MessageProperties messageProperties;
+		private final byte[] body;
+
+		public MessageLog(String routingKey, MessageProperties messageProperties, byte[] body) {
+			this.routingKey = routingKey;
+			this.messageProperties = messageProperties;
+			this.body = body;
+		}
+
+		public String getRoutingKey() {
+			return routingKey;
+		}
+
+		public MessageProperties getMessageProperties() {
+			return messageProperties;
+		}
+
+		public byte[] getBody() {
+			return body;
 		}
 	}
 }

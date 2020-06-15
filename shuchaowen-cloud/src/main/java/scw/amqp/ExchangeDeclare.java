@@ -1,12 +1,8 @@
 package scw.amqp;
 
-import scw.core.GlobalPropertyFactory;
-
 public class ExchangeDeclare extends Declare {
-	public static final String DEFAULT_TYPE = GlobalPropertyFactory.getInstance().getValue("amqp.exchange.type",
-			String.class, "direct");
 	private static final long serialVersionUID = 1L;
-	private String type = DEFAULT_TYPE;
+	private String type;
 	private boolean internal;
 
 	public ExchangeDeclare(String name) {
