@@ -21,7 +21,7 @@ public class MessageProperties implements Serializable {
 	private static final String RETRY_DELAY_SCRIPT = "scw.retry.delay";
 	private static final String RETRY_DELAY_MULTIPLE = "scw.retry.delay.multiple";
 	private static final String PUBLISH_ROUTING_KEY = "scw.publish.routingKey";
-	private static final String ENABLE_LOCAL_TRANSACTION = "scw.enable.local.transaction";
+	private static final String ENABLE_LOCAL_RETRY_PUSH = "scw.enable.local.retry.push";
 
 	private String contentType;
 	private String contentEncoding;
@@ -293,12 +293,12 @@ public class MessageProperties implements Serializable {
 		setHeader(PUBLISH_ROUTING_KEY, routingKey);
 	}
 	
-	public Boolean isEnableLocalTransaction(){
-		Value value = getHeaderValue(ENABLE_LOCAL_TRANSACTION);
+	public Boolean isEnableLocalRetryPush(){
+		Value value = getHeaderValue(ENABLE_LOCAL_RETRY_PUSH);
 		return value == null? null:value.getAsBoolean();
 	}
 	
-	public void setEnableLocalTransaction(Boolean enableLocalTransaction){
-		setHeader(ENABLE_LOCAL_TRANSACTION, enableLocalTransaction);
+	public void setEnableLocalRetryPush(Boolean enableLocalRetryPush){
+		setHeader(ENABLE_LOCAL_RETRY_PUSH, enableLocalRetryPush);
 	}
 }

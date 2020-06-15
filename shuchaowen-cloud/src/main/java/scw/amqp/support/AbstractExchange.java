@@ -39,23 +39,21 @@ public abstract class AbstractExchange implements Exchange, Init {
 	private final NoTypeSpecifiedSerializer serializer;
 	private final ExchangeDeclare exchangeDeclare;
 	private SystemLocalLogger<MessageLog> systemLocalLogger;
-	private final boolean enableLocalTransaction;
+	private final boolean enableLocalRetryPush;
 
 	/**
 	 * @param serializer
 	 * @param exchangeDeclare
-	 * @param enableLocalTransaction
-	 *            是否开启本地事务, 此实现保证消息一定发送成功，但不保证消息多次发送，为保证生产者性能，消息的幂等性需要消费端自行处理
+	 * @param enableLocalRetryPush
+	 *            是否开启本地重试, 此实现保证消息一定发送成功，但不保证消息多次发送，为保证生产者性能，消息的幂等性需要消费端自行处理
 	 */
 	public AbstractExchange(NoTypeSpecifiedSerializer serializer, ExchangeDeclare exchangeDeclare,
-			boolean enableLocalTransaction) {
+			boolean enableLocalRetryPush) {
 		this.serializer = serializer;
 		this.exchangeDeclare = exchangeDeclare;
-		this.enableLocalTransaction = enableLocalTransaction;
-		if (enableLocalTransaction) {
+		this.enableLocalRetryPush = enableLocalRetryPush;
 			this.systemLocalLogger = new SystemLocalLogger<AbstractExchange.MessageLog>(
 					"scw_rabbitmq_" + exchangeDeclare.getName());
-		}
 	}
 
 	public final NoTypeSpecifiedSerializer getSerializer() {
@@ -68,14 +66,12 @@ public abstract class AbstractExchange implements Exchange, Init {
 
 	@Override
 	public void init() throws Exception {
-		if (enableLocalTransaction) {
-			// 将因意外发送失败的消息补发
-			Enumeration<Record<MessageLog>> enumeration = systemLocalLogger.enumeration();
-			while (enumeration.hasMoreElements()) {
-				Record<MessageLog> record = enumeration.nextElement();
-				basicPublish(record.getData());
-				systemLocalLogger.getLocalLogger().delete(record.getId());
-			}
+		// 将因意外发送失败的消息补发
+		Enumeration<Record<MessageLog>> enumeration = systemLocalLogger.enumeration();
+		while (enumeration.hasMoreElements()) {
+			Record<MessageLog> record = enumeration.nextElement();
+			basicPublish(record.getData());
+			systemLocalLogger.getLocalLogger().delete(record.getId());
 		}
 	}
 
@@ -260,13 +256,13 @@ public abstract class AbstractExchange implements Exchange, Init {
 		final MessageLog log = new MessageLog(routingKey, messageProperties, body);
 		if (TransactionManager.hasTransaction()) {
 			TransactionLifeCycle transactionLifeCycle;
-			//是否开启本地事务
-			Boolean enableLocalTransaction = messageProperties.isEnableLocalTransaction();
-			if(enableLocalTransaction == null){
-				enableLocalTransaction = this.enableLocalTransaction;
+			// 是否开启本地事务
+			Boolean enableLocalRetryPush = messageProperties.isEnableLocalRetryPush();
+			if (enableLocalRetryPush == null) {
+				enableLocalRetryPush = this.enableLocalRetryPush;
 			}
-			
-			if (enableLocalTransaction) {
+
+			if (enableLocalRetryPush) {
 				final Record<MessageLog> record = systemLocalLogger.create(log);
 				transactionLifeCycle = new DefaultTransactionLifeCycle() {
 					@Override
