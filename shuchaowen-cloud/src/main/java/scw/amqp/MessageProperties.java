@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import scw.core.utils.StringUtils;
 import scw.math.NumberHolder;
 import scw.script.MathScriptEngine;
-import scw.value.StringValue;
+import scw.value.AnyValue;
 import scw.value.Value;
 
 public class MessageProperties implements Serializable {
@@ -20,6 +20,8 @@ public class MessageProperties implements Serializable {
 	private static final String RETRY_DELAY = "scw.retry.delay";
 	private static final String RETRY_DELAY_SCRIPT = "scw.retry.delay";
 	private static final String RETRY_DELAY_MULTIPLE = "scw.retry.delay.multiple";
+	private static final String PUBLISH_ROUTING_KEY = "scw.publish.routingKey";
+	private static final String ENABLE_LOCAL_RETRY_PUSH = "scw.enable.local.retry.push";
 
 	private String contentType;
 	private String contentEncoding;
@@ -165,7 +167,7 @@ public class MessageProperties implements Serializable {
 		if (value == null) {
 			return null;
 		}
-		return new StringValue(value.toString());
+		return new AnyValue(value);
 	}
 
 	public MessageProperties removeHeader(String name) {
@@ -277,5 +279,26 @@ public class MessageProperties implements Serializable {
 
 	public void setRetryDelay(long delay, TimeUnit timeUnit) {
 		setHeader(RETRY_DELAY, timeUnit.toMillis(delay));
+	}
+	
+	/**
+	 * 获取消息发送时的ORIGIN_ROUTING_KEY
+	 * @return
+	 */
+	public String getPublishRoutingKey(){
+		return StringUtils.toString(getHeader(PUBLISH_ROUTING_KEY), null);
+	}
+	
+	public void setPublishRoutingKey(String routingKey){
+		setHeader(PUBLISH_ROUTING_KEY, routingKey);
+	}
+	
+	public Boolean isEnableLocalRetryPush(){
+		Value value = getHeaderValue(ENABLE_LOCAL_RETRY_PUSH);
+		return value == null? null:value.getAsBoolean();
+	}
+	
+	public void setEnableLocalRetryPush(Boolean enableLocalRetryPush){
+		setHeader(ENABLE_LOCAL_RETRY_PUSH, enableLocalRetryPush);
 	}
 }

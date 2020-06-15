@@ -2253,8 +2253,8 @@ public final class StringUtils {
 		if (value == null) {
 			return defaultValue == null ? null : defaultValue.toString();
 		}
-
-		String v = value.toString();
+		
+		String v = (value instanceof String)? (String)value:value.toString();
 		if (checkLength && !StringUtils.hasLength(v)) {
 			return defaultValue.toString();
 		}
