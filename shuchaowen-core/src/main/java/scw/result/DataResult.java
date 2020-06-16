@@ -7,18 +7,6 @@ public class DataResult<T> extends Result {
 	public DataResult() {
 	};
 
-	/**
-	 * 不会设置data的值
-	 * 
-	 * @param result
-	 */
-	public DataResult(Result result) {
-		setCode(result.getCode());
-		setMsg(result.getMsg());
-		setSuccess(result.isSuccess());
-		setRollbackOnlyResult(result.getRollbackOnlyResult());
-	}
-
 	public T getData() {
 		return data;
 	}
@@ -51,5 +39,12 @@ public class DataResult<T> extends Result {
 	public DataResult<T> setSuccess(boolean success) {
 		super.setSuccess(success);
 		return this;
+	}
+	
+	public Result result(){
+		Result result = new Result(getCode(), getMsg());
+		result.setRollbackOnlyResult(result.getRollbackOnlyResult());
+		result.setSuccess(isSuccess());
+		return result;
 	}
 }

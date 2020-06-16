@@ -67,4 +67,18 @@ public class Result implements Serializable, RollbackOnlyResult {
 		this.rollbackOnlyResult = rollbackOnlyResult;
 		return this;
 	}
+
+	public <T> DataResult<T> dataResult() {
+		return dataResult(null);
+	}
+
+	public <T> DataResult<T> dataResult(T data) {
+		DataResult<T> dataResult = new DataResult<T>();
+		dataResult.setCode(getCode()).setMsg(getMsg()).setRollbackOnlyResult(getRollbackOnlyResult())
+				.setSuccess(isSuccess());
+		if (data != null) {
+			dataResult.setData(data);
+		}
+		return dataResult;
+	}
 }
