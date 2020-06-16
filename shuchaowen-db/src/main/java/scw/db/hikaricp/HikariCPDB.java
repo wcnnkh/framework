@@ -1,6 +1,5 @@
 package scw.db.hikaricp;
 
-import scw.beans.annotation.Bean;
 import scw.core.Destroy;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
@@ -16,7 +15,6 @@ import scw.db.DefaultDB;
  * @author shuchaowen
  *
  */
-@Bean(proxy=false)
 public class HikariCPDB extends DefaultDB implements Destroy {
 
 	public HikariCPDB(Redis redis,

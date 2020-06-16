@@ -4,7 +4,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.beans.annotation.Bean;
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
 import scw.core.annotation.KeyValuePair;
@@ -12,8 +11,8 @@ import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
 import scw.lang.NotSupportedException;
 import scw.mvc.action.Action;
-import scw.mvc.action.ActionManager;
 import scw.mvc.action.Action.ControllerDescriptor;
+import scw.mvc.action.ActionManager;
 import scw.mvc.annotation.ActionAuthority;
 import scw.mvc.annotation.ActionAuthorityParent;
 import scw.security.authority.http.DefaultHttpAuthority;
@@ -22,7 +21,6 @@ import scw.security.authority.http.HttpAuthority;
 import scw.util.Base64;
 
 @Configuration(order = Integer.MIN_VALUE, value = HttpActionAuthorityManager.class)
-@Bean(proxy = false)
 public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority>
 		implements HttpActionAuthorityManager {
 

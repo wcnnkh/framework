@@ -7,14 +7,12 @@ import java.io.OutputStream;
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 
-import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 import scw.io.serialzer.Serializer;
 
 @Configuration(order = Integer.MIN_VALUE + 200)
-@Bean(proxy=false)
 public class Hessian2Serializer extends Serializer {
 
 	@Override

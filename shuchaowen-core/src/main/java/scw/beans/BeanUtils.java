@@ -4,12 +4,13 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import scw.aop.Filter;
+import scw.beans.annotation.AopEnable;
 import scw.beans.annotation.Bean;
+import scw.beans.annotation.Service;
 import scw.beans.builder.BeanBuilder;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
@@ -20,7 +21,6 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
@@ -101,7 +101,7 @@ public final class BeanUtils {
 		return bean == null ? true : bean.singleton();
 	}
 
-	public static boolean isProxy(Class<?> type, AnnotatedElement annotatedElement) {
+	public static boolean isAopEnable(Class<?> type, AnnotatedElement annotatedElement) {
 		if (Modifier.isFinal(type.getModifiers())) {// final修饰的类无法代理
 			return false;
 		}
@@ -123,22 +123,28 @@ public final class BeanUtils {
 			}
 		}
 
-		Bean bean = annotatedElement.getAnnotation(Bean.class);
-		if (bean != null) {
-			return bean.proxy();
+		AopEnable aopEnable = annotatedElement.getAnnotation(AopEnable.class);
+		if (aopEnable != null) {
+			return aopEnable.value();
+		}
+		
+		//如果是一个服务那么应该默认使用aop
+		Service service = annotatedElement.getAnnotation(Service.class);
+		if(service != null){
+			return true;
 		}
 
 		Class<?> useClass = type;
 		while (useClass != null && useClass != Object.class) {
-			bean = useClass.getAnnotation(Bean.class);
-			if (bean != null && !bean.proxy()) {
-				return false;
+			aopEnable = useClass.getAnnotation(AopEnable.class);
+			if(aopEnable != null){
+				return aopEnable.value();
 			}
-
+			
 			for (Class<?> interfaceClass : useClass.getInterfaces()) {
-				bean = interfaceClass.getAnnotation(Bean.class);
-				if (bean != null && !bean.proxy()) {
-					return false;
+				aopEnable = interfaceClass.getAnnotation(AopEnable.class);
+				if(aopEnable != null){
+					return aopEnable.value();
 				}
 			}
 			useClass = useClass.getSuperclass();
@@ -150,16 +156,15 @@ public final class BeanUtils {
 		return GlobalPropertyFactory.getInstance().getValue("scw.scan.beans.package", String.class,
 				InstanceUtils.getScanAnnotationPackageName());
 	}
-
-	public static Class<?>[] getServiceInterfaces(Class<?> clazz) {
-		List<Class<?>> list = new ArrayList<Class<?>>();
+	
+	public static Class<?> getServiceInterface(Class<?> clazz){
 		for (Class<?> i : clazz.getInterfaces()) {
 			if (AnnotationUtils.isIgnore(clazz) || i.getMethods().length == 0) {
 				continue;
 			}
 
-			list.add(i);
+			return i;
 		}
-		return list.isEmpty() ? ClassUtils.emptyArray() : list.toArray(new Class<?>[0]);
+		return null;
 	}
 }

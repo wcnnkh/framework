@@ -3,9 +3,9 @@ package scw.sql.orm.cache;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 
-@Bean(proxy=false)
+@AopEnable(false)
 public interface CacheManager {
 	void save(Object bean);
 

@@ -8,9 +8,17 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Bean {
-	public String id() default "";
+	/**
+	 * bean的id，默认是使用当前类名做为id
+	 * @return
+	 */
+	public String value() default "";
 	
-	public String[] value() default {};
+	/**
+	 * bean的别名
+	 * @return
+	 */
+	public String[] names() default {};
 	
 	/**
 	 * 是否是单例
@@ -18,6 +26,4 @@ public @interface Bean {
 	 * @return
 	 */
 	public boolean singleton() default true;
-	
-	public boolean proxy() default true;
 }

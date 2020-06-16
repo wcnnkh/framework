@@ -7,12 +7,10 @@ import javax.servlet.Filter;
 
 import org.apache.tomcat.websocket.server.WsFilter;
 
-import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.embed.servlet.FilterConfiguration;
 
 @Configuration
-@Bean(proxy=false)
 public class WsFilterConfiguration implements FilterConfiguration {
 	private static final Filter wsFilter = new WsFilter();
 	private static final String url = "/*";

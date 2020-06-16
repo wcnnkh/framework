@@ -35,7 +35,7 @@ public abstract class AbstractBeanBuilder extends
 	}
 
 	protected boolean isProxy() {
-		return BeanUtils.isProxy(getTargetClass(), getTargetClass());
+		return BeanUtils.isAopEnable(getTargetClass(), getTargetClass());
 	}
 
 	@Override

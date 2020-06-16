@@ -1,9 +1,9 @@
 package scw.amqp;
 
 import scw.aop.MethodInvoker;
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 
-@Bean(proxy = false)
+@AopEnable(false)
 public interface Exchange {
 	void bind(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener);
 

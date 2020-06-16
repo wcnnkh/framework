@@ -6,7 +6,7 @@ import org.apache.tomcat.JarScanType;
 import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 import scw.core.instance.annotation.Configuration;
 import scw.embed.EmbeddedUtils;
 import scw.value.property.PropertyFactory;
@@ -18,7 +18,7 @@ import scw.value.property.PropertyFactory;
  *
  */
 @Configuration(order=Integer.MIN_VALUE)
-@Bean(proxy=false)
+@AopEnable(false)
 public class Tomcat8AboveStandardJarScanner extends StandardJarScanner {
 	private boolean scanTdl;
 	

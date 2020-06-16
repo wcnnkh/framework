@@ -4,7 +4,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
-import scw.beans.annotation.Bean;
 import scw.beans.builder.AbstractBeanBuilder;
 import scw.beans.builder.BeanBuilder;
 import scw.beans.builder.BeanBuilderLoader;
@@ -15,7 +14,6 @@ import scw.io.Resource;
 import scw.io.ResourceUtils;
 
 @Configuration(order = Integer.MIN_VALUE)
-@Bean(proxy = false)
 public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanBuilder loading(LoaderContext context,

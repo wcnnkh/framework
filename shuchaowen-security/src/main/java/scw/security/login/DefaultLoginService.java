@@ -1,12 +1,10 @@
 package scw.security.login;
 
-import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.data.TemporaryCache;
 
-@Bean(proxy = false)
 public class DefaultLoginService<T> extends AbstractLoginService<T> {
 	private final String prefix;
 

@@ -3,9 +3,9 @@ package scw.sql;
 import java.util.Collection;
 import java.util.List;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 
-@Bean(proxy=false)
+@AopEnable(false)
 public interface SqlOperations {
 	/**
 	 * 执行一条sql语句

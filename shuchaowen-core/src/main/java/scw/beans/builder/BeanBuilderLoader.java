@@ -1,8 +1,8 @@
 package scw.beans.builder;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 
-@Bean(proxy = false)
+@AopEnable(false)
 public interface BeanBuilderLoader {
 	BeanBuilder loading(LoaderContext context,
 			BeanBuilderLoaderChain loaderChain);

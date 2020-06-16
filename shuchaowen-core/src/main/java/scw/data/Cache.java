@@ -3,7 +3,7 @@ package scw.data;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 
 /**
  * 缓存<br/>
@@ -12,7 +12,7 @@ import scw.beans.annotation.Bean;
  *
  */
 
-@Bean(proxy=false)
+@AopEnable(false)
 public interface Cache {
 	<T> T get(String key);
 

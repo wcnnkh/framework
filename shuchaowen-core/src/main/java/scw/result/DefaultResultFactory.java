@@ -1,11 +1,9 @@
 package scw.result;
 
-import scw.beans.annotation.Bean;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.lang.Nullable;
 
-@Bean(proxy = false)
 public class DefaultResultFactory extends AbstractResultFactory {
 	private ResultMessageFactory resultMessageFactory;
 	private final int defaultErrorCode;

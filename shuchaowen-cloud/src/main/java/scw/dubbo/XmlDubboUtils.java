@@ -113,21 +113,21 @@ public final class XmlDubboUtils {
 						if (StringUtils.isNotEmpty(packageName)) {
 							for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(packageName)) {
 								Service service = clazz.getAnnotation(Service.class);
-								if (service != null) {
-									Class<?>[] interfaces = BeanUtils.getServiceInterfaces(clazz);
-									if (scw.core.utils.ArrayUtils.isEmpty(interfaces)) {
-										continue;
-									}
+								if (service == null) {
+									continue;
+								}
 
-									Object refInstance = refInstanceFactory.getInstance(clazz);
-									for (Class<?> interfaceClass : interfaces) {
-										ServiceConfig<Object> scanService = Copy.copy(ServiceConfig.class, config);
-										scanService.setInterface(interfaceClass);
-										scanService.setRef(refInstance);
-										if (scanService.isValid()) {
-											list.add(scanService);
-										}
-									}
+								Class<?> interfaceService = BeanUtils.getServiceInterface(clazz);
+								if (interfaceService == null) {
+									continue;
+								}
+
+								Object refInstance = refInstanceFactory.getInstance(clazz);
+								ServiceConfig<Object> scanService = Copy.copy(ServiceConfig.class, config);
+								scanService.setInterface(interfaceService);
+								scanService.setRef(refInstance);
+								if (scanService.isValid()) {
+									list.add(scanService);
 								}
 							}
 						}
@@ -247,7 +247,7 @@ public final class XmlDubboUtils {
 			if (MapperUtils.isDescription(field.getSetter())) {
 				logger.warn("{} set value={} description field: {}", instance.getClass(), value, field);
 			}
-			
+
 			if (logger.isDebugEnabled()) {
 				logger.debug("{} set name={}, value={}", instance.getClass(), name, value);
 			}

@@ -4,6 +4,9 @@ import java.util.Collection;
 
 import javax.servlet.Filter;
 
+import scw.beans.annotation.AopEnable;
+
+@AopEnable(false)
 public interface FilterConfiguration{
 	String getName();
 	

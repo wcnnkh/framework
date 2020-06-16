@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.aop.support.FieldSetterListen;
+import scw.mapper.Field;
 import scw.sql.SqlUtils;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.ResultMapping;
@@ -30,7 +31,7 @@ public abstract class AbstractResultMapping implements ResultMapping {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T get(Class<? extends T> clazz, TableNameMapping tableNameMapping) {
+	public final <T> T get(Class<? extends T> clazz, TableNameMapping tableNameMapping) {
 		if (isEmpty()) {
 			return null;
 		}
@@ -47,14 +48,14 @@ public abstract class AbstractResultMapping implements ResultMapping {
 			return (T) array;
 		}
 
-		T v = mapping(clazz, tableNameMapping, SqlUtils.getObjectRelationalMapping());
+		T v = mapping(clazz, tableNameMapping, SqlUtils.getObjectRelationalMapping(), null);
 		if (v instanceof FieldSetterListen) {
 			((FieldSetterListen) v).clear_field_setter_listen();
 		}
 		return v;
 	}
 
-	protected abstract <T> T mapping(Class<T> clazz, TableNameMapping tableNameMapping, ObjectRelationalMapping objectRelationalMapping);
+	protected abstract <T> T mapping(Class<T> clazz, TableNameMapping tableNameMapping, ObjectRelationalMapping objectRelationalMapping, Field parentField);
 
 	public final <T> T get(Class<? extends T> clazz, String tableName) {
 		return get(clazz, new SingleTableNameMapping(clazz, tableName));

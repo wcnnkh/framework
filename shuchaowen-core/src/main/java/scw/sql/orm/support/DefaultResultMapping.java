@@ -2,6 +2,7 @@ package scw.sql.orm.support;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
 import scw.aop.support.FieldSetterListen;
 import scw.aop.support.FieldSetterListenUtils;
@@ -10,6 +11,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.Field;
 import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.ObjectRelationalMapping;
@@ -64,15 +66,18 @@ public class DefaultResultMapping extends AbstractResultMapping {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected <T> T mapping(Class<T> clazz, TableNameMapping tableNameMapping,
-			ObjectRelationalMapping objectRelationalMapping) {
+			ObjectRelationalMapping objectRelationalMapping, Field parentField) {
 		String tableName = getTableName(clazz, tableNameMapping, objectRelationalMapping);
 		T entity = (T) (SqlUtils.getObjectRelationalMapping().isTable(clazz)
 				? FieldSetterListenUtils.getFieldSetterListenProxy(clazz).create()
 				: InstanceUtils.INSTANCE_FACTORY.getInstance(clazz));
-		for (Column column : objectRelationalMapping.getColumns(clazz)) {
+		Enumeration<Column> enumeration = objectRelationalMapping.enumeration(clazz);
+		while (enumeration.hasMoreElements()) {
+			Column column = enumeration.nextElement();
 			Object value;
 			if (column.isEntity()) {
-				value = mapping(column.getField().getSetter().getType(), tableNameMapping, objectRelationalMapping);
+				value = mapping(column.getField().getSetter().getType(), tableNameMapping, objectRelationalMapping,
+						column.getField());
 			} else {
 				value = getValue(tableName, column, clazz);
 			}

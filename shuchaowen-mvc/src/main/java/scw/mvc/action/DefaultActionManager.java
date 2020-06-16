@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.instance.annotation.Configuration;
 import scw.io.ResourceUtils;
@@ -18,7 +17,6 @@ import scw.mvc.annotation.Controller;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
-@Bean(proxy = false)
 public class DefaultActionManager implements ActionManager {
 	protected transient final Logger logger = LoggerUtils.getLogger(getClass());
 	private final Map<Method, Action> actionMap = new HashMap<Method, Action>();

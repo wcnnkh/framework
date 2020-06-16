@@ -1,13 +1,13 @@
 package scw.hystrix;
 
-import scw.aop.ProxyInvoker;
-import scw.beans.annotation.AutoImpl;
-import scw.beans.annotation.Bean;
-
 import com.netflix.hystrix.HystrixCommand;
 
+import scw.aop.ProxyInvoker;
+import scw.beans.annotation.AopEnable;
+import scw.beans.annotation.AutoImpl;
+
 @AutoImpl(DefaultHystrixCommandFactory.class)
-@Bean(proxy=false)
+@AopEnable(false)
 public interface HystrixCommandFactory {
 	HystrixCommand<?> getHystrixCommandFactory(ProxyInvoker invoker, Object[] args)
 			throws Exception;

@@ -3,6 +3,9 @@ package scw.security.authority;
 import java.util.Collection;
 import java.util.List;
 
+import scw.beans.annotation.AopEnable;
+
+@AopEnable(false)
 public interface AuthorityManager<T extends Authority> {
 	void register(T authority);
 	

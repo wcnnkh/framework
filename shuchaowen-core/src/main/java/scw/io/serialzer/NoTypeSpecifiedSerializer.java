@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import scw.beans.annotation.AopEnable;
+
+@AopEnable(false)
 public interface NoTypeSpecifiedSerializer {
 	void serialize(OutputStream out, Object data) throws IOException;
 

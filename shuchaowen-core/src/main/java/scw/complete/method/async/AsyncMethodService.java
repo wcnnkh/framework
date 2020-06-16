@@ -1,8 +1,8 @@
 package scw.complete.method.async;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 
-@Bean(proxy=false)
+@AopEnable(false)
 public interface AsyncMethodService {
 	void service(AsyncMethodCompleteTask asyncComplete) throws Exception;
 }

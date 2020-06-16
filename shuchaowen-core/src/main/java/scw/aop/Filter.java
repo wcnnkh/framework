@@ -1,8 +1,8 @@
 package scw.aop;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 
-@Bean(proxy = false)
+@AopEnable(false)
 public interface Filter {
 	Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable;
 }

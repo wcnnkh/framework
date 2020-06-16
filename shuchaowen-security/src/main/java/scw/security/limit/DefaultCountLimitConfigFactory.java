@@ -2,7 +2,6 @@ package scw.security.limit;
 
 import java.lang.reflect.Method;
 
-import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterDescriptor;
@@ -11,7 +10,6 @@ import scw.security.limit.annotation.CountLimitParameter;
 import scw.security.limit.annotation.CountLimitSecurityCount;
 import scw.security.limit.annotation.CountLimitSecurityName;
 
-@Bean(proxy = false)
 public class DefaultCountLimitConfigFactory implements CountLimitConfigFactory {
 
 	public CountLimitConfig getCountLimitConfig(Class<?> clazz, Method method,

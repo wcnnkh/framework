@@ -5,6 +5,9 @@ import java.util.Set;
 
 import javax.servlet.ServletContainerInitializer;
 
+import scw.beans.annotation.AopEnable;
+
+@AopEnable(false)
 public interface ServletContainerInitializerConfiguration {
 	Collection<? extends ServletContainerInitializer> getServletContainerInitializers();
 	

@@ -5,7 +5,6 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
-import scw.beans.annotation.Bean;
 import scw.beans.builder.AbstractBeanBuilder;
 import scw.beans.builder.BeanBuilder;
 import scw.beans.builder.BeanBuilderLoader;
@@ -16,7 +15,6 @@ import scw.io.serialzer.SerializerUtils;
 import scw.net.InetUtils;
 
 @Configuration(order = Integer.MIN_VALUE)
-@Bean(proxy = false)
 public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
