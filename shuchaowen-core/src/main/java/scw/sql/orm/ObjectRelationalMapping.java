@@ -46,10 +46,21 @@ public class ObjectRelationalMapping implements FieldFilter {
 				PRIMARY_KEY_CONNECTOR_CHARACTER));
 	}
 
+	/**
+	 * 迭代可以映射的字段，包含entity字段
+	 * @param entityClass
+	 * @param parentField 指明父级字段
+	 * @return
+	 */
 	public Enumeration<Column> enumeration(Class<?> entityClass, Field parentField) {
 		return new EnumerationColumn(getMapper().enumeration(entityClass, true, parentField, this));
 	}
 
+	/**
+	 * 迭代可以映射的字段，包含entity字段
+	 * @param entityClass
+	 * @return
+	 */
 	public final Enumeration<Column> enumeration(Class<?> entityClass) {
 		return enumeration(entityClass, null);
 	}
