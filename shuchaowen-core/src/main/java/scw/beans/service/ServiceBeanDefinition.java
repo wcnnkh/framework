@@ -4,20 +4,18 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.beans.DefaultBeanDefinition;
 import scw.beans.annotation.Service;
 import scw.beans.builder.AutoBeanBuilder;
-import scw.core.Init;
-import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.value.property.PropertyFactory;
 
 public class ServiceBeanDefinition extends DefaultBeanDefinition {
 
-	public ServiceBeanDefinition(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> targetClass) {
-		super(beanFactory, propertyFactory, targetClass, new AutoBeanBuilder(
-				beanFactory, propertyFactory, targetClass));
+	public ServiceBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
+		super(beanFactory, propertyFactory, targetClass,
+				new AutoBeanBuilder(beanFactory, propertyFactory, targetClass));
 	}
 
 	@Override
@@ -27,34 +25,21 @@ public class ServiceBeanDefinition extends DefaultBeanDefinition {
 			return super.getNames();
 		}
 
-		HashSet<String> list = new HashSet<String>(4);
-		if (ArrayUtils.isEmpty(service.name())
-				&& ArrayUtils.isEmpty(service.value())) {
-			Class<?>[] clzs = getTargetClass().getInterfaces();
-			if (clzs != null) {
-				for (Class<?> i : clzs) {
-					if (AnnotationUtils.isIgnore(i)) {
-						continue;
-					}
-
-					if (i.getName().startsWith("java.")
-							|| i.getName().startsWith("javax.")
-							|| i == scw.core.Destroy.class || i == Init.class) {
-						continue;
-					}
-
-					list.add(i.getName());
-				}
-			}
-		} else {
-			for (Class<?> name : service.value()) {
-				list.add(name.getName());
-			}
-
-			for (String name : service.name()) {
+		if (!ArrayUtils.isEmpty(service.value())) {
+			HashSet<String> list = new HashSet<String>(super.getNames());
+			for (String name : service.value()) {
 				list.add(name);
 			}
+			return list;
 		}
+
+		Class<?> serviceInterface = BeanUtils.getServiceInterface(getTargetClass());
+		if (serviceInterface == null) {
+			return super.getNames();
+		}
+
+		HashSet<String> list = new HashSet<String>(super.getNames());
+		list.add(serviceInterface.getName());
 		return list;
 	}
 }

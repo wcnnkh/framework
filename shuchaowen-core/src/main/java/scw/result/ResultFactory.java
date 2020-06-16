@@ -1,10 +1,12 @@
 package scw.result;
 
+import scw.beans.annotation.AopEnable;
 import scw.beans.annotation.AutoImpl;
 
 @AutoImpl({ DefaultResultFactory.class })
+@AopEnable(false)
 public interface ResultFactory {
-	
+
 	/**
 	 * 授权失败
 	 * 
@@ -22,7 +24,7 @@ public interface ResultFactory {
 	<T> DataResult<T> error(long code, String msg, Object data);
 
 	<T> DataResult<T> error(String msg, Object data);
-	
+
 	<T> DataResult<T> error(long code, String msg);
 
 	<T> DataResult<T> error(long code);

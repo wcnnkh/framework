@@ -6,14 +6,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 
 @Configuration(order = Integer.MIN_VALUE)
-@Bean(proxy=false)
 public class JavaSerializer extends Serializer {
 	public final static JavaSerializer INSTANCE = new JavaSerializer();
 

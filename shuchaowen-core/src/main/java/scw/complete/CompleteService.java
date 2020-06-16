@@ -2,7 +2,7 @@ package scw.complete;
 
 import java.io.IOException;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 import scw.core.Init;
 
 /**
@@ -11,7 +11,7 @@ import scw.core.Init;
  * @author shuchaowen
  *
  */
-@Bean(proxy = false)
+@AopEnable(false)
 public interface CompleteService extends Init {
 
 	/**

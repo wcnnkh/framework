@@ -2,9 +2,9 @@ package scw.http.server;
 
 import java.io.IOException;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 
-@Bean(proxy=false)
+@AopEnable(false)
 public interface HttpServiceHandler {
 	boolean accept(ServerHttpRequest request);
 

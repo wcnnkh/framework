@@ -1,6 +1,5 @@
 package scw.timer.db;
 
-import scw.beans.annotation.Bean;
 import scw.db.DB;
 import scw.locks.Lock;
 import scw.sql.SimpleSql;
@@ -8,7 +7,6 @@ import scw.sql.Sql;
 import scw.timer.TaskConfig;
 import scw.timer.TaskLockFactory;
 
-@Bean(proxy = false)
 public class DBTaskLockFactory implements TaskLockFactory {
 	private DB db;
 

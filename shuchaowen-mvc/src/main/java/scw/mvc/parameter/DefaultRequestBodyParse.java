@@ -8,7 +8,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
-import scw.beans.annotation.Bean;
 import scw.core.parameter.ParameterDescriptor;
 import scw.json.JSONSupport;
 import scw.logger.Logger;
@@ -18,7 +17,6 @@ import scw.net.InetUtils;
 import scw.value.StringValue;
 import scw.xml.XMLUtils;
 
-@Bean(proxy = false)
 public class DefaultRequestBodyParse implements RequestBodyParse {
 	private static Logger logger = LoggerFactory.getLogger(DefaultRequestBodyParse.class);
 

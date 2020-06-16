@@ -6,14 +6,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
-import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.instance.annotation.Configuration;
 import scw.http.server.DefaultHttpService;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = HttpServletService.class)
-@Bean(proxy=false)
 public class DefaultHttpServletService extends DefaultHttpService implements HttpServletService {
 	public DefaultHttpServletService() {
 	}

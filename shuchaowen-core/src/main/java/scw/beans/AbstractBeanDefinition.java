@@ -91,7 +91,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 			return targetClass.getName();
 		}
 
-		return StringUtils.isEmpty(bean.id()) ? targetClass.getName() : bean.id();
+		return StringUtils.isEmpty(bean.value()) ? targetClass.getName() : bean.value();
 	}
 
 	public Collection<String> getNames() {
@@ -100,7 +100,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 			return Collections.emptyList();
 		}
 
-		return Arrays.asList(bean.value());
+		return Arrays.asList(bean.names());
 	}
 
 	public boolean isSingleton() {

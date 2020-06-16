@@ -1,13 +1,11 @@
 package scw.mvc.logger;
 
-import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.Configuration;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
 
 @Configuration(order = Integer.MAX_VALUE)
-@Bean(proxy = false)
 public class ActionLogFilter implements ActionFilter {
 	private ActionLogService actionLogService;
 	private ActionLogFactory actionLogFactory;

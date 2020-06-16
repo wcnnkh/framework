@@ -1,6 +1,6 @@
 package scw.beans;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 import scw.value.property.PropertyFactory;
 
 /**
@@ -8,7 +8,7 @@ import scw.value.property.PropertyFactory;
  * @author shuchaowen
  *
  */
-@Bean(proxy=false)
+@AopEnable(false)
 public interface BeanFactoryLifeCycle {
 	void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception;
 	

@@ -30,7 +30,7 @@ public class MethodBeanBuilder extends AbstractBeanBuilder {
 
 	@Override
 	protected boolean isProxy() {
-		return BeanUtils.isProxy(method.getReturnType(), method) && method.getReturnType().isInterface();
+		return BeanUtils.isAopEnable(method.getReturnType(), method) && method.getReturnType().isInterface();
 	}
 
 	public boolean isInstance() {

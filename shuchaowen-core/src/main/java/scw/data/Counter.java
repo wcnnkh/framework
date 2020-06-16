@@ -1,6 +1,6 @@
 package scw.data;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 
 /**
  * 计数器
@@ -8,7 +8,7 @@ import scw.beans.annotation.Bean;
  *
  */
 
-@Bean(proxy=false)
+@AopEnable(false)
 public interface Counter {
 	boolean isExist(String key);
 	

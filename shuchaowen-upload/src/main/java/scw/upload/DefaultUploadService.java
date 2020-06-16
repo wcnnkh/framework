@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import scw.beans.annotation.Bean;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.IOUtils;
 
-@Bean(proxy = false)
 public class DefaultUploadService implements UploadService {
 	private String rootPath;
 	private String rootUrl;

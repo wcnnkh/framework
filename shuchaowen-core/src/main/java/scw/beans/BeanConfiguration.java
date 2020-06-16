@@ -3,10 +3,10 @@ package scw.beans;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.beans.annotation.Bean;
+import scw.beans.annotation.AopEnable;
 import scw.value.property.PropertyFactory;
 
-@Bean(proxy=false)
+@AopEnable(false)
 public interface BeanConfiguration {
 	void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception;
 	

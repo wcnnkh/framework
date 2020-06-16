@@ -6,7 +6,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.annotation.Bean;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
@@ -18,7 +17,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.xml.XMLUtils;
 
-@Bean(proxy = false)
 public class XmlHttpAuthorityManager extends
 		DefaultHttpAuthorityManager<HttpAuthority> {
 	private static Logger logger = LoggerFactory
