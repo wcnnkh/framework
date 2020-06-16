@@ -11,4 +11,10 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Autowired {
 	public String value() default "";
+	
+	/**
+	 * 是否强制依赖
+	 * @return
+	 */
+	public boolean required() default true;
 }

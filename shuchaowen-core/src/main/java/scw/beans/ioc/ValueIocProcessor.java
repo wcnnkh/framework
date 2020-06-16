@@ -11,12 +11,12 @@ public class ValueIocProcessor extends DefaultFieldIocProcessor {
 		super(field);
 	}
 
-	public Object process(Object bean, BeanFactory beanFactory,
+	public void process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
 		Value value = getField().getSetter()
 				.getAnnotatedElement().getAnnotation(Value.class);
 		if (value != null) {
-			existDefaultValueWarnLog(bean);
+			checkField(bean);
 			Object v = beanFactory.getInstance(value.format()).format(
 					beanFactory, propertyFactory, getField(),
 					value.value());
@@ -24,7 +24,6 @@ public class ValueIocProcessor extends DefaultFieldIocProcessor {
 				getField().getSetter().set(bean, v);
 			}
 		}
-		return null;
 	}
 
 }

@@ -1,14 +1,15 @@
 package scw.beans.ioc;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.value.property.PropertyFactory;
 
 public class IocMetadata {
-	protected final LinkedList<IocProcessor> iocProcessors = new LinkedList<IocProcessor>();
+	protected final List<IocProcessor> iocProcessors = new ArrayList<IocProcessor>();
 	
-	public LinkedList<IocProcessor> getIocProcessors() {
+	public List<IocProcessor> getIocProcessors() {
 		return iocProcessors;
 	}
 

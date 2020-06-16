@@ -11,18 +11,17 @@ public class ConfigIocProcessor extends DefaultFieldIocProcessor {
 		super(field);
 	}
 
-	public Object process(Object bean, BeanFactory beanFactory,
+	public void process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
 		Config config = getField().getSetter()
 				.getAnnotatedElement().getAnnotation(Config.class);
 		if (config != null) {
 			Object value = null;
-			existDefaultValueWarnLog(bean);
+			checkField(bean);
 			value = beanFactory.getInstance(config.parse()).parse(beanFactory,
 					propertyFactory, getField(), config.value(),
 					config.charset());
 			getField().getSetter().set(bean, value);
 		}
-		return null;
 	}
 }

@@ -14,17 +14,13 @@ public class NoArgumentMethodIocProcessor extends MethodIocProcessor {
 		checkMethod();
 	}
 
-	public Object process(Object bean, BeanFactory beanFactory,
+	public void process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
-		return noArgumentInvoke(bean);
+		noArgumentInvoke(bean);
 	}
 
 	public Method getMethod() {
 		return method;
-	}
-
-	public Object invoke(Object bean) throws Exception {
-		return noArgumentInvoke(bean);
 	}
 
 	public Object noArgumentInvoke(Object bean) throws Exception {

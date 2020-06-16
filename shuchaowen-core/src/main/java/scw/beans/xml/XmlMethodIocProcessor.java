@@ -58,12 +58,12 @@ public class XmlMethodIocProcessor extends MethodIocProcessor {
 		checkMethod();
 	}
 
-	public Object process(Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
+	public void process(Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
 		if (method.getParameterCount() == 0) {
-			return method.invoke(bean);
+			method.invoke(bean);
 		} else {
 			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertyFactory);
-			return method.invoke(bean, args);
+			method.invoke(bean, args);
 		}
 	}
 

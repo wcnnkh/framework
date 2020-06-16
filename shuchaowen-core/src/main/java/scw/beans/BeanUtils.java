@@ -110,7 +110,7 @@ public final class BeanUtils {
 			return false;
 		}
 
-		if (Filter.class.isAssignableFrom(type) || BeanLifeCycle.class.isAssignableFrom(type)
+		if (Filter.class.isAssignableFrom(type)
 				|| BeanConfiguration.class.isAssignableFrom(type) || BeanBuilderLoader.class.isAssignableFrom(type)
 				|| BeanBuilderLoaderChain.class.isAssignableFrom(type) || BeanBuilder.class.isAssignableFrom(type)
 				|| BeanDefinition.class.isAssignableFrom(type)) {

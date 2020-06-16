@@ -70,10 +70,12 @@ public abstract class AbstractBeanBuilder extends
 		Proxy proxy = createProxy(targetClass, null);
 		return proxy.create(parameterTypes, args);
 	}
+	
+	public void dependence(Object instance) throws Exception {
+		ioc.getDependence().process(instance, beanFactory, propertyFactory, false);
+	}
 
 	public void init(Object instance) throws Exception {
-		ioc.getAutowired().process(instance, beanFactory, propertyFactory,
-				false);
 		ioc.getInit().process(instance, beanFactory, propertyFactory, false);
 	}
 

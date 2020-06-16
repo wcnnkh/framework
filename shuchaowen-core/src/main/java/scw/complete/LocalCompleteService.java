@@ -70,6 +70,7 @@ public final class LocalCompleteService implements CompleteService, Destroy {
 		BeanDefinition beanDefinition = beanFactory == null ? null
 				: beanFactory.getDefinition(ProxyUtils.getProxyFactory().getUserClass(completeTask.getClass()));
 		if (beanDefinition != null) {
+			beanDefinition.dependence(completeTask);
 			beanDefinition.init(completeTask);
 		}
 		try {

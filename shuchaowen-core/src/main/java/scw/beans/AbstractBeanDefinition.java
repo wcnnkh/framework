@@ -7,7 +7,11 @@ import java.util.Collections;
 
 import scw.beans.annotation.Bean;
 import scw.beans.builder.BeanBuilder;
+import scw.beans.event.BeanLifeCycleEvent;
+import scw.beans.event.BeanLifeCycleEvent.Step;
+import scw.beans.ioc.Ioc;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XUtils;
 import scw.value.property.PropertyFactory;
 
 public abstract class AbstractBeanDefinition implements BeanDefinition {
@@ -15,8 +19,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 	protected final PropertyFactory propertyFactory;
 	protected final Class<?> targetClass;
 
-	public AbstractBeanDefinition(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> targetClass) {
+	public AbstractBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
 		this.beanFactory = beanFactory;
 		this.propertyFactory = propertyFactory;
 		this.targetClass = targetClass;
@@ -24,24 +27,42 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 
 	protected abstract BeanBuilder getBeanBuiler();
 
-	protected BeanLifeCycle getBeanLifeCycle() {
-		return beanFactory.getInstance(BeanLifeCycle.class);
+	public void dependence(Object instance) throws Exception {
+		beanFactory.getEventDispatcher()
+				.publishEvent(new BeanLifeCycleEvent(instance, beanFactory, propertyFactory, Step.BEFORE_DEPENDENCE));
+		if (instance != null) {
+			Ioc ioc = Ioc.forClass(instance.getClass());
+			ioc.getDependence().process(instance, beanFactory, propertyFactory, false);
+		}
+		getBeanBuiler().dependence(instance);
+		beanFactory.getEventDispatcher()
+				.publishEvent(new BeanLifeCycleEvent(instance, beanFactory, propertyFactory, Step.AFTER_DEPENDENCE));
 	}
 
 	public void init(Object instance) throws Exception {
-		getBeanLifeCycle().initBefore(beanFactory, propertyFactory, this,
-				instance);
+		beanFactory.getEventDispatcher()
+				.publishEvent(new BeanLifeCycleEvent(instance, beanFactory, propertyFactory, Step.BEFORE_INIT));
 		getBeanBuiler().init(instance);
-		getBeanLifeCycle().initAfter(beanFactory, propertyFactory, this,
-				instance);
+		if (instance != null) {
+			Ioc ioc = Ioc.forClass(instance.getClass());
+			ioc.getInit().process(instance, beanFactory, propertyFactory, false);
+			XUtils.init(instance);
+		}
+		beanFactory.getEventDispatcher()
+				.publishEvent(new BeanLifeCycleEvent(instance, beanFactory, propertyFactory, Step.AFTER_INIT));
 	}
 
 	public void destroy(Object instance) throws Exception {
-		getBeanLifeCycle().destroyBefore(beanFactory, propertyFactory, this,
-				instance);
+		beanFactory.getEventDispatcher()
+				.publishEvent(new BeanLifeCycleEvent(instance, beanFactory, propertyFactory, Step.BEFORE_DESTROY));
+		if (instance != null) {
+			Ioc ioc = Ioc.forClass(instance.getClass());
+			ioc.getDestroy().process(instance, beanFactory, propertyFactory, false);
+			XUtils.destroy(instance);
+		}
 		getBeanBuiler().destroy(instance);
-		getBeanLifeCycle().destroyAfter(beanFactory, propertyFactory, this,
-				instance);
+		beanFactory.getEventDispatcher()
+				.publishEvent(new BeanLifeCycleEvent(instance, beanFactory, propertyFactory, Step.AFTER_DESTROY));
 	}
 
 	public Class<? extends Object> getTargetClass() {
@@ -60,8 +81,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 		return getBeanBuiler().create(params);
 	}
 
-	public Object create(Class<?>[] parameterTypes, Object... params)
-			throws Exception {
+	public Object create(Class<?>[] parameterTypes, Object... params) throws Exception {
 		return getBeanBuiler().create(parameterTypes, params);
 	}
 
@@ -71,8 +91,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 			return targetClass.getName();
 		}
 
-		return StringUtils.isEmpty(bean.id()) ? targetClass.getName() : bean
-				.id();
+		return StringUtils.isEmpty(bean.id()) ? targetClass.getName() : bean.id();
 	}
 
 	public Collection<String> getNames() {

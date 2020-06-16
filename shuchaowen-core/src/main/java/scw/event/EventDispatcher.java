@@ -1,7 +1,9 @@
 package scw.event;
 
-public interface EventDispatcher {
-	EventRegistration registerListener(EventListener<? extends Event> eventListener);
+public interface EventDispatcher<T extends Event> extends BasicEventDispatcher<T>{
+	void unregister(Class<? extends T> eventType);
 
-	void publishEvent(Event event);
+	<E extends T> EventRegistration registerListener(Class<E> eventType, EventListener<E> eventListener);
+
+	<E extends T> void publishEvent(Class<E> eventType, E event);
 }

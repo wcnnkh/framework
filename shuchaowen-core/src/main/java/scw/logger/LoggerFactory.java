@@ -11,7 +11,7 @@ public final class LoggerFactory {
 
 	static {
 		if(LOGGER_FACTORY != null){
-			FormatUtils.info(LoggerFactory.class, "use logger factory [{}]", LOGGER_FACTORY.getClass().getName());
+			FormatUtils.info(LoggerFactory.class, "using logger factory [{}]", LOGGER_FACTORY.getClass().getName());
 		}
 	}
 
