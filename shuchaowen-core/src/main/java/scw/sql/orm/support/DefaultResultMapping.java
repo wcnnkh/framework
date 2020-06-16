@@ -2,6 +2,7 @@ package scw.sql.orm.support;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
 import scw.aop.support.FieldSetterListen;
 import scw.aop.support.FieldSetterListenUtils;
@@ -69,10 +70,12 @@ public class DefaultResultMapping extends AbstractResultMapping {
 		T entity = (T) (SqlUtils.getObjectRelationalMapping().isTable(clazz)
 				? FieldSetterListenUtils.getFieldSetterListenProxy(clazz).create()
 				: InstanceUtils.INSTANCE_FACTORY.getInstance(clazz));
-		for (Column column : objectRelationalMapping.getColumns(clazz)) {
+		Enumeration<Column> enumeration = objectRelationalMapping.enumeration(clazz);
+		while(enumeration.hasMoreElements()){
+			Column column = enumeration.nextElement();
 			Object value;
 			if (column.isEntity()) {
-				value = mapping(column.getField().getSetter().getType(), tableNameMapping, objectRelationalMapping);
+				value = get(column.getField().getSetter().getType(), tableNameMapping);
 			} else {
 				value = getValue(tableName, column, clazz);
 			}
