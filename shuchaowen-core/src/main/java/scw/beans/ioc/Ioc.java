@@ -12,11 +12,14 @@ import scw.core.annotation.AnnotationUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
 import scw.mapper.MapperUtils;
+import scw.util.ConcurrentReferenceHashMap;
 
-public class Ioc {
+public final class Ioc {
+	private static ConcurrentReferenceHashMap<Class<?>, Ioc> iocCache = new ConcurrentReferenceHashMap<Class<?>, Ioc>();
+
 	private final IocMetadata init = new IocMetadata();
 	private final IocMetadata destroy = new IocMetadata();
-	private final IocMetadata autowired = new IocMetadata();
+	private final IocMetadata dependence = new IocMetadata();
 
 	public Ioc() {
 	};
@@ -32,50 +35,61 @@ public class Ioc {
 			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		List<Field> autowrites = MapperUtils.getMapper().getFields(targetClass, null,
-				new FieldFilter() {
+		List<Field> autowrites = MapperUtils.getMapper().getFields(targetClass, null, new FieldFilter() {
 
-					public boolean accept(Field field) {
-						if (!field.isSupportSetter()) {
-							return false;
-						}
+			public boolean accept(Field field) {
+				if (!field.isSupportSetter()) {
+					return false;
+				}
 
-						AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
-						if (AnnotationUtils.isDeprecated(annotatedElement)) {
-							return false;
-						}
-						return true;
-					}
-				});
+				AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
+				if (AnnotationUtils.isDeprecated(annotatedElement)) {
+					return false;
+				}
+				return true;
+			}
+		});
 
 		for (Field field : autowrites) {
 			AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
 			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
 			if (autowired != null) {
-				this.autowired.getIocProcessors().add(new AutowiredIocProcessor(field));
+				this.dependence.getIocProcessors().add(new AutowiredIocProcessor(field));
 			}
 
 			Config config = annotatedElement.getAnnotation(Config.class);
 			if (config != null) {
-				this.autowired.getIocProcessors().add(new ConfigIocProcessor(field));
+				this.dependence.getIocProcessors().add(new ConfigIocProcessor(field));
 			}
 
 			Value value = annotatedElement.getAnnotation(Value.class);
 			if (value != null) {
-				this.autowired.getIocProcessors().add(new ValueIocProcessor(field));
+				this.dependence.getIocProcessors().add(new ValueIocProcessor(field));
 			}
 		}
 	}
 
-	public final IocMetadata getInit() {
+	public IocMetadata getInit() {
 		return init;
 	}
 
-	public final IocMetadata getDestroy() {
+	public IocMetadata getDestroy() {
 		return destroy;
 	}
 
-	public final IocMetadata getAutowired() {
-		return autowired;
+	public IocMetadata getDependence() {
+		return dependence;
+	}
+
+	public static Ioc forClass(Class<?> clazz) {
+		Ioc ioc = iocCache.get(clazz);
+		if (ioc == null) {
+			ioc = new Ioc(clazz);
+			Ioc old = iocCache.putIfAbsent(clazz, ioc);
+			if (old != null) {
+				ioc = old;
+			}
+		}
+		return ioc;
 	}
 }

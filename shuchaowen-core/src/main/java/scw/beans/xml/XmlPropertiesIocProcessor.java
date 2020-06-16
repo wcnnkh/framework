@@ -17,16 +17,15 @@ public class XmlPropertiesIocProcessor implements IocProcessor {
 		this.targetClass = targetClass;
 	}
 
-	public Object process(Object bean, BeanFactory beanFactory,
+	public void process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
 		Field field = MapperUtils.getMapper().getField(targetClass, xmlBeanParameter.getName(), null, FilterFeature.SUPPORT_SETTER);
 		if(field == null){
-			return null;
+			return ;
 		}
 
 		field.getSetter().set(bean, xmlBeanParameter.parseValue(beanFactory, propertyFactory,
 				field.getSetter().getGenericType()));
-		return null;
 	}
 
 	public boolean isGlobal() {

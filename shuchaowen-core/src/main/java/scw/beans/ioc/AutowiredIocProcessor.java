@@ -2,6 +2,7 @@ package scw.beans.ioc;
 
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowired;
+import scw.lang.NotSupportedException;
 import scw.mapper.Field;
 import scw.value.property.PropertyFactory;
 
@@ -11,7 +12,7 @@ public class AutowiredIocProcessor extends DefaultFieldIocProcessor {
 		super(field);
 	}
 
-	public Object process(Object bean, BeanFactory beanFactory,
+	public void process(Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
 		Autowired s = getField().getSetter()
 				.getAnnotatedElement().getAnnotation(Autowired.class);
@@ -22,9 +23,20 @@ public class AutowiredIocProcessor extends DefaultFieldIocProcessor {
 						.getName();
 			}
 
-			existDefaultValueWarnLog(bean);
-			getField().getSetter().set(bean, beanFactory.getInstance(name));
+			checkField(bean);
+
+			if(s.required()){//是否是强制依赖
+				if(!beanFactory.isInstance(name)){
+					throw new NotSupportedException(name);
+				}
+				
+
+				getField().getSetter().set(bean, beanFactory.getInstance(name));
+			}else{
+				if(beanFactory.isInstance(name)){
+					getField().getSetter().set(bean, beanFactory.getInstance(name));
+				}
+			}
 		}
-		return null;
 	}
 }

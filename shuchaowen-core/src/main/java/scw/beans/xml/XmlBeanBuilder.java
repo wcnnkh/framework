@@ -39,7 +39,7 @@ public class XmlBeanBuilder extends ConstructorBeanBuilder {
 				.getIocProcessors()
 				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(
 						getTargetClass(), nodeList));
-		ioc.getAutowired()
+		ioc.getDependence()
 				.getIocProcessors()
 				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(
 						targetClass, nodeList));

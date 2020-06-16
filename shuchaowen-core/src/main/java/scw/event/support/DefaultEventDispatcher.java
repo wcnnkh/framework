@@ -1,63 +1,51 @@
 package scw.event.support;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import scw.core.Assert;
+import scw.compatible.CompatibleUtils;
+import scw.compatible.map.CompatibleMap;
+import scw.event.BasicEventDispatcher;
 import scw.event.Event;
 import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.lang.AlreadyExistsException;
 
-public class DefaultEventDispatcher implements EventDispatcher {
-	private final Collection<EventRegistrationInternal> eventListeners;
-	private final boolean concurrent;
+public class DefaultEventDispatcher<T extends Event> extends DefaultBasicEventDispatcher<T>
+		implements EventDispatcher<T> {
+	private final CompatibleMap<Class<? extends T>, BasicEventDispatcher<T>> typeEventListenerMap;
 
-	public DefaultEventDispatcher(boolean concurrent){
-		this.concurrent = concurrent;
-		this.eventListeners = concurrent? new CopyOnWriteArraySet<EventRegistrationInternal>():new LinkedHashSet<DefaultEventDispatcher.EventRegistrationInternal>();
-	}
-	
-	public final boolean isConcurrent() {
-		return concurrent;
+	public DefaultEventDispatcher(boolean concurrent) {
+		super(concurrent);
+		Map<Class<? extends T>, BasicEventDispatcher<T>> typeEventListenerMap = concurrent
+				? new ConcurrentHashMap<Class<? extends T>, BasicEventDispatcher<T>>()
+				: new HashMap<Class<? extends T>, BasicEventDispatcher<T>>();
+		this.typeEventListenerMap = CompatibleUtils.getMapCompatible().wrapper(typeEventListenerMap);
 	}
 
-	public EventRegistration registerListener(EventListener<? extends Event> eventListener) {
-		Assert.requiredArgument(eventListener != null, "eventListener");
-
-		EventRegistration eventRegistration = new EventRegistrationInternal(eventListener);
-		if (eventListeners.contains(eventRegistration)) {
-			throw new AlreadyExistsException(eventRegistration.toString());
-		}
-
-		eventListeners.add(new EventRegistrationInternal(eventListener));
-		return eventRegistration;
+	public void unregister(Class<? extends T> eventType) {
+		typeEventListenerMap.remove(eventType);
 	}
 
-	public void publishEvent(Event event) {
-		Assert.requiredArgument(event != null, "event");
-
-		for (EventRegistrationInternal registrationInternal : eventListeners) {
-			registrationInternal.getEventListener().onEvent(event);
+	@SuppressWarnings("unchecked")
+	public <E extends T> EventRegistration registerListener(Class<E> eventType, EventListener<E> eventListener) {
+		BasicEventDispatcher<T> eventDispatcher = typeEventListenerMap.get(eventType);
+		if (eventDispatcher == null) {
+			eventDispatcher = new DefaultBasicEventDispatcher<T>(isConcurrent());
+			BasicEventDispatcher<T> dispatcher = typeEventListenerMap.putIfAbsent(eventType, eventDispatcher);
+			if (dispatcher != null) {
+				eventDispatcher = dispatcher;
+			}
 		}
+
+		return eventDispatcher.registerListener((EventListener<T>) eventListener);
 	}
 
-	private class EventRegistrationInternal implements EventRegistration {
-		private final EventListener<? extends Event> eventListener;
-
-		public EventRegistrationInternal(EventListener<? extends Event> eventListener) {
-			this.eventListener = eventListener;
-		}
-
-		public void unregister() {
-			eventListeners.remove(this);
-		}
-
-		@SuppressWarnings("unchecked")
-		public EventListener<Event> getEventListener() {
-			return (EventListener<Event>) eventListener;
+	public <E extends T> void publishEvent(Class<E> eventType, E event) {
+		BasicEventDispatcher<T> eventDispatcher = typeEventListenerMap.get(eventType);
+		if (eventDispatcher != null) {
+			eventDispatcher.publishEvent(event);
 		}
 	}
 }

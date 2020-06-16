@@ -51,6 +51,7 @@ public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 			Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(message.getClass());
 			BeanDefinition beanDefinition = beanFactory.getDefinition(clazz.getName());
 			if(beanDefinition != null){
+				beanDefinition.dependence(message);
 				beanDefinition.init(message);
 			}
 		}
