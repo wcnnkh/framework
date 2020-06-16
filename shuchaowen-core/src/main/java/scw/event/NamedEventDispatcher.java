@@ -1,6 +1,6 @@
 package scw.event;
 
-public interface NamedEventDispatcher<T extends Event> extends EventDispatcher<T>{
+public interface NamedEventDispatcher<T extends Event> {
 	void unregister(String name);
 
 	EventRegistration registerListener(String name, EventListener<T> eventListener);

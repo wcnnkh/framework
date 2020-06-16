@@ -14,6 +14,7 @@ import scw.event.EventRegistration;
 
 public class DefaultEventDispatcher<T extends Event> extends DefaultBasicEventDispatcher<T>
 		implements EventDispatcher<T> {
+	private final CompatibleMap<String, BasicEventDispatcher<T>> namedEventListenerMap;
 	private final CompatibleMap<Class<? extends T>, BasicEventDispatcher<T>> typeEventListenerMap;
 
 	public DefaultEventDispatcher(boolean concurrent) {
@@ -22,6 +23,11 @@ public class DefaultEventDispatcher<T extends Event> extends DefaultBasicEventDi
 				? new ConcurrentHashMap<Class<? extends T>, BasicEventDispatcher<T>>()
 				: new HashMap<Class<? extends T>, BasicEventDispatcher<T>>();
 		this.typeEventListenerMap = CompatibleUtils.getMapCompatible().wrapper(typeEventListenerMap);
+	
+		Map<String, BasicEventDispatcher<T>> namedEventListenerMap = concurrent
+				? new ConcurrentHashMap<String, BasicEventDispatcher<T>>()
+				: new HashMap<String, BasicEventDispatcher<T>>();
+		this.namedEventListenerMap = CompatibleUtils.getMapCompatible().wrapper(namedEventListenerMap);
 	}
 
 	public void unregister(Class<? extends T> eventType) {
@@ -47,5 +53,32 @@ public class DefaultEventDispatcher<T extends Event> extends DefaultBasicEventDi
 		if (eventDispatcher != null) {
 			eventDispatcher.publishEvent(event);
 		}
+	}
+	
+	public void unregister(String name) {
+		namedEventListenerMap.remove(name);
+	}
+
+	public EventRegistration registerListener(String name, EventListener<T> eventListener) {
+		BasicEventDispatcher<T> eventDispatcher = namedEventListenerMap.get(name);
+		if (eventDispatcher == null) {
+			eventDispatcher = new DefaultBasicEventDispatcher<T>(isConcurrent());
+			BasicEventDispatcher<T> dispatcher = namedEventListenerMap.putIfAbsent(name, eventDispatcher);
+			if (dispatcher != null) {
+				eventDispatcher = dispatcher;
+			}
+		}
+
+		return eventDispatcher.registerListener(eventListener);
+	}
+
+	public void publishEvent(String name, T event) {
+		BasicEventDispatcher<T> dispatcher = namedEventListenerMap.get(name);
+		if (dispatcher == null) {
+			return;
+		}
+
+		dispatcher.publishEvent(event);
+		return;
 	}
 }
