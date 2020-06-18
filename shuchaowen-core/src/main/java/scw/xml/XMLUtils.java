@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -474,7 +473,7 @@ public final class XMLUtils {
 		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
 	}
 
-	public static <T> T getBean(NoArgsInstanceFactory instanceFactory, Node node, Class<T> type) throws Exception {
+	public static <T> T getBean(NoArgsInstanceFactory instanceFactory, Node node, Class<T> type) {
 		T t = null;
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -503,8 +502,7 @@ public final class XMLUtils {
 		return t;
 	}
 
-	public static <T> List<T> getBeanList(NoArgsInstanceFactory instanceFactory, Node rootNode, Class<T> type)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public static <T> List<T> getBeanList(NoArgsInstanceFactory instanceFactory, Node rootNode, Class<T> type) {
 		if (rootNode == null) {
 			return null;
 		}
@@ -521,16 +519,11 @@ public final class XMLUtils {
 				continue;
 			}
 
-			T t;
-			try {
-				t = getBean(instanceFactory, node, type);
-				if (t == null) {
-					continue;
-				}
-				list.add(t);
-			} catch (Exception e) {
-				e.printStackTrace();
+			T t= getBean(instanceFactory, node, type);
+			if (t == null) {
+				continue;
 			}
+			list.add(t);
 		}
 		return list;
 	}
