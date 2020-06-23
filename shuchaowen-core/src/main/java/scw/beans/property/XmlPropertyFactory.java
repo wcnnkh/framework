@@ -5,8 +5,8 @@ import java.util.Enumeration;
 
 import org.w3c.dom.NodeList;
 
+import scw.beans.Destroy;
 import scw.beans.xml.XmlBeanUtils;
-import scw.core.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.io.ResourceUtils;
 import scw.value.Value;

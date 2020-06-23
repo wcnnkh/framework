@@ -25,7 +25,7 @@ public final class FastJsonArray extends JsonArray implements JSONAware, Seriali
 	public Iterator<JsonElement> iterator() {
 		return new IteratorConvert<Object, JsonElement>(jsonArray.iterator(), new Converter<Object, JsonElement>() {
 
-			public JsonElement convert(Object k) throws Exception {
+			public JsonElement convert(Object k) {
 				if (k == null) {
 					return null;
 				}

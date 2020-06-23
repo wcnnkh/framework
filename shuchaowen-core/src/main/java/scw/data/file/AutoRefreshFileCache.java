@@ -32,14 +32,9 @@ public class AutoRefreshFileCache extends FileCache {
 	}
 
 	private Object refresh(String key) {
-		Object value = null;
-		try {
-			value = converter.convert(key);
-			if (value != null) {
-				set(key, value);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		Object value = converter.convert(key);
+		if (value != null) {
+			set(key, value);
 		}
 		return value;
 	}

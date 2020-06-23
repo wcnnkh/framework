@@ -12,17 +12,19 @@ import java.util.Date;
 import java.util.List;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
+import scw.beans.Destroy;
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
-import scw.core.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.ArrayUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
-import scw.core.utils.XUtils;
 import scw.http.HttpMethod;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
@@ -41,6 +43,7 @@ import scw.mvc.annotation.RequestBody;
 import scw.mvc.beans.DefaultHttpChannelBeanManager;
 import scw.mvc.beans.HttpChannelBeanManager;
 import scw.mvc.parameter.RequestBodyParse;
+import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
 import scw.value.AbstractStringValue;
@@ -89,7 +92,7 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 			getLogger().trace("destroy channel: {}", toString());
 		}
 
-		XUtils.destroy(httpChannelBeanManager);
+		BeanUtils.destroy(httpChannelBeanManager);
 
 		long useTime = System.currentTimeMillis() - createTime;
 		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.TRACE;
@@ -124,33 +127,35 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		return new RequestValue(name,
 				defaultValue == null ? DefaultValueDefinition.DEFAULT_VALUE_DEFINITION : defaultValue);
 	}
-
-	public String[] getStringArray(String key) {
-		String[] array = getRequest().getParameterValues(key);
-		MultiValueMap<String, String> restfulParameterMap = MVCUtils.getRestfulParameterMap(this);
-		if (restfulParameterMap != null) {
-			List<String> values = restfulParameterMap.get(key);
-			if (values != null && values.size() != 0) {
-				String[] newArray = new String[array == null ? values.size() : (array.length + values.size())];
-				values.toArray(newArray);
-				System.arraycopy(array, 0, newArray, values.size(), array.length);
-				return newArray;
-			}
-		}
-		return array;
+	
+	protected Value parseValue(String value){
+		return new StringValue(value);
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	public final <E> E[] getArray(String name, Class<? extends E> type) {
-		String[] values = getStringArray(name);
-		if (values == null) {
+	protected final <E> E[] parseArray(MultiValueMap<String, String> parameterMap, String name, Class<? extends E> type){
+		List<String> values = request.getParameterMap().get(name);
+		if (CollectionUtils.isEmpty(values)) {
 			return (E[]) Array.newInstance(type, 0);
 		}
-
-		Object array = Array.newInstance(type, values.length);
-		for (int i = 0; i < values.length; i++) {
-			Value value = new StringValue(values[i]);
+		
+		
+		Object array = Array.newInstance(type, values.size());
+		for (int i = 0, len = values.size(); i < len; i++) {
+			Value value = parseValue(values.get(i));
 			Array.set(array, i, value.getAsObject(type));
+		}
+		
+		return (E[]) array;
+	}
+
+	public <E> E[] getArray(String name, Class<? extends E> type) {
+		E[] array = parseArray(request.getParameterMap(), name, type);
+		if(request instanceof RestfulParameterMapAware){
+			E[] restfulArray = parseArray(((RestfulParameterMapAware) request).getRestfulParameterMap(), name, type);
+			if(restfulArray.length != 0){
+				return ArrayUtils.merge(array, restfulArray);
+			}
 		}
 		return (E[]) array;
 	}
@@ -309,14 +314,11 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 	}
 
 	protected String getStringValue(String name) {
-		String v = request.getParameter(name);
-		if (v == null) {
-			MultiValueMap<String, String> restfulParameterMap = MVCUtils.getRestfulParameterMap(this);
-			if (restfulParameterMap != null) {
-				v = restfulParameterMap.getFirst(name);
-			}
+		String v = request.getParameterMap().getFirst(name);
+		if(v == null && request instanceof RestfulParameterMapAware){
+			v = ((RestfulParameterMapAware)request).getRestfulParameterMap().getFirst(name);
 		}
-
+		
 		if (v != null && HttpMethod.GET == request.getMethod()) {
 			v = decodeGETParameter(v);
 		}

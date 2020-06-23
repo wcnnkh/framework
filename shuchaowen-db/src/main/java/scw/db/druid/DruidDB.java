@@ -1,9 +1,9 @@
 package scw.db.druid;
 
-import scw.core.Destroy;
+import scw.beans.BeanUtils;
+import scw.beans.Destroy;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
-import scw.core.utils.XUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.db.DBUtils;
@@ -24,6 +24,6 @@ public class DruidDB extends DefaultDB implements Destroy {
 	}
 
 	public void destroy() throws Exception {
-		XUtils.destroy(getDbConfig());
+		BeanUtils.destroy(getDbConfig());
 	}
 }

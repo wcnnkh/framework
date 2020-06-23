@@ -24,12 +24,12 @@ import scw.util.MultiValueMap;
 public final class Restful {
 	private static final char PATH_SPLIT = '/';
 	private final RestfulPath[] paths;
-	private final String targetPath;
+	private final String sourcePath;
 
-	public Restful(String path) {
-		Assert.requiredArgument(path != null, "path");
-		this.targetPath = path;
-		String[] paths = StringUtils.split(path, PATH_SPLIT);
+	public Restful(String sourcePath) {
+		Assert.requiredArgument(sourcePath != null, "sourcePath");
+		this.sourcePath = sourcePath;
+		String[] paths = StringUtils.split(sourcePath, PATH_SPLIT);
 		this.paths = new RestfulPath[paths.length];
 		for (int i = 0; i < paths.length; i++) {
 			this.paths[i] = new RestfulPath(paths[i]);
@@ -49,13 +49,13 @@ public final class Restful {
 		return false;
 	}
 
-	public String getTargetPath() {
-		return targetPath;
+	public String getSourcePath() {
+		return sourcePath;
 	}
 
 	@Override
 	public int hashCode() {
-		return getTargetPath().hashCode();
+		return sourcePath.hashCode();
 	}
 
 	@Override
@@ -105,22 +105,21 @@ public final class Restful {
 
 	@Override
 	public String toString() {
-		return getTargetPath();
+		return sourcePath;
 	}
-
+	
 	public static final class RestfulMatchingResult implements Serializable {
 		private static final long serialVersionUID = 1L;
 		public static final RestfulMatchingResult ERROR = new RestfulMatchingResult();
 		private final boolean success;
 		private final MultiValueMap<String, String> parameterMap;
 
-		@SuppressWarnings("unchecked")
 		private RestfulMatchingResult() {
 			this.success = false;
-			this.parameterMap = CollectionUtils.EMPTY_MULTI_VALUE_MAP;
+			this.parameterMap = CollectionUtils.emptyMultiValueMap();
 		}
 
-		public RestfulMatchingResult(MultiValueMap<String, String> parameterMap) {
+		private RestfulMatchingResult(MultiValueMap<String, String> parameterMap) {
 			this.success = true;
 			this.parameterMap = parameterMap;
 		}

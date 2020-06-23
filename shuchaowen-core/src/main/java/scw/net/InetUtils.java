@@ -2,7 +2,6 @@ package scw.net;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
@@ -17,7 +16,6 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
-import scw.io.IOUtils;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
@@ -87,25 +85,6 @@ public final class InetUtils {
 			addresses.add(new InetSocketAddress(h, port));
 		}
 		return addresses;
-	}
-
-	/**
-	 * 检查端口号占用
-	 * 
-	 * @param port
-	 * @return
-	 */
-	public static boolean checkPortCccupied(int port) {
-		ServerSocket socket = null;
-		try {
-			socket = new ServerSocket(port);
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			IOUtils.close(false, socket);
-		}
-		return false;
 	}
 
 	public static URI toURI(String uri) {

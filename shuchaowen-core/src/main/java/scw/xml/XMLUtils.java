@@ -221,10 +221,10 @@ public final class XMLUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String, Object> toRecursionMap(Node node) throws Exception {
+	public static Map<String, Object> toRecursionMap(Node node) {
 		return toMap(node, new Converter<Node, KeyValuePair<String, Object>>() {
 
-			public KeyValuePair<String, Object> convert(Node n) throws Exception {
+			public KeyValuePair<String, Object> convert(Node n) {
 				NodeList nodeList = n.getChildNodes();
 				Object v;
 				if (nodeList == null || nodeList.getLength() == 0) {
@@ -232,7 +232,7 @@ public final class XMLUtils {
 				} else {
 					List<Object> list = toList(n, new Converter<Node, Object>() {
 
-						public Object convert(Node k) throws Exception {
+						public Object convert(Node k) {
 							return toRecursionMap(k);
 						}
 					});
@@ -244,7 +244,7 @@ public final class XMLUtils {
 		});
 	}
 
-	public static List<Object> toList(Node node, Converter<Node, Object> nodeConvert) throws Exception {
+	public static List<Object> toList(Node node, Converter<Node, Object> nodeConvert) {
 		if (ignoreNode(node)) {
 			return null;
 		}
@@ -277,8 +277,7 @@ public final class XMLUtils {
 		return list.isEmpty() ? null : list;
 	}
 
-	public static Map<String, Object> toMap(Node node, Converter<Node, KeyValuePair<String, Object>> nodeParse)
-			throws Exception {
+	public static Map<String, Object> toMap(Node node, Converter<Node, KeyValuePair<String, Object>> nodeParse) {
 		if (ignoreNode(node)) {
 			return null;
 		}

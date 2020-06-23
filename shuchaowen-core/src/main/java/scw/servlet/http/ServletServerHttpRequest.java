@@ -7,12 +7,18 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.Principal;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
@@ -25,14 +31,18 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.net.InetAddress;
 import scw.net.InetUtils;
+import scw.net.RestfulParameterMapAware;
 import scw.net.message.AbstractInputMessage;
 import scw.security.session.Session;
 import scw.util.LinkedCaseInsensitiveMap;
+import scw.util.MultiValueMap;
 
-public class ServletServerHttpRequest extends AbstractInputMessage implements ServerHttpRequest {
+public class ServletServerHttpRequest extends AbstractInputMessage implements ServerHttpRequest, RestfulParameterMapAware {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletAsyncControl asyncControl;
+	private MultiValueMap<String, String> parameterMap;
+	private MultiValueMap<String, String> restfulParameterMap;
 
 	public ServletServerHttpRequest(HttpServletRequest httpServletRequest) {
 		this.httpServletRequest = httpServletRequest;
@@ -74,12 +84,14 @@ public class ServletServerHttpRequest extends AbstractInputMessage implements Se
 	}
 
 	public InetAddress getLocalAddress() {
-		
-		return new InetAddress.DefaultInetAddress(this.httpServletRequest.getLocalName(), this.httpServletRequest.getLocalPort());
+
+		return new InetAddress.DefaultInetAddress(this.httpServletRequest.getLocalName(),
+				this.httpServletRequest.getLocalPort());
 	}
 
 	public InetAddress getRemoteAddress() {
-		return new InetAddress.DefaultInetAddress(this.httpServletRequest.getRemoteHost(), this.httpServletRequest.getRemotePort());
+		return new InetAddress.DefaultInetAddress(this.httpServletRequest.getRemoteHost(),
+				this.httpServletRequest.getRemotePort());
 	}
 
 	public void setCharacterEncoding(String enc) {
@@ -173,20 +185,33 @@ public class ServletServerHttpRequest extends AbstractInputMessage implements Se
 		return httpServletRequest.getInputStream();
 	}
 
-	public String getParameter(String name) {
-		return httpServletRequest.getParameter(name);
+	private void initParameterMap() {
+		if (parameterMap != null) {
+			return;
+		}
+
+		Map<String, String[]> map = httpServletRequest.getParameterMap();
+		if(map.isEmpty()){
+			this.parameterMap = CollectionUtils.emptyMultiValueMap();
+			return ;
+		}
+		
+		Map<String, List<String>> valueMap = new HashMap<String, List<String>>();
+		for (Entry<String, String[]> entry : map.entrySet()) {
+			String[] values = entry.getValue();
+			if (values == null || values.length == 0) {
+				continue;
+			}
+
+			valueMap.put(entry.getKey(), Arrays.asList(values));
+		}
+		
+		this.parameterMap = CollectionUtils.toMultiValueMap(Collections.unmodifiableMap(valueMap));
 	}
 
-	public Enumeration<String> getParameterNames() {
-		return httpServletRequest.getParameterNames();
-	}
-
-	public String[] getParameterValues(String name) {
-		return httpServletRequest.getParameterValues(name);
-	}
-
-	public Map<String, String[]> getParameterMap() {
-		return httpServletRequest.getParameterMap();
+	public MultiValueMap<String, String> getParameterMap() {
+		initParameterMap();
+		return parameterMap;
 	}
 
 	public String getRawMethod() {
@@ -245,5 +270,13 @@ public class ServletServerHttpRequest extends AbstractInputMessage implements Se
 
 	public String getIp() {
 		return HttpUtils.getServerHttpRequestIpGetter().getRequestIp(this);
+	}
+	
+	public MultiValueMap<String, String> getRestfulParameterMap() {
+		return restfulParameterMap;
+	}
+	
+	public void setRestfulParameterMap(MultiValueMap<String, String> restfulParameterMap) {
+		this.restfulParameterMap = restfulParameterMap;
 	}
 }

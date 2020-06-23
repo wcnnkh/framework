@@ -17,7 +17,7 @@ import scw.result.ResultFactory;
 import scw.util.RandomUtils;
 import scw.xml.XMLUtils;
 
-public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode, scw.core.Destroy {
+public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode, scw.beans.Destroy {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String codeParameterKey;

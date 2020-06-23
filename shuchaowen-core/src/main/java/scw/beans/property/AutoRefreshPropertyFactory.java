@@ -11,7 +11,7 @@ import java.util.TimerTask;
 
 import org.w3c.dom.NodeList;
 
-import scw.core.Destroy;
+import scw.beans.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.util.FormatUtils;

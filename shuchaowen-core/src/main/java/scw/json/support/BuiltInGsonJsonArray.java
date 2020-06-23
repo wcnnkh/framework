@@ -20,7 +20,7 @@ public final class BuiltInGsonJsonArray extends JsonArray {
 		return new IteratorConvert<scw.json.gson.GsonJsonElement, JsonElement>(gsonJsonArray.iterator(),
 				new Converter<scw.json.gson.GsonJsonElement, JsonElement>() {
 
-					public JsonElement convert(scw.json.gson.GsonJsonElement k) throws Exception {
+					public JsonElement convert(scw.json.gson.GsonJsonElement k) {
 						return new BuiltInGsonElement(k, gson, getDefaultValue(null));
 					}
 				});

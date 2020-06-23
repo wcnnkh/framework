@@ -13,7 +13,7 @@ import scw.amqp.MessageProperties;
 import scw.amqp.MethodMessage;
 import scw.amqp.QueueDeclare;
 import scw.aop.MethodInvoker;
-import scw.core.Init;
+import scw.beans.Init;
 import scw.core.utils.StringUtils;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.io.support.LocalLogger.Record;

@@ -2,10 +2,9 @@ package scw.mvc;
 
 import java.io.IOException;
 
-import scw.core.utils.XUtils;
+import scw.beans.BeanUtils;
 import scw.http.server.ServerHttpAsyncEvent;
 import scw.http.server.ServerHttpAsyncListener;
-import scw.mvc.HttpChannel;
 
 public class HttpChannelAsyncListener implements ServerHttpAsyncListener {
 	private HttpChannel httpChannel;
@@ -17,7 +16,7 @@ public class HttpChannelAsyncListener implements ServerHttpAsyncListener {
 	public void onComplete(ServerHttpAsyncEvent event) throws IOException {
 		if(!httpChannel.isCompleted()){
 			try {
-				XUtils.destroy(httpChannel);
+				BeanUtils.destroy(httpChannel);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

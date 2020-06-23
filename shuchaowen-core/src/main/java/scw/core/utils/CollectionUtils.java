@@ -37,8 +37,12 @@ import scw.util.MultiValueMapWrapper;
 
 public abstract class CollectionUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(
-			Collections.emptyMap());
+	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(Collections.emptyMap());
+
+	@SuppressWarnings("unchecked")
+	public static <K, V> MultiValueMap<K, V> emptyMultiValueMap() {
+		return EMPTY_MULTI_VALUE_MAP;
+	}
 
 	/**
 	 * Return {@code true} if the supplied Collection is {@code null} or empty.
@@ -111,8 +115,7 @@ public abstract class CollectionUtils {
 	 *            the target Collection to merge the array into
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void mergeArrayIntoCollection(Object array,
-			Collection collection) {
+	public static void mergeArrayIntoCollection(Object array, Collection collection) {
 		if (collection == null) {
 			throw new IllegalArgumentException("Collection must not be null");
 		}
@@ -308,8 +311,7 @@ public abstract class CollectionUtils {
 	 * @return a value of one of the given types found if there is a clear
 	 *         match, or {@code null} if none or more than one such value found
 	 */
-	public static Object findValueOfType(Collection<?> collection,
-			Class<?>[] types) {
+	public static Object findValueOfType(Collection<?> collection, Class<?>[] types) {
 		if (isEmpty(collection) || ObjectUtils.isEmpty(types)) {
 			return null;
 		}
@@ -381,8 +383,7 @@ public abstract class CollectionUtils {
 	 * given array. The array returned will be a different instance than the
 	 * array given.
 	 */
-	public static <A, E extends A> A[] toArray(Enumeration<E> enumeration,
-			A[] array) {
+	public static <A, E extends A> A[] toArray(Enumeration<E> enumeration, A[] array) {
 		ArrayList<A> elements = new ArrayList<A>();
 		while (enumeration.hasMoreElements()) {
 			elements.add(enumeration.nextElement());
@@ -420,12 +421,10 @@ public abstract class CollectionUtils {
 	 *            the map for which an unmodifiable view is to be returned.
 	 * @return an unmodifiable view of the specified multi-value map.
 	 */
-	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(
-			MultiValueMap<? extends K, ? extends V> map) {
+	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(MultiValueMap<? extends K, ? extends V> map) {
 		Assert.notNull(map, "'map' must not be null");
 		Map<K, List<V>> result = new LinkedHashMap<K, List<V>>(map.size());
-		for (Map.Entry<? extends K, ? extends List<? extends V>> entry : map
-				.entrySet()) {
+		for (Map.Entry<? extends K, ? extends List<? extends V>> entry : map.entrySet()) {
 			List<V> values = Collections.unmodifiableList(entry.getValue());
 			result.put(entry.getKey(), values);
 		}
@@ -462,8 +461,7 @@ public abstract class CollectionUtils {
 	 * @param keys
 	 * @return
 	 */
-	public static <K, V> V getValueByKeys(Map<K, V> map, boolean valueIsNull,
-			V defaultValue, K... keys) {
+	public static <K, V> V getValueByKeys(Map<K, V> map, boolean valueIsNull, V defaultValue, K... keys) {
 		if (map == null || map.isEmpty()) {
 			return defaultValue;
 		}
@@ -494,8 +492,7 @@ public abstract class CollectionUtils {
 	 * @param key
 	 * @return
 	 */
-	public static <K, V> V getValue(Map<K, V> map, boolean valueIsNull,
-			V defaultValue, K key) {
+	public static <K, V> V getValue(Map<K, V> map, boolean valueIsNull, V defaultValue, K key) {
 		if (map == null || map.isEmpty()) {
 			return defaultValue;
 		}
@@ -557,8 +554,7 @@ public abstract class CollectionUtils {
 		return Collections.unmodifiableSet(new LinkedHashSet<E>(collection));
 	}
 
-	public static <K, V, M extends Map<K, V>> void put(M map, K key, V value,
-			Callable<? extends M> callback) {
+	public static <K, V, M extends Map<K, V>> void put(M map, K key, V value, Callable<? extends M> callback) {
 		if (map == null) {
 			map = callback.call();
 		}
@@ -566,8 +562,7 @@ public abstract class CollectionUtils {
 		map.put(key, value);
 	}
 
-	public static <K, V> Callable<HashMap<K, V>> hashMapCallable(
-			final int initialCapacity) {
+	public static <K, V> Callable<HashMap<K, V>> hashMapCallable(final int initialCapacity) {
 		return new Callable<HashMap<K, V>>() {
 
 			public HashMap<K, V> call() {
@@ -576,8 +571,7 @@ public abstract class CollectionUtils {
 		};
 	};
 
-	public static <E> Callable<ArrayList<E>> arrayListCallable(
-			final int initialCapacity) {
+	public static <E> Callable<ArrayList<E>> arrayListCallable(final int initialCapacity) {
 		return new Callable<ArrayList<E>>() {
 
 			public ArrayList<E> call() {

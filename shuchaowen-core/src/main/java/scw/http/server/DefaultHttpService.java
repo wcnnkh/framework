@@ -13,7 +13,7 @@ import scw.http.server.resource.HttpServerResourceHandler;
 import scw.value.property.PropertyFactory;
 
 public class DefaultHttpService implements HttpService {
-	protected final LinkedList<HttpServiceHandler> handlers = new LinkedList<HttpServiceHandler>();
+	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
 	protected final LinkedList<HttpServiceFilter> filters = new LinkedList<HttpServiceFilter>();
 
 	public DefaultHttpService() {
@@ -24,10 +24,14 @@ public class DefaultHttpService implements HttpService {
 				? beanFactory.getInstance(HttpServerResourceFactory.class)
 				: new DefaultHttpServerResourceFactory(propertyFactory);
 		HttpServerResourceHandler resourceHandler = new HttpServerResourceHandler(httpServerResourceFactory);
-		handlers.add(resourceHandler);
+		handlerAccessor.bind(resourceHandler);
 		filters.add(new CorsFilter(beanFactory, propertyFactory));
 		filters.addAll(InstanceUtils.getConfigurationList(HttpServiceFilter.class, beanFactory, propertyFactory));
-		handlers.addAll(InstanceUtils.getConfigurationList(HttpServiceHandler.class, beanFactory, propertyFactory));
+		handlerAccessor.bind(InstanceUtils.getConfigurationList(HttpServiceHandler.class, beanFactory, propertyFactory));
+	}
+
+	public final HttpServiceHandlerAccessor getHandlerAccessor() {
+		return handlerAccessor;
 	}
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
@@ -50,16 +54,10 @@ public class DefaultHttpService implements HttpService {
 	}
 
 	protected void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		for (HttpServiceHandler handler : handlers) {
-			if (handler.accept(request)) {
-				handler.doHandle(request, response);
-				return;
-			}
+		HttpServiceHandler handler = handlerAccessor.get(request);
+		if(handler != null){
+			handler.doHandle(request, response);
 		}
-	}
-
-	public LinkedList<HttpServiceHandler> getHandlers() {
-		return handlers;
 	}
 
 	public LinkedList<HttpServiceFilter> getFilters() {

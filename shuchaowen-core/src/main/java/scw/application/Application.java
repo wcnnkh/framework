@@ -1,8 +1,8 @@
 package scw.application;
 
 import scw.beans.BeanFactory;
-import scw.core.Destroy;
-import scw.core.Init;
+import scw.beans.Destroy;
+import scw.beans.Init;
 import scw.value.property.PropertyFactory;
 
 public interface Application extends Init, Destroy{

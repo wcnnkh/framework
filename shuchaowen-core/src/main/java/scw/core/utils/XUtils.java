@@ -1,7 +1,5 @@
 package scw.core.utils;
 
-import java.io.Flushable;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,8 +20,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import scw.core.Converter;
-import scw.core.Destroy;
-import scw.core.Init;
 import scw.core.ResourceFactory;
 import scw.util.ToMap;
 
@@ -185,38 +181,8 @@ public final class XUtils {
 		}
 	}
 
-	public static void init(Object init) throws Exception {
-		if (init == null) {
-			return;
-		}
-
-		if (init instanceof Init) {
-			((Init) init).init();
-		}
-	}
-
-	public static void destroy(Object destroy) throws Exception {
-		if (destroy == null) {
-			return;
-		}
-
-		if (destroy instanceof Destroy) {
-			((Destroy) destroy).destroy();
-		}
-	}
-
-	public static void flush(Object flushable) throws IOException {
-		if (flushable == null) {
-			return;
-		}
-
-		if (flushable instanceof Flushable) {
-			((Flushable) flushable).flush();
-		}
-	}
-
 	public static <T, R> T execute(ResourceFactory<R> resourceFactory,
-			Converter<R, T> resourceConverter) throws Exception {
+			Converter<R, T> resourceConverter) {
 		R r = null;
 		try {
 			r = resourceFactory.getResource();

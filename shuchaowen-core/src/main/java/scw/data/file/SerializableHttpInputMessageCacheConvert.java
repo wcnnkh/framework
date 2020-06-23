@@ -7,7 +7,7 @@ import scw.net.message.SerializableInputMessage;
 public class SerializableHttpInputMessageCacheConvert implements
 		Converter<String, SerializableInputMessage> {
 
-	public SerializableInputMessage convert(String url) throws Exception {
+	public SerializableInputMessage convert(String url) {
 		return HttpUtils.getHttpClient().getSerializableHttpInputMessage(url,
 				null);
 	}

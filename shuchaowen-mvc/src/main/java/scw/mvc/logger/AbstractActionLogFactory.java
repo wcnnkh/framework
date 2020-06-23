@@ -2,11 +2,11 @@ package scw.mvc.logger;
 
 import java.util.Map;
 
+import scw.http.server.HttpControllerDescriptor;
 import scw.http.server.ServerHttpRequest;
 import scw.json.JSONUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
-import scw.mvc.action.Action.ControllerDescriptor;
 import scw.mvc.logger.annotation.ActionLogConfig;
 
 public abstract class AbstractActionLogFactory implements ActionLogFactory {
@@ -19,8 +19,8 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	}
 
 	protected String getController(HttpChannel httpChannel, Action action) {
-		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
-			return descriptor.getController();
+		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
+			return descriptor.getPath();
 		}
 		return null;
 	}

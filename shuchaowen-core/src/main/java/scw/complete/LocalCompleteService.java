@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.core.Destroy;
+import scw.beans.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;

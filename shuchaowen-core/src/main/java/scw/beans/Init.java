@@ -1,4 +1,4 @@
-package scw.core;
+package scw.beans;
 
 import scw.lang.Ignore;
 

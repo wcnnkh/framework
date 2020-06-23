@@ -110,10 +110,9 @@ public final class BeanUtils {
 			return false;
 		}
 
-		if (Filter.class.isAssignableFrom(type)
-				|| BeanConfiguration.class.isAssignableFrom(type) || BeanBuilderLoader.class.isAssignableFrom(type)
-				|| BeanBuilderLoaderChain.class.isAssignableFrom(type) || BeanBuilder.class.isAssignableFrom(type)
-				|| BeanDefinition.class.isAssignableFrom(type)) {
+		if (Filter.class.isAssignableFrom(type) || BeanConfiguration.class.isAssignableFrom(type)
+				|| BeanBuilderLoader.class.isAssignableFrom(type) || BeanBuilderLoaderChain.class.isAssignableFrom(type)
+				|| BeanBuilder.class.isAssignableFrom(type) || BeanDefinition.class.isAssignableFrom(type)) {
 			return false;
 		}
 
@@ -127,23 +126,23 @@ public final class BeanUtils {
 		if (aopEnable != null) {
 			return aopEnable.value();
 		}
-		
-		//如果是一个服务那么应该默认使用aop
+
+		// 如果是一个服务那么应该默认使用aop
 		Service service = annotatedElement.getAnnotation(Service.class);
-		if(service != null){
+		if (service != null) {
 			return true;
 		}
 
 		Class<?> useClass = type;
 		while (useClass != null && useClass != Object.class) {
 			aopEnable = useClass.getAnnotation(AopEnable.class);
-			if(aopEnable != null){
+			if (aopEnable != null) {
 				return aopEnable.value();
 			}
-			
+
 			for (Class<?> interfaceClass : useClass.getInterfaces()) {
 				aopEnable = interfaceClass.getAnnotation(AopEnable.class);
-				if(aopEnable != null){
+				if (aopEnable != null) {
 					return aopEnable.value();
 				}
 			}
@@ -156,8 +155,8 @@ public final class BeanUtils {
 		return GlobalPropertyFactory.getInstance().getValue("scw.scan.beans.package", String.class,
 				InstanceUtils.getScanAnnotationPackageName());
 	}
-	
-	public static Class<?> getServiceInterface(Class<?> clazz){
+
+	public static Class<?> getServiceInterface(Class<?> clazz) {
 		for (Class<?> i : clazz.getInterfaces()) {
 			if (AnnotationUtils.isIgnore(clazz) || i.getMethods().length == 0) {
 				continue;
@@ -166,5 +165,25 @@ public final class BeanUtils {
 			return i;
 		}
 		return null;
+	}
+
+	public static void init(Object init) throws Exception {
+		if (init == null) {
+			return;
+		}
+
+		if (init instanceof Init) {
+			((Init) init).init();
+		}
+	}
+
+	public static void destroy(Object destroy) throws Exception {
+		if (destroy == null) {
+			return;
+		}
+
+		if (destroy instanceof Destroy) {
+			((Destroy) destroy).destroy();
+		}
 	}
 }

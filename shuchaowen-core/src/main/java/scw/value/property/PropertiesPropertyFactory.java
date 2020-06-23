@@ -18,7 +18,7 @@ public class PropertiesPropertyFactory extends StringValuePropertyFactory {
 		return new EnumerationConvert<Object, String>(properties.keys(),
 				new Converter<Object, String>() {
 
-					public String convert(Object k) throws Exception {
+					public String convert(Object k) {
 						return k.toString();
 					}
 				});
