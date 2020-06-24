@@ -1,6 +1,6 @@
 package scw.util.queue;
 
-import scw.core.Destroy;
+import scw.beans.Destroy;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 

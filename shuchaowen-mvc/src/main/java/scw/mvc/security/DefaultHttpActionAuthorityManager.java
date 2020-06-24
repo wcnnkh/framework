@@ -9,9 +9,9 @@ import scw.core.Constants;
 import scw.core.annotation.KeyValuePair;
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
+import scw.http.server.HttpControllerDescriptor;
 import scw.lang.NotSupportedException;
 import scw.mvc.action.Action;
-import scw.mvc.action.Action.ControllerDescriptor;
 import scw.mvc.action.ActionManager;
 import scw.mvc.annotation.ActionAuthority;
 import scw.mvc.annotation.ActionAuthorityParent;
@@ -62,7 +62,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			return;
 		}
 
-		ControllerDescriptor descriptor = getAuthorityControllerDescriptor(action);
+		HttpControllerDescriptor descriptor = getAuthorityControllerDescriptor(action);
 		if (descriptor == null) {
 			logger.warn("not found controller descriptor: {}", action);
 			return;
@@ -74,12 +74,12 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			checkIsMenu(parentId, action);
 		}
 
-		String id = descriptor.getHttpMethod() + "&" + descriptor.getController();
+		String id = descriptor.getMethod() + "&" + descriptor.getPath();
 		id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
 
 		register(new DefaultHttpAuthority(id, parentId, methodAuthority.value(),
-				getAttributeMap(classAuthority, methodAuthority), isMenu, descriptor.getController(),
-				descriptor.getHttpMethod()));
+				getAttributeMap(classAuthority, methodAuthority), isMenu, descriptor.getPath(),
+				descriptor.getMethod()));
 	}
 
 	private void checkIsMenu(String parentId, Action action) {
@@ -92,8 +92,8 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 	}
 
 	public HttpAuthority getAuthority(Action action) {
-		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
-			HttpAuthority authority = getAuthority(descriptor.getController(), descriptor.getHttpMethod());
+		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
+			HttpAuthority authority = getAuthority(descriptor.getPath(), descriptor.getMethod());
 			if (authority != null) {
 				return authority;
 			}
@@ -117,14 +117,14 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		return attributeMap.isEmpty() ? null : attributeMap;
 	}
 
-	protected ControllerDescriptor getAuthorityControllerDescriptor(Action action) {
-		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
-			if (descriptor.getHttpMethod() == HttpMethod.GET) {
+	protected HttpControllerDescriptor getAuthorityControllerDescriptor(Action action) {
+		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
+			if (descriptor.getMethod() == HttpMethod.GET) {
 				return descriptor;
 			}
 		}
 
-		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
+		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
 			return descriptor;
 		}
 		return null;

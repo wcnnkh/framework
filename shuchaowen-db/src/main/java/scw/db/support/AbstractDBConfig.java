@@ -2,11 +2,11 @@ package scw.db.support;
 
 import java.util.Map;
 
+import scw.beans.BeanUtils;
+import scw.beans.Destroy;
 import scw.core.Constants;
-import scw.core.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XUtils;
 import scw.data.memcached.Memcached;
 import scw.data.memory.MemoryDataManager;
 import scw.data.memory.MemoryDataTemplete;
@@ -116,8 +116,8 @@ public abstract class AbstractDBConfig implements DBConfig, Destroy {
 	}
 
 	public void destroy() throws Exception {
-		XUtils.destroy(asyncQueue);
-		XUtils.destroy(cacheManager);
-		XUtils.destroy(memoryDataManager);
+		BeanUtils.destroy(asyncQueue);
+		BeanUtils.destroy(cacheManager);
+		BeanUtils.destroy(memoryDataManager);
 	}
 }

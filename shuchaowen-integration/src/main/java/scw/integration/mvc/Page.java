@@ -16,7 +16,6 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
 import scw.mvc.HttpChannel;
-import scw.mvc.MVCUtils;
 import scw.mvc.page.AbstractPage;
 import scw.mvc.servlet.Jsp;
 import scw.net.MimeType;
@@ -41,9 +40,9 @@ public class Page extends AbstractPage {
 	}
 
 	public static void setPageType(String suffix, PageType pageType) {
-		Iterator<Entry<String, PageType>> iterator = suffixMap.entrySet().iterator();
+		Iterator<java.util.Map.Entry<String, PageType>> iterator = suffixMap.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<String, PageType> entry = iterator.next();
+			java.util.Map.Entry<String, PageType> entry = iterator.next();
 			if (entry.getKey().endsWith(suffix) || suffix.endsWith(entry.getKey())) {
 				iterator.remove();
 			}
@@ -180,10 +179,6 @@ public class Page extends AbstractPage {
 					Object obj = enumeration.nextElement();
 					if (obj != null) {
 						String name = obj.toString();
-						if (MVCUtils.isSystemAttribute(name)) {
-							continue;
-						}
-
 						put(name, httpChannel.getRequest().getAttribute(name));
 					}
 				}

@@ -121,7 +121,6 @@ public class ResolvableType implements Serializable {
 	/**
 	 * Private constructor used to create a new {@link ResolvableType} for cache value purposes,
 	 * with upfront resolution and a pre-calculated hash.
-	 * @since 4.2
 	 */
 	private ResolvableType(Type type, TypeProvider typeProvider, VariableResolver variableResolver, Integer hash) {
 		this.type = type;
@@ -150,7 +149,6 @@ public class ResolvableType implements Serializable {
 	/**
 	 * Private constructor used to create a new {@link ResolvableType} on a {@link Class} basis.
 	 * Avoids all {@code instanceof} checks in order to create a straight {@link Class} wrapper.
-	 * @since 4.2
 	 */
 	private ResolvableType(Class<?> clazz) {
 		this.resolved = (clazz != null ? clazz : Object.class);
@@ -200,7 +198,6 @@ public class ResolvableType implements Serializable {
 	/**
 	 * Determine whether the given object is an instance of this {@code ResolvableType}.
 	 * @param obj the object to check
-	 * @since 4.2
 	 * @see #isAssignableFrom(Class)
 	 */
 	public boolean isInstance(Object obj) {
@@ -211,7 +208,6 @@ public class ResolvableType implements Serializable {
 	 * Determine whether this {@code ResolvableType} is assignable from the
 	 * specified other type.
 	 * @param other the type to be checked against (as a {@code Class})
-	 * @since 4.2
 	 * @see #isAssignableFrom(ResolvableType)
 	 */
 	public boolean isAssignableFrom(Class<?> other) {
@@ -918,7 +914,6 @@ public class ResolvableType implements Serializable {
 	 * @param clazz the class to introspect ({@code null} is semantically
 	 * equivalent to {@code Object.class} for typical use cases here)
 	 * @return a {@link ResolvableType} for the specified class
-	 * @since 4.2
 	 * @see #forClass(Class)
 	 * @see #getRawClass()
 	 */
@@ -1005,7 +1000,6 @@ public class ResolvableType implements Serializable {
 	 * the {@link #forClass(Class) Class instance}.
 	 * @param instance the instance
 	 * @return a {@link ResolvableType} for the specified instance
-	 * @since 4.2
 	 * @see ResolvableTypeProvider
 	 */
 	public static ResolvableType forInstance(Object instance) {
@@ -1230,7 +1224,6 @@ public class ResolvableType implements Serializable {
 	/**
 	 * Resolve the top-level parameter type of the given {@code MethodParameter}.
 	 * @param methodParameter the method parameter to resolve
-	 * @since 4.1.9
 	 * @see MethodParameter#setParameterType
 	 */
 	static void resolveMethodParameter(MethodParameter methodParameter) {
@@ -1293,7 +1286,6 @@ public class ResolvableType implements Serializable {
 	 * <p>Note: The resulting {@link ResolvableType} instance may not be {@link Serializable}.
 	 * @param typeReference the reference to obtain the source type from
 	 * @return a {@link ResolvableType} for the specified {@link ParameterizedTypeReference}
-	 * @since 4.3.12
 	 * @see #forType(Type)
 	 */
 	public static ResolvableType forType(ParameterizedTypeReference<?> typeReference) {
@@ -1348,7 +1340,6 @@ public class ResolvableType implements Serializable {
 
 	/**
 	 * Clear the internal {@code ResolvableType}/{@code SerializableTypeWrapper} cache.
-	 * @since 4.2
 	 */
 	public static void clearCache() {
 		cache.clear();

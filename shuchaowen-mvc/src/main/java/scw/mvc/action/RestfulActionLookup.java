@@ -8,10 +8,10 @@ import java.util.Map.Entry;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
+import scw.http.server.HttpControllerDescriptor;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.HttpChannel;
 import scw.mvc.MVCUtils;
-import scw.mvc.action.Action.ControllerDescriptor;
 import scw.net.Restful;
 import scw.net.Restful.RestfulMatchingResult;
 
@@ -27,12 +27,12 @@ public class RestfulActionLookup implements ActionLookup {
 	}
 
 	public void register(Action action) {
-		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
+		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
 			if (!descriptor.getRestful().isRestful()) {
 				continue;
 			}
 
-			Map<Restful, Action> map = restMap.get(descriptor.getHttpMethod());
+			Map<Restful, Action> map = restMap.get(descriptor.getMethod());
 			if (map == null) {
 				map = new HashMap<Restful, Action>();
 			}
@@ -43,7 +43,7 @@ public class RestfulActionLookup implements ActionLookup {
 			}
 
 			map.put(descriptor.getRestful(), action);
-			restMap.put(descriptor.getHttpMethod(), map);
+			restMap.put(descriptor.getMethod(), map);
 		}
 	}
 
@@ -58,7 +58,7 @@ public class RestfulActionLookup implements ActionLookup {
 			Restful restful = entry.getKey();
 			RestfulMatchingResult result = restful.matching(pathArr);
 			if (result.isSuccess()) {
-				MVCUtils.setRestfulParameterMap(httpChannel, result.getParameterMap());
+				Restful.restfulParameterMapAware(httpChannel.getRequest(), result.getParameterMap());
 				return entry.getValue();
 			}
 		}

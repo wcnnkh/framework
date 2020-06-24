@@ -2,6 +2,7 @@ package scw.freemarker.mvc;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.List;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -57,7 +58,7 @@ public class FreemarkerPage extends AbstractPage {
 		}
 
 		ServerHttpRequest serverHttpRequest = (ServerHttpRequest) serverRequest;
-		for (java.util.Map.Entry<String, String[]> entry : serverHttpRequest.getParameterMap().entrySet()) {
+		for (java.util.Map.Entry<String, List<String>> entry : serverHttpRequest.getParameterMap().entrySet()) {
 			String key = entry.getKey();
 			if (key == null || containsKey(key)) {
 				continue;

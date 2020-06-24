@@ -1,6 +1,6 @@
 package scw.logger;
 
-import scw.core.Destroy;
+import scw.beans.Destroy;
 
 public interface ILoggerFactory extends Destroy{
 

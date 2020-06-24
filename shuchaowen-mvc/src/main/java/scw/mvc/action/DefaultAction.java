@@ -13,16 +13,17 @@ import scw.beans.BeanFactory;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.XUtils;
 import scw.http.HttpMethod;
+import scw.http.server.HttpControllerDescriptor;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Methods;
 
 public class DefaultAction extends BeanAction {
-	protected final Set<ControllerDescriptor> controllerDescriptors = new HashSet<ControllerDescriptor>(
+	protected final Set<HttpControllerDescriptor> httpHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
-	protected final Set<ControllerDescriptor> targetClassControllerDescriptors = new HashSet<ControllerDescriptor>(
+	protected final Set<HttpControllerDescriptor> targetClassHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
-	protected final Set<ControllerDescriptor> methodControllerDescriptors = new HashSet<ControllerDescriptor>(
+	protected final Set<HttpControllerDescriptor> methodHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
 	
 	public DefaultAction(BeanFactory beanFactory, Class<?> targetClass,
@@ -32,26 +33,26 @@ public class DefaultAction extends BeanAction {
 				.getAnnotation(Controller.class);
 		Controller methodController = getMethodAnnotatedElement()
 				.getAnnotation(Controller.class);
-		controllerDescriptors.addAll(createControllerDescriptors(
+		httpHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
 				XUtils.mergePath("/", classController.value(),
 						methodController.value()), getControllerHttpMethods()));
-		targetClassControllerDescriptors.addAll(createControllerDescriptors(
+		targetClassHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
 				XUtils.mergePath("/", classController.value()),
 				Arrays.asList(classController.methods())));
-		methodControllerDescriptors.addAll(createControllerDescriptors(
+		methodHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
 				methodController.value(),
 				Arrays.asList(methodController.methods())));
 		this.actionFilters.addAll(getControllerActionFilters());
 	}
 
-	protected Collection<ControllerDescriptor> createControllerDescriptors(
+	protected Collection<HttpControllerDescriptor> createHttpControllerDescriptors(
 			String controller, Collection<HttpMethod> httpMethods) {
 		if (controller == null || CollectionUtils.isEmpty(httpMethods)) {
-			return Arrays.asList(new ControllerDescriptor(controller, HttpMethod.GET));
+			return Arrays.asList(new HttpControllerDescriptor(controller, HttpMethod.GET));
 		}
-		List<ControllerDescriptor> descriptors = new LinkedList<ControllerDescriptor>();
+		List<HttpControllerDescriptor> descriptors = new LinkedList<HttpControllerDescriptor>();
 		for (HttpMethod httpMethod : httpMethods) {
-			descriptors.add(new ControllerDescriptor(controller, httpMethod));
+			descriptors.add(new HttpControllerDescriptor(controller, httpMethod));
 		}
 		return descriptors;
 	}
@@ -134,15 +135,15 @@ public class DefaultAction extends BeanAction {
 		return httpMethods;
 	}
 	
-	public Set<ControllerDescriptor> getControllerDescriptors() {
-		return Collections.unmodifiableSet(controllerDescriptors);
+	public Set<HttpControllerDescriptor> getHttpControllerDescriptors() {
+		return Collections.unmodifiableSet(httpHttpControllerDescriptors);
 	}
 
-	public Set<ControllerDescriptor> getTargetClassControllerDescriptors() {
-		return Collections.unmodifiableSet(targetClassControllerDescriptors);
+	public Set<HttpControllerDescriptor> getTargetClassHttpControllerDescriptors() {
+		return Collections.unmodifiableSet(targetClassHttpControllerDescriptors);
 	}
 
-	public Set<ControllerDescriptor> getMethodControllerDescriptors() {
-		return Collections.unmodifiableSet(methodControllerDescriptors);
+	public Set<HttpControllerDescriptor> getMethodHttpControllerDescriptors() {
+		return Collections.unmodifiableSet(methodHttpControllerDescriptors);
 	}
 }

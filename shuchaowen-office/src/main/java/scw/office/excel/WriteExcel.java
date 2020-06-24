@@ -1,6 +1,6 @@
 package scw.office.excel;
 
-import scw.core.Destroy;
+import scw.beans.Destroy;
 
 public interface WriteExcel extends Destroy{
 	

@@ -8,9 +8,9 @@ import java.util.Map;
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
 import scw.http.HttpMethod;
+import scw.http.server.HttpControllerDescriptor;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionManager;
-import scw.mvc.action.Action.ControllerDescriptor;
 import scw.security.authority.annotation.AnnotationAuthorityManager;
 import scw.security.authority.http.DefaultHttpAuthority;
 import scw.security.authority.http.HttpAuthority;
@@ -48,21 +48,21 @@ public class AnnotationHttpActionAuthorityManager extends AnnotationAuthorityMan
 	protected String getAuthorityId(Class<?> clazz, Method method) {
 		if (method != null) {
 			Action action = actionManager.getAction(clazz, method);
-			ControllerDescriptor controllerDescriptor = getAuthorityControllerDescriptor(action);
-			String id = controllerDescriptor.getHttpMethod() + "&" + controllerDescriptor.getController();
+			HttpControllerDescriptor httpControllerDescriptor = getAuthorityControllerDescriptor(action);
+			String id = httpControllerDescriptor.getMethod() + "&" + httpControllerDescriptor.getPath();
 			return Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
 		}
 		return super.getAuthorityId(clazz, method);
 	}
 
-	protected ControllerDescriptor getAuthorityControllerDescriptor(Action action) {
-		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
-			if (descriptor.getHttpMethod() == HttpMethod.GET) {
+	protected HttpControllerDescriptor getAuthorityControllerDescriptor(Action action) {
+		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
+			if (descriptor.getMethod() == HttpMethod.GET) {
 				return descriptor;
 			}
 		}
 
-		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
+		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
 			return descriptor;
 		}
 		return null;
@@ -73,18 +73,18 @@ public class AnnotationHttpActionAuthorityManager extends AnnotationAuthorityMan
 			Map<String, String> attributeMap, boolean isMenu) {
 		if (method != null) {
 			Action action = actionManager.getAction(clazz, method);
-			ControllerDescriptor descriptor = getAuthorityControllerDescriptor(action);
+			HttpControllerDescriptor descriptor = getAuthorityControllerDescriptor(action);
 			if (descriptor != null) {
-				return new DefaultHttpAuthority(id, parentId, name, attributeMap, isMenu, descriptor.getController(),
-						descriptor.getHttpMethod());
+				return new DefaultHttpAuthority(id, parentId, name, attributeMap, isMenu, descriptor.getPath(),
+						descriptor.getMethod());
 			}
 		}
 		return new DefaultHttpAuthority(id, parentId, name, attributeMap, isMenu, null, null);
 	}
 
 	public HttpAuthority getAuthority(Action action) {
-		for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
-			HttpAuthority authority = getAuthority(descriptor.getController(), descriptor.getHttpMethod());
+		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
+			HttpAuthority authority = getAuthority(descriptor.getPath(), descriptor.getMethod());
 			if (authority != null) {
 				return authority;
 			}

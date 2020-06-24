@@ -9,7 +9,7 @@ import java.util.Map;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.core.Destroy;
+import scw.beans.Destroy;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.mvc.HttpChannel;

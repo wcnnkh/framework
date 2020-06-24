@@ -38,11 +38,11 @@ import scw.embed.servlet.ServletEmbedded;
 import scw.embed.servlet.support.RootServletContainerInitializerConfiguration;
 import scw.embed.servlet.support.ServletRootFilterConfiguration;
 import scw.http.HttpMethod;
+import scw.http.server.HttpControllerDescriptor;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionManager;
-import scw.mvc.action.Action.ControllerDescriptor;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE + 1000)
@@ -120,10 +120,10 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 					continue;
 				}
 				
-				ControllerDescriptor controllerDescriptorToUse = null;
-				for(ControllerDescriptor controllerDescriptor : action.getControllerDescriptors()){
-					if(controllerDescriptor.getHttpMethod() == HttpMethod.GET && !controllerDescriptor.getRestful().isRestful()){
-						controllerDescriptorToUse = controllerDescriptor;
+				HttpControllerDescriptor controllerDescriptorToUse = null;
+				for(HttpControllerDescriptor httpControllerDescriptor : action.getHttpControllerDescriptors()){
+					if(httpControllerDescriptor.getMethod() == HttpMethod.GET && !httpControllerDescriptor.getRestful().isRestful()){
+						controllerDescriptorToUse = httpControllerDescriptor;
 					}
 				}
 				
@@ -136,7 +136,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 					for(int code : errorCodeController.value()){
 						ErrorPage errorPage = new ErrorPage();
 						errorPage.setErrorCode(code);
-						errorPage.setLocation(controllerDescriptorToUse.getController());
+						errorPage.setLocation(controllerDescriptorToUse.getPath());
 						context.addErrorPage(errorPage);
 					}
 				}

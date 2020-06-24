@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.core.Destroy;
+import scw.beans.Destroy;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;

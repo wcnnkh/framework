@@ -6,9 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.core.instance.InstanceUtils;
-import scw.core.utils.XUtils;
 import scw.http.server.HttpServiceHandler;
+import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
@@ -31,7 +32,7 @@ import scw.net.message.converter.MessageConverter;
 import scw.result.Result;
 import scw.value.property.PropertyFactory;
 
-public class HttpControllerHandler implements HttpServiceHandler {
+public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final LinkedList<ActionLookup> actionLookups = new LinkedList<ActionLookup>();
 	protected final LinkedList<ActionFilter> actionFilters = new LinkedList<ActionFilter>();
@@ -139,7 +140,7 @@ public class HttpControllerHandler implements HttpServiceHandler {
 				}
 
 				try {
-					XUtils.destroy(httpChannel);
+					BeanUtils.destroy(httpChannel);
 				} catch (Exception e) {
 					logger.error(e, "destroy channel error: {}", httpChannel.toString());
 				}

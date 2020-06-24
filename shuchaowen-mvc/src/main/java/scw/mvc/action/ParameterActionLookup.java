@@ -9,10 +9,10 @@ import java.util.Set;
 
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
+import scw.http.server.HttpControllerDescriptor;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.HttpChannel;
 import scw.mvc.MVCUtils;
-import scw.mvc.action.Action.ControllerDescriptor;
 
 @Configuration(order = Integer.MIN_VALUE + 1)
 public class ParameterActionLookup implements ActionLookup {
@@ -76,23 +76,23 @@ public class ParameterActionLookup implements ActionLookup {
 		actionMap.put(classController, clzMap);
 	}
 
-	private Set<String> toControllerSet(Collection<ControllerDescriptor> controllerDescriptors) {
+	private Set<String> toControllerSet(Collection<HttpControllerDescriptor> httpHttpControllerDescriptors) {
 		HashSet<String> actions = new HashSet<String>();
-		for (ControllerDescriptor methodControllerDescriptor : controllerDescriptors) {
+		for (HttpControllerDescriptor methodControllerDescriptor : httpHttpControllerDescriptors) {
 			if (methodControllerDescriptor.getRestful().isRestful()) {
 				continue;
 			}
 
-			actions.add(methodControllerDescriptor.getController());
+			actions.add(methodControllerDescriptor.getPath());
 		}
 		return actions;
 	}
 
 	public void register(Action action) {
-		for (String classController : toControllerSet(action.getTargetClassControllerDescriptors())) {
-			for (String methodController : toControllerSet(action.getMethodControllerDescriptors())) {
-				for (ControllerDescriptor descriptor : action.getControllerDescriptors()) {
-					register(descriptor.getHttpMethod(), classController, methodController, action);
+		for (String classController : toControllerSet(action.getTargetClassHttpControllerDescriptors())) {
+			for (String methodController : toControllerSet(action.getMethodHttpControllerDescriptors())) {
+				for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
+					register(descriptor.getMethod(), classController, methodController, action);
 				}
 			}
 		}

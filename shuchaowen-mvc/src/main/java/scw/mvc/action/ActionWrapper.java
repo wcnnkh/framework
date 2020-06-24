@@ -4,6 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.http.server.HttpControllerDescriptor;
 import scw.mvc.HttpChannel;
 
 public class ActionWrapper implements Action {
@@ -48,16 +49,16 @@ public class ActionWrapper implements Action {
 		return action.doAction(httpChannel);
 	}
 
-	public Collection<ControllerDescriptor> getControllerDescriptors() {
-		return action.getControllerDescriptors();
+	public Collection<HttpControllerDescriptor> getHttpControllerDescriptors() {
+		return action.getHttpControllerDescriptors();
 	}
 
-	public Collection<ControllerDescriptor> getTargetClassControllerDescriptors() {
-		return action.getTargetClassControllerDescriptors();
+	public Collection<HttpControllerDescriptor> getTargetClassHttpControllerDescriptors() {
+		return action.getTargetClassHttpControllerDescriptors();
 	}
 
-	public Collection<ControllerDescriptor> getMethodControllerDescriptors() {
-		return action.getMethodControllerDescriptors();
+	public Collection<HttpControllerDescriptor> getMethodHttpControllerDescriptors() {
+		return action.getMethodHttpControllerDescriptors();
 	}
 
 }

@@ -7,20 +7,28 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
-import java.util.Map;
 
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.MediaType;
 import scw.net.InetAddress;
+import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
+import scw.util.MultiValueMap;
 
-public class ServerHttpRequestWrapper implements ServerHttpRequest {
+public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParameterMapAware {
 	protected final ServerHttpRequest targetRequest;
 
 	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest) {
 		this.targetRequest = targetRequest;
+	}
+
+	public ServerHttpRequest getTargetRequest() {
+		if(targetRequest instanceof ServerHttpRequestWrapper){
+			return ((ServerHttpRequestWrapper) targetRequest).getTargetRequest();
+		}
+		return targetRequest;
 	}
 
 	public InputStream getBody() throws IOException {
@@ -75,20 +83,8 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest {
 		return targetRequest.getURI();
 	}
 
-	public String getParameter(String name) {
-		return targetRequest.getParameter(name);
-	}
-
-	public Enumeration<String> getParameterNames() {
-		return targetRequest.getParameterNames();
-	}
-
-	public Map<String, String[]> getParameterMap() {
+	public MultiValueMap<String, String> getParameterMap() {
 		return targetRequest.getParameterMap();
-	}
-
-	public String[] getParameterValues(String name) {
-		return targetRequest.getParameterValues(name);
 	}
 
 	public String getRawMethod() {
@@ -141,5 +137,15 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest {
 	
 	public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
 		targetRequest.setCharacterEncoding(env);
+	}
+
+	public void setRestfulParameterMap(MultiValueMap<String, String> parameterMap) {
+		if(targetRequest instanceof RestfulParameterMapAware){
+			((RestfulParameterMapAware) targetRequest).setRestfulParameterMap(parameterMap);
+		}
+	}
+
+	public MultiValueMap<String, String> getRestfulParameterMap() {
+		return targetRequest.getRestfulParameterMap();
 	}
 }

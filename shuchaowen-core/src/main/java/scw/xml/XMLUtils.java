@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -222,10 +221,10 @@ public final class XMLUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Map<String, Object> toRecursionMap(Node node) throws Exception {
+	public static Map<String, Object> toRecursionMap(Node node) {
 		return toMap(node, new Converter<Node, KeyValuePair<String, Object>>() {
 
-			public KeyValuePair<String, Object> convert(Node n) throws Exception {
+			public KeyValuePair<String, Object> convert(Node n) {
 				NodeList nodeList = n.getChildNodes();
 				Object v;
 				if (nodeList == null || nodeList.getLength() == 0) {
@@ -233,7 +232,7 @@ public final class XMLUtils {
 				} else {
 					List<Object> list = toList(n, new Converter<Node, Object>() {
 
-						public Object convert(Node k) throws Exception {
+						public Object convert(Node k) {
 							return toRecursionMap(k);
 						}
 					});
@@ -245,7 +244,7 @@ public final class XMLUtils {
 		});
 	}
 
-	public static List<Object> toList(Node node, Converter<Node, Object> nodeConvert) throws Exception {
+	public static List<Object> toList(Node node, Converter<Node, Object> nodeConvert) {
 		if (ignoreNode(node)) {
 			return null;
 		}
@@ -278,8 +277,7 @@ public final class XMLUtils {
 		return list.isEmpty() ? null : list;
 	}
 
-	public static Map<String, Object> toMap(Node node, Converter<Node, KeyValuePair<String, Object>> nodeParse)
-			throws Exception {
+	public static Map<String, Object> toMap(Node node, Converter<Node, KeyValuePair<String, Object>> nodeParse) {
 		if (ignoreNode(node)) {
 			return null;
 		}
@@ -474,7 +472,7 @@ public final class XMLUtils {
 		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
 	}
 
-	public static <T> T getBean(NoArgsInstanceFactory instanceFactory, Node node, Class<T> type) throws Exception {
+	public static <T> T getBean(NoArgsInstanceFactory instanceFactory, Node node, Class<T> type) {
 		T t = null;
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
@@ -503,8 +501,7 @@ public final class XMLUtils {
 		return t;
 	}
 
-	public static <T> List<T> getBeanList(NoArgsInstanceFactory instanceFactory, Node rootNode, Class<T> type)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public static <T> List<T> getBeanList(NoArgsInstanceFactory instanceFactory, Node rootNode, Class<T> type) {
 		if (rootNode == null) {
 			return null;
 		}
@@ -521,16 +518,11 @@ public final class XMLUtils {
 				continue;
 			}
 
-			T t;
-			try {
-				t = getBean(instanceFactory, node, type);
-				if (t == null) {
-					continue;
-				}
-				list.add(t);
-			} catch (Exception e) {
-				e.printStackTrace();
+			T t= getBean(instanceFactory, node, type);
+			if (t == null) {
+				continue;
 			}
+			list.add(t);
 		}
 		return list;
 	}

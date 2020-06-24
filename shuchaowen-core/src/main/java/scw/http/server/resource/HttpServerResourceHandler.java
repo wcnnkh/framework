@@ -3,13 +3,14 @@ package scw.http.server.resource;
 import java.io.IOException;
 
 import scw.http.server.HttpServiceHandler;
+import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.io.IOUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public final class HttpServerResourceHandler implements HttpServiceHandler {
+public final class HttpServerResourceHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	private static Logger logger = LoggerUtils.getLogger(HttpServerResourceHandler.class);
 	private HttpServerResourceFactory httpServerResourceFactory;
 

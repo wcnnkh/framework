@@ -16,7 +16,7 @@
 
 package scw.websocket.sockjs.transport.handler;
 
-import java.io.IOException;	
+import java.io.IOException;
 
 import scw.core.utils.StringUtils;
 import scw.http.HttpStatus;
@@ -61,7 +61,7 @@ public class JsonpReceivingTransportHandler extends AbstractHttpReceivingTranspo
 		SockJsMessageCodec messageCodec = getServiceConfig().getMessageCodec();
 		MediaType contentType = request.getHeaders().getContentType();
 		if (contentType != null && MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(contentType)) {
-			String d = request.getParameter("d");
+			String d = request.getParameterMap().getFirst("d");
 			return (StringUtils.hasText(d) ? messageCodec.decode(d) : null);
 		}
 		else {

@@ -2,8 +2,8 @@ package scw.complete;
 
 import java.io.IOException;
 
+import scw.beans.Init;
 import scw.beans.annotation.AopEnable;
-import scw.core.Init;
 
 /**
  * 一个确认服务，保证一定会执行,但不保证会重复执行

@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
 
-import scw.core.Destroy;
+import scw.beans.Destroy;
 
 public abstract class ExecutorServiceDestroyProxyInvocationHandler<T extends ExecutorService>
 		implements InvocationHandler, Destroy {

@@ -8,7 +8,7 @@ public enum ProtocolType {
 	/**
 	 * 自动识别当前网页是https还是http
 	 */
-	AUTO("//"),
+	HTTP_AUTO("//"),
 	;
 	
 	private final String value;

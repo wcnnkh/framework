@@ -11,7 +11,6 @@ import scw.beans.event.BeanLifeCycleEvent;
 import scw.beans.event.BeanLifeCycleEvent.Step;
 import scw.beans.ioc.Ioc;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XUtils;
 import scw.value.property.PropertyFactory;
 
 public abstract class AbstractBeanDefinition implements BeanDefinition {
@@ -46,7 +45,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 		if (instance != null) {
 			Ioc ioc = Ioc.forClass(instance.getClass());
 			ioc.getInit().process(instance, beanFactory, propertyFactory, false);
-			XUtils.init(instance);
+			BeanUtils.init(instance);
 		}
 		beanFactory.getEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(instance, beanFactory, propertyFactory, Step.AFTER_INIT));
@@ -58,7 +57,7 @@ public abstract class AbstractBeanDefinition implements BeanDefinition {
 		if (instance != null) {
 			Ioc ioc = Ioc.forClass(instance.getClass());
 			ioc.getDestroy().process(instance, beanFactory, propertyFactory, false);
-			XUtils.destroy(instance);
+			BeanUtils.destroy(instance);
 		}
 		getBeanBuiler().destroy(instance);
 		beanFactory.getEventDispatcher()

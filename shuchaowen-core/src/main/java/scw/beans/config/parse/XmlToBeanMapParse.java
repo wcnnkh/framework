@@ -1,28 +1,26 @@
 package scw.beans.config.parse;
 
+import java.util.Map;
+
 import scw.beans.BeanFactory;
 import scw.beans.config.ConfigParse;
 import scw.beans.property.AbstractValueFormat;
-import scw.core.utils.ClassUtils;
+import scw.core.ResolvableType;
+import scw.lang.NotSupportedException;
 import scw.mapper.Field;
 import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
 public final class XmlToBeanMapParse extends AbstractValueFormat implements ConfigParse {
 
-	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String filePath, String charset)
-			throws Exception {
-		String type = field.getSetter().getGenericType().toString();
-		type = type.substring(type.indexOf("<") + 1, type.indexOf(">"));
-		String valueType = type.split(",")[1].trim();
-
-		try {
-			Class<?> toClz = ClassUtils.forName(valueType);
-			return ConfigUtils.xmlToMap(toClz, filePath);
-		} catch (Exception e) {
-			e.printStackTrace();
+	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String filePath,
+			String charset) throws Exception {
+		if (!Map.class.isAssignableFrom(field.getSetter().getType())) {
+			throw new NotSupportedException(field.getSetter().toString());
 		}
-		return null;
+
+		ResolvableType resolvableType = ResolvableType.forType(field.getSetter().getGenericType());
+		return ConfigUtils.xmlToMap(resolvableType.getGeneric(1).getRawClass(), filePath);
 	}
 
 	public Object format(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String name)

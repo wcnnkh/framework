@@ -8,8 +8,7 @@ public class EnumerationConvert<T, E> implements Enumeration<E> {
 	private Enumeration<? extends T> enumeration;
 	private Converter<T, E> converter;
 
-	public EnumerationConvert(Enumeration<? extends T> enumeration,
-			Converter<T, E> converter) {
+	public EnumerationConvert(Enumeration<? extends T> enumeration, Converter<T, E> converter) {
 		this.enumeration = enumeration;
 		this.converter = converter;
 	}
@@ -24,21 +23,15 @@ public class EnumerationConvert<T, E> implements Enumeration<E> {
 			return null;
 		}
 
-		try {
-			return converter.convert(v);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		return converter.convert(v);
 	}
 
-	public static Enumeration<String> convertToStringEnumeration(
-			Enumeration<?> enumeration) {
-		return new EnumerationConvert<Object, String>(enumeration,
-				new Converter<Object, String>() {
+	public static Enumeration<String> convertToStringEnumeration(Enumeration<?> enumeration) {
+		return new EnumerationConvert<Object, String>(enumeration, new Converter<Object, String>() {
 
-					public String convert(Object k) throws Exception {
-						return k == null ? null : k.toString();
-					}
-				});
+			public String convert(Object k) {
+				return k == null ? null : k.toString();
+			}
+		});
 	}
 }

@@ -4,9 +4,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
-import scw.http.HttpMethod;
+import scw.http.server.HttpControllerDescriptor;
 import scw.mvc.HttpChannel;
-import scw.net.Restful;
 
 public interface Action{
 	/**
@@ -33,57 +32,9 @@ public interface Action{
 	
 	Object doAction(HttpChannel httpChannel) throws Throwable;
 
-	Collection<ControllerDescriptor> getControllerDescriptors();
+	Collection<HttpControllerDescriptor> getHttpControllerDescriptors();
 
-	Collection<ControllerDescriptor> getTargetClassControllerDescriptors();
+	Collection<HttpControllerDescriptor> getTargetClassHttpControllerDescriptors();
 
-	Collection<ControllerDescriptor> getMethodControllerDescriptors();
-
-	public static final class ControllerDescriptor {
-		private final String controller;
-		private final HttpMethod httpMethod;
-		private final Restful restful;
-
-		public ControllerDescriptor(String controller, HttpMethod httpMethod) {
-			this.restful = new Restful(controller);
-			this.httpMethod = httpMethod;
-			this.controller = controller;
-		}
-
-		public String getController() {
-			return controller;
-		}
-
-		public HttpMethod getHttpMethod() {
-			return httpMethod;
-		}
-
-		public Restful getRestful() {
-			return restful;
-		}
-
-		@Override
-		public int hashCode() {
-			return controller.hashCode() + httpMethod.hashCode();
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == null) {
-				return false;
-			}
-
-			if (obj == this) {
-				return true;
-			}
-
-			if (obj instanceof ControllerDescriptor) {
-				ControllerDescriptor descriptor = (ControllerDescriptor) obj;
-				return descriptor.getController().equals(this.getController())
-						&& descriptor.getHttpMethod().equals(
-								this.getHttpMethod());
-			}
-			return false;
-		}
-	}
+	Collection<HttpControllerDescriptor> getMethodHttpControllerDescriptors();
 }

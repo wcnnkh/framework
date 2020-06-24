@@ -453,6 +453,10 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 		if (value == null) {
 			return getDefaultValue().getAsObject(type);
 		}
+		
+		if(type.isInstance(value)){
+			return (T) value;
+		}
 
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);

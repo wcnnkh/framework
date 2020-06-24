@@ -3,8 +3,8 @@ package scw.data;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import scw.core.Destroy;
-import scw.core.utils.XUtils;
+import scw.beans.BeanUtils;
+import scw.beans.Destroy;
 
 public abstract class AbstractExpireCacheFactory implements ExpiredCacheFactory, Destroy {
 	private ConcurrentHashMap<Integer, ExpiredCache> cacheMap = new ConcurrentHashMap<Integer, ExpiredCache>();
@@ -16,7 +16,7 @@ public abstract class AbstractExpireCacheFactory implements ExpiredCacheFactory,
 		ExpiredCache cache = cacheMap.putIfAbsent(exp, create);
 		if (cache == null) {
 			try {
-				XUtils.init(create);
+				BeanUtils.init(create);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -28,7 +28,7 @@ public abstract class AbstractExpireCacheFactory implements ExpiredCacheFactory,
 	public void destroy() {
 		for (Entry<Integer, ExpiredCache> entry : cacheMap.entrySet()) {
 			try {
-				XUtils.destroy(entry.getValue());
+				BeanUtils.destroy(entry.getValue());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

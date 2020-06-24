@@ -21,7 +21,7 @@ public class JsonpUtils {
 			return null;
 		}
 
-		return request.getParameter(JSONP_CALLBACK);
+		return request.getParameterMap().getFirst(JSONP_CALLBACK);
 	}
 
 	public static void writePrefix(ServerHttpResponse response, String callback) throws IOException {

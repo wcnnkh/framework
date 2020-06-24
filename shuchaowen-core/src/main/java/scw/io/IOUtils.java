@@ -8,6 +8,7 @@ import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.Flushable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -480,18 +481,18 @@ public final class IOUtils {
 			}
 		}
 	}
-
-	public static void close(boolean printStackTrace, Closeable... closeables) {
-		if (ArrayUtils.isEmpty(closeables)) {
+	
+	public static void flush(Object flushable) throws IOException {
+		if (flushable == null) {
 			return;
 		}
 
-		for (Closeable closeable : closeables) {
-			close(printStackTrace, closeable);
+		if (flushable instanceof Flushable) {
+			((Flushable) flushable).flush();
 		}
 	}
 
-	public static void close(boolean printStackTrace, Closeable closeable) {
+	public static void close(Closeable closeable) {
 		if (closeable == null) {
 			return;
 		}
@@ -499,18 +500,18 @@ public final class IOUtils {
 		try {
 			closeable.close();
 		} catch (IOException e) {
-			if (printStackTrace) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 		}
 	}
 
-	public static void close(Closeable closeable) {
-		close(true, closeable);
-	}
-
 	public static void close(Closeable... closeables) {
-		close(true, closeables);
+		if (ArrayUtils.isEmpty(closeables)) {
+			return;
+		}
+
+		for (Closeable closeable : closeables) {
+			close(closeable);
+		}
 	}
 
 	/**
@@ -538,7 +539,7 @@ public final class IOUtils {
 	 *            the Writer to close, may be null or already closed
 	 */
 	public static void closeQuietly(Closeable closeable) {
-		close(false, closeable);
+		close(closeable);
 	}
 
 	/**
@@ -2412,7 +2413,7 @@ public final class IOUtils {
 			isr = new InputStreamReader(inputStream, charsetName);
 			return IOUtils.read(isr, 256, 0);
 		} finally {
-			IOUtils.close(isr);
+			close(isr);
 		}
 	}
 

@@ -6,7 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import scw.core.Destroy;
+import scw.beans.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.data.cas.CAS;
 import scw.logger.Logger;

@@ -2,6 +2,7 @@ package scw.sql.orm;
 
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
+import java.util.Date;
 
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
@@ -170,6 +171,10 @@ public class Column implements Serializable{
 		} else {
 			if (value == null) {
 				return null;
+			}
+			
+			if(value instanceof Date){
+				return new java.sql.Date(((Date) value).getTime());
 			}
 
 			return JSONUtils.toJSONString(value);
