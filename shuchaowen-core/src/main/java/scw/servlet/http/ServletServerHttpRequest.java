@@ -273,10 +273,14 @@ public class ServletServerHttpRequest extends AbstractInputMessage implements Se
 	}
 	
 	public MultiValueMap<String, String> getRestfulParameterMap() {
+		if(restfulParameterMap == null){
+			return CollectionUtils.emptyMultiValueMap();
+		}
+		
 		return restfulParameterMap;
 	}
 	
 	public void setRestfulParameterMap(MultiValueMap<String, String> restfulParameterMap) {
-		this.restfulParameterMap = restfulParameterMap;
+		this.restfulParameterMap = CollectionUtils.unmodifiableMultiValueMap(restfulParameterMap);
 	}
 }
