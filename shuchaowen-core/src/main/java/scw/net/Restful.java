@@ -58,7 +58,11 @@ public final class Restful {
 
 	@Override
 	public int hashCode() {
-		return sourcePath.hashCode();
+		int code = 0;
+		for(RestfulPath path : paths){
+			code += path.hashCode();
+		}
+		return code;
 	}
 
 	@Override
@@ -70,15 +74,22 @@ public final class Restful {
 		if (obj == this) {
 			return true;
 		}
-
-		Restful restful = (Restful) obj;
-		for (int i = 0; i < paths.length; i++) {
-			if (!paths[i].match(restful.paths[i].getTargetPath())
-					|| !restful.paths[i].equals(paths[i].getTargetPath())) {
+		
+		if(obj instanceof Restful){
+			Restful restful = (Restful) obj;
+			if(restful.paths.length != paths.length){
 				return false;
 			}
+			
+			for (int i = 0; i < paths.length; i++) {
+				if(!paths[i].equals(restful.paths[i])){
+					return false;
+				}
+			}
+			return true;
 		}
-		return true;
+		
+		return false;
 	}
 
 	public RestfulMatchingResult matching(String[] paths) {
@@ -197,12 +208,46 @@ public final class Restful {
 
 		public boolean match(String path) {
 			if (isWildcard()) {
-				return StringUtils.test(path, path);
+				return StringUtils.test(path, this.path);
 			} else if (isPlaceholder()) {
 				return true;
 			} else {
 				return this.path.equals(path);
 			}
+		}
+		
+		@Override
+		public String toString() {
+			return targetPath;
+		}
+		
+		@Override
+		public int hashCode() {
+			if(isWildcard() || isPlaceholder()){
+				return 0;
+			}
+			
+			return path.hashCode();
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if(obj == null){
+				return false;
+			}
+			
+			if(obj == this){
+				return true;
+			}
+			
+			if(obj instanceof RestfulPath){
+				if(isWildcard() || isPlaceholder()){
+					return true;
+				}
+				
+				return path.equals(((RestfulPath) obj).path);
+			}
+			return false;
 		}
 	}
 }
