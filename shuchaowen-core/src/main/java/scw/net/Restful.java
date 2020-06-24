@@ -5,6 +5,8 @@ import java.io.Serializable;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpRequestWrapper;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 
@@ -15,7 +17,8 @@ import scw.util.MultiValueMap;
  * "我这篇文章的写作目的，就是想在符合架构原理的前提下，理解和评估以网络为基础的应用软件的架构设计，得到一个功能强、性能好、适宜通信的架构。REST指的是一组架构约束条件和原则。"
  * <br/>
  * 如果一个架构符合REST的约束条件和原则，我们就称它为RESTful架构。 <br/>
- * REST本身并没有创造新的技术、组件或服务，而隐藏在RESTful背后的理念就是使用Web的现有特征和能力， 更好地使用现有Web标准中的一些准则和约束。 <br/>
+ * REST本身并没有创造新的技术、组件或服务，而隐藏在RESTful背后的理念就是使用Web的现有特征和能力， 更好地使用现有Web标准中的一些准则和约束。
+ * <br/>
  * 虽然REST本身受Web技术的影响很深， 但是理论上REST架构风格并不是绑定在HTTP上，只不过目前HTTP是唯一与REST相关的实例。
  * 
  * @author shuchaowen
@@ -83,8 +86,7 @@ public final class Restful {
 			return RestfulMatchingResult.ERROR;
 		}
 
-		MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<String, String>(
-				paths.length);
+		MultiValueMap<String, String> parameterMap = new LinkedMultiValueMap<String, String>(paths.length);
 		for (int i = 0; i < paths.length; i++) {
 			String value = paths[i];
 			RestfulPath path = this.paths[i];
@@ -103,11 +105,37 @@ public final class Restful {
 		return matching(StringUtils.split(requestPath, PATH_SPLIT));
 	}
 
+	public RestfulMatchingResult matching(ServerHttpRequest request) {
+		RestfulMatchingResult result = matching(request.getPath());
+		if (result.isSuccess()) {
+			ServerHttpRequest targetRequest = request;
+			if (restfulParameterMapAware(targetRequest, result.getParameterMap())) {
+				return result;
+			}
+
+			if (targetRequest instanceof ServerHttpRequestWrapper) {
+				targetRequest = ((ServerHttpRequestWrapper) targetRequest).getTargetRequest();
+				if (restfulParameterMapAware(targetRequest, result.getParameterMap())) {
+					return result;
+				}
+			}
+		}
+		return result;
+	}
+
 	@Override
 	public String toString() {
 		return sourcePath;
 	}
 	
+	public static boolean restfulParameterMapAware(Object instance, MultiValueMap<String, String> parameterMap) {
+		if (instance instanceof RestfulParameterMapAware) {
+			((RestfulParameterMapAware) instance).setRestfulParameterMap(parameterMap);
+			return true;
+		}
+		return false;
+	}
+
 	public static final class RestfulMatchingResult implements Serializable {
 		private static final long serialVersionUID = 1L;
 		public static final RestfulMatchingResult ERROR = new RestfulMatchingResult();
@@ -145,12 +173,10 @@ public final class Restful {
 		public RestfulPath(String path) {
 			Assert.requiredArgument(path != null, "path");
 			this.targetPath = path;
-			this.placeholder = path.startsWith(PLACEHOLDER_BEGIN)
-					&& path.endsWith(PLACEHOLDER_END);
+			this.placeholder = path.startsWith(PLACEHOLDER_BEGIN) && path.endsWith(PLACEHOLDER_END);
 			this.wildcard = StringUtils.isSupportTestMatching(path);
-			this.path = placeholder ? path.substring(
-					PLACEHOLDER_BEGIN.length(), path.length() - PLACEHOLDER_END.length())
-					: path;
+			this.path = placeholder
+					? path.substring(PLACEHOLDER_BEGIN.length(), path.length() - PLACEHOLDER_END.length()) : path;
 		}
 
 		public String getPath() {

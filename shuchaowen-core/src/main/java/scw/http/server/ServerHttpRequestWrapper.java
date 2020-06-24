@@ -8,7 +8,6 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
 
-import scw.core.utils.CollectionUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
@@ -23,6 +22,13 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParam
 
 	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest) {
 		this.targetRequest = targetRequest;
+	}
+
+	public ServerHttpRequest getTargetRequest() {
+		if(targetRequest instanceof ServerHttpRequestWrapper){
+			return ((ServerHttpRequestWrapper) targetRequest).getTargetRequest();
+		}
+		return targetRequest;
 	}
 
 	public InputStream getBody() throws IOException {
@@ -140,9 +146,6 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParam
 	}
 
 	public MultiValueMap<String, String> getRestfulParameterMap() {
-		if(targetRequest instanceof RestfulParameterMapAware){
-			return ((RestfulParameterMapAware) targetRequest).getRestfulParameterMap();
-		}
-		return CollectionUtils.emptyMultiValueMap();
+		return targetRequest.getRestfulParameterMap();
 	}
 }

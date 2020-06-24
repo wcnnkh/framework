@@ -53,4 +53,6 @@ public interface ServerHttpRequest extends Attributes<String, Object>, InputMess
 	String getIp();
 	
 	MultiValueMap<String, String> getParameterMap();
+	
+	MultiValueMap<String, String> getRestfulParameterMap();
 }

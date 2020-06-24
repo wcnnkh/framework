@@ -127,35 +127,33 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		return new RequestValue(name,
 				defaultValue == null ? DefaultValueDefinition.DEFAULT_VALUE_DEFINITION : defaultValue);
 	}
-	
-	protected Value parseValue(String value){
+
+	protected Value parseValue(String value) {
 		return new StringValue(value);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	protected final <E> E[] parseArray(MultiValueMap<String, String> parameterMap, String name, Class<? extends E> type){
+	protected final <E> E[] parseArray(MultiValueMap<String, String> parameterMap, String name,
+			Class<? extends E> type) {
 		List<String> values = request.getParameterMap().get(name);
 		if (CollectionUtils.isEmpty(values)) {
 			return (E[]) Array.newInstance(type, 0);
 		}
-		
-		
+
 		Object array = Array.newInstance(type, values.size());
 		for (int i = 0, len = values.size(); i < len; i++) {
 			Value value = parseValue(values.get(i));
 			Array.set(array, i, value.getAsObject(type));
 		}
-		
+
 		return (E[]) array;
 	}
 
 	public <E> E[] getArray(String name, Class<? extends E> type) {
 		E[] array = parseArray(request.getParameterMap(), name, type);
-		if(request instanceof RestfulParameterMapAware){
-			E[] restfulArray = parseArray(((RestfulParameterMapAware) request).getRestfulParameterMap(), name, type);
-			if(restfulArray.length != 0){
-				return ArrayUtils.merge(array, restfulArray);
-			}
+		E[] restfulArray = parseArray(request.getRestfulParameterMap(), name, type);
+		if (restfulArray.length != 0) {
+			return ArrayUtils.merge(array, restfulArray);
 		}
 		return (E[]) array;
 	}
@@ -315,10 +313,10 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 
 	protected String getStringValue(String name) {
 		String v = request.getParameterMap().getFirst(name);
-		if(v == null && request instanceof RestfulParameterMapAware){
-			v = ((RestfulParameterMapAware)request).getRestfulParameterMap().getFirst(name);
+		if (v == null && request instanceof RestfulParameterMapAware) {
+			v = request.getRestfulParameterMap().getFirst(name);
 		}
-		
+
 		if (v != null && HttpMethod.GET == request.getMethod()) {
 			v = decodeGETParameter(v);
 		}

@@ -12,7 +12,6 @@ import scw.http.HttpMethod;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.net.RestfulParameterMapAware;
 import scw.net.Restful.RestfulMatchingResult;
 
 public final class HttpServiceHandlerAccessor {
@@ -88,11 +87,8 @@ public final class HttpServiceHandlerAccessor {
 				HttpControllerDescriptor descriptor = ((HttpServiceHandlerControllerDesriptor) handler)
 						.getControllerDescriptor();
 				if (descriptor.getMethod() == null || descriptor.getMethod().equals(request.getMethod())) {
-					RestfulMatchingResult result = descriptor.getRestful().matching(request.getPath());
+					RestfulMatchingResult result = descriptor.getRestful().matching(request);
 					if (result.isSuccess()) {
-						if (request instanceof RestfulParameterMapAware) {
-							((RestfulParameterMapAware) request).setRestfulParameterMap(result.getParameterMap());
-						}
 						return handler;
 					}
 				}

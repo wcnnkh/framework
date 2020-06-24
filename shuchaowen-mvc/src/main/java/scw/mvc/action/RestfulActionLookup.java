@@ -9,13 +9,11 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
-import scw.http.server.ServerHttpRequest;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.HttpChannel;
 import scw.mvc.MVCUtils;
 import scw.net.Restful;
 import scw.net.Restful.RestfulMatchingResult;
-import scw.net.RestfulParameterMapAware;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class RestfulActionLookup implements ActionLookup {
@@ -60,10 +58,7 @@ public class RestfulActionLookup implements ActionLookup {
 			Restful restful = entry.getKey();
 			RestfulMatchingResult result = restful.matching(pathArr);
 			if (result.isSuccess()) {
-				ServerHttpRequest request = httpChannel.getRequest();
-				if(request instanceof RestfulParameterMapAware){
-					((RestfulParameterMapAware) request).setRestfulParameterMap(result.getParameterMap());
-				}
+				Restful.restfulParameterMapAware(httpChannel.getRequest(), result.getParameterMap());
 				return entry.getValue();
 			}
 		}
