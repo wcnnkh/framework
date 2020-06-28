@@ -199,10 +199,14 @@ public abstract class AbstractExchange implements Exchange, Init {
 			}
 
 			if (messageListener == null) {
-				logger.info("Unable to consume exchange:{}, routingKey:{}, message:{}", exchange, routingKeyToUse,
+				// 不应该到这里, 转为延迟消息重试
+				int delay = 1;
+				TimeUnit delayTimeUnit = TimeUnit.SECONDS;
+				logger.error("retry delay: {}, Unable to consume exchange:{}, routingKey:{}, message:{}", delayTimeUnit.toMillis(delay), exchange, routingKeyToUse,
 						JSONUtils.toJSONString(message));
-				// 不应该到这里
-				throw new RuntimeException("Should never get here");
+				message.setDelay(delay, delayTimeUnit);
+				retryPush(routingKeyToUse, message, message.getBody());
+				return ;
 			}
 
 			if (logger.isDebugEnabled()) {

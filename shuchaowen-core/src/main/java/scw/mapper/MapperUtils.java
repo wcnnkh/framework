@@ -67,7 +67,7 @@ public class MapperUtils {
 		if (field.getGetter().getType().isPrimitive()) {// 如果是值类型，那么是不可能为空的
 			Object value = field.getGetter().get(instance);
 			if (value != null && value instanceof Number) {
-				return ((Number) value).intValue() != 0;
+				return ((Number) value).doubleValue() != 0;
 			}
 			return false;
 		} else {

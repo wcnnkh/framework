@@ -49,4 +49,14 @@ public final class SequenceIdGenerator implements IdGenerator<SequenceId> {
 		String id = XTime.format(t, time_format) + StringUtils.complemented(number + "", '0', 10);
 		return new SequenceId(t, id);
 	}
+	
+	public SequenceId next(long currentTimeMillis){
+		int number = idGenerator.next().intValue();
+		if (number < 0) {
+			number = Integer.MAX_VALUE + number;
+		}
+		
+		String id = XTime.format(currentTimeMillis, time_format) + StringUtils.complemented(number + "", '0', 10);
+		return new SequenceId(currentTimeMillis, id);
+	}
 }
