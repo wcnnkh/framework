@@ -1,5 +1,6 @@
 package scw.http.server;
 
+import scw.core.utils.ObjectUtils;
 import scw.http.HttpMethod;
 import scw.net.Restful;
 
@@ -43,7 +44,17 @@ public final class HttpControllerDescriptor {
 
 		if (obj instanceof HttpControllerDescriptor) {
 			HttpControllerDescriptor descriptor = (HttpControllerDescriptor) obj;
-			return descriptor.path.equals(this.path) && descriptor.method.equals(this.method);
+			if(!ObjectUtils.equals(descriptor.method, method)){
+				return false;
+			}
+			
+			if(restful.isRestful()){//如果当前路径是restful
+				return restful.matching(descriptor.getPath()).isSuccess();
+			}else if(descriptor.restful.isRestful()){
+				return descriptor.restful.matching(path).isSuccess();
+			}else{
+				return ObjectUtils.equals(path, descriptor.path);
+			}
 		}
 		return false;
 	}
