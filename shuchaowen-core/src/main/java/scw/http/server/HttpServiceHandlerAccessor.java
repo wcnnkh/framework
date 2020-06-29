@@ -135,24 +135,26 @@ public final class HttpServiceHandlerAccessor {
 		}
 
 		public HttpServiceHandler get(ServerHttpRequest request) {
-			for (HttpServiceHandler handler : handlers) {
-				if (handler instanceof HttpServiceHandlerControllerDesriptor) {
-					HttpControllerDescriptor descriptor = ((HttpServiceHandlerControllerDesriptor) handler)
-							.getHttpControllerDescriptor();
-					if (descriptor.getMethod() == null || descriptor.getMethod().equals(request.getMethod())) {
-						if (descriptor.getRestful().isRestful()) {
-							RestfulMatchingResult result = descriptor.getRestful().matching(request);
-							if (result.isSuccess() && isAccept(handler, request)) {
-								return handler;
-							}
-						} else {
-							if (request.getPath().equals(descriptor.getPath()) && isAccept(handler, request)) {
-								return handler;
+ 			for (HttpServiceHandler handler : handlers) {
+				if(isAccept(handler, request)){
+					if(handler instanceof HttpServiceHandlerControllerDesriptor){
+						HttpControllerDescriptor descriptor = ((HttpServiceHandlerControllerDesriptor) handler)
+								.getHttpControllerDescriptor();
+						if (descriptor.getMethod() == null || descriptor.getMethod().equals(request.getMethod())) {
+							if (descriptor.getRestful().isRestful()) {
+								RestfulMatchingResult result = descriptor.getRestful().matching(request);
+								if (result.isSuccess()) {
+									return handler;
+								}
+							} else {
+								if (request.getPath().equals(descriptor.getPath())) {
+									return handler;
+								}
 							}
 						}
+					}else{
+						return handler;
 					}
-				} else if (isAccept(handler, request)) {
-					return handler;
 				}
 			}
 			return null;

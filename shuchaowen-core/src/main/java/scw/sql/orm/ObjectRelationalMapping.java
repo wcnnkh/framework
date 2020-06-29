@@ -22,6 +22,7 @@ import scw.mapper.Mapper;
 import scw.mapper.MapperUtils;
 import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.Table;
+import scw.util.Accept;
 
 /**
  * 默认的orm定义
@@ -48,8 +49,10 @@ public class ObjectRelationalMapping implements FieldFilter {
 
 	/**
 	 * 迭代可以映射的字段，包含entity字段
+	 * 
 	 * @param entityClass
-	 * @param parentField 指明父级字段
+	 * @param parentField
+	 *            指明父级字段
 	 * @return
 	 */
 	public Enumeration<Column> enumeration(Class<?> entityClass, Field parentField) {
@@ -58,6 +61,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 
 	/**
 	 * 迭代可以映射的字段，包含entity字段
+	 * 
 	 * @param entityClass
 	 * @return
 	 */
@@ -67,6 +71,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 
 	/**
 	 * 获取数据库字段
+	 * 
 	 * @param entityClass
 	 * @return
 	 */
@@ -86,6 +91,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 
 	/**
 	 * 获取主键字段
+	 * 
 	 * @param entityClass
 	 * @return
 	 */
@@ -105,6 +111,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 
 	/**
 	 * 获取非主键字段
+	 * 
 	 * @param entityClass
 	 * @return
 	 */
@@ -201,8 +208,8 @@ public class ObjectRelationalMapping implements FieldFilter {
 				&& FilterFeature.IGNORE_STATIC.getFilter().accept(field))) {
 			return false;
 		}
-		
-		if(field.getSetter().getField() == null || field.getGetter().getField() == null){
+
+		if (field.getSetter().getField() == null || field.getGetter().getField() == null) {
 			return false;
 		}
 
@@ -265,5 +272,16 @@ public class ObjectRelationalMapping implements FieldFilter {
 			return StringUtils.humpNamingReplacement(tableClass.getSimpleName(), "_");
 		}
 		return table.name();
+	}
+
+	public Column findColumn(Class<?> tableClass, Accept<Column> accept) {
+		Enumeration<Column> enumeration = enumeration(tableClass);
+		if (enumeration.hasMoreElements()) {
+			Column column = enumeration.nextElement();
+			if (accept.accept(column)) {
+				return column;
+			}
+		}
+		return null;
 	}
 }

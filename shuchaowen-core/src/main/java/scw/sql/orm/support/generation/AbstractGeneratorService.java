@@ -6,28 +6,24 @@ import scw.data.generator.SequenceId;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.MapperUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.ORMException;
 import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.support.generation.annotation.CreateTime;
 import scw.sql.orm.support.generation.annotation.UpdateTime;
+import scw.util.Accept;
 
 public abstract class AbstractGeneratorService implements GeneratorService {
 	protected Logger logger = LoggerUtils.getLogger(getClass());
+	private final TemporaryVariable temporaryVariable = new TemporaryVariable();
+
+	public TemporaryVariable getTemporaryVariable() {
+		return temporaryVariable;
+	}
 
 	protected boolean isGenerator(Object bean, Column column) {
-		Object v = column.getField().getGetter().get(bean);
-		if (v != null) {// 已经存在值了
-			if (column.getField().getSetter().getType().isPrimitive()) {
-				return ((Number) v).doubleValue() == 0;
-			} else if (v instanceof Number) {
-				if (((Number) v).doubleValue() == 0) {
-					return true;
-				}
-			}
-			return false;
-		}
-		return true;
+		return !MapperUtils.isExistValue(column.getField(), bean);
 	}
 
 	public void process(GeneratorContext generatorContext) throws ORMException {
@@ -91,7 +87,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 
 		UpdateTime updateTime = generatorContext.getColumn().getAnnotatedElement().getAnnotation(UpdateTime.class);
 		if (updateTime != null) {
-			generatorContext.getColumn().set(generatorContext.getBean(), getUUID(generatorContext));
+			generatorContext.getColumn().set(generatorContext.getBean(), getUpdateTime(generatorContext));
 			return;
 		}
 	}
@@ -100,20 +96,20 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 		SequenceId sId = (SequenceId) generatorContext.getAttribute(SequenceId.class);
 		if (sId == null) {
 			sId = generateSequeueId(generatorContext);
-			generatorContext.setAttribute(SequenceId.class, sId);
-			generatorContext.setAttribute(CreateTime.class, sId.getTimestamp());
+			getTemporaryVariable().setSequeueId(generatorContext, sId);
+			getTemporaryVariable().setCreateTime(generatorContext, sId.getTimestamp());
 		}
 		return sId;
 	}
 
 	public final long getCreateTime(GeneratorContext generatorContext) {
-		SequenceId sequenceId = (SequenceId) generatorContext.getAttribute(SequenceId.class);
+		SequenceId sequenceId = getTemporaryVariable().getSequenceId(generatorContext);
 		long t;
 		if (sequenceId != null) {
 			t = sequenceId.getTimestamp();
 		} else {
 			t = System.currentTimeMillis();
-			generatorContext.setAttribute(CreateTime.class, t);
+			getTemporaryVariable().setCreateTime(generatorContext, t);
 		}
 		return t;
 	}
@@ -129,4 +125,41 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 	public abstract SequenceId generateSequeueId(GeneratorContext generatorContext);
 
 	public abstract Number generateNumber(GeneratorContext generatorContext);
+
+	static class TemporaryVariable {
+
+		public SequenceId getSequenceId(GeneratorContext generatorContext) {
+			return (SequenceId) generatorContext.getAttribute(SequenceId.class);
+		}
+
+		public void setSequeueId(GeneratorContext generatorContext, SequenceId sequenceId) {
+			generatorContext.setAttribute(SequenceId.class, sequenceId);
+		}
+
+		public Long getCreateTime(GeneratorContext generatorContext) {
+			Long createTime = (Long) generatorContext.getAttribute(CreateTime.class);
+			if (createTime == null) {
+				Column createTimeColumn = generatorContext.getObjectRelationalMapping()
+						.findColumn(generatorContext.getBean().getClass(), new Accept<Column>() {
+
+							public boolean accept(Column e) {
+								return e.getAnnotatedElement().getAnnotation(CreateTime.class) != null;
+							}
+						});
+
+				if (createTimeColumn != null) {
+					createTime = (Long) createTimeColumn.getField().getGetter().get(generatorContext.getBean());
+					if (createTime != null && createTime.longValue() != 0) {
+						setCreateTime(generatorContext, createTime);
+						return createTime;
+					}
+				}
+			}
+			return createTime;
+		}
+
+		public void setCreateTime(GeneratorContext generatorContext, long createTime) {
+			generatorContext.setAttribute(CreateTime.class, createTime);
+		}
+	}
 }

@@ -3,17 +3,17 @@ package scw.sql.orm.support.generation;
 import scw.aop.ProxyUtils;
 import scw.core.Constants;
 import scw.data.Counter;
-import scw.data.generator.IdGenerator;
 import scw.data.generator.SequenceId;
+import scw.data.generator.SequenceIdGenerator;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
 
 public class DefaultGeneratorService extends AbstractGeneratorService {
-	private final IdGenerator<SequenceId> sequeueIdGenerator;
+	private final SequenceIdGenerator sequeueIdGenerator;
 	private final Counter counter;
 	private final LockFactory lockFactory;
 
-	public DefaultGeneratorService(IdGenerator<SequenceId> sequeueIdGenerator, Counter counter,
+	public DefaultGeneratorService(SequenceIdGenerator sequeueIdGenerator, Counter counter,
 			LockFactory lockFactory) {
 		this.sequeueIdGenerator = sequeueIdGenerator;
 		this.counter = counter;
@@ -35,7 +35,11 @@ public class DefaultGeneratorService extends AbstractGeneratorService {
 
 	@Override
 	public SequenceId generateSequeueId(GeneratorContext generatorContext) {
-		return sequeueIdGenerator.next();
+		Long createTime = getTemporaryVariable().getCreateTime(generatorContext);
+		if(createTime == null){
+			return sequeueIdGenerator.next();
+		}
+		return sequeueIdGenerator.next(createTime);
 	}
 
 	protected long getMaxId(GeneratorContext generatorContext) {
