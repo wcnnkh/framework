@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -42,10 +43,10 @@ import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.enums.TableStructureResultField;
 import scw.sql.orm.support.generation.GeneratorContext;
 import scw.sql.orm.support.generation.GeneratorService;
-import scw.sql.orm.support.generation.annotation.Generator;
 import scw.util.Pagination;
 
 public abstract class AbstractEntityOperations extends SqlTemplate implements EntityOperations {
+	
 	public abstract SqlDialect getSqlDialect();
 
 	public abstract CacheManager getCacheManager();
@@ -126,12 +127,9 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 	protected boolean orm(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
 		GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean,
 				getSqlDialect().getObjectRelationalMapping(), tableName);
-		for (Column column : getSqlDialect().getObjectRelationalMapping().getColumns(clazz)) {
-			Generator generator = column.getAnnotatedElement().getAnnotation(Generator.class);
-			if (generator == null) {
-				continue;
-			}
-
+		Enumeration<Column> enumeration = getSqlDialect().getObjectRelationalMapping().enumeration(clazz);
+		while(enumeration.hasMoreElements()){
+			Column column = enumeration.nextElement();
 			generatorContext.setColumn(column);
 			getGeneratorService().process(generatorContext);
 		}
