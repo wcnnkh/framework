@@ -1,9 +1,7 @@
 package scw.sql.orm.support.generation;
 
-import scw.aop.ProxyUtils;
 import scw.core.utils.XUtils;
 import scw.data.generator.SequenceId;
-import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.MapperUtils;
@@ -11,7 +9,7 @@ import scw.sql.orm.Column;
 import scw.sql.orm.ORMException;
 import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.support.generation.annotation.CreateTime;
-import scw.sql.orm.support.generation.annotation.UpdateTime;
+import scw.sql.orm.support.generation.annotation.Generator;
 import scw.util.Accept;
 
 public abstract class AbstractGeneratorService implements GeneratorService {
@@ -22,40 +20,14 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 		return temporaryVariable;
 	}
 
-	protected boolean isGenerator(Object bean, Column column) {
-		return !MapperUtils.isExistValue(column.getField(), bean);
-	}
-
 	public void process(GeneratorContext generatorContext) throws ORMException {
-		if (generatorContext.getOperationType() == OperationType.DELETE) {
-			return;
-		}
-
 		if (generatorContext.getOperationType() == OperationType.SAVE
-				|| generatorContext.getOperationType() == OperationType.SAVE_OR_UPDATE) {
-			if (generatorContext.getOperationType() == OperationType.SAVE_OR_UPDATE
-					&& !isGenerator(generatorContext.getBean(), generatorContext.getColumn())) {
-				return;
-			}
-
+				|| (generatorContext.getOperationType() == OperationType.SAVE_OR_UPDATE && !MapperUtils
+						.isExistValue(generatorContext.getColumn().getField(), generatorContext.getBean()))) {
 			scw.sql.orm.support.generation.annotation.SequenceId sequenceId = generatorContext.getColumn()
 					.getAnnotatedElement().getAnnotation(scw.sql.orm.support.generation.annotation.SequenceId.class);
 			if (sequenceId != null) {
 				generatorContext.getColumn().set(generatorContext.getBean(), getSequenceId(generatorContext).getId());
-
-				Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(generatorContext.getBean().getClass());
-				for (String name : sequenceId.createTime()) {
-					Column column = generatorContext.getObjectRelationalMapping().getColumn(clazz, name);
-					if (column == null) {
-						throw new NotFoundException("clazz=" + clazz + ", column=" + name);
-					}
-
-					if (!isGenerator(generatorContext.getBean(), column)) {
-						continue;
-					}
-
-					column.set(generatorContext.getBean(), getCreateTime(generatorContext));
-				}
 				return;
 			}
 
@@ -72,23 +44,20 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 				return;
 			}
 
-			// 如果是String走uuid流程
-			if (String.class == generatorContext.getColumn().getField().getSetter().getType()) {
-				generatorContext.getColumn().set(generatorContext.getBean(), getUUID(generatorContext));
-				return;
-			}
+			Generator generator = generatorContext.getColumn().getAnnotatedElement().getAnnotation(Generator.class);
+			if (generator != null) {
+				// 如果是String走uuid流程
+				if (String.class == generatorContext.getColumn().getField().getSetter().getType()) {
+					generatorContext.getColumn().set(generatorContext.getBean(), getUUID(generatorContext));
+					return;
+				}
 
-			if (Number.class.isAssignableFrom(generatorContext.getColumn().getField().getSetter().getType())
-					|| generatorContext.getColumn().getField().getSetter().getType().isPrimitive()) {
-				generatorContext.getColumn().set(generatorContext.getBean(), generateNumber(generatorContext));
-				return;
+				if (Number.class.isAssignableFrom(generatorContext.getColumn().getField().getSetter().getType())
+						|| generatorContext.getColumn().getField().getSetter().getType().isPrimitive()) {
+					generatorContext.getColumn().set(generatorContext.getBean(), generateNumber(generatorContext));
+					return;
+				}
 			}
-		}
-
-		UpdateTime updateTime = generatorContext.getColumn().getAnnotatedElement().getAnnotation(UpdateTime.class);
-		if (updateTime != null) {
-			generatorContext.getColumn().set(generatorContext.getBean(), getUpdateTime(generatorContext));
-			return;
 		}
 	}
 
