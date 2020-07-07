@@ -30,6 +30,13 @@
 			<artifactId>lucene-core</artifactId>
 			<scope>provided</scope>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<scope>provided</scope>
+		</dependency>
 		<!-- lucene相关 -->
 	</dependencies>
 </project>

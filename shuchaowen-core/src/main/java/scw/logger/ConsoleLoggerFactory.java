@@ -1,7 +1,5 @@
 package scw.logger;
 
-import scw.core.UnsafeStringBuffer;
-
 public class ConsoleLoggerFactory extends AbstractMyLoggerFactory {
 
 	public void destroy() {
@@ -10,9 +8,14 @@ public class ConsoleLoggerFactory extends AbstractMyLoggerFactory {
 	@Override
 	public void log(Message message) {
 		try {
-			console(new UnsafeStringBuffer(), message);
+			console(message);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	protected Appendable createAppendable() {
+		return new StringBuilder();
 	}
 }

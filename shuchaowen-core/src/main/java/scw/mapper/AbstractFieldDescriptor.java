@@ -9,8 +9,7 @@ import scw.core.reflect.SerializableField;
 import scw.core.reflect.SerializableMethod;
 import scw.lang.NotSupportedException;
 
-public abstract class AbstractFieldDescriptor
-		implements FieldDescriptor {
+public abstract class AbstractFieldDescriptor implements FieldDescriptor {
 	private static final long serialVersionUID = 1L;
 	private final Class<?> declaringClass;
 	private final SerializableField field;
@@ -19,14 +18,11 @@ public abstract class AbstractFieldDescriptor
 
 	public AbstractFieldDescriptor(Class<?> declaringClass, Field field, Method method) {
 		this.declaringClass = declaringClass;
-		this.annotatedElement = MultiAnnotatedElement.forAnnotatedElements(
-				true, method, field);
-		this.field = field == null ? null : new SerializableField(
-				declaringClass, field);
-		this.method = method == null ? null : new SerializableMethod(
-				declaringClass, method);
+		this.annotatedElement = MultiAnnotatedElement.forAnnotatedElements(true, method, field);
+		this.field = field == null ? null : new SerializableField(declaringClass, field);
+		this.method = method == null ? null : new SerializableMethod(declaringClass, method);
 	}
-	
+
 	public AnnotatedElement getAnnotatedElement() {
 		return annotatedElement;
 	}
@@ -38,29 +34,28 @@ public abstract class AbstractFieldDescriptor
 	public Method getMethod() {
 		return method == null ? null : method.getMethod();
 	}
-	
+
 	public int getModifiers() {
 		Method method = getMethod();
 		Field field = getField();
-		if(method != null && field != null){
+		if (method != null && field != null) {
 			return method.getModifiers() | field.getModifiers();
 		}
-		
-		if(method != null){
+
+		if (method != null) {
 			return method.getModifiers();
 		}
-		
-		if(field != null){
+
+		if (field != null) {
 			return field.getModifiers();
 		}
 		throw createNotSupportException();
 	}
 
 	protected NotSupportedException createNotSupportException() {
-		return new NotSupportedException("class=["
-				+ getDeclaringClass() + "] column [" + getName() + "]");
+		return new NotSupportedException("class=[" + getDeclaringClass() + "] column [" + getName() + "]");
 	}
-	
+
 	public Class<?> getDeclaringClass() {
 		return declaringClass;
 	}
@@ -76,9 +71,9 @@ public abstract class AbstractFieldDescriptor
 		}
 
 		if (obj instanceof FieldDescriptor) {
-			return ((FieldDescriptor) obj).getType() == getType()
-					&& ((FieldDescriptor) obj).getName().equals(
-							getName());
+			// 这里并不需要判断泛型类型，因为如果set/get方法的"参数类型/返回类型"一样时就是方法的重载
+			return getType().equals(((FieldDescriptor) obj).getType())
+					&& ((FieldDescriptor) obj).getName().equals(getName());
 		}
 		return false;
 	}
@@ -87,7 +82,7 @@ public abstract class AbstractFieldDescriptor
 	public int hashCode() {
 		return getName().hashCode() + getType().hashCode();
 	}
-	
+
 	@Override
 	public String toString() {
 		return "declaringClass [" + getDeclaringClass() + "] name [" + getName() + "]";

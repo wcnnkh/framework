@@ -5,7 +5,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import scw.core.UnsafeStringBuffer;
 import scw.core.instance.annotation.Configuration;
 
-@Configuration(order=Integer.MIN_VALUE)
+@Configuration(order = Integer.MIN_VALUE)
 public class AsyncLoggerFactory extends AbstractMyLoggerFactory implements Runnable {
 	private final LinkedBlockingQueue<Message> handlerQueue;
 	private final Thread thread;
@@ -18,7 +18,7 @@ public class AsyncLoggerFactory extends AbstractMyLoggerFactory implements Runna
 		thread.start();
 	}
 
-	public void log(Message message) {
+	protected void log(Message message) {
 		handlerQueue.offer(message);
 	}
 
@@ -31,7 +31,7 @@ public class AsyncLoggerFactory extends AbstractMyLoggerFactory implements Runna
 				}
 
 				try {
-					console(unsafeStringBuffer, message);
+					console(message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -40,12 +40,13 @@ public class AsyncLoggerFactory extends AbstractMyLoggerFactory implements Runna
 		}
 	}
 
-	protected String getMessage(Message message) throws Exception {
-		message.appendTo(unsafeStringBuffer);
-		return unsafeStringBuffer.toString();
-	}
-
 	public void destroy() {
 		thread.interrupt();
+	}
+
+	@Override
+	protected Appendable createAppendable() {
+		unsafeStringBuffer.reset();
+		return unsafeStringBuffer;
 	}
 }

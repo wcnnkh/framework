@@ -1,7 +1,5 @@
 package scw.logger;
 
-import scw.core.UnsafeStringBuffer;
-
 public abstract class AbstractMyLoggerFactory extends AbstractILoggerFactory {
 
 	public Logger getLogger(String name, String placeholder) {
@@ -9,17 +7,20 @@ public abstract class AbstractMyLoggerFactory extends AbstractILoggerFactory {
 		return new MyLogger(level, name, this, placeholder);
 	}
 
-	public abstract void log(Message message);
+	protected abstract void log(Message message);
 
-	public void console(UnsafeStringBuffer unsafeStringBuffer, Message message) throws Exception {
-		String msg = message.toString(unsafeStringBuffer);
+	protected abstract Appendable createAppendable();
+
+	public void console(Message message) throws Exception {
+		Appendable appendable = createAppendable();
+		message.appendTo(appendable);
 		switch (message.getLevel()) {
 		case ERROR:
 		case WARN:
-			System.err.println(msg);
+			System.err.println(appendable.toString());
 			break;
 		default:
-			System.out.println(msg);
+			System.out.println(appendable.toString());
 			break;
 		}
 
