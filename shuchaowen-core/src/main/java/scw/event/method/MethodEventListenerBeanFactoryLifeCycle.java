@@ -7,11 +7,14 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.event.method.annotation.RegisterMethodEventListener;
 import scw.io.ResourceUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
 
 @Configuration
 public class MethodEventListenerBeanFactoryLifeCycle implements
 		BeanFactoryLifeCycle {
+	private static Logger logger = LoggerUtils.getLogger(MethodEventListenerBeanFactoryLifeCycle.class);
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws Exception {
@@ -23,7 +26,7 @@ public class MethodEventListenerBeanFactoryLifeCycle implements
 				.getInstance(MethodEventDispatcher.class);
 		for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(
 				getScanAnnotationPackageName())) {
-			if (MethodEventListener.class.isAssignableFrom(clz)) {
+			if (!MethodEventListener.class.isAssignableFrom(clz)) {
 				continue;
 			}
 
@@ -37,6 +40,7 @@ public class MethodEventListenerBeanFactoryLifeCycle implements
 					.getInstance(clz);
 			dispatcher.registerListener(registerMethodEventListener.value(),
 					eventListener);
+			logger.debug("register MethodEventListener: {}", clz);
 		}
 	}
 
