@@ -23,6 +23,11 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-timer</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>shuchaowen</groupId>
+			<artifactId>shuchaowen-search</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>shuchaowen</groupId>

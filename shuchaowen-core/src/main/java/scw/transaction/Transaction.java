@@ -59,14 +59,15 @@ public final class Transaction {
 		tlcc.add(tlc);
 	}
 
-	public Object getResource(Object name) {
+	@SuppressWarnings("unchecked")
+	public <T> T getResource(Object name) {
 		checkStatus();
 
 		if (!newTransaction) {
 			return parent.getResource(name);
 		}
 
-		return resourceMap == null ? null : resourceMap.get(name);
+		return (T) (resourceMap == null ? null : resourceMap.get(name));
 	}
 
 	public void bindResource(Object name, Object resource) {
@@ -89,10 +90,10 @@ public final class Transaction {
 	}
 
 	protected void createTempSavepoint() {
-		if(hasSavepoint()){
+		if (hasSavepoint()) {
 			throw new TransactionException("一个事务不能存在多个savepoint");
 		}
-		
+
 		this.tempSavepoint = createSavepoint();
 	}
 
@@ -131,8 +132,8 @@ public final class Transaction {
 	public void setRollbackOnly(boolean rollbackOnly) {
 		this.rollbackOnly = rollbackOnly;
 	}
-	
-	public Savepoint createSavepoint(){
+
+	public Savepoint createSavepoint() {
 		checkStatus();
 		if (resourceMap == null) {
 			return new EmptySavepoint();
@@ -164,7 +165,7 @@ public final class Transaction {
 	public boolean isComplete() {
 		return complete;
 	}
-	
+
 	protected void commit() throws Throwable {
 		if (isComplete()) {
 			return;

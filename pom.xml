@@ -24,7 +24,7 @@
 		<netty-socketio.version>1.7.17</netty-socketio.version>
 		<jstl.version>1.2</jstl.version>
 		<mysql-connector-java.version>8.0.16</mysql-connector-java.version>
-		<lucene-version>8.5.1</lucene-version>
+		<lucene.version>8.5.1</lucene.version>
 	</properties>
 
 	<dependencyManagement>
@@ -38,6 +38,12 @@
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-cloud</artifactId>
+				<version>0.0.1-SNAPSHOT</version>
+			</dependency>
+
+			<dependency>
+				<groupId>shuchaowen</groupId>
+				<artifactId>shuchaowen-search</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
 
@@ -346,7 +352,20 @@
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-core</artifactId>
-				<version>${lucene-version}</version>
+				<version>${lucene.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-queryparser</artifactId>
+				<version>${lucene.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/com.janeluo/ikanalyzer -->
+			<dependency>
+				<groupId>com.janeluo</groupId>
+				<artifactId>ikanalyzer</artifactId>
+				<version>2012_u6</version>
 			</dependency>
 			<!-- lucene相关 -->
 		</dependencies>
@@ -400,5 +419,6 @@
 		<module>shuchaowen-office</module>
 		<module>shuchaowen-cloud</module>
 		<module>shuchaowen-security</module>
+		<module>shuchaowen-search</module>
 	</modules>
 </project>

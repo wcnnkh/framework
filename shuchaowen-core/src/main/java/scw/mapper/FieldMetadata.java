@@ -5,6 +5,7 @@ import java.lang.reflect.AnnotatedElement;
 
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.MultiAnnotatedElement;
+import scw.core.utils.ObjectUtils;
 
 public class FieldMetadata implements Serializable {
 	public static final FieldMetadata[] EMPTY_ARRAY = new FieldMetadata[0];
@@ -32,23 +33,55 @@ public class FieldMetadata implements Serializable {
 	public boolean isSupportSetter() {
 		return setter != null;
 	}
-	
+
 	/**
-	 * 将gett setter的AnnotatedElement结果合并
+	 * 将gettr setter的AnnotatedElement结果合并
+	 * 
 	 * @return
 	 */
-	public AnnotatedElement getAnnotatedElement(){
-		if(isSupportGetter() && isSupportSetter()){
+	public AnnotatedElement getAnnotatedElement() {
+		if (isSupportGetter() && isSupportSetter()) {
 			return new MultiAnnotatedElement(getGetter().getAnnotatedElement(), getSetter().getAnnotatedElement());
 		}
-		
-		if(isSupportGetter()){
+
+		if (isSupportGetter()) {
 			return getGetter().getAnnotatedElement();
 		}
-		
-		if(isSupportSetter()){
+
+		if (isSupportSetter()) {
 			return getSetter().getAnnotatedElement();
 		}
 		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT;
+	}
+
+	@Override
+	public int hashCode() {
+		if (getter == null && setter == null) {
+			return 0;
+		}
+
+		if (getter == null) {
+			return setter.hashCode();
+		}
+
+		if (setter == null) {
+			return getter.hashCode();
+		}
+
+		return getter.hashCode() + setter.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof FieldMetadata) {
+			return ObjectUtils.equals(getter, ((FieldMetadata) obj).getter)
+					&& ObjectUtils.equals(setter, ((FieldMetadata) obj).setter);
+		}
+
+		return false;
 	}
 }

@@ -6,21 +6,28 @@
 		<artifactId>shuchaowen</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>shuchaowen-data</artifactId>
+	<artifactId>shuchaowen-search</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-core</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>redis.clients</groupId>
-			<artifactId>jedis</artifactId>
-		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.googlecode.xmemcached/xmemcached -->
+		<!-- lucene相关 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
 		<dependency>
-			<groupId>com.googlecode.xmemcached</groupId>
-			<artifactId>xmemcached</artifactId>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<scope>provided</scope>
 		</dependency>
+		<!-- lucene相关 -->
+
+		<!-- https://mvnrepository.com/artifact/org.apache.solr/solr-solrj -->
+		<!-- <dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-solrj</artifactId>
+			<version>8.5.2</version> 
+			<scope>provided</scope>
+		</dependency> -->
 	</dependencies>
 </project>
