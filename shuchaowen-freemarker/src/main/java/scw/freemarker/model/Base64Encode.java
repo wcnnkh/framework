@@ -5,8 +5,10 @@ import java.util.List;
 
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
+import scw.freemarker.annotation.SharedVariable;
 import scw.util.Base64;
 
+@SharedVariable
 public class Base64Encode implements TemplateMethodModelEx{
 
 	@SuppressWarnings("rawtypes")

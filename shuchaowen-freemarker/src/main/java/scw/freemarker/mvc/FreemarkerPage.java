@@ -2,7 +2,9 @@ package scw.freemarker.mvc;
 
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -47,6 +49,7 @@ public class FreemarkerPage extends AbstractPage {
 			serverResponse.setContentType(MimeTypeUtils.TEXT_HTML);
 		}
 
+		Map<String, Object> freemarkerMap = new HashMap<String, Object>(size());
 		Enumeration<String> enumeration = httpChannel.getRequest().getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();
@@ -54,7 +57,7 @@ public class FreemarkerPage extends AbstractPage {
 				continue;
 			}
 
-			put(key, httpChannel.getRequest().getAttribute(key));
+			freemarkerMap.put(key, httpChannel.getRequest().getAttribute(key));
 		}
 
 		ServerHttpRequest serverHttpRequest = (ServerHttpRequest) serverRequest;
@@ -64,13 +67,14 @@ public class FreemarkerPage extends AbstractPage {
 				continue;
 			}
 
-			put(key, entry.getValue());
+			freemarkerMap.put(key, entry.getValue());
 		}
-
+		
+		freemarkerMap.putAll(this);
 		String page = getPage();
 		Template template = configuration.getTemplate(page, serverRequest.getCharacterEncoding());
 		try {
-			template.process(this, serverResponse.getWriter());
+			template.process(freemarkerMap, serverResponse.getWriter());
 			if (httpChannel.isLogEnabled()) {
 				httpChannel.log("freemarker:{}", page);
 			}
