@@ -11,6 +11,7 @@ public class AccessToken implements Serializable, Cloneable {
 	private TokenType tokenType;
 	private Token refreshToken;
 	private String scope;
+	private String state;
 
 	public Token getAccessToken() {
 		return accessToken;
@@ -44,6 +45,14 @@ public class AccessToken implements Serializable, Cloneable {
 		this.scope = scope;
 	}
 
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
 	@Override
 	public AccessToken clone() {
 		AccessToken accessToken = new AccessToken();
@@ -51,6 +60,7 @@ public class AccessToken implements Serializable, Cloneable {
 		accessToken.refreshToken = this.refreshToken.clone();
 		accessToken.scope = this.scope;
 		accessToken.tokenType = this.tokenType;
+		accessToken.state = this.state;
 		return accessToken;
 	}
 
