@@ -413,6 +413,10 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, B
 		}
 
 		for (Class<?> clazz : PackageScan.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName())) {
+			if (!ReflectionUtils.isPresent(clazz)) {
+				continue;
+			}
+			
 			Ioc ioc = Ioc.forClass(clazz);
 			ioc.getDependence().process(null, this, propertyFactory, true);
 			ioc.getInit().process(null, this, propertyFactory, true);

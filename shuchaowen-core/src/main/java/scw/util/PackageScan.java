@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentMap;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.UseJavaVersion;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.classreading.SimpleMetadataReaderFactory;
@@ -71,14 +70,16 @@ public class PackageScan implements Accept<Class<?>> {
 		this.classDirectory = classDirectory;
 	}
 
-	protected Collection<Class<?>> getClassesInternal(String packageName) throws IOException {
+	protected Collection<Class<?>> getClassesInternal(String packageName)
+			throws IOException {
+		ClassLoader classLoader = resourcePatternResolver.getClassLoader();
+		boolean initialize = false;
 		String usePackageName = packageName;
 		if (StringUtils.isEmpty(usePackageName) || usePackageName.equals(ALL)) {
 			usePackageName = ALL;
 			String classDirectory = getClassDirectory();
 			if (!StringUtils.isEmpty(classDirectory)) {
-				Collection<Class<?>> classes = getDirectoryClasses(classDirectory,
-						resourcePatternResolver.getClassLoader(), false);
+				Collection<Class<?>> classes = getDirectoryClasses(classDirectory, classLoader, initialize);
 				return classes;
 			}
 			return Collections.emptyList();
@@ -93,24 +94,20 @@ public class PackageScan implements Accept<Class<?>> {
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 		for (Resource resource : resourcePatternResolver
 				.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + usePackageName + CLASS_RESOURCE)) {
-			appendClass(resource, resourcePatternResolver.getClassLoader(), classes);
+			appendClass(resource, initialize, classLoader, classes);
 		}
 		return classes;
 	}
 
-	private void appendClass(Resource resource, ClassLoader classLoader, Collection<Class<?>> classes)
-			throws IOException {
+	private void appendClass(Resource resource, boolean initialize, ClassLoader classLoader,
+			Collection<Class<?>> classes) throws IOException {
 		MetadataReader reader = metadataReaderFactory.getMetadataReader(resource);
 		if (reader == null) {
 			return;
 		}
 
-		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName(), classLoader);
-		if (clazz == null) {
-			return;
-		}
-
-		if (!accept(clazz)) {
+		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName(), initialize, classLoader);
+		if (clazz == null || !accept(clazz)) {
 			return;
 		}
 
@@ -195,10 +192,6 @@ public class PackageScan implements Accept<Class<?>> {
 	}
 
 	public boolean accept(Class<?> e) {
-		if (!ReflectionUtils.isPresent(e)) {
-			return false;
-		}
-
 		if (e.getAnnotation(Deprecated.class) != null || e.getAnnotation(Ignore.class) != null) {
 			return false;
 		}
@@ -208,7 +201,6 @@ public class PackageScan implements Accept<Class<?>> {
 		if (useJavaVersion != null && JavaVersion.INSTANCE.getMasterVersion() < useJavaVersion.value()) {
 			return false;
 		}
-
 		return true;
 	}
 
@@ -220,12 +212,9 @@ public class PackageScan implements Accept<Class<?>> {
 		String name = classFile.substring(0, classFile.length() - 6);
 		name = name.replaceAll("\\\\", ".");
 		name = name.replaceAll("/", ".");
-		try {
-			Class<?> clazz = ClassUtils.forName(name, initialize, classLoader);
-			if (accept(clazz)) {
-				return clazz;
-			}
-		} catch (Throwable e) {
+		Class<?> clazz = ClassUtils.forNameNullable(name, initialize, classLoader);
+		if (clazz != null && accept(clazz)) {
+			return clazz;
 		}
 		return null;
 	}

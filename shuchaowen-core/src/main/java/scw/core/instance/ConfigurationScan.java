@@ -59,7 +59,7 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 				}
 			}
 
-			if (!ClassUtils.isPresent(clazz.getName())) {
+			if (!ReflectionUtils.isPresent(clazz)) {
 				logger.debug("not support class: {}", clazz.getName());
 				continue;
 			}

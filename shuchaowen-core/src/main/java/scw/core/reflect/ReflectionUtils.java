@@ -28,28 +28,24 @@ import scw.lang.Ignore;
 import scw.util.FormatUtils;
 import scw.util.comparator.CompareUtils;
 
-
 public abstract class ReflectionUtils {
 	/**
-	 * 此方法不是用classloader来判断的，这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
+	 * 这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
 	 * 
 	 * @param clazz
 	 * @return
 	 */
 	public static boolean isPresent(Class<?> clazz) {
-		if(!ClassUtils.isPresent(clazz.getName(), clazz.getClassLoader())){
+		if (!ClassUtils.isPresent(clazz.getName(), clazz.getClassLoader())) {
 			return false;
 		}
-		
+
 		try {
-			clazz.getAnnotations();
-			clazz.getDeclaredAnnotations();
-			clazz.getDeclaredConstructors();
-			clazz.getConstructors();
-			clazz.getDeclaredFields();
-			clazz.getFields();
-			clazz.getDeclaredMethods();
-			clazz.getMethods();
+			for (Method method : Class.class.getMethods()) {
+				if (method.getName().startsWith("get") && method.getParameterTypes().length == 0) {
+					method.invoke(clazz);
+				}
+			}
 		} catch (Throwable e) {
 			return false;
 		}
@@ -1190,7 +1186,7 @@ public abstract class ReflectionUtils {
 			if (Modifier.isPrivate(setter.getModifiers())) {
 				return null;
 			}
-			
+
 			makeAccessible(setter);
 		}
 		return setter;
@@ -1299,23 +1295,22 @@ public abstract class ReflectionUtils {
 		autoList.addAll(defList);
 		return autoList;
 	}
-	
+
 	/**
-     * Returns {@code true} if this method is a default
-     * method; returns {@code false} otherwise.
-     *
-     * A default method is a public non-abstract instance method, that
-     * is, a non-static method with a body, declared in an interface
-     * type.
-     *
-     * @return true if and only if this method is a default
-     * method as defined by the Java Language Specification.
-     * @since 1.8
-     */
-    public boolean isDefault(Method method) {
-        // Default methods are public non-abstract instance methods
-        // declared in an interface.
-        return ((method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) ==
-                Modifier.PUBLIC) && method.getDeclaringClass().isInterface();
-    }
+	 * Returns {@code true} if this method is a default method; returns
+	 * {@code false} otherwise.
+	 *
+	 * A default method is a public non-abstract instance method, that is, a
+	 * non-static method with a body, declared in an interface type.
+	 *
+	 * @return true if and only if this method is a default method as defined by
+	 *         the Java Language Specification.
+	 * @since 1.8
+	 */
+	public boolean isDefault(Method method) {
+		// Default methods are public non-abstract instance methods
+		// declared in an interface.
+		return ((method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC)
+				&& method.getDeclaringClass().isInterface();
+	}
 }

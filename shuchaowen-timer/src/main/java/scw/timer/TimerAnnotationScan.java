@@ -12,6 +12,7 @@ import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.timer.annotation.Crontab;
 import scw.timer.annotation.Schedule;
@@ -26,6 +27,10 @@ public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 		Timer timer = beanFactory.getInstance(Timer.class);
 		for (Class<?> clz : PackageScan.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
 				getScanAnnotationPackageName())) {
+			if (!ReflectionUtils.isPresent(clz)) {
+				continue;
+			}
+			
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Schedule.class)) {
 				Schedule schedule = method.getAnnotation(Schedule.class);
 				schedule(beanFactory, clz, method, timer, schedule);
