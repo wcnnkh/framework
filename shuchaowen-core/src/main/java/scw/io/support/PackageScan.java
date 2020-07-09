@@ -2,18 +2,19 @@ package scw.io.support;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.UseJavaVersion;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.classreading.SimpleMetadataReaderFactory;
@@ -22,11 +23,11 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Resource;
 import scw.lang.Ignore;
+import scw.util.Accept;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.JavaVersion;
-import scw.value.AnyValue;
 
-public class PackageScan {
+public class PackageScan implements Accept<Class<?>> {
 	public static final String ALL = "*";
 	static final String CLASS_RESOURCE = "**/*.class";
 	private final ResourcePatternResolver resourcePatternResolver;
@@ -84,42 +85,27 @@ public class PackageScan {
 			usePackageName = usePackageName + "/";
 		}
 
-		List<Class<?>> classes = new LinkedList<Class<?>>();
+		List<Class<?>> classes = new ArrayList<Class<?>>();
 		for (Resource resource : resourcePatternResolver
 				.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + usePackageName + CLASS_RESOURCE)) {
 			appendClass(resource, classes);
 		}
 		return classes;
 	}
-	
-	private void appendClass(Resource resource, Collection<Class<?>> classes) throws IOException{
+
+	private void appendClass(Resource resource, Collection<Class<?>> classes) throws IOException {
 		MetadataReader reader = metadataReaderFactory.getMetadataReader(resource);
 		if (reader == null) {
-			return ;
-		}
-
-		if (reader.getAnnotationMetadata().hasAnnotation(Deprecated.class.getName())
-				|| reader.getAnnotationMetadata().hasAnnotation(Ignore.class.getName())) {
-			return ;
-		}
-		
-		Map<String, Object> useJavaVersoinAttribute = reader.getAnnotationMetadata().getAnnotationAttributes(UseJavaVersion.class.getName());
-		if(useJavaVersoinAttribute != null){
-			Object version = useJavaVersoinAttribute.get("value");
-			if(version != null){
-				AnyValue anyValue = new AnyValue(version);
-				/**
-				 * 如果java主版本号小于要求的版本号那么忽略该类
-				 */
-				if(JavaVersion.INSTANCE.getMasterVersion() < anyValue.getAsNumber().intValue()){
-					return ;
-				}
-			}
+			return;
 		}
 
 		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName());
 		if (clazz == null) {
-			return ;
+			return;
+		}
+
+		if (!accept(clazz)) {
+			return;
 		}
 
 		classes.add(clazz);
@@ -202,6 +188,24 @@ public class PackageScan {
 		return list;
 	}
 
+	public boolean accept(Class<?> e) {
+		if (!ReflectionUtils.isPresent(e)) {
+			return false;
+		}
+
+		if (e.getAnnotation(Deprecated.class) != null || e.getAnnotation(Ignore.class) != null) {
+			return false;
+		}
+
+		UseJavaVersion useJavaVersion = e.getAnnotation(UseJavaVersion.class);
+		// 如果java主版本号小于要求的版本号那么忽略该类
+		if (useJavaVersion != null && JavaVersion.INSTANCE.getMasterVersion() < useJavaVersion.value()) {
+			return false;
+		}
+		
+		return true;
+	}
+
 	private Class<?> forFileName(String classFile, ClassLoader classLoader, boolean initialize) {
 		if (!classFile.endsWith(ClassUtils.CLASS_FILE_SUFFIX)) {
 			return null;
@@ -211,7 +215,10 @@ public class PackageScan {
 		name = name.replaceAll("\\\\", ".");
 		name = name.replaceAll("/", ".");
 		try {
-			return ClassUtils.forName(name, initialize, classLoader);
+			Class<?> clazz = ClassUtils.forName(name, initialize, classLoader);
+			if (accept(clazz)) {
+				return clazz;
+			}
 		} catch (Throwable e) {
 		}
 		return null;

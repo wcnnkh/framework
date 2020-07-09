@@ -37,11 +37,20 @@ public abstract class ReflectionUtils {
 	 * @return
 	 */
 	public static boolean isPresent(Class<?> clazz) {
+		if(!ClassUtils.isPresent(clazz.getName(), clazz.getClassLoader())){
+			return false;
+		}
+		
 		try {
+			clazz.getAnnotations();
+			clazz.getDeclaredAnnotations();
 			clazz.getDeclaredConstructors();
+			clazz.getConstructors();
 			clazz.getDeclaredFields();
+			clazz.getFields();
 			clazz.getDeclaredMethods();
-		} catch (NoClassDefFoundError e) {
+			clazz.getMethods();
+		} catch (Throwable e) {
 			return false;
 		}
 		return true;

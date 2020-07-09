@@ -107,6 +107,11 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 					logger.warn("not create class by name: {}", name);
 					continue;
 				}
+				
+				if (!ReflectionUtils.isPresent(clazz)) {
+					logger.debug("reflection not present [{}]", clazz);
+					continue;
+				}
 
 				if (ClassUtils.isAssignable(type, clazz)) {
 					logger.warn("type [{}] not isAssignable class by name: {}", type, name);
@@ -122,11 +127,6 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 
 		for (Class<T> clazz : list) {
 			if (set.contains(clazz)) {
-				continue;
-			}
-
-			if (!ReflectionUtils.isPresent(clazz)) {
-				logger.debug("reflection not present [{}]", clazz);
 				continue;
 			}
 			set.add(clazz);

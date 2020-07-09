@@ -9,28 +9,16 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Bean;
 import scw.core.Constants;
-import scw.core.reflect.ReflectionUtils;
 import scw.io.ResourceUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
 
 public class MethodBeanConfiguration extends AbstractBeanConfiguration {
-	private static Logger logger = LoggerUtils
-			.getLogger(MethodBeanConfiguration.class);
 	
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws Exception {
 		for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(Arrays.asList(
 				BeanUtils.getScanAnnotationPackageName(),
 				Constants.SYSTEM_PACKAGE_NAME))) {
-			if (!ReflectionUtils.isPresent(clz)) {
-				if (logger.isTraceEnabled()) {
-					logger.trace("not support class:{}", clz);
-				}
-				continue;
-			}
-
 			for (Method method : clz.getDeclaredMethods()) {
 				Bean bean = method.getAnnotation(Bean.class);
 				if (bean == null) {
