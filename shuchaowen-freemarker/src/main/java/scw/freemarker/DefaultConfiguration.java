@@ -40,7 +40,7 @@ public class DefaultConfiguration extends Configuration {
 
 		setObjectWrapper(new DefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
 
-		for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(getScanAnnotationPackageName())) {
+		for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName())) {
 			SharedVariable sharedVariable = clz.getAnnotation(SharedVariable.class);
 			if (sharedVariable == null) {
 				continue;
