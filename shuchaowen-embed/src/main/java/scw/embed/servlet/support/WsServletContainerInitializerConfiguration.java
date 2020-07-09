@@ -12,7 +12,7 @@ import scw.beans.BeanUtils;
 import scw.core.Constants;
 import scw.core.instance.annotation.Configuration;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
-import scw.io.ResourceUtils;
+import scw.util.ClassScanner;
 
 @Configuration(order=Integer.MIN_VALUE)
 public class WsServletContainerInitializerConfiguration implements ServletContainerInitializerConfiguration{
@@ -23,7 +23,7 @@ public class WsServletContainerInitializerConfiguration implements ServletContai
 	}
 
 	public Set<Class<?>> getClassSet() {
-		return ResourceUtils.getPackageScan().getClasses(Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName()));
+		return ClassScanner.getInstance().getClasses(Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName()));
 	}
 
 

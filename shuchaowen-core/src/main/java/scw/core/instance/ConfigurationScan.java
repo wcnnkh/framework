@@ -14,9 +14,9 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.ClassScanner;
 import scw.util.comparator.CompareUtils;
 import scw.value.property.PropertyFactory;
 
@@ -32,7 +32,7 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 
 	protected Collection<Class<?>> scan(Class<?> type, Collection<String> packageNames) {
 		Set<Class<?>> list = new HashSet<Class<?>>();
-		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(packageNames)) {
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(packageNames)) {
 			if (clazz == type) {//防止死循环
 				continue;
 			}
@@ -59,7 +59,7 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 				}
 			}
 
-			if (!ClassUtils.isPresent(clazz.getName())) {
+			if (!ReflectionUtils.isPresent(clazz)) {
 				logger.debug("not support class: {}", clazz.getName());
 				continue;
 			}
@@ -107,6 +107,11 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 					logger.warn("not create class by name: {}", name);
 					continue;
 				}
+				
+				if (!ReflectionUtils.isPresent(clazz)) {
+					logger.debug("reflection not present [{}]", clazz);
+					continue;
+				}
 
 				if (ClassUtils.isAssignable(type, clazz)) {
 					logger.warn("type [{}] not isAssignable class by name: {}", type, name);
@@ -122,11 +127,6 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 
 		for (Class<T> clazz : list) {
 			if (set.contains(clazz)) {
-				continue;
-			}
-
-			if (!ReflectionUtils.isPresent(clazz)) {
-				logger.debug("reflection not present [{}]", clazz);
 				continue;
 			}
 			set.add(clazz);

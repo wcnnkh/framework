@@ -3,7 +3,7 @@ package scw.event.method;
 import scw.aop.Filter;
 import scw.aop.ProxyInvoker;
 import scw.core.instance.annotation.Configuration;
-import scw.event.method.annotation.PublishEvent;
+import scw.event.method.annotation.PublishMethodEvent;
 import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
@@ -16,7 +16,7 @@ public class MethodEventFilter implements Filter {
 	}
 
 	public Object doFilter(final ProxyInvoker invoker, final Object[] args) throws Throwable {
-		final PublishEvent publishEvent = invoker.getMethod().getAnnotation(PublishEvent.class);
+		final PublishMethodEvent publishEvent = invoker.getMethod().getAnnotation(PublishMethodEvent.class);
 		if (publishEvent == null) {
 			return invoker.invoke(args);
 		}

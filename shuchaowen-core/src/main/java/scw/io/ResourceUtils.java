@@ -18,7 +18,6 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.support.FileSystemSearchResourceLoader;
-import scw.io.support.PackageScan;
 import scw.io.support.ResourceOperations;
 import scw.lang.NestedRuntimeException;
 import scw.lang.Nullable;
@@ -84,8 +83,6 @@ public final class ResourceUtils {
 					.getInstance().getValue("resource.cache.enable",
 							boolean.class, true));
 
-	private static final PackageScan PACKAGE_SCAN = new PackageScan(true);
-
 	static {
 		RESOURCE_OPERATIONS
 				.addResourceLoader(new FileSystemSearchResourceLoader(false,
@@ -94,10 +91,6 @@ public final class ResourceUtils {
 
 	public static final ResourceOperations getResourceOperations() {
 		return RESOURCE_OPERATIONS;
-	}
-
-	public static PackageScan getPackageScan() {
-		return PACKAGE_SCAN;
 	}
 
 	/**

@@ -43,7 +43,7 @@ public final class ClassUtils {
 	public static final String CLASS_FILE_SUFFIX = ".class";
 
 	public static final String GENERIC_PREFIX = "<";
-	
+
 	private static final Class<?>[] EMPTY_ARRAY = new Class<?>[0];
 
 	/**
@@ -102,9 +102,9 @@ public final class ClassUtils {
 				StackTraceElement.class, StackTraceElement[].class);
 		registerCommonClasses(Enum.class, Iterable.class, Cloneable.class, Comparable.class);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public static <T> Class<T>[] emptyArray(){
+	public static <T> Class<T>[] emptyArray() {
 		return (Class<T>[]) EMPTY_ARRAY;
 	}
 
@@ -615,16 +615,20 @@ public final class ClassUtils {
 	public static Class<?> forNameNullable(String name) {
 		return forNameNullable(name, null);
 	}
-	
+
 	public static Class<?> forNameNullable(String name, ClassLoader classLoader) {
+		return forNameNullable(name, false, classLoader);
+	}
+
+	public static Class<?> forNameNullable(String name, boolean initialize, ClassLoader classLoader) {
 		Class<?> clazz = null;
 		try {
-			clazz = forName(name, classLoader);
+			clazz = forName(name, initialize, classLoader);
 		} catch (ClassNotFoundException e) {
 			// ignore
 		} catch (NoClassDefFoundError e) {
 			// ignore
-		}catch (UnsupportedClassVersionError e) {
+		} catch (UnsupportedClassVersionError e) {
 			// ignore jdk版本不对
 		}
 		return clazz;

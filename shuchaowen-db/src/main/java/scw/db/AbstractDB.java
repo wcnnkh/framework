@@ -14,7 +14,6 @@ import scw.beans.Init;
 import scw.beans.annotation.Autowired;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.io.ResourceUtils;
 import scw.io.serialzer.SerializerUtils;
 import scw.sql.Sql;
 import scw.sql.orm.Column;
@@ -24,6 +23,7 @@ import scw.sql.orm.dialect.SqlDialect;
 import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.support.AbstractEntityOperations;
 import scw.transaction.sql.SqlTransactionUtils;
+import scw.util.ClassScanner;
 import scw.util.queue.Consumer;
 
 public abstract class AbstractDB extends AbstractEntityOperations implements DB,
@@ -80,7 +80,7 @@ public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 	}
 
 	public void createTable(String packageName, boolean registerManager) {
-		Collection<Class<?>> list = ResourceUtils.getPackageScan().getClasses(packageName);
+		Collection<Class<?>> list = ClassScanner.getInstance().getClasses(packageName);
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {

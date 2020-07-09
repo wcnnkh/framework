@@ -1,7 +1,6 @@
 package scw.beans.method;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanDefinition;
@@ -10,24 +9,15 @@ import scw.beans.BeanUtils;
 import scw.beans.annotation.Bean;
 import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
-import scw.io.ResourceUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
 
 public class MethodBeanConfiguration extends AbstractBeanConfiguration {
-	private static Logger logger = LoggerUtils
-			.getLogger(MethodBeanConfiguration.class);
-	
-	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
-			throws Exception {
-		for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(Arrays.asList(
-				BeanUtils.getScanAnnotationPackageName(),
-				Constants.SYSTEM_PACKAGE_NAME))) {
+
+	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
+		for (Class<?> clz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName(),
+				Constants.SYSTEM_PACKAGE_NAME)) {
 			if (!ReflectionUtils.isPresent(clz)) {
-				if (logger.isTraceEnabled()) {
-					logger.trace("not support class:{}", clz);
-				}
 				continue;
 			}
 
@@ -37,9 +27,8 @@ public class MethodBeanConfiguration extends AbstractBeanConfiguration {
 					continue;
 				}
 
-				BeanDefinition beanDefinition = new MethodBeanDefinition(
-						beanFactory, propertyFactory, method.getReturnType(),
-						clz, method);
+				BeanDefinition beanDefinition = new MethodBeanDefinition(beanFactory, propertyFactory,
+						method.getReturnType(), clz, method);
 				beanDefinitions.add(beanDefinition);
 			}
 		}

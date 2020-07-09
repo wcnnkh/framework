@@ -25,23 +25,33 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.lang.Ignore;
+import scw.util.Accept;
 import scw.util.FormatUtils;
 import scw.util.comparator.CompareUtils;
 
-
 public abstract class ReflectionUtils {
+	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class, new Accept<Method>() {
+		public boolean accept(Method method) {
+			return method.getName().startsWith("get") && method.getParameterTypes().length == 0;
+		}
+	}).toArray(new Method[0]);
+
 	/**
-	 * 此方法不是用classloader来判断的，这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
+	 * 这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
 	 * 
 	 * @param clazz
 	 * @return
 	 */
 	public static boolean isPresent(Class<?> clazz) {
+		if (!ClassUtils.isPresent(clazz.getName(), clazz.getClassLoader())) {
+			return false;
+		}
+
 		try {
-			clazz.getDeclaredConstructors();
-			clazz.getDeclaredFields();
-			clazz.getDeclaredMethods();
-		} catch (NoClassDefFoundError e) {
+			for (Method method : CLASS_PRESENT_METHODS) {
+				method.invoke(clazz);
+			}
+		} catch (Throwable e) {
 			return false;
 		}
 		return true;
@@ -225,6 +235,16 @@ public abstract class ReflectionUtils {
 			searchType = searchType.getSuperclass();
 		}
 		return null;
+	}
+
+	public static List<Method> getMethods(Class<?> clazz, Accept<Method> accept) {
+		List<Method> methods = new ArrayList<Method>();
+		for (Method method : clazz.getMethods()) {
+			if (accept == null || accept.accept(method)) {
+				methods.add(method);
+			}
+		}
+		return methods;
 	}
 
 	/**
@@ -1181,7 +1201,7 @@ public abstract class ReflectionUtils {
 			if (Modifier.isPrivate(setter.getModifiers())) {
 				return null;
 			}
-			
+
 			makeAccessible(setter);
 		}
 		return setter;
@@ -1290,23 +1310,22 @@ public abstract class ReflectionUtils {
 		autoList.addAll(defList);
 		return autoList;
 	}
-	
+
 	/**
-     * Returns {@code true} if this method is a default
-     * method; returns {@code false} otherwise.
-     *
-     * A default method is a public non-abstract instance method, that
-     * is, a non-static method with a body, declared in an interface
-     * type.
-     *
-     * @return true if and only if this method is a default
-     * method as defined by the Java Language Specification.
-     * @since 1.8
-     */
-    public boolean isDefault(Method method) {
-        // Default methods are public non-abstract instance methods
-        // declared in an interface.
-        return ((method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) ==
-                Modifier.PUBLIC) && method.getDeclaringClass().isInterface();
-    }
+	 * Returns {@code true} if this method is a default method; returns
+	 * {@code false} otherwise.
+	 *
+	 * A default method is a public non-abstract instance method, that is, a
+	 * non-static method with a body, declared in an interface type.
+	 *
+	 * @return true if and only if this method is a default method as defined by
+	 *         the Java Language Specification.
+	 * @since 1.8
+	 */
+	public boolean isDefault(Method method) {
+		// Default methods are public non-abstract instance methods
+		// declared in an interface.
+		return ((method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC)
+				&& method.getDeclaringClass().isInterface();
+	}
 }

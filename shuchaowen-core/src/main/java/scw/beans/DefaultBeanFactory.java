@@ -29,6 +29,7 @@ import scw.beans.event.DependenceRefreshEvent;
 import scw.beans.ioc.Ioc;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
+import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
@@ -39,13 +40,13 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.event.EventDispatcher;
 import scw.event.support.DefaultEventDispatcher;
-import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.lang.Ignore;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.ClassScanner;
 import scw.value.property.BasePropertyFactory;
 import scw.value.property.PropertyFactory;
 
@@ -411,7 +412,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, B
 			addBeanConfiguration(configuration);
 		}
 
-		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(BeanUtils.getScanAnnotationPackageName())) {
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName())) {
+			if (!ReflectionUtils.isPresent(clazz)) {
+				continue;
+			}
+			
 			Ioc ioc = Ioc.forClass(clazz);
 			ioc.getDependence().process(null, this, propertyFactory, true);
 			ioc.getInit().process(null, this, propertyFactory, true);
@@ -451,7 +456,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, B
 			}
 		}
 
-		for (Class<?> clazz : ResourceUtils.getPackageScan().getClasses(BeanUtils.getScanAnnotationPackageName())) {
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME, BeanUtils.getScanAnnotationPackageName())) {
 			Ioc ioc = new Ioc(clazz);
 			ioc.getDestroy().process(null, this, propertyFactory, true);
 		}

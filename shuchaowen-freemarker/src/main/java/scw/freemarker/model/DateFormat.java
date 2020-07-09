@@ -7,7 +7,9 @@ import freemarker.template.SimpleNumber;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
 import scw.core.utils.XTime;
+import scw.freemarker.annotation.SharedVariable;
 
+@SharedVariable
 public class DateFormat implements TemplateMethodModelEx{
 
 	@SuppressWarnings("rawtypes")

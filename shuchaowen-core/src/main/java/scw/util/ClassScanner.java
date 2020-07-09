@@ -1,14 +1,14 @@
-package scw.io.support;
+package scw.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
@@ -21,12 +21,11 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Resource;
+import scw.io.support.PathMatchingResourcePatternResolver;
+import scw.io.support.ResourcePatternResolver;
 import scw.lang.Ignore;
-import scw.util.ConcurrentReferenceHashMap;
-import scw.util.JavaVersion;
-import scw.value.AnyValue;
 
-public class PackageScan {
+public class ClassScanner implements Accept<Class<?>> {
 	public static final String ALL = "*";
 	static final String CLASS_RESOURCE = "**/*.class";
 	private final ResourcePatternResolver resourcePatternResolver;
@@ -34,15 +33,21 @@ public class PackageScan {
 	private boolean useCache = true;
 	private String classDirectory;
 
-	public PackageScan(boolean useCache) {
+	private static final ClassScanner INSTANCE = new ClassScanner(true);
+
+	public static ClassScanner getInstance() {
+		return INSTANCE;
+	}
+
+	public ClassScanner(boolean useCache) {
 		this(new SimpleMetadataReaderFactory(), useCache);
 	}
 
-	public PackageScan(MetadataReaderFactory metadataReaderFactory, boolean useCache) {
+	public ClassScanner(MetadataReaderFactory metadataReaderFactory, boolean useCache) {
 		this(new PathMatchingResourcePatternResolver(), metadataReaderFactory, useCache);
 	}
 
-	public PackageScan(ResourcePatternResolver resourcePatternResolver, MetadataReaderFactory metadataReaderFactory,
+	public ClassScanner(ResourcePatternResolver resourcePatternResolver, MetadataReaderFactory metadataReaderFactory,
 			boolean useCache) {
 		this.resourcePatternResolver = resourcePatternResolver;
 		this.metadataReaderFactory = metadataReaderFactory;
@@ -66,13 +71,14 @@ public class PackageScan {
 	}
 
 	protected Collection<Class<?>> getClassesInternal(String packageName) throws IOException {
+		ClassLoader classLoader = resourcePatternResolver.getClassLoader();
+		boolean initialize = false;
 		String usePackageName = packageName;
 		if (StringUtils.isEmpty(usePackageName) || usePackageName.equals(ALL)) {
 			usePackageName = ALL;
 			String classDirectory = getClassDirectory();
 			if (!StringUtils.isEmpty(classDirectory)) {
-				Collection<Class<?>> classes = getDirectoryClasses(classDirectory,
-						resourcePatternResolver.getClassLoader(), false);
+				Collection<Class<?>> classes = getDirectoryClasses(classDirectory, classLoader, initialize);
 				return classes;
 			}
 			return Collections.emptyList();
@@ -84,42 +90,29 @@ public class PackageScan {
 			usePackageName = usePackageName + "/";
 		}
 
-		List<Class<?>> classes = new LinkedList<Class<?>>();
+		return getClassesByClassPath(usePackageName, initialize, classLoader);
+	}
+
+	private Collection<Class<?>> getClassesByClassPath(String packageName, boolean initialize, ClassLoader classLoader)
+			throws IOException {
+		List<Class<?>> classes = new ArrayList<Class<?>>();
 		for (Resource resource : resourcePatternResolver
-				.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + usePackageName + CLASS_RESOURCE)) {
-			appendClass(resource, classes);
+				.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packageName + CLASS_RESOURCE)) {
+			appendClass(resource, initialize, classLoader, classes);
 		}
 		return classes;
 	}
-	
-	private void appendClass(Resource resource, Collection<Class<?>> classes) throws IOException{
+
+	private void appendClass(Resource resource, boolean initialize, ClassLoader classLoader,
+			Collection<Class<?>> classes) throws IOException {
 		MetadataReader reader = metadataReaderFactory.getMetadataReader(resource);
 		if (reader == null) {
-			return ;
+			return;
 		}
 
-		if (reader.getAnnotationMetadata().hasAnnotation(Deprecated.class.getName())
-				|| reader.getAnnotationMetadata().hasAnnotation(Ignore.class.getName())) {
-			return ;
-		}
-		
-		Map<String, Object> useJavaVersoinAttribute = reader.getAnnotationMetadata().getAnnotationAttributes(UseJavaVersion.class.getName());
-		if(useJavaVersoinAttribute != null){
-			Object version = useJavaVersoinAttribute.get("value");
-			if(version != null){
-				AnyValue anyValue = new AnyValue(version);
-				/**
-				 * 如果java主版本号小于要求的版本号那么忽略该类
-				 */
-				if(JavaVersion.INSTANCE.getMasterVersion() < anyValue.getAsNumber().intValue()){
-					return ;
-				}
-			}
-		}
-
-		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName());
-		if (clazz == null) {
-			return ;
+		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName(), initialize, classLoader);
+		if (clazz == null || !accept(clazz)) {
+			return;
 		}
 
 		classes.add(clazz);
@@ -202,6 +195,19 @@ public class PackageScan {
 		return list;
 	}
 
+	public boolean accept(Class<?> e) {
+		if (e.getAnnotation(Deprecated.class) != null || e.getAnnotation(Ignore.class) != null) {
+			return false;
+		}
+
+		UseJavaVersion useJavaVersion = e.getAnnotation(UseJavaVersion.class);
+		// 如果java主版本号小于要求的版本号那么忽略该类
+		if (useJavaVersion != null && JavaVersion.INSTANCE.getMasterVersion() < useJavaVersion.value()) {
+			return false;
+		}
+		return true;
+	}
+
 	private Class<?> forFileName(String classFile, ClassLoader classLoader, boolean initialize) {
 		if (!classFile.endsWith(ClassUtils.CLASS_FILE_SUFFIX)) {
 			return null;
@@ -210,9 +216,9 @@ public class PackageScan {
 		String name = classFile.substring(0, classFile.length() - 6);
 		name = name.replaceAll("\\\\", ".");
 		name = name.replaceAll("/", ".");
-		try {
-			return ClassUtils.forName(name, initialize, classLoader);
-		} catch (Throwable e) {
+		Class<?> clazz = ClassUtils.forNameNullable(name, initialize, classLoader);
+		if (clazz != null && accept(clazz)) {
+			return clazz;
 		}
 		return null;
 	}
