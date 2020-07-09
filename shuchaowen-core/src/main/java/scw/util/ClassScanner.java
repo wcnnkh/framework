@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,8 +69,7 @@ public class ClassScanner implements Accept<Class<?>> {
 		this.classDirectory = classDirectory;
 	}
 
-	protected Collection<Class<?>> getClassesInternal(String packageName)
-			throws IOException {
+	protected Collection<Class<?>> getClassesInternal(String packageName) throws IOException {
 		ClassLoader classLoader = resourcePatternResolver.getClassLoader();
 		boolean initialize = false;
 		String usePackageName = packageName;
@@ -82,7 +80,7 @@ public class ClassScanner implements Accept<Class<?>> {
 				Collection<Class<?>> classes = getDirectoryClasses(classDirectory, classLoader, initialize);
 				return classes;
 			}
-			return Collections.emptyList();
+			return getClassesByClassPath("", initialize, classLoader);
 		} else {
 			usePackageName = usePackageName.replace(".", "/");
 		}
@@ -91,9 +89,14 @@ public class ClassScanner implements Accept<Class<?>> {
 			usePackageName = usePackageName + "/";
 		}
 
+		return getClassesByClassPath(usePackageName, initialize, classLoader);
+	}
+
+	private Collection<Class<?>> getClassesByClassPath(String packageName, boolean initialize, ClassLoader classLoader)
+			throws IOException {
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 		for (Resource resource : resourcePatternResolver
-				.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + usePackageName + CLASS_RESOURCE)) {
+				.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + packageName + CLASS_RESOURCE)) {
 			appendClass(resource, initialize, classLoader, classes);
 		}
 		return classes;

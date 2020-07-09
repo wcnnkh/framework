@@ -25,10 +25,17 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.lang.Ignore;
+import scw.util.Accept;
 import scw.util.FormatUtils;
 import scw.util.comparator.CompareUtils;
 
 public abstract class ReflectionUtils {
+	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class, new Accept<Method>() {
+		public boolean accept(Method method) {
+			return method.getName().startsWith("get") && method.getParameterTypes().length == 0;
+		}
+	}).toArray(new Method[0]);
+
 	/**
 	 * 这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
 	 * 
@@ -41,10 +48,8 @@ public abstract class ReflectionUtils {
 		}
 
 		try {
-			for (Method method : Class.class.getMethods()) {
-				if (method.getName().startsWith("get") && method.getParameterTypes().length == 0) {
-					method.invoke(clazz);
-				}
+			for (Method method : CLASS_PRESENT_METHODS) {
+				method.invoke(clazz);
 			}
 		} catch (Throwable e) {
 			return false;
@@ -230,6 +235,16 @@ public abstract class ReflectionUtils {
 			searchType = searchType.getSuperclass();
 		}
 		return null;
+	}
+
+	public static List<Method> getMethods(Class<?> clazz, Accept<Method> accept) {
+		List<Method> methods = new ArrayList<Method>();
+		for (Method method : clazz.getMethods()) {
+			if (accept == null || accept.accept(method)) {
+				methods.add(method);
+			}
+		}
+		return methods;
 	}
 
 	/**
