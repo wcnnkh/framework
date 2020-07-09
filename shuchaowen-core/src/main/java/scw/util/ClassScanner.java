@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -80,7 +81,7 @@ public class ClassScanner implements Accept<Class<?>> {
 				Collection<Class<?>> classes = getDirectoryClasses(classDirectory, classLoader, initialize);
 				return classes;
 			}
-			return getClassesByClassPath("", initialize, classLoader);
+			return Collections.emptyList();
 		} else {
 			usePackageName = usePackageName.replace(".", "/");
 		}
