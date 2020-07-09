@@ -23,7 +23,7 @@ import scw.sql.orm.dialect.SqlDialect;
 import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.support.AbstractEntityOperations;
 import scw.transaction.sql.SqlTransactionUtils;
-import scw.util.PackageScan;
+import scw.util.ClassScanner;
 import scw.util.queue.Consumer;
 
 public abstract class AbstractDB extends AbstractEntityOperations implements DB,
@@ -80,7 +80,7 @@ public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 	}
 
 	public void createTable(String packageName, boolean registerManager) {
-		Collection<Class<?>> list = PackageScan.getInstance().getClasses(packageName);
+		Collection<Class<?>> list = ClassScanner.getInstance().getClasses(packageName);
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {

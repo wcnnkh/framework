@@ -18,14 +18,14 @@ import scw.timer.annotation.Crontab;
 import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
-import scw.util.PackageScan;
+import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Timer timer = beanFactory.getInstance(Timer.class);
-		for (Class<?> clz : PackageScan.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
+		for (Class<?> clz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
 				getScanAnnotationPackageName())) {
 			if (!ReflectionUtils.isPresent(clz)) {
 				continue;

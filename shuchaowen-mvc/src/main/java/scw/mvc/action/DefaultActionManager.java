@@ -13,7 +13,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.MVCUtils;
 import scw.mvc.annotation.Controller;
-import scw.util.PackageScan;
+import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
@@ -31,7 +31,7 @@ public class DefaultActionManager implements ActionManager {
 			String scanAnnotationPackageName) {
 		this.beanFactory = beanFactory;
 		this.propertyFactory = propertyFactory;
-		for (Class<?> clz : PackageScan.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
+		for (Class<?> clz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
 				scanAnnotationPackageName)) {
 			if (!isSupport(clz)) {
 				continue;

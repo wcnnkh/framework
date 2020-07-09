@@ -9,7 +9,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.event.method.annotation.RegisterMethodEventListener;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.PackageScan;
+import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
 
 @Configuration
@@ -22,7 +22,7 @@ public class MethodEventListenerBeanFactoryLifeCycle implements BeanFactoryLifeC
 		}
 
 		MethodEventDispatcher dispatcher = beanFactory.getInstance(MethodEventDispatcher.class);
-		for (Class<?> clz : PackageScan.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
+		for (Class<?> clz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
 				getScanAnnotationPackageName())) {
 			if (!MethodEventListener.class.isAssignableFrom(clz)) {
 				continue;

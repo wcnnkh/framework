@@ -16,7 +16,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.serialzer.Serializer;
 import scw.io.serialzer.SerializerUtils;
-import scw.util.PackageScan;
+import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
@@ -50,7 +50,7 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfig
 			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
 			if (!StringUtils.isNull(packageName)) {
-				for (Class<?> clz : PackageScan.getInstance().getClasses(packageName)) {
+				for (Class<?> clz : ClassScanner.getInstance().getClasses(packageName)) {
 					if (!clz.isInterface() || AnnotationUtils.isIgnore(clz)) {
 						continue;
 					}

@@ -6,7 +6,7 @@ import scw.beans.BeanUtils;
 import scw.beans.annotation.Service;
 import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
-import scw.util.PackageScan;
+import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
 
 /**
@@ -18,7 +18,7 @@ import scw.value.property.PropertyFactory;
 public class ServiceBeanConfiguration extends AbstractBeanConfiguration {
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		for (Class<?> clz : PackageScan.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName(),
+		for (Class<?> clz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName(),
 				Constants.SYSTEM_PACKAGE_NAME)) {
 			if (!ReflectionUtils.isPresent(clz)) {
 				continue;

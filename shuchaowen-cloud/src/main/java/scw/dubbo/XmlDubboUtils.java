@@ -34,7 +34,7 @@ import scw.mapper.Copy;
 import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
-import scw.util.PackageScan;
+import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
@@ -111,7 +111,7 @@ public final class XmlDubboUtils {
 
 						String packageName = getPackageName(propertyFactory, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : PackageScan.getInstance().getClasses(packageName)) {
+							for (Class<?> clazz : ClassScanner.getInstance().getClasses(packageName)) {
 								Service service = clazz.getAnnotation(Service.class);
 								if (service == null) {
 									continue;
@@ -191,7 +191,7 @@ public final class XmlDubboUtils {
 					public boolean doFilter(List<ReferenceConfig> list, Node node, ReferenceConfig config) {
 						String packageName = getPackageName(propertyFactory, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : PackageScan.getInstance().getClasses(packageName)) {
+							for (Class<?> clazz : ClassScanner.getInstance().getClasses(packageName)) {
 								if (!clazz.isInterface() || AnnotationUtils.isIgnore(clazz)) {
 									continue;
 								}

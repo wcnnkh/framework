@@ -42,7 +42,7 @@ import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.enums.TableStructureResultField;
 import scw.sql.orm.support.generation.GeneratorContext;
 import scw.sql.orm.support.generation.GeneratorService;
-import scw.util.PackageScan;
+import scw.util.ClassScanner;
 import scw.util.Pagination;
 
 public abstract class AbstractEntityOperations extends SqlTemplate implements EntityOperations {
@@ -355,7 +355,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 	}
 
 	public void createTable(String packageName) {
-		Collection<Class<?>> list = PackageScan.getInstance().getClasses(packageName);
+		Collection<Class<?>> list = ClassScanner.getInstance().getClasses(packageName);
 		for (Class<?> tableClass : list) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {

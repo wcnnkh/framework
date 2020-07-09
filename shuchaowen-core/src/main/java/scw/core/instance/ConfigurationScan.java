@@ -16,7 +16,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.util.PackageScan;
+import scw.util.ClassScanner;
 import scw.util.comparator.CompareUtils;
 import scw.value.property.PropertyFactory;
 
@@ -32,7 +32,7 @@ public class ConfigurationScan implements Comparator<Class<?>> {
 
 	protected Collection<Class<?>> scan(Class<?> type, Collection<String> packageNames) {
 		Set<Class<?>> list = new HashSet<Class<?>>();
-		for (Class<?> clazz : PackageScan.getInstance().getClasses(packageNames)) {
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(packageNames)) {
 			if (clazz == type) {//防止死循环
 				continue;
 			}

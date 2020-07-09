@@ -25,7 +25,7 @@ import scw.io.support.PathMatchingResourcePatternResolver;
 import scw.io.support.ResourcePatternResolver;
 import scw.lang.Ignore;
 
-public class PackageScan implements Accept<Class<?>> {
+public class ClassScanner implements Accept<Class<?>> {
 	public static final String ALL = "*";
 	static final String CLASS_RESOURCE = "**/*.class";
 	private final ResourcePatternResolver resourcePatternResolver;
@@ -33,21 +33,21 @@ public class PackageScan implements Accept<Class<?>> {
 	private boolean useCache = true;
 	private String classDirectory;
 
-	private static final PackageScan INSTANCE = new PackageScan(true);
+	private static final ClassScanner INSTANCE = new ClassScanner(true);
 
-	public static PackageScan getInstance() {
+	public static ClassScanner getInstance() {
 		return INSTANCE;
 	}
 
-	public PackageScan(boolean useCache) {
+	public ClassScanner(boolean useCache) {
 		this(new SimpleMetadataReaderFactory(), useCache);
 	}
 
-	public PackageScan(MetadataReaderFactory metadataReaderFactory, boolean useCache) {
+	public ClassScanner(MetadataReaderFactory metadataReaderFactory, boolean useCache) {
 		this(new PathMatchingResourcePatternResolver(), metadataReaderFactory, useCache);
 	}
 
-	public PackageScan(ResourcePatternResolver resourcePatternResolver, MetadataReaderFactory metadataReaderFactory,
+	public ClassScanner(ResourcePatternResolver resourcePatternResolver, MetadataReaderFactory metadataReaderFactory,
 			boolean useCache) {
 		this.resourcePatternResolver = resourcePatternResolver;
 		this.metadataReaderFactory = metadataReaderFactory;
