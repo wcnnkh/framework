@@ -18,8 +18,8 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.freemarker.annotation.SharedVariable;
-import scw.io.ResourceUtils;
 import scw.logger.LoggerUtils;
+import scw.util.PackageScan;
 import scw.value.property.PropertyFactory;
 
 @scw.core.instance.annotation.Configuration(order = Integer.MIN_VALUE, value = Configuration.class)
@@ -40,7 +40,7 @@ public class DefaultConfiguration extends Configuration {
 
 		setObjectWrapper(new DefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
 
-		for (Class<?> clz : ResourceUtils.getPackageScan().getClasses(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName())) {
+		for (Class<?> clz : PackageScan.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName())) {
 			SharedVariable sharedVariable = clz.getAnnotation(SharedVariable.class);
 			if (sharedVariable == null) {
 				continue;

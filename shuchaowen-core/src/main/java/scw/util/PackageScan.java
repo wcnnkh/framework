@@ -1,4 +1,4 @@
-package scw.io.support;
+package scw.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,10 +22,9 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Resource;
+import scw.io.support.PathMatchingResourcePatternResolver;
+import scw.io.support.ResourcePatternResolver;
 import scw.lang.Ignore;
-import scw.util.Accept;
-import scw.util.ConcurrentReferenceHashMap;
-import scw.util.JavaVersion;
 
 public class PackageScan implements Accept<Class<?>> {
 	public static final String ALL = "*";
@@ -34,6 +33,12 @@ public class PackageScan implements Accept<Class<?>> {
 	private final MetadataReaderFactory metadataReaderFactory;
 	private boolean useCache = true;
 	private String classDirectory;
+
+	private static final PackageScan INSTANCE = new PackageScan(true);
+
+	public static PackageScan getInstance() {
+		return INSTANCE;
+	}
 
 	public PackageScan(boolean useCache) {
 		this(new SimpleMetadataReaderFactory(), useCache);
@@ -88,18 +93,19 @@ public class PackageScan implements Accept<Class<?>> {
 		List<Class<?>> classes = new ArrayList<Class<?>>();
 		for (Resource resource : resourcePatternResolver
 				.getResources(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + usePackageName + CLASS_RESOURCE)) {
-			appendClass(resource, classes);
+			appendClass(resource, resourcePatternResolver.getClassLoader(), classes);
 		}
 		return classes;
 	}
 
-	private void appendClass(Resource resource, Collection<Class<?>> classes) throws IOException {
+	private void appendClass(Resource resource, ClassLoader classLoader, Collection<Class<?>> classes)
+			throws IOException {
 		MetadataReader reader = metadataReaderFactory.getMetadataReader(resource);
 		if (reader == null) {
 			return;
 		}
 
-		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName());
+		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName(), classLoader);
 		if (clazz == null) {
 			return;
 		}
@@ -202,7 +208,7 @@ public class PackageScan implements Accept<Class<?>> {
 		if (useJavaVersion != null && JavaVersion.INSTANCE.getMasterVersion() < useJavaVersion.value()) {
 			return false;
 		}
-		
+
 		return true;
 	}
 

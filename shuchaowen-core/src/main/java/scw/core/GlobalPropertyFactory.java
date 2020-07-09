@@ -5,9 +5,9 @@ import java.io.UnsupportedEncodingException;
 
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
-import scw.io.support.PackageScan;
 import scw.io.support.ResourceOperations;
 import scw.util.FormatUtils;
+import scw.util.PackageScan;
 import scw.value.property.ConcurrentMapPropertyFactory;
 import scw.value.property.SystemPropertyFactory;
 
