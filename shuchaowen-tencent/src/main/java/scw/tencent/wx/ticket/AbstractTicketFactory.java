@@ -1,6 +1,6 @@
 package scw.tencent.wx.ticket;
 
-import scw.tencent.wx.Ticket;
+import scw.security.Token;
 import scw.tencent.wx.token.AccessTokenFactory;
 
 public abstract class AbstractTicketFactory implements TicketFactory {
@@ -37,28 +37,28 @@ public abstract class AbstractTicketFactory implements TicketFactory {
 	}
 
 	public String getTicket() {
-		Ticket ticket = getJsApiTicketByCache();
-		if (ticket == null || ticket.isExpires()) {
+		Token ticket = getJsApiTicketByCache();
+		if (ticket == null || ticket.isExpired()) {
 			ticket = refreshJsApiTicket();
 		}
 
 		if (ticket == null) {
 			throw new RuntimeException("无法获取ticket");
 		}
-		return ticket.getTicket();
+		return ticket.getToken();
 	}
 
-	protected boolean isExpires() {
-		Ticket ticket = getJsApiTicketByCache();
-		return ticket == null || ticket.isExpires();
+	protected boolean isExpired() {
+		Token ticket = getJsApiTicketByCache();
+		return ticket == null || ticket.isExpired();
 	}
 
-	protected abstract Ticket refreshJsApiTicket();
+	protected abstract Token refreshJsApiTicket();
 
 	/**
 	 * 从缓存中获取ticket
 	 * 
 	 * @return
 	 */
-	protected abstract Ticket getJsApiTicketByCache();
+	protected abstract Token getJsApiTicketByCache();
 }

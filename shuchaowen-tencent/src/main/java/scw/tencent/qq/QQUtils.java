@@ -7,6 +7,8 @@ import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
+import scw.oauth2.AccessToken;
+import scw.security.Token;
 
 public final class QQUtils {
 	private static final String callbackPrefix = "callback( ";
@@ -38,14 +40,22 @@ public final class QQUtils {
 		return sb.toString();
 	}
 
-	public static String getPCTokenData(String appId, String appKey, String redirect_uri, String code) {
+	public static AccessToken getAccessToken(String appId, String appKey, String redirect_uri, String code) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("grant_type", "authorization_code");
 		map.put("client_id", appId);
 		map.put("client_secret", appKey);
 		map.put("redirect_uri", redirect_uri);
 		map.put("code", code);
-		return HttpUtils.getHttpClient().post(qq_get_pc_token, String.class, map, MediaType.APPLICATION_FORM_URLENCODED);
+		String content = HttpUtils.getHttpClient().post(qq_get_pc_token, String.class, map,
+				MediaType.APPLICATION_FORM_URLENCODED);
+		JsonObject json = JSONUtils.parseObject(content);
+		if (json.getIntValue("code") != 0) {
+			throw new RuntimeException(
+					"url=" + qq_get_pc_token + ", data=" + JSONUtils.toJSONString(map) + ", response=" + content);
+		}
+		return new AccessToken(new Token(json.getString("access_token"), json.getIntValue("expires_in")), null,
+				new Token(json.getString("refresh_token"), 0), null, null);
 	}
 
 	public static String formatCallBackPrefix(String data) {
@@ -58,17 +68,27 @@ public final class QQUtils {
 	public static String getOpenId(String access_token) {
 		StringBuilder sb = new StringBuilder(qq_get_pc_openid);
 		sb.append("?access_token=").append(access_token);
-		String data = HttpUtils.getHttpClient().get(sb.toString(), String.class);
-		data = formatCallBackPrefix(data);
-		JsonObject jsonObject = JSONUtils.parseObject(data);
+		sb.append("&fmt=json");
+		JsonObject jsonObject = doGet(sb.toString());
 		return jsonObject.getString("openid");
 	}
 
-	public static String getServerUserInfo(String appId, String access_token, String openId) {
+	public static JsonObject doGet(String url) {
+		String content = HttpUtils.getHttpClient().get(url, String.class);
+		content = formatCallBackPrefix(content);
+		JsonObject json = JSONUtils.parseObject(content);
+		if (json.getIntValue("ret") != 0) {
+			throw new RuntimeException("url=" + url + ", response=" + content);
+		}
+		return json;
+	}
+
+	public static Userinfo getUserinfo(String appId, String access_token, String openId) {
 		StringBuilder sb = new StringBuilder(qq_get_user_info);
 		sb.append("?access_token=").append(access_token);
 		sb.append("&oauth_consumer_key=").append(appId);
 		sb.append("&openid=").append(openId);
-		return HttpUtils.getHttpClient().get(sb.toString(), String.class);
+		JsonObject json = doGet(sb.toString());
+		return JSONUtils.parseObject(json.toJsonString(), Userinfo.class);
 	}
 }

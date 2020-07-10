@@ -5,7 +5,7 @@ import scw.data.locks.RedisLockFactory;
 import scw.data.redis.Redis;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.tencent.wx.AccessToken;
+import scw.oauth2.AccessToken;
 import scw.tencent.wx.WeiXinUtils;
 
 public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
@@ -30,19 +30,17 @@ public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
 
 	@Override
 	protected AccessToken refreshToken() {
-		if (!isExpires()) {
+		if (!isExpired()) {
 			return getAccessTokenByCache();
 		}
 
 		Lock lock = lockFactory.getLock(lockKey);
 		if (lock.tryLock()) {
 			try {
-				if (isExpires()) {
+				if (isExpired()) {
 					AccessToken accessToken = WeiXinUtils.getAccessToken(getAppId(), getAppSecret());
-					if (accessToken.isSuccess()) {
-						redis.getObjectOperations().setex(key, accessToken.getExpires_in(), accessToken);
-						return accessToken;
-					}
+					redis.getObjectOperations().setex(key, accessToken.getAccessToken().getExpiresIn(), accessToken);
+					return accessToken;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

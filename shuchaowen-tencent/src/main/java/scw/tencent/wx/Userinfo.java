@@ -1,8 +1,8 @@
 package scw.tencent.wx;
 
-import scw.json.JsonObject;
+import java.io.Serializable;
 
-public final class WebUserInfo extends BaseResponse {
+public class Userinfo implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String openid;// 用户的唯一标识
 	private String nickname;// 用户昵称
@@ -18,26 +18,20 @@ public final class WebUserInfo extends BaseResponse {
 	private String privilege;// 用户特权信息，json 数组，如微信沃卡用户为（chinaunicom）
 	private String unionid;// 只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
 
-	/**
-	 * 用于序列化
-	 */
-	public WebUserInfo() {
-		super(null);
+	public Userinfo() {
 	}
 
-	public WebUserInfo(JsonObject json) {
-		super(json);
-		if (isSuccess()) {
-			this.openid = json.getString("openid");
-			this.nickname = json.getString("nickname");
-			this.sex = json.getIntValue("sex");
-			this.province = json.getString("province");
-			this.city = json.getString("city");
-			this.country = json.getString("country");
-			this.headimgurl = json.getString("headimgurl");
-			this.privilege = json.getString("privilege");
-			this.unionid = json.getString("unionid");
-		}
+	public Userinfo(String openid, String nickname, int sex, String province, String city, String country,
+			String headimgurl, String privilege, String unionid) {
+		this.openid = openid;
+		this.nickname = nickname;
+		this.sex = sex;
+		this.province = province;
+		this.city = city;
+		this.country = country;
+		this.headimgurl = headimgurl;
+		this.privilege = privilege;
+		this.unionid = unionid;
 	}
 
 	public String getOpenid() {
@@ -74,5 +68,41 @@ public final class WebUserInfo extends BaseResponse {
 
 	public String getUnionid() {
 		return unionid;
+	}
+
+	public void setOpenid(String openid) {
+		this.openid = openid;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	public void setSex(int sex) {
+		this.sex = sex;
+	}
+
+	public void setProvince(String province) {
+		this.province = province;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public void setHeadimgurl(String headimgurl) {
+		this.headimgurl = headimgurl;
+	}
+
+	public void setPrivilege(String privilege) {
+		this.privilege = privilege;
+	}
+
+	public void setUnionid(String unionid) {
+		this.unionid = unionid;
 	}
 }

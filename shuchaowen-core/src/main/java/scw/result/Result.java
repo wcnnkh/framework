@@ -81,4 +81,9 @@ public class Result implements Serializable, RollbackOnlyResult {
 		}
 		return dataResult;
 	}
+
+	@Override
+	public String toString() {
+		return "success=" + success + ", code=" + code + ", msg=" + msg + ", rollbackOnlyResult=" + rollbackOnlyResult;
+	}
 }

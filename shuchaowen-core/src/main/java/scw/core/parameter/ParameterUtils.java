@@ -12,12 +12,35 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.util.JavaVersion;
 import scw.value.StringValue;
 import scw.value.Value;
 
 public final class ParameterUtils {
-	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new LocalVariableTableParameterNameDiscoverer();
+	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER;
+
+	static {
+		ParameterNameDiscoverer parameterNameDiscoverer = null;
+		if (JavaVersion.INSTANCE.getMasterVersion() >= 8) {
+			try {
+				parameterNameDiscoverer = (ParameterNameDiscoverer) ClassUtils
+						.forName("scw.core.parameter.Jdk8ParameterNameDiscoverer").newInstance();
+			} catch (InstantiationException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
+		} else {
+			parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+		}
+
+		PARAMETER_NAME_DISCOVERER = parameterNameDiscoverer == null ? new LocalVariableTableParameterNameDiscoverer()
+				: parameterNameDiscoverer;
+	}
 
 	private ParameterUtils() {
 	};
@@ -94,20 +117,20 @@ public final class ParameterUtils {
 	public static LinkedHashMap<String, Object> getParameterMap(Constructor<?> constructor, Object[] args) {
 		return getParameterMap(getParameterDescriptors(constructor), args);
 	}
-	
-	public static Value getDefaultValue(ParameterDescriptor parameterDescriptor){
+
+	public static Value getDefaultValue(ParameterDescriptor parameterDescriptor) {
 		DefaultValue defaultValue = parameterDescriptor.getAnnotatedElement().getAnnotation(DefaultValue.class);
 		if (defaultValue == null) {
 			return null;
 		}
 		return new StringValue(defaultValue.value());
 	}
-	
-	public static String getDisplayName(ParameterDescriptor parameterDescriptor){
+
+	public static String getDisplayName(ParameterDescriptor parameterDescriptor) {
 		ParameterName parameterName = parameterDescriptor.getAnnotatedElement().getAnnotation(ParameterName.class);
 		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
 			return parameterName.value();
-		}	
+		}
 		return parameterDescriptor.getName();
 	}
 }

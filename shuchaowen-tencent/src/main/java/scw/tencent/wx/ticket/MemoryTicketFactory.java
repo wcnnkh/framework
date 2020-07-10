@@ -1,13 +1,13 @@
 package scw.tencent.wx.ticket;
 
 import scw.core.parameter.annotation.ParameterName;
-import scw.tencent.wx.Ticket;
+import scw.security.Token;
 import scw.tencent.wx.WeiXinUtils;
 import scw.tencent.wx.token.AccessTokenFactory;
 import scw.tencent.wx.token.MemoryAccessTokenFactory;
 
 public final class MemoryTicketFactory extends AbstractTicketFactory {
-	private volatile Ticket ticket;
+	private volatile Token ticket;
 	private volatile Object lock = new Object();
 
 	public MemoryTicketFactory(@ParameterName(WX_APPID_KEY) String appid,
@@ -29,19 +29,16 @@ public final class MemoryTicketFactory extends AbstractTicketFactory {
 	}
 
 	@Override
-	protected Ticket getJsApiTicketByCache() {
+	protected Token getJsApiTicketByCache() {
 		return ticket;
 	}
 
 	@Override
-	protected Ticket refreshJsApiTicket() {
-		if (isExpires()) {
+	protected Token refreshJsApiTicket() {
+		if (isExpired()) {
 			synchronized (lock) {
-				if (isExpires()) {
-					Ticket ticket = WeiXinUtils.getTicket(getAccessToken(), getType());
-					if (ticket.isSuccess()) {
-						this.ticket = ticket;
-					}
+				if (isExpired()) {
+					this.ticket = WeiXinUtils.getTicket(getAccessToken(), getType());
 				}
 			}
 		}

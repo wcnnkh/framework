@@ -121,6 +121,11 @@ public final class XmlDubboUtils {
 								if (interfaceService == null) {
 									continue;
 								}
+								
+								if(!refInstanceFactory.isInstance(clazz)){
+									logger.debug("{} not support create instance", clazz);
+									continue;
+								}
 
 								Object refInstance = refInstanceFactory.getInstance(clazz);
 								ServiceConfig<Object> scanService = Copy.copy(ServiceConfig.class, config);

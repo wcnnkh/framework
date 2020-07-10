@@ -382,6 +382,9 @@
 					<source>1.5</source>
 					<target>1.5</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
+					<compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
 				</configuration>
 			</plugin>
 

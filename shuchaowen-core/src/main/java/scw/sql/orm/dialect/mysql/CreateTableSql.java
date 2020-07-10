@@ -30,7 +30,7 @@ public class CreateTableSql extends MysqlDialectSql {
 		while (iterator.hasNext()) {
 			scw.sql.orm.Column col = iterator.next();
 			SqlType sqlType = col.getSqlType(sqlTypeFactory);
-			sb.append("`").append(col.getName()).append("`");
+			keywordProcessing(sb, col.getName());
 			sb.append(" ");
 			sb.append(sqlType.getName());
 			if (sqlType.getLength() > 0) {
@@ -70,7 +70,7 @@ public class CreateTableSql extends MysqlDialectSql {
 
 			sb.append(",");
 			sb.append("UNIQUE (");
-			sb.append("`").append(column.getName()).append("`");
+			keywordProcessing(sb, column.getName());
 			sb.append(")");
 		}
 
@@ -86,14 +86,14 @@ public class CreateTableSql extends MysqlDialectSql {
 
 			if (!StringUtils.isEmpty(entry.getKey().getName())) {
 				sb.append(" ");
-				sb.append(entry.getKey().getName());
+				keywordProcessing(sb, entry.getKey().getName());
 			}
 
 			sb.append(" (");
 			Iterator<IndexInfo> indexIterator = entry.getValue().iterator();
 			while (indexIterator.hasNext()) {
 				IndexInfo indexInfo = indexIterator.next();
-				sb.append(indexInfo.getColumn().getName());
+				keywordProcessing(sb, indexInfo.getColumn().getName());
 				if (indexInfo.getLength() != -1) {
 					sb.append("(");
 					sb.append(indexInfo.getLength());
@@ -101,7 +101,8 @@ public class CreateTableSql extends MysqlDialectSql {
 				}
 
 				if (indexInfo.getOrder() != IndexOrder.DEFAULT) {
-					sb.append(" ").append(indexInfo.getOrder().name());
+					sb.append(" ");
+					keywordProcessing(sb, indexInfo.getOrder().name());
 				}
 
 				if (indexIterator.hasNext()) {
