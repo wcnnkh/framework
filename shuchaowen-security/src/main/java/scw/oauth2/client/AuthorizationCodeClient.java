@@ -1,7 +1,5 @@
 package scw.oauth2.client;
 
-import java.net.URL;
-
 import scw.oauth2.AccessToken;
 
 /**
@@ -13,8 +11,6 @@ import scw.oauth2.AccessToken;
  */
 public interface AuthorizationCodeClient extends RefreshAccessTokenClient {
 	String getClientId();
-
-	URL getAuthorizeURL(String redirect_uri, String scope, String state);
 
 	AccessToken getAccessToken(String code, String redirect_uri);
 }
