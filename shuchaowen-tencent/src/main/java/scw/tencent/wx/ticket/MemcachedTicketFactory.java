@@ -5,7 +5,7 @@ import scw.data.locks.MemcachedLockFactory;
 import scw.data.memcached.Memcached;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.tencent.wx.Ticket;
+import scw.security.Token;
 import scw.tencent.wx.WeiXinUtils;
 import scw.tencent.wx.token.AccessTokenFactory;
 import scw.tencent.wx.token.MemcachedAccessTokenFactory;
@@ -39,25 +39,23 @@ public final class MemcachedTicketFactory extends AbstractTicketFactory {
 	}
 
 	@Override
-	protected Ticket getJsApiTicketByCache() {
-		return (Ticket) memcached.get(key);
+	protected Token getJsApiTicketByCache() {
+		return memcached.get(key);
 	}
 
 	@Override
-	protected Ticket refreshJsApiTicket() {
-		if (!isExpires()) {
+	protected Token refreshJsApiTicket() {
+		if (!isExpired()) {
 			return getJsApiTicketByCache();
 		}
 
 		Lock lock = lockFactory.getLock(lockKey);
 		if (lock.tryLock()) {
 			try {
-				if (isExpires()) {
-					Ticket ticket = WeiXinUtils.getTicket(getAccessToken(), getType());
-					if (ticket.isSuccess()) {
-						memcached.set(key, ticket.getExpires_in(), ticket);
-						return ticket;
-					}
+				if (isExpired()) {
+					Token ticket = WeiXinUtils.getTicket(getAccessToken(), getType());
+					memcached.set(key, ticket.getExpiresIn(), ticket.clone());
+					return ticket;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

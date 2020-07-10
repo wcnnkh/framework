@@ -13,6 +13,10 @@
   	</dependency>
   	<dependency>
   		<groupId>shuchaowen</groupId>
+  		<artifactId>shuchaowen-security</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>shuchaowen</groupId>
   		<artifactId>shuchaowen-data</artifactId>
   	</dependency>
   </dependencies>

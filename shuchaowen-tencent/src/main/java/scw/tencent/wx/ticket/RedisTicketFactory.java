@@ -5,7 +5,7 @@ import scw.data.locks.RedisLockFactory;
 import scw.data.redis.Redis;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.tencent.wx.Ticket;
+import scw.security.Token;
 import scw.tencent.wx.WeiXinUtils;
 import scw.tencent.wx.token.AccessTokenFactory;
 import scw.tencent.wx.token.RedisAccessTokenFactory;
@@ -39,25 +39,23 @@ public final class RedisTicketFactory extends AbstractTicketFactory {
 	}
 
 	@Override
-	protected Ticket getJsApiTicketByCache() {
-		return (Ticket) redis.getObjectOperations().get(key);
+	protected Token getJsApiTicketByCache() {
+		return (Token) redis.getObjectOperations().get(key);
 	}
 
 	@Override
-	protected Ticket refreshJsApiTicket() {
-		if (!isExpires()) {
+	protected Token refreshJsApiTicket() {
+		if (!isExpired()) {
 			return getJsApiTicketByCache();
 		}
 
 		Lock lock = lockFactory.getLock(lockKey);
 		if (lock.tryLock()) {
 			try {
-				if (isExpires()) {
-					Ticket ticket = WeiXinUtils.getTicket(getAccessToken(), getType());
-					if (ticket.isSuccess()) {
-						redis.getObjectOperations().setex(key, ticket.getExpires_in(), ticket);
+				if (isExpired()) {
+					Token ticket = WeiXinUtils.getTicket(getAccessToken(), getType());
+						redis.getObjectOperations().setex(key, ticket.getExpiresIn(), ticket);
 						return ticket;
-					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

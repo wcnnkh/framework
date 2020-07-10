@@ -1,7 +1,7 @@
 package scw.core.instance;
 
-
 public interface InstanceFactory extends NoArgsInstanceFactory {
+	
 	/**
 	 * 执行失败返回空
 	 * 
@@ -38,6 +38,5 @@ public interface InstanceFactory extends NoArgsInstanceFactory {
 	 * @param params
 	 * @return
 	 */
-	<T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes,
-			Object... params);
+	<T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes, Object... params);
 }

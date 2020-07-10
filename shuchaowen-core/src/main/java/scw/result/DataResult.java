@@ -47,4 +47,9 @@ public class DataResult<T> extends Result {
 		result.setSuccess(isSuccess());
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + ", data=" + data;
+	}
 }

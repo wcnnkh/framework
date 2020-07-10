@@ -1,6 +1,6 @@
 package scw.tencent.wx.token;
 
-import scw.tencent.wx.AccessToken;
+import scw.oauth2.AccessToken;
 
 public abstract class AbstractAccessTokenFactory implements AccessTokenFactory {
 	private final String appId;
@@ -19,14 +19,14 @@ public abstract class AbstractAccessTokenFactory implements AccessTokenFactory {
 		return appSecret;
 	}
 
-	protected boolean isExpires() {
+	protected boolean isExpired() {
 		AccessToken accessToken = getAccessTokenByCache();
-		return accessToken == null || accessToken.isExpires();
+		return accessToken == null || accessToken.getAccessToken().isExpired();
 	}
 
 	public String getAccessToken() {
 		AccessToken accessToken = getAccessTokenByCache();
-		if (accessToken == null || accessToken.isExpires()) {
+		if (accessToken == null || accessToken.getAccessToken().isExpired()) {
 			accessToken = refreshToken();
 		}
 
@@ -34,7 +34,7 @@ public abstract class AbstractAccessTokenFactory implements AccessTokenFactory {
 			throw new RuntimeException("无法获取token");
 		}
 
-		return accessToken.getAccess_token();
+		return accessToken.getAccessToken().getToken();
 	}
 
 	protected abstract AccessToken refreshToken();

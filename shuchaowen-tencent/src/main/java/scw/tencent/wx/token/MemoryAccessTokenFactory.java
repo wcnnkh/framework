@@ -1,7 +1,7 @@
 package scw.tencent.wx.token;
 
 import scw.core.parameter.annotation.ParameterName;
-import scw.tencent.wx.AccessToken;
+import scw.oauth2.AccessToken;
 import scw.tencent.wx.WeiXinUtils;
 
 public final class MemoryAccessTokenFactory extends AbstractAccessTokenFactory {
@@ -20,13 +20,10 @@ public final class MemoryAccessTokenFactory extends AbstractAccessTokenFactory {
 
 	@Override
 	protected AccessToken refreshToken() {
-		if (isExpires()) {
+		if (isExpired()) {
 			synchronized (lock) {
-				if (isExpires()) {
-					AccessToken accessToken = WeiXinUtils.getAccessToken(getAppId(), getAppSecret());
-					if (accessToken.isSuccess()) {
-						this.accessToken = accessToken;
-					}
+				if (isExpired()) {
+					this.accessToken = WeiXinUtils.getAccessToken(getAppId(), getAppSecret());
 				}
 			}
 		}

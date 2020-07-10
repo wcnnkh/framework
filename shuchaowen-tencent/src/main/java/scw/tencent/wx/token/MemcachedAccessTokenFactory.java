@@ -5,7 +5,7 @@ import scw.data.locks.MemcachedLockFactory;
 import scw.data.memcached.Memcached;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
-import scw.tencent.wx.AccessToken;
+import scw.oauth2.AccessToken;
 import scw.tencent.wx.WeiXinUtils;
 
 public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactory {
@@ -30,19 +30,17 @@ public final class MemcachedAccessTokenFactory extends AbstractAccessTokenFactor
 
 	@Override
 	protected AccessToken refreshToken() {
-		if (!isExpires()) {
+		if (!isExpired()) {
 			return getAccessTokenByCache();
 		}
 
 		Lock memcachedLock = lockFactory.getLock(lockKey);
 		if (memcachedLock.tryLock()) {
 			try {
-				if (isExpires()) {
+				if (isExpired()) {
 					AccessToken accessToken = WeiXinUtils.getAccessToken(getAppId(), getAppSecret());
-					if (accessToken.isSuccess()) {
-						memcached.set(key, accessToken.getExpires_in(), accessToken);
-						return accessToken;
-					}
+					memcached.set(key, accessToken.getAccessToken().getExpiresIn(), accessToken);
+					return accessToken;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
