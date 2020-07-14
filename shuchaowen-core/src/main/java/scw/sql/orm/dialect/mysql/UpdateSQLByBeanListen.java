@@ -12,7 +12,6 @@ import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
-import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.CounterInfo;
 import scw.sql.orm.ObjectRelationalMapping;
@@ -25,8 +24,8 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(ObjectRelationalMapping objectRelationalMapping, Class<?> clazz, FieldSetterListen beanFieldListen,
-			String tableName) {
+	public UpdateSQLByBeanListen(ObjectRelationalMapping objectRelationalMapping, Class<?> clazz,
+			FieldSetterListen beanFieldListen, String tableName) {
 		Collection<Column> primaryKeys = objectRelationalMapping.getPrimaryKeys(clazz);
 		if (primaryKeys.size() == 0) {
 			throw new NotFoundException("not found primary key");
@@ -45,10 +44,10 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		int index = 0;
 		StringBuilder where = null;
 		List<Object> paramList = new LinkedList<Object>();
-		
+
 		Collection<Column> notPrimaryKeys = objectRelationalMapping.getNotPrimaryKeys(clazz);
 		Iterator<Column> iterator = notPrimaryKeys.iterator();
-		//处理CasType.AUTO_INCREMENT字段
+		// 处理CasType.AUTO_INCREMENT字段
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.getCasType() != CasType.AUTO_INCREMENT) {
@@ -69,13 +68,12 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			keywordProcessing(sb, column.getName());
 			sb.append("+1");
 		}
-		
-		for(Column column : notPrimaryKeys){
-			//如果不是一个数据库字段类型那么也参与更新
-			if(!(changeMap.containsKey(column.getField().getGetter().getName()) || SqlUtils.isDataBaseType(column.getField().getGetter().getType()))){
+
+		for (Column column : notPrimaryKeys) {
+			if (!(changeMap.containsKey(column.getField().getGetter().getName()) || column.isForceUpdate())) {
 				continue;
 			}
-			
+
 			Object oldValue = changeMap.get(column.getField().getSetter().getName());
 			Object value = column.getField().getGetter().get(beanFieldListen);
 			CounterInfo counterInfo = column.getCounterInfo();
@@ -118,8 +116,8 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 					}
 					continue;
 				} else {
-					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", clazz.getName(),
-							column.getName(), oldValue, value);
+					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", clazz.getName(), column.getName(),
+							oldValue, value);
 				}
 			}
 
