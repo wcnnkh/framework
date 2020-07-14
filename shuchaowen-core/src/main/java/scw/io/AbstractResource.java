@@ -10,37 +10,54 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import scw.core.Assert;
+import scw.io.event.DefaultResourceEventDispatcher;
+import scw.io.event.ResourceEventDispatcher;
 import scw.lang.NestedIOException;
 import scw.lang.NotSupportedException;
 
 /**
- * Convenience base class for {@link Resource} implementations,
- * pre-implementing typical behavior.
+ * Convenience base class for {@link Resource} implementations, pre-implementing
+ * typical behavior.
  *
- * <p>The "exists" method will check whether a File or InputStream can
- * be opened; "isOpen" will always return false; "getURL" and "getFile"
- * throw an exception; and "toString" will return the description.
+ * <p>
+ * The "exists" method will check whether a File or InputStream can be opened;
+ * "isOpen" will always return false; "getURL" and "getFile" throw an exception;
+ * and "toString" will return the description.
  *
  */
 public abstract class AbstractResource implements Resource {
+	private volatile ResourceEventDispatcher eventDispatcher;
+
+	public ResourceEventDispatcher getEventDispatcher() {
+		if (eventDispatcher == null) {
+			synchronized (this) {
+				if (eventDispatcher == null) {
+					eventDispatcher = new DefaultResourceEventDispatcher(this);
+				}
+			}
+		}
+		return eventDispatcher;
+	}
+
+	public boolean isSupportEventDispatcher() {
+		return true;
+	}
 
 	/**
-	 * This implementation checks whether a File can be opened,
-	 * falling back to whether an InputStream can be opened.
-	 * This will cover both directories and content resources.
+	 * This implementation checks whether a File can be opened, falling back to
+	 * whether an InputStream can be opened. This will cover both directories
+	 * and content resources.
 	 */
 	public boolean exists() {
 		// Try file existence: can we find the file in the file system?
 		try {
 			return getFile().exists();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			// Fall back to stream existence: can we open the stream?
 			try {
 				getInputStream().close();
 				return true;
-			}
-			catch (Throwable isEx) {
+			} catch (Throwable isEx) {
 				return false;
 			}
 		}
@@ -61,39 +78,41 @@ public abstract class AbstractResource implements Resource {
 	}
 
 	/**
-	 * This implementation throws a FileNotFoundException, assuming
-	 * that the resource cannot be resolved to a URL.
+	 * This implementation throws a FileNotFoundException, assuming that the
+	 * resource cannot be resolved to a URL.
 	 */
 	public URL getURL() throws IOException {
-		throw new FileNotFoundException(getDescription() + " cannot be resolved to URL");
+		throw new FileNotFoundException(getDescription()
+				+ " cannot be resolved to URL");
 	}
 
 	/**
-	 * This implementation builds a URI based on the URL returned
-	 * by {@link #getURL()}.
+	 * This implementation builds a URI based on the URL returned by
+	 * {@link #getURL()}.
 	 */
 	public URI getURI() throws IOException {
 		URL url = getURL();
 		try {
 			return ResourceUtils.toURI(url);
-		}
-		catch (URISyntaxException ex) {
+		} catch (URISyntaxException ex) {
 			throw new NestedIOException("Invalid URI [" + url + "]", ex);
 		}
 	}
 
 	/**
-	 * This implementation throws a FileNotFoundException, assuming
-	 * that the resource cannot be resolved to an absolute file path.
+	 * This implementation throws a FileNotFoundException, assuming that the
+	 * resource cannot be resolved to an absolute file path.
 	 */
 	public File getFile() throws IOException {
-		throw new FileNotFoundException(getDescription() + " cannot be resolved to absolute file path");
+		throw new FileNotFoundException(getDescription()
+				+ " cannot be resolved to absolute file path");
 	}
 
 	/**
-	 * This implementation reads the entire InputStream to calculate the
-	 * content length. Subclasses will almost always be able to provide
-	 * a more optimal version of this, e.g. checking a File length.
+	 * This implementation reads the entire InputStream to calculate the content
+	 * length. Subclasses will almost always be able to provide a more optimal
+	 * version of this, e.g. checking a File length.
+	 * 
 	 * @see #getInputStream()
 	 */
 	public long contentLength() throws IOException {
@@ -107,62 +126,67 @@ public abstract class AbstractResource implements Resource {
 				size += read;
 			}
 			return size;
-		}
-		finally {
+		} finally {
 			try {
 				is.close();
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 			}
 		}
 	}
 
 	/**
-	 * This implementation checks the timestamp of the underlying File,
-	 * if available.
+	 * This implementation checks the timestamp of the underlying File, if
+	 * available.
+	 * 
 	 * @see #getFileForLastModifiedCheck()
 	 */
 	public long lastModified() throws IOException {
 		File fileToCheck = getFileForLastModifiedCheck();
 		long lastModified = fileToCheck.lastModified();
 		if (lastModified == 0L && !fileToCheck.exists()) {
-			throw new FileNotFoundException(getDescription() +
-					" cannot be resolved in the file system for checking its last-modified timestamp");
+			throw new FileNotFoundException(
+					getDescription()
+							+ " cannot be resolved in the file system for checking its last-modified timestamp");
 		}
 		return lastModified;
 	}
 
 	/**
 	 * Determine the File to use for timestamp checking.
-	 * <p>The default implementation delegates to {@link #getFile()}.
+	 * <p>
+	 * The default implementation delegates to {@link #getFile()}.
+	 * 
 	 * @return the File to use for timestamp checking (never {@code null})
-	 * @throws FileNotFoundException if the resource cannot be resolved as
-	 * an absolute file path, i.e. is not available in a file system
-	 * @throws IOException in case of general resolution/reading failures
+	 * @throws FileNotFoundException
+	 *             if the resource cannot be resolved as an absolute file path,
+	 *             i.e. is not available in a file system
+	 * @throws IOException
+	 *             in case of general resolution/reading failures
 	 */
 	protected File getFileForLastModifiedCheck() throws IOException {
 		return getFile();
 	}
 
 	/**
-	 * This implementation throws a FileNotFoundException, assuming
-	 * that relative resources cannot be created for this resource.
+	 * This implementation throws a FileNotFoundException, assuming that
+	 * relative resources cannot be created for this resource.
 	 */
 	public Resource createRelative(String relativePath) throws IOException {
-		throw new FileNotFoundException("Cannot create a relative resource for " + getDescription());
+		throw new FileNotFoundException(
+				"Cannot create a relative resource for " + getDescription());
 	}
 
 	/**
-	 * This implementation always returns {@code null},
-	 * assuming that this resource type does not have a filename.
+	 * This implementation always returns {@code null}, assuming that this
+	 * resource type does not have a filename.
 	 */
 	public String getFilename() {
 		return null;
 	}
 
-
 	/**
 	 * This implementation returns the description of this resource.
+	 * 
 	 * @see #getDescription()
 	 */
 	public String toString() {
@@ -171,15 +195,17 @@ public abstract class AbstractResource implements Resource {
 
 	/**
 	 * This implementation compares description strings.
+	 * 
 	 * @see #getDescription()
 	 */
 	public boolean equals(Object obj) {
-		return (obj == this ||
-			(obj instanceof Resource && ((Resource) obj).getDescription().equals(getDescription())));
+		return (obj == this || (obj instanceof Resource && ((Resource) obj)
+				.getDescription().equals(getDescription())));
 	}
 
 	/**
 	 * This implementation returns the description's hash code.
+	 * 
 	 * @see #getDescription()
 	 */
 	public int hashCode() {
@@ -189,7 +215,7 @@ public abstract class AbstractResource implements Resource {
 	public boolean isWritable() {
 		return false;
 	}
-	
+
 	public OutputStream getOutputStream() throws IOException {
 		throw new NotSupportedException(getDescription());
 	}

@@ -8,10 +8,10 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
+import scw.io.event.ResourceEventDispatcher;
 import scw.lang.NotSupportedException;
 
 public final class NonexistentResource implements Resource {
-
 	public InputStream getInputStream() throws IOException {
 		throw new NotSupportedException("empty resource");
 	}
@@ -67,5 +67,12 @@ public final class NonexistentResource implements Resource {
 	public String getDescription() {
 		return "empty resource";
 	}
+	
+	public ResourceEventDispatcher getEventDispatcher() {
+		return EMPTY_EVENT_DISPATCHER;
+	}
 
+	public boolean isSupportEventDispatcher() {
+		return false;
+	}
 }
