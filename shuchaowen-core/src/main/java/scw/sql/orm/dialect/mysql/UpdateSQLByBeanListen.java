@@ -12,10 +12,12 @@ import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.CounterInfo;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.enums.CasType;
+import scw.value.AnyValue;
 
 public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private static Logger logger = LoggerUtils.getLogger(UpdateSQLByBeanListen.class);
@@ -46,6 +48,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		
 		Collection<Column> notPrimaryKeys = objectRelationalMapping.getNotPrimaryKeys(clazz);
 		Iterator<Column> iterator = notPrimaryKeys.iterator();
+		//处理CasType.AUTO_INCREMENT字段
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.getCasType() != CasType.AUTO_INCREMENT) {
@@ -68,7 +71,8 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		}
 		
 		for(Column column : notPrimaryKeys){
-			if(!changeMap.containsKey(column.getField().getSetter().getName())){
+			//如果不是一个数据库字段类型那么也参与更新
+			if(!(changeMap.containsKey(column.getField().getGetter().getName()) || SqlUtils.isDataBaseType(column.getField().getGetter().getType()))){
 				continue;
 			}
 			
@@ -78,8 +82,8 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			if (counterInfo != null && TypeUtils.isNumber(column.getField().getSetter().getType())) {
 				if (oldValue != null && value != null) {
 					// incr or decr
-					double oldV = getNumberValue(oldValue);
-					double newV = getNumberValue(value);
+					double oldV = new AnyValue(oldValue).getAsDoubleValue();
+					double newV = new AnyValue(value).getAsDoubleValue();
 
 					if (index++ > 0) {
 						sb.append(",");
@@ -176,17 +180,5 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 	public Object[] getParams() {
 		return params;
-	}
-
-	public static double getNumberValue(Object value) {
-		if (value == null) {
-			throw new NullPointerException();
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).doubleValue();
-		} else {
-			return (Double) value;
-		}
 	}
 }
