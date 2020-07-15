@@ -54,7 +54,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 				if (ResourceUtils.getResourceOperations().isExist(config)) {
 					Properties properties = ResourceUtils
 							.getResourceOperations().getFormattedProperties(
-									config, Constants.DEFAULT_CHARSET_NAME);
+									config, Constants.DEFAULT_CHARSET_NAME).getResource();
 					host = properties.getProperty(HOST_CONFIG_KEY);
 					if (host == null) {
 						host = properties.getProperty("host");// 兼容老版本
@@ -99,7 +99,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 		public Object create() throws Exception {
 			Properties properties = ResourceUtils.getResourceOperations()
 					.getFormattedProperties(getConfigName(propertyFactory),
-							Constants.DEFAULT_CHARSET_NAME);
+							Constants.DEFAULT_CHARSET_NAME).getResource();
 			PropertyFactory propertyFactory = new PropertiesPropertyFactory(
 					properties);
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);

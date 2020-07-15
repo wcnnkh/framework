@@ -15,16 +15,16 @@ import scw.io.ResourceUtils;
 public final class DruidDBConfig extends AbstractDruidDBConfig {
 
 	public DruidDBConfig(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties) {
-		super(ResourceUtils.getResourceOperations().getFormattedProperties(properties));
-		initByMemory(ResourceUtils.getResourceOperations().getFormattedProperties(properties));
+		super(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource());
+		initByMemory(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource());
 	}
 
 	public DruidDBConfig(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties, Memcached memcached) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties), memcached);
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource(), memcached);
 	}
 
 	public DruidDBConfig(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties, Redis redis) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties), redis);
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource(), redis);
 	}
 
 	public DruidDBConfig(Map properties, Memcached memcached) {

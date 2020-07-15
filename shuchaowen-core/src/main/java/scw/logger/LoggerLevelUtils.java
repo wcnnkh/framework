@@ -28,7 +28,7 @@ public class LoggerLevelUtils {
 				.valueOf(defaultLevel.toUpperCase());
 
 		reader(ResourceUtils.getResourceOperations().getFormattedProperties(
-				"/scw/logger/logger-level.properties", PROPERTY_FACTORY));
+				"/scw/logger/logger-level.properties", PROPERTY_FACTORY).getResource());
 
 		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance()
 				.getValue("scw.logger.level.config", String.class,
@@ -39,7 +39,7 @@ public class LoggerLevelUtils {
 					+ loggerEnablePropertiePath);
 			Properties properties = ResourceUtils.getResourceOperations()
 					.getFormattedProperties(loggerEnablePropertiePath,
-							PROPERTY_FACTORY);
+							PROPERTY_FACTORY).getResource();
 			reader(properties);
 		}
 

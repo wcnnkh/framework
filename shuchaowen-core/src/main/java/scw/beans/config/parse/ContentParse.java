@@ -12,7 +12,7 @@ import scw.value.property.PropertyFactory;
 public final class ContentParse extends AbstractValueFormat implements ConfigParse{
 
 	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String filePath, String charset) throws Exception{
-		List<String> list = ResourceUtils.getResourceOperations().getLines(filePath, charset);
+		List<String> list = ResourceUtils.getResourceOperations().getLines(filePath, charset).getResource();
 		if(String.class.isAssignableFrom(field.getSetter().getType())){
 			StringBuilder sb = new StringBuilder();
 			if(list != null){

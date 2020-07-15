@@ -67,7 +67,7 @@ public final class WeiXinPay {
 			return null;
 		}
 
-		InputStream is = ResourceUtils.getResourceOperations().getInputStream(certTrustFile);
+		InputStream is = ResourceUtils.getResourceOperations().getInputStream(certTrustFile).getResource();
 		if (is == null) {
 			return null;
 		}

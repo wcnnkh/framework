@@ -71,7 +71,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		public Object create() throws Exception {
 			ConnectionFactory connectionFactory = new ConnectionFactory();
 			Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(DEFAULT_CONFIG,
-					propertyFactory);
+					propertyFactory).getResource();
 			ConnectionFactoryConfigurator.load(connectionFactory, properties, null);
 			ConnectionFactoryConfigurator.load(connectionFactory, properties);
 			return connectionFactory;
@@ -109,7 +109,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		@Override
 		public Object create() throws Exception {
 			Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(DEFAULT_CONFIG,
-					propertyFactory);
+					propertyFactory).getResource();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
 			ConfigUtils.loadProperties(exchangeDeclare, properties, null, "exchange.");
 			return exchangeDeclare;

@@ -45,7 +45,7 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 					connectionFactory,
 					ResourceUtils.getResourceOperations()
 							.getFormattedProperties(DEFAULT_CONFIG,
-									propertyFactory), null, null);
+									propertyFactory).getResource(), null, null);
 			return connectionFactory;
 		}
 	}

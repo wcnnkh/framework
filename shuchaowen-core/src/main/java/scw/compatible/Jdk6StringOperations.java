@@ -4,10 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import scw.core.annotation.UseJavaVersion;
-import scw.core.instance.annotation.Configuration;
 
 @UseJavaVersion(6)
-@Configuration(order=Jdk6StringOperations.CONFIGURATION_ORDER)
 public class Jdk6StringOperations implements StringOperations{
 	public static final int CONFIGURATION_ORDER = 6;
 

@@ -12,6 +12,12 @@ public class ResourceEvent extends BasicEvent {
 		this.lastModified = lastModified;
 	}
 
+	public ResourceEvent(ResourceEvent resourceEvent) {
+		super(resourceEvent.getCreateTime());
+		this.resource = resourceEvent.resource;
+		this.lastModified = resourceEvent.lastModified;
+	}
+
 	public Resource getResource() {
 		return resource;
 	}
@@ -19,7 +25,7 @@ public class ResourceEvent extends BasicEvent {
 	public long getLastModified() {
 		return lastModified;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "createTime=" + getCreateTime() + ", lastModified=" + lastModified + ", resource=[" + resource + "]";

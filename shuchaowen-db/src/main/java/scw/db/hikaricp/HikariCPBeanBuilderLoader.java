@@ -40,7 +40,7 @@ public class HikariCPBeanBuilderLoader implements BeanBuilderLoader {
 		public Object create() throws Exception {
 			HikariConfig config = new HikariConfig();
 			DBUtils.loadProperties(config,
-					ResourceUtils.getResourceOperations().getFormattedProperties(DBUtils.DEFAULT_CONFIGURATION));
+					ResourceUtils.getResourceOperations().getFormattedProperties(DBUtils.DEFAULT_CONFIGURATION).getResource());
 			return config;
 		}
 	}

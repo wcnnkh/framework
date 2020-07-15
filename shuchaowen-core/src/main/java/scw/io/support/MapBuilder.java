@@ -34,7 +34,7 @@ public class MapBuilder implements Serializable {
 	}
 
 	public void loading(String resource) {
-		Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(resource);
+		Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(resource).getResource();
 		loading(properties);
 	}
 }

@@ -4,10 +4,8 @@ import java.util.Map;
 
 import scw.compatible.map.Java5MapWrapper.Java5CompatibleMap;
 import scw.core.annotation.UseJavaVersion;
-import scw.core.instance.annotation.Configuration;
 
 @UseJavaVersion(8)
-@Configuration(order = Integer.MIN_VALUE + 1)
 public class Java8MapWrapper implements MapCompatible {
 
 	public <K, V> CompatibleMap<K, V> wrapper(Map<K, V> map) {

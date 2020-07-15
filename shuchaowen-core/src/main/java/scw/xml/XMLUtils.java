@@ -144,7 +144,7 @@ public final class XMLUtils {
 	}
 
 	public static Document getDocument(String path) throws NotFoundException {
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path);
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path).getResource();
 		if (inputStream == null) {
 			throw new NotFoundException(path);
 		}

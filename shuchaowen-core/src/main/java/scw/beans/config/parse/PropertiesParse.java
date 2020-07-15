@@ -19,7 +19,7 @@ public final class PropertiesParse extends AbstractValueFormat implements Config
 	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field,
 			String filePath, String charset) throws Exception {
 		Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(filePath, charset,
-				propertyFactory);
+				propertyFactory).getResource();
 		if (ClassUtils.isPrimitiveOrWrapper(field.getSetter().getType())
 				|| TypeUtils.isString(field.getSetter().getType())) {
 			return ValueUtils.parse(properties.getProperty(field.getSetter().getName()),

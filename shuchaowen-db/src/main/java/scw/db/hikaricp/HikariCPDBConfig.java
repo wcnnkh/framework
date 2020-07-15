@@ -13,18 +13,18 @@ import scw.io.ResourceUtils;
 @Configuration(order = Integer.MIN_VALUE)
 public final class HikariCPDBConfig extends AbstractHikariCPDBConfig {
 	public HikariCPDBConfig(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties) {
-		super(ResourceUtils.getResourceOperations().getFormattedProperties(properties));
-		initByMemory(ResourceUtils.getResourceOperations().getFormattedProperties(properties));
+		super(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource());
+		initByMemory(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource());
 	}
 
 	public HikariCPDBConfig(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties,
 			Memcached memcached) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties), memcached);
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource(), memcached);
 	}
 
 	public HikariCPDBConfig(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties,
 			Redis redis) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties), redis);
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource(), redis);
 	}
 
 	@SuppressWarnings("rawtypes")

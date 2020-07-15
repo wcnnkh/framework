@@ -36,7 +36,7 @@ public class DruidBeanBuilderLoader implements BeanBuilderLoader {
 		public Object create() throws Exception {
 			DruidDataSource dataSource = new DruidDataSource();
 			DBUtils.loadProperties(dataSource,
-					ResourceUtils.getResourceOperations().getFormattedProperties(DBUtils.DEFAULT_CONFIGURATION));
+					ResourceUtils.getResourceOperations().getFormattedProperties(DBUtils.DEFAULT_CONFIGURATION).getResource());
 			if (!dataSource.isPoolPreparedStatements()) {// 如果配置文件中没有开启psCache
 				dataSource.setMaxPoolPreparedStatementPerConnectionSize(20);
 			}

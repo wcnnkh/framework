@@ -68,7 +68,7 @@ public final class Log4jUtils {
 		Properties properties = ResourceUtils.getResourceOperations()
 				.getFormattedProperties(
 						"classpath:/scw/logger/log4j/default-log4j.properties",
-						LoggerLevelUtils.PROPERTY_FACTORY);
+						LoggerLevelUtils.PROPERTY_FACTORY).getResource();
 		for (KeyValuePair<String, Level> entry : LoggerLevelUtils
 				.getLevelConfigList()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue()
@@ -78,7 +78,7 @@ public final class Log4jUtils {
 		if (ResourceUtils.getResourceOperations().isExist(LOG4J_APPEND_PATH)) {
 			FormatUtils.info(Log4jUtils.class, "loading " + LOG4J_APPEND_PATH);
 			Properties append = ResourceUtils.getResourceOperations()
-					.getFormattedProperties(LOG4J_APPEND_PATH, LoggerLevelUtils.PROPERTY_FACTORY);
+					.getFormattedProperties(LOG4J_APPEND_PATH, LoggerLevelUtils.PROPERTY_FACTORY).getResource();
 			properties.putAll(append);
 		}
 

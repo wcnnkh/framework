@@ -3,10 +3,8 @@ package scw.compatible;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import scw.core.instance.annotation.Configuration;
 import scw.lang.NestedRuntimeException;
 
-@Configuration(order = Jdk5CompatibleOperations.CONFIGURATION_ORDER)
 public class Jdk5CompatibleOperations implements StringOperations {
 	public static final int CONFIGURATION_ORDER = 5;
 

@@ -20,7 +20,7 @@ public final class JsonParse extends AbstractValueFormat implements ConfigParse 
 
 	public Object parse(BeanFactory beanFactory, PropertyFactory propertyFactory, Field field, String filePath, String charset)
 			throws Exception {
-		String content = ResourceUtils.getResourceOperations().getContent(filePath, charset);
+		String content = ResourceUtils.getResourceOperations().getContent(filePath, charset).getResource();
 		if (JsonObject.class.isAssignableFrom(field.getSetter().getType())) {
 			return JSONUtils.parseObject(content);
 		} else if (JsonArray.class.isAssignableFrom(field.getSetter().getType())) {

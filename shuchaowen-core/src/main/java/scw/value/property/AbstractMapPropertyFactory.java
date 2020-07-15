@@ -70,7 +70,7 @@ public abstract class AbstractMapPropertyFactory extends PropertyFactory {
 			String resource) {
 		if (resourceOperations.isExist(resource)) {
 			Properties properties = resourceOperations
-					.getFormattedProperties(resource);
+					.getFormattedProperties(resource).getResource();
 			if (properties != null) {
 				loadProperties(properties);
 			}

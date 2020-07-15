@@ -18,10 +18,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.ServiceConfigurationError;
 
-import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 
-@Configuration(order = Integer.MIN_VALUE)
 public class InternalSPI implements SPI {
 
 	public static final class InternalServiceLoader<S> implements ServiceLoader<S> {

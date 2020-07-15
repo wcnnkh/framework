@@ -8,11 +8,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import scw.compatible.CompatibleUtils;
+import scw.compatible.ServiceLoader;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.CollectionUtils;
+import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
@@ -43,8 +46,31 @@ public final class InstanceUtils {
 	/**
 	 * 不调用构造方法实例化对象
 	 */
-	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY = getSystemConfiguration(
-			NoArgsInstanceFactory.class);
+	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY;
+
+	static {
+		NoArgsInstanceFactory noArgsInstanceFactory = null;
+		ServiceLoader<NoArgsInstanceFactory> serviceLoader = CompatibleUtils.getSpi().load(NoArgsInstanceFactory.class);
+		for (NoArgsInstanceFactory factory : serviceLoader) {
+			noArgsInstanceFactory = factory;
+			break;
+		}
+
+		if (noArgsInstanceFactory == null) {
+			for (String name : new String[] { "scw.core.instance.SunNoArgsInstanceFactory",
+					"scw.core.instance.UnsafeNoArgsInstanceFactory" }) {
+				if (INSTANCE_FACTORY.isInstance(name)) {
+					noArgsInstanceFactory = INSTANCE_FACTORY.getInstance(name);
+					break;
+				}
+			}
+		}
+
+		NO_ARGS_INSTANCE_FACTORY = noArgsInstanceFactory;
+		if (NO_ARGS_INSTANCE_FACTORY == null) {
+			throw new NotSupportedException(NoArgsInstanceFactory.class.getName());
+		}
+	}
 
 	/**
 	 * 根据参数名来调用构造方法

@@ -37,7 +37,7 @@ public class MybatisBeanBuilderLoader implements BeanBuilderLoader {
 			String resource = "mybatis-config.xml";
 			if (ResourceUtils.getResourceOperations().isExist(resource)) {
 				return new SqlSessionFactoryBuilder().build(ResourceUtils
-						.getResourceOperations().getInputStream(resource));
+						.getResourceOperations().getInputStream(resource).getResource());
 			} else {
 				return new SqlSessionFactoryBuilder()
 						.build(beanFactory

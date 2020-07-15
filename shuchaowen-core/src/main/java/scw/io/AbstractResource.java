@@ -82,8 +82,7 @@ public abstract class AbstractResource implements Resource {
 	 * resource cannot be resolved to a URL.
 	 */
 	public URL getURL() throws IOException {
-		throw new FileNotFoundException(getDescription()
-				+ " cannot be resolved to URL");
+		throw new FileNotFoundException(getDescription() + " cannot be resolved to URL");
 	}
 
 	/**
@@ -104,8 +103,7 @@ public abstract class AbstractResource implements Resource {
 	 * resource cannot be resolved to an absolute file path.
 	 */
 	public File getFile() throws IOException {
-		throw new FileNotFoundException(getDescription()
-				+ " cannot be resolved to absolute file path");
+		throw new FileNotFoundException(getDescription() + " cannot be resolved to absolute file path");
 	}
 
 	/**
@@ -144,9 +142,8 @@ public abstract class AbstractResource implements Resource {
 		File fileToCheck = getFileForLastModifiedCheck();
 		long lastModified = fileToCheck.lastModified();
 		if (lastModified == 0L && !fileToCheck.exists()) {
-			throw new FileNotFoundException(
-					getDescription()
-							+ " cannot be resolved in the file system for checking its last-modified timestamp");
+			throw new FileNotFoundException(getDescription()
+					+ " cannot be resolved in the file system for checking its last-modified timestamp");
 		}
 		return lastModified;
 	}
@@ -172,8 +169,7 @@ public abstract class AbstractResource implements Resource {
 	 * relative resources cannot be created for this resource.
 	 */
 	public Resource createRelative(String relativePath) throws IOException {
-		throw new FileNotFoundException(
-				"Cannot create a relative resource for " + getDescription());
+		throw new FileNotFoundException("Cannot create a relative resource for " + getDescription());
 	}
 
 	/**
@@ -199,8 +195,7 @@ public abstract class AbstractResource implements Resource {
 	 * @see #getDescription()
 	 */
 	public boolean equals(Object obj) {
-		return (obj == this || (obj instanceof Resource && ((Resource) obj)
-				.getDescription().equals(getDescription())));
+		return (obj == this || (obj instanceof Resource && ((Resource) obj).getDescription().equals(getDescription())));
 	}
 
 	/**

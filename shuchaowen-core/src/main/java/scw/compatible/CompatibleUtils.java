@@ -1,32 +1,23 @@
 package scw.compatible;
 
-import java.nio.charset.Charset;
-
+import scw.compatible.map.Java5MapWrapper;
 import scw.compatible.map.MapCompatible;
 import scw.core.instance.InstanceUtils;
-import scw.core.reflect.ReflectionUtils;
+import scw.util.JavaVersion;
 
 public final class CompatibleUtils {
 	private CompatibleUtils() {
 	};
 
-	private static final boolean isSupportJdk6;
-	private static final StringOperations STRING_OPERATIONS = InstanceUtils
-			.getSystemConfiguration(StringOperations.class);
-	private static final SPI SPI = InstanceUtils
-			.getSystemConfiguration(SPI.class);
+	private static final StringOperations STRING_OPERATIONS = (StringOperations) (JavaVersion.INSTANCE
+			.getMasterVersion() >= 6 ? InstanceUtils.INSTANCE_FACTORY.getInstance("scw.compatible.Jdk6StringOperations")
+					: new Jdk5CompatibleOperations());
 
-	private static final MapCompatible MAP_COMPATIBLE = InstanceUtils
-			.getSystemConfiguration(MapCompatible.class);
+	private static final SPI SPI = (scw.compatible.SPI) (JavaVersion.INSTANCE.getMasterVersion() >= 6
+			? InstanceUtils.INSTANCE_FACTORY.getInstance("scw.compatible.DefaultSPI") : new InternalSPI());
 
-	static {
-		isSupportJdk6 = ReflectionUtils.getMethod(String.class, "getBytes",
-				new Class<?>[] { Charset.class }) != null;
-	}
-
-	public static boolean isSupportJdk6() {
-		return isSupportJdk6;
-	}
+	private static final MapCompatible MAP_COMPATIBLE = (MapCompatible) (JavaVersion.INSTANCE.getMasterVersion() >= 8
+			? InstanceUtils.INSTANCE_FACTORY.getInstance("scw.compatible.map.Java8MapWrapper") : new Java5MapWrapper());
 
 	public static StringOperations getStringOperations() {
 		return STRING_OPERATIONS;
