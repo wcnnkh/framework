@@ -62,7 +62,7 @@ public class XmlPropertyFactory implements BasePropertyFactory, Destroy {
 		return ;
 	}
 
-	public boolean isSupportListener(String key) {
+	public boolean containsKey(String key) {
 		return false;
 	}
 }

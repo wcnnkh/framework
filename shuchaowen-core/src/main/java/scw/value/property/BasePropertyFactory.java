@@ -8,5 +8,5 @@ import scw.value.BaseValueFactory;
 public interface BasePropertyFactory extends BaseValueFactory<String>, NamedEventDispatcher<PropertyEvent>{
 	Enumeration<String> enumerationKeys();
 	
-	boolean isSupportListener(String key);
+	boolean containsKey(String key);
 }

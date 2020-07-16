@@ -65,13 +65,13 @@ public class PropertyFactory extends SimpleValueFactory implements
 		return new MultiEnumeration<String>(enumerations);
 	}
 
-	public boolean isSupportListener(String key) {
+	public boolean containsKey(String key) {
 		if (basePropertyFactories == null) {
 			return false;
 		}
 
 		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
-			if (basePropertyFactory.isSupportListener(key)) {
+			if (basePropertyFactory.containsKey(key)) {
 				return true;
 			}
 		}
@@ -85,7 +85,7 @@ public class PropertyFactory extends SimpleValueFactory implements
 		}
 
 		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
-			if (basePropertyFactory.isSupportListener(key)) {
+			if (basePropertyFactory.containsKey(key)) {
 				return basePropertyFactory.registerListener(key, eventListener);
 			}
 		}
@@ -98,7 +98,7 @@ public class PropertyFactory extends SimpleValueFactory implements
 		}
 		
 		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
-			if (basePropertyFactory.isSupportListener(name)) {
+			if (basePropertyFactory.containsKey(name)) {
 				basePropertyFactory.unregister(name);
 			}
 		}
@@ -110,7 +110,7 @@ public class PropertyFactory extends SimpleValueFactory implements
 		}
 		
 		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
-			if (basePropertyFactory.isSupportListener(name)) {
+			if (basePropertyFactory.containsKey(name)) {
 				basePropertyFactory.publishEvent(name, event);
 			}
 		}

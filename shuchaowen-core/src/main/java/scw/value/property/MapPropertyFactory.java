@@ -166,11 +166,11 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 	}
 
 	@Override
-	public boolean isSupportListener(String key) {
+	public boolean containsKey(String key) {
 		if (map.containsKey(key)) {
 			return true;
 		}
-		return super.isSupportListener(key);
+		return super.containsKey(key);
 	}
 
 	@Override

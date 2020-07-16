@@ -23,12 +23,6 @@ public abstract class JsonObject extends AbstractJson<String> implements BasePro
 
 	public abstract Collection<String> keys();
 
-	public abstract boolean containsKey(String key);
-	
-	public boolean isSupportListener(String key) {
-		return containsKey(key);
-	}
-	
 	public void publishEvent(String name, PropertyEvent event) {
 		if(dispatcher == null){
 			return ;
