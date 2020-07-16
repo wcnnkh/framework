@@ -9,6 +9,7 @@ import scw.core.utils.XTime;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.support.DefaultBasicEventDispatcher;
+import scw.event.support.EventType;
 import scw.io.Resource;
 
 public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<ResourceEvent>
@@ -72,7 +73,7 @@ public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<
 			long last = lastModified();
 			if (this.last != last) {
 				this.last = last;
-				publishEvent(new ResourceEvent(resource, last));
+				publishEvent(new ResourceEvent(EventType.UPDATE, resource, last));
 			}
 		}
 	}
