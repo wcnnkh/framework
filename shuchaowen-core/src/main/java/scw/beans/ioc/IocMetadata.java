@@ -3,6 +3,7 @@ package scw.beans.ioc;
 import java.util.ArrayList;
 import java.util.List;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.value.property.PropertyFactory;
 
@@ -13,18 +14,18 @@ public class IocMetadata {
 		return iocProcessors;
 	}
 
-	public void process(Object instance, BeanFactory beanFactory,
+	public void process(BeanDefinition beanDefinition, Object instance, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, boolean global) throws Exception {
 		for (IocProcessor iocProcessor : iocProcessors) {
 			if (global) {
 				if (iocProcessor.isGlobal()) {
 					iocProcessor
-							.process(instance, beanFactory, propertyFactory);
+							.process(beanDefinition, instance, beanFactory, propertyFactory);
 				}
 			} else {
 				if (!iocProcessor.isGlobal()) {
 					iocProcessor
-							.process(instance, beanFactory, propertyFactory);
+							.process(beanDefinition, instance, beanFactory, propertyFactory);
 				}
 			}
 		}

@@ -43,7 +43,7 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 	private static final class InternalInstanceBuilder<T> extends AbstractInstanceBuilder<T> {
 		private final T instance;
 
-		public InternalInstanceBuilder(Class<? extends T> targetClass, T instance) {
+		public InternalInstanceBuilder(Class<T> targetClass, T instance) {
 			super(targetClass);
 			this.instance = instance;
 		}

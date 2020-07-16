@@ -3,8 +3,8 @@ package scw.db.ibatis;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -14,7 +14,7 @@ import scw.io.ResourceUtils;
 @Configuration(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
 public class MybatisBeanBuilderLoader implements BeanBuilderLoader {
 
-	public BeanBuilder loading(LoaderContext context,
+	public BeanDefinition loading(LoaderContext context,
 			BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == SqlSessionFactory.class) {
 			return new SqlSessionFactoryBeanBuilder(context);
@@ -23,7 +23,7 @@ public class MybatisBeanBuilderLoader implements BeanBuilderLoader {
 	}
 
 	private static final class SqlSessionFactoryBeanBuilder extends
-			AbstractBeanBuilder {
+			AbstractBeanDefinition {
 
 		public SqlSessionFactoryBeanBuilder(LoaderContext context) {
 			super(context);

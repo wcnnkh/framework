@@ -27,8 +27,7 @@ public class MethodBeanConfiguration extends AbstractBeanConfiguration {
 					continue;
 				}
 
-				BeanDefinition beanDefinition = new MethodBeanDefinition(beanFactory, propertyFactory,
-						method.getReturnType(), clz, method);
+				BeanDefinition beanDefinition = new MethodBeanDefinition(beanFactory, propertyFactory, clz, method);
 				beanDefinitions.add(beanDefinition);
 			}
 		}

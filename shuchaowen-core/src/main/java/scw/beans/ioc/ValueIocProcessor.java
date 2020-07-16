@@ -1,5 +1,6 @@
 package scw.beans.ioc;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
 import scw.mapper.Field;
@@ -11,7 +12,7 @@ public class ValueIocProcessor extends DefaultFieldIocProcessor {
 		super(field);
 	}
 
-	public void process(Object bean, BeanFactory beanFactory,
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
 		Value value = getField().getSetter()
 				.getAnnotatedElement().getAnnotation(Value.class);

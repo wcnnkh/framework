@@ -1,5 +1,7 @@
 package scw.beans.builder;
 
+import scw.beans.BeanDefinition;
+
 public interface BeanBuilderLoaderChain {
-	BeanBuilder loading(LoaderContext context);
+	BeanDefinition loading(LoaderContext context);
 }

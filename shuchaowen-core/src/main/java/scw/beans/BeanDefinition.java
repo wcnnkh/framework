@@ -3,9 +3,9 @@ package scw.beans;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
 
-import scw.beans.builder.BeanBuilder;
+import scw.core.instance.InstanceBuilder;
 
-public interface BeanDefinition extends BeanBuilder {
+public interface BeanDefinition extends InstanceBuilder<Object>, Cloneable{
 	String getId();
 
 	Collection<String> getNames();
@@ -13,4 +13,14 @@ public interface BeanDefinition extends BeanBuilder {
 	boolean isSingleton();
 
 	AnnotatedElement getAnnotatedElement();
+
+	void dependence(Object instance) throws Exception;
+
+	void init(Object instance) throws Exception;
+
+	void destroy(Object instance) throws Exception;
+	
+	boolean isNew();
+	
+	BeanDefinition clone();
 }

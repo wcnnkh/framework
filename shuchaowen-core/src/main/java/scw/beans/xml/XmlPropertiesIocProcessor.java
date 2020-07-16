@@ -1,5 +1,6 @@
 package scw.beans.xml;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.ioc.IocProcessor;
 import scw.mapper.Field;
@@ -17,7 +18,7 @@ public class XmlPropertiesIocProcessor implements IocProcessor {
 		this.targetClass = targetClass;
 	}
 
-	public void process(Object bean, BeanFactory beanFactory,
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
 		Field field = MapperUtils.getMapper().getField(targetClass, xmlBeanParameter.getName(), null, FilterFeature.SUPPORT_SETTER);
 		if(field == null){

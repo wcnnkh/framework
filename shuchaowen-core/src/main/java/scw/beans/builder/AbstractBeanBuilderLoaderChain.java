@@ -1,5 +1,6 @@
 package scw.beans.builder;
 
+import scw.beans.BeanDefinition;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -14,10 +15,10 @@ public abstract class AbstractBeanBuilderLoaderChain implements
 		this.chain = chain;
 	}
 
-	public final BeanBuilder loading(LoaderContext context) {
+	public final BeanDefinition loading(LoaderContext context) {
 		BeanBuilderLoader loader = getNext(context);
 		if (loader == null) {
-			return chain == null ? new AutoBeanBuilder(context) : chain
+			return chain == null ? new AutoBeanDefinition(context) : chain
 					.loading(context);
 		}
 

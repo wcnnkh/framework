@@ -5,8 +5,8 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -17,7 +17,7 @@ import scw.net.InetUtils;
 @Configuration(order = Integer.MIN_VALUE)
 public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 
-	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == MemcachedClientBuilder.class
 				|| context.getTargetClass() == XMemcachedClientBuilder.class) {
 			return new MemcachedClientBuilderBeanBuilder(context);
@@ -27,7 +27,7 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static final class MemcachedClientBeanBuilder extends AbstractBeanBuilder {
+	private static final class MemcachedClientBeanBuilder extends AbstractBeanDefinition {
 
 		public MemcachedClientBeanBuilder(LoaderContext context) {
 			super(context);
@@ -50,7 +50,7 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private static final class MemcachedClientBuilderBeanBuilder extends AbstractBeanBuilder {
+	private static final class MemcachedClientBuilderBeanBuilder extends AbstractBeanDefinition {
 
 		public MemcachedClientBuilderBeanBuilder(LoaderContext context) {
 			super(context);

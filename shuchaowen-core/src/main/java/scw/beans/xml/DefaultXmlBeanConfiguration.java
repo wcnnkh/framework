@@ -9,14 +9,12 @@ import scw.value.property.PropertyFactory;
 public class DefaultXmlBeanConfiguration extends XmlBeanConfiguration {
 	private static final String TAG_NAME = "bean";
 
-	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory)
-			throws Exception {
+	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
 		if (getNodeList() != null) {
 			for (int i = 0; i < getNodeList().getLength(); i++) {
 				Node nRoot = getNodeList().item(i);
 				if (TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-					BeanDefinition beanDefinition = new XmlBeanDefinition(
-							beanFactory, propertyFactory, nRoot);
+					BeanDefinition beanDefinition = new XmlBeanBuilder(beanFactory, propertyFactory, nRoot);
 					beanDefinitions.add(beanDefinition);
 				}
 			}

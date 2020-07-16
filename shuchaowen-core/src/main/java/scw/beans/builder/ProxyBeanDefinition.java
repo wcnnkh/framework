@@ -4,14 +4,14 @@ import scw.aop.Filter;
 import scw.beans.BeanFactory;
 import scw.value.property.PropertyFactory;
 
-public class ProxyBeanBuilder extends AutoBeanBuilder {
+public class ProxyBeanDefinition extends AutoBeanDefinition {
 
-	public ProxyBeanBuilder(LoaderContext context, Filter... filters) {
+	public ProxyBeanDefinition(LoaderContext context, Filter... filters) {
 		this(context.getBeanFactory(), context.getPropertyFactory(), context
 				.getTargetClass(), filters);
 	}
 
-	public ProxyBeanBuilder(BeanFactory beanFactory,
+	public ProxyBeanDefinition(BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Class<?> targetClass,
 			Filter... filters) {
 		super(beanFactory, propertyFactory, targetClass);

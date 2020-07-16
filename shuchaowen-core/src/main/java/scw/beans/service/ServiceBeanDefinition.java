@@ -5,17 +5,15 @@ import java.util.HashSet;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.beans.DefaultBeanDefinition;
 import scw.beans.annotation.Service;
-import scw.beans.builder.AutoBeanBuilder;
+import scw.beans.builder.AutoBeanDefinition;
 import scw.core.utils.ArrayUtils;
 import scw.value.property.PropertyFactory;
 
-public class ServiceBeanDefinition extends DefaultBeanDefinition {
+public class ServiceBeanDefinition extends AutoBeanDefinition {
 
 	public ServiceBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
-		super(beanFactory, propertyFactory, targetClass,
-				new AutoBeanBuilder(beanFactory, propertyFactory, targetClass));
+		super(beanFactory, propertyFactory, targetClass);
 	}
 
 	@Override

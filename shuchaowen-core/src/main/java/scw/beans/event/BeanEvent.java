@@ -3,7 +3,7 @@ package scw.beans.event;
 import scw.beans.BeanFactory;
 import scw.event.EventObject;
 
-public abstract class BeanEvent extends EventObject{
+public abstract class BeanEvent extends EventObject<Object>{
 	private static final long serialVersionUID = 1L;
 	private transient final BeanFactory beanFactory;
 	

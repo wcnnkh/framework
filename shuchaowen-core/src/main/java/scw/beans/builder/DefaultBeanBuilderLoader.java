@@ -5,6 +5,7 @@ import java.util.LinkedList;
 
 import scw.aop.Filter;
 import scw.aop.MultiFilter;
+import scw.beans.BeanDefinition;
 import scw.beans.annotation.Proxy;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
@@ -15,13 +16,13 @@ import scw.logger.LoggerUtils;
 public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 	private static Logger logger = LoggerUtils.getLogger(DefaultBeanBuilderLoader.class);
 
-	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		// 未注解service时接口默认实现
 		if (context.getTargetClass().isInterface()) {
 			String name = context.getTargetClass().getName() + "Impl";
 			if (ClassUtils.isPresent(name) && context.getBeanFactory().isInstance(name)) {
 				logger.info("{} reference {}", context.getTargetClass().getName(), name);
-				return new AutoBeanBuilder(context.getBeanFactory(), context.getPropertyFactory(),
+				return new AutoBeanDefinition(context.getBeanFactory(), context.getPropertyFactory(),
 						ClassUtils.forNameNullable(name));
 			} else {
 				int index = context.getTargetClass().getName().lastIndexOf(".");
@@ -30,8 +31,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 								+ context.getTargetClass().getSimpleName() + "Impl");
 				if (ClassUtils.isPresent(name) && context.getBeanFactory().isInstance(name)) {
 					logger.info("{} reference {}", context.getTargetClass().getName(), name);
-					return new AutoBeanBuilder(context.getBeanFactory(), context.getPropertyFactory(),
-							ClassUtils.forNameNullable(name));
+					return context.getBeanFactory().getDefinition(name);
 				}
 			}
 		}
@@ -39,7 +39,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 		if (context.getTargetClass().isInterface() || Modifier.isAbstract(context.getTargetClass().getModifiers())) {
 			Proxy proxy = context.getTargetClass().getAnnotation(Proxy.class);
 			if (proxy != null) {
-				return new ProxyBeanBuilder(context, new MultiFilter(context.getBeanFactory(), getProxyNames(proxy)));
+				return new ProxyBeanDefinition(context, new MultiFilter(context.getBeanFactory(), getProxyNames(proxy)));
 			}
 		}
 		return loaderChain.loading(context);

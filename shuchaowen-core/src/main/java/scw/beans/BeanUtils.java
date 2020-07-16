@@ -11,7 +11,6 @@ import scw.aop.Filter;
 import scw.beans.annotation.AopEnable;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Service;
-import scw.beans.builder.BeanBuilder;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.xml.XmlBeanParameter;
@@ -112,7 +111,7 @@ public final class BeanUtils {
 
 		if (Filter.class.isAssignableFrom(type) || BeanConfiguration.class.isAssignableFrom(type)
 				|| BeanBuilderLoader.class.isAssignableFrom(type) || BeanBuilderLoaderChain.class.isAssignableFrom(type)
-				|| BeanBuilder.class.isAssignableFrom(type) || BeanDefinition.class.isAssignableFrom(type)) {
+				|| BeanDefinition.class.isAssignableFrom(type)) {
 			return false;
 		}
 

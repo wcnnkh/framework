@@ -4,8 +4,8 @@ import javax.sql.DataSource;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -16,14 +16,14 @@ import scw.io.ResourceUtils;
 @Configuration(order=Integer.MIN_VALUE)
 public class DruidBeanBuilderLoader implements BeanBuilderLoader {
 
-	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (DataSource.class.isAssignableFrom(context.getTargetClass())) {
 			return new DruidDataSourceBeanBuilder(new LoaderContext(DruidDataSource.class, context));
 		}
 		return loaderChain.loading(context);
 	}
 
-	private static final class DruidDataSourceBeanBuilder extends AbstractBeanBuilder {
+	private static final class DruidDataSourceBeanBuilder extends AbstractBeanDefinition {
 
 		public DruidDataSourceBeanBuilder(LoaderContext context) {
 			super(context);
