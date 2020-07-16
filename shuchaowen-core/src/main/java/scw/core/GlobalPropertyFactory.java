@@ -6,12 +6,12 @@ import java.io.UnsupportedEncodingException;
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
 import scw.io.support.ResourceOperations;
-import scw.util.FormatUtils;
 import scw.util.ClassScanner;
-import scw.value.property.ConcurrentMapPropertyFactory;
+import scw.util.FormatUtils;
+import scw.value.property.MapPropertyFactory;
 import scw.value.property.SystemPropertyFactory;
 
-public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
+public final class GlobalPropertyFactory extends MapPropertyFactory {
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSES_DIRECTORY = "classes.directory";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
@@ -23,6 +23,7 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 	}
 
 	private GlobalPropertyFactory() {
+		super(true);
 		addBasePropertyFactory(SystemPropertyFactory.getInstance());
 		if (getWorkPath() == null) {
 			setWorkPath(getDefaultWorkPath());

@@ -35,7 +35,7 @@ public abstract class ReflectionUtils {
 			return method.getName().startsWith("get") && method.getParameterTypes().length == 0;
 		}
 	}).toArray(new Method[0]);
-
+	
 	/**
 	 * 这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
 	 * 

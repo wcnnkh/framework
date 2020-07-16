@@ -1,19 +1,22 @@
 package scw.value.property;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 
 import scw.core.utils.CollectionUtils;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
+import scw.event.support.EmptyEventRegistration;
 import scw.util.MultiEnumeration;
 import scw.value.SimpleValueFactory;
 import scw.value.Value;
 
 public class PropertyFactory extends SimpleValueFactory implements
 		BasePropertyFactory {
-	private LinkedList<BasePropertyFactory> basePropertyFactories;
+	private List<BasePropertyFactory> basePropertyFactories;
 
 	public void addBasePropertyFactory(BasePropertyFactory basePropertyFactory) {
 		if (basePropertyFactory == null) {
@@ -21,9 +24,9 @@ public class PropertyFactory extends SimpleValueFactory implements
 		}
 
 		if (basePropertyFactories == null) {
-			basePropertyFactories = new LinkedList<BasePropertyFactory>();
+			basePropertyFactories = new ArrayList<BasePropertyFactory>();
 		}
-		basePropertyFactories.addFirst(basePropertyFactory);
+		basePropertyFactories.add(basePropertyFactory);
 	}
 
 	public void addBasePropertyFactory(
@@ -32,10 +35,8 @@ public class PropertyFactory extends SimpleValueFactory implements
 			return;
 		}
 
-		ListIterator<BasePropertyFactory> listIterator = basePropertyFactories
-				.listIterator(basePropertyFactories.size());
-		while (listIterator.hasPrevious()) {
-			addBasePropertyFactory(listIterator.previous());
+		for (BasePropertyFactory propertyFactory : basePropertyFactories) {
+			addBasePropertyFactory(propertyFactory);
 		}
 	}
 
@@ -62,5 +63,56 @@ public class PropertyFactory extends SimpleValueFactory implements
 			enumerations.add(basePropertyFactory.enumerationKeys());
 		}
 		return new MultiEnumeration<String>(enumerations);
+	}
+
+	public boolean isSupportListener(String key) {
+		if (basePropertyFactories == null) {
+			return false;
+		}
+
+		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
+			if (basePropertyFactory.isSupportListener(key)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public EventRegistration registerListener(String key,
+			EventListener<PropertyEvent> eventListener) {
+		if (basePropertyFactories == null) {
+			return new EmptyEventRegistration();
+		}
+
+		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
+			if (basePropertyFactory.isSupportListener(key)) {
+				return basePropertyFactory.registerListener(key, eventListener);
+			}
+		}
+		return new EmptyEventRegistration();
+	}
+
+	public void unregister(String name) {
+		if(basePropertyFactories == null){
+			return ;
+		}
+		
+		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
+			if (basePropertyFactory.isSupportListener(name)) {
+				basePropertyFactory.unregister(name);
+			}
+		}
+	}
+
+	public void publishEvent(String name, PropertyEvent event) {
+		if(basePropertyFactories == null){
+			return ;
+		}
+		
+		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
+			if (basePropertyFactory.isSupportListener(name)) {
+				basePropertyFactory.publishEvent(name, event);
+			}
+		}
 	}
 }

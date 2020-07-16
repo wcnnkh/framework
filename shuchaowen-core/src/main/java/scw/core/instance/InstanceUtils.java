@@ -50,25 +50,8 @@ public final class InstanceUtils {
 	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY;
 
 	static {
-		NoArgsInstanceFactory noArgsInstanceFactory = null;
-		ServiceLoader<NoArgsInstanceFactory> serviceLoader = CompatibleUtils
-				.getSpi().load(NoArgsInstanceFactory.class);
-		for (NoArgsInstanceFactory factory : serviceLoader) {
-			noArgsInstanceFactory = factory;
-			break;
-		}
-
-		if (noArgsInstanceFactory == null) {
-			for (String name : new String[] {
-					"scw.core.instance.SunNoArgsInstanceFactory",
-					"scw.core.instance.UnsafeNoArgsInstanceFactory" }) {
-				if (INSTANCE_FACTORY.isInstance(name)) {
-					noArgsInstanceFactory = INSTANCE_FACTORY.getInstance(name);
-					break;
-				}
-			}
-		}
-
+		NoArgsInstanceFactory noArgsInstanceFactory = serviceLoader(NoArgsInstanceFactory.class, "scw.core.instance.SunNoArgsInstanceFactory",
+					"scw.core.instance.UnsafeNoArgsInstanceFactory");
 		NO_ARGS_INSTANCE_FACTORY = noArgsInstanceFactory;
 		if (NO_ARGS_INSTANCE_FACTORY == null) {
 			throw new NotSupportedException(
