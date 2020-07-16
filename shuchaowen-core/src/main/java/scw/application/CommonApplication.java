@@ -3,7 +3,7 @@ package scw.application;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanFactory;
 import scw.core.utils.StringUtils;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public class CommonApplication extends XmlBeanFactory implements Application {
 	public static final String DEFAULT_BEANS_PATH = "beans.xml";
@@ -64,6 +64,6 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		destroyInternal();
-		LoggerUtils.getILoggerFactory().destroy();
+		LoggerFactory.getILoggerFactory().destroy();
 	}
 }

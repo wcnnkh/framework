@@ -2,12 +2,10 @@ package scw.logger.log4j2;
 
 import org.apache.logging.log4j.LogManager;
 
-import scw.core.instance.annotation.Configuration;
 import scw.logger.AbstractILoggerFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerLevelUtils;
 
-@Configuration(order=Integer.MIN_VALUE + 400)
 public class Log4j2LoggerFactory extends AbstractILoggerFactory {
 
 	static {

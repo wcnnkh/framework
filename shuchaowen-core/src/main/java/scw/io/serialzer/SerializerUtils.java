@@ -17,12 +17,12 @@ public final class SerializerUtils {
 	/**
 	 * 默认的序列化实现
 	 */
-	public static final Serializer DEFAULT_SERIALIZER = InstanceUtils.getSystemConfiguration(Serializer.class);
+	public static final Serializer DEFAULT_SERIALIZER;
 
 	static {
-		if (DEFAULT_SERIALIZER != null) {
-			FormatUtils.info(SerializerUtils.class, "default serializer：" + DEFAULT_SERIALIZER.getClass().getName());
-		}
+		Serializer serializer = InstanceUtils.serviceLoader(Serializer.class, "scw.io.serialzer.hessian.Hessian2Serializer");
+		DEFAULT_SERIALIZER = serializer == null? JavaSerializer.INSTANCE:serializer;
+		FormatUtils.info(SerializerUtils.class, "default serializer：" + DEFAULT_SERIALIZER.getClass().getName());
 	}
 
 	private SerializerUtils() {

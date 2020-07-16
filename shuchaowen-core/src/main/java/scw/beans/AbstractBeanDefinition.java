@@ -21,7 +21,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
 
-public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Object> implements BeanDefinition {
+public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Object> implements BeanDefinition, Cloneable{
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;

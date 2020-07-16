@@ -57,14 +57,18 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	private final LinkedList<BeanFactoryLifeCycle> beanFactoryLifeCycles = new LinkedList<BeanFactoryLifeCycle>();
 	protected final LinkedList<String> filterNameList = new LinkedList<String>();
 	protected final LinkedList<BeanBuilderLoader> beanBuilderLoaders = new LinkedList<BeanBuilderLoader>();
-	private final EventDispatcher<BeanEvent> eventDispatcher = new DefaultEventDispatcher<BeanEvent>(true);
+	private final EventDispatcher<BeanEvent> eventDispatcher = new DefaultEventDispatcher<BeanEvent>(
+			true);
 
 	public DefaultBeanFactory() {
-		propertyFactory.addBasePropertyFactory(GlobalPropertyFactory.getInstance());
-		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
+		propertyFactory.addBasePropertyFactory(GlobalPropertyFactory
+				.getInstance());
+		addInternalSingleton(BeanFactory.class, this,
+				InstanceFactory.class.getName(),
 				NoArgsInstanceFactory.class.getName());
 		addInternalSingleton(PropertyFactory.class, propertyFactory);
-		eventDispatcher.registerListener(DependenceRefreshEvent.class, new DependenceRefreshEventListener());
+		eventDispatcher.registerListener(DependenceRefreshEvent.class,
+				new DependenceRefreshEventListener());
 	}
 
 	protected BeanDefinition getDefinitionByCache(String name) {
@@ -105,17 +109,25 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 				synchronized (nameMappingMap) {
 					beanDefinition = getDefinitionByCache(name);
 					if (beanDefinition == null) {
-						beanDefinition = loading(new LoaderContext(clazz, this, getPropertyFactory(), null));
+						beanDefinition = loading(new LoaderContext(clazz, this,
+								getPropertyFactory(), null));
 						if (beanDefinition == null) {
 							return null;
 						}
 
-						if (!beanDefinition.getId().equals(name) && !beanDefinition.getNames().contains(name)) {
-							addBeanNameMapping(Arrays.asList(name), beanDefinition.getId(), true);
+						if (!beanDefinition.getId().equals(name)
+								&& !beanDefinition.getNames().contains(name)) {
+							addBeanNameMapping(Arrays.asList(name),
+									beanDefinition.getId(), true);
 						}
 
-						if (beanDefinition.isNew()) {
-							beanDefinition = beanDefinition.clone();
+						if (beanDefinition instanceof AbstractBeanDefinition) {
+							AbstractBeanDefinition definition = (AbstractBeanDefinition) beanDefinition;
+							if (definition.isNew()) {
+								beanDefinition = definition.clone();
+								addBeanDefinition(beanDefinition, true);
+							}
+						} else {
 							addBeanDefinition(beanDefinition, true);
 						}
 					}
@@ -130,7 +142,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			return null;
 		}
 
-		AutoImpl autoImpl = context.getTargetClass().getAnnotation(AutoImpl.class);
+		AutoImpl autoImpl = context.getTargetClass().getAnnotation(
+				AutoImpl.class);
 		if (autoImpl != null) {
 			Collection<Class<?>> impls = getAutoImplClass(autoImpl, context);
 			if (!CollectionUtils.isEmpty(impls)) {
@@ -143,20 +156,23 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			}
 		}
 
-		for (Class<?> impl : InstanceUtils.getConfigurationClassList(context.getTargetClass(),
-				context.getPropertyFactory())) {
+		for (Class<?> impl : InstanceUtils.getConfigurationClassList(
+				context.getTargetClass(), context.getPropertyFactory())) {
 			BeanDefinition definition = getDefinition(impl);
 			if (definition != null && definition.isInstance()) {
-				logger.info("Configuration {} impl {}", context.getTargetClass(), impl);
+				logger.info("Configuration {} impl {}",
+						context.getTargetClass(), impl);
 				return definition;
 			}
 		}
 
-		return new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
+		return new IteratorBeanBuilderLoaderChain(beanBuilderLoaders)
+				.loading(context);
 	}
 
 	protected boolean isIgnoreClass(Class<?> clazz) {
-		return ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz);
+		return ClassUtils.isPrimitiveOrWrapper(clazz)
+				|| AnnotationUtils.isIgnore(clazz);
 	}
 
 	public BeanDefinition getDefinition(Class<?> clazz) {
@@ -215,7 +231,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return (T) object;
 	}
 
-	protected void init(long createTime, BeanDefinition definition, Object object) throws Exception {
+	protected void init(long createTime, BeanDefinition definition,
+			Object object) throws Exception {
 		if (definition.isSingleton()) {
 			singletonMap.put(definition.getId(), object);
 		}
@@ -223,8 +240,10 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		definition.init(object);
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("create instance [{}] by definition [{}] use time {}ms", object, definition.getId(),
-					System.currentTimeMillis() - createTime);
+			logger.debug(
+					"create instance [{}] by definition [{}] use time {}ms",
+					object, definition.getId(), System.currentTimeMillis()
+							- createTime);
 		}
 	}
 
@@ -254,7 +273,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			return false;
 		}
 
-		return singletonMap.containsKey(definition.getId()) || definition.isInstance();
+		return singletonMap.containsKey(definition.getId())
+				|| definition.isInstance();
 	}
 
 	public boolean isInstance(Class<?> clazz) {
@@ -309,7 +329,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes,
+			Object... params) {
 		Object obj = singletonMap.get(name);
 		if (obj != null) {
 			return (T) obj;
@@ -336,7 +357,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return (T) obj;
 	}
 
-	private Object createInternal(BeanDefinition definition, Class<?>[] parameterTypes, Object... params) {
+	private Object createInternal(BeanDefinition definition,
+			Class<?>[] parameterTypes, Object... params) {
 		long t = System.currentTimeMillis();
 		Object obj;
 		try {
@@ -348,28 +370,34 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return obj;
 	}
 
-	public <T> T getInstance(Class<? extends T> type, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(Class<? extends T> type,
+			Class<?>[] parameterTypes, Object... params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
 
-	protected void addBeanDefinition(BeanDefinition beanDefinition, boolean throwExistError) {
+	protected void addBeanDefinition(BeanDefinition beanDefinition,
+			boolean throwExistError) {
 		BeanDefinition definition = getDefinitionByCache(beanDefinition.getId());
 		if (definition != null) {
-			logger.warn("Already exist definition:{}, cache:{}", JSONUtils.toJSONString(beanDefinition),
+			logger.warn("Already exist definition:{}, cache:{}",
+					JSONUtils.toJSONString(beanDefinition),
 					JSONUtils.toJSONString(definition));
 			if (throwExistError) {
-				throw new AlreadyExistsException("存在相同ID的映射:" + JSONUtils.toJSONString(beanDefinition));
+				throw new AlreadyExistsException("存在相同ID的映射:"
+						+ JSONUtils.toJSONString(beanDefinition));
 			}
 
 			return;
 		}
 
-		if (addBeanNameMapping(beanDefinition.getNames(), beanDefinition.getId(), throwExistError)) {
+		if (addBeanNameMapping(beanDefinition.getNames(),
+				beanDefinition.getId(), throwExistError)) {
 			beanMap.put(beanDefinition.getId(), beanDefinition);
 		}
 	}
 
-	protected boolean addBeanNameMapping(Collection<String> names, String id, boolean throwExistError) {
+	protected boolean addBeanNameMapping(Collection<String> names, String id,
+			boolean throwExistError) {
 		if (CollectionUtils.isEmpty(names)) {
 			return true;
 		}
@@ -377,9 +405,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		for (String name : names) {
 			BeanDefinition definition = getDefinitionByCache(name);
 			if (definition != null) {
-				logger.warn("Already exist name:{}, definition:{}", name, JSONUtils.toJSONString(definition));
+				logger.warn("Already exist name:{}, definition:{}", name,
+						JSONUtils.toJSONString(definition));
 				if (throwExistError) {
-					throw new AlreadyExistsException("存在相同名称的映射:" + JSONUtils.toJSONString(definition));
+					throw new AlreadyExistsException("存在相同名称的映射:"
+							+ JSONUtils.toJSONString(definition));
 				}
 				return false;
 			}
@@ -391,18 +421,22 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return true;
 	}
 
-	protected void addBeanFactoryLifeCycle(BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
+	protected void addBeanFactoryLifeCycle(
+			BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
 		beanFactoryLifeCycles.add(beanFactoryLifeCycle);
 		beanFactoryLifeCycle.init(this, propertyFactory);
 	}
 
-	protected void beanFactoryLifeCycleDestroy(BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
+	protected void beanFactoryLifeCycleDestroy(
+			BeanFactoryLifeCycle beanFactoryLifeCycle) throws Exception {
 		beanFactoryLifeCycle.destroy(this, propertyFactory);
 	}
 
-	protected void addBeanConfiguration(BeanConfiguration beanConfiguration) throws Exception {
+	protected void addBeanConfiguration(BeanConfiguration beanConfiguration)
+			throws Exception {
 		beanConfiguration.init(this, propertyFactory);
-		Collection<BeanDefinition> beanDefinitions = beanConfiguration.getBeans();
+		Collection<BeanDefinition> beanDefinitions = beanConfiguration
+				.getBeans();
 		if (!CollectionUtils.isEmpty(beanDefinitions)) {
 			for (BeanDefinition beanDefinition : beanDefinitions) {
 				synchronized (beanMap) {
@@ -416,14 +450,18 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		Map<String, String> nameMapping = beanConfiguration.getNameMappingMap();
 		if (!CollectionUtils.isEmpty(nameMapping)) {
 			for (Entry<String, String> entry : nameMapping.entrySet()) {
-				addBeanNameMapping(Arrays.asList(entry.getKey()), entry.getValue(), false);
+				addBeanNameMapping(Arrays.asList(entry.getKey()),
+						entry.getValue(), false);
 			}
 		}
 	}
 
-	protected <T> void addInternalSingleton(Class<? extends T> type, T instance, String... names) {
+	protected <T> void addInternalSingleton(Class<? extends T> type,
+			T instance, String... names) {
 		singletonMap.put(type.getName(), instance);
-		addBeanDefinition(new InternalBeanDefinition(instance, type, Arrays.asList(names)), false);
+		addBeanDefinition(
+				new InternalBeanDefinition(instance, type, Arrays.asList(names)),
+				false);
 	}
 
 	public Aop getAop() {
@@ -437,34 +475,40 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
-		beanBuilderLoaders
-				.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, getPropertyFactory()));
-		propertyFactory.addBasePropertyFactory(
-				InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, getPropertyFactory()));
-		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
-				getPropertyFactory())) {
+		beanBuilderLoaders.addAll(InstanceUtils.getConfigurationList(
+				BeanBuilderLoader.class, this, getPropertyFactory()));
+		propertyFactory.addBasePropertyFactory(InstanceUtils
+				.getConfigurationList(BasePropertyFactory.class, this,
+						getPropertyFactory()));
+		for (BeanConfiguration configuration : InstanceUtils
+				.getConfigurationList(BeanConfiguration.class, this,
+						getPropertyFactory())) {
 			addBeanConfiguration(configuration);
 		}
 
-		for (Class<?> clazz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(
+				Constants.SYSTEM_PACKAGE_NAME,
 				BeanUtils.getScanAnnotationPackageName())) {
 			if (!ReflectionUtils.isPresent(clazz)) {
 				continue;
 			}
 
 			Ioc ioc = Ioc.forClass(clazz);
-			ioc.getDependence().process(null, null, this, propertyFactory, true);
+			ioc.getDependence()
+					.process(null, null, this, propertyFactory, true);
 			ioc.getInit().process(null, null, this, propertyFactory, true);
 		}
 
-		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class,
-				this, getPropertyFactory())) {
+		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils
+				.getConfigurationList(BeanFactoryLifeCycle.class, this,
+						getPropertyFactory())) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
 	}
 
 	public void destroy() throws Exception {
-		ListIterator<BeanFactoryLifeCycle> iterator = beanFactoryLifeCycles.listIterator(beanFactoryLifeCycles.size());
+		ListIterator<BeanFactoryLifeCycle> iterator = beanFactoryLifeCycles
+				.listIterator(beanFactoryLifeCycles.size());
 		while (iterator.hasPrevious()) {
 			beanFactoryLifeCycleDestroy(iterator.previous());
 		}
@@ -475,9 +519,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 				beanKeyList.add(entry.getKey());
 			}
 
-			ListIterator<String> keyIterator = beanKeyList.listIterator(beanKeyList.size());
+			ListIterator<String> keyIterator = beanKeyList
+					.listIterator(beanKeyList.size());
 			while (keyIterator.hasPrevious()) {
-				BeanDefinition beanDefinition = getDefinitionByCache(keyIterator.previous());
+				BeanDefinition beanDefinition = getDefinitionByCache(keyIterator
+						.previous());
 				if (beanDefinition == null) {
 					continue;
 				}
@@ -491,7 +537,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			}
 		}
 
-		for (Class<?> clazz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(
+				Constants.SYSTEM_PACKAGE_NAME,
 				BeanUtils.getScanAnnotationPackageName())) {
 			Ioc ioc = new Ioc(clazz);
 			ioc.getDestroy().process(null, null, this, propertyFactory, true);
@@ -502,9 +549,9 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		private final Object instance;
 		private final Class<?> targetClass;
 		private final Collection<String> names;
-		private boolean isNew = true;
 
-		public InternalBeanDefinition(Object instance, Class<?> targetClass, Collection<String> names) {
+		public InternalBeanDefinition(Object instance, Class<?> targetClass,
+				Collection<String> names) {
 			this.instance = instance;
 			this.targetClass = targetClass;
 			this.names = names;
@@ -538,7 +585,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			throw new NotSupportedException(getId());
 		}
 
-		public Object create(Class<?>[] parameterTypes, Object... params) throws Exception {
+		public Object create(Class<?>[] parameterTypes, Object... params)
+				throws Exception {
 			throw new NotSupportedException(getId());
 		}
 
@@ -549,7 +597,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		public void dependence(Object instance) throws Exception {
 			if (instance != null) {
 				Ioc ioc = Ioc.forClass(instance.getClass());
-				ioc.getDependence().process(null, instance, DefaultBeanFactory.this, propertyFactory, false);
+				ioc.getDependence().process(null, instance,
+						DefaultBeanFactory.this, propertyFactory, false);
 			}
 		}
 
@@ -562,28 +611,16 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		public AnnotatedElement getAnnotatedElement() {
 			return getTargetClass();
 		}
-
-		public boolean isNew() {
-			return isNew;
-		}
-
-		@Override
-		public BeanDefinition clone() {
-			try {
-				InternalBeanDefinition beanDefinition = (InternalBeanDefinition) super.clone();
-				beanDefinition.isNew = false;
-				return beanDefinition;
-			} catch (CloneNotSupportedException e) {
-				throw new RuntimeException(e);
-			}
-		}
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
-		return new FilterProxyInvoker(invoker, this, filterNameList).invoke(args);
+	public Object doFilter(ProxyInvoker invoker, Object[] args)
+			throws Throwable {
+		return new FilterProxyInvoker(invoker, this, filterNameList)
+				.invoke(args);
 	}
 
-	private Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, LoaderContext context) {
+	private Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig,
+			LoaderContext context) {
 		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
 		for (String name : autoConfig.className()) {
 			if (StringUtils.isEmpty(name)) {
@@ -604,7 +641,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			if (context.getTargetClass().isAssignableFrom(clz)) {
 				list.add(clz);
 			} else {
-				logger.warn("{} not is assignable from name {}", context.getTargetClass(), clz);
+				logger.warn("{} not is assignable from name {}",
+						context.getTargetClass(), clz);
 			}
 		}
 
@@ -612,7 +650,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			if (context.getTargetClass().isAssignableFrom(clz)) {
 				list.add(clz);
 			} else {
-				logger.warn("{} not is assignable from {}", context.getTargetClass(), clz);
+				logger.warn("{} not is assignable from {}",
+						context.getTargetClass(), clz);
 			}
 		}
 		return list;
@@ -622,7 +661,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return eventDispatcher;
 	}
 
-	private final class DependenceRefreshEventListener implements scw.event.EventListener<DependenceRefreshEvent> {
+	private final class DependenceRefreshEventListener implements
+			scw.event.EventListener<DependenceRefreshEvent> {
 
 		public void onEvent(DependenceRefreshEvent event) {
 			for (Entry<String, BeanDefinition> entry : beanMap.entrySet()) {
@@ -631,7 +671,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 					try {
 						entry.getValue().dependence(instance);
 					} catch (Exception e) {
-						logger.error(e, "refresh Dependence error, id={}", entry.getKey());
+						logger.error(e, "refresh Dependence error, id={}",
+								entry.getKey());
 					}
 				}
 			}

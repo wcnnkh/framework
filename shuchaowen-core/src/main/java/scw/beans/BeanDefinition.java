@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import scw.core.instance.InstanceBuilder;
 
-public interface BeanDefinition extends InstanceBuilder<Object>, Cloneable{
+public interface BeanDefinition extends InstanceBuilder<Object>{
 	String getId();
 
 	Collection<String> getNames();
@@ -19,8 +19,4 @@ public interface BeanDefinition extends InstanceBuilder<Object>, Cloneable{
 	void init(Object instance) throws Exception;
 
 	void destroy(Object instance) throws Exception;
-	
-	boolean isNew();
-	
-	BeanDefinition clone();
 }
