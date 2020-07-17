@@ -1952,7 +1952,7 @@ public final class StringUtils {
 			return new String[0];
 		}
 
-		LinkedList<String> list = new LinkedList<String>();
+		List<String> list = new ArrayList<String>();
 		int begin = 0;
 		int size = str.length();
 		for (int i = 0; i < size; i++) {
@@ -2004,7 +2004,7 @@ public final class StringUtils {
 			return new String[] { str };
 		}
 
-		LinkedList<String> list = new LinkedList<String>();
+		List<String> list = new ArrayList<String>();
 		while (index != -1 && v != null) {
 			if (ignoreNull && begin == index) {
 				begin++;

@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -506,7 +505,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 
 		for (Class<?> clazz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
 				BeanUtils.getScanAnnotationPackageName())) {
-			Ioc ioc = new Ioc(clazz);
+			Ioc ioc = Ioc.forClass(clazz);
 			ioc.getDestroy().process(null, null, this, propertyFactory, true);
 		}
 	}
@@ -581,7 +580,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	}
 
 	private Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, LoaderContext context) {
-		LinkedList<Class<?>> list = new LinkedList<Class<?>>();
+		List<Class<?>> list = new ArrayList<Class<?>>();
 		for (String name : autoConfig.className()) {
 			if (StringUtils.isEmpty(name)) {
 				continue;

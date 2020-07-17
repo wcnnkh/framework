@@ -14,8 +14,6 @@ import scw.mapper.MapperUtils;
 import scw.util.ConcurrentReferenceHashMap;
 
 public final class Ioc {
-	private static ConcurrentReferenceHashMap<Class<?>, Ioc> iocCache = new ConcurrentReferenceHashMap<Class<?>, Ioc>();
-
 	private final IocMetadata init = new IocMetadata();
 	private final IocMetadata destroy = new IocMetadata();
 	private final IocMetadata dependence = new IocMetadata();
@@ -23,44 +21,56 @@ public final class Ioc {
 	public Ioc() {
 	};
 
-	public Ioc(Class<?> targetClass) {
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, true, true, InitMethod.class)) {
+	private Ioc(Class<?> targetClass) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass,
+				true, true, InitMethod.class)) {
 			method.setAccessible(true);
-			init.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
+			init.getIocProcessors().add(
+					new NoArgumentMethodIocProcessor(method));
 		}
 
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, true, true, InitMethod.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass,
+				true, true, InitMethod.class)) {
 			method.setAccessible(true);
-			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
+			destroy.getIocProcessors().add(
+					new NoArgumentMethodIocProcessor(method));
 		}
 
-		List<Field> autowrites = MapperUtils.getMapper().getFields(targetClass, null, new FieldFilter() {
+		List<Field> autowrites = MapperUtils.getMapper().getFields(targetClass,
+				null, new FieldFilter() {
 
-			public boolean accept(Field field) {
-				if (!field.isSupportSetter()) {
-					return false;
-				}
+					public boolean accept(Field field) {
+						if (!field.isSupportSetter()) {
+							return false;
+						}
 
-				AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
-				if (AnnotationUtils.isDeprecated(annotatedElement)) {
-					return false;
-				}
-				return true;
-			}
-		});
+						AnnotatedElement annotatedElement = field.getSetter()
+								.getAnnotatedElement();
+						if (AnnotationUtils.isDeprecated(annotatedElement)) {
+							return false;
+						}
+						return true;
+					}
+				});
 
 		for (Field field : autowrites) {
-			AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
-			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
+			AnnotatedElement annotatedElement = field.getSetter()
+					.getAnnotatedElement();
+			Autowired autowired = annotatedElement
+					.getAnnotation(Autowired.class);
 			if (autowired != null) {
-				this.dependence.getIocProcessors().add(new AutowiredIocProcessor(field));
+				this.dependence.getIocProcessors().add(
+						new AutowiredIocProcessor(field));
 			}
 
 			Value value = annotatedElement.getAnnotation(Value.class);
 			if (value != null) {
-				this.dependence.getIocProcessors().add(new ValueIocProcessor(field));
+				this.dependence.getIocProcessors().add(
+						new ValueIocProcessor(field));
 			}
 		}
+
+		readyOnly();
 	}
 
 	public IocMetadata getInit() {
@@ -74,6 +84,14 @@ public final class Ioc {
 	public IocMetadata getDependence() {
 		return dependence;
 	}
+	
+	public void readyOnly(){
+		init.readyOnly();
+		dependence.readyOnly();
+		destroy.readyOnly();
+	}
+
+	private static ConcurrentReferenceHashMap<Class<?>, Ioc> iocCache = new ConcurrentReferenceHashMap<Class<?>, Ioc>();
 
 	public static Ioc forClass(Class<?> clazz) {
 		Ioc ioc = iocCache.get(clazz);
