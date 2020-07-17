@@ -4,16 +4,17 @@ import scw.core.instance.InstanceUtils;
 import scw.util.FormatUtils;
 
 public final class LoggerFactory {
-	private static final ILoggerFactory LOGGER_FACTORY = InstanceUtils.getSystemConfiguration(ILoggerFactory.class);
-
+	public static final ConsoleLoggerFactory CONSOLE_LOGGER_FACTORY = new ConsoleLoggerFactory();
+	private static final ILoggerFactory LOGGER_FACTORY;
+	
+	static{
+		ILoggerFactory loggerFactory = InstanceUtils.serviceLoader(ILoggerFactory.class, "scw.logger.log4j2.Log4j2LoggerFactory", "scw.logger.log4j.Log4jLoggerFactory");
+		LOGGER_FACTORY = loggerFactory == null? CONSOLE_LOGGER_FACTORY : loggerFactory;
+		FormatUtils.info(LoggerFactory.class, "using logger factory [{}]", LOGGER_FACTORY.getClass().getName());
+	}
+	
 	private LoggerFactory() {
 	};
-
-	static {
-		if(LOGGER_FACTORY != null){
-			FormatUtils.info(LoggerFactory.class, "using logger factory [{}]", LOGGER_FACTORY.getClass().getName());
-		}
-	}
 
 	public static Logger getLogger(String name) {
 		return getILoggerFactory().getLogger(name);

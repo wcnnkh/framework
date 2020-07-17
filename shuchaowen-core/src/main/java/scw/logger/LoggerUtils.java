@@ -1,14 +1,7 @@
 package scw.logger;
 
-import java.lang.reflect.Method;
-
-import scw.core.reflect.ReflectionUtils;
 
 public final class LoggerUtils {
-	private static final ConsoleLoggerFactory CONSOLE_LOGGER_FACTORY = new ConsoleLoggerFactory();
-	private static Method I_LOGGER_FACTORY_METHOD = ReflectionUtils.getMethod("scw.logger.LoggerFactory",
-			"getILoggerFactory");
-
 	private LoggerUtils() {
 	};
 
@@ -52,15 +45,6 @@ public final class LoggerUtils {
 	 */
 	public static Logger getLogger(String name, String placeholder) {
 		return new LazyLogger(name, placeholder);
-	}
-
-	public static ILoggerFactory getILoggerFactory() {
-		ILoggerFactory loggerFactory = null;
-		try {
-			loggerFactory = (ILoggerFactory) I_LOGGER_FACTORY_METHOD.invoke(null);
-		} catch (Exception e) {
-		}
-		return loggerFactory == null ? CONSOLE_LOGGER_FACTORY : loggerFactory;
 	}
 
 	public static boolean isLoggerEnabled(Logger logger, Level level) {

@@ -8,8 +8,8 @@ import com.rabbitmq.client.ConnectionFactoryConfigurator;
 
 import scw.amqp.Exchange;
 import scw.amqp.ExchangeDeclare;
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -23,7 +23,7 @@ import scw.util.ConfigUtils;
 public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 	public static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/rabbitmq/rabbitmq.properties";
 
-	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == ConnectionFactory.class) {
 			return new ConnectionFactoryBeanBuilder(context);
 		} else if (context.getTargetClass() == Connection.class) {
@@ -36,7 +36,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static class ConnectionBeanBuilder extends AbstractBeanBuilder {
+	private static class ConnectionBeanBuilder extends AbstractBeanDefinition {
 
 		public ConnectionBeanBuilder(LoaderContext context) {
 			super(context);
@@ -55,10 +55,11 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 			if (instance instanceof Connection) {
 				((Connection) instance).close();
 			}
+			super.destroy(instance);
 		}
 	}
 
-	private static class ConnectionFactoryBeanBuilder extends AbstractBeanBuilder {
+	private static class ConnectionFactoryBeanBuilder extends AbstractBeanDefinition {
 
 		public ConnectionFactoryBeanBuilder(LoaderContext context) {
 			super(context);
@@ -71,14 +72,14 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		public Object create() throws Exception {
 			ConnectionFactory connectionFactory = new ConnectionFactory();
 			Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(DEFAULT_CONFIG,
-					propertyFactory);
+					propertyFactory).getResource();
 			ConnectionFactoryConfigurator.load(connectionFactory, properties, null);
 			ConnectionFactoryConfigurator.load(connectionFactory, properties);
 			return connectionFactory;
 		}
 	}
 
-	private static class ExchangeBeanBuilder extends AbstractBeanBuilder {
+	private static class ExchangeBeanBuilder extends AbstractBeanDefinition {
 
 		public ExchangeBeanBuilder(LoaderContext context) {
 			super(context);
@@ -95,7 +96,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private final class ExchangeDeclareBeanBuilder extends AbstractBeanBuilder {
+	private final class ExchangeDeclareBeanBuilder extends AbstractBeanDefinition {
 
 		public ExchangeDeclareBeanBuilder(LoaderContext context) {
 			super(context);
@@ -109,7 +110,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		@Override
 		public Object create() throws Exception {
 			Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(DEFAULT_CONFIG,
-					propertyFactory);
+					propertyFactory).getResource();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
 			ConfigUtils.loadProperties(exchangeDeclare, properties, null, "exchange.");
 			return exchangeDeclare;

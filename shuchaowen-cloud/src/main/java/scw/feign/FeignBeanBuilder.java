@@ -1,6 +1,6 @@
 package scw.feign;
 
-import scw.beans.builder.ConstructorBeanBuilder;
+import scw.beans.builder.ConstructorBeanDefinition;
 import scw.beans.builder.LoaderContext;
 import scw.core.instance.ConstructorBuilder;
 import scw.core.utils.StringUtils;
@@ -9,7 +9,7 @@ import feign.Feign;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
 
-public class FeignBeanBuilder extends ConstructorBeanBuilder {
+public class FeignBeanBuilder extends ConstructorBeanDefinition {
 	private scw.feign.annotation.FeignClient feignClient;
 
 	public FeignBeanBuilder(LoaderContext context, scw.feign.annotation.FeignClient feignClient) {

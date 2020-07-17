@@ -265,7 +265,7 @@ public final class SqlUtils {
 		LinkedList<Sql> list = new LinkedList<Sql>();
 		if (lines) {
 			Collection<String> sqlList = ResourceUtils.getResourceOperations()
-					.getLines(path, Constants.DEFAULT_CHARSET_NAME);
+					.getLines(path, Constants.DEFAULT_CHARSET_NAME).getResource();
 			for (String sql : sqlList) {
 				if (sql.startsWith(IGNORE_SQL_START_WITH)) {
 					continue;
@@ -275,7 +275,7 @@ public final class SqlUtils {
 			}
 		} else {
 			String sql = ResourceUtils.getResourceOperations().getContent(path,
-					Constants.DEFAULT_CHARSET_NAME);
+					Constants.DEFAULT_CHARSET_NAME).getResource();
 			if (!StringUtils.isEmpty(sql)) {
 				list.add(new SimpleSql(sql));
 			}

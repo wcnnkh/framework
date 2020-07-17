@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 
+import scw.io.event.EmptyResourceEventDispatcher;
+import scw.io.event.ResourceEventDispatcher;
+
 public interface Resource extends InputStreamSource, OutputStreamSource {
+	public static final EmptyResourceEventDispatcher EMPTY_EVENT_DISPATCHER = new EmptyResourceEventDispatcher();
 	public static final Resource NONEXISTENT_RESOURCE = new NonexistentResource();
 
 	/**
@@ -52,4 +56,8 @@ public interface Resource extends InputStreamSource, OutputStreamSource {
 	String getFilename();
 
 	String getDescription();
+	
+	boolean isSupportEventDispatcher();
+	
+	ResourceEventDispatcher getEventDispatcher();
 }

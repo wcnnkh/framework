@@ -5,9 +5,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
-import scw.core.instance.annotation.Configuration;
-
-@Configuration(order=Integer.MIN_VALUE)
 public class Java5MapWrapper implements MapCompatible {
 
 	public <K, V> CompatibleMap<K, V> wrapper(java.util.Map<K, V> map) {

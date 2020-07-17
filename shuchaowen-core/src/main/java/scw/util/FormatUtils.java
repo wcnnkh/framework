@@ -17,7 +17,7 @@ import scw.lang.FormatterException;
 public final class FormatUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
 	private static final String DEFAULT_PLACEHOLDER = "{}";
-	
+
 	private FormatUtils() {
 	};
 
@@ -103,7 +103,7 @@ public final class FormatUtils {
 		return new DecimalFormat(new String(charBuffer.array())).format(number);
 	}
 
-	public static Date getDate(String date, String formatter) throws FormatterException{
+	public static Date getDate(String date, String formatter) throws FormatterException {
 		try {
 			return new SimpleDateFormat(formatter).parse(date);
 		} catch (ParseException e) {
@@ -114,23 +114,23 @@ public final class FormatUtils {
 	public static String dateFormat(Date date, String formatter) {
 		return new SimpleDateFormat(formatter).format(date);
 	}
-	
-	public static String formatEL(String text, scw.value.ValueFactory<String> propertyFactory){
+
+	public static String formatEL(String text, scw.value.ValueFactory<String> propertyFactory) {
 		return StringFormat.format(text, "${", "}", propertyFactory);
 	}
-	
-	public static String formatEL(String text, Map<?, ?> map){
+
+	public static String formatEL(String text, Map<?, ?> map) {
 		return StringFormat.format(text, "${", "}", map);
 	}
-	
-	public static String format(String text, scw.value.ValueFactory<String> propertyFactory){
+
+	public static String format(String text, scw.value.ValueFactory<String> propertyFactory) {
 		return StringFormat.format(text, "{", "}", propertyFactory);
 	}
-	
-	public static String format(String text, Map<?, ?> map){
+
+	public static String format(String text, Map<?, ?> map) {
 		return StringFormat.format(text, "{", "}", map);
 	}
-	
+
 	public static String format(String text, scw.value.ValueFactory<String> propertyFactory, boolean supportEL) {
 		String newText = text;
 		if (supportEL) {
@@ -138,7 +138,7 @@ public final class FormatUtils {
 		}
 		return format(newText, propertyFactory);
 	}
-	
+
 	public static String format(String text, Map<?, ?> map, boolean supportEL) {
 		String newText = text;
 		if (supportEL) {
@@ -194,21 +194,29 @@ public final class FormatUtils {
 	}
 
 	public static void info(Class<?> clazz, Object msg, Object... args) {
+		info(clazz.getName(), msg, args);
+	}
+
+	public static void info(String name, Object msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
-			FormatUtils.loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", clazz.getName(), null, msg, args);
+			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", name, null, msg, args);
 			System.out.println(sb.toString());
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	public static void warn(Class<?> clazz, Object msg, Object... args) {
+		warn(clazz.getName(), msg, args);
+	}
+
+	public static void warn(String name, Object msg, Object... args) {
 		StringBuilder sb = new StringBuilder(256);
 		try {
-			FormatUtils.loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", clazz.getName(), null, msg, args);
+			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", name, null, msg, args);
 			System.err.println(sb.toString());
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 	}

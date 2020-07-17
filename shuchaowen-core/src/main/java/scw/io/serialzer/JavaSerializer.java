@@ -6,12 +6,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
-import scw.core.instance.annotation.Configuration;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.UnsafeByteArrayOutputStream;
 
-@Configuration(order = Integer.MIN_VALUE)
 public class JavaSerializer extends Serializer {
 	public final static JavaSerializer INSTANCE = new JavaSerializer();
 

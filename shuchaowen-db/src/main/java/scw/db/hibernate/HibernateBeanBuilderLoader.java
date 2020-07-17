@@ -4,8 +4,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -16,8 +16,7 @@ import scw.io.ResourceUtils;
 @Configuration(order = Integer.MIN_VALUE)
 public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 
-	public BeanBuilder loading(LoaderContext context,
-			BeanBuilderLoaderChain serviceChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain serviceChain) {
 		if (context.getTargetClass() == org.hibernate.cfg.Configuration.class) {
 			return new ConfigurationBeanBuilder(context);
 		} else if (context.getTargetClass() == SessionFactory.class) {
@@ -26,51 +25,49 @@ public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 		return serviceChain.loading(context);
 	}
 
-	private static final class SessionFactoryBeanBuilder extends
-			AbstractBeanBuilder {
+	private static final class SessionFactoryBeanBuilder extends AbstractBeanDefinition {
 
 		public SessionFactoryBeanBuilder(LoaderContext context) {
 			super(context);
 		}
 
 		public boolean isInstance() {
-			return beanFactory
-					.isInstance(org.hibernate.cfg.Configuration.class);
+			return beanFactory.isInstance(org.hibernate.cfg.Configuration.class);
 		}
 
 		public Object create() throws Exception {
 			org.hibernate.cfg.Configuration configuration = beanFactory
 					.getInstance(org.hibernate.cfg.Configuration.class);
 			if (beanFactory.isInstance(ServiceRegistry.class)) {
-				return configuration.buildSessionFactory(beanFactory
-						.getInstance(ServiceRegistry.class));
+				return configuration.buildSessionFactory(beanFactory.getInstance(ServiceRegistry.class));
 			} else {
 				return configuration.buildSessionFactory();
 			}
 		}
-		
+
 		@Override
 		public void destroy(Object instance) throws Exception {
-			if(instance instanceof SessionFactory){
+			if (instance instanceof SessionFactory) {
 				((SessionFactory) instance).close();
 			}
 			super.destroy(instance);
 		}
 	}
 
-	private static final class ConfigurationBeanBuilder extends
-			AbstractBeanBuilder {
+	private static final class ConfigurationBeanBuilder extends AbstractBeanDefinition {
 
 		public ConfigurationBeanBuilder(LoaderContext context) {
 			super(context);
 		}
 
 		public boolean isInstance() {
-			return ResourceUtils.getResourceOperations().isExist(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
+			return ResourceUtils.getResourceOperations()
+					.isExist(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
 		}
 
 		public Object create() throws Exception {
-			Resource resource = ResourceUtils.getResourceOperations().getResource(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
+			Resource resource = ResourceUtils.getResourceOperations()
+					.getResource(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
 			return new org.hibernate.cfg.Configuration().configure(resource.getURL());
 		}
 	}

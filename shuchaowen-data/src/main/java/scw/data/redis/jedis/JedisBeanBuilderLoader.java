@@ -4,8 +4,8 @@ import java.util.Properties;
 
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -22,7 +22,7 @@ import scw.value.property.PropertyFactory;
 public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 		RedisConstants {
 
-	public BeanBuilder loading(LoaderContext context,
+	public BeanDefinition loading(LoaderContext context,
 			BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == JedisPool.class) {
 			return new JedisPoolBeanBuilder(context);
@@ -37,7 +37,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 				DEFAULT_CONFIG);
 	}
 
-	private static final class JedisPoolBeanBuilder extends AbstractBeanBuilder {
+	private static final class JedisPoolBeanBuilder extends AbstractBeanDefinition {
 
 		public JedisPoolBeanBuilder(LoaderContext context) {
 			super(context);
@@ -54,7 +54,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 				if (ResourceUtils.getResourceOperations().isExist(config)) {
 					Properties properties = ResourceUtils
 							.getResourceOperations().getFormattedProperties(
-									config, Constants.DEFAULT_CHARSET_NAME);
+									config, Constants.DEFAULT_CHARSET_NAME).getResource();
 					host = properties.getProperty(HOST_CONFIG_KEY);
 					if (host == null) {
 						host = properties.getProperty("host");// 兼容老版本
@@ -86,7 +86,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 	}
 
 	private static final class JedisPoolConfigBeanBuilder extends
-			AbstractBeanBuilder {
+			AbstractBeanDefinition {
 		public JedisPoolConfigBeanBuilder(LoaderContext context) {
 			super(context);
 		}
@@ -99,7 +99,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 		public Object create() throws Exception {
 			Properties properties = ResourceUtils.getResourceOperations()
 					.getFormattedProperties(getConfigName(propertyFactory),
-							Constants.DEFAULT_CHARSET_NAME);
+							Constants.DEFAULT_CHARSET_NAME).getResource();
 			PropertyFactory propertyFactory = new PropertiesPropertyFactory(
 					properties);
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);

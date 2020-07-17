@@ -2,22 +2,42 @@ package scw.json;
 
 import java.lang.reflect.Type;
 
+import scw.compatible.CompatibleUtils;
+import scw.compatible.ServiceLoader;
 import scw.core.instance.InstanceUtils;
+import scw.json.support.BuiltinGsonSupport;
 import scw.util.FormatUtils;
 
 public final class JSONUtils {
+	public static final BuiltinGsonSupport BUILTIN_GSON_SUPPORT = new BuiltinGsonSupport();
+	
 	private JSONUtils() {
 	};
 
 	/**
 	 * 默认的json序列化工具
 	 */
-	public static final JSONSupport JSON_SUPPORT = InstanceUtils.getSystemConfiguration(JSONSupport.class);
+	public static final JSONSupport JSON_SUPPORT;
 
 	static {
-		if (JSON_SUPPORT != null) {
-			FormatUtils.info(JSONUtils.class, "default json parse：{}", JSON_SUPPORT.getClass().getName());
+		JSONSupport jsonSupport = null;
+		ServiceLoader<JSONSupport> serviceLoader = CompatibleUtils.getSpi().load(JSONSupport.class);
+		for(JSONSupport support : serviceLoader){
+			jsonSupport = support;
+			break;
 		}
+		
+		if(jsonSupport == null){
+			for(String name : new String[]{"scw.json.support.FastJsonSupport"}){
+				if(InstanceUtils.INSTANCE_FACTORY.isInstance(name)){
+					jsonSupport = InstanceUtils.INSTANCE_FACTORY.getInstance(name);
+					break;
+				}
+			}
+		}
+
+		JSON_SUPPORT = jsonSupport == null? BUILTIN_GSON_SUPPORT:jsonSupport;
+		FormatUtils.info(JSONUtils.class, "using json support：{}", JSON_SUPPORT.getClass().getName());
 	}
 
 	public static JSONSupport getJsonSupport() {

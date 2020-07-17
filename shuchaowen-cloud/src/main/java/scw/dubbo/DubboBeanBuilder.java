@@ -3,11 +3,11 @@ package scw.dubbo;
 import org.apache.dubbo.config.ReferenceConfig;
 
 import scw.beans.BeanFactory;
-import scw.beans.builder.ConstructorBeanBuilder;
+import scw.beans.builder.ConstructorBeanDefinition;
 import scw.core.instance.ConstructorBuilder;
 import scw.value.property.PropertyFactory;
 
-public class DubboBeanBuilder extends ConstructorBeanBuilder {
+public class DubboBeanBuilder extends ConstructorBeanDefinition {
 	private final ReferenceConfig<?> referenceConfig;
 
 	public DubboBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,

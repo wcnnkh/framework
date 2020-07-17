@@ -2,16 +2,18 @@ package scw.core;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
 import scw.io.support.ResourceOperations;
-import scw.util.FormatUtils;
 import scw.util.ClassScanner;
-import scw.value.property.ConcurrentMapPropertyFactory;
+import scw.util.FormatUtils;
+import scw.value.property.MapPropertyFactory;
 import scw.value.property.SystemPropertyFactory;
 
-public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
+public final class GlobalPropertyFactory extends MapPropertyFactory {
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSES_DIRECTORY = "classes.directory";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
@@ -22,18 +24,20 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 		return instance;
 	}
 
+	private List<PropertiesRegistration> propertiesRegistrations = new ArrayList<MapPropertyFactory.PropertiesRegistration>();
+
 	private GlobalPropertyFactory() {
+		super(true);
 		addBasePropertyFactory(SystemPropertyFactory.getInstance());
 		if (getWorkPath() == null) {
 			setWorkPath(getDefaultWorkPath());
 		}
 
 		ResourceOperations operations = new ResourceOperations(this, false);
-		loadProperties(operations, "global.properties");
-		loadProperties(
-				operations,
-				getValue("scw.properties.private", String.class,
-						"/private.properties"));
+		// 因为类加载顺序的原因，所以此些不能直接registerListener
+		propertiesRegistrations.add(loadProperties(null, operations, "global.properties", "UTF-8"));
+		propertiesRegistrations.add(loadProperties(null, operations,
+				getValue("scw.properties.private", String.class, "/private.properties"), "UTF-8"));
 	}
 
 	public void setWorkPath(String path) {
@@ -45,10 +49,8 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 	}
 
 	public String getDefaultWorkPath() {
-		File file = FileUtils.searchDirectory(new File(SystemPropertyFactory
-				.getInstance().getUserDir()), "WEB-INF");
-		return file == null ? SystemPropertyFactory.getInstance().getUserDir()
-				: file.getParent();
+		File file = FileUtils.searchDirectory(new File(SystemPropertyFactory.getInstance().getUserDir()), "WEB-INF");
+		return file == null ? SystemPropertyFactory.getInstance().getUserDir() : file.getParent();
 	}
 
 	public String getWorkPath() {
@@ -108,12 +110,11 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 		String systemOnlyId = getString(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {
-				systemOnlyId = scw.util.Base64.encode((SystemPropertyFactory
-						.getInstance().getUserDir() + "&" + getWorkPath())
-						.getBytes(Constants.DEFAULT_CHARSET_NAME));
+				systemOnlyId = scw.util.Base64
+						.encode((SystemPropertyFactory.getInstance().getUserDir() + "&" + getWorkPath())
+								.getBytes(Constants.DEFAULT_CHARSET_NAME));
 				if (systemOnlyId.endsWith("==")) {
-					systemOnlyId = systemOnlyId.substring(0,
-							systemOnlyId.length() - 2);
+					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
 				}
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);
@@ -142,5 +143,11 @@ public final class GlobalPropertyFactory extends ConcurrentMapPropertyFactory {
 		}
 
 		putIfAbsent(BASE_PACKAGE_NAME, packageName);
+	}
+
+	public synchronized void startListener() {
+		for (PropertiesRegistration propertiesRegistration : propertiesRegistrations) {
+			propertiesRegistration.registerListener();
+		}
 	}
 }

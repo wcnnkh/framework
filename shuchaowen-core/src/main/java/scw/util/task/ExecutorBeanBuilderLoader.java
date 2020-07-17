@@ -6,9 +6,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.AutoBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
+import scw.beans.builder.AutoBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -28,7 +28,7 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 			StringUtils.toString(GlobalPropertyFactory.getInstance().getString("executor.pool.keepAliveTime.unit"),
 					TimeUnit.HOURS.name()).toUpperCase());
 
-	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass().isAssignableFrom(ThreadPoolExecutor.class)) {
 			return new ThreadPoolExecutorBeanBuilder(context);
 		} else if (ScheduledExecutorService.class == context.getTargetClass()) {
@@ -37,7 +37,7 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private final class ScheduledExecutorServiceBeanBuilder extends AbstractBeanBuilder {
+	private final class ScheduledExecutorServiceBeanBuilder extends AbstractBeanDefinition {
 
 		public ScheduledExecutorServiceBeanBuilder(LoaderContext context) {
 			super(context);
@@ -56,10 +56,11 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 			if (instance instanceof ScheduledExecutorService) {
 				((ScheduledExecutorService) instance).shutdownNow();
 			}
+			super.destroy(instance);
 		}
 	}
 
-	private final class ThreadPoolExecutorBeanBuilder extends AutoBeanBuilder {
+	private final class ThreadPoolExecutorBeanBuilder extends AutoBeanDefinition {
 		public ThreadPoolExecutorBeanBuilder(LoaderContext context) {
 			super(context);
 		}
@@ -85,6 +86,7 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 			if (instance instanceof ThreadPoolExecutor) {
 				((ThreadPoolExecutor) instance).shutdownNow();
 			}
+			super.destroy(instance);
 		}
 	}
 }

@@ -1,11 +1,11 @@
 package scw.aop;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
 
-public class MultipleProxyFactory extends LinkedList<ProxyFactory> implements ProxyFactory {
+public class MultipleProxyFactory extends ArrayList<ProxyFactory> implements ProxyFactory {
 	private static final long serialVersionUID = 1L;
 
 	public boolean isSupport(Class<?> clazz) {

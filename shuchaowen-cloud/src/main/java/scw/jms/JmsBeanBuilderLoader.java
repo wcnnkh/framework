@@ -3,8 +3,8 @@ package scw.jms;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -13,7 +13,7 @@ import scw.core.instance.annotation.Configuration;
 @Configuration(order = Integer.MIN_VALUE)
 public class JmsBeanBuilderLoader implements BeanBuilderLoader {
 
-	public BeanBuilder loading(LoaderContext context,
+	public BeanDefinition loading(LoaderContext context,
 			BeanBuilderLoaderChain loaderChain) {
 		if (Connection.class == context.getTargetClass()) {
 			return new ConnectionBeanBuilder(context);
@@ -22,7 +22,7 @@ public class JmsBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static class ConnectionBeanBuilder extends AbstractBeanBuilder {
+	private static class ConnectionBeanBuilder extends AbstractBeanDefinition {
 
 		public ConnectionBeanBuilder(LoaderContext context) {
 			super(context);
@@ -42,6 +42,7 @@ public class JmsBeanBuilderLoader implements BeanBuilderLoader {
 			if (instance instanceof Connection) {
 				((Connection) instance).close();
 			}
+			super.destroy(instance);
 		}
 	}
 }

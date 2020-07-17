@@ -17,7 +17,7 @@ public final class LazyLogger extends AbstractLazyLogger {
 		if (logger == null) {
 			synchronized (this) {
 				if (logger == null) {
-					this.logger = LoggerUtils.getILoggerFactory().getLogger(
+					this.logger = LoggerFactory.getLogger(
 							getName(), getPlaceholder());
 				}
 			}

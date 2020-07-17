@@ -17,7 +17,7 @@ public class BaseIPVerification extends HashSet<String> implements IPVerificatio
 
 	protected void appendIPFile(String path) {
 		if (ResourceUtils.getResourceOperations().isExist(path)) {
-			List<String> contentList = ResourceUtils.getResourceOperations().getLines(path, Constants.DEFAULT_CHARSET_NAME);
+			List<String> contentList = ResourceUtils.getResourceOperations().getLines(path, Constants.DEFAULT_CHARSET_NAME).getResource();
 			if (!CollectionUtils.isEmpty(contentList)) {
 				for (String content : contentList) {
 					if (StringUtils.isEmpty(content)) {

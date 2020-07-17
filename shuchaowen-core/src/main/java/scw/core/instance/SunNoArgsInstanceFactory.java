@@ -4,10 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.IdentityHashMap;
 
-import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 
-@Configuration(order = Integer.MIN_VALUE + 100)
 public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	private static final Constructor<?> CONSTRUCTOR;
 	private volatile IdentityHashMap<Class<?>, Constructor<?>> constructorMap = new IdentityHashMap<Class<?>, Constructor<?>>();

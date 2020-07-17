@@ -9,8 +9,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockFactory;
 
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -20,7 +20,7 @@ import scw.core.utils.StringUtils;
 @Configuration
 public class LuceneBeanBuilderLoader implements BeanBuilderLoader {
 
-	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == Directory.class) {
 			return new DirectorBeanBuilder(context);
 		}
@@ -32,7 +32,7 @@ public class LuceneBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static class DirectorBeanBuilder extends AbstractBeanBuilder {
+	private static class DirectorBeanBuilder extends AbstractBeanDefinition {
 
 		public DirectorBeanBuilder(LoaderContext context) {
 			super(context);
@@ -56,7 +56,7 @@ public class LuceneBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private static class AnalyzerBeanBuilder extends AbstractBeanBuilder {
+	private static class AnalyzerBeanBuilder extends AbstractBeanDefinition {
 
 		public AnalyzerBeanBuilder(LoaderContext context) {
 			super(context);

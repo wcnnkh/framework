@@ -4,10 +4,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.aop.Filter;
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilder;
-import scw.beans.builder.ProxyBeanBuilder;
+import scw.beans.builder.ProxyBeanDefinition;
 import scw.beans.xml.XmlBeanConfiguration;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.annotation.AnnotationUtils;
@@ -56,8 +55,8 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfig
 					}
 
 					Filter filter = new SimpleHttpObjectRpcServiceFilter(ser, sign, responseThrowable, address);
-					BeanBuilder beanBuilder = new ProxyBeanBuilder(beanFactory, propertyFactory, clz, filter);
-					beanDefinitions.add(new DefaultBeanDefinition(beanFactory, propertyFactory, clz, beanBuilder));
+					BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, filter);
+					beanDefinitions.add(beanBuilder);
 				}
 			}
 
@@ -85,8 +84,8 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfig
 				}
 
 				Filter filter = new SimpleHttpObjectRpcServiceFilter(ser, mySign, responseThrowable, myAddress);
-				BeanBuilder beanBuilder = new ProxyBeanBuilder(beanFactory, propertyFactory, clz, filter);
-				beanDefinitions.add(new DefaultBeanDefinition(beanFactory, propertyFactory, clz, beanBuilder));
+				BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, filter);
+				beanDefinitions.add(beanBuilder);
 			}
 		}
 	}

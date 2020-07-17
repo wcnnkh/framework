@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Date;
 
+import com.google.protobuf.Value;
+
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.json.JSONUtils;
@@ -11,19 +13,22 @@ import scw.mapper.Field;
 import scw.sql.SqlUtils;
 import scw.sql.orm.annotation.AutoIncrement;
 import scw.sql.orm.annotation.Counter;
+import scw.sql.orm.annotation.ForceUpdate;
 import scw.sql.orm.annotation.Index;
 import scw.sql.orm.annotation.PrimaryKey;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.dialect.SqlType;
 import scw.sql.orm.dialect.SqlTypeFactory;
 import scw.sql.orm.enums.CasType;
+import scw.value.AnyValue;
 
 /**
  * 名称相同视为同一字段
+ * 
  * @author shuchaowen
  *
  */
-public class Column implements Serializable{
+public class Column implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Field field;
 
@@ -53,6 +58,7 @@ public class Column implements Serializable{
 
 	/**
 	 * 将值转换为对象的类型
+	 * 
 	 * @param value
 	 * @return
 	 */
@@ -65,6 +71,8 @@ public class Column implements Serializable{
 		Class<?> type = field.getSetter().getType();
 		if (type.isInstance(value)) {
 			return value;
+		} else if (type == Value.class) {
+			return new AnyValue(value);
 		} else if (TypeUtils.isBoolean(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).intValue() == 1;
@@ -110,49 +118,51 @@ public class Column implements Serializable{
 		} else if (type.isEnum()) {
 			return Enum.valueOf((Class<? extends Enum>) type, value.toString());
 		} else {
-			return JSONUtils.parseObject(value.toString(), field.getSetter()
-					.getGenericType());
+			return JSONUtils.parseObject(value.toString(), field.getSetter().getGenericType());
 		}
 	}
-	
+
 	/**
 	 * 将数据库的值插入到对象
+	 * 
 	 * @param entity
 	 * @param value
 	 */
-	public final void set(Object entity, Object value){
-		if(value == null){
-			return ;
+	public final void set(Object entity, Object value) {
+		if (value == null) {
+			return;
 		}
-		
+
 		Object v = toColumnValue(value);
-		if(v == null){
-			return ;
+		if (v == null) {
+			return;
 		}
-		
+
 		field.getSetter().set(entity, v);
 	}
-	
+
 	/**
 	 * 获取插入到数据库的值
+	 * 
 	 * @param entity
 	 * @return
 	 */
-	public final Object get(Object entity){
+	public final Object get(Object entity) {
 		Object value = field.getGetter().get(entity);
-		return value == null? null:toDataBaseValue(value);
+		return value == null ? null : toDataBaseValue(value);
 	}
 
 	/**
 	 * 将值转换成数据库类型
+	 * 
 	 * @param value
 	 * @return
 	 */
 	public Object toDataBaseValue(Object value) {
-		if(value != null && value instanceof Enum){
+		if (value != null && value instanceof Enum) {
 			return ((Enum<?>) value).name();
 		}
-		
+
 		Class<?> type = field.getGetter().getType();
 		if (boolean.class == type) {
 			boolean b = value == null ? false : (Boolean) value;
@@ -166,14 +176,22 @@ public class Column implements Serializable{
 			return (Boolean) value ? 1 : 0;
 		}
 
+		if (scw.value.Value.class.isAssignableFrom(type)) {
+			if (value instanceof scw.value.Value) {
+				return ((scw.value.Value) value).getAsString();
+			} else {
+				return value.toString();
+			}
+		}
+
 		if (SqlUtils.isDataBaseType(type)) {
 			return value;
 		} else {
 			if (value == null) {
 				return null;
 			}
-			
-			if(value instanceof Date){
+
+			if (value instanceof Date) {
 				return new java.sql.Date(((Date) value).getTime());
 			}
 
@@ -217,8 +235,7 @@ public class Column implements Serializable{
 	}
 
 	protected scw.sql.orm.annotation.Column getColumn() {
-		return field.getAnnotatedElement().getAnnotation(
-				scw.sql.orm.annotation.Column.class);
+		return field.getAnnotatedElement().getAnnotation(scw.sql.orm.annotation.Column.class);
 	}
 
 	public CasType getCasType() {
@@ -258,7 +275,7 @@ public class Column implements Serializable{
 		scw.sql.orm.annotation.Column column = getColumn();
 		return column == null ? null : column.comment();
 	}
-	
+
 	public SqlType getSqlType(SqlTypeFactory sqlTypeFactory) {
 		String type = null;
 		scw.sql.orm.annotation.Column column = getColumn();
@@ -279,13 +296,17 @@ public class Column implements Serializable{
 		}
 		return new SqlType(type, len);
 	}
-	
-	public CounterInfo getCounterInfo(){
+
+	public CounterInfo getCounterInfo() {
 		Counter counter = field.getAnnotatedElement().getAnnotation(Counter.class);
-		return counter == null? null:new CounterInfo(counter.min(), counter.max());
+		return counter == null ? null : new CounterInfo(counter.min(), counter.max());
+	}
+
+	public AnnotatedElement getAnnotatedElement() {
+		return field.getAnnotatedElement();
 	}
 	
-	public AnnotatedElement getAnnotatedElement(){
-		return field.getAnnotatedElement();
+	public boolean isForceUpdate(){
+		return getAnnotatedElement().getAnnotation(ForceUpdate.class) != null;
 	}
 }

@@ -1,32 +1,29 @@
 package scw.compatible;
 
-import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import scw.compatible.map.CompatibleMap;
+import scw.compatible.map.Java5MapWrapper;
 import scw.compatible.map.MapCompatible;
-import scw.core.instance.InstanceUtils;
-import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.ClassUtils;
+import scw.util.JavaVersion;
 
 public final class CompatibleUtils {
 	private CompatibleUtils() {
 	};
 
-	private static final boolean isSupportJdk6;
-	private static final StringOperations STRING_OPERATIONS = InstanceUtils
-			.getSystemConfiguration(StringOperations.class);
-	private static final SPI SPI = InstanceUtils
-			.getSystemConfiguration(SPI.class);
+	private static final StringOperations STRING_OPERATIONS = (StringOperations) (JavaVersion.INSTANCE
+			.getMasterVersion() >= 6 ? ClassUtils.createInstance("scw.compatible.Jdk6StringOperations")
+			: new Jdk5CompatibleOperations());
 
-	private static final MapCompatible MAP_COMPATIBLE = InstanceUtils
-			.getSystemConfiguration(MapCompatible.class);
+	private static final SPI SPI = (scw.compatible.SPI) (JavaVersion.INSTANCE
+			.getMasterVersion() >= 6 ? ClassUtils.createInstance("scw.compatible.DefaultSPI") : new InternalSPI());
 
-	static {
-		isSupportJdk6 = ReflectionUtils.getMethod(String.class, "getBytes",
-				new Class<?>[] { Charset.class }) != null;
-	}
-
-	public static boolean isSupportJdk6() {
-		return isSupportJdk6;
-	}
+	private static final MapCompatible MAP_COMPATIBLE = (MapCompatible) (JavaVersion.INSTANCE
+			.getMasterVersion() >= 8 ? ClassUtils.createInstance("scw.compatible.map.Java8MapWrapper")
+			: new Java5MapWrapper());
 
 	public static StringOperations getStringOperations() {
 		return STRING_OPERATIONS;
@@ -38,5 +35,11 @@ public final class CompatibleUtils {
 
 	public static MapCompatible getMapCompatible() {
 		return MAP_COMPATIBLE;
+	}
+
+	public static <K, V> CompatibleMap<K, V> createMap(boolean concurrent) {
+		Map<K, V> map = concurrent ? new ConcurrentHashMap<K, V>()
+				: new HashMap<K, V>();
+		return MAP_COMPATIBLE.wrapper(map);
 	}
 }

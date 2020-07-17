@@ -21,7 +21,7 @@ public abstract class AbstractJxlLoadExcel<T> extends AbstractLoadRow<T> impleme
 
 	public void run() {
 		logger.debug("开始读取:{}", excel);
-		InputStream is = ResourceUtils.getResourceOperations().getInputStream(excel);
+		InputStream is = ResourceUtils.getResourceOperations().getInputStream(excel).getResource();
 		final long t = System.currentTimeMillis();
 		Workbook workbook = null;
 		try {

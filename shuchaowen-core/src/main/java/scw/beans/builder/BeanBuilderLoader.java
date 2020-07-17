@@ -1,9 +1,10 @@
 package scw.beans.builder;
 
+import scw.beans.BeanDefinition;
 import scw.beans.annotation.AopEnable;
 
 @AopEnable(false)
 public interface BeanBuilderLoader {
-	BeanBuilder loading(LoaderContext context,
+	BeanDefinition loading(LoaderContext context,
 			BeanBuilderLoaderChain loaderChain);
 }

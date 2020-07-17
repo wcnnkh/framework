@@ -1,10 +1,8 @@
 package scw.core.instance;
 
-import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
 import scw.util.UnsafeUtils;
 
-@Configuration(order = Integer.MIN_VALUE)
 public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	static {
 		if (!UnsafeUtils.isSupport()) {

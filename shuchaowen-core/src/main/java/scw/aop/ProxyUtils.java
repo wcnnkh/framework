@@ -2,23 +2,22 @@ package scw.aop;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Collection;
 
-import scw.core.GlobalPropertyFactory;
-import scw.core.instance.InstanceUtils;
+import scw.compatible.CompatibleUtils;
+import scw.compatible.ServiceLoader;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 
 public final class ProxyUtils {
 	private static final MultipleProxyFactory PROXY_FACTORY = new MultipleProxyFactory();
 
-	public static final Collection<Class<Filter>> FILTERS = InstanceUtils
-			.getConfigurationClassList(Filter.class,
-					GlobalPropertyFactory.getInstance());
-
 	static {
-		PROXY_FACTORY.addAll(InstanceUtils
-				.getSystemConfigurationList(ProxyFactory.class));
+		ServiceLoader<ProxyFactory> serviceLoader = CompatibleUtils.getSpi().load(ProxyFactory.class);
+		for (ProxyFactory proxyFactory : serviceLoader) {
+			PROXY_FACTORY.add(proxyFactory);
+		}
+		PROXY_FACTORY.add(new CglibProxyFactory());
+		PROXY_FACTORY.add(new JdkProxyFactory());
 	}
 
 	private ProxyUtils() {
@@ -37,10 +36,8 @@ public final class ProxyUtils {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T proxyIngoreMethod(Class<? extends T> clazz, T instance,
-			IgnoreMethodAccept ignoreMethodAccept) {
-		Proxy proxy = getProxyFactory().getProxy(clazz,
-				new Class<?>[] { IgnoreMethodTarget.class },
+	public static <T> T proxyIngoreMethod(Class<? extends T> clazz, T instance, IgnoreMethodAccept ignoreMethodAccept) {
+		Proxy proxy = getProxyFactory().getProxy(clazz, new Class<?>[] { IgnoreMethodTarget.class },
 				new IgnoreMethodFilter(instance, ignoreMethodAccept));
 		return (T) proxy.create();
 	}
@@ -53,21 +50,17 @@ public final class ProxyUtils {
 		private final Object object;
 		private final IgnoreMethodAccept ignoreMethodAccept;
 
-		public IgnoreMethodFilter(Object object,
-				IgnoreMethodAccept ignoreMethodAccept) {
+		public IgnoreMethodFilter(Object object, IgnoreMethodAccept ignoreMethodAccept) {
 			this.object = object;
 			this.ignoreMethodAccept = ignoreMethodAccept;
 		}
 
-		public Object doFilter(ProxyInvoker invoker, Object[] args)
-				throws Throwable {
-			if (ArrayUtils.isEmpty(args)
-					&& invoker.getMethod().equals("getIgnoreMethodTarget")) {
+		public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+			if (ArrayUtils.isEmpty(args) && invoker.getMethod().equals("getIgnoreMethodTarget")) {
 				return object;
 			}
 
-			if (ignoreMethodAccept != null
-					&& ignoreMethodAccept.accept(invoker.getMethod())) {
+			if (ignoreMethodAccept != null && ignoreMethodAccept.accept(invoker.getMethod())) {
 				return null;
 			}
 
@@ -80,8 +73,7 @@ public final class ProxyUtils {
 	}
 
 	public static boolean isIgnoreMethod(Method method) {
-		return ReflectionUtils.isHashCodeMethod(method)
-				&& ReflectionUtils.isToStringMethod(method)
+		return ReflectionUtils.isHashCodeMethod(method) && ReflectionUtils.isToStringMethod(method)
 				&& ReflectionUtils.isEqualsMethod(method);
 	}
 
@@ -90,8 +82,7 @@ public final class ProxyUtils {
 	}
 
 	public static String invokeToString(ProxyInvoker invoker) {
-		return invoker.getProxy().getClass().getName() + "@"
-				+ Integer.toHexString(invokeHashCode(invoker));
+		return invoker.getProxy().getClass().getName() + "@" + Integer.toHexString(invokeHashCode(invoker));
 	}
 
 	public static boolean invokeEquals(ProxyInvoker invoker, Object[] args) {
@@ -124,10 +115,8 @@ public final class ProxyUtils {
 	 * @return
 	 */
 	public static boolean isWriteReplaceMethod(ProxyInvoker invoker) {
-		return ArrayUtils.isEmpty(invoker.getMethod().getParameterTypes())
-				&& invoker.getProxy() instanceof Serializable
-				&& invoker.getMethod().getName()
-						.equals(WriteReplaceInterface.WRITE_REPLACE_METHOD);
+		return ArrayUtils.isEmpty(invoker.getMethod().getParameterTypes()) && invoker.getProxy() instanceof Serializable
+				&& invoker.getMethod().getName().equals(WriteReplaceInterface.WRITE_REPLACE_METHOD);
 	}
 
 	/**
@@ -137,15 +126,12 @@ public final class ProxyUtils {
 	 *            原始类型是否应该实现{@see WriteReplaceInterface}
 	 * @return
 	 */
-	public static boolean isWriteReplaceMethod(ProxyInvoker invoker,
-			boolean writeReplaceInterface) {
+	public static boolean isWriteReplaceMethod(ProxyInvoker invoker, boolean writeReplaceInterface) {
 		if (isWriteReplaceMethod(invoker)) {
 			if (writeReplaceInterface) {
-				return WriteReplaceInterface.class.isAssignableFrom(invoker
-						.getTargetClass());
+				return WriteReplaceInterface.class.isAssignableFrom(invoker.getTargetClass());
 			} else {
-				return !WriteReplaceInterface.class.isAssignableFrom(invoker
-						.getTargetClass());
+				return !WriteReplaceInterface.class.isAssignableFrom(invoker.getTargetClass());
 			}
 		}
 		return false;

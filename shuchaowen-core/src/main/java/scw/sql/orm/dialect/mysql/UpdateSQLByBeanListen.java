@@ -16,6 +16,7 @@ import scw.sql.orm.Column;
 import scw.sql.orm.CounterInfo;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.enums.CasType;
+import scw.value.AnyValue;
 
 public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private static Logger logger = LoggerUtils.getLogger(UpdateSQLByBeanListen.class);
@@ -23,8 +24,8 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(ObjectRelationalMapping objectRelationalMapping, Class<?> clazz, FieldSetterListen beanFieldListen,
-			String tableName) {
+	public UpdateSQLByBeanListen(ObjectRelationalMapping objectRelationalMapping, Class<?> clazz,
+			FieldSetterListen beanFieldListen, String tableName) {
 		Collection<Column> primaryKeys = objectRelationalMapping.getPrimaryKeys(clazz);
 		if (primaryKeys.size() == 0) {
 			throw new NotFoundException("not found primary key");
@@ -43,9 +44,10 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		int index = 0;
 		StringBuilder where = null;
 		List<Object> paramList = new LinkedList<Object>();
-		
+
 		Collection<Column> notPrimaryKeys = objectRelationalMapping.getNotPrimaryKeys(clazz);
 		Iterator<Column> iterator = notPrimaryKeys.iterator();
+		// 处理CasType.AUTO_INCREMENT字段
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.getCasType() != CasType.AUTO_INCREMENT) {
@@ -66,20 +68,20 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			keywordProcessing(sb, column.getName());
 			sb.append("+1");
 		}
-		
-		for(Column column : notPrimaryKeys){
-			if(!changeMap.containsKey(column.getField().getSetter().getName())){
+
+		for (Column column : notPrimaryKeys) {
+			if (!(changeMap.containsKey(column.getField().getGetter().getName()) || column.isForceUpdate())) {
 				continue;
 			}
-			
+
 			Object oldValue = changeMap.get(column.getField().getSetter().getName());
 			Object value = column.getField().getGetter().get(beanFieldListen);
 			CounterInfo counterInfo = column.getCounterInfo();
 			if (counterInfo != null && TypeUtils.isNumber(column.getField().getSetter().getType())) {
 				if (oldValue != null && value != null) {
 					// incr or decr
-					double oldV = getNumberValue(oldValue);
-					double newV = getNumberValue(value);
+					double oldV = new AnyValue(oldValue).getAsDoubleValue();
+					double newV = new AnyValue(value).getAsDoubleValue();
 
 					if (index++ > 0) {
 						sb.append(",");
@@ -114,8 +116,8 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 					}
 					continue;
 				} else {
-					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", clazz.getName(),
-							column.getName(), oldValue, value);
+					logger.warn("{}中计数器字段[{}]不能为空,class:{},oldValue={},newValue={}", clazz.getName(), column.getName(),
+							oldValue, value);
 				}
 			}
 
@@ -176,17 +178,5 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 	public Object[] getParams() {
 		return params;
-	}
-
-	public static double getNumberValue(Object value) {
-		if (value == null) {
-			throw new NullPointerException();
-		}
-
-		if (value instanceof Number) {
-			return ((Number) value).doubleValue();
-		} else {
-			return (Double) value;
-		}
 	}
 }

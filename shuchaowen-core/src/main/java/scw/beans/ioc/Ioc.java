@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import scw.beans.annotation.Autowired;
-import scw.beans.annotation.Config;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Value;
 import scw.core.annotation.AnnotationUtils;
@@ -55,11 +54,6 @@ public final class Ioc {
 			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
 			if (autowired != null) {
 				this.dependence.getIocProcessors().add(new AutowiredIocProcessor(field));
-			}
-
-			Config config = annotatedElement.getAnnotation(Config.class);
-			if (config != null) {
-				this.dependence.getIocProcessors().add(new ConfigIocProcessor(field));
 			}
 
 			Value value = annotatedElement.getAnnotation(Value.class);

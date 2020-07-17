@@ -1,5 +1,6 @@
 package scw.beans.ioc;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowired;
 import scw.lang.NotSupportedException;
@@ -12,7 +13,7 @@ public class AutowiredIocProcessor extends DefaultFieldIocProcessor {
 		super(field);
 	}
 
-	public void process(Object bean, BeanFactory beanFactory,
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) throws Exception {
 		Autowired s = getField().getSetter()
 				.getAnnotatedElement().getAnnotation(Autowired.class);

@@ -2,9 +2,9 @@ package scw.compatible;
 
 import java.util.Iterator;
 
-import scw.core.instance.annotation.Configuration;
+import scw.core.annotation.UseJavaVersion;
 
-@Configuration(order=Integer.MIN_VALUE + 1)
+@UseJavaVersion(6)
 public class DefaultSPI implements SPI {
 
 	public <S> ServiceLoader<S> load(Class<S> service, ClassLoader loader) {

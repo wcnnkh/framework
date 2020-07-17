@@ -4,8 +4,8 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -18,7 +18,7 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 	private static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX
 			+ "/activemq/activemq.properties";
 
-	public BeanBuilder loading(LoaderContext context,
+	public BeanDefinition loading(LoaderContext context,
 			BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == ConnectionFactory.class) {
 			return new ConnectionFactoryBeanBuilder(context);
@@ -28,7 +28,7 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 	}
 
 	private static class ConnectionFactoryBeanBuilder extends
-			AbstractBeanBuilder {
+			AbstractBeanDefinition {
 
 		public ConnectionFactoryBeanBuilder(LoaderContext context) {
 			super(context);
@@ -45,7 +45,7 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 					connectionFactory,
 					ResourceUtils.getResourceOperations()
 							.getFormattedProperties(DEFAULT_CONFIG,
-									propertyFactory), null, null);
+									propertyFactory).getResource(), null, null);
 			return connectionFactory;
 		}
 	}

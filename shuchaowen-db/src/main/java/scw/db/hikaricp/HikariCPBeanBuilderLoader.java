@@ -5,9 +5,9 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import scw.beans.builder.AbstractBeanBuilder;
-import scw.beans.builder.AutoBeanBuilder;
-import scw.beans.builder.BeanBuilder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.BeanDefinition;
+import scw.beans.builder.AutoBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -18,7 +18,7 @@ import scw.io.ResourceUtils;
 @Configuration(order = Integer.MIN_VALUE)
 public class HikariCPBeanBuilderLoader implements BeanBuilderLoader {
 
-	public BeanBuilder loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == HikariConfig.class) {
 			return new HikariConfigBeanBuilder(context);
 		} else if (DataSource.class.isAssignableFrom(context.getTargetClass())) {
@@ -27,7 +27,7 @@ public class HikariCPBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static final class HikariConfigBeanBuilder extends AbstractBeanBuilder {
+	private static final class HikariConfigBeanBuilder extends AbstractBeanDefinition {
 
 		public HikariConfigBeanBuilder(LoaderContext context) {
 			super(context);
@@ -40,12 +40,12 @@ public class HikariCPBeanBuilderLoader implements BeanBuilderLoader {
 		public Object create() throws Exception {
 			HikariConfig config = new HikariConfig();
 			DBUtils.loadProperties(config,
-					ResourceUtils.getResourceOperations().getFormattedProperties(DBUtils.DEFAULT_CONFIGURATION));
+					ResourceUtils.getResourceOperations().getFormattedProperties(DBUtils.DEFAULT_CONFIGURATION).getResource());
 			return config;
 		}
 	}
 
-	protected static final class HikariDataSourceBeanBuilder extends AutoBeanBuilder {
+	protected static final class HikariDataSourceBeanBuilder extends AutoBeanDefinition {
 
 		public HikariDataSourceBeanBuilder(LoaderContext context) {
 			super(context);

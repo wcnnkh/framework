@@ -14,7 +14,7 @@ public final class AutoZookeeperServerStart implements BeanFactoryLifeCycle{
 			throws Exception {
 		ZookeeperServerStart start = null;
 		if(ResourceUtils.getResourceOperations().isExist(DEFAULT_ZOOKEEPER_CONFIG)){
-			start = new ZookeeperServerStart(ResourceUtils.getResourceOperations().getFormattedProperties(DEFAULT_ZOOKEEPER_CONFIG));
+			start = new ZookeeperServerStart(ResourceUtils.getResourceOperations().getFormattedProperties(DEFAULT_ZOOKEEPER_CONFIG).getResource());
 		}else{
 			Integer port = propertyFactory.getInteger("zookeeper.port");
 			if(port != null){

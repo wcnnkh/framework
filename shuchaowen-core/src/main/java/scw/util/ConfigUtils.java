@@ -56,7 +56,7 @@ public final class ConfigUtils {
 	public static List<Map<String, String>> getDefaultXmlContent(String path,
 			final String rootTag) {
 		InputStream inputStream = ResourceUtils.getResourceOperations()
-				.getInputStream(path);
+				.getInputStream(path).getResource();
 		if (inputStream == null) {
 			return Collections.emptyList();
 		}
@@ -93,7 +93,7 @@ public final class ConfigUtils {
 
 	public static <T> List<T> xmlToList(final Class<T> type, String path) {
 		InputStream inputStream = ResourceUtils.getResourceOperations()
-				.getInputStream(path);
+				.getInputStream(path).getResource();
 		if (inputStream == null) {
 			return Collections.emptyList();
 		}
@@ -119,7 +119,7 @@ public final class ConfigUtils {
 	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType,
 			String path) {
 		InputStream inputStream = ResourceUtils.getResourceOperations()
-				.getInputStream(path);
+				.getInputStream(path).getResource();
 		if (inputStream == null) {
 			return Collections.emptyMap();
 		}

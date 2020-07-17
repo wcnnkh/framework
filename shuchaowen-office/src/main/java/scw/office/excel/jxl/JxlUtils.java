@@ -381,7 +381,7 @@ public final class JxlUtils {
 	public static void load(final String filePath, final RowCallback callback) {
 		logger.debug("开始读取:{}", filePath);
 		final long t = System.currentTimeMillis();
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(filePath);
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(filePath).getResource();
 		if (inputStream == null) {
 			logger.warn("not found: " + filePath);
 			return;

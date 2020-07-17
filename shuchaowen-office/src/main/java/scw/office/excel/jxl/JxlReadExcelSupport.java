@@ -14,7 +14,7 @@ import scw.office.excel.RowCallback;
 public class JxlReadExcelSupport implements ReadExcelSupport {
 
 	public void read(String excel, final RowCallback callback) {
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(excel);
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(excel).getResource();
 		if (inputStream != null) {
 			read(inputStream, callback);
 		}

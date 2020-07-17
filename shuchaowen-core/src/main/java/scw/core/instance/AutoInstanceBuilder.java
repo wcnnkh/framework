@@ -7,7 +7,7 @@ import scw.value.property.PropertyFactory;
 public class AutoInstanceBuilder<T> extends AbstractInstanceBuilder<T> {
 	private ConstructorBuilder constructorBuilder;
 
-	public AutoInstanceBuilder(Class<? extends T> targetClass, NoArgsInstanceFactory instanceFactory,
+	public AutoInstanceBuilder(Class<T> targetClass, NoArgsInstanceFactory instanceFactory,
 			PropertyFactory propertyFactory) {
 		super(targetClass);
 		this.constructorBuilder = new AutoConstructorBuilder(instanceFactory, propertyFactory, targetClass);

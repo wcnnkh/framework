@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.BeansException;
@@ -58,7 +59,7 @@ public class XmlMethodIocProcessor extends MethodIocProcessor {
 		checkMethod();
 	}
 
-	public void process(Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
 		if (method.getParameterCount() == 0) {
 			method.invoke(bean);
 		} else {

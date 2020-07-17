@@ -33,7 +33,7 @@ public class CollectionBuilder implements Serializable {
 	}
 
 	public void loading(String resource, String charsetName, boolean trim) {
-		List<String> list = ResourceUtils.getResourceOperations().getLines(resource, charsetName);
+		List<String> list = ResourceUtils.getResourceOperations().getLines(resource, charsetName).getResource();
 		if (CollectionUtils.isEmpty(list)) {
 			return;
 		}
