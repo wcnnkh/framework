@@ -1,6 +1,7 @@
 package scw.embed.servlet;
 
 import scw.application.MainApplication;
+import scw.application.MainArgs;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
@@ -11,7 +12,7 @@ import scw.servlet.http.HttpServletService;
 public class ServletEmbeddedApplication extends MainApplication {
 	private ServletEmbedded embedded;
 
-	public ServletEmbeddedApplication(Class<?> mainClass, String[] args) {
+	public ServletEmbeddedApplication(Class<?> mainClass, MainArgs args) {
 		super(mainClass, args);
 	}
 
@@ -29,7 +30,7 @@ public class ServletEmbeddedApplication extends MainApplication {
 			dispatcherServlet.setHttpServletService(getBeanFactory().getInstance(HttpServletService.class));
 		}
 		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
-				dispatcherServlet, getMainClass());
+				dispatcherServlet, getMainClass(), getArgs());
 	}
 
 	@Override
