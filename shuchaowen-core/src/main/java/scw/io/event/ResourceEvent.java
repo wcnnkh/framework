@@ -30,6 +30,7 @@ public class ResourceEvent extends BasicEvent {
 
 	@Override
 	public String toString() {
-		return "createTime=" + getCreateTime() + ", lastModified=" + lastModified + ", resource=[" + resource + "]";
+		return "eventType=[" + getEventType() + "], createTime=" + getCreateTime() + ", lastModified=" + lastModified
+				+ ", resource=[" + resource + "]";
 	}
 }

@@ -75,8 +75,9 @@ public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<
 			boolean exist = resource.exists();
 			long last = lastModified();
 			if (exist != this.exist) {
+				this.last = last;
 				this.exist = exist;
-				publishEvent(new ResourceEvent(this.exist ? EventType.DELETE : EventType.CREATE, resource, last));
+				publishEvent(new ResourceEvent(exist ? EventType.CREATE : EventType.DELETE, resource, last));
 			} else if (this.last != last) {
 				this.last = last;
 				publishEvent(new ResourceEvent(EventType.UPDATE, resource, last));

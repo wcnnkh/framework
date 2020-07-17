@@ -11,4 +11,9 @@ public class ObservableResourceEvent<T> extends ResourceEvent {
 	public T getSource() {
 		return source;
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + ", source=[" + source + "]";
+	}
 }
