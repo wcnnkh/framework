@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.io.DefaultResourceLoader;
 import scw.io.FileSystemResource;
@@ -15,13 +14,8 @@ public class FileSystemSearchResourceLoader extends DefaultResourceLoader {
 	private boolean compatible;
 	private boolean search;
 
-	public FileSystemSearchResourceLoader(boolean search, boolean compatible) {
-		this(null, search, compatible);
-	}
-
 	public FileSystemSearchResourceLoader(String rootPath, boolean search, boolean compatible) {
-		this.rootPath = StringUtils.cleanPath(
-				StringUtils.isEmpty(rootPath) ? GlobalPropertyFactory.getInstance().getWorkPath() : rootPath);
+		this.rootPath = StringUtils.cleanPath(rootPath);
 		this.search = search;
 		this.compatible = compatible;
 	}

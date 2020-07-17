@@ -2,6 +2,7 @@ package scw.application;
 
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanFactory;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerFactory;
 
@@ -10,8 +11,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 	private volatile boolean start = false;
 
 	public CommonApplication(String xmlConfigPath) {
-		super(StringUtils.isEmpty(xmlConfigPath) ? DEFAULT_BEANS_PATH
-				: xmlConfigPath);
+		super(StringUtils.isEmpty(xmlConfigPath) ? DEFAULT_BEANS_PATH : xmlConfigPath);
 	}
 
 	public BeanFactory getBeanFactory() {
@@ -32,6 +32,7 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		initInternal();
+		GlobalPropertyFactory.getInstance().startListener();
 	}
 
 	protected void initInternal() {

@@ -11,10 +11,10 @@ import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.support.EmptyEventRegistration;
 import scw.util.MultiEnumeration;
-import scw.value.SimpleValueFactory;
+import scw.value.StringValueFactory;
 import scw.value.Value;
 
-public class PropertyFactory extends SimpleValueFactory implements
+public class PropertyFactory extends StringValueFactory implements
 		BasePropertyFactory {
 	private List<BasePropertyFactory> basePropertyFactories;
 

@@ -58,10 +58,11 @@ public class XmlPropertyFactory extends MapPropertyFactory {
 
 		String file = XMLUtils.getNodeAttributeValue(node, "file");
 		if (!StringUtils.isEmpty(file)) {
-			loadProperties(prefixToUse, ResourceUtils.getResourceOperations(), file, charsetNameToUse);
+			loadProperties(prefixToUse, ResourceUtils.getResourceOperations(), file, charsetNameToUse)
+					.registerListener();
 		}
 
-		String name = XMLUtils.getRequireNodeAttributeValue(node, "name");
+		String name = XMLUtils.getNodeAttributeValue(node, "name");
 		if (!StringUtils.isEmpty(name)) {
 			name = StringUtils.isEmpty(prefixToUse) ? name : (prefixToUse + name);
 

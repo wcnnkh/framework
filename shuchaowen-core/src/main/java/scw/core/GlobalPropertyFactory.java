@@ -2,6 +2,8 @@ package scw.core;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
@@ -22,6 +24,8 @@ public final class GlobalPropertyFactory extends MapPropertyFactory {
 		return instance;
 	}
 
+	private List<PropertiesRegistration> propertiesRegistrations = new ArrayList<MapPropertyFactory.PropertiesRegistration>();
+
 	private GlobalPropertyFactory() {
 		super(true);
 		addBasePropertyFactory(SystemPropertyFactory.getInstance());
@@ -30,9 +34,10 @@ public final class GlobalPropertyFactory extends MapPropertyFactory {
 		}
 
 		ResourceOperations operations = new ResourceOperations(this, false);
-		loadProperties(null, operations, "global.properties", "UTF-8");
-		loadProperties(null, operations, getValue("scw.properties.private", String.class, "/private.properties"),
-				"UTF-8");
+		// 因为类加载顺序的原因，所以此些不能直接registerListener
+		propertiesRegistrations.add(loadProperties(null, operations, "global.properties", "UTF-8"));
+		propertiesRegistrations.add(loadProperties(null, operations,
+				getValue("scw.properties.private", String.class, "/private.properties"), "UTF-8"));
 	}
 
 	public void setWorkPath(String path) {
@@ -138,5 +143,11 @@ public final class GlobalPropertyFactory extends MapPropertyFactory {
 		}
 
 		putIfAbsent(BASE_PACKAGE_NAME, packageName);
+	}
+
+	public synchronized void startListener() {
+		for (PropertiesRegistration propertiesRegistration : propertiesRegistrations) {
+			propertiesRegistration.registerListener();
+		}
 	}
 }

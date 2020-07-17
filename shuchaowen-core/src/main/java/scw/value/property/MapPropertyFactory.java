@@ -8,13 +8,11 @@ import java.util.Properties;
 import scw.compatible.CompatibleUtils;
 import scw.compatible.map.CompatibleMap;
 import scw.core.Assert;
-import scw.core.Constants;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.NamedEventDispatcher;
 import scw.event.support.DefaultEventDispatcher;
 import scw.event.support.EventType;
-import scw.io.ResourceUtils;
 import scw.io.event.ObservableResource;
 import scw.io.event.ObservableResourceEvent;
 import scw.io.event.ObservableResourceEventListener;
@@ -102,27 +100,14 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 		}
 	}
 
-	public void loadProperties(String resource) {
-		loadProperties(null, resource);
-	}
-
-	public void loadProperties(final String keyPrefix, String resource) {
-		loadProperties(keyPrefix, ResourceUtils.getResourceOperations(), resource, Constants.DEFAULT_CHARSET_NAME);
-	}
-
-	public void loadProperties(final String keyPrefix, ResourceOperations resourceOperations, String resource,
-			String charsetName) {
+	public PropertiesRegistration loadProperties(final String keyPrefix, ResourceOperations resourceOperations,
+			String resource, String charsetName) {
 		ObservableResource<Properties> res = resourceOperations.getProperties(resource, charsetName);
 		if (res.getResource() != null) {
 			loadProperties(keyPrefix, res.getResource());
 		}
 
-		res.registerListener(new ObservableResourceEventListener<Properties>() {
-
-			public void onEvent(ObservableResourceEvent<Properties> event) {
-				loadProperties(keyPrefix, event.getSource());
-			}
-		});
+		return new PropertiesRegistration(res, keyPrefix);
 	}
 
 	public void loadProperties(Properties properties) {
@@ -178,5 +163,42 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 			return;
 		}
 		super.publishEvent(name, event);
+	}
+
+	public class PropertiesRegistration {
+		private final ObservableResource<Properties> resource;
+		private EventRegistration eventRegistration;
+		private final String keyPrefix;
+
+		public PropertiesRegistration(ObservableResource<Properties> resource, String keyPrefix) {
+			this.resource = resource;
+			this.keyPrefix = keyPrefix;
+		}
+
+		public ObservableResource<Properties> getResource() {
+			return resource;
+		}
+
+		public EventRegistration getEventRegistration() {
+			return eventRegistration;
+		}
+
+		public boolean isRegisterListener() {
+			return eventRegistration != null;
+		}
+
+		public boolean registerListener() {
+			if (isRegisterListener()) {
+				return false;
+			}
+
+			eventRegistration = resource.registerListener(new ObservableResourceEventListener<Properties>() {
+
+				public void onEvent(ObservableResourceEvent<Properties> event) {
+					loadProperties(keyPrefix, event.getSource());
+				}
+			});
+			return true;
+		}
 	}
 }

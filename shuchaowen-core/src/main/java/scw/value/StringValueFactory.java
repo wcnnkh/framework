@@ -6,8 +6,8 @@ import scw.logger.LoggerUtils;
 import scw.util.FormatUtils;
 import scw.util.PropertyPlaceholderHelper;
 
-public class SimpleValueFactory extends DefaultValueFactory<String> {
-	private static Logger logger = LoggerUtils.getLogger(SimpleValueFactory.class);
+public class StringValueFactory extends DefaultValueFactory<String> {
+	private static Logger logger = LoggerUtils.getLogger(StringValueFactory.class);
 	
 	/**
 	 * Resolve {@code $ ...} placeholders in the given text, replacing them with
