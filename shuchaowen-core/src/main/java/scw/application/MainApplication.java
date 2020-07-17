@@ -15,21 +15,25 @@ import scw.logger.LoggerUtils;
 public class MainApplication extends CommonApplication implements Application {
 	private final Logger logger;
 	private final Class<?> mainClass;
-	private final String[] args;
+	private final MainArgs args;
 
-	public MainApplication(Class<?> mainClass, String[] args) {
+	public MainApplication(Class<?> mainClass, MainArgs args) {
 		super(DEFAULT_BEANS_PATH);
 		this.mainClass = mainClass;
 		this.args = args;
 		configuration(mainClass, args);
 		this.logger = LoggerUtils.getLogger(mainClass);
+		if (args != null) {
+			logger.debug("args: {}", args);
+			addInternalSingleton(MainArgs.class, args);
+		}
 	}
 
 	public Class<?> getMainClass() {
 		return mainClass;
 	}
 
-	public String[] getArgs() {
+	public MainArgs getArgs() {
 		return args;
 	}
 
@@ -49,16 +53,13 @@ public class MainApplication extends CommonApplication implements Application {
 		return logger;
 	}
 
-	public static void configuration(Class<?> mainClass, String[] args) {
-		Thread.currentThread()
-				.setContextClassLoader(mainClass.getClassLoader());
+	public static void configuration(Class<?> mainClass, MainArgs args) {
+		Thread.currentThread().setContextClassLoader(mainClass.getClassLoader());
 		BasePackage basePackage = mainClass.getAnnotation(BasePackage.class);
 		if (basePackage == null) {
-			GlobalPropertyFactory.getInstance().setBasePackageName(
-					mainClass.getPackage().getName());
+			GlobalPropertyFactory.getInstance().setBasePackageName(mainClass.getPackage().getName());
 		} else {
-			GlobalPropertyFactory.getInstance().setBasePackageName(
-					basePackage.value());
+			GlobalPropertyFactory.getInstance().setBasePackageName(basePackage.value());
 		}
 	}
 
@@ -70,29 +71,18 @@ public class MainApplication extends CommonApplication implements Application {
 		run.start();
 	}
 
-	public static MainApplication getAutoMainApplicationImpl(
-			Class<?> mainClass, String[] args) throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException,
-			InvocationTargetException {
-		Collection<Class<MainApplication>> impls = InstanceUtils
-				.getConfigurationClassList(MainApplication.class,
-						GlobalPropertyFactory.getInstance());
+	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, MainArgs args)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class,
+				GlobalPropertyFactory.getInstance());
 		if (!CollectionUtils.isEmpty(impls)) {
 			Iterator<Class<MainApplication>> iterator = impls.iterator();
 			while (iterator.hasNext()) {
-				Constructor<MainApplication> constructor = ReflectionUtils
-						.findConstructor(iterator.next(), false, Class.class,
-								String[].class);
+				Constructor<MainApplication> constructor = ReflectionUtils.findConstructor(iterator.next(), false,
+						Class.class, MainArgs.class);
 				if (constructor != null) {
 					ReflectionUtils.makeAccessible(constructor);
 					return constructor.newInstance(mainClass, args);
-				}
-
-				constructor = ReflectionUtils.findConstructor(iterator.next(),
-						false, Class.class);
-				if (constructor != null) {
-					ReflectionUtils.makeAccessible(constructor);
-					return constructor.newInstance(mainClass);
 				}
 			}
 		}
@@ -100,20 +90,20 @@ public class MainApplication extends CommonApplication implements Application {
 	}
 
 	public static void run(Class<?> mainClass, String[] args) {
-		configuration(mainClass, args);
+		MainArgs mainArgs = new MainArgs(args);
+		configuration(mainClass, mainArgs);
 		MainApplication application;
 		try {
-			application = getAutoMainApplicationImpl(mainClass, args);
+			application = getAutoMainApplicationImpl(mainClass, mainArgs);
 		} catch (Exception e) {
 			throw new ApplicationException("获取MainApplication实现异常", e);
 		}
 
 		if (application == null) {
-			application = new MainApplication(mainClass, args);
+			application = new MainApplication(mainClass, mainArgs);
 		}
 
-		application.getLogger().info("use application: {}",
-				application.getClass().getName());
+		application.getLogger().info("use application: {}", application.getClass().getName());
 		run(application);
 	}
 

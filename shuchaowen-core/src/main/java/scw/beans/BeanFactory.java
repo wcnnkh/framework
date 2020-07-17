@@ -3,7 +3,7 @@ package scw.beans;
 import scw.aop.Aop;
 import scw.beans.event.BeanEvent;
 import scw.core.instance.InstanceFactory;
-import scw.event.EventDispatcher;
+import scw.event.BasicEventDispatcher;
 
 public interface BeanFactory extends InstanceFactory {
 	BeanDefinition getDefinition(String name);
@@ -16,5 +16,5 @@ public interface BeanFactory extends InstanceFactory {
 	 * bean的事件派发
 	 * @return
 	 */
-	EventDispatcher<BeanEvent> getEventDispatcher();
+	BasicEventDispatcher<BeanEvent> getEventDispatcher();
 }

@@ -1,10 +1,7 @@
 package scw.freemarker;
 
-import java.io.File;
 import java.io.IOException;
 
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.cache.FileTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
@@ -13,9 +10,9 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.beans.annotation.AopEnable;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.freemarker.annotation.SharedVariable;
 import scw.logger.LoggerUtils;
@@ -23,6 +20,7 @@ import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
 
 @scw.core.instance.annotation.Configuration(order = Integer.MIN_VALUE, value = Configuration.class)
+@AopEnable(false)
 public class DefaultConfiguration extends Configuration {
 	private static scw.logger.Logger logger = LoggerUtils.getLogger(DefaultConfiguration.class);
 
@@ -40,7 +38,8 @@ public class DefaultConfiguration extends Configuration {
 
 		setObjectWrapper(new DefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
 
-		for (Class<?> clz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName())) {
+		for (Class<?> clz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
+				getScanAnnotationPackageName())) {
 			SharedVariable sharedVariable = clz.getAnnotation(SharedVariable.class);
 			if (sharedVariable == null) {
 				continue;
@@ -72,10 +71,7 @@ public class DefaultConfiguration extends Configuration {
 
 	protected TemplateLoader getDefaultTemplateLoader(BeanFactory beanFactory, PropertyFactory propertyFactory)
 			throws IOException {
-		MultiTemplateLoader multiTemplateLoader = new MultiTemplateLoader();
-		multiTemplateLoader.add(new FileTemplateLoader(new File(GlobalPropertyFactory.getInstance().getWorkPath())));
-		multiTemplateLoader.add(new ClassTemplateLoader(ClassUtils.getDefaultClassLoader(), "/"));
-		return multiTemplateLoader;
+		return beanFactory.getInstance(MyTemplateLoader.class);
 	}
 
 	public String getScanAnnotationPackageName() {
