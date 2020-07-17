@@ -13,7 +13,7 @@ import scw.mapper.Field;
 import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
-public final class XmlFileToListMapParse extends AbstractFileInputStreamValueProcesser {
+public final class XmlFileToListMapValueProcesser extends AbstractFileInputStreamValueProcesser {
 
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,

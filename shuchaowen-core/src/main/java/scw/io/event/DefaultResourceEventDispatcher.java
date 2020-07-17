@@ -50,8 +50,10 @@ public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<
 
 	class DefaultEventTimerTask extends TimerTask {
 		private long last;
+		private boolean exist;
 
 		public DefaultEventTimerTask() {
+			this.exist = resource.exists();
 			this.last = lastModified();
 		}
 
@@ -70,8 +72,12 @@ public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<
 
 		@Override
 		public void run() {
+			boolean exist = resource.exists();
 			long last = lastModified();
-			if (this.last != last) {
+			if (exist != this.exist) {
+				this.exist = exist;
+				publishEvent(new ResourceEvent(this.exist ? EventType.DELETE : EventType.CREATE, resource, last));
+			} else if (this.last != last) {
 				this.last = last;
 				publishEvent(new ResourceEvent(EventType.UPDATE, resource, last));
 			}
