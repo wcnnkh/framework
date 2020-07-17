@@ -7,9 +7,9 @@ import java.util.LinkedList;
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
 import scw.http.server.cors.CorsFilter;
-import scw.http.server.resource.DefaultHttpServerResourceFactory;
-import scw.http.server.resource.HttpServerResourceFactory;
-import scw.http.server.resource.HttpServerResourceHandler;
+import scw.http.server.resource.DefaultStaticResourceLoader;
+import scw.http.server.resource.StaticResourceHttpServerHandler;
+import scw.http.server.resource.StaticResourceLoader;
 import scw.value.property.PropertyFactory;
 
 public class DefaultHttpService implements HttpService {
@@ -20,14 +20,15 @@ public class DefaultHttpService implements HttpService {
 	}
 
 	public DefaultHttpService(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		HttpServerResourceFactory httpServerResourceFactory = beanFactory.isInstance(HttpServerResourceFactory.class)
-				? beanFactory.getInstance(HttpServerResourceFactory.class)
-				: new DefaultHttpServerResourceFactory(propertyFactory);
-		HttpServerResourceHandler resourceHandler = new HttpServerResourceHandler(httpServerResourceFactory);
+		StaticResourceLoader staticResourceLoader = beanFactory.isInstance(StaticResourceLoader.class)
+				? beanFactory.getInstance(StaticResourceLoader.class)
+				: new DefaultStaticResourceLoader(propertyFactory);
+		StaticResourceHttpServerHandler resourceHandler = new StaticResourceHttpServerHandler(staticResourceLoader);
 		handlerAccessor.bind(resourceHandler);
 		filters.add(new CorsFilter(beanFactory, propertyFactory));
 		filters.addAll(InstanceUtils.getConfigurationList(HttpServiceFilter.class, beanFactory, propertyFactory));
-		handlerAccessor.bind(InstanceUtils.getConfigurationList(HttpServiceHandler.class, beanFactory, propertyFactory));
+		handlerAccessor
+				.bind(InstanceUtils.getConfigurationList(HttpServiceHandler.class, beanFactory, propertyFactory));
 	}
 
 	public final HttpServiceHandlerAccessor getHandlerAccessor() {
@@ -55,7 +56,7 @@ public class DefaultHttpService implements HttpService {
 
 	protected void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		HttpServiceHandler handler = handlerAccessor.get(request);
-		if(handler != null){
+		if (handler != null) {
 			handler.doHandle(request, response);
 		}
 	}
