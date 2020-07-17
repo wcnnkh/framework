@@ -9,14 +9,12 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanConfiguration;
 import scw.beans.BeanFactoryLifeCycle;
 import scw.beans.DefaultBeanFactory;
-import scw.beans.property.XmlPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.xml.XMLUtils;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
 	private NodeList nodeList;
-	private XmlPropertyFactory xmlPropertyFactory;
 	private String xmlConfigPath;
 
 	public XmlBeanFactory(String xmlConfigPath) {
@@ -77,18 +75,10 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 				logger.info("not use:{}", xmlConfigPath);
 			}
 
-			this.xmlPropertyFactory = new XmlPropertyFactory(nodeList);
-			propertyFactory.addBasePropertyFactory(xmlPropertyFactory);
+			propertyFactory.addBasePropertyFactory(new XmlPropertyFactory(propertyFactory, nodeList));
 		}
 		addXmlBeanNameMapping(nodeList);
 		addBeanConfiguration(new DefaultXmlBeanConfiguration());
 		super.init();
-	}
-
-	public void destroy() throws Exception {
-		if (xmlPropertyFactory != null) {
-			xmlPropertyFactory.destroy();
-		}
-		super.destroy();
 	}
 }

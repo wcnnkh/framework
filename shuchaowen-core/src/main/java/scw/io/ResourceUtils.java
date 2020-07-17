@@ -21,6 +21,7 @@ import scw.io.support.FileSystemSearchResourceLoader;
 import scw.io.support.ResourceOperations;
 import scw.lang.NestedRuntimeException;
 import scw.lang.Nullable;
+import scw.value.property.SystemPropertyFactory;
 
 /**
  * 资源工具
@@ -79,7 +80,7 @@ public final class ResourceUtils {
 	public static final String WAR_URL_SEPARATOR = "*/";
 
 	private static final ResourceOperations RESOURCE_OPERATIONS = new ResourceOperations(
-			GlobalPropertyFactory.getInstance(), GlobalPropertyFactory
+			GlobalPropertyFactory.getInstance(), SystemPropertyFactory
 					.getInstance().getValue("resource.cache.enable",
 							boolean.class, true));
 

@@ -30,11 +30,9 @@ public final class GlobalPropertyFactory extends MapPropertyFactory {
 		}
 
 		ResourceOperations operations = new ResourceOperations(this, false);
-		loadProperties(operations, "global.properties");
-		loadProperties(
-				operations,
-				getValue("scw.properties.private", String.class,
-						"/private.properties"));
+		loadProperties(null, operations, "global.properties", "UTF-8");
+		loadProperties(null, operations, getValue("scw.properties.private", String.class, "/private.properties"),
+				"UTF-8");
 	}
 
 	public void setWorkPath(String path) {
@@ -46,10 +44,8 @@ public final class GlobalPropertyFactory extends MapPropertyFactory {
 	}
 
 	public String getDefaultWorkPath() {
-		File file = FileUtils.searchDirectory(new File(SystemPropertyFactory
-				.getInstance().getUserDir()), "WEB-INF");
-		return file == null ? SystemPropertyFactory.getInstance().getUserDir()
-				: file.getParent();
+		File file = FileUtils.searchDirectory(new File(SystemPropertyFactory.getInstance().getUserDir()), "WEB-INF");
+		return file == null ? SystemPropertyFactory.getInstance().getUserDir() : file.getParent();
 	}
 
 	public String getWorkPath() {
@@ -109,12 +105,11 @@ public final class GlobalPropertyFactory extends MapPropertyFactory {
 		String systemOnlyId = getString(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
 			try {
-				systemOnlyId = scw.util.Base64.encode((SystemPropertyFactory
-						.getInstance().getUserDir() + "&" + getWorkPath())
-						.getBytes(Constants.DEFAULT_CHARSET_NAME));
+				systemOnlyId = scw.util.Base64
+						.encode((SystemPropertyFactory.getInstance().getUserDir() + "&" + getWorkPath())
+								.getBytes(Constants.DEFAULT_CHARSET_NAME));
 				if (systemOnlyId.endsWith("==")) {
-					systemOnlyId = systemOnlyId.substring(0,
-							systemOnlyId.length() - 2);
+					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
 				}
 			} catch (UnsupportedEncodingException e) {
 				throw new RuntimeException(e);

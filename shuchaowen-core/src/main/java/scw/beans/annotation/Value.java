@@ -6,19 +6,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.beans.property.ValueFormat;
+import scw.beans.ioc.value.DefaultValueProcess;
+import scw.beans.ioc.value.ValueProcesser;
 
-/**
- * 推荐在字段添加Volatile修饰符
- * 如果字段使用final修饰则不会自动更新
- * @author shuchaowen
- *
- */
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Value {
-	public String value();
-	
-	public Class<? extends ValueFormat> format() default ValueFormat.class;
+	String value();
+
+	Class<? extends ValueProcesser> processer() default DefaultValueProcess.class;
+
+	String charsetName() default "";
 }

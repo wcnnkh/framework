@@ -8,11 +8,16 @@ import java.util.Properties;
 import scw.compatible.CompatibleUtils;
 import scw.compatible.map.CompatibleMap;
 import scw.core.Assert;
+import scw.core.Constants;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.NamedEventDispatcher;
 import scw.event.support.DefaultEventDispatcher;
 import scw.event.support.EventType;
+import scw.io.ResourceUtils;
+import scw.io.event.ObservableResource;
+import scw.io.event.ObservableResourceEvent;
+import scw.io.event.ObservableResourceEventListener;
 import scw.io.support.ResourceOperations;
 import scw.util.MultiEnumeration;
 import scw.value.AnyValue;
@@ -25,8 +30,7 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 
 	public MapPropertyFactory(boolean concurrent) {
 		this.map = CompatibleUtils.createMap(concurrent);
-		this.eventDispatcher = new DefaultEventDispatcher<PropertyEvent>(
-				concurrent);
+		this.eventDispatcher = new DefaultEventDispatcher<PropertyEvent>(concurrent);
 	}
 
 	@Override
@@ -49,7 +53,7 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 	public Value remove(String key) {
 		Assert.requiredArgument(key != null, "key");
 		Value v = map.remove(key);
-		if(v != null){
+		if (v != null) {
 			eventDispatcher.publishEvent(key, new PropertyEvent(EventType.DELETE, key, v));
 		}
 		return v;
@@ -59,8 +63,8 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
 		Value v = map.put(key, value);
-		eventDispatcher.publishEvent(key, new PropertyEvent(
-				v == null ? EventType.CREATE : EventType.UPDATE, key, value));
+		eventDispatcher.publishEvent(key,
+				new PropertyEvent(v == null ? EventType.CREATE : EventType.UPDATE, key, value));
 		return v;
 	}
 
@@ -73,8 +77,7 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 	public Value putIfAbsent(String key, Value value) {
 		Value v = map.putIfAbsent(key, value);
 		if (v != null) {
-			eventDispatcher.publishEvent(key, new PropertyEvent(
-					EventType.CREATE, key, value));
+			eventDispatcher.publishEvent(key, new PropertyEvent(EventType.CREATE, key, value));
 		}
 		return v;
 	}
@@ -94,23 +97,39 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 	public void clear() {
 		map.clear();
 		for (Entry<String, Value> entry : map.entrySet()) {
-			eventDispatcher.publishEvent(entry.getKey(), new PropertyEvent(
-					EventType.DELETE, entry.getKey(), entry.getValue()));
+			eventDispatcher.publishEvent(entry.getKey(),
+					new PropertyEvent(EventType.DELETE, entry.getKey(), entry.getValue()));
 		}
 	}
 
-	public void loadProperties(ResourceOperations resourceOperations,
-			String resource) {
-		if (resourceOperations.isExist(resource)) {
-			Properties properties = resourceOperations.getFormattedProperties(
-					resource).getResource();
-			if (properties != null) {
-				loadProperties(properties);
-			}
+	public void loadProperties(String resource) {
+		loadProperties(null, resource);
+	}
+
+	public void loadProperties(final String keyPrefix, String resource) {
+		loadProperties(keyPrefix, ResourceUtils.getResourceOperations(), resource, Constants.DEFAULT_CHARSET_NAME);
+	}
+
+	public void loadProperties(final String keyPrefix, ResourceOperations resourceOperations, String resource,
+			String charsetName) {
+		ObservableResource<Properties> res = resourceOperations.getProperties(resource, charsetName);
+		if (res.getResource() != null) {
+			loadProperties(keyPrefix, res.getResource());
 		}
+
+		res.registerListener(new ObservableResourceEventListener<Properties>() {
+
+			public void onEvent(ObservableResourceEvent<Properties> event) {
+				loadProperties(keyPrefix, event.getSource());
+			}
+		});
 	}
 
 	public void loadProperties(Properties properties) {
+		loadProperties(null, properties);
+	}
+
+	public void loadProperties(String keyPrefix, Properties properties) {
 		if (properties != null) {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
@@ -122,46 +141,8 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 				if (value == null) {
 					continue;
 				}
-
-				put(key.toString(), value);
+				put(keyPrefix == null ? key.toString() : (keyPrefix + key.toString()), value);
 			}
-		}
-	}
-
-	public void loadProperties(ResourceOperations resourceOperations,
-			String resource, boolean putIfAbsent) {
-		if (putIfAbsent) {
-			if (resourceOperations.isExist(resource)) {
-				Properties properties = resourceOperations
-						.getFormattedProperties(resource).getResource();
-				if (properties != null) {
-					loadProperties(properties, putIfAbsent);
-				}
-			}
-		} else {
-			loadProperties(resourceOperations, resource);
-		}
-	}
-
-	public void loadProperties(Properties properties, boolean putIfAbsent) {
-		if (putIfAbsent) {
-			if (properties != null) {
-				for (Entry<Object, Object> entry : properties.entrySet()) {
-					Object key = entry.getKey();
-					if (key == null) {
-						continue;
-					}
-
-					Object value = entry.getValue();
-					if (value == null) {
-						continue;
-					}
-
-					putIfAbsent(key.toString(), value);
-				}
-			}
-		} else {
-			loadProperties(properties);
 		}
 	}
 
@@ -174,8 +155,7 @@ public abstract class MapPropertyFactory extends PropertyFactory {
 	}
 
 	@Override
-	public EventRegistration registerListener(String key,
-			EventListener<PropertyEvent> eventListener) {
+	public EventRegistration registerListener(String key, EventListener<PropertyEvent> eventListener) {
 		if (map.containsKey(key)) {
 			return eventDispatcher.registerListener(key, eventListener);
 		}
