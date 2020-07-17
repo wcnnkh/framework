@@ -15,7 +15,7 @@ import scw.value.property.PropertyFactory;
  * @author shuchaowen
  *
  */
-public final class JsonParse extends AbstractStringValueFileProcesser {
+public final class FileJsonValueProcesser extends AbstractFileContentValueProcesser {
 
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,

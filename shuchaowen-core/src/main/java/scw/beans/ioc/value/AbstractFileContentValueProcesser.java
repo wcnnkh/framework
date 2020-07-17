@@ -10,7 +10,7 @@ import scw.io.event.ObservableResourceEventListener;
 import scw.mapper.Field;
 import scw.value.property.PropertyFactory;
 
-public abstract class AbstractStringValueFileProcesser extends AbstractValueProcesser {
+public abstract class AbstractFileContentValueProcesser extends AbstractValueProcesser {
 
 	@Override
 	protected void processInteranl(final BeanDefinition beanDefinition, final BeanFactory beanFactory,

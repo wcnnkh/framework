@@ -1,6 +1,6 @@
 package scw.beans.ioc.value;
 
-import java.util.Map;
+import java.util.Collection;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
@@ -12,17 +12,23 @@ import scw.mapper.Field;
 import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
-public final class XmlToBeanMapParse extends AbstractInputStreamValueFileProcesser {
+/**
+ * xml解析
+ * 
+ * @author shuchaowen
+ *
+ */
+public final class XmlFileToBeansValueProcesser extends AbstractFileInputStreamValueProcesser {
 
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Object bean, Field field, Value value, String name, String charsetName,
 			UnsafeByteArrayInputStream inputStream) {
-		if (!Map.class.isAssignableFrom(field.getSetter().getType())) {
+		if (!Collection.class.isAssignableFrom(field.getSetter().getType())) {
 			throw new NotSupportedException(field.getSetter().toString());
 		}
 
 		ResolvableType resolvableType = ResolvableType.forType(field.getSetter().getGenericType());
-		return ConfigUtils.xmlToMap(resolvableType.getGeneric(1).getRawClass(), inputStream);
+		return ConfigUtils.xmlToList(resolvableType.getGeneric(0).getRawClass(), inputStream);
 	}
 }

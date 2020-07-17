@@ -1,5 +1,7 @@
 package scw.beans.ioc.value;
 
+import java.lang.reflect.Modifier;
+
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
@@ -19,7 +21,8 @@ public abstract class AbstractValueProcesser implements ValueProcesser {
 	}
 
 	protected boolean isRegisterListener(BeanDefinition beanDefinition, Field field) {
-		return beanDefinition == null || beanDefinition.isSingleton();
+		return Modifier.isStatic(field.getSetter().getModifiers())
+				|| (beanDefinition != null && beanDefinition.isSingleton());
 	}
 
 	protected abstract void processInteranl(BeanDefinition beanDefinition, BeanFactory beanFactory,

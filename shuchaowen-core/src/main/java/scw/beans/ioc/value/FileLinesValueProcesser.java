@@ -15,7 +15,7 @@ import scw.mapper.Field;
 import scw.value.StringValue;
 import scw.value.property.PropertyFactory;
 
-public final class ContentParse extends AbstractLinesValueFileProcesser {
+public final class FileLinesValueProcesser extends AbstractFileLinesValueProcesser {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override

@@ -1,6 +1,7 @@
 package scw.beans.ioc.value;
 
 import java.util.Collection;
+import java.util.Map;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
@@ -12,13 +13,7 @@ import scw.mapper.Field;
 import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
-/**
- * xml解析
- * 
- * @author shuchaowen
- *
- */
-public final class XmlBeansParse extends AbstractInputStreamValueFileProcesser {
+public final class XmlFileToListMapParse extends AbstractFileInputStreamValueProcesser {
 
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
@@ -28,7 +23,11 @@ public final class XmlBeansParse extends AbstractInputStreamValueFileProcesser {
 			throw new NotSupportedException(field.getSetter().toString());
 		}
 
-		ResolvableType resolvableType = ResolvableType.forType(field.getSetter().getGenericType());
-		return ConfigUtils.xmlToList(resolvableType.getGeneric(0).getRawClass(), inputStream);
+		if (!Map.class.isAssignableFrom(
+				ResolvableType.forType(field.getSetter().getGenericType()).getGeneric(0).getRawClass())) {
+			throw new NotSupportedException(field.getSetter().toString());
+		}
+
+		return ConfigUtils.getDefaultXmlContent(inputStream, "config");
 	}
 }

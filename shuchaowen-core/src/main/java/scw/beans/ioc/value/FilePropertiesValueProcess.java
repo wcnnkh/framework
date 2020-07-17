@@ -14,7 +14,7 @@ import scw.mapper.MapperUtils;
 import scw.value.ValueUtils;
 import scw.value.property.PropertyFactory;
 
-public final class PropertiesParse extends AbstractPropertiesValueFileProcesser {
+public final class FilePropertiesValueProcess extends AbstractFilePropertiesValueProcesser {
 
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,

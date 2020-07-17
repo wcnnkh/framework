@@ -19,6 +19,7 @@ import scw.aop.FilterProxyInvoker;
 import scw.aop.ProxyInvoker;
 import scw.aop.ProxyUtils;
 import scw.beans.annotation.AutoImpl;
+import scw.beans.builder.AutoBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.IteratorBeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -148,7 +149,10 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			Collection<Class<?>> impls = getAutoImplClass(autoImpl, context);
 			if (!CollectionUtils.isEmpty(impls)) {
 				for (Class<?> impl : impls) {
-					BeanDefinition definition = getDefinition(impl);
+					BeanDefinition definition = getDefinitionByCache(impl.getName());
+					if(definition == null){
+						definition = new AutoBeanDefinition(new LoaderContext(impl, context));
+					}
 					if (definition != null && definition.isInstance()) {
 						return definition;
 					}
@@ -158,7 +162,10 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 
 		for (Class<?> impl : InstanceUtils.getConfigurationClassList(
 				context.getTargetClass(), context.getPropertyFactory())) {
-			BeanDefinition definition = getDefinition(impl);
+			BeanDefinition definition = getDefinitionByCache(impl.getName());
+			if(definition == null){
+				definition = new AutoBeanDefinition(new LoaderContext(impl, context));
+			}
 			if (definition != null && definition.isInstance()) {
 				logger.info("Configuration {} impl {}",
 						context.getTargetClass(), impl);
