@@ -1,6 +1,6 @@
 package scw.sql;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import scw.core.utils.ArrayUtils;
@@ -54,7 +54,7 @@ public class CommonSql implements Sql {
 
 	public CommonSql addParam(Object param) {
 		if (paramList == null) {
-			paramList = new LinkedList<Object>();
+			paramList = new ArrayList<Object>();
 		}
 		paramList.add(param);
 		return this;
@@ -62,7 +62,7 @@ public class CommonSql implements Sql {
 
 	public CommonSql setParam(int index, Object param) {
 		if (paramList == null) {
-			paramList = new LinkedList<Object>();
+			paramList = new ArrayList<Object>();
 		}
 
 		paramList.set(index, param);

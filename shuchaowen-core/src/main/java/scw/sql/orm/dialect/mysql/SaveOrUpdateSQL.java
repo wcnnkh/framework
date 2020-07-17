@@ -1,8 +1,8 @@
 package scw.sql.orm.dialect.mysql;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import scw.logger.Logger;
@@ -28,7 +28,7 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 		StringBuilder sb = new StringBuilder(512);
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
-		List<Object> params = new LinkedList<Object>();
+		List<Object> params = new ArrayList<Object>();
 		Iterator<Column> iterator = objectRelationalMapping.getColumns(clazz).iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();

@@ -46,6 +46,10 @@ public class DefaultActionManager implements ActionManager {
 					if (logger.isTraceEnabled()) {
 						logger.trace("register action: {}", action);
 					}
+					
+					if(action instanceof AbstractAction){
+						((AbstractAction) action).optimization();
+					}
 					actionMap.put(method, action);
 				}
 			}

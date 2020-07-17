@@ -1,8 +1,10 @@
 package scw.http.server;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
@@ -14,7 +16,7 @@ import scw.value.property.PropertyFactory;
 
 public class DefaultHttpService implements HttpService {
 	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
-	protected final LinkedList<HttpServiceFilter> filters = new LinkedList<HttpServiceFilter>();
+	private List<HttpServiceFilter> filters = new ArrayList<HttpServiceFilter>();
 
 	public DefaultHttpService() {
 	}
@@ -27,6 +29,7 @@ public class DefaultHttpService implements HttpService {
 		handlerAccessor.bind(resourceHandler);
 		filters.add(new CorsFilter(beanFactory, propertyFactory));
 		filters.addAll(InstanceUtils.getConfigurationList(HttpServiceFilter.class, beanFactory, propertyFactory));
+		filters = Arrays.asList(filters.toArray(new HttpServiceFilter[0]));
 		handlerAccessor
 				.bind(InstanceUtils.getConfigurationList(HttpServiceHandler.class, beanFactory, propertyFactory));
 	}
@@ -61,7 +64,7 @@ public class DefaultHttpService implements HttpService {
 		}
 	}
 
-	public LinkedList<HttpServiceFilter> getFilters() {
+	public List<HttpServiceFilter> getFilters() {
 		return filters;
 	}
 

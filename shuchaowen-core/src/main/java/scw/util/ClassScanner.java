@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -190,7 +189,7 @@ public class ClassScanner implements Accept<Class<?>> {
 	 */
 	protected final Collection<Class<?>> getDirectoryClasses(String directory, ClassLoader classLoader,
 			boolean initialize) {
-		List<Class<?>> list = new LinkedList<Class<?>>();
+		List<Class<?>> list = new ArrayList<Class<?>>();
 		appendDirectoryClass(null, new File(directory), list, classLoader, initialize);
 		return list;
 	}

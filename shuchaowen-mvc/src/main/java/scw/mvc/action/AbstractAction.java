@@ -2,9 +2,10 @@ package scw.mvc.action;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Set;
 
 import scw.aop.Invoker;
 import scw.core.annotation.AnnotatedElementUtils;
@@ -21,7 +22,7 @@ public abstract class AbstractAction implements Action {
 	private final AnnotatedElement targetClassAnnotatedElement;
 	private final AnnotatedElement methodAnnotatedElement;
 	private final ParameterDescriptor[] parameterDescriptors;
-	protected final Set<ActionFilter> actionFilters = new LinkedHashSet<ActionFilter>(4);
+	protected Collection<ActionFilter> actionFilters = new LinkedHashSet<ActionFilter>(4);
 
 	public AbstractAction(Class<?> targetClass, Method method) {
 		this.targetClass = targetClass;
@@ -30,6 +31,10 @@ public abstract class AbstractAction implements Action {
 		this.methodAnnotatedElement = AnnotatedElementUtils.forAnnotations(method.getAnnotations());
 		this.annotatedElement = new MultiAnnotatedElement(methodAnnotatedElement, targetClassAnnotatedElement);
 		this.parameterDescriptors = ParameterUtils.getParameterDescriptors(method);
+	}
+	
+	public void optimization(){
+		this.actionFilters = Arrays.asList(actionFilters.toArray(new ActionFilter[0]));
 	}
 
 	public AnnotatedElement getAnnotatedElement() {

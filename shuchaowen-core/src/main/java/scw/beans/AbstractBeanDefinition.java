@@ -25,8 +25,8 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
-	protected final Ioc ioc = new Ioc();
-	protected final List<Filter> filters = new ArrayList<Filter>(4);
+	protected Ioc ioc = new Ioc();
+	protected List<Filter> filters = new ArrayList<Filter>(4);
 	private boolean isNew = true;
 
 	public AbstractBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
@@ -152,6 +152,8 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 		try {
 			AbstractBeanDefinition beanDefinition = (AbstractBeanDefinition) super.clone();
 			beanDefinition.setNew(false);
+			beanDefinition.filters = Arrays.asList(filters.toArray(new Filter[0]));
+			beanDefinition.ioc.readyOnly();
 			return beanDefinition;
 		} catch (CloneNotSupportedException e) {
 			throw new RuntimeException(e);

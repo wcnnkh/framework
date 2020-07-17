@@ -1,9 +1,9 @@
 package scw.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +16,7 @@ public abstract class AbstractMultiValueMap<K, V> implements MultiValueMap<K, V>
 	protected abstract Map<K, List<V>> getTargetMap();
 
 	protected List<V> createList() {
-		return new LinkedList<V>();
+		return new ArrayList<V>();
 	}
 
 	protected Map<K, V> createMap() {

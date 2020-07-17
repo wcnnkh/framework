@@ -3,7 +3,6 @@ package scw.mvc.action;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,11 +18,11 @@ import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Methods;
 
 public class DefaultAction extends BeanAction {
-	protected final Set<HttpControllerDescriptor> httpHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
+	protected Collection<HttpControllerDescriptor> httpHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
-	protected final Set<HttpControllerDescriptor> targetClassHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
+	protected Collection<HttpControllerDescriptor> targetClassHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
-	protected final Set<HttpControllerDescriptor> methodHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
+	protected Collection<HttpControllerDescriptor> methodHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
 	
 	public DefaultAction(BeanFactory beanFactory, Class<?> targetClass,
@@ -43,6 +42,14 @@ public class DefaultAction extends BeanAction {
 				methodController.value(),
 				Arrays.asList(methodController.methods())));
 		this.actionFilters.addAll(getControllerActionFilters());
+	}
+	
+	@Override
+	public void optimization() {
+		this.httpHttpControllerDescriptors = Arrays.asList(httpHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
+		this.targetClassHttpControllerDescriptors = Arrays.asList(targetClassHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
+		this.methodHttpControllerDescriptors = Arrays.asList(methodHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
+		super.optimization();
 	}
 
 	protected Collection<HttpControllerDescriptor> createHttpControllerDescriptors(
@@ -135,15 +142,15 @@ public class DefaultAction extends BeanAction {
 		return httpMethods;
 	}
 	
-	public Set<HttpControllerDescriptor> getHttpControllerDescriptors() {
-		return Collections.unmodifiableSet(httpHttpControllerDescriptors);
+	public Collection<HttpControllerDescriptor> getHttpControllerDescriptors() {
+		return httpHttpControllerDescriptors;
 	}
 
-	public Set<HttpControllerDescriptor> getTargetClassHttpControllerDescriptors() {
-		return Collections.unmodifiableSet(targetClassHttpControllerDescriptors);
+	public Collection<HttpControllerDescriptor> getTargetClassHttpControllerDescriptors() {
+		return targetClassHttpControllerDescriptors;
 	}
 
-	public Set<HttpControllerDescriptor> getMethodHttpControllerDescriptors() {
-		return Collections.unmodifiableSet(methodHttpControllerDescriptors);
+	public Collection<HttpControllerDescriptor> getMethodHttpControllerDescriptors() {
+		return methodHttpControllerDescriptors;
 	}
 }

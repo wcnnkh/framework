@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -515,7 +514,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 		Sql sql = getSqlDialect().toTableStructureSql(tableClass, tName, Arrays.asList(TableStructureResultField.NAME));
 		List<String[]> list = select(String[].class, sql);
 		HashSet<String> hashSet = new HashSet<String>();
-		List<String> deleteList = new LinkedList<String>();
+		List<String> deleteList = new ArrayList<String>();
 		for (String[] names : list) {
 			String name = names[0];
 			hashSet.add(name);
@@ -525,7 +524,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 			}
 		}
 
-		List<Column> addList = new LinkedList<Column>();
+		List<Column> addList = new ArrayList<Column>();
 		for (Column column : getSqlDialect().getObjectRelationalMapping().getColumns(tableClass)) {
 			if (!hashSet.contains(column.getName())) {// 在已有的数据库中不存在，应该添加
 				addList.add(column);
