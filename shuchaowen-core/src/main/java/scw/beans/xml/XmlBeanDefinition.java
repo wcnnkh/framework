@@ -20,17 +20,17 @@ import scw.core.utils.StringUtils;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
-public class XmlBeanBuilder extends ConstructorBeanDefinition {
+public class XmlBeanDefinition extends ConstructorBeanDefinition {
 	private volatile ConstructorBuilder constructorBuilder;
 	private List<String> names = new ArrayList<String>();
 	private final String id;
 	private final boolean singleton;
 
-	public XmlBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Node beanNode) throws Exception {
+	public XmlBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Node beanNode) throws Exception {
 		this(beanFactory, propertyFactory, XmlBeanUtils.getClass(beanNode, true), beanNode);
 	}
 
-	public XmlBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass, Node beanNode)
+	public XmlBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass, Node beanNode)
 			throws Exception {
 		super(beanFactory, propertyFactory, targetClass);
 		Collection<String> filterNames = getFilters(beanNode);

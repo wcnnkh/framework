@@ -14,7 +14,7 @@ public class DefaultXmlBeanConfiguration extends XmlBeanConfiguration {
 			for (int i = 0; i < getNodeList().getLength(); i++) {
 				Node nRoot = getNodeList().item(i);
 				if (TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-					BeanDefinition beanDefinition = new XmlBeanBuilder(beanFactory, propertyFactory, nRoot);
+					BeanDefinition beanDefinition = new XmlBeanDefinition(beanFactory, propertyFactory, nRoot);
 					beanDefinitions.add(beanDefinition);
 				}
 			}

@@ -157,6 +157,7 @@ public class ClassScanner implements Accept<Class<?>> {
 
 			if (sann) {
 				classes = getClassesInternal(packageName);
+				classes = Arrays.asList(classes.toArray(new Class<?>[0]));
 				Collection<Class<?>> cache = classCache.putIfAbsent(packageName, classes);
 				if (cache != null) {
 					classes = cache;
