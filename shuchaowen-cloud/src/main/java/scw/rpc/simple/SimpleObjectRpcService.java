@@ -9,6 +9,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.Bytes;
 import scw.io.serialzer.Serializer;
+import scw.io.serialzer.SerializerUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeTypeUtils;
@@ -24,12 +25,18 @@ public final class SimpleObjectRpcService implements RpcService, RpcConstants {
 	private static Logger logger = LoggerUtils.getLogger(SimpleObjectRpcService.class);
 	private final String sign;
 	private final InstanceFactory instanceFactory;
-	private final Serializer serializer;
+	private Serializer serializer = SerializerUtils.DEFAULT_SERIALIZER;
 
-	public SimpleObjectRpcService(InstanceFactory instanceFactory, @ParameterName(RPC_HTTP_SIGN_NAME) String sign,
-			Serializer serializer) {
+	public SimpleObjectRpcService(InstanceFactory instanceFactory, @ParameterName(RPC_HTTP_SIGN_NAME) String sign) {
 		this.instanceFactory = instanceFactory;
 		this.sign = sign;
+	}
+
+	public Serializer getSerializer() {
+		return serializer;
+	}
+
+	public void setSerializer(Serializer serializer) {
 		this.serializer = serializer;
 	}
 
