@@ -3,7 +3,6 @@ package scw.sql;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import scw.core.utils.ArrayUtils;
@@ -68,7 +67,7 @@ public class WhereSql implements Sql {
 
 	private void checkParams() {
 		if (paramList == null) {
-			paramList = new LinkedList<Object>();
+			paramList = new ArrayList<Object>();
 		}
 	}
 

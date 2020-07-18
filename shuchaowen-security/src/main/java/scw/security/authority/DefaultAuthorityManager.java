@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -153,7 +152,7 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 	}
 
 	protected List<T> getRootList(Set<String> ids) {
-		List<T> list = new LinkedList<T>();
+		List<T> list = new ArrayList<T>();
 		for (String id : ids) {
 			T t = getAuthority(id);
 			if (t == null) {

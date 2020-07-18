@@ -1,9 +1,10 @@
 package scw.beans.xml;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.List;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -21,7 +22,7 @@ import scw.xml.XMLUtils;
 
 public class XmlBeanBuilder extends ConstructorBeanDefinition {
 	private volatile ConstructorBuilder constructorBuilder;
-	private final LinkedList<String> names = new LinkedList<String>();
+	private List<String> names = new ArrayList<String>();
 	private final String id;
 	private final boolean singleton;
 
@@ -57,6 +58,7 @@ public class XmlBeanBuilder extends ConstructorBeanDefinition {
 		this.id = getId(beanNode);
 		this.names.addAll(super.getNames());
 		this.names.addAll(Arrays.asList(getNames(beanNode)));
+		this.names = Arrays.asList(this.names.toArray(new String[0]));
 		this.singleton = XmlBeanUtils.isSingleton(beanNode) ? true : super.isSingleton();
 	}
 
@@ -77,7 +79,7 @@ public class XmlBeanBuilder extends ConstructorBeanDefinition {
 
 	@Override
 	public Collection<String> getNames() {
-		return Collections.unmodifiableCollection(names);
+		return names;
 	}
 
 	@Override

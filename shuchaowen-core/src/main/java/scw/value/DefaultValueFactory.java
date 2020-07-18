@@ -3,16 +3,16 @@ package scw.value;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
 import scw.core.utils.CollectionUtils;
 
 public class DefaultValueFactory<K> implements ValueFactory<K> {
-	private LinkedList<BaseValueFactory<K>> baseValueFactories;
+	private List<BaseValueFactory<K>> baseValueFactories;
 
 	public Value get(K key) {
 		if (baseValueFactories == null) {
@@ -38,9 +38,9 @@ public class DefaultValueFactory<K> implements ValueFactory<K> {
 
 	public void addBaseValueFactory(BaseValueFactory<K> baseValueFactory) {
 		if (baseValueFactory == null) {
-			baseValueFactories = new LinkedList<BaseValueFactory<K>>();
+			baseValueFactories = new ArrayList<BaseValueFactory<K>>();
 		}
-		baseValueFactories.addFirst(baseValueFactory);
+		baseValueFactories.add(baseValueFactory);
 	}
 
 	public void addBaseValueFactory(List<BaseValueFactory<K>> baseValueFactories) {

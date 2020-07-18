@@ -1,14 +1,14 @@
 package scw.mvc.view;
 
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.mvc.HttpChannel;
 import scw.util.CSVUtils;
 
-public final class CSVView extends LinkedList<Object[]> implements scw.mvc.view.View {
+public final class CSVView extends ArrayList<Object[]> implements scw.mvc.view.View {
 	private static final long serialVersionUID = 1L;
 	private String fileName;
 	private final char split;

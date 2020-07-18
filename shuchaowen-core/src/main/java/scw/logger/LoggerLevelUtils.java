@@ -1,9 +1,10 @@
 package scw.logger;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -16,7 +17,7 @@ import scw.util.comparator.CompareUtils;
 import scw.value.property.PropertyFactory;
 
 public class LoggerLevelUtils {
-	private static final LinkedList<KeyValuePair<String, Level>> LOGGER_LEVEL_LIST = new LinkedList<KeyValuePair<String, Level>>();
+	private static final List<LevelConfig> LOGGER_LEVEL_LIST;
 	public static final PropertyFactory PROPERTY_FACTORY = new LoggerPropertyFactory();
 
 	public static final Level DEFAULT_LEVEL;
@@ -27,12 +28,15 @@ public class LoggerLevelUtils {
 		DEFAULT_LEVEL = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level
 				.valueOf(defaultLevel.toUpperCase());
 
-		reader(ResourceUtils.getResourceOperations().getFormattedProperties(
+		List<LevelConfig> levelList = new ArrayList<LevelConfig>();
+		reader(levelList, ResourceUtils.getResourceOperations().getFormattedProperties(
 				"/scw/logger/logger-level.properties", PROPERTY_FACTORY).getResource());
 
 		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance()
 				.getValue("scw.logger.level.config", String.class,
 						"/logger-level.properties");
+		
+		
 		if (ResourceUtils.getResourceOperations().isExist(
 				loggerEnablePropertiePath)) {
 			FormatUtils.info(LoggerLevelUtils.class, "loading "
@@ -40,21 +44,22 @@ public class LoggerLevelUtils {
 			Properties properties = ResourceUtils.getResourceOperations()
 					.getFormattedProperties(loggerEnablePropertiePath,
 							PROPERTY_FACTORY).getResource();
-			reader(properties);
+			reader(levelList, properties);
 		}
 
-		Comparator<KeyValuePair<String, Level>> comparator = new Comparator<KeyValuePair<String, Level>>() {
+		Comparator<LevelConfig> comparator = new Comparator<LevelConfig>() {
 
-			public int compare(KeyValuePair<String, Level> o1,
-					KeyValuePair<String, Level> o2) {
+			public int compare(LevelConfig o1,
+					LevelConfig o2) {
 				return CompareUtils.compare(o1.getKey().length(), o2.getKey()
 						.length(), false);
 			}
 		};
-		Collections.sort(LOGGER_LEVEL_LIST, comparator);
+		Collections.sort(levelList, comparator);
+		LOGGER_LEVEL_LIST = Arrays.asList(levelList.toArray(new LevelConfig[0]));
 	}
-
-	private static void reader(Properties properties) {
+	
+	private static void reader(List<LevelConfig> list, Properties properties) {
 		if(properties == null){
 			return ;
 		}
@@ -75,7 +80,7 @@ public class LoggerLevelUtils {
 				continue;
 			}
 
-			LOGGER_LEVEL_LIST.add(new KeyValuePair<String, Level>(key
+			list.add(new LevelConfig(key
 					.toString(), level));
 		}
 	}
@@ -93,7 +98,7 @@ public class LoggerLevelUtils {
 		return DEFAULT_LEVEL;
 	}
 
-	public static Collection<KeyValuePair<String, Level>> getLevelConfigList() {
-		return Collections.unmodifiableCollection(LOGGER_LEVEL_LIST);
+	public static List<LevelConfig> getLevelConfigList() {
+		return LOGGER_LEVEL_LIST;
 	}
 }

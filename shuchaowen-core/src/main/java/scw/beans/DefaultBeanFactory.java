@@ -49,15 +49,13 @@ import scw.value.property.PropertyFactory;
 
 public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
-	public static final Collection<Class<Filter>> FILTERS = InstanceUtils.getConfigurationClassList(Filter.class,
-			GlobalPropertyFactory.getInstance());
 	protected volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
 	protected final PropertyFactory propertyFactory = new PropertyFactory();
-	private final List<BeanFactoryLifeCycle> beanFactoryLifeCycles = new ArrayList<BeanFactoryLifeCycle>();
-	protected final List<String> filterNameList = new ArrayList<String>();
-	protected final List<BeanBuilderLoader> beanBuilderLoaders = new ArrayList<BeanBuilderLoader>();
+	private List<BeanFactoryLifeCycle> beanFactoryLifeCycles = new ArrayList<BeanFactoryLifeCycle>();
+	private List<String> filterNameList = new ArrayList<String>();
+	private List<BeanBuilderLoader> beanBuilderLoaders = new ArrayList<BeanBuilderLoader>();
 	private final EventDispatcher<BeanEvent> eventDispatcher = new DefaultEventDispatcher<BeanEvent>(true);
 
 	public DefaultBeanFactory() {
@@ -443,14 +441,18 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	}
 
 	public void init() throws Exception {
-		for (Class<Filter> filter : FILTERS) {
+		for (Class<Filter> filter : InstanceUtils.getConfigurationClassList(Filter.class,
+				GlobalPropertyFactory.getInstance())) {
 			filterNameList.add(filter.getName());
 		}
+		filterNameList = Arrays.asList(filterNameList.toArray(new String[0]));
 
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
 		beanBuilderLoaders
 				.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, getPropertyFactory()));
+		beanBuilderLoaders = Arrays.asList(beanBuilderLoaders.toArray(new BeanBuilderLoader[0]));
+		
 		propertyFactory.addBasePropertyFactory(
 				InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, getPropertyFactory()));
 		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
@@ -473,6 +475,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 				this, getPropertyFactory())) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
+		beanFactoryLifeCycles = Arrays.asList(beanFactoryLifeCycles.toArray(new BeanFactoryLifeCycle[0]));
 	}
 
 	public void destroy() throws Exception {

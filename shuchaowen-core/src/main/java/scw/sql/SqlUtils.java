@@ -13,9 +13,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
@@ -262,7 +263,7 @@ public final class SqlUtils {
 	}
 
 	public static Collection<Sql> getSqlByFile(String path, boolean lines) {
-		LinkedList<Sql> list = new LinkedList<Sql>();
+		List<Sql> list = new ArrayList<Sql>();
 		if (lines) {
 			Collection<String> sqlList = ResourceUtils.getResourceOperations()
 					.getLines(path, Constants.DEFAULT_CHARSET_NAME).getResource();

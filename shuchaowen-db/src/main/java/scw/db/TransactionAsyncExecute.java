@@ -1,12 +1,12 @@
 package scw.db;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
 
-public final class TransactionAsyncExecute extends LinkedList<AsyncExecute> implements AsyncExecute {
+public final class TransactionAsyncExecute extends ArrayList<AsyncExecute> implements AsyncExecute {
 	private static final long serialVersionUID = 1L;
 
 	public void execute(DB db) {

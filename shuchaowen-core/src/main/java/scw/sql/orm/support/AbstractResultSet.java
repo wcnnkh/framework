@@ -15,7 +15,7 @@ import scw.sql.orm.TableNameMapping;
 public abstract class AbstractResultSet implements ResultSet {
 	private static final long serialVersionUID = 1L;
 	protected ResultSetResolver resultSetResolver;
-	protected LinkedList<Object[]> dataList;
+	protected List<Object[]> dataList;
 
 	public AbstractResultSet(ResultSetResolver resultSetResolver,
 			LinkedList<Object[]> dataList) {
@@ -28,7 +28,7 @@ public abstract class AbstractResultSet implements ResultSet {
 			if (resultSetResolver == null) {// 第一次
 				resultSetResolver = new ResultSetResolver(
 						resultSet.getMetaData());
-				dataList = new LinkedList<Object[]>();
+				dataList = new ArrayList<Object[]>();
 			}
 
 			dataList.add(SqlUtils.getRowValues(resultSet,
@@ -40,7 +40,7 @@ public abstract class AbstractResultSet implements ResultSet {
 		return resultSetResolver;
 	}
 
-	public final LinkedList<Object[]> getDataList() {
+	public final List<Object[]> getDataList() {
 		return dataList;
 	}
 
@@ -87,7 +87,7 @@ public abstract class AbstractResultSet implements ResultSet {
 			return ResultMapping.EMPTY_RESULT;
 		}
 
-		return createResultMapping(dataList.getFirst());
+		return createResultMapping(dataList.get(0));
 	}
 
 	public final ResultMapping getLast() {
@@ -95,7 +95,7 @@ public abstract class AbstractResultSet implements ResultSet {
 			return ResultMapping.EMPTY_RESULT;
 		}
 
-		return createResultMapping(dataList.getLast());
+		return createResultMapping(dataList.get(dataList.size()));
 	}
 
 	public final boolean isEmpty() {

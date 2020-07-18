@@ -1,8 +1,8 @@
 package scw.sql.orm.dialect.mysql;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,8 +43,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 		int index = 0;
 		StringBuilder where = null;
-		List<Object> paramList = new LinkedList<Object>();
-
+		List<Object> paramList = new ArrayList<Object>();
 		Collection<Column> notPrimaryKeys = objectRelationalMapping.getNotPrimaryKeys(clazz);
 		Iterator<Column> iterator = notPrimaryKeys.iterator();
 		// 处理CasType.AUTO_INCREMENT字段

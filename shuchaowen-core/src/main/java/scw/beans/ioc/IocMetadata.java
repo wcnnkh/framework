@@ -1,7 +1,7 @@
 package scw.beans.ioc;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 import scw.beans.BeanDefinition;
@@ -34,6 +34,6 @@ public class IocMetadata {
 	}
 
 	public void readyOnly() {
-		this.iocProcessors = Collections.unmodifiableList(iocProcessors);
+		this.iocProcessors = Arrays.asList(iocProcessors.toArray(new IocProcessor[0]));
 	}
 }
