@@ -21,7 +21,7 @@ import scw.util.comparator.CompareUtils;
 import scw.value.property.PropertyFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class ConfigurationScan implements Comparator<Class<?>> {
+public class ConfigurationScanner implements Comparator<Class<?>> {
 	protected Logger logger = LoggerUtils.getLogger(getClass());
 
 	public int compare(Class<?> o1, Class<?> o2) {

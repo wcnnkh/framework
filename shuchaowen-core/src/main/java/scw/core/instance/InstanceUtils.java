@@ -39,10 +39,9 @@ public final class InstanceUtils {
 		}
 	};
 
-	public static final ConfigurationScan CONFIGURATION_SCAN = new ConfigurationScan();
+	public static final ConfigurationScanner CONFIGURATION_SCANNER;
 
-	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
-			GlobalPropertyFactory.getInstance());
+	public static final InstanceFactory INSTANCE_FACTORY;
 
 	/**
 	 * 不调用构造方法实例化对象
@@ -50,6 +49,13 @@ public final class InstanceUtils {
 	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY;
 
 	static {
+		InstanceFactory instanceFactory = serviceLoader(InstanceFactory.class);
+		INSTANCE_FACTORY = instanceFactory == null? new DefaultInstanceFactory(
+				GlobalPropertyFactory.getInstance()):instanceFactory; 
+		
+		ConfigurationScanner configurationScanner = serviceLoader(ConfigurationScanner.class);
+		CONFIGURATION_SCANNER = configurationScanner == null? new ConfigurationScanner():configurationScanner;
+		
 		NoArgsInstanceFactory noArgsInstanceFactory = serviceLoader(NoArgsInstanceFactory.class, "scw.core.instance.SunNoArgsInstanceFactory",
 					"scw.core.instance.UnsafeNoArgsInstanceFactory");
 		NO_ARGS_INSTANCE_FACTORY = noArgsInstanceFactory;
@@ -156,7 +162,7 @@ public final class InstanceUtils {
 			Class<? extends T> type, PropertyFactory propertyFactory,
 			Collection<? extends Class> excludeTypes,
 			Collection<String> packageNames) {
-		return CONFIGURATION_SCAN.scan(type, propertyFactory, excludeTypes,
+		return CONFIGURATION_SCANNER.scan(type, propertyFactory, excludeTypes,
 				packageNames);
 	}
 
