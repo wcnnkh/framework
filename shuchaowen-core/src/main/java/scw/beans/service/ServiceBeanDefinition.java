@@ -1,5 +1,6 @@
 package scw.beans.service;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -11,13 +12,15 @@ import scw.core.utils.ArrayUtils;
 import scw.value.property.PropertyFactory;
 
 public class ServiceBeanDefinition extends AutoBeanDefinition {
-
+	private Collection<String> names;
+	
 	public ServiceBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
 		super(beanFactory, propertyFactory, targetClass);
+		this.names = getInternalNames();
+		this.names = Arrays.asList(names.toArray(new String[0]));
 	}
-
-	@Override
-	public Collection<String> getNames() {
+	
+	private Collection<String> getInternalNames(){
 		Service service = getAnnotatedElement().getAnnotation(Service.class);
 		if (service == null) {
 			return super.getNames();
@@ -39,5 +42,10 @@ public class ServiceBeanDefinition extends AutoBeanDefinition {
 		HashSet<String> list = new HashSet<String>(super.getNames());
 		list.add(serviceInterface.getName());
 		return list;
+	}
+
+	@Override
+	public Collection<String> getNames() {
+		return names;
 	}
 }
