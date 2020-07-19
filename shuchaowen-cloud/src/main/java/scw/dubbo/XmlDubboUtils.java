@@ -22,8 +22,6 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.beans.BeanUtils;
-import scw.beans.annotation.Service;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
@@ -112,24 +110,18 @@ public final class XmlDubboUtils {
 						String packageName = getPackageName(propertyFactory, node);
 						if (StringUtils.isNotEmpty(packageName)) {
 							for (Class<?> clazz : ClassScanner.getInstance().getClasses(packageName)) {
-								Service service = clazz.getAnnotation(Service.class);
-								if (service == null) {
-									continue;
-								}
-
-								Class<?> interfaceService = BeanUtils.getServiceInterface(clazz);
-								if (interfaceService == null) {
+								if(!clazz.isInterface()){
 									continue;
 								}
 								
 								if(!refInstanceFactory.isInstance(clazz)){
-									logger.debug("{} not support create instance", clazz);
+									logger.warn("{} not support create instance", clazz);
 									continue;
 								}
 
 								Object refInstance = refInstanceFactory.getInstance(clazz);
 								ServiceConfig<Object> scanService = Copy.copy(ServiceConfig.class, config);
-								scanService.setInterface(interfaceService);
+								scanService.setInterface(clazz);
 								scanService.setRef(refInstance);
 								if (scanService.isValid()) {
 									list.add(scanService);
