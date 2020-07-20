@@ -48,6 +48,10 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		this.eventDispatcher = new DefaultEventDispatcher<PropertyEvent>(concurrent);
 	}
 
+	public boolean isPriorityOfUseSelf() {
+		return priorityOfUseSelf;
+	}
+
 	public void addFirstBasePropertyFactory(BasePropertyFactory basePropertyFactory) {
 		if (basePropertyFactory == null) {
 			return;

@@ -115,7 +115,7 @@ public final class XmlDubboUtils {
 								}
 								
 								if(!refInstanceFactory.isInstance(clazz)){
-									logger.warn("{} not support create instance", clazz);
+									logger.warn("{} not supported get instance", clazz);
 									continue;
 								}
 

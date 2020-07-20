@@ -9,14 +9,15 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import scw.core.annotation.UseJavaVersion;
 import scw.event.support.EventType;
 import scw.io.Resource;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.KeyValuePair;
 import scw.value.property.SystemPropertyFactory;
 
 /**
@@ -27,15 +28,19 @@ import scw.value.property.SystemPropertyFactory;
  *
  */
 @UseJavaVersion(7)
-public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDispatcher {
-	public static final boolean USE_WATCH_SERVICE = SystemPropertyFactory.getInstance().getValue("resource.watch.enable", boolean.class, true);
-	private static Logger logger = LoggerUtils.getLogger(WatchServiceResourceEventDispatcher.class);
+public class WatchServiceResourceEventDispatcher extends
+		DefaultResourceEventDispatcher {
+	public static final boolean USE_WATCH_SERVICE = SystemPropertyFactory
+			.getInstance().getValue("resource.watch.enable", boolean.class,
+					true);
+	private static Logger logger = LoggerUtils
+			.getLogger(WatchServiceResourceEventDispatcher.class);
 	private static final WatchService WATCH_SERVICE;
 	private static ConcurrentHashMap<Path, ResourceWatchKey> listenerMap;
 
 	static {
 		WatchService watchService = null;
-		if(USE_WATCH_SERVICE){
+		if (USE_WATCH_SERVICE) {
 			try {
 				watchService = FileSystems.getDefault().newWatchService();
 			} catch (IOException e) {
@@ -96,12 +101,15 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 			ResourceWatchKey resourceWatchKey = listenerMap.get(path);
 			if (resourceWatchKey == null) {
 				resourceWatchKey = new ResourceWatchKey();
-				ResourceWatchKey old = listenerMap.putIfAbsent(path, resourceWatchKey);
+				ResourceWatchKey old = listenerMap.putIfAbsent(path,
+						resourceWatchKey);
 				if (old != null) {
 					resourceWatchKey = old;
 				} else {
-					WatchKey watchKey = path.register(WATCH_SERVICE, StandardWatchEventKinds.ENTRY_CREATE,
-							StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+					WatchKey watchKey = path.register(WATCH_SERVICE,
+							StandardWatchEventKinds.ENTRY_CREATE,
+							StandardWatchEventKinds.ENTRY_DELETE,
+							StandardWatchEventKinds.ENTRY_MODIFY);
 					resourceWatchKey.setWatchKey(watchKey);
 					logger.debug("register watch service path: {}", path);
 				}
@@ -109,7 +117,8 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 
 			resourceWatchKey.register(file, getResource());
 		} catch (IOException e) {
-			logger.debug(e, "register watch service error resource: {}", getResource());
+			logger.debug(e, "register watch service error resource: {}",
+					getResource());
 			// 如果出现异常就使用默认的方式来实现监听
 			super.listener();
 		}
@@ -117,10 +126,11 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 
 	private static class ResourceWatchKey implements Runnable {
 		private WatchKey watchKey;
-		private Map<String, Resource> resourceMap = new ConcurrentHashMap<String, Resource>();
+		private CopyOnWriteArrayList<KeyValuePair<String, Resource>> resourceList = new CopyOnWriteArrayList<KeyValuePair<String, Resource>>();
 
 		public void register(File file, Resource resource) {
-			resourceMap.put(file.getName(), resource);
+			resourceList.add(new KeyValuePair<String, Resource>(file.getName(),
+					resource));
 		}
 
 		public void setWatchKey(WatchKey watchKey) {
@@ -143,9 +153,11 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 				EventType eventType = null;
 				if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
 					eventType = EventType.CREATE;
-				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
+				} else if (event.kind().equals(
+						StandardWatchEventKinds.ENTRY_MODIFY)) {
 					eventType = EventType.UPDATE;
-				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
+				} else if (event.kind().equals(
+						StandardWatchEventKinds.ENTRY_DELETE)) {
 					eventType = EventType.DELETE;
 				}
 				if (eventType == null) {
@@ -153,13 +165,19 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 				}
 
 				File file = path.toFile();
-				Resource resource = resourceMap.get(file.getName());
-				if (resource == null) {
-					return;
+				for (KeyValuePair<String, Resource> keyValuePair : resourceList) {
+					if (file.getName().equals(keyValuePair.getKey())) {
+						keyValuePair
+								.getValue()
+								.getEventDispatcher()
+								.publishEvent(
+										new ResourceEvent(eventType,
+												keyValuePair.getValue()));
+					}
 				}
-
-				resource.getEventDispatcher().publishEvent(new ResourceEvent(eventType, resource));
+				;
 			}
+			
 			watchKey.reset();
 		}
 	}

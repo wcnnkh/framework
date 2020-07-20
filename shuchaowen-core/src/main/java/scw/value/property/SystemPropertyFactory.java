@@ -7,7 +7,7 @@ import scw.core.utils.StringUtils;
 import scw.util.EnumerationConvert;
 import scw.util.MultiEnumeration;
 
-public final class SystemPropertyFactory extends StringValuePropertyFactory {
+public final class SystemPropertyFactory extends ExtendGetPropertyFactory {
 	public static final String PROPERTY_MAVEN_HOME = "maven.home";
 	public static final String PROPERTY_PATH_SEPARATOR = "path.separator";
 	public static final String PROPERTY_JAVA_CLASS_PATH = "java.class.path";
@@ -19,6 +19,7 @@ public final class SystemPropertyFactory extends StringValuePropertyFactory {
 	private static SystemPropertyFactory instance = new SystemPropertyFactory();
 
 	private SystemPropertyFactory() {
+		super(true, true);
 	};
 
 	public static SystemPropertyFactory getInstance() {
@@ -26,16 +27,17 @@ public final class SystemPropertyFactory extends StringValuePropertyFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public Enumeration<String> internalEnumerationKeys() {
+	@Override
+	public Enumeration<String> enumerationKeys() {
 		Enumeration<String> e1 = EnumerationConvert
 				.convertToStringEnumeration(System.getProperties().keys());
 		Enumeration<String> e2 = Collections.enumeration(System.getenv()
 				.keySet());
-		return new MultiEnumeration<String>(e1, e2);
+		return new MultiEnumeration<String>(e1, e2, super.enumerationKeys());
 	}
 
 	@Override
-	protected String getStringValue(String key) {
+	protected Object getExtendValue(String key) {
 		String v = System.getProperty(key);
 		if (v == null) {
 			v = System.getenv(key);
@@ -84,7 +86,7 @@ public final class SystemPropertyFactory extends StringValuePropertyFactory {
 	public String getOSName() {
 		return getString(PROPERTY_OS_NAME);
 	}
-	
+
 	public boolean isWin() {
 		return getOSName().toLowerCase().startsWith("win");
 	}
