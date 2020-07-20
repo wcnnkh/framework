@@ -2245,6 +2245,15 @@ public final class StringUtils {
 		return Double.parseDouble(v);
 	}
 
+	public static KeyValuePair<String, String> parseKV(String text, String separator) {
+		int index = text.indexOf(separator);
+		if (index == -1) {
+			return null;
+		}
+
+		return new KeyValuePair<String, String>(text.substring(0, index), text.substring(index + separator.length()));
+	}
+
 	public static String toString(Object value, Object defaultValue) {
 		return toString(value, defaultValue, true);
 	}
@@ -2253,8 +2262,8 @@ public final class StringUtils {
 		if (value == null) {
 			return defaultValue == null ? null : defaultValue.toString();
 		}
-		
-		String v = (value instanceof String)? (String)value:value.toString();
+
+		String v = (value instanceof String) ? (String) value : value.toString();
 		if (checkLength && !StringUtils.hasLength(v)) {
 			return defaultValue.toString();
 		}
@@ -2659,9 +2668,10 @@ public final class StringUtils {
 	public static KeyValuePair<Integer, Integer> indexOf(String text, String prefix, String suffix) {
 		return indexOf(text.toCharArray(), prefix.toCharArray(), suffix.toCharArray(), 0, text.length());
 	}
-	
+
 	/**
 	 * 从左边开始获取组合第一次出现的位置, prefix和suffix必须是成对出现的，允许嵌套
+	 * 
 	 * @param source
 	 * @param prefix
 	 * @param suffix
@@ -2669,7 +2679,8 @@ public final class StringUtils {
 	 * @param endIndex
 	 * @return
 	 */
-	public static KeyValuePair<Integer, Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex, int endIndex) {
+	public static KeyValuePair<Integer, Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex,
+			int endIndex) {
 		int begin = indexOf(source, prefix, 0, endIndex);
 		if (begin == -1) {
 			return null;
@@ -2715,7 +2726,7 @@ public final class StringUtils {
 	public static int lastIndexOf(char[] source, char[] target, int fromIndex, int endIndex) {
 		int sourceCount = Math.min(fromIndex, source.length) - endIndex;
 		int index = lastIndexOf(source, endIndex, sourceCount, target, 0, target.length, sourceCount);
-		return index == -1? -1: index + endIndex;
+		return index == -1 ? -1 : index + endIndex;
 	}
 
 	/**

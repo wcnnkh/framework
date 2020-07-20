@@ -52,14 +52,14 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	protected volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
 	private volatile Map<String, String> nameMappingMap = new HashMap<String, String>();
-	protected final PropertyFactory propertyFactory = new PropertyFactory();
+	protected final PropertyFactory propertyFactory = new PropertyFactory(true, true);
 	private List<BeanFactoryLifeCycle> beanFactoryLifeCycles = new ArrayList<BeanFactoryLifeCycle>();
 	private List<String> filterNameList = new ArrayList<String>();
 	private List<BeanBuilderLoader> beanBuilderLoaders = new ArrayList<BeanBuilderLoader>();
 	private final EventDispatcher<BeanEvent> eventDispatcher = new DefaultEventDispatcher<BeanEvent>(true);
 
 	public DefaultBeanFactory() {
-		propertyFactory.addBasePropertyFactory(GlobalPropertyFactory.getInstance());
+		propertyFactory.addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
 		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
 				NoArgsInstanceFactory.class.getName());
 		addInternalSingleton(PropertyFactory.class, propertyFactory);
@@ -453,7 +453,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 				.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, getPropertyFactory()));
 		beanBuilderLoaders = Arrays.asList(beanBuilderLoaders.toArray(new BeanBuilderLoader[0]));
 		
-		propertyFactory.addBasePropertyFactory(
+		propertyFactory.addLastBasePropertyFactory(
 				InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, getPropertyFactory()));
 		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
 				getPropertyFactory())) {

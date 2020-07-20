@@ -9,8 +9,8 @@ import scw.value.property.StringValuePropertyFactory;
 public class LoggerPropertyFactory extends StringValuePropertyFactory {
 
 	public LoggerPropertyFactory() {
-		addBasePropertyFactory(Constants.PROPERTY_FACTORY);
-		addBasePropertyFactory(GlobalPropertyFactory.getInstance());
+		addFirstBasePropertyFactory(Constants.PROPERTY_FACTORY);
+		addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
 	}
 
 	@Override

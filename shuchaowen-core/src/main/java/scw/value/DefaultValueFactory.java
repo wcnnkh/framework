@@ -7,13 +7,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.ListIterator;
 
 import scw.core.utils.CollectionUtils;
 
 public class DefaultValueFactory<K> implements ValueFactory<K> {
-	private List<BaseValueFactory<K>> baseValueFactories;
-
+	private volatile List<BaseValueFactory<K>> baseValueFactories;
+	
 	public Value get(K key) {
 		if (baseValueFactories == null) {
 			return null;
@@ -28,7 +27,7 @@ public class DefaultValueFactory<K> implements ValueFactory<K> {
 		return null;
 	}
 
-	protected Collection<BaseValueFactory<K>> getBaseValueFactories() {
+	public Collection<BaseValueFactory<K>> getBaseValueFactories() {
 		if (baseValueFactories == null) {
 			return Collections.emptyList();
 		}
@@ -36,22 +35,33 @@ public class DefaultValueFactory<K> implements ValueFactory<K> {
 		return Collections.unmodifiableList(baseValueFactories);
 	}
 
-	public void addBaseValueFactory(BaseValueFactory<K> baseValueFactory) {
-		if (baseValueFactory == null) {
-			baseValueFactories = new ArrayList<BaseValueFactory<K>>();
+	public void addLastBaseValueFactory(BaseValueFactory<K> baseValueFactory) {
+		synchronized (this) {
+			if (baseValueFactories == null) {
+				baseValueFactories = new ArrayList<BaseValueFactory<K>>();
+			}
+
+			baseValueFactories.add(baseValueFactory);
 		}
-		baseValueFactories.add(baseValueFactory);
 	}
 
-	public void addBaseValueFactory(List<BaseValueFactory<K>> baseValueFactories) {
+	public void addFirstBaseValueFactoryBefore(BaseValueFactory<K> baseValueFactory) {
+		synchronized (this) {
+			if (baseValueFactories == null) {
+				baseValueFactories = new ArrayList<BaseValueFactory<K>>();
+			}
+
+			baseValueFactories.add(0, baseValueFactory);
+		}
+	}
+
+	public void addLastBaseValueFactory(List<BaseValueFactory<K>> baseValueFactories) {
 		if (CollectionUtils.isEmpty(baseValueFactories)) {
 			return;
 		}
 
-		ListIterator<BaseValueFactory<K>> listIterator = baseValueFactories
-				.listIterator(baseValueFactories.size());
-		while (listIterator.hasPrevious()) {
-			addBaseValueFactory(listIterator.previous());
+		for (BaseValueFactory<K> factory : baseValueFactories) {
+			addLastBaseValueFactory(factory);
 		}
 	}
 
@@ -73,128 +83,107 @@ public class DefaultValueFactory<K> implements ValueFactory<K> {
 
 	public final byte getByteValue(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsByteValue() : value
-				.getAsByteValue();
+		return value == null ? getDefaultValue(key).getAsByteValue() : value.getAsByteValue();
 	}
 
 	public final Short getShort(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsShort() : value
-				.getAsShort();
+		return value == null ? getDefaultValue(key).getAsShort() : value.getAsShort();
 	}
 
 	public final short getShortValue(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsShortValue() : value
-				.getAsShortValue();
+		return value == null ? getDefaultValue(key).getAsShortValue() : value.getAsShortValue();
 	}
 
 	public final Integer getInteger(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsInteger() : value
-				.getAsInteger();
+		return value == null ? getDefaultValue(key).getAsInteger() : value.getAsInteger();
 	}
 
 	public final int getIntValue(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsIntValue() : value
-				.getAsIntValue();
+		return value == null ? getDefaultValue(key).getAsIntValue() : value.getAsIntValue();
 	}
 
 	public final Long getLong(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsLong() : value
-				.getAsLong();
+		return value == null ? getDefaultValue(key).getAsLong() : value.getAsLong();
 	}
 
 	public final long getLongValue(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsLongValue() : value
-				.getAsLongValue();
+		return value == null ? getDefaultValue(key).getAsLongValue() : value.getAsLongValue();
 	}
 
 	public final Boolean getBoolean(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsBoolean() : value
-				.getAsBoolean();
+		return value == null ? getDefaultValue(key).getAsBoolean() : value.getAsBoolean();
 	}
 
 	public final boolean getBooleanValue(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsBooleanValue() : value
-				.getAsBooleanValue();
+		return value == null ? getDefaultValue(key).getAsBooleanValue() : value.getAsBooleanValue();
 	}
 
 	public final Float getFloat(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsFloat() : value
-				.getAsFloat();
+		return value == null ? getDefaultValue(key).getAsFloat() : value.getAsFloat();
 	}
 
 	public final float getFloatValue(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsFloatValue() : value
-				.getAsFloatValue();
+		return value == null ? getDefaultValue(key).getAsFloatValue() : value.getAsFloatValue();
 	}
 
 	public final Double getDouble(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsDouble() : value
-				.getAsDouble();
+		return value == null ? getDefaultValue(key).getAsDouble() : value.getAsDouble();
 	}
 
 	public final double getDoubleValue(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsDoubleValue() : value
-				.getAsDoubleValue();
+		return value == null ? getDefaultValue(key).getAsDoubleValue() : value.getAsDoubleValue();
 	}
 
 	public final char getChar(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsChar() : value
-				.getAsChar();
+		return value == null ? getDefaultValue(key).getAsChar() : value.getAsChar();
 	}
 
 	public final Character getCharacter(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsCharacter() : value
-				.getAsCharacter();
+		return value == null ? getDefaultValue(key).getAsCharacter() : value.getAsCharacter();
 	}
 
 	public final String getString(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsString() : value
-				.getAsString();
+		return value == null ? getDefaultValue(key).getAsString() : value.getAsString();
 	}
 
 	public final BigInteger getBigInteger(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsBigInteger() : value
-				.getAsBigInteger();
+		return value == null ? getDefaultValue(key).getAsBigInteger() : value.getAsBigInteger();
 	}
 
 	public final BigDecimal getBigDecimal(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsBigDecimal() : value
-				.getAsBigDecimal();
+		return value == null ? getDefaultValue(key).getAsBigDecimal() : value.getAsBigDecimal();
 	}
 
 	public final Number getNumber(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsNumber() : value
-				.getAsNumber();
+		return value == null ? getDefaultValue(key).getAsNumber() : value.getAsNumber();
 	}
 
 	public final Class<?> getClass(K key) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsClass() : value
-				.getAsClass();
+		return value == null ? getDefaultValue(key).getAsClass() : value.getAsClass();
 	}
 
 	public final Enum<?> getEnum(K key, Class<?> enumType) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsEnum(enumType) : value
-				.getAsEnum(enumType);
+		return value == null ? getDefaultValue(key).getAsEnum(enumType) : value.getAsEnum(enumType);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -254,8 +243,7 @@ public class DefaultValueFactory<K> implements ValueFactory<K> {
 
 	protected Object getObjectSupport(K key, Class<?> type) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsObject(type) : value
-				.getAsObject(type);
+		return value == null ? getDefaultValue(key).getAsObject(type) : value.getAsObject(type);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -269,8 +257,7 @@ public class DefaultValueFactory<K> implements ValueFactory<K> {
 
 	protected Object getObjectSupport(K key, Type type) {
 		Value value = get(key);
-		return value == null ? getDefaultValue(key).getAsObject(type) : value
-				.getAsObject(type);
+		return value == null ? getDefaultValue(key).getAsObject(type) : value.getAsObject(type);
 	}
 
 	public Object getValue(K key, Type type, Object defaultValue) {

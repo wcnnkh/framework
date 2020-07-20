@@ -3,7 +3,7 @@ package scw.value.property;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import scw.value.StringValue;
+import scw.value.AnyValue;
 import scw.value.Value;
 
 public class StaticFieldPropertyFactory extends PropertyFactory {
@@ -11,8 +11,8 @@ public class StaticFieldPropertyFactory extends PropertyFactory {
 	private final String prefix;
 	private final boolean toUpperCase;
 
-	public StaticFieldPropertyFactory(Class<?> clazz, String prefix,
-			boolean toUpperCase) {
+	public StaticFieldPropertyFactory(Class<?> clazz, String prefix, boolean toUpperCase) {
+		super(true, true);
 		this.clazz = clazz;
 		this.prefix = prefix;
 		this.toUpperCase = toUpperCase;
@@ -31,8 +31,7 @@ public class StaticFieldPropertyFactory extends PropertyFactory {
 	}
 
 	protected Object getFieldValue(String prefix, String key)
-			throws NoSuchFieldException, SecurityException,
-			IllegalArgumentException, IllegalAccessException {
+			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		String k = key.toUpperCase();
 		if (k.startsWith(prefix)) {
 			k = k.substring(prefix.length());
@@ -45,19 +44,13 @@ public class StaticFieldPropertyFactory extends PropertyFactory {
 		return null;
 	}
 
-	protected Value createValue(String key, Object value) {
-		return value == null ? null : new StringValue(value.toString(),
-				getDefaultValue(key));
-	}
-
 	@Override
 	public Value get(String key) {
 		try {
-			Object value = isToUpperCase() ? getFieldValue(
-					prefix.toUpperCase(), key.toUpperCase()) : getFieldValue(
-					prefix, key);
+			Object value = isToUpperCase() ? getFieldValue(prefix.toUpperCase(), key.toUpperCase())
+					: getFieldValue(prefix, key);
 			if (value != null) {
-				return createValue(key, value);
+				return new AnyValue(value);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

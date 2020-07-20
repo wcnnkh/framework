@@ -85,10 +85,6 @@ public final class SystemPropertyFactory extends StringValuePropertyFactory {
 		return getString(PROPERTY_OS_NAME);
 	}
 	
-	public String getJavaVersion(){
-		return getString("java.version");
-	}
-
 	public boolean isWin() {
 		return getOSName().toLowerCase().startsWith("win");
 	}

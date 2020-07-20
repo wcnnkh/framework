@@ -21,7 +21,7 @@ public abstract class AbstractFileLinesValueProcesser extends AbstractValueProce
 		ObservableResource<List<String>> res = ResourceUtils.getResourceOperations().getLines(name, charsetName);
 		field.getSetter().set(bean, parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name,
 				charsetName, res.getResource()));
-		if (isRegisterListener(beanDefinition, field)) {
+		if (isRegisterListener(beanDefinition, field, value)) {
 			res.registerListener(new ObservableResourceEventListener<List<String>>() {
 
 				public void onEvent(ObservableResourceEvent<List<String>> event) {

@@ -1,36 +1,25 @@
 package scw.application;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-import scw.core.utils.ArrayUtils;
-import scw.value.StringValue;
+import scw.core.utils.StringUtils;
+import scw.util.KeyValuePair;
+import scw.value.AnyValue;
 import scw.value.Value;
 
 public class MainArgs {
-	private final Value[] args;
+	private final String[] args;
 
 	public MainArgs(String[] args) {
-		if (ArrayUtils.isEmpty(args)) {
-			this.args = new Value[0];
-		} else {
-			this.args = new Value[args.length];
-			for (int i = 0; i < args.length; i++) {
-				this.args[i] = new StringValue(args[i]);
-			}
-		}
-	}
-
-	public MainArgs(Value[] args) {
-		this.args = args;
+		this.args = args == null ? new String[0] : args;
 	}
 
 	public int indexOf(String value) {
-		return indexOf(new StringValue(value));
-	}
-
-	public int indexOf(Value value) {
 		for (int i = 0; i < args.length; i++) {
-			if (args[i].equals(value)) {
+			if (value.equals(args[i])) {
 				return i;
 			}
 		}
@@ -38,14 +27,14 @@ public class MainArgs {
 	}
 
 	public Value get(int index) {
-		return args[index];
+		return new AnyValue(args[index]);
 	}
 
 	public int length() {
 		return args.length;
 	}
 
-	public Value[] getArgs() {
+	public String[] getArgs() {
 		return args.clone();
 	}
 
@@ -59,11 +48,28 @@ public class MainArgs {
 			return null;
 		}
 
-		return args[index + 1];
+		return get(index + 1);
 	}
-	
+
 	@Override
 	public String toString() {
 		return Arrays.toString(args);
+	}
+
+	public Map<String, String> getParameterMap() {
+		if (args.length == 0) {
+			return Collections.emptyMap();
+		}
+
+		Map<String, String> map = new HashMap<String, String>(8);
+		for (String value : args) {
+			if (value.startsWith("--") && value.indexOf("=") != -1) {
+				KeyValuePair<String, String> keyValuePair = StringUtils.parseKV(value.substring(2), "=");
+				if (keyValuePair != null) {
+					map.put(keyValuePair.getKey(), keyValuePair.getValue());
+				}
+			}
+		}
+		return map;
 	}
 }

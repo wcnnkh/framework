@@ -8,10 +8,12 @@ import java.net.URL;
 
 import scw.io.event.EmptyResourceEventDispatcher;
 import scw.io.event.ResourceEventDispatcher;
+import scw.value.property.SystemPropertyFactory;
 
 public interface Resource extends InputStreamSource, OutputStreamSource {
 	public static final EmptyResourceEventDispatcher EMPTY_EVENT_DISPATCHER = new EmptyResourceEventDispatcher();
 	public static final Resource NONEXISTENT_RESOURCE = new NonexistentResource();
+	public static final boolean SUPPORT_EVENT_DISPATCHER = SystemPropertyFactory.getInstance().getValue("resource.event.dispathcer.enable", boolean.class, true);
 
 	/**
 	 * 是否存在

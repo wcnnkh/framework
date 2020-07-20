@@ -16,7 +16,7 @@ public class DefaultValueProcess extends AbstractValueProcesser {
 			String charsetName) {
 		scw.value.Value v = propertyFactory.get(name);
 		field.getSetter().set(bean, v == null ? null : v.getAsObject(field.getSetter().getGenericType()));
-		if (isRegisterListener(beanDefinition, field)) {
+		if (isRegisterListener(beanDefinition, field, value)) {
 			propertyFactory.registerListener(name, new EventListener<PropertyEvent>() {
 
 				public void onEvent(PropertyEvent event) {

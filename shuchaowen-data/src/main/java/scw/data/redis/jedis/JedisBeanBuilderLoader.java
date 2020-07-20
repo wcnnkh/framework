@@ -15,7 +15,6 @@ import scw.core.utils.StringUtils;
 import scw.data.redis.RedisConstants;
 import scw.io.ResourceUtils;
 import scw.util.ConfigUtils;
-import scw.value.property.PropertiesPropertyFactory;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
@@ -100,8 +99,8 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 			Properties properties = ResourceUtils.getResourceOperations()
 					.getFormattedProperties(getConfigName(propertyFactory),
 							Constants.DEFAULT_CHARSET_NAME).getResource();
-			PropertyFactory propertyFactory = new PropertiesPropertyFactory(
-					properties);
+			PropertyFactory propertyFactory = new PropertyFactory(false, true);
+			propertyFactory.loadProperties(properties);
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);
 			if (StringUtils.isEmpty(host)) {
 				host = "127.0.0.1";

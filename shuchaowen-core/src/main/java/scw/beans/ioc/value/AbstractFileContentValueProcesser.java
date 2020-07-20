@@ -19,7 +19,7 @@ public abstract class AbstractFileContentValueProcesser extends AbstractValuePro
 		ObservableResource<String> res = ResourceUtils.getResourceOperations().getContent(name, charsetName);
 		field.getSetter().set(bean, parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name,
 				charsetName, res.getResource()));
-		if (isRegisterListener(beanDefinition, field)) {
+		if (isRegisterListener(beanDefinition, field, value)) {
 			res.registerListener(new ObservableResourceEventListener<String>() {
 
 				public void onEvent(ObservableResourceEvent<String> event) {

@@ -8,6 +8,10 @@ import scw.value.Value;
 
 public abstract class StringValuePropertyFactory extends PropertyFactory {
 
+	public StringValuePropertyFactory() {
+		super(true, true);
+	}
+	
 	@Override
 	public final Value get(String key) {
 		String value = getStringValue(key);
