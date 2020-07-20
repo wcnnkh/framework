@@ -20,9 +20,9 @@ public abstract class AbstractValueProcesser implements ValueProcesser {
 		processInteranl(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName);
 	}
 
-	protected boolean isRegisterListener(BeanDefinition beanDefinition, Field field) {
-		return Modifier.isStatic(field.getSetter().getModifiers())
-				|| (beanDefinition != null && beanDefinition.isSingleton());
+	protected boolean isRegisterListener(BeanDefinition beanDefinition, Field field, Value value) {
+		return (Modifier.isStatic(field.getSetter().getModifiers())
+				|| (beanDefinition != null && beanDefinition.isSingleton())) && value.listener();
 	}
 
 	protected abstract void processInteranl(BeanDefinition beanDefinition, BeanFactory beanFactory,

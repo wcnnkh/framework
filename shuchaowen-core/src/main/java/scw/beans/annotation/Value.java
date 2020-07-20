@@ -18,4 +18,10 @@ public @interface Value {
 	Class<? extends ValueProcesser> processer() default DefaultValueProcess.class;
 
 	String charsetName() default "";
+	
+	/**
+	 * 是否监听变更
+	 * @return
+	 */
+	boolean listener() default true;
 }

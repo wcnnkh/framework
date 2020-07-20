@@ -22,7 +22,7 @@ public abstract class AbstractFilePropertiesValueProcesser extends AbstractValue
 				charsetName, propertyFactory);
 		field.getSetter().set(bean, parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name,
 				charsetName, res.getResource()));
-		if (isRegisterListener(beanDefinition, field)) {
+		if (isRegisterListener(beanDefinition, field, value)) {
 			res.registerListener(new ObservableResourceEventListener<Properties>() {
 
 				public void onEvent(ObservableResourceEvent<Properties> event) {

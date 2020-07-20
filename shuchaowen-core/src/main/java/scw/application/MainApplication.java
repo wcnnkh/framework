@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
@@ -21,7 +22,12 @@ public class MainApplication extends CommonApplication implements Application {
 		super(DEFAULT_BEANS_PATH);
 		this.mainClass = mainClass;
 		this.args = args;
+		
 		configuration(mainClass, args);
+		for(Entry<String, String> entry : args.getParameterMap().entrySet()){
+			getPropertyFactory().put(entry.getKey(), entry.getValue());
+		}
+		
 		this.logger = LoggerUtils.getLogger(mainClass);
 		if (args != null) {
 			logger.debug("args: {}", args);

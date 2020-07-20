@@ -20,7 +20,7 @@ public abstract class AbstractFileInputStreamValueProcesser extends AbstractValu
 		ObservableResource<UnsafeByteArrayInputStream> res = ResourceUtils.getResourceOperations().getInputStream(name);
 		field.getSetter().set(bean, parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name,
 				charsetName, res.getResource()));
-		if (isRegisterListener(beanDefinition, field)) {
+		if (isRegisterListener(beanDefinition, field, value)) {
 			res.registerListener(new ObservableResourceEventListener<UnsafeByteArrayInputStream>() {
 
 				public void onEvent(ObservableResourceEvent<UnsafeByteArrayInputStream> event) {

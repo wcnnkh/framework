@@ -10,10 +10,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 import scw.core.Assert;
+import scw.core.instance.InstanceUtils;
 import scw.io.event.DefaultResourceEventDispatcher;
 import scw.io.event.ResourceEventDispatcher;
 import scw.lang.NestedIOException;
 import scw.lang.NotSupportedException;
+import scw.util.JavaVersion;
 
 /**
  * Convenience base class for {@link Resource} implementations, pre-implementing
@@ -29,18 +31,26 @@ public abstract class AbstractResource implements Resource {
 	private volatile ResourceEventDispatcher eventDispatcher;
 
 	public ResourceEventDispatcher getEventDispatcher() {
-		if (eventDispatcher == null) {
-			synchronized (this) {
-				if (eventDispatcher == null) {
-					eventDispatcher = new DefaultResourceEventDispatcher(this);
+		if (SUPPORT_EVENT_DISPATCHER) {
+			if (eventDispatcher == null) {
+				synchronized (this) {
+					if (eventDispatcher == null) {
+						if (JavaVersion.INSTANCE.getMasterVersion() >= 7) {
+							eventDispatcher = InstanceUtils.INSTANCE_FACTORY
+									.getInstance("scw.io.event.WatchServiceResourceEventDispatcher", this);
+						} else {
+							eventDispatcher = new DefaultResourceEventDispatcher(this);
+						}
+					}
 				}
 			}
+			return eventDispatcher;
 		}
-		return eventDispatcher;
+		return EMPTY_EVENT_DISPATCHER;
 	}
 
 	public boolean isSupportEventDispatcher() {
-		return true;
+		return SUPPORT_EVENT_DISPATCHER;
 	}
 
 	/**

@@ -6,31 +6,23 @@ import scw.io.Resource;
 
 public class ResourceEvent extends BasicEvent {
 	private final Resource resource;
-	private final long lastModified;
 
-	public ResourceEvent(EventType eventType, Resource resource, long lastModified) {
+	public ResourceEvent(EventType eventType, Resource resource) {
 		super(eventType);
 		this.resource = resource;
-		this.lastModified = lastModified;
 	}
 
 	public ResourceEvent(ResourceEvent resourceEvent) {
 		super(resourceEvent);
 		this.resource = resourceEvent.resource;
-		this.lastModified = resourceEvent.lastModified;
 	}
 
 	public Resource getResource() {
 		return resource;
 	}
 
-	public long getLastModified() {
-		return lastModified;
-	}
-
 	@Override
 	public String toString() {
-		return "eventType=[" + getEventType() + "], createTime=" + getCreateTime() + ", lastModified=" + lastModified
-				+ ", resource=[" + resource + "]";
+		return "eventType=[" + getEventType() + "], createTime=" + getCreateTime() + ", resource=[" + resource + "]";
 	}
 }

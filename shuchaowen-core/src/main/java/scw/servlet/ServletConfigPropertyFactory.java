@@ -4,12 +4,14 @@ import java.util.Enumeration;
 
 import javax.servlet.ServletConfig;
 
-import scw.value.property.StringValuePropertyFactory;
+import scw.util.MultiEnumeration;
+import scw.value.property.ExtendGetPropertyFactory;
 
-public class ServletConfigPropertyFactory extends StringValuePropertyFactory {
+public class ServletConfigPropertyFactory extends ExtendGetPropertyFactory {
 	private final ServletConfig servletConfig;
 
 	public ServletConfigPropertyFactory(ServletConfig servletConfig) {
+		super(true, true);
 		this.servletConfig = servletConfig;
 	}
 
@@ -17,14 +19,15 @@ public class ServletConfigPropertyFactory extends StringValuePropertyFactory {
 		// 兼容老版本
 		return getString("shuchaowen");
 	}
-
+	
 	@Override
-	protected String getStringValue(String key) {
+	protected Object getExtendValue(String key) {
 		return servletConfig.getInitParameter(key);
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	protected Enumeration<String> internalEnumerationKeys() {
-		return servletConfig.getInitParameterNames();
+	public Enumeration<String> enumerationKeys() {
+		return new MultiEnumeration<String>(servletConfig.getInitParameterNames(), super.enumerationKeys());
 	}
 }

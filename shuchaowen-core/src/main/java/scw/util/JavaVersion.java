@@ -2,7 +2,6 @@ package scw.util;
 
 import scw.value.AnyValue;
 import scw.value.Value;
-import scw.value.property.SystemPropertyFactory;
 
 public class JavaVersion extends Version {
 	private static final long serialVersionUID = 1L;
@@ -10,7 +9,7 @@ public class JavaVersion extends Version {
 	public static final JavaVersion INSTANCE;
 
 	static {
-		Version version = new Version(SystemPropertyFactory.getInstance().getJavaVersion());
+		Version version = new Version(System.getProperty("java.version"));
 		if (version.length() > 1) {
 			Value fragment = version.get(0).getFragment();
 			if (fragment.isNumber() && fragment.getAsIntValue() > 1) {// java9以上

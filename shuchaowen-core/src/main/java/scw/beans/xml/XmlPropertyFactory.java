@@ -6,11 +6,10 @@ import org.w3c.dom.NodeList;
 import scw.core.utils.StringUtils;
 import scw.http.HttpUtils;
 import scw.io.ResourceUtils;
-import scw.value.property.MapPropertyFactory;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
-public class XmlPropertyFactory extends MapPropertyFactory {
+public class XmlPropertyFactory extends PropertyFactory {
 
 	public XmlPropertyFactory(PropertyFactory propertyFactory, String beanXml) {
 		this(propertyFactory,
@@ -18,7 +17,7 @@ public class XmlPropertyFactory extends MapPropertyFactory {
 	}
 
 	public XmlPropertyFactory(PropertyFactory propertyFactory, NodeList nodeList) {
-		super(true);
+		super(true, false);
 		if (nodeList == null) {
 			return;
 		}

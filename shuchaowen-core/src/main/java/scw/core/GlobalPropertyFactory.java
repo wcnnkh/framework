@@ -10,10 +10,10 @@ import scw.io.FileUtils;
 import scw.io.support.ResourceOperations;
 import scw.util.ClassScanner;
 import scw.util.FormatUtils;
-import scw.value.property.MapPropertyFactory;
+import scw.value.property.PropertyFactory;
 import scw.value.property.SystemPropertyFactory;
 
-public final class GlobalPropertyFactory extends MapPropertyFactory {
+public final class GlobalPropertyFactory extends PropertyFactory {
 	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSES_DIRECTORY = "classes.directory";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
@@ -24,11 +24,11 @@ public final class GlobalPropertyFactory extends MapPropertyFactory {
 		return instance;
 	}
 
-	private List<PropertiesRegistration> propertiesRegistrations = new ArrayList<MapPropertyFactory.PropertiesRegistration>();
+	private List<PropertiesRegistration> propertiesRegistrations = new ArrayList<PropertiesRegistration>();
 
 	private GlobalPropertyFactory() {
-		super(true);
-		addBasePropertyFactory(SystemPropertyFactory.getInstance());
+		super(true, false);
+		addFirstBasePropertyFactory(SystemPropertyFactory.getInstance());
 		if (getWorkPath() == null) {
 			setWorkPath(getDefaultWorkPath());
 		}

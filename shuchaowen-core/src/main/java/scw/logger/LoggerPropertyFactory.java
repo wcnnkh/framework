@@ -1,25 +1,19 @@
 package scw.logger;
 
-import java.util.Enumeration;
-
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
-import scw.value.property.StringValuePropertyFactory;
+import scw.value.property.ExtendGetPropertyFactory;
 
-public class LoggerPropertyFactory extends StringValuePropertyFactory {
+public class LoggerPropertyFactory extends ExtendGetPropertyFactory {
 
 	public LoggerPropertyFactory() {
-		addBasePropertyFactory(Constants.PROPERTY_FACTORY);
-		addBasePropertyFactory(GlobalPropertyFactory.getInstance());
+		super(true, true);
+		addFirstBasePropertyFactory(Constants.PROPERTY_FACTORY);
+		addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
 	}
 
 	@Override
-	protected Enumeration<String> internalEnumerationKeys() {
-		return null;
-	}
-
-	@Override
-	protected String getStringValue(String key) {
+	protected Object getExtendValue(String key) {
 		String value = null;
 		if (key.equalsIgnoreCase("default.logger.level")) {
 			value = LoggerLevelUtils.DEFAULT_LEVEL.name();

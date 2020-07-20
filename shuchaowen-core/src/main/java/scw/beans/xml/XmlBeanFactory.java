@@ -75,7 +75,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 				logger.info("not use:{}", xmlConfigPath);
 			}
 
-			propertyFactory.addBasePropertyFactory(new XmlPropertyFactory(propertyFactory, nodeList));
+			propertyFactory.addLastBasePropertyFactory(new XmlPropertyFactory(propertyFactory, nodeList));
 		}
 		addXmlBeanNameMapping(nodeList);
 		addBeanConfiguration(new DefaultXmlBeanConfiguration());

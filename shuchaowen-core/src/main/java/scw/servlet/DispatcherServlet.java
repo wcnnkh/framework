@@ -53,7 +53,7 @@ public class DispatcherServlet extends HttpServlet {
 					propertyFactory.getConfigXml());
 		}
 
-		getApplication().getPropertyFactory().addBasePropertyFactory(
+		getApplication().getPropertyFactory().addLastBasePropertyFactory(
 				propertyFactory);
 
 		if (!reference) {
