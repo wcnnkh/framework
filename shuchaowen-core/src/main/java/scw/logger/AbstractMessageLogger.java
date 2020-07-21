@@ -1,9 +1,9 @@
 package scw.logger;
 
-public abstract class AbstractMyLogger extends AbstractLogger implements Logger {
+public abstract class AbstractMessageLogger extends AbstractLogger implements Logger {
 	private final String name;
 
-	public AbstractMyLogger(Level level, String name, String placeholder) {
+	public AbstractMessageLogger(Level level, String name, String placeholder) {
 		super(level, placeholder);
 		this.name = name;
 	}

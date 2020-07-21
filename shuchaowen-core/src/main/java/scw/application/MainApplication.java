@@ -13,7 +13,7 @@ import scw.core.utils.CollectionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public class MainApplication extends CommonApplication implements Application {
+public class MainApplication extends CommonApplication implements Application, Runnable {
 	private final Logger logger;
 	private final Class<?> mainClass;
 	private final MainArgs args;
@@ -43,16 +43,8 @@ public class MainApplication extends CommonApplication implements Application {
 		return args;
 	}
 
-	private static class Run extends Thread {
-		private MainApplication mainApplication;
-
-		public Run(MainApplication mainApplication) {
-			this.mainApplication = mainApplication;
-		}
-
-		public void run() {
-			mainApplication.init();
-		}
+	public void run() {
+		init();
 	}
 
 	public final Logger getLogger() {
@@ -70,7 +62,7 @@ public class MainApplication extends CommonApplication implements Application {
 	}
 
 	public static void run(MainApplication application) {
-		Run run = new Run(application);
+		Thread run = new Thread(application);
 		run.setContextClassLoader(application.getMainClass().getClassLoader());
 		run.setName(application.getMainClass().getName());
 		run.setDaemon(false);

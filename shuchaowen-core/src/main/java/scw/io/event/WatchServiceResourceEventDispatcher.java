@@ -28,13 +28,10 @@ import scw.value.property.SystemPropertyFactory;
  *
  */
 @UseJavaVersion(7)
-public class WatchServiceResourceEventDispatcher extends
-		DefaultResourceEventDispatcher {
-	public static final boolean USE_WATCH_SERVICE = SystemPropertyFactory
-			.getInstance().getValue("resource.watch.enable", boolean.class,
-					true);
-	private static Logger logger = LoggerUtils
-			.getLogger(WatchServiceResourceEventDispatcher.class);
+public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDispatcher {
+	public static final boolean USE_WATCH_SERVICE = SystemPropertyFactory.getInstance()
+			.getValue("resource.watch.enable", boolean.class, true);
+	private static Logger logger = LoggerUtils.getLogger(WatchServiceResourceEventDispatcher.class);
 	private static final WatchService WATCH_SERVICE;
 	private static ConcurrentHashMap<Path, ResourceWatchKey> listenerMap;
 
@@ -52,7 +49,7 @@ public class WatchServiceResourceEventDispatcher extends
 
 		if (WATCH_SERVICE != null) {
 			listenerMap = new ConcurrentHashMap<Path, WatchServiceResourceEventDispatcher.ResourceWatchKey>();
-			new Thread() {
+			Thread thread = new Thread() {
 				public void run() {
 					while (!Thread.currentThread().isInterrupted()) {
 						try {
@@ -60,19 +57,23 @@ public class WatchServiceResourceEventDispatcher extends
 							for (ResourceWatchKey key : listenerMap.values()) {
 								key.run();
 							}
-						} catch (InterruptedException e) {
+						} catch (Exception e) {
 						}
 					}
 				};
-			}.start();
+			};
+			thread.setDaemon(true);
+			thread.setName(WatchServiceResourceEventDispatcher.class.getSimpleName());
+			thread.start();
 
 			Runtime.getRuntime().addShutdownHook(new Thread() {
 				@Override
 				public void run() {
 					try {
 						WATCH_SERVICE.close();
-					} catch (IOException e) {
+					} catch (Exception e) {
 					}
+					super.run();
 				}
 			});
 		}
@@ -101,15 +102,12 @@ public class WatchServiceResourceEventDispatcher extends
 			ResourceWatchKey resourceWatchKey = listenerMap.get(path);
 			if (resourceWatchKey == null) {
 				resourceWatchKey = new ResourceWatchKey();
-				ResourceWatchKey old = listenerMap.putIfAbsent(path,
-						resourceWatchKey);
+				ResourceWatchKey old = listenerMap.putIfAbsent(path, resourceWatchKey);
 				if (old != null) {
 					resourceWatchKey = old;
 				} else {
-					WatchKey watchKey = path.register(WATCH_SERVICE,
-							StandardWatchEventKinds.ENTRY_CREATE,
-							StandardWatchEventKinds.ENTRY_DELETE,
-							StandardWatchEventKinds.ENTRY_MODIFY);
+					WatchKey watchKey = path.register(WATCH_SERVICE, StandardWatchEventKinds.ENTRY_CREATE,
+							StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
 					resourceWatchKey.setWatchKey(watchKey);
 					logger.debug("register watch service path: {}", path);
 				}
@@ -117,8 +115,7 @@ public class WatchServiceResourceEventDispatcher extends
 
 			resourceWatchKey.register(file, getResource());
 		} catch (IOException e) {
-			logger.debug(e, "register watch service error resource: {}",
-					getResource());
+			logger.debug(e, "register watch service error resource: {}", getResource());
 			// 如果出现异常就使用默认的方式来实现监听
 			super.listener();
 		}
@@ -129,8 +126,7 @@ public class WatchServiceResourceEventDispatcher extends
 		private CopyOnWriteArrayList<KeyValuePair<String, Resource>> resourceList = new CopyOnWriteArrayList<KeyValuePair<String, Resource>>();
 
 		public void register(File file, Resource resource) {
-			resourceList.add(new KeyValuePair<String, Resource>(file.getName(),
-					resource));
+			resourceList.add(new KeyValuePair<String, Resource>(file.getName(), resource));
 		}
 
 		public void setWatchKey(WatchKey watchKey) {
@@ -138,7 +134,7 @@ public class WatchServiceResourceEventDispatcher extends
 		}
 
 		public void run() {
-			if (watchKey == null) {
+			if (watchKey == null || !watchKey.isValid()) {
 				return;
 			}
 
@@ -153,11 +149,9 @@ public class WatchServiceResourceEventDispatcher extends
 				EventType eventType = null;
 				if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
 					eventType = EventType.CREATE;
-				} else if (event.kind().equals(
-						StandardWatchEventKinds.ENTRY_MODIFY)) {
+				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
 					eventType = EventType.UPDATE;
-				} else if (event.kind().equals(
-						StandardWatchEventKinds.ENTRY_DELETE)) {
+				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
 					eventType = EventType.DELETE;
 				}
 				if (eventType == null) {
@@ -167,17 +161,13 @@ public class WatchServiceResourceEventDispatcher extends
 				File file = path.toFile();
 				for (KeyValuePair<String, Resource> keyValuePair : resourceList) {
 					if (file.getName().equals(keyValuePair.getKey())) {
-						keyValuePair
-								.getValue()
-								.getEventDispatcher()
-								.publishEvent(
-										new ResourceEvent(eventType,
-												keyValuePair.getValue()));
+						keyValuePair.getValue().getEventDispatcher()
+								.publishEvent(new ResourceEvent(eventType, keyValuePair.getValue()));
 					}
 				}
 				;
 			}
-			
+
 			watchKey.reset();
 		}
 	}

@@ -1,6 +1,6 @@
 package scw.logger;
 
-public class ConsoleLoggerFactory extends AbstractMyLoggerFactory {
+public class ConsoleLoggerFactory extends AbstractConsoleLoggerFactory {
 
 	public void destroy() {
 	}

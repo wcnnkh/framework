@@ -14,16 +14,7 @@ import scw.io.Resource;
 
 public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<ResourceEvent>
 		implements ResourceEventDispatcher {
-	static final Timer TIMER = new Timer();
-	static {
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				TIMER.cancel();
-			}
-		});
-	}
-
+	static final Timer TIMER = new Timer(true);//守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
 	private final Resource resource;
 
