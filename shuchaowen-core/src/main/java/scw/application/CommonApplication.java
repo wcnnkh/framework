@@ -31,8 +31,8 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 			start = true;
 		}
 
-		initInternal();
 		GlobalPropertyFactory.getInstance().startListener();
+		initInternal();
 	}
 
 	protected void initInternal() {

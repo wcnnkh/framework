@@ -103,8 +103,8 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 
 		addErrorPage(context, beanFactory, propertyFactory);
-		
-		if(beanFactory.isInstance(JspConfigDescriptor.class)){
+
+		if (beanFactory.isInstance(JspConfigDescriptor.class)) {
 			context.setJspConfigDescriptor(beanFactory.getInstance(JspConfigDescriptor.class));
 		}
 		return context;
@@ -282,11 +282,10 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	private void tomcat8() throws Throwable {
-		ClassLoader classLoader = ClassUtils.getDefaultClassLoader();
-		if (ClassUtils.isPresent("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory", classLoader)) {
-			Class<?> clz = ClassUtils.forName("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
-					classLoader);
+	private void tomcat8(ClassLoader classLoader) throws Throwable {
+		Class<?> clz = ClassUtils.forNameNullable("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
+				classLoader);
+		if (clz != null) {
 			Method method = clz.getDeclaredMethod("disable");
 			method.invoke(null);
 		}
@@ -305,7 +304,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet destroy, Servlet service,
 			Class<?> mainClass, MainArgs args) {
 		try {
-			tomcat8();
+			tomcat8(mainClass.getClassLoader());
 		} catch (Throwable e1) {
 		}
 
@@ -320,6 +319,5 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		} catch (LifecycleException e) {
 			throw new RuntimeException(e);
 		}
-		tomcat.getServer().await();
 	}
 }

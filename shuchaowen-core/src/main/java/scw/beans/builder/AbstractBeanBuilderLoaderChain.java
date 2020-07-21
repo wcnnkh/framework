@@ -18,7 +18,7 @@ public abstract class AbstractBeanBuilderLoaderChain implements
 	public final BeanDefinition loading(LoaderContext context) {
 		BeanBuilderLoader loader = getNext(context);
 		if (loader == null) {
-			return chain == null ? new AutoBeanDefinition(context) : chain
+			return chain == null ? null : chain
 					.loading(context);
 		}
 

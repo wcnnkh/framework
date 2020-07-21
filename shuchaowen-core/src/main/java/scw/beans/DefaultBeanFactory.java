@@ -77,9 +77,9 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		return beanDefinition;
 	}
 
-	public BeanDefinition getDefinition(String name, boolean autoload) {
+	public BeanDefinition getDefinition(String name) {
 		BeanDefinition beanDefinition = getDefinitionByCache(name);
-		if (beanDefinition == null && autoload) {
+		if (beanDefinition == null) {
 			String aliasName = nameMappingMap.get(name);
 			Class<?> clazz;
 			if (aliasName == null) {
@@ -129,14 +129,6 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		return beanDefinition;
 	}
 
-	public BeanDefinition getDefinition(Class<?> clazz, boolean autoload) {
-		return getDefinition(clazz.getName(), autoload);
-	}
-
-	public final BeanDefinition getDefinition(String name) {
-		return getDefinition(name, true);
-	}
-
 	private BeanDefinition loading(LoaderContext context) {
 		if (!accept(context.getTargetClass())) {
 			return null;
@@ -170,7 +162,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 			}
 		}
 
-		return new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
+		BeanDefinition definition = new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
+		if(definition == null){
+			definition = new AutoBeanDefinition(context);
+		}
+		return definition;
 	}
 
 	public boolean accept(Class<?> clazz) {
@@ -184,29 +180,21 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		return getDefinition(clazz.getName());
 	}
 
-	public boolean isSingleton(Class<?> clazz, boolean autoload) {
-		return isSingleton(clazz.getName(), autoload);
+	public boolean isSingleton(Class<?> clazz) {
+		return isSingleton(clazz.getName());
 	}
 
-	public boolean isSingleton(String name, boolean autoload) {
+	public boolean isSingleton(String name) {
 		if (singletonMap.containsKey(name)) {
 			return true;
 		}
 
-		BeanDefinition definition = getDefinition(name, autoload);
+		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return false;
 		}
 
 		return singletonMap.containsKey(definition.getId()) || definition.isSingleton();
-	}
-
-	public boolean isSingleton(String name) {
-		return isSingleton(name, true);
-	}
-
-	public boolean isSingleton(Class<?> clazz) {
-		return isSingleton(clazz.getName());
 	}
 
 	public <T> T getInstance(Class<? extends T> clazz) {
@@ -270,12 +258,12 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		return obj;
 	}
 
-	public boolean isInstance(String name, boolean autoload) {
+	public boolean isInstance(String name) {
 		if (singletonMap.containsKey(name)) {
 			return true;
 		}
 
-		BeanDefinition definition = getDefinition(name, autoload);
+		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return false;
 		}
@@ -283,16 +271,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		return singletonMap.containsKey(definition.getId()) || definition.isInstance();
 	}
 
-	public boolean isInstance(Class<?> clazz, boolean autoload) {
-		return accept(clazz) && isInstance(clazz.getName(), autoload);
-	}
-
-	public boolean isInstance(String name) {
-		return isInstance(name, true);
-	}
-
 	public boolean isInstance(Class<?> clazz) {
-		return isInstance(clazz, true);
+		return accept(clazz) && isInstance(clazz.getName());
 	}
 
 	@SuppressWarnings("unchecked")

@@ -22,12 +22,12 @@ public class MainApplication extends CommonApplication implements Application, R
 		super(DEFAULT_BEANS_PATH);
 		this.mainClass = mainClass;
 		this.args = args;
-		
+
 		configuration(mainClass, args);
-		for(Entry<String, String> entry : args.getParameterMap().entrySet()){
+		for (Entry<String, String> entry : args.getParameterMap().entrySet()) {
 			getPropertyFactory().put(entry.getKey(), entry.getValue());
 		}
-		
+
 		this.logger = LoggerUtils.getLogger(mainClass);
 		if (args != null) {
 			logger.debug("args: {}", args);
@@ -45,6 +45,13 @@ public class MainApplication extends CommonApplication implements Application, R
 
 	public void run() {
 		init();
+		while (true) {
+			try {
+				Thread.sleep(Long.MAX_VALUE);
+			} catch (InterruptedException e) {
+				break;
+			}
+		}
 	}
 
 	public final Logger getLogger() {
