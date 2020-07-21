@@ -8,6 +8,7 @@ import java.util.Set;
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
+import javax.servlet.descriptor.JspConfigDescriptor;
 
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
@@ -84,7 +85,6 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	private Context createContext(BeanFactory beanFactory, PropertyFactory propertyFactory, ClassLoader classLoader) {
 		Context context = tomcat.addContext(getContextPath(propertyFactory), getDocBase(propertyFactory));
 		context.setParentClassLoader(classLoader);
-
 		if (beanFactory.isInstance(JarScanner.class)) {
 			context.setJarScanner(beanFactory.getInstance(JarScanner.class));
 		}
@@ -103,6 +103,10 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 
 		addErrorPage(context, beanFactory, propertyFactory);
+		
+		if(beanFactory.isInstance(JspConfigDescriptor.class)){
+			context.setJspConfigDescriptor(beanFactory.getInstance(JspConfigDescriptor.class));
+		}
 		return context;
 	}
 
@@ -316,5 +320,6 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		} catch (LifecycleException e) {
 			throw new RuntimeException(e);
 		}
+		tomcat.getServer().await();
 	}
 }
