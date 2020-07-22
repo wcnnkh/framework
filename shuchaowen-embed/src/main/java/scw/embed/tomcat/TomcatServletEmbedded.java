@@ -47,7 +47,7 @@ import scw.mvc.action.ActionManager;
 import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
-public final class TomcatServletEmbedded implements ServletEmbedded {
+public class TomcatServletEmbedded implements ServletEmbedded {
 	private static Logger logger = LoggerUtils.getLogger(TomcatServletEmbedded.class);
 	private Tomcat tomcat;
 
