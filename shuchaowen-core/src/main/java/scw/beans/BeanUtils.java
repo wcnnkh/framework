@@ -185,4 +185,14 @@ public final class BeanUtils {
 			((Destroy) destroy).destroy();
 		}
 	}
+
+	public static void aware(Object instance, BeanFactory beanFactory, BeanDefinition beanDefinition) {
+		if (instance instanceof BeanFactoryAware) {
+			((BeanFactoryAware) instance).setBeanFactory(beanFactory);
+		}
+
+		if (instance instanceof BeanDefinitionAware) {
+			((BeanDefinitionAware) instance).setBeanDefinition(beanDefinition);
+		}
+	}
 }

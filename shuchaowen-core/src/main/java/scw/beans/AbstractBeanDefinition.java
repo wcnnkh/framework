@@ -46,6 +46,8 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 			Ioc ioc = Ioc.forClass(instance.getClass());
 			ioc.getDependence().process(this, instance, beanFactory, propertyFactory, false);
 			ioc.getDependence().process(this, instance, beanFactory, propertyFactory, false);
+			
+			BeanUtils.aware(instance, beanFactory, this);
 		}
 		beanFactory.getEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DEPENDENCE));
