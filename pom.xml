@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>shuchaowen</groupId>
 	<artifactId>shuchaowen</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
 	<properties>
@@ -32,115 +32,115 @@
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-core</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-cloud</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-search</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-websocket</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-timer</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-mvc</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-security</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-data</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-kdniao</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-db</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-integration</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-alibaba</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-apple</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-office</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-freemarker</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-mail</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-tencent</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-upload</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
 				<artifactId>shuchaowen-embed</artifactId>
-				<version>0.0.1-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 
 			<!-- 分割线 -->
