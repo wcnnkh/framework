@@ -2,10 +2,8 @@ package scw.http.client;
 
 import javax.net.ssl.SSLSocketFactory;
 
-import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
 
-@Configuration(order = Integer.MIN_VALUE)
 public class SimpleHttpClient extends AbstractHttpClient {
 
 	@Override

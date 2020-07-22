@@ -33,6 +33,17 @@ public class MainApplication extends CommonApplication implements Application, R
 			logger.debug("args: {}", args);
 			addInternalSingleton(MainArgs.class, args);
 		}
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(){
+			@Override
+			public void run() {
+				try {
+					MainApplication.this.destroy();
+				} catch (Exception e) {
+					logger.error(e, "destroy error");
+				}
+			}
+		});
 	}
 
 	public Class<?> getMainClass() {
@@ -78,8 +89,7 @@ public class MainApplication extends CommonApplication implements Application, R
 
 	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, MainArgs args)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class,
-				GlobalPropertyFactory.getInstance());
+		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class, GlobalPropertyFactory.getInstance());
 		if (!CollectionUtils.isEmpty(impls)) {
 			Iterator<Class<MainApplication>> iterator = impls.iterator();
 			while (iterator.hasNext()) {

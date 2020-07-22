@@ -150,8 +150,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 			}
 		}
 
-		for (Class<?> impl : InstanceUtils.getConfigurationClassList(context.getTargetClass(),
-				context.getPropertyFactory())) {
+		for (Class<?> impl : InstanceUtils.getConfigurationClassList(context.getTargetClass(), propertyFactory)) {
 			BeanDefinition definition = getDefinitionByCache(impl.getName());
 			if (definition == null) {
 				definition = new AutoBeanDefinition(new LoaderContext(impl, context));
@@ -442,8 +441,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 	}
 
 	public void init() throws Exception {
-		for (Class<Filter> filter : InstanceUtils.getConfigurationClassList(Filter.class,
-				GlobalPropertyFactory.getInstance())) {
+		for (Class<Filter> filter : InstanceUtils.getConfigurationClassList(Filter.class, propertyFactory)) {
 			filterNameList.add(filter.getName());
 		}
 		filterNameList = Arrays.asList(filterNameList.toArray(new String[0]));
@@ -451,17 +449,16 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
 		beanBuilderLoaders
-				.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, getPropertyFactory()));
+				.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, propertyFactory));
 		beanBuilderLoaders = Arrays.asList(beanBuilderLoaders.toArray(new BeanBuilderLoader[0]));
 
 		propertyFactory.addLastBasePropertyFactory(
-				InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, getPropertyFactory()));
-		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
-				getPropertyFactory())) {
+				InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, propertyFactory));
+		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this, propertyFactory)) {
 			addBeanConfiguration(configuration);
 		}
 
-		for (Class<?> clazz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName())) {
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
 			if (!ReflectionUtils.isPresent(clazz)) {
 				continue;
 			}
@@ -471,8 +468,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 			ioc.getInit().process(null, null, this, propertyFactory, true);
 		}
 
-		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class,
-				this, getPropertyFactory())) {
+		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class, 
+				this, propertyFactory)) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
 		beanFactoryLifeCycles = Arrays.asList(beanFactoryLifeCycles.toArray(new BeanFactoryLifeCycle[0]));
@@ -506,7 +503,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 			}
 		}
 
-		for (Class<?> clazz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName())) {
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
 			Ioc ioc = Ioc.forClass(clazz);
 			ioc.getDestroy().process(null, null, this, propertyFactory, true);
 		}

@@ -8,10 +8,8 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Year;
 
-import scw.core.instance.annotation.Configuration;
 import scw.core.utils.TypeUtils;
 
-@Configuration(order=Integer.MIN_VALUE)
 public class DefaultSqlTypeFactory implements SqlTypeFactory {
 	
 	public SqlType getSqlType(Class<?> type) {

@@ -15,7 +15,6 @@ import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.xml.XmlBeanParameter;
 import scw.core.Constants;
-import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
@@ -23,6 +22,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
+import scw.value.ValueFactory;
 import scw.value.property.PropertyFactory;
 
 public final class BeanUtils {
@@ -150,9 +150,9 @@ public final class BeanUtils {
 		return true;
 	}
 
-	public static String getScanAnnotationPackageName() {
-		return GlobalPropertyFactory.getInstance().getValue("scw.scan.beans.package", String.class,
-				InstanceUtils.getScanAnnotationPackageName());
+	public static String getScanAnnotationPackageName(ValueFactory<String> propertyFactory) {
+		return propertyFactory.getValue("scw.scan.beans.package", String.class,
+				InstanceUtils.getScanAnnotationPackageName(propertyFactory));
 	}
 
 	public static Class<?> getServiceInterface(Class<?> clazz) {

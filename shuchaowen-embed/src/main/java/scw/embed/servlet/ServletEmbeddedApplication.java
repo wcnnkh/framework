@@ -19,7 +19,7 @@ public class ServletEmbeddedApplication extends MainApplication {
 	@Override
 	protected void initInternal() {
 		super.initInternal();
-		embedded = InstanceUtils.getConfiguration(ServletEmbedded.class, getBeanFactory(), getPropertyFactory());
+		embedded = InstanceUtils.loadService(ServletEmbedded.class, getBeanFactory(), getPropertyFactory(), "scw.embed.tomcat.TomcatServletEmbedded");
 		if (embedded == null) {
 			throw new NotSupportedException("未找到支持的embedded, 如需支持请导入对应的jar");
 		}

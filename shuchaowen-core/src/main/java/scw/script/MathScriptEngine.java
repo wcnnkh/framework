@@ -9,8 +9,6 @@ import java.util.List;
 
 import scw.compatible.CompatibleUtils;
 import scw.compatible.ServiceLoader;
-import scw.core.instance.InstanceUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
@@ -35,13 +33,11 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 	static {
 		List<Function> functions = new ArrayList<MathScriptEngine.Function>();
-		ServiceLoader<Function> serviceLoader = CompatibleUtils.getSpi().load(Function.class,
-				ClassUtils.getDefaultClassLoader());
+		ServiceLoader<Function> serviceLoader = CompatibleUtils.getSpi().load(Function.class);
 		for (Function function : serviceLoader) {
 			functions.add(function);
 		}
 
-		functions.addAll(InstanceUtils.getSystemConfigurationList(Function.class));
 		functions.add(new MaxFunction());
 		functions.add(new MinFunction());
 		functions.add(new MeaninglessFunction("{", "}"));

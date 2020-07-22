@@ -20,7 +20,7 @@ public final class SerializerUtils {
 	public static final Serializer DEFAULT_SERIALIZER;
 
 	static {
-		Serializer serializer = InstanceUtils.serviceLoader(Serializer.class, "scw.io.serialzer.hessian.Hessian2Serializer");
+		Serializer serializer = InstanceUtils.loadService(Serializer.class, "scw.io.serialzer.hessian.Hessian2Serializer");
 		DEFAULT_SERIALIZER = serializer == null? JavaSerializer.INSTANCE:serializer;
 		FormatUtils.info(SerializerUtils.class, "default serializer：" + DEFAULT_SERIALIZER.getClass().getName());
 	}

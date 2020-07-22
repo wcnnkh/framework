@@ -1,4 +1,4 @@
-package scw.transaction.sql;
+package scw.sql.transaction;
 
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
@@ -8,7 +8,7 @@ import scw.sql.ConnectionFactory;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
 
-public abstract class SqlTransactionUtils {
+public final class SqlTransactionUtils {
 	private SqlTransactionUtils() {
 	};
 

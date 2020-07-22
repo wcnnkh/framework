@@ -19,14 +19,19 @@ import scw.core.utils.StringUtils;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
+import scw.net.message.converter.ByteArrayMessageConverter;
+import scw.net.message.converter.HttpFormMessageConveter;
+import scw.net.message.converter.JsonMessageConverter;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MultiMessageConverter;
+import scw.net.message.converter.StringMessageConverter;
+import scw.net.message.converter.XmlMessageConverter;
 import scw.net.ssl.TrustAllManager;
 
 public final class InetUtils {
 	private InetUtils() {
 	};
-	
+
 	/**
 	 * 本地ip
 	 */
@@ -46,7 +51,7 @@ public final class InetUtils {
 	 */
 	public static final SSLSocketFactory TRUSE_ALL_SSL_SOCKET_FACTORY;
 
-	private static final MultiMessageConverter MESSAGE_CONVERTERS = new MultiMessageConverter();
+	private static final MultiMessageConverter MESSAGE_CONVERTER = new MultiMessageConverter();
 
 	static {
 		// 创建一个信任所有的
@@ -64,11 +69,16 @@ public final class InetUtils {
 		}
 		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
 
-		MESSAGE_CONVERTERS.addAll(InstanceUtils.getSystemConfigurationList(MessageConverter.class));
+		MESSAGE_CONVERTER.add(new JsonMessageConverter());
+		MESSAGE_CONVERTER.add(new StringMessageConverter());
+		MESSAGE_CONVERTER.add(new ByteArrayMessageConverter());
+		MESSAGE_CONVERTER.add(new XmlMessageConverter());
+		MESSAGE_CONVERTER.add(new HttpFormMessageConveter());
+		MESSAGE_CONVERTER.addAll(InstanceUtils.loadAllService(MessageConverter.class));
 	}
 
-	public static MultiMessageConverter getMessageConverters() {
-		return MESSAGE_CONVERTERS;
+	public static MessageConverter getMessageConverter() {
+		return MESSAGE_CONVERTER;
 	}
 
 	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {
@@ -142,12 +152,12 @@ public final class InetUtils {
 
 	public static boolean isDesignatedContentTypeMessage(Message message, String contentType) {
 		MimeType mimeType = message.getContentType();
-		if(mimeType == null){
+		if (mimeType == null) {
 			return false;
 		}
 		return StringUtils.contains(mimeType.toString(), contentType, true);
 	}
-	
+
 	public static boolean isLocalIP(String ip) {
 		if (StringUtils.isEmpty(ip)) {
 			return false;

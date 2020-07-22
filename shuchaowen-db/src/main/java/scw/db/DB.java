@@ -7,8 +7,7 @@ import scw.sql.orm.EntityOperations;
 public interface DB extends EntityOperations, SqlOperations {
 	void createTable(Class<?> tableClass, boolean registerManager);
 
-	void createTable(Class<?> tableClass, String tableName,
-			boolean registerManager);
+	void createTable(Class<?> tableClass, String tableName, boolean registerManager);
 
 	void createTable(String packageName, boolean registerManager);
 
@@ -19,8 +18,8 @@ public interface DB extends EntityOperations, SqlOperations {
 	void asyncUpdate(Object... objs);
 
 	void asyncDelete(Object... objs);
-	
-	void asyncSaveOrUpdate(Object ...objs);
+
+	void asyncSaveOrUpdate(Object... objs);
 
 	void asyncExecute(Sql... sqls);
 }

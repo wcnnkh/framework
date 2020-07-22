@@ -39,8 +39,12 @@ public final class HttpUtils {
 			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.connect.timeout"), 10000);
 	public static final int DEFAULT_READ_TIMEOUT = StringUtils
 			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.read.timeout"), 10000);
-	private static final HttpClient HTTP_CLIENT = InstanceUtils.getSystemConfiguration(HttpClient.class);
-	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils.getSystemConfiguration(ServerHttpRequestIpGetter.class);
+	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class, "scw.http.client.SimpleHttpClient");
+	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils.loadService(ServerHttpRequestIpGetter.class, "scw.http.server.ip.DefaultServerHttpRequestIpGetter");
+	
+	static{
+		
+	}
 	
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;

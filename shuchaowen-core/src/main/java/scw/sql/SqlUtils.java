@@ -31,24 +31,15 @@ import scw.sql.orm.dialect.SqlTypeFactory;
 import scw.sql.orm.enums.OperationType;
 
 public final class SqlUtils {
-	public static final int MAX_PAGINATION_LIMIT = GlobalPropertyFactory
-			.getInstance()
+	public static final int MAX_PAGINATION_LIMIT = GlobalPropertyFactory.getInstance()
 			.getValue("sql.pagination.max.limit", int.class, 2000);
-	public static final int DEFAULT_PAGINATION_LIMIT = GlobalPropertyFactory
-			.getInstance().getValue("sql.pagination.limit", int.class, 20);
+	public static final int DEFAULT_PAGINATION_LIMIT = GlobalPropertyFactory.getInstance()
+			.getValue("sql.pagination.limit", int.class, 20);
 
-	private static final String IGNORE_SQL_START_WITH = StringUtils.toString(
-			GlobalPropertyFactory.getInstance().getString(
-					"db.file.sql.ignore.start.with"), "##");
-	private static final SqlTypeFactory SQL_TYPE_FACTORY = InstanceUtils
-			.getSystemConfiguration(SqlTypeFactory.class);
-	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING;
-	static {
-		ObjectRelationalMapping objectRelationalMapping = InstanceUtils
-				.getSystemConfiguration(ObjectRelationalMapping.class);
-		OBJECT_RELATIONAL_MAPPING = objectRelationalMapping == null ? new ObjectRelationalMapping()
-				: objectRelationalMapping;
-	}
+	private static final String IGNORE_SQL_START_WITH = StringUtils
+			.toString(GlobalPropertyFactory.getInstance().getString("db.file.sql.ignore.start.with"), "##");
+	private static final SqlTypeFactory SQL_TYPE_FACTORY = InstanceUtils.loadService(SqlTypeFactory.class, "scw.sql.orm.dialect.DefaultSqlTypeFactory");
+	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING = InstanceUtils.loadService(ObjectRelationalMapping.class, "scw.sql.orm.ObjectRelationalMapping");
 
 	private SqlUtils() {
 	};
@@ -76,8 +67,7 @@ public final class SqlUtils {
 		}
 	}
 
-	public static PreparedStatement createPreparedStatement(
-			Connection connection, Sql sql) throws SQLException {
+	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql) throws SQLException {
 		PreparedStatement statement;
 		if (sql.isStoredProcedure()) {
 			statement = connection.prepareCall(sql.getSql());
@@ -94,13 +84,12 @@ public final class SqlUtils {
 		return statement;
 	}
 
-	public static void setSqlParams(PreparedStatement preparedStatement,
-			Object[] args) throws SQLException {
+	public static void setSqlParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
 		if (args != null && args.length != 0) {
 			for (int i = 0; i < args.length; i++) {
 				Object value = args[i];
-				if(value != null){
-					if(value instanceof Enum){
+				if (value != null) {
+					if (value instanceof Enum) {
 						value = ((Enum<?>) value).name();
 					}
 				}
@@ -109,16 +98,13 @@ public final class SqlUtils {
 		}
 	}
 
-	public static PreparedStatement createPreparedStatement(
-			Connection connection, Sql sql, int resultSetType,
+	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
 			int resultSetConcurrency) throws SQLException {
 		PreparedStatement preparedStatement;
 		if (sql.isStoredProcedure()) {
-			preparedStatement = connection.prepareCall(sql.getSql(),
-					resultSetType, resultSetConcurrency);
+			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency);
 		} else {
-			preparedStatement = connection.prepareStatement(sql.getSql(),
-					resultSetType, resultSetConcurrency);
+			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency);
 		}
 
 		try {
@@ -130,17 +116,15 @@ public final class SqlUtils {
 		return preparedStatement;
 	}
 
-	public static PreparedStatement createPreparedStatement(
-			Connection connection, Sql sql, int resultSetType,
-			int resultSetConcurrency, int resultSetHoldability)
-			throws SQLException {
+	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
+			int resultSetConcurrency, int resultSetHoldability) throws SQLException {
 		PreparedStatement preparedStatement;
 		if (sql.isStoredProcedure()) {
-			preparedStatement = connection.prepareCall(sql.getSql(),
-					resultSetType, resultSetConcurrency, resultSetHoldability);
+			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency,
+					resultSetHoldability);
 		} else {
-			preparedStatement = connection.prepareStatement(sql.getSql(),
-					resultSetType, resultSetConcurrency, resultSetHoldability);
+			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency,
+					resultSetHoldability);
 		}
 
 		try {
@@ -152,8 +136,7 @@ public final class SqlUtils {
 		return preparedStatement;
 	}
 
-	public static void query(Connection connection, Sql sql,
-			ResultSetCallback resultSetCallback) throws SQLException {
+	public static void query(Connection connection, Sql sql, ResultSetCallback resultSetCallback) throws SQLException {
 
 		PreparedStatement statement = null;
 		try {
@@ -166,8 +149,7 @@ public final class SqlUtils {
 		}
 	}
 
-	public static void query(PreparedStatement statement,
-			ResultSetCallback resultSetCallback) throws SQLException {
+	public static void query(PreparedStatement statement, ResultSetCallback resultSetCallback) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -179,8 +161,7 @@ public final class SqlUtils {
 		}
 	}
 
-	public static <T> T query(Connection connection, Sql sql,
-			ResultSetMapper<T> resultSetMapper) throws SQLException {
+	public static <T> T query(Connection connection, Sql sql, ResultSetMapper<T> resultSetMapper) throws SQLException {
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -192,8 +173,7 @@ public final class SqlUtils {
 		}
 	}
 
-	public static <T> T query(PreparedStatement statement,
-			ResultSetMapper<T> resultSetMapper) throws SQLException {
+	public static <T> T query(PreparedStatement statement, ResultSetMapper<T> resultSetMapper) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = statement.executeQuery();
@@ -205,8 +185,7 @@ public final class SqlUtils {
 		}
 	}
 
-	public static boolean execute(Connection connection, Sql sql)
-			throws SQLException {
+	public static boolean execute(Connection connection, Sql sql) throws SQLException {
 		PreparedStatement statement = null;
 		try {
 			statement = createPreparedStatement(connection, sql);
@@ -218,8 +197,7 @@ public final class SqlUtils {
 		}
 	}
 
-	public static int update(Connection connection, Sql sql)
-			throws SQLException {
+	public static int update(Connection connection, Sql sql) throws SQLException {
 		PreparedStatement statement = null;
 		try {
 			statement = createPreparedStatement(connection, sql);
@@ -231,8 +209,7 @@ public final class SqlUtils {
 		}
 	}
 
-	public static Object[] getRowValues(ResultSet resultSet, int size)
-			throws SQLException {
+	public static Object[] getRowValues(ResultSet resultSet, int size) throws SQLException {
 		Object[] values = new Object[size];
 		for (int i = 1; i <= size; i++) {
 			values[i - 1] = resultSet.getObject(i);
@@ -254,8 +231,8 @@ public final class SqlUtils {
 		return sb.toString();
 	}
 
-	public static void executeSqlByFile(SqlOperations sqlOperations,
-			String filePath, boolean lines) throws SQLException {
+	public static void executeSqlByFile(SqlOperations sqlOperations, String filePath, boolean lines)
+			throws SQLException {
 		Collection<Sql> sqls = getSqlByFile(filePath, lines);
 		for (Sql sql : sqls) {
 			sqlOperations.execute(sql);
@@ -275,8 +252,8 @@ public final class SqlUtils {
 				list.add(new SimpleSql(sql));
 			}
 		} else {
-			String sql = ResourceUtils.getResourceOperations().getContent(path,
-					Constants.DEFAULT_CHARSET_NAME).getResource();
+			String sql = ResourceUtils.getResourceOperations().getContent(path, Constants.DEFAULT_CHARSET_NAME)
+					.getResource();
 			if (!StringUtils.isEmpty(sql)) {
 				list.add(new SimpleSql(sql));
 			}
@@ -285,22 +262,16 @@ public final class SqlUtils {
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {
-		return ClassUtils.isPrimitiveOrWrapper(type)
-				|| String.class.isAssignableFrom(type)
-				|| Date.class.isAssignableFrom(type)
-				|| java.util.Date.class.isAssignableFrom(type)
-				|| Time.class.isAssignableFrom(type)
-				|| Timestamp.class.isAssignableFrom(type)
-				|| Array.class.isAssignableFrom(type)
-				|| Blob.class.isAssignableFrom(type)
-				|| Clob.class.isAssignableFrom(type)
-				|| BigDecimal.class.isAssignableFrom(type)
-				|| Reader.class.isAssignableFrom(type)
-				|| NClob.class.isAssignableFrom(type);
+		return ClassUtils.isPrimitiveOrWrapper(type) || String.class.isAssignableFrom(type)
+				|| Date.class.isAssignableFrom(type) || java.util.Date.class.isAssignableFrom(type)
+				|| Time.class.isAssignableFrom(type) || Timestamp.class.isAssignableFrom(type)
+				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
+				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
+				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
 	}
 
-	public static Sql toSql(OperationType operationType, SqlDialect sqlDialect,
-			Class<?> clazz, Object bean, String tableName) {
+	public static Sql toSql(OperationType operationType, SqlDialect sqlDialect, Class<?> clazz, Object bean,
+			String tableName) {
 		switch (operationType) {
 		case SAVE:
 			return sqlDialect.toInsertSql(bean, clazz, tableName);

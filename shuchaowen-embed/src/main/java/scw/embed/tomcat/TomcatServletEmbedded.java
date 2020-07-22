@@ -25,7 +25,6 @@ import scw.application.MainArgs;
 import scw.beans.BeanFactory;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -48,12 +47,11 @@ import scw.mvc.action.ActionManager;
 import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
-@Configuration(order = Integer.MIN_VALUE + 1000)
 public final class TomcatServletEmbedded implements ServletEmbedded {
 	private static Logger logger = LoggerUtils.getLogger(TomcatServletEmbedded.class);
 	private Tomcat tomcat;
 
-	private Tomcat createTomcat(BeanFactory beanFactory, PropertyFactory propertyFactory, MainArgs args) {
+	protected Tomcat createTomcat(BeanFactory beanFactory, PropertyFactory propertyFactory, MainArgs args) {
 		Tomcat tomcat = new Tomcat();
 		Value value = args.getInstruction("-p");
 		int port = value == null ? EmbeddedUtils.getPort(propertyFactory) : value.getAsInteger();
@@ -73,16 +71,16 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		return tomcat;
 	}
 
-	private String getDocBase(PropertyFactory propertyFactory) {
+	protected String getDocBase(PropertyFactory propertyFactory) {
 		return GlobalPropertyFactory.getInstance().getWorkPath();
 	}
 
-	private String getContextPath(PropertyFactory propertyFactory) {
+	protected String getContextPath(PropertyFactory propertyFactory) {
 		String contextPath = EmbeddedUtils.getContextPath(propertyFactory);
 		return StringUtils.isEmpty(contextPath) ? "" : contextPath;
 	}
 
-	private Context createContext(BeanFactory beanFactory, PropertyFactory propertyFactory, ClassLoader classLoader) {
+	protected Context createContext(BeanFactory beanFactory, PropertyFactory propertyFactory, ClassLoader classLoader) {
 		Context context = tomcat.addContext(getContextPath(propertyFactory), getDocBase(propertyFactory));
 		context.setParentClassLoader(classLoader);
 		if (beanFactory.isInstance(JarScanner.class)) {
@@ -110,7 +108,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		return context;
 	}
 
-	private void addErrorPage(Context context, BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	protected void addErrorPage(Context context, BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		if (beanFactory.isInstance(ActionManager.class)) {
 			for (Action action : beanFactory.getInstance(ActionManager.class).getActions()) {
 				ErrorCodeController errorCodeController = action.getMethodAnnotatedElement()
@@ -145,7 +143,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addServletContainerInitializer(Context context,
+	protected void addServletContainerInitializer(Context context,
 			ServletContainerInitializerConfiguration configuration) {
 		Collection<? extends ServletContainerInitializer> initializers = configuration
 				.getServletContainerInitializers();
@@ -165,7 +163,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	private void addFilter(Context context, FilterConfiguration filterConfiguration) {
+	protected void addFilter(Context context, FilterConfiguration filterConfiguration) {
 		Collection<? extends Filter> filters = filterConfiguration.getFilters();
 		if (CollectionUtils.isEmpty(filters)) {
 			return;
@@ -190,11 +188,11 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	private boolean isVersion(String version) {
+	protected boolean isVersion(String version) {
 		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(), version);
 	}
 
-	private void configureConnector(Tomcat tomcat, int port, BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	protected void configureConnector(Tomcat tomcat, int port, BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Connector connector = null;
 		String connectorName = EmbeddedUtils.getTomcatConnectorName(propertyFactory);
 		if (!StringUtils.isEmpty(connectorName)) {
@@ -216,13 +214,13 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	private void configureLifecycleListener(Context context) {
+	protected void configureLifecycleListener(Context context) {
 		if (AprLifecycleListener.isAprAvailable()) {
 			context.addLifecycleListener(new AprLifecycleListener());
 		}
 	}
 
-	private void configureJSP(Context context, PropertyFactory propertyFactory) {
+	protected void configureJSP(Context context, PropertyFactory propertyFactory) {
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet")) {
 			ServletContainerInitializer containerInitializer = InstanceUtils.INSTANCE_FACTORY
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
@@ -236,7 +234,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	private void configShutdown(Context context, PropertyFactory propertyFactory, Servlet destroy) {
+	protected void configShutdown(Context context, PropertyFactory propertyFactory, Servlet destroy) {
 		String tomcatShutdownServletPath = EmbeddedUtils.getShutdownPath(propertyFactory);
 		if (StringUtils.isEmpty(tomcatShutdownServletPath)) {
 			return;
@@ -251,7 +249,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		addServletMapping(context, tomcatShutdownServletPath, tomcatShutdownServletName);
 	}
 
-	private void addServletMapping(Context context, String pattern, String servletName) {
+	protected void addServletMapping(Context context, String pattern, String servletName) {
 		Method method = ReflectionUtils.getMethod(Context.class, "addServletMappingDecoded", String.class,
 				String.class);
 		if (method == null) {// tomcat8以下
@@ -266,7 +264,7 @@ public final class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	private void configureServlet(Context context, Servlet servlet, PropertyFactory propertyFactory) {
+	protected void configureServlet(Context context, Servlet servlet, PropertyFactory propertyFactory) {
 		Tomcat.addServlet(context, "scw", servlet);
 		addServletMapping(context, "/", "scw");
 		String sourceMapping = EmbeddedUtils.getDefaultServletMapping(propertyFactory);

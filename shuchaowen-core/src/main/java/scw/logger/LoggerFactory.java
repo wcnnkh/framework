@@ -7,7 +7,7 @@ public final class LoggerFactory {
 	private static final ILoggerFactory LOGGER_FACTORY;
 	
 	static{
-		ILoggerFactory loggerFactory = InstanceUtils.serviceLoader(ILoggerFactory.class, "scw.logger.log4j2.Log4j2LoggerFactory", "scw.logger.log4j.Log4jLoggerFactory");
+		ILoggerFactory loggerFactory = InstanceUtils.loadService(ILoggerFactory.class, "scw.logger.log4j2.Log4j2LoggerFactory", "scw.logger.log4j.Log4jLoggerFactory");
 		LOGGER_FACTORY = loggerFactory == null? new AsyncConsoleLoggerFactory() : loggerFactory;
 		FormatUtils.info(LoggerFactory.class, "using logger factory [{}]", LOGGER_FACTORY.getClass().getName());
 	}

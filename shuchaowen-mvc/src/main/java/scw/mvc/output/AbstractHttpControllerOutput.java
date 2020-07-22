@@ -9,21 +9,20 @@ import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.view.View;
+import scw.net.InetUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
-import scw.net.InetUtils;
 import scw.net.message.Entity;
 import scw.net.message.InputMessage;
 import scw.net.message.Text;
 import scw.net.message.converter.MultiMessageConverter;
-import scw.net.message.converter.support.AllMessageConverter;
 
 public abstract class AbstractHttpControllerOutput<T> implements HttpControllerOutput {
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	private final MultiMessageConverter messageConverter = new MultiMessageConverter();
 
 	public AbstractHttpControllerOutput() {
-		messageConverter.add(new AllMessageConverter());
+		messageConverter.add(InetUtils.getMessageConverter());
 	}
 
 	protected MimeType getJsonpContentType(HttpChannel httpChannel, T body) {

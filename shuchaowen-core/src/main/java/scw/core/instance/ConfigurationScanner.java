@@ -12,13 +12,11 @@ import java.util.Set;
 
 import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.ClassScanner;
 import scw.util.comparator.CompareUtils;
-import scw.value.property.PropertyFactory;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public class ConfigurationScanner implements Comparator<Class<?>> {
@@ -69,7 +67,7 @@ public class ConfigurationScanner implements Comparator<Class<?>> {
 		return list;
 	}
 
-	public <T> Collection<Class<T>> scan(Class<? extends T> type, PropertyFactory propertyFactory,
+	public <T> Collection<Class<T>> scan(Class<? extends T> type,
 			Collection<? extends Class> excludeTypes, Collection<String> packageNames) {
 		Set<Class<T>> set = new LinkedHashSet<Class<T>>();
 		for (Class<?> clazz : scan(type, packageNames)) {
@@ -78,6 +76,7 @@ public class ConfigurationScanner implements Comparator<Class<?>> {
 				continue;
 			}
 
+			//排除
 			if (ClassUtils.isAssignable(excludeTypes, clazz)) {
 				continue;
 			}
@@ -85,8 +84,7 @@ public class ConfigurationScanner implements Comparator<Class<?>> {
 			set.add((Class<T>) clazz);
 		}
 
-		List<Class<T>> list = new ArrayList<Class<T>>(set);
-		for (Class<? extends T> clazz : list) {
+		for (Class<? extends T> clazz : set) {
 			Configuration c = clazz.getAnnotation(Configuration.class);
 			for (Class<?> e : c.excludes()) {
 				if (e == clazz) {
@@ -96,41 +94,8 @@ public class ConfigurationScanner implements Comparator<Class<?>> {
 			}
 		}
 
+		List<Class<T>> list = new ArrayList<Class<T>>(set);
 		Collections.sort(list, this);
-
-		set.clear();
-		String[] configNames = propertyFactory.getObject(type.getName(), String[].class);
-		if (!ArrayUtils.isEmpty(configNames)) {
-			for (String name : configNames) {
-				Class<?> clazz = ClassUtils.forNameNullable(name);
-				if (clazz == null) {
-					logger.warn("not create class by name: {}", name);
-					continue;
-				}
-				
-				if (!ReflectionUtils.isPresent(clazz)) {
-					logger.debug("reflection not present [{}]", clazz);
-					continue;
-				}
-
-				if (ClassUtils.isAssignable(type, clazz)) {
-					logger.warn("type [{}] not isAssignable class by name: {}", type, name);
-					continue;
-				}
-
-				if (ClassUtils.isAssignable(excludeTypes, clazz)) {
-					continue;
-				}
-				set.add((Class<T>) clazz);
-			}
-		}
-
-		for (Class<T> clazz : list) {
-			if (set.contains(clazz)) {
-				continue;
-			}
-			set.add(clazz);
-		}
-		return set;
+		return new LinkedHashSet<Class<T>>(list);
 	}
 }

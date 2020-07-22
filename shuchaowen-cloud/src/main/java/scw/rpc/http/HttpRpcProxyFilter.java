@@ -10,6 +10,7 @@ import scw.core.instance.InstanceUtils;
 import scw.http.client.ClientHttpRequest;
 import scw.http.client.ClientHttpResponse;
 import scw.lang.NotSupportedException;
+import scw.net.InetUtils;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MultiMessageConverter;
 import scw.value.property.PropertyFactory;
@@ -23,6 +24,7 @@ public class HttpRpcProxyFilter implements Filter {
 				? beanFactory.getInstance(HttpRpcProxyRequestFactory.class)
 				: new RestfulHttpRpcProxyRequestFactory(propertyFactory, Constants.DEFAULT_CHARSET_NAME);
 		MultiMessageConverter messageConverter = new MultiMessageConverter();
+		messageConverter.add(InetUtils.getMessageConverter());
 		messageConverter
 				.addAll(InstanceUtils.getConfigurationList(MessageConverter.class, beanFactory, propertyFactory));
 		this.messageConverter = messageConverter;
