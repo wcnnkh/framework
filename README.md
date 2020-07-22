@@ -17,5 +17,5 @@ AOP、事务、ORM、MVC、RPC、分布式TCC事务、分布式锁、dubbo(支�
     <dependency>
       <groupId>shuchaowen</groupId>
       <artifactId>shuchaowen-integration</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
