@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map.Entry;
@@ -135,15 +136,14 @@ public class ResourceOperations extends DefaultResourceLoader {
 	@Override
 	public Resource getResource(String location) {
 		List<String> nameList = getEnvironmentalResourceNameList(location);
-		for (String name : nameList) {
+		Iterator<String> iterator = nameList.iterator();
+		while(iterator.hasNext()){
+			String name = iterator.next();
 			Resource resource = isCacheEnable() ? getResourceByCache(name) : super.getResource(name);
-			if (resource == null || !resource.exists()) {
-				continue;
+			if(!iterator.hasNext() || (resource != null && resource.exists())){
+				return resource;
 			}
-
-			return resource;
 		}
-
 		return null;
 	}
 
