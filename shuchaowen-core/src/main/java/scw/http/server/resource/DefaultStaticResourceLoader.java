@@ -32,14 +32,15 @@ public class DefaultStaticResourceLoader implements StaticResourceLoader {
 	}
 
 	public Resource getResource(final String location) {
-		if (ArrayUtils.isEmpty(resourcePath) || location.endsWith("/")) {
+		if (ArrayUtils.isEmpty(resourcePath)) {
 			return null;
 		}
 
+		String locationToUse = location.endsWith("/") ? (location + "index.html") : location;
 		for (String p : resourcePath) {
 			if (StringUtils.test(location, p)) {
 				return ResourceUtils.getResourceOperations()
-						.getResource(resourceRoot + (location.startsWith("/") ? location : ("/" + location)));
+						.getResource(resourceRoot + (locationToUse.startsWith("/") ? locationToUse : ("/" + locationToUse)));
 			}
 		}
 		return null;
