@@ -6,13 +6,27 @@ import java.io.Reader;
 
 import freemarker.cache.TemplateLoader;
 import scw.io.Resource;
+import scw.io.ResourceLoader;
 import scw.io.ResourceUtils;
 import scw.io.UnsafeByteArrayInputStream;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
-public class MyTemplateLoader implements TemplateLoader {
+public class DefaultTemplateLoader implements TemplateLoader {
+	private static Logger logger = LoggerUtils.getLogger(DefaultTemplateLoader.class);
+	private final ResourceLoader resourceLoader;
+	
+	public DefaultTemplateLoader(){
+		this(ResourceUtils.getResourceOperations());
+	}
+	
+	public DefaultTemplateLoader(ResourceLoader resourceLoader){
+		this.resourceLoader = resourceLoader;
+	}
 
 	public Object findTemplateSource(String name) throws IOException {
-		return ResourceUtils.getResourceOperations().getResource(name);
+		Resource resource = resourceLoader.getResource(name);
+		return (resource == null || !resource.exists()) ? null : resource;
 	}
 
 	public long getLastModified(Object templateSource) {
@@ -20,7 +34,7 @@ public class MyTemplateLoader implements TemplateLoader {
 			try {
 				return ((Resource) templateSource).lastModified();
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e, templateSource);
 			}
 		}
 		return 0;

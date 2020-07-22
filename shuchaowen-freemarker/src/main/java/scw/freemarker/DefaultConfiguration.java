@@ -30,7 +30,7 @@ public class DefaultConfiguration extends Configuration {
 		if (beanFactory.isInstance(TemplateLoader.class)) {
 			setTemplateLoader(beanFactory.getInstance(TemplateLoader.class));
 		} else {
-			setTemplateLoader(getDefaultTemplateLoader(beanFactory, propertyFactory));
+			setTemplateLoader(new DefaultTemplateLoader());
 		}
 		if (beanFactory.isInstance(TemplateExceptionHandler.class)) {
 			setTemplateExceptionHandler(beanFactory.getInstance(TemplateExceptionHandler.class));
@@ -67,11 +67,6 @@ public class DefaultConfiguration extends Configuration {
 				}
 			}
 		}
-	}
-
-	protected TemplateLoader getDefaultTemplateLoader(BeanFactory beanFactory, PropertyFactory propertyFactory)
-			throws IOException {
-		return beanFactory.getInstance(MyTemplateLoader.class);
 	}
 
 	public String getScanAnnotationPackageName(ValueFactory<String> propertyFactory) {
