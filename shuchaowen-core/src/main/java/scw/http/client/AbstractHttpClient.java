@@ -25,7 +25,7 @@ public abstract class AbstractHttpClient implements HttpClient {
 	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
 
 	public AbstractHttpClient() {
-		messageConverter.addAll(InetUtils.getMessageConverters());
+		messageConverter.add(InetUtils.getMessageConverter());
 	}
 
 	public MultiMessageConverter getMessageConverter() {

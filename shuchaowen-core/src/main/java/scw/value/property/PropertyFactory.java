@@ -159,8 +159,19 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
 		Value v = map.put(key, value);
-		eventDispatcher.publishEvent(key,
-				new PropertyEvent(this, v == null ? EventType.CREATE : EventType.UPDATE, key, value));
+		
+		PropertyEvent event = null;
+		if (v == null) {
+			event = new PropertyEvent(this, EventType.CREATE, key, value);
+		} else {
+			if (!v.equals(value)) {
+				event = new PropertyEvent(this, EventType.UPDATE, key, value);
+			}
+		}
+
+		if (event != null) {
+			eventDispatcher.publishEvent(key, event);
+		}
 		return v;
 	}
 

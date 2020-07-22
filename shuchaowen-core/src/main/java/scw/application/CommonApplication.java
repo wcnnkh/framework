@@ -23,16 +23,9 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 			throw new ApplicationException("已经启动了");
 		}
 
-		synchronized (this) {
-			if (start) {
-				throw new ApplicationException("已经启动了");
-			}
-
-			start = true;
-		}
-
-		initInternal();
+		start = true;
 		GlobalPropertyFactory.getInstance().startListener();
+		initInternal();
 	}
 
 	protected void initInternal() {
@@ -51,19 +44,16 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 	}
 
+	public boolean isStart() {
+		return start;
+	}
+
 	public final synchronized void destroy() {
 		if (!start) {
-			throw new ApplicationException("还未启动，无法销毁");
+			return;
 		}
 
-		synchronized (this) {
-			if (!start) {
-				throw new ApplicationException("还未启动，无法销毁");
-			}
-
-			start = false;
-		}
-
+		start = false;
 		destroyInternal();
 		LoggerFactory.getILoggerFactory().destroy();
 	}

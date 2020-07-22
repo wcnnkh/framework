@@ -38,7 +38,7 @@ public class FeignBeanBuilder extends ConstructorBeanDefinition {
 
 	@Override
 	public Object create() throws Exception {
-		FeignCodec codec = new FeignCodec(InetUtils.getMessageConverters());
+		FeignCodec codec = new FeignCodec(InetUtils.getMessageConverter());
 		Encoder encoder = beanFactory.isInstance(Encoder.class) ? beanFactory.getInstance(Encoder.class) : codec;
 		Decoder decoder = beanFactory.isInstance(Decoder.class) ? beanFactory.getInstance(Decoder.class) : codec;
 		Object proxy = Feign.builder().encoder(encoder).decoder(decoder).target(getTargetClass(), getHost());

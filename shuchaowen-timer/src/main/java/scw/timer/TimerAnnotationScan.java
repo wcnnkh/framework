@@ -8,8 +8,6 @@ import scw.aop.Invoker;
 import scw.beans.AbstractBeanFactoryLifeCycle;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.Constants;
-import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.ReflectionUtils;
@@ -19,18 +17,18 @@ import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
 import scw.util.ClassScanner;
+import scw.value.ValueFactory;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
 public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		Timer timer = beanFactory.getInstance(Timer.class);
-		for (Class<?> clz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
-				getScanAnnotationPackageName())) {
+		for (Class<?> clz : ClassScanner.getInstance().getClasses(getScanAnnotationPackageName(propertyFactory))) {
 			if (!ReflectionUtils.isPresent(clz)) {
 				continue;
 			}
-			
+
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Schedule.class)) {
 				Schedule schedule = method.getAnnotation(Schedule.class);
 				schedule(beanFactory, clz, method, timer, schedule);
@@ -43,9 +41,9 @@ public final class TimerAnnotationScan extends AbstractBeanFactoryLifeCycle {
 		}
 	}
 
-	public String getScanAnnotationPackageName() {
-		return GlobalPropertyFactory.getInstance().getValue("scw.scan.crontab.package", String.class,
-				BeanUtils.getScanAnnotationPackageName());
+	public String getScanAnnotationPackageName(ValueFactory<String> propertyFactory) {
+		return propertyFactory.getValue("scw.scan.crontab.package", String.class,
+				BeanUtils.getScanAnnotationPackageName(propertyFactory));
 	}
 
 	private Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {

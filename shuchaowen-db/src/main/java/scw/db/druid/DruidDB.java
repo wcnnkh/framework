@@ -1,29 +1,100 @@
 package scw.db.druid;
 
-import scw.beans.BeanUtils;
-import scw.beans.Destroy;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
+
+import com.alibaba.druid.pool.DruidDataSource;
+
+import scw.core.instance.annotation.Configuration;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.db.AbstractDB;
 import scw.db.DBUtils;
-import scw.db.DefaultDB;
+import scw.db.database.DataBase;
+import scw.io.ResourceUtils;
+import scw.sql.orm.dialect.SqlDialect;
 
-public class DruidDB extends DefaultDB implements Destroy {
+@SuppressWarnings("rawtypes")
+@Configuration(order = Integer.MIN_VALUE + 1)
+public class DruidDB extends AbstractDB {
+	private DruidDataSource datasource;
+	private DataBase dataBase;
 
-	public DruidDB(Redis redis, @ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
-		super(new DruidDBConfig(propertiesFile, redis));
+	static {
+		DruidDataSource.class.getName();
 	}
 
-	public DruidDB(Memcached memcached, @ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
-		super(new DruidDBConfig(propertiesFile, memcached));
+	public DruidDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties) {
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource());
 	}
 
-	public DruidDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
-		super(new DruidDBConfig(propertiesFile));
+	public DruidDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties,
+			Memcached memcached) {
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource(), memcached);
 	}
 
-	public void destroy() throws Exception {
-		BeanUtils.destroy(getDbConfig());
+	public DruidDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties,
+			Redis redis) {
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource(), redis);
+	}
+
+	protected DruidDB(Map properties) {
+		super(properties);
+		initConfig(properties);
+	}
+
+	protected DruidDB(Map properties, Memcached memcached) {
+		super(properties, memcached);
+		initConfig(properties);
+	}
+
+	protected DruidDB(Map properties, Redis redis) {
+		super(properties, redis);
+		initConfig(properties);
+	}
+
+	private void initConfig(Map properties) {
+		if(properties == null){
+			return ;
+		}
+		
+		datasource = new DruidDataSource();
+		DBUtils.loadProperties(datasource, properties);
+		initConfig(datasource);
+		createTableByProperties(properties);
+	}
+	
+	protected void initConfig(DruidDataSource dataSource){
+		if (!datasource.isPoolPreparedStatements()) {// 如果配置中没有开启psCache
+			datasource.setMaxPoolPreparedStatementPerConnectionSize(20);
+		}
+
+		datasource.setRemoveAbandoned(false);
+		this.dataBase = DBUtils.automaticRecognition(datasource.getDriverClassName(), datasource.getUrl(),
+				datasource.getUsername(), datasource.getPassword());
+		dataBase.create();
+	}
+
+	public DataBase getDataBase() {
+		return dataBase;
+	}
+
+	public Connection getConnection() throws SQLException {
+		return datasource.getConnection();
+	}
+
+	@Override
+	public SqlDialect getSqlDialect() {
+		return dataBase.getSqlDialect();
+	}
+
+	public synchronized void destroy() {
+		if (datasource != null && !datasource.isClosed()) {
+			datasource.close();
+		}
+		super.destroy();
 	}
 }

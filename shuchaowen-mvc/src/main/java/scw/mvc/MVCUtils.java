@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.BeanUtils;
-import scw.core.GlobalPropertyFactory;
 import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
@@ -16,6 +15,7 @@ import scw.http.server.ServerHttpRequest;
 import scw.lang.ParameterException;
 import scw.mvc.action.Action;
 import scw.util.MultiValueMap;
+import scw.value.ValueFactory;
 
 public final class MVCUtils {
 	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet");
@@ -94,8 +94,8 @@ public final class MVCUtils {
 		return SUPPORT_SERVLET;
 	}
 
-	public static String getScanAnnotationPackageName() {
-		return GlobalPropertyFactory.getInstance().getValue("scw.scan.mvc.package", String.class,
-				BeanUtils.getScanAnnotationPackageName());
+	public static String getScanAnnotationPackageName(ValueFactory<String> propertyFactory) {
+		return propertyFactory.getValue("scw.scan.mvc.package", String.class,
+				BeanUtils.getScanAnnotationPackageName(propertyFactory));
 	}
 }

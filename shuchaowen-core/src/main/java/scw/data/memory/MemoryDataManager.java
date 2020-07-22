@@ -32,8 +32,15 @@ public final class MemoryDataManager implements Destroy {
 	public MemoryDataManager(long clearPeriodSecond) {
 		if (clearPeriodSecond > 0) {
 			this.timerTask = new ClearExpireKeyTask();
-			timer = new Timer(getClass().getSimpleName());
+			timer = new Timer(getClass().getSimpleName(), true);
 			this.timer.schedule(timerTask, clearPeriodSecond * 1000L, clearPeriodSecond * 1000L);
+			Runtime.getRuntime().addShutdownHook(new Thread(){
+				@Override
+				public void run() {
+					MemoryDataManager.this.destroy();
+					super.run();
+				}
+			});
 		}
 	}
 

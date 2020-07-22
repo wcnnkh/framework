@@ -6,56 +6,183 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.Init;
-import scw.beans.annotation.Autowired;
+import scw.beans.BeanFactoryAware;
+import scw.beans.Destroy;
+import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.io.serialzer.SerializerUtils;
+import scw.data.memcached.Memcached;
+import scw.data.redis.Redis;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
+import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.orm.Column;
 import scw.sql.orm.TableChange;
 import scw.sql.orm.annotation.Table;
-import scw.sql.orm.dialect.SqlDialect;
+import scw.sql.orm.cache.CacheManager;
+import scw.sql.orm.cache.DefaultCacheManager;
+import scw.sql.orm.cache.TemporaryCacheManager;
 import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.support.AbstractEntityOperations;
-import scw.transaction.sql.SqlTransactionUtils;
+import scw.sql.orm.support.generation.DefaultGeneratorService;
+import scw.sql.orm.support.generation.GeneratorService;
+import scw.sql.transaction.SqlTransactionUtils;
 import scw.util.ClassScanner;
-import scw.util.queue.Consumer;
 
-public abstract class AbstractDB extends AbstractEntityOperations implements DB,
-		Consumer<AsyncExecute>, DBConfig, Init {
-	@Autowired
+@SuppressWarnings("rawtypes")
+public abstract class AbstractDB extends AbstractEntityOperations
+		implements DB, Runnable, BeanFactoryAware, Destroy, ConnectionFactory {
+	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	private final LinkedBlockingQueue<AsyncExecute> asyncExecutes = new LinkedBlockingQueue<AsyncExecute>();
 	private BeanFactory beanFactory;
+	private volatile boolean asyncShutdown = false;
+	private Thread thread;
+	private CacheManager cacheManager;
+	private GeneratorService generatorService;
 
-	public SqlDialect getSqlDialect() {
-		return getDataBase().getSqlDialect();
+	public AbstractDB(Map properties) {
+		this.cacheManager = new DefaultCacheManager();
+		this.generatorService = new DefaultGeneratorService();
+		initAsync();
 	}
 
-	public void init() {
-		if (StringUtils.isNotEmpty(getSannerTablePackage())) {
-			createTable(getSannerTablePackage());
+	public AbstractDB(Map properties, Memcached memcached) {
+		this.cacheManager = new TemporaryCacheManager(memcached, true, getCachePrefix(properties));
+		this.generatorService = new MemcachedGeneratorService(memcached);
+		initAsync();
+	}
+
+	public AbstractDB(Map properties, Redis redis) {
+		this.cacheManager = new TemporaryCacheManager(redis, true, getCachePrefix(properties));
+		this.generatorService = new RedisGeneratorService(redis);
+		initAsync();
+	}
+
+	public AbstractDB(CacheManager cacheManager, GeneratorService generatorService) {
+		this.cacheManager = cacheManager;
+		this.generatorService = generatorService;
+		initAsync();
+	}
+
+	private void initAsync() {
+		thread = new Thread(this, getClass().getSimpleName());
+		thread.setDaemon(true);
+		thread.start();
+
+		Thread shutdown = new Thread() {
+			@Override
+			public void run() {
+				AbstractDB.this.destroy();
+			}
+		};
+		shutdown.setName(thread.getName() + "-shutdown");
+		Runtime.getRuntime().addShutdownHook(shutdown);
+	}
+
+	protected String getCachePrefix(Map properties) {
+		if(properties == null){
+			return null;
 		}
-		getAsyncQueue().addConsumer(this);
+		return StringUtils.toString(properties.get("cache.prefix"), Constants.DEFAULT_PREFIX);
+	}
+
+	protected void createTableByProperties(Map properties) {
+		if(properties == null){
+			return ;
+		}
+		
+		String create = StringUtils.toString(properties.get("create"), null);
+		if (StringUtils.isNotEmpty(create)) {
+			createTable(create);
+		}
+	}
+
+	@Override
+	public GeneratorService getGeneratorService() {
+		return generatorService;
+	}
+
+	@Override
+	public CacheManager getCacheManager() {
+		return cacheManager;
 	}
 
 	public void createTable(Class<?> tableClass, boolean registerManager) {
 		createTable(tableClass, null, registerManager);
 	}
 
-	public void consume(AsyncExecute message) throws Throwable {
-		if(beanFactory != null){
-			Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(message.getClass());
-			BeanDefinition beanDefinition = beanFactory.getDefinition(clazz.getName());
-			if(beanDefinition != null){
-				beanDefinition.dependence(message);
-				beanDefinition.init(message);
+	public void setBeanFactory(BeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
+	}
+
+	public void processing(AsyncExecute asyncExecute, boolean isLogger) {
+		if (asyncExecute == null) {
+			return;
+		}
+
+		if (beanFactory != null) {
+			Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(asyncExecute.getClass());
+			BeanDefinition definition = beanFactory.getDefinition(clazz);
+			if (definition != null) {
+				try {
+					definition.dependence(asyncExecute);
+					definition.init(asyncExecute);
+				} catch (Exception e) {
+					logger.error(e, "dependence {} error", clazz);
+				}
 			}
 		}
-		message.execute(this);
+
+		if (isLogger) {
+			logger.info("async processing: {}", asyncExecute);
+		}
+
+		try {
+			asyncExecute.execute(this);
+		} catch (Exception e) {
+			logger.error(e, "async processing error");
+		}
+	}
+
+	public synchronized void destroy() {
+		if (asyncShutdown) {
+			return;
+		}
+
+		asyncShutdown = true;
+		thread.interrupt();
+		synchronized (asyncExecutes) {
+			while (!asyncExecutes.isEmpty()) {
+				AsyncExecute asyncExecute = asyncExecutes.poll();
+				processing(asyncExecute, true);
+			}
+		}
+	}
+
+	public void run() {
+		while (!thread.isInterrupted()) {
+			AsyncExecute asyncExecute;
+			synchronized (asyncExecutes) {
+				if (asyncShutdown && asyncExecutes.isEmpty()) {
+					break;
+				}
+
+				try {
+					asyncExecute = asyncExecutes.take();
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
+
+			processing(asyncExecute, false);
+		}
 	}
 
 	@Override
@@ -63,12 +190,11 @@ public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 		createTable(tableClass, tableName, true);
 	}
 
-	public void createTable(Class<?> tableClass, String tableName,
-			boolean registerManager) {
+	public void createTable(Class<?> tableClass, String tableName, boolean registerManager) {
 		if (registerManager) {
 			DBManager.register(tableClass, this);
 		}
-		
+
 		super.createTable(tableClass, tableName);
 		// 检查表变更
 		checkTableChange(tableClass);
@@ -100,27 +226,18 @@ public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 		TableChange tableChange = getTableChange(tableClass);
 		List<String> addList = new LinkedList<String>();
 		if (!CollectionUtils.isEmpty(tableChange.getAddColumnss())) {
-			for (Column column : tableChange
-					.getAddColumnss()) {
+			for (Column column : tableChange.getAddColumnss()) {
 				addList.add(column.getName());
 			}
 		}
-		
-		if (!CollectionUtils.isEmpty(tableChange.getDeleteColumns())
-				|| !CollectionUtils.isEmpty(addList)) {
+
+		if (!CollectionUtils.isEmpty(tableChange.getDeleteColumns()) || !CollectionUtils.isEmpty(addList)) {
 			// 如果存在字段变更
 			if (logger.isWarnEnabled()) {
-				logger.warn("There are field changes class={}, addList={}, deleteList={}",
-						tableClass.getName(),
-						Arrays.toString(addList.toArray()),
-						Arrays.toString(tableChange.getDeleteColumns().toArray()));
+				logger.warn("There are field changes class={}, addList={}, deleteList={}", tableClass.getName(),
+						Arrays.toString(addList.toArray()), Arrays.toString(tableChange.getDeleteColumns().toArray()));
 			}
 		}
-	}
-
-	@Override
-	public Connection getUserConnection() throws SQLException {
-		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 
 	public final void asyncDelete(Object... objs) {
@@ -154,8 +271,8 @@ public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 		}
 		asyncExecute(asyncExecute);
 	}
-	
-	public void asyncSaveOrUpdate(Object... objs) {
+
+	public final void asyncSaveOrUpdate(Object... objs) {
 		TransactionAsyncExecute asyncExecute = new TransactionAsyncExecute();
 		for (Object bean : objs) {
 			asyncExecute.add(new BeanAsyncExecute(bean, OperationType.SAVE_OR_UPDATE));
@@ -163,12 +280,23 @@ public abstract class AbstractDB extends AbstractEntityOperations implements DB,
 		asyncExecute(asyncExecute);
 	}
 
-	public final void asyncExecute(AsyncExecute asyncExecute) {
-		getAsyncQueue().push(SerializerUtils.clone(asyncExecute));
+	public void asyncExecute(AsyncExecute asyncExecute) {
+		if (asyncShutdown) {
+			throw new RuntimeException("Asynchronous processing has stopped!");
+		}
+
+		if (!asyncExecutes.offer(asyncExecute)) {
+			throw new RuntimeException("async execute offer error: " + asyncExecute);
+		}
 	}
-	
+
+	@Override
+	public Connection getUserConnection() throws SQLException {
+		return SqlTransactionUtils.getTransactionConnection(this);
+	}
+
 	@Deprecated
-	public Select createSelect(){
+	public Select createSelect() {
 		return new MysqlSelect(this);
 	}
 }

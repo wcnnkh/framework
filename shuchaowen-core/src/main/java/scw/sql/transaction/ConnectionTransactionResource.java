@@ -1,4 +1,4 @@
-package scw.transaction.sql;
+package scw.sql.transaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;

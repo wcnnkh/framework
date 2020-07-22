@@ -1,12 +1,10 @@
 package scw.http.server.ip;
 
 import scw.core.GlobalPropertyFactory;
-import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.http.server.ServerHttpRequest;
 
-@Configuration(order = Integer.MIN_VALUE)
 public class DefaultServerHttpRequestIpGetter implements ServerHttpRequestIpGetter {
 	
 	// 使用ip的模式 1表示使用第一个ip 2表示使用最后一个ip 其他表示原样返回

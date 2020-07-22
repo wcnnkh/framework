@@ -26,7 +26,6 @@ import scw.beans.event.DependenceRefreshEvent;
 import scw.beans.ioc.Ioc;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
-import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
@@ -43,11 +42,12 @@ import scw.lang.AlreadyExistsException;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.Accept;
 import scw.util.ClassScanner;
 import scw.value.property.BasePropertyFactory;
 import scw.value.property.PropertyFactory;
 
-public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
+public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, Accept<Class<?>> {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
@@ -77,7 +77,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		return beanDefinition;
 	}
 
-	public final BeanDefinition getDefinition(String name) {
+	public BeanDefinition getDefinition(String name) {
 		BeanDefinition beanDefinition = getDefinitionByCache(name);
 		if (beanDefinition == null) {
 			String aliasName = nameMappingMap.get(name);
@@ -96,7 +96,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 				return null;
 			}
 
-			if (isIgnoreClass(clazz)) {
+			if (!accept(clazz)) {
 				return null;
 			}
 
@@ -130,7 +130,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	}
 
 	private BeanDefinition loading(LoaderContext context) {
-		if (isIgnoreClass(context.getTargetClass())) {
+		if (!accept(context.getTargetClass())) {
 			return null;
 		}
 
@@ -150,8 +150,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			}
 		}
 
-		for (Class<?> impl : InstanceUtils.getConfigurationClassList(context.getTargetClass(),
-				context.getPropertyFactory())) {
+		for (Class<?> impl : InstanceUtils.getConfigurationClassList(context.getTargetClass(), propertyFactory)) {
 			BeanDefinition definition = getDefinitionByCache(impl.getName());
 			if (definition == null) {
 				definition = new AutoBeanDefinition(new LoaderContext(impl, context));
@@ -162,18 +161,26 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			}
 		}
 
-		return new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
+		BeanDefinition definition = new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
+		if(definition == null){
+			definition = new AutoBeanDefinition(context);
+		}
+		return definition;
 	}
 
-	protected boolean isIgnoreClass(Class<?> clazz) {
-		return ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz);
+	public boolean accept(Class<?> clazz) {
+		return !ClassUtils.isPrimitiveOrWrapper(clazz) && !AnnotationUtils.isIgnore(clazz);
 	}
 
 	public BeanDefinition getDefinition(Class<?> clazz) {
-		if (isIgnoreClass(clazz)) {
+		if (!accept(clazz)) {
 			return null;
 		}
 		return getDefinition(clazz.getName());
+	}
+
+	public boolean isSingleton(Class<?> clazz) {
+		return isSingleton(clazz.getName());
 	}
 
 	public boolean isSingleton(String name) {
@@ -186,11 +193,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			return false;
 		}
 
-		return definition.isSingleton();
-	}
-
-	public boolean isSingleton(Class<?> clazz) {
-		return isSingleton(clazz.getName());
+		return singletonMap.containsKey(definition.getId()) || definition.isSingleton();
 	}
 
 	public <T> T getInstance(Class<? extends T> clazz) {
@@ -268,10 +271,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	}
 
 	public boolean isInstance(Class<?> clazz) {
-		if (isIgnoreClass(clazz)) {
-			return false;
-		}
-		return isInstance(clazz.getName());
+		return accept(clazz) && isInstance(clazz.getName());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -441,8 +441,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 	}
 
 	public void init() throws Exception {
-		for (Class<Filter> filter : InstanceUtils.getConfigurationClassList(Filter.class,
-				GlobalPropertyFactory.getInstance())) {
+		for (Class<Filter> filter : InstanceUtils.getConfigurationClassList(Filter.class, propertyFactory)) {
 			filterNameList.add(filter.getName());
 		}
 		filterNameList = Arrays.asList(filterNameList.toArray(new String[0]));
@@ -450,18 +449,16 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
 		beanBuilderLoaders
-				.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, getPropertyFactory()));
+				.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, propertyFactory));
 		beanBuilderLoaders = Arrays.asList(beanBuilderLoaders.toArray(new BeanBuilderLoader[0]));
-		
+
 		propertyFactory.addLastBasePropertyFactory(
-				InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, getPropertyFactory()));
-		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
-				getPropertyFactory())) {
+				InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, propertyFactory));
+		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this, propertyFactory)) {
 			addBeanConfiguration(configuration);
 		}
 
-		for (Class<?> clazz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
-				BeanUtils.getScanAnnotationPackageName())) {
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
 			if (!ReflectionUtils.isPresent(clazz)) {
 				continue;
 			}
@@ -471,8 +468,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			ioc.getInit().process(null, null, this, propertyFactory, true);
 		}
 
-		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class,
-				this, getPropertyFactory())) {
+		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class, 
+				this, propertyFactory)) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
 		beanFactoryLifeCycles = Arrays.asList(beanFactoryLifeCycles.toArray(new BeanFactoryLifeCycle[0]));
@@ -506,8 +503,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter {
 			}
 		}
 
-		for (Class<?> clazz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
-				BeanUtils.getScanAnnotationPackageName())) {
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
 			Ioc ioc = Ioc.forClass(clazz);
 			ioc.getDestroy().process(null, null, this, propertyFactory, true);
 		}

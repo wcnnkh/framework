@@ -1,37 +1,101 @@
 package scw.db.hikaricp;
 
-import scw.beans.BeanUtils;
-import scw.beans.Destroy;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Map;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import scw.core.instance.annotation.Configuration;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.db.AbstractDB;
 import scw.db.DBUtils;
-import scw.db.DefaultDB;
+import scw.db.database.DataBase;
+import scw.io.ResourceUtils;
+import scw.sql.orm.dialect.SqlDialect;
 
-/**
- * 只在能java8中使用 除非你在pom引入你需要的版本
- * 
- * @author shuchaowen
- *
- */
-public class HikariCPDB extends DefaultDB implements Destroy {
+@SuppressWarnings("rawtypes")
+@Configuration(order = Integer.MIN_VALUE)
+public class HikariCPDB extends AbstractDB {
+	private HikariDataSource hds;
+	private DataBase dataBase;
 
-	public HikariCPDB(Redis redis,
-			@ResourceParameter@DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
-		super(new HikariCPDBConfig(propertiesFile, redis));
+	static {
+		HikariConfig.class.getName();
 	}
 
-	public HikariCPDB(Memcached memcached,
-			@ResourceParameter@DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
-		super(new HikariCPDBConfig(propertiesFile, memcached));
+	public HikariCPDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile,
+			Redis redis) {
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile).getResource(), redis);
 	}
 
-	public HikariCPDB(@ResourceParameter@DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
-		super(new HikariCPDBConfig(propertiesFile));
+	public HikariCPDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile,
+			Memcached memcached) {
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile).getResource(), memcached);
 	}
 
-	public void destroy() throws Exception {
-		BeanUtils.destroy(getDbConfig());
+	public HikariCPDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
+		this(ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile).getResource());
+	}
+
+	protected HikariCPDB(Map properties) {
+		super(properties);
+		initConfig(properties);
+	}
+
+	protected HikariCPDB(Map properties, Memcached memcached) {
+		super(properties, memcached);
+		initConfig(properties);
+	}
+
+	protected HikariCPDB(Map properties, Redis redis) {
+		super(properties, redis);
+		initConfig(properties);
+	}
+
+	protected void initConfig(HikariConfig config) {
+		this.dataBase = DBUtils.automaticRecognition(config.getDriverClassName(), config.getJdbcUrl(),
+				config.getUsername(), config.getPassword());
+		dataBase.create();
+		hds = new HikariDataSource(config);
+	}
+
+	private void initConfig(Map properties) {
+		if(properties == null){
+			return ;
+		}
+		HikariConfig config = new HikariConfig();
+		DBUtils.loadProperties(config, properties);
+		initConfig(config);
+		createTableByProperties(properties);
+	}
+
+	public DataBase getDataBase() {
+		return dataBase;
+	}
+
+	public Connection getConnection() throws SQLException {
+		return hds.getConnection();
+	}
+
+	@Override
+	public synchronized void destroy() {
+		if (!hds.isClosed()) {
+			hds.close();
+		}
+		super.destroy();
+	}
+
+	@Override
+	public SqlDialect getSqlDialect() {
+		return dataBase.getSqlDialect();
+	}
+
+	public void setDataBase(DataBase dataBase) {
+		this.dataBase = dataBase;
 	}
 }

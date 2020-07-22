@@ -11,9 +11,10 @@ public interface BeanFactory extends InstanceFactory {
 	BeanDefinition getDefinition(Class<?> clazz);
 
 	Aop getAop();
-	
+
 	/**
 	 * bean的事件派发
+	 * 
 	 * @return
 	 */
 	BasicEventDispatcher<BeanEvent> getEventDispatcher();

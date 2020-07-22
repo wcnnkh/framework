@@ -10,6 +10,7 @@ import scw.beans.BeanUtils;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.util.ClassScanner;
+import scw.value.ValueFactory;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE)
@@ -17,7 +18,7 @@ public final class MethodMessageListenerScan extends AbstractBeanFactoryLifeCycl
 
 	@SuppressWarnings("unchecked")
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		for (Class<?> clazz : ClassScanner.getInstance().getClasses(getScanAnnotationPackageName())) {
+		for (Class<?> clazz : ClassScanner.getInstance().getClasses(getScanAnnotationPackageName(propertyFactory))) {
 			if (scw.amqp.MessageListener.class.isAssignableFrom(clazz)) {
 				MessageListener messageListener = clazz.getAnnotation(MessageListener.class);
 				if (messageListener != null) {
@@ -45,8 +46,8 @@ public final class MethodMessageListenerScan extends AbstractBeanFactoryLifeCycl
 		return queueDeclare;
 	}
 
-	public String getScanAnnotationPackageName() {
-		return BeanUtils.getScanAnnotationPackageName();
+	public String getScanAnnotationPackageName(ValueFactory<String> propertyFactory) {
+		return BeanUtils.getScanAnnotationPackageName(propertyFactory);
 	}
 
 	public void destroy(BeanFactory beanFactory, PropertyFactory propertyFactory) {

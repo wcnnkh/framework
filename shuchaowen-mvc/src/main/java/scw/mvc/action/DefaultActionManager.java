@@ -24,7 +24,7 @@ public class DefaultActionManager implements ActionManager {
 	private final PropertyFactory propertyFactory;
 
 	public DefaultActionManager(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		this(beanFactory, propertyFactory, MVCUtils.getScanAnnotationPackageName());
+		this(beanFactory, propertyFactory, MVCUtils.getScanAnnotationPackageName(propertyFactory));
 	}
 
 	public DefaultActionManager(BeanFactory beanFactory, PropertyFactory propertyFactory,

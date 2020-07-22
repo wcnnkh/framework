@@ -7,7 +7,6 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.beans.annotation.Bean;
-import scw.core.Constants;
 import scw.core.reflect.ReflectionUtils;
 import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
@@ -15,8 +14,7 @@ import scw.value.property.PropertyFactory;
 public class MethodBeanConfiguration extends AbstractBeanConfiguration {
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
-		for (Class<?> clz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName(),
-				Constants.SYSTEM_PACKAGE_NAME)) {
+		for (Class<?> clz : ClassScanner.getInstance().getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
 			if (!ReflectionUtils.isPresent(clz)) {
 				continue;
 			}

@@ -13,7 +13,7 @@ import scw.core.utils.CollectionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public class MainApplication extends CommonApplication implements Application {
+public class MainApplication extends CommonApplication implements Application, Runnable {
 	private final Logger logger;
 	private final Class<?> mainClass;
 	private final MainArgs args;
@@ -22,17 +22,28 @@ public class MainApplication extends CommonApplication implements Application {
 		super(DEFAULT_BEANS_PATH);
 		this.mainClass = mainClass;
 		this.args = args;
-		
+
 		configuration(mainClass, args);
-		for(Entry<String, String> entry : args.getParameterMap().entrySet()){
+		for (Entry<String, String> entry : args.getParameterMap().entrySet()) {
 			getPropertyFactory().put(entry.getKey(), entry.getValue());
 		}
-		
+
 		this.logger = LoggerUtils.getLogger(mainClass);
 		if (args != null) {
 			logger.debug("args: {}", args);
 			addInternalSingleton(MainArgs.class, args);
 		}
+		
+		Runtime.getRuntime().addShutdownHook(new Thread(){
+			@Override
+			public void run() {
+				try {
+					MainApplication.this.destroy();
+				} catch (Exception e) {
+					logger.error(e, "destroy error");
+				}
+			}
+		});
 	}
 
 	public Class<?> getMainClass() {
@@ -43,15 +54,14 @@ public class MainApplication extends CommonApplication implements Application {
 		return args;
 	}
 
-	private static class Run extends Thread {
-		private MainApplication mainApplication;
-
-		public Run(MainApplication mainApplication) {
-			this.mainApplication = mainApplication;
-		}
-
-		public void run() {
-			mainApplication.init();
+	public void run() {
+		init();
+		while (true) {
+			try {
+				Thread.sleep(Long.MAX_VALUE);
+			} catch (InterruptedException e) {
+				break;
+			}
 		}
 	}
 
@@ -70,7 +80,7 @@ public class MainApplication extends CommonApplication implements Application {
 	}
 
 	public static void run(MainApplication application) {
-		Run run = new Run(application);
+		Thread run = new Thread(application);
 		run.setContextClassLoader(application.getMainClass().getClassLoader());
 		run.setName(application.getMainClass().getName());
 		run.setDaemon(false);
@@ -79,8 +89,7 @@ public class MainApplication extends CommonApplication implements Application {
 
 	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, MainArgs args)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class,
-				GlobalPropertyFactory.getInstance());
+		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class, GlobalPropertyFactory.getInstance());
 		if (!CollectionUtils.isEmpty(impls)) {
 			Iterator<Class<MainApplication>> iterator = impls.iterator();
 			while (iterator.hasNext()) {
