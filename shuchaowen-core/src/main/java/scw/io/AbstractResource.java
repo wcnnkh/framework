@@ -31,7 +31,7 @@ public abstract class AbstractResource implements Resource {
 	private volatile ResourceEventDispatcher eventDispatcher;
 
 	public ResourceEventDispatcher getEventDispatcher() {
-		if (SUPPORT_EVENT_DISPATCHER) {
+		if (isSupportEventDispatcher()) {
 			if (eventDispatcher == null) {
 				synchronized (this) {
 					if (eventDispatcher == null) {
@@ -50,7 +50,11 @@ public abstract class AbstractResource implements Resource {
 	}
 
 	public boolean isSupportEventDispatcher() {
-		return SUPPORT_EVENT_DISPATCHER;
+		try {
+			return SUPPORT_EVENT_DISPATCHER && !ResourceUtils.isJarURL(getURL());
+		} catch (IOException e) {
+			return false;
+		}
 	}
 
 	/**

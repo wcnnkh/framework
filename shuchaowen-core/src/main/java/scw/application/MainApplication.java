@@ -70,7 +70,6 @@ public class MainApplication extends CommonApplication implements Application, R
 	}
 
 	public static void configuration(Class<?> mainClass, MainArgs args) {
-		Thread.currentThread().setContextClassLoader(mainClass.getClassLoader());
 		BasePackage basePackage = mainClass.getAnnotation(BasePackage.class);
 		if (basePackage == null) {
 			GlobalPropertyFactory.getInstance().setBasePackageName(mainClass.getPackage().getName());

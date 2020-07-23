@@ -77,5 +77,7 @@ public final class ShutdownHttpServlet extends HttpServlet {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		System.exit(0);
 	}
 }

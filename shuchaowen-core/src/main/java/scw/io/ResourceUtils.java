@@ -84,6 +84,7 @@ public final class ResourceUtils {
 			SystemPropertyFactory.getInstance().getValue("resource.cache.enable", boolean.class, true));
 
 	static {
+		RESOURCE_OPERATIONS.setClassLoader(ClassUtils.getDefaultClassLoader());
 		RESOURCE_OPERATIONS.addResourceLoader(
 				new FileSystemSearchResourceLoader(GlobalPropertyFactory.getInstance().getWorkPath(), false, true));
 	}

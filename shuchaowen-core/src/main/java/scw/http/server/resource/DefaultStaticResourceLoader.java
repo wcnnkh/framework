@@ -5,6 +5,7 @@ import java.util.Arrays;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Resource;
+import scw.io.ResourceLoader;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -13,21 +14,31 @@ import scw.net.MimeType;
 import scw.value.property.PropertyFactory;
 
 public class DefaultStaticResourceLoader implements StaticResourceLoader {
-	private static Logger logger = LoggerUtils.getLogger(DefaultStaticResourceLoader.class);
+	private static Logger logger = LoggerUtils
+			.getLogger(DefaultStaticResourceLoader.class);
 	private final String resourceRoot;
 	private final String[] resourcePath;
 	private final String defaultFileName;
+	private final ResourceLoader resourceLoader;
 
 	public DefaultStaticResourceLoader(PropertyFactory propertyFactory) {
 		this(propertyFactory.getString("http.static.resource.root"),
-				propertyFactory.getObject("http.static.resource.path", String[].class),
-				propertyFactory.getString("http.static.resource.default.name"));
+				propertyFactory.getObject("http.static.resource.path",
+						String[].class), propertyFactory
+						.getString("http.static.resource.default.name"),
+				ResourceUtils.getResourceOperations());
 	}
 
-	public DefaultStaticResourceLoader(String resourceRoot, String[] resourcePath, String defaultFileName) {
-		this.resourceRoot = StringUtils.isEmpty(resourceRoot) ? "" : resourceRoot;
+	public DefaultStaticResourceLoader(String resourceRoot,
+			String[] resourcePath, String defaultFileName,
+			ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader == null ? ResourceUtils
+				.getResourceOperations() : resourceLoader;
+		this.resourceRoot = StringUtils.isEmpty(resourceRoot) ? "/"
+				: StringUtils.cleanPath(resourceRoot);
 		this.resourcePath = resourcePath;
-		this.defaultFileName = StringUtils.isEmpty(defaultFileName) ? "index.html" : defaultFileName;
+		this.defaultFileName = StringUtils.isEmpty(defaultFileName) ? "index.html"
+				: defaultFileName;
 		if (!ArrayUtils.isEmpty(resourcePath)) {
 			logger.info("resourceDefaultFileName:{}", this.defaultFileName);
 			logger.info("resourceRoot:{}", resourceRoot);
@@ -40,11 +51,15 @@ public class DefaultStaticResourceLoader implements StaticResourceLoader {
 			return null;
 		}
 
-		String locationToUse = location.endsWith("/") ? (location + defaultFileName) : location;
+		String locationToUse = location.endsWith("/") ? (location + defaultFileName)
+				: location;
 		for (String p : resourcePath) {
 			if (StringUtils.test(location, p)) {
-				return ResourceUtils.getResourceOperations().getResource(
-						resourceRoot + (locationToUse.startsWith("/") ? locationToUse : ("/" + locationToUse)));
+				locationToUse = resourceRoot
+						+ (locationToUse.startsWith("/") ? locationToUse
+								: ("/" + locationToUse));
+				locationToUse = StringUtils.cleanPath(locationToUse);
+				return resourceLoader.getResource(locationToUse);
 			}
 		}
 		return null;

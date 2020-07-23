@@ -5,6 +5,7 @@ import scw.application.MainArgs;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
+import scw.logger.SplitLineAppend;
 import scw.servlet.DispatcherServlet;
 import scw.servlet.http.HttpServletService;
 
@@ -35,11 +36,10 @@ public class ServletEmbeddedApplication extends MainApplication {
 
 	@Override
 	protected void destroyInternal() {
-		getLogger().info(ServletEmbeddedApplication.class, "---------------shutdown---------------");
+		getLogger().info(new SplitLineAppend("shutdown"));
 		if (embedded != null) {
 			embedded.destroy();
 		}
 		super.destroyInternal();
-		System.exit(0);
 	}
 }
