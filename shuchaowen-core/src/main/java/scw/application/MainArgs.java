@@ -25,6 +25,10 @@ public class MainArgs {
 		}
 		return -1;
 	}
+	
+	public boolean contains(String value){
+		return indexOf(value) != -1;
+	}
 
 	public Value get(int index) {
 		return new AnyValue(args[index]);

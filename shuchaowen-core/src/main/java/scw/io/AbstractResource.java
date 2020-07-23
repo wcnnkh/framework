@@ -16,6 +16,7 @@ import scw.io.event.ResourceEventDispatcher;
 import scw.lang.NestedIOException;
 import scw.lang.NotSupportedException;
 import scw.util.JavaVersion;
+import scw.value.property.SystemPropertyFactory;
 
 /**
  * Convenience base class for {@link Resource} implementations, pre-implementing
@@ -28,6 +29,11 @@ import scw.util.JavaVersion;
  *
  */
 public abstract class AbstractResource implements Resource {
+	/**
+	 * 对于jar的资源是否也应该进行事件监听，默认不监听
+	 */
+	public static final boolean SUPPORT_JAR_RESOURCE_EVENT_DISPATCHER = SystemPropertyFactory.getInstance().getBooleanValue("jar.resource.event.dispathcer.enable");
+	
 	private volatile ResourceEventDispatcher eventDispatcher;
 
 	public ResourceEventDispatcher getEventDispatcher() {
@@ -51,7 +57,7 @@ public abstract class AbstractResource implements Resource {
 
 	public boolean isSupportEventDispatcher() {
 		try {
-			return SUPPORT_EVENT_DISPATCHER && !ResourceUtils.isJarURL(getURL());
+			return SUPPORT_EVENT_DISPATCHER && (SUPPORT_JAR_RESOURCE_EVENT_DISPATCHER || !ResourceUtils.isJarURL(getURL()));
 		} catch (IOException e) {
 			return false;
 		}

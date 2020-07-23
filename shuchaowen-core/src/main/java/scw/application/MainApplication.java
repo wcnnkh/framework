@@ -13,7 +13,8 @@ import scw.core.utils.CollectionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public class MainApplication extends CommonApplication implements Application, Runnable {
+public class MainApplication extends CommonApplication implements Application,
+		Runnable {
 	private final Logger logger;
 	private final Class<?> mainClass;
 	private final MainArgs args;
@@ -24,6 +25,7 @@ public class MainApplication extends CommonApplication implements Application, R
 		this.args = args;
 
 		configuration(mainClass, args);
+
 		for (Entry<String, String> entry : args.getParameterMap().entrySet()) {
 			getPropertyFactory().put(entry.getKey(), entry.getValue());
 		}
@@ -33,8 +35,8 @@ public class MainApplication extends CommonApplication implements Application, R
 			logger.debug("args: {}", args);
 			addInternalSingleton(MainArgs.class, args);
 		}
-		
-		Runtime.getRuntime().addShutdownHook(new Thread(){
+
+		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
 				try {
@@ -72,9 +74,11 @@ public class MainApplication extends CommonApplication implements Application, R
 	public static void configuration(Class<?> mainClass, MainArgs args) {
 		BasePackage basePackage = mainClass.getAnnotation(BasePackage.class);
 		if (basePackage == null) {
-			GlobalPropertyFactory.getInstance().setBasePackageName(mainClass.getPackage().getName());
+			GlobalPropertyFactory.getInstance().setBasePackageName(
+					mainClass.getPackage().getName());
 		} else {
-			GlobalPropertyFactory.getInstance().setBasePackageName(basePackage.value());
+			GlobalPropertyFactory.getInstance().setBasePackageName(
+					basePackage.value());
 		}
 	}
 
@@ -86,14 +90,19 @@ public class MainApplication extends CommonApplication implements Application, R
 		run.start();
 	}
 
-	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, MainArgs args)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class, GlobalPropertyFactory.getInstance());
+	public static MainApplication getAutoMainApplicationImpl(
+			Class<?> mainClass, MainArgs args) throws InstantiationException,
+			IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException {
+		Collection<Class<MainApplication>> impls = InstanceUtils
+				.getConfigurationClassList(MainApplication.class,
+						GlobalPropertyFactory.getInstance());
 		if (!CollectionUtils.isEmpty(impls)) {
 			Iterator<Class<MainApplication>> iterator = impls.iterator();
 			while (iterator.hasNext()) {
-				Constructor<MainApplication> constructor = ReflectionUtils.findConstructor(iterator.next(), false,
-						Class.class, MainArgs.class);
+				Constructor<MainApplication> constructor = ReflectionUtils
+						.findConstructor(iterator.next(), false, Class.class,
+								MainArgs.class);
 				if (constructor != null) {
 					ReflectionUtils.makeAccessible(constructor);
 					return constructor.newInstance(mainClass, args);
@@ -117,7 +126,8 @@ public class MainApplication extends CommonApplication implements Application, R
 			application = new MainApplication(mainClass, mainArgs);
 		}
 
-		application.getLogger().info("use application: {}", application.getClass().getName());
+		application.getLogger().info("use application: {}",
+				application.getClass().getName());
 		run(application);
 	}
 

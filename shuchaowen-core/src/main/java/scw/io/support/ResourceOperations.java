@@ -20,6 +20,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
+import scw.event.method.MultiEventRegistration;
 import scw.io.DefaultResourceLoader;
 import scw.io.IOUtils;
 import scw.io.Resource;
@@ -219,15 +220,31 @@ public class ResourceOperations extends DefaultResourceLoader {
 
 			@Override
 			public EventRegistration registerListener(final ObservableResourceEventListener<Properties> eventListener) {
-				return resources.get(0).getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
-
-					public void onEvent(ResourceEvent event) {
-						eventListener.onEvent(new ObservableResourceEvent<Properties>(event,
-								getProperties(resource, charsetName).getResource()));
-					}
-				});
+				List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>(resources.size());
+				for(Resource res : resources){
+					EventRegistration eventRegistration = res.getEventDispatcher().registerListener(new PropertiesResourceListener(resource, charsetName, eventListener));
+					eventRegistrations.add(eventRegistration);
+				}
+				return new MultiEventRegistration(eventRegistrations);
 			}
 		};
+	}
+	
+	private final class PropertiesResourceListener implements EventListener<ResourceEvent>{
+		private String resource;
+		private ObservableResourceEventListener<Properties> eventListener;
+		private String charsetName;
+		
+		public PropertiesResourceListener(String resource, String charsetName, ObservableResourceEventListener<Properties> eventListener){
+			this.resource = resource;
+			this.charsetName = charsetName;
+			this.eventListener = eventListener;
+		}
+		
+		public void onEvent(ResourceEvent event) {
+			eventListener.onEvent(new ObservableResourceEvent<Properties>(event,
+					getProperties(resource, charsetName).getResource()));
+		}
 	}
 
 	public ObservableResource<String> getContent(final String resource, final String charsetName) {
@@ -368,8 +385,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 				return res.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
 
 					public void onEvent(ResourceEvent event) {
-						eventListener
-								.onEvent(new ObservableResourceEvent<byte[]>(event, getBytes(resource).getResource()));
+						eventListener.onEvent(new ObservableResourceEvent<byte[]>(event, getBytes(resource).getResource()));
 					}
 				});
 			}
