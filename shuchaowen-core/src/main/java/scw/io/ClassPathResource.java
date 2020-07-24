@@ -6,10 +6,10 @@ import java.io.InputStream;
 import java.net.URL;
 
 import scw.core.Assert;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.value.property.SystemPropertyFactory;
 
 /**
  * {@link Resource} implementation for class path resources. Uses either a given
@@ -24,7 +24,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	/**
 	 * 在可执行jar中resources资源会被统一打包到resources目录中
 	 */
-	private static final String RESOURCES_PREFIX = SystemPropertyFactory
+	private static final String RESOURCES_PREFIX = GlobalPropertyFactory
 			.getInstance().getValue("scw.classpath.resources.prefix",
 					String.class, "resources/");
 

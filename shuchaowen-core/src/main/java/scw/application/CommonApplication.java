@@ -2,7 +2,6 @@ package scw.application;
 
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanFactory;
-import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.logger.LoggerFactory;
 
@@ -24,7 +23,6 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		start = true;
-		GlobalPropertyFactory.getInstance().startListener();
 		initInternal();
 	}
 

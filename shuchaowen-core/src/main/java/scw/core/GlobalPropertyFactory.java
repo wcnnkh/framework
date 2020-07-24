@@ -7,24 +7,25 @@ import java.util.List;
 
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
-import scw.io.support.ResourceOperations;
 import scw.util.ClassScanner;
-import scw.util.FormatUtils;
 import scw.value.property.PropertyFactory;
 import scw.value.property.SystemPropertyFactory;
 
 public final class GlobalPropertyFactory extends PropertyFactory {
-	private static final String WEB_ROOT = "web.root";
 	private static final String CLASSES_DIRECTORY = "classes.directory";
 	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
 	private static final String BASE_PACKAGE_NAME = "scw.base.package";
+	private static final String WEB_ROOT = "web.root";
+
 	private static GlobalPropertyFactory instance = new GlobalPropertyFactory();
 
 	public static GlobalPropertyFactory getInstance() {
 		return instance;
 	}
 
-	private List<PropertiesRegistration> propertiesRegistrations = new ArrayList<PropertiesRegistration>();
+	static {
+		instance.load();
+	}
 
 	private GlobalPropertyFactory() {
 		super(true, false);
@@ -32,29 +33,25 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 		if (getWorkPath() == null) {
 			setWorkPath(getDefaultWorkPath());
 		}
-
-		ResourceOperations operations = new ResourceOperations(this, false);
-		// 因为类加载顺序的原因，所以此些不能直接registerListener
-		propertiesRegistrations.add(loadProperties(null, operations, "global.properties", "UTF-8"));
-		propertiesRegistrations.add(loadProperties(null, operations,
-				getValue("scw.properties.private", String.class, "/private.properties"), "UTF-8"));
 	}
 
-	public void setWorkPath(String path) {
-		if (path == null) {
+	private volatile List<PropertiesRegistration> propertiesRegistrations = new ArrayList<PropertyFactory.PropertiesRegistration>();
+
+	private void load() {
+		propertiesRegistrations.add(instance.loadProperties("global.properties", "UTF-8"));
+		propertiesRegistrations.add(instance.loadProperties(
+				instance.getValue("scw.properties.private", String.class, "/private.properties"), "UTF-8"));
+	}
+
+	public synchronized void startListener() {
+		if (propertiesRegistrations == null) {
 			return;
 		}
 
-		put(WEB_ROOT, path);
-	}
-
-	public String getDefaultWorkPath() {
-		File file = FileUtils.searchDirectory(new File(SystemPropertyFactory.getInstance().getUserDir()), "WEB-INF");
-		return file == null ? SystemPropertyFactory.getInstance().getUserDir() : file.getParent();
-	}
-
-	public String getWorkPath() {
-		return getString(WEB_ROOT);
+		for (PropertiesRegistration propertiesRegistration : propertiesRegistrations) {
+			propertiesRegistration.registerListener();
+		}
+		propertiesRegistrations = null;
 	}
 
 	public String getClassesDirectory() {
@@ -124,10 +121,6 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 		return systemOnlyId;
 	}
 
-	public String format(String text, boolean supportEL) {
-		return FormatUtils.format(text, this, supportEL);
-	}
-
 	/**
 	 * 可能会返回空
 	 * 
@@ -145,9 +138,20 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 		putIfAbsent(BASE_PACKAGE_NAME, packageName);
 	}
 
-	public synchronized void startListener() {
-		for (PropertiesRegistration propertiesRegistration : propertiesRegistrations) {
-			propertiesRegistration.registerListener();
+	public String getDefaultWorkPath() {
+		File file = FileUtils.searchDirectory(new File(SystemPropertyFactory.getInstance().getUserDir()), "WEB-INF");
+		return file == null ? SystemPropertyFactory.getInstance().getUserDir() : file.getParent();
+	}
+
+	public void setWorkPath(String path) {
+		if (path == null) {
+			return;
 		}
+
+		put(WEB_ROOT, path);
+	}
+
+	public String getWorkPath() {
+		return getString(WEB_ROOT);
 	}
 }

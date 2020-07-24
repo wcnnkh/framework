@@ -21,7 +21,6 @@ import scw.io.support.FileSystemSearchResourceLoader;
 import scw.io.support.ResourceOperations;
 import scw.lang.NestedRuntimeException;
 import scw.lang.Nullable;
-import scw.value.property.SystemPropertyFactory;
 
 /**
  * 资源工具
@@ -81,10 +80,9 @@ public final class ResourceUtils {
 
 	private static final ResourceOperations RESOURCE_OPERATIONS = new ResourceOperations(
 			GlobalPropertyFactory.getInstance(),
-			SystemPropertyFactory.getInstance().getValue("resource.cache.enable", boolean.class, true));
+			GlobalPropertyFactory.getInstance().getValue("resource.cache.enable", boolean.class, true));
 
 	static {
-		RESOURCE_OPERATIONS.setClassLoader(ClassUtils.getDefaultClassLoader());
 		RESOURCE_OPERATIONS.addResourceLoader(
 				new FileSystemSearchResourceLoader(GlobalPropertyFactory.getInstance().getWorkPath(), false, true));
 	}

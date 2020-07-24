@@ -10,6 +10,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Level;
 import scw.logger.LoggerLevelUtils;
+import scw.logger.LoggerPropertyFactory;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 
@@ -68,7 +69,7 @@ public final class Log4jUtils {
 		Properties properties = ResourceUtils.getResourceOperations()
 				.getFormattedProperties(
 						"classpath:/scw/logger/log4j/default-log4j.properties",
-						LoggerLevelUtils.PROPERTY_FACTORY).getResource();
+						LoggerPropertyFactory.getInstance()).getResource();
 		for (KeyValuePair<String, Level> entry : LoggerLevelUtils
 				.getLevelConfigList()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue()
@@ -78,7 +79,7 @@ public final class Log4jUtils {
 		if (ResourceUtils.getResourceOperations().isExist(LOG4J_APPEND_PATH)) {
 			FormatUtils.info(Log4jUtils.class, "loading " + LOG4J_APPEND_PATH);
 			Properties append = ResourceUtils.getResourceOperations()
-					.getFormattedProperties(LOG4J_APPEND_PATH, LoggerLevelUtils.PROPERTY_FACTORY).getResource();
+					.getFormattedProperties(LOG4J_APPEND_PATH, LoggerPropertyFactory.getInstance()).getResource();
 			properties.putAll(append);
 		}
 

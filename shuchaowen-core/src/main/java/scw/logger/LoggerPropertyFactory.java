@@ -1,14 +1,17 @@
 package scw.logger;
 
-import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.value.property.ExtendGetPropertyFactory;
 
 public class LoggerPropertyFactory extends ExtendGetPropertyFactory {
+	private static LoggerPropertyFactory instance = new LoggerPropertyFactory();
 
-	public LoggerPropertyFactory() {
+	public static LoggerPropertyFactory getInstance() {
+		return instance;
+	}
+
+	private LoggerPropertyFactory() {
 		super(true, true);
-		addFirstBasePropertyFactory(Constants.PROPERTY_FACTORY);
 		addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
 	}
 

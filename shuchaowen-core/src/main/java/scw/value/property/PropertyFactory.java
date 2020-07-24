@@ -20,6 +20,7 @@ import scw.event.NamedEventDispatcher;
 import scw.event.method.MultiEventRegistration;
 import scw.event.support.DefaultEventDispatcher;
 import scw.event.support.EventType;
+import scw.io.ResourceUtils;
 import scw.io.event.ObservableResource;
 import scw.io.event.ObservableResourceEvent;
 import scw.io.event.ObservableResourceEventListener;
@@ -159,7 +160,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
 		Value v = map.put(key, value);
-		
+
 		PropertyEvent event = null;
 		if (v == null) {
 			event = new PropertyEvent(this, EventType.CREATE, key, value);
@@ -200,6 +201,14 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 			eventDispatcher.publishEvent(entry.getKey(),
 					new PropertyEvent(this, EventType.DELETE, entry.getKey(), entry.getValue()));
 		}
+	}
+
+	public PropertiesRegistration loadProperties(String resource, String charsetName) {
+		return loadProperties(null, resource, charsetName);
+	}
+
+	public PropertiesRegistration loadProperties(String keyPrefix, String resource, String charsetName) {
+		return loadProperties(keyPrefix, ResourceUtils.getResourceOperations(), resource, charsetName);
 	}
 
 	public PropertiesRegistration loadProperties(final String keyPrefix, ResourceOperations resourceOperations,

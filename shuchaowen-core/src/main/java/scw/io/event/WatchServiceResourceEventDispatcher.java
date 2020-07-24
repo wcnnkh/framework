@@ -12,13 +12,11 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.UseJavaVersion;
 import scw.event.support.EventType;
 import scw.io.Resource;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 import scw.util.KeyValuePair;
-import scw.value.property.SystemPropertyFactory;
 
 /**
  * 使用WatchService实现resource监听<br/>
@@ -29,9 +27,8 @@ import scw.value.property.SystemPropertyFactory;
  */
 @UseJavaVersion(7)
 public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDispatcher {
-	public static final boolean USE_WATCH_SERVICE = SystemPropertyFactory.getInstance()
+	public static final boolean USE_WATCH_SERVICE = GlobalPropertyFactory.getInstance()
 			.getValue("resource.watch.enable", boolean.class, true);
-	private static Logger logger = LoggerUtils.getLogger(WatchServiceResourceEventDispatcher.class);
 	private static final WatchService WATCH_SERVICE;
 	private static ConcurrentHashMap<Path, ResourceWatchKey> listenerMap;
 
@@ -109,13 +106,11 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 					WatchKey watchKey = path.register(WATCH_SERVICE, StandardWatchEventKinds.ENTRY_CREATE,
 							StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
 					resourceWatchKey.setWatchKey(watchKey);
-					logger.debug("register watch service path: {}", path);
 				}
 			}
 
 			resourceWatchKey.register(file, getResource());
 		} catch (IOException e) {
-			logger.debug(e, "register watch service error resource: {}", getResource());
 			// 如果出现异常就使用默认的方式来实现监听
 			super.listener();
 		}

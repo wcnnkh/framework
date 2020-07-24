@@ -60,6 +60,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 
 	public DefaultBeanFactory() {
 		propertyFactory.addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
+		GlobalPropertyFactory.getInstance().startListener();
+		
 		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
 				NoArgsInstanceFactory.class.getName());
 		addInternalSingleton(PropertyFactory.class, propertyFactory);

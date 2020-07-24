@@ -9,17 +9,15 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.GlobalPropertyFactory;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.util.comparator.CompareUtils;
-import scw.value.property.PropertyFactory;
 
 public class LoggerLevelUtils {
 	private static final List<LevelConfig> LOGGER_LEVEL_LIST;
-	public static final PropertyFactory PROPERTY_FACTORY = new LoggerPropertyFactory();
-
 	public static final Level DEFAULT_LEVEL;
 
 	static {
@@ -30,7 +28,7 @@ public class LoggerLevelUtils {
 
 		List<LevelConfig> levelList = new ArrayList<LevelConfig>();
 		reader(levelList, ResourceUtils.getResourceOperations().getFormattedProperties(
-				"/scw/logger/logger-level.properties", PROPERTY_FACTORY).getResource());
+				"/scw/logger/logger-level.properties", LoggerPropertyFactory.getInstance()).getResource());
 
 		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance()
 				.getValue("scw.logger.level.config", String.class,
@@ -43,7 +41,7 @@ public class LoggerLevelUtils {
 					+ loggerEnablePropertiePath);
 			Properties properties = ResourceUtils.getResourceOperations()
 					.getFormattedProperties(loggerEnablePropertiePath,
-							PROPERTY_FACTORY).getResource();
+							LoggerPropertyFactory.getInstance()).getResource();
 			reader(levelList, properties);
 		}
 
@@ -86,13 +84,15 @@ public class LoggerLevelUtils {
 	}
 
 	public static Level getLevel(String name) {
-		for (KeyValuePair<String, Level> keyValuePair : LOGGER_LEVEL_LIST) {
-			if (keyValuePair == null) {
-				continue;
-			}
+		if(!CollectionUtils.isEmpty(LOGGER_LEVEL_LIST)){
+			for (KeyValuePair<String, Level> keyValuePair : LOGGER_LEVEL_LIST) {
+				if (keyValuePair == null) {
+					continue;
+				}
 
-			if (name.startsWith(keyValuePair.getKey())) {
-				return keyValuePair.getValue();
+				if (name.startsWith(keyValuePair.getKey())) {
+					return keyValuePair.getValue();
+				}
 			}
 		}
 		return DEFAULT_LEVEL;
