@@ -474,7 +474,6 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
 		beanFactoryLifeCycles = Arrays.asList(beanFactoryLifeCycles.toArray(new BeanFactoryLifeCycle[0]));
-		GlobalPropertyFactory.getInstance().startPropertiesResourceListener();
 	}
 
 	public void destroy() throws Exception {

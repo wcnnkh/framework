@@ -2,8 +2,6 @@ package scw.core;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
@@ -24,9 +22,9 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 	}
 
 	static {
-		instance.addPropertiesResource("global.properties", "UTF-8");
-		instance.addPropertiesResource(instance.getValue("scw.properties.private", String.class, "/private.properties"),
-				"UTF-8");
+		instance.loadProperties("global.properties", "UTF-8").registerListener();
+		instance.loadProperties(instance.getValue("scw.properties.private", String.class, "/private.properties"),
+				"UTF-8").registerListener();
 	}
 
 	private GlobalPropertyFactory() {
@@ -34,28 +32,6 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 		addFirstBasePropertyFactory(SystemPropertyFactory.getInstance());
 		if (getWorkPath() == null) {
 			setWorkPath(getDefaultWorkPath());
-		}
-	}
-
-	private volatile List<PropertiesRegistration> propertiesRegistrations = new ArrayList<PropertyFactory.PropertiesRegistration>();
-
-	public void addPropertiesResource(String resource, String charsetName) {
-		PropertiesRegistration propertiesRegistration = instance.loadProperties(resource, charsetName);
-		synchronized (propertiesRegistrations) {
-			propertiesRegistrations.add(propertiesRegistration);
-		}
-	}
-
-	public void startPropertiesResourceListener() {
-		synchronized (propertiesRegistrations) {
-			if (propertiesRegistrations.isEmpty()) {
-				return;
-			}
-
-			for (PropertiesRegistration propertiesRegistration : propertiesRegistrations) {
-				propertiesRegistration.registerListener();
-			}
-			propertiesRegistrations.clear();
 		}
 	}
 

@@ -92,15 +92,10 @@ public final class ConfigUtils {
 	public static <T> List<T> xmlToList(Class<T> type, InputStream inputStream) {
 		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
 		List<T> objList = new ArrayList<T>();
-		try {
-			for (Map<String, String> map : list) {
-				objList.add(ConfigUtils.parseObject(map, type));
-			}
-			return objList;
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (Map<String, String> map : list) {
+			objList.add(ConfigUtils.parseObject(map, type));
 		}
-		return null;
+		return objList;
 	}
 
 	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType, String path) {
