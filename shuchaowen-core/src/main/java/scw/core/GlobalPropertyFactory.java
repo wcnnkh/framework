@@ -24,7 +24,9 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 	}
 
 	static {
-		instance.load();
+		instance.addPropertiesResource("global.properties", "UTF-8");
+		instance.addPropertiesResource(instance.getValue("scw.properties.private", String.class, "/private.properties"),
+				"UTF-8");
 	}
 
 	private GlobalPropertyFactory() {
@@ -37,21 +39,24 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 
 	private volatile List<PropertiesRegistration> propertiesRegistrations = new ArrayList<PropertyFactory.PropertiesRegistration>();
 
-	private void load() {
-		propertiesRegistrations.add(instance.loadProperties("global.properties", "UTF-8"));
-		propertiesRegistrations.add(instance.loadProperties(
-				instance.getValue("scw.properties.private", String.class, "/private.properties"), "UTF-8"));
+	public void addPropertiesResource(String resource, String charsetName) {
+		PropertiesRegistration propertiesRegistration = instance.loadProperties(resource, charsetName);
+		synchronized (propertiesRegistrations) {
+			propertiesRegistrations.add(propertiesRegistration);
+		}
 	}
 
-	public synchronized void startListener() {
-		if (propertiesRegistrations == null) {
-			return;
-		}
+	public void startPropertiesResourceListener() {
+		synchronized (propertiesRegistrations) {
+			if (propertiesRegistrations.isEmpty()) {
+				return;
+			}
 
-		for (PropertiesRegistration propertiesRegistration : propertiesRegistrations) {
-			propertiesRegistration.registerListener();
+			for (PropertiesRegistration propertiesRegistration : propertiesRegistrations) {
+				propertiesRegistration.registerListener();
+			}
+			propertiesRegistrations.clear();
 		}
-		propertiesRegistrations = null;
 	}
 
 	public String getClassesDirectory() {

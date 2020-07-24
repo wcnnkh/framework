@@ -52,7 +52,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 	}
 
 	protected Timer createTimer() {
-		return new Timer(getClass().getName());
+		return new Timer(getClass().getName(), true);
 	}
 
 	public TaskLockFactory getTimerLockFactory() {

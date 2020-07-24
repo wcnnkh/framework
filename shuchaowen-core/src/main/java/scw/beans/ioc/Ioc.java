@@ -2,14 +2,14 @@ package scw.beans.ioc;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.List;
 
 import scw.beans.annotation.Autowired;
+import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Value;
 import scw.core.annotation.AnnotationUtils;
 import scw.mapper.Field;
-import scw.mapper.FieldFilter;
+import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.ConcurrentReferenceHashMap;
 
@@ -22,51 +22,26 @@ public final class Ioc {
 	};
 
 	private Ioc(Class<?> targetClass) {
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass,
-				true, true, InitMethod.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, true, true, InitMethod.class)) {
 			method.setAccessible(true);
-			init.getIocProcessors().add(
-					new NoArgumentMethodIocProcessor(method));
+			init.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass,
-				true, true, InitMethod.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, true, true, Destroy.class)) {
 			method.setAccessible(true);
-			destroy.getIocProcessors().add(
-					new NoArgumentMethodIocProcessor(method));
+			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		List<Field> autowrites = MapperUtils.getMapper().getFields(targetClass,
-				null, new FieldFilter() {
-
-					public boolean accept(Field field) {
-						if (!field.isSupportSetter()) {
-							return false;
-						}
-
-						AnnotatedElement annotatedElement = field.getSetter()
-								.getAnnotatedElement();
-						if (AnnotationUtils.isDeprecated(annotatedElement)) {
-							return false;
-						}
-						return true;
-					}
-				});
-
-		for (Field field : autowrites) {
-			AnnotatedElement annotatedElement = field.getSetter()
-					.getAnnotatedElement();
-			Autowired autowired = annotatedElement
-					.getAnnotation(Autowired.class);
+		for (Field field : MapperUtils.getMapper().getFields(targetClass, FilterFeature.SUPPORT_SETTER)) {
+			AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
+			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
 			if (autowired != null) {
-				this.dependence.getIocProcessors().add(
-						new AutowiredIocProcessor(field));
+				this.dependence.getIocProcessors().add(new AutowiredIocProcessor(field));
 			}
 
 			Value value = annotatedElement.getAnnotation(Value.class);
 			if (value != null) {
-				this.dependence.getIocProcessors().add(
-						new ValueIocProcessor(field));
+				this.dependence.getIocProcessors().add(new ValueIocProcessor(field));
 			}
 		}
 
@@ -84,8 +59,8 @@ public final class Ioc {
 	public IocMetadata getDependence() {
 		return dependence;
 	}
-	
-	public void readyOnly(){
+
+	public void readyOnly() {
 		init.readyOnly();
 		dependence.readyOnly();
 		destroy.readyOnly();
