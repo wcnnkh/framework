@@ -20,12 +20,22 @@ public abstract class AbstractFilePropertiesValueProcesser extends AbstractValue
 			final String name, final String charsetName) {
 		ObservableResource<Properties> res = ResourceUtils.getResourceOperations().getFormattedProperties(name,
 				charsetName, propertyFactory);
-		field.getSetter().set(bean, parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name,
-				charsetName, res.getResource()));
+		if(res.getResource() != null){
+			field.getSetter().set(bean, parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name,
+					charsetName, res.getResource()));
+		}else{
+			logger.warn("Nonexistent resources name:{}, field={}", name, field);
+		}
+		
 		if (isRegisterListener(beanDefinition, field, value)) {
 			res.registerListener(new ObservableResourceEventListener<Properties>() {
 
 				public void onEvent(ObservableResourceEvent<Properties> event) {
+					if(event.getSource() == null){
+						logger.warn("Nonexistent resources name:{}, field={}", name, field);
+						return ;
+					}
+					
 					field.getSetter().set(bean, parse(beanDefinition, beanFactory, propertyFactory, bean, field, value,
 							name, charsetName, event.getSource()));
 				}

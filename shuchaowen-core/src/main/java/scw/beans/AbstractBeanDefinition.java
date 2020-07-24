@@ -43,10 +43,8 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 		beanFactory.getEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
-			Ioc ioc = Ioc.forClass(instance.getClass());
+			Ioc.forClass(instance.getClass()).getDependence().process(this, instance, beanFactory, propertyFactory, false);
 			ioc.getDependence().process(this, instance, beanFactory, propertyFactory, false);
-			ioc.getDependence().process(this, instance, beanFactory, propertyFactory, false);
-			
 			BeanUtils.aware(instance, beanFactory, this);
 		}
 		beanFactory.getEventDispatcher().publishEvent(
@@ -57,9 +55,7 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 		beanFactory.getEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_INIT));
 		if (instance != null) {
-			ioc.getInit().process(this, instance, beanFactory, propertyFactory, false);
-
-			Ioc ioc = Ioc.forClass(instance.getClass());
+			Ioc.forClass(instance.getClass()).getInit().process(this, instance, beanFactory, propertyFactory, false);
 			ioc.getInit().process(this, instance, beanFactory, propertyFactory, false);
 			BeanUtils.init(instance);
 		}
@@ -71,11 +67,9 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 		beanFactory.getEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
-			Ioc ioc = Ioc.forClass(instance.getClass());
-			ioc.getDestroy().process(this, instance, beanFactory, propertyFactory, false);
 			BeanUtils.destroy(instance);
-
 			ioc.getDestroy().process(this, instance, beanFactory, propertyFactory, false);
+			Ioc.forClass(instance.getClass()).getDestroy().process(this, instance, beanFactory, propertyFactory, false);
 		}
 		beanFactory.getEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DESTROY));

@@ -7,10 +7,13 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
 import scw.core.Constants;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mapper.Field;
 import scw.value.property.PropertyFactory;
 
 public abstract class AbstractValueProcesser implements ValueProcesser {
+	final Logger logger = LoggerUtils.getLogger(AbstractValueProcesser.class);
 
 	public void process(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Object bean, Field field, Value value) {
