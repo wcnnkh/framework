@@ -1,99 +1,34 @@
 package scw.logger;
 
-import java.io.IOException;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import scw.core.UnsafeStringBuffer;
+import scw.util.Consumer;
+import scw.util.queue.MemoryAsyncExecuteQueue;
 
-public class AsyncConsoleLoggerFactory extends AbstractConsoleLoggerFactory implements Runnable {
-	private final LinkedBlockingQueue<Message> handlerQueue;
-	private final Thread thread;
+public class AsyncConsoleLoggerFactory extends AbstractConsoleLoggerFactory
+		implements Consumer<Message> {
+	private final MemoryAsyncExecuteQueue<Message> asyncExecuteQueue = new MemoryAsyncExecuteQueue<Message>(
+			getClass().getSimpleName(), true);
 	private final UnsafeStringBuffer unsafeStringBuffer;
-	private volatile boolean shutdown = false;
 
 	public AsyncConsoleLoggerFactory() {
-		handlerQueue = new LinkedBlockingQueue<Message>();
 		unsafeStringBuffer = new UnsafeStringBuffer();
-		thread = new Thread(this, getClass().getSimpleName());
-		thread.setDaemon(true);
-		thread.start();
-
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				AsyncConsoleLoggerFactory.this.destroy();
-			}
-		});
+		asyncExecuteQueue.addConsumer(this);
 	}
 
 	protected final void log(Message message) {
-		if(shutdown){
-			throw new RuntimeException("It's stopped");
-		}
-		
-		if(!handlerQueue.offer(message)){
-			try {
-				handlerQueue.put(message);
-			} catch (InterruptedException e) {
-				throw new RuntimeException(message.toString(), e);
-			}
-		}
+		asyncExecuteQueue.put(message);
 	}
 
-	public void run() {
-		while (!thread.isInterrupted()) {
-			synchronized (handlerQueue) {
-				if (shutdown && handlerQueue.isEmpty()) {
-					break;
-				}
-
-				Message message;
-				try {
-					message = handlerQueue.take();
-				} catch (InterruptedException e1) {
-					break;
-				}
-
-				if (message == null) {
-					continue;
-				}
-
-				try {
-					console(message);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+	public void accept(Message message) {
+		try {
+			console(message);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-	}
-
-	public boolean isShutdown() {
-		return shutdown;
 	}
 
 	public synchronized void destroy() {
-		if (shutdown) {
-			return;
-		}
-
-		shutdown = true;
-		if(!thread.isInterrupted()){
-			thread.interrupt();
-		}
-		synchronized (handlerQueue) {
-			while(!handlerQueue.isEmpty()){
-				Message message = handlerQueue.poll();
-				if(message == null){
-					continue;
-				}
-				
-				try {
-					console(message);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		asyncExecuteQueue.destroy();
 	}
 
 	@Override
