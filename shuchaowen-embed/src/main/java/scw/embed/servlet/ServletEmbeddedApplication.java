@@ -1,11 +1,9 @@
 package scw.embed.servlet;
 
 import scw.application.MainApplication;
-import scw.application.MainArgs;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.lang.NotSupportedException;
-import scw.logger.SplitLineAppend;
 import scw.servlet.DispatcherServlet;
 import scw.servlet.http.HttpServletService;
 
@@ -13,7 +11,7 @@ import scw.servlet.http.HttpServletService;
 public class ServletEmbeddedApplication extends MainApplication {
 	private ServletEmbedded embedded;
 
-	public ServletEmbeddedApplication(Class<?> mainClass, MainArgs args) {
+	public ServletEmbeddedApplication(Class<?> mainClass, String[] args) {
 		super(mainClass, args);
 	}
 
@@ -36,7 +34,6 @@ public class ServletEmbeddedApplication extends MainApplication {
 
 	@Override
 	protected void destroyInternal() {
-		getLogger().info(new SplitLineAppend("shutdown"));
 		if (embedded != null) {
 			embedded.destroy();
 		}

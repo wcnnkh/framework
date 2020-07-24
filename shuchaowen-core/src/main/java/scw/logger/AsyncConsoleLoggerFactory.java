@@ -27,7 +27,17 @@ public class AsyncConsoleLoggerFactory extends AbstractConsoleLoggerFactory impl
 	}
 
 	protected final void log(Message message) {
-		handlerQueue.offer(message);
+		if(shutdown){
+			throw new RuntimeException("It's stopped");
+		}
+		
+		if(!handlerQueue.offer(message)){
+			try {
+				handlerQueue.put(message);
+			} catch (InterruptedException e) {
+				throw new RuntimeException(message.toString(), e);
+			}
+		}
 	}
 
 	public void run() {
@@ -65,8 +75,11 @@ public class AsyncConsoleLoggerFactory extends AbstractConsoleLoggerFactory impl
 		if (shutdown) {
 			return;
 		}
+
 		shutdown = true;
-		thread.interrupt();
+		if(!thread.isInterrupted()){
+			thread.interrupt();
+		}
 		synchronized (handlerQueue) {
 			while(!handlerQueue.isEmpty()){
 				Message message = handlerQueue.poll();

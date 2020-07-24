@@ -21,8 +21,6 @@ import java.nio.charset.Charset;
 import scw.asm.Opcodes;
 import scw.core.utils.StringUtils;
 import scw.core.utils.SystemUtils;
-import scw.value.property.PropertyFactory;
-import scw.value.property.StaticFieldPropertyFactory;
 
 /**
  * This class can be used to parse other classes containing constant definitions
@@ -79,7 +77,4 @@ public class Constants {
 			.getInstance().getString("constants.default.prefix");
 
 	public static final Charset ISO_8859_1 = Charset.forName("iso-8859-1");
-
-	public static final PropertyFactory PROPERTY_FACTORY = new StaticFieldPropertyFactory(
-			Constants.class, "constants.", true);
 }

@@ -18,21 +18,19 @@ public final class SystemPropertyFactory extends ExtendGetPropertyFactory {
 
 	private static SystemPropertyFactory instance = new SystemPropertyFactory();
 
-	private SystemPropertyFactory() {
-		super(true, true);
-	};
-
 	public static SystemPropertyFactory getInstance() {
 		return instance;
 	}
 
+	private SystemPropertyFactory() {
+		super(true, true);
+	};
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Enumeration<String> enumerationKeys() {
-		Enumeration<String> e1 = EnumerationConvert
-				.convertToStringEnumeration(System.getProperties().keys());
-		Enumeration<String> e2 = Collections.enumeration(System.getenv()
-				.keySet());
+		Enumeration<String> e1 = EnumerationConvert.convertToStringEnumeration(System.getProperties().keys());
+		Enumeration<String> e2 = Collections.enumeration(System.getenv().keySet());
 		return new MultiEnumeration<String>(e1, e2, super.enumerationKeys());
 	}
 

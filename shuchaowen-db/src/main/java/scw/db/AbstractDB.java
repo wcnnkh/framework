@@ -157,7 +157,10 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		}
 
 		asyncShutdown = true;
-		thread.interrupt();
+		if(!thread.isInterrupted()){
+			thread.interrupt();
+		}
+		
 		synchronized (asyncExecutes) {
 			while (!asyncExecutes.isEmpty()) {
 				AsyncExecute asyncExecute = asyncExecutes.poll();

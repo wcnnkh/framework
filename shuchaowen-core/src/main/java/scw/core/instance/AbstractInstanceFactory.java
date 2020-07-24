@@ -88,7 +88,7 @@ public abstract class AbstractInstanceFactory implements InstanceFactory {
 	}
 
 	public boolean isSingleton(Class<?> clazz) {
-		return false;
+		return isSingleton(clazz.getName());
 	}
 
 	public boolean isSingleton(String name) {

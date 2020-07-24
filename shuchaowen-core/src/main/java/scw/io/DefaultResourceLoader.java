@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import scw.core.Assert;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
@@ -83,7 +84,22 @@ public class DefaultResourceLoader implements ResourceLoader {
 	}
 
 	protected Resource getResourceByPath(String path) {
-		return new ClassPathContextResource(path, getClassLoader());
+		ClassPathContextResource resource = new ClassPathContextResource(path, getClassLoader());
+		if (resource.exists()) {
+			return resource;
+		}
+
+		String root = GlobalPropertyFactory.getInstance().getWorkPath();
+		if(root == null){
+			return resource;
+		}
+		
+		root = StringUtils.cleanPath(root);
+		String pathTouse = StringUtils.cleanPath(path);
+		if (!pathTouse.startsWith(root)) {
+			pathTouse = root + "/" + pathTouse;
+		}
+		return new FileSystemResource(pathTouse);
 	}
 
 	protected static class ClassPathContextResource extends ClassPathResource implements ContextResource {

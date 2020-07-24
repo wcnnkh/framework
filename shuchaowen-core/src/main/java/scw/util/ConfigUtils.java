@@ -42,8 +42,8 @@ public final class ConfigUtils {
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) {
 		T t = InstanceUtils.INSTANCE_FACTORY.getInstance(clz);
 		for (Entry<String, String> entry : map.entrySet()) {
-			scw.mapper.Field field = MapperUtils.getMapper().getField(clz,
-					entry.getKey(), null, FilterFeature.SUPPORT_SETTER);
+			scw.mapper.Field field = MapperUtils.getMapper().getField(clz, entry.getKey(), null,
+					FilterFeature.SUPPORT_SETTER);
 			if (field == null) {
 				continue;
 			}
@@ -53,10 +53,8 @@ public final class ConfigUtils {
 		return t;
 	}
 
-	public static List<Map<String, String>> getDefaultXmlContent(String path,
-			final String rootTag) {
-		InputStream inputStream = ResourceUtils.getResourceOperations()
-				.getInputStream(path).getResource();
+	public static List<Map<String, String>> getDefaultXmlContent(String path, final String rootTag) {
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path).getResource();
 		if (inputStream == null) {
 			return Collections.emptyList();
 		}
@@ -64,36 +62,26 @@ public final class ConfigUtils {
 		return getDefaultXmlContent(inputStream, rootTag);
 	}
 
-	public static List<Map<String, String>> getDefaultXmlContent(
-			InputStream inputStream, String rootTag) {
+	public static List<Map<String, String>> getDefaultXmlContent(InputStream inputStream, String rootTag) {
 		if (rootTag == null) {
 			throw new NullPointerException("rootTag is null");
 		}
 
 		List<Map<String, String>> list = new ArrayList<Map<String, String>>();
-		try {
-			try {
-				Document doc = XMLUtils.parse(inputStream);
-				Element root = doc.getDocumentElement();
-				NodeList nhosts = root.getChildNodes();
-				for (int x = 0; x < nhosts.getLength(); x++) {
-					Node nRoot = nhosts.item(x);
-					if (nRoot.getNodeName().equalsIgnoreCase(rootTag)) {
-						list.add(XMLUtils.xmlToMap(nRoot));
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+		Document doc = XMLUtils.parse(inputStream);
+		Element root = doc.getDocumentElement();
+		NodeList nhosts = root.getChildNodes();
+		for (int x = 0; x < nhosts.getLength(); x++) {
+			Node nRoot = nhosts.item(x);
+			if (nRoot.getNodeName().equalsIgnoreCase(rootTag)) {
+				list.add(XMLUtils.xmlToMap(nRoot));
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		return list;
 	}
 
 	public static <T> List<T> xmlToList(final Class<T> type, String path) {
-		InputStream inputStream = ResourceUtils.getResourceOperations()
-				.getInputStream(path).getResource();
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path).getResource();
 		if (inputStream == null) {
 			return Collections.emptyList();
 		}
@@ -102,24 +90,16 @@ public final class ConfigUtils {
 	}
 
 	public static <T> List<T> xmlToList(Class<T> type, InputStream inputStream) {
-		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(
-				inputStream, "config");
+		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
 		List<T> objList = new ArrayList<T>();
-		try {
-			for (Map<String, String> map : list) {
-				objList.add(ConfigUtils.parseObject(map, type));
-			}
-			return objList;
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (Map<String, String> map : list) {
+			objList.add(ConfigUtils.parseObject(map, type));
 		}
-		return null;
+		return objList;
 	}
 
-	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType,
-			String path) {
-		InputStream inputStream = ResourceUtils.getResourceOperations()
-				.getInputStream(path).getResource();
+	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType, String path) {
+		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path).getResource();
 		if (inputStream == null) {
 			return Collections.emptyMap();
 		}
@@ -128,24 +108,20 @@ public final class ConfigUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType,
-			InputStream inputStream) {
-		Field keyField = MapperUtils.getMapper().getField(valueType, null,
-				FilterFeature.SETTER_IGNORE_STATIC,
+	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, InputStream inputStream) {
+		Field keyField = MapperUtils.getMapper().getField(valueType, null, FilterFeature.SETTER_IGNORE_STATIC,
 				FilterFeature.SUPPORT_GETTER);
 		if (keyField == null) {
 			throw new NullPointerException("打不到主键字段");
 		}
 
-		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(
-				inputStream, "config");
+		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
 		Map<K, V> map = new HashMap<K, V>();
 		for (Map<String, String> tempMap : list) {
 			Object obj = ConfigUtils.parseObject(tempMap, valueType);
 			Object kV = keyField.getGetter().get(obj);
 			if (map.containsKey(kV)) {
-				throw new NullPointerException("已经存在的key="
-						+ keyField.getGetter().getName() + ",value=" + kV);
+				throw new NullPointerException("已经存在的key=" + keyField.getGetter().getName() + ",value=" + kV);
 			}
 			map.put((K) kV, (V) obj);
 		}
@@ -153,19 +129,16 @@ public final class ConfigUtils {
 		return map;
 	}
 
-	public static <T> T setProperties(Object obj, Properties properties,
-			StringFormat stringFormat) {
+	public static <T> T setProperties(Object obj, Properties properties, StringFormat stringFormat) {
 		T t = null;
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			String key = stringFormat.format(entry.getKey().toString());
-			scw.mapper.Field fieldContext = MapperUtils.getMapper().getField(
-					obj.getClass(), key, null);
+			scw.mapper.Field fieldContext = MapperUtils.getMapper().getField(obj.getClass(), key, null);
 			if (fieldContext == null) {
 				continue;
 			}
 
-			String value = entry.getValue() == null ? null : entry.getValue()
-					.toString();
+			String value = entry.getValue() == null ? null : entry.getValue().toString();
 			value = stringFormat.format(value);
 			MapperUtils.setStringValue(fieldContext, obj, value);
 		}
@@ -186,28 +159,23 @@ public final class ConfigUtils {
 		return null;
 	}
 
-	public static String getProperty(Properties properties,
-			Object defaultValue, String... key) {
+	public static String getProperty(Properties properties, Object defaultValue, String... key) {
 		String v = getProperty(properties, key);
-		return v == null ? (defaultValue == null ? null : defaultValue
-				.toString()) : v;
+		return v == null ? (defaultValue == null ? null : defaultValue.toString()) : v;
 	}
 
-	public static void loadProperties(Object instance,
-			PropertyFactory propertyFactory, Collection<String> asNameList,
+	public static void loadProperties(Object instance, PropertyFactory propertyFactory, Collection<String> asNameList,
 			String propertyPrefix) {
-		loadProperties(instance, propertyFactory, asNameList, propertyPrefix,
-				new FieldFilter() {
+		loadProperties(instance, propertyFactory, asNameList, propertyPrefix, new FieldFilter() {
 
-					public boolean accept(Field field) {
-						return isCommonConfigType(field.getSetter().getType());
-					}
-				});
+			public boolean accept(Field field) {
+				return isCommonConfigType(field.getSetter().getType());
+			}
+		});
 	}
 
 	public static boolean isCommonConfigType(Class<?> type) {
-		if (String.class == type || ClassUtils.isPrimitiveOrWrapper(type)
-				|| type == Class.class) {
+		if (String.class == type || ClassUtils.isPrimitiveOrWrapper(type) || type == Class.class) {
 			return true;
 		}
 
@@ -217,19 +185,17 @@ public final class ConfigUtils {
 		return false;
 	}
 
-	public static void loadProperties(Object instance,
-			PropertyFactory propertyFactory, Collection<String> asNameList,
+	public static void loadProperties(Object instance, PropertyFactory propertyFactory, Collection<String> asNameList,
 			String propertyPrefix, FieldFilter fieldFilter) {
 		List<String> nameList = null;
 		if (!CollectionUtils.isEmpty(asNameList)) {
 			nameList = new ArrayList<String>(asNameList);
 		}
 
-		for (Field field : MapperUtils.getMapper().getFields(
-				instance.getClass(), null, fieldFilter, FilterFeature.SETTER)) {
+		for (Field field : MapperUtils.getMapper().getFields(instance.getClass(), null, fieldFilter,
+				FilterFeature.SETTER)) {
 			String name = field.getSetter().getName();
-			Value value = propertyFactory.get(StringUtils
-					.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
+			Value value = propertyFactory.get(StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
 			if (value == null && nameList != null) {
 				Iterator<String> iterator = nameList.iterator();
 				while (iterator.hasNext()) {
@@ -243,9 +209,8 @@ public final class ConfigUtils {
 					for (String asName : names) {
 						if (asName.equals(name)) {
 							for (String n : names) {
-								value = propertyFactory.get(StringUtils
-										.isEmpty(propertyPrefix) ? n
-										: (propertyPrefix + n));
+								value = propertyFactory
+										.get(StringUtils.isEmpty(propertyPrefix) ? n : (propertyPrefix + n));
 								if (value != null) {
 									break;
 								}
@@ -265,27 +230,23 @@ public final class ConfigUtils {
 				continue;
 			}
 
-			logger.info("Property {} on target {} set value {}", name, instance
-					.getClass().getName(), value);
-			field.getSetter().set(instance,
-					value.getAsObject(field.getSetter().getGenericType()));
+			logger.info("Property {} on target {} set value {}", name, instance.getClass().getName(), value);
+			field.getSetter().set(instance, value.getAsObject(field.getSetter().getGenericType()));
 		}
 	}
 
-	public static void loadProperties(Object instance, Map<?, ?> properties,
-			Collection<String> asNameList, String propertyPrefix) {
-		loadProperties(instance, properties, asNameList, propertyPrefix,
-				new FieldFilter() {
+	public static void loadProperties(Object instance, Map<?, ?> properties, Collection<String> asNameList,
+			String propertyPrefix) {
+		loadProperties(instance, properties, asNameList, propertyPrefix, new FieldFilter() {
 
-					public boolean accept(Field field) {
-						return isCommonConfigType(field.getSetter().getType());
-					}
-				});
+			public boolean accept(Field field) {
+				return isCommonConfigType(field.getSetter().getType());
+			}
+		});
 	}
 
-	public static void loadProperties(Object instance, Map<?, ?> properties,
-			Collection<String> asNameList, String propertyPrefix,
-			FieldFilter fieldFilter) {
+	public static void loadProperties(Object instance, Map<?, ?> properties, Collection<String> asNameList,
+			String propertyPrefix, FieldFilter fieldFilter) {
 		if (properties == null) {
 			return;
 		}
@@ -305,13 +266,12 @@ public final class ConfigUtils {
 			map.put(key.toString(), value.toString());
 		}
 
-		for (Field field : MapperUtils.getMapper().getFields(
-				instance.getClass(), null, fieldFilter, FilterFeature.SETTER)) {
+		for (Field field : MapperUtils.getMapper().getFields(instance.getClass(), null, fieldFilter,
+				FilterFeature.SETTER)) {
 			String name = field.getSetter().getName();
 			String value = null;
 			if (CollectionUtils.isEmpty(nameList)) {
-				value = map.remove(StringUtils.isEmpty(propertyPrefix) ? name
-						: (propertyPrefix + name));
+				value = map.remove(StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
 			} else {
 				Iterator<String> iterator = nameList.iterator();
 				while (iterator.hasNext()) {
@@ -325,9 +285,7 @@ public final class ConfigUtils {
 					for (String asName : names) {
 						if (asName.equals(name)) {
 							for (String n : names) {
-								String useName = StringUtils
-										.isEmpty(propertyPrefix) ? n
-										: (propertyPrefix + n);
+								String useName = StringUtils.isEmpty(propertyPrefix) ? n : (propertyPrefix + n);
 								value = map.get(useName);
 								if (value != null) {
 									map.remove(useName);
@@ -340,7 +298,7 @@ public final class ConfigUtils {
 					}
 				}
 			}
-			
+
 			if (value == null) {
 				continue;
 			}

@@ -23,10 +23,18 @@ public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFac
 	}
 
 	public boolean isSingleton(String name) {
+		if(getClass().getName().endsWith(name)){
+			return true;
+		}
+		
 		return false;
 	}
 
 	public boolean isSingleton(Class<?> clazz) {
-		return false;
+		if(getClass().equals(clazz)){
+			return true;
+		}
+		
+		return isSingleton(clazz.getName());
 	}
 }

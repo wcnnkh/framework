@@ -34,8 +34,8 @@ public abstract class AbstractStaticResourceLoader implements StaticResourceLoad
 				: defaultFileName;
 		if (!ArrayUtils.isEmpty(resourcePath)) {
 			logger.info("resourceDefaultFileName:{}", this.defaultFileName);
-			logger.info("resourceRoot:{}", resourceRoot);
-			logger.info("resourcePath:{}", Arrays.toString(resourcePath));
+			logger.info("resourceRoot:{}", this.resourceRoot);
+			logger.info("resourcePath:{}", Arrays.toString(this.resourcePath));
 		}
 	}
 
@@ -48,9 +48,16 @@ public abstract class AbstractStaticResourceLoader implements StaticResourceLoad
 				: location;
 		for (String p : resourcePath) {
 			if (StringUtils.test(location, p)) {
-				locationToUse = resourceRoot
-						+ (locationToUse.startsWith("/") ? locationToUse
-								: ("/" + locationToUse));
+				if(resourceRoot.endsWith("/")){
+					locationToUse = resourceRoot
+							+ (locationToUse.startsWith("/") ? locationToUse.substring(1)
+									: locationToUse);
+				}else{
+					locationToUse = resourceRoot
+							+ (locationToUse.startsWith("/") ? locationToUse
+									: ("/" + locationToUse));
+				}
+				
 				locationToUse = StringUtils.cleanPath(locationToUse);
 				return getResourceInternal(locationToUse);
 			}

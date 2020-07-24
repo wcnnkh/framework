@@ -8,14 +8,24 @@ import scw.beans.annotation.Value;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
+import scw.io.ResourceUtils;
+import scw.io.event.ObservableResource;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
 import scw.mapper.MapperUtils;
 import scw.value.ValueUtils;
 import scw.value.property.PropertyFactory;
 
-public final class FilePropertiesValueProcess extends AbstractFilePropertiesValueProcesser {
+public final class FilePropertiesValueProcess extends AbstractResourceValueProcesser<Properties> {
 
+	@Override
+	protected ObservableResource<Properties> getObservableResource(BeanDefinition beanDefinition,
+			BeanFactory beanFactory, PropertyFactory propertyFactory, Object bean, Field field, Value value,
+			String name, String charsetName) {
+		return ResourceUtils.getResourceOperations().getFormattedProperties(name,
+				charsetName, propertyFactory);
+	}
+	
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Object bean, Field field, Value value, String name, String charsetName, Properties properties) {

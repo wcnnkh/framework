@@ -11,9 +11,12 @@ import scw.event.EventRegistration;
 import scw.event.support.DefaultBasicEventDispatcher;
 import scw.event.support.EventType;
 import scw.io.Resource;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<ResourceEvent>
 		implements ResourceEventDispatcher {
+	private static Logger logger = LoggerUtils.getLogger(DefaultResourceEventDispatcher.class);
 	static final Timer TIMER = new Timer(true);//守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
 	private final Resource resource;
@@ -63,15 +66,19 @@ public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<
 
 		@Override
 		public void run() {
-			boolean exist = resource.exists();
-			long last = lastModified();
-			if (exist != this.exist) {
-				this.last = last;
-				this.exist = exist;
-				publishEvent(new ResourceEvent(exist ? EventType.CREATE : EventType.DELETE, resource));
-			} else if (this.last != last) {
-				this.last = last;
-				publishEvent(new ResourceEvent(EventType.UPDATE, resource));
+			try {
+				boolean exist = resource.exists();
+				long last = lastModified();
+				if (exist != this.exist) {
+					this.last = last;
+					this.exist = exist;
+					publishEvent(new ResourceEvent(exist ? EventType.CREATE : EventType.DELETE, resource));
+				} else if (this.last != last) {
+					this.last = last;
+					publishEvent(new ResourceEvent(EventType.UPDATE, resource));
+				}
+			} catch (Exception e) {
+				logger.error(e, resource);
 			}
 		}
 	}
