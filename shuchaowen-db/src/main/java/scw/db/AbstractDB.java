@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
@@ -35,55 +34,44 @@ import scw.sql.orm.support.generation.DefaultGeneratorService;
 import scw.sql.orm.support.generation.GeneratorService;
 import scw.sql.transaction.SqlTransactionUtils;
 import scw.util.ClassScanner;
+import scw.util.Consumer;
+import scw.util.queue.MemoryAsyncExecuteQueue;
 
 @SuppressWarnings("rawtypes")
 public abstract class AbstractDB extends AbstractEntityOperations
-		implements DB, Runnable, BeanFactoryAware, Destroy, ConnectionFactory {
+		implements DB, Consumer<AsyncExecute>, BeanFactoryAware, Destroy, ConnectionFactory {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
-	private final LinkedBlockingQueue<AsyncExecute> asyncExecutes = new LinkedBlockingQueue<AsyncExecute>();
+	private final MemoryAsyncExecuteQueue<AsyncExecute> asyncExecuteQueue = new MemoryAsyncExecuteQueue<AsyncExecute>(getClass().getName(), true);
 	private BeanFactory beanFactory;
-	private volatile boolean asyncShutdown = false;
-	private Thread thread;
 	private CacheManager cacheManager;
 	private GeneratorService generatorService;
+	
+	{
+		asyncExecuteQueue.addConsumer(this);
+	}
 
 	public AbstractDB(Map properties) {
 		this.cacheManager = new DefaultCacheManager();
 		this.generatorService = new DefaultGeneratorService();
-		initAsync();
 	}
 
 	public AbstractDB(Map properties, Memcached memcached) {
 		this.cacheManager = new TemporaryCacheManager(memcached, true, getCachePrefix(properties));
 		this.generatorService = new MemcachedGeneratorService(memcached);
-		initAsync();
 	}
 
 	public AbstractDB(Map properties, Redis redis) {
 		this.cacheManager = new TemporaryCacheManager(redis, true, getCachePrefix(properties));
 		this.generatorService = new RedisGeneratorService(redis);
-		initAsync();
 	}
 
 	public AbstractDB(CacheManager cacheManager, GeneratorService generatorService) {
 		this.cacheManager = cacheManager;
 		this.generatorService = generatorService;
-		initAsync();
 	}
-
-	private void initAsync() {
-		thread = new Thread(this, getClass().getSimpleName());
-		thread.setDaemon(true);
-		thread.start();
-
-		Thread shutdown = new Thread() {
-			@Override
-			public void run() {
-				AbstractDB.this.destroy();
-			}
-		};
-		shutdown.setName(thread.getName() + "-shutdown");
-		Runtime.getRuntime().addShutdownHook(shutdown);
+	
+	public void accept(AsyncExecute message) {
+		processing(message, false);
 	}
 
 	protected String getCachePrefix(Map properties) {
@@ -152,40 +140,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	}
 
 	public synchronized void destroy() {
-		if (asyncShutdown) {
-			return;
-		}
-
-		asyncShutdown = true;
-		if(!thread.isInterrupted()){
-			thread.interrupt();
-		}
-		
-		synchronized (asyncExecutes) {
-			while (!asyncExecutes.isEmpty()) {
-				AsyncExecute asyncExecute = asyncExecutes.poll();
-				processing(asyncExecute, true);
-			}
-		}
-	}
-
-	public void run() {
-		while (!thread.isInterrupted()) {
-			AsyncExecute asyncExecute;
-			synchronized (asyncExecutes) {
-				if (asyncShutdown && asyncExecutes.isEmpty()) {
-					break;
-				}
-
-				try {
-					asyncExecute = asyncExecutes.take();
-				} catch (InterruptedException e) {
-					break;
-				}
-			}
-
-			processing(asyncExecute, false);
-		}
+		asyncExecuteQueue.destroy();
 	}
 
 	@Override
@@ -284,13 +239,11 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	}
 
 	public void asyncExecute(AsyncExecute asyncExecute) {
-		if (asyncShutdown) {
+		if(!asyncExecuteQueue.isStarted()){
 			throw new RuntimeException("Asynchronous processing has stopped!");
 		}
-
-		if (!asyncExecutes.offer(asyncExecute)) {
-			throw new RuntimeException("async execute offer error: " + asyncExecute);
-		}
+		
+		asyncExecuteQueue.put(asyncExecute);
 	}
 
 	@Override
