@@ -15,6 +15,7 @@ public final class MemoryAsyncExecuteQueue<E> implements AsyncExecuteQueue<E>,
 	private BlockingQueue<E> blockingQueue;
 	private Thread thread;
 	private volatile boolean started = true;
+	private volatile boolean destroy = false;// 是否销毁结束
 
 	public MemoryAsyncExecuteQueue(String threadName, Boolean daemon) {
 		this(new LinkedBlockingQueue<E>(), threadName, daemon);
@@ -41,21 +42,19 @@ public final class MemoryAsyncExecuteQueue<E> implements AsyncExecuteQueue<E>,
 	}
 
 	public void run() {
-		while (!thread.isInterrupted()) {
-			synchronized (this) {
-				E message;
-				try {
-					message = blockingQueue.take();
-				} catch (InterruptedException e) {
-					break;
-				}
-
-				if (message == null) {
-					continue;
-				}
-
-				accept(message);
+		while (!thread.isInterrupted() && started) {
+			E message;
+			try {
+				message = blockingQueue.take();
+			} catch (InterruptedException e) {
+				break;
 			}
+
+			if (message == null) {
+				continue;
+			}
+
+			accept(message);
 		}
 	}
 
@@ -74,21 +73,20 @@ public final class MemoryAsyncExecuteQueue<E> implements AsyncExecuteQueue<E>,
 			thread.interrupt();
 		}
 
-		synchronized (this) {
-			while (!blockingQueue.isEmpty()) {
-				E message = blockingQueue.poll();
-				if (message == null) {
-					continue;
-				}
-
-				accept(message);
-			}
-		}
 		started = false;
+		while (!blockingQueue.isEmpty()) {
+			E message = blockingQueue.poll();
+			if (message == null) {
+				continue;
+			}
+
+			accept(message);
+		}
+		destroy = true;
 	}
 
 	public void put(E message) {
-		if (!started) {
+		if (destroy) {// 如果已经销毁结束了
 			accept(message);
 			return;
 		}
