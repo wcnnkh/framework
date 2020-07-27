@@ -5,21 +5,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.core.Assert;
+import scw.core.utils.StringUtils;
 import scw.security.SignatureUtils;
 import scw.util.RandomUtils;
 
 public final class JsApiSignature implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private String nonceStr;// 注意 这个随机字符串的S在前端是大写的，可是在签名的时候是小写的
-	private int timestamp;// 单位：秒
-	private String url;
-	private String signature;
-
-	/**
-	 * 这个构造方法是用于序列化的，请不要随意使用，除非你已经知道是什么意思
-	 */
-	public JsApiSignature() {
-	}
+	private final String nonceStr;// 注意 这个随机字符串的S在前端是大写的，可是在签名的时候是小写的
+	private final int timestamp;// 单位：秒
+	private final String url;
+	private final String signature;
 
 	public JsApiSignature(String jsapi_ticket, String url) {
 		this(RandomUtils.getRandomStr(10), jsapi_ticket, (int) (System
@@ -28,6 +24,7 @@ public final class JsApiSignature implements Serializable {
 
 	public JsApiSignature(String nonceStr, String jsapi_ticket, int timestamp,
 			String url) {
+		Assert.isTrue(StringUtils.isNotEmpty(nonceStr, jsapi_ticket, url));
 		this.nonceStr = nonceStr;
 		this.timestamp = timestamp;
 		this.url = url;
@@ -55,31 +52,15 @@ public final class JsApiSignature implements Serializable {
 		return nonceStr;
 	}
 
-	public void setNonceStr(String nonceStr) {
-		this.nonceStr = nonceStr;
-	}
-
 	public int getTimestamp() {
 		return timestamp;
-	}
-
-	public void setTimestamp(int timestamp) {
-		this.timestamp = timestamp;
 	}
 
 	public String getUrl() {
 		return url;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
 	public String getSignature() {
 		return signature;
-	}
-
-	public void setSignature(String signature) {
-		this.signature = signature;
 	}
 }
