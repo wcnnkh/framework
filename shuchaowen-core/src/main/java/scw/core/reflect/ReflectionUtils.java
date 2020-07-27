@@ -1268,6 +1268,32 @@ public abstract class ReflectionUtils {
 		return invokeStaticMethod(ClassUtils.forName(className), name, parameterTypes, params);
 	}
 
+	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = new Comparator<Constructor<?>>() {
+
+		public int compare(Constructor<?> o1, Constructor<?> o2) {
+			Deprecated d1 = o1.getAnnotation(Deprecated.class);
+			Deprecated d2 = o2.getAnnotation(Deprecated.class);
+
+			// 先比较作用域 public
+			int v1 = o1.getModifiers();
+			int v2 = o2.getModifiers();
+			if (!(d1 != null && d2 != null)) {
+				if (d1 != null) {
+					v1 = Integer.MAX_VALUE;
+				}
+
+				if (d2 != null) {
+					v2 = Integer.MAX_VALUE;
+				}
+			}
+
+			if (v1 == v2) {
+				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
+			}
+			return CompareUtils.compare(v1, v2, false);
+		}
+	};
+
 	public static <T> Collection<Constructor<?>> getConstructorOrderList(Class<?> clazz) {
 		LinkedList<Constructor<?>> autoList = new LinkedList<Constructor<?>>();
 		LinkedList<Constructor<?>> defList = new LinkedList<Constructor<?>>();
@@ -1289,36 +1315,14 @@ public abstract class ReflectionUtils {
 			public int compare(Constructor<?> o1, Constructor<?> o2) {
 				Order auto1 = o1.getAnnotation(Order.class);
 				Order auto2 = o2.getAnnotation(Order.class);
+				if (auto1.value() == auto2.value()) {
+					return CONSTRUCTOR_COMPARATOR.compare(o1, o2);
+				}
 				return CompareUtils.compare(auto1.value(), auto2.value(), true);
 			}
 		});
 
-		defList.sort(new Comparator<Constructor<?>>() {
-
-			public int compare(Constructor<?> o1, Constructor<?> o2) {
-				Deprecated d1 = o1.getAnnotation(Deprecated.class);
-				Deprecated d2 = o2.getAnnotation(Deprecated.class);
-
-				// 先比较作用域 public
-				int v1 = o1.getModifiers();
-				int v2 = o2.getModifiers();
-				if (!(d1 != null && d2 != null)) {
-					if (d1 != null) {
-						v1 = Integer.MAX_VALUE;
-					}
-
-					if (d2 != null) {
-						v2 = Integer.MAX_VALUE;
-					}
-				}
-
-				if (v1 == v2) {
-					return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
-				}
-				return CompareUtils.compare(v1, v2, false);
-			}
-		});
-
+		defList.sort(CONSTRUCTOR_COMPARATOR);
 		autoList.addAll(defList);
 		return autoList;
 	}

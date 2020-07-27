@@ -105,8 +105,8 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 		}
 
 		if (Date.class == parameterType) {
-			if (StringUtils.isNumeric(value.getAsString())) {
-				return new Date(Long.parseLong(value.getAsString()));
+			if (value.isNumber()) {
+				return new Date(value.getAsLong());
 			} else {
 				String dateFormat = xmlValue.getNodeAttributeValue("date-format");
 				if (StringUtils.isNull(dateFormat)) {
@@ -117,6 +117,7 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 				return sdf.parse(value.getAsString());
 			}
 		}
+		
 		return value.getAsObject(parameterType);
 	}
 }

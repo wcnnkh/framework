@@ -19,7 +19,7 @@ public class HikaricpBeanBuilderLoader implements BeanBuilderLoader {
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == HikariCPDB.class) {
 			return new HikariCPDBBeanDefinitaion(context);
-		} else if (DB.class.isAssignableFrom(context.getTargetClass())) {
+		} else if (DB.class == context.getTargetClass()) {
 			return context.getBeanFactory().getDefinition(HikariCPDB.class);
 		}
 		return loaderChain.loading(context);

@@ -62,18 +62,18 @@ public class XmlPropertyFactory extends PropertyFactory {
 		}
 
 		String name = XMLUtils.getNodeAttributeValue(node, "name");
-		if (!StringUtils.isEmpty(name)) {
+		if (StringUtils.isNotEmpty(name)) {
 			name = StringUtils.isEmpty(prefixToUse) ? name : (prefixToUse + name);
 
 			String url = getURL(node);
-			if (!StringUtils.isEmpty(url)) {
+			if (StringUtils.isNotEmpty(url)) {
 				String value = HttpUtils.getHttpClient().get(url, String.class);
 				put(name, value);
 			}
 
 			String value = XMLUtils.getNodeAttributeValueOrNodeContent(propertyFactory, node, "value");
 			if (StringUtils.isNotEmpty(value)) {
-				put(name, value);
+				put(name, value, true);
 			}
 		}
 

@@ -19,7 +19,7 @@ public class DruidDBBeanBuilderLoader implements BeanBuilderLoader {
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == DruidDB.class) {
 			return new DruidDBBeanDefinition(context);
-		} else if (DB.class.isAssignableFrom(context.getTargetClass())) {
+		} else if (DB.class == context.getTargetClass()) {
 			return context.getBeanFactory().getDefinition(DruidDB.class);
 		}
 		return loaderChain.loading(context);

@@ -36,6 +36,7 @@ public final class SelectByIdSQL extends DialectSql {
 				sb.append(AND);
 			}
 		}
+		this.sql = sb.toString();
 	}
 
 	public String getSql() {

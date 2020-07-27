@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
+import scw.core.annotation.Order;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.db.AbstractDB;
@@ -21,14 +22,17 @@ public class DruidDB extends AbstractDB {
 	private DruidDataSource datasource;
 	private DataBase dataBase;
 
+	@Order
 	public DruidDB(String properties) {
 		this(new PropertyFactory(false, true).loadProperties(properties, "UTF-8").registerListener());
 	}
 
+	@Order
 	public DruidDB(String properties, Memcached memcached) {
 		this(new PropertyFactory(false, true).loadProperties(properties, "UTF-8").registerListener(), memcached);
 	}
 
+	@Order
 	public DruidDB(String properties, Redis redis) {
 		this(new PropertyFactory(false, true).loadProperties(properties, "UTF-8").registerListener(), redis);
 	}

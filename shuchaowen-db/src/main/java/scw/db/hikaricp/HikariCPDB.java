@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
+import scw.core.annotation.Order;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.db.AbstractDB;
@@ -22,14 +23,17 @@ public class HikariCPDB extends AbstractDB {
 		HikariConfig.class.getName();
 	}
 
+	@Order
 	public HikariCPDB(String propertiesFile) {
 		this(new PropertyFactory(false, true).loadProperties(propertiesFile, "UTF-8").registerListener());
 	}
 
+	@Order
 	public HikariCPDB(String propertiesFile, Redis redis) {
 		this(new PropertyFactory(false, true).loadProperties(propertiesFile, "UTF-8").registerListener(), redis);
 	}
 
+	@Order
 	public HikariCPDB(String propertiesFile, Memcached memcached) {
 		this(new PropertyFactory(false, true).loadProperties(propertiesFile, "UTF-8").registerListener(), memcached);
 	}

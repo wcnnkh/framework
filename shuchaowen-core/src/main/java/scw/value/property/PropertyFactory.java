@@ -27,6 +27,7 @@ import scw.io.event.ObservableResourceEventListener;
 import scw.io.support.ResourceOperations;
 import scw.util.MultiEnumeration;
 import scw.value.AnyValue;
+import scw.value.StringValue;
 import scw.value.StringValueFactory;
 import scw.value.Value;
 
@@ -156,11 +157,8 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		return v;
 	}
 
-	public Value put(String key, Value value) {
-		Assert.requiredArgument(key != null, "key");
-		Assert.requiredArgument(value != null, "value");
+	protected Value put(String key, Value value) {
 		Value v = map.put(key, value);
-
 		PropertyEvent event = null;
 		if (v == null) {
 			event = new PropertyEvent(this, EventType.CREATE, key, value);
@@ -177,12 +175,28 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	}
 
 	public Value put(String key, Object value) {
-		Assert.requiredArgument(key != null, "key");
-		Assert.requiredArgument(value != null, "value");
-		return put(key, new AnyValue(value));
+		return put(key, value, false);
 	}
 
-	public Value putIfAbsent(String key, Value value) {
+	public Value put(String key, Object value, boolean format) {
+		Assert.requiredArgument(key != null, "key");
+		Assert.requiredArgument(value != null, "value");
+		return put(key, toValue(value, format));
+	}
+
+	private Value toValue(Object value, boolean format) {
+		Value v;
+		if (value instanceof Value) {
+			v = (Value) value;
+		} else if (value instanceof String) {
+			v = format ? new StringFormatValue((String) value) : new StringValue((String) value);
+		} else {
+			v = new AnyValue(value);
+		}
+		return v;
+	}
+
+	protected Value putIfAbsent(String key, Value value) {
 		Value v = map.putIfAbsent(key, value);
 		if (v != null) {
 			eventDispatcher.publishEvent(key, new PropertyEvent(this, EventType.CREATE, key, value));
@@ -191,7 +205,13 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	}
 
 	public Value putIfAbsent(String key, Object value) {
-		return putIfAbsent(key, new AnyValue(value));
+		return putIfAbsent(key, value, false);
+	}
+
+	public Value putIfAbsent(String key, Object value, boolean format) {
+		Assert.requiredArgument(key != null, "key");
+		Assert.requiredArgument(value != null, "value");
+		return putIfAbsent(key, toValue(value, format));
 	}
 
 	public void clear() {
@@ -213,9 +233,14 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 	public PropertiesRegistration loadProperties(final String keyPrefix, ResourceOperations resourceOperations,
 			String resource, String charsetName) {
+		return loadProperties(keyPrefix, resourceOperations, resource, charsetName, false);
+	}
+
+	public PropertiesRegistration loadProperties(final String keyPrefix, ResourceOperations resourceOperations,
+			String resource, String charsetName, boolean format) {
 		ObservableResource<Properties> res = resourceOperations.getProperties(resource, charsetName);
 		if (res.getResource() != null) {
-			loadProperties(keyPrefix, res.getResource());
+			loadProperties(keyPrefix, res.getResource(), format);
 		}
 
 		return new PropertiesRegistration(keyPrefix, res);
@@ -226,6 +251,10 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	}
 
 	public void loadProperties(String keyPrefix, Properties properties) {
+		loadProperties(keyPrefix, properties, false);
+	}
+
+	public void loadProperties(String keyPrefix, Properties properties, boolean format) {
 		if (properties != null) {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
@@ -237,7 +266,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 				if (value == null) {
 					continue;
 				}
-				put(keyPrefix == null ? key.toString() : (keyPrefix + key.toString()), value);
+				put(keyPrefix == null ? key.toString() : (keyPrefix + key.toString()), value, format);
 			}
 		}
 	}
@@ -282,6 +311,20 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 			if (eventRegistration != null) {
 				eventRegistration.unregister();
 			}
+		}
+	}
+
+	class StringFormatValue extends StringValue {
+		private static final long serialVersionUID = 1L;
+
+		public StringFormatValue(String value) {
+			super(value);
+		}
+
+		@Override
+		public String getAsString() {
+			String value = super.getAsString();
+			return format(value, true);
 		}
 	}
 }
