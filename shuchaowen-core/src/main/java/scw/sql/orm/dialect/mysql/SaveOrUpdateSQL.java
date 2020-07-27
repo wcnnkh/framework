@@ -7,11 +7,13 @@ import java.util.List;
 
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.CounterInfo;
-import scw.sql.orm.ObjectRelationalMapping;
+import scw.sql.orm.dialect.DialectHelper;
+import scw.sql.orm.dialect.DialectSql;
 
-public class SaveOrUpdateSQL extends MysqlDialectSql {
+public class SaveOrUpdateSQL extends DialectSql {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerUtils.getLogger(SaveOrUpdateSQL.class);
 	private static final String TEMP = ") ON DUPLICATE KEY UPDATE ";
@@ -19,8 +21,8 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 	private String sql;
 	private Object[] params;
 
-	public SaveOrUpdateSQL(ObjectRelationalMapping objectRelationalMapping, Class<?> clazz, Object obj, String tableName) {
-		Collection<Column> primaryKeys = objectRelationalMapping.getColumns(clazz);
+	public SaveOrUpdateSQL(Class<?> clazz, Object obj, String tableName, DialectHelper dialectHelper) {
+		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getColumns(clazz);
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -29,10 +31,10 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = objectRelationalMapping.getColumns(clazz).iterator();
+		Iterator<Column> iterator = SqlUtils.getObjectRelationalMapping().getColumns(clazz).iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			keywordProcessing(cols, column.getName());
+			dialectHelper.keywordProcessing(cols, column.getName());
 			values.append("?");
 			params.add(column.get(obj));
 
@@ -43,45 +45,45 @@ public class SaveOrUpdateSQL extends MysqlDialectSql {
 		}
 
 		sb.append(INSERT_INTO_PREFIX);
-		keywordProcessing(sb, tableName);
+		dialectHelper.keywordProcessing(sb, tableName);
 		sb.append("(");
 		sb.append(cols);
-		sb.append(InsertSQL.VALUES);
+		sb.append(VALUES);
 		sb.append(values);
 		sb.append(TEMP);
 
-		iterator = objectRelationalMapping.getNotPrimaryKeys(clazz).iterator();
+		iterator = SqlUtils.getObjectRelationalMapping().getNotPrimaryKeys(clazz).iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			Object v = column.get(obj);
 			CounterInfo counterInfo = column.getCounterInfo();
 			if (counterInfo == null) {
-				keywordProcessing(sb, column.getName());
+				dialectHelper.keywordProcessing(sb, column.getName());
 				sb.append("=?");
 				params.add(v);
 			} else {
 				if (v == null) {
 					logger.warn("{}中计数器字段{}的值为空", clazz.getName(), column.getName());
-					keywordProcessing(sb, column.getName());
+					dialectHelper.keywordProcessing(sb, column.getName());
 					sb.append("=?");
 					params.add(v);
 				} else {
-					keywordProcessing(sb, column.getName());
+					dialectHelper.keywordProcessing(sb, column.getName());
 					sb.append("=");
 					sb.append(IF);
-					keywordProcessing(sb, column.getName());
+					dialectHelper.keywordProcessing(sb, column.getName());
 					sb.append("+").append(v);
 					sb.append(">=").append(counterInfo.getMin());
 					sb.append(AND);
-					keywordProcessing(sb, column.getName());
+					dialectHelper.keywordProcessing(sb, column.getName());
 					sb.append("+").append(v);
 					sb.append("<=").append(counterInfo.getMax());
 					sb.append(",");
-					keywordProcessing(sb, column.getName());
+					dialectHelper.keywordProcessing(sb, column.getName());
 					sb.append("+?");
 					params.add(v);
 					sb.append(",");
-					keywordProcessing(sb, column.getName());
+					dialectHelper.keywordProcessing(sb, column.getName());
 					sb.append(")");
 				}
 			}

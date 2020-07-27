@@ -15,11 +15,11 @@ public @interface Table {
 	 */
 	public String name() default "";
 
-	public String engine() default "InnoDB";
+	public String engine() default "";
 
-	public String charset() default "utf8";
+	public String charset() default "";
 
-	public String row_format() default "COMPACT";
+	public String row_format() default "";
 
 	/**
 	 * 是否自动创建

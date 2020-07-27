@@ -1,19 +1,19 @@
-package scw.sql.orm.dialect.mysql;
+package scw.sql.orm.dialect;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import scw.lang.ParameterException;
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
-import scw.sql.orm.ObjectRelationalMapping;
 
-public class DeleteByIdSql extends MysqlDialectSql {
+public class DeleteByIdSql extends DialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public DeleteByIdSql(ObjectRelationalMapping objectRelationalMapping, Class<?> clazz, String tableName, Object[] parimayKeys) {
-		Collection<Column> primaryKeys = objectRelationalMapping.getPrimaryKeys(clazz);
+	public DeleteByIdSql(Class<?> clazz, String tableName, Object[] parimayKeys, DialectHelper dialectHelper) {
+		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -24,7 +24,7 @@ public class DeleteByIdSql extends MysqlDialectSql {
 
 		StringBuilder sql = new StringBuilder();
 		sql.append(DELETE_PREFIX);
-		keywordProcessing(sql, tableName);
+		dialectHelper.keywordProcessing(sql, tableName);
 		sql.append(WHERE);
 
 		int i = 0;
@@ -32,7 +32,7 @@ public class DeleteByIdSql extends MysqlDialectSql {
 		Iterator<Column> iterator = primaryKeys.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			keywordProcessing(sql, column.getName());
+			dialectHelper.keywordProcessing(sql, column.getName());
 			sql.append("=?");
 			params[i] = column.toDataBaseValue(parimayKeys[i]);
 			i++;

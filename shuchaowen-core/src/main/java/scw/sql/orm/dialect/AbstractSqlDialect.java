@@ -1,21 +1,25 @@
 package scw.sql.orm.dialect;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import scw.aop.support.FieldSetterListen;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
-import scw.sql.SqlUtils;
-import scw.sql.orm.ObjectRelationalMapping;
 import scw.util.Pagination;
 
 public abstract class AbstractSqlDialect implements SqlDialect {
-	
-	public ObjectRelationalMapping getObjectRelationalMapping() {
-		return SqlUtils.getObjectRelationalMapping();
+	private DialectHelper dialectHelper;
+
+	public AbstractSqlDialect(DialectHelper dialectHelper) {
+		this.dialectHelper = dialectHelper;
 	}
-	
-	public SqlTypeFactory getSqlTypeFactory() {
-		return SqlUtils.getSqlTypeFactory();
+
+	public DialectHelper getDialectHelper() {
+		return dialectHelper;
 	}
-	
+
 	public PaginationSql toPaginationSql(Sql sql, long page, int limit) throws SqlDialectException {
 		String str = sql.getSql();
 		int fromIndex = str.indexOf(" from ");// ignore select
@@ -45,10 +49,32 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 		return new PaginationSql(countSql, new SimpleSql(sb.toString(), sql.getParams()));
 	}
 
-	public Sql toCopyTableStructureSql(String newTableName, String oldTableName) throws SqlDialectException {
-		StringBuilder sb = new StringBuilder();
-		sb.append("CREATE TABLE IF NOT EXISTS `").append(newTableName).append("`");
-		sb.append(" like `").append(oldTableName).append("`");
-		return new SimpleSql(sb.toString());
+	public Sql toInsertSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException {
+		return new InsertSQL(clazz, tableName, obj, getDialectHelper());
+	}
+
+	public Sql toUpdateSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException {
+		return (obj instanceof FieldSetterListen)
+				? new UpdateSQLByBeanListen(clazz, (FieldSetterListen) obj, tableName, getDialectHelper())
+				: new UpdateSQL(clazz, obj, tableName, getDialectHelper());
+	}
+
+	public Sql toDeleteSql(Object obj, Class<?> clazz, String tableName) throws SqlDialectException {
+		return new DeleteSQL(clazz, obj, tableName, getDialectHelper());
+	}
+
+	public Sql toDeleteByIdSql(Class<?> clazz, String tableName, Object[] parimayKeys) throws SqlDialectException {
+		return new DeleteByIdSql(clazz, tableName, parimayKeys, getDialectHelper());
+	}
+
+	@SuppressWarnings("unchecked")
+	public Sql toSelectByIdSql(Class<?> clazz, String tableName, Object[] params) throws SqlDialectException {
+		return new SelectByIdSQL(clazz, tableName, params == null ? Collections.EMPTY_LIST : Arrays.asList(params),
+				getDialectHelper());
+	}
+
+	public Sql toSelectInIdSql(Class<?> clazz, String tableName, Object[] ids, Collection<?> inIdList)
+			throws SqlDialectException {
+		return new SelectInIdSQL(clazz, tableName, ids, inIdList, getDialectHelper());
 	}
 }

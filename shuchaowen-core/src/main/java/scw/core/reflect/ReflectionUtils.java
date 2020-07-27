@@ -866,6 +866,16 @@ public abstract class ReflectionUtils {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> Constructor<T> findConstructor(String className, boolean isPublic, Class<?>... parameterTypes) {
+		Class<?> clazz = ClassUtils.forNameNullable(className);
+		if (clazz == null) {
+			return null;
+		}
+
+		return (Constructor<T>) findConstructor(clazz, isPublic, parameterTypes);
+	}
+
 	/**
 	 * 此方法可能返回空
 	 * 

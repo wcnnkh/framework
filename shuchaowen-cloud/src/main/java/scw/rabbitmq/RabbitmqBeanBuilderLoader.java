@@ -60,13 +60,14 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 	}
 
 	private static class ConnectionFactoryBeanBuilder extends AbstractBeanDefinition {
-
+		private final boolean exist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
+		
 		public ConnectionFactoryBeanBuilder(LoaderContext context) {
 			super(context);
 		}
 
 		public boolean isInstance() {
-			return ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
+			return exist;
 		}
 
 		public Object create() throws Exception {
@@ -97,14 +98,15 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 	}
 
 	private final class ExchangeDeclareBeanBuilder extends AbstractBeanDefinition {
-
+		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
+		
 		public ExchangeDeclareBeanBuilder(LoaderContext context) {
 			super(context);
 		}
 
 		@Override
 		public boolean isInstance() {
-			return ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
+			return isExist;
 		}
 
 		@Override

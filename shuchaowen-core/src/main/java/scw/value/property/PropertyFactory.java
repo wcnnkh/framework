@@ -218,7 +218,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 			loadProperties(keyPrefix, res.getResource());
 		}
 
-		return new PropertiesRegistration(res, keyPrefix);
+		return new PropertiesRegistration(keyPrefix, res);
 	}
 
 	public void loadProperties(Properties properties) {
@@ -242,40 +242,46 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 	}
 
-	public class PropertiesRegistration {
+	public class PropertiesRegistration implements EventRegistration {
 		private final ObservableResource<Properties> resource;
 		private EventRegistration eventRegistration;
 		private final String keyPrefix;
 
-		public PropertiesRegistration(ObservableResource<Properties> resource, String keyPrefix) {
-			this.resource = resource;
+		public PropertiesRegistration(String keyPrefix, ObservableResource<Properties> resource) {
 			this.keyPrefix = keyPrefix;
+			this.resource = resource;
 		}
 
 		public ObservableResource<Properties> getResource() {
 			return resource;
 		}
 
-		public EventRegistration getEventRegistration() {
-			return eventRegistration;
-		}
-
 		public boolean isRegisterListener() {
 			return eventRegistration != null;
 		}
 
-		public boolean registerListener() {
+		public PropertyFactory getPropertyFactory() {
+			return PropertyFactory.this;
+		}
+
+		public PropertyFactory registerListener() {
 			if (isRegisterListener()) {
-				return false;
+				return getPropertyFactory();
 			}
 
-			eventRegistration = resource.registerListener(new ObservableResourceEventListener<Properties>() {
+			this.eventRegistration = resource.registerListener(new ObservableResourceEventListener<Properties>() {
 
 				public void onEvent(ObservableResourceEvent<Properties> event) {
-					loadProperties(keyPrefix, event.getSource());
+					getPropertyFactory().loadProperties(keyPrefix, event.getSource());
 				}
 			});
-			return true;
+			return getPropertyFactory();
+		}
+
+		public void unregister() {
+			if (eventRegistration != null) {
+				eventRegistration.unregister();
+			}
 		}
 	}
 }

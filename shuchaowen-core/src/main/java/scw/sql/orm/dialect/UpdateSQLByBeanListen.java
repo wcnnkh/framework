@@ -1,4 +1,4 @@
-package scw.sql.orm.dialect.mysql;
+package scw.sql.orm.dialect;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,21 +12,21 @@ import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.CounterInfo;
-import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.enums.CasType;
 import scw.value.AnyValue;
 
-public final class UpdateSQLByBeanListen extends MysqlDialectSql {
+public final class UpdateSQLByBeanListen extends DialectSql {
 	private static Logger logger = LoggerUtils.getLogger(UpdateSQLByBeanListen.class);
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public UpdateSQLByBeanListen(ObjectRelationalMapping objectRelationalMapping, Class<?> clazz,
-			FieldSetterListen beanFieldListen, String tableName) {
-		Collection<Column> primaryKeys = objectRelationalMapping.getPrimaryKeys(clazz);
+	public UpdateSQLByBeanListen(Class<?> clazz, FieldSetterListen beanFieldListen, String tableName,
+			DialectHelper dialectHelper) {
+		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
 		if (primaryKeys.size() == 0) {
 			throw new NotFoundException("not found primary key");
 		}
@@ -38,13 +38,13 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 
 		StringBuilder sb = new StringBuilder(512);
 		sb.append(UPDATE_PREFIX);
-		keywordProcessing(sb, tableName);
+		dialectHelper.keywordProcessing(sb, tableName);
 		sb.append(SET);
 
 		int index = 0;
 		StringBuilder where = null;
 		List<Object> paramList = new ArrayList<Object>();
-		Collection<Column> notPrimaryKeys = objectRelationalMapping.getNotPrimaryKeys(clazz);
+		Collection<Column> notPrimaryKeys = SqlUtils.getObjectRelationalMapping().getNotPrimaryKeys(clazz);
 		Iterator<Column> iterator = notPrimaryKeys.iterator();
 		// 处理CasType.AUTO_INCREMENT字段
 		while (iterator.hasNext()) {
@@ -62,9 +62,9 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 				sb.append(",");
 			}
 
-			keywordProcessing(sb, column.getName());
+			dialectHelper.keywordProcessing(sb, column.getName());
 			sb.append("=");
-			keywordProcessing(sb, column.getName());
+			dialectHelper.keywordProcessing(sb, column.getName());
 			sb.append("+1");
 		}
 
@@ -87,10 +87,10 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 					}
 
 					double change = newV - oldV;
-					keywordProcessing(sb, column.getName());
+					dialectHelper.keywordProcessing(sb, column.getName());
 					sb.append("=");
 
-					keywordProcessing(sb, column.getName());
+					dialectHelper.keywordProcessing(sb, column.getName());
 					sb.append(change > 0 ? "+" : "-");
 					sb.append(Math.abs(change));
 
@@ -103,12 +103,12 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 					if (change == 0) {
 						where.append("1 != 1");
 					} else {
-						keywordProcessing(where, column.getName());
+						dialectHelper.keywordProcessing(where, column.getName());
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append(">=").append(counterInfo.getMin());
 						where.append(AND);
-						keywordProcessing(where, column.getName());
+						dialectHelper.keywordProcessing(where, column.getName());
 						where.append(change > 0 ? "+" : "-");
 						where.append(Math.abs(change));
 						where.append("<=").append(counterInfo.getMax());
@@ -124,7 +124,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 				sb.append(",");
 			}
 
-			keywordProcessing(sb, column.getName());
+			dialectHelper.keywordProcessing(sb, column.getName());
 			sb.append("=?");
 			paramList.add(column.toDataBaseValue(value));
 		}
@@ -134,7 +134,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 		iterator = primaryKeys.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			keywordProcessing(sb, column.getName());
+			dialectHelper.keywordProcessing(sb, column.getName());
 			sb.append("=?");
 			paramList.add(column.get(beanFieldListen));
 			if (iterator.hasNext()) {
@@ -150,7 +150,7 @@ public final class UpdateSQLByBeanListen extends MysqlDialectSql {
 			}
 
 			sb.append(AND);
-			keywordProcessing(sb, column.getName());
+			dialectHelper.keywordProcessing(sb, column.getName());
 			sb.append("=?");
 			Object value;
 			if (changeMap.containsKey(column.getField().getSetter().getName())) {

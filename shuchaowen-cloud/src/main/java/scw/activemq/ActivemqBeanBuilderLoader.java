@@ -15,11 +15,9 @@ import scw.util.ConfigUtils;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
-	private static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX
-			+ "/activemq/activemq.properties";
+	private static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/activemq/activemq.properties";
 
-	public BeanDefinition loading(LoaderContext context,
-			BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == ConnectionFactory.class) {
 			return new ConnectionFactoryBeanBuilder(context);
 		}
@@ -27,25 +25,21 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static class ConnectionFactoryBeanBuilder extends
-			AbstractBeanDefinition {
+	private static class ConnectionFactoryBeanBuilder extends AbstractBeanDefinition {
+		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
 
 		public ConnectionFactoryBeanBuilder(LoaderContext context) {
 			super(context);
 		}
 
 		public boolean isInstance() {
-			return ResourceUtils.getResourceOperations()
-					.isExist(DEFAULT_CONFIG);
+			return isExist;
 		}
 
 		public Object create() throws Exception {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-			ConfigUtils.loadProperties(
-					connectionFactory,
-					ResourceUtils.getResourceOperations()
-							.getFormattedProperties(DEFAULT_CONFIG,
-									propertyFactory).getResource(), null, null);
+			ConfigUtils.loadProperties(connectionFactory, ResourceUtils.getResourceOperations()
+					.getFormattedProperties(DEFAULT_CONFIG, propertyFactory).getResource(), null, null);
 			return connectionFactory;
 		}
 	}

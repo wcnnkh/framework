@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
@@ -36,32 +35,33 @@ import scw.sql.transaction.SqlTransactionUtils;
 import scw.util.ClassScanner;
 import scw.util.Consumer;
 import scw.util.queue.MemoryAsyncExecuteQueue;
+import scw.value.property.PropertyFactory;
 
-@SuppressWarnings("rawtypes")
 public abstract class AbstractDB extends AbstractEntityOperations
 		implements DB, Consumer<AsyncExecute>, BeanFactoryAware, Destroy, ConnectionFactory {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
-	private final MemoryAsyncExecuteQueue<AsyncExecute> asyncExecuteQueue = new MemoryAsyncExecuteQueue<AsyncExecute>(getClass().getName(), true);
+	private final MemoryAsyncExecuteQueue<AsyncExecute> asyncExecuteQueue = new MemoryAsyncExecuteQueue<AsyncExecute>(
+			getClass().getName(), true);
 	private BeanFactory beanFactory;
 	private CacheManager cacheManager;
 	private GeneratorService generatorService;
-	
+
 	{
 		asyncExecuteQueue.addConsumer(this);
 	}
 
-	public AbstractDB(Map properties) {
+	public AbstractDB() {
 		this.cacheManager = new DefaultCacheManager();
 		this.generatorService = new DefaultGeneratorService();
 	}
 
-	public AbstractDB(Map properties, Memcached memcached) {
-		this.cacheManager = new TemporaryCacheManager(memcached, true, getCachePrefix(properties));
+	public AbstractDB(PropertyFactory propertyFactory, Memcached memcached) {
+		this.cacheManager = new TemporaryCacheManager(memcached, true, getCachePrefix(propertyFactory));
 		this.generatorService = new MemcachedGeneratorService(memcached);
 	}
 
-	public AbstractDB(Map properties, Redis redis) {
-		this.cacheManager = new TemporaryCacheManager(redis, true, getCachePrefix(properties));
+	public AbstractDB(PropertyFactory propertyFactory, Redis redis) {
+		this.cacheManager = new TemporaryCacheManager(redis, true, getCachePrefix(propertyFactory));
 		this.generatorService = new RedisGeneratorService(redis);
 	}
 
@@ -69,24 +69,24 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		this.cacheManager = cacheManager;
 		this.generatorService = generatorService;
 	}
-	
+
 	public void accept(AsyncExecute message) {
 		processing(message, false);
 	}
 
-	protected String getCachePrefix(Map properties) {
-		if(properties == null){
+	protected String getCachePrefix(PropertyFactory propertyFactory) {
+		if (propertyFactory == null) {
 			return null;
 		}
-		return StringUtils.toString(properties.get("cache.prefix"), Constants.DEFAULT_PREFIX);
+		return StringUtils.toString(propertyFactory.getString("cache.prefix"), Constants.DEFAULT_PREFIX);
 	}
 
-	protected void createTableByProperties(Map properties) {
-		if(properties == null){
-			return ;
+	protected void createTableByProperties(PropertyFactory propertyFactory) {
+		if (propertyFactory == null) {
+			return;
 		}
-		
-		String create = StringUtils.toString(properties.get("create"), null);
+
+		String create = StringUtils.toString(propertyFactory.getString("create"), null);
 		if (StringUtils.isNotEmpty(create)) {
 			createTable(create);
 		}
@@ -102,8 +102,8 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		return cacheManager;
 	}
 
-	public void createTable(Class<?> tableClass, boolean registerManager) {
-		createTable(tableClass, null, registerManager);
+	public boolean createTable(Class<?> tableClass, boolean registerManager) {
+		return createTable(tableClass, null, registerManager);
 	}
 
 	public void setBeanFactory(BeanFactory beanFactory) {
@@ -144,18 +144,19 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	}
 
 	@Override
-	public void createTable(Class<?> tableClass, String tableName) {
-		createTable(tableClass, tableName, true);
+	public boolean createTable(Class<?> tableClass, String tableName) {
+		return createTable(tableClass, tableName, true);
 	}
 
-	public void createTable(Class<?> tableClass, String tableName, boolean registerManager) {
+	public boolean createTable(Class<?> tableClass, String tableName, boolean registerManager) {
 		if (registerManager) {
 			DBManager.register(tableClass, this);
 		}
 
-		super.createTable(tableClass, tableName);
+		boolean b = super.createTable(tableClass, tableName);
 		// 检查表变更
 		checkTableChange(tableClass);
+		return b;
 	}
 
 	@Override
@@ -239,20 +240,20 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	}
 
 	public void asyncExecute(AsyncExecute asyncExecute) {
-		if(!asyncExecuteQueue.isStarted()){
+		if (!asyncExecuteQueue.isStarted()) {
 			throw new RuntimeException("Asynchronous processing has stopped!");
 		}
-		
-		asyncExecuteQueue.put(asyncExecute);
-	}
 
-	@Override
-	public Connection getUserConnection() throws SQLException {
-		return SqlTransactionUtils.getTransactionConnection(this);
+		asyncExecuteQueue.put(asyncExecute);
 	}
 
 	@Deprecated
 	public Select createSelect() {
 		return new MysqlSelect(this);
+	}
+
+	@Override
+	protected final Connection getUserConnection() throws SQLException {
+		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 }

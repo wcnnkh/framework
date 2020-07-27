@@ -69,9 +69,9 @@ public interface EntityOperations {
 
 	<T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String idField);
 
-	void createTable(Class<?> tableClass);
+	boolean createTable(Class<?> tableClass);
 
-	void createTable(Class<?> tableClass, String tableName);
+	boolean createTable(Class<?> tableClass, String tableName);
 
 	void createTable(String packageName);
 

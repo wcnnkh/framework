@@ -31,13 +31,6 @@ public final class LoggerFactory {
 		return getILoggerFactory().getLogger(clazz.getName(), placeholder);
 	}
 
-	/**
-	 * 建议使用LoggerUtils.destroy() 此方法调用会初始化logger
-	 */
-	public static void destroy() {
-		getILoggerFactory().destroy();
-	}
-
 	public static ILoggerFactory getILoggerFactory() {
 		return LOGGER_FACTORY;
 	}

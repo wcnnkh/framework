@@ -2,24 +2,18 @@ package scw.db.hikaricp;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import scw.core.instance.annotation.Configuration;
-import scw.core.instance.annotation.ResourceParameter;
-import scw.core.parameter.annotation.DefaultValue;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.database.DataBase;
-import scw.io.ResourceUtils;
 import scw.sql.orm.dialect.SqlDialect;
+import scw.value.property.PropertyFactory;
 
-@SuppressWarnings("rawtypes")
-@Configuration(order = Integer.MIN_VALUE)
 public class HikariCPDB extends AbstractDB {
 	private HikariDataSource hds;
 	private DataBase dataBase;
@@ -28,33 +22,31 @@ public class HikariCPDB extends AbstractDB {
 		HikariConfig.class.getName();
 	}
 
-	public HikariCPDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile,
-			Redis redis) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile).getResource(), redis);
+	public HikariCPDB(String propertiesFile) {
+		this(new PropertyFactory(false, true).loadProperties(propertiesFile, "UTF-8").registerListener());
 	}
 
-	public HikariCPDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile,
-			Memcached memcached) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile).getResource(), memcached);
+	public HikariCPDB(String propertiesFile, Redis redis) {
+		this(new PropertyFactory(false, true).loadProperties(propertiesFile, "UTF-8").registerListener(), redis);
 	}
 
-	public HikariCPDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String propertiesFile) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(propertiesFile).getResource());
+	public HikariCPDB(String propertiesFile, Memcached memcached) {
+		this(new PropertyFactory(false, true).loadProperties(propertiesFile, "UTF-8").registerListener(), memcached);
 	}
 
-	protected HikariCPDB(Map properties) {
-		super(properties);
-		initConfig(properties);
+	public HikariCPDB(PropertyFactory propertyFactory) {
+		super();
+		initConfig(propertyFactory);
 	}
 
-	protected HikariCPDB(Map properties, Memcached memcached) {
-		super(properties, memcached);
-		initConfig(properties);
+	public HikariCPDB(PropertyFactory propertyFactory, Memcached memcached) {
+		super(propertyFactory, memcached);
+		initConfig(propertyFactory);
 	}
 
-	protected HikariCPDB(Map properties, Redis redis) {
-		super(properties, redis);
-		initConfig(properties);
+	public HikariCPDB(PropertyFactory propertyFactory, Redis redis) {
+		super(propertyFactory, redis);
+		initConfig(propertyFactory);
 	}
 
 	protected void initConfig(HikariConfig config) {
@@ -64,14 +56,14 @@ public class HikariCPDB extends AbstractDB {
 		hds = new HikariDataSource(config);
 	}
 
-	private void initConfig(Map properties) {
-		if(properties == null){
-			return ;
+	private void initConfig(PropertyFactory propertyFactory) {
+		if (propertyFactory == null) {
+			return;
 		}
 		HikariConfig config = new HikariConfig();
-		DBUtils.loadProperties(config, properties);
+		DBUtils.loadProperties(config, propertyFactory);
 		initConfig(config);
-		createTableByProperties(properties);
+		createTableByProperties(propertyFactory);
 	}
 
 	public DataBase getDataBase() {
@@ -93,9 +85,5 @@ public class HikariCPDB extends AbstractDB {
 	@Override
 	public SqlDialect getSqlDialect() {
 		return dataBase.getSqlDialect();
-	}
-
-	public void setDataBase(DataBase dataBase) {
-		this.dataBase = dataBase;
 	}
 }

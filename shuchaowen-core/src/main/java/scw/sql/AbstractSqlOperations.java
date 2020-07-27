@@ -10,16 +10,16 @@ import java.util.List;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public abstract class SqlTemplate implements SqlOperations {
+public abstract class AbstractSqlOperations implements SqlOperations {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	
-	protected void logger(Sql sql){
+
+	protected void logger(Sql sql) {
 		if (logger.isDebugEnabled()) {
 			logger.debug(SqlUtils.getSqlId(sql));
 		}
 	}
-
-	public abstract Connection getUserConnection() throws SQLException;
+	
+	protected abstract Connection getUserConnection() throws SQLException;
 
 	protected void close(Connection connection) throws SqlException {
 		if (connection != null) {
@@ -166,7 +166,7 @@ public abstract class SqlTemplate implements SqlOperations {
 
 		});
 	}
-	
+
 	protected int update(Sql sql, Connection connection) throws SQLException {
 		logger(sql);
 		PreparedStatement statement = null;

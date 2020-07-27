@@ -3,7 +3,7 @@ package scw.db.database;
 import scw.core.QueryString;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
-import scw.sql.orm.dialect.MySqlSqlDialect;
+import scw.sql.orm.dialect.mysql.MySqlSqlDialect;
 
 /**
  * Sql Server7.0/2000数据库
@@ -12,7 +12,7 @@ import scw.sql.orm.dialect.MySqlSqlDialect;
  *
  */
 public class SqlServerDataBase extends AbstractDataBase {
-	private String database;
+	private String name;
 	private String connectionUrl;
 
 	public SqlServerDataBase(String driverClass, String url, String username, String password) {
@@ -30,16 +30,16 @@ public class SqlServerDataBase extends AbstractDataBase {
 
 		String query = url.substring(databaseBeginIndex + 1);
 		QueryString queryString = new QueryString(query);
-		this.database = queryString.getFirst("DatabaseName");
-		if (StringUtils.isEmpty(this.database)) {
+		this.name = queryString.getFirst("DatabaseName");
+		if (StringUtils.isEmpty(this.name)) {
 			throw new NotFoundException("无法解析数据库名称：" + url);
 		}
 
 		this.connectionUrl = url.substring(0, databaseBeginIndex - 1);
 	}
 
-	public String getDataBase() {
-		return database;
+	public String getName() {
+		return name;
 	}
 
 	public String getConnectionURL() {

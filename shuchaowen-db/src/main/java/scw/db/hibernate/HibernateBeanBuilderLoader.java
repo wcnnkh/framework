@@ -55,14 +55,15 @@ public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 	}
 
 	private static final class ConfigurationBeanBuilder extends AbstractBeanDefinition {
-
+		private final boolean isExist = ResourceUtils.getResourceOperations()
+				.isExist(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
+		
 		public ConfigurationBeanBuilder(LoaderContext context) {
 			super(context);
 		}
 
 		public boolean isInstance() {
-			return ResourceUtils.getResourceOperations()
-					.isExist(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
+			return isExist;
 		}
 
 		public Object create() throws Exception {
