@@ -45,6 +45,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	private BeanFactory beanFactory;
 	private CacheManager cacheManager;
 	private GeneratorService generatorService;
+	private boolean checkTableChange = true;
 
 	{
 		asyncExecuteQueue.addConsumer(this);
@@ -70,6 +71,14 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		this.generatorService = generatorService;
 	}
 
+	public boolean isCheckTableChange() {
+		return checkTableChange;
+	}
+
+	public void setCheckTableChange(boolean checkTableChange) {
+		this.checkTableChange = checkTableChange;
+	}
+
 	public void accept(AsyncExecute message) {
 		processing(message, false);
 	}
@@ -86,6 +95,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 			return;
 		}
 
+		setCheckTableChange(propertyFactory.getValue("check.table.change", boolean.class, true));
 		String create = StringUtils.toString(propertyFactory.getString("create"), null);
 		if (StringUtils.isNotEmpty(create)) {
 			createTable(create);
@@ -155,7 +165,9 @@ public abstract class AbstractDB extends AbstractEntityOperations
 
 		boolean b = super.createTable(tableClass, tableName);
 		// 检查表变更
-		checkTableChange(tableClass);
+		if (isCheckTableChange()) {
+			checkTableChange(tableClass);
+		}
 		return b;
 	}
 
