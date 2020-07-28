@@ -30,6 +30,7 @@ import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
 import scw.value.Value;
 import scw.value.event.DefaultDynamicMap;
+import scw.value.event.ValueCreator;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -510,9 +511,9 @@ public class HttpHeaders extends Headers {
 	private static final DefaultDynamicMap AJAX_HEADERS = new DefaultDynamicMap(false);
 
 	static {
-		AJAX_HEADERS.loadProperties("/scw/net/headers/ajax.headers.properties");
+		AJAX_HEADERS.loadProperties("/scw/net/headers/ajax.headers.properties", ValueCreator.CREATOR);
 		AJAX_HEADERS.loadProperties(GlobalPropertyFactory.getInstance().getValue("scw.net.ajax.headers", String.class,
-				"/ajax-headers.properties"));
+				"/ajax-headers.properties"), ValueCreator.CREATOR);
 	}
 
 	public HttpHeaders() {

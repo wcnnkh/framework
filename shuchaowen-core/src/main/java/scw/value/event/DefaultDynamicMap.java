@@ -1,6 +1,9 @@
 package scw.value.event;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,8 +20,6 @@ import scw.io.ResourceUtils;
 import scw.io.event.ObservableResource;
 import scw.io.event.ObservableResourceEvent;
 import scw.io.event.ObservableResourceEventListener;
-import scw.value.AnyValue;
-import scw.value.StringValue;
 import scw.value.Value;
 
 public class DefaultDynamicMap extends DefaultCompatibleMap<String, Value> implements DynamicMap {
@@ -131,28 +132,29 @@ public class DefaultDynamicMap extends DefaultCompatibleMap<String, Value> imple
 		}
 	}
 
-	public PropertiesRegistration loadProperties(String resource) {
-		return loadProperties(resource, (String) null);
+	public PropertiesEventRegistration loadProperties(String resource, ValueCreator creator) {
+		return loadProperties(resource, (String) null, creator);
 	}
 
-	public PropertiesRegistration loadProperties(String resource, String charsetName) {
-		return loadProperties(null, resource, charsetName);
+	public PropertiesEventRegistration loadProperties(String resource, String charsetName, ValueCreator creator) {
+		return loadProperties(null, resource, charsetName, creator);
 	}
 
-	public PropertiesRegistration loadProperties(String keyPrefix, String resource, String charsetName) {
+	public PropertiesEventRegistration loadProperties(String keyPrefix, String resource, String charsetName,
+			ValueCreator creator) {
 		ObservableResource<Properties> res = ResourceUtils.getResourceOperations().getProperties(resource, charsetName);
 		if (res.getResource() != null) {
-			loadProperties(keyPrefix, res.getResource());
+			loadProperties(keyPrefix, res.getResource(), creator);
 		}
 
-		return new PropertiesRegistration(keyPrefix, res);
+		return new PropertiesEventRegistration(keyPrefix, res, creator);
 	}
 
-	public void loadProperties(Properties properties) {
-		loadProperties(null, properties);
+	public void loadProperties(Properties properties, ValueCreator creator) {
+		loadProperties(null, properties, creator);
 	}
 
-	public void loadProperties(String keyPrefix, Properties properties) {
+	public void loadProperties(String keyPrefix, Properties properties, ValueCreator creator) {
 		if (properties == null) {
 			return;
 		}
@@ -167,30 +169,39 @@ public class DefaultDynamicMap extends DefaultCompatibleMap<String, Value> imple
 			if (value == null) {
 				continue;
 			}
-			put(keyPrefix == null ? key.toString() : (keyPrefix + key.toString()), value);
+
+			put(keyPrefix == null ? key.toString() : (keyPrefix + key.toString()),
+					creator.create(key.toString(), value));
 		}
 	}
 
-	public Value put(String key, Object value) {
-		return put(key, createValue(value));
-	}
-
-	public Value putIfAbsent(String key, Object value) {
-		return putIfAbsent(key, createValue(value));
-	}
-
-	protected Value createValue(Object value) {
-		return value instanceof String ? new StringValue((String) value) : new AnyValue(value);
-	}
-
-	public class PropertiesRegistration implements EventRegistration {
+	public class PropertiesEventRegistration implements EventRegistration {
 		private final ObservableResource<Properties> resource;
 		private EventRegistration eventRegistration;
 		private final String keyPrefix;
+		private final ValueCreator creator;
+		private final List<String> keys = new ArrayList<String>();
 
-		public PropertiesRegistration(String keyPrefix, ObservableResource<Properties> resource) {
+		public PropertiesEventRegistration(String keyPrefix, ObservableResource<Properties> resource,
+				ValueCreator creator) {
 			this.keyPrefix = keyPrefix;
 			this.resource = resource;
+			this.creator = creator;
+			addKeys(resource.getResource());
+		}
+
+		private void addKeys(Properties properties) {
+			if (properties == null) {
+				return;
+			}
+
+			for (Object key : properties.keySet()) {
+				if (key == null) {
+					continue;
+				}
+
+				keys.add(key.toString());
+			}
 		}
 
 		public ObservableResource<Properties> getResource() {
@@ -205,22 +216,38 @@ public class DefaultDynamicMap extends DefaultCompatibleMap<String, Value> imple
 			return DefaultDynamicMap.this;
 		}
 
-		public DefaultDynamicMap registerListener() {
+		public void registerListener() {
 			if (isRegisterListener()) {
-				return getDefaultDynamicMap();
+				return;
 			}
 
-			this.eventRegistration = registerListener(new ObservableResourceEventListener<Properties>() {
+			this.eventRegistration = resource.registerListener(new ObservableResourceEventListener<Properties>() {
 
 				public void onEvent(ObservableResourceEvent<Properties> event) {
-					getDefaultDynamicMap().loadProperties(keyPrefix, event.getSource());
+					Properties properties = event.getSource();
+					HashSet<String> keySet = new HashSet<String>(keys);
+					if (properties != null) {
+						for (Entry<Object, Object> entry : properties.entrySet()) {
+							Object value = entry.getValue();
+							if (value == null) {
+								continue;
+							}
+
+							String key = entry.getKey().toString();
+							String k = keyPrefix == null ? key : (keyPrefix + key);
+							Value v = creator.create(key, value);
+							put(k, v);
+							keySet.remove(key);
+						}
+					}
+					for (String key : keySet) {
+						String k = keyPrefix == null ? key : (keyPrefix + key);
+						remove(k);
+					}
+					keys.clear();
+					addKeys(properties);
 				}
 			});
-			return getDefaultDynamicMap();
-		}
-
-		public EventRegistration registerListener(ObservableResourceEventListener<Properties> eventListener) {
-			return resource.registerListener(eventListener);
 		}
 
 		public void unregister() {
