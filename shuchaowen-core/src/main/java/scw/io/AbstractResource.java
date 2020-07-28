@@ -35,8 +35,8 @@ public abstract class AbstractResource implements Resource {
 	private volatile ResourceEventDispatcher eventDispatcher;
 
 	public ResourceEventDispatcher getEventDispatcher() {
-		if (isSupportEventDispatcher()) {
-			if (eventDispatcher == null) {
+		if (eventDispatcher == null) {
+			if (isSupportEventDispatcher()) {
 				synchronized (this) {
 					if (eventDispatcher == null) {
 						if (JavaVersion.INSTANCE.getMasterVersion() >= 7) {
@@ -53,18 +53,24 @@ public abstract class AbstractResource implements Resource {
 					}
 				}
 			}
-			return eventDispatcher;
 		}
-		return EMPTY_EVENT_DISPATCHER;
+		return eventDispatcher == null ? EMPTY_EVENT_DISPATCHER : eventDispatcher;
 	}
 
 	public boolean isSupportEventDispatcher() {
-		try {
-			return SUPPORT_EVENT_DISPATCHER
-					&& (SUPPORT_JAR_RESOURCE_EVENT_DISPATCHER || !ResourceUtils.isJarURL(getURL()));
-		} catch (IOException e) {
+		if (!SUPPORT_EVENT_DISPATCHER) {
 			return false;
 		}
+
+		if (exists()) {
+			try {
+				if (ResourceUtils.isJarURL(getURL())) {
+					return SUPPORT_JAR_RESOURCE_EVENT_DISPATCHER;
+				}
+			} catch (IOException e) {
+			}
+		}
+		return true;
 	}
 
 	/**
