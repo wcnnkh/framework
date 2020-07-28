@@ -11,7 +11,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import scw.aop.ProxyUtils;
+import scw.aop.support.FieldSetterListenUtils;
 import scw.core.GlobalPropertyFactory;
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
@@ -283,5 +286,14 @@ public class ObjectRelationalMapping implements FieldFilter {
 			}
 		}
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T newEntity(Class<? extends T> entityClass) {
+		if (isTable(entityClass) && ProxyUtils.getProxyFactory().isSupport(entityClass)) {
+			return (T) FieldSetterListenUtils.getFieldSetterListenProxy(entityClass).create();
+		} else {
+			return InstanceUtils.INSTANCE_FACTORY.getInstance(entityClass);
+		}
 	}
 }

@@ -5,14 +5,11 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 
 import scw.aop.support.FieldSetterListen;
-import scw.aop.support.FieldSetterListenUtils;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
-import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.TableNameMapping;
@@ -63,14 +60,11 @@ public class DefaultResultMapping extends AbstractResultMapping {
 		return v;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected <T> T mapping(Class<T> clazz, TableNameMapping tableNameMapping,
 			ObjectRelationalMapping objectRelationalMapping, Field parentField) {
 		String tableName = getTableName(clazz, tableNameMapping, objectRelationalMapping);
-		T entity = (T) (SqlUtils.getObjectRelationalMapping().isTable(clazz)
-				? FieldSetterListenUtils.getFieldSetterListenProxy(clazz).create()
-				: InstanceUtils.INSTANCE_FACTORY.getInstance(clazz));
+		T entity = objectRelationalMapping.newEntity(clazz);
 		Enumeration<Column> enumeration = objectRelationalMapping.enumeration(clazz);
 		while (enumeration.hasMoreElements()) {
 			Column column = enumeration.nextElement();

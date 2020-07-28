@@ -98,7 +98,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		setCheckTableChange(propertyFactory.getValue("check.table.change", boolean.class, true));
 		String create = StringUtils.toString(propertyFactory.getString("create"), null);
 		if (StringUtils.isNotEmpty(create)) {
-			createTable(create);
+			createTable(create, propertyFactory.getValue("table.register.manager", boolean.class, true));
 		}
 	}
 
