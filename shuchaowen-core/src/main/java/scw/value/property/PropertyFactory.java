@@ -13,10 +13,6 @@ import scw.core.utils.CollectionUtils;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.method.MultiEventRegistration;
-import scw.io.ResourceUtils;
-import scw.io.event.ObservableResource;
-import scw.io.event.ObservableResourceEvent;
-import scw.io.event.ObservableResourceEventListener;
 import scw.util.MultiEnumeration;
 import scw.value.AnyValue;
 import scw.value.StringValue;
@@ -25,9 +21,12 @@ import scw.value.Value;
 import scw.value.ValueWrapper;
 import scw.value.event.DefaultDynamicMap;
 import scw.value.event.DynamicMap;
+import scw.value.event.DynamicMapRegistration;
+import scw.value.event.ValueCreator;
 import scw.value.event.ValueEvent;
 
-public class PropertyFactory extends StringValueFactory implements BasePropertyFactory {
+public class PropertyFactory extends StringValueFactory implements
+		BasePropertyFactory {
 	private final List<BasePropertyFactory> basePropertyFactories;
 	private final DynamicMap dynamicMap;
 	private final boolean priorityOfUseSelf;
@@ -48,7 +47,8 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		return priorityOfUseSelf;
 	}
 
-	public void addFirstBasePropertyFactory(BasePropertyFactory basePropertyFactory) {
+	public void addFirstBasePropertyFactory(
+			BasePropertyFactory basePropertyFactory) {
 		if (basePropertyFactory == null) {
 			return;
 		}
@@ -56,7 +56,8 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		basePropertyFactories.add(0, basePropertyFactory);
 	}
 
-	public void addLastBasePropertyFactory(BasePropertyFactory basePropertyFactory) {
+	public void addLastBasePropertyFactory(
+			BasePropertyFactory basePropertyFactory) {
 		if (basePropertyFactory == null) {
 			return;
 		}
@@ -64,7 +65,8 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		basePropertyFactories.add(basePropertyFactory);
 	}
 
-	public void addLastBasePropertyFactory(List<BasePropertyFactory> basePropertyFactories) {
+	public void addLastBasePropertyFactory(
+			List<BasePropertyFactory> basePropertyFactories) {
 		if (CollectionUtils.isEmpty(basePropertyFactories)) {
 			return;
 		}
@@ -123,28 +125,60 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		return false;
 	}
 
+	public ValueCreator createPropertyCreator(final boolean format) {
+		return new ValueCreator() {
+
+			public Value create(String key, Object value) {
+				Value v;
+				if (value instanceof Value) {
+					if (value instanceof StringFormatValue
+							|| value instanceof AnyFormatValue
+							|| value instanceof FormatValue) {
+						v = (Value) value;
+					} else {
+						v = format ? new FormatValue((Value) value)
+								: (Value) value;
+					}
+				} else if (value instanceof String) {
+					v = format ? new StringFormatValue((String) value)
+							: new StringValue((String) value);
+				} else {
+					v = format ? new AnyFormatValue(value)
+							: new AnyValue(value);
+				}
+				return v;
+			}
+		};
+	}
+
 	private class PropertyEventListener implements EventListener<ValueEvent> {
 		private final EventListener<PropertyEvent> eventListener;
 		private final String key;
 
-		public PropertyEventListener(String key, EventListener<PropertyEvent> eventListener) {
+		public PropertyEventListener(String key,
+				EventListener<PropertyEvent> eventListener) {
 			this.key = key;
 			this.eventListener = eventListener;
 		}
 
 		public void onEvent(ValueEvent event) {
-			eventListener.onEvent(new PropertyEvent(PropertyFactory.this, key, event));
+			eventListener.onEvent(new PropertyEvent(PropertyFactory.this, key,
+					event));
 		}
 	}
 
-	public EventRegistration registerListener(String key, EventListener<PropertyEvent> eventListener) {
-		EventRegistration registration = dynamicMap.getEventDispatcher().registerListener(key,
-				new PropertyEventListener(key, eventListener));
-		EventRegistration[] registrations = new EventRegistration[basePropertyFactories.size() + 1];
+	public EventRegistration registerListener(String key,
+			EventListener<PropertyEvent> eventListener) {
+		EventRegistration registration = dynamicMap.getEventDispatcher()
+				.registerListener(key,
+						new PropertyEventListener(key, eventListener));
+		EventRegistration[] registrations = new EventRegistration[basePropertyFactories
+				.size() + 1];
 		registrations[0] = registration;
 		int index = 1;
 		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
-			registrations[index++] = basePropertyFactory.registerListener(key, eventListener);
+			registrations[index++] = basePropertyFactory.registerListener(key,
+					eventListener);
 		}
 		return new MultiEventRegistration(registrations);
 	}
@@ -175,13 +209,16 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	private Value toValue(Object value, boolean format) {
 		Value v;
 		if (value instanceof Value) {
-			if (value instanceof StringFormatValue || value instanceof AnyFormatValue || value instanceof FormatValue) {
+			if (value instanceof StringFormatValue
+					|| value instanceof AnyFormatValue
+					|| value instanceof FormatValue) {
 				v = (Value) value;
 			} else {
 				v = format ? new FormatValue((Value) value) : (Value) value;
 			}
 		} else if (value instanceof String) {
-			v = format ? new StringFormatValue((String) value) : new StringValue((String) value);
+			v = format ? new StringFormatValue((String) value)
+					: new StringValue((String) value);
 		} else {
 			v = format ? new AnyFormatValue(value) : new AnyValue(value);
 		}
@@ -202,34 +239,36 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		dynamicMap.clear();
 	}
 
-	public PropertiesRegistration loadProperties(String resource) {
+	public PropertyFactoryRegistration loadProperties(String resource) {
 		return loadProperties(resource, (String) null);
 	}
 
-	public PropertiesRegistration loadProperties(String resource, String charsetName) {
+	public PropertyFactoryRegistration loadProperties(String resource,
+			String charsetName) {
 		return loadProperties(null, resource, charsetName);
 	}
 
-	public PropertiesRegistration loadProperties(final String keyPrefix, String resource, String charsetName) {
+	public PropertyFactoryRegistration loadProperties(final String keyPrefix,
+			String resource, String charsetName) {
 		return loadProperties(keyPrefix, resource, charsetName, false);
 	}
 
-	public PropertiesRegistration loadProperties(String resource, boolean format) {
+	public PropertyFactoryRegistration loadProperties(String resource,
+			boolean format) {
 		return loadProperties((String) resource, (String) null, format);
 	}
 
-	public PropertiesRegistration loadProperties(String resource, String charsetName, boolean format) {
+	public PropertyFactoryRegistration loadProperties(String resource,
+			String charsetName, boolean format) {
 		return loadProperties(null, resource, charsetName, format);
 	}
 
-	public PropertiesRegistration loadProperties(final String keyPrefix, String resource, String charsetName,
-			boolean format) {
-		ObservableResource<Properties> res = ResourceUtils.getResourceOperations().getProperties(resource, charsetName);
-		if (res.getResource() != null) {
-			loadProperties(keyPrefix, res.getResource(), format);
-		}
-
-		return new PropertiesRegistration(keyPrefix, res);
+	public PropertyFactoryRegistration loadProperties(final String keyPrefix,
+			String resource, String charsetName, boolean format) {
+		DynamicMapRegistration propertiesRegistration = dynamicMap
+				.loadProperties(keyPrefix, resource, charsetName,
+						createPropertyCreator(format));
+		return new PropertyFactoryRegistration(propertiesRegistration);
 	}
 
 	public void loadProperties(Properties properties) {
@@ -240,7 +279,8 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		loadProperties(keyPrefix, properties, false);
 	}
 
-	public void loadProperties(String keyPrefix, Properties properties, boolean format) {
+	public void loadProperties(String keyPrefix, Properties properties,
+			boolean format) {
 		if (properties != null) {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
@@ -252,51 +292,31 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 				if (value == null) {
 					continue;
 				}
-				put(keyPrefix == null ? key.toString() : (keyPrefix + key.toString()), value, format);
+				put(keyPrefix == null ? key.toString()
+						: (keyPrefix + key.toString()), value, format);
 			}
 		}
 	}
 
-	public class PropertiesRegistration implements EventRegistration {
-		private final ObservableResource<Properties> resource;
-		private EventRegistration eventRegistration;
-		private final String keyPrefix;
+	public class PropertyFactoryRegistration {
+		private final DynamicMapRegistration propertiesRegistration;
 
-		public PropertiesRegistration(String keyPrefix, ObservableResource<Properties> resource) {
-			this.keyPrefix = keyPrefix;
-			this.resource = resource;
-		}
-
-		public ObservableResource<Properties> getResource() {
-			return resource;
-		}
-
-		public boolean isRegisterListener() {
-			return eventRegistration != null;
+		public PropertyFactoryRegistration(
+				DynamicMapRegistration propertiesRegistration) {
+			this.propertiesRegistration = propertiesRegistration;
 		}
 
 		public PropertyFactory getPropertyFactory() {
 			return PropertyFactory.this;
 		}
 
-		public PropertyFactory registerListener() {
-			if (isRegisterListener()) {
-				return getPropertyFactory();
-			}
-
-			this.eventRegistration = resource.registerListener(new ObservableResourceEventListener<Properties>() {
-
-				public void onEvent(ObservableResourceEvent<Properties> event) {
-					getPropertyFactory().loadProperties(keyPrefix, event.getSource());
-				}
-			});
-			return getPropertyFactory();
+		public DynamicMapRegistration getPropertiesRegistration() {
+			return propertiesRegistration;
 		}
 
-		public void unregister() {
-			if (eventRegistration != null) {
-				eventRegistration.unregister();
-			}
+		public PropertyFactory registerListener() {
+			propertiesRegistration.register();
+			return getPropertyFactory();
 		}
 	}
 

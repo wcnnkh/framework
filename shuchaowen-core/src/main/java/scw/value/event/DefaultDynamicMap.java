@@ -1,11 +1,14 @@
 package scw.value.event;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -41,6 +44,21 @@ public class DefaultDynamicMap extends DefaultCompatibleMap<String, Value> imple
 
 	protected boolean isSupportedConcurrent() {
 		return getTargetMap() instanceof ConcurrentMap;
+	}
+	
+	@Override
+	public Set<java.util.Map.Entry<String, Value>> entrySet() {
+		return Collections.unmodifiableSet(super.entrySet());
+	}
+	
+	@Override
+	public Set<String> keySet() {
+		return Collections.unmodifiableSet(super.keySet());
+	}
+	
+	@Override
+	public Collection<Value> values() {
+		return Collections.unmodifiableCollection(super.values());
 	}
 
 	@Override
@@ -132,22 +150,22 @@ public class DefaultDynamicMap extends DefaultCompatibleMap<String, Value> imple
 		}
 	}
 
-	public PropertiesEventRegistration loadProperties(String resource, ValueCreator creator) {
+	public DynamicMapRegistration loadProperties(String resource, ValueCreator creator) {
 		return loadProperties(resource, (String) null, creator);
 	}
 
-	public PropertiesEventRegistration loadProperties(String resource, String charsetName, ValueCreator creator) {
+	public DynamicMapRegistration loadProperties(String resource, String charsetName, ValueCreator creator) {
 		return loadProperties(null, resource, charsetName, creator);
 	}
 
-	public PropertiesEventRegistration loadProperties(String keyPrefix, String resource, String charsetName,
+	public DynamicMapRegistration loadProperties(String keyPrefix, String resource, String charsetName,
 			ValueCreator creator) {
 		ObservableResource<Properties> res = ResourceUtils.getResourceOperations().getProperties(resource, charsetName);
 		if (res.getResource() != null) {
 			loadProperties(keyPrefix, res.getResource(), creator);
 		}
 
-		return new PropertiesEventRegistration(keyPrefix, res, creator);
+		return new DefaultPropertiesRegistration(keyPrefix, res, creator);
 	}
 
 	public void loadProperties(Properties properties, ValueCreator creator) {
@@ -175,14 +193,14 @@ public class DefaultDynamicMap extends DefaultCompatibleMap<String, Value> imple
 		}
 	}
 
-	public class PropertiesEventRegistration implements EventRegistration {
+	private class DefaultPropertiesRegistration implements DynamicMapRegistration {
 		private final ObservableResource<Properties> resource;
-		private EventRegistration eventRegistration;
+		private volatile EventRegistration eventRegistration;
 		private final String keyPrefix;
 		private final ValueCreator creator;
 		private final List<String> keys = new ArrayList<String>();
 
-		public PropertiesEventRegistration(String keyPrefix, ObservableResource<Properties> resource,
+		public DefaultPropertiesRegistration(String keyPrefix, ObservableResource<Properties> resource,
 				ValueCreator creator) {
 			this.keyPrefix = keyPrefix;
 			this.resource = resource;
@@ -204,56 +222,57 @@ public class DefaultDynamicMap extends DefaultCompatibleMap<String, Value> imple
 			}
 		}
 
-		public ObservableResource<Properties> getResource() {
-			return resource;
-		}
-
-		public boolean isRegisterListener() {
+		public boolean isRegister() {
 			return eventRegistration != null;
 		}
 
-		public DefaultDynamicMap getDefaultDynamicMap() {
-			return DefaultDynamicMap.this;
-		}
-
-		public void registerListener() {
-			if (isRegisterListener()) {
+		public void register() {
+			if (isRegister()) {
 				return;
 			}
-
-			this.eventRegistration = resource.registerListener(new ObservableResourceEventListener<Properties>() {
-
-				public void onEvent(ObservableResourceEvent<Properties> event) {
-					Properties properties = event.getSource();
-					HashSet<String> keySet = new HashSet<String>(keys);
-					if (properties != null) {
-						for (Entry<Object, Object> entry : properties.entrySet()) {
-							Object value = entry.getValue();
-							if (value == null) {
-								continue;
-							}
-
-							String key = entry.getKey().toString();
-							String k = keyPrefix == null ? key : (keyPrefix + key);
-							Value v = creator.create(key, value);
-							put(k, v);
-							keySet.remove(key);
-						}
-					}
-					for (String key : keySet) {
-						String k = keyPrefix == null ? key : (keyPrefix + key);
-						remove(k);
-					}
-					keys.clear();
-					addKeys(properties);
+			
+			synchronized (this) {
+				if(isRegister()){
+					return ;
 				}
-			});
+				
+				this.eventRegistration = resource.registerListener(new ObservableResourceEventListener<Properties>() {
+
+					public void onEvent(ObservableResourceEvent<Properties> event) {
+						Properties properties = event.getSource();
+						HashSet<String> keySet = new HashSet<String>(keys);
+						if (properties != null) {
+							for (Entry<Object, Object> entry : properties.entrySet()) {
+								Object value = entry.getValue();
+								if (value == null) {
+									continue;
+								}
+
+								String key = entry.getKey().toString();
+								String k = keyPrefix == null ? key : (keyPrefix + key);
+								Value v = creator.create(key, value);
+								put(k, v);
+								keySet.remove(key);
+							}
+						}
+						for (String key : keySet) {
+							String k = keyPrefix == null ? key : (keyPrefix + key);
+							remove(k);
+						}
+						keys.clear();
+						addKeys(properties);
+					}
+				});
+			}
 		}
 
 		public void unregister() {
 			if (eventRegistration != null) {
-				eventRegistration.unregister();
+				synchronized (this) {
+					eventRegistration.unregister();
+				}
 			}
+			eventRegistration = null;
 		}
 	}
 }
