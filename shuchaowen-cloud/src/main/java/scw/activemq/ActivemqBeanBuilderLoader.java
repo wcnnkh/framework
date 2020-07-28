@@ -38,8 +38,8 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 
 		public Object create() throws Exception {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-			ConfigUtils.loadProperties(connectionFactory, ResourceUtils.getResourceOperations()
-					.getFormattedProperties(DEFAULT_CONFIG, propertyFactory).getResource(), null, null);
+			ConfigUtils.loadProperties(connectionFactory,
+					ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).getResource(), null, null);
 			return connectionFactory;
 		}
 	}

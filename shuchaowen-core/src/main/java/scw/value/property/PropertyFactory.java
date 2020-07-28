@@ -2,39 +2,34 @@ package scw.value.property;
 
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import scw.compatible.CompatibleUtils;
-import scw.compatible.map.CompatibleMap;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.NamedEventDispatcher;
 import scw.event.method.MultiEventRegistration;
-import scw.event.support.DefaultEventDispatcher;
-import scw.event.support.EventType;
 import scw.io.ResourceUtils;
 import scw.io.event.ObservableResource;
 import scw.io.event.ObservableResourceEvent;
 import scw.io.event.ObservableResourceEventListener;
-import scw.io.support.ResourceOperations;
 import scw.util.MultiEnumeration;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.StringValueFactory;
 import scw.value.Value;
+import scw.value.ValueWrapper;
+import scw.value.event.DefaultDynamicMap;
+import scw.value.event.DynamicMap;
+import scw.value.event.ValueEvent;
 
 public class PropertyFactory extends StringValueFactory implements BasePropertyFactory {
 	private final List<BasePropertyFactory> basePropertyFactories;
-	private final CompatibleMap<String, Value> map;
-	private final NamedEventDispatcher<PropertyEvent> eventDispatcher;
+	private final DynamicMap dynamicMap;
 	private final boolean priorityOfUseSelf;
 
 	/**
@@ -43,11 +38,10 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	 *            是否优先使用自身的值
 	 */
 	public PropertyFactory(boolean concurrent, boolean priorityOfUseSelf) {
+		this.dynamicMap = new DefaultDynamicMap(concurrent);
 		this.basePropertyFactories = concurrent ? new CopyOnWriteArrayList<BasePropertyFactory>()
 				: new LinkedList<BasePropertyFactory>();
 		this.priorityOfUseSelf = priorityOfUseSelf;
-		this.map = CompatibleUtils.createMap(concurrent);
-		this.eventDispatcher = new DefaultEventDispatcher<PropertyEvent>(concurrent);
 	}
 
 	public boolean isPriorityOfUseSelf() {
@@ -87,7 +81,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	@Override
 	public Value get(String key) {
 		if (priorityOfUseSelf) {
-			Value value = map.get(key);
+			Value value = dynamicMap.get(key);
 			if (value != null) {
 				return value;
 			}
@@ -102,7 +96,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 		Value value = super.get(key);
 		if (value == null && !priorityOfUseSelf) {
-			value = map.get(key);
+			value = dynamicMap.get(key);
 		}
 		return value;
 	}
@@ -112,12 +106,12 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
 			enumerations.add(basePropertyFactory.enumerationKeys());
 		}
-		enumerations.add(Collections.enumeration(map.keySet()));
+		enumerations.add(Collections.enumeration(dynamicMap.keySet()));
 		return new MultiEnumeration<String>(enumerations);
 	}
 
 	public boolean containsKey(String key) {
-		if (map.containsKey(key)) {
+		if (dynamicMap.containsKey(key)) {
 			return true;
 		}
 
@@ -129,8 +123,23 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		return false;
 	}
 
+	private class PropertyEventListener implements EventListener<ValueEvent> {
+		private final EventListener<PropertyEvent> eventListener;
+		private final String key;
+
+		public PropertyEventListener(String key, EventListener<PropertyEvent> eventListener) {
+			this.key = key;
+			this.eventListener = eventListener;
+		}
+
+		public void onEvent(ValueEvent event) {
+			eventListener.onEvent(new PropertyEvent(PropertyFactory.this, key, event));
+		}
+	}
+
 	public EventRegistration registerListener(String key, EventListener<PropertyEvent> eventListener) {
-		EventRegistration registration = eventDispatcher.registerListener(key, eventListener);
+		EventRegistration registration = dynamicMap.getEventDispatcher().registerListener(key,
+				new PropertyEventListener(key, eventListener));
 		EventRegistration[] registrations = new EventRegistration[basePropertyFactories.size() + 1];
 		registrations[0] = registration;
 		int index = 1;
@@ -141,37 +150,16 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	}
 
 	public void unregister(String name) {
-		eventDispatcher.unregister(name);
+		dynamicMap.getEventDispatcher().unregister(name);
 	}
 
 	public void publishEvent(String name, PropertyEvent event) {
-		eventDispatcher.publishEvent(name, event);
+		dynamicMap.getEventDispatcher().publishEvent(name, event);
 	}
 
 	public Value remove(String key) {
 		Assert.requiredArgument(key != null, "key");
-		Value v = map.remove(key);
-		if (v != null) {
-			eventDispatcher.publishEvent(key, new PropertyEvent(this, EventType.DELETE, key, v));
-		}
-		return v;
-	}
-
-	protected Value put(String key, Value value) {
-		Value v = map.put(key, value);
-		PropertyEvent event = null;
-		if (v == null) {
-			event = new PropertyEvent(this, EventType.CREATE, key, value);
-		} else {
-			if (!v.equals(value)) {
-				event = new PropertyEvent(this, EventType.UPDATE, key, value);
-			}
-		}
-
-		if (event != null) {
-			eventDispatcher.publishEvent(key, event);
-		}
-		return v;
+		return dynamicMap.remove(key);
 	}
 
 	public Value put(String key, Object value) {
@@ -181,25 +169,21 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	public Value put(String key, Object value, boolean format) {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
-		return put(key, toValue(value, format));
+		return dynamicMap.put(key, toValue(value, format));
 	}
 
 	private Value toValue(Object value, boolean format) {
 		Value v;
 		if (value instanceof Value) {
-			v = (Value) value;
+			if (value instanceof StringFormatValue || value instanceof AnyFormatValue || value instanceof FormatValue) {
+				v = (Value) value;
+			} else {
+				v = format ? new FormatValue((Value) value) : (Value) value;
+			}
 		} else if (value instanceof String) {
 			v = format ? new StringFormatValue((String) value) : new StringValue((String) value);
 		} else {
-			v = new AnyValue(value);
-		}
-		return v;
-	}
-
-	protected Value putIfAbsent(String key, Value value) {
-		Value v = map.putIfAbsent(key, value);
-		if (v != null) {
-			eventDispatcher.publishEvent(key, new PropertyEvent(this, EventType.CREATE, key, value));
+			v = format ? new AnyFormatValue(value) : new AnyValue(value);
 		}
 		return v;
 	}
@@ -211,34 +195,36 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	public Value putIfAbsent(String key, Object value, boolean format) {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
-		return putIfAbsent(key, toValue(value, format));
+		return dynamicMap.putIfAbsent(key, toValue(value, format));
 	}
 
 	public void clear() {
-		Map<String, Value> cloneMap = new HashMap<String, Value>(map);
-		map.clear();
-		for (Entry<String, Value> entry : cloneMap.entrySet()) {
-			eventDispatcher.publishEvent(entry.getKey(),
-					new PropertyEvent(this, EventType.DELETE, entry.getKey(), entry.getValue()));
-		}
+		dynamicMap.clear();
+	}
+
+	public PropertiesRegistration loadProperties(String resource) {
+		return loadProperties(resource, (String) null);
 	}
 
 	public PropertiesRegistration loadProperties(String resource, String charsetName) {
 		return loadProperties(null, resource, charsetName);
 	}
 
-	public PropertiesRegistration loadProperties(String keyPrefix, String resource, String charsetName) {
-		return loadProperties(keyPrefix, ResourceUtils.getResourceOperations(), resource, charsetName);
+	public PropertiesRegistration loadProperties(final String keyPrefix, String resource, String charsetName) {
+		return loadProperties(keyPrefix, resource, charsetName, false);
 	}
 
-	public PropertiesRegistration loadProperties(final String keyPrefix, ResourceOperations resourceOperations,
-			String resource, String charsetName) {
-		return loadProperties(keyPrefix, resourceOperations, resource, charsetName, false);
+	public PropertiesRegistration loadProperties(String resource, boolean format) {
+		return loadProperties((String) resource, (String) null, format);
 	}
 
-	public PropertiesRegistration loadProperties(final String keyPrefix, ResourceOperations resourceOperations,
-			String resource, String charsetName, boolean format) {
-		ObservableResource<Properties> res = resourceOperations.getProperties(resource, charsetName);
+	public PropertiesRegistration loadProperties(String resource, String charsetName, boolean format) {
+		return loadProperties(null, resource, charsetName, format);
+	}
+
+	public PropertiesRegistration loadProperties(final String keyPrefix, String resource, String charsetName,
+			boolean format) {
+		ObservableResource<Properties> res = ResourceUtils.getResourceOperations().getProperties(resource, charsetName);
 		if (res.getResource() != null) {
 			loadProperties(keyPrefix, res.getResource(), format);
 		}
@@ -247,7 +233,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	}
 
 	public void loadProperties(Properties properties) {
-		loadProperties(null, properties);
+		loadProperties(null, properties, false);
 	}
 
 	public void loadProperties(String keyPrefix, Properties properties) {
@@ -318,6 +304,32 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		private static final long serialVersionUID = 1L;
 
 		public StringFormatValue(String value) {
+			super(value);
+		}
+
+		@Override
+		public String getAsString() {
+			String value = super.getAsString();
+			return format(value, true);
+		}
+	}
+
+	class AnyFormatValue extends AnyValue {
+		private static final long serialVersionUID = 1L;
+
+		public AnyFormatValue(Object value) {
+			super(value);
+		}
+
+		public String getAsString() {
+			String value = super.getAsString();
+			return format(value, true);
+		};
+	}
+
+	class FormatValue extends ValueWrapper {
+
+		public FormatValue(Value value) {
 			super(value);
 		}
 

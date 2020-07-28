@@ -25,15 +25,14 @@ public final class Log4jUtils {
 			return;
 		}
 
-		Method method = ReflectionUtils.getMethod(
-				"org.apache.log4j.PropertyConfigurator", "configure",
+		Method method = ReflectionUtils.getMethod("org.apache.log4j.PropertyConfigurator", "configure",
 				Properties.class);
 		if (method == null) {
 			return;
 		}
 
 		try {
-			method.invoke(null, properties);
+			method.invoke(null, LoggerPropertyFactory.getInstance().format(properties));
 		} catch (Exception e) {
 		}
 	}
@@ -43,9 +42,7 @@ public final class Log4jUtils {
 			return;
 		}
 
-		Method method = ReflectionUtils.getMethod(
-				"org.apache.log4j.xml.DOMConfigurator", "configure",
-				Element.class);
+		Method method = ReflectionUtils.getMethod("org.apache.log4j.xml.DOMConfigurator", "configure", Element.class);
 		if (method == null) {
 			return;
 		}
@@ -58,28 +55,21 @@ public final class Log4jUtils {
 
 	public static void defaultInit() {
 		if (ResourceUtils.getResourceOperations().isExist("log4j.properties")) {
-			FormatUtils
-					.info(Log4jUtils.class, "Already exist log4j.properties");
+			FormatUtils.info(Log4jUtils.class, "Already exist log4j.properties");
 			return;
 		}
 
 		String rootPath = GlobalPropertyFactory.getInstance().getWorkPath();
-		FormatUtils.info(Log4jUtils.class,
-				"using the default log directory: {}", rootPath);
+		FormatUtils.info(Log4jUtils.class, "using the default log directory: {}", rootPath);
 		Properties properties = ResourceUtils.getResourceOperations()
-				.getFormattedProperties(
-						"classpath:/scw/logger/log4j/default-log4j.properties",
-						LoggerPropertyFactory.getInstance()).getResource();
-		for (KeyValuePair<String, Level> entry : LoggerLevelUtils
-				.getLevelConfigList()) {
-			properties.put("log4j.logger." + entry.getKey(), entry.getValue()
-					.name());
+				.getProperties("classpath:/scw/logger/log4j/default-log4j.properties").getResource();
+		for (KeyValuePair<String, Level> entry : LoggerLevelUtils.getLevelConfigList()) {
+			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name());
 		}
 
 		if (ResourceUtils.getResourceOperations().isExist(LOG4J_APPEND_PATH)) {
 			FormatUtils.info(Log4jUtils.class, "loading " + LOG4J_APPEND_PATH);
-			Properties append = ResourceUtils.getResourceOperations()
-					.getFormattedProperties(LOG4J_APPEND_PATH, LoggerPropertyFactory.getInstance()).getResource();
+			Properties append = ResourceUtils.getResourceOperations().getProperties(LOG4J_APPEND_PATH).getResource();
 			properties.putAll(append);
 		}
 

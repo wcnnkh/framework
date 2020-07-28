@@ -61,7 +61,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 
 	private static class ConnectionFactoryBeanBuilder extends AbstractBeanDefinition {
 		private final boolean exist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
-		
+
 		public ConnectionFactoryBeanBuilder(LoaderContext context) {
 			super(context);
 		}
@@ -72,8 +72,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 
 		public Object create() throws Exception {
 			ConnectionFactory connectionFactory = new ConnectionFactory();
-			Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(DEFAULT_CONFIG,
-					propertyFactory).getResource();
+			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).getResource();
 			ConnectionFactoryConfigurator.load(connectionFactory, properties, null);
 			ConnectionFactoryConfigurator.load(connectionFactory, properties);
 			return connectionFactory;
@@ -99,7 +98,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 
 	private final class ExchangeDeclareBeanBuilder extends AbstractBeanDefinition {
 		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
-		
+
 		public ExchangeDeclareBeanBuilder(LoaderContext context) {
 			super(context);
 		}
@@ -111,8 +110,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 
 		@Override
 		public Object create() throws Exception {
-			Properties properties = ResourceUtils.getResourceOperations().getFormattedProperties(DEFAULT_CONFIG,
-					propertyFactory).getResource();
+			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).getResource();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
 			ConfigUtils.loadProperties(exchangeDeclare, properties, null, "exchange.");
 			return exchangeDeclare;

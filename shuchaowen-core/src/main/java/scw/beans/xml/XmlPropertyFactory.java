@@ -57,7 +57,7 @@ public class XmlPropertyFactory extends PropertyFactory {
 
 		String file = XMLUtils.getNodeAttributeValue(node, "file");
 		if (!StringUtils.isEmpty(file)) {
-			loadProperties(prefixToUse, ResourceUtils.getResourceOperations(), file, charsetNameToUse)
+			loadProperties(prefixToUse, file, charsetNameToUse)
 					.registerListener();
 		}
 

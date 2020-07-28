@@ -1,28 +1,21 @@
 package scw.io.support;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
-import scw.core.reflect.ReflectionUtils;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.method.MultiEventRegistration;
 import scw.io.DefaultResourceLoader;
-import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.io.UnsafeByteArrayInputStream;
@@ -31,27 +24,17 @@ import scw.io.event.ObservableResource;
 import scw.io.event.ObservableResourceEvent;
 import scw.io.event.ObservableResourceEventListener;
 import scw.io.event.ResourceEvent;
-import scw.lang.NestedRuntimeException;
 import scw.util.ConcurrentReferenceHashMap;
-import scw.util.FormatUtils;
-import scw.value.StringValueFactory;
-import scw.value.property.PropertyFactory;
 
 public class ResourceOperations extends DefaultResourceLoader {
 	private static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
 	private static final String RESOURCE_SUFFIX = "scw_res_suffix";
-	private final PropertyFactory propertyFactory;
 	private final boolean cacheEnable;
 	private final ConcurrentMap<String, Resource> resourceCache;
 
-	public ResourceOperations(PropertyFactory propertyFactory, boolean cacheEnable) {
-		this.propertyFactory = propertyFactory;
+	public ResourceOperations(boolean cacheEnable) {
 		this.cacheEnable = cacheEnable;
 		this.resourceCache = cacheEnable ? new ConcurrentReferenceHashMap<String, Resource>() : null;
-	}
-
-	public PropertyFactory getPropertyFactory() {
-		return propertyFactory;
 	}
 
 	public boolean isCacheEnable() {
@@ -64,8 +47,8 @@ public class ResourceOperations extends DefaultResourceLoader {
 	 * @return
 	 */
 	protected String[] getResourceEnvironmentalNames() {
-		return getPropertyFactory().getValue(RESOURCE_SUFFIX, String[].class,
-				getPropertyFactory().getObject(CONFIG_SUFFIX, String[].class));
+		return GlobalPropertyFactory.getInstance().getValue(RESOURCE_SUFFIX, String[].class,
+				GlobalPropertyFactory.getInstance().getObject(CONFIG_SUFFIX, String[].class));
 	}
 
 	/**
@@ -76,7 +59,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 	 */
 	public List<String> getEnvironmentalResourceNameList(String resourceName) {
 		String[] suffixs = getResourceEnvironmentalNames();
-		String resourceNameToUse = getPropertyFactory().format(resourceName, true);
+		String resourceNameToUse = GlobalPropertyFactory.getInstance().format(resourceName, true);
 		if (ArrayUtils.isEmpty(suffixs)) {
 			return Arrays.asList(resourceNameToUse);
 		}
@@ -99,7 +82,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 	};
 
 	protected Resource getResourceInternal(String location) {
-		if(isCacheEnable()){
+		if (isCacheEnable()) {
 			Resource resource = resourceCache.get(location);
 			if (resource == null) {
 				resource = super.getResource(location);
@@ -114,7 +97,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 			}
 			return resource;
 		}
-		
+
 		return super.getResource(location);
 	}
 
@@ -154,57 +137,6 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return null;
 	}
 
-	public void loadProperties(Properties properties, Resource resource, String charsetName) {
-		if (!resource.exists()) {
-			return;
-		}
-
-		InputStream is = null;
-		try {
-			is = resource.getInputStream();
-			if (resource.getFilename().endsWith(".xml")) {
-				properties.loadFromXML(is);
-			} else {
-				if (StringUtils.isEmpty(charsetName)) {
-					properties.load(is);
-				} else {
-					Method method = ReflectionUtils.getMethod(Properties.class, "load", Reader.class);
-					if (method == null) {
-						FormatUtils.warn(getClass(), "jdk1.6及以上的版本才支持指定字符集: {}" + resource.getDescription());
-						properties.load(is);
-					} else {
-						InputStreamReader isr = null;
-						try {
-							isr = new InputStreamReader(is, charsetName);
-							method.invoke(properties, isr);
-						} finally {
-							IOUtils.close(isr);
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			throw new NestedRuntimeException(resource.getDescription(), e);
-		} finally {
-			IOUtils.close(is);
-		}
-	}
-
-	public void formatProperties(Properties properties, StringValueFactory propertyFactory) {
-		if (properties == null || propertyFactory == null) {
-			return;
-		}
-
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			Object value = entry.getValue();
-			if (value == null) {
-				continue;
-			}
-
-			entry.setValue(propertyFactory.format(value.toString(), true));
-		}
-	}
-
 	public ObservableResource<Properties> getProperties(String resource) {
 		return getProperties(resource, null);
 	}
@@ -219,7 +151,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 		ListIterator<Resource> iterator = resources.listIterator(resources.size());
 		while (iterator.hasPrevious()) {
 			Resource res = iterator.previous();
-			loadProperties(properties, res, charsetName);
+			ResourceUtils.loadProperties(properties, res, charsetName);
 		}
 
 		return new ObservableResource<Properties>(properties) {
@@ -328,40 +260,6 @@ public class ResourceOperations extends DefaultResourceLoader {
 	public boolean isExist(String resource) {
 		Resource res = getResource(resource);
 		return res != null && res.exists();
-	}
-
-	public ObservableResource<Properties> getFormattedProperties(String resource, String charsetName,
-			final StringValueFactory formatPropertyFactory) {
-		final ObservableResource<Properties> res = getProperties(resource, charsetName);
-		Properties properties = res.getResource();
-		formatProperties(properties, formatPropertyFactory);
-		return new ObservableResource<Properties>(properties) {
-
-			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<Properties> eventListener) {
-				return res.registerListener(new ObservableResourceEventListener<Properties>() {
-
-					public void onEvent(ObservableResourceEvent<Properties> event) {
-						Properties properties = event.getSource();
-						formatProperties(properties, formatPropertyFactory);
-						eventListener.onEvent(new ObservableResourceEvent<Properties>(event, properties));
-					}
-				});
-			}
-		};
-	}
-
-	public ObservableResource<Properties> getFormattedProperties(String resource,
-			StringValueFactory formatPropertyFactory) {
-		return getFormattedProperties(resource, null, formatPropertyFactory);
-	}
-
-	public ObservableResource<Properties> getFormattedProperties(String resource, String charsetName) {
-		return getFormattedProperties(resource, charsetName, getPropertyFactory());
-	}
-
-	public ObservableResource<Properties> getFormattedProperties(String resource) {
-		return getFormattedProperties(resource, getPropertyFactory());
 	}
 
 	public ObservableResource<UnsafeByteArrayInputStream> getInputStream(String resource) {

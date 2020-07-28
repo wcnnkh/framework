@@ -23,13 +23,13 @@ import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.io.support.MapBuilder;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
 import scw.value.Value;
+import scw.value.event.DefaultDynamicMap;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -507,11 +507,11 @@ public class HttpHeaders extends Headers {
 
 	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
-	private static final MapBuilder AJAX_HEADERS = new MapBuilder();
+	private static final DefaultDynamicMap AJAX_HEADERS = new DefaultDynamicMap(false);
 
 	static {
-		AJAX_HEADERS.loading("/scw/net/headers/ajax.headers.properties");
-		AJAX_HEADERS.loading(GlobalPropertyFactory.getInstance().getValue("scw.net.ajax.headers", String.class,
+		AJAX_HEADERS.loadProperties("/scw/net/headers/ajax.headers.properties");
+		AJAX_HEADERS.loadProperties(GlobalPropertyFactory.getInstance().getValue("scw.net.ajax.headers", String.class,
 				"/ajax-headers.properties"));
 	}
 
@@ -1385,8 +1385,8 @@ public class HttpHeaders extends Headers {
 	}
 
 	public boolean isAjax() {
-		for (Entry<Object, Value> entry : AJAX_HEADERS.getValueMap().entrySet()) {
-			String key = entry.getKey().toString();
+		for (Entry<String, Value> entry : AJAX_HEADERS.entrySet()) {
+			String key = entry.getKey();
 			String[] values = entry.getValue().getAsObject(String[].class);
 			if (ArrayUtils.isEmpty(values)) {
 				continue;

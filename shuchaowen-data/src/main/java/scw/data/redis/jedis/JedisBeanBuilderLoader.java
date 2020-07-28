@@ -45,7 +45,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);
 			if (host == null && isExist) {
 				Properties properties = ResourceUtils.getResourceOperations()
-						.getFormattedProperties(configName, Constants.DEFAULT_CHARSET_NAME).getResource();
+						.getProperties(configName, Constants.DEFAULT_CHARSET_NAME).getResource();
 				host = properties.getProperty(HOST_CONFIG_KEY);
 				if (host == null) {
 					host = properties.getProperty("host");// 兼容老版本
