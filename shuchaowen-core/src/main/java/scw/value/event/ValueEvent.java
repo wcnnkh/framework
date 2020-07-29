@@ -1,10 +1,10 @@
 package scw.value.event;
 
-import scw.event.support.BasicEvent;
+import scw.event.support.BasicTypeEvent;
 import scw.event.support.EventType;
 import scw.value.Value;
 
-public class ValueEvent extends BasicEvent {
+public class ValueEvent extends BasicTypeEvent {
 	private final Value value;
 
 	public ValueEvent(ValueEvent valueEvent) {

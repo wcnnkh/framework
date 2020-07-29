@@ -60,7 +60,7 @@ public final class Log4jUtils {
 		}
 
 		String rootPath = GlobalPropertyFactory.getInstance().getWorkPath();
-		FormatUtils.info(Log4jUtils.class, "using the default log directory: {}", rootPath);
+		FormatUtils.info(Log4jUtils.class, "using log directory: {}", rootPath);
 		Properties properties = ResourceUtils.getResourceOperations()
 				.getProperties("classpath:/scw/logger/log4j/default-log4j.properties").getResource();
 		for (KeyValuePair<String, Level> entry : LoggerLevelUtils.getLevelConfigList()) {
