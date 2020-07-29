@@ -939,7 +939,7 @@ public abstract class ReflectionUtils {
 		int size = parameterMap.size();
 		for (Method method : type.getDeclaredMethods()) {
 			if (size == method.getParameterTypes().length) {
-				String[] names = ParameterUtils.getParameterName(method);
+				String[] names = ParameterUtils.getParameterNames(method);
 				Object[] args = new Object[size];
 				boolean find = true;
 				for (int i = 0; i < names.length; i++) {

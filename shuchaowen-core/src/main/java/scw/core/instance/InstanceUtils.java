@@ -162,7 +162,7 @@ public final class InstanceUtils {
 		int size = parameterMap.size();
 		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
 			if (size == constructor.getParameterTypes().length) {
-				String[] names = ParameterUtils.getParameterName(constructor);
+				String[] names = ParameterUtils.getParameterNames(constructor);
 				Object[] args = new Object[size];
 				boolean find = true;
 				for (int i = 0; i < names.length; i++) {
