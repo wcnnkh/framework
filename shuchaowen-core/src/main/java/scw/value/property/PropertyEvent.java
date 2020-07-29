@@ -19,4 +19,9 @@ public class PropertyEvent extends ValueEvent {
 	public BasePropertyFactory getBasePropertyFactory() {
 		return basePropertyFactory;
 	}
+
+	@Override
+	public String toString() {
+		return "propertyFactory=" + basePropertyFactory + ", key=" + key + ", " + super.toString();
+	}
 }

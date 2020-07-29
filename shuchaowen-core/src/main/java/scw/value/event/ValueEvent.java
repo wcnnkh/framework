@@ -20,4 +20,9 @@ public class ValueEvent extends BasicEvent {
 	public Value getValue() {
 		return value;
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + ", value=" + value;
+	}
 }

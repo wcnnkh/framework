@@ -42,7 +42,7 @@ public class DefaultDynamicMap extends DefaultCompatibleMap<String, Value> imple
 		return eventDispatcher;
 	}
 
-	protected boolean isSupportedConcurrent() {
+	public boolean isSupportedConcurrent() {
 		return getTargetMap() instanceof ConcurrentMap;
 	}
 	
