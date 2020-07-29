@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 import scw.aop.ProxyInvoker;
 import scw.core.reflect.SerializableMethod;
-import scw.event.support.SimpleEvent;
+import scw.event.support.BasicEvent;
 
-public class MethodEvent extends SimpleEvent implements Serializable {
+public class MethodEvent extends BasicEvent implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final SerializableMethod method;
 	private final Object[] args;

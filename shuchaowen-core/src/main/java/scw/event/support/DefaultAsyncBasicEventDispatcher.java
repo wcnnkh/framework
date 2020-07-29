@@ -1,31 +1,28 @@
-package scw.util.queue;
+package scw.event.support;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import scw.beans.Destroy;
 import scw.core.utils.StringUtils;
-import scw.util.Consumer;
+import scw.event.Event;
 
-public final class MemoryAsyncExecuteQueue<E> implements AsyncExecuteQueue<E>,
-		Runnable, Destroy, Consumer<E> {
-	private List<Consumer<E>> consumers = new ArrayList<Consumer<E>>();
-	private BlockingQueue<E> blockingQueue;
+public class DefaultAsyncBasicEventDispatcher<T extends Event> extends DefaultBasicEventDispatcher<T>
+		implements Runnable, Destroy {
+	private BlockingQueue<T> blockingQueue;
 	private Thread thread;
 	private volatile boolean started = true;
 	private volatile boolean destroy = false;// 是否销毁结束
 
-	public MemoryAsyncExecuteQueue(String threadName, Boolean daemon) {
-		this(new LinkedBlockingQueue<E>(), threadName, daemon);
+	public DefaultAsyncBasicEventDispatcher(boolean concurrent, String threadName, Boolean daemon) {
+		this(concurrent, new LinkedBlockingQueue<T>(), threadName, daemon);
 	}
 
-	public MemoryAsyncExecuteQueue(BlockingQueue<E> blockingQueue,
-			String threadName, Boolean daemon) {
+	public DefaultAsyncBasicEventDispatcher(boolean concurrent, BlockingQueue<T> blockingQueue, String threadName,
+			Boolean daemon) {
+		super(concurrent);
 		this.blockingQueue = blockingQueue;
-		thread = new Thread(this, StringUtils.isEmpty(threadName) ? getClass()
-				.getName() : threadName);
+		thread = new Thread(this, StringUtils.isEmpty(threadName) ? getClass().getName() : threadName);
 		if (daemon != null) {
 			thread.setDaemon(daemon);
 		}
@@ -34,7 +31,7 @@ public final class MemoryAsyncExecuteQueue<E> implements AsyncExecuteQueue<E>,
 		Thread shutdown = new Thread() {
 			@Override
 			public void run() {
-				MemoryAsyncExecuteQueue.this.destroy();
+				DefaultAsyncBasicEventDispatcher.this.destroy();
 			}
 		};
 		shutdown.setName(thread.getName() + "-shutdown");
@@ -43,7 +40,7 @@ public final class MemoryAsyncExecuteQueue<E> implements AsyncExecuteQueue<E>,
 
 	public void run() {
 		while (!thread.isInterrupted() && started) {
-			E message;
+			T message;
 			try {
 				message = blockingQueue.take();
 			} catch (InterruptedException e) {
@@ -54,13 +51,7 @@ public final class MemoryAsyncExecuteQueue<E> implements AsyncExecuteQueue<E>,
 				continue;
 			}
 
-			accept(message);
-		}
-	}
-
-	public void accept(E message) {
-		for (Consumer<E> consumer : consumers) {
-			consumer.accept(message);
+			super.publishEvent(message);
 		}
 	}
 
@@ -75,25 +66,26 @@ public final class MemoryAsyncExecuteQueue<E> implements AsyncExecuteQueue<E>,
 
 		started = false;
 		while (!blockingQueue.isEmpty()) {
-			E message = blockingQueue.poll();
+			T message = blockingQueue.poll();
 			if (message == null) {
 				continue;
 			}
 
-			accept(message);
+			super.publishEvent(message);
 		}
 		destroy = true;
 	}
 
-	public void put(E message) {
+	@Override
+	public void publishEvent(T event) {
 		if (destroy) {// 如果已经销毁结束了
-			accept(message);
+			super.publishEvent(event);
 			return;
 		}
 
-		if (!blockingQueue.offer(message)) {
+		if (!blockingQueue.offer(event)) {
 			try {
-				blockingQueue.put(message);
+				blockingQueue.put(event);
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}
@@ -103,9 +95,4 @@ public final class MemoryAsyncExecuteQueue<E> implements AsyncExecuteQueue<E>,
 	public boolean isStarted() {
 		return started;
 	}
-
-	public void addConsumer(Consumer<E> consumer) {
-		consumers.add(consumer);
-	}
-
 }

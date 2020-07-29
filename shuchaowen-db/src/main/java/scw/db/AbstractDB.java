@@ -17,6 +17,10 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
+import scw.db.AbstractDB.AsyncExecuteEvent;
+import scw.event.EventListener;
+import scw.event.support.BasicEvent;
+import scw.event.support.DefaultAsyncBasicEventDispatcher;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.sql.ConnectionFactory;
@@ -33,22 +37,20 @@ import scw.sql.orm.support.generation.DefaultGeneratorService;
 import scw.sql.orm.support.generation.GeneratorService;
 import scw.sql.transaction.SqlTransactionUtils;
 import scw.util.ClassScanner;
-import scw.util.Consumer;
-import scw.util.queue.MemoryAsyncExecuteQueue;
 import scw.value.property.PropertyFactory;
 
 public abstract class AbstractDB extends AbstractEntityOperations
-		implements DB, Consumer<AsyncExecute>, BeanFactoryAware, Destroy, ConnectionFactory {
+		implements DB, EventListener<AsyncExecuteEvent>, BeanFactoryAware, Destroy, ConnectionFactory {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
-	private final MemoryAsyncExecuteQueue<AsyncExecute> asyncExecuteQueue = new MemoryAsyncExecuteQueue<AsyncExecute>(
-			getClass().getName(), true);
+	private final DefaultAsyncBasicEventDispatcher<AsyncExecuteEvent> asyncBasicEventDispatcher = new DefaultAsyncBasicEventDispatcher<AsyncExecuteEvent>(
+			false, getClass().getName(), true);
 	private BeanFactory beanFactory;
 	private CacheManager cacheManager;
 	private GeneratorService generatorService;
 	private boolean checkTableChange = true;
 
 	{
-		asyncExecuteQueue.addConsumer(this);
+		asyncBasicEventDispatcher.registerListener(this);
 	}
 
 	public AbstractDB() {
@@ -79,8 +81,8 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		this.checkTableChange = checkTableChange;
 	}
 
-	public void accept(AsyncExecute message) {
-		processing(message, false);
+	public void onEvent(AsyncExecuteEvent event) {
+		processing(event.getAsyncExecute(), false);
 	}
 
 	protected String getCachePrefix(PropertyFactory propertyFactory) {
@@ -150,7 +152,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	}
 
 	public synchronized void destroy() {
-		asyncExecuteQueue.destroy();
+		asyncBasicEventDispatcher.destroy();
 	}
 
 	@Override
@@ -252,11 +254,11 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	}
 
 	public void asyncExecute(AsyncExecute asyncExecute) {
-		if (!asyncExecuteQueue.isStarted()) {
+		if (!asyncBasicEventDispatcher.isStarted()) {
 			throw new RuntimeException("Asynchronous processing has stopped!");
 		}
 
-		asyncExecuteQueue.put(asyncExecute);
+		asyncBasicEventDispatcher.publishEvent(new AsyncExecuteEvent(asyncExecute));
 	}
 
 	@Deprecated
@@ -267,5 +269,17 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	@Override
 	protected final Connection getUserConnection() throws SQLException {
 		return SqlTransactionUtils.getTransactionConnection(this);
+	}
+
+	public static class AsyncExecuteEvent extends BasicEvent {
+		private final AsyncExecute asyncExecute;
+
+		public AsyncExecuteEvent(AsyncExecute asyncExecute) {
+			this.asyncExecute = asyncExecute;
+		}
+
+		public AsyncExecute getAsyncExecute() {
+			return asyncExecute;
+		}
 	}
 }
