@@ -2,28 +2,29 @@ package scw.aop;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import scw.compatible.CompatibleUtils;
-import scw.compatible.ServiceLoader;
+import scw.core.instance.InstanceUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 
 public final class ProxyUtils {
-	private static final MultipleProxyFactory PROXY_FACTORY = new MultipleProxyFactory();
+	private static final ProxyFactory PROXY_FACTORY;
 
 	static {
-		ServiceLoader<ProxyFactory> serviceLoader = CompatibleUtils.getSpi().load(ProxyFactory.class);
-		for (ProxyFactory proxyFactory : serviceLoader) {
-			PROXY_FACTORY.add(proxyFactory);
-		}
-		PROXY_FACTORY.add(new CglibProxyFactory());
-		PROXY_FACTORY.add(new JdkProxyFactory());
+		List<ProxyFactory> proxyFactories = new ArrayList<ProxyFactory>();
+		proxyFactories.addAll(InstanceUtils.loadAllService(ProxyFactory.class));
+		proxyFactories.add(new JdkProxyFactory());
+		proxyFactories.add(new CglibProxyFactory());
+		PROXY_FACTORY = new MultiProxyFactory(Arrays.asList(proxyFactories.toArray(new ProxyFactory[0])));
 	}
 
 	private ProxyUtils() {
 	};
 
-	public static MultipleProxyFactory getProxyFactory() {
+	public static ProxyFactory getProxyFactory() {
 		return PROXY_FACTORY;
 	}
 

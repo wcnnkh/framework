@@ -55,7 +55,7 @@ public abstract class AbstractDataBase implements DataBase {
 	}
 
 	public void create() {
-		create(getDataBase());
+		create(getName());
 	}
 
 	public void create(String database) {

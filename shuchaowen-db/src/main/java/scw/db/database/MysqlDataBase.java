@@ -2,10 +2,10 @@ package scw.db.database;
 
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
-import scw.sql.orm.dialect.MySqlSqlDialect;
+import scw.sql.orm.dialect.mysql.MySqlSqlDialect;
 
 public class MysqlDataBase extends AbstractDataBase {
-	private String database;
+	private String name;
 	private String connectionUrl;
 	private String charsetName = "utf8";
 	private String collate = "utf8_general_ci";
@@ -31,16 +31,16 @@ public class MysqlDataBase extends AbstractDataBase {
 		}
 
 		if (databaseEndIndex == -1) {
-			this.database = url.substring(databaseBeginIndex);
+			this.name = url.substring(databaseBeginIndex);
 			this.connectionUrl = url.substring(0, databaseBeginIndex - 1);
 		} else {
-			this.database = url.substring(databaseBeginIndex, databaseEndIndex);
+			this.name = url.substring(databaseBeginIndex, databaseEndIndex);
 			this.connectionUrl = url.substring(0, databaseBeginIndex - 1) + url.substring(databaseEndIndex);
 		}
 	}
 
-	public String getDataBase() {
-		return database;
+	public String getName() {
+		return name;
 	}
 
 	public String getConnectionURL() {

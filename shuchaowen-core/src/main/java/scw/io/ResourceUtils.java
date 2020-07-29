@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,14 +15,17 @@ import java.net.URLConnection;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import scw.core.Assert;
-import scw.core.GlobalPropertyFactory;
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.support.ResourceOperations;
 import scw.lang.NestedRuntimeException;
 import scw.lang.Nullable;
+import scw.util.FormatUtils;
+import scw.value.property.SystemPropertyFactory;
 
 /**
  * 资源工具
@@ -78,8 +84,7 @@ public final class ResourceUtils {
 	public static final String WAR_URL_SEPARATOR = "*/";
 
 	private static final ResourceOperations RESOURCE_OPERATIONS = new ResourceOperations(
-			GlobalPropertyFactory.getInstance(),
-			GlobalPropertyFactory.getInstance().getValue("resource.cache.enable", boolean.class, true));
+			SystemPropertyFactory.getInstance().getValue("resource.cache.enable", boolean.class, true));
 
 	public static final ResourceOperations getResourceOperations() {
 		return RESOURCE_OPERATIONS;
@@ -468,6 +473,42 @@ public final class ResourceUtils {
 			is = resource.getInputStream();
 			return IOUtils.toByteArray(is);
 		} catch (IOException e) {
+			throw new NestedRuntimeException(resource.getDescription(), e);
+		} finally {
+			IOUtils.close(is);
+		}
+	}
+
+	public static void loadProperties(Properties properties, Resource resource, String charsetName) {
+		if (!resource.exists()) {
+			return;
+		}
+
+		InputStream is = null;
+		try {
+			is = resource.getInputStream();
+			if (resource.getFilename().endsWith(".xml")) {
+				properties.loadFromXML(is);
+			} else {
+				if (StringUtils.isEmpty(charsetName)) {
+					properties.load(is);
+				} else {
+					Method method = ReflectionUtils.getMethod(Properties.class, "load", Reader.class);
+					if (method == null) {
+						FormatUtils.warn(ResourceUtils.class, "jdk1.6及以上的版本才支持指定字符集: {}" + resource.getDescription());
+						properties.load(is);
+					} else {
+						InputStreamReader isr = null;
+						try {
+							isr = new InputStreamReader(is, charsetName);
+							method.invoke(properties, isr);
+						} finally {
+							IOUtils.close(isr);
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
 			IOUtils.close(is);

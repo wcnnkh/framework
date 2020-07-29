@@ -18,11 +18,9 @@ import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
-public class JedisBeanBuilderLoader implements BeanBuilderLoader,
-		RedisConstants {
+public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants {
 
-	public BeanDefinition loading(LoaderContext context,
-			BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == JedisPool.class) {
 			return new JedisPoolBeanBuilder(context);
 		} else if (context.getTargetClass() == JedisPoolConfig.class) {
@@ -31,12 +29,9 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 		return loaderChain.loading(context);
 	}
 
-	private static String getConfigName(PropertyFactory propertyFactory) {
-		return propertyFactory.getValue(CONFIG_KEY, String.class,
-				DEFAULT_CONFIG);
-	}
-
 	private static final class JedisPoolBeanBuilder extends AbstractBeanDefinition {
+		private final String configName = propertyFactory.getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
+		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(configName);
 
 		public JedisPoolBeanBuilder(LoaderContext context) {
 			super(context);
@@ -48,16 +43,12 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 
 		private String getHost() {
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);
-			if (host == null) {
-				String config = getConfigName(propertyFactory);
-				if (ResourceUtils.getResourceOperations().isExist(config)) {
-					Properties properties = ResourceUtils
-							.getResourceOperations().getFormattedProperties(
-									config, Constants.DEFAULT_CHARSET_NAME).getResource();
-					host = properties.getProperty(HOST_CONFIG_KEY);
-					if (host == null) {
-						host = properties.getProperty("host");// 兼容老版本
-					}
+			if (host == null && isExist) {
+				Properties properties = ResourceUtils.getResourceOperations()
+						.getProperties(configName, Constants.DEFAULT_CHARSET_NAME).getResource();
+				host = properties.getProperty(HOST_CONFIG_KEY);
+				if (host == null) {
+					host = properties.getProperty("host");// 兼容老版本
 				}
 			}
 			return host;
@@ -66,8 +57,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 		public Object create() throws Exception {
 			String host = getHost();
 			if (beanFactory.isInstance(JedisPoolConfig.class)) {
-				return new JedisPool(
-						beanFactory.getInstance(JedisPoolConfig.class), host);
+				return new JedisPool(beanFactory.getInstance(JedisPoolConfig.class), host);
 			} else {
 				return new JedisPool(host);
 			}
@@ -84,23 +74,21 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 		}
 	}
 
-	private static final class JedisPoolConfigBeanBuilder extends
-			AbstractBeanDefinition {
+	private static final class JedisPoolConfigBeanBuilder extends AbstractBeanDefinition {
+		private final String configName = propertyFactory.getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
+		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(configName);
+
 		public JedisPoolConfigBeanBuilder(LoaderContext context) {
 			super(context);
 		}
 
 		public boolean isInstance() {
-			return ResourceUtils.getResourceOperations().isExist(
-					getConfigName(propertyFactory));
+			return isExist;
 		}
 
 		public Object create() throws Exception {
-			Properties properties = ResourceUtils.getResourceOperations()
-					.getFormattedProperties(getConfigName(propertyFactory),
-							Constants.DEFAULT_CHARSET_NAME).getResource();
 			PropertyFactory propertyFactory = new PropertyFactory(false, true);
-			propertyFactory.loadProperties(properties);
+			propertyFactory.loadProperties(configName, Constants.DEFAULT_CHARSET_NAME);
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);
 			if (StringUtils.isEmpty(host)) {
 				host = "127.0.0.1";
@@ -108,10 +96,8 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader,
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null,
-					null);
-			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null,
-					"redis.");
+			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null, null);
+			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null, "redis.");
 			return jedisPoolConfig;
 		}
 	}

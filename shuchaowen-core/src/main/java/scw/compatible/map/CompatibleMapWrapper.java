@@ -62,9 +62,4 @@ public class CompatibleMapWrapper<K, V> implements CompatibleMap<K, V> {
 	public V putIfAbsent(K key, V value) {
 		return targetMap.putIfAbsent(key, value);
 	}
-
-	public Map<K, V> getSourceMap() {
-		return targetMap.getSourceMap();
-	}
-
 }

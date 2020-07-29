@@ -3,13 +3,10 @@ package scw.sql.orm.dialect;
 import java.util.Collection;
 
 import scw.sql.Sql;
-import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.enums.TableStructureResultField;
 
 public interface SqlDialect {
-	ObjectRelationalMapping getObjectRelationalMapping();
-	
-	SqlTypeFactory getSqlTypeFactory();
+	DialectHelper getDialectHelper();
 
 	Sql toCreateTableSql(Class<?> clazz, String tableName) throws SqlDialectException;
 
@@ -43,6 +40,5 @@ public interface SqlDialect {
 
 	Sql toMaxIdSql(Class<?> clazz, String tableName, String idField) throws SqlDialectException;
 
-	Sql toTableStructureSql(Class<?> clazz, String tableName,
-			Collection<TableStructureResultField> fields);
+	Sql toTableStructureSql(Class<?> clazz, String tableName, Collection<TableStructureResultField> fields);
 }

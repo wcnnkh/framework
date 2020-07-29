@@ -63,21 +63,6 @@ public final class WeiXinUtils {
 		return sb.toString();
 	}
 
-	public static int getRefreshExpires(int refreshCount) {
-		switch (refreshCount) {
-		case 0:
-			return 7 * 24 * 3600;
-		case 1:
-			return 30 * 24 * 3600;
-		case 2:
-			return 60 * 24 * 3600;
-		case 3:
-			return 90 * 24 * 3600;
-		default:
-			return 7 * 24 * 3600;
-		}
-	}
-
 	public static String getPaySign(Map<String, String> paramMap, String apiKey) {
 		StringBuilder sb = SignatureUtils.formatSortParams(paramMap);
 		sb.append("&key=").append(apiKey);

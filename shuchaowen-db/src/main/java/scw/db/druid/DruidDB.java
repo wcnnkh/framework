@@ -2,72 +2,68 @@ package scw.db.druid;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import scw.core.instance.annotation.Configuration;
-import scw.core.instance.annotation.ResourceParameter;
-import scw.core.parameter.annotation.DefaultValue;
+import scw.core.annotation.Order;
 import scw.data.memcached.Memcached;
 import scw.data.redis.Redis;
 import scw.db.AbstractDB;
 import scw.db.DBUtils;
 import scw.db.database.DataBase;
-import scw.io.ResourceUtils;
 import scw.sql.orm.dialect.SqlDialect;
+import scw.value.property.PropertyFactory;
 
-@SuppressWarnings("rawtypes")
-@Configuration(order = Integer.MIN_VALUE + 1)
 public class DruidDB extends AbstractDB {
-	private DruidDataSource datasource;
-	private DataBase dataBase;
-
 	static {
 		DruidDataSource.class.getName();
 	}
 
-	public DruidDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource());
+	private DruidDataSource datasource;
+	private DataBase dataBase;
+
+	@Order
+	public DruidDB(String properties) {
+		this(new PropertyFactory(false, true).loadProperties(properties, "UTF-8").registerListener());
 	}
 
-	public DruidDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties,
-			Memcached memcached) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource(), memcached);
+	@Order
+	public DruidDB(String properties, Memcached memcached) {
+		this(new PropertyFactory(false, true).loadProperties(properties, "UTF-8").registerListener(), memcached);
 	}
 
-	public DruidDB(@ResourceParameter @DefaultValue(DBUtils.DEFAULT_CONFIGURATION) String properties,
-			Redis redis) {
-		this(ResourceUtils.getResourceOperations().getFormattedProperties(properties).getResource(), redis);
+	@Order
+	public DruidDB(String properties, Redis redis) {
+		this(new PropertyFactory(false, true).loadProperties(properties, "UTF-8").registerListener(), redis);
 	}
 
-	protected DruidDB(Map properties) {
-		super(properties);
-		initConfig(properties);
+	public DruidDB(PropertyFactory propertyFactory) {
+		super();
+		initConfig(propertyFactory);
 	}
 
-	protected DruidDB(Map properties, Memcached memcached) {
-		super(properties, memcached);
-		initConfig(properties);
+	public DruidDB(PropertyFactory propertyFactory, Memcached memcached) {
+		super(propertyFactory, memcached);
+		initConfig(propertyFactory);
 	}
 
-	protected DruidDB(Map properties, Redis redis) {
-		super(properties, redis);
-		initConfig(properties);
+	public DruidDB(PropertyFactory propertyFactory, Redis redis) {
+		super(propertyFactory, redis);
+		initConfig(propertyFactory);
 	}
 
-	private void initConfig(Map properties) {
-		if(properties == null){
-			return ;
+	private void initConfig(PropertyFactory propertyFactory) {
+		if (propertyFactory == null) {
+			return;
 		}
-		
+
 		datasource = new DruidDataSource();
-		DBUtils.loadProperties(datasource, properties);
+		DBUtils.loadProperties(datasource, propertyFactory);
 		initConfig(datasource);
-		createTableByProperties(properties);
+		createTableByProperties(propertyFactory);
 	}
-	
-	protected void initConfig(DruidDataSource dataSource){
+
+	protected void initConfig(DruidDataSource dataSource) {
 		if (!datasource.isPoolPreparedStatements()) {// 如果配置中没有开启psCache
 			datasource.setMaxPoolPreparedStatementPerConnectionSize(20);
 		}

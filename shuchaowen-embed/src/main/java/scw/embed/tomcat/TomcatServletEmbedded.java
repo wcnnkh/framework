@@ -80,11 +80,17 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		return StringUtils.isEmpty(contextPath) ? "" : contextPath;
 	}
 
+	protected JarScanner getJarScanner(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		return InstanceUtils.loadService(JarScanner.class, beanFactory, propertyFactory,
+				"scw.embed.tomcat.Tomcat8AboveStandardJarScanner");
+	}
+
 	protected Context createContext(BeanFactory beanFactory, PropertyFactory propertyFactory, ClassLoader classLoader) {
 		Context context = tomcat.addContext(getContextPath(propertyFactory), getDocBase(propertyFactory));
 		context.setParentClassLoader(classLoader);
-		if (beanFactory.isInstance(JarScanner.class)) {
-			context.setJarScanner(beanFactory.getInstance(JarScanner.class));
+		JarScanner jarScanner = getJarScanner(beanFactory, propertyFactory);
+		if (jarScanner != null) {
+			context.setJarScanner(jarScanner);
 		}
 
 		addServletContainerInitializer(context,
@@ -192,7 +198,8 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(), version);
 	}
 
-	protected void configureConnector(Tomcat tomcat, int port, BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	protected void configureConnector(Tomcat tomcat, int port, BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
 		Connector connector = null;
 		String connectorName = EmbeddedUtils.getTomcatConnectorName(propertyFactory);
 		if (!StringUtils.isEmpty(connectorName)) {

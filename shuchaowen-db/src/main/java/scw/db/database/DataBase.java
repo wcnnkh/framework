@@ -23,7 +23,7 @@ public interface DataBase extends ConnectionFactory {
 	 * 
 	 * @return
 	 */
-	String getDataBase();
+	String getName();
 
 	/**
 	 * 获取数据库驱动

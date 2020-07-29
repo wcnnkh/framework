@@ -1,21 +1,23 @@
 package scw.sql.orm.dialect.mysql;
 
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
-import scw.sql.orm.ObjectRelationalMapping;
+import scw.sql.orm.dialect.DialectHelper;
+import scw.sql.orm.dialect.DialectSql;
 
-public class MaxIdSql extends MysqlDialectSql {
+public class MaxIdSql extends DialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
-	public MaxIdSql(ObjectRelationalMapping objectRelationalMapping, Class<?> clazz, String tableName, String idField) {
-		Column column = objectRelationalMapping.getColumn(clazz, idField);
+	public MaxIdSql(Class<?> clazz, String tableName, String idField, DialectHelper dialectHelper) {
+		Column column = SqlUtils.getObjectRelationalMapping().getColumn(clazz, idField);
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ");
-		keywordProcessing(sb, column.getName());
+		dialectHelper.keywordProcessing(sb, column.getName());
 		sb.append(" from ");
-		keywordProcessing(sb, tableName);
+		dialectHelper.keywordProcessing(sb, tableName);
 		sb.append(" order by ");
-		keywordProcessing(sb, column.getName());
+		dialectHelper.keywordProcessing(sb, column.getName());
 		sb.append(" desc");
 		this.sql = sb.toString();
 	}

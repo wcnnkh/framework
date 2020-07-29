@@ -1,30 +1,27 @@
 package scw.value.property;
 
-import scw.event.support.BasicEvent;
-import scw.event.support.EventType;
-import scw.value.Value;
+import scw.value.event.ValueEvent;
 
-public class PropertyEvent extends BasicEvent {
+public class PropertyEvent extends ValueEvent {
 	private final BasePropertyFactory basePropertyFactory;
 	private final String key;
-	private final Value value;
 
-	public PropertyEvent(BasePropertyFactory basePropertyFactory, EventType eventType, String key, Value value) {
-		super(eventType);
+	public PropertyEvent(BasePropertyFactory basePropertyFactory, String key, ValueEvent valueEvent) {
+		super(valueEvent);
 		this.basePropertyFactory = basePropertyFactory;
 		this.key = key;
-		this.value = value;
 	}
 
 	public String getKey() {
 		return key;
 	}
 
-	public Value getValue() {
-		return value;
-	}
-
 	public BasePropertyFactory getBasePropertyFactory() {
 		return basePropertyFactory;
+	}
+
+	@Override
+	public String toString() {
+		return "propertyFactory=" + basePropertyFactory + ", key=" + key + ", " + super.toString();
 	}
 }

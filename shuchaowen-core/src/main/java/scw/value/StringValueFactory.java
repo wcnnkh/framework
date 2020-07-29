@@ -1,5 +1,8 @@
 package scw.value;
 
+import java.util.Map.Entry;
+import java.util.Properties;
+
 import scw.core.StringFormat;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -8,7 +11,7 @@ import scw.util.PropertyPlaceholderHelper;
 
 public class StringValueFactory extends DefaultValueFactory<String> {
 	private static Logger logger = LoggerUtils.getLogger(StringValueFactory.class);
-	
+
 	/**
 	 * Resolve {@code $ ...} placeholders in the given text, replacing them with
 	 * corresponding system property values.
@@ -42,20 +45,17 @@ public class StringValueFactory extends DefaultValueFactory<String> {
 	 *             if there is an unresolvable placeholder and the
 	 *             "ignoreUnresolvablePlaceholders" flag is {@code false}
 	 */
-	public String resolvePlaceholders(String text,
-			boolean ignoreUnresolvablePlaceholders) {
+	public String resolvePlaceholders(String text, boolean ignoreUnresolvablePlaceholders) {
 		PropertyPlaceholderHelper helper = (ignoreUnresolvablePlaceholders ? PropertyPlaceholderHelper.nonStrictHelper
 				: PropertyPlaceholderHelper.strictHelper);
-		return helper.replacePlaceholders(text,
-				new PropertyPlaceholderResolver(text));
+		return helper.replacePlaceholders(text, new PropertyPlaceholderResolver(text));
 	}
 
 	/**
 	 * PlaceholderResolver implementation that resolves against system
 	 * properties and system environment variables.
 	 */
-	private final class PropertyPlaceholderResolver implements
-			PropertyPlaceholderHelper.PlaceholderResolver {
+	private final class PropertyPlaceholderResolver implements PropertyPlaceholderHelper.PlaceholderResolver {
 		private final String text;
 
 		public PropertyPlaceholderResolver(String text) {
@@ -66,8 +66,7 @@ public class StringValueFactory extends DefaultValueFactory<String> {
 			try {
 				return getString(placeholderName);
 			} catch (Throwable ex) {
-				logger.error("Could not resolve placeholder '"
-						+ placeholderName + "' in [" + this.text
+				logger.error("Could not resolve placeholder '" + placeholderName + "' in [" + this.text
 						+ "] as system property: " + ex);
 				return null;
 			}
@@ -80,5 +79,26 @@ public class StringValueFactory extends DefaultValueFactory<String> {
 
 	public String format(String text, String prefix, String suffix) {
 		return StringFormat.format(text, prefix, suffix, this);
+	}
+
+	public Properties format(Properties properties) {
+		if (properties == null || properties.isEmpty()) {
+			return properties;
+		}
+
+		Properties props = new Properties();
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			Object value = entry.getValue();
+			if (value == null) {
+				continue;
+			}
+
+			if (value instanceof String) {
+				props.put(entry.getKey(), format((String) value, true));
+			} else {
+				props.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return props;
 	}
 }

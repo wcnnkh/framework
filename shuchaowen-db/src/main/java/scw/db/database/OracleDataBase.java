@@ -1,7 +1,7 @@
 package scw.db.database;
 
 import scw.lang.NotFoundException;
-import scw.sql.orm.dialect.MySqlSqlDialect;
+import scw.sql.orm.dialect.mysql.MySqlSqlDialect;
 
 /**
  * Oracle8/8i/9i数据库（thin模式）
@@ -10,7 +10,7 @@ import scw.sql.orm.dialect.MySqlSqlDialect;
  *
  */
 public class OracleDataBase extends AbstractDataBase {
-	private String database;
+	private String name;
 	private String connectionUrl;
 
 	public OracleDataBase(String driverClass, String url, String username, String password) {
@@ -43,16 +43,16 @@ public class OracleDataBase extends AbstractDataBase {
 		}
 
 		if (databaseEndIndex == -1) {
-			this.database = url.substring(databaseBeginIndex);
+			this.name = url.substring(databaseBeginIndex);
 			this.connectionUrl = url.substring(0, databaseBeginIndex - 1);
 		} else {
-			this.database = url.substring(databaseBeginIndex, databaseEndIndex);
+			this.name = url.substring(databaseBeginIndex, databaseEndIndex);
 			this.connectionUrl = url.substring(0, databaseBeginIndex - 1) + url.substring(databaseEndIndex);
 		}
 	}
 
-	public String getDataBase() {
-		return database;
+	public String getName() {
+		return name;
 	}
 
 	public String getConnectionURL() {

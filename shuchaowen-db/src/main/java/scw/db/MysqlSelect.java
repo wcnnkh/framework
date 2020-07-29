@@ -9,9 +9,10 @@ import scw.core.utils.CollectionUtils;
 import scw.lang.ParameterException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.ResultSet;
-import scw.sql.orm.dialect.mysql.UpdateSQL;
+import scw.sql.orm.dialect.UpdateSQL;
 
 @Deprecated
 public final class MysqlSelect extends Select {
@@ -24,7 +25,7 @@ public final class MysqlSelect extends Select {
 	private StringBuilder orderBySql;
 
 	public MysqlSelect(AbstractDB abstractDB) {
-		super(abstractDB);
+		super(abstractDB, abstractDB.getSqlDialect().getDialectHelper());
 	}
 
 	private void checkWhereInit() {
@@ -45,7 +46,7 @@ public final class MysqlSelect extends Select {
 
 	@Override
 	public Select whereAndValue(Class<?> tableClass, String name, Object value) {
-		if (!abstractDB.getSqlDialect().getObjectRelationalMapping().isTable(tableClass)) {
+		if (!SqlUtils.getObjectRelationalMapping().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
@@ -55,8 +56,8 @@ public final class MysqlSelect extends Select {
 			whereSql.append(UpdateSQL.AND);
 		}
 
-		keywordProcessing(whereSql, tableName,
-				abstractDB.getSqlDialect().getObjectRelationalMapping().getColumn(tableClass, name).getName());
+		getDialectHelper().keywordProcessing(whereSql, tableName,
+				SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name).getName());
 		whereSql.append("=?");
 		paramList.add(value);
 
@@ -66,7 +67,7 @@ public final class MysqlSelect extends Select {
 
 	@Override
 	public Select whereOrValue(Class<?> tableClass, String name, Object value) {
-		if (!abstractDB.getSqlDialect().getObjectRelationalMapping().isTable(tableClass)) {
+		if (!SqlUtils.getObjectRelationalMapping().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
@@ -76,8 +77,8 @@ public final class MysqlSelect extends Select {
 			whereSql.append(UpdateSQL.OR);
 		}
 
-		keywordProcessing(whereSql, tableName, abstractDB.getSqlDialect().getObjectRelationalMapping()
-				.getColumn(tableClass, name).getName());
+		getDialectHelper().keywordProcessing(whereSql, tableName,
+				SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name).getName());
 		whereSql.append("=?");
 		paramList.add(value);
 		addSelectTable(tableName);
@@ -90,7 +91,7 @@ public final class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		if (!abstractDB.getSqlDialect().getObjectRelationalMapping().isTable(tableClass)) {
+		if (!SqlUtils.getObjectRelationalMapping().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
@@ -100,7 +101,8 @@ public final class MysqlSelect extends Select {
 			whereSql.append(" and ");
 		}
 
-		keywordProcessing(whereSql, tableName, abstractDB.getSqlDialect().getObjectRelationalMapping().getColumn(tableClass, name).getName());
+		getDialectHelper().keywordProcessing(whereSql, tableName,
+				SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name).getName());
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
 		while (iterator.hasNext()) {
@@ -116,7 +118,7 @@ public final class MysqlSelect extends Select {
 	}
 
 	public Column getColumn(Class<?> tableClass, String name) {
-		return abstractDB.getSqlDialect().getObjectRelationalMapping().getColumn(tableClass, name);
+		return SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name);
 	}
 
 	@Override
@@ -125,7 +127,7 @@ public final class MysqlSelect extends Select {
 			throw new NullPointerException();
 		}
 
-		if (!abstractDB.getSqlDialect().getObjectRelationalMapping().isTable(tableClass)) {
+		if (!SqlUtils.getObjectRelationalMapping().isTable(tableClass)) {
 			throw new ParameterException(tableClass.getName() + "not found @Table");
 		}
 
@@ -135,7 +137,7 @@ public final class MysqlSelect extends Select {
 			whereSql.append(" or ");
 		}
 
-		keywordProcessing(whereSql, tableName, getColumn(tableClass, name).getName());
+		getDialectHelper().keywordProcessing(whereSql, tableName, getColumn(tableClass, name).getName());
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
 		while (iterator.hasNext()) {
@@ -150,10 +152,10 @@ public final class MysqlSelect extends Select {
 		return this;
 	}
 
-	public boolean isTable(Class<?> tableClass){
-		return abstractDB.getSqlDialect().getObjectRelationalMapping().isTable(tableClass);
+	public boolean isTable(Class<?> tableClass) {
+		return SqlUtils.getObjectRelationalMapping().isTable(tableClass);
 	}
-	
+
 	@Override
 	public Select desc(Class<?> tableClass, Collection<String> nameList) {
 		if (nameList == null || tableClass == null || nameList.isEmpty()) {
@@ -169,7 +171,7 @@ public final class MysqlSelect extends Select {
 		checkOrderInit();
 		Iterator<String> iterator = nameList.iterator();
 		while (iterator.hasNext()) {
-			keywordProcessing(orderBySql, tableName,
+			getDialectHelper().keywordProcessing(orderBySql, tableName,
 					getColumn(tableClass, iterator.next()).getName());
 			if (iterator.hasNext()) {
 				orderBySql.append(",");
@@ -195,7 +197,7 @@ public final class MysqlSelect extends Select {
 		checkOrderInit();
 		Iterator<String> iterator = nameList.iterator();
 		while (iterator.hasNext()) {
-			keywordProcessing(orderBySql, tableName,
+			getDialectHelper().keywordProcessing(orderBySql, tableName,
 					getColumn(tableClass, iterator.next()).getName());
 			if (iterator.hasNext()) {
 				orderBySql.append(",");

@@ -1,21 +1,21 @@
-package scw.sql.orm.dialect.mysql;
+package scw.sql.orm.dialect;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
-import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.enums.CasType;
 
-public class DeleteSQL extends MysqlDialectSql {
+public class DeleteSQL extends DialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;
 
-	public <T> DeleteSQL(ObjectRelationalMapping objectRelationalMapping, Class<? extends T> clazz, T obj, String tableName) {
-		Collection<Column> primaryKeys = objectRelationalMapping.getPrimaryKeys(clazz);
+	public <T> DeleteSQL(Class<? extends T> clazz, T obj, String tableName, DialectHelper dialectHelper) {
+		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -23,12 +23,12 @@ public class DeleteSQL extends MysqlDialectSql {
 		List<Object> params = new ArrayList<Object>(primaryKeys.size());
 		StringBuilder sql = new StringBuilder();
 		sql.append(DELETE_PREFIX);
-		keywordProcessing(sql, tableName);
+		dialectHelper.keywordProcessing(sql, tableName);
 		sql.append(WHERE);
 		Iterator<Column> iterator = primaryKeys.iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			keywordProcessing(sql, column.getName());
+			dialectHelper.keywordProcessing(sql, column.getName());
 			sql.append("=?");
 			params.add(column.get(obj));
 			if (iterator.hasNext()) {
@@ -36,7 +36,7 @@ public class DeleteSQL extends MysqlDialectSql {
 			}
 		}
 
-		iterator = objectRelationalMapping.getNotPrimaryKeys(clazz).iterator();
+		iterator = SqlUtils.getObjectRelationalMapping().getNotPrimaryKeys(clazz).iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.getCasType() == CasType.NOTHING) {
@@ -44,7 +44,7 @@ public class DeleteSQL extends MysqlDialectSql {
 			}
 
 			sql.append(AND);
-			keywordProcessing(sql, column.getName());
+			dialectHelper.keywordProcessing(sql, column.getName());
 			sql.append("=?");
 			params.add(column.get(obj));
 		}

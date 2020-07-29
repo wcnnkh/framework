@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import scw.beans.ioc.value.DefaultValueProcess;
 import scw.beans.ioc.value.ValueProcesser;
 
-@Target({ ElementType.FIELD })
+@Target({ ElementType.FIELD, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface Value {

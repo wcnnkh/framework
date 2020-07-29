@@ -15,8 +15,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	private ClassLoader classLoader;
 	private final Set<ProtocolResolver> protocolResolvers = new LinkedHashSet<ProtocolResolver>(4);
 	private final Set<ResourceLoader> resourceLoaders = new LinkedHashSet<ResourceLoader>(4);
-	private boolean findWorkPath = true;
-	
+
 	public DefaultResourceLoader() {
 		this.classLoader = ClassUtils.getDefaultClassLoader();
 	}
@@ -24,13 +23,9 @@ public class DefaultResourceLoader implements ResourceLoader {
 	public DefaultResourceLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
-	
-	public boolean isFindWorkPath() {
-		return findWorkPath;
-	}
 
-	public void setFindWorkPath(boolean findWorkPath) {
-		this.findWorkPath = findWorkPath;
+	public boolean isFindWorkPath() {
+		return GlobalPropertyFactory.getInstance().getValue("resource.find.workpath.enable", boolean.class, true);
 	}
 
 	public void setClassLoader(ClassLoader classLoader) {
@@ -94,31 +89,31 @@ public class DefaultResourceLoader implements ResourceLoader {
 
 	protected Resource getResourceByPath(String path) {
 		ClassPathContextResource classPathContextResource = new ClassPathContextResource(path, getClassLoader());
-		if(!isFindWorkPath()){
+		if (!isFindWorkPath()) {
 			return classPathContextResource;
 		}
-		
+
 		String root = GlobalPropertyFactory.getInstance().getWorkPath();
-		if(root == null){
+		if (root == null) {
 			return classPathContextResource;
 		}
-		
+
 		root = StringUtils.cleanPath(root);
 		String pathTouse = StringUtils.cleanPath(path);
 		if (!pathTouse.startsWith(root)) {
 			pathTouse = root + "/" + pathTouse;
 		}
-		
-		//优先读取workpath中的文件
+
+		// 优先读取workpath中的文件
 		Resource resource = new FileSystemResource(pathTouse);
-		if(resource.exists()){
+		if (resource.exists()) {
 			return resource;
 		}
-		
-		if(classPathContextResource.exists()){
+
+		if (classPathContextResource.exists()) {
 			return classPathContextResource;
 		}
-		
+
 		return resource;
 	}
 

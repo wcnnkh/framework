@@ -1,23 +1,24 @@
-package scw.sql.orm.dialect.mysql;
+package scw.sql.orm.dialect;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 
-public final class InsertSQL extends MysqlDialectSql {
+public final class InsertSQL extends DialectSql {
 	private static final long serialVersionUID = 1L;
-	protected static final String VALUES = ") values(";
 	private String sql;
 	private Object[] params;
 
-	public InsertSQL(scw.sql.orm.ObjectRelationalMapping objectRelationalMapping, Class<?> clazz, String tableName, Object obj) {
+	public InsertSQL(Class<?> clazz, String tableName,
+			Object obj, DialectHelper dialectHelper) {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
 		List<Object> params = new ArrayList<Object>();
-		Iterator<Column> iterator = objectRelationalMapping.getColumns(clazz).iterator();
+		Iterator<Column> iterator = SqlUtils.getObjectRelationalMapping().getColumns(clazz).iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.isAutoIncrement()) {
@@ -29,12 +30,12 @@ public final class InsertSQL extends MysqlDialectSql {
 				values.append(",");
 			}
 
-			keywordProcessing(cols, column.getName());
+			dialectHelper.keywordProcessing(cols, column.getName());
 			values.append("?");
 			params.add(column.get(obj));
 		}
 		sql.append(INSERT_INTO_PREFIX);
-		keywordProcessing(sql, tableName);
+		dialectHelper.keywordProcessing(sql, tableName);
 		sql.append("(");
 		sql.append(cols);
 		sql.append(VALUES);

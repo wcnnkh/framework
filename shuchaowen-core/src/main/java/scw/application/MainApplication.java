@@ -1,7 +1,6 @@
 package scw.application;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -97,8 +96,7 @@ public class MainApplication extends CommonApplication implements Application, R
 		run.start();
 	}
 
-	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, String[] args)
-			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, String[] args) {
 		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class,
 				GlobalPropertyFactory.getInstance());
 		if (!CollectionUtils.isEmpty(impls)) {
@@ -108,25 +106,19 @@ public class MainApplication extends CommonApplication implements Application, R
 						Class.class, String[].class);
 				if (constructor != null) {
 					ReflectionUtils.makeAccessible(constructor);
-					return constructor.newInstance(mainClass, args);
+					try {
+						return constructor.newInstance(mainClass, args);
+					} catch (Exception e) {
+						ReflectionUtils.handleReflectionException(e);
+					}
 				}
 			}
 		}
-		return null;
+		return new MainApplication(mainClass, args);
 	}
 
 	public static void run(Class<?> mainClass, String[] args) {
-		MainApplication application;
-		try {
-			application = getAutoMainApplicationImpl(mainClass, args);
-		} catch (Exception e) {
-			throw new ApplicationException("获取MainApplication实现异常", e);
-		}
-
-		if (application == null) {
-			application = new MainApplication(mainClass, args);
-		}
-
+		MainApplication application = getAutoMainApplicationImpl(mainClass, args);
 		application.getLogger().info("use application: {}", application.getClass().getName());
 		run(application);
 	}

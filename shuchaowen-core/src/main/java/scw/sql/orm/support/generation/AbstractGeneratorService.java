@@ -5,6 +5,7 @@ import scw.data.generator.SequenceId;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.MapperUtils;
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.ORMException;
 import scw.sql.orm.enums.OperationType;
@@ -108,7 +109,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 		public Long getCreateTime(GeneratorContext generatorContext) {
 			Long createTime = (Long) generatorContext.getAttribute(CreateTime.class);
 			if (createTime == null) {
-				Column createTimeColumn = generatorContext.getObjectRelationalMapping()
+				Column createTimeColumn = SqlUtils.getObjectRelationalMapping()
 						.findColumn(generatorContext.getBean().getClass(), new Accept<Column>() {
 
 							public boolean accept(Column e) {

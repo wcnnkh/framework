@@ -11,10 +11,12 @@ import java.util.Map.Entry;
 
 import scw.lang.ParameterException;
 import scw.sql.Sql;
+import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.ResultMapping;
 import scw.sql.orm.ResultSet;
-import scw.sql.orm.dialect.mysql.MysqlDialectSql;
+import scw.sql.orm.dialect.DialectHelper;
+import scw.sql.orm.dialect.DialectSql;
 import scw.util.Pagination;
 
 /**
@@ -24,14 +26,20 @@ import scw.util.Pagination;
  *
  */
 @Deprecated
-public abstract class Select extends MysqlDialectSql {
+public abstract class Select extends DialectSql {
 	private static final long serialVersionUID = 1L;
 	private Map<String, String> associationWhereMap;
 	private HashSet<String> selectTableSet;
 	protected AbstractDB abstractDB;
+	private DialectHelper dialectHelper;
 
-	public Select(AbstractDB abstractDB) {
+	public Select(AbstractDB abstractDB, DialectHelper dialectHelper) {
 		this.abstractDB = abstractDB;
+		this.dialectHelper = dialectHelper;
+	}
+
+	public DialectHelper getDialectHelper() {
+		return dialectHelper;
 	}
 
 	public Select from(Class<?> tableClass) {
@@ -147,8 +155,8 @@ public abstract class Select extends MysqlDialectSql {
 			associationWhereMap = new HashMap<String, String>();
 		}
 
-		Collection<Column> t1 = abstractDB.getSqlDialect().getObjectRelationalMapping().getPrimaryKeys(tableClass1);
-		Collection<Column> t2 = abstractDB.getSqlDialect().getObjectRelationalMapping().getPrimaryKeys(tableClass2);
+		Collection<Column> t1 = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(tableClass1);
+		Collection<Column> t2 = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(tableClass2);
 		String tName1 = getTableName(tableClass1);
 		String tName2 = getTableName(tableClass2);
 		if (table2Columns == null || table2Columns.length == 0) {
@@ -162,8 +170,8 @@ public abstract class Select extends MysqlDialectSql {
 			while (iterator1.hasNext() && iterator2.hasNext()) {
 				Column c1 = iterator1.next();
 				Column c2 = iterator2.next();
-				String n1 = getSqlName(tName1, c1.getName());
-				String n2 = getSqlName(tName2, c2.getName());
+				String n1 = dialectHelper.getSqlName(tName1, c1.getName());
+				String n2 = dialectHelper.getSqlName(tName2, c2.getName());
 				if (checkWhere(associationWhereMap, n1, n2)) {
 					continue;
 				}
@@ -182,8 +190,8 @@ public abstract class Select extends MysqlDialectSql {
 				for (int i = 0; i < table2Columns.length; i++) {
 					Column c1 = iterator1.next();
 					Column c2 = iterator2.next();
-					String n1 = getSqlName(tName2, c2.getName());
-					String n2 = getSqlName(tName1, c1.getName());
+					String n1 = dialectHelper.getSqlName(tName2, c2.getName());
+					String n2 = dialectHelper.getSqlName(tName1, c1.getName());
 					if (checkWhere(associationWhereMap, n1, n2)) {
 						continue;
 					}

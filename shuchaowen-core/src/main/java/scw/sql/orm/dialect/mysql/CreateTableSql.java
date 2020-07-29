@@ -7,40 +7,42 @@ import java.util.Map.Entry;
 import scw.core.utils.StringUtils;
 import scw.sql.SqlUtils;
 import scw.sql.orm.IndexInfo;
-import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.annotation.Table;
+import scw.sql.orm.dialect.DialectHelper;
+import scw.sql.orm.dialect.DialectSql;
 import scw.sql.orm.dialect.SqlType;
-import scw.sql.orm.dialect.SqlTypeFactory;
 import scw.sql.orm.enums.IndexMethod;
 import scw.sql.orm.enums.IndexOrder;
 
-public class CreateTableSql extends MysqlDialectSql {
+public class CreateTableSql extends DialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
-	public CreateTableSql(ObjectRelationalMapping objectRelationalMapping,
-			Class<?> clazz, String tableName,
-			final SqlTypeFactory sqlTypeFactory) {
+	protected void appendColumnType(StringBuilder sb, SqlType sqlType) {
+		sb.append(sqlType.getName());
+		if (sqlType.getLength() > 0) {
+			sb.append("(").append(sqlType.getLength()).append(")");
+		}
+	}
+
+	public CreateTableSql(Class<?> clazz, String tableName, DialectHelper dialectHelper) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("CREATE TABLE IF NOT EXISTS `").append(tableName).append("`");
+		sb.append(dialectHelper.getCreateTablePrefix());
+		sb.append(" ");
+		dialectHelper.keywordProcessing(sb, tableName);
 		sb.append(" (");
 
-		Iterator<scw.sql.orm.Column> iterator = objectRelationalMapping
-				.getColumns(clazz).iterator();
+		Iterator<scw.sql.orm.Column> iterator = SqlUtils.getObjectRelationalMapping().getColumns(clazz).iterator();
 		while (iterator.hasNext()) {
 			scw.sql.orm.Column col = iterator.next();
-			SqlType sqlType = col.getSqlType(sqlTypeFactory);
-			keywordProcessing(sb, col.getName());
+			SqlType sqlType = col.getSqlType(SqlUtils.getSqlTypeFactory());
+			dialectHelper.keywordProcessing(sb, col.getName());
 			sb.append(" ");
-			sb.append(sqlType.getName());
-			if (sqlType.getLength() > 0) {
-				sb.append("(").append(sqlType.getLength()).append(")");
-			}
+			appendColumnType(sb, sqlType);
 			sb.append(" ");
 
 			if (!StringUtils.isEmpty(col.getCharsetName())) {
-				sb.append("character set ").append(col.getCharsetName())
-						.append(" ");
+				sb.append("character set ").append(col.getCharsetName()).append(" ");
 			}
 
 			if (!col.isNullable()) {
@@ -48,8 +50,7 @@ public class CreateTableSql extends MysqlDialectSql {
 			}
 
 			if (StringUtils.isNotEmpty(col.getDescription())) {
-				sb.append(" comment \'").append(col.getDescription())
-						.append("\'");
+				sb.append(" comment \'").append(col.getDescription()).append("\'");
 			}
 
 			if (col.isAutoIncrement()) {
@@ -61,7 +62,7 @@ public class CreateTableSql extends MysqlDialectSql {
 			}
 		}
 
-		iterator = objectRelationalMapping.getColumns(clazz).iterator();
+		iterator = SqlUtils.getObjectRelationalMapping().getColumns(clazz).iterator();
 		while (iterator.hasNext()) {
 			scw.sql.orm.Column column = iterator.next();
 			if (!column.isUnique()) {
@@ -70,12 +71,12 @@ public class CreateTableSql extends MysqlDialectSql {
 
 			sb.append(",");
 			sb.append("UNIQUE (");
-			keywordProcessing(sb, column.getName());
+			dialectHelper.keywordProcessing(sb, column.getName());
 			sb.append(")");
 		}
 
-		for (Entry<IndexInfo, List<IndexInfo>> entry : objectRelationalMapping
-				.getIndexInfoMap(clazz).entrySet()) {
+		for (Entry<IndexInfo, List<IndexInfo>> entry : SqlUtils.getObjectRelationalMapping().getIndexInfoMap(clazz)
+				.entrySet()) {
 			sb.append(",");
 			if (entry.getKey().getMethod() != IndexMethod.DEFAULT) {
 				sb.append(" ");
@@ -86,14 +87,14 @@ public class CreateTableSql extends MysqlDialectSql {
 
 			if (!StringUtils.isEmpty(entry.getKey().getName())) {
 				sb.append(" ");
-				keywordProcessing(sb, entry.getKey().getName());
+				dialectHelper.keywordProcessing(sb, entry.getKey().getName());
 			}
 
 			sb.append(" (");
 			Iterator<IndexInfo> indexIterator = entry.getValue().iterator();
 			while (indexIterator.hasNext()) {
 				IndexInfo indexInfo = indexIterator.next();
-				keywordProcessing(sb, indexInfo.getColumn().getName());
+				dialectHelper.keywordProcessing(sb, indexInfo.getColumn().getName());
 				if (indexInfo.getLength() != -1) {
 					sb.append("(");
 					sb.append(indexInfo.getLength());
@@ -102,7 +103,7 @@ public class CreateTableSql extends MysqlDialectSql {
 
 				if (indexInfo.getOrder() != IndexOrder.DEFAULT) {
 					sb.append(" ");
-					keywordProcessing(sb, indexInfo.getOrder().name());
+					dialectHelper.keywordProcessing(sb, indexInfo.getOrder().name());
 				}
 
 				if (indexIterator.hasNext()) {
@@ -113,8 +114,7 @@ public class CreateTableSql extends MysqlDialectSql {
 		}
 
 		StringBuilder primaryKeySql = new StringBuilder();
-		iterator = SqlUtils.getObjectRelationalMapping().getColumns(clazz)
-				.iterator();
+		iterator = SqlUtils.getObjectRelationalMapping().getColumns(clazz).iterator();
 		while (iterator.hasNext()) {
 			scw.sql.orm.Column column = iterator.next();
 			if (!column.isPrimaryKey()) {
@@ -124,7 +124,7 @@ public class CreateTableSql extends MysqlDialectSql {
 				primaryKeySql.append(",");
 			}
 
-			keywordProcessing(primaryKeySql, column.getName());
+			dialectHelper.keywordProcessing(primaryKeySql, column.getName());
 		}
 
 		if (primaryKeySql.length() > 0) {
@@ -137,10 +137,17 @@ public class CreateTableSql extends MysqlDialectSql {
 		sb.append(")");
 		Table table = clazz.getAnnotation(Table.class);
 		if (table != null) {
-			sb.append(" ENGINE=").append(table.engine());
-			sb.append(" DEFAULT");
-			sb.append(" CHARSET=").append(table.charset());
-			sb.append(" ROW_FORMAT=").append(table.row_format());
+			if (StringUtils.isNotEmpty(table.engine())) {
+				sb.append(" ENGINE=").append(table.engine());
+			}
+
+			if (StringUtils.isNotEmpty(table.charset())) {
+				sb.append(" CHARSET=").append(table.charset());
+			}
+
+			if (StringUtils.isNotEmpty(table.row_format())) {
+				sb.append(" ROW_FORMAT=").append(table.row_format());
+			}
 		}
 
 		if (table != null && !StringUtils.isEmpty(table.comment())) {

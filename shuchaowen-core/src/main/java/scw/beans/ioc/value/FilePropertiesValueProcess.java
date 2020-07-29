@@ -22,10 +22,9 @@ public final class FilePropertiesValueProcess extends AbstractResourceValueProce
 	protected ObservableResource<Properties> getObservableResource(BeanDefinition beanDefinition,
 			BeanFactory beanFactory, PropertyFactory propertyFactory, Object bean, Field field, Value value,
 			String name, String charsetName) {
-		return ResourceUtils.getResourceOperations().getFormattedProperties(name,
-				charsetName, propertyFactory);
+		return ResourceUtils.getResourceOperations().getProperties(name, charsetName);
 	}
-	
+
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
 			Object bean, Field field, Value value, String name, String charsetName, Properties properties) {

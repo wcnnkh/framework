@@ -50,7 +50,7 @@ public final class ParameterUtils {
 	}
 
 	public static ParameterDescriptor[] getParameterDescriptors(Constructor<?> constructor) {
-		String[] names = ParameterUtils.getParameterName(constructor);
+		String[] names = ParameterUtils.getParameterNames(constructor);
 		if (ArrayUtils.isEmpty(names)) {
 			return ParameterDescriptor.EMPTY_ARRAY;
 		}
@@ -67,7 +67,7 @@ public final class ParameterUtils {
 	}
 
 	public static ParameterDescriptor[] getParameterDescriptors(Method method) {
-		String[] names = ParameterUtils.getParameterName(method);
+		String[] names = ParameterUtils.getParameterNames(method);
 		if (ArrayUtils.isEmpty(names)) {
 			return ParameterDescriptor.EMPTY_ARRAY;
 		}
@@ -83,12 +83,12 @@ public final class ParameterUtils {
 		return parameterDefinitions;
 	}
 
-	public static String[] getParameterName(Method method) {
+	public static String[] getParameterNames(Method method) {
 		return getParameterNameDiscoverer().getParameterNames(method);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static String[] getParameterName(Constructor constructor) {
+	public static String[] getParameterNames(Constructor constructor) {
 		return getParameterNameDiscoverer().getParameterNames(constructor);
 	}
 

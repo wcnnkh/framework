@@ -71,7 +71,7 @@ public final class BeanUtils {
 			return null;
 		}
 
-		return sortParameters(ParameterUtils.getParameterName(method), method.getParameterTypes(),
+		return sortParameters(ParameterUtils.getParameterNames(method), method.getParameterTypes(),
 				beanMethodParameters);
 	}
 
@@ -81,7 +81,7 @@ public final class BeanUtils {
 			return null;
 		}
 
-		return sortParameters(ParameterUtils.getParameterName(constructor), constructor.getParameterTypes(),
+		return sortParameters(ParameterUtils.getParameterNames(constructor), constructor.getParameterTypes(),
 				beanMethodParameters);
 	}
 

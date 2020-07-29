@@ -8,6 +8,7 @@ public abstract class DialectSql implements Sql {
 	protected static final String DELETE_PREFIX = "delete from ";
 	protected static final String SELECT_ALL_PREFIX = "select * from ";
 	protected static final String INSERT_INTO_PREFIX = "insert into ";
+	protected static final String VALUES = ") values(";
 
 	protected static final String SET = " set ";
 	protected static final String WHERE = " where ";
@@ -17,16 +18,4 @@ public abstract class DialectSql implements Sql {
 	public final boolean isStoredProcedure() {
 		return false;
 	}
-
-	/**
-	 * 关键字处理
-	 * 
-	 * @param sb
-	 * @param text
-	 */
-	public abstract void keywordProcessing(StringBuilder sb, String text);
-
-	public abstract void keywordProcessing(StringBuilder sb, String tableName, String column);
-
-	public abstract String getSqlName(String tableName, String column);
 }

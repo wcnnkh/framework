@@ -24,7 +24,7 @@ import scw.mapper.MapperUtils;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.Sql;
-import scw.sql.SqlTemplate;
+import scw.sql.AbstractSqlOperations;
 import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.EntityOperations;
@@ -44,8 +44,8 @@ import scw.sql.orm.support.generation.GeneratorService;
 import scw.util.ClassScanner;
 import scw.util.Pagination;
 
-public abstract class AbstractEntityOperations extends SqlTemplate implements EntityOperations {
-	
+public abstract class AbstractEntityOperations extends AbstractSqlOperations implements EntityOperations {
+
 	public abstract SqlDialect getSqlDialect();
 
 	public abstract CacheManager getCacheManager();
@@ -59,12 +59,12 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 				tName = ((TableName) obj).getTableName();
 			}
 		}
-		return StringUtils.isEmpty(tName) ? getSqlDialect().getObjectRelationalMapping().getTableName(clazz) : tName;
+		return StringUtils.isEmpty(tName) ? SqlUtils.getObjectRelationalMapping().getTableName(clazz) : tName;
 	}
 
 	public final String getTableName(Class<?> clazz, String tableName) {
 		return (tableName == null || tableName.length() == 0)
-				? getSqlDialect().getObjectRelationalMapping().getTableName(clazz) : tableName;
+				? SqlUtils.getObjectRelationalMapping().getTableName(clazz) : tableName;
 	}
 
 	public final <T> T getById(Class<? extends T> type, Object... params) {
@@ -120,14 +120,14 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 	 * @param operationType
 	 * @param clazz
 	 * @param bean
-	 * @param tableName 入参，并非指实际表名
+	 * @param tableName
+	 *            入参，并非指实际表名
 	 * @return
 	 */
 	protected boolean orm(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
-		GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean,
-				getSqlDialect().getObjectRelationalMapping(), tableName);
-		Enumeration<Column> enumeration = getSqlDialect().getObjectRelationalMapping().enumeration(clazz);
-		while(enumeration.hasMoreElements()){
+		GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean, tableName);
+		Enumeration<Column> enumeration = SqlUtils.getObjectRelationalMapping().enumeration(clazz);
+		while (enumeration.hasMoreElements()) {
 			Column column = enumeration.nextElement();
 			generatorContext.setColumn(column);
 			getGeneratorService().process(generatorContext);
@@ -139,7 +139,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 		try {
 			connection = getUserConnection();
 			int count = update(sql, connection);
-			for (Column column : getSqlDialect().getObjectRelationalMapping().getColumns(clazz)) {
+			for (Column column : SqlUtils.getObjectRelationalMapping().getColumns(clazz)) {
 				if (column.isAutoIncrement()) {
 					if (operationType == OperationType.SAVE || operationType == OperationType.SAVE_OR_UPDATE) {
 						if (count == 0) {
@@ -243,11 +243,10 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 			return Collections.emptyMap();
 		}
 
-		Map<String, K> keyMap = getSqlDialect().getObjectRelationalMapping().getInIdKeyMap(type, inPrimaryKeys,
-				primaryKeys);
+		Map<String, K> keyMap = SqlUtils.getObjectRelationalMapping().getInIdKeyMap(type, inPrimaryKeys, primaryKeys);
 		Map<K, V> map = new LinkedHashMap<K, V>();
 		for (V v : list) {
-			String key = getSqlDialect().getObjectRelationalMapping().getObjectKey(type, v);
+			String key = SqlUtils.getObjectRelationalMapping().getObjectKey(type, v);
 			map.put(keyMap.get(key), v);
 		}
 		return map;
@@ -265,7 +264,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 		}
 
 		if (primaryKeys != null
-				&& primaryKeys.length > getSqlDialect().getObjectRelationalMapping().getPrimaryKeys(type).size() - 1) {
+				&& primaryKeys.length > SqlUtils.getObjectRelationalMapping().getPrimaryKeys(type).size() - 1) {
 			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
 		}
 
@@ -345,12 +344,12 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 		}
 	}
 
-	public void createTable(Class<?> tableClass) {
-		createTable(tableClass, null);
+	public boolean createTable(Class<?> tableClass) {
+		return createTable(tableClass, null);
 	}
 
-	public void createTable(Class<?> tableClass, String tableName) {
-		execute(getSqlDialect().toCreateTableSql(tableClass, getTableName(tableClass, tableName)));
+	public boolean createTable(Class<?> tableClass, String tableName) {
+		return execute(getSqlDialect().toCreateTableSql(tableClass, getTableName(tableClass, tableName)));
 	}
 
 	public void createTable(String packageName) {
@@ -420,7 +419,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 	 */
 	public <T> void iterator(final Class<? extends T> tableClass, final IteratorCallback<T> iterator) {
 		Sql sql = getSqlDialect().toSelectByIdSql(tableClass,
-				getSqlDialect().getObjectRelationalMapping().getTableName(tableClass), null);
+				SqlUtils.getObjectRelationalMapping().getTableName(tableClass), null);
 		iterator(sql, new IteratorCallback<ResultMapping>() {
 
 			public boolean iteratorCallback(ResultMapping data) {
@@ -459,7 +458,7 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 
 	public <T> void query(final Class<? extends T> tableClass, final IteratorCallback<Row<T>> iterator) {
 		Sql sql = getSqlDialect().toSelectByIdSql(tableClass,
-				getSqlDialect().getObjectRelationalMapping().getTableName(tableClass), null);
+				SqlUtils.getObjectRelationalMapping().getTableName(tableClass), null);
 		query(sql, new IteratorCallback<Row<ResultMapping>>() {
 
 			public boolean iteratorCallback(Row<ResultMapping> row) {
@@ -518,14 +517,14 @@ public abstract class AbstractEntityOperations extends SqlTemplate implements En
 		for (String[] names : list) {
 			String name = names[0];
 			hashSet.add(name);
-			Column column = getSqlDialect().getObjectRelationalMapping().getColumn(tableClass, name);
+			Column column = SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name);
 			if (column == null) {// 在现在的表结构中不存在，应该删除
 				deleteList.add(name);
 			}
 		}
 
 		List<Column> addList = new ArrayList<Column>();
-		for (Column column : getSqlDialect().getObjectRelationalMapping().getColumns(tableClass)) {
+		for (Column column : SqlUtils.getObjectRelationalMapping().getColumns(tableClass)) {
 			if (!hashSet.contains(column.getName())) {// 在已有的数据库中不存在，应该添加
 				addList.add(column);
 			}

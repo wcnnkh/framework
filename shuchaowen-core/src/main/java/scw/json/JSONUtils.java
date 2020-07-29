@@ -2,17 +2,15 @@ package scw.json;
 
 import java.lang.reflect.Type;
 
-import scw.compatible.CompatibleUtils;
-import scw.compatible.ServiceLoader;
 import scw.core.instance.InstanceUtils;
 import scw.json.support.BuiltinGsonSupport;
 import scw.util.FormatUtils;
 
 public final class JSONUtils {
-	public static final BuiltinGsonSupport BUILTIN_GSON_SUPPORT = new BuiltinGsonSupport();
-	
 	private JSONUtils() {
 	};
+
+	public static final BuiltinGsonSupport BUILTIN_GSON_SUPPORT = new BuiltinGsonSupport();
 
 	/**
 	 * 默认的json序列化工具
@@ -20,23 +18,8 @@ public final class JSONUtils {
 	public static final JSONSupport JSON_SUPPORT;
 
 	static {
-		JSONSupport jsonSupport = null;
-		ServiceLoader<JSONSupport> serviceLoader = CompatibleUtils.getSpi().load(JSONSupport.class);
-		for(JSONSupport support : serviceLoader){
-			jsonSupport = support;
-			break;
-		}
-		
-		if(jsonSupport == null){
-			for(String name : new String[]{"scw.json.support.FastJsonSupport"}){
-				if(InstanceUtils.INSTANCE_FACTORY.isInstance(name)){
-					jsonSupport = InstanceUtils.INSTANCE_FACTORY.getInstance(name);
-					break;
-				}
-			}
-		}
-
-		JSON_SUPPORT = jsonSupport == null? BUILTIN_GSON_SUPPORT:jsonSupport;
+		JSONSupport jsonSupport = InstanceUtils.loadService(JSONSupport.class, "scw.json.support.FastJsonSupport");
+		JSON_SUPPORT = jsonSupport == null ? BUILTIN_GSON_SUPPORT : jsonSupport;
 		FormatUtils.info(JSONUtils.class, "using json support：{}", JSON_SUPPORT.getClass().getName());
 	}
 

@@ -5,12 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import scw.core.Assert;
-import scw.core.instance.InstanceUtils;
+import scw.core.reflect.ReflectionUtils;
 import scw.io.event.DefaultResourceEventDispatcher;
 import scw.io.event.ResourceEventDispatcher;
 import scw.lang.NestedIOException;
@@ -28,33 +29,48 @@ import scw.util.JavaVersion;
  *
  */
 public abstract class AbstractResource implements Resource {
+	private static final Constructor<ResourceEventDispatcher> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
+			.findConstructor("scw.io.event.WatchServiceResourceEventDispatcher", true, Resource.class);
+
 	private volatile ResourceEventDispatcher eventDispatcher;
 
 	public ResourceEventDispatcher getEventDispatcher() {
-		if (isSupportEventDispatcher()) {
-			if (eventDispatcher == null) {
+		if (eventDispatcher == null) {
+			if (isSupportEventDispatcher()) {
 				synchronized (this) {
 					if (eventDispatcher == null) {
 						if (JavaVersion.INSTANCE.getMasterVersion() >= 7) {
-							eventDispatcher = InstanceUtils.INSTANCE_FACTORY
-									.getInstance("scw.io.event.WatchServiceResourceEventDispatcher", this);
-						} else {
+							try {
+								eventDispatcher = WATCH_SERVICE_CONSTRUCTOR.newInstance(this);
+							} catch (Exception e) {
+								ReflectionUtils.handleReflectionException(e);
+							}
+						}
+
+						if (eventDispatcher == null) {
 							eventDispatcher = new DefaultResourceEventDispatcher(this);
 						}
 					}
 				}
 			}
-			return eventDispatcher;
 		}
-		return EMPTY_EVENT_DISPATCHER;
+		return eventDispatcher == null ? EMPTY_EVENT_DISPATCHER : eventDispatcher;
 	}
 
 	public boolean isSupportEventDispatcher() {
-		try {
-			return SUPPORT_EVENT_DISPATCHER && (SUPPORT_JAR_RESOURCE_EVENT_DISPATCHER || !ResourceUtils.isJarURL(getURL()));
-		} catch (IOException e) {
+		if (!SUPPORT_EVENT_DISPATCHER) {
 			return false;
 		}
+
+		if (exists()) {
+			try {
+				if (ResourceUtils.isJarURL(getURL())) {
+					return SUPPORT_JAR_RESOURCE_EVENT_DISPATCHER;
+				}
+			} catch (IOException e) {
+			}
+		}
+		return true;
 	}
 
 	/**

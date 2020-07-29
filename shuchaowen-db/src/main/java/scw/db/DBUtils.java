@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.Map;
 
 import scw.core.utils.StringUtils;
 import scw.db.database.DataBase;
@@ -14,6 +13,7 @@ import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
 import scw.lang.NotSupportedException;
 import scw.util.ConfigUtils;
+import scw.value.property.PropertyFactory;
 
 public final class DBUtils {
 	public static final String DEFAULT_CONFIGURATION = "/db/db.properties";
@@ -21,15 +21,14 @@ public final class DBUtils {
 	private DBUtils() {
 	};
 
-	@SuppressWarnings("rawtypes")
-	public static void loadProperties(Object instance, Map properties) {
+	public static void loadProperties(Object instance, PropertyFactory properties) {
 		ConfigUtils.loadProperties(instance, properties, Arrays.asList(
 				"jdbcUrl,url,host", "username,user", "password",
 				"minSize,initialSize,minimumIdle",
 				"maxSize,maxActive,maximumPoolSize",
 				"driver,driverClass,driverClassName"), null);
 	}
-
+	
 	/**
 	 * 自动识别数据库 driverClassName和url两个参数至少要存在一个
 	 * 

@@ -8,12 +8,16 @@ import scw.beans.annotation.Destroy;
 import scw.beans.annotation.InitMethod;
 import scw.beans.annotation.Value;
 import scw.core.annotation.AnnotationUtils;
+import scw.core.parameter.ParameterUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.ConcurrentReferenceHashMap;
 
 public final class Ioc {
+	private static Logger logger = LoggerUtils.getLogger(Ioc.class);
 	private final IocMetadata init = new IocMetadata();
 	private final IocMetadata destroy = new IocMetadata();
 	private final IocMetadata dependence = new IocMetadata();
@@ -43,6 +47,16 @@ public final class Ioc {
 			if (value != null) {
 				this.dependence.getIocProcessors().add(new ValueIocProcessor(field));
 			}
+		}
+
+		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, true, true, Value.class)) {
+			if (method.getParameterTypes().length != 1) {
+				logger.error("@Value method one parameter must exis: {}", method);
+				continue;
+			}
+
+			Field field = new Field(null, targetClass, ParameterUtils.getParameterNames(method)[0], null, null, method);
+			this.dependence.getIocProcessors().add(new ValueIocProcessor(field));
 		}
 
 		readyOnly();

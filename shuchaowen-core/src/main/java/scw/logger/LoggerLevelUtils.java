@@ -21,47 +21,38 @@ public class LoggerLevelUtils {
 	public static final Level DEFAULT_LEVEL;
 
 	static {
-		String defaultLevel = GlobalPropertyFactory.getInstance().getString(
-				Level.class.getName());
-		DEFAULT_LEVEL = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level
-				.valueOf(defaultLevel.toUpperCase());
+		String defaultLevel = GlobalPropertyFactory.getInstance().getString(Level.class.getName());
+		DEFAULT_LEVEL = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level.valueOf(defaultLevel.toUpperCase());
 
 		List<LevelConfig> levelList = new ArrayList<LevelConfig>();
-		reader(levelList, ResourceUtils.getResourceOperations().getFormattedProperties(
-				"/scw/logger/logger-level.properties", LoggerPropertyFactory.getInstance()).getResource());
+		reader(levelList, ResourceUtils.getResourceOperations().getProperties("/scw/logger/logger-level.properties")
+				.getResource());
 
-		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance()
-				.getValue("scw.logger.level.config", String.class,
-						"/logger-level.properties");
-		
-		
-		if (ResourceUtils.getResourceOperations().isExist(
-				loggerEnablePropertiePath)) {
-			FormatUtils.info(LoggerLevelUtils.class, "loading "
-					+ loggerEnablePropertiePath);
-			Properties properties = ResourceUtils.getResourceOperations()
-					.getFormattedProperties(loggerEnablePropertiePath,
-							LoggerPropertyFactory.getInstance()).getResource();
+		String loggerEnablePropertiePath = GlobalPropertyFactory.getInstance().getValue("scw.logger.level.config",
+				String.class, "/logger-level.properties");
+
+		if (ResourceUtils.getResourceOperations().isExist(loggerEnablePropertiePath)) {
+			FormatUtils.info(LoggerLevelUtils.class, "loading " + loggerEnablePropertiePath);
+			Properties properties = ResourceUtils.getResourceOperations().getProperties(loggerEnablePropertiePath)
+					.getResource();
 			reader(levelList, properties);
 		}
 
 		Comparator<LevelConfig> comparator = new Comparator<LevelConfig>() {
 
-			public int compare(LevelConfig o1,
-					LevelConfig o2) {
-				return CompareUtils.compare(o1.getKey().length(), o2.getKey()
-						.length(), false);
+			public int compare(LevelConfig o1, LevelConfig o2) {
+				return CompareUtils.compare(o1.getKey().length(), o2.getKey().length(), false);
 			}
 		};
 		Collections.sort(levelList, comparator);
 		LOGGER_LEVEL_LIST = Arrays.asList(levelList.toArray(new LevelConfig[0]));
 	}
-	
+
 	private static void reader(List<LevelConfig> list, Properties properties) {
-		if(properties == null){
-			return ;
+		if (properties == null) {
+			return;
 		}
-		
+
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			Object key = entry.getKey();
 			if (key == null) {
@@ -78,13 +69,12 @@ public class LoggerLevelUtils {
 				continue;
 			}
 
-			list.add(new LevelConfig(key
-					.toString(), level));
+			list.add(new LevelConfig(key.toString(), level));
 		}
 	}
 
 	public static Level getLevel(String name) {
-		if(!CollectionUtils.isEmpty(LOGGER_LEVEL_LIST)){
+		if (!CollectionUtils.isEmpty(LOGGER_LEVEL_LIST)) {
 			for (KeyValuePair<String, Level> keyValuePair : LOGGER_LEVEL_LIST) {
 				if (keyValuePair == null) {
 					continue;

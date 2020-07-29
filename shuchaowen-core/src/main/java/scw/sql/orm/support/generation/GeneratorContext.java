@@ -2,7 +2,6 @@ package scw.sql.orm.support.generation;
 
 import scw.sql.orm.Column;
 import scw.sql.orm.EntityOperations;
-import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.enums.OperationType;
 import scw.util.attribute.SimpleAttributes;
 
@@ -12,15 +11,13 @@ public final class GeneratorContext extends SimpleAttributes<Object, Object> {
 	private final EntityOperations entityOperations;
 	private final OperationType operationType;
 	private final Object bean;
-	private final ObjectRelationalMapping objectRelationalMapping;
 	private final String tableName;// ORM 入参，并非实际表名
 
 	public GeneratorContext(EntityOperations entityOperations, OperationType operationType, Object bean,
-			ObjectRelationalMapping objectRelationalMapping, String tableName) {
+			String tableName) {
 		this.entityOperations = entityOperations;
 		this.operationType = operationType;
 		this.bean = bean;
-		this.objectRelationalMapping = objectRelationalMapping;
 		this.tableName = tableName;
 	}
 
@@ -42,10 +39,6 @@ public final class GeneratorContext extends SimpleAttributes<Object, Object> {
 
 	public EntityOperations getEntityOperations() {
 		return entityOperations;
-	}
-
-	public ObjectRelationalMapping getObjectRelationalMapping() {
-		return objectRelationalMapping;
 	}
 
 	/**

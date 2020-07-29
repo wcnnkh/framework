@@ -23,6 +23,6 @@ public class ResourceEvent extends BasicEvent {
 
 	@Override
 	public String toString() {
-		return "eventType=[" + getEventType() + "], createTime=" + getCreateTime() + ", resource=[" + resource + "]";
+		return super.toString() + ", resource=[" + resource + "]";
 	}
 }
