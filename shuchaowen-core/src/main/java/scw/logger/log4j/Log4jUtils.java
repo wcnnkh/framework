@@ -64,7 +64,7 @@ public final class Log4jUtils {
 		Properties properties = ResourceUtils.getResourceOperations()
 				.getProperties("classpath:/scw/logger/log4j/default-log4j.properties").getResource();
 		for (KeyValuePair<String, Level> entry : LoggerLevelUtils.getLevelConfigList()) {
-			properties.put("log4j.logger." + entry.getKey(), entry.getValue().name());
+			properties.put("log4j.logger." + entry.getKey(), entry.getValue().getName());
 		}
 
 		if (ResourceUtils.getResourceOperations().isExist(LOG4J_APPEND_PATH)) {

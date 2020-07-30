@@ -31,7 +31,6 @@ import scw.http.server.ServerHttpResponse;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
 import scw.logger.Level;
-import scw.logger.LoggerUtils;
 import scw.mapper.MapperUtils;
 import scw.mapper.support.ParameterFactoryMapping;
 import scw.mvc.annotation.Attribute;
@@ -96,8 +95,8 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 
 		long useTime = System.currentTimeMillis() - createTime;
 		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.TRACE;
-		if (LoggerUtils.isLoggerEnabled(getLogger(), level)) {
-			LoggerUtils.logger(getLogger(), level, "execute：{}, use time:{}ms", toString(), useTime);
+		if (getLogger().isLogEnable(level)) {
+			getLogger().log(level, "execute：{}, use time:{}ms", toString(), useTime);
 		}
 	}
 

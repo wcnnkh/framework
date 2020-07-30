@@ -22,7 +22,7 @@ public class LoggerLevelUtils {
 
 	static {
 		String defaultLevel = GlobalPropertyFactory.getInstance().getString(Level.class.getName());
-		DEFAULT_LEVEL = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level.valueOf(defaultLevel.toUpperCase());
+		DEFAULT_LEVEL = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level.getLevel(defaultLevel.toUpperCase());
 
 		List<LevelConfig> levelList = new ArrayList<LevelConfig>();
 		reader(levelList, ResourceUtils.getResourceOperations().getProperties("/scw/logger/logger-level.properties")
@@ -64,7 +64,7 @@ public class LoggerLevelUtils {
 				continue;
 			}
 
-			Level level = Level.valueOf(value.toString().toUpperCase());
+			Level level = Level.getLevel(value.toString());
 			if (level == null) {
 				continue;
 			}

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.Logger;
 
 import scw.logger.AbstractLogger;
 import scw.logger.Level;
+import scw.util.PlaceholderFormatAppend;
 
 public class Log4j2Logger extends AbstractLogger {
 	private final Logger logger;
@@ -13,52 +14,38 @@ public class Log4j2Logger extends AbstractLogger {
 		this.logger = logger;
 	}
 
-	public Logger getLogger() {
-		return logger;
-	}
-
 	public String getName() {
 		return logger.getName();
 	}
 
-	public boolean isInfoEnabled() {
-		return super.isInfoEnabled() && logger.isInfoEnabled();
-	}
-
-	public void info(Object format, Object... args) {
-		if(!isInfoEnabled()){
-			return ;
-		}
-		
-		logger.info(createMessage(format, args));
-	}
-
-	public void info(Throwable e, Object format, Object... args) {
-		if(!isInfoEnabled()){
-			return ;
-		}
-		
-		logger.info(createMessage(format, args), e);
-	}
-
+	@Override
 	public boolean isTraceEnabled() {
 		return super.isTraceEnabled() && logger.isTraceEnabled();
 	}
 
-	public void trace(Object format, Object... args) {
-		if(!isTraceEnabled()){
-			return ;
-		}
-		
-		logger.trace(createMessage(format, args));
+	@Override
+	public void trace(Throwable e, Object msg, Object... args) {
+		logger.trace(new PlaceholderFormatAppend(msg, placeholder, args), e);
 	}
 
-	public void trace(Throwable e, Object format, Object... args) {
-		if(!isTraceEnabled()){
-			return ;
-		}
-		
-		logger.trace(createMessage(format, args), e);
+	@Override
+	public boolean isDebugEnabled() {
+		return super.isDebugEnabled() && logger.isDebugEnabled();
+	}
+
+	@Override
+	public void debug(Throwable e, Object msg, Object... args) {
+		logger.debug(new PlaceholderFormatAppend(msg, placeholder, args), e);
+	}
+
+	@Override
+	public boolean isInfoEnabled() {
+		return super.isInfoEnabled() && logger.isInfoEnabled();
+	}
+
+	@Override
+	public void info(Throwable e, Object msg, Object... args) {
+		logger.info(new PlaceholderFormatAppend(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -66,20 +53,9 @@ public class Log4j2Logger extends AbstractLogger {
 		return super.isWarnEnabled() && logger.isWarnEnabled();
 	}
 
-	public void warn(Object format, Object... args) {
-		if(!isWarnEnabled()){
-			return ;
-		}
-		
-		logger.warn(createMessage(format, args));
-	}
-
-	public void warn(Throwable e, Object format, Object... args) {
-		if(!isWarnEnabled()){
-			return ;
-		}
-		
-		logger.warn(createMessage(format, args), e);
+	@Override
+	public void warn(Throwable e, Object msg, Object... args) {
+		logger.warn(new PlaceholderFormatAppend(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -87,39 +63,34 @@ public class Log4j2Logger extends AbstractLogger {
 		return super.isErrorEnabled() && logger.isErrorEnabled();
 	}
 
-	public void error(Object format, Object... args) {
-		if(!isErrorEnabled()){
-			return ;
-		}
-		
-		logger.error(createMessage(format, args));
+	@Override
+	public void error(Throwable e, Object msg, Object... args) {
+		logger.error(new PlaceholderFormatAppend(msg, placeholder, args), e);
 	}
 
-	public void error(Throwable e, Object format, Object... args) {
-		if(!isErrorEnabled()){
-			return ;
+	private static org.apache.logging.log4j.Level parse(Level level) {
+		org.apache.logging.log4j.Level lv = org.apache.logging.log4j.Level.getLevel(level.getName());
+		if (lv == null) {
+			lv = org.apache.logging.log4j.Level.forName(level.getName(), level.getValue());
 		}
-		
-		logger.error(createMessage(format, args), e);
+		return lv;
 	}
 
-	public boolean isDebugEnabled() {
-		return super.isDebugEnabled() && logger.isDebugEnabled();
+	@Override
+	public boolean isLogEnable(Level level) {
+		return super.isLogEnable(level) && logger.isEnabled(parse(level));
 	}
 
-	public void debug(Object format, Object... args) {
-		if(!isDebugEnabled()){
-			return ;
+	public void log(Level level, Throwable e, Object format, Object... args) {
+		if (!super.isLogEnable(level)) {
+			return;
 		}
-		
-		logger.debug(createMessage(format, args));
-	}
 
-	public void debug(Throwable e, Object format, Object... args) {
-		if(!isDebugEnabled()){
-			return ;
+		org.apache.logging.log4j.Level lv = parse(level);
+		if (!logger.isEnabled(lv)) {
+			return;
 		}
-		
-		logger.debug(createMessage(format, args), e);
+
+		logger.log(lv, new PlaceholderFormatAppend(format, placeholder, args), e);
 	}
 }

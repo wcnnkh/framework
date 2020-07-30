@@ -1,17 +1,22 @@
 package scw.logger;
 
-public final class ConsoleLogger extends AbstractMessageLogger {
+public final class ConsoleLogger extends AbstractLogger {
 	private final AbstractConsoleLoggerFactory abstractConsoleLoggerFactory;
+	private final String name;
 
 	public ConsoleLogger(Level level, String name, AbstractConsoleLoggerFactory abstractConsoleLoggerFactory,
 			String placeholder) {
-		super(level, name, placeholder);
+		super(level, placeholder);
+		this.name = name;
 		this.abstractConsoleLoggerFactory = abstractConsoleLoggerFactory;
 	}
 
-	@Override
-	protected void log(Message message) {
+	public void log(Level level, Throwable e, Object format, Object... args) {
+		Message message = new Message(level, name, format, args, e, getPlaceholder());
 		abstractConsoleLoggerFactory.log(message);
 	}
 
+	public String getName() {
+		return name;
+	}
 }

@@ -1,9 +1,9 @@
 package scw.event;
 
 public interface NamedEventDispatcher<T extends Event> {
-	void unregister(String name);
+	void unregister(Object name);
 
-	EventRegistration registerListener(String name, EventListener<T> eventListener);
+	EventRegistration registerListener(Object name, EventListener<T> eventListener);
 
-	void publishEvent(String name, T event);
+	void publishEvent(Object name, T event);
 }

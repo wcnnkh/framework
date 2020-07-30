@@ -86,4 +86,20 @@ public abstract class AbstractLoggerWrapper implements Logger {
 	public void debug(Throwable e, Object format, Object... args) {
 		getLogger().debug(e, format, args);
 	}
+	
+	public boolean isLogEnable(Level level) {
+		return getLogger().isLogEnable(level);
+	}
+	
+	public void log(Level level, Object format) {
+		getLogger().log(level, format);
+	}
+	
+	public void log(Level level, Object format, Object... args) {
+		getLogger().log(level, format, args);
+	}
+	
+	public void log(Level level, Throwable e, Object format, Object... args) {
+		getLogger().log(level, e, format, args);
+	}
 }

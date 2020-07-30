@@ -19,7 +19,7 @@ public class LoggerPropertyFactory extends ExtendGetPropertyFactory {
 	protected Object getExtendValue(String key) {
 		String value = null;
 		if (key.equalsIgnoreCase("default.logger.level")) {
-			value = LoggerLevelUtils.DEFAULT_LEVEL.name();
+			value = LoggerLevelUtils.DEFAULT_LEVEL.getName();
 		} else if (key.equalsIgnoreCase("logger.rootPath")) {
 			value = GlobalPropertyFactory.getInstance().getWorkPath();
 		}

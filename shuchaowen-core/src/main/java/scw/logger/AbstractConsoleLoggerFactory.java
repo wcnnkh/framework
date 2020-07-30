@@ -16,16 +16,11 @@ public abstract class AbstractConsoleLoggerFactory extends AbstractILoggerFactor
 	public void console(Message message) throws IOException {
 		Appendable appendable = createAppendable();
 		message.appendTo(appendable);
-		switch (message.getLevel()) {
-		case ERROR:
-		case WARN:
+		if (message.getLevel().getValue() >= Level.WARN.getValue()) {
 			System.err.println(appendable.toString());
-			break;
-		default:
+		} else {
 			System.out.println(appendable.toString());
-			break;
 		}
-
 		if (message.getThrowable() != null) {
 			message.getThrowable().printStackTrace();
 		}

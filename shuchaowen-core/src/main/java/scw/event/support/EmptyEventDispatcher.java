@@ -29,16 +29,16 @@ public class EmptyEventDispatcher<T extends Event> implements
 		// ignore
 	}
 
-	public void unregister(String name) {
+	public void unregister(Object name) {
 		// ignore
 	}
 
-	public EventRegistration registerListener(String name,
+	public EventRegistration registerListener(Object name,
 			EventListener<T> eventListener) {
 		return new EmptyEventRegistration();
 	}
 
-	public void publishEvent(String name, T event) {
+	public void publishEvent(Object name, T event) {
 		// ignore
 	}
 
