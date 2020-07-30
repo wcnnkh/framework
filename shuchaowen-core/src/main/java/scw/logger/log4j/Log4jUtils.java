@@ -15,8 +15,6 @@ import scw.logger.LoggerPropertyFactory;
 import scw.util.FormatUtils;
 
 public final class Log4jUtils {
-	private static final String LOG4J_APPEND_PATH = "/log4j-append.properties";
-
 	private Log4jUtils() {
 	}
 
@@ -70,13 +68,6 @@ public final class Log4jUtils {
 		for (Entry<String, Level> entry : LoggerLevelManager.getInstance().getLevelMap().entrySet()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().getName());
 		}
-
-		if (ResourceUtils.getResourceOperations().isExist(LOG4J_APPEND_PATH)) {
-			FormatUtils.info(Log4jUtils.class, "loading " + LOG4J_APPEND_PATH);
-			Properties append = ResourceUtils.getResourceOperations().getProperties(LOG4J_APPEND_PATH).getResource();
-			properties.putAll(append);
-		}
-
 		initByProperties(properties);
 	}
 }
