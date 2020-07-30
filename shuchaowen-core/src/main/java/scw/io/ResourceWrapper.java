@@ -10,81 +10,76 @@ import java.net.URL;
 
 import scw.io.event.ResourceEventDispatcher;
 
-public class ResourceWrapper implements Resource{
-	private final Resource resource;
-	
-	public ResourceWrapper(Resource resource){
-		this.resource = resource;
-	}
+public abstract class ResourceWrapper implements Resource {
+
+	public abstract Resource getResource();
 
 	public InputStream getInputStream() throws IOException {
-		return resource.getInputStream();
+		return getResource().getInputStream();
 	}
 
 	public OutputStream getOutputStream() throws IOException {
-		return resource.getOutputStream();
+		return getResource().getOutputStream();
 	}
 
 	public boolean exists() {
-		return resource.exists();
+		return getResource().exists();
 	}
 
 	public boolean isReadable() {
-		return resource.isReadable();
+		return getResource().isReadable();
 	}
 
 	public boolean isWritable() {
-		return resource.isWritable();
+		return getResource().isWritable();
 	}
 
 	public boolean isOpen() {
-		return resource.isOpen();
+		return getResource().isOpen();
 	}
 
 	public URL getURL() throws IOException {
-		return resource.getURL();
+		return getResource().getURL();
 	}
 
 	public URI getURI() throws IOException {
-		return resource.getURI();
+		return getResource().getURI();
 	}
 
 	public File getFile() throws IOException, FileNotFoundException {
-		return resource.getFile();
+		return getResource().getFile();
 	}
 
 	public long contentLength() throws IOException {
-		return resource.contentLength();
+		return getResource().contentLength();
 	}
 
 	public long lastModified() throws IOException {
-		return resource.lastModified();
+		return getResource().lastModified();
 	}
 
 	public Resource createRelative(String relativePath) throws IOException {
-		return resource.createRelative(relativePath);
+		return getResource().createRelative(relativePath);
 	}
 
 	public String getFilename() {
-		return resource.getFilename();
+		return getResource().getFilename();
 	}
 
 	public String getDescription() {
-		return resource.getDescription();
+		return getResource().getDescription();
 	}
 
 	public boolean isSupportEventDispatcher() {
-		return resource.isSupportEventDispatcher();
+		return getResource().isSupportEventDispatcher();
 	}
 
 	public ResourceEventDispatcher getEventDispatcher() {
-		return resource.getEventDispatcher();
+		return getResource().getEventDispatcher();
 	}
-
-	public Resource getResource() {
-		if(resource instanceof ResourceWrapper){
-			return ((ResourceWrapper) resource).getResource();
-		}
-		return resource;
+	
+	@Override
+	public String toString() {
+		return getResource().toString();
 	}
 }

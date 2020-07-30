@@ -5,10 +5,16 @@ import java.io.InputStream;
 
 public class CachingResource extends ResourceWrapper {
 	private final byte[] data;
+	private final Resource resource;
 
 	public CachingResource(Resource resource, byte[] data) {
-		super(resource);
+		this.resource = resource;
 		this.data = data;
+	}
+
+	@Override
+	public Resource getResource() {
+		return resource;
 	}
 
 	@Override

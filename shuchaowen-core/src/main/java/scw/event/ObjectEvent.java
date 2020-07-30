@@ -20,4 +20,9 @@ public class ObjectEvent<T> extends EventObject implements Event {
 	public T getSource() {
 		return (T) super.getSource();
 	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + ", source=" + getSource();
+	}
 }

@@ -4,8 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.Properties;
 
 import scw.event.BasicEventDispatcher;
-import scw.event.ObjectEvent;
 import scw.event.EventRegistration;
+import scw.event.ObjectEvent;
 import scw.event.support.DefaultBasicEventDispatcher;
 import scw.io.ResourceUtils;
 import scw.io.event.ObservableResource;

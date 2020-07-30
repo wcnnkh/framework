@@ -116,10 +116,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 			if (res == null) {
 				continue;
 			}
-
-			if (res.exists()) {
-				resources.add(res);
-			}
+			resources.add(res);
 		}
 		return resources;
 	}
