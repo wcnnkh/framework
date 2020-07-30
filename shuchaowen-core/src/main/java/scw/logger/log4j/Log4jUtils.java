@@ -1,6 +1,7 @@
 package scw.logger.log4j;
 
 import java.lang.reflect.Method;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.w3c.dom.Element;
@@ -9,10 +10,9 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Level;
-import scw.logger.LoggerLevelUtils;
+import scw.logger.LoggerLevelManager;
 import scw.logger.LoggerPropertyFactory;
 import scw.util.FormatUtils;
-import scw.util.KeyValuePair;
 
 public final class Log4jUtils {
 	private static final String LOG4J_APPEND_PATH = "/log4j-append.properties";
@@ -63,7 +63,11 @@ public final class Log4jUtils {
 		FormatUtils.info(Log4jUtils.class, "using log directory: {}", rootPath);
 		Properties properties = ResourceUtils.getResourceOperations()
 				.getProperties("classpath:/scw/logger/log4j/default-log4j.properties").getResource();
-		for (KeyValuePair<String, Level> entry : LoggerLevelUtils.getLevelConfigList()) {
+		for (Entry<String, Level> entry : LoggerLevelManager.DEFAULT_LEVEL_MAP.entrySet()) {
+			properties.put("log4j.logger." + entry.getKey(), entry.getValue().getName());
+		}
+		
+		for (Entry<String, Level> entry : LoggerLevelManager.getInstance().getLevelMap().entrySet()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().getName());
 		}
 

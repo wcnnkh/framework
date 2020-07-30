@@ -4,12 +4,13 @@ import org.apache.log4j.Logger;
 
 import scw.logger.AbstractLogger;
 import scw.logger.Level;
+import scw.logger.LoggerLevelManager.DynamicLevel;
 import scw.util.PlaceholderFormatAppend;
 
 public class Log4jLogger extends AbstractLogger {
 	private final Logger logger;
 
-	public Log4jLogger(Logger logger, Level level, String placeholder) {
+	public Log4jLogger(Logger logger, final DynamicLevel level, String placeholder) {
 		super(level, placeholder);
 		this.logger = logger;
 	}
@@ -20,7 +21,7 @@ public class Log4jLogger extends AbstractLogger {
 
 	@Override
 	public boolean isTraceEnabled() {
-		return super.isTraceEnabled() && logger.isTraceEnabled();
+		return super.isTraceEnabled() || logger.isTraceEnabled();
 	}
 
 	@Override
@@ -30,7 +31,7 @@ public class Log4jLogger extends AbstractLogger {
 
 	@Override
 	public boolean isDebugEnabled() {
-		return super.isDebugEnabled() && logger.isDebugEnabled();
+		return super.isDebugEnabled() || logger.isDebugEnabled();
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class Log4jLogger extends AbstractLogger {
 
 	@Override
 	public boolean isInfoEnabled() {
-		return super.isInfoEnabled() && logger.isInfoEnabled();
+		return super.isInfoEnabled() || logger.isInfoEnabled();
 	}
 
 	@Override
@@ -50,7 +51,7 @@ public class Log4jLogger extends AbstractLogger {
 
 	@Override
 	public boolean isWarnEnabled() {
-		return super.isWarnEnabled() && logger.isEnabledFor(org.apache.log4j.Level.WARN);
+		return super.isWarnEnabled() || logger.isEnabledFor(org.apache.log4j.Level.WARN);
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public class Log4jLogger extends AbstractLogger {
 
 	@Override
 	public boolean isErrorEnabled() {
-		return super.isErrorEnabled() && logger.isEnabledFor(org.apache.log4j.Level.ERROR);
+		return super.isErrorEnabled() || logger.isEnabledFor(org.apache.log4j.Level.ERROR);
 	}
 
 	@Override
@@ -73,19 +74,13 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	public boolean isLogEnable(Level level) {
-		return super.isLogEnable(level) && logger.isEnabledFor(parse(level));
+		return super.isLogEnable(level) || logger.isEnabledFor(parse(level));
 	}
 
 	public void log(Level level, Throwable e, Object format, Object... args) {
-		if (!super.isLogEnable(level)) {
-			return;
-		}
-
 		org.apache.log4j.Level lv = parse(level);
-		if (!logger.isEnabledFor(lv)) {
-			return;
+		if (super.isLogEnable(level) || logger.isEnabledFor(lv)) {
+			logger.log(lv, new PlaceholderFormatAppend(format, placeholder, args), e);
 		}
-
-		logger.log(lv, new PlaceholderFormatAppend(format, placeholder, args), e);
 	}
 }

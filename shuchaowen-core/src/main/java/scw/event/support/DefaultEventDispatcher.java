@@ -25,8 +25,8 @@ public class DefaultEventDispatcher<T extends Event> extends DefaultBasicEventDi
 		this.typeEventListenerMap = CompatibleUtils.getMapCompatible().wrapper(typeEventListenerMap);
 
 		Map<Object, BasicEventDispatcher<T>> namedEventListenerMap = concurrent
-				? new ConcurrentHashMap<Object, BasicEventDispatcher<T>>()
-				: new HashMap<Object, BasicEventDispatcher<T>>();
+				? new ConcurrentHashMap<Object, BasicEventDispatcher<T>>(8)
+				: new HashMap<Object, BasicEventDispatcher<T>>(8);
 		this.namedEventListenerMap = CompatibleUtils.getMapCompatible().wrapper(namedEventListenerMap);
 	}
 

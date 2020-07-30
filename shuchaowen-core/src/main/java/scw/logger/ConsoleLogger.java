@@ -1,10 +1,12 @@
 package scw.logger;
 
+import scw.logger.LoggerLevelManager.DynamicLevel;
+
 public final class ConsoleLogger extends AbstractLogger {
 	private final AbstractConsoleLoggerFactory abstractConsoleLoggerFactory;
 	private final String name;
 
-	public ConsoleLogger(Level level, String name, AbstractConsoleLoggerFactory abstractConsoleLoggerFactory,
+	public ConsoleLogger(DynamicLevel level, String name, AbstractConsoleLoggerFactory abstractConsoleLoggerFactory,
 			String placeholder) {
 		super(level, placeholder);
 		this.name = name;

@@ -5,8 +5,7 @@ import java.io.IOException;
 public abstract class AbstractConsoleLoggerFactory extends AbstractILoggerFactory {
 
 	public Logger getLogger(String name, String placeholder) {
-		Level level = LoggerLevelUtils.getLevel(name);
-		return new ConsoleLogger(level, name, this, placeholder);
+		return new ConsoleLogger(LoggerLevelManager.getInstance().getDynamicLevel(name), name, this, placeholder);
 	}
 
 	protected abstract void log(Message message);

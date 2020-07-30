@@ -3,6 +3,7 @@ package scw.io.support;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -162,6 +163,46 @@ public class ResourceOperations extends DefaultResourceLoader {
 				for (Resource res : resources) {
 					EventRegistration eventRegistration = res.getEventDispatcher()
 							.registerListener(new PropertiesResourceListener(resource, charsetName, eventListener));
+					eventRegistrations.add(eventRegistration);
+				}
+				return new MultiEventRegistration(eventRegistrations);
+			}
+		};
+	}
+
+	public ObservableResource<Properties> getProperties(Collection<String> resources) {
+		return getProperties(resources, null);
+	}
+
+	public ObservableResource<Properties> getProperties(final Collection<String> resources, final String charsetName) {
+		final List<ObservableResource<Properties>> list = new ArrayList<ObservableResource<Properties>>(
+				resources.size());
+		Properties properties = new Properties();
+		for (String resource : resources) {
+			ObservableResource<Properties> res = getProperties(resource, charsetName);
+			if (res.getResource() != null) {
+				properties.putAll(res.getResource());
+			}
+			list.add(res);
+		}
+
+		return new ObservableResource<Properties>(properties) {
+
+			@Override
+			public EventRegistration registerListener(final ObservableResourceEventListener<Properties> eventListener) {
+				List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>();
+				for (ObservableResource<Properties> res : list) {
+					EventRegistration eventRegistration = res
+							.registerListener(new ObservableResourceEventListener<Properties>() {
+
+								public void onEvent(ObservableResourceEvent<Properties> event) {
+									ObservableResource<Properties> observableResource = getProperties(resources,
+											charsetName);
+									eventListener.onEvent(new ObservableResourceEvent<Properties>(event,
+											observableResource.getResource()));
+								}
+
+							});
 					eventRegistrations.add(eventRegistration);
 				}
 				return new MultiEventRegistration(eventRegistrations);

@@ -1,21 +1,19 @@
 package scw.logger;
 
+import scw.logger.LoggerLevelManager.DynamicLevel;
+
 public abstract class AbstractLogger implements Logger {
 	private static final Object[] EMPTY_ARGS = new Object[0];
 	protected final String placeholder;
-	private volatile Level level;
+	private final DynamicLevel dynamicLevel;
 
-	public AbstractLogger(Level level, String placeholder) {
-		this.level = level;
+	public AbstractLogger(DynamicLevel dynamicLevel, String placeholder) {
+		this.dynamicLevel = dynamicLevel;
 		this.placeholder = placeholder;
 	}
 
-	public Level getLevel() {
-		return level;
-	}
-
-	public void setLevel(Level level) {
-		this.level = level;
+	public DynamicLevel getDynamicLevel() {
+		return dynamicLevel;
 	}
 
 	public String getPlaceholder() {
@@ -111,6 +109,6 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public boolean isLogEnable(Level level) {
-		return this.level.isEnable(level);
+		return this.dynamicLevel.getLevel().isEnable(level);
 	}
 }
