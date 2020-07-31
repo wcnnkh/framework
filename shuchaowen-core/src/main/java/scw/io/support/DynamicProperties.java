@@ -19,13 +19,22 @@ public class DynamicProperties {
 	private EventRegistration eventRegistration;
 	private final BasicEventDispatcher<ObjectEvent<Properties>> eventDispatcher = new DefaultBasicEventDispatcher<ObjectEvent<Properties>>(
 			true);
+	private final boolean registerByExist;
 
-	public DynamicProperties() {
-		this(null);
+	/**
+	 * @param registerByExist 是否仅当存在时才注册
+	 */
+	public DynamicProperties(boolean registerByExist) {
+		this(null, registerByExist);
 	}
 
-	public DynamicProperties(String charsetName) {
+	/**
+	 * @param charsetName
+	 * @param registerByExist 是否仅当存在时才注册
+	 */
+	public DynamicProperties(String charsetName, boolean registerByExist) {
 		this.charsetName = charsetName;
+		this.registerByExist = registerByExist;
 	}
 
 	public synchronized boolean load(String resource) {
@@ -36,19 +45,21 @@ public class DynamicProperties {
 		if (eventRegistration != null) {
 			eventRegistration.unregister();
 		}
-		
+
 		ObservableResource<Properties> observableResource = ResourceUtils.getResourceOperations()
 				.getProperties(resources, charsetName);
 		this.properties = observableResource.getResource();
 		eventDispatcher.publishEvent(new ObjectEvent<Properties>(properties));
-		eventRegistration = observableResource.registerListener(new ObservableResourceEventListener<Properties>() {
-
-			public void onEvent(ObservableResourceEvent<Properties> event) {
-				properties = event.getSource();
-				eventDispatcher.publishEvent(new ObjectEvent<Properties>(properties));
-			}
-		});
+		eventRegistration = observableResource.registerListener(new EventListener(), registerByExist);
 		return true;
+	}
+
+	private class EventListener implements ObservableResourceEventListener<Properties> {
+
+		public void onEvent(ObservableResourceEvent<Properties> event) {
+			properties = event.getSource();
+			eventDispatcher.publishEvent(new ObjectEvent<Properties>(properties));
+		}
 	}
 
 	public Properties getProperties() {

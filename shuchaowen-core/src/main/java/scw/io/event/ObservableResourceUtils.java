@@ -25,11 +25,16 @@ public final class ObservableResourceUtils {
 		}
 
 		return new ObservableResource<Properties>(properties) {
-
+			
 			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<Properties> eventListener) {
-				List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>();
+			public EventRegistration registerListener(final ObservableResourceEventListener<Properties> eventListener,
+					boolean isExist) {
+				List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>(resources.size());
 				for (Resource res : resources) {
+					if(isExist && !res.exists()){
+						continue;
+					}
+					
 					EventRegistration eventRegistration = res.getEventDispatcher()
 							.registerListener(new EventListener<ResourceEvent>() {
 
@@ -52,7 +57,11 @@ public final class ObservableResourceUtils {
 		return new ObservableResource<byte[]>(data) {
 
 			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<byte[]> eventListener) {
+			public EventRegistration registerListener(final ObservableResourceEventListener<byte[]> eventListener, boolean isExist) {
+				if(isExist && !resource.exists()){
+					return EventRegistration.EMPTY;
+				}
+				
 				return resource.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
 
 					public void onEvent(ResourceEvent event) {
@@ -71,14 +80,14 @@ public final class ObservableResourceUtils {
 
 			@Override
 			public EventRegistration registerListener(
-					final ObservableResourceEventListener<UnsafeByteArrayInputStream> eventListener) {
+					final ObservableResourceEventListener<UnsafeByteArrayInputStream> eventListener, boolean isExist) {
 				return res.registerListener(new ObservableResourceEventListener<byte[]>() {
 
 					public void onEvent(ObservableResourceEvent<byte[]> event) {
 						eventListener.onEvent(new ObservableResourceEvent<UnsafeByteArrayInputStream>(event,
 								res.getResource() == null ? null : new UnsafeByteArrayInputStream(res.getResource())));
 					}
-				});
+				}, isExist);
 			}
 		};
 	}
@@ -89,7 +98,11 @@ public final class ObservableResourceUtils {
 
 			@Override
 			public EventRegistration registerListener(
-					final ObservableResourceEventListener<List<String>> eventListener) {
+					final ObservableResourceEventListener<List<String>> eventListener, boolean isExist) {
+				if(isExist && !resource.exists()){
+					return EventRegistration.EMPTY;
+				}
+				
 				return resource.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
 					public void onEvent(ResourceEvent event) {
 						eventListener.onEvent(new ObservableResourceEvent<List<String>>(event,
@@ -113,7 +126,11 @@ public final class ObservableResourceUtils {
 		return new ObservableResource<String>(content) {
 
 			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<String> eventListener) {
+			public EventRegistration registerListener(final ObservableResourceEventListener<String> eventListener, boolean isExist) {
+				if(isExist && !resource.exists()){
+					return EventRegistration.EMPTY;
+				}
+				
 				return resource.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
 					public void onEvent(ResourceEvent event) {
 						eventListener.onEvent(new ObservableResourceEvent<String>(event,

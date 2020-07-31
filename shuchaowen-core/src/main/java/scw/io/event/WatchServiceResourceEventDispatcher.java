@@ -43,7 +43,6 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 		}
 
 		WATCH_SERVICE = watchService;
-
 		if (WATCH_SERVICE != null) {
 			listenerMap = new ConcurrentHashMap<Path, WatchServiceResourceEventDispatcher.ResourceWatchKey>();
 			Thread thread = new Thread() {

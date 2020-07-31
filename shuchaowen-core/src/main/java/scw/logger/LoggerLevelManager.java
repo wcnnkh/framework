@@ -55,7 +55,7 @@ public class LoggerLevelManager {
 	private final Level defaultLevel;
 	private volatile TreeMap<String, Level> levelMap;
 	private final BasicEventDispatcher<BasicEvent> eventDispatcher = new DefaultBasicEventDispatcher<BasicEvent>(true);
-	private final DynamicProperties dynamicProperties = new DynamicProperties();
+	private final DynamicProperties dynamicProperties = new DynamicProperties(false);
 
 	private LoggerLevelManager(Level defaultLevel) {
 		this.defaultLevel = defaultLevel;

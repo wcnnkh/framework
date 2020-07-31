@@ -513,7 +513,7 @@ public class HttpHeaders extends Headers {
 	static {
 		AJAX_HEADERS.loadProperties("/scw/net/headers/ajax.headers.properties", ValueCreator.CREATOR);
 		AJAX_HEADERS.loadProperties(GlobalPropertyFactory.getInstance().getValue("scw.net.ajax.headers", String.class,
-				"/ajax-headers.properties"), ValueCreator.CREATOR);
+				"/ajax-headers.properties"), ValueCreator.CREATOR).register();
 	}
 
 	public HttpHeaders() {

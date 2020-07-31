@@ -120,7 +120,17 @@ public class DynamicMap extends EventMap<String, Value> {
 			return eventRegistration != null;
 		}
 
+		/**
+		 * 默认只有当资源存在时才注册
+		 */
 		public void register() {
+			register(true);
+		}
+
+		/**
+		 * @param isExist true表示只在当资源存在时才注册
+		 */
+		public void register(boolean isExist) {
 			if (isRegister()) {
 				return;
 			}
@@ -156,7 +166,7 @@ public class DynamicMap extends EventMap<String, Value> {
 						keys.clear();
 						addKeys(properties);
 					}
-				});
+				}, isExist);
 			}
 		}
 

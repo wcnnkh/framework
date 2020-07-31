@@ -20,7 +20,7 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 	 * 默认的监听周期
 	 */
 	static final long LISTENER_PERIOD = Math.max(1,
-			GlobalPropertyFactory.getInstance().getValue("resource.listener.period", int.class, 10)) * 1000L;
+			GlobalPropertyFactory.getInstance().getValue("resource.listener.period", int.class, 8)) * 1000L;
 	static final Timer TIMER = new Timer(true);// 守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
 	private final Resource resource;

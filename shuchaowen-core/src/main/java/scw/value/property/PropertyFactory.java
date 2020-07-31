@@ -274,8 +274,20 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 			return propertiesRegistration;
 		}
 
+		/**
+		 * 默认只有当资源存在时才注册
+		 * @return
+		 */
 		public PropertyFactory registerListener() {
-			propertiesRegistration.register();
+			return registerListener(true);
+		}
+		
+		/**
+		 * @param isExist true表示只有当资源存在时才注册
+		 * @return
+		 */
+		public PropertyFactory registerListener(boolean isExist) {
+			propertiesRegistration.register(isExist);
 			return getPropertyFactory();
 		}
 	}
