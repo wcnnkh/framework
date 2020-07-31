@@ -43,8 +43,7 @@ public final class ArrayUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T[] toArray(Class<T> type,
-			Collection<? extends T> collection) {
+	public static <T> T[] toArray(Class<T> type, Collection<? extends T> collection) {
 		if (CollectionUtils.isEmpty(collection)) {
 			return (T[]) Array.newInstance(type, 0);
 		}
@@ -95,10 +94,23 @@ public final class ArrayUtils {
 
 		int len1 = Array.getLength(arr1);
 		int len2 = Array.getLength(arr2);
-		Object arr = Array.newInstance(arr1.getClass().getComponentType(), len1
-				+ len2);
+		Object arr = Array.newInstance(arr1.getClass().getComponentType(), len1 + len2);
 		System.arraycopy(arr1, 0, arr, 0, len1);
 		System.arraycopy(arr2, 0, arr, len1, len2);
 		return (T) arr;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T[] reversal(Object array) {
+		if (array == null) {
+			return null;
+		}
+
+		int len = Array.getLength(array);
+		Object newArray = Array.newInstance(array.getClass().getComponentType(), len);
+		for (int i = len - 1, index = 0; i >= 0; i--) {
+			Array.set(newArray, index ++, Array.get(array, i));
+		}
+		return (T[]) newArray;
 	}
 }

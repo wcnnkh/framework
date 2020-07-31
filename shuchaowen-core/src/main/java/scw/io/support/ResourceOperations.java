@@ -6,25 +6,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentMap;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
-import scw.event.EventListener;
-import scw.event.EventRegistration;
-import scw.event.method.MultiEventRegistration;
 import scw.io.DefaultResourceLoader;
 import scw.io.Resource;
-import scw.io.ResourceUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.io.event.NonexistentObservableResource;
 import scw.io.event.ObservableResource;
-import scw.io.event.ObservableResourceEvent;
-import scw.io.event.ObservableResourceEventListener;
-import scw.io.event.ResourceEvent;
+import scw.io.event.ObservableResourceUtils;
 import scw.util.ConcurrentReferenceHashMap;
 
 public class ResourceOperations extends DefaultResourceLoader {
@@ -103,7 +96,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 	}
 
 	/**
-	 * 可使用的资源列表，使用优先级从左到右
+	 * 可使用的资源列表，使用优先级从左到右,从高到低
 	 * 
 	 * @param resource
 	 * @return
@@ -139,160 +132,42 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return getProperties(resource, null);
 	}
 
-	public ObservableResource<Properties> getProperties(final String resource, final String charsetName) {
-		final List<Resource> resources = getResources(resource);
+	public ObservableResource<Properties> getProperties(String resource, String charsetName) {
+		List<Resource> resources = getResources(resource);
 		if (CollectionUtils.isEmpty(resources)) {
 			return new NonexistentObservableResource<Properties>();
 		}
 
-		Properties properties = new Properties();
-		ListIterator<Resource> iterator = resources.listIterator(resources.size());
-		while (iterator.hasPrevious()) {
-			Resource res = iterator.previous();
-			ResourceUtils.loadProperties(properties, res, charsetName);
-		}
-
-		return new ObservableResource<Properties>(properties) {
-
-			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<Properties> eventListener) {
-				List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>(resources.size());
-				for (Resource res : resources) {
-					EventRegistration eventRegistration = res.getEventDispatcher()
-							.registerListener(new PropertiesResourceListener(resource, charsetName, eventListener));
-					eventRegistrations.add(eventRegistration);
-				}
-				return new MultiEventRegistration(eventRegistrations);
-			}
-		};
+		return ObservableResourceUtils.getProperties(CollectionUtils.reversal(resources), charsetName);
 	}
 
-	public ObservableResource<Properties> getProperties(Collection<String> resources) {
-		return getProperties(resources, null);
-	}
-
-	public ObservableResource<Properties> getProperties(final Collection<String> resources, final String charsetName) {
-		final List<ObservableResource<Properties>> list = new ArrayList<ObservableResource<Properties>>(
-				resources.size());
-		Properties properties = new Properties();
+	public ObservableResource<Properties> getProperties(Collection<String> resources, String charsetName) {
+		List<Resource> list = new ArrayList<Resource>(resources.size());
 		for (String resource : resources) {
-			ObservableResource<Properties> res = getProperties(resource, charsetName);
-			if (res.getResource() != null) {
-				properties.putAll(res.getResource());
+			Resource res = getResource(resource);
+			if (res == null) {
+				continue;
 			}
+
 			list.add(res);
 		}
-
-		return new ObservableResource<Properties>(properties) {
-
-			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<Properties> eventListener) {
-				List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>();
-				for (ObservableResource<Properties> res : list) {
-					EventRegistration eventRegistration = res
-							.registerListener(new ObservableResourceEventListener<Properties>() {
-
-								public void onEvent(ObservableResourceEvent<Properties> event) {
-									ObservableResource<Properties> observableResource = getProperties(resources,
-											charsetName);
-									eventListener.onEvent(new ObservableResourceEvent<Properties>(event,
-											observableResource.getResource()));
-								}
-
-							});
-					eventRegistrations.add(eventRegistration);
-				}
-				return new MultiEventRegistration(eventRegistrations);
-			}
-		};
-	}
-
-	private final class PropertiesResourceListener implements EventListener<ResourceEvent> {
-		private String resource;
-		private ObservableResourceEventListener<Properties> eventListener;
-		private String charsetName;
-
-		public PropertiesResourceListener(String resource, String charsetName,
-				ObservableResourceEventListener<Properties> eventListener) {
-			this.resource = resource;
-			this.charsetName = charsetName;
-			this.eventListener = eventListener;
-		}
-
-		public void onEvent(ResourceEvent event) {
-			eventListener.onEvent(
-					new ObservableResourceEvent<Properties>(event, getProperties(resource, charsetName).getResource()));
-		}
+		return ObservableResourceUtils.getProperties(list, charsetName);
 	}
 
 	public ObservableResource<String> getContent(final String resource, final String charsetName) {
-		final Resource res = getResource(resource);
-		String content = ResourceUtils.getContent(getResource(resource), charsetName);
-		return new ObservableResource<String>(content) {
-
-			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<String> eventListener) {
-				return res.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
-					public void onEvent(ResourceEvent event) {
-						eventListener.onEvent(new ObservableResourceEvent<String>(event,
-								getContent(resource, charsetName).getResource()));
-					}
-				});
-			}
-		};
+		return ObservableResourceUtils.getContent(getResource(resource), charsetName);
 	}
 
 	public ObservableResource<String> getContent(final String resource, final Charset charset) {
-		final Resource res = getResource(resource);
-		String content = ResourceUtils.getContent(getResource(resource), charset);
-		return new ObservableResource<String>(content) {
-
-			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<String> eventListener) {
-				return res.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
-					public void onEvent(ResourceEvent event) {
-						eventListener.onEvent(new ObservableResourceEvent<String>(event,
-								getContent(resource, charset).getResource()));
-					}
-				});
-			}
-		};
+		return ObservableResourceUtils.getContent(getResource(resource), charset);
 	}
 
 	public ObservableResource<List<String>> getLines(final String resource, final Charset charset) {
-		final Resource res = getResource(resource);
-		List<String> lines = ResourceUtils.getLines(getResource(resource), charset);
-		return new ObservableResource<List<String>>(lines) {
-
-			@Override
-			public EventRegistration registerListener(
-					final ObservableResourceEventListener<List<String>> eventListener) {
-				return res.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
-					public void onEvent(ResourceEvent event) {
-						eventListener.onEvent(new ObservableResourceEvent<List<String>>(event,
-								getLines(resource, charset).getResource()));
-					}
-				});
-			}
-		};
+		return ObservableResourceUtils.getLines(getResource(resource), charset);
 	}
 
 	public ObservableResource<List<String>> getLines(final String resource, final String charsetName) {
-		final Resource res = getResource(resource);
-		List<String> lines = ResourceUtils.getLines(getResource(resource), charsetName);
-		return new ObservableResource<List<String>>(lines) {
-
-			@Override
-			public EventRegistration registerListener(
-					final ObservableResourceEventListener<List<String>> eventListener) {
-				return res.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
-					public void onEvent(ResourceEvent event) {
-						eventListener.onEvent(new ObservableResourceEvent<List<String>>(event,
-								getLines(resource, charsetName).getResource()));
-					}
-				});
-			}
-		};
+		return ObservableResourceUtils.getLines(getResource(resource), charsetName);
 	}
 
 	public boolean isExist(String resource) {
@@ -301,39 +176,10 @@ public class ResourceOperations extends DefaultResourceLoader {
 	}
 
 	public ObservableResource<UnsafeByteArrayInputStream> getInputStream(String resource) {
-		final ObservableResource<byte[]> res = getBytes(resource);
-		return new ObservableResource<UnsafeByteArrayInputStream>(
-				res.getResource() == null ? null : new UnsafeByteArrayInputStream(res.getResource())) {
-
-			@Override
-			public EventRegistration registerListener(
-					final ObservableResourceEventListener<UnsafeByteArrayInputStream> eventListener) {
-				return res.registerListener(new ObservableResourceEventListener<byte[]>() {
-
-					public void onEvent(ObservableResourceEvent<byte[]> event) {
-						eventListener.onEvent(new ObservableResourceEvent<UnsafeByteArrayInputStream>(event,
-								res.getResource() == null ? null : new UnsafeByteArrayInputStream(res.getResource())));
-					}
-				});
-			}
-		};
+		return ObservableResourceUtils.getInputStream(getResource(resource));
 	}
 
 	public ObservableResource<byte[]> getBytes(final String resource) {
-		final Resource res = getResource(resource);
-		byte[] data = ResourceUtils.getBytes(res);
-		return new ObservableResource<byte[]>(data) {
-
-			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<byte[]> eventListener) {
-				return res.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
-
-					public void onEvent(ResourceEvent event) {
-						eventListener
-								.onEvent(new ObservableResourceEvent<byte[]>(event, getBytes(resource).getResource()));
-					}
-				});
-			}
-		};
+		return ObservableResourceUtils.getBytes(getResource(resource));
 	}
 }

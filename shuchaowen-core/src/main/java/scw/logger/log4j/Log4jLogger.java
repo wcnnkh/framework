@@ -3,7 +3,7 @@ package scw.logger.log4j;
 import org.apache.log4j.Logger;
 
 import scw.event.EventListener;
-import scw.event.support.BasicEvent;
+import scw.event.ObjectEvent;
 import scw.logger.AbstractLogger;
 import scw.logger.Level;
 import scw.logger.LoggerLevelManager.DynamicLevel;
@@ -15,10 +15,10 @@ public class Log4jLogger extends AbstractLogger {
 	public Log4jLogger(Logger logger, final DynamicLevel level, String placeholder) {
 		super(level, placeholder);
 		this.logger = logger;
-		level.getEventDispatcher().registerListener(new EventListener<BasicEvent>() {
-			
-			public void onEvent(BasicEvent event) {
-				Log4jLogger.this.logger.setLevel(parse(getDynamicLevel().getLevel()));
+		level.registerListener(new EventListener<ObjectEvent<Level>>() {
+
+			public void onEvent(ObjectEvent<Level> event) {
+				Log4jLogger.this.logger.setLevel(parse(event.getSource()));
 			}
 		});
 	}

@@ -438,18 +438,15 @@ public abstract class CollectionUtils {
 	 * @param collection
 	 * @return
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T extends Collection> T reversal(T collection) {
+	@SuppressWarnings("unchecked")
+	public static <E> List<E> reversal(Collection<E> collection) {
 		if (collection == null || collection.isEmpty()) {
-			return collection;
+			return Collections.emptyList();
 		}
 
 		Object[] values = collection.toArray();
-		collection.clear();
-		for (int i = values.length - 1; i >= 0; i--) {
-			collection.add(values[i]);
-		}
-		return collection;
+		values = ArrayUtils.reversal(values);
+		return Arrays.asList((E[]) values);
 	}
 
 	/**
@@ -578,5 +575,17 @@ public abstract class CollectionUtils {
 				return new ArrayList<E>(initialCapacity);
 			}
 		};
+	}
+
+	public static <T> T first(Collection<T> values) {
+		if (isEmpty(values)) {
+			return null;
+		}
+		if (values instanceof List) {
+			List<T> list = (List<T>) values;
+			return list.get(0);
+		} else {
+			return values.iterator().next();
+		}
 	}
 }

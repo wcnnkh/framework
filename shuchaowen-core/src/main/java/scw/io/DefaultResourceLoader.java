@@ -2,23 +2,21 @@ package scw.io;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.io.event.DefaultResourceEventDispatcher;
-import scw.io.event.ResourceEventDispatcher;
 
 public class DefaultResourceLoader implements ResourceLoader {
 	private ClassLoader classLoader;
-	private final Set<ProtocolResolver> protocolResolvers = new LinkedHashSet<ProtocolResolver>(
-			4);
-	private final Set<ResourceLoader> resourceLoaders = new LinkedHashSet<ResourceLoader>(
-			4);
+	private final Set<ProtocolResolver> protocolResolvers = new LinkedHashSet<ProtocolResolver>(4);
+	private final Set<ResourceLoader> resourceLoaders = new LinkedHashSet<ResourceLoader>(4);
 
 	public DefaultResourceLoader() {
 		this.classLoader = ClassUtils.getDefaultClassLoader();
@@ -29,8 +27,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	}
 
 	public boolean isFindWorkPath() {
-		return GlobalPropertyFactory.getInstance().getValue(
-				"resource.find.workpath.enable", boolean.class, true);
+		return GlobalPropertyFactory.getInstance().getValue("resource.find.workpath.enable", boolean.class, true);
 	}
 
 	public void setClassLoader(ClassLoader classLoader) {
@@ -38,8 +35,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	}
 
 	public ClassLoader getClassLoader() {
-		return (this.classLoader != null ? this.classLoader : ClassUtils
-				.getDefaultClassLoader());
+		return (this.classLoader != null ? this.classLoader : ClassUtils.getDefaultClassLoader());
 	}
 
 	public void addProtocolResolver(ProtocolResolver resolver) {
@@ -80,9 +76,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 		if (location.startsWith("/")) {
 			return getResourceByPath(location);
 		} else if (location.startsWith(CLASSPATH_URL_PREFIX)) {
-			return new ClassPathResource(
-					location.substring(CLASSPATH_URL_PREFIX.length()),
-					getClassLoader());
+			return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 		} else {
 			try {
 				// Try to parse the location as a URL...
@@ -96,69 +90,22 @@ public class DefaultResourceLoader implements ResourceLoader {
 	}
 
 	protected Resource getResourceByPath(String path) {
-		return new AutoResource(path);
-	}
-
-	protected class AutoResource extends ResourceWrapper {
-		private final String path;
-
-		public AutoResource(String path) {
-			this.path = path;
-		}
-
-		private volatile ResourceEventDispatcher eventDispatcher;
-
-		@Override
-		public ResourceEventDispatcher getEventDispatcher() {
-			if (eventDispatcher == null) {
-				if (isSupportEventDispatcher()) {
-					synchronized (this) {
-						if (eventDispatcher == null) {
-							eventDispatcher = new DefaultResourceEventDispatcher(
-									this);
-						}
-					}
-				}
-			}
-			return eventDispatcher == null ? EMPTY_EVENT_DISPATCHER
-					: eventDispatcher;
-		}
-
-		@Override
-		public Resource getResource() {
-			ClassPathContextResource classPathContextResource = new ClassPathContextResource(
-					path, getClassLoader());
-			if (!isFindWorkPath()) {
-				return classPathContextResource;
-			}
-
-			String root = GlobalPropertyFactory.getInstance().getWorkPath();
-			if (root == null) {
-				return classPathContextResource;
-			}
-
+		List<Resource> list = new ArrayList<Resource>();
+		list.add(new ClassPathContextResource(path, classLoader));
+		String root = GlobalPropertyFactory.getInstance().getWorkPath();
+		if (isFindWorkPath() && StringUtils.isNotEmpty(root)) {
 			root = StringUtils.cleanPath(root);
 			String pathTouse = StringUtils.cleanPath(path);
 			if (!pathTouse.startsWith(root)) {
 				pathTouse = root + "/" + pathTouse;
 			}
 
-			// 优先读取workpath中的文件
-			Resource resource = new FileSystemResource(pathTouse);
-			if (resource.exists()) {
-				return resource;
-			}
-
-			if (classPathContextResource.exists()) {
-				return classPathContextResource;
-			}
-
-			return resource;
+			list.add(new FileSystemResource(pathTouse));
 		}
+		return new AutomaticResource(list);
 	}
 
-	protected static class ClassPathContextResource extends ClassPathResource
-			implements ContextResource {
+	protected static class ClassPathContextResource extends ClassPathResource implements ContextResource {
 
 		public ClassPathContextResource(String path, ClassLoader classLoader) {
 			super(path, classLoader);
@@ -170,8 +117,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 
 		@Override
 		public Resource createRelative(String relativePath) {
-			String pathToUse = StringUtils.applyRelativePath(getPath(),
-					relativePath);
+			String pathToUse = StringUtils.applyRelativePath(getPath(), relativePath);
 			return new ClassPathContextResource(pathToUse, getClassLoader());
 		}
 	}

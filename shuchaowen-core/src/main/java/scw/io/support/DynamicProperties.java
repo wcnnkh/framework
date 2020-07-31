@@ -36,7 +36,7 @@ public class DynamicProperties {
 		if (eventRegistration != null) {
 			eventRegistration.unregister();
 		}
-
+		
 		ObservableResource<Properties> observableResource = ResourceUtils.getResourceOperations()
 				.getProperties(resources, charsetName);
 		this.properties = observableResource.getResource();

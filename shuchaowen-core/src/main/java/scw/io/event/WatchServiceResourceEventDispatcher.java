@@ -80,6 +80,10 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 		super(resource);
 	}
 
+	public WatchServiceResourceEventDispatcher(Resource resource, long listenerPeriod) {
+		super(resource, listenerPeriod);
+	}
+
 	@Override
 	protected void listener() {
 		if (WATCH_SERVICE == null) {
