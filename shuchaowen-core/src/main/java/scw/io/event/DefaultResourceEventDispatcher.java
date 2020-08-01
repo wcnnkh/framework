@@ -17,10 +17,10 @@ import scw.logger.LoggerUtils;
 public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatcher {
 	private static Logger logger = LoggerUtils.getLogger(DefaultResourceEventDispatcher.class);
 	/**
-	 * 默认的监听周期4s(经过多次尝试，在性能和实时性间取舍)
+	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)
 	 */
 	static final long LISTENER_PERIOD = Math.max(1,
-			GlobalPropertyFactory.getInstance().getValue("resource.listener.period", int.class, 4)) * 1000L;
+			GlobalPropertyFactory.getInstance().getValue("resource.listener.period", int.class, 5)) * 1000L;
 	static final Timer TIMER = new Timer(true);// 守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
 	private final Resource resource;
@@ -40,12 +40,29 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 		this.period = period < XTime.ONE_SECOND ? LISTENER_PERIOD : period;
 	}
 	
+	private volatile TimerTask timerTask;
 	protected void listener() {
-		TIMER.schedule(new DefaultEventTimerTask(), period, period);
+		if(timerTask != null){
+			return ;
+		}
+		
+		timerTask = new DefaultEventTimerTask();
+		TIMER.schedule(timerTask, period, period);
+	}
+	
+	protected void cancelListener(){
+		if(timerTask != null){
+			timerTask.cancel();
+			timerTask = null;
+		}
 	}
 	
 	public Resource getResource() {
 		return resource;
+	}
+	
+	protected void onChange(ResourceEvent resourceEvent){
+		publishEvent(resourceEvent);
 	}
 
 	@Override
@@ -86,10 +103,10 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 				if (exist != this.exist) {
 					this.last = last;
 					this.exist = exist;
-					publishEvent(new ResourceEvent(exist ? EventType.CREATE : EventType.DELETE, resource));
+					onChange(new ResourceEvent(exist ? EventType.CREATE : EventType.DELETE, resource));
 				} else if (this.last != last) {
 					this.last = last;
-					publishEvent(new ResourceEvent(EventType.UPDATE, resource));
+					onChange(new ResourceEvent(EventType.UPDATE, resource));
 				}
 			} catch (Exception e) {
 				logger.error(e, resource);
