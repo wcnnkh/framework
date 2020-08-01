@@ -46,7 +46,7 @@ public final class Message implements StringAppend {
 	}
 
 	public void appendTo(Appendable appendable) throws IOException {
-		FormatUtils.loggerAppend(appendable, cts, level.name(), name, msg);
+		FormatUtils.loggerAppend(appendable, cts, level.getName(), name, msg);
 	}
 
 	@Override

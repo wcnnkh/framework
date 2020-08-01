@@ -1,28 +1,29 @@
 package scw.event.method;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import scw.event.EventRegistration;
 
 public class MultiEventRegistration implements EventRegistration {
-	private List<EventRegistration> list;
+	private List<EventRegistration> eventRegistrations;
 
-	public MultiEventRegistration(EventRegistration ...registrations) {
+	public MultiEventRegistration(EventRegistration... registrations) {
 		this(Arrays.asList(registrations));
 	}
-	
-	public MultiEventRegistration(List<EventRegistration> list) {
-		this.list = list;
+
+	public MultiEventRegistration(Collection<EventRegistration> eventRegistrations) {
+		this.eventRegistrations = Arrays.asList(eventRegistrations.toArray(new EventRegistration[0]));
 	}
 
 	public void unregister() {
-		if (list != null) {
-			for (EventRegistration registration : list) {
-				if(registration == null){
+		if (eventRegistrations != null) {
+			for (EventRegistration registration : eventRegistrations) {
+				if (registration == null) {
 					continue;
 				}
-				
+
 				registration.unregister();
 			}
 		}

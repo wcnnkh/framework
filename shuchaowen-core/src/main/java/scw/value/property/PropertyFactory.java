@@ -13,17 +13,15 @@ import scw.core.utils.CollectionUtils;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.method.MultiEventRegistration;
+import scw.event.support.ValueEvent;
 import scw.util.MultiEnumeration;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.StringValueFactory;
 import scw.value.Value;
 import scw.value.ValueWrapper;
-import scw.value.event.DefaultDynamicMap;
-import scw.value.event.DynamicMap;
-import scw.value.event.DynamicMapRegistration;
-import scw.value.event.ValueCreator;
-import scw.value.event.ValueEvent;
+import scw.value.property.DynamicMap.DynamicMapRegistration;
+import scw.value.property.DynamicMap.ValueCreator;
 
 public class PropertyFactory extends StringValueFactory implements BasePropertyFactory {
 	private final List<BasePropertyFactory> basePropertyFactories;
@@ -36,7 +34,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	 *            是否优先使用自身的值
 	 */
 	public PropertyFactory(boolean concurrent, boolean priorityOfUseSelf) {
-		this.dynamicMap = new DefaultDynamicMap(concurrent);
+		this.dynamicMap = new DynamicMap(concurrent);
 		this.basePropertyFactories = concurrent ? new CopyOnWriteArrayList<BasePropertyFactory>()
 				: new LinkedList<BasePropertyFactory>();
 		this.priorityOfUseSelf = priorityOfUseSelf;
@@ -125,7 +123,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		return false;
 	}
 
-	private class PropertyEventListener implements EventListener<ValueEvent> {
+	private class PropertyEventListener implements EventListener<ValueEvent<Value>> {
 		private final EventListener<PropertyEvent> eventListener;
 		private final String key;
 
@@ -134,14 +132,14 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 			this.eventListener = eventListener;
 		}
 
-		public void onEvent(ValueEvent event) {
+		public void onEvent(ValueEvent<Value> event) {
 			eventListener.onEvent(new PropertyEvent(PropertyFactory.this, key, event));
 		}
 	}
 
-	public EventRegistration registerListener(String key, EventListener<PropertyEvent> eventListener) {
+	public EventRegistration registerListener(Object key, EventListener<PropertyEvent> eventListener) {
 		EventRegistration registration = dynamicMap.getEventDispatcher().registerListener(key,
-				new PropertyEventListener(key, eventListener));
+				new PropertyEventListener(key.toString(), eventListener));
 		EventRegistration[] registrations = new EventRegistration[basePropertyFactories.size() + 1];
 		registrations[0] = registration;
 		int index = 1;
@@ -151,11 +149,11 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		return new MultiEventRegistration(registrations);
 	}
 
-	public void unregister(String name) {
+	public void unregister(Object name) {
 		dynamicMap.getEventDispatcher().unregister(name);
 	}
 
-	public void publishEvent(String name, PropertyEvent event) {
+	public void publishEvent(Object name, PropertyEvent event) {
 		dynamicMap.getEventDispatcher().publishEvent(name, event);
 	}
 
@@ -276,8 +274,20 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 			return propertiesRegistration;
 		}
 
+		/**
+		 * 默认只有当资源存在时才注册
+		 * @return
+		 */
 		public PropertyFactory registerListener() {
-			propertiesRegistration.register();
+			return registerListener(true);
+		}
+		
+		/**
+		 * @param isExist true表示只有当资源存在时才注册
+		 * @return
+		 */
+		public PropertyFactory registerListener(boolean isExist) {
+			propertiesRegistration.register(isExist);
 			return getPropertyFactory();
 		}
 	}

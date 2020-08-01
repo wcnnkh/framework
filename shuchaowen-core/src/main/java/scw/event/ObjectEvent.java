@@ -1,10 +1,12 @@
 package scw.event;
 
-public class EventObject<T> extends java.util.EventObject implements Event {
+import java.util.EventObject;
+
+public class ObjectEvent<T> extends EventObject implements Event {
 	private static final long serialVersionUID = 1L;
 	private final long createTime;
 
-	public EventObject(T source) {
+	public ObjectEvent(T source) {
 		super(source);
 		this.createTime = System.currentTimeMillis();
 	}
@@ -17,5 +19,10 @@ public class EventObject<T> extends java.util.EventObject implements Event {
 	@Override
 	public T getSource() {
 		return (T) super.getSource();
+	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + ", source=" + getSource();
 	}
 }

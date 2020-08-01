@@ -5,33 +5,64 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.XTime;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.support.DefaultBasicEventDispatcher;
 import scw.event.support.EventType;
 import scw.io.Resource;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
-public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<ResourceEvent>
-		implements ResourceEventDispatcher {
+public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatcher {
 	private static Logger logger = LoggerUtils.getLogger(DefaultResourceEventDispatcher.class);
-	static final Timer TIMER = new Timer(true);//守护进程，自动退出
+	/**
+	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)
+	 */
+	static final long LISTENER_PERIOD = Math.max(1,
+			GlobalPropertyFactory.getInstance().getValue("resource.listener.period", int.class, 5)) * 1000L;
+	static final Timer TIMER = new Timer(true);// 守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
 	private final Resource resource;
+	private final long period;
 
 	public DefaultResourceEventDispatcher(Resource resource) {
+		this(resource, LISTENER_PERIOD);
+	}
+
+	/**
+	 * @param resource
+	 * @param period 不能小于1000ms
+	 */
+	public DefaultResourceEventDispatcher(Resource resource, long period) {
 		super(true);
 		this.resource = resource;
+		this.period = period < XTime.ONE_SECOND ? LISTENER_PERIOD : period;
 	}
-
+	
+	private volatile TimerTask timerTask;
 	protected void listener() {
-		TIMER.schedule(new DefaultEventTimerTask(), XTime.ONE_SECOND, XTime.ONE_SECOND);
+		if(timerTask != null){
+			return ;
+		}
+		
+		timerTask = new DefaultEventTimerTask();
+		TIMER.schedule(timerTask, period, period);
 	}
-
+	
+	protected void cancelListener(){
+		if(timerTask != null){
+			timerTask.cancel();
+			timerTask = null;
+		}
+	}
+	
 	public Resource getResource() {
 		return resource;
+	}
+	
+	protected void onChange(ResourceEvent resourceEvent){
+		publishEvent(resourceEvent);
 	}
 
 	@Override
@@ -72,10 +103,10 @@ public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<
 				if (exist != this.exist) {
 					this.last = last;
 					this.exist = exist;
-					publishEvent(new ResourceEvent(exist ? EventType.CREATE : EventType.DELETE, resource));
+					onChange(new ResourceEvent(exist ? EventType.CREATE : EventType.DELETE, resource));
 				} else if (this.last != last) {
 					this.last = last;
-					publishEvent(new ResourceEvent(EventType.UPDATE, resource));
+					onChange(new ResourceEvent(EventType.UPDATE, resource));
 				}
 			} catch (Exception e) {
 				logger.error(e, resource);

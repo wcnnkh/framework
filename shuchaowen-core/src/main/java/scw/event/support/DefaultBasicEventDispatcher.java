@@ -18,7 +18,7 @@ public class DefaultBasicEventDispatcher<T extends Event> implements BasicEventD
 	public DefaultBasicEventDispatcher(boolean concurrent) {
 		this.concurrent = concurrent;
 		this.eventListeners = concurrent ? new CopyOnWriteArraySet<EventRegistrationInternal>()
-				: new LinkedHashSet<EventRegistrationInternal>();
+				: new LinkedHashSet<EventRegistrationInternal>(8);
 	}
 
 	public final boolean isConcurrent() {

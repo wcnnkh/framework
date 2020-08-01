@@ -1,47 +1,53 @@
 package scw.logger;
 
 public interface Logger {
-	static final Object[] EMPTY_ARGS = new Object[0];
-	
 	String getName();
 
 	boolean isInfoEnabled();
 
-	void info(final Object format);
+	void info(Object format);
 
-	void info(final Object format, final Object... args);
+	void info(Object format, Object... args);
 
-	void info(final Throwable e, final Object format, final Object... args);
+	void info(Throwable e, Object format, Object... args);
 
 	boolean isTraceEnabled();
 
-	void trace(final Object format);
+	void trace(Object format);
 
-	void trace(final Object format, final Object... args);
+	void trace(Object format, Object... args);
 
-	void trace(final Throwable e,final Object format,final Object... args);
+	void trace(Throwable e, Object format, Object... args);
 
 	boolean isWarnEnabled();
 
-	void warn(final Object format);
+	void warn(Object format);
 
-	void warn(final Object format,final Object... args);
+	void warn(Object format, Object... args);
 
-	void warn(final Throwable e, final Object format, final Object... args);
+	void warn(Throwable e, Object format, Object... args);
 
 	boolean isErrorEnabled();
 
-	void error(final Object format);
+	void error(Object format);
 
-	void error(final Object format, final Object... args);
+	void error(Object format, Object... args);
 
-	void error(final Throwable e, final Object format, final Object... args);
+	void error(Throwable e, Object format, Object... args);
 
 	boolean isDebugEnabled();
 
-	void debug(final Object format);
+	void debug(Object format);
 
-	void debug(final Object format, final Object... args);
+	void debug(Object format, Object... args);
 
-	void debug(final Throwable e, final Object format, final Object... args);
+	void debug(Throwable e, Object format, Object... args);
+
+	boolean isLogEnable(Level level);
+
+	void log(Level level, Object format);
+
+	void log(Level level, Object format, Object... args);
+
+	void log(Level level, Throwable e, Object format, Object... args);
 }

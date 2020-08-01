@@ -2,8 +2,10 @@ package scw.io;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import scw.core.Assert;
@@ -88,33 +90,19 @@ public class DefaultResourceLoader implements ResourceLoader {
 	}
 
 	protected Resource getResourceByPath(String path) {
-		ClassPathContextResource classPathContextResource = new ClassPathContextResource(path, getClassLoader());
-		if (!isFindWorkPath()) {
-			return classPathContextResource;
-		}
-
+		List<Resource> list = new ArrayList<Resource>();
+		list.add(new ClassPathContextResource(path, classLoader));
 		String root = GlobalPropertyFactory.getInstance().getWorkPath();
-		if (root == null) {
-			return classPathContextResource;
-		}
+		if (isFindWorkPath() && StringUtils.isNotEmpty(root)) {
+			root = StringUtils.cleanPath(root);
+			String pathTouse = StringUtils.cleanPath(path);
+			if (!pathTouse.startsWith(root)) {
+				pathTouse = root + "/" + pathTouse;
+			}
 
-		root = StringUtils.cleanPath(root);
-		String pathTouse = StringUtils.cleanPath(path);
-		if (!pathTouse.startsWith(root)) {
-			pathTouse = root + "/" + pathTouse;
+			list.add(new FileSystemResource(pathTouse));
 		}
-
-		// 优先读取workpath中的文件
-		Resource resource = new FileSystemResource(pathTouse);
-		if (resource.exists()) {
-			return resource;
-		}
-
-		if (classPathContextResource.exists()) {
-			return classPathContextResource;
-		}
-
-		return resource;
+		return new AutomaticResource(list);
 	}
 
 	protected static class ClassPathContextResource extends ClassPathResource implements ContextResource {

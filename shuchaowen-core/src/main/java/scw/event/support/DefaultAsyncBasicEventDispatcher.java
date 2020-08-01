@@ -40,18 +40,20 @@ public class DefaultAsyncBasicEventDispatcher<T extends Event> extends DefaultBa
 
 	public void run() {
 		while (!thread.isInterrupted() && started) {
-			T message;
-			try {
-				message = blockingQueue.take();
-			} catch (InterruptedException e) {
-				break;
-			}
+			synchronized (blockingQueue) {
+				T message;
+				try {
+					message = blockingQueue.take();
+				} catch (InterruptedException e) {
+					break;
+				}
 
-			if (message == null) {
-				continue;
-			}
+				if (message == null) {
+					continue;
+				}
 
-			super.publishEvent(message);
+				super.publishEvent(message);
+			}
 		}
 	}
 
@@ -65,13 +67,15 @@ public class DefaultAsyncBasicEventDispatcher<T extends Event> extends DefaultBa
 		}
 
 		started = false;
-		while (!blockingQueue.isEmpty()) {
-			T message = blockingQueue.poll();
-			if (message == null) {
-				continue;
-			}
+		synchronized (blockingQueue) {
+			while (!blockingQueue.isEmpty()) {
+				T message = blockingQueue.poll();
+				if (message == null) {
+					continue;
+				}
 
-			super.publishEvent(message);
+				super.publishEvent(message);
+			}
 		}
 		destroy = true;
 	}

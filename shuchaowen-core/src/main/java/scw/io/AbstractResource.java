@@ -36,25 +36,27 @@ public abstract class AbstractResource implements Resource {
 
 	public ResourceEventDispatcher getEventDispatcher() {
 		if (eventDispatcher == null) {
-			if (isSupportEventDispatcher()) {
-				synchronized (this) {
-					if (eventDispatcher == null) {
-						if (JavaVersion.INSTANCE.getMasterVersion() >= 7) {
-							try {
-								eventDispatcher = WATCH_SERVICE_CONSTRUCTOR.newInstance(this);
-							} catch (Exception e) {
-								ReflectionUtils.handleReflectionException(e);
-							}
-						}
+			if (!isSupportEventDispatcher()) {
+				return EMPTY_EVENT_DISPATCHER;
+			}
 
-						if (eventDispatcher == null) {
-							eventDispatcher = new DefaultResourceEventDispatcher(this);
+			synchronized (this) {
+				if (eventDispatcher == null) {
+					if (JavaVersion.INSTANCE.getMasterVersion() >= 7) {
+						try {
+							eventDispatcher = WATCH_SERVICE_CONSTRUCTOR.newInstance(this);
+						} catch (Exception e) {
+							ReflectionUtils.handleReflectionException(e);
 						}
+					}
+
+					if (eventDispatcher == null) {
+						eventDispatcher = new DefaultResourceEventDispatcher(this);
 					}
 				}
 			}
 		}
-		return eventDispatcher == null ? EMPTY_EVENT_DISPATCHER : eventDispatcher;
+		return eventDispatcher;
 	}
 
 	public boolean isSupportEventDispatcher() {

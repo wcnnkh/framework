@@ -181,7 +181,7 @@ public class AutoSource<T> {
 			ParameterDescriptor parameterDescriptor = parameterDescriptors[i];
 			try {
 				boolean auto = isAuto(parameterDescriptor);
-				LoggerUtils.logger(logger, auto ? Level.TRACE : Level.DEBUG, "{} parameter index {} matching: {}",
+				logger.log(auto ? Level.TRACE : Level.DEBUG, "{} parameter index {} matching: {}",
 						source, i, auto ? "success" : "fail");
 				if (!auto) {
 					return false;

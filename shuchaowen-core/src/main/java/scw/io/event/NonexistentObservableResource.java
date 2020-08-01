@@ -1,7 +1,6 @@
 package scw.io.event;
 
 import scw.event.EventRegistration;
-import scw.event.support.EmptyEventRegistration;
 
 public class NonexistentObservableResource<T> extends ObservableResource<T> {
 
@@ -10,7 +9,7 @@ public class NonexistentObservableResource<T> extends ObservableResource<T> {
 	}
 
 	@Override
-	public EventRegistration registerListener(ObservableResourceEventListener<T> eventListener) {
-		return new EmptyEventRegistration();
+	public EventRegistration registerListener(ObservableResourceEventListener<T> eventListener, boolean isExist) {
+		return EventRegistration.EMPTY;
 	}
 }

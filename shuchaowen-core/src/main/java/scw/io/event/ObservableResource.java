@@ -13,5 +13,19 @@ public abstract class ObservableResource<T> {
 		return resource;
 	}
 
-	public abstract EventRegistration registerListener(ObservableResourceEventListener<T> eventListener);
+	/**
+	 * 默认情况下只有当资源存在时才会监听
+	 * @param eventListener
+	 * @return
+	 */
+	public EventRegistration registerListener(ObservableResourceEventListener<T> eventListener){
+		return registerListener(eventListener, true);
+	}
+
+	/**
+	 * @param eventListener
+	 * @param isExist true表示只有在资源存在时才注册此监听
+	 * @return
+	 */
+	public abstract EventRegistration registerListener(ObservableResourceEventListener<T> eventListener, boolean isExist);
 }

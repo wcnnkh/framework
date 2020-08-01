@@ -9,7 +9,7 @@ public class EmptyEventDispatcher<T extends Event> implements
 		EventDispatcher<T> {
 
 	public EventRegistration registerListener(EventListener<T> eventListener) {
-		return new EmptyEventRegistration();
+		return EventRegistration.EMPTY;
 	}
 
 	public void publishEvent(T event) {
@@ -22,23 +22,23 @@ public class EmptyEventDispatcher<T extends Event> implements
 
 	public <E extends T> EventRegistration registerListener(Class<E> eventType,
 			EventListener<E> eventListener) {
-		return new EmptyEventRegistration();
+		return EventRegistration.EMPTY;
 	}
 
 	public <E extends T> void publishEvent(Class<E> eventType, E event) {
 		// ignore
 	}
 
-	public void unregister(String name) {
+	public void unregister(Object name) {
 		// ignore
 	}
 
-	public EventRegistration registerListener(String name,
+	public EventRegistration registerListener(Object name,
 			EventListener<T> eventListener) {
-		return new EmptyEventRegistration();
+		return EventRegistration.EMPTY;
 	}
 
-	public void publishEvent(String name, T event) {
+	public void publishEvent(Object name, T event) {
 		// ignore
 	}
 
