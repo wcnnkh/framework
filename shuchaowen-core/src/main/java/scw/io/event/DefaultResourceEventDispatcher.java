@@ -17,10 +17,10 @@ import scw.logger.LoggerUtils;
 public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatcher {
 	private static Logger logger = LoggerUtils.getLogger(DefaultResourceEventDispatcher.class);
 	/**
-	 * 默认的监听周期
+	 * 默认的监听周期4s(经过多次尝试，在性能和实时性间取舍)
 	 */
 	static final long LISTENER_PERIOD = Math.max(1,
-			GlobalPropertyFactory.getInstance().getValue("resource.listener.period", int.class, 8)) * 1000L;
+			GlobalPropertyFactory.getInstance().getValue("resource.listener.period", int.class, 4)) * 1000L;
 	static final Timer TIMER = new Timer(true);// 守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
 	private final Resource resource;
@@ -39,11 +39,11 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 		this.resource = resource;
 		this.period = period < XTime.ONE_SECOND ? LISTENER_PERIOD : period;
 	}
-
+	
 	protected void listener() {
 		TIMER.schedule(new DefaultEventTimerTask(), period, period);
 	}
-
+	
 	public Resource getResource() {
 		return resource;
 	}

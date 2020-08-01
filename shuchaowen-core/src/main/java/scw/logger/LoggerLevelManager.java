@@ -11,7 +11,6 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.event.BasicEventDispatcher;
 import scw.event.EventListener;
-import scw.event.EventRegistration;
 import scw.event.ObjectEvent;
 import scw.event.support.BasicEvent;
 import scw.event.support.DefaultBasicEventDispatcher;
@@ -35,17 +34,22 @@ public class LoggerLevelManager {
 	private static LoggerLevelManager loggerLevelManager;
 
 	static {
-		String defaultLevel = GlobalPropertyFactory.getInstance().getString(Level.class.getName());
-		Level defLevel = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level.getLevel(defaultLevel.toUpperCase());
+		String defaultLevel = GlobalPropertyFactory.getInstance().getString(
+				Level.class.getName());
+		Level defLevel = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level
+				.getLevel(defaultLevel.toUpperCase());
 
-		ClassPathResource resource = new ClassPathResource("scw/logger/logger-level.properties");
+		ClassPathResource resource = new ClassPathResource(
+				"scw/logger/logger-level.properties");
 		Properties properties = new Properties();
 		ResourceUtils.loadProperties(properties, resource, null);
-		DEFAULT_LEVEL_MAP = Collections.unmodifiableMap(parse(properties, defLevel));
+		DEFAULT_LEVEL_MAP = Collections.unmodifiableMap(parse(properties,
+				defLevel));
 
 		loggerLevelManager = new LoggerLevelManager(defLevel);
-		loggerLevelManager.loadProperties(GlobalPropertyFactory.getInstance().getValue("scw.logger.level.config",
-				String.class, "/logger-level.properties"));
+		loggerLevelManager.loadProperties(GlobalPropertyFactory.getInstance()
+				.getValue("scw.logger.level.config", String.class,
+						"/logger-level.properties"));
 	}
 
 	public static LoggerLevelManager getInstance() {
@@ -54,25 +58,30 @@ public class LoggerLevelManager {
 
 	private final Level defaultLevel;
 	private volatile TreeMap<String, Level> levelMap;
-	private final BasicEventDispatcher<BasicEvent> eventDispatcher = new DefaultBasicEventDispatcher<BasicEvent>(true);
-	private final DynamicProperties dynamicProperties = new DynamicProperties(false);
+	private final BasicEventDispatcher<BasicEvent> eventDispatcher = new DefaultBasicEventDispatcher<BasicEvent>(
+			true);
+	private final DynamicProperties dynamicProperties = new DynamicProperties(
+			false);
 
 	private LoggerLevelManager(Level defaultLevel) {
 		this.defaultLevel = defaultLevel;
-		dynamicProperties.getEventDispatcher().registerListener(new EventListener<ObjectEvent<Properties>>() {
-			public void onEvent(ObjectEvent<Properties> event) {
-				levelMap = parse(event.getSource(), getDefaultLevel());
-				eventDispatcher.publishEvent(new BasicEvent());
-			};
-		});
+		dynamicProperties.getEventDispatcher().registerListener(
+				new EventListener<ObjectEvent<Properties>>() {
+					public void onEvent(ObjectEvent<Properties> event) {
+						levelMap = parse(event.getSource(), getDefaultLevel());
+						eventDispatcher.publishEvent(new BasicEvent());
+					};
+				});
 	}
 
 	public boolean loadProperties(String properties) {
 		return dynamicProperties.load(properties);
 	}
 
-	private static TreeMap<String, Level> parse(Properties properties, Level defaultLevel) {
-		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);
+	private static TreeMap<String, Level> parse(Properties properties,
+			Level defaultLevel) {
+		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(
+				LEVEL_NAME_COMPARATOR);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			Object key = entry.getKey();
 			if (key == null) {
@@ -84,7 +93,8 @@ public class LoggerLevelManager {
 				continue;
 			}
 
-			Level level = Level.getLevel(value.toString(), defaultLevel.getValue());
+			Level level = Level.getLevel(value.toString(),
+					defaultLevel.getValue());
 			if (level == null) {
 				continue;
 			}
@@ -126,69 +136,54 @@ public class LoggerLevelManager {
 
 	@SuppressWarnings("unchecked")
 	public Map<String, Level> getLevelMap() {
-		return (Map<String, Level>) (levelMap == null ? Collections.emptyMap() : Collections.unmodifiableMap(levelMap));
+		return (Map<String, Level>) (levelMap == null ? Collections.emptyMap()
+				: Collections.unmodifiableMap(levelMap));
 	}
 
 	public BasicEventDispatcher<BasicEvent> getEventDispatcher() {
 		return eventDispatcher;
 	}
 
-	public final class DynamicLevel implements EventRegistration {
+	public final class DynamicLevel {
 		private volatile Level level;
-		private EventRegistration eventRegistration;
 		private String name;
+		private volatile BasicEventDispatcher<ObjectEvent<Level>> eventDispatcher;
 
 		public DynamicLevel(String name) {
 			this.name = name;
 			this.level = LoggerLevelManager.this.getLevel(name);
-			this.eventRegistration = LoggerLevelManager.this.eventDispatcher
+			LoggerLevelManager.this.eventDispatcher
 					.registerListener(new EventListener<BasicEvent>() {
 
 						public void onEvent(BasicEvent event) {
-							Level level = LoggerLevelManager.this.getLevel(DynamicLevel.this.name);
+							Level level = LoggerLevelManager.this
+									.getLevel(DynamicLevel.this.name);
 							if (!level.equals(DynamicLevel.this.level)) {
 								DynamicLevel.this.level = level;
+								if (eventDispatcher != null) {
+									eventDispatcher
+											.publishEvent(new ObjectEvent<Level>(
+													DynamicLevel.this.level));
+								}
 							}
 						}
 					});
-		}
-
-		public void register() {
-			if (eventRegistration != null) {
-				return;
-			}
-
-			this.eventRegistration = registerListener(new EventListener<ObjectEvent<Level>>() {
-
-				public void onEvent(ObjectEvent<Level> event) {
-					DynamicLevel.this.level = event.getSource();
-				}
-			});
-		}
-
-		public void unregister() {
-			if (eventRegistration == null) {
-				return;
-			}
-
-			eventRegistration.unregister();
-			eventRegistration = null;
 		}
 
 		public Level getLevel() {
 			return level;
 		}
 
-		public EventRegistration registerListener(final EventListener<ObjectEvent<Level>> listener) {
-			return LoggerLevelManager.this.eventDispatcher.registerListener(new EventListener<BasicEvent>() {
-
-				public void onEvent(BasicEvent event) {
-					Level level = LoggerLevelManager.this.getLevel(DynamicLevel.this.name);
-					if (!level.equals(DynamicLevel.this.level)) {
-						listener.onEvent(new ObjectEvent<Level>(level));
+		public BasicEventDispatcher<ObjectEvent<Level>> getEventDispatcher() {
+			if (eventDispatcher == null) {
+				synchronized (this) {
+					if (eventDispatcher == null) {
+						eventDispatcher = new DefaultBasicEventDispatcher<ObjectEvent<Level>>(
+								true);
 					}
 				}
-			});
+			}
+			return eventDispatcher;
 		}
 	}
 }

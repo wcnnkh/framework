@@ -15,7 +15,7 @@ public class Log4jLogger extends AbstractLogger {
 	public Log4jLogger(Logger logger, final DynamicLevel level, String placeholder) {
 		super(level, placeholder);
 		this.logger = logger;
-		level.registerListener(new EventListener<ObjectEvent<Level>>() {
+		level.getEventDispatcher().registerListener(new EventListener<ObjectEvent<Level>>() {
 
 			public void onEvent(ObjectEvent<Level> event) {
 				Log4jLogger.this.logger.setLevel(parse(event.getSource()));
