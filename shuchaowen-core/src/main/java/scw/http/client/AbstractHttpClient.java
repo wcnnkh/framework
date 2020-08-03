@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.Assert;
+import scw.core.instance.InstanceUtils;
 import scw.http.HttpMethod;
 import scw.http.HttpResponseEntity;
 import scw.http.HttpStatus;
@@ -19,8 +20,19 @@ import scw.net.InetUtils;
 import scw.net.message.converter.MultiMessageConverter;
 
 public abstract class AbstractHttpClient implements HttpClient {
-	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = new DefaultClientHttpInputMessageErrorHandler();
+	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
+	static final HttpClientCookieManager COOKIE_MANAGER;
+	
+	static{
+		ClientHttpResponseErrorHandler errorHandler = InstanceUtils.loadService(ClientHttpResponseErrorHandler.class);
+		CLIENT_HTTP_RESPONSE_ERROR_HANDLER = errorHandler == null? new DefaultClientHttpResponseErrorHandler():errorHandler;
+	
+		COOKIE_MANAGER = InstanceUtils.loadService(HttpClientCookieManager.class);
+	}
+	
 	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
+	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
+	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
 
 	public AbstractHttpClient() {
@@ -52,6 +64,15 @@ public abstract class AbstractHttpClient implements HttpClient {
 		this.clientHttpResponseErrorHandler = clientHttpResponseErrorHandler;
 	}
 
+	public HttpClientCookieManager getCookieManager() {
+		return cookieManager;
+	}
+
+	public void setCookieManager(HttpClientCookieManager cookieManager) {
+		Assert.notNull(clientHttpResponseErrorHandler, "HttpClientCookieManager must not be null");
+		this.cookieManager = cookieManager;
+	}
+
 	protected RuntimeException throwIOException(IOException ex, ClientHttpRequestBuilder builder) {
 		return new HttpClientResourceAccessException("I/O error on " + builder.getMethod().name() + " request for \""
 				+ builder.getUri() + "\": " + ex.getMessage(), ex);
@@ -79,11 +100,18 @@ public abstract class AbstractHttpClient implements HttpClient {
 			throws HttpClientException {
 		ClientHttpResponse response = null;
 		ClientHttpRequest request;
+		HttpClientCookieManager cookieManager = getCookieManager();
 		try {
 			request = builder.builder();
 			requestCallback(builder, request, requestCallback);
+			if(cookieManager != null){
+				cookieManager.accept(request);
+			}
 			response = request.execute();
 			handleResponse(builder, response);
+			if(cookieManager != null){
+				cookieManager.accept(response);
+			}
 			T body = responseExtractor(builder, response, clientResponseExtractor);
 			return new HttpResponseEntity<T>(body, response.getHeaders(), response.getStatusCode());
 		} catch (IOException ex) {

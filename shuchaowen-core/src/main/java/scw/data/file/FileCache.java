@@ -13,6 +13,7 @@ import scw.beans.Destroy;
 import scw.beans.Init;
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 import scw.data.ExpiredCache;
 import scw.http.HttpUtils;
 import scw.io.FileUtils;
@@ -32,23 +33,33 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 	private final String charsetName;
 	private final String cacheDirectory;
 
+	/**
+	 * @param exp 单位:秒
+	 */
 	protected FileCache(int exp) {
-		this.exp = exp;
-		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
-		this.charsetName = Constants.DEFAULT_CHARSET_NAME;
-		this.cacheDirectory = SystemPropertyFactory.getInstance().getTempDirectoryPath() + File.separator
-				+ getClass().getName();
+		this(exp, SerializerUtils.DEFAULT_SERIALIZER, Constants.DEFAULT_CHARSET_NAME, SystemPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + exp);
 	}
 
+	/**
+	 * @param exp 单位:秒
+	 * @param cacheDirectory
+	 */
 	public FileCache(int exp, String cacheDirectory) {
 		this(exp, SerializerUtils.DEFAULT_SERIALIZER, Constants.DEFAULT_CHARSET_NAME, cacheDirectory);
 	}
 
+	/**
+	 * @param exp 单位:秒
+	 * @param serializer
+	 * @param charsetName
+	 * @param cacheDirectory
+	 */
 	public FileCache(int exp, NoTypeSpecifiedSerializer serializer, String charsetName, String cacheDirectory) {
 		this.exp = exp;
 		this.serializer = serializer;
 		this.charsetName = charsetName;
-		this.cacheDirectory = cacheDirectory;
+		this.cacheDirectory = StringUtils.cleanPath(cacheDirectory);
+		logger.info("{} exp is {} use cache directory: {}", getClass().getName(), exp, this.cacheDirectory);
 	}
 
 	public void init() {

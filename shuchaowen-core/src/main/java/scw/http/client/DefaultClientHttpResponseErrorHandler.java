@@ -11,7 +11,7 @@ import scw.http.client.exception.HttpServerErrorException;
 import scw.http.client.exception.UnknownHttpStatusCodeException;
 import scw.io.FileCopyUtils;
 
-public class DefaultClientHttpInputMessageErrorHandler implements
+public class DefaultClientHttpResponseErrorHandler implements
 		ClientHttpResponseErrorHandler {
 
 	/**
