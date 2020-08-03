@@ -8,9 +8,11 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.Assert;
 import scw.http.HttpMethod;
 import scw.http.HttpResponseEntity;
+import scw.http.HttpStatus;
 import scw.http.MediaType;
 import scw.http.client.exception.HttpClientException;
 import scw.http.client.exception.HttpClientResourceAccessException;
+import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.InetUtils;
@@ -96,43 +98,60 @@ public abstract class AbstractHttpClient implements HttpClient {
 	protected abstract ClientHttpRequestBuilder createBuilder(String url, HttpMethod method,
 			SSLSocketFactory sslSocketFactory);
 
-	public HttpResponseEntity<Object> execute(final Type responseType, String url, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, final Object body, final MediaType contentType)
-			throws HttpClientException {
-		return execute(createBuilder(url, method, sslSocketFactory), new ClientHttpRequestCallback() {
+	protected ClientHttpRequestCallback getWriteRequestBodyCallback(final HttpMethod httpMethod, final Object body,
+			final MediaType contentType) {
+		if (body == null || httpMethod == HttpMethod.GET) {
+			return null;
+		}
+
+		if (!getMessageConverter().canWrite(body, contentType)) {
+			throw new NotSupportedException("not supported write contentType=" + contentType + ", body=" + body);
+		}
+
+		return new ClientHttpRequestCallback() {
 
 			public void callback(ClientHttpRequest clientRequest) throws IOException {
-				if (body == null) {
-					return;
-				}
-
 				getMessageConverter().write(body, contentType, clientRequest);
 			}
-		}, new ClientHttpResponseExtractor<Object>() {
-			public Object execute(ClientHttpResponse response) throws IOException {
-				return getMessageConverter().read(responseType, response);
-			}
-		});
+		};
 	}
 
+	protected <T> ClientHttpResponseExtractor<T> getClientHttpResponseExtractor(HttpMethod httpMethod,
+			final Type responseType) {
+		if (httpMethod == HttpMethod.HEAD) {
+			return null;
+		}
+
+		return new ClientHttpResponseExtractor<T>() {
+			@SuppressWarnings("unchecked")
+			public T execute(ClientHttpResponse response) throws IOException {
+				if (HttpStatus.OK.value() != response.getRawStatusCode()) {
+					return null;
+				}
+
+				if (!getMessageConverter().canRead(responseType, response.getContentType())) {
+					throw new NotSupportedException("not supported read responseType=" + responseType);
+				}
+
+				return (T) getMessageConverter().read(responseType, response);
+			}
+		};
+	}
+
+	public HttpResponseEntity<Object> execute(final Type responseType, String url, HttpMethod method,
+			SSLSocketFactory sslSocketFactory, Object body, MediaType contentType) throws HttpClientException {
+		return execute(createBuilder(url, method, sslSocketFactory),
+				getWriteRequestBodyCallback(method, body, contentType),
+				getClientHttpResponseExtractor(method, responseType));
+	}
+
+	@SuppressWarnings("unchecked")
 	public <T> HttpResponseEntity<T> execute(final Class<? extends T> responseType, String url, HttpMethod method,
 			SSLSocketFactory sslSocketFactory, final Object body, final MediaType contentType)
 			throws HttpClientException {
-		return execute(createBuilder(url, method, sslSocketFactory), new ClientHttpRequestCallback() {
-
-			public void callback(ClientHttpRequest clientRequest) throws IOException {
-				if (body == null) {
-					return;
-				}
-
-				getMessageConverter().write(body, contentType, clientRequest);
-			}
-		}, new ClientHttpResponseExtractor<T>() {
-			@SuppressWarnings("unchecked")
-			public T execute(ClientHttpResponse response) throws IOException {
-				return (T) getMessageConverter().read(responseType, response);
-			}
-		});
+		return (HttpResponseEntity<T>) execute(createBuilder(url, method, sslSocketFactory),
+				getWriteRequestBodyCallback(method, body, contentType),
+				getClientHttpResponseExtractor(method, responseType));
 	}
 
 	public <T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url) throws HttpClientException {
