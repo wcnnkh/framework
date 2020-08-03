@@ -7,20 +7,17 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.Assert;
 import scw.http.HttpMethod;
+import scw.http.HttpResponseEntity;
 import scw.http.MediaType;
-import scw.http.SerializableHttpInputMessage;
 import scw.http.client.exception.HttpClientException;
 import scw.http.client.exception.HttpClientResourceAccessException;
-import scw.io.IOUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.net.MimeType;
 import scw.net.InetUtils;
-import scw.net.message.InputMessage;
 import scw.net.message.converter.MultiMessageConverter;
 
 public abstract class AbstractHttpClient implements HttpClient {
-	private ClientHttpInputMessageErrorHandler clientHttpInputMessageErrorHandler = new DefaultClientHttpInputMessageErrorHandler();
+	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = new DefaultClientHttpInputMessageErrorHandler();
 	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
 	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
 
@@ -30,25 +27,6 @@ public abstract class AbstractHttpClient implements HttpClient {
 
 	public MultiMessageConverter getMessageConverter() {
 		return messageConverter;
-	}
-
-	public <T> T execute(ClientHttpRequestBuilder builder, ClientHttpRequestCallback requestCallback,
-			ClientHttpResponseExtractor<T> clientResponseExtractor) throws HttpClientException {
-		ClientHttpResponse response = null;
-		ClientHttpRequest request;
-		try {
-			request = builder.builder();
-			requestCallback(builder, request, requestCallback);
-			response = request.execute();
-			handleResponse(builder, response);
-			return responseExtractor(builder, response, clientResponseExtractor);
-		} catch (IOException ex) {
-			throw throwIOException(ex, builder);
-		} finally {
-			if (response != null) {
-				response.close();
-			}
-		}
 	}
 
 	protected void requestCallback(ClientHttpRequestBuilder builder, ClientHttpRequest request,
@@ -63,61 +41,13 @@ public abstract class AbstractHttpClient implements HttpClient {
 		return clientResponseExtractor == null ? null : clientResponseExtractor.execute(response);
 	}
 
-	public SerializableHttpInputMessage execute(final ClientHttpRequestBuilder builder,
-			final InputMessage inputMessage) {
-		return execute(builder, new ClientHttpRequestCallback() {
-
-			public void callback(ClientHttpRequest clientRequest) throws IOException {
-				InetUtils.writeHeader(inputMessage, clientRequest);
-				IOUtils.write(inputMessage.getBody(), clientRequest.getBody());
-			}
-		}, new ClientHttpResponseExtractor<SerializableHttpInputMessage>() {
-
-			public SerializableHttpInputMessage execute(ClientHttpResponse response) throws IOException {
-				return convertToSerializableInputMessage(builder, response);
-			}
-		});
+	public ClientHttpResponseErrorHandler getClientHttpResponseErrorHandler() {
+		return clientHttpResponseErrorHandler;
 	}
 
-	public Object execute(ClientHttpRequestBuilder builder, final Type responseType, final Object body,
-			final MimeType contentType) {
-		return execute(builder, body == null ? null : new ClientHttpRequestCallback() {
-
-			public void callback(ClientHttpRequest clientRequest) throws IOException {
-				getMessageConverter().write(body, contentType, clientRequest);
-			}
-		}, new ClientHttpResponseExtractor<Object>() {
-
-			public Object execute(ClientHttpResponse response) throws IOException {
-				return getMessageConverter().read(responseType, response);
-			}
-		});
-	}
-
-	public <T> T execute(ClientHttpRequestBuilder builder, final Class<? extends T> responseType, final Object body,
-			final MimeType contentType) {
-		return execute(builder, new ClientHttpRequestCallback() {
-
-			public void callback(ClientHttpRequest clientRequest) throws IOException {
-				getMessageConverter().write(body, contentType, clientRequest);
-			}
-		}, new ClientHttpResponseExtractor<T>() {
-
-			@SuppressWarnings("unchecked")
-			public T execute(ClientHttpResponse response) throws IOException {
-				return (T) getMessageConverter().read(responseType, response);
-			}
-		});
-	}
-
-	public ClientHttpInputMessageErrorHandler getClientHttpInputMessageErrorHandler() {
-		return clientHttpInputMessageErrorHandler;
-	}
-
-	public void setClientHttpInputMessageErrorHandler(
-			ClientHttpInputMessageErrorHandler clientHttpInputMessageErrorHandler) {
-		Assert.notNull(clientHttpInputMessageErrorHandler, "ClientHttpInputMessageErrorHandler must not be null");
-		this.clientHttpInputMessageErrorHandler = clientHttpInputMessageErrorHandler;
+	public void setClientHttpInputMessageErrorHandler(ClientHttpResponseErrorHandler clientHttpResponseErrorHandler) {
+		Assert.notNull(clientHttpResponseErrorHandler, "ClientHttpInputMessageErrorHandler must not be null");
+		this.clientHttpResponseErrorHandler = clientHttpResponseErrorHandler;
 	}
 
 	protected RuntimeException throwIOException(IOException ex, ClientHttpRequestBuilder builder) {
@@ -125,14 +55,8 @@ public abstract class AbstractHttpClient implements HttpClient {
 				+ builder.getUri() + "\": " + ex.getMessage(), ex);
 	}
 
-	protected SerializableHttpInputMessage convertToSerializableInputMessage(ClientHttpRequestBuilder builder,
-			ClientHttpResponse response) throws IOException {
-		byte[] body = builder.getMethod() == HttpMethod.OPTIONS ? null : IOUtils.toByteArray(response.getBody());
-		return new SerializableHttpInputMessage(body, response.getHeaders());
-	}
-
 	protected void handleResponse(ClientHttpRequestBuilder builder, ClientHttpResponse response) throws IOException {
-		ClientHttpInputMessageErrorHandler errorHandler = getClientHttpInputMessageErrorHandler();
+		ClientHttpResponseErrorHandler errorHandler = getClientHttpResponseErrorHandler();
 		boolean hasError = errorHandler.hasError(response);
 		if (logger.isDebugEnabled()) {
 			try {
@@ -148,64 +72,104 @@ public abstract class AbstractHttpClient implements HttpClient {
 		}
 	}
 
-	public SerializableHttpInputMessage getSerializableHttpInputMessage(String url, SSLSocketFactory sslSocketFactory)
+	public <T> HttpResponseEntity<T> execute(ClientHttpRequestBuilder builder,
+			ClientHttpRequestCallback requestCallback, ClientHttpResponseExtractor<T> clientResponseExtractor)
 			throws HttpClientException {
-		return executeAndGetSerializableHttpInputMessage(url, HttpMethod.GET, sslSocketFactory, null, null);
-	}
-
-	public SerializableHttpInputMessage executeAndGetSerializableHttpInputMessage(String url, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, final Object body, final MediaType contentType)
-			throws HttpClientException {
-		final ClientHttpRequestBuilder builder = createBuilder(url, method, sslSocketFactory);
-		return execute(builder, body == null ? null : new ClientHttpRequestCallback() {
-
-			public void callback(ClientHttpRequest clientRequest) throws IOException {
-				getMessageConverter().write(body, contentType, clientRequest);
+		ClientHttpResponse response = null;
+		ClientHttpRequest request;
+		try {
+			request = builder.builder();
+			requestCallback(builder, request, requestCallback);
+			response = request.execute();
+			handleResponse(builder, response);
+			T body = responseExtractor(builder, response, clientResponseExtractor);
+			return new HttpResponseEntity<T>(body, response.getHeaders(), response.getStatusCode());
+		} catch (IOException ex) {
+			throw throwIOException(ex, builder);
+		} finally {
+			if (response != null) {
+				response.close();
 			}
-		}, new ClientHttpResponseExtractor<SerializableHttpInputMessage>() {
-
-			public SerializableHttpInputMessage execute(ClientHttpResponse response) throws IOException {
-				return convertToSerializableInputMessage(builder, response);
-			}
-		});
+		}
 	}
 
 	protected abstract ClientHttpRequestBuilder createBuilder(String url, HttpMethod method,
 			SSLSocketFactory sslSocketFactory);
 
-	public <T> T get(String url, Class<? extends T> responseType) throws HttpClientException {
-		return get(url, responseType, null);
-	}
-
-	public <T> T get(String url, Class<? extends T> responseType, SSLSocketFactory sslSocketFactory)
+	public HttpResponseEntity<Object> execute(final Type responseType, String url, HttpMethod method,
+			SSLSocketFactory sslSocketFactory, final Object body, final MediaType contentType)
 			throws HttpClientException {
-		return execute(createBuilder(url, HttpMethod.GET, sslSocketFactory), responseType, null, null);
+		return execute(createBuilder(url, method, sslSocketFactory), new ClientHttpRequestCallback() {
+
+			public void callback(ClientHttpRequest clientRequest) throws IOException {
+				if (body == null) {
+					return;
+				}
+
+				getMessageConverter().write(body, contentType, clientRequest);
+			}
+		}, new ClientHttpResponseExtractor<Object>() {
+			public Object execute(ClientHttpResponse response) throws IOException {
+				return getMessageConverter().read(responseType, response);
+			}
+		});
 	}
 
-	public Object get(String url, Type responseType) throws HttpClientException {
-		return get(url, responseType, null);
-	}
-
-	public Object get(String url, Type responseType, SSLSocketFactory sslSocketFactory) throws HttpClientException {
-		return execute(createBuilder(url, HttpMethod.GET, sslSocketFactory), responseType, null, null);
-	}
-
-	public <T> T post(String url, Class<? extends T> responseType, Object body, MediaType contentType)
+	public <T> HttpResponseEntity<T> execute(final Class<? extends T> responseType, String url, HttpMethod method,
+			SSLSocketFactory sslSocketFactory, final Object body, final MediaType contentType)
 			throws HttpClientException {
-		return post(url, responseType, null, body, contentType);
+		return execute(createBuilder(url, method, sslSocketFactory), new ClientHttpRequestCallback() {
+
+			public void callback(ClientHttpRequest clientRequest) throws IOException {
+				if (body == null) {
+					return;
+				}
+
+				getMessageConverter().write(body, contentType, clientRequest);
+			}
+		}, new ClientHttpResponseExtractor<T>() {
+			@SuppressWarnings("unchecked")
+			public T execute(ClientHttpResponse response) throws IOException {
+				return (T) getMessageConverter().read(responseType, response);
+			}
+		});
 	}
 
-	public <T> T post(String url, Class<? extends T> responseType, SSLSocketFactory sslSocketFactory, Object body,
+	public <T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url) throws HttpClientException {
+		return get(responseType, url, null);
+	}
+
+	public <T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url, SSLSocketFactory sslSocketFactory)
+			throws HttpClientException {
+		return execute(responseType, url, HttpMethod.GET, sslSocketFactory, null, null);
+	}
+
+	public HttpResponseEntity<Object> get(Type responseType, String url) throws HttpClientException {
+		return get(responseType, url, null);
+	}
+
+	public HttpResponseEntity<Object> get(Type responseType, String url, SSLSocketFactory sslSocketFactory)
+			throws HttpClientException {
+		return execute(responseType, url, HttpMethod.GET, sslSocketFactory, null, null);
+	}
+
+	public <T> HttpResponseEntity<T> post(Class<? extends T> responseType, String url, Object body,
 			MediaType contentType) throws HttpClientException {
-		return execute(createBuilder(url, HttpMethod.POST, sslSocketFactory), responseType, body, contentType);
+		return post(responseType, url, null, body, contentType);
 	}
 
-	public Object post(String url, Type responseType, Object body, MediaType contentType) throws HttpClientException {
-		return post(url, responseType, null, body, contentType);
+	public <T> HttpResponseEntity<T> post(Class<? extends T> responseType, String url,
+			SSLSocketFactory sslSocketFactory, Object body, MediaType contentType) throws HttpClientException {
+		return execute(responseType, url, HttpMethod.POST, sslSocketFactory, body, contentType);
 	}
 
-	public Object post(String url, Type responseType, SSLSocketFactory sslSocketFactory, Object body,
-			MediaType contentType) throws HttpClientException {
-		return execute(createBuilder(url, HttpMethod.POST, sslSocketFactory), responseType, body, contentType);
+	public HttpResponseEntity<Object> post(Type responseType, String url, Object body, MediaType contentType)
+			throws HttpClientException {
+		return post(responseType, url, null, body, contentType);
+	}
+
+	public HttpResponseEntity<Object> post(Type responseType, String url, SSLSocketFactory sslSocketFactory,
+			Object body, MediaType contentType) throws HttpClientException {
+		return execute(responseType, url, HttpMethod.POST, sslSocketFactory, body, contentType);
 	}
 }

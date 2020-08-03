@@ -21,7 +21,7 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 	 */
 	static final long LISTENER_PERIOD = Math.max(1,
 			GlobalPropertyFactory.getInstance().getValue("resource.listener.period", int.class, 5)) * 1000L;
-	static final Timer TIMER = new Timer(true);// 守护进程，自动退出
+	static final Timer TIMER = new Timer(DefaultResourceEventDispatcher.class.getSimpleName(), true);// 守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
 	private final Resource resource;
 	private final long period;

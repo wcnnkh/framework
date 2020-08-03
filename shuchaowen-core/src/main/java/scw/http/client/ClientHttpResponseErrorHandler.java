@@ -2,7 +2,7 @@ package scw.http.client;
 
 import java.io.IOException;
 
-public interface ClientHttpInputMessageErrorHandler {
+public interface ClientHttpResponseErrorHandler {
 	/**
 	 * Indicate whether the given response has any errors.
 	 * <p>
@@ -16,7 +16,7 @@ public interface ClientHttpInputMessageErrorHandler {
 	 * @throws IOException
 	 *             in case of I/O errors
 	 */
-	boolean hasError(ClientHttpInputMessage response) throws IOException;
+	boolean hasError(ClientHttpResponse response) throws IOException;
 
 	/**
 	 * Handle the error in the given response.
@@ -29,5 +29,5 @@ public interface ClientHttpInputMessageErrorHandler {
 	 * @throws IOException
 	 *             in case of I/O errors
 	 */
-	void handleError(ClientHttpInputMessage response) throws IOException;
+	void handleError(ClientHttpResponse response) throws IOException;
 }

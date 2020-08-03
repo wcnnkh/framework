@@ -16,44 +16,13 @@
 
 package scw.http;
 
+import java.io.Serializable;
+
 import scw.core.utils.ObjectUtils;
 import scw.util.MultiValueMap;
 
-/**
- * Represents an HTTP request or response entity, consisting of headers and body.
- *
- * <p>Typically used in combination with the {@link org.springframework.web.client.RestTemplate},
- * like so:
- * <pre class="code">
- * HttpHeaders headers = new HttpHeaders();
- * headers.setContentType(MediaType.TEXT_PLAIN);
- * HttpEntity&lt;String&gt; entity = new HttpEntity&lt;String&gt;(helloWorld, headers);
- * URI location = template.postForLocation("https://example.com", entity);
- * </pre>
- * or
- * <pre class="code">
- * HttpEntity&lt;String&gt; entity = template.getForEntity("https://example.com", String.class);
- * String body = entity.getBody();
- * MediaType contentType = entity.getHeaders().getContentType();
- * </pre>
- * Can also be used in Spring MVC, as a return value from a @Controller method:
- * <pre class="code">
- * &#64;RequestMapping("/handle")
- * public HttpEntity&lt;String&gt; handle() {
- *   HttpHeaders responseHeaders = new HttpHeaders();
- *   responseHeaders.set("MyResponseHeader", "MyValue");
- *   return new HttpEntity&lt;String&gt;("Hello World", responseHeaders);
- * }
- * </pre>
- *
- * @author Arjen Poutsma
- * @author Juergen Hoeller
- * @since 3.0.2
- * @see org.springframework.web.client.RestTemplate
- * @see #getBody()
- * @see #getHeaders()
- */
-public class HttpEntity<T> {
+public class HttpEntity<T> implements Serializable{
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * The empty {@code HttpEntity}, with no body or headers.

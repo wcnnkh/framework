@@ -12,7 +12,7 @@ import scw.http.client.exception.UnknownHttpStatusCodeException;
 import scw.io.FileCopyUtils;
 
 public class DefaultClientHttpInputMessageErrorHandler implements
-		ClientHttpInputMessageErrorHandler {
+		ClientHttpResponseErrorHandler {
 
 	/**
 	 * Delegates to {@link #hasError(HttpStatus)} (for a standard status enum
@@ -23,7 +23,7 @@ public class DefaultClientHttpInputMessageErrorHandler implements
 	 * @see #hasError(HttpStatus)
 	 * @see #hasError(int)
 	 */
-	public boolean hasError(ClientHttpInputMessage response) throws IOException {
+	public boolean hasError(ClientHttpResponse response) throws IOException {
 		int rawStatusCode = response.getRawStatusCode();
 		HttpStatus httpStatus = HttpStatus.valueOf(rawStatusCode);
 		if (httpStatus == null) {
@@ -81,7 +81,7 @@ public class DefaultClientHttpInputMessageErrorHandler implements
 	 * {@link org.springframework.http.HttpStatus.Series#SERVER_ERROR}, and a
 	 * {@link RestClientException} in other cases.
 	 */
-	public void handleError(ClientHttpInputMessage response) throws IOException {
+	public void handleError(ClientHttpResponse response) throws IOException {
 		HttpStatus statusCode = getHttpStatusCode(response);
 		switch (statusCode.series()) {
 		case CLIENT_ERROR:
@@ -114,7 +114,7 @@ public class DefaultClientHttpInputMessageErrorHandler implements
 	 *             with the {@link HttpStatus} enum
 	 * @since 4.3.8
 	 */
-	protected HttpStatus getHttpStatusCode(ClientHttpInputMessage response)
+	protected HttpStatus getHttpStatusCode(ClientHttpResponse response)
 			throws IOException {
 		try {
 			return response.getStatusCode();
@@ -136,7 +136,7 @@ public class DefaultClientHttpInputMessageErrorHandler implements
 	 *         body could not be read
 	 * @since 4.3.8
 	 */
-	protected byte[] getResponseBody(ClientHttpInputMessage response) {
+	protected byte[] getResponseBody(ClientHttpResponse response) {
 		try {
 			return FileCopyUtils.copyToByteArray(response.getBody());
 		} catch (IOException ex) {
@@ -154,7 +154,7 @@ public class DefaultClientHttpInputMessageErrorHandler implements
 	 * @return the associated charset, or {@code null} if none
 	 * @since 4.3.8
 	 */
-	protected Charset getCharset(ClientHttpInputMessage response) {
+	protected Charset getCharset(ClientHttpResponse response) {
 		HttpHeaders headers = response.getHeaders();
 		MediaType contentType = headers.getContentType();
 		return (contentType != null ? contentType.getCharset() : null);

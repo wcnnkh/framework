@@ -24,7 +24,7 @@ public class XmlValue {
 				String path = url.substring(7);
 				value = ResourceUtils.getResourceOperations().getContent(path, charset).getResource();
 			} else if (url.startsWith("http://") || url.startsWith("https://")) {
-				value = HttpUtils.getHttpClient().get(url, String.class);
+				value = HttpUtils.getHttpClient().get(String.class, url).getBody();
 			} else {
 				String path = url.substring(7);
 				value = ResourceUtils.getResourceOperations().getContent(path, charset).getResource();

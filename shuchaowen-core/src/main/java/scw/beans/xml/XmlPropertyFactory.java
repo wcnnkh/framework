@@ -67,7 +67,7 @@ public class XmlPropertyFactory extends PropertyFactory {
 
 			String url = getURL(node);
 			if (StringUtils.isNotEmpty(url)) {
-				String value = HttpUtils.getHttpClient().get(url, String.class);
+				String value = HttpUtils.getHttpClient().get(String.class, url).getBody();
 				put(name, value);
 			}
 

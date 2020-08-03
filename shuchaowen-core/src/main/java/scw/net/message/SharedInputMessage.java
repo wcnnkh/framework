@@ -5,12 +5,12 @@ import java.io.Serializable;
 import scw.compatible.CompatibleUtils;
 import scw.io.UnsafeByteArrayInputStream;
 
-public class SerializableInputMessage extends AbstractInputMessage implements Serializable {
+public class SharedInputMessage extends AbstractInputMessage implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final byte[] body;
 	private final Headers headers;
 
-	public SerializableInputMessage(byte[] body, Headers headers) {
+	public SharedInputMessage(byte[] body, Headers headers) {
 		this.body = body;
 		this.headers = headers;
 		headers.readyOnly();
