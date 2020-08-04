@@ -5,10 +5,10 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class DefaultValueDefinition extends AbstractValue implements
+public class EmptyValue extends AbstractValue implements
 		Serializable {
 	private static final long serialVersionUID = 1L;
-	public static final DefaultValueDefinition DEFAULT_VALUE_DEFINITION = new DefaultValueDefinition();
+	public static final EmptyValue INSTANCE = new EmptyValue();
 
 	@Override
 	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {

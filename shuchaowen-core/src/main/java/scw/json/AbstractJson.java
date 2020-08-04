@@ -8,7 +8,7 @@ public abstract class AbstractJson<K> extends DefaultValueFactory<K> {
 
 	@Override
 	public JsonElement getDefaultValue(K key) {
-		return DefaultJsonElementValue.DEFAULT_JSON_ELEMENT_VALUE;
+		return EmptyJsonElement.INSTANCE;
 	}
 
 	public abstract int size();

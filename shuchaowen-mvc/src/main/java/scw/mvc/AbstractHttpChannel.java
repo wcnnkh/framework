@@ -46,7 +46,7 @@ import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
 import scw.value.AbstractStringValue;
-import scw.value.DefaultValueDefinition;
+import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
 
@@ -119,12 +119,12 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 	}
 
 	public final Value getValue(String name) {
-		return getValue(name, DefaultValueDefinition.DEFAULT_VALUE_DEFINITION);
+		return getValue(name, EmptyValue.INSTANCE);
 	}
 
 	public final Value getValue(String name, Value defaultValue) {
 		return new RequestValue(name,
-				defaultValue == null ? DefaultValueDefinition.DEFAULT_VALUE_DEFINITION : defaultValue);
+				defaultValue == null ? EmptyValue.INSTANCE : defaultValue);
 	}
 
 	protected Value parseValue(String value) {

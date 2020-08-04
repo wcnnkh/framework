@@ -14,7 +14,7 @@ public class StringValue extends AbstractStringValue implements Serializable {
 	private transient JSONSupport jsonSupport;
 
 	public StringValue(String value) {
-		this(value, DefaultValueDefinition.DEFAULT_VALUE_DEFINITION);
+		this(value, EmptyValue.INSTANCE);
 	}
 
 	public StringValue(String value, Value defaultValue) {
