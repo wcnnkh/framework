@@ -32,7 +32,6 @@ import java.util.concurrent.Executor;
  * mainly for backwards compatibility with JDK 1.4 in Spring 2.x.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see java.util.concurrent.Executor
  */
 public interface TaskExecutor extends Executor {

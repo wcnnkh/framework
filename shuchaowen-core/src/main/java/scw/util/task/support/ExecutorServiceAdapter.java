@@ -42,7 +42,6 @@ import scw.util.task.TaskExecutor;
  * with this adapter acting as an access-only proxy for that target pool.
  *
  * @author Juergen Hoeller
- * @since 3.0
  * @see java.util.concurrent.ExecutorService
  */
 public class ExecutorServiceAdapter extends AbstractExecutorService {

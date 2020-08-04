@@ -33,7 +33,6 @@ import scw.core.Assert;
  * {@code TaskExecutor} instead for such scenarios.
  *
  * @author Juergen Hoeller
- * @since 2.0
  * @see SimpleAsyncTaskExecutor
  */
 @SuppressWarnings("serial")

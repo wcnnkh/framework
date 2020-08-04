@@ -21,28 +21,19 @@ package scw.json.gson;
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
- * @since 1.2
  */
 public final class JsonNull extends GsonJsonElement {
   /**
    * singleton for JsonNull
    *
-   * @since 1.8
    */
   public static final JsonNull INSTANCE = new JsonNull();
 
-  /**
-   * Creates a new JsonNull object.
-   * Deprecated since Gson version 1.8. Use {@link #INSTANCE} instead
-   */
-  @Deprecated
-  public JsonNull() {
-    // Do nothing
+  private JsonNull() {
   }
 
   /**
    * Returns the same instance since it is an immutable value
-   * @since 2.8.2
    */
   @Override
   public JsonNull deepCopy() {

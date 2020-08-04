@@ -38,7 +38,6 @@ import scw.util.task.TaskRejectedException;
  * accordingly.
  *
  * @author Juergen Hoeller
- * @since 3.0
  * @see java.util.concurrent.Executor
  * @see java.util.concurrent.ExecutorService
  * @see java.util.concurrent.Executors

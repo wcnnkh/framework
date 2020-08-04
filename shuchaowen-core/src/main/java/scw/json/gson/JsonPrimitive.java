@@ -87,7 +87,6 @@ public final class JsonPrimitive extends GsonJsonElement {
 
   /**
    * Returns the same value as primitives are immutable.
-   * @since 2.8.2
    */
   @Override
   public JsonPrimitive deepCopy() {

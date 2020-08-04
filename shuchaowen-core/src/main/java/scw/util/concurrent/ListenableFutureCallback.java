@@ -22,7 +22,6 @@ package scw.util.concurrent;
  *
  * @author Arjen Poutsma
  * @author Sebastien Deleuze
- * @since 4.0
  */
 public interface ListenableFutureCallback<T> extends SuccessCallback<T>, FailureCallback {
 

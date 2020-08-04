@@ -19,7 +19,6 @@ public abstract class GsonJsonElement {
   /**
    * Returns a deep copy of this element. Immutable elements like primitives
    * and nulls are not copied.
-   * @since 2.8.2
    */
   public abstract GsonJsonElement deepCopy();
 
@@ -54,7 +53,6 @@ public abstract class GsonJsonElement {
    * provides check for verifying if this element represents a null value or not.
    *
    * @return true if this element is of type {@link JsonNull}, false otherwise.
-   * @since 1.2
    */
   public boolean isJsonNull() {
     return this instanceof JsonNull;
@@ -116,7 +114,6 @@ public abstract class GsonJsonElement {
    *
    * @return get this element as a {@link JsonNull}.
    * @throws IllegalStateException if the element is of another type.
-   * @since 1.2
    */
   public JsonNull getAsJsonNull() {
     if (isJsonNull()) {
@@ -237,7 +234,6 @@ public abstract class GsonJsonElement {
    * byte value.
    * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
-   * @since 1.3
    */
   public byte getAsByte() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
@@ -251,7 +247,6 @@ public abstract class GsonJsonElement {
    * char value.
    * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
-   * @since 1.3
    */
   public char getAsCharacter() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
@@ -265,7 +260,6 @@ public abstract class GsonJsonElement {
    * * @throws NumberFormatException if the element is not a valid {@link BigDecimal}.
    * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
-   * @since 1.2
    */
   public BigDecimal getAsBigDecimal() {
     throw new UnsupportedOperationException(getClass().getSimpleName());
@@ -279,7 +273,6 @@ public abstract class GsonJsonElement {
    * @throws NumberFormatException if the element is not a valid {@link BigInteger}.
    * @throws IllegalStateException if the element is of the type {@link GsonJsonArray} but contains
    * more than a single element.
-   * @since 1.2
    */
   public BigInteger getAsBigInteger() {
     throw new UnsupportedOperationException(getClass().getSimpleName());

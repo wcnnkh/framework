@@ -30,7 +30,6 @@ public final class GsonJsonArray extends GsonJsonElement implements Iterable<Gso
 
   /**
    * Creates a deep copy of this element and all its children
-   * @since 2.8.2
    */
   @Override
   public GsonJsonArray deepCopy() {
@@ -118,7 +117,6 @@ public final class GsonJsonArray extends GsonJsonElement implements Iterable<Gso
    * If the array does not contain the element, it is unchanged.
    * @param element element to be removed from this array, if present
    * @return true if this array contained the specified element, false otherwise
-   * @since 2.3
    */
   public boolean remove(GsonJsonElement element) {
     return elements.remove(element);
@@ -131,7 +129,6 @@ public final class GsonJsonArray extends GsonJsonElement implements Iterable<Gso
    * @param index index the index of the element to be removed
    * @return the element previously at the specified position
    * @throws IndexOutOfBoundsException if the specified index is outside the array bounds
-   * @since 2.3
    */
   public GsonJsonElement remove(int index) {
     return elements.remove(index);
@@ -141,7 +138,6 @@ public final class GsonJsonArray extends GsonJsonElement implements Iterable<Gso
    * Returns true if this array contains the specified element.
    * @return true if this array contains the specified element.
    * @param element whose presence in this array is to be tested
-   * @since 2.3
    */
   public boolean contains(GsonJsonElement element) {
     return elements.contains(element);
@@ -250,7 +246,6 @@ public final class GsonJsonArray extends GsonJsonElement implements Iterable<Gso
    * @throws ClassCastException if the element in the array is of not a {@link JsonPrimitive}.
    * @throws NumberFormatException if the element at index 0 is not a valid {@link BigInteger}.
    * @throws IllegalStateException if the array has more than one element.
-   * @since 1.2
    */
   @Override
   public BigInteger getAsBigInteger() {

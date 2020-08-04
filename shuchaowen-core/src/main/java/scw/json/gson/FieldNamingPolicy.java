@@ -51,7 +51,6 @@ public enum FieldNamingPolicy implements FieldNamingStrategy {
    *   <li>_someFieldName ---> _Some Field Name</li>
    * </ul>
    *
-   * @since 1.4
    */
   UPPER_CAMEL_CASE_WITH_SPACES() {
     public String translateName(Field f) {
@@ -92,7 +91,6 @@ public enum FieldNamingPolicy implements FieldNamingStrategy {
    * expressions. This requires that a field named with dashes is always accessed as a quoted
    * property like {@code myobject['my-field']}. Accessing it as an object field
    * {@code myobject.my-field} will result in an unintended javascript expression.
-   * @since 1.4
    */
   LOWER_CASE_WITH_DASHES() {
     public String translateName(Field f) {
@@ -115,7 +113,6 @@ public enum FieldNamingPolicy implements FieldNamingStrategy {
    * expressions. This requires that a field named with dots is always accessed as a quoted
    * property like {@code myobject['my.field']}. Accessing it as an object field
    * {@code myobject.my.field} will result in an unintended javascript expression.
-   * @since 2.8
    */
   LOWER_CASE_WITH_DOTS() {
     public String translateName(Field f) {

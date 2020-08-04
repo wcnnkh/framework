@@ -28,7 +28,6 @@ package scw.util.task;
  * invocation, or to provide some monitoring/statistics for task execution.
  *
  * @author Juergen Hoeller
- * @since 4.3
  * @see TaskExecutor#execute(Runnable)
  * @see SimpleAsyncTaskExecutor#setTaskDecorator
  */

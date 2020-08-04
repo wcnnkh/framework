@@ -9,7 +9,6 @@ import java.lang.reflect.Field;
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
- * @since 1.3
  */
 public interface FieldNamingStrategy {
 
@@ -18,7 +17,6 @@ public interface FieldNamingStrategy {
    *
    * @param f the field object that we are translating
    * @return the translated field name.
-   * @since 1.3
    */
   public String translateName(Field f);
 }

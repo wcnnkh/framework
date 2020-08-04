@@ -12,6 +12,7 @@ import java.util.TimerTask;
 import scw.beans.Destroy;
 import scw.beans.Init;
 import scw.core.Constants;
+import scw.core.GlobalPropertyFactory;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.data.ExpiredCache;
@@ -34,14 +35,19 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 	private final String cacheDirectory;
 
 	/**
-	 * @param exp 单位:秒
+	 * @param exp
+	 *            单位:秒
 	 */
 	protected FileCache(int exp) {
-		this(exp, SerializerUtils.DEFAULT_SERIALIZER, Constants.DEFAULT_CHARSET_NAME, SystemPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + exp);
+		this(exp, SerializerUtils.DEFAULT_SERIALIZER, Constants.DEFAULT_CHARSET_NAME,
+				SystemPropertyFactory.getInstance().getTempDirectoryPath()
+						+ GlobalPropertyFactory.getInstance().getSystemLocalId() + File.separator + "file_cache_"
+						+ exp);
 	}
 
 	/**
-	 * @param exp 单位:秒
+	 * @param exp
+	 *            单位:秒
 	 * @param cacheDirectory
 	 */
 	public FileCache(int exp, String cacheDirectory) {
@@ -49,7 +55,8 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 	}
 
 	/**
-	 * @param exp 单位:秒
+	 * @param exp
+	 *            单位:秒
 	 * @param serializer
 	 * @param charsetName
 	 * @param cacheDirectory
