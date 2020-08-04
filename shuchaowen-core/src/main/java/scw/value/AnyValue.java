@@ -24,6 +24,9 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 	}
 
 	public Object getValue() {
+		if(value instanceof AnyValue){
+			return ((AnyValue) value).value;
+		}
 		return value;
 	}
 
@@ -474,7 +477,7 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 			return new StringValue(getAsString(), getDefaultValue()).getAsObject(type);
 		}
 
-		return parseObject(type);
+		return internalParseObject(type);
 	}
 
 	@Override
@@ -491,15 +494,15 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 			return getAsObjectNotSupport((Class<?>) type);
 		}
 
-		return parseObject(type);
+		return internalParseObject(type);
 	}
 
-	protected <T> T parseObject(Class<? extends T> type) {
+	protected <T> T internalParseObject(Class<? extends T> type) {
 		return type.cast(type);
 	}
 
-	protected Object parseObject(Type type) {
-		return parseObject(TypeUtils.toClass(type));
+	protected Object internalParseObject(Type type) {
+		return internalParseObject(TypeUtils.toClass(type));
 	}
 
 	@Override
@@ -532,6 +535,10 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 		if (value instanceof CharSequence) {
 			return StringUtils.isEmpty((CharSequence) value);
 		}
+		
+		if(value instanceof Value){
+			return ((Value) value).isEmpty();
+		}
 		return false;
 	}
 
@@ -547,7 +554,15 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 		if (value instanceof CharSequence) {
 			return StringUtils.isNumeric((CharSequence) value);
 		}
-
+		
+		if(value instanceof Value){
+			return ((Value) value).isNumber();
+		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return getAsString();
 	}
 }
