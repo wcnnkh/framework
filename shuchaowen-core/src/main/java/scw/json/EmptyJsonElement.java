@@ -1,10 +1,10 @@
 package scw.json;
 
-import scw.value.DefaultValueDefinition;
+import scw.value.EmptyValue;
 
-public class DefaultJsonElementValue extends DefaultValueDefinition implements JsonElement {
+public class EmptyJsonElement extends EmptyValue implements JsonElement {
 	private static final long serialVersionUID = 1L;
-	public static final DefaultJsonElementValue DEFAULT_JSON_ELEMENT_VALUE = new DefaultJsonElementValue();
+	public static final EmptyJsonElement INSTANCE = new EmptyJsonElement();
 
 	public JsonArray getAsJsonArray() {
 		return null;

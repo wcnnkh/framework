@@ -15,7 +15,7 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 	private Object value;
 
 	public AnyValue(Object value) {
-		this(value, DefaultValueDefinition.DEFAULT_VALUE_DEFINITION);
+		this(value, EmptyValue.INSTANCE);
 	}
 
 	public AnyValue(Object value, Value defaultValue) {

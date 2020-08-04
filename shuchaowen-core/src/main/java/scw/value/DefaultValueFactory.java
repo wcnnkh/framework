@@ -73,7 +73,7 @@ public class DefaultValueFactory<K> implements ValueFactory<K> {
 	 * @return
 	 */
 	protected Value getDefaultValue(K key) {
-		return DefaultValueDefinition.DEFAULT_VALUE_DEFINITION;
+		return EmptyValue.INSTANCE;
 	}
 
 	public final Byte getByte(K key) {
