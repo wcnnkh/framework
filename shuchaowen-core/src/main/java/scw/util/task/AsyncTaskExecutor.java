@@ -33,7 +33,6 @@ import java.util.concurrent.Future;
  * asynchronously in some other thread.
  *
  * @author Juergen Hoeller
- * @since 2.0.3
  * @see SimpleAsyncTaskExecutor
  * @see org.springframework.scheduling.SchedulingTaskExecutor
  * @see java.util.concurrent.Callable
@@ -67,7 +66,6 @@ public interface AsyncTaskExecutor extends TaskExecutor {
 	 * @param task the {@code Runnable} to execute (never {@code null})
 	 * @return a Future representing pending completion of the task
 	 * @throws TaskRejectedException if the given task was not accepted
-	 * @since 3.0
 	 */
 	Future<?> submit(Runnable task);
 
@@ -77,7 +75,6 @@ public interface AsyncTaskExecutor extends TaskExecutor {
 	 * @param task the {@code Callable} to execute (never {@code null})
 	 * @return a Future representing pending completion of the task
 	 * @throws TaskRejectedException if the given task was not accepted
-	 * @since 3.0
 	 */
 	<T> Future<T> submit(Callable<T> task);
 

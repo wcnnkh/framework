@@ -16,7 +16,6 @@ import scw.json.gson.internal.$Gson$Preconditions;
  * @author Inderjeet Singh
  * @author Joel Leitch
  *
- * @since 1.4
  */
 public final class FieldAttributes {
   private final Field field;
@@ -100,7 +99,6 @@ public final class FieldAttributes {
    * Return the annotations that are present on this field.
    *
    * @return an array of all the annotations set on the field
-   * @since 1.4
    */
   public Collection<Annotation> getAnnotations() {
     return Arrays.asList(field.getAnnotations());

@@ -148,7 +148,6 @@ public final class GsonBuilder {
    * for details.
    *
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.3
    */
   public GsonBuilder generateNonExecutableJson() {
     this.generateNonExecutableJson = true;
@@ -171,7 +170,6 @@ public final class GsonBuilder {
    * during serialization.
    *
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.2
    */
   public GsonBuilder serializeNulls() {
     this.serializeNulls = true;
@@ -252,7 +250,6 @@ public final class GsonBuilder {
    * }</pre>
    *
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.7
    */
   public GsonBuilder enableComplexMapKeySerialization() {
     complexMapKeySerialization = true;
@@ -263,7 +260,6 @@ public final class GsonBuilder {
    * Configures Gson to exclude inner classes during serialization.
    *
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.3
    */
   public GsonBuilder disableInnerClassSerialization() {
     excluder = excluder.disableInnerClassSerialization();
@@ -276,7 +272,6 @@ public final class GsonBuilder {
    *
    * @param serializationPolicy the particular policy to use for serializing longs.
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.3
    */
   public GsonBuilder setLongSerializationPolicy(LongSerializationPolicy serializationPolicy) {
     this.longSerializationPolicy = serializationPolicy;
@@ -302,7 +297,6 @@ public final class GsonBuilder {
    *
    * @param fieldNamingStrategy the actual naming strategy to apply to the fields
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.3
    */
   public GsonBuilder setFieldNamingStrategy(FieldNamingStrategy fieldNamingStrategy) {
     this.fieldNamingPolicy = fieldNamingStrategy;

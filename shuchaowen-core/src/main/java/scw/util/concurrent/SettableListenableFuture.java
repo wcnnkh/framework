@@ -33,7 +33,6 @@ import scw.core.Assert;
  * @author Mattias Severson
  * @author Rossen Stoyanchev
  * @author Juergen Hoeller
- * @since 4.1
  */
 public class SettableListenableFuture<T> implements ListenableFuture<T> {
 

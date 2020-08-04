@@ -10,7 +10,7 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 
-public class AnyValue extends SupportDefaultValue implements Serializable{
+public class AnyValue extends SupportDefaultValue implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Object value;
 
@@ -21,6 +21,13 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 	public AnyValue(Object value, Value defaultValue) {
 		super(defaultValue);
 		this.value = value;
+	}
+
+	public Object getValue() {
+		if(value instanceof AnyValue){
+			return ((AnyValue) value).value;
+		}
+		return value;
 	}
 
 	public String getAsString() {
@@ -363,11 +370,11 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 		if (value instanceof BigInteger) {
 			return (BigInteger) value;
 		}
-		
+
 		if (value instanceof BigDecimal) {
 			return ((BigDecimal) value).toBigInteger();
 		}
-		
+
 		if (value instanceof Value) {
 			return ((Value) value).getAsBigInteger();
 		}
@@ -383,12 +390,12 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 		if (value instanceof BigDecimal) {
 			return (BigDecimal) value;
 		}
-		
-		if(value instanceof BigInteger){
-			return new BigDecimal((BigInteger)value);
+
+		if (value instanceof BigInteger) {
+			return new BigDecimal((BigInteger) value);
 		}
-		
-		if(value instanceof Number){
+
+		if (value instanceof Number) {
 			return new BigDecimal(((Number) value).doubleValue());
 		}
 
@@ -453,8 +460,8 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 		if (value == null) {
 			return getDefaultValue().getAsObject(type);
 		}
-		
-		if(type.isInstance(value)){
+
+		if (type.isInstance(value)) {
 			return (T) value;
 		}
 
@@ -470,7 +477,7 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 			return new StringValue(getAsString(), getDefaultValue()).getAsObject(type);
 		}
 
-		return type.cast(value);
+		return internalParseObject(type);
 	}
 
 	@Override
@@ -483,7 +490,19 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 			return ((Value) value).getAsObject(type);
 		}
 
-		return getAsObjectNotSupport(TypeUtils.toClass(type));
+		if (type instanceof Class) {
+			return getAsObjectNotSupport((Class<?>) type);
+		}
+
+		return internalParseObject(type);
+	}
+
+	protected <T> T internalParseObject(Class<? extends T> type) {
+		return type.cast(type);
+	}
+
+	protected Object internalParseObject(Type type) {
+		return internalParseObject(TypeUtils.toClass(type));
 	}
 
 	@Override
@@ -496,8 +515,8 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 		if (value == null) {
 			return false;
 		}
-		
-		if(obj == this){
+
+		if (obj == this) {
 			return true;
 		}
 
@@ -507,31 +526,43 @@ public class AnyValue extends SupportDefaultValue implements Serializable{
 
 		return obj.equals(value);
 	}
-	
+
 	public boolean isEmpty() {
-		if(value == null){
+		if (value == null) {
 			return true;
 		}
+
+		if (value instanceof CharSequence) {
+			return StringUtils.isEmpty((CharSequence) value);
+		}
 		
-		if(value instanceof CharSequence){
-			return StringUtils.isEmpty((CharSequence)value);
+		if(value instanceof Value){
+			return ((Value) value).isEmpty();
+		}
+		return false;
+	}
+
+	public boolean isNumber() {
+		if (isEmpty()) {
+			return false;
+		}
+
+		if (value instanceof Number) {
+			return true;
+		}
+
+		if (value instanceof CharSequence) {
+			return StringUtils.isNumeric((CharSequence) value);
+		}
+		
+		if(value instanceof Value){
+			return ((Value) value).isNumber();
 		}
 		return false;
 	}
 	
-	public boolean isNumber(){
-		if(isEmpty()){
-			return false;
-		}
-		
-		if(value instanceof Number){
-			return true;
-		}
-		
-		if(value instanceof CharSequence){
-			return StringUtils.isNumeric((CharSequence)value);
-		}
-		
-		return false;
+	@Override
+	public String toString() {
+		return getAsString();
 	}
 }

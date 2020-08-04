@@ -31,14 +31,13 @@ import scw.core.Assert;
  * @author Arjen Poutsma
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
- * @since 4.0
  */
 public class ListenableFutureCallbackRegistry<T> {
 
 	private final Queue<SuccessCallback<? super T>> successCallbacks = new LinkedList<SuccessCallback<? super T>>();
 
 	private final Queue<FailureCallback> failureCallbacks = new LinkedList<FailureCallback>();
-
+	
 	private State state = State.NEW;
 
 	private Object result = null;
@@ -91,7 +90,6 @@ public class ListenableFutureCallbackRegistry<T> {
 	 * 
 	 * @param callback
 	 *            the success callback to add
-	 * @since 4.1
 	 */
 	public void addSuccessCallback(SuccessCallback<? super T> callback) {
 		Assert.notNull(callback, "'callback' must not be null");
@@ -114,7 +112,6 @@ public class ListenableFutureCallbackRegistry<T> {
 	 * 
 	 * @param callback
 	 *            the failure callback to add
-	 * @since 4.1
 	 */
 	public void addFailureCallback(FailureCallback callback) {
 		Assert.notNull(callback, "'callback' must not be null");

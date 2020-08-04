@@ -93,7 +93,8 @@ public class KDNiao {
 		}
 		parameterMap.put("DataSign", dataSign);
 		parameterMap.put("DataType", "2");
-		return HttpUtils.getHttpClient().post(requestUrl, String.class, parameterMap, new MediaType(MediaType.APPLICATION_JSON_VALUE, CHARSET_NAME));
+		return HttpUtils.getHttpClient().post(String.class, requestUrl, parameterMap,
+				new MediaType(MediaType.APPLICATION_JSON_VALUE, CHARSET_NAME)).getBody();
 	}
 
 	/**

@@ -25,56 +25,15 @@ import scw.core.Assert;
 import scw.core.utils.ObjectUtils;
 import scw.util.MultiValueMap;
 
-/**
- * Extension of {@link HttpEntity} that adds a {@link HttpStatus} status code.
- * Used in {@code RestTemplate} as well {@code @Controller} methods.
- *
- * <p>In {@code RestTemplate}, this class is returned by
- * {@link org.springframework.web.client.RestTemplate#getForEntity getForEntity()} and
- * {@link org.springframework.web.client.RestTemplate#exchange exchange()}:
- * <pre class="code">
- * ResponseEntity&lt;String&gt; entity = template.getForEntity("https://example.com", String.class);
- * String body = entity.getBody();
- * MediaType contentType = entity.getHeaders().getContentType();
- * HttpStatus statusCode = entity.getStatusCode();
- * </pre>
- *
- * <p>Can also be used in Spring MVC, as the return value from a @Controller method:
- * <pre class="code">
- * &#64;RequestMapping("/handle")
- * public ResponseEntity&lt;String&gt; handle() {
- *   URI location = ...;
- *   HttpHeaders responseHeaders = new HttpHeaders();
- *   responseHeaders.setLocation(location);
- *   responseHeaders.set("MyResponseHeader", "MyValue");
- *   return new ResponseEntity&lt;String&gt;("Hello World", responseHeaders, HttpStatus.CREATED);
- * }
- * </pre>
- *
- * Or, by using a builder accessible via static methods:
- * <pre class="code">
- * &#64;RequestMapping("/handle")
- * public ResponseEntity&lt;String&gt; handle() {
- *   URI location = ...;
- *   return ResponseEntity.created(location).header("MyResponseHeader", "MyValue").body("Hello World");
- * }
- * </pre>
- *
- * @author Arjen Poutsma
- * @author Brian Clozel
- * @param <T> the body type
- * @see #getStatusCode()
- */
-public class ResponseEntity<T> extends HttpEntity<T> {
-
+public class HttpResponseEntity<T> extends HttpEntity<T> {
+	private static final long serialVersionUID = 1L;
 	private final Object status;
-
 
 	/**
 	 * Create a new {@code ResponseEntity} with the given status code, and no body nor headers.
 	 * @param status the status code
 	 */
-	public ResponseEntity(HttpStatus status) {
+	public HttpResponseEntity(HttpStatus status) {
 		this(null, null, status);
 	}
 
@@ -83,7 +42,7 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * @param body the entity body
 	 * @param status the status code
 	 */
-	public ResponseEntity(T body, HttpStatus status) {
+	public HttpResponseEntity(T body, HttpStatus status) {
 		this(body, null, status);
 	}
 
@@ -92,7 +51,7 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * @param headers the entity headers
 	 * @param status the status code
 	 */
-	public ResponseEntity(MultiValueMap<String, String> headers, HttpStatus status) {
+	public HttpResponseEntity(MultiValueMap<String, String> headers, HttpStatus status) {
 		this(null, headers, status);
 	}
 
@@ -102,7 +61,7 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * @param headers the entity headers
 	 * @param status the status code
 	 */
-	public ResponseEntity(T body, MultiValueMap<String, String> headers, HttpStatus status) {
+	public HttpResponseEntity(T body, MultiValueMap<String, String> headers, HttpStatus status) {
 		super(body, headers);
 		Assert.notNull(status, "HttpStatus must not be null");
 		this.status = status;
@@ -115,7 +74,7 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * @param headers the entity headers
 	 * @param status the status code (as {@code HttpStatus} or as {@code Integer} value)
 	 */
-	private ResponseEntity(T body, MultiValueMap<String, String> headers, Object status) {
+	private HttpResponseEntity(T body, MultiValueMap<String, String> headers, Object status) {
 		super(body, headers);
 		this.status = status;
 	}
@@ -156,7 +115,7 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 		if (!super.equals(other)) {
 			return false;
 		}
-		ResponseEntity<?> otherEntity = (ResponseEntity<?>) other;
+		HttpResponseEntity<?> otherEntity = (HttpResponseEntity<?>) other;
 		return ObjectUtils.nullSafeEquals(this.status, otherEntity.status);
 	}
 
@@ -224,7 +183,7 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 	 * the status set to {@linkplain HttpStatus#OK OK}.
 	 * @return the created {@code ResponseEntity}
 	 */
-	public static <T> ResponseEntity<T> ok(T body) {
+	public static <T> HttpResponseEntity<T> ok(T body) {
 		BodyBuilder builder = ok();
 		return builder.body(body);
 	}
@@ -367,7 +326,7 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 		 * @return the response entity
 		 * @see BodyBuilder#body(Object)
 		 */
-		<T> ResponseEntity<T> build();
+		<T> HttpResponseEntity<T> build();
 	}
 
 
@@ -400,7 +359,7 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 		 * @param body the body of the response entity
 		 * @return the built response entity
 		 */
-		<T> ResponseEntity<T> body(T body);
+		<T> HttpResponseEntity<T> body(T body);
 	}
 
 
@@ -479,12 +438,12 @@ public class ResponseEntity<T> extends HttpEntity<T> {
 			return this;
 		}
 
-		public <T> ResponseEntity<T> build() {
+		public <T> HttpResponseEntity<T> build() {
 			return body(null);
 		}
 
-		public <T> ResponseEntity<T> body(T body) {
-			return new ResponseEntity<T>(body, this.headers, this.statusCode);
+		public <T> HttpResponseEntity<T> body(T body) {
+			return new HttpResponseEntity<T>(body, this.headers, this.statusCode);
 		}
 	}
 

@@ -31,9 +31,7 @@ import scw.util.task.TaskExecutor;
  * solely exposing the standard Executor interface to a client.
  *
  * @author Juergen Hoeller
- * @since 2.5
  * @see java.util.concurrent.Executor
- * @see org.springframework.core.task.TaskExecutor
  */
 public class ConcurrentExecutorAdapter implements Executor {
 

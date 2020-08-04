@@ -10,15 +10,31 @@ import scw.io.serialzer.SerializerUtils;
 public class AutoRefreshFileCache extends FileCache {
 	private final Converter<String, ?> converter;
 
+	/**
+	 * @param period 单位:秒
+	 * @param converter
+	 */
 	protected AutoRefreshFileCache(int period, Converter<String, ?> converter) {
 		super(period);
 		this.converter = converter;
 	}
 
+	/**
+	 * @param period 单位:秒
+	 * @param cacheDirectory
+	 * @param converter
+	 */
 	public AutoRefreshFileCache(int period, String cacheDirectory, Converter<String, ?> converter) {
 		this(period, SerializerUtils.DEFAULT_SERIALIZER, Constants.DEFAULT_CHARSET_NAME, cacheDirectory, converter);
 	}
 
+	/**
+	 * @param period 单位:秒
+	 * @param serializer
+	 * @param charsetName
+	 * @param cacheDirectory
+	 * @param converter
+	 */
 	public AutoRefreshFileCache(int period, NoTypeSpecifiedSerializer serializer, String charsetName,
 			String cacheDirectory, Converter<String, ?> converter) {
 		super(period, serializer, charsetName, cacheDirectory);

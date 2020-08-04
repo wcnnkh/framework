@@ -19,7 +19,6 @@ public final class GsonJsonObject extends GsonJsonElement {
 
   /**
    * Creates a deep copy of this element and all its children
-   * @since 2.8.2
    */
   @Override
   public GsonJsonObject deepCopy() {
@@ -50,7 +49,6 @@ public final class GsonJsonObject extends GsonJsonElement {
    *
    * @param property name of the member that should be removed.
    * @return the {@link GsonJsonElement} object that is being removed.
-   * @since 1.3
    */
   public GsonJsonElement remove(String property) {
     return members.remove(property);
@@ -124,7 +122,6 @@ public final class GsonJsonObject extends GsonJsonElement {
    * Returns a set of members key values.
    *
    * @return a set of member keys as Strings
-   * @since 2.8.1
    */
   public Set<String> keySet() {
     return members.keySet();

@@ -20,7 +20,6 @@ package scw.util.concurrent;
  * Success callback for a {@link ListenableFuture}.
  *
  * @author Sebastien Deleuze
- * @since 4.1
  */
 public interface SuccessCallback<T> {
 

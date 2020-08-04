@@ -39,7 +39,7 @@ public class SimpleHttpObjectRpcServiceFilter implements Filter {
 				(SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + sign)))));
 		requestMessage.setAttribute("responseThrowable", responseThrowable);
 		byte[] body = serializer.serialize(requestMessage);
-		byte[] response = HttpUtils.getHttpClient().post(host, byte[].class, body, MediaType.APPLICATION_OCTET_STREAM);
+		byte[] response = HttpUtils.getHttpClient().post(byte[].class, host, body, MediaType.APPLICATION_OCTET_STREAM).getBody();
 		Object obj = serializer.deserialize(response);
 		if (obj instanceof SimpleResponseMessage) {
 			if (((SimpleResponseMessage) obj).getError() != null) {

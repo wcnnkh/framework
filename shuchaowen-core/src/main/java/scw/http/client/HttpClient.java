@@ -5,152 +5,46 @@ import java.lang.reflect.Type;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.http.HttpMethod;
+import scw.http.HttpResponseEntity;
 import scw.http.MediaType;
-import scw.http.SerializableHttpInputMessage;
 import scw.http.client.exception.HttpClientException;
-import scw.net.message.InputMessage;
 
 /**
  * 一个http客户端
+ * 
  * @author shuchaowen
  *
  */
 public interface HttpClient {
-	/**
-	 * @param builder
-	 * @param requestCallback
-	 * @param clientResponseExtractor
-	 * @return
-	 * @throws HttpClientException
-	 */
-	<T> T execute(
-			ClientHttpRequestBuilder builder,
-			ClientHttpRequestCallback requestCallback,
-			ClientHttpResponseExtractor<T> clientResponseExtractor)
+
+	<T> HttpResponseEntity<T> execute(ClientHttpRequestBuilder builder, ClientHttpRequestCallback requestCallback,
+			ClientHttpResponseExtractor<T> clientResponseExtractor) throws HttpClientException;
+
+	HttpResponseEntity<Object> execute(Type responseType, String url, HttpMethod method,
+			SSLSocketFactory sslSocketFactory, Object body, MediaType contentType) throws HttpClientException;
+
+	<T> HttpResponseEntity<T> execute(Class<? extends T> responseType, String url, HttpMethod method,
+			SSLSocketFactory sslSocketFactory, Object body, MediaType contentType) throws HttpClientException;
+
+	<T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url, SSLSocketFactory sslSocketFactory)
 			throws HttpClientException;
 
-	/**
-	 * @param builder
-	 * @param inputMessage
-	 * @return
-	 * @throws HttpClientException
-	 */
-	SerializableHttpInputMessage execute(ClientHttpRequestBuilder builder,
-			InputMessage inputMessage) throws HttpClientException;
+	HttpResponseEntity<Object> get(Type responseType, String url, SSLSocketFactory sslSocketFactory)
+			throws HttpClientException;
 
-	/**
-	 * 发送一个GET请求
-	 * @param url
-	 * @param sslSocketFactory
-	 * @return
-	 * @throws HttpClientException
-	 */
-	SerializableHttpInputMessage getSerializableHttpInputMessage(String url, SSLSocketFactory sslSocketFactory) throws HttpClientException;
+	<T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url) throws HttpClientException;
 
-	/**
-	 * 发送一个GET请求
-	 * @param url
-	 * @param method
-	 * @param sslSocketFactory
-	 * @param body
-	 * @param contentType
-	 * @return
-	 * @throws HttpClientException
-	 */
-	SerializableHttpInputMessage executeAndGetSerializableHttpInputMessage(
-			String url, HttpMethod method, SSLSocketFactory sslSocketFactory,
+	HttpResponseEntity<Object> get(Type responseType, String url) throws HttpClientException;
+
+	<T> HttpResponseEntity<T> post(Class<? extends T> responseType, String url, SSLSocketFactory sslSocketFactory,
 			Object body, MediaType contentType) throws HttpClientException;
 
-	/**
-	 * 发送一个GET请求
-	 * @param url 请求地址
-	 * @param responseType 返回类型
-	 * @return
-	 * @throws HttpClientException
-	 */
-	<T> T get(String url, Class<? extends T> responseType)
+	HttpResponseEntity<Object> post(Type responseType, String url, SSLSocketFactory sslSocketFactory, Object body,
+			MediaType contentType) throws HttpClientException;
+
+	<T> HttpResponseEntity<T> post(Class<? extends T> responseType, String url, Object body, MediaType contentType)
 			throws HttpClientException;
 
-	/**
-	 * 发送一个GET请求
-	 * @param url
-	 * @param responseType
-	 * @param sslSocketFactory
-	 * @return
-	 * @throws HttpClientException
-	 */
-	<T> T get(String url, Class<? extends T> responseType,
-			SSLSocketFactory sslSocketFactory) throws HttpClientException;
-
-	/**
-	 * 发送一个GET请求
-	 * @param url
-	 * @param responseType
-	 * @return
-	 * @throws HttpClientException
-	 */
-	Object get(String url, Type responseType) throws HttpClientException;
-
-	/**
-	 * 发送一个GET请求
-	 * @param url
-	 * @param responseType
-	 * @param sslSocketFactory
-	 * @return
-	 * @throws HttpClientException
-	 */
-	Object get(String url, Type responseType, SSLSocketFactory sslSocketFactory)
+	HttpResponseEntity<Object> post(Type responseType, String url, Object body, MediaType contentType)
 			throws HttpClientException;
-
-	/**
-	 * 发送一个POST请求
-	 * @param url
-	 * @param responseType
-	 * @param body
-	 * @param contentType
-	 * @return
-	 * @throws HttpClientException
-	 */
-	<T> T post(String url, Class<? extends T> responseType, Object body,
-			MediaType contentType) throws HttpClientException;
-
-	/**
-	 * 发送一个POST请求
-	 * @param url
-	 * @param responseType
-	 * @param sslSocketFactory
-	 * @param body
-	 * @param contentType
-	 * @return
-	 * @throws HttpClientException
-	 */
-	<T> T post(String url, Class<? extends T> responseType,
-			SSLSocketFactory sslSocketFactory, Object body,
-			MediaType contentType) throws HttpClientException;
-
-	/**
-	 * 发送一个POST请求
-	 * @param url
-	 * @param responseType
-	 * @param body
-	 * @param contentType
-	 * @return
-	 * @throws HttpClientException
-	 */
-	Object post(String url, Type responseType, Object body,
-			MediaType contentType) throws HttpClientException;
-
-	/**
-	 * 发送一个POST请求
-	 * @param url
-	 * @param responseType
-	 * @param sslSocketFactory
-	 * @param body
-	 * @param contentType
-	 * @return
-	 * @throws HttpClientException
-	 */
-	Object post(String url, Type responseType,
-			SSLSocketFactory sslSocketFactory, Object body,
-			MediaType contentType) throws HttpClientException;
 }

@@ -25,7 +25,6 @@ import scw.util.concurrent.ListenableFuture;
  * tasks for {@link ListenableFuture}s.
  *
  * @author Arjen Poutsma
- * @since 4.0
  * @see ListenableFuture
  */
 public interface AsyncListenableTaskExecutor extends AsyncTaskExecutor {

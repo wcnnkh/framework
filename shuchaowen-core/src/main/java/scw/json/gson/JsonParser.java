@@ -29,7 +29,6 @@ import scw.json.gson.stream.MalformedJsonException;
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
- * @since 1.3
  */
 public final class JsonParser {
 
@@ -39,7 +38,6 @@ public final class JsonParser {
    * @param json JSON text
    * @return a parse tree of {@link GsonJsonElement}s corresponding to the specified JSON
    * @throws JsonParseException if the specified text is not valid JSON
-   * @since 1.3
    */
   public GsonJsonElement parse(String json) throws JsonSyntaxException {
     return parse(new StringReader(json));
@@ -51,7 +49,6 @@ public final class JsonParser {
    * @param json JSON text
    * @return a parse tree of {@link GsonJsonElement}s corresponding to the specified JSON
    * @throws JsonParseException if the specified text is not valid JSON
-   * @since 1.3
    */
   public GsonJsonElement parse(Reader json) throws JsonIOException, JsonSyntaxException {
     try {

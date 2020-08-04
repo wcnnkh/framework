@@ -75,7 +75,6 @@ package scw.json.gson;
  * @see GsonBuilder#addDeserializationExclusionStrategy(ExclusionStrategy)
  * @see GsonBuilder#addSerializationExclusionStrategy(ExclusionStrategy)
  *
- * @since 1.4
  */
 public interface ExclusionStrategy {
 

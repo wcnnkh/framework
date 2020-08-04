@@ -368,8 +368,8 @@ public final class WeiXinPay {
 
 		logger.debug("微信支付请求xml内容:{}", content);
 
-		String res = HttpUtils.getHttpClient().post(url, String.class, sslSocketFactory, content,
-				new MediaType(MimeTypeUtils.APPLICATION_XML, charsetName));
+		String res = HttpUtils.getHttpClient().post(String.class, url, sslSocketFactory, content,
+				new MediaType(MimeTypeUtils.APPLICATION_XML, charsetName)).getBody();
 		if (res == null) {
 			throw new RuntimeException("请求：" + url + "失败");
 		}

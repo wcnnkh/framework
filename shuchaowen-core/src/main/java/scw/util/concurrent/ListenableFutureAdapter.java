@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutionException;
  * {@link #adapt(Object)} on the adaptee's result.
  *
  * @author Arjen Poutsma
- * @since 4.0
  * @param <T>
  *            the type of this {@code Future}
  * @param <S>

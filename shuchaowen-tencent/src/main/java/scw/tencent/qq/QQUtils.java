@@ -47,8 +47,8 @@ public final class QQUtils {
 		map.put("client_secret", appKey);
 		map.put("redirect_uri", redirect_uri);
 		map.put("code", code);
-		String content = HttpUtils.getHttpClient().post(qq_get_pc_token, String.class, map,
-				MediaType.APPLICATION_FORM_URLENCODED);
+		String content = HttpUtils.getHttpClient().post(String.class, qq_get_pc_token, map,
+				MediaType.APPLICATION_FORM_URLENCODED).getBody();
 		JsonObject json = JSONUtils.parseObject(content);
 		if (json.getIntValue("code") != 0) {
 			throw new RuntimeException(
@@ -74,7 +74,7 @@ public final class QQUtils {
 	}
 
 	public static JsonObject doGet(String url) {
-		String content = HttpUtils.getHttpClient().get(url, String.class);
+		String content = HttpUtils.getHttpClient().get(String.class, url).getBody();
 		content = formatCallBackPrefix(content);
 		JsonObject json = JSONUtils.parseObject(content);
 		if (json.getIntValue("ret") != 0) {

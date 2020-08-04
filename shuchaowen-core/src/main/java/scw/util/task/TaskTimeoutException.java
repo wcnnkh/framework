@@ -21,7 +21,6 @@ package scw.util.task;
  * task for execution because of the specified timeout.
  *
  * @author Juergen Hoeller
- * @since 2.0.3
  * @see AsyncTaskExecutor#execute(Runnable, long)
  * @see TaskRejectedException
  */
