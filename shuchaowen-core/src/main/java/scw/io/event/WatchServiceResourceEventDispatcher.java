@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.UseJavaVersion;
 import scw.event.support.EventType;
 import scw.io.Resource;
@@ -26,22 +25,16 @@ import scw.util.KeyValuePair;
  *
  */
 @UseJavaVersion(7)
-public class WatchServiceResourceEventDispatcher extends
-		DefaultResourceEventDispatcher {
-	public static final boolean USE_WATCH_SERVICE = GlobalPropertyFactory
-			.getInstance().getValue("resource.watch.enable", boolean.class,
-					true);
+public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDispatcher {
 	private static final WatchService WATCH_SERVICE;
 	private static ConcurrentHashMap<Path, ResourceWatchKey> listenerMap;
 
 	static {
 		WatchService watchService = null;
-		if (USE_WATCH_SERVICE) {
-			try {
-				watchService = FileSystems.getDefault().newWatchService();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			watchService = FileSystems.getDefault().newWatchService();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		WATCH_SERVICE = watchService;
@@ -61,8 +54,7 @@ public class WatchServiceResourceEventDispatcher extends
 				};
 			};
 			thread.setDaemon(true);
-			thread.setName(WatchServiceResourceEventDispatcher.class
-					.getSimpleName());
+			thread.setName(WatchServiceResourceEventDispatcher.class.getSimpleName());
 			thread.start();
 
 			Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -82,8 +74,7 @@ public class WatchServiceResourceEventDispatcher extends
 		super(resource);
 	}
 
-	public WatchServiceResourceEventDispatcher(Resource resource,
-			long listenerPeriod) {
+	public WatchServiceResourceEventDispatcher(Resource resource, long listenerPeriod) {
 		super(resource, listenerPeriod);
 	}
 
@@ -114,15 +105,12 @@ public class WatchServiceResourceEventDispatcher extends
 				ResourceWatchKey resourceWatchKey = listenerMap.get(path);
 				if (resourceWatchKey == null) {
 					resourceWatchKey = new ResourceWatchKey();
-					ResourceWatchKey old = listenerMap.putIfAbsent(path,
-							resourceWatchKey);
+					ResourceWatchKey old = listenerMap.putIfAbsent(path, resourceWatchKey);
 					if (old != null) {
 						resourceWatchKey = old;
 					} else {
-						WatchKey watchKey = path.register(WATCH_SERVICE,
-								StandardWatchEventKinds.ENTRY_CREATE,
-								StandardWatchEventKinds.ENTRY_DELETE,
-								StandardWatchEventKinds.ENTRY_MODIFY);
+						WatchKey watchKey = path.register(WATCH_SERVICE, StandardWatchEventKinds.ENTRY_CREATE,
+								StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
 						resourceWatchKey.setWatchKey(watchKey);
 					}
 				}
@@ -160,8 +148,7 @@ public class WatchServiceResourceEventDispatcher extends
 		private CopyOnWriteArrayList<KeyValuePair<String, Resource>> resourceList = new CopyOnWriteArrayList<KeyValuePair<String, Resource>>();
 
 		public void register(File file, Resource resource) {
-			resourceList.add(new KeyValuePair<String, Resource>(file.getName(),
-					resource));
+			resourceList.add(new KeyValuePair<String, Resource>(file.getName(), resource));
 		}
 
 		public void setWatchKey(WatchKey watchKey) {
@@ -184,11 +171,9 @@ public class WatchServiceResourceEventDispatcher extends
 				EventType eventType = null;
 				if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
 					eventType = EventType.CREATE;
-				} else if (event.kind().equals(
-						StandardWatchEventKinds.ENTRY_MODIFY)) {
+				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
 					eventType = EventType.UPDATE;
-				} else if (event.kind().equals(
-						StandardWatchEventKinds.ENTRY_DELETE)) {
+				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
 					eventType = EventType.DELETE;
 				}
 				if (eventType == null) {
@@ -198,12 +183,8 @@ public class WatchServiceResourceEventDispatcher extends
 				File file = path.toFile();
 				for (KeyValuePair<String, Resource> keyValuePair : resourceList) {
 					if (file.getName().equals(keyValuePair.getKey())) {
-						keyValuePair
-								.getValue()
-								.getEventDispatcher()
-								.publishEvent(
-										new ResourceEvent(eventType,
-												keyValuePair.getValue()));
+						keyValuePair.getValue().getEventDispatcher()
+								.publishEvent(new ResourceEvent(eventType, keyValuePair.getValue()));
 					}
 				}
 				;
