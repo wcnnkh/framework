@@ -260,7 +260,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	}
 
 	public <T> DynamicValue<T> getDynamicValue(String name, Class<? extends T> type, T defaultValue) {
-		return new DynamicValue<T>(name, type, defaultValue);
+		return new DefaultDynamicValue<T>(name, type, defaultValue);
 	}
 
 	public class PropertyFactoryRegistration {
@@ -338,11 +338,15 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 	}
 
-	public final class DynamicValue<T> {
+	public interface DynamicValue<T> {
+		T getValue();
+	}
+
+	private final class DefaultDynamicValue<T> implements DynamicValue<T> {
 		private volatile T value;
 		private EventRegistration eventRegistration;
 
-		public DynamicValue(String name, final Class<? extends T> type, final T defaultValue) {
+		public DefaultDynamicValue(String name, final Class<? extends T> type, final T defaultValue) {
 			Value v = get(name);
 			this.value = v == null ? defaultValue : v.getAsObject(type);
 			this.eventRegistration = registerListener(name, new EventListener<PropertyEvent>() {
