@@ -48,16 +48,20 @@ public abstract class AbstractResourceValueProcesser<R> extends AbstractValuePro
 			Object bean, Field field, Value value, String name, String charsetName, R res, boolean insertNull) {
 		Object v = null;
 		if (res == null) {
-			logger.warn("nonexistent resources name:{}, field={}", name, field);
+			logger.warn("nonexistent resources name [{}] field [{}]", name, field.getSetter());
 		} else {
 			v = parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res);
 			if (v == null) {
-				logger.warn("value is a null name={}, field={}", name, field);
+				logger.warn("value is a null name [{}] field [{}]", name, field.getSetter());
 			}
 		}
 
+		if (logger.isDebugEnabled()) {
+			logger.debug("Changes in progress name [{}] field [{}] value {}", name, field.getSetter(), v);
+		}
+
 		if (v == null && !insertNull) {
-			logger.warn("Cannot insert null value name:{}, field={}", name, field);
+			logger.warn("Cannot insert null value name [{}] field [{}]", name, field.getSetter());
 			return;
 		}
 		field.getSetter().set(bean, v);

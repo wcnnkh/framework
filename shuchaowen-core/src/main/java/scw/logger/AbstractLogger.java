@@ -13,6 +13,28 @@ public abstract class AbstractLogger implements Logger {
 	public AbstractLogger(Level level, String placeholder) {
 		this.level = level;
 		this.placeholder = placeholder;
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		if (eventRegistration != null) {
+			eventRegistration.unregister();
+		}
+		eventRegistration = null;
+		super.finalize();
+	}
+
+	/**
+	 * 注册对日志Level变更的监听
+	 * 
+	 * @return 如果已经注册过了就返回false, 否则返回true
+	 */
+	public boolean registerLevelListener() {
+		if (eventRegistration != null) {
+			// 已经注册过吧
+			return false;
+		}
+
 		eventRegistration = LoggerLevelManager.getInstance().getEventDispatcher()
 				.registerListener(new EventListener<BasicEvent>() {
 					public void onEvent(BasicEvent event) {
@@ -22,12 +44,7 @@ public abstract class AbstractLogger implements Logger {
 						}
 					}
 				});
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		eventRegistration.unregister();
-		super.finalize();
+		return true;
 	}
 
 	public Level getLevel() {
@@ -35,6 +52,7 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public void setLevel(Level level) {
+		//这里使用off是为了任意日志级别都会显示该日志
 		log(Level.OFF, "level change [{}]", level);
 		this.level = level;
 	}

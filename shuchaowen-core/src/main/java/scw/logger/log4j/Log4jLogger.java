@@ -12,6 +12,7 @@ public class Log4jLogger extends AbstractLogger {
 	public Log4jLogger(Logger logger, Level level, String placeholder) {
 		super(level, placeholder);
 		this.logger = logger;
+		registerLevelListener();
 	}
 
 	public String getName() {

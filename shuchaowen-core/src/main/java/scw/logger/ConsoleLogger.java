@@ -10,6 +10,7 @@ public final class ConsoleLogger extends AbstractLogger {
 		super(level, placeholder);
 		this.name = name;
 		this.abstractConsoleLoggerFactory = abstractConsoleLoggerFactory;
+		registerLevelListener();
 	}
 
 	public void log(Level level, Throwable e, Object format, Object... args) {
