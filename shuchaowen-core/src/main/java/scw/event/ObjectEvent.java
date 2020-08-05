@@ -2,6 +2,8 @@ package scw.event;
 
 import java.util.EventObject;
 
+import scw.core.utils.XTime;
+
 public class ObjectEvent<T> extends EventObject implements Event {
 	private static final long serialVersionUID = 1L;
 	private final long createTime;
@@ -20,9 +22,9 @@ public class ObjectEvent<T> extends EventObject implements Event {
 	public T getSource() {
 		return (T) super.getSource();
 	}
-	
+
 	@Override
 	public String toString() {
-		return super.toString() + ", source=" + getSource();
+		return "createTime=" + XTime.format(createTime, "yyyy-MM-dd HH:mm:ss,SSS") + super.toString();
 	}
 }

@@ -1,19 +1,60 @@
 package scw.logger;
 
-import scw.logger.LoggerLevelManager.DynamicLevel;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
+import scw.event.support.BasicEvent;
 
 public abstract class AbstractLogger implements Logger {
 	private static final Object[] EMPTY_ARGS = new Object[0];
 	protected final String placeholder;
-	private final DynamicLevel dynamicLevel;
+	private volatile Level level;
+	private EventRegistration eventRegistration;
 
-	public AbstractLogger(DynamicLevel dynamicLevel, String placeholder) {
-		this.dynamicLevel = dynamicLevel;
+	public AbstractLogger(Level level, String placeholder) {
+		this.level = level;
 		this.placeholder = placeholder;
 	}
 
-	public DynamicLevel getDynamicLevel() {
-		return dynamicLevel;
+	@Override
+	protected void finalize() throws Throwable {
+		if (eventRegistration != null) {
+			eventRegistration.unregister();
+		}
+		eventRegistration = null;
+		super.finalize();
+	}
+
+	/**
+	 * 注册对日志Level变更的监听
+	 * 
+	 * @return 如果已经注册过了就返回false, 否则返回true
+	 */
+	public boolean registerLevelListener() {
+		if (eventRegistration != null) {
+			// 已经注册过吧
+			return false;
+		}
+
+		eventRegistration = LoggerLevelManager.getInstance().getEventDispatcher()
+				.registerListener(new EventListener<BasicEvent>() {
+					public void onEvent(BasicEvent event) {
+						Level level = LoggerLevelManager.getInstance().getLevel(getName());
+						if (!level.equals(getLevel())) {
+							setLevel(level);
+						}
+					}
+				});
+		return true;
+	}
+
+	public Level getLevel() {
+		return level;
+	}
+
+	public void setLevel(Level level) {
+		//这里使用off是为了任意日志级别都会显示该日志
+		log(Level.OFF, "level change [{}]", level);
+		this.level = level;
 	}
 
 	public String getPlaceholder() {
@@ -109,6 +150,6 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public boolean isLogEnable(Level level) {
-		return this.dynamicLevel.getLevel().isEnable(level);
+		return level.isGreaterOrEqual(getLevel());
 	}
 }

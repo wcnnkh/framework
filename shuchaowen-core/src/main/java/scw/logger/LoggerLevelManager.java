@@ -130,10 +130,6 @@ public class LoggerLevelManager {
 		return level == null ? defaultLevel : level;
 	}
 
-	public DynamicLevel getDynamicLevel(String name) {
-		return new DynamicLevel(name);
-	}
-
 	@SuppressWarnings("unchecked")
 	public Map<String, Level> getLevelMap() {
 		return (Map<String, Level>) (levelMap == null ? Collections.emptyMap()
@@ -142,48 +138,5 @@ public class LoggerLevelManager {
 
 	public BasicEventDispatcher<BasicEvent> getEventDispatcher() {
 		return eventDispatcher;
-	}
-
-	public final class DynamicLevel {
-		private volatile Level level;
-		private String name;
-		private volatile BasicEventDispatcher<ObjectEvent<Level>> eventDispatcher;
-
-		public DynamicLevel(String name) {
-			this.name = name;
-			this.level = LoggerLevelManager.this.getLevel(name);
-			LoggerLevelManager.this.eventDispatcher
-					.registerListener(new EventListener<BasicEvent>() {
-
-						public void onEvent(BasicEvent event) {
-							Level level = LoggerLevelManager.this
-									.getLevel(DynamicLevel.this.name);
-							if (!level.equals(DynamicLevel.this.level)) {
-								DynamicLevel.this.level = level;
-								if (eventDispatcher != null) {
-									eventDispatcher
-											.publishEvent(new ObjectEvent<Level>(
-													DynamicLevel.this.level));
-								}
-							}
-						}
-					});
-		}
-
-		public Level getLevel() {
-			return level;
-		}
-
-		public BasicEventDispatcher<ObjectEvent<Level>> getEventDispatcher() {
-			if (eventDispatcher == null) {
-				synchronized (this) {
-					if (eventDispatcher == null) {
-						eventDispatcher = new DefaultBasicEventDispatcher<ObjectEvent<Level>>(
-								true);
-					}
-				}
-			}
-			return eventDispatcher;
-		}
 	}
 }

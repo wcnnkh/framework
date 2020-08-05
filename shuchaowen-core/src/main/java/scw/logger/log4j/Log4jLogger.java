@@ -2,29 +2,27 @@ package scw.logger.log4j;
 
 import org.apache.log4j.Logger;
 
-import scw.event.EventListener;
-import scw.event.ObjectEvent;
 import scw.logger.AbstractLogger;
 import scw.logger.Level;
-import scw.logger.LoggerLevelManager.DynamicLevel;
 import scw.util.PlaceholderFormatAppend;
 
 public class Log4jLogger extends AbstractLogger {
 	private final Logger logger;
 
-	public Log4jLogger(Logger logger, final DynamicLevel level, String placeholder) {
+	public Log4jLogger(Logger logger, Level level, String placeholder) {
 		super(level, placeholder);
 		this.logger = logger;
-		level.getEventDispatcher().registerListener(new EventListener<ObjectEvent<Level>>() {
-
-			public void onEvent(ObjectEvent<Level> event) {
-				Log4jLogger.this.logger.setLevel(parse(event.getSource()));
-			}
-		});
+		registerLevelListener();
 	}
 
 	public String getName() {
 		return logger.getName();
+	}
+
+	@Override
+	public void setLevel(Level level) {
+		logger.setLevel(parse(level));
+		super.setLevel(level);
 	}
 
 	@Override

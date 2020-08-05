@@ -9,7 +9,7 @@ import scw.core.Assert;
 public class Level implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private volatile static Map<String, Level> levelNameMap = new HashMap<String, Level>();
-	public static final Level ALL = new Level("ALL", 0);
+	public static final Level ALL = new Level("ALL", Integer.MIN_VALUE);
 	public static final Level TRACE = new Level("TRACE", 10000);
 	public static final Level DEBUG = new Level("DEBUG", 20000);
 	public static final Level INFO = new Level("INFO", 30000);
@@ -69,13 +69,13 @@ public class Level implements Serializable {
 	}
 
 	/**
-	 * 相对于当前的level是否可用
 	 * 
+	 * 大于或等于
 	 * @param level
 	 * @return
 	 */
-	public boolean isEnable(Level level) {
-		return level.value >= value;
+	public boolean isGreaterOrEqual(Level level) {
+		return value >= level.value;
 	}
 
 	public static Level getLevel(String name) {

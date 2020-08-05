@@ -17,38 +17,54 @@ public abstract class AbstractResourceValueProcesser<R> extends AbstractValuePro
 			final String name, final String charsetName) {
 		ObservableResource<R> res = getObservableResource(beanDefinition, beanFactory, propertyFactory, bean, field,
 				value, name, charsetName);
-		if (res.getResource() == null) {
-			logger.warn("Nonexistent resources name:{}, field={}", name, field);
-		} else {
-			Object v = parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName,
-					res.getResource());
-			if (v == null) {
-				logger.warn("Value is a null! name={}, field={}", name, field);
-			} else {
-				field.getSetter().set(bean, v);
-			}
-		}
+		set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res.getResource(),
+				false);
 
 		if (isRegisterListener(beanDefinition, field, value)) {
 			res.registerListener(new ObservableResourceEventListener<R>() {
 
 				public void onEvent(ObservableResourceEvent<R> event) {
-					R res = event.getSource();
-					Object v = null;
-					if (res == null) {
-						logger.warn("Event: nonexistent resources name:{}, field={}", name, field);
-					} else {
-						v = parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName,
-								event.getSource());
-						if (v == null) {
-							logger.warn("Event: value is a null! name={}, field={}", name, field);
-						}
-					}
-
-					field.getSetter().set(bean, v);
+					set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName,
+							event.getSource(), true);
 				}
 			});
 		}
+	}
+
+	/**
+	 * @param beanDefinition
+	 * @param beanFactory
+	 * @param propertyFactory
+	 * @param bean
+	 * @param field
+	 * @param value
+	 * @param name
+	 * @param charsetName
+	 * @param res
+	 * @param insertNull
+	 *            是否可以插入空值
+	 */
+	protected void set(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
+			Object bean, Field field, Value value, String name, String charsetName, R res, boolean insertNull) {
+		Object v = null;
+		if (res == null) {
+			logger.warn("nonexistent resources name [{}] field [{}]", name, field.getSetter());
+		} else {
+			v = parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res);
+			if (v == null) {
+				logger.warn("value is a null name [{}] field [{}]", name, field.getSetter());
+			}
+		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("Changes in progress name [{}] field [{}] value {}", name, field.getSetter(), v);
+		}
+
+		if (v == null && !insertNull) {
+			logger.warn("Cannot insert null value name [{}] field [{}]", name, field.getSetter());
+			return;
+		}
+		field.getSetter().set(bean, v);
 	}
 
 	protected abstract ObservableResource<R> getObservableResource(BeanDefinition beanDefinition,

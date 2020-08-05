@@ -12,18 +12,26 @@ public class DefaultValueProcess extends AbstractValueProcesser {
 
 	@Override
 	protected void processInteranl(BeanDefinition beanDefinition, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, final Object bean, final Field field, Value value, String name,
+			PropertyFactory propertyFactory, final Object bean, final Field field, Value value, final String name,
 			String charsetName) {
 		scw.value.Value v = propertyFactory.get(name);
-		field.getSetter().set(bean, v == null ? null : v.getAsObject(field.getSetter().getGenericType()));
+		set(bean, field, name, v);
+
 		if (isRegisterListener(beanDefinition, field, value)) {
 			propertyFactory.registerListener(name, new EventListener<PropertyEvent>() {
 
 				public void onEvent(PropertyEvent event) {
-					field.getSetter().set(bean, event.getValue() == null ? null
-							: event.getValue().getAsObject(field.getSetter().getGenericType()));
+					set(bean, field, name, event.getValue());
 				}
 			});
 		}
+	}
+
+	protected void set(final Object bean, final Field field, final String name, scw.value.Value value) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Changes in progress name [{}] field [{}] value [{}]", name, field.getSetter(), value);
+		}
+
+		field.getSetter().set(bean, value == null ? null : value.getAsObject(field.getSetter().getGenericType()));
 	}
 }
