@@ -248,11 +248,11 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 	}
 
-	public <T> DynamicValue<T> getDynamicValue(String name, Class<? extends T> type, T defaultValue) {
+	public final <T> DynamicValue<T> getDynamicValue(String name, Class<? extends T> type, T defaultValue) {
 		return new DynamicValue<T>(name, type, defaultValue);
 	}
 
-	public DynamicValue<Object> getDynamicValue(String name, Type type, Object defaultValue) {
+	public final DynamicValue<Object> getDynamicValue(String name, Type type, Object defaultValue) {
 		return new DynamicValue<Object>(name, type, defaultValue);
 	}
 
@@ -331,7 +331,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 	}
 
-	public class DynamicValue<T> {
+	public final class DynamicValue<T> {
 		private final String name;
 		private volatile T value;
 		private final T defaultValue;
@@ -342,8 +342,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 			this.name = name;
 			this.type = type;
 			this.defaultValue = defaultValue;
-			this.value = this.parse(PropertyFactory.this.get(name));
-
+			this.value = getNewValue();
 			eventRegistration = registerListener(new EventListener<ValueEvent<T>>() {
 
 				public void onEvent(ValueEvent<T> event) {
@@ -381,16 +380,15 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 
 		@SuppressWarnings("unchecked")
-		protected T parse(Value value) {
-			return (T) (value == null ? this.getDefaultValue() : value.getAsObject(getType()));
+		protected T getNewValue() {
+			return (T) PropertyFactory.this.getValue(getName(), getType(), getDefaultValue());
 		}
 
 		public EventRegistration registerListener(final EventListener<ValueEvent<T>> eventListener) {
 			return PropertyFactory.this.registerListener(getName(), new EventListener<PropertyEvent>() {
 
 				public void onEvent(PropertyEvent event) {
-					T value = parse(event.getValue());
-					eventListener.onEvent(new ValueEvent<T>(event, value));
+					eventListener.onEvent(new ValueEvent<T>(event, getNewValue()));
 				}
 			});
 		}
