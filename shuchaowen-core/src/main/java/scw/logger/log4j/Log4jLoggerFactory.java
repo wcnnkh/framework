@@ -19,6 +19,6 @@ public class Log4jLoggerFactory extends AbstractILoggerFactory {
 
 	public Logger getLogger(String name, String placeholder) {
 		org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(name);
-		return new Log4jLogger(logger, LoggerLevelManager.getInstance().getDynamicLevel(name), placeholder);
+		return new Log4jLogger(logger, LoggerLevelManager.getInstance().getLevel(name), placeholder);
 	}
 }

@@ -4,13 +4,12 @@ import org.apache.logging.log4j.Logger;
 
 import scw.logger.AbstractLogger;
 import scw.logger.Level;
-import scw.logger.LoggerLevelManager.DynamicLevel;
 import scw.util.PlaceholderFormatAppend;
 
 public class Log4j2Logger extends AbstractLogger {
 	private final Logger logger;
 
-	public Log4j2Logger(Logger logger, DynamicLevel level, String placeholder) {
+	public Log4j2Logger(Logger logger, Level level, String placeholder) {
 		super(level, placeholder);
 		this.logger = logger;
 	}

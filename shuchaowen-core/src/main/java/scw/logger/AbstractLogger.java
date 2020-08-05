@@ -1,19 +1,42 @@
 package scw.logger;
 
-import scw.logger.LoggerLevelManager.DynamicLevel;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
+import scw.event.support.BasicEvent;
 
 public abstract class AbstractLogger implements Logger {
 	private static final Object[] EMPTY_ARGS = new Object[0];
 	protected final String placeholder;
-	private final DynamicLevel dynamicLevel;
+	private volatile Level level;
+	private EventRegistration eventRegistration;
 
-	public AbstractLogger(DynamicLevel dynamicLevel, String placeholder) {
-		this.dynamicLevel = dynamicLevel;
+	public AbstractLogger(Level level, String placeholder) {
+		this.level = level;
 		this.placeholder = placeholder;
+		eventRegistration = LoggerLevelManager.getInstance().getEventDispatcher()
+				.registerListener(new EventListener<BasicEvent>() {
+					public void onEvent(BasicEvent event) {
+						Level level = LoggerLevelManager.getInstance().getLevel(getName());
+						if (!level.equals(getLevel())) {
+							setLevel(level);
+						}
+					}
+				});
 	}
 
-	public DynamicLevel getDynamicLevel() {
-		return dynamicLevel;
+	@Override
+	protected void finalize() throws Throwable {
+		eventRegistration.unregister();
+		super.finalize();
+	}
+
+	public Level getLevel() {
+		return level;
+	}
+
+	public void setLevel(Level level) {
+		log(Level.OFF, "level change [{}]", level);
+		this.level = level;
 	}
 
 	public String getPlaceholder() {
@@ -109,6 +132,6 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public boolean isLogEnable(Level level) {
-		return this.dynamicLevel.getLevel().isEnable(level);
+		return level.isGreaterOrEqual(getLevel());
 	}
 }
