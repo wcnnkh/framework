@@ -31,11 +31,6 @@ import scw.sql.orm.dialect.SqlTypeFactory;
 import scw.sql.orm.enums.OperationType;
 
 public final class SqlUtils {
-	public static final int MAX_PAGINATION_LIMIT = GlobalPropertyFactory.getInstance()
-			.getValue("sql.pagination.max.limit", int.class, 2000);
-	public static final int DEFAULT_PAGINATION_LIMIT = GlobalPropertyFactory.getInstance()
-			.getValue("sql.pagination.limit", int.class, 20);
-
 	private static final String IGNORE_SQL_START_WITH = StringUtils
 			.toString(GlobalPropertyFactory.getInstance().getString("db.file.sql.ignore.start.with"), "##");
 	private static final SqlTypeFactory SQL_TYPE_FACTORY = InstanceUtils.loadService(SqlTypeFactory.class, "scw.sql.orm.dialect.DefaultSqlTypeFactory");

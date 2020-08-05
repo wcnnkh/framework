@@ -23,11 +23,12 @@ import scw.timer.Task;
 import scw.timer.Timer;
 import scw.timer.support.SimpleCrontabConfig;
 import scw.util.Pagination;
+import scw.value.property.PropertyFactory.DynamicValue;
 
 public class DBActionLogServiceImpl implements ActionLogService, Task {
 	private static Logger logger = LoggerUtils.getLogger(DBActionLogServiceImpl.class);
-	private static final int LOG_EXPIRATION_TIME = GlobalPropertyFactory.getInstance()
-			.getValue("mvc.logger.expire.time", Integer.class, 90);// 默认保存90天日志
+	private static final DynamicValue<Integer> LOG_EXPIRATION_TIME = GlobalPropertyFactory.getInstance()
+			.getDynamicValue("mvc.logger.expire.time", Integer.class, 90);// 默认保存90天日志
 
 	private DB db;
 
@@ -43,13 +44,13 @@ public class DBActionLogServiceImpl implements ActionLogService, Task {
 	}
 
 	public void run(long executionTime) throws Throwable {
-		if (LOG_EXPIRATION_TIME <= 0) {
+		if (LOG_EXPIRATION_TIME.getValue() <= 0) {
 			return;
 		}
 
 		db.execute(new SimpleSql(
 				"delete log_table, log_attribute_table from log_table, log_attribute_table where log_table.logId=log_attribute_table.logId and log_table.createTime<?",
-				executionTime - LOG_EXPIRATION_TIME * XTime.ONE_DAY));
+				executionTime - LOG_EXPIRATION_TIME.getValue() * XTime.ONE_DAY));
 	}
 
 	public void addLog(ActionLog log) {

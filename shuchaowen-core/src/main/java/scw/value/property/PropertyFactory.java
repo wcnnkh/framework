@@ -259,6 +259,10 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 	}
 
+	public <T> DynamicValue<T> getDynamicValue(String name, Class<? extends T> type, T defaultValue) {
+		return new DefaultDynamicValue<T>(name, type, defaultValue);
+	}
+
 	public class PropertyFactoryRegistration {
 		private final DynamicMapRegistration propertiesRegistration;
 
@@ -276,14 +280,16 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 		/**
 		 * 默认只有当资源存在时才注册
+		 * 
 		 * @return
 		 */
 		public PropertyFactory registerListener() {
 			return registerListener(true);
 		}
-		
+
 		/**
-		 * @param isExist true表示只有当资源存在时才注册
+		 * @param isExist
+		 *            true表示只有当资源存在时才注册
 		 * @return
 		 */
 		public PropertyFactory registerListener(boolean isExist) {
@@ -329,6 +335,37 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		public String getAsString() {
 			String value = super.getAsString();
 			return format(value, true);
+		}
+	}
+
+	public interface DynamicValue<T> {
+		T getValue();
+	}
+
+	private final class DefaultDynamicValue<T> implements DynamicValue<T> {
+		private volatile T value;
+		private EventRegistration eventRegistration;
+
+		public DefaultDynamicValue(String name, final Class<? extends T> type, final T defaultValue) {
+			Value v = get(name);
+			this.value = v == null ? defaultValue : v.getAsObject(type);
+			this.eventRegistration = registerListener(name, new EventListener<PropertyEvent>() {
+
+				public void onEvent(PropertyEvent event) {
+					Value v = event.getValue();
+					value = v == null ? defaultValue : v.getAsObject(type);
+				}
+			});
+		}
+
+		@Override
+		protected void finalize() throws Throwable {
+			eventRegistration.unregister();
+			super.finalize();
+		}
+
+		public T getValue() {
+			return value;
 		}
 	}
 }

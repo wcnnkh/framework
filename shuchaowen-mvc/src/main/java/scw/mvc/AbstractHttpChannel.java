@@ -49,11 +49,12 @@ import scw.value.AbstractStringValue;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
+import scw.value.property.PropertyFactory.DynamicValue;
 
 public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends ServerHttpResponse>
 		implements HttpChannel, Destroy {
-	private static final long WARN_TIMEOUT = GlobalPropertyFactory.getInstance().getValue("mvc.warn-execute-time",
-			long.class, 100L);
+	private static final DynamicValue<Long> WARN_TIMEOUT = GlobalPropertyFactory.getInstance()
+			.getDynamicValue("mvc.warn-execute-time", Long.class, 100L);
 	private final long createTime;
 	private final JSONSupport jsonSupport;
 	private final HttpChannelBeanManager httpChannelBeanManager;
@@ -101,7 +102,7 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 	}
 
 	protected long getExecuteWarnTime() {
-		return WARN_TIMEOUT;
+		return WARN_TIMEOUT.getValue();
 	}
 
 	public boolean isLogEnabled() {
@@ -123,8 +124,7 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 	}
 
 	public final Value getValue(String name, Value defaultValue) {
-		return new RequestValue(name,
-				defaultValue == null ? EmptyValue.INSTANCE : defaultValue);
+		return new RequestValue(name, defaultValue == null ? EmptyValue.INSTANCE : defaultValue);
 	}
 
 	protected Value parseValue(String value) {

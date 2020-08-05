@@ -393,10 +393,6 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 			throw new RuntimeException("page=" + page + ", limit=" + limit);
 		}
 
-		if (limit > SqlUtils.MAX_PAGINATION_LIMIT) {
-			throw new RuntimeException("Limit too large: " + limit + ", max=" + SqlUtils.MAX_PAGINATION_LIMIT);
-		}
-
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql, page, limit);
 		Long count = selectOne(Long.class, paginationSql.getCountSql());
 		Pagination<ResultMapping> pagination = new Pagination<ResultMapping>(limit);

@@ -4,14 +4,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.StringFormat;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 import scw.util.FormatUtils;
 import scw.util.PropertyPlaceholderHelper;
 
 public class StringValueFactory extends DefaultValueFactory<String> {
-	private static Logger logger = LoggerUtils.getLogger(StringValueFactory.class);
-
 	/**
 	 * Resolve {@code $ ...} placeholders in the given text, replacing them with
 	 * corresponding system property values.
@@ -48,7 +44,7 @@ public class StringValueFactory extends DefaultValueFactory<String> {
 	public String resolvePlaceholders(String text, boolean ignoreUnresolvablePlaceholders) {
 		PropertyPlaceholderHelper helper = (ignoreUnresolvablePlaceholders ? PropertyPlaceholderHelper.nonStrictHelper
 				: PropertyPlaceholderHelper.strictHelper);
-		return helper.replacePlaceholders(text, new PropertyPlaceholderResolver(text));
+		return helper.replacePlaceholders(text, new PropertyPlaceholderResolver());
 	}
 
 	/**
@@ -56,20 +52,9 @@ public class StringValueFactory extends DefaultValueFactory<String> {
 	 * properties and system environment variables.
 	 */
 	private final class PropertyPlaceholderResolver implements PropertyPlaceholderHelper.PlaceholderResolver {
-		private final String text;
-
-		public PropertyPlaceholderResolver(String text) {
-			this.text = text;
-		}
 
 		public String resolvePlaceholder(String placeholderName) {
-			try {
-				return getString(placeholderName);
-			} catch (Throwable ex) {
-				logger.error("Could not resolve placeholder '" + placeholderName + "' in [" + this.text
-						+ "] as system property: " + ex);
-				return null;
-			}
+			return getString(placeholderName);
 		}
 	}
 
