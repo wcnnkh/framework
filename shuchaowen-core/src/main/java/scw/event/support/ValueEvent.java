@@ -8,6 +8,11 @@ public class ValueEvent<V> extends BasicTypeEvent {
 		this.value = valueEvent.value;
 	}
 
+	public ValueEvent(BasicTypeEvent basicTypeEvent, V value) {
+		super(basicTypeEvent);
+		this.value = value;
+	}
+	
 	public ValueEvent(EventType eventType, V value) {
 		super(eventType);
 		this.value = value;
