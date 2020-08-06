@@ -7,6 +7,7 @@ import scw.core.Constants;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -16,8 +17,9 @@ public class BaseIPVerification extends HashSet<String> implements IPVerificatio
 	private Logger logger = LoggerUtils.getLogger(getClass());
 
 	protected void appendIPFile(String path) {
-		if (ResourceUtils.getResourceOperations().isExist(path)) {
-			List<String> contentList = ResourceUtils.getResourceOperations().getLines(path, Constants.DEFAULT_CHARSET_NAME).getResource();
+		Resource resource = ResourceUtils.getResourceOperations().getResource(path);
+		if (resource.exists()) {
+			List<String> contentList = ResourceUtils.getLines(resource, Constants.DEFAULT_CHARSET);
 			if (!CollectionUtils.isEmpty(contentList)) {
 				for (String content : contentList) {
 					if (StringUtils.isEmpty(content)) {

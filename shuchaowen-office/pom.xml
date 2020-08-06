@@ -18,11 +18,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-db</artifactId>
 			<scope>provided</scope>
@@ -32,6 +27,11 @@
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-mvc</artifactId>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
 		</dependency>
 	</dependencies>
 </project>

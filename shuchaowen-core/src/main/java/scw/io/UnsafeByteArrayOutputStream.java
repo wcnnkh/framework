@@ -68,6 +68,6 @@ public class UnsafeByteArrayOutputStream extends OutputStream {
 		return new String(mBuffer, 0, mCount, charset);
 	}
 
-	public void close() throws IOException {
+	public void close() {
 	}
 }

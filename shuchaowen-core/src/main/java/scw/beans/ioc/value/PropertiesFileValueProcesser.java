@@ -16,7 +16,7 @@ import scw.mapper.MapperUtils;
 import scw.value.ValueUtils;
 import scw.value.property.PropertyFactory;
 
-public final class PropertiesFileValueProcesser extends AbstractResourceValueProcesser<Properties> {
+public final class PropertiesFileValueProcesser extends AbstractObservableValueProcesser<Properties> {
 
 	@Override
 	protected ObservableResource<Properties> getObservableResource(BeanDefinition beanDefinition,

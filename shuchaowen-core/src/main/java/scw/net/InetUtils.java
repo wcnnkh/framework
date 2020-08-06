@@ -194,4 +194,16 @@ public final class InetUtils {
 		Matcher matcher = p.matcher(ip);
 		return matcher.find();
 	}
+
+	public static void writeFileMessageHeaders(OutputMessage outputMessage, String fileName) throws IOException {
+		String fileNameToUse = StringUtils.containsChinese(fileName) ? new String(fileName.getBytes(), "iso-8859-1")
+				: fileName;
+		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
+		if (mimeType == null) {
+			outputMessage.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
+		} else {
+			outputMessage.setContentType(mimeType);
+		}
+		outputMessage.getHeaders().add("Content-Disposition", "attachment;filename=" + fileNameToUse);
+	}
 }

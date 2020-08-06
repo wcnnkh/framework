@@ -14,6 +14,7 @@ import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
+import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.lang.NestedRuntimeException;
@@ -67,11 +68,12 @@ public final class WeiXinPay {
 			return null;
 		}
 
-		InputStream is = ResourceUtils.getResourceOperations().getInputStream(certTrustFile).getResource();
-		if (is == null) {
+		Resource resource = ResourceUtils.getResourceOperations().getResource(certTrustFile);
+		if(!resource.exists()){
 			return null;
 		}
-
+		
+		InputStream is = ResourceUtils.getInputStream(resource);
 		char[] password = mch_id.toCharArray();
 		try {
 			return SSLContexts.custom().loadKeyMaterial(is, password, password).build().getSocketFactory();

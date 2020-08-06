@@ -19,15 +19,11 @@ public class XmlValue {
 		String value;
 		String url = XMLUtils.getNodeAttributeValue(node, "url");
 
-		if (!StringUtils.isNull(url)) {
-			if (url.startsWith("file://")) {
-				String path = url.substring(7);
-				value = ResourceUtils.getResourceOperations().getContent(path, charset).getResource();
-			} else if (url.startsWith("http://") || url.startsWith("https://")) {
+		if (StringUtils.isNotEmpty(url)) {
+			if (url.startsWith("http://") || url.startsWith("https://")) {
 				value = HttpUtils.getHttpClient().get(String.class, url).getBody();
 			} else {
-				String path = url.substring(7);
-				value = ResourceUtils.getResourceOperations().getContent(path, charset).getResource();
+				value = ResourceUtils.getContent(ResourceUtils.getResourceOperations().getResource(url), charset);
 			}
 		} else {
 			value = XMLUtils.getNodeAttributeValueOrNodeContent(node, "value");

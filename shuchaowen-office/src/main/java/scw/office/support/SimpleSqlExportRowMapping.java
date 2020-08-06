@@ -1,15 +1,15 @@
-package scw.office.excel.jxl.export;
+package scw.office.support;
 
 import scw.sql.orm.ResultMapping;
 
-public class SimpleExportRowImpl implements SqlExportRow {
+public class SimpleSqlExportRowMapping implements SqlExportRowMapping {
 	private int colCount;
 
-	public SimpleExportRowImpl(int colCount) {
+	public SimpleSqlExportRowMapping(int colCount) {
 		this.colCount = colCount;
 	}
 
-	public String[] exportRow(ResultMapping resultMapping) {
+	public String[] mapping(ResultMapping resultMapping) {
 		Object[] values = resultMapping.getValues();
 		String[] strs = new String[colCount];
 		int i = 0;

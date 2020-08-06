@@ -26,8 +26,9 @@ import scw.value.ValueFactory;
 import scw.value.property.PropertyFactory;
 
 public final class BeanUtils {
-	private static final List<String> DISABLE_PROXY_BEANS = ResourceUtils.getResourceOperations()
-			.getLines("/scw/beans/disable-proxy.beans", Constants.DEFAULT_CHARSET).getResource();
+	private static final List<String> DISABLE_PROXY_BEANS = ResourceUtils.getLines(
+			ResourceUtils.getResourceOperations().getResource("/scw/beans/disable-proxy.beans"),
+			Constants.DEFAULT_CHARSET);
 
 	private BeanUtils() {
 	};

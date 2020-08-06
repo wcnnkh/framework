@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
+import scw.core.Converter;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.method.MultiEventRegistration;
@@ -25,16 +26,16 @@ public final class ObservableResourceUtils {
 		}
 
 		return new ObservableResource<Properties>(properties) {
-			
+
 			@Override
 			public EventRegistration registerListener(final ObservableResourceEventListener<Properties> eventListener,
 					boolean isExist) {
 				List<EventRegistration> eventRegistrations = new ArrayList<EventRegistration>(resources.size());
 				for (Resource res : resources) {
-					if(isExist && !res.exists()){
+					if (isExist && !res.exists()) {
 						continue;
 					}
-					
+
 					EventRegistration eventRegistration = res.getEventDispatcher()
 							.registerListener(new EventListener<ResourceEvent>() {
 
@@ -53,64 +54,31 @@ public final class ObservableResourceUtils {
 	}
 
 	public static ObservableResource<byte[]> getBytes(final Resource resource) {
-		byte[] data = ResourceUtils.getBytes(resource);
-		return new ObservableResource<byte[]>(data) {
+		return getObservableResource(resource, new Converter<Resource, byte[]>() {
 
-			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<byte[]> eventListener, boolean isExist) {
-				if(isExist && !resource.exists()){
-					return EventRegistration.EMPTY;
-				}
-				
-				return resource.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
-
-					public void onEvent(ResourceEvent event) {
-						eventListener.onEvent(new ObservableResourceEvent<byte[]>(event,
-								getBytes(event.getResource()).getResource()));
-					}
-				});
+			public byte[] convert(Resource k) {
+				return ResourceUtils.getBytes(k);
 			}
-		};
+		});
 	}
 
 	public static ObservableResource<UnsafeByteArrayInputStream> getInputStream(final Resource resource) {
-		final ObservableResource<byte[]> res = getBytes(resource);
-		return new ObservableResource<UnsafeByteArrayInputStream>(
-				res.getResource() == null ? null : new UnsafeByteArrayInputStream(res.getResource())) {
+		return getObservableResource(resource, new Converter<Resource, UnsafeByteArrayInputStream>() {
 
-			@Override
-			public EventRegistration registerListener(
-					final ObservableResourceEventListener<UnsafeByteArrayInputStream> eventListener, boolean isExist) {
-				return res.registerListener(new ObservableResourceEventListener<byte[]>() {
-
-					public void onEvent(ObservableResourceEvent<byte[]> event) {
-						eventListener.onEvent(new ObservableResourceEvent<UnsafeByteArrayInputStream>(event,
-								res.getResource() == null ? null : new UnsafeByteArrayInputStream(res.getResource())));
-					}
-				}, isExist);
+			public UnsafeByteArrayInputStream convert(Resource k) {
+				byte[] data = ResourceUtils.getBytes(k);
+				return data == null ? null : new UnsafeByteArrayInputStream(data);
 			}
-		};
+		});
 	}
 
 	public static ObservableResource<List<String>> getLines(final Resource resource, final String charsetName) {
-		List<String> lines = ResourceUtils.getLines(resource, charsetName);
-		return new ObservableResource<List<String>>(lines) {
+		return getObservableResource(resource, new Converter<Resource, List<String>>() {
 
-			@Override
-			public EventRegistration registerListener(
-					final ObservableResourceEventListener<List<String>> eventListener, boolean isExist) {
-				if(isExist && !resource.exists()){
-					return EventRegistration.EMPTY;
-				}
-				
-				return resource.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
-					public void onEvent(ResourceEvent event) {
-						eventListener.onEvent(new ObservableResourceEvent<List<String>>(event,
-								getLines(event.getResource(), charsetName).getResource()));
-					}
-				});
+			public List<String> convert(Resource k) {
+				return ResourceUtils.getLines(k, charsetName);
 			}
-		};
+		});
 	}
 
 	public static ObservableResource<List<String>> getLines(Resource resource, Charset charset) {
@@ -121,20 +89,38 @@ public final class ObservableResourceUtils {
 		return getContent(resource, charset.name());
 	}
 
-	public static ObservableResource<String> getContent(final Resource resource, final String charsetName) {
-		String content = ResourceUtils.getContent(resource, charsetName);
-		return new ObservableResource<String>(content) {
+	public static ObservableResource<String> getContent(Resource resource, final String charsetName) {
+		return getObservableResource(resource, new Converter<Resource, String>() {
+			public String convert(Resource k) {
+				return ResourceUtils.getContent(k, charsetName);
+			}
+		});
+	}
+
+	public static ObservableResource<Resource> getResource(Resource resource) {
+		return getObservableResource(resource, new Converter<Resource, Resource>() {
+			public Resource convert(Resource k) {
+				return k;
+			}
+		});
+	}
+
+	public static <R> ObservableResource<R> getObservableResource(final Resource resource,
+			final Converter<Resource, R> converter) {
+		R r = converter.convert(resource);
+		return new ObservableResource<R>(r) {
 
 			@Override
-			public EventRegistration registerListener(final ObservableResourceEventListener<String> eventListener, boolean isExist) {
-				if(isExist && !resource.exists()){
+			public EventRegistration registerListener(final ObservableResourceEventListener<R> eventListener,
+					boolean isExist) {
+				if (isExist && !resource.exists()) {
 					return EventRegistration.EMPTY;
 				}
-				
+
 				return resource.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
 					public void onEvent(ResourceEvent event) {
-						eventListener.onEvent(new ObservableResourceEvent<String>(event,
-								getContent(event.getResource(), charsetName).getResource()));
+						R r = converter.convert(event.getResource());
+						eventListener.onEvent(new ObservableResourceEvent<R>(event, r));
 					}
 				});
 			}

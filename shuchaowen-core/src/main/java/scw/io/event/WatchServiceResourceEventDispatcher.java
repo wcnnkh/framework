@@ -19,8 +19,8 @@ import scw.util.KeyValuePair;
 
 /**
  * 使用WatchService实现resource监听<br/>
- * 需要jdk7(包含)以上
- * 
+ * 需要jdk7(包含)以上<br/>
+ * 事件可能会重复触发，这与操作系统的实现有关
  * @author shuchaowen
  *
  */

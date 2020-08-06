@@ -20,7 +20,6 @@ import java.nio.charset.Charset;
 
 import scw.asm.Opcodes;
 import scw.core.utils.StringUtils;
-import scw.core.utils.SystemUtils;
 
 /**
  * This class can be used to parse other classes containing constant definitions
@@ -61,14 +60,6 @@ public class Constants {
 	public static final int ASM_VERSION = StringUtils.parseInt(
 			GlobalPropertyFactory.getInstance().getString(
 					"constants.asm.version"), Opcodes.ASM7);
-
-	/**
-	 * 可用的处理器数量
-	 */
-	public static final int AVAILABLE_PROCESSORS = StringUtils.parseInt(
-			GlobalPropertyFactory.getInstance().getString(
-					"constants.available.processors"),
-			SystemUtils.getAvailableProcessors());
 
 	/**
 	 * 注意：可能为空

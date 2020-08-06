@@ -13,17 +13,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
-import scw.core.Constants;
-import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.io.ResourceUtils;
 import scw.lang.NotSupportedException;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.dialect.SqlDialect;
@@ -31,8 +25,6 @@ import scw.sql.orm.dialect.SqlTypeFactory;
 import scw.sql.orm.enums.OperationType;
 
 public final class SqlUtils {
-	private static final String IGNORE_SQL_START_WITH = StringUtils
-			.toString(GlobalPropertyFactory.getInstance().getString("db.file.sql.ignore.start.with"), "##");
 	private static final SqlTypeFactory SQL_TYPE_FACTORY = InstanceUtils.loadService(SqlTypeFactory.class, "scw.sql.orm.dialect.DefaultSqlTypeFactory");
 	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING = InstanceUtils.loadService(ObjectRelationalMapping.class, "scw.sql.orm.ObjectRelationalMapping");
 
@@ -224,36 +216,6 @@ public final class SqlUtils {
 		}
 		sb.append("%");
 		return sb.toString();
-	}
-
-	public static void executeSqlByFile(SqlOperations sqlOperations, String filePath, boolean lines)
-			throws SQLException {
-		Collection<Sql> sqls = getSqlByFile(filePath, lines);
-		for (Sql sql : sqls) {
-			sqlOperations.execute(sql);
-		}
-	}
-
-	public static Collection<Sql> getSqlByFile(String path, boolean lines) {
-		List<Sql> list = new ArrayList<Sql>();
-		if (lines) {
-			Collection<String> sqlList = ResourceUtils.getResourceOperations()
-					.getLines(path, Constants.DEFAULT_CHARSET_NAME).getResource();
-			for (String sql : sqlList) {
-				if (sql.startsWith(IGNORE_SQL_START_WITH)) {
-					continue;
-				}
-
-				list.add(new SimpleSql(sql));
-			}
-		} else {
-			String sql = ResourceUtils.getResourceOperations().getContent(path, Constants.DEFAULT_CHARSET_NAME)
-					.getResource();
-			if (!StringUtils.isEmpty(sql)) {
-				list.add(new SimpleSql(sql));
-			}
-		}
-		return list;
 	}
 
 	public static boolean isDataBaseType(Class<?> type) {
