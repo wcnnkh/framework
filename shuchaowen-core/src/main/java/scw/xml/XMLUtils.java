@@ -1,6 +1,5 @@
 package scw.xml;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
@@ -39,6 +38,7 @@ import scw.core.StringFormat;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
+import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
 import scw.mapper.Field;
@@ -79,28 +79,13 @@ public final class XMLUtils {
 		}
 	}
 
-	public static Document parse(InputStream is) {
+	public static Document parse(InputStream is) throws IOException {
 		DocumentBuilder documentBuilder = newDocumentBuilder();
 		try {
 			return documentBuilder.parse(is);
 		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			throw new XmlException(e);
 		}
-		return null;
-	}
-
-	public static Document parse(File file) {
-		DocumentBuilder documentBuilder = newDocumentBuilder();
-		try {
-			return documentBuilder.parse(file);
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 
 	public static Document parse(InputSource is) {
@@ -144,11 +129,23 @@ public final class XMLUtils {
 	}
 
 	public static Document getDocument(String path) throws NotFoundException {
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path).getResource();
-		if (inputStream == null) {
-			throw new NotFoundException(path);
+		return getDocument(ResourceUtils.getResourceOperations().getResource(path));
+	}
+
+	public static Document getDocument(Resource resource) {
+		if (!resource.exists()) {
+			throw new NotFoundException(resource.getDescription());
 		}
-		return parse(inputStream);
+
+		InputStream inputStream = null;
+		try {
+			inputStream = resource.getInputStream();
+			return parse(inputStream);
+		} catch (IOException e) {
+			throw new RuntimeException(resource.getDescription(), e);
+		} finally {
+			IOUtils.close(inputStream);
+		}
 	}
 
 	public static Element getRootElement(String xmlPath) {
@@ -518,7 +515,7 @@ public final class XMLUtils {
 				continue;
 			}
 
-			T t= getBean(instanceFactory, node, type);
+			T t = getBean(instanceFactory, node, type);
 			if (t == null) {
 				continue;
 			}

@@ -1,6 +1,5 @@
 package scw.io.support;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,7 +13,6 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.io.DefaultResourceLoader;
 import scw.io.Resource;
-import scw.io.UnsafeByteArrayInputStream;
 import scw.io.event.NonexistentObservableResource;
 import scw.io.event.ObservableResource;
 import scw.io.event.ObservableResourceUtils;
@@ -154,32 +152,8 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return ObservableResourceUtils.getProperties(list, charsetName);
 	}
 
-	public ObservableResource<String> getContent(final String resource, final String charsetName) {
-		return ObservableResourceUtils.getContent(getResource(resource), charsetName);
-	}
-
-	public ObservableResource<String> getContent(final String resource, final Charset charset) {
-		return ObservableResourceUtils.getContent(getResource(resource), charset);
-	}
-
-	public ObservableResource<List<String>> getLines(final String resource, final Charset charset) {
-		return ObservableResourceUtils.getLines(getResource(resource), charset);
-	}
-
-	public ObservableResource<List<String>> getLines(final String resource, final String charsetName) {
-		return ObservableResourceUtils.getLines(getResource(resource), charsetName);
-	}
-
 	public boolean isExist(String resource) {
 		Resource res = getResource(resource);
 		return res != null && res.exists();
-	}
-
-	public ObservableResource<UnsafeByteArrayInputStream> getInputStream(String resource) {
-		return ObservableResourceUtils.getInputStream(getResource(resource));
-	}
-
-	public ObservableResource<byte[]> getBytes(final String resource) {
-		return ObservableResourceUtils.getBytes(getResource(resource));
 	}
 }

@@ -1,7 +1,74 @@
 package scw.office;
 
-public final class OfficeUtils {
-	private OfficeUtils(){};
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-	public static final String EXCEL_CONTENT_TYPE = "application/vnd.ms-excel";
+import scw.core.instance.InstanceUtils;
+import scw.core.utils.ArrayUtils;
+import scw.net.message.OutputMessage;
+
+public final class OfficeUtils {
+	private OfficeUtils() {
+	};
+
+	private static final ExcelOperations EXCEL_OPERATIONS = InstanceUtils.loadService(ExcelOperations.class,
+			"scw.office.jxl.JxlExcelOperations");
+
+	public static ExcelOperations getExcelOperations() {
+		return EXCEL_OPERATIONS;
+	}
+
+	/**
+	 * 只会加载第一个sheet
+	 * 
+	 * @param inputStream
+	 * @return
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
+	public static List<String[]> loadingExcel(InputStream inputStream) throws ExcelException, IOException {
+		if (inputStream == null) {
+			return Collections.emptyList();
+		}
+
+		List<String[]> list = new ArrayList<String[]>();
+		Excel excel = null;
+		try {
+			excel = getExcelOperations().create(inputStream);
+			Sheet sheet = excel.getSheet(0);
+			if (sheet != null) {
+				for (int i = 0; i < sheet.getRows(); i++) {
+					list.add(sheet.read(i));
+				}
+			}
+		} finally {
+			if (excel != null) {
+				excel.close();
+			}
+		}
+		return list;
+	}
+
+	public static void exportExcel(OutputMessage outputMessage, String fileName, String[] titles, List<String[]> list)
+			throws ExcelException, IOException {
+		ExcelExport excelExport = null;
+		try {
+			excelExport = getExcelOperations().createExport(outputMessage, fileName);
+			if (!ArrayUtils.isEmpty(titles)) {
+				excelExport.append(titles);
+			}
+
+			for (String[] contents : list) {
+				excelExport.append(contents);
+			}
+			excelExport.flush();
+		} finally {
+			if (excelExport != null) {
+				excelExport.close();
+			}
+		}
+	}
 }

@@ -1,6 +1,5 @@
 package scw.io;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 public class UnsafeByteArrayInputStream extends InputStream {
@@ -67,7 +66,7 @@ public class UnsafeByteArrayInputStream extends InputStream {
 		mPosition = mMark;
 	}
 
-	public void close() throws IOException {
+	public void close() {
 	}
 
 	public int position() {

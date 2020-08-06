@@ -9,7 +9,7 @@ import scw.io.event.ObservableResourceEventListener;
 import scw.mapper.Field;
 import scw.value.property.PropertyFactory;
 
-public abstract class AbstractResourceValueProcesser<R> extends AbstractValueProcesser {
+public abstract class AbstractObservableValueProcesser<R> extends AbstractValueProcesser {
 
 	@Override
 	protected void processInteranl(final BeanDefinition beanDefinition, final BeanFactory beanFactory,
@@ -50,7 +50,13 @@ public abstract class AbstractResourceValueProcesser<R> extends AbstractValuePro
 		if (res == null) {
 			logger.warn("nonexistent resources name [{}] field [{}]", name, field.getSetter());
 		} else {
-			v = parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res);
+			try {
+				v = parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res);
+			} catch (Exception e) {
+				logger.error(e, "field [{}]", field.getSetter());
+				return;
+			}
+			
 			if (v == null) {
 				logger.warn("value is a null name [{}] field [{}]", name, field.getSetter());
 			}
@@ -73,5 +79,5 @@ public abstract class AbstractResourceValueProcesser<R> extends AbstractValuePro
 
 	protected abstract Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, Object bean, Field field, Value value, String name, String charsetName,
-			R resource);
+			R resource) throws Exception;
 }

@@ -11,25 +11,19 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
 import scw.core.ResolvableType;
+import scw.io.Resource;
 import scw.io.ResourceUtils;
-import scw.io.event.ObservableResource;
 import scw.mapper.Field;
 import scw.value.StringValue;
 import scw.value.property.PropertyFactory;
 
-public final class FileLinesValueProcesser extends AbstractResourceValueProcesser<List<String>> {
+public final class FileLinesValueProcesser extends AbstractObservableResourceValueProcesser {
 
-	@Override
-	protected ObservableResource<List<String>> getObservableResource(BeanDefinition beanDefinition,
-			BeanFactory beanFactory, PropertyFactory propertyFactory, Object bean, Field field, Value value,
-			String name, String charsetName) {
-		return ResourceUtils.getResourceOperations().getLines(name, charsetName);
-	}
-	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Object bean, Field field, Value value, String name, String charsetName, List<String> lines) {
+			Object bean, Field field, Value value, String name, String charsetName, Resource resource) throws Exception {
+		List<String> lines = ResourceUtils.getLines(resource, charsetName);
 		if (lines == null) {
 			return null;
 		}

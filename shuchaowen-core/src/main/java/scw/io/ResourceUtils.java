@@ -479,6 +479,15 @@ public final class ResourceUtils {
 		}
 	}
 
+	public static UnsafeByteArrayInputStream getInputStream(Resource resource) {
+		byte[] data = getBytes(resource);
+		if (data == null) {
+			return null;
+		}
+
+		return new UnsafeByteArrayInputStream(data);
+	}
+	
 	public static void loadProperties(Properties properties, Resource resource, String charsetName) {
 		if (!resource.exists()) {
 			return;

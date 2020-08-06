@@ -9,21 +9,20 @@ import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.core.instance.annotation.Configuration;
+import scw.io.Resource;
 import scw.io.ResourceUtils;
 
 @Configuration(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
 public class MybatisBeanBuilderLoader implements BeanBuilderLoader {
 
-	public BeanDefinition loading(LoaderContext context,
-			BeanBuilderLoaderChain loaderChain) {
+	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == SqlSessionFactory.class) {
 			return new SqlSessionFactoryBeanBuilder(context);
 		}
 		return loaderChain.loading(context);
 	}
 
-	private static final class SqlSessionFactoryBeanBuilder extends
-			AbstractBeanDefinition {
+	private static final class SqlSessionFactoryBeanBuilder extends AbstractBeanDefinition {
 
 		public SqlSessionFactoryBeanBuilder(LoaderContext context) {
 			super(context);
@@ -34,14 +33,12 @@ public class MybatisBeanBuilderLoader implements BeanBuilderLoader {
 		}
 
 		public Object create() throws Exception {
-			String resource = "mybatis-config.xml";
-			if (ResourceUtils.getResourceOperations().isExist(resource)) {
-				return new SqlSessionFactoryBuilder().build(ResourceUtils
-						.getResourceOperations().getInputStream(resource).getResource());
+			Resource resource = ResourceUtils.getResourceOperations().getResource("mybatis-config.xml");
+			if (resource.exists()) {
+				return new SqlSessionFactoryBuilder().build(ResourceUtils.getInputStream(resource));
 			} else {
 				return new SqlSessionFactoryBuilder()
-						.build(beanFactory
-								.getInstance(org.apache.ibatis.session.Configuration.class));
+						.build(beanFactory.getInstance(org.apache.ibatis.session.Configuration.class));
 			}
 		}
 	}

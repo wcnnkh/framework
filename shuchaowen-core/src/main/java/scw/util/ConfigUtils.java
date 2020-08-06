@@ -1,5 +1,6 @@
 package scw.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +22,8 @@ import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.io.IOUtils;
+import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -53,16 +56,24 @@ public final class ConfigUtils {
 		return t;
 	}
 
-	public static List<Map<String, String>> getDefaultXmlContent(String path, final String rootTag) {
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path).getResource();
-		if (inputStream == null) {
+	public static List<Map<String, String>> getDefaultXmlContent(Resource resource, final String rootTag) {
+		if (!resource.exists()) {
 			return Collections.emptyList();
 		}
 
-		return getDefaultXmlContent(inputStream, rootTag);
+		InputStream inputStream = null;
+		try {
+			inputStream = resource.getInputStream();
+			return getDefaultXmlContent(inputStream, rootTag);
+		} catch (Exception e) {
+			throw new RuntimeException(resource.getDescription(), e);
+		} finally {
+			IOUtils.close(inputStream);
+		}
 	}
 
-	public static List<Map<String, String>> getDefaultXmlContent(InputStream inputStream, String rootTag) {
+	public static List<Map<String, String>> getDefaultXmlContent(InputStream inputStream, String rootTag)
+			throws IOException {
 		if (rootTag == null) {
 			throw new NullPointerException("rootTag is null");
 		}
@@ -80,16 +91,27 @@ public final class ConfigUtils {
 		return list;
 	}
 
-	public static <T> List<T> xmlToList(final Class<T> type, String path) {
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path).getResource();
-		if (inputStream == null) {
+	public static <T> List<T> xmlToList(final Class<T> type, String resource) {
+		return xmlToList(type, ResourceUtils.getResourceOperations().getResource(resource));
+	}
+
+	public static <T> List<T> xmlToList(final Class<T> type, Resource resource) {
+		if (!resource.exists()) {
 			return Collections.emptyList();
 		}
 
-		return xmlToList(type, inputStream);
+		InputStream inputStream = null;
+		try {
+			inputStream = resource.getInputStream();
+			return xmlToList(type, inputStream);
+		} catch (Exception e) {
+			throw new RuntimeException(resource.getDescription(), e);
+		} finally {
+			IOUtils.close(inputStream);
+		}
 	}
 
-	public static <T> List<T> xmlToList(Class<T> type, InputStream inputStream) {
+	public static <T> List<T> xmlToList(Class<T> type, InputStream inputStream) throws IOException {
 		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
 		List<T> objList = new ArrayList<T>();
 		for (Map<String, String> map : list) {
@@ -98,17 +120,28 @@ public final class ConfigUtils {
 		return objList;
 	}
 
-	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType, String path) {
-		InputStream inputStream = ResourceUtils.getResourceOperations().getInputStream(path).getResource();
-		if (inputStream == null) {
+	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType, String resource) {
+		return xmlToMap(valueType, ResourceUtils.getResourceOperations().getResource(resource));
+	}
+
+	public static <K, V> Map<K, V> xmlToMap(final Class<V> valueType, Resource resource) {
+		if (!resource.exists()) {
 			return Collections.emptyMap();
 		}
 
-		return xmlToMap(valueType, inputStream);
+		InputStream inputStream = null;
+		try {
+			inputStream = resource.getInputStream();
+			return xmlToMap(valueType, inputStream);
+		} catch (IOException e) {
+			throw new RuntimeException(resource.getDescription(), e);
+		} finally {
+			IOUtils.close(inputStream);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, InputStream inputStream) {
+	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, InputStream inputStream) throws IOException {
 		Field keyField = MapperUtils.getMapper().getField(valueType, null, FilterFeature.SETTER_IGNORE_STATIC,
 				FilterFeature.SUPPORT_GETTER);
 		if (keyField == null) {
