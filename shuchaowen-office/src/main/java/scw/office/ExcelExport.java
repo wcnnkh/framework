@@ -7,6 +7,11 @@ import java.util.Collection;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 
+/**
+ * excel导出
+ * @author shuchaowen
+ *
+ */
 public final class ExcelExport extends WritableExcelWrapper {
 	private final int maxSheets;
 	private final int maxRows;
@@ -28,6 +33,42 @@ public final class ExcelExport extends WritableExcelWrapper {
 		this.rowIndex = beginRowIndex;
 	}
 
+	/**
+	 * 调用append时使用的sheetIndex
+	 * @return
+	 */
+	public int getSheetIndex() {
+		return sheetIndex;
+	}
+
+	public void setSheetIndex(int sheetIndex) {
+		this.sheetIndex = sheetIndex;
+	}
+
+	/**
+	 * 调用append时使用的rowIndex
+	 * @return
+	 */
+	public int getRowIndex() {
+		return rowIndex;
+	}
+
+	public void setRowIndex(int rowIndex) {
+		this.rowIndex = rowIndex;
+	}
+
+	public int getMaxSheets() {
+		return maxSheets;
+	}
+
+	public int getMaxRows() {
+		return maxRows;
+	}
+
+	public int getMaxColumns() {
+		return maxColumns;
+	}
+
 	public void append(Collection<String> contents) throws IOException, ExcelException {
 		if (CollectionUtils.isEmpty(contents)) {
 			return;
@@ -38,7 +79,8 @@ public final class ExcelExport extends WritableExcelWrapper {
 		}
 
 		if (maxColumns > 0 && contents.size() > maxColumns) {
-			throw new ExcelException("max rows is " + maxColumns);
+			this.rowIndex = 0;
+			sheetIndex++;
 		}
 
 		WritableSheet sheet = getSheet(sheetIndex);
