@@ -8,6 +8,8 @@ import java.util.List;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
+import scw.io.IOUtils;
+import scw.io.Resource;
 import scw.net.message.OutputMessage;
 
 public final class OfficeUtils {
@@ -19,6 +21,28 @@ public final class OfficeUtils {
 
 	public static ExcelOperations getExcelOperations() {
 		return EXCEL_OPERATIONS;
+	}
+
+	/**
+	 * 只会加载第一个sheet
+	 * 
+	 * @param resource
+	 * @return
+	 * @throws ExcelException
+	 * @throws IOException
+	 */
+	public static List<String[]> loadingExcel(Resource resource) throws ExcelException, IOException {
+		if (!resource.exists()) {
+			return Collections.emptyList();
+		}
+
+		InputStream inputStream = null;
+		try {
+			inputStream = resource.getInputStream();
+			return loadingExcel(inputStream);
+		} finally {
+			IOUtils.close(inputStream);
+		}
 	}
 
 	/**
