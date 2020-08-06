@@ -37,6 +37,10 @@ public class JxlWritableExcel implements WritableExcel {
 	}
 
 	public scw.office.WritableSheet getSheet(int sheetIndex) {
+		if(sheetIndex >= workbook.getNumberOfSheets()){
+			return null;
+		}
+		
 		jxl.write.WritableSheet sheet = workbook.getSheet(sheetIndex);
 		if (sheet == null) {
 			return null;

@@ -41,6 +41,10 @@ public class JxlExcel implements Excel {
 	}
 
 	public Sheet getSheet(int sheetIndex) {
+		if(sheetIndex >= workbook.getNumberOfSheets()){
+			return null;
+		}
+		
 		jxl.Sheet sheet = workbook.getSheet(sheetIndex);
 		if (sheet == null) {
 			return null;
