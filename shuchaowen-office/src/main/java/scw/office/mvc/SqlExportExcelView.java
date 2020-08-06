@@ -34,7 +34,7 @@ public class SqlExportExcelView implements View {
 	public void render(HttpChannel httpChannel) throws IOException {
 		ExcelExport excelExport = null;
 		try {
-			excelExport = OfficeUtils.getExcelOperations().createExport(httpChannel.getResponse(), fileName);
+			excelExport = OfficeUtils.createExcelExport(httpChannel.getResponse(), fileName + ".xls");
 			SqlExportUtils.export(excelExport, titles, sqlExportRowMapping, db, sql);
 		} finally {
 			excelExport.close();

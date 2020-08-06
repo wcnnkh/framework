@@ -5,12 +5,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import jxl.read.biff.BiffException;
-import scw.office.AbstractExcelOperations;
 import scw.office.Excel;
 import scw.office.ExcelException;
+import scw.office.ExcelOperations;
 import scw.office.WritableExcel;
 
-public class JxlExcelOperations extends AbstractExcelOperations {
+public class JxlExcelOperations implements ExcelOperations {
 
 	public Excel create(InputStream inputStream) throws IOException, ExcelException {
 		try {

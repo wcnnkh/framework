@@ -22,7 +22,7 @@ public class SimpleExportExcelView implements View {
 	public void render(HttpChannel httpChannel) throws IOException {
 		ExcelExport excelExport = null;
 		try {
-			excelExport = OfficeUtils.getExcelOperations().createExport(httpChannel.getResponse(), fileName);
+			excelExport = OfficeUtils.createExcelExport(httpChannel.getResponse(), fileName + ".xls");
 			excelExport.append(titles);
 			for (String[] contents : list) {
 				excelExport.append(contents);

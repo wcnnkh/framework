@@ -20,7 +20,7 @@ public class SqlExportUtils {
 
 	public static void export(OutputMessage outputMessage, String fileName, String[] titles,
 			final SqlExportRowMapping sqlExportRowMapping, DB db, Sql... sqls) throws ExcelException, IOException {
-		export(OfficeUtils.getExcelOperations().createExport(outputMessage, fileName), titles, sqlExportRowMapping, db,
+		export(OfficeUtils.createExcelExport(outputMessage, fileName), titles, sqlExportRowMapping, db,
 				Arrays.asList(sqls));
 	}
 

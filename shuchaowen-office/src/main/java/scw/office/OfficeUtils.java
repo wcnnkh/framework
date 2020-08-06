@@ -2,6 +2,7 @@ package scw.office;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +11,7 @@ import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
+import scw.net.InetUtils;
 import scw.net.message.OutputMessage;
 
 public final class OfficeUtils {
@@ -80,7 +82,7 @@ public final class OfficeUtils {
 			throws ExcelException, IOException {
 		ExcelExport excelExport = null;
 		try {
-			excelExport = getExcelOperations().createExport(outputMessage, fileName);
+			excelExport = createExcelExport(outputMessage, fileName);
 			if (!ArrayUtils.isEmpty(titles)) {
 				excelExport.append(titles);
 			}
@@ -94,5 +96,16 @@ public final class OfficeUtils {
 				excelExport.close();
 			}
 		}
+	}
+
+	public static ExcelExport createExcelExport(OutputStream outputStream) throws ExcelException, IOException {
+		WritableExcel writableExcel = getExcelOperations().create(outputStream);
+		return new ExcelExport(writableExcel, 0, 0);
+	}
+
+	public static ExcelExport createExcelExport(OutputMessage outputMessage, String fileName) throws IOException {
+		InetUtils.writeFileMessageHeaders(outputMessage, fileName);
+		WritableExcel writableExcel = getExcelOperations().create(outputMessage.getBody());
+		return ExcelExport.create(writableExcel, fileName, 0, 0);
 	}
 }
