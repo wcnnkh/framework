@@ -1,4 +1,4 @@
-package scw.office.jxl;
+package scw.microsoft.jxl;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -7,8 +7,8 @@ import java.util.Iterator;
 import jxl.write.Label;
 import jxl.write.WriteException;
 import jxl.write.biff.RowsExceededException;
-import scw.office.ExcelException;
-import scw.office.WritableSheet;
+import scw.microsoft.ExcelException;
+import scw.microsoft.WritableSheet;
 
 public class JxlWritableSheet extends JxlSheet implements WritableSheet {
 

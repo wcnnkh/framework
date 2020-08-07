@@ -1,12 +1,12 @@
-package scw.office.jxl;
+package scw.microsoft.jxl;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 import jxl.Workbook;
 import jxl.write.WritableWorkbook;
-import scw.office.WritableExcel;
-import scw.office.WritableSheet;
+import scw.microsoft.WritableExcel;
+import scw.microsoft.WritableSheet;
 
 public class JxlWritableExcel implements WritableExcel {
 	private WritableWorkbook workbook;
@@ -23,7 +23,7 @@ public class JxlWritableExcel implements WritableExcel {
 		workbook.write();
 	}
 
-	public scw.office.WritableSheet[] getSheets() {
+	public scw.microsoft.WritableSheet[] getSheets() {
 		jxl.write.WritableSheet[] sheets = workbook.getSheets();
 		if (sheets == null || sheets.length == 0) {
 			return new WritableSheet[0];
@@ -36,7 +36,7 @@ public class JxlWritableExcel implements WritableExcel {
 		return sheets2;
 	}
 
-	public scw.office.WritableSheet getSheet(int sheetIndex) {
+	public scw.microsoft.WritableSheet getSheet(int sheetIndex) {
 		if(sheetIndex >= workbook.getNumberOfSheets()){
 			return null;
 		}

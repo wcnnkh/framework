@@ -1,4 +1,4 @@
-package scw.office;
+package scw.microsoft;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,8 +14,8 @@ import scw.io.Resource;
 import scw.net.InetUtils;
 import scw.net.message.OutputMessage;
 
-public final class OfficeUtils {
-	private OfficeUtils() {
+public final class MicrosoftUtils {
+	private MicrosoftUtils() {
 	};
 
 	private static final ExcelOperations EXCEL_OPERATIONS = InstanceUtils.loadService(ExcelOperations.class,

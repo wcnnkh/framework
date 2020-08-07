@@ -1,12 +1,12 @@
-package scw.office.mvc;
+package scw.microsoft.mvc;
 
 import java.io.IOException;
 import java.util.List;
 
+import scw.microsoft.ExcelExport;
+import scw.microsoft.MicrosoftUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.view.View;
-import scw.office.ExcelExport;
-import scw.office.OfficeUtils;
 
 public class SimpleExportExcelView implements View {
 	private String fileName;
@@ -22,7 +22,7 @@ public class SimpleExportExcelView implements View {
 	public void render(HttpChannel httpChannel) throws IOException {
 		ExcelExport excelExport = null;
 		try {
-			excelExport = OfficeUtils.createExcelExport(httpChannel.getResponse(), fileName + ".xls");
+			excelExport = MicrosoftUtils.createExcelExport(httpChannel.getResponse(), fileName + ".xls");
 			excelExport.append(titles);
 			for (String[] contents : list) {
 				excelExport.append(contents);

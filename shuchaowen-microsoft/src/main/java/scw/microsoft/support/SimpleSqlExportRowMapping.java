@@ -1,4 +1,4 @@
-package scw.office.support;
+package scw.microsoft.support;
 
 import scw.sql.orm.ResultMapping;
 

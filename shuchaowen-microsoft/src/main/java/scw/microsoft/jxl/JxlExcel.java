@@ -1,12 +1,12 @@
-package scw.office.jxl;
+package scw.microsoft.jxl;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import jxl.Workbook;
 import jxl.read.biff.BiffException;
-import scw.office.Excel;
-import scw.office.Sheet;
+import scw.microsoft.Excel;
+import scw.microsoft.Sheet;
 
 public class JxlExcel implements Excel {
 	private final Workbook workbook;

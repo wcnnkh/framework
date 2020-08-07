@@ -1,14 +1,14 @@
-package scw.office.jxl;
+package scw.microsoft.jxl;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import jxl.read.biff.BiffException;
-import scw.office.Excel;
-import scw.office.ExcelException;
-import scw.office.ExcelOperations;
-import scw.office.WritableExcel;
+import scw.microsoft.Excel;
+import scw.microsoft.ExcelException;
+import scw.microsoft.ExcelOperations;
+import scw.microsoft.WritableExcel;
 
 public class JxlExcelOperations implements ExcelOperations {
 

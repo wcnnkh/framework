@@ -1,15 +1,15 @@
-package scw.office.mvc;
+package scw.microsoft.mvc;
 
 import java.io.IOException;
 
 import scw.db.DB;
+import scw.microsoft.ExcelExport;
+import scw.microsoft.MicrosoftUtils;
+import scw.microsoft.support.SimpleSqlExportRowMapping;
+import scw.microsoft.support.SqlExportRowMapping;
+import scw.microsoft.support.SqlExportUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.view.View;
-import scw.office.ExcelExport;
-import scw.office.OfficeUtils;
-import scw.office.support.SimpleSqlExportRowMapping;
-import scw.office.support.SqlExportRowMapping;
-import scw.office.support.SqlExportUtils;
 import scw.sql.Sql;
 
 public class SqlExportExcelView implements View {
@@ -34,7 +34,7 @@ public class SqlExportExcelView implements View {
 	public void render(HttpChannel httpChannel) throws IOException {
 		ExcelExport excelExport = null;
 		try {
-			excelExport = OfficeUtils.createExcelExport(httpChannel.getResponse(), fileName + ".xls");
+			excelExport = MicrosoftUtils.createExcelExport(httpChannel.getResponse(), fileName + ".xls");
 			SqlExportUtils.export(excelExport, titles, sqlExportRowMapping, db, sql);
 		} finally {
 			excelExport.close();

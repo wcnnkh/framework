@@ -109,7 +109,7 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-office</artifactId>
+				<artifactId>shuchaowen-microsoft</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -419,9 +419,9 @@
 		<module>shuchaowen-data</module>
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>
-		<module>shuchaowen-office</module>
 		<module>shuchaowen-cloud</module>
 		<module>shuchaowen-security</module>
 		<module>shuchaowen-search</module>
+		<module>shuchaowen-microsoft</module>
 	</modules>
 </project>
