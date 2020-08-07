@@ -1,4 +1,4 @@
-package scw.office;
+package scw.microsoft;
 
 public class ExcelException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

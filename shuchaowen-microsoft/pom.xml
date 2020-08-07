@@ -6,7 +6,8 @@
 		<artifactId>shuchaowen</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>shuchaowen-office</artifactId>
+	<artifactId>shuchaowen-microsoft</artifactId>
+
 	<dependencies>
 		<dependency>
 			<groupId>shuchaowen</groupId>
@@ -16,22 +17,24 @@
 			<groupId>jexcelapi</groupId>
 			<artifactId>jxl</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-csv</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-db</artifactId>
 			<scope>provided</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>shuchaowen</groupId>
 			<artifactId>shuchaowen-mvc</artifactId>
 			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-csv</artifactId>
 		</dependency>
 	</dependencies>
 </project>

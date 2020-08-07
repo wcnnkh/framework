@@ -1,10 +1,10 @@
-package scw.office.jxl;
+package scw.microsoft.jxl;
 
 import java.io.IOException;
 
 import jxl.Cell;
 
-public class JxlSheet implements scw.office.Sheet {
+public class JxlSheet implements scw.microsoft.Sheet {
 	private final jxl.Sheet sheet;
 
 	public JxlSheet(jxl.Sheet sheet) {
@@ -30,10 +30,6 @@ public class JxlSheet implements scw.office.Sheet {
 	public String read(int rowIndex, int colIndex) throws IOException {
 		Cell cell = sheet.getCell(colIndex, rowIndex);
 		return cell.getContents();
-	}
-
-	public int getColumns() {
-		return sheet.getColumns();
 	}
 
 	public int getRows() {

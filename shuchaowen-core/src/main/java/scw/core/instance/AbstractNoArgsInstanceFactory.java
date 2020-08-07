@@ -1,8 +1,10 @@
 package scw.core.instance;
 
+import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
+import scw.util.Accept;
 
-public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFactory {
+public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFactory, Accept<Class<?>> {
 	private ClassLoader classLoader;
 
 	public ClassLoader getClassLoader() {
@@ -36,5 +38,9 @@ public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFac
 		}
 		
 		return isSingleton(clazz.getName());
+	}
+	
+	public boolean accept(Class<?> clazz) {
+		return !ClassUtils.isPrimitiveOrWrapper(clazz) && ReflectionUtils.isPresent(clazz);
 	}
 }

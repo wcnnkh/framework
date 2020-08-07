@@ -1,4 +1,4 @@
-package scw.office.support;
+package scw.microsoft.support;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -7,10 +7,10 @@ import java.util.Collection;
 import scw.core.IteratorCallback;
 import scw.core.utils.ArrayUtils;
 import scw.db.DB;
+import scw.microsoft.ExcelException;
+import scw.microsoft.ExcelExport;
+import scw.microsoft.MicrosoftUtils;
 import scw.net.message.OutputMessage;
-import scw.office.ExcelException;
-import scw.office.ExcelExport;
-import scw.office.OfficeUtils;
 import scw.sql.Sql;
 import scw.sql.orm.ResultMapping;
 
@@ -20,7 +20,7 @@ public class SqlExportUtils {
 
 	public static void export(OutputMessage outputMessage, String fileName, String[] titles,
 			final SqlExportRowMapping sqlExportRowMapping, DB db, Sql... sqls) throws ExcelException, IOException {
-		export(OfficeUtils.createExcelExport(outputMessage, fileName), titles, sqlExportRowMapping, db,
+		export(MicrosoftUtils.createExcelExport(outputMessage, fileName), titles, sqlExportRowMapping, db,
 				Arrays.asList(sqls));
 	}
 

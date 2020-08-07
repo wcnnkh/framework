@@ -50,4 +50,8 @@ public class JavaVersion extends Version {
 	public boolean isJava8() {
 		return getMasterVersion() == 8;
 	}
+
+	public boolean isSupport(int version) {
+		return version >= getMasterVersion();
+	}
 }

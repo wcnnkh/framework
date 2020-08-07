@@ -109,7 +109,7 @@
 
 			<dependency>
 				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-office</artifactId>
+				<artifactId>shuchaowen-microsoft</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -368,6 +368,13 @@
 				<artifactId>commons-csv</artifactId>
 				<version>1.4</version>
 			</dependency>
+			
+			<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+			<dependency>
+				<groupId>org.apache.poi</groupId>
+				<artifactId>poi</artifactId>
+				<version>4.1.2</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -419,9 +426,9 @@
 		<module>shuchaowen-data</module>
 		<module>shuchaowen-mvc</module>
 		<module>shuchaowen-websocket</module>
-		<module>shuchaowen-office</module>
 		<module>shuchaowen-cloud</module>
 		<module>shuchaowen-security</module>
 		<module>shuchaowen-search</module>
+		<module>shuchaowen-microsoft</module>
 	</modules>
 </project>
