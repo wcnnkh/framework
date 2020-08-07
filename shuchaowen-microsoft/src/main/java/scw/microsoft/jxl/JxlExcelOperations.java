@@ -14,25 +14,18 @@ import scw.microsoft.WritableExcel;
 
 public class JxlExcelOperations implements ExcelOperations {
 
-	public Excel create(InputStream inputStream) throws ExcelException {
+	public Excel create(InputStream inputStream) throws IOException, ExcelException {
 		Workbook workbook;
 		try {
 			workbook = Workbook.getWorkbook(inputStream);
-		} catch (IOException e) {
-			throw new ExcelException(e);
 		} catch (BiffException e) {
 			throw new ExcelException(e);
 		}
 		return new JxlExcel(workbook);
 	}
 
-	public WritableExcel create(OutputStream outputStream) throws ExcelException {
-		WritableWorkbook workbook;
-		try {
-			workbook = Workbook.createWorkbook(outputStream);
-		} catch (IOException e) {
-			throw new ExcelException(e);
-		}
+	public WritableExcel create(OutputStream outputStream) throws IOException, ExcelException {
+		WritableWorkbook workbook = Workbook.createWorkbook(outputStream);
 		return new JxlWritableExcel(workbook);
 	}
 }

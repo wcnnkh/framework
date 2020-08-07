@@ -14,11 +14,22 @@ import scw.logger.LoggerFactory;
 
 public final class MemoryDataManager implements Destroy {
 	// 单位：秒
-	private static final long DEFAULT_CLEAR_PERIOD = GlobalPropertyFactory.getInstance().getValue("memory.temporary.cache.clear.period", Long.class, 60L);
+	private static final int DEFAULT_CLEAR_PERIOD = GlobalPropertyFactory.getInstance()
+			.getValue("memory.temporary.cache.clear.period", int.class, 60);
+	private static final Timer TIMER = new Timer(MemoryDataManager.class.getSimpleName(), true);
+
 	private static Logger logger = LoggerFactory.getLogger(MemoryDataManager.class);
 
+	static {
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				TIMER.cancel();
+			}
+		});
+	}
+
 	private final ConcurrentHashMap<String, MemoryData> cacheMap = new ConcurrentHashMap<String, MemoryData>();
-	private Timer timer;
 	private TimerTask timerTask;
 
 	public MemoryDataManager() {
@@ -29,19 +40,10 @@ public final class MemoryDataManager implements Destroy {
 	 * @param clearPeriodSecond
 	 *            单位：秒
 	 */
-	public MemoryDataManager(long clearPeriodSecond) {
-		if (clearPeriodSecond > 0) {
-			this.timerTask = new ClearExpireKeyTask();
-			timer = new Timer(getClass().getSimpleName(), true);
-			this.timer.schedule(timerTask, clearPeriodSecond * 1000L, clearPeriodSecond * 1000L);
-			Runtime.getRuntime().addShutdownHook(new Thread(){
-				@Override
-				public void run() {
-					MemoryDataManager.this.destroy();
-					super.run();
-				}
-			});
-		}
+	public MemoryDataManager(int clearPeriodSecond) {
+		this.timerTask = new ClearExpireKeyTask();
+		int period = Math.max(1, clearPeriodSecond);
+		TIMER.schedule(timerTask, period * 1000L, period * 1000L);
 	}
 
 	public MemoryData getMemoryCache(String key) {
@@ -89,10 +91,6 @@ public final class MemoryDataManager implements Destroy {
 		if (timerTask != null) {
 			timerTask.cancel();
 		}
-
-		if (timer != null) {
-			timer.cancel();
-		}
 	}
 
 	private final class ClearExpireKeyTask extends TimerTask {
@@ -107,12 +105,12 @@ public final class MemoryDataManager implements Destroy {
 					if (memoryData.isExpire()) {
 						CAS<?> cas = memoryData.get();
 						long c = 0;
-						if(cas != null){
+						if (cas != null) {
 							c = cas.getCas();
 						}
-						
+
 						boolean b = memoryData.incrCasAndCompare(c);
-						if(b){
+						if (b) {
 							iterator.remove();
 							logger.debug("Deleting expired key:{}", entry.getKey());
 						}

@@ -1,13 +1,11 @@
 package scw.core.instance;
 
 import scw.core.annotation.AnnotationUtils;
-import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ClassUtils;
 
 public abstract class AbstractInstanceFactory implements InstanceFactory {
 
 	protected <T> InstanceBuilder<T> getInstanceBuilder(Class<? extends T> clazz) {
-		if(isIgnoreClass(clazz)){
+		if (isIgnoreClass(clazz)) {
 			return null;
 		}
 		return getInstanceBuilder(clazz.getName());
@@ -33,7 +31,7 @@ public abstract class AbstractInstanceFactory implements InstanceFactory {
 	}
 
 	protected boolean isIgnoreClass(Class<?> clazz) {
-		return ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz) || !ReflectionUtils.isPresent(clazz);
+		return AnnotationUtils.isIgnore(clazz) || !InstanceUtils.isSupport(clazz);
 	}
 
 	public boolean isInstance(String name) {

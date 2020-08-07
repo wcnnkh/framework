@@ -2806,7 +2806,7 @@ public abstract class AnnotationUtils {
 
 		return ignore.value();
 	}
-
+	
 	/**
 	 * 是否可以为空
 	 * 

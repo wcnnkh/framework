@@ -17,13 +17,13 @@ public class PoiExcel implements Excel, WritableExcel {
 		this(workbook, null);
 	}
 
-	public PoiExcel(Workbook workbook, OutputStream outputStream) {
+	PoiExcel(Workbook workbook, OutputStream outputStream) {
 		this.workbook = workbook;
 		this.outputStream = outputStream;
 	}
 
 	public void close() throws IOException {
-		if (outputStream != null) {
+		if(outputStream != null){
 			workbook.write(outputStream);
 		}
 		workbook.close();

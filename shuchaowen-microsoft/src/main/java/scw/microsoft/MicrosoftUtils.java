@@ -11,17 +11,29 @@ import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
+import scw.lang.NotSupportedException;
 import scw.net.InetUtils;
 import scw.net.message.OutputMessage;
+import scw.util.FormatUtils;
 
 public final class MicrosoftUtils {
 	private MicrosoftUtils() {
 	};
 
 	private static final ExcelOperations EXCEL_OPERATIONS = InstanceUtils.loadService(ExcelOperations.class,
-			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations");
+			"scw.microsoft.poi.XssfPoiExcelOperations", "scw.microsoft.poi.PoiExcelOperations",
+			"scw.microsoft.jxl.JxlExcelOperations");
+
+	static {
+		if (EXCEL_OPERATIONS == null) {
+			FormatUtils.warn(MicrosoftUtils.class, "not found excel support");
+		}
+	}
 
 	public static ExcelOperations getExcelOperations() {
+		if (EXCEL_OPERATIONS == null) {
+			throw new NotSupportedException("excel operations");
+		}
 		return EXCEL_OPERATIONS;
 	}
 
@@ -103,7 +115,8 @@ public final class MicrosoftUtils {
 		return new ExcelExport(writableExcel, 0, 0);
 	}
 
-	public static ExcelExport createExcelExport(OutputMessage outputMessage, String fileName) throws IOException {
+	public static ExcelExport createExcelExport(OutputMessage outputMessage, String fileName)
+			throws ExcelException, IOException {
 		InetUtils.writeFileMessageHeaders(outputMessage, fileName);
 		WritableExcel writableExcel = getExcelOperations().create(outputMessage.getBody());
 		return ExcelExport.create(writableExcel, fileName, 0, 0);

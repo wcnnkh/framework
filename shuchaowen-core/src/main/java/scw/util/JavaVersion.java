@@ -1,5 +1,6 @@
 package scw.util;
 
+import scw.core.annotation.UseJavaVersion;
 import scw.value.AnyValue;
 import scw.value.Value;
 
@@ -53,5 +54,21 @@ public class JavaVersion extends Version {
 
 	public boolean isSupport(int version) {
 		return version >= getMasterVersion();
+	}
+	
+	public static boolean isSupport(Class<?> clazz) {
+		UseJavaVersion useJavaVersion = clazz.getAnnotation(UseJavaVersion.class);
+		if (useJavaVersion != null) {
+			if (!INSTANCE.isSupport(useJavaVersion.value())) {
+				return false;
+			}
+		}
+
+		for (Class<?> interfaceClass : clazz.getInterfaces()) {
+			if (!isSupport(interfaceClass)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

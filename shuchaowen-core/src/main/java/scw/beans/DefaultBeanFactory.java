@@ -44,6 +44,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.Accept;
 import scw.util.ClassScanner;
+import scw.util.JavaVersion;
 import scw.value.property.BasePropertyFactory;
 import scw.value.property.PropertyFactory;
 
@@ -169,7 +170,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 	}
 
 	public boolean accept(Class<?> clazz) {
-		return !ClassUtils.isPrimitiveOrWrapper(clazz) && !AnnotationUtils.isIgnore(clazz) && ReflectionUtils.isPresent(clazz);
+		return !ClassUtils.isPrimitiveOrWrapper(clazz) && !AnnotationUtils.isIgnore(clazz) && JavaVersion.isSupport(clazz) && ReflectionUtils.isPresent(clazz);
 	}
 
 	public BeanDefinition getDefinition(Class<?> clazz) {
@@ -460,7 +461,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 
 		for (Class<?> clazz : ClassScanner.getInstance()
 				.getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
-			if (!ReflectionUtils.isPresent(clazz)) {
+			if (!accept(clazz)) {
 				continue;
 			}
 
@@ -592,8 +593,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 				continue;
 			}
 
-			if (!ReflectionUtils.isPresent(clz)) {
-				logger.debug("{} reflection not present", clz);
+			if (!accept(clz)) {
+				logger.debug("{} not present", clz);
 				continue;
 			}
 

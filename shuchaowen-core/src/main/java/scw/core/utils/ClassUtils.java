@@ -50,29 +50,25 @@ public final class ClassUtils {
 	 * Map with primitive wrapper type as key and corresponding primitive type
 	 * as value, for example: Integer.class -> int.class.
 	 */
-	private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new IdentityHashMap<Class<?>, Class<?>>(
-			8);
+	private static final Map<Class<?>, Class<?>> primitiveWrapperTypeMap = new IdentityHashMap<Class<?>, Class<?>>(8);
 
 	/**
 	 * Map with primitive type as key and corresponding wrapper type as value,
 	 * for example: int.class -> Integer.class.
 	 */
-	private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new IdentityHashMap<Class<?>, Class<?>>(
-			8);
+	private static final Map<Class<?>, Class<?>> primitiveTypeToWrapperMap = new IdentityHashMap<Class<?>, Class<?>>(8);
 
 	/**
 	 * Map with primitive type name as key and corresponding primitive type as
 	 * value, for example: "int" -> "int.class".
 	 */
-	private static final Map<String, Class<?>> primitiveTypeNameMap = new HashMap<String, Class<?>>(
-			32);
+	private static final Map<String, Class<?>> primitiveTypeNameMap = new HashMap<String, Class<?>>(32);
 
 	/**
 	 * Map with common "java.lang" class name as key and corresponding Class as
 	 * value. Primarily for efficient deserialization of remote invocations.
 	 */
-	private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(
-			32);
+	private static final Map<String, Class<?>> commonClassCache = new HashMap<String, Class<?>>(32);
 
 	static {
 		primitiveWrapperTypeMap.put(Boolean.class, boolean.class);
@@ -84,33 +80,27 @@ public final class ClassUtils {
 		primitiveWrapperTypeMap.put(Long.class, long.class);
 		primitiveWrapperTypeMap.put(Short.class, short.class);
 
-		for (Map.Entry<Class<?>, Class<?>> entry : primitiveWrapperTypeMap
-				.entrySet()) {
+		for (Map.Entry<Class<?>, Class<?>> entry : primitiveWrapperTypeMap.entrySet()) {
 			primitiveTypeToWrapperMap.put(entry.getValue(), entry.getKey());
 			registerCommonClasses(entry.getKey());
 		}
 
 		Set<Class<?>> primitiveTypes = new HashSet<Class<?>>(64);
 		primitiveTypes.addAll(primitiveWrapperTypeMap.values());
-		primitiveTypes.addAll(Arrays.asList(new Class<?>[] { boolean[].class,
-				byte[].class, char[].class, double[].class, float[].class,
-				int[].class, long[].class, short[].class }));
+		primitiveTypes.addAll(Arrays.asList(new Class<?>[] { boolean[].class, byte[].class, char[].class,
+				double[].class, float[].class, int[].class, long[].class, short[].class }));
 		primitiveTypes.add(void.class);
 		for (Class<?> primitiveType : primitiveTypes) {
 			primitiveTypeNameMap.put(primitiveType.getName(), primitiveType);
 		}
 
-		registerCommonClasses(Boolean[].class, Byte[].class, Character[].class,
-				Double[].class, Float[].class, Integer[].class, Long[].class,
-				Short[].class);
-		registerCommonClasses(Number.class, Number[].class, String.class,
-				String[].class, Class.class, Class[].class, Object.class,
-				Object[].class);
-		registerCommonClasses(Throwable.class, Exception.class,
-				RuntimeException.class, Error.class, StackTraceElement.class,
-				StackTraceElement[].class);
-		registerCommonClasses(Enum.class, Iterable.class, Cloneable.class,
-				Comparable.class);
+		registerCommonClasses(Boolean[].class, Byte[].class, Character[].class, Double[].class, Float[].class,
+				Integer[].class, Long[].class, Short[].class);
+		registerCommonClasses(Number.class, Number[].class, String.class, String[].class, Class.class, Class[].class,
+				Object.class, Object[].class);
+		registerCommonClasses(Throwable.class, Exception.class, RuntimeException.class, Error.class,
+				StackTraceElement.class, StackTraceElement[].class);
+		registerCommonClasses(Enum.class, Iterable.class, Cloneable.class, Comparable.class);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -131,8 +121,7 @@ public final class ClassUtils {
 	 *         returned.
 	 * @since 3.2.6
 	 */
-	public static Class<?> determineCommonAncestor(Class<?> clazz1,
-			Class<?> clazz2) {
+	public static Class<?> determineCommonAncestor(Class<?> clazz1, Class<?> clazz2) {
 		if (clazz1 == null) {
 			return clazz2;
 		}
@@ -181,8 +170,7 @@ public final class ClassUtils {
 	 */
 	public static String getQualifiedMethodName(Method method, Class<?> clazz) {
 		Assert.notNull(method, "Method must not be null");
-		return (clazz != null ? clazz : method.getDeclaringClass()).getName()
-				+ '.' + method.getName();
+		return (clazz != null ? clazz : method.getDeclaringClass()).getName() + '.' + method.getName();
 	}
 
 	/**
@@ -215,8 +203,7 @@ public final class ClassUtils {
 	 * @return the constructor, or {@code null} if not found
 	 * @see Class#getConstructor
 	 */
-	public static <T> Constructor<T> getConstructorIfAvailable(Class<T> clazz,
-			Class<?>... paramTypes) {
+	public static <T> Constructor<T> getConstructorIfAvailable(Class<T> clazz, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		try {
 			return clazz.getConstructor(paramTypes);
@@ -240,8 +227,7 @@ public final class ClassUtils {
 	 * @return whether the class has a corresponding method
 	 * @see Class#getMethod
 	 */
-	public static boolean hasMethod(Class<?> clazz, String methodName,
-			Class<?>... paramTypes) {
+	public static boolean hasMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
 		return (getMethodIfAvailable(clazz, methodName, paramTypes) != null);
 	}
 
@@ -268,16 +254,14 @@ public final class ClassUtils {
 	 *             if the method has not been found
 	 * @see Class#getMethod
 	 */
-	public static Method getMethod(Class<?> clazz, String methodName,
-			Class<?>... paramTypes) {
+	public static Method getMethod(Class<?> clazz, String methodName, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		if (paramTypes != null) {
 			try {
 				return clazz.getMethod(methodName, paramTypes);
 			} catch (NoSuchMethodException ex) {
-				throw new IllegalStateException("Expected method not found: "
-						+ ex);
+				throw new IllegalStateException("Expected method not found: " + ex);
 			}
 		} else {
 			Set<Method> candidates = new HashSet<Method>(1);
@@ -290,11 +274,9 @@ public final class ClassUtils {
 			if (candidates.size() == 1) {
 				return candidates.iterator().next();
 			} else if (candidates.isEmpty()) {
-				throw new IllegalStateException("Expected method not found: "
-						+ clazz.getName() + '.' + methodName);
+				throw new IllegalStateException("Expected method not found: " + clazz.getName() + '.' + methodName);
 			} else {
-				throw new IllegalStateException("No unique method found: "
-						+ clazz.getName() + '.' + methodName);
+				throw new IllegalStateException("No unique method found: " + clazz.getName() + '.' + methodName);
 			}
 		}
 	}
@@ -318,8 +300,7 @@ public final class ClassUtils {
 	 * @return the method, or {@code null} if not found
 	 * @see Class#getMethod
 	 */
-	public static Method getMethodIfAvailable(Class<?> clazz,
-			String methodName, Class<?>... paramTypes) {
+	public static Method getMethodIfAvailable(Class<?> clazz, String methodName, Class<?>... paramTypes) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		if (paramTypes != null) {
@@ -384,8 +365,7 @@ public final class ClassUtils {
 	 *            the name of the method
 	 * @return whether there is at least one method with the given name
 	 */
-	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz,
-			String methodName) {
+	public static boolean hasAtLeastOneMethodWithName(Class<?> clazz, String methodName) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		Method[] declaredMethods = clazz.getDeclaredMethods();
@@ -400,8 +380,7 @@ public final class ClassUtils {
 				return true;
 			}
 		}
-		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(
-				clazz.getSuperclass(), methodName));
+		return (clazz.getSuperclass() != null && hasAtLeastOneMethodWithName(clazz.getSuperclass(), methodName));
 	}
 
 	/**
@@ -433,22 +412,18 @@ public final class ClassUtils {
 	 * @return the specific target method, or the original method if the
 	 *         {@code targetClass} doesn't implement it or is {@code null}
 	 */
-	public static Method getMostSpecificMethod(Method method,
-			Class<?> targetClass) {
-		if (method != null && isOverridable(method, targetClass)
-				&& targetClass != null
+	public static Method getMostSpecificMethod(Method method, Class<?> targetClass) {
+		if (method != null && isOverridable(method, targetClass) && targetClass != null
 				&& targetClass != method.getDeclaringClass()) {
 			try {
 				if (Modifier.isPublic(method.getModifiers())) {
 					try {
-						return targetClass.getMethod(method.getName(),
-								method.getParameterTypes());
+						return targetClass.getMethod(method.getName(), method.getParameterTypes());
 					} catch (NoSuchMethodException ex) {
 						return method;
 					}
 				} else {
-					Method specificMethod = ReflectionUtils.findMethod(
-							targetClass, method.getName(),
+					Method specificMethod = ReflectionUtils.findMethod(targetClass, method.getName(),
 							method.getParameterTypes());
 					return (specificMethod != null ? specificMethod : method);
 				}
@@ -483,8 +458,7 @@ public final class ClassUtils {
 	}
 
 	private static boolean isGroovyObjectMethod(Method method) {
-		return method.getDeclaringClass().getName()
-				.equals("groovy.lang.GroovyObject");
+		return method.getDeclaringClass().getName().equals("groovy.lang.GroovyObject");
 	}
 
 	/**
@@ -500,12 +474,10 @@ public final class ClassUtils {
 		if (Modifier.isPrivate(method.getModifiers())) {
 			return false;
 		}
-		if (Modifier.isPublic(method.getModifiers())
-				|| Modifier.isProtected(method.getModifiers())) {
+		if (Modifier.isPublic(method.getModifiers()) || Modifier.isProtected(method.getModifiers())) {
 			return true;
 		}
-		return getPackageName(method.getDeclaringClass()).equals(
-				getPackageName(targetClass));
+		return getPackageName(method.getDeclaringClass()).equals(getPackageName(targetClass));
 	}
 
 	/**
@@ -521,8 +493,7 @@ public final class ClassUtils {
 	 * @throws IllegalArgumentException
 	 *             if the method name is blank or the clazz is null
 	 */
-	public static Method getStaticMethod(Class<?> clazz, String methodName,
-			Class<?>... args) {
+	public static Method getStaticMethod(Class<?> clazz, String methodName, Class<?>... args) {
 		Assert.notNull(clazz, "Class must not be null");
 		Assert.notNull(methodName, "Method name must not be null");
 		try {
@@ -544,8 +515,7 @@ public final class ClassUtils {
 	 */
 	public static Class<?> getSuperClass(Class<?> clz) {
 		Class<?> superClz = clz.getSuperclass();
-		if (superClz == null
-				|| Object.class.getName().equals(superClz.getName())) {
+		if (superClz == null || Object.class.getName().equals(superClz.getName())) {
 			return null;
 		}
 		return superClz;
@@ -615,13 +585,10 @@ public final class ClassUtils {
 	 * @return the original thread context ClassLoader, or {@code null} if not
 	 *         overridden
 	 */
-	public static ClassLoader overrideThreadContextClassLoader(
-			ClassLoader classLoaderToUse) {
+	public static ClassLoader overrideThreadContextClassLoader(ClassLoader classLoaderToUse) {
 		Thread currentThread = Thread.currentThread();
-		ClassLoader threadContextClassLoader = currentThread
-				.getContextClassLoader();
-		if (classLoaderToUse != null
-				&& !classLoaderToUse.equals(threadContextClassLoader)) {
+		ClassLoader threadContextClassLoader = currentThread.getContextClassLoader();
+		if (classLoaderToUse != null && !classLoaderToUse.equals(threadContextClassLoader)) {
 			currentThread.setContextClassLoader(classLoaderToUse);
 			return threadContextClassLoader;
 		} else {
@@ -629,13 +596,11 @@ public final class ClassUtils {
 		}
 	}
 
-	public static Class<?>[] forNames(String... classNames)
-			throws ClassNotFoundException {
+	public static Class<?>[] forNames(String... classNames) throws ClassNotFoundException {
 		return forNames(getDefaultClassLoader(), classNames);
 	}
 
-	public static Class<?>[] forNames(ClassLoader classLoader,
-			String... className) throws ClassNotFoundException {
+	public static Class<?>[] forNames(ClassLoader classLoader, String... className) throws ClassNotFoundException {
 		if (ArrayUtils.isEmpty(className)) {
 			return new Class<?>[0];
 		}
@@ -655,8 +620,7 @@ public final class ClassUtils {
 		return forNameNullable(name, false, classLoader);
 	}
 
-	public static Class<?> forNameNullable(String name, boolean initialize,
-			ClassLoader classLoader) {
+	public static Class<?> forNameNullable(String name, boolean initialize, ClassLoader classLoader) {
 		Class<?> clazz = null;
 		try {
 			clazz = forName(name, initialize, classLoader);
@@ -674,13 +638,12 @@ public final class ClassUtils {
 		return forName(name, getDefaultClassLoader());
 	}
 
-	public static Class<?> forName(String name, ClassLoader classLoader)
-			throws ClassNotFoundException {
+	public static Class<?> forName(String name, ClassLoader classLoader) throws ClassNotFoundException {
 		return forName(name, false, classLoader);
 	}
 
-	public static Class<?> forName(String name, boolean initialize,
-			ClassLoader classLoader) throws ClassNotFoundException {
+	public static Class<?> forName(String name, boolean initialize, ClassLoader classLoader)
+			throws ClassNotFoundException {
 		Assert.notNull(name, "Name must not be null");
 
 		Class<?> clazz = resolvePrimitiveClassName(name);
@@ -693,27 +656,22 @@ public final class ClassUtils {
 
 		// "java.lang.String[]" style arrays
 		if (name.endsWith(ARRAY_SUFFIX)) {
-			String elementClassName = name.substring(0, name.length()
-					- ARRAY_SUFFIX.length());
-			Class<?> elementClass = forName(elementClassName, initialize,
-					classLoader);
+			String elementClassName = name.substring(0, name.length() - ARRAY_SUFFIX.length());
+			Class<?> elementClass = forName(elementClassName, initialize, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		// "[Ljava.lang.String;" style arrays
 		if (name.startsWith(NON_PRIMITIVE_ARRAY_PREFIX) && name.endsWith(";")) {
-			String elementName = name.substring(
-					NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
-			Class<?> elementClass = forName(elementName, initialize,
-					classLoader);
+			String elementName = name.substring(NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
+			Class<?> elementClass = forName(elementName, initialize, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		// "[[I" or "[[Ljava.lang.String;" style arrays
 		if (name.startsWith(INTERNAL_ARRAY_PREFIX)) {
 			String elementName = name.substring(INTERNAL_ARRAY_PREFIX.length());
-			Class<?> elementClass = forName(elementName, initialize,
-					classLoader);
+			Class<?> elementClass = forName(elementName, initialize, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
@@ -721,8 +679,7 @@ public final class ClassUtils {
 		if (end != -1) {
 			// 对于泛型字符串处理
 			int begin = name.lastIndexOf(" ", end);
-			return forName(name.substring(begin == -1 ? 0 : begin + 1, end),
-					initialize, classLoader);
+			return forName(name.substring(begin == -1 ? 0 : begin + 1, end), initialize, classLoader);
 		}
 
 		ClassLoader classLoaderToUse = classLoader;
@@ -734,8 +691,7 @@ public final class ClassUtils {
 		} catch (ClassNotFoundException ex) {
 			int lastDotIndex = name.lastIndexOf('.');
 			if (lastDotIndex != -1) {
-				String innerClassName = name.substring(0, lastDotIndex) + '$'
-						+ name.substring(lastDotIndex + 1);
+				String innerClassName = name.substring(0, lastDotIndex) + '$' + name.substring(lastDotIndex + 1);
 				// try {
 				return forName0(innerClassName, initialize, classLoaderToUse);
 				// } catch (ClassNotFoundException ex2) {
@@ -746,8 +702,8 @@ public final class ClassUtils {
 		}
 	}
 
-	private static Class<?> forName0(String name, boolean initialize,
-			ClassLoader classLoader) throws ClassNotFoundException {
+	private static Class<?> forName0(String name, boolean initialize, ClassLoader classLoader)
+			throws ClassNotFoundException {
 		if (initialize) {
 			return Class.forName(name, true, classLoader);
 		} else {
@@ -774,17 +730,14 @@ public final class ClassUtils {
 	 *             could not be found or the class file could not be loaded)
 	 * @see #forName(String, ClassLoader)
 	 */
-	public static Class<?> resolveClassName(String className,
-			ClassLoader classLoader) throws IllegalArgumentException {
+	public static Class<?> resolveClassName(String className, ClassLoader classLoader) throws IllegalArgumentException {
 		try {
 			return forName(className, classLoader);
 		} catch (ClassNotFoundException ex) {
-			throw new IllegalArgumentException("Cannot find class ["
-					+ className + "]", ex);
+			throw new IllegalArgumentException("Cannot find class [" + className + "]", ex);
 		} catch (LinkageError ex) {
-			throw new IllegalArgumentException("Error loading class ["
-					+ className
-					+ "]: problem with class file or dependent class.", ex);
+			throw new IllegalArgumentException(
+					"Error loading class [" + className + "]: problem with class file or dependent class.", ex);
 		}
 	}
 
@@ -884,8 +837,7 @@ public final class ClassUtils {
 	public static String getShortName(String className) {
 		Assert.hasLength(className, "Class name must not be empty");
 		int lastDotIndex = className.lastIndexOf(PACKAGE_SEPARATOR);
-		String shortName = className.substring(lastDotIndex + 1,
-				className.length());
+		String shortName = className.substring(lastDotIndex + 1, className.length());
 		shortName = shortName.replace(INNER_CLASS_SEPARATOR, PACKAGE_SEPARATOR);
 		return shortName;
 	}
@@ -913,8 +865,7 @@ public final class ClassUtils {
 	public static String getShortNameAsProperty(Class<?> clazz) {
 		String shortName = ClassUtils.getShortName(clazz);
 		int dotIndex = shortName.lastIndexOf('.');
-		shortName = (dotIndex != -1 ? shortName.substring(dotIndex + 1)
-				: shortName);
+		shortName = (dotIndex != -1 ? shortName.substring(dotIndex + 1) : shortName);
 		return Introspector.decapitalize(shortName);
 	}
 
@@ -959,8 +910,7 @@ public final class ClassUtils {
 	public static String getPackageName(String fqClassName) {
 		Assert.notNull(fqClassName, "Class name must not be null");
 		int lastDotIndex = fqClassName.lastIndexOf(PACKAGE_SEPARATOR);
-		return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex)
-				: "");
+		return (lastDotIndex != -1 ? fqClassName.substring(0, lastDotIndex) : "");
 	}
 
 	/**
@@ -1039,9 +989,8 @@ public final class ClassUtils {
 	 *            the type name to match
 	 */
 	public static boolean matchesTypeName(Class<?> clazz, String typeName) {
-		return (typeName != null && (typeName.equals(clazz.getName())
-				|| typeName.equals(clazz.getSimpleName()) || (clazz.isArray() && typeName
-				.equals(getQualifiedNameForArray(clazz)))));
+		return (typeName != null && (typeName.equals(clazz.getName()) || typeName.equals(clazz.getSimpleName())
+				|| (clazz.isArray() && typeName.equals(getQualifiedNameForArray(clazz)))));
 	}
 
 	/**
@@ -1108,8 +1057,7 @@ public final class ClassUtils {
 	 */
 	public static Class<?> resolvePrimitiveIfNecessary(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");
-		return (clazz.isPrimitive() && clazz != void.class ? primitiveTypeToWrapperMap
-				.get(clazz) : clazz);
+		return (clazz.isPrimitive() && clazz != void.class ? primitiveTypeToWrapperMap.get(clazz) : clazz);
 	}
 
 	/**
@@ -1138,8 +1086,7 @@ public final class ClassUtils {
 			}
 		} else {
 			Class resolvedWrapper = primitiveTypeToWrapperMap.get(rhsType);
-			if (resolvedWrapper != null
-					&& lhsType.isAssignableFrom(resolvedWrapper)) {
+			if (resolvedWrapper != null && lhsType.isAssignableFrom(resolvedWrapper)) {
 				return true;
 			}
 		}
@@ -1147,8 +1094,7 @@ public final class ClassUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static boolean isAssignable(Collection<? extends Class> lhsTypes,
-			Class<?> rhsType) {
+	public static boolean isAssignable(Collection<? extends Class> lhsTypes, Class<?> rhsType) {
 		if (CollectionUtils.isEmpty(lhsTypes)) {
 			return false;
 		}
@@ -1162,8 +1108,7 @@ public final class ClassUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static boolean isAssignable(Class<?> lhsType,
-			Collection<? extends Class> rhsTypes) {
+	public static boolean isAssignable(Class<?> lhsType, Collection<? extends Class> rhsTypes) {
 		if (CollectionUtils.isEmpty(rhsTypes)) {
 			return false;
 		}
@@ -1181,14 +1126,12 @@ public final class ClassUtils {
 		return isAssignable(lhsType, Arrays.asList(rhsTypes));
 	}
 
-	public static boolean isAssignable(Collection<Class<?>> lhsTypes,
-			Collection<Class<?>> rhsTypes) {
+	public static boolean isAssignable(Collection<Class<?>> lhsTypes, Collection<Class<?>> rhsTypes) {
 		if (CollectionUtils.isEmpty(lhsTypes)) {
 			return CollectionUtils.isEmpty(rhsTypes);
 		}
 
-		if (lhsTypes.size() != (CollectionUtils.isEmpty(rhsTypes) ? 0
-				: rhsTypes.size())) {
+		if (lhsTypes.size() != (CollectionUtils.isEmpty(rhsTypes) ? 0 : rhsTypes.size())) {
 			return false;
 		}
 
@@ -1215,18 +1158,15 @@ public final class ClassUtils {
 	 */
 	public static boolean isAssignableValue(Class<?> type, Object value) {
 		Assert.notNull(type, "Type must not be null");
-		return (value != null ? isAssignable(type, value.getClass()) : !type
-				.isPrimitive());
+		return (value != null ? isAssignable(type, value.getClass()) : !type.isPrimitive());
 	}
 
-	public static boolean isAssignableValue(Collection<Class<?>> types,
-			Collection<Object> values) {
+	public static boolean isAssignableValue(Collection<Class<?>> types, Collection<Object> values) {
 		if (CollectionUtils.isEmpty(types)) {
 			return CollectionUtils.isEmpty(values);
 		}
 
-		if (types.size() != (CollectionUtils.isEmpty(values) ? 0 : values
-				.size())) {
+		if (types.size() != (CollectionUtils.isEmpty(values) ? 0 : values.size())) {
 			return false;
 		}
 
@@ -1286,8 +1226,7 @@ public final class ClassUtils {
 	 * @see ClassLoader#getResource
 	 * @see Class#getResource
 	 */
-	public static String addResourcePathToPackagePath(Class<?> clazz,
-			String resourceName) {
+	public static String addResourcePathToPackagePath(Class<?> clazz, String resourceName) {
 		Assert.notNull(resourceName, "Resource name must not be null");
 		if (!resourceName.startsWith("/")) {
 			return classPackageAsResourcePath(clazz) + "/" + resourceName;
@@ -1428,8 +1367,7 @@ public final class ClassUtils {
 	 * @return all interfaces that the given object implements as array
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz,
-			ClassLoader classLoader) {
+	public static Class<?>[] getAllInterfacesForClass(Class<?> clazz, ClassLoader classLoader) {
 		Set<Class> ifcs = getAllInterfacesForClassAsSet(clazz, classLoader);
 		return ifcs.toArray(new Class[ifcs.size()]);
 	}
@@ -1477,8 +1415,7 @@ public final class ClassUtils {
 	 * @return all interfaces that the given object implements as Set
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Set<Class> getAllInterfacesForClassAsSet(Class clazz,
-			ClassLoader classLoader) {
+	public static Set<Class> getAllInterfacesForClassAsSet(Class clazz, ClassLoader classLoader) {
 		Assert.notNull(clazz, "Class must not be null");
 		if (clazz.isInterface() && isVisible(clazz, classLoader)) {
 			return Collections.singleton(clazz);
@@ -1487,8 +1424,7 @@ public final class ClassUtils {
 		while (clazz != null) {
 			Class<?>[] ifcs = clazz.getInterfaces();
 			for (Class<?> ifc : ifcs) {
-				interfaces.addAll(getAllInterfacesForClassAsSet(ifc,
-						classLoader));
+				interfaces.addAll(getAllInterfacesForClassAsSet(ifc, classLoader));
 			}
 			clazz = clazz.getSuperclass();
 		}
@@ -1600,8 +1536,7 @@ public final class ClassUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(String className)
-			throws InstantiationException, IllegalAccessException,
-			ClassNotFoundException {
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		Class<?> clazz = forName(className);
 		if (clazz == null) {
 			return null;

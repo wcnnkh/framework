@@ -15,10 +15,12 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.JavaVersion;
 import scw.value.ValueFactory;
 
 @SuppressWarnings("rawtypes")
@@ -182,13 +184,14 @@ public final class InstanceUtils {
 		throw new NoSuchMethodException(type.getName());
 	}
 
-	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type, ValueFactory<String> propertyFactory,
-			Collection<? extends Class> excludeTypes) {
+	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type,
+			ValueFactory<String> propertyFactory, Collection<? extends Class> excludeTypes) {
 		return getConfigurationClassList(type, excludeTypes,
 				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName(propertyFactory)));
 	}
 
-	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type, ValueFactory<String> propertyFactory, Class... excludeTypes) {
+	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type,
+			ValueFactory<String> propertyFactory, Class... excludeTypes) {
 		return getConfigurationClassList(type, propertyFactory, Arrays.asList(excludeTypes));
 	}
 
@@ -249,5 +252,10 @@ public final class InstanceUtils {
 	public static <T> T getConfiguration(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
 			ValueFactory<String> propertyFactory, Class... excludeTypes) {
 		return getConfiguration(type, instanceFactory, propertyFactory, Arrays.asList(excludeTypes));
+	}
+
+	public static boolean isSupport(Class<?> clazz) {
+		return !ClassUtils.isPrimitiveOrWrapper(clazz) && JavaVersion.isSupport(clazz)
+				&& ReflectionUtils.isPresent(clazz);
 	}
 }
