@@ -202,7 +202,7 @@ public class ClassScanner implements Accept<Class<?>> {
 
 		UseJavaVersion useJavaVersion = e.getAnnotation(UseJavaVersion.class);
 		// 如果java主版本号小于要求的版本号那么忽略该类
-		if (useJavaVersion != null && JavaVersion.INSTANCE.getMasterVersion() < useJavaVersion.value()) {
+		if (useJavaVersion != null && !JavaVersion.INSTANCE.isSupport(useJavaVersion.value())) {
 			return false;
 		}
 		return true;

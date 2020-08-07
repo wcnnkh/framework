@@ -169,7 +169,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 	}
 
 	public boolean accept(Class<?> clazz) {
-		return !ClassUtils.isPrimitiveOrWrapper(clazz) && !AnnotationUtils.isIgnore(clazz);
+		return !ClassUtils.isPrimitiveOrWrapper(clazz) && !AnnotationUtils.isIgnore(clazz) && ReflectionUtils.isPresent(clazz);
 	}
 
 	public BeanDefinition getDefinition(Class<?> clazz) {

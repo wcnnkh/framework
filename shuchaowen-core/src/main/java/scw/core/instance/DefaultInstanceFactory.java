@@ -22,16 +22,16 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 				return null;
 			}
 			
-			if(isIgnoreClass(clazz)){
-				return null;
-			}
-			
 			if(ClassUtils.isAssignableValue(clazz, this)){
 				return new InternalInstanceBuilder<T>(clazz, clazz.cast(this));
 			}
 
 			if (PropertyFactory.class == clazz) {
 				return new InternalInstanceBuilder<T>(clazz, clazz.cast(propertyFactory));
+			}
+			
+			if(isIgnoreClass(clazz)){
+				return null;
 			}
 
 			instanceBuilder = new AutoInstanceBuilder<T>(clazz, this, propertyFactory);

@@ -14,6 +14,10 @@ public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 		if (type == null) {
 			return null;
 		}
+		
+		if(!accept(type)){
+			return null;
+		}
 
 		try {
 			return type.cast(UnsafeUtils.allocateInstance(type));
@@ -27,6 +31,6 @@ public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 			return false;
 		}
 
-		return true;
+		return accept(clazz);
 	}
 }

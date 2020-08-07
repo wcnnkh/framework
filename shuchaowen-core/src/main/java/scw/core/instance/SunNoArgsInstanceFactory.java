@@ -46,6 +46,10 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 		if (type == null) {
 			return null;
 		}
+		
+		if(!accept(type)){
+			return null;
+		}
 
 		Constructor<?> constructor = null;
 		try {
@@ -68,6 +72,6 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	}
 
 	public boolean isInstance(Class<?> clazz) {
-		return clazz != null;
+		return clazz != null && accept(clazz);
 	}
 }
