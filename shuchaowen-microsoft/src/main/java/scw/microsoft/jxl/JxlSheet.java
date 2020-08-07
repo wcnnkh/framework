@@ -32,10 +32,6 @@ public class JxlSheet implements scw.microsoft.Sheet {
 		return cell.getContents();
 	}
 
-	public int getColumns() {
-		return sheet.getColumns();
-	}
-
 	public int getRows() {
 		return sheet.getRows();
 	}

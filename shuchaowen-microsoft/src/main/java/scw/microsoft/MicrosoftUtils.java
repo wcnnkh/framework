@@ -19,7 +19,7 @@ public final class MicrosoftUtils {
 	};
 
 	private static final ExcelOperations EXCEL_OPERATIONS = InstanceUtils.loadService(ExcelOperations.class,
-			"scw.office.jxl.JxlExcelOperations");
+			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations");
 
 	public static ExcelOperations getExcelOperations() {
 		return EXCEL_OPERATIONS;

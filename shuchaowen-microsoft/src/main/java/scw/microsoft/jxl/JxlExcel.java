@@ -1,18 +1,16 @@
 package scw.microsoft.jxl;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import jxl.Workbook;
-import jxl.read.biff.BiffException;
 import scw.microsoft.Excel;
 import scw.microsoft.Sheet;
 
 public class JxlExcel implements Excel {
 	private final Workbook workbook;
 
-	public JxlExcel(InputStream inputStream) throws IOException, BiffException {
-		workbook = Workbook.getWorkbook(inputStream);
+	public JxlExcel(Workbook workbook) {
+		this.workbook = workbook;
 	}
 
 	public void close() throws IOException {
@@ -41,14 +39,18 @@ public class JxlExcel implements Excel {
 	}
 
 	public Sheet getSheet(int sheetIndex) {
-		if(sheetIndex >= workbook.getNumberOfSheets()){
+		if (sheetIndex >= workbook.getNumberOfSheets()) {
 			return null;
 		}
-		
+
 		jxl.Sheet sheet = workbook.getSheet(sheetIndex);
 		if (sheet == null) {
 			return null;
 		}
 		return new JxlSheet(sheet);
+	}
+
+	public int getNumberOfSheets() {
+		return workbook.getNumberOfSheets();
 	}
 }

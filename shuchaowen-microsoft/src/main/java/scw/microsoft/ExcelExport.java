@@ -9,6 +9,7 @@ import scw.core.utils.CollectionUtils;
 
 /**
  * excel导出
+ * 
  * @author shuchaowen
  *
  */
@@ -18,7 +19,7 @@ public final class ExcelExport extends WritableExcelWrapper {
 	private final int maxColumns;
 	private int sheetIndex;
 	private int rowIndex;
-	
+
 	public ExcelExport(WritableExcel writableExcel, int sheetIndex, int beginRowIndex) {
 		this(writableExcel, 255, 65535, 256, sheetIndex, beginRowIndex);
 	}
@@ -35,6 +36,7 @@ public final class ExcelExport extends WritableExcelWrapper {
 
 	/**
 	 * 调用append时使用的sheetIndex
+	 * 
 	 * @return
 	 */
 	public int getSheetIndex() {
@@ -47,6 +49,7 @@ public final class ExcelExport extends WritableExcelWrapper {
 
 	/**
 	 * 调用append时使用的rowIndex
+	 * 
 	 * @return
 	 */
 	public int getRowIndex() {
@@ -85,7 +88,7 @@ public final class ExcelExport extends WritableExcelWrapper {
 
 		WritableSheet sheet = getSheet(sheetIndex);
 		if (sheet == null) {
-			sheet = createSheet("sheet-" + sheetIndex, sheetIndex);
+			sheet = createSheet();
 		}
 
 		sheet.write(rowIndex, contents);

@@ -1,9 +1,7 @@
 package scw.microsoft.jxl;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
-import jxl.Workbook;
 import jxl.write.WritableWorkbook;
 import scw.microsoft.WritableExcel;
 import scw.microsoft.WritableSheet;
@@ -11,8 +9,8 @@ import scw.microsoft.WritableSheet;
 public class JxlWritableExcel implements WritableExcel {
 	private WritableWorkbook workbook;
 
-	public JxlWritableExcel(OutputStream outputStream) throws IOException {
-		this.workbook = Workbook.createWorkbook(outputStream);
+	public JxlWritableExcel(WritableWorkbook workbook) {
+		this.workbook = workbook;
 	}
 
 	public void close() throws IOException {
@@ -23,24 +21,11 @@ public class JxlWritableExcel implements WritableExcel {
 		workbook.write();
 	}
 
-	public scw.microsoft.WritableSheet[] getSheets() {
-		jxl.write.WritableSheet[] sheets = workbook.getSheets();
-		if (sheets == null || sheets.length == 0) {
-			return new WritableSheet[0];
-		}
-
-		WritableSheet[] sheets2 = new WritableSheet[sheets.length];
-		for (int i = 0; i < sheets.length; i++) {
-			sheets2[i] = new JxlWritableSheet(sheets[i]);
-		}
-		return sheets2;
-	}
-
 	public scw.microsoft.WritableSheet getSheet(int sheetIndex) {
-		if(sheetIndex >= workbook.getNumberOfSheets()){
+		if (sheetIndex >= workbook.getNumberOfSheets()) {
 			return null;
 		}
-		
+
 		jxl.write.WritableSheet sheet = workbook.getSheet(sheetIndex);
 		if (sheet == null) {
 			return null;
@@ -56,11 +41,23 @@ public class JxlWritableExcel implements WritableExcel {
 		return new JxlWritableSheet(sheet);
 	}
 
-	public WritableSheet createSheet(String sheetName, int sheetIndex) {
-		jxl.write.WritableSheet sheet = workbook.createSheet(sheetName, sheetIndex);
+	public WritableSheet createSheet(String sheetName) {
+		jxl.write.WritableSheet sheet = workbook.createSheet(sheetName, getNumberOfSheets() + 1);
 		if (sheet == null) {
 			return null;
 		}
 		return new JxlWritableSheet(sheet);
+	}
+
+	public int getNumberOfSheets() {
+		return workbook.getNumberOfSheets();
+	}
+
+	public WritableSheet createSheet() {
+		return createSheet("sheet-");
+	}
+
+	public void removeSheet(int sheetIndex) {
+		workbook.removeSheet(sheetIndex);
 	}
 }

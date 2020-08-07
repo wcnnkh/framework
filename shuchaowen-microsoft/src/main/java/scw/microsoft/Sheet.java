@@ -9,7 +9,5 @@ public interface Sheet {
 
 	String read(int rowIndex, int colIndex) throws IOException, ExcelException;
 
-	int getColumns();
-
 	int getRows();
 }
