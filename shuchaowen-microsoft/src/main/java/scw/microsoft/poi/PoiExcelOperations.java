@@ -1,7 +1,6 @@
 package scw.microsoft.poi;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,14 +61,7 @@ public class PoiExcelOperations implements ExcelOperations {
 	}
 
 	public void read(File file, RowCallback rowCallback) throws IOException, ExcelException {
-		FileInputStream fis = new FileInputStream(file);
-		FileMagic fm;
-		try {
-			fm = FileMagic.valueOf(fis);
-		} finally {
-			fis.close();
-		}
-
+		FileMagic fm = FileMagic.valueOf(file);
 		switch (fm) {
 		case OLE2:
 			OLE2_READER.read(file, rowCallback);
