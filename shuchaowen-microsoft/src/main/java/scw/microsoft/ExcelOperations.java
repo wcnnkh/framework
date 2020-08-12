@@ -12,12 +12,16 @@ public interface ExcelOperations extends ExcelReader {
 	Excel create(InputStream inputStream) throws IOException, ExcelException;
 
 	WritableExcel create(OutputStream outputStream) throws IOException, ExcelException;
+	
+	WritableExcel create(OutputStream outputStream, ExcelVersion excelVersion) throws IOException, ExcelException;
 
 	Excel create(File file) throws IOException, ExcelException;
 
 	WritableExcel createWritableExcel(File file) throws IOException, ExcelException;
 	
 	ExcelExport createExcelExport(OutputStream outputStream) throws IOException, ExcelException;
+	
+	ExcelExport createExcelExport(OutputStream outputStream, ExcelVersion excelVersion) throws IOException, ExcelException;
 	
 	ExcelExport createExcelExport(File file) throws IOException, ExcelException;
 }

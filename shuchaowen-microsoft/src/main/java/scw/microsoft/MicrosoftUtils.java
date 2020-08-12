@@ -107,11 +107,10 @@ public final class MicrosoftUtils {
 	public static ExcelExport createExcelExport(OutputMessage outputMessage, String fileName)
 			throws IOException, ExcelException {
 		InetUtils.writeFileMessageHeaders(outputMessage, fileName);
-		WritableExcel writableExcel = getExcelOperations().create(outputMessage.getBody());
 		ExcelVersion excelVersion = ExcelVersion.forFileName(fileName);
 		if (excelVersion == null) {
 			excelVersion = ExcelVersion.XLS;
 		}
-		return new DefaultExcelExport(writableExcel, excelVersion, 0, 0);
+		return getExcelOperations().createExcelExport(outputMessage.getBody(), excelVersion);
 	}
 }

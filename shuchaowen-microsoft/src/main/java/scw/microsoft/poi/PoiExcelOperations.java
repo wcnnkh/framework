@@ -109,4 +109,22 @@ public class PoiExcelOperations implements ExcelOperations {
 		}
 		return new DefaultExcelExport(writableExcel, excelVersion, 0, 0);
 	}
+
+	public WritableExcel create(OutputStream outputStream, ExcelVersion excelVersion)
+			throws IOException, ExcelException {
+		Workbook workbook;
+		if (excelVersion == ExcelVersion.XLS) {
+			workbook = WorkbookFactory.create(false);
+		} else {
+			workbook = SXSS_WORKBOOK_CLASS != null ? InstanceUtils.INSTANCE_FACTORY.getInstance(SXSS_WORKBOOK_CLASS)
+					: WorkbookFactory.create(true);
+		}
+		return new PoiExcel(workbook, outputStream);
+	}
+
+	public ExcelExport createExcelExport(OutputStream outputStream, ExcelVersion excelVersion)
+			throws IOException, ExcelException {
+		WritableExcel writableExcel = create(outputStream, excelVersion);
+		return new DefaultExcelExport(writableExcel, excelVersion, 0, 0);
+	}
 }
