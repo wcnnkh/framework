@@ -20,7 +20,6 @@ import scw.json.JSONUtils;
 import scw.lang.NestedRuntimeException;
 import scw.lang.NotSupportedException;
 import scw.lang.ParameterException;
-import scw.lang.SignatureException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.MimeTypeUtils;
@@ -390,7 +389,7 @@ public final class WeiXinPay {
 		}
 
 		if (!checkSign(map)) {
-			throw new SignatureException("签名错误");
+			throw new WeiXinException("签名错误");
 		}
 
 		return map;

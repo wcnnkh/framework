@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 import scw.core.LocalVariableTableParameterNameDiscoverer;
-import scw.core.annotation.UseJavaVersion;
+import scw.lang.RequiredJavaVersion;
 
-@UseJavaVersion(8)
+@RequiredJavaVersion(8)
 public class Jdk8ParameterNameDiscoverer extends LocalVariableTableParameterNameDiscoverer {
 	@Override
 	public String[] getParameterNames(Constructor<?> ctor) {

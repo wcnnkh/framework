@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BiFunction;
 
-import scw.core.annotation.UseJavaVersion;
+import scw.lang.RequiredJavaVersion;
 
 /**
  * Adapts a {@link CompletableFuture} or {@link CompletionStage} into a Spring
@@ -33,7 +33,7 @@ import scw.core.annotation.UseJavaVersion;
  * @author Juergen Hoeller
  */
 
-@UseJavaVersion(8)
+@RequiredJavaVersion(8)
 public class CompletableToListenableFutureAdapter<T> implements ListenableFuture<T> {
 
 	private final CompletableFuture<T> completableFuture;

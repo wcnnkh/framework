@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 import scw.core.GlobalPropertyFactory;
-import scw.core.annotation.UseJavaVersion;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.classreading.SimpleMetadataReaderFactory;
@@ -199,13 +198,8 @@ public class ClassScanner implements Accept<Class<?>> {
 		if (e.getAnnotation(Deprecated.class) != null || e.getAnnotation(Ignore.class) != null) {
 			return false;
 		}
-
-		UseJavaVersion useJavaVersion = e.getAnnotation(UseJavaVersion.class);
-		// 如果java主版本号小于要求的版本号那么忽略该类
-		if (useJavaVersion != null && !JavaVersion.INSTANCE.isSupport(useJavaVersion.value())) {
-			return false;
-		}
-		return true;
+		
+		return JavaVersion.isSupported(e);
 	}
 
 	private Class<?> forFileName(String classFile, ClassLoader classLoader, boolean initialize) {

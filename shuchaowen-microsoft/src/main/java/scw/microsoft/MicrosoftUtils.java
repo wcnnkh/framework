@@ -2,7 +2,6 @@ package scw.microsoft;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,8 +10,10 @@ import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
+import scw.lang.NotSupportedException;
 import scw.net.InetUtils;
 import scw.net.message.OutputMessage;
+import scw.util.FormatUtils;
 
 public final class MicrosoftUtils {
 	private MicrosoftUtils() {
@@ -21,7 +22,18 @@ public final class MicrosoftUtils {
 	private static final ExcelOperations EXCEL_OPERATIONS = InstanceUtils.loadService(ExcelOperations.class,
 			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations");
 
+	static {
+		if (EXCEL_OPERATIONS == null) {
+			FormatUtils.warn(MicrosoftUtils.class, "not found excel support");
+		} else {
+			FormatUtils.info(MicrosoftUtils.class, "using excel operations {}", EXCEL_OPERATIONS.getClass());
+		}
+	}
+
 	public static ExcelOperations getExcelOperations() {
+		if (EXCEL_OPERATIONS == null) {
+			throw new NotSupportedException("excel operations");
+		}
 		return EXCEL_OPERATIONS;
 	}
 
@@ -30,10 +42,8 @@ public final class MicrosoftUtils {
 	 * 
 	 * @param resource
 	 * @return
-	 * @throws ExcelException
-	 * @throws IOException
 	 */
-	public static List<String[]> loadingExcel(Resource resource) throws ExcelException, IOException {
+	public static List<String[]> loadingExcel(Resource resource) throws IOException, ExcelException {
 		if (!resource.exists()) {
 			return Collections.emptyList();
 		}
@@ -55,31 +65,27 @@ public final class MicrosoftUtils {
 	 * @throws ExcelException
 	 * @throws IOException
 	 */
-	public static List<String[]> loadingExcel(InputStream inputStream) throws ExcelException, IOException {
+	public static List<String[]> loadingExcel(InputStream inputStream) throws IOException, ExcelException {
 		if (inputStream == null) {
 			return Collections.emptyList();
 		}
 
-		List<String[]> list = new ArrayList<String[]>();
-		Excel excel = null;
-		try {
-			excel = getExcelOperations().create(inputStream);
-			Sheet sheet = excel.getSheet(0);
-			if (sheet != null) {
-				for (int i = 0; i < sheet.getRows(); i++) {
-					list.add(sheet.read(i));
+		final List<String[]> list = new ArrayList<String[]>();
+		getExcelOperations().read(inputStream, new RowCallback() {
+
+			public void processRow(int sheetIndex, int rowIndex, String[] contents) {
+				if (sheetIndex != 0) {
+					return;
 				}
+
+				list.add(contents);
 			}
-		} finally {
-			if (excel != null) {
-				excel.close();
-			}
-		}
+		});
 		return list;
 	}
 
 	public static void exportExcel(OutputMessage outputMessage, String fileName, String[] titles, List<String[]> list)
-			throws ExcelException, IOException {
+			throws IOException, ExcelException {
 		ExcelExport excelExport = null;
 		try {
 			excelExport = createExcelExport(outputMessage, fileName);
@@ -98,14 +104,13 @@ public final class MicrosoftUtils {
 		}
 	}
 
-	public static ExcelExport createExcelExport(OutputStream outputStream) throws ExcelException, IOException {
-		WritableExcel writableExcel = getExcelOperations().create(outputStream);
-		return new ExcelExport(writableExcel, 0, 0);
-	}
-
-	public static ExcelExport createExcelExport(OutputMessage outputMessage, String fileName) throws IOException {
+	public static ExcelExport createExcelExport(OutputMessage outputMessage, String fileName)
+			throws IOException, ExcelException {
 		InetUtils.writeFileMessageHeaders(outputMessage, fileName);
-		WritableExcel writableExcel = getExcelOperations().create(outputMessage.getBody());
-		return ExcelExport.create(writableExcel, fileName, 0, 0);
+		ExcelVersion excelVersion = ExcelVersion.forFileName(fileName);
+		if (excelVersion == null) {
+			excelVersion = ExcelVersion.XLS;
+		}
+		return getExcelOperations().createExcelExport(outputMessage.getBody(), excelVersion);
 	}
 }

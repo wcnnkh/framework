@@ -3,9 +3,9 @@ package scw.compatible;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import scw.core.annotation.UseJavaVersion;
+import scw.lang.RequiredJavaVersion;
 
-@UseJavaVersion(6)
+@RequiredJavaVersion(6)
 public class Jdk6StringOperations implements StringOperations{
 	public static final int CONFIGURATION_ORDER = 6;
 

@@ -19,7 +19,6 @@ import java.util.Map;
 import scw.cglib.core.ReflectUtils;
 import scw.core.Assert;
 import scw.core.annotation.Order;
-import scw.core.annotation.UseJavaVersion;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -28,7 +27,6 @@ import scw.core.utils.TypeUtils;
 import scw.lang.Ignore;
 import scw.util.Accept;
 import scw.util.FormatUtils;
-import scw.util.JavaVersion;
 import scw.util.comparator.CompareUtils;
 
 public abstract class ReflectionUtils {
@@ -50,11 +48,6 @@ public abstract class ReflectionUtils {
 			return false;
 		}
 		
-		UseJavaVersion useJavaVersion = clazz.getAnnotation(UseJavaVersion.class);
-		if(useJavaVersion != null && !JavaVersion.INSTANCE.isSupport(useJavaVersion.value())){
-			return false;
-		}
-
 		try {
 			for (Method method : CLASS_PRESENT_METHODS) {
 				method.invoke(clazz);

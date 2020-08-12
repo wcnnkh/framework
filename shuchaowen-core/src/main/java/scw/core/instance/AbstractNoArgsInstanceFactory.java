@@ -1,6 +1,5 @@
 package scw.core.instance;
 
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.util.Accept;
 
@@ -41,6 +40,6 @@ public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFac
 	}
 	
 	public boolean accept(Class<?> clazz) {
-		return !ClassUtils.isPrimitiveOrWrapper(clazz) && ReflectionUtils.isPresent(clazz);
+		return InstanceUtils.isSupport(clazz);
 	}
 }

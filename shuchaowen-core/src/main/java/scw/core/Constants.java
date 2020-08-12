@@ -68,4 +68,6 @@ public class Constants {
 			.getInstance().getString("constants.default.prefix");
 
 	public static final Charset ISO_8859_1 = Charset.forName("iso-8859-1");
+	
+	public static final Charset UTF_8 = Charset.forName("UTF-8");
 }

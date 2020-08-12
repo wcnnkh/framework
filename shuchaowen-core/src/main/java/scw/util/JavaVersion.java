@@ -1,5 +1,6 @@
 package scw.util;
 
+import scw.lang.RequiredJavaVersion;
 import scw.value.AnyValue;
 import scw.value.Value;
 
@@ -51,7 +52,23 @@ public class JavaVersion extends Version {
 		return getMasterVersion() == 8;
 	}
 
-	public boolean isSupport(int version) {
+	public boolean isSupported(int version) {
 		return version >= getMasterVersion();
+	}
+	
+	public static boolean isSupported(Class<?> clazz) {
+		RequiredJavaVersion requiredJavaVersion = clazz.getAnnotation(RequiredJavaVersion.class);
+		if (requiredJavaVersion != null) {
+			if (!INSTANCE.isSupported(requiredJavaVersion.value())) {
+				return false;
+			}
+		}
+
+		for (Class<?> interfaceClass : clazz.getInterfaces()) {
+			if (!isSupported(interfaceClass)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

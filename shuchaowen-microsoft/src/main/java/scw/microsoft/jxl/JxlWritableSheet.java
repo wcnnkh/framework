@@ -33,9 +33,9 @@ public class JxlWritableSheet extends JxlSheet implements WritableSheet {
 		try {
 			getSheet().addCell(new Label(colIndex, rowIndex, content));
 		} catch (RowsExceededException e) {
-			throw new ExcelException(e);
+			throw new ExcelException("write row=" + rowIndex + ", col=" + colIndex, e);
 		} catch (WriteException e) {
-			throw new ExcelException(e);
+			throw new ExcelException("write row=" + rowIndex + ", col=" + colIndex, e);
 		}
 	}
 }

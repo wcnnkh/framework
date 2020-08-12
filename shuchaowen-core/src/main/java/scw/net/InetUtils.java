@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLSocketFactory;
 
+import scw.compatible.CompatibleUtils;
+import scw.core.Constants;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
 import scw.net.message.Headers;
@@ -195,9 +197,9 @@ public final class InetUtils {
 		return matcher.find();
 	}
 
-	public static void writeFileMessageHeaders(OutputMessage outputMessage, String fileName) throws IOException {
-		String fileNameToUse = StringUtils.containsChinese(fileName) ? new String(fileName.getBytes(), "iso-8859-1")
-				: fileName;
+	public static void writeFileMessageHeaders(OutputMessage outputMessage, String fileName) {
+		String fileNameToUse = StringUtils.containsChinese(fileName) ? CompatibleUtils.getStringOperations()
+				.createString(fileName.getBytes(Constants.UTF_8), Constants.ISO_8859_1) : fileName;
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
 		if (mimeType == null) {
 			outputMessage.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);

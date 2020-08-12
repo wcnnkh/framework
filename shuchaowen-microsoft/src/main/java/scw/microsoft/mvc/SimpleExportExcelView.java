@@ -27,6 +27,7 @@ public class SimpleExportExcelView implements View {
 			for (String[] contents : list) {
 				excelExport.append(contents);
 			}
+			excelExport.flush();
 		} finally {
 			excelExport.close();
 		}
