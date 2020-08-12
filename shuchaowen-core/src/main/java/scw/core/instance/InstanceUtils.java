@@ -255,7 +255,7 @@ public final class InstanceUtils {
 	}
 
 	public static boolean isSupport(Class<?> clazz) {
-		return !ClassUtils.isPrimitiveOrWrapper(clazz) && JavaVersion.isSupport(clazz)
+		return !ClassUtils.isPrimitiveOrWrapper(clazz) && JavaVersion.isSupported(clazz)
 				&& ReflectionUtils.isPresent(clazz);
 	}
 }

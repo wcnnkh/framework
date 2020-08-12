@@ -19,7 +19,7 @@ public class SqlExportUtils {
 	};
 
 	public static void export(OutputMessage outputMessage, String fileName, String[] titles,
-			final SqlExportRowMapping sqlExportRowMapping, DB db, Sql... sqls) throws ExcelException, IOException {
+			final SqlExportRowMapping sqlExportRowMapping, DB db, Sql... sqls) throws Exception {
 		export(MicrosoftUtils.createExcelExport(outputMessage, fileName), titles, sqlExportRowMapping, db,
 				Arrays.asList(sqls));
 	}
@@ -43,8 +43,6 @@ public class SqlExportUtils {
 					String[] contents = sqlExportRowMapping.mapping(value);
 					try {
 						excelExport.append(contents);
-					} catch (ExcelException e) {
-						throw new ExcelException(e);
 					} catch (IOException e) {
 						throw new ExcelException(e);
 					}

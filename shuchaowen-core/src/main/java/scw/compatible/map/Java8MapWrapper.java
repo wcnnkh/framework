@@ -2,9 +2,9 @@ package scw.compatible.map;
 
 import java.util.Map;
 
-import scw.core.annotation.UseJavaVersion;
+import scw.lang.RequiredJavaVersion;
 
-@UseJavaVersion(8)
+@RequiredJavaVersion(8)
 public class Java8MapWrapper implements MapCompatible {
 
 	public <K, V> CompatibleMap<K, V> wrapper(Map<K, V> map) {

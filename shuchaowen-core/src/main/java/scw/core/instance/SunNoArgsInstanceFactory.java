@@ -55,9 +55,7 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 		try {
 			constructor = getConstructor(type);
 		} catch (Exception e) {
-			if (e instanceof InstanceException) {
-				throw (InstanceException) e;
-			}
+			throw new InstanceException(type.getName(), e);
 		}
 
 		if (constructor == null) {
@@ -67,7 +65,7 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 		try {
 			return (T) constructor.newInstance();
 		} catch (Exception e) {
-			throw new InstanceException(e);
+			throw new InstanceException(type.getName(), e);
 		}
 	}
 

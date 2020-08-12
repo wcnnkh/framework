@@ -22,7 +22,7 @@ public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 		try {
 			return type.cast(UnsafeUtils.allocateInstance(type));
 		} catch (Exception e) {
-			throw new InstanceException(e);
+			throw new InstanceException(type.getName(), e);
 		}
 	}
 

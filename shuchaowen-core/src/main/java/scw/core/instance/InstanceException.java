@@ -15,8 +15,4 @@ public class InstanceException extends RuntimeException{
 	public InstanceException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
-
-	public InstanceException(Throwable cause) {
-		super(cause);
-	}
 }

@@ -14,4 +14,5 @@ public class ExcelException extends RuntimeException {
 	public ExcelException(String message, Throwable e) {
 		super(message, e);
 	}
+
 }

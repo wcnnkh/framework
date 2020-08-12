@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import scw.core.annotation.UseJavaVersion;
 import scw.event.support.EventType;
 import scw.io.Resource;
+import scw.lang.RequiredJavaVersion;
 import scw.util.KeyValuePair;
 
 /**
@@ -24,7 +24,7 @@ import scw.util.KeyValuePair;
  * @author shuchaowen
  *
  */
-@UseJavaVersion(7)
+@RequiredJavaVersion(7)
 public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDispatcher {
 	private static final WatchService WATCH_SERVICE;
 	private static ConcurrentHashMap<Path, ResourceWatchKey> listenerMap;

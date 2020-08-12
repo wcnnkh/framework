@@ -199,7 +199,7 @@ public class ClassScanner implements Accept<Class<?>> {
 			return false;
 		}
 		
-		return JavaVersion.isSupport(e);
+		return JavaVersion.isSupported(e);
 	}
 
 	private Class<?> forFileName(String classFile, ClassLoader classLoader, boolean initialize) {
