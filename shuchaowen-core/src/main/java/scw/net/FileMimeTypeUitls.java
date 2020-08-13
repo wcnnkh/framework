@@ -11,6 +11,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
+import scw.io.ResourceUtils;
 import scw.lang.Nullable;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
@@ -20,13 +21,15 @@ public class FileMimeTypeUitls {
 
 	private static MultiValueMap<String, MimeType> parseMimeTypes() {
 		String mimeTypesFileName = "/scw/net/mime/mime.types";
-		InputStream is = MimeTypeUtils.class.getResourceAsStream(mimeTypesFileName);
-		if (is == null) {
+		Resource resource = ResourceUtils.getResourceOperations().getResource("classpath:/scw/net/mime/mime.types");
+		if (resource == null || !resource.exists()) {
 			return new LinkedMultiValueMap<String, MimeType>();
 		}
 
 		BufferedReader reader = null;
+		InputStream is = null;
 		try {
+			is = resource.getInputStream();
 			reader = new BufferedReader(new InputStreamReader(is, MimeTypeUtils.US_ASCII));
 			MultiValueMap<String, MimeType> result = new LinkedMultiValueMap<String, MimeType>();
 			String line;
@@ -71,6 +74,12 @@ public class FileMimeTypeUitls {
 		if (ext == null) {
 			return Collections.emptyList();
 		}
-		return Collections.unmodifiableList(fileExtensionToMediaTypes.get(ext.toLowerCase(Locale.ENGLISH)));
+		
+		List<MimeType> mimeTypes = fileExtensionToMediaTypes.get(ext.toLowerCase(Locale.ENGLISH));
+		if(mimeTypes == null){
+			return Collections.emptyList();
+		}
+		
+		return Collections.unmodifiableList(mimeTypes);
 	}
 }

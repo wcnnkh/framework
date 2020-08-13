@@ -132,7 +132,7 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 		String path = getString(WEB_ROOT);
 		if(path == null){
 			path = getDefaultWorkPath();
-			if(path == null){
+			if(StringUtils.isEmpty(path)){
 				path = SystemPropertyFactory.getInstance().getUserDir();
 			}
 			
