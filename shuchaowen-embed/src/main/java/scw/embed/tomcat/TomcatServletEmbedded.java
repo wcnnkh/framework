@@ -227,7 +227,7 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	protected void configureJSP(Context context, PropertyFactory propertyFactory) {
+	protected void configureJSP(Context context, PropertyFactory propertyFactory) throws Exception {
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet")) {
 			ServletContainerInitializer containerInitializer = InstanceUtils.INSTANCE_FACTORY
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
@@ -241,7 +241,7 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	protected void configShutdown(Context context, PropertyFactory propertyFactory, Servlet destroy) {
+	protected void configShutdown(Context context, PropertyFactory propertyFactory, Servlet destroy) throws Exception {
 		String tomcatShutdownServletPath = EmbeddedUtils.getShutdownPath(propertyFactory);
 		if (StringUtils.isEmpty(tomcatShutdownServletPath)) {
 			return;
@@ -256,24 +256,20 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		addServletMapping(context, tomcatShutdownServletPath, tomcatShutdownServletName);
 	}
 
-	protected void addServletMapping(Context context, String pattern, String servletName) {
+	protected void addServletMapping(Context context, String pattern, String servletName) throws Exception {
 		Method method = ReflectionUtils.getMethod(Context.class, "addServletMappingDecoded", String.class,
 				String.class);
 		if (method == null) {// tomcat8以下
 			method = ReflectionUtils.getMethod(Context.class, "addServletMapping", String.class, String.class);
 		}
-		try {
-			method.invoke(context, pattern, servletName);
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		method.invoke(context, pattern, servletName);
 	}
 
-	protected void configureServlet(Context context, Servlet servlet, PropertyFactory propertyFactory) {
-		Tomcat.addServlet(context, "scw", servlet);
-		addServletMapping(context, "/", "scw");
+	protected void configureServlet(Context context, Servlet servlet, PropertyFactory propertyFactory,
+			Class<?> mainClass) throws Exception {
+		String servletName = mainClass == null ? "scw" : mainClass.getSimpleName();
+		Tomcat.addServlet(context, servletName, servlet);
+		addServletMapping(context, "/", servletName);
 		String sourceMapping = EmbeddedUtils.getDefaultServletMapping(propertyFactory);
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
@@ -296,7 +292,7 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	public void destroy() {
+	public void destroy() throws Exception {
 		if (tomcat != null) {
 			try {
 				tomcat.destroy();
@@ -307,7 +303,7 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 	}
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet destroy, Servlet service,
-			Class<?> mainClass, MainArgs args) {
+			Class<?> mainClass, MainArgs args) throws Exception {
 		try {
 			tomcat8(mainClass.getClassLoader());
 		} catch (Throwable e1) {
@@ -317,12 +313,8 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		Context context = createContext(beanFactory, propertyFactory, mainClass.getClassLoader());
 		configureLifecycleListener(context);
 		configureJSP(context, propertyFactory);
-		configureServlet(context, service, propertyFactory);
+		configureServlet(context, service, propertyFactory, mainClass);
 		configShutdown(context, propertyFactory, destroy);
-		try {
-			tomcat.start();
-		} catch (LifecycleException e) {
-			throw new RuntimeException(e);
-		}
+		tomcat.start();
 	}
 }

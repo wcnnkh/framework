@@ -20,7 +20,11 @@ public abstract class AbstractValueProcesser implements ValueProcesser {
 		String name = StringUtils.isEmpty(value.value()) ? field.getSetter().getName() : value.value();
 		String charsetName = StringUtils.isEmpty(value.charsetName()) ? Constants.DEFAULT_CHARSET_NAME
 				: value.charsetName();
-		processInteranl(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName);
+		try {
+			processInteranl(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName);
+		} catch (Exception e) {
+			throw new ValueException(field.toString(), e);
+		}
 	}
 
 	protected boolean isRegisterListener(BeanDefinition beanDefinition, Field field, Value value) {
@@ -29,5 +33,5 @@ public abstract class AbstractValueProcesser implements ValueProcesser {
 	}
 
 	protected abstract void processInteranl(BeanDefinition beanDefinition, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Object bean, Field field, Value value, String name, String charsetName);
+			PropertyFactory propertyFactory, Object bean, Field field, Value value, String name, String charsetName) throws Exception;
 }

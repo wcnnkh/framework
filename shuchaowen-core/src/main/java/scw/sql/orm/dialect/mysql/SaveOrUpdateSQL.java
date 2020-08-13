@@ -16,7 +16,7 @@ import scw.sql.orm.dialect.DialectSql;
 public class SaveOrUpdateSQL extends DialectSql {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerUtils.getLogger(SaveOrUpdateSQL.class);
-	private static final String TEMP = ") ON DUPLICATE KEY UPDATE ";
+	private static final String DUPLICATE_KEY = " ON DUPLICATE KEY UPDATE ";
 	private static final String IF = "IF(";
 	private String sql;
 	private Object[] params;
@@ -50,9 +50,10 @@ public class SaveOrUpdateSQL extends DialectSql {
 		sb.append(cols);
 		sb.append(VALUES);
 		sb.append(values);
-		sb.append(TEMP);
-
-		iterator = SqlUtils.getObjectRelationalMapping().getNotPrimaryKeys(clazz).iterator();
+		sb.append(")");
+		sb.append(DUPLICATE_KEY);
+		
+		iterator = SqlUtils.getObjectRelationalMapping().getColumns(clazz).iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			Object v = column.get(obj);

@@ -14,7 +14,7 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 	@Override
 	protected void processInteranl(final BeanDefinition beanDefinition, final BeanFactory beanFactory,
 			final PropertyFactory propertyFactory, final Object bean, final Field field, final Value value,
-			final String name, final String charsetName) {
+			final String name, final String charsetName) throws Exception {
 		ObservableResource<R> res = getObservableResource(beanDefinition, beanFactory, propertyFactory, bean, field,
 				value, name, charsetName);
 		set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res.getResource(),
@@ -24,8 +24,12 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 			res.registerListener(new ObservableResourceEventListener<R>() {
 
 				public void onEvent(ObservableResourceEvent<R> event) {
-					set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName,
-							event.getSource(), true);
+					try {
+						set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName,
+								event.getSource(), true);
+					} catch (Exception e) {
+						logger.error(e, field);
+					}
 				}
 			});
 		}
@@ -45,18 +49,13 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 	 *            是否可以插入空值
 	 */
 	protected void set(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Object bean, Field field, Value value, String name, String charsetName, R res, boolean insertNull) {
+			Object bean, Field field, Value value, String name, String charsetName, R res, boolean insertNull)
+			throws Exception {
 		Object v = null;
 		if (res == null) {
 			logger.warn("nonexistent resources name [{}] field [{}]", name, field.getSetter());
 		} else {
-			try {
-				v = parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res);
-			} catch (Exception e) {
-				logger.error(e, "field [{}]", field.getSetter());
-				return;
-			}
-			
+			v = parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res);
 			if (v == null) {
 				logger.warn("value is a null name [{}] field [{}]", name, field.getSetter());
 			}

@@ -23,6 +23,6 @@ public class HttpCode implements View {
 			httpChannel.log("path={},method={},status={},msg={}", httpChannel.getRequest().getPath(),
 					httpChannel.getRequest().getMethod(), status, msg);
 		}
-		httpChannel.getResponse().sendError(status);
+		httpChannel.getResponse().sendError(status, msg);
 	}
 }

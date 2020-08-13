@@ -10,7 +10,7 @@ import scw.value.property.PropertyFactory;
 @AopEnable(false)
 public interface ServletEmbedded {
 	void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet destroy, Servlet service,
-			Class<?> mainClass, MainArgs args);
+			Class<?> mainClass, MainArgs args) throws Exception;
 
-	void destroy();
+	void destroy() throws Exception;
 }
