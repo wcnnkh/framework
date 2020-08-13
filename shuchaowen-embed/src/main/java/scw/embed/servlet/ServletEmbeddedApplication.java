@@ -16,7 +16,7 @@ public class ServletEmbeddedApplication extends MainApplication {
 	}
 
 	@Override
-	protected void initInternal() {
+	protected void initInternal() throws Exception{
 		super.initInternal();
 		embedded = InstanceUtils.loadService(ServletEmbedded.class, getBeanFactory(), getPropertyFactory(), "scw.embed.tomcat.TomcatServletEmbedded");
 		if (embedded == null) {
@@ -31,10 +31,10 @@ public class ServletEmbeddedApplication extends MainApplication {
 		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
 				dispatcherServlet, getMainClass(), getArgs());
 	}
-
+	
 	@Override
-	protected void destroyInternal() {
-		if (embedded != null) {
+	protected void destroyInternal() throws Exception {
+		if(embedded != null){
 			embedded.destroy();
 		}
 		super.destroyInternal();

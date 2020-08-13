@@ -57,7 +57,7 @@ public class MainApplication extends CommonApplication implements Application, R
 	}
 
 	@Override
-	protected void initInternal() {
+	protected void initInternal() throws Exception{
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -72,7 +72,7 @@ public class MainApplication extends CommonApplication implements Application, R
 	}
 
 	@Override
-	protected void destroyInternal() {
+	protected void destroyInternal() throws Exception{
 		logger.info(new SplitLineAppend("destroy"));
 		super.destroyInternal();
 	}
@@ -119,7 +119,7 @@ public class MainApplication extends CommonApplication implements Application, R
 
 	public static void run(Class<?> mainClass, String[] args) {
 		MainApplication application = getAutoMainApplicationImpl(mainClass, args);
-		application.getLogger().info("use application: {}", application.getClass().getName());
+		application.getLogger().info("using application: {}", application.getClass().getName());
 		run(application);
 	}
 

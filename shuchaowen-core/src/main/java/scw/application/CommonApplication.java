@@ -23,23 +23,22 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		start = true;
-		initInternal();
-	}
 
-	protected void initInternal() {
 		try {
 			super.init();
+			initInternal();
 		} catch (Exception e) {
-			throw new ApplicationException("BeanFactory初始化异常", e);
+			if (e instanceof RuntimeException) {
+				throw (RuntimeException) e;
+			}
+			throw new ApplicationException("Initialization exception", e);
 		}
 	}
 
-	protected void destroyInternal() {
-		try {
-			super.destroy();
-		} catch (Exception e) {
-			throw new ApplicationException("销毁异常", e);
-		}
+	protected void initInternal() throws Exception {
+	}
+
+	protected void destroyInternal() throws Exception {
 	}
 
 	public boolean isStart() {
@@ -52,7 +51,19 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		}
 
 		start = false;
-		destroyInternal();
-		LoggerFactory.getILoggerFactory().destroy();
+		try {
+			try {
+				destroyInternal();
+			} finally {
+				super.destroy();
+			}
+		} catch (Exception e) {
+			if (e instanceof RuntimeException) {
+				throw (RuntimeException) e;
+			}
+			throw new ApplicationException("Destroy exception", e);
+		} finally {
+			LoggerFactory.getILoggerFactory().destroy();
+		}
 	}
 }
