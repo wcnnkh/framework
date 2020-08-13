@@ -10,11 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.application.Application;
 import scw.application.CommonApplication;
-import scw.core.GlobalPropertyFactory;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.servlet.http.HttpServletService;
 
 public class DispatcherServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LoggerUtils.getLogger(DispatcherServlet.class);
 	private Application application;
 	private HttpServletService httpServletService;
 	private boolean reference = false;
@@ -43,11 +45,10 @@ public class DispatcherServlet extends HttpServlet {
 	
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
+		logger.info("Servlet context realPath / in {}", servletConfig.getServletContext().getRealPath("/"));
 		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(
 				servletConfig);
 		if (getApplication() == null) {
-			GlobalPropertyFactory.getInstance().setWorkPath(
-					servletConfig.getServletContext().getRealPath("/"));
 			reference = false;
 			this.application = new CommonApplication(
 					propertyFactory.getConfigXml());
