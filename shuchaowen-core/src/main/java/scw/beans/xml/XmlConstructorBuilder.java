@@ -2,7 +2,6 @@ package scw.beans.xml;
 
 import java.lang.reflect.Constructor;
 
-import scw.beans.BeanUtils;
 import scw.core.instance.ConstructorBuilder;
 import scw.core.instance.InstanceFactory;
 import scw.core.reflect.ReflectionUtils;
@@ -16,8 +15,7 @@ public class XmlConstructorBuilder implements ConstructorBuilder {
 	private final XmlBeanParameter[] xmlBeanParameters;
 	private final Class<?> clazz;
 
-	public XmlConstructorBuilder(InstanceFactory instanceFactory,
-			PropertyFactory propertyFactory, Class<?> clazz,
+	public XmlConstructorBuilder(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<?> clazz,
 			XmlBeanParameter[] xmlBeanParameters) {
 		this.instanceFactory = instanceFactory;
 		this.propertyFactory = propertyFactory;
@@ -29,20 +27,18 @@ public class XmlConstructorBuilder implements ConstructorBuilder {
 		if (constructorDescriptor == null) {
 			synchronized (this) {
 				if (constructorDescriptor == null) {
-					for (Constructor<?> constructor : ReflectionUtils
-							.getConstructorOrderList(clazz)) {
-						XmlBeanParameter[] beanMethodParameters = BeanUtils
-								.sortParameters(constructor, xmlBeanParameters);
+					for (Constructor<?> constructor : ReflectionUtils.getConstructorOrderList(clazz)) {
+						XmlBeanParameter[] beanMethodParameters = XmlBeanUtils.sortParameters(constructor,
+								xmlBeanParameters);
 						if (beanMethodParameters != null) {
-							this.constructorDescriptor = new XmlConstructorDescriptor(
-									constructor, beanMethodParameters);
+							this.constructorDescriptor = new XmlConstructorDescriptor(constructor,
+									beanMethodParameters);
 							break;
 						}
 					}
-					
-					if(constructorDescriptor == null){
-						this.constructorDescriptor = new XmlConstructorDescriptor(
-								null, null);
+
+					if (constructorDescriptor == null) {
+						this.constructorDescriptor = new XmlConstructorDescriptor(null, null);
 					}
 				}
 			}
@@ -60,13 +56,11 @@ public class XmlConstructorBuilder implements ConstructorBuilder {
 			return null;
 		}
 
-		if (ArrayUtils.isEmpty(getXmlConstructorDescriptor()
-				.getXmlBeanParameters())) {
+		if (ArrayUtils.isEmpty(getXmlConstructorDescriptor().getXmlBeanParameters())) {
 			return new Object[0];
 		}
 
-		return BeanUtils.getBeanMethodParameterArgs(
-				getXmlConstructorDescriptor().getXmlBeanParameters(),
+		return XmlBeanUtils.getBeanMethodParameterArgs(getXmlConstructorDescriptor().getXmlBeanParameters(),
 				instanceFactory, propertyFactory);
 	}
 
@@ -74,8 +68,7 @@ public class XmlConstructorBuilder implements ConstructorBuilder {
 		private final Constructor<?> constructor;
 		private final XmlBeanParameter[] xmlBeanParameters;
 
-		public XmlConstructorDescriptor(Constructor<?> constructor,
-				XmlBeanParameter[] xmlBeanParameters) {
+		public XmlConstructorDescriptor(Constructor<?> constructor, XmlBeanParameter[] xmlBeanParameters) {
 			this.constructor = constructor;
 			this.xmlBeanParameters = xmlBeanParameters;
 		}

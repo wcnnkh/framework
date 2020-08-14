@@ -17,8 +17,8 @@ import scw.lang.NotSupportedException;
 import scw.value.property.PropertyFactory;
 
 public class MethodBeanDefinition extends AbstractBeanDefinition {
-	private Method method;
-	private Class<?> methodTargetClass;
+	private final Method method;
+	private final Class<?> methodTargetClass;
 	private AutoSource<Method> autoSource;
 
 	public MethodBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> methodTargetClass,
@@ -89,5 +89,13 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	@Override
 	public Enumeration<ParameterDescriptor[]> enumeration() {
 		return new EnumerationMethodParameterDescriptors(methodTargetClass, method, true);
+	}
+
+	public Method getMethod() {
+		return method;
+	}
+
+	public Class<?> getMethodTargetClass() {
+		return methodTargetClass;
 	}
 }

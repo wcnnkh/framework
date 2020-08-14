@@ -7,7 +7,6 @@ import org.w3c.dom.Node;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
 import scw.beans.BeansException;
 import scw.beans.ioc.MethodIocProcessor;
 import scw.json.JSONUtils;
@@ -41,7 +40,7 @@ public class XmlMethodIocProcessor extends MethodIocProcessor {
 					continue;
 				}
 
-				XmlBeanParameter[] beanMethodParameters = BeanUtils.sortParameters(method, parametetrs);
+				XmlBeanParameter[] beanMethodParameters = XmlBeanUtils.sortParameters(method, parametetrs);
 				if (beanMethodParameters != null) {
 					this.beanMethodParameters = beanMethodParameters;
 					method.setAccessible(true);
@@ -59,11 +58,12 @@ public class XmlMethodIocProcessor extends MethodIocProcessor {
 		checkMethod();
 	}
 
-	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
+			PropertyFactory propertyFactory) throws Exception {
 		if (method.getParameterCount() == 0) {
 			method.invoke(bean);
 		} else {
-			Object[] args = BeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertyFactory);
+			Object[] args = XmlBeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertyFactory);
 			method.invoke(bean, args);
 		}
 	}

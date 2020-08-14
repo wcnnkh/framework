@@ -84,15 +84,15 @@ public class AutoSource<T> {
 				.getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
 			Class<?> type = parameterConfig.getType();
-			if(ValueUtils.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
-					|| Map.class.isAssignableFrom(type)){
+			if (ValueUtils.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
+					|| Map.class.isAssignableFrom(type)) {
 				return true;
 			}
-			
-			if(!ReflectionUtils.isInstance(type, true)){
+
+			if (!ReflectionUtils.isInstance(type, true)) {
 				return false;
 			}
-			
+
 			return type.getName().startsWith("java.") || type.getName().startsWith("javax.");
 		} else {
 			return propertyParameter.value();
@@ -144,14 +144,13 @@ public class AutoSource<T> {
 		if (!require) {
 			return true;
 		}
-		
+
 		if (parameterDescriptor.getType() == targetClass) {
 			return false;
 		}
 
 		if (parameterFactory != null) {
-			Object value = parameterFactory.getParameter(parameterDescriptor);
-			if (value != null) {
+			if (parameterFactory.accept(parameterDescriptor)) {
 				return true;
 			}
 		}
@@ -176,13 +175,13 @@ public class AutoSource<T> {
 		if (parameterDescriptors == null || parameterDescriptors.length == 0) {
 			return true;
 		}
-		
+
 		for (int i = 0; i < parameterDescriptors.length; i++) {
 			ParameterDescriptor parameterDescriptor = parameterDescriptors[i];
 			try {
 				boolean auto = isAuto(parameterDescriptor);
-				logger.log(auto ? Level.TRACE : Level.DEBUG, "{} parameter index {} matching: {}",
-						source, i, auto ? "success" : "fail");
+				logger.log(auto ? Level.TRACE : Level.DEBUG, "{} parameter index {} matching: {}", source, i,
+						auto ? "success" : "fail");
 				if (!auto) {
 					return false;
 				}

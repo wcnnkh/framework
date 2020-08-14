@@ -183,6 +183,10 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 	protected Object getObjectSupport(String key, Type type) {
 		return getObjectSupport(key, TypeUtils.toClass(type));
 	}
+	
+	public boolean accept(ParameterDescriptor parameterDescriptor) {
+		return getParameter(parameterDescriptor) != null;
+	}
 
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
 		if (ServerHttpRequest.class.isAssignableFrom(parameterDescriptor.getType())) {
