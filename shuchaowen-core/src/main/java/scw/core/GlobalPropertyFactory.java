@@ -2,16 +2,20 @@ package scw.core;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
 
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
+import scw.io.ResourceUtils;
 import scw.util.ClassScanner;
+import scw.util.FormatUtils;
 import scw.value.property.PropertyFactory;
 import scw.value.property.SystemPropertyFactory;
 
 public final class GlobalPropertyFactory extends PropertyFactory {
-	private static final String CLASSES_DIRECTORY = "classes.directory";
-	private static final String SYSTEM_ID_PROPERTY = "private.system.id";
+	private static final String CLASSES_DIRECTORY = "scw.classes.directory";
+	private static final String SYSTEM_ID_PROPERTY = "scw.private.system.id";
 	private static final String BASE_PACKAGE_NAME = "scw.base.package";
 	private static final String WEB_ROOT = "web.root";
 
@@ -30,9 +34,8 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 	private GlobalPropertyFactory() {
 		super(true, false);
 		addFirstBasePropertyFactory(SystemPropertyFactory.getInstance());
-		if (getWorkPath() == null) {
-			setWorkPath(getDefaultWorkPath());
-		}
+		FormatUtils.info(GlobalPropertyFactory.class, "using classes directory {}", getClassesDirectory());
+		FormatUtils.info(GlobalPropertyFactory.class, "using work path {}", getWorkPath());
 	}
 
 	public String getClassesDirectory() {
@@ -41,34 +44,7 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 			return path;
 		}
 
-		File file = new File(getWorkPath());
-		if (!file.exists() || !file.isDirectory()) {
-			return null;
-		}
-
-		File webInf = null;
-		File[] files = file.listFiles();
-		if (files != null) {
-			for (File f : files) {
-				if (f.isDirectory() && f.getName().equals("WEB-INF")) {
-					webInf = f;
-				}
-			}
-		}
-
-		if (webInf == null) {
-			return null;
-		}
-
-		files = webInf.listFiles();
-		if (files != null) {
-			for (File f : files) {
-				if (f.isDirectory() && f.getName().equals("classes")) {
-					setClassesDirectory(f.getPath());
-				}
-			}
-		}
-		return getString(CLASSES_DIRECTORY);
+		return ClassUtils.getDefaultClassLoader().getResource("").getPath();
 	}
 
 	public void setClassesDirectory(String directory) {
@@ -119,20 +95,52 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 		putIfAbsent(BASE_PACKAGE_NAME, packageName);
 	}
 
-	public String getDefaultWorkPath() {
-		File file = FileUtils.searchDirectory(new File(SystemPropertyFactory.getInstance().getUserDir()), "WEB-INF");
-		return file == null ? SystemPropertyFactory.getInstance().getUserDir() : file.getParent();
-	}
-
-	public void setWorkPath(String path) {
-		if (path == null) {
-			return;
+	private String getDefaultWorkPath() {
+		URL url = ClassUtils.getDefaultClassLoader().getResource("");
+		if(url == null){
+			return null;
+		}
+		
+		if(ResourceUtils.isJarURL(url)){
+			return null;
+		}
+		
+		String path = url.getPath();
+		File file = new File(path);
+		if(!file.getName().equals("classes")){
+			return file.getPath();
+		}
+		
+		if(file.getParent() == null){
+			return file.getPath();
+		}
+		
+		file = file.getParentFile();
+		if(file.getName().equals("WEB-INF")){
+			return file.getParent() == null? path : file.getParent();
 		}
 
-		put(WEB_ROOT, path);
+		if(file.getParent() != null){
+			File wi = FileUtils.searchDirectory(file.getParentFile(), "WEB-INF");
+			if(wi != null){
+				return wi.getParent();
+			}
+		}
+		return path;
 	}
 
 	public String getWorkPath() {
-		return getString(WEB_ROOT);
+		String path = getString(WEB_ROOT);
+		if(path == null){
+			path = getDefaultWorkPath();
+			if(StringUtils.isEmpty(path)){
+				path = SystemPropertyFactory.getInstance().getUserDir();
+			}
+			
+			if(path != null){
+				put(WEB_ROOT, path);
+			}
+		}
+		return path;
 	}
 }

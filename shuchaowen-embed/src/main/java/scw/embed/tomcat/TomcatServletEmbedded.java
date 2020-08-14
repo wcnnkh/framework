@@ -58,11 +58,7 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		tomcat.setPort(port);
 
 		String basedir = EmbeddedUtils.getBaseDir(propertyFactory);
-		if (StringUtils.isEmpty(basedir)) {
-			basedir = GlobalPropertyFactory.getInstance().getWorkPath();
-		}
-
-		if (!StringUtils.isEmpty(basedir)) {
+		if(StringUtils.isNotEmpty(basedir)){
 			tomcat.setBaseDir(basedir);
 		}
 

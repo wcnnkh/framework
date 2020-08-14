@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import org.w3c.dom.Element;
 
-import scw.core.GlobalPropertyFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.io.ResourceUtils;
 import scw.logger.Level;
@@ -57,8 +56,6 @@ public final class Log4jUtils {
 			return;
 		}
 
-		String rootPath = GlobalPropertyFactory.getInstance().getWorkPath();
-		FormatUtils.info(Log4jUtils.class, "using log directory: {}", rootPath);
 		Properties properties = ResourceUtils.getResourceOperations()
 				.getProperties("classpath:/scw/logger/log4j/default-log4j.properties").getResource();
 		for (Entry<String, Level> entry : LoggerLevelManager.DEFAULT_LEVEL_MAP.entrySet()) {
