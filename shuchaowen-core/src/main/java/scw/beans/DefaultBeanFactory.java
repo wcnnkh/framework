@@ -4,6 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,9 +29,11 @@ import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
+import scw.core.instance.EnumerationConstructorParameterDescriptors;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -573,6 +576,10 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 
 		public AnnotatedElement getAnnotatedElement() {
 			return getTargetClass();
+		}
+
+		public Enumeration<ParameterDescriptor[]> enumeration() {
+			return new EnumerationConstructorParameterDescriptors(getTargetClass());
 		}
 	}
 

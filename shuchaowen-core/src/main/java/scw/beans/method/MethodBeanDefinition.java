@@ -3,15 +3,16 @@ package scw.beans.method;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
+import java.util.Enumeration;
 
 import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.instance.AutoSource;
+import scw.core.instance.EnumerationMethodParameterDescriptors;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
 import scw.value.property.PropertyFactory;
 
@@ -28,7 +29,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 		this.autoSource = new AutoSource<Method>(beanFactory, propertyFactory, getTargetClass(),
 				ParameterUtils.getParameterDescriptors(method), method);
 	}
-	
+
 	@Override
 	public AnnotatedElement getAnnotatedElement() {
 		return method;
@@ -68,13 +69,13 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	public Object create(Object... params) throws Exception {
-		for (Method method : methodTargetClass.getDeclaredMethods()) {
-			if (!method.getName().equals(this.method.getName())) {
-				continue;
-			}
-
-			if (ClassUtils.isAssignableValue(Arrays.asList(method.getParameterTypes()), Arrays.asList(params))) {
-				return invoke(method, params);
+		Enumeration<ParameterDescriptor[]> enumeration = enumeration();
+		while (enumeration.hasMoreElements()) {
+			ParameterDescriptor[] parameterDescriptors = enumeration.nextElement();
+			if (ParameterUtils.isAssignableValue(parameterDescriptors, params, true)) {
+				Method invoker = methodTargetClass.getDeclaredMethod(method.getName(),
+						ParameterUtils.toParameterTypes(parameterDescriptors));
+				return invoke(invoker, params);
 			}
 		}
 		throw new NotSupportedException(method.toString());
@@ -83,5 +84,10 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	public Object create(Class<?>[] parameterTypes, Object... params) throws Exception {
 		Method method = methodTargetClass.getDeclaredMethod(this.method.getName(), parameterTypes);
 		return invoke(method, params);
+	}
+
+	@Override
+	public Enumeration<ParameterDescriptor[]> enumeration() {
+		return new EnumerationMethodParameterDescriptors(methodTargetClass, method, true);
 	}
 }

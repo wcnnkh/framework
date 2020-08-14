@@ -1,7 +1,9 @@
 package scw.core.instance;
 
 import java.lang.reflect.Constructor;
+import java.util.Enumeration;
 
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotFoundException;
 
@@ -15,9 +17,8 @@ public abstract class AbstractInstanceBuilder<T> implements InstanceBuilder<T> {
 	public Class<? extends T> getTargetClass() {
 		return targetClass;
 	}
-	
-	protected T createInternal(Class<?> targetClass,
-			Constructor<? extends T> constructor, Object[] params)
+
+	protected T createInternal(Class<?> targetClass, Constructor<? extends T> constructor, Object[] params)
 			throws Exception {
 		try {
 			return constructor.newInstance(params);
@@ -28,8 +29,8 @@ public abstract class AbstractInstanceBuilder<T> implements InstanceBuilder<T> {
 	}
 
 	public T create(Object... params) throws Exception {
-		Constructor<? extends T> constructor = ReflectionUtils
-				.findConstructorByParameters(getTargetClass(), false, params);
+		Constructor<? extends T> constructor = ReflectionUtils.findConstructorByParameters(getTargetClass(), false,
+				params);
 		if (constructor == null) {
 			throw new NotFoundException(getTargetClass() + "找不到指定的构造方法");
 		}
@@ -37,14 +38,16 @@ public abstract class AbstractInstanceBuilder<T> implements InstanceBuilder<T> {
 		return createInternal(getTargetClass(), constructor, params);
 	}
 
-	public T create(Class<?>[] parameterTypes, Object... params)
-			throws Exception {
-		Constructor<? extends T> constructor = ReflectionUtils.getConstructor(
-				getTargetClass(), false, parameterTypes);
+	public T create(Class<?>[] parameterTypes, Object... params) throws Exception {
+		Constructor<? extends T> constructor = ReflectionUtils.getConstructor(getTargetClass(), false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getTargetClass() + "找不到指定的构造方法");
 		}
 
 		return createInternal(getTargetClass(), constructor, params);
+	}
+
+	public Enumeration<ParameterDescriptor[]> enumeration() {
+		return new EnumerationConstructorParameterDescriptors(getTargetClass());
 	}
 }

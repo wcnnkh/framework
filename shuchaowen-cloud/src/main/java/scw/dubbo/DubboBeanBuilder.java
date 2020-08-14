@@ -2,12 +2,11 @@ package scw.dubbo;
 
 import org.apache.dubbo.config.ReferenceConfig;
 
+import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.builder.ConstructorBeanDefinition;
-import scw.core.instance.ConstructorBuilder;
 import scw.value.property.PropertyFactory;
 
-public class DubboBeanBuilder extends ConstructorBeanDefinition {
+public class DubboBeanBuilder extends AbstractBeanDefinition {
 	private final ReferenceConfig<?> referenceConfig;
 
 	public DubboBeanBuilder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
@@ -23,10 +22,5 @@ public class DubboBeanBuilder extends ConstructorBeanDefinition {
 	public Object create() throws Exception {
 		return createInstanceProxy(referenceConfig.get(), getTargetClass(),
 				new Class<?>[] { referenceConfig.getInterfaceClass() }).create();
-	}
-
-	@Override
-	protected ConstructorBuilder getConstructorBuilder() {
-		return null;
 	}
 }

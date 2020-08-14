@@ -1326,6 +1326,65 @@ public abstract class ReflectionUtils {
 		autoList.addAll(defList);
 		return autoList;
 	}
+	
+	private static final Comparator<Method> METHOD_COMPARATOR = new Comparator<Method>() {
+
+		public int compare(Method o1, Method o2) {
+			Deprecated d1 = o1.getAnnotation(Deprecated.class);
+			Deprecated d2 = o2.getAnnotation(Deprecated.class);
+
+			// 先比较作用域 public
+			int v1 = o1.getModifiers();
+			int v2 = o2.getModifiers();
+			if (!(d1 != null && d2 != null)) {
+				if (d1 != null) {
+					v1 = Integer.MAX_VALUE;
+				}
+
+				if (d2 != null) {
+					v2 = Integer.MAX_VALUE;
+				}
+			}
+
+			if (v1 == v2) {
+				return CompareUtils.compare(o1.getParameterTypes().length, o2.getParameterTypes().length, true);
+			}
+			return CompareUtils.compare(v1, v2, false);
+		}
+	};
+	
+	public static List<Method> getMethodOrderList(Class<?> targetClass, Method referenceMethod){
+		List<Method> autoList = new ArrayList<Method>();
+		List<Method> defList = new ArrayList<Method>();
+		for (Method method : targetClass.getDeclaredMethods()) {
+			if (method.getAnnotation(Ignore.class) != null) {
+				continue;
+			}
+
+			Order order = method.getAnnotation(Order.class);
+			if (order == null) {
+				defList.add(method);
+			} else {
+				autoList.add(method);
+			}
+		}
+
+		autoList.sort(new Comparator<Method>() {
+
+			public int compare(Method o1, Method o2) {
+				Order auto1 = o1.getAnnotation(Order.class);
+				Order auto2 = o2.getAnnotation(Order.class);
+				if (auto1.value() == auto2.value()) {
+					return METHOD_COMPARATOR.compare(o1, o2);
+				}
+				return CompareUtils.compare(auto1.value(), auto2.value(), true);
+			}
+		});
+
+		defList.sort(METHOD_COMPARATOR);
+		autoList.addAll(defList);
+		return autoList;
+	}
 
 	/**
 	 * Returns {@code true} if this method is a default method; returns

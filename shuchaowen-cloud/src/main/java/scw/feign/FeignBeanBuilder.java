@@ -1,15 +1,14 @@
 package scw.feign;
 
-import scw.beans.builder.ConstructorBeanDefinition;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.ConstructorBuilder;
-import scw.core.utils.StringUtils;
-import scw.net.InetUtils;
 import feign.Feign;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import scw.beans.AbstractBeanDefinition;
+import scw.beans.builder.LoaderContext;
+import scw.core.utils.StringUtils;
+import scw.net.InetUtils;
 
-public class FeignBeanBuilder extends ConstructorBeanDefinition {
+public class FeignBeanBuilder extends AbstractBeanDefinition {
 	private scw.feign.annotation.FeignClient feignClient;
 
 	public FeignBeanBuilder(LoaderContext context, scw.feign.annotation.FeignClient feignClient) {
@@ -17,11 +16,6 @@ public class FeignBeanBuilder extends ConstructorBeanDefinition {
 		this.feignClient = feignClient;
 	}
 
-	@Override
-	protected ConstructorBuilder getConstructorBuilder() {
-		return null;
-	}
-	
 	private String getHost(){
 		String host = feignClient.host();
 		if(StringUtils.isEmpty(host)){
