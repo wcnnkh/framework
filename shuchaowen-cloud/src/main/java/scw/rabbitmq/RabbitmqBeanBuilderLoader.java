@@ -8,7 +8,7 @@ import com.rabbitmq.client.ConnectionFactoryConfigurator;
 
 import scw.amqp.Exchange;
 import scw.amqp.ExchangeDeclare;
-import scw.beans.AbstractBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
@@ -36,7 +36,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static class ConnectionBeanBuilder extends AbstractBeanDefinition {
+	private static class ConnectionBeanBuilder extends DefaultBeanDefinition {
 
 		public ConnectionBeanBuilder(LoaderContext context) {
 			super(context);
@@ -59,7 +59,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private static class ConnectionFactoryBeanBuilder extends AbstractBeanDefinition {
+	private static class ConnectionFactoryBeanBuilder extends DefaultBeanDefinition {
 		private final boolean exist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
 
 		public ConnectionFactoryBeanBuilder(LoaderContext context) {
@@ -79,7 +79,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private static class ExchangeBeanBuilder extends AbstractBeanDefinition {
+	private static class ExchangeBeanBuilder extends DefaultBeanDefinition {
 
 		public ExchangeBeanBuilder(LoaderContext context) {
 			super(context);
@@ -96,7 +96,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private final class ExchangeDeclareBeanBuilder extends AbstractBeanDefinition {
+	private final class ExchangeDeclareBeanBuilder extends DefaultBeanDefinition {
 		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
 
 		public ExchangeDeclareBeanBuilder(LoaderContext context) {

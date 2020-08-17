@@ -4,25 +4,22 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.core.parameter.ParameterDescriptors;
 import scw.http.server.HttpControllerDescriptor;
 import scw.mvc.HttpChannel;
 
 public class ActionWrapper implements Action {
-	private Action action;
+	private final Action action;
 
+	public ActionWrapper(Action action) {
+		this.action = action;
+	}
+	
 	public Action getAction() {
 		if(action instanceof ActionWrapper){
 			return ((ActionWrapper) action).getAction();
 		}
 		return action;
-	}
-
-	public void setAction(Action action) {
-		this.action = action;
-	}
-
-	public ActionWrapper(Action action) {
-		this.action = action;
 	}
 
 	public AnnotatedElement getAnnotatedElement() {
@@ -59,6 +56,10 @@ public class ActionWrapper implements Action {
 
 	public Collection<HttpControllerDescriptor> getMethodHttpControllerDescriptors() {
 		return action.getMethodHttpControllerDescriptors();
+	}
+
+	public ParameterDescriptors getParameterDescriptors() {
+		return action.getParameterDescriptors();
 	}
 
 }

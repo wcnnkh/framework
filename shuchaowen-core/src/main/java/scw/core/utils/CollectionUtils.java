@@ -402,6 +402,10 @@ public abstract class CollectionUtils {
 		return new EnumerationIterator<E>(enumeration);
 	}
 
+	public static <E> Enumeration<E> toEnumeration(Iterator<E> iterator) {
+		return new IteratorEnumeration<E>(iterator);
+	}
+
 	/**
 	 * Adapts a {@code Map<K, List<V>>} to an {@code MultiValueMap<K,V>}.
 	 *
@@ -530,6 +534,22 @@ public abstract class CollectionUtils {
 
 		public void remove() throws UnsupportedOperationException {
 			throw new UnsupportedOperationException("Not supported");
+		}
+	}
+
+	private static class IteratorEnumeration<E> implements Enumeration<E> {
+		private final Iterator<E> iterator;
+
+		public IteratorEnumeration(Iterator<E> iterator) {
+			this.iterator = iterator;
+		}
+
+		public boolean hasMoreElements() {
+			return iterator.hasNext();
+		}
+
+		public E nextElement() {
+			return iterator.next();
 		}
 	}
 

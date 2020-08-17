@@ -107,7 +107,7 @@ public class DefaultFieldLoader implements CacheLoader<Class<?>, FieldMetadata[]
 		Iterator<T> iterator = metadatas.iterator();
 		while (iterator.hasNext()) {
 			T t = iterator.next();
-			if (t.getName().equals(fieldMetadata.getName()) && t.getType() == fieldMetadata.getType()) {
+			if (t.getName().equals(fieldMetadata.getName()) && t.getType().equals(fieldMetadata.getType())) {
 				iterator.remove();
 				return t;
 			}

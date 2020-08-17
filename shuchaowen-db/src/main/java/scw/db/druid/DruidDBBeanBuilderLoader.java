@@ -1,6 +1,6 @@
 package scw.db.druid;
 
-import scw.beans.AbstractBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
@@ -25,7 +25,7 @@ public class DruidDBBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static class DruidDBBeanDefinition extends AbstractBeanDefinition {
+	private static class DruidDBBeanDefinition extends DefaultBeanDefinition {
 		private final boolean isInstance = ResourceUtils.getResourceOperations().isExist(DBUtils.DEFAULT_CONFIGURATION);
 
 		public DruidDBBeanDefinition(LoaderContext loaderContext) {

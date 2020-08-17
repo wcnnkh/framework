@@ -2,11 +2,9 @@ package scw.mvc.parameter;
 
 import java.io.IOException;
 
-import scw.beans.annotation.Bean;
 import scw.http.server.ServerHttpRequest;
 import scw.io.IOUtils;
 
-@Bean(singleton = false)
 public final class Body {
 	private String body;
 	private ServerHttpRequest serverRequest;

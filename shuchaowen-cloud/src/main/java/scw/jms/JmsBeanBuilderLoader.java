@@ -3,7 +3,7 @@ package scw.jms;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 
-import scw.beans.AbstractBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
@@ -22,7 +22,7 @@ public class JmsBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static class ConnectionBeanBuilder extends AbstractBeanDefinition {
+	private static class ConnectionBeanBuilder extends DefaultBeanDefinition {
 
 		public ConnectionBeanBuilder(LoaderContext context) {
 			super(context);

@@ -4,7 +4,7 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import scw.beans.AbstractBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
@@ -25,7 +25,7 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static class ConnectionFactoryBeanBuilder extends AbstractBeanDefinition {
+	private static class ConnectionFactoryBeanBuilder extends DefaultBeanDefinition {
 		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
 
 		public ConnectionFactoryBeanBuilder(LoaderContext context) {

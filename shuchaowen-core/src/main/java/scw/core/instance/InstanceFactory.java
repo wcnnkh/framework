@@ -1,7 +1,6 @@
 package scw.core.instance;
 
 public interface InstanceFactory extends NoArgsInstanceFactory {
-	
 	/**
 	 * 执行失败返回空
 	 * 

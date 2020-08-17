@@ -6,9 +6,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanDefinition;
-import scw.beans.builder.AutoBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -37,7 +36,7 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private final class ScheduledExecutorServiceBeanBuilder extends AbstractBeanDefinition {
+	private final class ScheduledExecutorServiceBeanBuilder extends DefaultBeanDefinition {
 
 		public ScheduledExecutorServiceBeanBuilder(LoaderContext context) {
 			super(context);
@@ -60,7 +59,7 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private final class ThreadPoolExecutorBeanBuilder extends AutoBeanDefinition {
+	private final class ThreadPoolExecutorBeanBuilder extends DefaultBeanDefinition {
 		public ThreadPoolExecutorBeanBuilder(LoaderContext context) {
 			super(context);
 		}

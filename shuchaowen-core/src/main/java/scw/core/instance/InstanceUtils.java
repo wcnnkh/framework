@@ -30,17 +30,6 @@ public final class InstanceUtils {
 	private InstanceUtils() {
 	};
 
-	public static final ConstructorBuilder EMPTY_INSTANCE_BUILDER = new ConstructorBuilder() {
-
-		public Constructor<?> getConstructor() {
-			return null;
-		}
-
-		public Object[] getArgs() throws Exception {
-			return null;
-		}
-	};
-
 	public static final ConfigurationScanner CONFIGURATION_SCANNER;
 
 	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(

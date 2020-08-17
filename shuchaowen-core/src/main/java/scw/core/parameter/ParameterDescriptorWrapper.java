@@ -25,4 +25,9 @@ public class ParameterDescriptorWrapper implements ParameterDescriptor {
 	public Type getGenericType() {
 		return parameterDescriptor.getGenericType();
 	}
+	
+	@Override
+	public String toString() {
+		return parameterDescriptor.toString();
+	}
 }

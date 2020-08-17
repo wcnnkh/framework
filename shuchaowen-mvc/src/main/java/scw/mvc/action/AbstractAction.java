@@ -10,10 +10,9 @@ import java.util.LinkedHashSet;
 import scw.aop.Invoker;
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.MultiAnnotatedElement;
-import scw.core.parameter.ParameterDescriptor;
-import scw.core.parameter.ParameterUtils;
+import scw.core.parameter.MethodParameterDescriptors;
+import scw.core.parameter.ParameterDescriptors;
 import scw.mvc.HttpChannel;
-import scw.mvc.MVCUtils;
 
 public abstract class AbstractAction implements Action {
 	private final Method method;
@@ -21,7 +20,7 @@ public abstract class AbstractAction implements Action {
 	private final AnnotatedElement annotatedElement;
 	private final AnnotatedElement targetClassAnnotatedElement;
 	private final AnnotatedElement methodAnnotatedElement;
-	private final ParameterDescriptor[] parameterDescriptors;
+	private final ParameterDescriptors parameterDescriptors;
 	protected Collection<ActionFilter> actionFilters = new LinkedHashSet<ActionFilter>(4);
 
 	public AbstractAction(Class<?> targetClass, Method method) {
@@ -30,7 +29,7 @@ public abstract class AbstractAction implements Action {
 		this.targetClassAnnotatedElement = AnnotatedElementUtils.forAnnotations(targetClass.getDeclaredAnnotations());
 		this.methodAnnotatedElement = AnnotatedElementUtils.forAnnotations(method.getAnnotations());
 		this.annotatedElement = new MultiAnnotatedElement(methodAnnotatedElement, targetClassAnnotatedElement);
-		this.parameterDescriptors = ParameterUtils.getParameterDescriptors(method);
+		this.parameterDescriptors = new MethodParameterDescriptors(targetClass, method);
 	}
 	
 	public void optimization(){
@@ -57,7 +56,7 @@ public abstract class AbstractAction implements Action {
 		return methodAnnotatedElement;
 	}
 
-	public ParameterDescriptor[] getParameterDescriptors() {
+	public ParameterDescriptors getParameterDescriptors() {
 		return parameterDescriptors;
 	}
 
@@ -106,7 +105,7 @@ public abstract class AbstractAction implements Action {
 				return iterator.next().doFilter(this, httpChannel);
 			}
 
-			return getInvoker().invoke(MVCUtils.getParameterValues(httpChannel, parameterDescriptors));
+			return getInvoker().invoke(httpChannel.getParameters(getParameterDescriptors()));
 		}
 	}
 }

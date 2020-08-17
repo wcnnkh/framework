@@ -1,5 +1,9 @@
 package scw.core.parameter;
 
-public interface ParameterFactory {
-	Object getParameter(ParameterDescriptor parameterDescriptor);
+
+
+public interface ParameterFactory{
+	boolean isAccept(ParameterDescriptors parameterDescriptors);
+	
+	Object[] getParameters(ParameterDescriptors parameterDescriptors);
 }

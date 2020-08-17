@@ -10,7 +10,6 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeansException;
 import scw.beans.ioc.IocProcessor;
-import scw.beans.ioc.MethodIocProcessor;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -132,9 +131,9 @@ public final class XmlBeanUtils {
 		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}
 
-	public static List<MethodIocProcessor> getMethodIocProcessos(Class<?> clz,
+	public static List<XmlMethodIocProcessor> getMethodIocProcessos(Class<?> clz,
 			NodeList nodeList, String tagName) throws Exception {
-		List<MethodIocProcessor> list = new ArrayList<MethodIocProcessor>();
+		List<XmlMethodIocProcessor> list = new ArrayList<XmlMethodIocProcessor>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (tagName.equalsIgnoreCase(n.getNodeName())) {
@@ -146,12 +145,12 @@ public final class XmlBeanUtils {
 		return list;
 	}
 
-	public static List<MethodIocProcessor> getInitMethodIocProcessors(
+	public static List<XmlMethodIocProcessor> getInitMethodIocProcessors(
 			Class<?> clz, NodeList nodeList) throws Exception {
 		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "init");
 	}
 
-	public static List<MethodIocProcessor> getDestroyMethodIocProcessors(
+	public static List<XmlMethodIocProcessor> getDestroyMethodIocProcessors(
 			Class<?> clz, NodeList nodeList) throws Exception {
 		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "destroy");
 	}

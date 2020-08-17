@@ -4,7 +4,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
-import scw.beans.AbstractBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
@@ -25,7 +25,7 @@ public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 		return serviceChain.loading(context);
 	}
 
-	private static final class SessionFactoryBeanBuilder extends AbstractBeanDefinition {
+	private static final class SessionFactoryBeanBuilder extends DefaultBeanDefinition {
 
 		public SessionFactoryBeanBuilder(LoaderContext context) {
 			super(context);
@@ -54,7 +54,7 @@ public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private static final class ConfigurationBeanBuilder extends AbstractBeanDefinition {
+	private static final class ConfigurationBeanBuilder extends DefaultBeanDefinition {
 		private final boolean isExist = ResourceUtils.getResourceOperations()
 				.isExist(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
 		

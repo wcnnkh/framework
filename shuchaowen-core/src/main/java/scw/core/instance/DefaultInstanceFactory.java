@@ -21,30 +21,31 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 			if (clazz == null) {
 				return null;
 			}
-			
-			if(ClassUtils.isAssignableValue(clazz, this)){
-				return new InternalInstanceBuilder<T>(clazz, clazz.cast(this));
+
+			if (ClassUtils.isAssignableValue(clazz, this)) {
+				return new InternalInstanceBuilder<T>(this, propertyFactory, clazz, clazz.cast(this));
 			}
 
 			if (PropertyFactory.class == clazz) {
-				return new InternalInstanceBuilder<T>(clazz, clazz.cast(propertyFactory));
+				return new InternalInstanceBuilder<T>(this, propertyFactory, clazz, clazz.cast(propertyFactory));
 			}
-			
-			if(isIgnoreClass(clazz)){
+
+			if (isIgnoreClass(clazz)) {
 				return null;
 			}
 
-			instanceBuilder = new AutoInstanceBuilder<T>(clazz, this, propertyFactory);
+			instanceBuilder = new DefaultInstanceBuilder<T>(this, propertyFactory, clazz);
 		}
 
 		return instanceBuilder;
 	}
 
-	private static final class InternalInstanceBuilder<T> extends AbstractInstanceBuilder<T> {
+	private static final class InternalInstanceBuilder<T> extends DefaultInstanceBuilder<T> {
 		private final T instance;
 
-		public InternalInstanceBuilder(Class<T> targetClass, T instance) {
-			super(targetClass);
+		public InternalInstanceBuilder(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
+				Class<? extends T> targetClass, T instance) {
+			super(instanceFactory, propertyFactory, targetClass);
 			this.instance = instance;
 		}
 

@@ -9,7 +9,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockFactory;
 
-import scw.beans.AbstractBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
@@ -32,7 +32,7 @@ public class LuceneBeanBuilderLoader implements BeanBuilderLoader {
 		return loaderChain.loading(context);
 	}
 
-	private static class DirectorBeanBuilder extends AbstractBeanDefinition {
+	private static class DirectorBeanBuilder extends DefaultBeanDefinition {
 
 		public DirectorBeanBuilder(LoaderContext context) {
 			super(context);
@@ -56,7 +56,7 @@ public class LuceneBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private static class AnalyzerBeanBuilder extends AbstractBeanDefinition {
+	private static class AnalyzerBeanBuilder extends DefaultBeanDefinition {
 
 		public AnalyzerBeanBuilder(LoaderContext context) {
 			super(context);

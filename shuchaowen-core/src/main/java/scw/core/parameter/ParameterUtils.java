@@ -133,4 +133,29 @@ public final class ParameterUtils {
 		}
 		return parameterDescriptor.getName();
 	}
+
+	public static boolean isAssignableValue(ParameterDescriptors parameterDescriptors, Object[] params,
+			boolean ignoreNull) {
+		// 异或运算，如果两个不同则结果为1
+		if (parameterDescriptors.size() == 0 ^ ArrayUtils.isEmpty(params)) {
+			return false;
+		}
+
+		if (parameterDescriptors.size() != params.length) {
+			return false;
+		}
+
+		int index = 0;
+		for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
+			Object value = params[index++];
+			if (value == null && !ignoreNull) {
+				return false;
+			}
+
+			if (!ClassUtils.isAssignableValue(parameterDescriptor.getType(), value)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

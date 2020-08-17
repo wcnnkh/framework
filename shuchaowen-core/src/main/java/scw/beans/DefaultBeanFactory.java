@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -17,7 +18,6 @@ import scw.aop.Filter;
 import scw.aop.FilterProxyInvoker;
 import scw.aop.ProxyInvoker;
 import scw.beans.annotation.AutoImpl;
-import scw.beans.builder.AutoBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.IteratorBeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -31,6 +31,8 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.parameter.ConstructorParameterDescriptorsIterator;
+import scw.core.parameter.ParameterDescriptors;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -114,8 +116,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 							addBeanNameMapping(Arrays.asList(name), beanDefinition.getId(), true);
 						}
 
-						if (beanDefinition instanceof AbstractBeanDefinition) {
-							AbstractBeanDefinition definition = (AbstractBeanDefinition) beanDefinition;
+						if (beanDefinition instanceof DefaultBeanDefinition) {
+							DefaultBeanDefinition definition = (DefaultBeanDefinition) beanDefinition;
 							if (definition.isNew()) {
 								beanDefinition = definition.clone();
 								addBeanDefinition(beanDefinition, true);
@@ -142,7 +144,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 				for (Class<?> impl : impls) {
 					BeanDefinition definition = getDefinitionByCache(impl.getName());
 					if (definition == null) {
-						definition = new AutoBeanDefinition(new LoaderContext(impl, context));
+						definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 					}
 					if (definition != null && definition.isInstance()) {
 						return definition;
@@ -154,7 +156,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		for (Class<?> impl : InstanceUtils.getConfigurationClassList(context.getTargetClass(), propertyFactory)) {
 			BeanDefinition definition = getDefinitionByCache(impl.getName());
 			if (definition == null) {
-				definition = new AutoBeanDefinition(new LoaderContext(impl, context));
+				definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 			}
 			if (definition != null && definition.isInstance()) {
 				logger.info("Configuration {} impl {}", context.getTargetClass(), impl);
@@ -164,7 +166,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 
 		BeanDefinition definition = new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
 		if (definition == null) {
-			definition = new AutoBeanDefinition(context);
+			definition = new DefaultBeanDefinition(context);
 		}
 		return definition;
 	}
@@ -466,8 +468,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 			}
 
 			Ioc ioc = Ioc.forClass(clazz);
-			ioc.getDependence().process(null, null, this, propertyFactory, true);
-			ioc.getInit().process(null, null, this, propertyFactory, true);
+			ioc.getDependence().process(null, null, this, propertyFactory);
+			ioc.getInit().process(null, null, this, propertyFactory);
 		}
 
 		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class,
@@ -507,7 +509,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 
 		for (Class<?> clazz : ClassScanner.getInstance()
 				.getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
-			Ioc.forClass(clazz).getDestroy().process(null, null, this, propertyFactory, true);
+			Ioc.forClass(clazz).getDestroy().process(null, null, this, propertyFactory);
 		}
 	}
 
@@ -561,7 +563,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		public void dependence(Object instance) throws Exception {
 			if (instance != null) {
 				Ioc ioc = Ioc.forClass(instance.getClass());
-				ioc.getDependence().process(null, instance, DefaultBeanFactory.this, propertyFactory, false);
+				ioc.getDependence().process(this, instance, DefaultBeanFactory.this, propertyFactory);
 			}
 		}
 
@@ -573,6 +575,10 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 
 		public AnnotatedElement getAnnotatedElement() {
 			return getTargetClass();
+		}
+
+		public Iterator<ParameterDescriptors> iterator() {
+			return new ConstructorParameterDescriptorsIterator(getTargetClass());
 		}
 	}
 
