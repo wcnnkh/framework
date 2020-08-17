@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
-import scw.beans.AbstractBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.parameter.MethodParameterDescriptors;
@@ -16,7 +16,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotSupportedException;
 import scw.value.property.PropertyFactory;
 
-public class MethodBeanDefinition extends AbstractBeanDefinition {
+public class MethodBeanDefinition extends DefaultBeanDefinition {
 	private final Method method;
 	private final Class<?> methodTargetClass;
 	private final MethodParameterDescriptors methodParameterDescriptors;

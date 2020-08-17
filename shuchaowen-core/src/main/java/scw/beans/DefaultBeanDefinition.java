@@ -21,7 +21,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
 
-public abstract class AbstractBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable{
+public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable{
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
@@ -29,13 +29,13 @@ public abstract class AbstractBeanDefinition extends DefaultInstanceBuilder<Obje
 	protected List<Filter> filters = new ArrayList<Filter>(4);
 	private boolean isNew = true;
 
-	public AbstractBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
+	public DefaultBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
 		super(beanFactory, propertyFactory, targetClass);
 		this.beanFactory = beanFactory;
 		this.propertyFactory = propertyFactory;
 	}
 
-	public AbstractBeanDefinition(LoaderContext loaderContext) {
+	public DefaultBeanDefinition(LoaderContext loaderContext) {
 		this(loaderContext.getBeanFactory(), loaderContext.getPropertyFactory(), loaderContext.getTargetClass());
 	}
 
@@ -108,6 +108,11 @@ public abstract class AbstractBeanDefinition extends DefaultInstanceBuilder<Obje
 	public AnnotatedElement getAnnotatedElement() {
 		return getTargetClass();
 	}
+	
+	@Override
+	public boolean isInstance() {
+		return super.isInstance(isProxy() && !filters.isEmpty());
+	}
 
 	@Override
 	protected Object createInternal(Class<?> targetClass, Constructor<? extends Object> constructor, Object[] params)
@@ -146,7 +151,7 @@ public abstract class AbstractBeanDefinition extends DefaultInstanceBuilder<Obje
 	@Override
 	public BeanDefinition clone() {
 		try {
-			AbstractBeanDefinition beanDefinition = (AbstractBeanDefinition) super.clone();
+			DefaultBeanDefinition beanDefinition = (DefaultBeanDefinition) super.clone();
 			beanDefinition.setNew(false);
 			beanDefinition.filters = Arrays.asList(filters.toArray(new Filter[0]));
 			beanDefinition.ioc.readyOnly();

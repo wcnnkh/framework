@@ -4,7 +4,7 @@ import java.util.Properties;
 
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import scw.beans.AbstractBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
@@ -29,7 +29,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 		return loaderChain.loading(context);
 	}
 
-	private static final class JedisPoolBeanBuilder extends AbstractBeanDefinition {
+	private static final class JedisPoolBeanBuilder extends DefaultBeanDefinition {
 		private final String configName = propertyFactory.getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
 		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(configName);
 
@@ -74,7 +74,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 		}
 	}
 
-	private static final class JedisPoolConfigBeanBuilder extends AbstractBeanDefinition {
+	private static final class JedisPoolConfigBeanBuilder extends DefaultBeanDefinition {
 		private final String configName = propertyFactory.getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
 		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(configName);
 

@@ -11,7 +11,7 @@ import org.w3c.dom.NodeList;
 
 import scw.aop.MultiFilter;
 import scw.beans.BeanFactory;
-import scw.beans.builder.ConstructorBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
@@ -20,7 +20,7 @@ import scw.lang.NotSupportedException;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
-public class XmlBeanDefinition extends ConstructorBeanDefinition {
+public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private List<String> names = new ArrayList<String>();
 	private final String id;
 	private final boolean singleton;

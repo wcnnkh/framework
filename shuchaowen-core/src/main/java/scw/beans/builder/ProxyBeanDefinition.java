@@ -2,9 +2,10 @@ package scw.beans.builder;
 
 import scw.aop.Filter;
 import scw.beans.BeanFactory;
+import scw.beans.DefaultBeanDefinition;
 import scw.value.property.PropertyFactory;
 
-public class ProxyBeanDefinition extends AutoBeanDefinition {
+public class ProxyBeanDefinition extends DefaultBeanDefinition {
 
 	public ProxyBeanDefinition(LoaderContext context, Filter... filters) {
 		this(context.getBeanFactory(), context.getPropertyFactory(), context

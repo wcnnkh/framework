@@ -9,6 +9,7 @@ import java.util.List;
 import scw.aop.Filter;
 import scw.aop.MultiFilter;
 import scw.beans.BeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.annotation.Proxy;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
@@ -29,7 +30,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 					&& context.getBeanFactory().isInstance(name)) {
 				logger.info("{} reference {}", context.getTargetClass()
 						.getName(), name);
-				return new AutoBeanDefinition(context.getBeanFactory(),
+				return new DefaultBeanDefinition(context.getBeanFactory(),
 						context.getPropertyFactory(),
 						ClassUtils.forNameNullable(name));
 			} else {

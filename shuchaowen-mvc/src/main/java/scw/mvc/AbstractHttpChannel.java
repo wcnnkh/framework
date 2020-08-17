@@ -147,19 +147,23 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 							try {
 								bean = beanDefinition.create(parameterDescriptors.getTypes(),
 										getParameters(parameterDescriptors));
+								if (beanMap == null) {
+									beanMap = createBeanMap();
+								}
+								beanMap.put(beanDefinition.getId(), bean);
+								beanDefinition.dependence(bean);
+								beanDefinition.init(bean);
 							} catch (Exception e) {
 								throw new BeansException(beanDefinition.getId(), e);
 							}
-							if (beanMap == null) {
-								beanMap = createBeanMap();
-							}
-							beanMap.put(beanDefinition.getId(), bean);
 						}
 					}
 				} else {
 					try {
 						bean = beanDefinition.create(parameterDescriptors.getTypes(),
 								getParameters(parameterDescriptors));
+						beanDefinition.dependence(bean);
+						beanDefinition.init(bean);
 					} catch (Exception e) {
 						throw new BeansException(beanDefinition.getId(), e);
 					}

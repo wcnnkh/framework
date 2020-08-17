@@ -3,12 +3,12 @@ package scw.feign;
 import feign.Feign;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
-import scw.beans.AbstractBeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.LoaderContext;
 import scw.core.utils.StringUtils;
 import scw.net.InetUtils;
 
-public class FeignBeanBuilder extends AbstractBeanDefinition {
+public class FeignBeanBuilder extends DefaultBeanDefinition {
 	private scw.feign.annotation.FeignClient feignClient;
 
 	public FeignBeanBuilder(LoaderContext context, scw.feign.annotation.FeignClient feignClient) {

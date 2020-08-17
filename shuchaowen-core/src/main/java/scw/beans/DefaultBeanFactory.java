@@ -18,7 +18,6 @@ import scw.aop.Filter;
 import scw.aop.FilterProxyInvoker;
 import scw.aop.ProxyInvoker;
 import scw.beans.annotation.AutoImpl;
-import scw.beans.builder.AutoBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.IteratorBeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -117,8 +116,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 							addBeanNameMapping(Arrays.asList(name), beanDefinition.getId(), true);
 						}
 
-						if (beanDefinition instanceof AbstractBeanDefinition) {
-							AbstractBeanDefinition definition = (AbstractBeanDefinition) beanDefinition;
+						if (beanDefinition instanceof DefaultBeanDefinition) {
+							DefaultBeanDefinition definition = (DefaultBeanDefinition) beanDefinition;
 							if (definition.isNew()) {
 								beanDefinition = definition.clone();
 								addBeanDefinition(beanDefinition, true);
@@ -145,7 +144,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 				for (Class<?> impl : impls) {
 					BeanDefinition definition = getDefinitionByCache(impl.getName());
 					if (definition == null) {
-						definition = new AutoBeanDefinition(new LoaderContext(impl, context));
+						definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 					}
 					if (definition != null && definition.isInstance()) {
 						return definition;
@@ -157,7 +156,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		for (Class<?> impl : InstanceUtils.getConfigurationClassList(context.getTargetClass(), propertyFactory)) {
 			BeanDefinition definition = getDefinitionByCache(impl.getName());
 			if (definition == null) {
-				definition = new AutoBeanDefinition(new LoaderContext(impl, context));
+				definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 			}
 			if (definition != null && definition.isInstance()) {
 				logger.info("Configuration {} impl {}", context.getTargetClass(), impl);
@@ -167,7 +166,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 
 		BeanDefinition definition = new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
 		if (definition == null) {
-			definition = new AutoBeanDefinition(context);
+			definition = new DefaultBeanDefinition(context);
 		}
 		return definition;
 	}

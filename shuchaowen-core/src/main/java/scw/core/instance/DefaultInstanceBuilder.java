@@ -1,6 +1,7 @@
 package scw.core.instance;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -69,14 +70,22 @@ public class DefaultInstanceBuilder<T> extends DefaultParameterFactory implement
 		return new ConstructorParameterDescriptorsIterator(getTargetClass());
 	}
 	
+	public boolean isInstance() {
+		return isInstance(false);
+	}
+	
 	private volatile AtomicBoolean init = new AtomicBoolean(false);
 	private ParameterDescriptors parameterDescriptors;
-	public boolean isInstance() {
+	public boolean isInstance(boolean supportAbstract) {
 		if (init.get()) {
 			return parameterDescriptors != null;
 		}
-
+		
 		if (init.compareAndSet(false, true)) {
+			if(!supportAbstract && Modifier.isAbstract(getTargetClass().getModifiers())){
+				return false;
+			}
+			
 			for (ParameterDescriptors parameterDescriptors : this) {
 				if (isAccept(parameterDescriptors)) {
 					this.parameterDescriptors = parameterDescriptors;
