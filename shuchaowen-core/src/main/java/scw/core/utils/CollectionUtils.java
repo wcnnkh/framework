@@ -516,7 +516,7 @@ public abstract class CollectionUtils {
 	/**
 	 * Iterator wrapping an Enumeration.
 	 */
-	private static class EnumerationIterator<E> implements Iterator<E> {
+	private static class EnumerationIterator<E> extends scw.util.Iterator<E>{
 
 		private Enumeration<E> enumeration;
 
@@ -530,10 +530,6 @@ public abstract class CollectionUtils {
 
 		public E next() {
 			return this.enumeration.nextElement();
-		}
-
-		public void remove() throws UnsupportedOperationException {
-			throw new UnsupportedOperationException("Not supported");
 		}
 	}
 

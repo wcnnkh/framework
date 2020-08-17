@@ -8,10 +8,10 @@ import scw.beans.builder.LoaderContext;
 import scw.core.utils.StringUtils;
 import scw.net.InetUtils;
 
-public class FeignBeanBuilder extends DefaultBeanDefinition {
+public class FeignBeanDefinition extends DefaultBeanDefinition {
 	private scw.feign.annotation.FeignClient feignClient;
 
-	public FeignBeanBuilder(LoaderContext context, scw.feign.annotation.FeignClient feignClient) {
+	public FeignBeanDefinition(LoaderContext context, scw.feign.annotation.FeignClient feignClient) {
 		super(context);
 		this.feignClient = feignClient;
 	}

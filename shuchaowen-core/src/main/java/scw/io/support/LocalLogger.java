@@ -34,7 +34,7 @@ public final class LocalLogger {
 		if (!file.exists()) {
 			file.mkdirs();
 		}
-		logger.info("use local logger: {}", this.directory);
+		logger.info("using local logger: {}", this.directory);
 	}
 
 	public String getDirectory() {

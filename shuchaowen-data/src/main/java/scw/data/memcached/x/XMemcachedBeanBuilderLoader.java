@@ -20,16 +20,16 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == MemcachedClientBuilder.class
 				|| context.getTargetClass() == XMemcachedClientBuilder.class) {
-			return new MemcachedClientBuilderBeanBuilder(context);
+			return new MemcachedClientBuilderBeanDefinition(context);
 		} else if (context.getTargetClass() == MemcachedClient.class) {
-			return new MemcachedClientBeanBuilder(context);
+			return new MemcachedClientBeanDefinition(context);
 		}
 		return loaderChain.loading(context);
 	}
 
-	private static final class MemcachedClientBeanBuilder extends DefaultBeanDefinition {
+	private static final class MemcachedClientBeanDefinition extends DefaultBeanDefinition {
 
-		public MemcachedClientBeanBuilder(LoaderContext context) {
+		public MemcachedClientBeanDefinition(LoaderContext context) {
 			super(context);
 		}
 
@@ -50,9 +50,9 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private static final class MemcachedClientBuilderBeanBuilder extends DefaultBeanDefinition {
+	private static final class MemcachedClientBuilderBeanDefinition extends DefaultBeanDefinition {
 
-		public MemcachedClientBuilderBeanBuilder(LoaderContext context) {
+		public MemcachedClientBuilderBeanDefinition(LoaderContext context) {
 			super(context);
 		}
 
