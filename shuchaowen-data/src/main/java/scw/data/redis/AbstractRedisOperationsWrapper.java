@@ -351,6 +351,6 @@ public abstract class AbstractRedisOperationsWrapper<K, WK, V, WV> implements Re
 	}
 
 	public long incr(K key, long delta) {
-		return getRedisOperations().decr(encodeKey(key), delta);
+		return getRedisOperations().incr(encodeKey(key), delta);
 	}
 }

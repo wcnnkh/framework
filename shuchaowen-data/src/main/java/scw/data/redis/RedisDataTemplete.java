@@ -5,7 +5,6 @@ import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
 import scw.data.DataTemplete;
-import scw.data.cas.CASOperations;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
 
@@ -66,9 +65,6 @@ public class RedisDataTemplete implements DataTemplete {
 		return RedisUtils.incr(redis.getStringOperations(), key, delta, initialValue);
 	}
 
-	/**
-	 * 后期改为使用脚本实现
-	 */
 	public long incr(String key, long delta, long initialValue, int exp) {
 		Long ttl = redis.getObjectOperations().ttl(key);
 		if (ttl == null || ttl <= 0) {
@@ -90,9 +86,6 @@ public class RedisDataTemplete implements DataTemplete {
 		return RedisUtils.decr(redis.getStringOperations(), key, delta, initialValue);
 	}
 
-	/**
-	 * 后期改为使用脚本实现
-	 */
 	public long decr(String key, long delta, long initialValue, int exp) {
 		Long ttl = redis.getObjectOperations().ttl(key);
 		if (ttl == null || ttl <= 0) {
@@ -114,9 +107,5 @@ public class RedisDataTemplete implements DataTemplete {
 		for (String key : keys) {
 			delete(key);
 		}
-	}
-
-	public CASOperations getCASOperations() {
-		return redis.getCASOperations();
 	}
 }
