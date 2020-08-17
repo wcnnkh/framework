@@ -9,8 +9,10 @@ import java.util.Date;
 
 import org.w3c.dom.Node;
 
+import scw.beans.BeanDefinition;
+import scw.beans.BeanFactory;
 import scw.core.annotation.AnnotatedElementUtils;
-import scw.core.instance.InstanceFactory;
+import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
@@ -66,18 +68,31 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT;
 	}
 
-	public Object parseValue(InstanceFactory instanceFactory, PropertyFactory propertyFactory) throws Exception {
-		return parseValue(instanceFactory, propertyFactory, this.type);
+	public boolean isAccept(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory, PropertyFactory propertyFactory){
+		switch (parameterType) {
+		case ref:
+			BeanDefinition definition = beanFactory.getDefinition(xmlValue.formatValue(propertyFactory));
+			if(definition == null){
+				return false;
+			}
+			
+			return parameterDescriptor.getType().isAssignableFrom(definition.getTargetClass()) && definition.isInstance();
+		case property:
+			return propertyFactory.containsKey(xmlValue.getValue());
+		default:
+			break;
+		}
+		return true;
 	}
 
-	public Object parseValue(InstanceFactory instanceFactory, PropertyFactory propertyFactory, Type type)
+	public Object parseValue(ParameterDescriptor parameterDescriptor, NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory)
 			throws Exception {
 		Object value = null;
 		switch (parameterType) {
 		case value:
 			String text = xmlValue.formatValue(propertyFactory);
 			if (text != null) {
-				value = formatStringValue(new StringValue(text), type);
+				value = formatStringValue(new StringValue(text), parameterDescriptor);
 			}
 			break;
 		case ref:
@@ -86,7 +101,7 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 		case property:
 			Value v = propertyFactory.get(xmlValue.getValue());
 			if (v != null) {
-				value = formatStringValue(v, type);
+				value = formatStringValue(v, parameterDescriptor);
 			}
 			break;
 		default:
@@ -99,12 +114,12 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 		return value;
 	}
 
-	private Object formatStringValue(Value value, Type parameterType) throws ClassNotFoundException, ParseException {
+	private Object formatStringValue(Value value, ParameterDescriptor parameterDescriptor) throws ClassNotFoundException, ParseException {
 		if (value == null) {
 			return null;
 		}
 
-		if (Date.class == parameterType) {
+		if (Date.class == parameterDescriptor.getType()) {
 			if (value.isNumber()) {
 				return new Date(value.getAsLong());
 			} else {
@@ -118,6 +133,6 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 			}
 		}
 		
-		return value.getAsObject(parameterType);
+		return value.getAsObject(parameterDescriptor.getGenericType());
 	}
 }

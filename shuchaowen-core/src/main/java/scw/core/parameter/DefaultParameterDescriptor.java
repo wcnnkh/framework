@@ -5,6 +5,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
 import scw.core.annotation.AnnotatedElementUtils;
+import scw.json.JSONUtils;
 
 public class DefaultParameterDescriptor implements ParameterDescriptor {
 	private final String name;
@@ -27,15 +28,6 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 		this.genericType = genericType;
 	}
 	
-	/**
-	 * 重新取个名字
-	 * @param name
-	 * @param parameterDescriptor
-	 */
-	public DefaultParameterDescriptor(String name, ParameterDescriptor parameterDescriptor) {
-		this(name, parameterDescriptor.getAnnotatedElement(), parameterDescriptor.getType(), parameterDescriptor.getGenericType());
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -50,5 +42,10 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 
 	public Type getGenericType() {
 		return genericType;
+	}
+
+	@Override
+	public String toString() {
+		return JSONUtils.toJSONString(this);
 	}
 }

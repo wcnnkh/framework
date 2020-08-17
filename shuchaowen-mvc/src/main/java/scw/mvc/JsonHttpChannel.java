@@ -24,7 +24,7 @@ public class JsonHttpChannel<R extends ServerHttpRequest, P extends ServerHttpRe
 		if (HttpMethod.GET.name().equals(request.getMethod())) {
 			logger.warn("path={},method={}不能使用JSON类型的请求", request.getPath(), request.getMethod());
 		} else {
-			String content = getHttpChannelBeanManager().getBean(Body.class).getBody();
+			String content = getBean(Body.class).getBody();
 			if (isLogEnabled()) {
 				log("path={},method={},{}", request.getPath(), request.getMethod(), content);
 			}

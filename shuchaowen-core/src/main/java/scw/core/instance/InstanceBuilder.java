@@ -1,11 +1,10 @@
 package scw.core.instance;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
-import scw.core.parameter.ParameterDescriptor;
-import scw.util.Enumerable;
+import scw.core.parameter.ParameterDescriptors;
 
-public interface InstanceBuilder<T> extends Enumerable<ParameterDescriptor[]>{
+public interface InstanceBuilder<T> extends Iterable<ParameterDescriptors>{
 	Class<? extends T> getTargetClass();
 	
 	boolean isInstance();
@@ -16,9 +15,5 @@ public interface InstanceBuilder<T> extends Enumerable<ParameterDescriptor[]>{
 
 	T create(Class<?>[] parameterTypes, Object... params) throws Exception;
 	
-	/**
-	 * 可用于构造该实例的参数描述组
-	 * @return
-	 */
-	Enumeration<ParameterDescriptor[]> enumeration();
+	Iterator<ParameterDescriptors> iterator();
 }

@@ -4,6 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.core.parameter.ParameterDescriptors;
 import scw.http.server.HttpControllerDescriptor;
 import scw.mvc.HttpChannel;
 
@@ -29,6 +30,8 @@ public interface Action{
 	 * @return
 	 */
 	AnnotatedElement getMethodAnnotatedElement();
+	
+	ParameterDescriptors getParameterDescriptors();
 	
 	Object doAction(HttpChannel httpChannel) throws Throwable;
 

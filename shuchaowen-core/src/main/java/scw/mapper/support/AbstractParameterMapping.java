@@ -1,20 +1,17 @@
 package scw.mapper.support;
 
-import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
-import scw.core.parameter.ParameterFactory;
+import scw.core.parameter.RenameParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.Setter;
 
-public class ParameterFactoryMapping extends AbstractMapping {
+public abstract class AbstractParameterMapping extends AbstractMapping {
 	private String basePrefix;
 	private boolean nestingName;
-	private ParameterFactory parameterFactory;
 
-	public ParameterFactoryMapping(ParameterFactory parameterFactory, boolean nestingName, String basePrefix) {
-		this.parameterFactory = parameterFactory;
+	public AbstractParameterMapping(boolean nestingName, String basePrefix) {
 		this.nestingName = nestingName;
 		this.basePrefix = basePrefix;
 	}
@@ -23,20 +20,21 @@ public class ParameterFactoryMapping extends AbstractMapping {
 	protected Object getValue(Field field) {
 		Setter setter = field.getSetter();
 		String name = nestingName ? getNestingDisplayName(field) : getDisplayName(setter);
-		if(!StringUtils.isEmpty(basePrefix)){
+		if (!StringUtils.isEmpty(basePrefix)) {
 			name = basePrefix + "." + name;
 		}
-		
-		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name, setter);
-		return parameterFactory.getParameter(parameterDescriptor);
+
+		return getValue(new RenameParameterDescriptor(setter, name));
 	}
+
+	protected abstract Object getValue(ParameterDescriptor parameterDescriptor);
 
 	@Override
 	protected boolean isNesting(FieldDescriptor fieldDescriptor) {
 		if (!nestingName) {
 			return false;
 		}
-		
+
 		return super.isNesting(fieldDescriptor);
 	}
 }

@@ -1,9 +1,9 @@
 package scw.core.parameter;
 
-import scw.util.Accept;
 
-public interface ParameterFactory extends Accept<ParameterDescriptor> {
-	boolean accept(ParameterDescriptor parameterDescriptor);
+
+public interface ParameterFactory{
+	boolean isAccept(ParameterDescriptors parameterDescriptors);
 	
-	Object getParameter(ParameterDescriptor parameterDescriptor);
+	Object[] getParameters(ParameterDescriptors parameterDescriptors);
 }

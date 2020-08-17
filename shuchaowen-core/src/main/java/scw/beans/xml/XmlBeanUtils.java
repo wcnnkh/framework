@@ -1,9 +1,6 @@
 package scw.beans.xml;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -13,12 +10,8 @@ import org.w3c.dom.NodeList;
 
 import scw.beans.BeansException;
 import scw.beans.ioc.IocProcessor;
-import scw.beans.ioc.MethodIocProcessor;
-import scw.core.instance.InstanceFactory;
-import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
@@ -138,9 +131,9 @@ public final class XmlBeanUtils {
 		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
 	}
 
-	public static List<MethodIocProcessor> getMethodIocProcessos(Class<?> clz,
+	public static List<XmlMethodIocProcessor> getMethodIocProcessos(Class<?> clz,
 			NodeList nodeList, String tagName) throws Exception {
-		List<MethodIocProcessor> list = new ArrayList<MethodIocProcessor>();
+		List<XmlMethodIocProcessor> list = new ArrayList<XmlMethodIocProcessor>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (tagName.equalsIgnoreCase(n.getNodeName())) {
@@ -152,12 +145,12 @@ public final class XmlBeanUtils {
 		return list;
 	}
 
-	public static List<MethodIocProcessor> getInitMethodIocProcessors(
+	public static List<XmlMethodIocProcessor> getInitMethodIocProcessors(
 			Class<?> clz, NodeList nodeList) throws Exception {
 		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "init");
 	}
 
-	public static List<MethodIocProcessor> getDestroyMethodIocProcessors(
+	public static List<XmlMethodIocProcessor> getDestroyMethodIocProcessors(
 			Class<?> clz, NodeList nodeList) throws Exception {
 		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "destroy");
 	}
@@ -223,69 +216,5 @@ public final class XmlBeanUtils {
 		}
 
 		return ClassUtils.forName(className);
-	}
-	
-
-	private static XmlBeanParameter[] sortParameters(String[] paramNames, Class<?>[] parameterTypes,
-			XmlBeanParameter[] beanMethodParameters) {
-		XmlBeanParameter[] methodParameters = new XmlBeanParameter[beanMethodParameters.length];
-		Class<?>[] types = new Class<?>[methodParameters.length];
-		for (int i = 0; i < methodParameters.length; i++) {
-			XmlBeanParameter beanMethodParameter = beanMethodParameters[i].clone();
-			if (!StringUtils.isNull(beanMethodParameter.getName())) {
-				for (int a = 0; a < paramNames.length; a++) {
-					if (paramNames[a].equals(beanMethodParameter.getName())) {
-						types[a] = parameterTypes[a];
-						methodParameters[a] = beanMethodParameters[i].clone();
-						methodParameters[a].setType(parameterTypes[a]);
-					}
-				}
-			} else if (beanMethodParameter.getType() != null) {
-				methodParameters[i] = beanMethodParameter;
-				types[i] = beanMethodParameter.getType();
-			} else {
-				types[i] = parameterTypes[i];
-				methodParameters[i] = beanMethodParameter;
-				methodParameters[i].setType(types[i]);
-			}
-		}
-
-		return ObjectUtils.equals(Arrays.asList(parameterTypes), Arrays.asList(types)) ? methodParameters : null;
-	}
-
-	/**
-	 * 对参数重新排序
-	 * 
-	 * @param executable
-	 * @param beanMethodParameters
-	 * @return
-	 */
-	public static XmlBeanParameter[] sortParameters(Method method, XmlBeanParameter[] beanMethodParameters) {
-		if (method.getParameterTypes().length != beanMethodParameters.length) {
-			return null;
-		}
-
-		return sortParameters(ParameterUtils.getParameterNames(method), method.getParameterTypes(),
-				beanMethodParameters);
-	}
-
-	public static XmlBeanParameter[] sortParameters(Constructor<?> constructor,
-			XmlBeanParameter[] beanMethodParameters) {
-		if (constructor.getParameterTypes().length != beanMethodParameters.length) {
-			return null;
-		}
-
-		return sortParameters(ParameterUtils.getParameterNames(constructor), constructor.getParameterTypes(),
-				beanMethodParameters);
-	}
-
-	public static Object[] getBeanMethodParameterArgs(XmlBeanParameter[] beanParameters,
-			InstanceFactory instanceFactory, PropertyFactory propertyFactory) throws Exception {
-		Object[] args = new Object[beanParameters.length];
-		for (int i = 0; i < args.length; i++) {
-			XmlBeanParameter xmlBeanParameter = beanParameters[i];
-			args[i] = xmlBeanParameter.parseValue(instanceFactory, propertyFactory);
-		}
-		return args;
 	}
 }

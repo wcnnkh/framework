@@ -8,13 +8,16 @@ import org.w3c.dom.Node;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeansException;
-import scw.beans.ioc.MethodIocProcessor;
+import scw.beans.ioc.AbstractIocProcessor;
+import scw.core.parameter.MethodParameterDescriptors;
+import scw.core.reflect.ReflectionUtils;
 import scw.json.JSONUtils;
 import scw.value.property.PropertyFactory;
 
-public class XmlMethodIocProcessor extends MethodIocProcessor {
-	private Method method;
-	private XmlBeanParameter[] beanMethodParameters;
+public class XmlMethodIocProcessor extends AbstractIocProcessor {
+	private Class<?> type;
+	private XmlBeanParameter[] xmlBeanParameters;
+	private String name;
 
 	public XmlMethodIocProcessor(Class<?> type, Node node) throws Exception {
 		if (node.getAttributes() == null) {
@@ -26,49 +29,44 @@ public class XmlMethodIocProcessor extends MethodIocProcessor {
 			throw new BeansException("not found method name");
 		}
 
-		String name = nameNode.getNodeValue();
+		this.name = nameNode.getNodeValue();
+		this.type = type;
 		List<XmlBeanParameter> xmlBeanParameters = XmlBeanUtils.parseBeanParameterList(node);
-		XmlBeanParameter[] parametetrs = xmlBeanParameters.toArray(new XmlBeanParameter[xmlBeanParameters.size()]);
+		this.xmlBeanParameters = xmlBeanParameters.toArray(new XmlBeanParameter[xmlBeanParameters.size()]);
+	}
+
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
+			PropertyFactory propertyFactory) throws Exception {
+		XmlParameterFactory xmlParameterFactory = new XmlParameterFactory(beanFactory, propertyFactory,
+				xmlBeanParameters);
 		Class<?> tempClz = type;
 		while (tempClz != null) {
 			for (Method method : tempClz.getDeclaredMethods()) {
-				if (method.getParameterCount() != parametetrs.length) {
+				if (method.getParameterCount() != xmlBeanParameters.length) {
 					continue;
 				}
 
 				if (!method.getName().equals(name)) {
 					continue;
 				}
+				
+				if(!acceptModifiers(beanDefinition, bean, method.getModifiers())){
+					continue;
+				}
 
-				XmlBeanParameter[] beanMethodParameters = XmlBeanUtils.sortParameters(method, parametetrs);
-				if (beanMethodParameters != null) {
-					this.beanMethodParameters = beanMethodParameters;
-					method.setAccessible(true);
-					this.method = method;
+				MethodParameterDescriptors methodParameterDescriptors = new MethodParameterDescriptors(type, method);
+				if (xmlParameterFactory.isAccept(methodParameterDescriptors)) {
+					Object[] args = xmlParameterFactory.getParameters(methodParameterDescriptors);
+					ReflectionUtils.makeAccessible(method);
+					method.invoke(bean, args);
+					return;
 				}
 			}
 			tempClz = tempClz.getSuperclass();
 		}
 
-		if (this.method == null) {
-			throw new BeansException(type.getName() + " not found method [" + name + "] parameterTypes "
-					+ JSONUtils.toJSONString(xmlBeanParameters));
-		}
+		throw new BeansException(type.getName() + " not found method [" + name + "] parameterTypes "
+				+ JSONUtils.toJSONString(xmlBeanParameters));
 
-		checkMethod();
-	}
-
-	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
-		if (method.getParameterCount() == 0) {
-			method.invoke(bean);
-		} else {
-			Object[] args = XmlBeanUtils.getBeanMethodParameterArgs(beanMethodParameters, beanFactory, propertyFactory);
-			method.invoke(bean, args);
-		}
-	}
-
-	public Method getMethod() {
-		return method;
 	}
 }

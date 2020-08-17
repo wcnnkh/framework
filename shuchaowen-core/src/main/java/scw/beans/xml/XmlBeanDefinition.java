@@ -12,26 +12,26 @@ import org.w3c.dom.NodeList;
 import scw.aop.MultiFilter;
 import scw.beans.BeanFactory;
 import scw.beans.builder.ConstructorBeanDefinition;
-import scw.core.instance.AutoConstructorBuilder;
-import scw.core.instance.ConstructorBuilder;
+import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.NotSupportedException;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
 public class XmlBeanDefinition extends ConstructorBeanDefinition {
-	private volatile ConstructorBuilder constructorBuilder;
 	private List<String> names = new ArrayList<String>();
 	private final String id;
 	private final boolean singleton;
+	private final XmlParameterFactory xmlParameterFactory;
 
 	public XmlBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Node beanNode) throws Exception {
 		this(beanFactory, propertyFactory, XmlBeanUtils.getClass(beanNode, true), beanNode);
 	}
 
-	public XmlBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass, Node beanNode)
-			throws Exception {
+	public XmlBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
+			Node beanNode) throws Exception {
 		super(beanFactory, propertyFactory, targetClass);
 		Collection<String> filterNames = getFilters(beanNode);
 		if (!CollectionUtils.isEmpty(filterNames)) {
@@ -44,17 +44,8 @@ public class XmlBeanDefinition extends ConstructorBeanDefinition {
 				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(getTargetClass(), nodeList));
 		ioc.getDependence().getIocProcessors()
 				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(targetClass, nodeList));
-
-		if (!getTargetClass().isInterface()) {// 可能只是映射
-			XmlBeanParameter[] constructorParameters = XmlBeanUtils.getConstructorParameters(nodeList);
-			if (ArrayUtils.isEmpty(constructorParameters)) {
-				this.constructorBuilder = new AutoConstructorBuilder(beanFactory, propertyFactory, getTargetClass());
-			} else {
-				this.constructorBuilder = new XmlConstructorBuilder(beanFactory, propertyFactory, getTargetClass(),
-						constructorParameters);
-			}
-		}
-
+		this.xmlParameterFactory = new XmlParameterFactory(beanFactory, propertyFactory,
+				XmlBeanUtils.getConstructorParameters(nodeList));
 		this.id = getId(beanNode);
 		this.names.addAll(super.getNames());
 		this.names.addAll(Arrays.asList(getNames(beanNode)));
@@ -70,11 +61,6 @@ public class XmlBeanDefinition extends ConstructorBeanDefinition {
 		}
 
 		return Arrays.asList(StringUtils.commonSplit(filters));
-	}
-
-	@Override
-	protected ConstructorBuilder getConstructorBuilder() {
-		return constructorBuilder;
 	}
 
 	@Override
@@ -100,5 +86,33 @@ public class XmlBeanDefinition extends ConstructorBeanDefinition {
 	protected String[] getNames(Node node) {
 		String name = XMLUtils.getNodeAttributeValue(node, "name");
 		return StringUtils.isEmpty(name) ? new String[0] : StringUtils.commonSplit(name);
+	}
+
+	@Override
+	public boolean isInstance() {
+		if (ArrayUtils.isEmpty(xmlParameterFactory.getXmlBeanParameters())) {
+			return super.isInstance();
+		}
+
+		for (ParameterDescriptors parameterDescriptors : this) {
+			if (xmlParameterFactory.isAccept(parameterDescriptors)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public Object create() throws Exception {
+		if (ArrayUtils.isEmpty(xmlParameterFactory.getXmlBeanParameters())) {
+			return super.create();
+		}
+
+		for (ParameterDescriptors parameterDescriptors : this) {
+			if (xmlParameterFactory.isAccept(parameterDescriptors)) {
+				return create(parameterDescriptors.getTypes(), xmlParameterFactory.getParameters(parameterDescriptors));
+			}
+		}
+		throw new NotSupportedException(getTargetClass().getName());
 	}
 }

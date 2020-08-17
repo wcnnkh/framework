@@ -3,14 +3,14 @@ package scw.beans.method;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import scw.beans.AbstractBeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.instance.AutoSource;
-import scw.core.instance.EnumerationMethodParameterDescriptors;
-import scw.core.parameter.ParameterDescriptor;
+import scw.core.parameter.MethodParameterDescriptors;
+import scw.core.parameter.MethodParameterDescriptorsIterator;
+import scw.core.parameter.ParameterDescriptors;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotSupportedException;
@@ -19,15 +19,14 @@ import scw.value.property.PropertyFactory;
 public class MethodBeanDefinition extends AbstractBeanDefinition {
 	private final Method method;
 	private final Class<?> methodTargetClass;
-	private AutoSource<Method> autoSource;
-
+	private final MethodParameterDescriptors methodParameterDescriptors;
+	
 	public MethodBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> methodTargetClass,
 			Method method) {
 		super(beanFactory, propertyFactory, method.getReturnType());
 		this.methodTargetClass = methodTargetClass;
 		this.method = method;
-		this.autoSource = new AutoSource<Method>(beanFactory, propertyFactory, getTargetClass(),
-				ParameterUtils.getParameterDescriptors(method), method);
+		this.methodParameterDescriptors = new MethodParameterDescriptors(methodTargetClass, method);
 	}
 
 	@Override
@@ -41,7 +40,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	public boolean isInstance() {
-		return autoSource.isAuto();
+		return isAccept(methodParameterDescriptors);
 	}
 
 	public Object create() throws Exception {
@@ -49,7 +48,7 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 			throw new NotSupportedException("不支持的构造方式");
 		}
 
-		Object[] args = autoSource.getAutoArgs();
+		Object[] args = getParameters(methodParameterDescriptors);
 		return invoke(method, args);
 	}
 
@@ -69,13 +68,9 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	public Object create(Object... params) throws Exception {
-		Enumeration<ParameterDescriptor[]> enumeration = enumeration();
-		while (enumeration.hasMoreElements()) {
-			ParameterDescriptor[] parameterDescriptors = enumeration.nextElement();
+		for (ParameterDescriptors parameterDescriptors : this) {
 			if (ParameterUtils.isAssignableValue(parameterDescriptors, params, true)) {
-				Method invoker = methodTargetClass.getDeclaredMethod(method.getName(),
-						ParameterUtils.toParameterTypes(parameterDescriptors));
-				return invoke(invoker, params);
+				return create(parameterDescriptors.getTypes(), params);
 			}
 		}
 		throw new NotSupportedException(method.toString());
@@ -87,8 +82,8 @@ public class MethodBeanDefinition extends AbstractBeanDefinition {
 	}
 
 	@Override
-	public Enumeration<ParameterDescriptor[]> enumeration() {
-		return new EnumerationMethodParameterDescriptors(methodTargetClass, method, true);
+	public Iterator<ParameterDescriptors> iterator() {
+		return new MethodParameterDescriptorsIterator(methodTargetClass, method, true);
 	}
 
 	public Method getMethod() {

@@ -15,21 +15,10 @@ public class IocMetadata {
 		return iocProcessors;
 	}
 
-	public void process(BeanDefinition beanDefinition, Object instance,
-			BeanFactory beanFactory, PropertyFactory propertyFactory,
-			boolean global) throws Exception {
+	public void process(BeanDefinition beanDefinition, Object instance, BeanFactory beanFactory,
+			PropertyFactory propertyFactory) throws Exception {
 		for (IocProcessor iocProcessor : iocProcessors) {
-			if (global) {
-				if (iocProcessor.isGlobal()) {
-					iocProcessor.process(beanDefinition, instance, beanFactory,
-							propertyFactory);
-				}
-			} else {
-				if (!iocProcessor.isGlobal()) {
-					iocProcessor.process(beanDefinition, instance, beanFactory,
-							propertyFactory);
-				}
-			}
+			iocProcessor.process(beanDefinition, instance, beanFactory, propertyFactory);
 		}
 	}
 

@@ -1,10 +1,10 @@
 package scw.mvc;
 
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.logger.LogService;
-import scw.mvc.beans.HttpChannelBeanManager;
 import scw.value.Value;
 
 public interface HttpChannel extends LogService, ParameterFactory {
@@ -18,9 +18,13 @@ public interface HttpChannel extends LogService, ParameterFactory {
 	
 	boolean isCompleted();
 	
-	HttpChannelBeanManager getHttpChannelBeanManager();
-	
 	Value getValue(String name);
 	
 	Value getValue(String name, Value defaultValue);
+	
+	Object getParameter(ParameterDescriptor parameterDescriptor);
+	
+	<T> T getBean(Class<T> type);
+	
+	<T> T getBean(String name);
 }

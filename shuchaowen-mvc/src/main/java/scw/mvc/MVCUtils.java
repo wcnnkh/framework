@@ -6,13 +6,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.BeanUtils;
-import scw.core.parameter.DefaultParameterDescriptor;
-import scw.core.parameter.ParameterDescriptor;
-import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.http.server.ServerHttpRequest;
-import scw.lang.ParameterException;
 import scw.mvc.action.Action;
 import scw.util.MultiValueMap;
 import scw.value.ValueFactory;
@@ -22,22 +18,6 @@ public final class MVCUtils {
 
 	private MVCUtils() {
 	};
-
-	public static Object[] getParameterValues(HttpChannel httpChannel, ParameterDescriptor[] parameterDescriptors)
-			throws ParameterException {
-		Object[] args = new Object[parameterDescriptors.length];
-		for (int i = 0; i < parameterDescriptors.length; i++) {
-			ParameterDescriptor parameterDescriptor = parameterDescriptors[i];
-			parameterDescriptor = new DefaultParameterDescriptor(ParameterUtils.getDisplayName(parameterDescriptor),
-					parameterDescriptor);
-			try {
-				args[i] = httpChannel.getParameter(parameterDescriptor);
-			} catch (Exception e) {
-				throw new ParameterException("Parameter error [" + parameterDescriptor.getName() + "]", e);
-			}
-		}
-		return args;
-	}
 
 	public static String getExistActionErrMsg(Action action, Action oldAction) {
 		StringBuilder sb = new StringBuilder();

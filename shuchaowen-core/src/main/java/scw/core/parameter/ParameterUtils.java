@@ -134,40 +134,28 @@ public final class ParameterUtils {
 		return parameterDescriptor.getName();
 	}
 
-	public static boolean isAssignableValue(ParameterDescriptor[] parameterDescriptors, Object[] params,
+	public static boolean isAssignableValue(ParameterDescriptors parameterDescriptors, Object[] params,
 			boolean ignoreNull) {
 		// 异或运算，如果两个不同则结果为1
-		if (ArrayUtils.isEmpty(parameterDescriptors) ^ ArrayUtils.isEmpty(params)) {
+		if (parameterDescriptors.size() == 0 ^ ArrayUtils.isEmpty(params)) {
 			return false;
 		}
 
-		if (parameterDescriptors.length != params.length) {
+		if (parameterDescriptors.size() != params.length) {
 			return false;
 		}
 
-		for (int i = 0; i < parameterDescriptors.length; i++) {
-			Object value = params[i];
+		int index = 0;
+		for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
+			Object value = params[index++];
 			if (value == null && !ignoreNull) {
 				return false;
 			}
 
-			if (!ClassUtils.isAssignableValue(parameterDescriptors[i].getType(), value)) {
+			if (!ClassUtils.isAssignableValue(parameterDescriptor.getType(), value)) {
 				return false;
 			}
 		}
 		return true;
 	}
-
-	public static Class<?>[] toParameterTypes(ParameterDescriptor[] parameterDescriptors) {
-		if (ArrayUtils.isEmpty(parameterDescriptors)) {
-			return new Class<?>[0];
-		}
-
-		Class<?>[] types = new Class<?>[parameterDescriptors.length];
-		for (int i = 0; i < types.length; i++) {
-			types[i] = parameterDescriptors[i].getType();
-		}
-		return types;
-	}
-
 }

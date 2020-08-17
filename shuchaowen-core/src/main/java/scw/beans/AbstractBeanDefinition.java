@@ -15,13 +15,13 @@ import scw.beans.builder.LoaderContext;
 import scw.beans.event.BeanLifeCycleEvent;
 import scw.beans.event.BeanLifeCycleEvent.Step;
 import scw.beans.ioc.Ioc;
-import scw.core.instance.AbstractInstanceBuilder;
+import scw.core.instance.DefaultInstanceBuilder;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
 
-public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Object> implements BeanDefinition, Cloneable{
+public abstract class AbstractBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable{
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
@@ -30,7 +30,7 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 	private boolean isNew = true;
 
 	public AbstractBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
-		super(targetClass);
+		super(beanFactory, propertyFactory, targetClass);
 		this.beanFactory = beanFactory;
 		this.propertyFactory = propertyFactory;
 	}
@@ -43,8 +43,8 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 		beanFactory.getEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
-			Ioc.forClass(instance.getClass()).getDependence().process(this, instance, beanFactory, propertyFactory, false);
-			ioc.getDependence().process(this, instance, beanFactory, propertyFactory, false);
+			Ioc.forClass(instance.getClass()).getDependence().process(this, instance, beanFactory, propertyFactory);
+			ioc.getDependence().process(this, instance, beanFactory, propertyFactory);
 			BeanUtils.aware(instance, beanFactory, this);
 		}
 		beanFactory.getEventDispatcher().publishEvent(
@@ -55,8 +55,8 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 		beanFactory.getEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_INIT));
 		if (instance != null) {
-			Ioc.forClass(instance.getClass()).getInit().process(this, instance, beanFactory, propertyFactory, false);
-			ioc.getInit().process(this, instance, beanFactory, propertyFactory, false);
+			Ioc.forClass(instance.getClass()).getInit().process(this, instance, beanFactory, propertyFactory);
+			ioc.getInit().process(this, instance, beanFactory, propertyFactory);
 			BeanUtils.init(instance);
 		}
 		beanFactory.getEventDispatcher()
@@ -68,8 +68,8 @@ public abstract class AbstractBeanDefinition extends AbstractInstanceBuilder<Obj
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
 			BeanUtils.destroy(instance);
-			ioc.getDestroy().process(this, instance, beanFactory, propertyFactory, false);
-			Ioc.forClass(instance.getClass()).getDestroy().process(this, instance, beanFactory, propertyFactory, false);
+			ioc.getDestroy().process(this, instance, beanFactory, propertyFactory);
+			Ioc.forClass(instance.getClass()).getDestroy().process(this, instance, beanFactory, propertyFactory);
 		}
 		beanFactory.getEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DESTROY));
