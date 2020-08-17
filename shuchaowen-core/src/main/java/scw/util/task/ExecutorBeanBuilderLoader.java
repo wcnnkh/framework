@@ -29,16 +29,16 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass().isAssignableFrom(ThreadPoolExecutor.class)) {
-			return new ThreadPoolExecutorBeanBuilder(context);
+			return new ThreadPoolExecutorBeanDefinition(context);
 		} else if (ScheduledExecutorService.class == context.getTargetClass()) {
-			return new ScheduledExecutorServiceBeanBuilder(context);
+			return new ScheduledExecutorServiceBeanDefinition(context);
 		}
 		return loaderChain.loading(context);
 	}
 
-	private final class ScheduledExecutorServiceBeanBuilder extends DefaultBeanDefinition {
+	private final class ScheduledExecutorServiceBeanDefinition extends DefaultBeanDefinition {
 
-		public ScheduledExecutorServiceBeanBuilder(LoaderContext context) {
+		public ScheduledExecutorServiceBeanDefinition(LoaderContext context) {
 			super(context);
 		}
 
@@ -59,8 +59,8 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 		}
 	}
 
-	private final class ThreadPoolExecutorBeanBuilder extends DefaultBeanDefinition {
-		public ThreadPoolExecutorBeanBuilder(LoaderContext context) {
+	private final class ThreadPoolExecutorBeanDefinition extends DefaultBeanDefinition {
+		public ThreadPoolExecutorBeanDefinition(LoaderContext context) {
 			super(context);
 		}
 

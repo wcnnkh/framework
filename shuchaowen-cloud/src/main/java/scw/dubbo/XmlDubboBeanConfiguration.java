@@ -49,7 +49,7 @@ public final class XmlDubboBeanConfiguration extends XmlBeanConfiguration {
 		}
 
 		for (ReferenceConfig<?> config : XmlDubboUtils.parseReferenceConfigList(propertyFactory, nodeList, null)) {
-			DubboBeanBuilder xmlDubboBean = new DubboBeanBuilder(beanFactory, propertyFactory,
+			DubboBeanDefinition xmlDubboBean = new DubboBeanDefinition(beanFactory, propertyFactory,
 					config.getInterfaceClass(), config);
 			beanDefinitions.add(xmlDubboBean);
 		}

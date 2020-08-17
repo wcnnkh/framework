@@ -19,16 +19,16 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == ConnectionFactory.class) {
-			return new ConnectionFactoryBeanBuilder(context);
+			return new ConnectionFactoryBeanDefinition(context);
 		}
 
 		return loaderChain.loading(context);
 	}
 
-	private static class ConnectionFactoryBeanBuilder extends DefaultBeanDefinition {
+	private static class ConnectionFactoryBeanDefinition extends DefaultBeanDefinition {
 		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
 
-		public ConnectionFactoryBeanBuilder(LoaderContext context) {
+		public ConnectionFactoryBeanDefinition(LoaderContext context) {
 			super(context);
 		}
 

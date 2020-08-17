@@ -14,7 +14,7 @@ public class FeignBeanBuilderLoader implements BeanBuilderLoader {
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		FeignClient feignClient = context.getTargetClass().getAnnotation(FeignClient.class);
 		if (feignClient != null) {
-			return new FeignBeanBuilder(context, feignClient);
+			return new FeignBeanDefinition(context, feignClient);
 		}
 		return loaderChain.loading(context);
 	}

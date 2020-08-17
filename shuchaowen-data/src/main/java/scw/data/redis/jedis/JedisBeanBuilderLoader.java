@@ -22,18 +22,18 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == JedisPool.class) {
-			return new JedisPoolBeanBuilder(context);
+			return new JedisPoolBeanDefinition(context);
 		} else if (context.getTargetClass() == JedisPoolConfig.class) {
-			return new JedisPoolConfigBeanBuilder(context);
+			return new JedisPoolConfigBeanDefinition(context);
 		}
 		return loaderChain.loading(context);
 	}
 
-	private static final class JedisPoolBeanBuilder extends DefaultBeanDefinition {
+	private static final class JedisPoolBeanDefinition extends DefaultBeanDefinition {
 		private final String configName = propertyFactory.getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
 		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(configName);
 
-		public JedisPoolBeanBuilder(LoaderContext context) {
+		public JedisPoolBeanDefinition(LoaderContext context) {
 			super(context);
 		}
 
@@ -74,11 +74,11 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants
 		}
 	}
 
-	private static final class JedisPoolConfigBeanBuilder extends DefaultBeanDefinition {
+	private static final class JedisPoolConfigBeanDefinition extends DefaultBeanDefinition {
 		private final String configName = propertyFactory.getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
 		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(configName);
 
-		public JedisPoolConfigBeanBuilder(LoaderContext context) {
+		public JedisPoolConfigBeanDefinition(LoaderContext context) {
 			super(context);
 		}
 
