@@ -7,7 +7,6 @@ import java.net.URL;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
-import scw.io.ResourceUtils;
 import scw.util.ClassScanner;
 import scw.util.FormatUtils;
 import scw.value.property.PropertyFactory;
@@ -44,15 +43,8 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 			return path;
 		}
 
-		return ClassUtils.getDefaultClassLoader().getResource("").getPath();
-	}
-
-	public void setClassesDirectory(String directory) {
-		if (StringUtils.isEmpty(directory)) {
-			return;
-		}
-
-		put(CLASSES_DIRECTORY, directory);
+		URL url = ClassUtils.getDefaultClassLoader().getResource("");
+		return url == null ? SystemPropertyFactory.getInstance().getUserDir() : url.getPath();
 	}
 
 	/**
@@ -96,33 +88,28 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 	}
 
 	private String getDefaultWorkPath() {
-		URL url = ClassUtils.getDefaultClassLoader().getResource("");
-		if(url == null){
-			return null;
-		}
-		
-		if(ResourceUtils.isJarURL(url)){
-			return null;
-		}
-		
-		String path = url.getPath();
+		String path = getClassesDirectory();
 		File file = new File(path);
-		if(!file.getName().equals("classes")){
-			return file.getPath();
+		if(file.isFile()){
+			return null;
 		}
 		
-		if(file.getParent() == null){
+		if (!file.getName().equals("classes")) {
 			return file.getPath();
-		}
-		
-		file = file.getParentFile();
-		if(file.getName().equals("WEB-INF")){
-			return file.getParent() == null? path : file.getParent();
 		}
 
-		if(file.getParent() != null){
+		if (file.getParent() == null) {
+			return file.getPath();
+		}
+
+		file = file.getParentFile();
+		if (file.getName().equals("WEB-INF")) {
+			return file.getParent() == null ? path : file.getParent();
+		}
+
+		if (file.getParent() != null) {
 			File wi = FileUtils.searchDirectory(file.getParentFile(), "WEB-INF");
-			if(wi != null){
+			if (wi != null) {
 				return wi.getParent();
 			}
 		}
@@ -131,13 +118,13 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 
 	public String getWorkPath() {
 		String path = getString(WEB_ROOT);
-		if(path == null){
+		if (path == null) {
 			path = getDefaultWorkPath();
-			if(StringUtils.isEmpty(path)){
+			if (StringUtils.isEmpty(path)) {
 				path = SystemPropertyFactory.getInstance().getUserDir();
 			}
-			
-			if(path != null){
+
+			if (path != null) {
 				put(WEB_ROOT, path);
 			}
 		}
