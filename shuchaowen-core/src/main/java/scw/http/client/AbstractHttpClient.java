@@ -39,13 +39,14 @@ public abstract class AbstractHttpClient implements HttpClient {
 
 		COOKIE_MANAGER = InstanceUtils.loadService(HttpClientCookieManager.class);
 	}
-
+	
+	private static final DynamicValue<Boolean> DOWNLOAD_SUPPORTED_REDIRECT = GlobalPropertyFactory.getInstance().getDynamicValue("scw.http.client.download.support.redirect", boolean.class, true);
 	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
 	//下载文件时是否支持重定向
-	private boolean downloadSupportedRedirect = true;
+	private Boolean downloadSupportedRedirect;
 	
 	public AbstractHttpClient() {
 		messageConverter.add(InetUtils.getMessageConverter());
@@ -56,10 +57,10 @@ public abstract class AbstractHttpClient implements HttpClient {
 	}
 
 	public boolean isDownloadSupportedRedirect() {
-		return downloadSupportedRedirect;
+		return downloadSupportedRedirect == null? DOWNLOAD_SUPPORTED_REDIRECT.getValue():downloadSupportedRedirect;
 	}
 
-	public void setDownloadSupportedRedirect(boolean downloadSupportedRedirect) {
+	public void setDownloadSupportedRedirect(Boolean downloadSupportedRedirect) {
 		this.downloadSupportedRedirect = downloadSupportedRedirect;
 	}
 
