@@ -2,6 +2,7 @@ package scw.http;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -25,7 +26,6 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ip.ServerHttpRequestIpGetter;
 import scw.json.JSONSupport;
 import scw.lang.NotSupportedException;
-import scw.net.uri.UriComponents;
 import scw.net.uri.UriComponentsBuilder;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
@@ -39,17 +39,19 @@ public final class HttpUtils {
 			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.connect.timeout"), 10000);
 	public static final int DEFAULT_READ_TIMEOUT = StringUtils
 			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.read.timeout"), 10000);
-	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class, "scw.http.client.SimpleHttpClient");
-	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils.loadService(ServerHttpRequestIpGetter.class, "scw.http.server.ip.DefaultServerHttpRequestIpGetter");
-	
-	static{
-		
+	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class,
+			"scw.http.client.SimpleHttpClient");
+	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils
+			.loadService(ServerHttpRequestIpGetter.class, "scw.http.server.ip.DefaultServerHttpRequestIpGetter");
+
+	static {
+
 	}
-	
+
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;
 	}
-	
+
 	public static ServerHttpRequestIpGetter getServerHttpRequestIpGetter() {
 		return SERVER_HTTP_REQUEST_IP_GETTER;
 	}
@@ -285,16 +287,38 @@ public final class HttpUtils {
 		if (origin == null) {
 			return true;
 		}
+		
+		return isSameOrigin(request.getURI(), UriComponentsBuilder.fromOriginHeader(origin).build().toUri());
+	}
+	
+	public static boolean isSameOrigin(String url1, String url2){
+		if(url1 == null || url2 == null){
+			return false;
+		}
+		
+		if(StringUtils.equals(url1, url2)){
+			return true;
+		}
+		
+		try {
+			return isSameOrigin(new URI(url1), new URI(url2));
+		} catch (URISyntaxException e) {
+			return false;
+		}
+	}
 
-		URI uri = request.getURI();
-		String scheme = uri.getScheme();
-		String host = uri.getHost();
-		int port = uri.getPort();
-
-		UriComponents originUrl = UriComponentsBuilder.fromOriginHeader(origin).build();
-		return (ObjectUtils.nullSafeEquals(scheme, originUrl.getScheme())
-				&& ObjectUtils.nullSafeEquals(host, originUrl.getHost())
-				&& getPort(scheme, port) == getPort(originUrl.getScheme(), originUrl.getPort()));
+	public static boolean isSameOrigin(URI uri1, URI uri2) {
+		if(uri1 == null || uri2 == null){
+			return false;
+		}
+		
+		if(uri1.equals(uri2)){
+			return true;
+		}
+		
+		return (ObjectUtils.nullSafeEquals(uri1.getScheme(), uri2.getScheme())
+				&& ObjectUtils.nullSafeEquals(uri1.getHost(), uri2.getHost())
+				&& getPort(uri1.getScheme(), uri1.getPort()) == getPort(uri2.getScheme(), uri2.getPort()));
 	}
 
 	private static int getPort(String scheme, int port) {

@@ -1,8 +1,6 @@
 package scw.http.client.exception;
 
-import scw.lang.NestedRuntimeException;
-
-public class HttpClientException extends NestedRuntimeException {
+public class HttpClientException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public HttpClientException(String msg) {
