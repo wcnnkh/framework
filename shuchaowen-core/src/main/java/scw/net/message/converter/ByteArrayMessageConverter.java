@@ -13,6 +13,7 @@ public class ByteArrayMessageConverter extends AbstractMessageConverter<byte[]>{
 	
 	public ByteArrayMessageConverter(){
 		supportMimeTypes.add(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL);
+		setSupportBytes(true);
 	}
 	
 	@Override

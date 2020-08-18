@@ -26,6 +26,15 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	private Charset defaultCharset = Constants.DEFAULT_CHARSET;
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	protected final MimeTypes supportMimeTypes = new MimeTypes();
+	private boolean supportBytes = false;
+
+	public boolean isSupportBytes() {
+		return supportBytes;
+	}
+
+	public void setSupportBytes(boolean supportBytes) {
+		this.supportBytes = supportBytes;
+	}
 
 	public final MimeTypes getSupportMimeTypes() {
 		return supportMimeTypes.readyOnly();
@@ -77,11 +86,19 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	public abstract boolean support(Class<?> clazz);
 
 	public boolean canRead(Type type, MimeType contentType) {
+		if(type == byte[].class && !isSupportBytes()){
+			return false;
+		}
+		
 		return support(TypeUtils.toClass(type)) && canRead(contentType);
 	}
 
 	public boolean canWrite(Object body, MimeType contentType) {
 		if (body == null) {
+			return false;
+		}
+		
+		if(body.getClass() == byte[].class && !isSupportBytes()){
 			return false;
 		}
 

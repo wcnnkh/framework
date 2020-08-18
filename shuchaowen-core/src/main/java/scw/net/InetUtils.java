@@ -208,4 +208,33 @@ public final class InetUtils {
 		}
 		outputMessage.getHeaders().add("Content-Disposition", "attachment;filename=" + fileNameToUse);
 	}
+
+	public static String getFilename(String url) {
+		String urlToUse = url;
+		int prefixIndex = urlToUse.indexOf("//");
+		if (prefixIndex != -1) {
+			urlToUse = url.substring(prefixIndex + 2);
+		}
+
+		int index = urlToUse.indexOf("/");
+		if (index == -1 && prefixIndex != -1) {
+			return null;
+		}
+
+		if (index != -1) {
+			urlToUse = urlToUse.substring(index);
+		}
+
+		index = urlToUse.indexOf("#");
+		if (index != -1) {
+			urlToUse = url.substring(0, index);
+		}
+
+		index = urlToUse.indexOf("?");
+		if (index != -1) {
+			urlToUse = url.substring(0, index);
+		}
+
+		return StringUtils.getFilename(urlToUse);
+	}
 }
