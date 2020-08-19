@@ -14,9 +14,11 @@ import scw.value.ValueUtils;
 
 class FormFileItem extends FileItem {
 	private String body;
+	private Charset charset;
 
 	public FormFileItem(String name, Object body, Charset charset, JSONSupport jsonSupport) {
 		super(name);
+		this.charset = charset;
 		getHeaders().setContentDisposition(ContentDisposition.builder("form-data").name(name).build());
 		if (ValueUtils.isBaseType(body.getClass())) {
 			this.body = body.toString();
@@ -34,6 +36,11 @@ class FormFileItem extends FileItem {
 
 	public InputStream getBody() {
 		return new UnsafeByteArrayInputStream(getBytes());
+	}
+	
+	@Override
+	protected Charset getDefaultCharset() {
+		return charset;
 	}
 
 	public void close() throws IOException {

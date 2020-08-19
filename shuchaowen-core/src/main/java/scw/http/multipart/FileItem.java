@@ -25,6 +25,10 @@ public abstract class FileItem extends AbstractHttpInputMessage implements HttpI
 	public String getName() {
 		return null;
 	}
+	
+	public boolean isFormField(){
+		return getName() == null;
+	}
 
 	/**
 	 * 字段名

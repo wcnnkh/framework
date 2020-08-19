@@ -85,7 +85,11 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 
 	public abstract boolean support(Class<?> clazz);
 	
-	public boolean support(Type type){
+	public boolean canWrite(Class<?> clazz){
+		return support(clazz);
+	}
+	
+	public boolean canRead(Type type){
 		if(type instanceof Class){
 			return support((Class<?>)type);
 		}
@@ -99,7 +103,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			return false;
 		}
 		
-		return support(type) && canRead(contentType);
+		return canRead(type) && canRead(contentType);
 	}
 
 	public boolean canWrite(Object body, MimeType contentType) {
@@ -111,7 +115,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			return false;
 		}
 
-		return support(body.getClass()) && canWrite(contentType);
+		return canWrite(body.getClass()) && canWrite(contentType);
 	}
 
 	public Object read(Type type, InputMessage inputMessage)

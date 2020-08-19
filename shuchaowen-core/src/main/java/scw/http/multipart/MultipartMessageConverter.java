@@ -12,8 +12,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.ResolvableType;
+import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
+import scw.http.DefaultHttpInputMessage;
+import scw.http.HttpInputMessage;
 import scw.io.IOUtils;
 import scw.lang.NotSupportedException;
 import scw.net.MimeType;
@@ -23,38 +28,55 @@ import scw.net.message.OutputMessage;
 import scw.net.message.converter.AbstractMessageConverter;
 import scw.net.message.converter.MessageConvertException;
 
-/**
- * 暂不支持读取
- * 
- * @author shuchaowen
- *
- */
 public class MultipartMessageConverter extends AbstractMessageConverter<Object> {
 	private static final String DEFAULT_BOUNDARY = XUtils.getUUID();
 	private static final String BOUNDARY_NAME = "boundary";
 	private static final String LINE = "\r\n";
 	private static final String BOUNDARY_APPEND = "--";
-
+	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class, "scw.http.multipart.ApacheFileItemParser");
+	
+	private FileItemParser fileItemParser = FILE_ITEM_PARSER;
 	public MultipartMessageConverter() {
 		supportMimeTypes.add(MimeTypeUtils.MULTIPART_FORM_DATA);
+	}
+
+	public FileItemParser getFileItemParser() {
+		return fileItemParser;
+	}
+
+	public void setFileItemParser(FileItemParser fileItemParser) {
+		this.fileItemParser = fileItemParser;
 	}
 
 	@Override
 	public boolean support(Class<?> clazz) {
 		return true;
 	}
-
-	// TODO 还未支持读取
+	
 	@Override
-	public boolean canRead(Type type, MimeType contentType) {
+	public boolean canRead(Type type) {
+		if(getFileItemParser() == null){
+			return false;
+		}
+		
+		ResolvableType resolvableType = ResolvableType.forType(type);
+		if(Iterable.class.isAssignableFrom(resolvableType.getRawClass())){
+			return resolvableType.getGeneric(0).getRawClass() == FileItem.class	;
+		}else if(resolvableType.isArray()){
+			return resolvableType.getComponentType().getRawClass() == FileItem.class;
+		}
 		return false;
 	}
-
+	
 	@Override
 	protected Object readInternal(Type type, InputMessage inputMessage) throws IOException, MessageConvertException {
-		return null;
+		List<FileItem> fileItems = getFileItemParser().parse(inputMessage instanceof HttpInputMessage? (HttpInputMessage)inputMessage:new DefaultHttpInputMessage(inputMessage));
+		if(TypeUtils.toClass(type).isArray()){
+			return fileItems.toArray(new FileItem[0]);
+		}
+		return fileItems;
 	}
-
+	
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void writeInternal(Object body, MimeType contentType, OutputMessage outputMessage)
@@ -164,7 +186,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter<Object> 
 				}
 			}
 		}else{
-			throw new NotSupportedException("不支持的body:" + multipartItem);
+			throw new NotSupportedException(multipartItem.toString());
 		}
 	}
 
