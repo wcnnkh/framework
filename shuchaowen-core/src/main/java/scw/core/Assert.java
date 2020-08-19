@@ -208,7 +208,7 @@ public abstract class Assert {
 	 * @see StringUtils#hasText
 	 */
 	public static void hasText(String text, String message) {
-		if (!StringUtils.isEmpty(text)) {
+		if (!StringUtils.hasText(text)) {
 			throw new IllegalArgumentException(message);
 		}
 	}

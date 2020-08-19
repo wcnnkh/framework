@@ -2,7 +2,6 @@ package scw.http;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -128,7 +127,7 @@ public final class ContentDisposition {
 			sb.append(this.name).append('\"');
 		}
 		if (this.filename != null) {
-			if (this.charset == null || StandardCharsets.US_ASCII.equals(this.charset)) {
+			if (this.charset == null || Constants.US_ASCII.equals(this.charset)) {
 				sb.append("; filename=\"");
 				sb.append(escapeQuotationsInFilename(this.filename)).append('\"');
 			} else {
@@ -204,7 +203,7 @@ public final class ContentDisposition {
 						filename = decodeFilename(value.substring(idx2 + 1), charset);
 					} else {
 						// US ASCII
-						filename = decodeFilename(value, StandardCharsets.US_ASCII);
+						filename = decodeFilename(value, Constants.US_ASCII);
 					}
 				} else if (attribute.equals("filename") && (filename == null)) {
 					filename = value;
@@ -328,7 +327,7 @@ public final class ContentDisposition {
 	private static String encodeFilename(String input, Charset charset) {
 		Assert.notNull(input, "`input` is required");
 		Assert.notNull(charset, "`charset` is required");
-		Assert.isTrue(!StandardCharsets.US_ASCII.equals(charset), "ASCII does not require encoding");
+		Assert.isTrue(!Constants.US_ASCII.equals(charset), "ASCII does not require encoding");
 		Assert.isTrue(Constants.UTF_8.equals(charset) || Constants.ISO_8859_1.equals(charset),
 				"Only UTF-8 and ISO-8859-1 supported.");
 		byte[] source = input.getBytes(charset);
