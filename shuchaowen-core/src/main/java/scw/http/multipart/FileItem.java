@@ -2,6 +2,7 @@ package scw.http.multipart;
 
 import java.io.Closeable;
 
+import scw.core.utils.StringUtils;
 import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpHeaders;
 import scw.http.HttpInputMessage;
@@ -27,7 +28,7 @@ public abstract class FileItem extends AbstractHttpInputMessage implements HttpI
 	}
 	
 	public boolean isFormField(){
-		return getName() == null;
+		return StringUtils.isEmpty(getName());
 	}
 
 	/**
