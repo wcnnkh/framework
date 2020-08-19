@@ -8,15 +8,13 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.Assert;
 import scw.http.HttpMethod;
-import scw.http.HttpUtils;
+import scw.http.client.accessor.HttpClientConfigAccessor;
 import scw.net.InetUtils;
 
-public class SimpleClientHttpRequestBuilder implements ClientHttpRequestBuilder {
+public class SimpleClientHttpRequestBuilder extends HttpClientConfigAccessor implements ClientHttpRequestBuilder {
 	private final URI uri;
 	private final HttpMethod method;
 	private SSLSocketFactory sslSocketFactory = InetUtils.TRUSE_ALL_SSL_SOCKET_FACTORY;
-	private int connectTimeout = HttpUtils.DEFAULT_CONNECT_TIMEOUT;
-	private int readTimeout = HttpUtils.DEFAULT_READ_TIMEOUT;
 	private Proxy proxy;
 
 	public SimpleClientHttpRequestBuilder(URI uri, HttpMethod method) {
@@ -49,22 +47,6 @@ public class SimpleClientHttpRequestBuilder implements ClientHttpRequestBuilder 
 		this.sslSocketFactory = sslSocketFactory;
 	}
 
-	public int getConnectTimeout() {
-		return connectTimeout;
-	}
-
-	public void setConnectTimeout(int connectTimeout) {
-		this.connectTimeout = connectTimeout;
-	}
-
-	public int getReadTimeout() {
-		return readTimeout;
-	}
-
-	public void setReadTimeout(int readTimeout) {
-		this.readTimeout = readTimeout;
-	}
-
 	public Proxy getProxy() {
 		return proxy;
 	}
@@ -79,9 +61,8 @@ public class SimpleClientHttpRequestBuilder implements ClientHttpRequestBuilder 
 			clientHttpRequestFactory.setSSLSocketFactory(getSslSocketFactory());
 		}
 
-		clientHttpRequestFactory.setConnectTimeout(getConnectTimeout());
-		clientHttpRequestFactory.setReadTimeout(getReadTimeout());
 		clientHttpRequestFactory.setProxy(getProxy());
+		clientHttpRequestFactory.setConfig(this);
 		return clientHttpRequestFactory.createRequest(getUri(), getMethod());
 
 	}

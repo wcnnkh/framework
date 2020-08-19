@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
+import scw.http.HttpUtils;
 import scw.mvc.HttpChannel;
-import scw.net.InetUtils;
 
 public class CSVView extends ArrayList<Object[]> implements scw.mvc.view.View {
 	private static final long serialVersionUID = 1L;
@@ -26,7 +26,7 @@ public class CSVView extends ArrayList<Object[]> implements scw.mvc.view.View {
 	}
 
 	public void render(HttpChannel httpChannel) throws IOException {
-		InetUtils.writeFileMessageHeaders(httpChannel.getResponse(), getFileName() + ".csv");
+		HttpUtils.writeFileMessageHeaders(httpChannel.getResponse(), getFileName() + ".csv");
 		CSVPrinter csvPrinter = new CSVPrinter(httpChannel.getResponse().getWriter(), CSVFormat.DEFAULT);
 		for (Object[] values : this) {
 			csvPrinter.printRecord(values);

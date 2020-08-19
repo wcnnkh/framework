@@ -818,40 +818,30 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Set the (new) value of the {@code Content-Disposition} header for
-	 * {@code form-data}, optionally encoding the filename using the RFC 5987.
-	 * <p>
-	 * Only the US-ASCII, UTF-8 and ISO-8859-1 charsets are supported.
-	 * 
-	 * @param name
-	 *            the control name
-	 * @param filename
-	 *            the filename (may be {@code null})
-	 * @param charset
-	 *            the charset used for the filename (may be {@code null})
-	 * @deprecated deprecated in 4.3.11 and removed from 5.0; as per
-	 *             <a link="https://tools.ietf.org/html/rfc7578#section-4.2">RFC
-	 *             7578, Section 4.2</a>, an RFC 5987 style encoding should not
-	 *             be used for multipart/form-data requests. Furthermore there
-	 *             should be no reason for applications to set this header
-	 *             explicitly; for more details also read
-	 *             {@link #setContentDispositionFormData(String, String)}
+	 * Set the {@literal Content-Disposition} header.
+	 * <p>This could be used on a response to indicate if the content is
+	 * expected to be displayed inline in the browser or as an attachment to be
+	 * saved locally.
+	 * <p>It can also be used for a {@code "multipart/form-data"} request.
+	 * For more details see notes on {@link #setContentDispositionFormData}.
+	 * @since 5.0
+	 * @see #getContentDisposition()
 	 */
-	@Deprecated
-	public void setContentDispositionFormData(String name, String filename, Charset charset) {
-		Assert.notNull(name, "'name' must not be null");
-		StringBuilder builder = new StringBuilder("form-data; name=\"");
-		builder.append(name).append('\"');
-		if (filename != null) {
-			if (charset == null || charset.name().equals("US-ASCII")) {
-				builder.append("; filename=\"");
-				builder.append(filename).append('\"');
-			} else {
-				builder.append("; filename*=");
-				builder.append(encodeHeaderFieldParam(filename, charset));
-			}
+	public void setContentDisposition(ContentDisposition contentDisposition) {
+		set(CONTENT_DISPOSITION, contentDisposition.toString());
+	}
+
+	/**
+	 * Return a parsed representation of the {@literal Content-Disposition} header.
+	 * @since 5.0
+	 * @see #setContentDisposition(ContentDisposition)
+	 */
+	public ContentDisposition getContentDisposition() {
+		String contentDisposition = getFirst(CONTENT_DISPOSITION);
+		if (contentDisposition != null) {
+			return ContentDisposition.parse(contentDisposition);
 		}
-		set(CONTENT_DISPOSITION, builder.toString());
+		return ContentDisposition.empty();
 	}
 
 	/**

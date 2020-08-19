@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
+import scw.http.MediaType;
 import scw.net.MimeType;
 
 public class ServerHttpResponseWrapper implements ServerHttpResponse {
@@ -28,7 +29,7 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse {
 		return targetResponse.getBody();
 	}
 
-	public MimeType getContentType() {
+	public MediaType getContentType() {
 		return targetResponse.getContentType();
 	}
 
@@ -98,5 +99,9 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse {
 
 	public void setCharacterEncoding(String charset) {
 		targetResponse.setCharacterEncoding(charset);
+	}
+
+	public void setContentType(MediaType contentType) {
+		targetResponse.setContentType(contentType);
 	}
 }

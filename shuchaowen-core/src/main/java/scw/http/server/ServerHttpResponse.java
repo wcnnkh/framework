@@ -6,10 +6,10 @@ import java.io.PrintWriter;
 
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
+import scw.http.HttpOutputMessage;
 import scw.http.HttpStatus;
-import scw.net.message.OutputMessage;
 
-public interface ServerHttpResponse extends Flushable, OutputMessage{
+public interface ServerHttpResponse extends Flushable, HttpOutputMessage{
     void addCookie(HttpCookie cookie);
     
     void addCookie(String name, String value);

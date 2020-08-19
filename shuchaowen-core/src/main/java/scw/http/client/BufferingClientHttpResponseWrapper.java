@@ -4,12 +4,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.io.StreamUtils;
-import scw.net.message.AbstractInputMessage;
 
-final class BufferingClientHttpResponseWrapper extends AbstractInputMessage implements ClientHttpResponse {
+final class BufferingClientHttpResponseWrapper extends AbstractHttpInputMessage implements ClientHttpResponse {
 
 	private final ClientHttpResponse response;
 

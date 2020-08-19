@@ -104,8 +104,9 @@ public class PoiExcelOperations implements ExcelOperations {
 
 	public WritableExcel create(OutputStream outputStream, ExcelVersion excelVersion)
 			throws IOException, ExcelException {
+		ExcelVersion excelVersionTouse = excelVersion == null? ExcelVersion.XLS:excelVersion;
 		Workbook workbook;
-		if (excelVersion == ExcelVersion.XLS) {
+		if (excelVersionTouse == ExcelVersion.XLS) {
 			workbook = WorkbookFactory.create(false);
 		} else {
 			workbook = SXSS_WORKBOOK_CLASS != null ? InstanceUtils.INSTANCE_FACTORY.getInstance(SXSS_WORKBOOK_CLASS)
@@ -116,7 +117,8 @@ public class PoiExcelOperations implements ExcelOperations {
 
 	public ExcelExport createExcelExport(OutputStream outputStream, ExcelVersion excelVersion)
 			throws IOException, ExcelException {
-		WritableExcel writableExcel = create(outputStream, excelVersion);
-		return new DefaultExcelExport(writableExcel, excelVersion, 0, 0);
+		ExcelVersion excelVersionTouse = excelVersion == null? ExcelVersion.XLS:excelVersion;
+		WritableExcel writableExcel = create(outputStream, excelVersionTouse);
+		return new DefaultExcelExport(writableExcel, excelVersionTouse, 0, 0);
 	}
 }

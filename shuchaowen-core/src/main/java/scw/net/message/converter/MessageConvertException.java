@@ -1,8 +1,7 @@
 package scw.net.message.converter;
 
-import scw.lang.NestedRuntimeException;
 
-public class MessageConvertException extends NestedRuntimeException {
+public class MessageConvertException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public MessageConvertException(Throwable cause) {

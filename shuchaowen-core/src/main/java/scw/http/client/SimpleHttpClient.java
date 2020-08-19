@@ -16,6 +16,8 @@ public class SimpleHttpClient extends AbstractHttpClient {
 		if (sslSocketFactory != null) {
 			builder.setSslSocketFactory(sslSocketFactory);
 		}
+		
+		builder.setConfig(this);
 		return builder;
 	}
 }

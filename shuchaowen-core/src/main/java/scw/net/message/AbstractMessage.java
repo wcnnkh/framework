@@ -23,13 +23,17 @@ public abstract class AbstractMessage implements Message {
 		return getHeaders().getFirst(HttpHeaders.CONTENT_TYPE);
 	}
 
-	public Charset getDefaultCharset() {
+	public Charset getCharset() {
 		MimeType mimeType = getContentType();
 		if (mimeType == null) {
-			return Constants.DEFAULT_CHARSET;
+			return getDefaultCharset();
 		}
 
 		Charset charset = mimeType.getCharset();
-		return charset == null ? Constants.DEFAULT_CHARSET : charset;
+		return charset == null ? getDefaultCharset() : charset;
+	}
+
+	protected Charset getDefaultCharset() {
+		return Constants.DEFAULT_CHARSET;
 	}
 }

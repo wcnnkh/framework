@@ -26,19 +26,20 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ip.ServerHttpRequestIpGetter;
 import scw.json.JSONSupport;
 import scw.lang.NotSupportedException;
+import scw.net.FileMimeTypeUitls;
+import scw.net.MimeType;
 import scw.net.uri.UriComponentsBuilder;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.ToMap;
+import scw.value.property.PropertyFactory.DynamicValue;
 
 public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	public static final int DEFAULT_CONNECT_TIMEOUT = StringUtils
-			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.connect.timeout"), 10000);
-	public static final int DEFAULT_READ_TIMEOUT = StringUtils
-			.parseInt(GlobalPropertyFactory.getInstance().getString("scw.http.client.read.timeout"), 10000);
+	public static final DynamicValue<Integer> DEFAULT_CONNECT_TIMEOUT = GlobalPropertyFactory.getInstance().getDynamicValue("scw.http.client.connect.timeout", Integer.class, 10000);
+	public static final DynamicValue<Integer> DEFAULT_READ_TIMEOUT = GlobalPropertyFactory.getInstance().getDynamicValue("scw.http.client.read.timeout", Integer.class, 10000);
 	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class,
 			"scw.http.client.SimpleHttpClient");
 	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils
@@ -361,5 +362,15 @@ public final class HttpUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName) {
+		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
+		if (mimeType != null) {
+			outputMessage.setContentType(mimeType);
+		}
+		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+				.filename(fileName, Constants.UTF_8).build();
+		outputMessage.getHeaders().setContentDisposition(contentDisposition);
 	}
 }

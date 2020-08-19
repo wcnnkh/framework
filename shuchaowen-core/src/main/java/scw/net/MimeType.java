@@ -70,14 +70,6 @@ public class MimeType implements Comparable<MimeType>, Serializable {
 
 	private final Map<String, String> parameters;
 
-	// 用于序列化
-	@Ignore
-	protected MimeType() {
-		this.type = null;
-		this.subtype = null;
-		this.parameters = null;
-	};
-
 	/**
 	 * Create a new {@code MimeType} for the given primary type.
 	 * <p>

@@ -14,10 +14,9 @@ import java.util.regex.Pattern;
 
 import javax.net.ssl.SSLSocketFactory;
 
-import scw.compatible.CompatibleUtils;
-import scw.core.Constants;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
+import scw.http.multipart.MultipartMessageConverter;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
@@ -76,6 +75,7 @@ public final class InetUtils {
 		MESSAGE_CONVERTER.add(new ByteArrayMessageConverter());
 		MESSAGE_CONVERTER.add(new XmlMessageConverter());
 		MESSAGE_CONVERTER.add(new HttpFormMessageConveter());
+		MESSAGE_CONVERTER.add(new MultipartMessageConverter());
 		MESSAGE_CONVERTER.addAll(InstanceUtils.loadAllService(MessageConverter.class));
 	}
 
@@ -195,18 +195,6 @@ public final class InetUtils {
 		Pattern p = Pattern.compile(INNER_IP_PATTERN);
 		Matcher matcher = p.matcher(ip);
 		return matcher.find();
-	}
-
-	public static void writeFileMessageHeaders(OutputMessage outputMessage, String fileName) {
-		String fileNameToUse = StringUtils.containsChinese(fileName) ? CompatibleUtils.getStringOperations()
-				.createString(fileName.getBytes(Constants.UTF_8), Constants.ISO_8859_1) : fileName;
-		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
-		if (mimeType == null) {
-			outputMessage.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM);
-		} else {
-			outputMessage.setContentType(mimeType);
-		}
-		outputMessage.getHeaders().add("Content-Disposition", "attachment;filename=" + fileNameToUse);
 	}
 
 	public static String getFilename(String url) {

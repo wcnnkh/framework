@@ -3,14 +3,11 @@ package scw.http.client;
 import java.io.Closeable;
 import java.io.IOException;
 
-import scw.http.HttpHeaders;
+import scw.http.HttpInputMessage;
 import scw.http.HttpStatus;
-import scw.net.message.InputMessage;
 
-public interface ClientHttpResponse extends InputMessage,
+public interface ClientHttpResponse extends HttpInputMessage,
 		Closeable {
-	HttpHeaders getHeaders();
-	
 	/**
 	 * Return the HTTP status code of the response.
 	 * 

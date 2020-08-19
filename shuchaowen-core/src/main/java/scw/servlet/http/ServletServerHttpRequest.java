@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
@@ -32,12 +33,11 @@ import scw.http.server.ServerHttpResponse;
 import scw.net.InetAddress;
 import scw.net.InetUtils;
 import scw.net.RestfulParameterMapAware;
-import scw.net.message.AbstractInputMessage;
 import scw.security.session.Session;
 import scw.util.LinkedCaseInsensitiveMap;
 import scw.util.MultiValueMap;
 
-public class ServletServerHttpRequest extends AbstractInputMessage implements ServerHttpRequest, RestfulParameterMapAware {
+public class ServletServerHttpRequest extends AbstractHttpInputMessage implements ServerHttpRequest, RestfulParameterMapAware {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletAsyncControl asyncControl;

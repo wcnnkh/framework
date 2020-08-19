@@ -6,14 +6,14 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
+import scw.http.AbstractHttpOutputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.http.server.ServerHttpResponse;
 import scw.net.MimeType;
-import scw.net.message.AbstractOutputMessage;
 
-public class ServletServerHttpResponse extends AbstractOutputMessage implements ServerHttpResponse {
+public class ServletServerHttpResponse extends AbstractHttpOutputMessage implements ServerHttpResponse {
 	private HttpServletResponse httpServletResponse;
 	private HttpServletResponseHeaders headers;
 	private boolean bodyUse = false;

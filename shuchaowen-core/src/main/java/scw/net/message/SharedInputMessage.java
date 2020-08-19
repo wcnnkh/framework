@@ -34,6 +34,6 @@ public class SharedInputMessage extends AbstractInputMessage implements Serializ
 			return null;
 		}
 
-		return CompatibleUtils.getStringOperations().createString(body, getDefaultCharset());
+		return CompatibleUtils.getStringOperations().createString(body, getCharset());
 	}
 }

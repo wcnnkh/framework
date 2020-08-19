@@ -259,11 +259,6 @@ public class MediaType extends MimeType implements Serializable {
 		TEXT_XML = valueOf(TEXT_XML_VALUE);
 	}
 
-	// 用于序列化
-	protected MediaType() {
-		super();
-	}
-
 	/**
 	 * Create a new {@code MediaType} for the given primary type.
 	 * <p>

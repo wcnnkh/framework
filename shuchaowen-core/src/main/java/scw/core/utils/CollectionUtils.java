@@ -454,69 +454,9 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * @param map
-	 * @param valueIsNull
-	 *            map中value是否可以为空
-	 * @param defaultValue
-	 *            默认值
-	 * @param keys
-	 * @return
-	 */
-	public static <K, V> V getValueByKeys(Map<K, V> map, boolean valueIsNull, V defaultValue, K... keys) {
-		if (map == null || map.isEmpty()) {
-			return defaultValue;
-		}
-
-		if (valueIsNull) {
-			for (K key : keys) {
-				if (map.containsKey(key)) {
-					return map.get(key);
-				}
-			}
-		} else {
-			for (K key : keys) {
-				V v = map.get(key);
-				if (v != null) {
-					return v;
-				}
-			}
-		}
-		return defaultValue;
-	}
-
-	/**
-	 * @param map
-	 * @param valueIsNull
-	 *            map中value是否可以为空
-	 * @param defaultValue
-	 *            默认值
-	 * @param key
-	 * @return
-	 */
-	public static <K, V> V getValue(Map<K, V> map, boolean valueIsNull, V defaultValue, K key) {
-		if (map == null || map.isEmpty()) {
-			return defaultValue;
-		}
-
-		if (valueIsNull) {
-			if (map.containsKey(key)) {
-				return map.get(key);
-			}
-			return defaultValue;
-		} else {
-			V v = map.get(key);
-			return v == null ? defaultValue : v;
-		}
-	}
-
-	public static <K, V> V getValue(Map<K, V> map, V defaultValue, K key) {
-		return getValue(map, true, defaultValue, key);
-	}
-
-	/**
 	 * Iterator wrapping an Enumeration.
 	 */
-	private static class EnumerationIterator<E> extends scw.util.Iterator<E>{
+	private static class EnumerationIterator<E> extends scw.util.Iterator<E> {
 
 		private Enumeration<E> enumeration;
 

@@ -8,11 +8,11 @@ import java.util.List;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
+import scw.http.HttpOutputMessage;
+import scw.http.HttpUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.lang.NotSupportedException;
-import scw.net.InetUtils;
-import scw.net.message.OutputMessage;
 import scw.util.FormatUtils;
 
 public final class MicrosoftUtils {
@@ -84,7 +84,7 @@ public final class MicrosoftUtils {
 		return list;
 	}
 
-	public static void exportExcel(OutputMessage outputMessage, String fileName, String[] titles, List<String[]> list)
+	public static void exportExcel(HttpOutputMessage outputMessage, String fileName, String[] titles, List<String[]> list)
 			throws IOException, ExcelException {
 		ExcelExport excelExport = null;
 		try {
@@ -104,9 +104,9 @@ public final class MicrosoftUtils {
 		}
 	}
 
-	public static ExcelExport createExcelExport(OutputMessage outputMessage, String fileName)
+	public static ExcelExport createExcelExport(HttpOutputMessage outputMessage, String fileName)
 			throws IOException, ExcelException {
-		InetUtils.writeFileMessageHeaders(outputMessage, fileName);
+		HttpUtils.writeFileMessageHeaders(outputMessage, fileName);
 		ExcelVersion excelVersion = ExcelVersion.forFileName(fileName);
 		if (excelVersion == null) {
 			excelVersion = ExcelVersion.XLS;

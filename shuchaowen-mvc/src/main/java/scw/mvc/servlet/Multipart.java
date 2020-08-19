@@ -41,38 +41,35 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 		FileItem fileItem;
 		try {
 			requestContext = new ServletRequestContext(request);
-			if (FileUpload.isMultipartContent(requestContext)) {
-				factory = new DiskFileItemFactory();
-				upload = new ServletFileUpload(factory);
-				items = upload.parseRequest(requestContext);
-				iterator = items.iterator();
-				while (iterator.hasNext()) {
-					fileItem = iterator.next();
-					if (fileItem == null) {
-						continue;
-					}
+			if (!FileUpload.isMultipartContent(requestContext)) {
+				logger.error("请求类型异常" + request.getServletPath() + ",method=" + request.getMethod());
+				return;
+			}
 
-					add(fileItem.getFieldName(), fileItem);
-					if (fileItem.isFormField()) {
-						logger.info("form表单字段name={}, value=",
-								fileItem.getFieldName(), fileItem.toString());
-					} else {
-						logger.info("form表单文件[name={}, size={}, fileName={}]",
-								fileItem.getFieldName(), fileItem.getSize(),
-								fileItem.getName());
-					}
+			factory = new DiskFileItemFactory();
+			upload = new ServletFileUpload(factory);
+			items = upload.parseRequest(requestContext);
+			iterator = items.iterator();
+			while (iterator.hasNext()) {
+				fileItem = iterator.next();
+				if (fileItem == null) {
+					continue;
 				}
-			} else {
-				logger.error("请求类型异常" + request.getServletPath() + ",method="
-						+ request.getMethod());
+
+				add(fileItem.getFieldName(), fileItem);
+				if (fileItem.isFormField()) {
+					logger.info("form表单字段name={}, value={}", fileItem.getFieldName(), fileItem.getString());
+				} else {
+					logger.info("form表单文件[name={}, size={}, fileName={}]", fileItem.getFieldName(), fileItem.getSize(),
+							fileItem.getName());
+				}
 			}
 		} catch (Exception e) {
 			logger.error(e, "获取上传文件请求内容异常！！");
 		}
 	}
 
-	public MultiValueMap<String, FileItem> getFieldItemMap(boolean formField,
-			boolean checkSize) {
+	public MultiValueMap<String, FileItem> getFieldItemMap(boolean formField, boolean checkSize) {
 		MultiValueMap<String, FileItem> map = new LinkedMultiValueMap<String, FileItem>();
 		for (Entry<String, List<FileItem>> entry : entrySet()) {
 			List<FileItem> list = entry.getValue();
@@ -138,8 +135,7 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 	 * @param checkSize
 	 * @return
 	 */
-	public Collection<FileItem> getAllFileItemList(boolean formField,
-			boolean checkSize) {
+	public Collection<FileItem> getAllFileItemList(boolean formField, boolean checkSize) {
 		LinkedList<FileItem> list = new LinkedList<FileItem>();
 		for (List<FileItem> fileItemList : values()) {
 			for (FileItem fileItem : fileItemList) {
@@ -165,8 +161,7 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 		return list;
 	}
 
-	public List<FileItem> getFieldItemList(String name, boolean formField,
-			boolean checkSize) {
+	public List<FileItem> getFieldItemList(String name, boolean formField, boolean checkSize) {
 		List<FileItem> fileItems = get(name);
 		if (CollectionUtils.isEmpty(fileItems)) {
 			return null;
@@ -214,10 +209,8 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 			return value;
 		}
 		try {
-			return new String(
-					value.getBytes("iso-8859-1"),
-					StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME
-							: charsetName);
+			return new String(value.getBytes("iso-8859-1"),
+					StringUtils.isEmpty(charsetName) ? Constants.DEFAULT_CHARSET_NAME : charsetName);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
@@ -233,9 +226,7 @@ public final class Multipart extends LinkedMultiValueMap<String, FileItem> {
 			try {
 				fileItem.write(new File(toPath + fileItem.getName()));
 			} catch (Exception e) {
-				logger.error(
-						"保存上传的文件异常,路径" + toPath + ",文件名：" + fileItem.getName(),
-						e);
+				logger.error("保存上传的文件异常,路径" + toPath + ",文件名：" + fileItem.getName(), e);
 			}
 		}
 	}

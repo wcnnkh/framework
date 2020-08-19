@@ -77,6 +77,12 @@
 			<artifactId>log4j</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- begin 可以不强制依赖, 但默认使用 -->
 		<dependency>
