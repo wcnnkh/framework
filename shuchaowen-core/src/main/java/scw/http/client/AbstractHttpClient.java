@@ -15,6 +15,7 @@ import scw.http.HttpMethod;
 import scw.http.HttpResponseEntity;
 import scw.http.HttpStatus;
 import scw.http.MediaType;
+import scw.http.client.accessor.HttpClientConfigAccessor;
 import scw.http.client.exception.HttpClientException;
 import scw.http.client.exception.HttpClientResourceAccessException;
 import scw.io.FileUtils;
@@ -25,7 +26,7 @@ import scw.net.InetUtils;
 import scw.net.message.converter.MultiMessageConverter;
 import scw.value.property.PropertyFactory.DynamicValue;
 
-public abstract class AbstractHttpClient implements HttpClient {
+public abstract class AbstractHttpClient extends HttpClientConfigAccessor implements HttpClient {
 	static final DynamicValue<String> DEFAULT_UA = GlobalPropertyFactory.getInstance().getDynamicValue(
 			"scw.http.client.headers.ua", String.class,
 			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");

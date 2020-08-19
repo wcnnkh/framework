@@ -11,10 +11,10 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.http.HttpMethod;
-import scw.http.HttpUtils;
+import scw.http.client.accessor.HttpClientConfigAccessor;
 import scw.net.InetUtils;
 
-public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory {
+public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor implements ClientHttpRequestFactory {
 	private static final int DEFAULT_CHUNK_SIZE = 4096;
 
 	private Proxy proxy;
@@ -22,10 +22,6 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory 
 	private boolean bufferRequestBody = true;
 
 	private int chunkSize = DEFAULT_CHUNK_SIZE;
-
-	private int connectTimeout = HttpUtils.DEFAULT_CONNECT_TIMEOUT;
-
-	private int readTimeout = HttpUtils.DEFAULT_READ_TIMEOUT;
 
 	private boolean outputStreaming = true;
 
@@ -79,30 +75,6 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory 
 	}
 
 	/**
-	 * Set the underlying URLConnection's connect timeout (in milliseconds). A
-	 * timeout value of 0 specifies an infinite timeout.
-	 * <p>
-	 * Default is the system's default timeout.
-	 * 
-	 * @see URLConnection#setConnectTimeout(int)
-	 */
-	public void setConnectTimeout(int connectTimeout) {
-		this.connectTimeout = connectTimeout;
-	}
-
-	/**
-	 * Set the underlying URLConnection's read timeout (in milliseconds). A
-	 * timeout value of 0 specifies an infinite timeout.
-	 * <p>
-	 * Default is the system's default timeout.
-	 * 
-	 * @see URLConnection#setReadTimeout(int)
-	 */
-	public void setReadTimeout(int readTimeout) {
-		this.readTimeout = readTimeout;
-	}
-
-	/**
 	 * Set if the underlying URLConnection can be set to 'output streaming'
 	 * mode. Default is {@code true}.
 	 * <p>
@@ -139,11 +111,14 @@ public class SimpleClientHttpRequestFactory implements ClientHttpRequestFactory 
 	}
 
 	protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
-		if (this.connectTimeout >= 0) {
-			connection.setConnectTimeout(this.connectTimeout);
+		Integer connectTimeout = getConnectTimeout();
+		if (connectTimeout != null && connectTimeout >= 0) {
+			connection.setConnectTimeout(connectTimeout);
 		}
-		if (this.readTimeout >= 0) {
-			connection.setReadTimeout(this.readTimeout);
+		
+		Integer readTimeout = getReadTimeout();
+		if (readTimeout != null && readTimeout >= 0) {
+			connection.setReadTimeout(readTimeout);
 		}
 
 		connection.setDoInput(true);
