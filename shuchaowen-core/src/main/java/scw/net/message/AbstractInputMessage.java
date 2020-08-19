@@ -11,7 +11,7 @@ public abstract class AbstractInputMessage extends AbstractMessage implements In
 		InputStream is = null;
 		try {
 			is = getBody();
-			return IOUtils.readContent(getBody(), getDefaultCharset().name());
+			return IOUtils.readContent(getBody(), getCharset().name());
 		} finally {
 			IOUtils.close(is);
 		}

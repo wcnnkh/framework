@@ -26,6 +26,8 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ip.ServerHttpRequestIpGetter;
 import scw.json.JSONSupport;
 import scw.lang.NotSupportedException;
+import scw.net.FileMimeTypeUitls;
+import scw.net.MimeType;
 import scw.net.uri.UriComponentsBuilder;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
@@ -361,5 +363,15 @@ public final class HttpUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName) {
+		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
+		if (mimeType != null) {
+			outputMessage.setContentType(mimeType);
+		}
+		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+				.filename(fileName, Constants.UTF_8).build();
+		outputMessage.getHeaders().setContentDisposition(contentDisposition);
 	}
 }

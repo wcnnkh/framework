@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import scw.core.Assert;
+import scw.http.AbstractHttpOutputMessage;
 import scw.http.HttpHeaders;
 import scw.http.MediaType;
-import scw.net.message.AbstractOutputMessage;
 
-public abstract class AbstractClientHttpRequest extends AbstractOutputMessage implements ClientHttpRequest {
+public abstract class AbstractClientHttpRequest extends AbstractHttpOutputMessage implements ClientHttpRequest {
 	private final HttpHeaders headers = new HttpHeaders();
 
 	private boolean executed = false;

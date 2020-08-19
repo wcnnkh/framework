@@ -6,14 +6,14 @@ import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 
 import scw.http.HttpCookie;
+import scw.http.HttpInputMessage;
 import scw.http.HttpRequest;
 import scw.net.InetAddress;
-import scw.net.message.InputMessage;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
 import scw.util.attribute.Attributes;
 
-public interface ServerHttpRequest extends Attributes<String, Object>, InputMessage, HttpRequest {
+public interface ServerHttpRequest extends Attributes<String, Object>, HttpInputMessage, HttpRequest {
 	String getPath();
 	
 	String getRawContentType();

@@ -43,6 +43,7 @@ public class JxlExcelOperations implements ExcelOperations {
 			throw new NotSupportedException("Support only xls");
 		}
 
+		excelVersion = excelVersion == null? ExcelVersion.XLS:excelVersion;
 		WritableWorkbook workbook = Workbook.createWorkbook(outputStream);
 		return new JxlWritableExcel(workbook);
 	}
@@ -89,14 +90,16 @@ public class JxlExcelOperations implements ExcelOperations {
 		if (excelVersion != null && excelVersion != ExcelVersion.XLS) {
 			throw new NotSupportedException("Support only xls");
 		}
-
+		
+		excelVersion = excelVersion == null? ExcelVersion.XLS:excelVersion;
 		WritableExcel writableExcel = createWritableExcel(file);
 		return new DefaultExcelExport(writableExcel, excelVersion, 0, 0);
 	}
 
 	public ExcelExport createExcelExport(OutputStream outputStream, ExcelVersion excelVersion)
 			throws IOException, ExcelException {
-		WritableExcel writableExcel = create(outputStream, excelVersion);
-		return new DefaultExcelExport(writableExcel, excelVersion, 0, 0);
+		ExcelVersion excelVersionTouse = excelVersion == null? ExcelVersion.XLS:excelVersion;
+		WritableExcel writableExcel = create(outputStream, excelVersionTouse);
+		return new DefaultExcelExport(writableExcel, excelVersionTouse, 0, 0);
 	}
 }

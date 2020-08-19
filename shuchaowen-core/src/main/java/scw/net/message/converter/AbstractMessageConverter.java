@@ -5,7 +5,7 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
 import scw.core.Constants;
-import scw.core.utils.TypeUtils;
+import scw.core.ResolvableType;
 import scw.http.HttpHeaders;
 import scw.io.IOUtils;
 import scw.json.JSONSupport;
@@ -84,13 +84,22 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	}
 
 	public abstract boolean support(Class<?> clazz);
+	
+	public boolean support(Type type){
+		if(type instanceof Class){
+			return support((Class<?>)type);
+		}
+		
+		ResolvableType resolvableType = ResolvableType.forType(type);
+		return support(resolvableType.getRawClass());
+	}
 
 	public boolean canRead(Type type, MimeType contentType) {
 		if(type == byte[].class && !isSupportBytes()){
 			return false;
 		}
 		
-		return support(TypeUtils.toClass(type)) && canRead(contentType);
+		return support(type) && canRead(contentType);
 	}
 
 	public boolean canWrite(Object body, MimeType contentType) {

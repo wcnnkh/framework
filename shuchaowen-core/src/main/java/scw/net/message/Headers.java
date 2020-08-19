@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.util.AbstractMultiValueMap;
 import scw.util.LinkedCaseInsensitiveMap;
@@ -25,10 +26,12 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 		}
 	}
 
-	public Headers(Map<String, List<String>> wrapperHeaders,
+	public Headers(Map<String, List<String>> headers,
 			boolean caseSensitiveKey) {
-		this.headers = wrapperHeaders;
-		caseSensitiveKey(caseSensitiveKey);
+		this(caseSensitiveKey);
+		if(!CollectionUtils.isEmpty(headers)){
+			putAll(headers);
+		}
 	}
 
 	public void caseSensitiveKey(boolean caseSensitiveKey) {
@@ -47,9 +50,13 @@ public class Headers extends AbstractMultiValueMap<String, String> {
 		}
 		this.headers = map;
 	}
-
+	
 	public final boolean isReadyOnly() {
 		return readyOnly;
+	}
+	
+	public final boolean isCaseSensitiveKey(){
+		return !(headers instanceof LinkedCaseInsensitiveMap);
 	}
 
 	public void readyOnly() {

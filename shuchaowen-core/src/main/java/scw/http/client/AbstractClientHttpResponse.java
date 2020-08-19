@@ -18,10 +18,10 @@ package scw.http.client;
 
 import java.io.IOException;
 
+import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpStatus;
-import scw.net.message.AbstractInputMessage;
 
-public abstract class AbstractClientHttpResponse extends AbstractInputMessage implements ClientHttpResponse {
+public abstract class AbstractClientHttpResponse extends AbstractHttpInputMessage implements ClientHttpResponse {
 
 	public HttpStatus getStatusCode() throws IOException {
 		return HttpStatus.valueOf(getRawStatusCode());
