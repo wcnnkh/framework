@@ -3,10 +3,8 @@ package scw.http.multipart;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.RequestContext;
@@ -46,47 +44,9 @@ public class ApacheFileItemParser implements FileItemParser {
 
 		List<FileItem> fileItems = new ArrayList<FileItem>(list.size());
 		for (org.apache.commons.fileupload.FileItem fileItem : list) {
-			fileItems.add(new FileItemWrapper(fileItem));
+			fileItems.add(new ApacheFileItem(fileItem));
 		}
 		return fileItems;
-	}
-
-	private static class FileItemWrapper extends FileItem {
-		private org.apache.commons.fileupload.FileItem fileItem;
-
-		public FileItemWrapper(org.apache.commons.fileupload.FileItem fileItem) {
-			super(fileItem.getFieldName());
-			this.fileItem = fileItem;
-			FileItemHeaders fileItemHeaders = fileItem.getHeaders();
-			Iterator<String> iterator = fileItemHeaders.getHeaderNames();
-			while (iterator.hasNext()) {
-				String name = iterator.next();
-				Iterator<String> valueIterator = fileItemHeaders
-						.getHeaders(name);
-				while (valueIterator.hasNext()) {
-					getHeaders().add(name, valueIterator.next());
-				}
-			}
-			getHeaders().readyOnly();
-		}
-
-		@Override
-		public long getContentLength() {
-			return fileItem.getSize();
-		}
-
-		@Override
-		public String getTextBody() throws IOException {
-			return fileItem.getString();
-		}
-
-		public InputStream getBody() throws IOException {
-			return fileItem.getInputStream();
-		}
-
-		public void close() throws IOException {
-			fileItem.delete();
-		}
 	}
 
 	private static class HttpRequestContext implements RequestContext {
