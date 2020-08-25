@@ -1,5 +1,7 @@
 package scw.rpc.simple.http;
 
+import java.util.Arrays;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -55,7 +57,7 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfig
 					}
 
 					Filter filter = new SimpleHttpObjectRpcServiceFilter(ser, sign, responseThrowable, address);
-					BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, filter);
+					BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, Arrays.asList(filter));
 					beanDefinitions.add(beanBuilder);
 				}
 			}
@@ -84,7 +86,7 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfig
 				}
 
 				Filter filter = new SimpleHttpObjectRpcServiceFilter(ser, mySign, responseThrowable, myAddress);
-				BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, filter);
+				BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, Arrays.asList(filter));
 				beanDefinitions.add(beanBuilder);
 			}
 		}

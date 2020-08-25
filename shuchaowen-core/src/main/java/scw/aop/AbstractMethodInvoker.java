@@ -6,21 +6,22 @@ import java.lang.reflect.Modifier;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NestedExceptionUtils;
 
-public abstract class InstanceInvoker implements MethodInvoker {
+public abstract class AbstractMethodInvoker implements MethodInvoker {
+	private final Class<?> sourceClass;
 
-	public Class<?> getTargetClass() {
-		return getMethod().getDeclaringClass();
+	public AbstractMethodInvoker(Class<?> sourceClass) {
+		this.sourceClass = sourceClass;
 	}
 
-	protected abstract Object getInstance();
+	public Class<?> getSourceClass() {
+		return sourceClass == null ? getMethod().getDeclaringClass() : sourceClass;
+	}
 
 	public Object invoke(Object... args) throws Throwable {
 		Method method = getMethod();
 		ReflectionUtils.makeAccessible(method);
 		try {
-			return method.invoke(
-					Modifier.isStatic(method.getModifiers()) ? null
-							: getInstance(), args);
+			return method.invoke(Modifier.isStatic(method.getModifiers()) ? null : getInstance(), args);
 		} catch (Throwable e) {
 			throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
 		}

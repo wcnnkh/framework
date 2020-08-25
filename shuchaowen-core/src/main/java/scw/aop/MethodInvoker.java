@@ -1,9 +1,15 @@
 package scw.aop;
 
-import java.lang.reflect.Method;
+import scw.core.reflect.MethodHolder;
 
-public interface MethodInvoker extends Invoker {
-	Method getMethod();
+public interface MethodInvoker extends Invoker, MethodHolder {
 
-	Class<?> getTargetClass();
+	Class<?> getSourceClass();
+
+	/**
+	 * 如果是静态方法那么是空
+	 * 
+	 * @return
+	 */
+	Object getInstance();
 }

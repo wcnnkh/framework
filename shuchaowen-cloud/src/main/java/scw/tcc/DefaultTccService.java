@@ -2,7 +2,7 @@ package scw.tcc;
 
 import java.lang.reflect.Method;
 
-import scw.aop.ProxyInvoker;
+import scw.aop.MethodInvoker;
 import scw.beans.BeanFactory;
 import scw.complete.Complete;
 import scw.complete.CompleteService;
@@ -34,7 +34,7 @@ public class DefaultTccService implements TccService {
 		return createStage(tryInfo, tcc, tcc.confirm());
 	}
 
-	public Stage createConfirm(ProxyInvoker invoker, Object[] args, Object tryResult, Tcc tcc) {
+	public Stage createConfirm(MethodInvoker invoker, Object[] args, Object tryResult, Tcc tcc) {
 		if (StringUtils.isEmpty(tcc.confirm())) {
 			return null;
 		}
@@ -42,7 +42,7 @@ public class DefaultTccService implements TccService {
 		return createStage(new TryInfo(invoker, args, tryResult), tcc, tcc.confirm());
 	}
 
-	public Stage createCancel(ProxyInvoker invoker, Object[] args, Object tryResult, Tcc tcc) {
+	public Stage createCancel(MethodInvoker invoker, Object[] args, Object tryResult, Tcc tcc) {
 		if (StringUtils.isEmpty(tcc.cancel())) {
 			return null;
 		}

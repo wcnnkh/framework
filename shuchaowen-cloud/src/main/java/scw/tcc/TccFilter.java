@@ -1,7 +1,8 @@
 package scw.tcc;
 
 import scw.aop.Filter;
-import scw.aop.ProxyInvoker;
+import scw.aop.FilterChain;
+import scw.aop.MethodInvoker;
 import scw.complete.Complete;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
@@ -18,7 +19,7 @@ public class TccFilter implements Filter {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
 		final Tcc tcc = invoker.getMethod().getAnnotation(Tcc.class);
 		if (tcc == null) {
 			return invoker.invoke(args);

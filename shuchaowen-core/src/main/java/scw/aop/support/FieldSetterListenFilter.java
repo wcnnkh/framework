@@ -1,7 +1,8 @@
 package scw.aop.support;
 
 import scw.aop.Filter;
-import scw.aop.ProxyInvoker;
+import scw.aop.FilterChain;
+import scw.aop.MethodInvoker;
 import scw.aop.ProxyUtils;
 import scw.mapper.Copy;
 import scw.mapper.Field;
@@ -16,32 +17,33 @@ public class FieldSetterListenFilter extends FieldSetterListenImpl implements Fi
 				FilterFeature.IGNORE_STATIC);
 	}
 
-	private final Object change(ProxyInvoker invoker, Object[] args, Field field) throws Throwable {
-		Object oldValue = field.getGetter().get(invoker.getProxy());
-		if (FieldSetterListen.class.isAssignableFrom(invoker.getTargetClass())) {
-			((FieldSetterListen) invoker.getProxy()).field_setter(invoker, field, oldValue);
+	private final Object change(MethodInvoker invoker, Object[] args, FilterChain filterChain, Field field)
+			throws Throwable {
+		Object oldValue = field.getGetter().get(invoker.getInstance());
+		if (FieldSetterListen.class.isAssignableFrom(invoker.getSourceClass())) {
+			((FieldSetterListen) invoker.getInstance()).field_setter(invoker, field, oldValue);
 		} else {
 			field_setter(invoker, field, oldValue);
 		}
-		return invoker.invoke(args);
+		return filterChain.doFilter(invoker, args);
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
 		if (ProxyUtils.isWriteReplaceMethod(invoker, false)) {
-			return Copy.copy(invoker.getTargetClass(), invoker.getProxy());
+			return Copy.copy(invoker.getSourceClass(), invoker.getInstance());
 		}
 
 		if (args.length == 0) {
 			if (FieldSetterListen.CLEAR_FIELD_LISTEN.equals(invoker.getMethod().getName())) {
-				if (FieldSetterListen.class.isAssignableFrom(invoker.getTargetClass())) {
-					return invoker.invoke(args);
+				if (FieldSetterListen.class.isAssignableFrom(invoker.getSourceClass())) {
+					return filterChain.doFilter(invoker, args);
 				} else {
 					clear_field_setter_listen();
 					return null;
 				}
 			} else if (FieldSetterListen.GET_CHANGE_MAP.equals(invoker.getMethod().getName())) {
-				if (FieldSetterListen.class.isAssignableFrom(invoker.getTargetClass())) {
-					return invoker.invoke(args);
+				if (FieldSetterListen.class.isAssignableFrom(invoker.getSourceClass())) {
+					return filterChain.doFilter(invoker, args);
 				} else {
 					return get_field_setter_map();
 				}
@@ -50,28 +52,28 @@ public class FieldSetterListenFilter extends FieldSetterListenImpl implements Fi
 
 		FieldSetter fieldSetter = invoker.getMethod().getAnnotation(FieldSetter.class);
 		if (fieldSetter != null) {
-			Field field = getField(invoker.getTargetClass(), fieldSetter.value(), null);
+			Field field = getField(invoker.getSourceClass(), fieldSetter.value(), null);
 			if (field != null) {
-				return change(invoker, args, field);
+				return change(invoker, args, filterChain, field);
 			}
 		} else if (args.length == 1 && invoker.getMethod().getName().startsWith("set")) {
 			char[] chars = new char[invoker.getMethod().getName().length() - 3];
 			chars[0] = Character.toLowerCase(invoker.getMethod().getName().charAt(3));
 			invoker.getMethod().getName().getChars(4, invoker.getMethod().getName().length(), chars, 1);
 			Class<?> type = invoker.getMethod().getParameterTypes()[0];
-			Field field = getField(invoker.getTargetClass(), new String(chars), type);
+			Field field = getField(invoker.getSourceClass(), new String(chars), type);
 			if (field == null) {
 				if (type == boolean.class) {
 					chars[0] = Character.toUpperCase(chars[0]);
-					field = getField(invoker.getTargetClass(), "is" + new String(chars), boolean.class);
+					field = getField(invoker.getSourceClass(), "is" + new String(chars), boolean.class);
 					if (field != null) {
-						return change(invoker, args, field);
+						return change(invoker, args, filterChain, field);
 					}
 				}
 			} else {
-				return change(invoker, args, field);
+				return change(invoker, args, filterChain, field);
 			}
 		}
-		return invoker.invoke(args);
+		return filterChain.doFilter(invoker, args);
 	}
 }

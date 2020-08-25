@@ -1,5 +1,7 @@
 package scw.aop.support;
 
+import java.util.Arrays;
+
 import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
 
@@ -11,7 +13,7 @@ public final class FieldSetterListenUtils {
 
 	public static Proxy getFieldSetterListenProxy(Class<?> clazz) {
 		return ProxyUtils.getProxyFactory().getProxy(clazz,
-				FIELD_SETTER_LISTEN_INTERFACES, new FieldSetterListenFilter());
+				FIELD_SETTER_LISTEN_INTERFACES, Arrays.asList(new FieldSetterListenFilter()));
 	}
 
 	public static void clearFieldSetterListen(Object instance) {

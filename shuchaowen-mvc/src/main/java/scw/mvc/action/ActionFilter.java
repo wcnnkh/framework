@@ -5,5 +5,6 @@ import scw.mvc.HttpChannel;
 
 @AopEnable(false)
 public interface ActionFilter {
-	Object doFilter(Action action, HttpChannel httpChannel) throws Throwable;
+	Object doFilter(HttpChannel httpChannel, Action action)
+			throws Throwable;
 }

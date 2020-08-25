@@ -1,22 +1,23 @@
 package scw.mvc.action;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.aop.MethodInvokerWrapper;
 import scw.core.parameter.ParameterDescriptors;
 import scw.http.server.HttpControllerDescriptor;
-import scw.mvc.HttpChannel;
 
-public class ActionWrapper implements Action {
+public class ActionWrapper extends MethodInvokerWrapper implements Action {
+	private static final long serialVersionUID = 1L;
 	private final Action action;
 
 	public ActionWrapper(Action action) {
+		super(action);
 		this.action = action;
 	}
-	
+
 	public Action getAction() {
-		if(action instanceof ActionWrapper){
+		if (action instanceof ActionWrapper) {
 			return ((ActionWrapper) action).getAction();
 		}
 		return action;
@@ -26,24 +27,12 @@ public class ActionWrapper implements Action {
 		return action.getAnnotatedElement();
 	}
 
-	public Class<?> getTargetClass() {
-		return action.getTargetClass();
-	}
-
 	public AnnotatedElement getTargetClassAnnotatedElement() {
 		return action.getTargetClassAnnotatedElement();
 	}
 
-	public Method getMethod() {
-		return action.getMethod();
-	}
-
 	public AnnotatedElement getMethodAnnotatedElement() {
 		return action.getMethodAnnotatedElement();
-	}
-
-	public Object doAction(HttpChannel httpChannel) throws Throwable {
-		return action.doAction(httpChannel);
 	}
 
 	public Collection<HttpControllerDescriptor> getHttpControllerDescriptors() {
@@ -62,4 +51,7 @@ public class ActionWrapper implements Action {
 		return action.getParameterDescriptors();
 	}
 
+	public Iterable<? extends ActionFilter> getActionFilter() {
+		return action.getActionFilter();
+	}
 }

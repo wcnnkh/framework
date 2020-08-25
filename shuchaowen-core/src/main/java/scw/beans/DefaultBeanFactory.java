@@ -15,8 +15,6 @@ import java.util.Map.Entry;
 import scw.aop.Aop;
 import scw.aop.DefaultAop;
 import scw.aop.Filter;
-import scw.aop.FilterProxyInvoker;
-import scw.aop.ProxyInvoker;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.IteratorBeanBuilderLoaderChain;
@@ -29,6 +27,7 @@ import scw.beans.service.ServiceBeanConfiguration;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
+import scw.core.instance.InstanceIterable;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
@@ -50,7 +49,7 @@ import scw.util.JavaVersion;
 import scw.value.property.BasePropertyFactory;
 import scw.value.property.PropertyFactory;
 
-public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, Accept<Class<?>> {
+public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Class<?>> {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
@@ -439,8 +438,9 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		addBeanDefinition(new InternalBeanDefinition(instance, type, Arrays.asList(names)), false);
 	}
 
+	private Aop aop = new DefaultAop(new InstanceIterable<Filter>(this, filterNameList));
 	public Aop getAop() {
-		return new DefaultAop(this);
+		return aop;
 	}
 
 	public void init() throws Exception {
@@ -580,10 +580,6 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		public Iterator<ParameterDescriptors> iterator() {
 			return new ConstructorParameterDescriptorsIterator(getTargetClass());
 		}
-	}
-
-	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
-		return new FilterProxyInvoker(invoker, this, filterNameList).invoke(args);
 	}
 
 	private Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, LoaderContext context) {

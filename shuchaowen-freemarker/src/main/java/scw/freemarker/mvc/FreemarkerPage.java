@@ -48,8 +48,10 @@ public class FreemarkerPage extends AbstractPage {
 		} else {
 			serverResponse.setContentType(MimeTypeUtils.TEXT_HTML);
 		}
-
+		
 		Map<String, Object> freemarkerMap = new HashMap<String, Object>(size());
+		freemarkerMap.put(CONTEXT_PATH_NAME, serverRequest.getContextPath());
+		
 		Enumeration<String> enumeration = httpChannel.getRequest().getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();

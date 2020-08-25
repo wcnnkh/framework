@@ -3,7 +3,8 @@ package scw.rpc.http;
 import java.lang.reflect.Modifier;
 
 import scw.aop.Filter;
-import scw.aop.ProxyInvoker;
+import scw.aop.FilterChain;
+import scw.aop.MethodInvoker;
 import scw.beans.BeanFactory;
 import scw.core.Constants;
 import scw.core.instance.InstanceUtils;
@@ -36,7 +37,7 @@ public class HttpRpcProxyFilter implements Filter {
 		this.messageConverter = messageConverter;
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
 		if (Modifier.isAbstract(invoker.getMethod().getModifiers())
 				|| Modifier.isInterface(invoker.getMethod().getModifiers())) {
 			ClientHttpRequest request = httpRpcProxyRequestFactory.getClientHttpRequest(invoker, args);
@@ -58,7 +59,7 @@ public class HttpRpcProxyFilter implements Filter {
 				}
 			}
 		}
-		return invoker.invoke(args);
+		return filterChain.doFilter(invoker, args);
 	}
 
 }

@@ -4,44 +4,46 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 
-import scw.aop.Invoker;
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.parameter.ParameterDescriptors;
-import scw.mvc.HttpChannel;
 
 public abstract class AbstractAction implements Action {
 	private final Method method;
-	private final Class<?> targetClass;
+	private final Class<?> sourceClass;
 	private final AnnotatedElement annotatedElement;
 	private final AnnotatedElement targetClassAnnotatedElement;
 	private final AnnotatedElement methodAnnotatedElement;
 	private final ParameterDescriptors parameterDescriptors;
 	protected Collection<ActionFilter> actionFilters = new LinkedHashSet<ActionFilter>(4);
 
-	public AbstractAction(Class<?> targetClass, Method method) {
-		this.targetClass = targetClass;
+	public AbstractAction(Class<?> sourceClass, Method method) {
+		this.sourceClass = sourceClass;
 		this.method = method;
-		this.targetClassAnnotatedElement = AnnotatedElementUtils.forAnnotations(targetClass.getDeclaredAnnotations());
+		this.targetClassAnnotatedElement = AnnotatedElementUtils.forAnnotations(sourceClass.getDeclaredAnnotations());
 		this.methodAnnotatedElement = AnnotatedElementUtils.forAnnotations(method.getAnnotations());
 		this.annotatedElement = new MultiAnnotatedElement(methodAnnotatedElement, targetClassAnnotatedElement);
-		this.parameterDescriptors = new MethodParameterDescriptors(targetClass, method);
+		this.parameterDescriptors = new MethodParameterDescriptors(sourceClass, method);
 	}
-	
-	public void optimization(){
+
+	public void optimization() {
 		this.actionFilters = Arrays.asList(actionFilters.toArray(new ActionFilter[0]));
+	}
+
+	public Iterable<? extends ActionFilter> getActionFilter() {
+		return Collections.unmodifiableCollection(actionFilters);
 	}
 
 	public AnnotatedElement getAnnotatedElement() {
 		return annotatedElement;
 	}
 
-	public Class<?> getTargetClass() {
-		return targetClass;
+	public Class<?> getSourceClass() {
+		return sourceClass;
 	}
 
 	public AnnotatedElement getTargetClassAnnotatedElement() {
@@ -60,12 +62,6 @@ public abstract class AbstractAction implements Action {
 		return parameterDescriptors;
 	}
 
-	public abstract Invoker getInvoker();
-
-	public Object doAction(HttpChannel httpChannel) throws Throwable {
-		return new InternalAction(this).doAction(httpChannel);
-	}
-
 	@Override
 	public final int hashCode() {
 		return method.hashCode();
@@ -82,30 +78,13 @@ public abstract class AbstractAction implements Action {
 		}
 
 		if (obj instanceof Action) {
-			return ((Action) obj).getMethod().equals(getMethod());
+			return getMethod().equals(((Action) obj).getMethod());
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return getInvoker().toString();
-	}
-
-	private final class InternalAction extends ActionWrapper {
-		private Iterator<ActionFilter> iterator = actionFilters.iterator();
-
-		public InternalAction(Action action) {
-			super(action);
-		}
-
-		@Override
-		public Object doAction(HttpChannel httpChannel) throws Throwable {
-			if (iterator.hasNext()) {
-				return iterator.next().doFilter(this, httpChannel);
-			}
-
-			return getInvoker().invoke(httpChannel.getParameters(getParameterDescriptors()));
-		}
+		return getMethod().toString();
 	}
 }

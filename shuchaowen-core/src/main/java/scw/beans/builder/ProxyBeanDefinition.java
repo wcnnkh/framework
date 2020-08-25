@@ -1,24 +1,38 @@
 package scw.beans.builder;
 
+import java.util.Collection;
+
 import scw.aop.Filter;
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
+import scw.core.instance.InstanceIterable;
 import scw.value.property.PropertyFactory;
 
 public class ProxyBeanDefinition extends DefaultBeanDefinition {
+	private Iterable<? extends Filter> filters;
 
-	public ProxyBeanDefinition(LoaderContext context, Filter... filters) {
-		this(context.getBeanFactory(), context.getPropertyFactory(), context
-				.getTargetClass(), filters);
+	public ProxyBeanDefinition(LoaderContext context, Collection<String> filterNames) {
+		this(context, new InstanceIterable<Filter>(context.getBeanFactory(), filterNames));
 	}
 
-	public ProxyBeanDefinition(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> targetClass,
-			Filter... filters) {
+	public ProxyBeanDefinition(LoaderContext context, Iterable<? extends Filter> filters) {
+		this(context.getBeanFactory(), context.getPropertyFactory(), context.getTargetClass(), filters);
+	}
+
+	public ProxyBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
+			Collection<String> filterNames) {
+		this(beanFactory, propertyFactory, targetClass, new InstanceIterable<Filter>(beanFactory, filterNames));
+	}
+
+	public ProxyBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
+			Iterable<? extends Filter> filters) {
 		super(beanFactory, propertyFactory, targetClass);
-		for (Filter filter : filters) {
-			super.filters.add(filter);
-		}
+		this.filters = filters;
+	}
+
+	@Override
+	public Iterable<? extends Filter> getFilters() {
+		return filters;
 	}
 
 	@Override

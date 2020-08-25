@@ -1,7 +1,8 @@
 package scw.transaction;
 
 import scw.aop.Filter;
-import scw.aop.ProxyInvoker;
+import scw.aop.FilterChain;
+import scw.aop.MethodInvoker;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.logger.Logger;
@@ -25,7 +26,7 @@ public final class TransactionFilter implements Filter {
 		this.transactionDefinition = transactionDefinition;
 	}
 
-	private void invokerAfter(Object rtn, ProxyInvoker invoker) {
+	private void invokerAfter(Object rtn, MethodInvoker invoker) {
 		if (rtn != null && (rtn instanceof RollbackOnlyResult)) {
 			RollbackOnlyResult result = (RollbackOnlyResult) rtn;
 			if (result.isRollbackOnly()) {
@@ -37,11 +38,11 @@ public final class TransactionFilter implements Filter {
 		}
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
-		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getTargetClass(),
+	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getSourceClass(),
 				invoker.getMethod());
 		if (tx == null && TransactionManager.hasTransaction()) {
-			Object rtn = invoker.invoke(args);
+			Object rtn = filterChain.doFilter(invoker, args);
 			invokerAfter(rtn, invoker);
 			return rtn;
 		}
@@ -51,7 +52,7 @@ public final class TransactionFilter implements Filter {
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
 		Object v;
 		try {
-			v = invoker.invoke(args);
+			v = filterChain.doFilter(invoker, args);
 			invokerAfter(v, invoker);
 			TransactionManager.commit(transaction);
 			return v;

@@ -2,11 +2,9 @@ package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import scw.aop.Filter;
 import scw.aop.Proxy;
@@ -16,6 +14,7 @@ import scw.beans.event.BeanLifeCycleEvent;
 import scw.beans.event.BeanLifeCycleEvent.Step;
 import scw.beans.ioc.Ioc;
 import scw.core.instance.DefaultInstanceBuilder;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -26,7 +25,6 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
 	protected Ioc ioc = new Ioc();
-	protected List<Filter> filters = new ArrayList<Filter>(4);
 	private boolean isNew = true;
 
 	public DefaultBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass) {
@@ -109,9 +107,13 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		return getTargetClass();
 	}
 	
+	public Iterable<? extends Filter> getFilters(){
+		return null;
+	}
+	
 	@Override
 	public boolean isInstance() {
-		return super.isInstance(isProxy() && !filters.isEmpty());
+		return super.isInstance(isProxy() && !CollectionUtils.isEmpty(getFilters()));
 	}
 
 	@Override
@@ -124,15 +126,15 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 	}
 
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
-		return beanFactory.getAop().getProxy(targetClass, interfaces, filters);
+		return beanFactory.getAop().getProxy(targetClass, interfaces, getFilters());
 	}
 
 	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass, Class<?>[] interfaces) {
-		return beanFactory.getAop().getProxyInstance(targetClass, instance, interfaces, filters);
+		return beanFactory.getAop().getProxyInstance(targetClass, instance, interfaces, getFilters());
 	}
 
 	protected Object createProxyInstance(Class<?> targetClass, Class<?>[] parameterTypes, Object[] args) {
-		if (getTargetClass().isInterface() && filters.isEmpty()) {
+		if (getTargetClass().isInterface() && CollectionUtils.isEmpty(getFilters())) {
 			logger.warn("empty filter: {}", getTargetClass().getName());
 		}
 
@@ -153,7 +155,6 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		try {
 			DefaultBeanDefinition beanDefinition = (DefaultBeanDefinition) super.clone();
 			beanDefinition.setNew(false);
-			beanDefinition.filters = Arrays.asList(filters.toArray(new Filter[0]));
 			beanDefinition.ioc.readyOnly();
 			return beanDefinition;
 		} catch (CloneNotSupportedException e) {

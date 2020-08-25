@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import scw.core.reflect.ReflectionUtils;
 
-public class MethodParameterDescriptorsIterator extends scw.util.Iterator<ParameterDescriptors> {
+public class MethodParameterDescriptorsIterator extends scw.util.AbstractIterator<ParameterDescriptors> {
 	private final Iterator<Method> iterator;
 	private final Class<?> targetClass;
 

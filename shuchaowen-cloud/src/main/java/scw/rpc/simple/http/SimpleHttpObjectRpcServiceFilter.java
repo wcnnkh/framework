@@ -3,7 +3,8 @@ package scw.rpc.simple.http;
 import java.lang.reflect.Modifier;
 
 import scw.aop.Filter;
-import scw.aop.ProxyInvoker;
+import scw.aop.FilterChain;
+import scw.aop.MethodInvoker;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.io.Bytes;
@@ -26,13 +27,13 @@ public class SimpleHttpObjectRpcServiceFilter implements Filter {
 		this.host = host;
 	}
 
-	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
+	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
 		if (!Modifier.isAbstract(invoker.getMethod().getModifiers())) {
-			return invoker.invoke(args);
+			return filterChain.doFilter(invoker, args);
 		}
 
 		long cts = System.currentTimeMillis();
-		final SimpleObjectRequestMessage requestMessage = new SimpleObjectRequestMessage(invoker.getTargetClass(),
+		final SimpleObjectRequestMessage requestMessage = new SimpleObjectRequestMessage(invoker.getSourceClass(),
 				invoker.getMethod(), args);
 		requestMessage.setAttribute("t", cts);
 		requestMessage.setAttribute("sign",

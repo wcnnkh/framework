@@ -4,5 +4,5 @@ import scw.beans.annotation.AopEnable;
 
 @AopEnable(false)
 public interface Filter {
-	Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable;
+	Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable;
 }
