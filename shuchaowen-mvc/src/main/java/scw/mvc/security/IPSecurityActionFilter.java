@@ -7,18 +7,23 @@ import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionFilterAccept;
 import scw.mvc.action.ActionFilterChain;
 import scw.mvc.annotation.IPSecurity;
 import scw.security.ip.IPValidationFailedException;
 import scw.security.ip.IPVerification;
 
 @Configuration(order=Integer.MAX_VALUE)
-public final class IPSecurityActionFilter implements ActionFilter{
+public final class IPSecurityActionFilter implements ActionFilter, ActionFilterAccept{
 	private static Logger logger = LoggerFactory.getLogger(IPSecurityActionFilter.class);
 	private BeanFactory beanFactory;
 	
 	public IPSecurityActionFilter(BeanFactory beanFactory){
 		this.beanFactory = beanFactory;
+	}
+	
+	public boolean isAccept(HttpChannel httpChannel, Action action, Object[] args) {
+		return action.getAnnotatedElement().getAnnotation(IPSecurity.class) != null;
 	}
 	
 	public Object doFilter(HttpChannel httpChannel, Action action, Object[] args, ActionFilterChain filterChain)

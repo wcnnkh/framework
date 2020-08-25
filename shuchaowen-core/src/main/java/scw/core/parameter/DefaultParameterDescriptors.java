@@ -39,10 +39,10 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	}
 
 	private class InternalIterator implements Iterator<ParameterDescriptor> {
-		private int index = -1;
+		private int index = 0;
 
 		public boolean hasNext() {
-			return index + 1 < names.length;
+			return index < names.length;
 		}
 
 		public ParameterDescriptor next() {

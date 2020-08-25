@@ -14,7 +14,7 @@ import scw.logger.LoggerUtils;
  *
  */
 @Configuration(order = Integer.MAX_VALUE)
-public final class TransactionFilter implements Filter {
+public final class TransactionFilter implements Filter{
 	private static Logger logger = LoggerUtils.getLogger(TransactionFilter.class);
 	private final TransactionDefinition transactionDefinition;
 
@@ -37,7 +37,7 @@ public final class TransactionFilter implements Filter {
 			}
 		}
 	}
-
+	
 	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
 		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getSourceClass(),
 				invoker.getMethod());

@@ -33,11 +33,15 @@ public final class MultiIterable<E> implements Iterable<E> {
 			}
 
 			while (iterator.hasNext()) {
-				valueIterator = iterator.next().iterator();
-				if (valueIterator != null && valueIterator.hasNext()) {
+				Iterable<? extends E> iterable = iterator.next();
+				if(iterable == null){
+					continue;
+				}
+				
+				valueIterator = iterable.iterator();
+				if (valueIterator.hasNext()) {
 					return true;
 				}
-
 				valueIterator = null;
 			}
 			return false;
@@ -48,8 +52,7 @@ public final class MultiIterable<E> implements Iterable<E> {
 				throw new NoSuchElementException();
 			}
 
-			E value = valueIterator.next();
-			return value;
+			return valueIterator.next();
 		}
 	}
 }

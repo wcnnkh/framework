@@ -1,6 +1,7 @@
 package scw.tcc;
 
 import scw.aop.Filter;
+import scw.aop.FilterAccept;
 import scw.aop.FilterChain;
 import scw.aop.MethodInvoker;
 import scw.complete.Complete;
@@ -12,11 +13,16 @@ import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
 @Configuration(order = Integer.MAX_VALUE)
-public class TccFilter implements Filter {
+public class TccFilter implements Filter, FilterAccept{
 	private NoArgsInstanceFactory instanceFactory;
 
 	public TccFilter(NoArgsInstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
+	}
+	
+	@Override
+	public boolean isAccept(MethodInvoker invoker, Object[] args) {
+		return invoker.getMethod().getAnnotation(Tcc.class) != null;
 	}
 
 	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {

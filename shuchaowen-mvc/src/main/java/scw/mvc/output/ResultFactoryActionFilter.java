@@ -5,17 +5,22 @@ import scw.core.instance.annotation.Configuration;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionFilterAccept;
 import scw.mvc.action.ActionFilterChain;
 import scw.mvc.annotation.ResultFactory;
 import scw.mvc.view.View;
 import scw.result.Result;
 
 @Configuration(order=Integer.MAX_VALUE)
-public final class ResultFactoryActionFilter implements ActionFilter{
+public final class ResultFactoryActionFilter implements ActionFilter, ActionFilterAccept{
 	private BeanFactory beanFactory;
 	
 	public ResultFactoryActionFilter(BeanFactory beanFactory){
 		this.beanFactory = beanFactory;
+	}
+	
+	public boolean isAccept(HttpChannel httpChannel, Action action, Object[] args) {
+		return action.getAnnotatedElement().getAnnotation(ResultFactory.class) != null;
 	}
 	
 	public Object doFilter(HttpChannel httpChannel, Action action, Object[] args, ActionFilterChain filterChain)

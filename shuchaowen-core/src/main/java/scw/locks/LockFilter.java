@@ -1,6 +1,7 @@
 package scw.locks;
 
 import scw.aop.Filter;
+import scw.aop.FilterAccept;
 import scw.aop.FilterChain;
 import scw.aop.MethodInvoker;
 import scw.core.annotation.AnnotationUtils;
@@ -18,7 +19,7 @@ import scw.locks.annotation.LockParameter;
  *
  */
 @Configuration(order=Integer.MAX_VALUE)
-public final class LockFilter implements Filter {
+public final class LockFilter implements Filter, FilterAccept {
 	private LockFactory lockFactory;
 
 	public LockFilter(LockFactory lockFactory) {
@@ -27,6 +28,10 @@ public final class LockFilter implements Filter {
 
 	public LockFilter(LockFactory lockFactory, String keyPrefix) {
 		this.lockFactory = lockFactory;
+	}
+	
+	public boolean isAccept(MethodInvoker invoker, Object[] args) {
+		return AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass()) != null;
 	}
 
 	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {

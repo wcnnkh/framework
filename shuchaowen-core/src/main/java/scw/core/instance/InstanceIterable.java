@@ -28,7 +28,7 @@ public final class InstanceIterable<E> implements Iterable<E> {
 			}
 			
 			if (name != null) {
-				return false;
+				return true;
 			}
 
 			while (iterator.hasNext()) {

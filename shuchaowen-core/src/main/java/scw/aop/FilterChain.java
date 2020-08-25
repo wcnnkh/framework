@@ -16,15 +16,32 @@ public final class FilterChain {
 	}
 
 	public Object doFilter(MethodInvoker invoker, Object[] args) throws Throwable {
-		if (hasNext()) {
-			return iterator.next().doFilter(invoker, args, this);
-		} else {
+		Filter filter = getNextFilter(invoker, args);
+		if (filter == null) {
 			if (nextFilterChain == null) {
 				return invoker.invoke(args);
 			} else {
 				return nextFilterChain.doFilter(invoker, args);
 			}
+		} else {
+			return filter.doFilter(invoker, args, this);
 		}
+	}
+
+	private Filter getNextFilter(MethodInvoker invoker, Object[] args) {
+		if (!hasNext()) {
+			return null;
+		}
+
+		Filter filter = iterator.next();
+		if (filter instanceof FilterAccept) {
+			if (((FilterAccept) filter).isAccept(invoker, args)) {
+				return filter;
+			} else {
+				return getNextFilter(invoker, args);
+			}
+		}
+		return filter;
 	}
 
 	private boolean hasNext() {

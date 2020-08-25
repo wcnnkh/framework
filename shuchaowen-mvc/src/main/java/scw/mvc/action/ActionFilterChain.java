@@ -18,15 +18,32 @@ public final class ActionFilterChain {
 	}
 
 	public Object doFilter(HttpChannel httpChannel, Action action, Object[] args) throws Throwable {
-		if (hasNext()) {
-			return iterator.next().doFilter(httpChannel, action, args, this);
-		} else {
+		ActionFilter actionFilter = getNextFilter(httpChannel, action, args);
+		if (actionFilter == null) {
 			if (nextActionFilterChain == null) {
 				return action.invoke(args);
 			} else {
 				return nextActionFilterChain.doFilter(httpChannel, action, args);
 			}
+		} else {
+			return actionFilter.doFilter(httpChannel, action, args, this);
 		}
+	}
+
+	private ActionFilter getNextFilter(HttpChannel httpChannel, Action action, Object[] args) {
+		if (!hasNext()) {
+			return null;
+		}
+
+		ActionFilter actionFilter = iterator.next();
+		if (actionFilter instanceof ActionFilterAccept) {
+			if (((ActionFilterAccept) actionFilter).isAccept(httpChannel, action, args)) {
+				return actionFilter;
+			} else {
+				return getNextFilter(httpChannel, action, args);
+			}
+		}
+		return actionFilter;
 	}
 
 	private boolean hasNext() {

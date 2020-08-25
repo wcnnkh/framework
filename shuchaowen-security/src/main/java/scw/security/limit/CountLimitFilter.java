@@ -1,6 +1,7 @@
 package scw.security.limit;
 
 import scw.aop.Filter;
+import scw.aop.FilterAccept;
 import scw.aop.FilterChain;
 import scw.aop.MethodInvoker;
 import scw.core.annotation.AnnotationUtils;
@@ -16,13 +17,23 @@ import scw.security.limit.annotation.CountLimitSecurity;
  * @author shuchaowen
  *
  */
-@Configuration(order=Integer.MAX_VALUE)
-public final class CountLimitFilter implements Filter {
+@Configuration(order = Integer.MAX_VALUE)
+public final class CountLimitFilter implements Filter, FilterAccept {
 	private static Logger logger = LoggerUtils.getLogger(CountLimitFilter.class);
 	private final InstanceFactory instanceFactory;
 
 	public CountLimitFilter(InstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
+	}
+
+	public boolean isAccept(MethodInvoker invoker, Object[] args) {
+		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
+				invoker.getSourceClass(), invoker.getMethod());
+		if (countLimitSecurity == null) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {

@@ -8,7 +8,7 @@ import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
-import scw.http.server.cors.CorsFilter;
+import scw.http.server.cors.CorsServiceFilter;
 import scw.http.server.resource.DefaultStaticResourceLoader;
 import scw.http.server.resource.StaticResourceHttpServerHandler;
 import scw.http.server.resource.StaticResourceLoader;
@@ -27,7 +27,7 @@ public class DefaultHttpService implements HttpService {
 				: new DefaultStaticResourceLoader(propertyFactory);
 		StaticResourceHttpServerHandler resourceHandler = new StaticResourceHttpServerHandler(staticResourceLoader);
 		handlerAccessor.bind(resourceHandler);
-		filters.add(new CorsFilter(beanFactory, propertyFactory));
+		filters.add(new CorsServiceFilter(beanFactory, propertyFactory));
 		filters.addAll(InstanceUtils.getConfigurationList(HttpServiceFilter.class, beanFactory, propertyFactory));
 		filters = Arrays.asList(filters.toArray(new HttpServiceFilter[0]));
 		handlerAccessor

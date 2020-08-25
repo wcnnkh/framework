@@ -1,6 +1,7 @@
 package scw.complete.method.async;
 
 import scw.aop.Filter;
+import scw.aop.FilterAccept;
 import scw.aop.FilterChain;
 import scw.aop.MethodInvoker;
 import scw.core.instance.NoArgsInstanceFactory;
@@ -9,7 +10,7 @@ import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
 
 @Configuration(order = Integer.MAX_VALUE)
-public final class AsyncFilter implements Filter {
+public final class AsyncFilter implements Filter, FilterAccept {
 	private static ThreadLocal<Boolean> TAG_THREAD_LOCAL = new ThreadLocal<Boolean>();
 	private final NoArgsInstanceFactory instanceFactory;
 
@@ -28,6 +29,19 @@ public final class AsyncFilter implements Filter {
 
 	public static void endAsync() {
 		TAG_THREAD_LOCAL.set(false);
+	}
+	
+	public boolean isAccept(MethodInvoker invoker, Object[] args) {
+		Async async = invoker.getMethod().getAnnotation(Async.class);
+		if (async == null) {
+			return false;
+		}
+
+		if (isStartAsync()) {
+			return false;
+		}
+		
+		return true;
 	}
 
 	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {

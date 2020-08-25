@@ -10,10 +10,10 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.value.property.PropertyFactory;
 
-public final class CorsFilter implements HttpServiceFilter {
+public final class CorsServiceFilter implements HttpServiceFilter {
 	private final CorsConfigFactory corsConfigFactory;
 
-	public CorsFilter(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	public CorsServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		String beanName = propertyFactory.getString("mvc.cross-domain.factory");
 		if (StringUtils.isEmpty(beanName)) {
 			this.corsConfigFactory = beanFactory.isInstance(CorsConfigFactory.class)
@@ -23,7 +23,7 @@ public final class CorsFilter implements HttpServiceFilter {
 		}
 	}
 
-	public CorsFilter(CorsConfigFactory corsConfigFactory) {
+	public CorsServiceFilter(CorsConfigFactory corsConfigFactory) {
 		this.corsConfigFactory = corsConfigFactory;
 	}
 
