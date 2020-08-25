@@ -28,8 +28,8 @@ public final class MultiIterable<E> implements Iterable<E> {
 				return false;
 			}
 
-			if (valueIterator != null) {
-				return valueIterator.hasNext();
+			if (valueIterator != null && valueIterator.hasNext()) {
+				return true;
 			}
 
 			while (iterator.hasNext()) {
