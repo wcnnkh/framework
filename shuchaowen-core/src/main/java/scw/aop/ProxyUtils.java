@@ -47,7 +47,7 @@ public final class ProxyUtils {
 		Object getIgnoreMethodTarget();
 	}
 
-	private static final class IgnoreMethodFilter implements Filter {
+	private static final class IgnoreMethodFilter implements MethodInterceptor {
 		private final Object object;
 		private final IgnoreMethodAccept ignoreMethodAccept;
 
@@ -56,7 +56,7 @@ public final class ProxyUtils {
 			this.ignoreMethodAccept = ignoreMethodAccept;
 		}
 
-		public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+		public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 			if (ArrayUtils.isEmpty(args) && invoker.getMethod().getName().equals("getIgnoreMethodTarget")) {
 				return object;
 			}
@@ -65,7 +65,7 @@ public final class ProxyUtils {
 				return null;
 			}
 
-			return filterChain.doFilter(invoker, args);
+			return filterChain.intercept(invoker, args);
 		}
 	}
 
@@ -138,15 +138,15 @@ public final class ProxyUtils {
 		return false;
 	}
 
-	public static MethodInvoker wrapper(MethodInvoker invoker, Iterable<? extends Filter> filters) {
+	public static MethodInvoker wrapper(MethodInvoker invoker, Iterable<? extends MethodInterceptor> filters) {
 		return new FilterProxyInvoker(invoker, filters);
 	}
 
 	private static class FilterProxyInvoker extends MethodInvokerWrapper implements Serializable {
 		private static final long serialVersionUID = 1L;
-		private Iterable<? extends Filter> filters;
+		private Iterable<? extends MethodInterceptor> filters;
 
-		public FilterProxyInvoker(MethodInvoker invoker, Iterable<? extends Filter> filters) {
+		public FilterProxyInvoker(MethodInvoker invoker, Iterable<? extends MethodInterceptor> filters) {
 			super(invoker);
 			this.filters = filters;
 		}
@@ -157,7 +157,7 @@ public final class ProxyUtils {
 				return super.invoke(args);
 			}
 
-			return new FilterChain(filters.iterator()).doFilter(getSource(), args);
+			return new MethodInterceptorChain(filters.iterator()).intercept(getSource(), args);
 		}
 	}
 }

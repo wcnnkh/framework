@@ -52,16 +52,16 @@ public class JdkProxyFactory implements ProxyFactory {
 		return java.lang.reflect.Proxy.getProxyClass(clazz.getClassLoader(), mergeInterfaces(clazz, interfaces));
 	}
 
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends Filter> filters) {
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> filters) {
 		return new JdkProxy(clazz, mergeInterfaces(clazz, interfaces), new FiltersInvocationHandler(clazz, filters));
 	}
 
 	private static final class FiltersInvocationHandler implements InvocationHandler, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final Class<?> targetClass;
-		private final Iterable<? extends Filter> filters;
+		private final Iterable<? extends MethodInterceptor> filters;
 
-		public FiltersInvocationHandler(Class<?> targetClass, Iterable<? extends Filter> filters) {
+		public FiltersInvocationHandler(Class<?> targetClass, Iterable<? extends MethodInterceptor> filters) {
 			this.targetClass = targetClass;
 			this.filters = filters;
 		}
@@ -71,7 +71,7 @@ public class JdkProxyFactory implements ProxyFactory {
 			if (filters == null) {
 				return invoker.invoke(args);
 			}
-			return new FilterChain(filters.iterator()).doFilter(invoker, args);
+			return new MethodInterceptorChain(filters.iterator()).intercept(invoker, args);
 		}
 	}
 

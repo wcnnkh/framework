@@ -13,7 +13,7 @@ public class AsyncMethodCompleteTask extends DefaultMethodCompleteTask {
 
 	@Override
 	public Object process() throws Exception {
-		AsyncFilter.startAsync();
+		AsyncMethodInterceptor.startAsync();
 		return super.process();
 	}
 }

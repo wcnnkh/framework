@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import scw.aop.Filter;
+import scw.aop.MethodInterceptor;
 import scw.beans.BeanDefinition;
 import scw.beans.DefaultBeanDefinition;
 import scw.beans.annotation.Proxy;
@@ -58,7 +58,7 @@ public final class DefaultBeanBuilderLoader implements BeanBuilderLoader {
 			list.add(name);
 		}
 
-		for (Class<? extends Filter> c : proxy.value()) {
+		for (Class<? extends MethodInterceptor> c : proxy.value()) {
 			list.add(c.getName());
 		}
 

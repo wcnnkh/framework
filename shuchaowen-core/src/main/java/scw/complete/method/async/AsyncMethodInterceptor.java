@@ -1,8 +1,8 @@
 package scw.complete.method.async;
 
-import scw.aop.Filter;
-import scw.aop.FilterAccept;
-import scw.aop.FilterChain;
+import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorAccept;
+import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.instance.annotation.Configuration;
@@ -10,11 +10,11 @@ import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
 
 @Configuration(order = Integer.MAX_VALUE)
-public final class AsyncFilter implements Filter, FilterAccept {
+public final class AsyncMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private static ThreadLocal<Boolean> TAG_THREAD_LOCAL = new ThreadLocal<Boolean>();
 	private final NoArgsInstanceFactory instanceFactory;
 
-	public AsyncFilter(NoArgsInstanceFactory instanceFactory) {
+	public AsyncMethodInterceptor(NoArgsInstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
 	}
 
@@ -44,14 +44,14 @@ public final class AsyncFilter implements Filter, FilterAccept {
 		return true;
 	}
 
-	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 		Async async = invoker.getMethod().getAnnotation(Async.class);
 		if (async == null) {
-			return filterChain.doFilter(invoker, args);
+			return filterChain.intercept(invoker, args);
 		}
 
 		if (isStartAsync()) {
-			return filterChain.doFilter(invoker, args);
+			return filterChain.intercept(invoker, args);
 		}
 
 		if (!instanceFactory.isInstance(async.service())) {

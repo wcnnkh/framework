@@ -7,7 +7,6 @@ import java.util.Arrays;
 
 import scw.cglib.proxy.Enhancer;
 import scw.cglib.proxy.Factory;
-import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
@@ -46,7 +45,7 @@ public class CglibProxyFactory implements ProxyFactory {
 		return enhancer.createClass();
 	}
 
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends Filter> filters) {
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> filters) {
 		return new CglibProxy(clazz, getInterfaces(clazz, interfaces), new CglibMethodInterceptor(clazz, filters));
 	}
 
@@ -63,12 +62,12 @@ public class CglibProxyFactory implements ProxyFactory {
 		return enhancer;
 	}
 
-	private static final class CglibMethodInterceptor implements MethodInterceptor, Serializable {
+	private static final class CglibMethodInterceptor implements scw.cglib.proxy.MethodInterceptor, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final Class<?> targetClass;
-		private final Iterable<? extends Filter> filters;
+		private final Iterable<? extends MethodInterceptor> filters;
 
-		public CglibMethodInterceptor(Class<?> targetClass, Iterable<? extends Filter> filters) {
+		public CglibMethodInterceptor(Class<?> targetClass, Iterable<? extends MethodInterceptor> filters) {
 			this.targetClass = targetClass;
 			this.filters = filters;
 		}
@@ -79,7 +78,7 @@ public class CglibProxyFactory implements ProxyFactory {
 				return invoker.invoke(args);
 			}
 
-			return new FilterChain(filters.iterator()).doFilter(invoker, args);
+			return new MethodInterceptorChain(filters.iterator()).intercept(invoker, args);
 		}
 	}
 
@@ -112,7 +111,7 @@ public class CglibProxyFactory implements ProxyFactory {
 	public static final class CglibProxy extends AbstractProxy {
 		private Enhancer enhancer;
 
-		public CglibProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor methodInterceptor) {
+		public CglibProxy(Class<?> clazz, Class<?>[] interfaces, scw.cglib.proxy.MethodInterceptor methodInterceptor) {
 			super(clazz);
 			this.enhancer = createEnhancer(clazz, interfaces);
 			this.enhancer.setCallback(methodInterceptor);

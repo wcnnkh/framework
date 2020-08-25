@@ -3,18 +3,18 @@ package scw.aop;
 import java.util.Arrays;
 
 public class DefaultAop extends Aop {
-	private final Iterable<Filter> filters;
+	private final Iterable<MethodInterceptor> filters;
 
-	public DefaultAop(Filter... filters) {
+	public DefaultAop(MethodInterceptor... filters) {
 		this(Arrays.asList(filters));
 	}
 
-	public DefaultAop(Iterable<Filter> filters) {
+	public DefaultAop(Iterable<MethodInterceptor> filters) {
 		this.filters = filters;
 	}
 
 	@Override
-	public Iterable<Filter> getFilters() {
+	public Iterable<MethodInterceptor> getFilters() {
 		return filters;
 	}
 }

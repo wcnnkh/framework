@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 
 import scw.aop.Aop;
 import scw.aop.DefaultAop;
-import scw.aop.Filter;
+import scw.aop.MethodInterceptor;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.IteratorBeanBuilderLoaderChain;
@@ -438,13 +438,13 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 		addBeanDefinition(new InternalBeanDefinition(instance, type, Arrays.asList(names)), false);
 	}
 
-	private Aop aop = new DefaultAop(new InstanceIterable<Filter>(this, filterNameList));
+	private Aop aop = new DefaultAop(new InstanceIterable<MethodInterceptor>(this, filterNameList));
 	public Aop getAop() {
 		return aop;
 	}
 
 	public void init() throws Exception {
-		for (Class<Filter> filter : InstanceUtils.getConfigurationClassList(Filter.class, propertyFactory)) {
+		for (Class<MethodInterceptor> filter : InstanceUtils.getConfigurationClassList(MethodInterceptor.class, propertyFactory)) {
 			filterNameList.add(filter.getName());
 		}
 		filterNameList = Arrays.asList(filterNameList.toArray(new String[0]));

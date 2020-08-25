@@ -13,7 +13,7 @@ import scw.util.MultiIterable;
 
 public abstract class Aop implements ProxyFactory {
 
-	protected abstract Iterable<Filter> getFilters();
+	protected abstract Iterable<MethodInterceptor> getFilters();
 
 	protected ProxyFactory getProxyFactory() {
 		return ProxyUtils.getProxyFactory();
@@ -24,32 +24,32 @@ public abstract class Aop implements ProxyFactory {
 	}
 
 	@SuppressWarnings("unchecked")
-	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends Filter> preFilters,
-			Iterable<? extends Filter> filters) {
+	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> preFilters,
+			Iterable<? extends MethodInterceptor> filters) {
 		return getProxyFactory().getProxy(clazz, interfaces,
-				new MultiIterable<Filter>(preFilters, getFilters(), filters));
+				new MultiIterable<MethodInterceptor>(preFilters, getFilters(), filters));
 	}
 
-	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Filter preFilter,
-			Iterable<? extends Filter> filters) {
+	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor preFilter,
+			Iterable<? extends MethodInterceptor> filters) {
 		return getProxy(clazz, interfaces, Arrays.asList(preFilter), filters);
 	}
 
-	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends Filter> filters) {
+	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> filters) {
 		return getProxy(clazz, interfaces, getFilters(), filters);
 	}
 
-	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Filter... filters) {
+	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor... filters) {
 		return getProxy(clazz, interfaces, Arrays.asList(filters));
 	}
 
-	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Collection<Filter> filters) {
-		return getProxy(clazz, interfaces, (Iterable<Filter>) filters);
+	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Collection<MethodInterceptor> filters) {
+		return getProxy(clazz, interfaces, (Iterable<MethodInterceptor>) filters);
 	}
 
 	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, NoArgsInstanceFactory instanceFactory,
 			Collection<String> filterNames) {
-		return getProxy(clazz, interfaces, new InstanceIterable<Filter>(instanceFactory, filterNames));
+		return getProxy(clazz, interfaces, new InstanceIterable<MethodInterceptor>(instanceFactory, filterNames));
 	}
 
 	public final Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
@@ -74,27 +74,27 @@ public abstract class Aop implements ProxyFactory {
 	}
 
 	public final <T> Proxy getProxyInstance(Class<? extends T> clazz, T instance, Class<?>[] interfaces,
-			Iterable<? extends Filter> filters) {
-		return getProxy(clazz, interfaces, new InstanceFilter(instance), filters);
+			Iterable<? extends MethodInterceptor> filters) {
+		return getProxy(clazz, interfaces, new InstanceMethodInterceptor(instance), filters);
 	}
 
 	public final <T> Proxy getProxyInstance(Class<? extends T> clazz, T instance, Class<?>[] interfaces,
-			Filter... filters) {
+			MethodInterceptor... filters) {
 		return getProxyInstance(clazz, instance, interfaces, Arrays.asList(filters));
 	}
 
 	public final <T> Proxy getProxyInstance(Class<? extends T> clazz, T instance, Class<?>[] interfaces,
 			NoArgsInstanceFactory instanceFactory, Collection<String> filterNames) {
 		return getProxyInstance(clazz, instance, interfaces,
-				new InstanceIterable<Filter>(instanceFactory, filterNames));
+				new InstanceIterable<MethodInterceptor>(instanceFactory, filterNames));
 	}
 
 	@SuppressWarnings("unchecked")
-	private final MethodInvoker wrapper(MethodInvoker invoker, Iterable<? extends Filter> filters) {
+	private final MethodInvoker wrapper(MethodInvoker invoker, Iterable<? extends MethodInterceptor> filters) {
 		if (isProxyMethod(invoker.getInstance(), invoker.getMethod())) {
 			return ProxyUtils.wrapper(invoker, filters);
 		}
-		return ProxyUtils.wrapper(invoker, new MultiIterable<Filter>(getFilters(), filters));
+		return ProxyUtils.wrapper(invoker, new MultiIterable<MethodInterceptor>(getFilters(), filters));
 	}
 
 	/**
@@ -107,13 +107,13 @@ public abstract class Aop implements ProxyFactory {
 	 * @return
 	 */
 	public final <T> MethodInvoker getProxyMethod(Class<? extends T> targetClass, T instance, Method method,
-			Iterable<? extends Filter> filters) {
+			Iterable<? extends MethodInterceptor> filters) {
 		MethodInvoker proxyInvoker = new DefaultMethodInvoker(instance, targetClass, method);
 		return wrapper(proxyInvoker, filters);
 	}
 
 	public final <T> MethodInvoker getProxyMethod(Class<? extends T> targetClass, T instance, Method method,
-			Filter... filters) {
+			MethodInterceptor... filters) {
 		return getProxyMethod(targetClass, instance, method, Arrays.asList(filters));
 	}
 
@@ -128,7 +128,7 @@ public abstract class Aop implements ProxyFactory {
 	 * @return
 	 */
 	public final MethodInvoker getProxyMethod(NoArgsInstanceFactory instanceFactory, String instanceName,
-			Class<?> targetClass, Method method, Iterable<? extends Filter> filters) {
+			Class<?> targetClass, Method method, Iterable<? extends MethodInterceptor> filters) {
 		if (Modifier.isStatic(method.getModifiers())) {
 			return getProxyMethod(targetClass, null, method, filters);
 		}
@@ -147,7 +147,7 @@ public abstract class Aop implements ProxyFactory {
 	}
 
 	public final MethodInvoker getProxyMethod(NoArgsInstanceFactory instanceFactory, String instanceName,
-			Class<?> targetClass, Method method, Filter... filters) {
+			Class<?> targetClass, Method method, MethodInterceptor... filters) {
 		return getProxyMethod(instanceFactory, instanceName, targetClass, method, Arrays.asList(filters));
 	}
 
@@ -161,12 +161,12 @@ public abstract class Aop implements ProxyFactory {
 	 * @return
 	 */
 	public final MethodInvoker getProxyMethod(NoArgsInstanceFactory noArgsInstanceFactory, Class<?> targetClass,
-			Method method, Iterable<? extends Filter> filters) {
+			Method method, Iterable<? extends MethodInterceptor> filters) {
 		return getProxyMethod(noArgsInstanceFactory, targetClass.getName(), targetClass, method, filters);
 	}
 
 	public final MethodInvoker getProxyMethod(NoArgsInstanceFactory noArgsInstanceFactory, Class<?> targetClass,
-			Method method, Filter... filters) {
+			Method method, MethodInterceptor... filters) {
 		return getProxyMethod(noArgsInstanceFactory, targetClass, method, Arrays.asList(filters));
 	}
 
@@ -179,18 +179,18 @@ public abstract class Aop implements ProxyFactory {
 		return isProxy;
 	}
 
-	private static final class InstanceFilter implements Filter, Serializable {
+	private static final class InstanceMethodInterceptor implements MethodInterceptor, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final Object instance;
 
-		public InstanceFilter(Object instance) {
+		public InstanceMethodInterceptor(Object instance) {
 			this.instance = instance;
 		}
 
-		public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+		public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 			MethodInvoker proxyInvoker = new DefaultMethodInvoker(instance, invoker.getSourceClass(),
 					invoker.getMethod(), true);
-			return filterChain.doFilter(proxyInvoker, args);
+			return filterChain.intercept(proxyInvoker, args);
 		}
 	}
 }

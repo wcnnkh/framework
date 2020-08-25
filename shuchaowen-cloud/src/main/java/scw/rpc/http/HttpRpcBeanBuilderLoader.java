@@ -19,7 +19,7 @@ public final class HttpRpcBeanBuilderLoader implements BeanBuilderLoader {
 		HttpClient httpClient = context.getTargetClass().getAnnotation(
 				HttpClient.class);
 		if (httpClient != null) {
-			String proxyName = HttpRpcProxyFilter.class.getName();
+			String proxyName = HttpRpcProxyMethodInterceptor.class.getName();
 			if (context.getBeanFactory().isInstance(proxyName)) {
 				return new ProxyBeanDefinition(context, Arrays.asList(proxyName));
 			}

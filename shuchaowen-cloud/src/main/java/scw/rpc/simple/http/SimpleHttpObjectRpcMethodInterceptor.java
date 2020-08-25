@@ -2,8 +2,8 @@ package scw.rpc.simple.http;
 
 import java.lang.reflect.Modifier;
 
-import scw.aop.Filter;
-import scw.aop.FilterChain;
+import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
@@ -13,13 +13,13 @@ import scw.rpc.simple.SimpleObjectRequestMessage;
 import scw.rpc.simple.SimpleResponseMessage;
 import scw.security.SignatureUtils;
 
-public class SimpleHttpObjectRpcServiceFilter implements Filter {
+public class SimpleHttpObjectRpcMethodInterceptor implements MethodInterceptor {
 	private boolean responseThrowable;
 	private Serializer serializer;
 	private String sign;
 	private String host;
 
-	public SimpleHttpObjectRpcServiceFilter(Serializer serializer, String sign, boolean responseThrowable,
+	public SimpleHttpObjectRpcMethodInterceptor(Serializer serializer, String sign, boolean responseThrowable,
 			String host) {
 		this.responseThrowable = responseThrowable;
 		this.serializer = serializer;
@@ -27,9 +27,9 @@ public class SimpleHttpObjectRpcServiceFilter implements Filter {
 		this.host = host;
 	}
 
-	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 		if (!Modifier.isAbstract(invoker.getMethod().getModifiers())) {
-			return filterChain.doFilter(invoker, args);
+			return filterChain.intercept(invoker, args);
 		}
 
 		long cts = System.currentTimeMillis();

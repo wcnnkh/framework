@@ -1,7 +1,7 @@
 package scw.transaction;
 
-import scw.aop.Filter;
-import scw.aop.FilterChain;
+import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
@@ -14,15 +14,15 @@ import scw.logger.LoggerUtils;
  *
  */
 @Configuration(order = Integer.MAX_VALUE)
-public final class TransactionFilter implements Filter{
-	private static Logger logger = LoggerUtils.getLogger(TransactionFilter.class);
+public final class TransactionMethodInterceptor implements MethodInterceptor{
+	private static Logger logger = LoggerUtils.getLogger(TransactionMethodInterceptor.class);
 	private final TransactionDefinition transactionDefinition;
 
-	public TransactionFilter() {
+	public TransactionMethodInterceptor() {
 		this(new DefaultTransactionDefinition());
 	}
 
-	public TransactionFilter(TransactionDefinition transactionDefinition) {
+	public TransactionMethodInterceptor(TransactionDefinition transactionDefinition) {
 		this.transactionDefinition = transactionDefinition;
 	}
 
@@ -38,11 +38,11 @@ public final class TransactionFilter implements Filter{
 		}
 	}
 	
-	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getSourceClass(),
 				invoker.getMethod());
 		if (tx == null && TransactionManager.hasTransaction()) {
-			Object rtn = filterChain.doFilter(invoker, args);
+			Object rtn = filterChain.intercept(invoker, args);
 			invokerAfter(rtn, invoker);
 			return rtn;
 		}
@@ -52,7 +52,7 @@ public final class TransactionFilter implements Filter{
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
 		Object v;
 		try {
-			v = filterChain.doFilter(invoker, args);
+			v = filterChain.intercept(invoker, args);
 			invokerAfter(v, invoker);
 			TransactionManager.commit(transaction);
 			return v;

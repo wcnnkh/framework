@@ -46,7 +46,7 @@ public class MultiProxyFactory implements ProxyFactory, Enumerable<ProxyFactory>
 		return false;
 	}
 	
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends Filter> filters) {
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> filters) {
 		for (ProxyFactory proxyFactory : proxyFactories) {
 			if (proxyFactory.isSupport(clazz)) {
 				return proxyFactory.getProxy(clazz, interfaces, filters);

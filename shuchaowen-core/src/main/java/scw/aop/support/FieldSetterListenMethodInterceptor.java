@@ -1,7 +1,7 @@
 package scw.aop.support;
 
-import scw.aop.Filter;
-import scw.aop.FilterChain;
+import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.aop.ProxyUtils;
 import scw.mapper.Copy;
@@ -9,7 +9,7 @@ import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 
-public class FieldSetterListenFilter extends FieldSetterListenImpl implements Filter {
+public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl implements MethodInterceptor {
 	private static final long serialVersionUID = 1L;
 
 	private Field getField(Class<?> clazz, String name, Class<?> type) {
@@ -17,7 +17,7 @@ public class FieldSetterListenFilter extends FieldSetterListenImpl implements Fi
 				FilterFeature.IGNORE_STATIC);
 	}
 
-	private final Object change(MethodInvoker invoker, Object[] args, FilterChain filterChain, Field field)
+	private final Object change(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain, Field field)
 			throws Throwable {
 		Object oldValue = field.getGetter().get(invoker.getInstance());
 		if (FieldSetterListen.class.isAssignableFrom(invoker.getSourceClass())) {
@@ -25,10 +25,10 @@ public class FieldSetterListenFilter extends FieldSetterListenImpl implements Fi
 		} else {
 			field_setter(invoker, field, oldValue);
 		}
-		return filterChain.doFilter(invoker, args);
+		return filterChain.intercept(invoker, args);
 	}
 
-	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 		if (ProxyUtils.isWriteReplaceMethod(invoker, false)) {
 			return Copy.copy(invoker.getSourceClass(), invoker.getInstance());
 		}
@@ -36,14 +36,14 @@ public class FieldSetterListenFilter extends FieldSetterListenImpl implements Fi
 		if (args.length == 0) {
 			if (FieldSetterListen.CLEAR_FIELD_LISTEN.equals(invoker.getMethod().getName())) {
 				if (FieldSetterListen.class.isAssignableFrom(invoker.getSourceClass())) {
-					return filterChain.doFilter(invoker, args);
+					return filterChain.intercept(invoker, args);
 				} else {
 					clear_field_setter_listen();
 					return null;
 				}
 			} else if (FieldSetterListen.GET_CHANGE_MAP.equals(invoker.getMethod().getName())) {
 				if (FieldSetterListen.class.isAssignableFrom(invoker.getSourceClass())) {
-					return filterChain.doFilter(invoker, args);
+					return filterChain.intercept(invoker, args);
 				} else {
 					return get_field_setter_map();
 				}
@@ -74,6 +74,6 @@ public class FieldSetterListenFilter extends FieldSetterListenImpl implements Fi
 				return change(invoker, args, filterChain, field);
 			}
 		}
-		return filterChain.doFilter(invoker, args);
+		return filterChain.intercept(invoker, args);
 	}
 }

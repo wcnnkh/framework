@@ -2,36 +2,36 @@ package scw.beans.builder;
 
 import java.util.Collection;
 
-import scw.aop.Filter;
+import scw.aop.MethodInterceptor;
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
 import scw.core.instance.InstanceIterable;
 import scw.value.property.PropertyFactory;
 
 public class ProxyBeanDefinition extends DefaultBeanDefinition {
-	private Iterable<? extends Filter> filters;
+	private Iterable<? extends MethodInterceptor> filters;
 
 	public ProxyBeanDefinition(LoaderContext context, Collection<String> filterNames) {
-		this(context, new InstanceIterable<Filter>(context.getBeanFactory(), filterNames));
+		this(context, new InstanceIterable<MethodInterceptor>(context.getBeanFactory(), filterNames));
 	}
 
-	public ProxyBeanDefinition(LoaderContext context, Iterable<? extends Filter> filters) {
+	public ProxyBeanDefinition(LoaderContext context, Iterable<? extends MethodInterceptor> filters) {
 		this(context.getBeanFactory(), context.getPropertyFactory(), context.getTargetClass(), filters);
 	}
 
 	public ProxyBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
 			Collection<String> filterNames) {
-		this(beanFactory, propertyFactory, targetClass, new InstanceIterable<Filter>(beanFactory, filterNames));
+		this(beanFactory, propertyFactory, targetClass, new InstanceIterable<MethodInterceptor>(beanFactory, filterNames));
 	}
 
 	public ProxyBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
-			Iterable<? extends Filter> filters) {
+			Iterable<? extends MethodInterceptor> filters) {
 		super(beanFactory, propertyFactory, targetClass);
 		this.filters = filters;
 	}
 
 	@Override
-	public Iterable<? extends Filter> getFilters() {
+	public Iterable<? extends MethodInterceptor> getFilters() {
 		return filters;
 	}
 

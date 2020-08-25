@@ -1,8 +1,8 @@
 package scw.locks;
 
-import scw.aop.Filter;
-import scw.aop.FilterAccept;
-import scw.aop.FilterChain;
+import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorAccept;
+import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.Configuration;
@@ -19,14 +19,14 @@ import scw.locks.annotation.LockParameter;
  *
  */
 @Configuration(order=Integer.MAX_VALUE)
-public final class LockFilter implements Filter, FilterAccept {
+public final class LockMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private LockFactory lockFactory;
 
-	public LockFilter(LockFactory lockFactory) {
+	public LockMethodInterceptor(LockFactory lockFactory) {
 		this(lockFactory, "");
 	}
 
-	public LockFilter(LockFactory lockFactory, String keyPrefix) {
+	public LockMethodInterceptor(LockFactory lockFactory, String keyPrefix) {
 		this.lockFactory = lockFactory;
 	}
 	
@@ -34,10 +34,10 @@ public final class LockFilter implements Filter, FilterAccept {
 		return AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass()) != null;
 	}
 
-	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass());
 		if (lockConfig == null) {
-			return filterChain.doFilter(invoker, args);
+			return filterChain.intercept(invoker, args);
 		}
 
 		StringBuilder sb = new StringBuilder(128);
@@ -68,7 +68,7 @@ public final class LockFilter implements Filter, FilterAccept {
 				throw new HasBeenLockedException(lockKey);
 			}
 
-			return filterChain.doFilter(invoker, args);
+			return filterChain.intercept(invoker, args);
 		} finally {
 			lock.unlock();
 		}

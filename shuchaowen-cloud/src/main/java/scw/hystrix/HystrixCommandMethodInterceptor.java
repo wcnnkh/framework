@@ -2,18 +2,18 @@ package scw.hystrix;
 
 import com.netflix.hystrix.HystrixCommand;
 
-import scw.aop.Filter;
-import scw.aop.FilterAccept;
-import scw.aop.FilterChain;
+import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorAccept;
+import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.core.instance.annotation.Configuration;
 import scw.hystrix.annotation.Hystrix;
 
 @Configuration(order = Integer.MAX_VALUE)
-public class HystrixCommandFilter implements Filter, FilterAccept {
+public class HystrixCommandMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private HystrixCommandFactory hystrixCommandFactory;
 
-	public HystrixCommandFilter(HystrixCommandFactory hystrixCommandFactory) {
+	public HystrixCommandMethodInterceptor(HystrixCommandFactory hystrixCommandFactory) {
 		this.hystrixCommandFactory = hystrixCommandFactory;
 	}
 	
@@ -23,10 +23,10 @@ public class HystrixCommandFilter implements Filter, FilterAccept {
 	}
 
 	@Override
-	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
-		HystrixCommand<?> command = hystrixCommandFactory.getHystrixCommandFactory(invoker, args, filterChain);
+	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain chain) throws Throwable {
+		HystrixCommand<?> command = hystrixCommandFactory.getHystrixCommandFactory(invoker, args, chain);
 		if (command == null) {
-			return invoker.invoke(args);
+			return chain.intercept(invoker, args);
 		}
 		return command.execute();
 	}

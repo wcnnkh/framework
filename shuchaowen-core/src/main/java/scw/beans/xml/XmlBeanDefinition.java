@@ -9,7 +9,7 @@ import java.util.List;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.aop.Filter;
+import scw.aop.MethodInterceptor;
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
 import scw.core.instance.InstanceIterable;
@@ -26,7 +26,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private final String id;
 	private final boolean singleton;
 	private final XmlParameterFactory xmlParameterFactory;
-	private Iterable<? extends Filter> filters;
+	private Iterable<? extends MethodInterceptor> filters;
 
 	public XmlBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Node beanNode) throws Exception {
 		this(beanFactory, propertyFactory, XmlBeanUtils.getClass(beanNode, true), beanNode);
@@ -37,7 +37,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 		super(beanFactory, propertyFactory, targetClass);
 		Collection<String> filterNames = getFilters(beanNode);
 		if (!CollectionUtils.isEmpty(filterNames)) {
-			this.filters = new InstanceIterable<Filter>(beanFactory, getFilters(beanNode));
+			this.filters = new InstanceIterable<MethodInterceptor>(beanFactory, getFilters(beanNode));
 		}
 
 		NodeList nodeList = beanNode.getChildNodes();
@@ -56,7 +56,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	}
 	
 	@Override
-	public Iterable<? extends Filter> getFilters() {
+	public Iterable<? extends MethodInterceptor> getFilters() {
 		return filters;
 	}
 

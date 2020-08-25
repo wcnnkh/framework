@@ -1,5 +1,5 @@
 package scw.aop;
 
-public interface FilterAccept {
+public interface MethodInterceptorAccept {
 	boolean isAccept(MethodInvoker invoker, Object[] args);
 }

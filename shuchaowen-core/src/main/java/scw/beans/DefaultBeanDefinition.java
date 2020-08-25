@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import scw.aop.Filter;
+import scw.aop.MethodInterceptor;
 import scw.aop.Proxy;
 import scw.beans.annotation.Bean;
 import scw.beans.builder.LoaderContext;
@@ -107,7 +107,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		return getTargetClass();
 	}
 	
-	public Iterable<? extends Filter> getFilters(){
+	public Iterable<? extends MethodInterceptor> getFilters(){
 		return null;
 	}
 	

@@ -7,7 +7,7 @@ import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
 
-import scw.aop.FilterChain;
+import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.hystrix.annotation.Hystrix;
@@ -20,7 +20,7 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 	}
 
 	@Override
-	public HystrixCommand<?> getHystrixCommandFactory(MethodInvoker invoker, Object[] args, FilterChain filterChain)
+	public HystrixCommand<?> getHystrixCommandFactory(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain)
 			throws Exception {
 		Hystrix hystrix = invoker.getSourceClass().getAnnotation(Hystrix.class);
 		if (hystrix == null) {

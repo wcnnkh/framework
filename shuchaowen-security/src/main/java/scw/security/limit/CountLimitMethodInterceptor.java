@@ -1,8 +1,8 @@
 package scw.security.limit;
 
-import scw.aop.Filter;
-import scw.aop.FilterAccept;
-import scw.aop.FilterChain;
+import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorAccept;
+import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
@@ -18,11 +18,11 @@ import scw.security.limit.annotation.CountLimitSecurity;
  *
  */
 @Configuration(order = Integer.MAX_VALUE)
-public final class CountLimitFilter implements Filter, FilterAccept {
-	private static Logger logger = LoggerUtils.getLogger(CountLimitFilter.class);
+public final class CountLimitMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
+	private static Logger logger = LoggerUtils.getLogger(CountLimitMethodInterceptor.class);
 	private final InstanceFactory instanceFactory;
 
-	public CountLimitFilter(InstanceFactory instanceFactory) {
+	public CountLimitMethodInterceptor(InstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
 	}
 
@@ -36,11 +36,11 @@ public final class CountLimitFilter implements Filter, FilterAccept {
 		return true;
 	}
 
-	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
 				invoker.getSourceClass(), invoker.getMethod());
 		if (countLimitSecurity == null) {
-			return filterChain.doFilter(invoker, args);
+			return filterChain.intercept(invoker, args);
 		}
 
 		if (!instanceFactory.isInstance(countLimitSecurity.value())) {
@@ -52,7 +52,7 @@ public final class CountLimitFilter implements Filter, FilterAccept {
 		CountLimitConfig config = countLimitConfigFactory.getCountLimitConfig(invoker.getSourceClass(),
 				invoker.getMethod(), args);
 		if (config == null) {
-			return filterChain.doFilter(invoker, args);
+			return filterChain.intercept(invoker, args);
 		}
 
 		if (!instanceFactory.isInstance(countLimitSecurity.factory())) {
@@ -69,7 +69,7 @@ public final class CountLimitFilter implements Filter, FilterAccept {
 		}
 
 		if (b) {
-			return filterChain.doFilter(invoker, args);
+			return filterChain.intercept(invoker, args);
 		}
 		logger.warn("Too frequent operation max={}, count={}, method={}", config.getMaxCount(), count,
 				invoker.getMethod());

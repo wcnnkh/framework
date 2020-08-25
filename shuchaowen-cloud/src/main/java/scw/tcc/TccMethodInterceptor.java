@@ -1,8 +1,8 @@
 package scw.tcc;
 
-import scw.aop.Filter;
-import scw.aop.FilterAccept;
-import scw.aop.FilterChain;
+import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorAccept;
+import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.complete.Complete;
 import scw.core.instance.NoArgsInstanceFactory;
@@ -13,10 +13,10 @@ import scw.transaction.DefaultTransactionLifeCycle;
 import scw.transaction.TransactionManager;
 
 @Configuration(order = Integer.MAX_VALUE)
-public class TccFilter implements Filter, FilterAccept{
+public class TccMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept{
 	private NoArgsInstanceFactory instanceFactory;
 
-	public TccFilter(NoArgsInstanceFactory instanceFactory) {
+	public TccMethodInterceptor(NoArgsInstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
 	}
 	
@@ -25,7 +25,7 @@ public class TccFilter implements Filter, FilterAccept{
 		return invoker.getMethod().getAnnotation(Tcc.class) != null;
 	}
 
-	public Object doFilter(MethodInvoker invoker, Object[] args, FilterChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 		final Tcc tcc = invoker.getMethod().getAnnotation(Tcc.class);
 		if (tcc == null) {
 			return invoker.invoke(args);
