@@ -5,6 +5,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionFilterChain;
 import scw.mvc.annotation.ResultFactory;
 import scw.mvc.view.View;
 import scw.result.Result;
@@ -17,9 +18,9 @@ public final class ResultFactoryActionFilter implements ActionFilter{
 		this.beanFactory = beanFactory;
 	}
 	
-	public Object doFilter(Action action, HttpChannel httpChannel)
+	public Object doFilter(HttpChannel httpChannel, Action action, Object[] args, ActionFilterChain filterChain)
 			throws Throwable {
-		Object value = action.doAction(httpChannel);
+		Object value = filterChain.doFilter(httpChannel, action, args);
 		if(value != null && value instanceof View){
 			return value;
 		}
@@ -34,5 +35,4 @@ public final class ResultFactoryActionFilter implements ActionFilter{
 		}
 		return value;
 	}
-
 }

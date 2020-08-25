@@ -42,7 +42,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 	public void register(Action action) {
 		ActionAuthority classAuthority = action.getTargetClassAnnotatedElement().getAnnotation(ActionAuthority.class);
 		if (classAuthority != null) {// 如果在类上存在此注解说明这是一个菜单
-			String id = action.getTargetClass().getName();
+			String id = action.getSourceClass().getName();
 			id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
 			HttpAuthority authority = getAuthority(id);
 			if (authority == null) {
@@ -68,7 +68,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			return;
 		}
 
-		String parentId = getParentId(action.getAnnotatedElement(), action.getTargetClass().getName());
+		String parentId = getParentId(action.getAnnotatedElement(), action.getSourceClass().getName());
 		boolean isMenu = methodAuthority.menu();
 		if (isMenu) {
 			checkIsMenu(parentId, action);

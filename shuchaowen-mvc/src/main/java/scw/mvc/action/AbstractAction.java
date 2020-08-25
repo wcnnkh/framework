@@ -34,7 +34,7 @@ public abstract class AbstractAction implements Action {
 		this.actionFilters = Arrays.asList(actionFilters.toArray(new ActionFilter[0]));
 	}
 
-	public Iterable<? extends ActionFilter> getActionFilter() {
+	public Iterable<? extends ActionFilter> getActionFilters() {
 		return Collections.unmodifiableCollection(actionFilters);
 	}
 

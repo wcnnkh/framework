@@ -3,7 +3,7 @@ package scw.core.reflect;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-public class SerializableField implements FieldHolder, Serializable {
+public final class SerializableField implements FieldHolder, Serializable {
 	private static final long serialVersionUID = 1L;
 	private volatile transient Field field;
 	private final String fieldName;

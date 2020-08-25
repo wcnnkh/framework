@@ -1,7 +1,6 @@
 package scw.mvc;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,8 +19,8 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionFilterChain;
 import scw.mvc.action.ActionLookup;
-import scw.mvc.action.ActionWrapper;
 import scw.mvc.action.DefaultNotfoundActionService;
 import scw.mvc.action.NotFoundActionService;
 import scw.mvc.exception.ExceptionHandler;
@@ -30,6 +29,7 @@ import scw.mvc.output.HttpControllerOutput;
 import scw.net.InetUtils;
 import scw.net.message.converter.MessageConverter;
 import scw.result.Result;
+import scw.util.MultiIterable;
 import scw.value.property.PropertyFactory;
 
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
@@ -99,8 +99,12 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 					message = doError(httpChannel, action, e);
 				}
 			} else {
+				@SuppressWarnings("unchecked")
+				MultiIterable<ActionFilter> filters = new MultiIterable<ActionFilter>(actionFilters,
+						action.getActionFilters());
 				try {
-					message = new FitlerAction(action).doAction(httpChannel);
+					Object[] args = httpChannel.getParameters(action.getParameterDescriptors());
+					message = new ActionFilterChain(filters.iterator()).doFilter(httpChannel, action, args);
 				} catch (Throwable e) {
 					message = doError(httpChannel, action, e);
 				}
@@ -165,22 +169,5 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 		httpChannel.getResponse().sendError(500, "system error");
 		return null;
-	}
-
-	private final class FitlerAction extends ActionWrapper {
-		private Iterator<ActionFilter> iterator = actionFilters.iterator();
-
-		public FitlerAction(Action action) {
-			super(action);
-		}
-
-		@Override
-		public Object doAction(HttpChannel httpChannel) throws Throwable {
-			if (iterator.hasNext()) {
-				return iterator.next().doFilter(this, httpChannel);
-			}
-
-			return super.doAction(httpChannel);
-		}
 	}
 }

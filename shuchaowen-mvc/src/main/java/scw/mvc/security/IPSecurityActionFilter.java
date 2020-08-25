@@ -7,6 +7,7 @@ import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionFilterChain;
 import scw.mvc.annotation.IPSecurity;
 import scw.security.ip.IPValidationFailedException;
 import scw.security.ip.IPVerification;
@@ -19,8 +20,8 @@ public final class IPSecurityActionFilter implements ActionFilter{
 	public IPSecurityActionFilter(BeanFactory beanFactory){
 		this.beanFactory = beanFactory;
 	}
-
-	public Object doFilter(Action action, HttpChannel httpChannel)
+	
+	public Object doFilter(HttpChannel httpChannel, Action action, Object[] args, ActionFilterChain filterChain)
 			throws Throwable {
 		IPSecurity ipSecurity = action.getAnnotatedElement().getAnnotation(IPSecurity.class);
 		if (ipSecurity != null) {
@@ -29,8 +30,7 @@ public final class IPSecurityActionFilter implements ActionFilter{
 				throw new IPValidationFailedException("ip验证失败");
 			}
 		}
-		
-		return action.doAction(httpChannel);
+		return filterChain.doFilter(httpChannel, action, args);
 	}
 
 	private boolean verificationIP(String ip, IPSecurity ipSecurity) {
