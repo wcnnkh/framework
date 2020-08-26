@@ -4,22 +4,24 @@ import java.util.Properties;
 
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.core.Constants;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
-import scw.data.redis.RedisConstants;
 import scw.io.ResourceUtils;
 import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
-public class JedisBeanBuilderLoader implements BeanBuilderLoader, RedisConstants {
-
+public class JedisBeanBuilderLoader implements BeanBuilderLoader {
+	private static final String HOST_CONFIG_KEY = "redis.host";
+	private static final String CONFIG_KEY = "redis.configuration";
+	private static final String DEFAULT_CONFIG = "/redis/redis.properties";
+	
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == JedisPool.class) {
 			return new JedisPoolBeanDefinition(context);

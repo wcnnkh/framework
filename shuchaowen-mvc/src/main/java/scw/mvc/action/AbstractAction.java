@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 
 import scw.core.annotation.AnnotatedElementUtils;
-import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.parameter.ParameterDescriptors;
 
@@ -16,17 +15,13 @@ public abstract class AbstractAction implements Action {
 	private final Method method;
 	private final Class<?> sourceClass;
 	private final AnnotatedElement annotatedElement;
-	private final AnnotatedElement targetClassAnnotatedElement;
-	private final AnnotatedElement methodAnnotatedElement;
 	private final ParameterDescriptors parameterDescriptors;
 	protected Collection<ActionInterceptor> actionInterceptor = new LinkedHashSet<ActionInterceptor>(4);
 
 	public AbstractAction(Class<?> sourceClass, Method method) {
 		this.sourceClass = sourceClass;
 		this.method = method;
-		this.targetClassAnnotatedElement = AnnotatedElementUtils.forAnnotations(sourceClass.getDeclaredAnnotations());
-		this.methodAnnotatedElement = AnnotatedElementUtils.forAnnotations(method.getAnnotations());
-		this.annotatedElement = new MultiAnnotatedElement(methodAnnotatedElement, targetClassAnnotatedElement);
+		this.annotatedElement = AnnotatedElementUtils.forAnnotations(method.getAnnotations());
 		this.parameterDescriptors = new MethodParameterDescriptors(sourceClass, method);
 	}
 
@@ -38,24 +33,16 @@ public abstract class AbstractAction implements Action {
 		return Collections.unmodifiableCollection(actionInterceptor);
 	}
 
-	public AnnotatedElement getAnnotatedElement() {
-		return annotatedElement;
-	}
-
 	public Class<?> getSourceClass() {
 		return sourceClass;
-	}
-
-	public AnnotatedElement getTargetClassAnnotatedElement() {
-		return targetClassAnnotatedElement;
 	}
 
 	public Method getMethod() {
 		return method;
 	}
 
-	public AnnotatedElement getMethodAnnotatedElement() {
-		return methodAnnotatedElement;
+	public AnnotatedElement getAnnotatedElement() {
+		return annotatedElement;
 	}
 
 	public ParameterDescriptors getParameterDescriptors() {

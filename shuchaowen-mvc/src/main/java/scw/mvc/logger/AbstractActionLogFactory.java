@@ -2,6 +2,7 @@ package scw.mvc.logger;
 
 import java.util.Map;
 
+import scw.core.annotation.AnnotationUtils;
 import scw.http.server.HttpControllerDescriptor;
 import scw.http.server.ServerHttpRequest;
 import scw.json.JSONUtils;
@@ -26,7 +27,8 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 	}
 
 	public ActionLog createActionLog(Action action, HttpChannel httpChannel, Object response, Throwable error) {
-		ActionLogConfig logConfig = action.getAnnotatedElement().getAnnotation(ActionLogConfig.class);
+		ActionLogConfig logConfig = AnnotationUtils.getAnnotation(ActionLogConfig.class, action.getSourceClass(),
+				action.getAnnotatedElement());
 		if (logConfig != null && !logConfig.enable()) {
 			return null;
 		}

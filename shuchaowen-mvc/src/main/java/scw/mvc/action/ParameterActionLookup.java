@@ -89,7 +89,7 @@ public class ParameterActionLookup implements ActionLookup {
 	}
 
 	public void register(Action action) {
-		for (String classController : toControllerSet(action.getTargetClassHttpControllerDescriptors())) {
+		for (String classController : toControllerSet(action.getSourceClassHttpControllerDescriptors())) {
 			for (String methodController : toControllerSet(action.getMethodHttpControllerDescriptors())) {
 				for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
 					register(descriptor.getMethod(), classController, methodController, action);

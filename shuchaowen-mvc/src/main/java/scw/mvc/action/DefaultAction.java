@@ -20,7 +20,7 @@ import scw.mvc.annotation.Methods;
 public class DefaultAction extends BeanAction {
 	protected Collection<HttpControllerDescriptor> httpHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
-	protected Collection<HttpControllerDescriptor> targetClassHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
+	protected Collection<HttpControllerDescriptor> sourceClassHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
 	protected Collection<HttpControllerDescriptor> methodHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
@@ -28,14 +28,14 @@ public class DefaultAction extends BeanAction {
 	public DefaultAction(BeanFactory beanFactory, Class<?> targetClass,
 			Method method) {
 		super(beanFactory, targetClass, method);
-		Controller classController = getTargetClassAnnotatedElement()
+		Controller classController = getSourceClass()
 				.getAnnotation(Controller.class);
-		Controller methodController = getMethodAnnotatedElement()
+		Controller methodController = getAnnotatedElement()
 				.getAnnotation(Controller.class);
 		httpHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
 				XUtils.mergePath("/", classController.value(),
 						methodController.value()), getControllerHttpMethods()));
-		targetClassHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
+		sourceClassHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
 				XUtils.mergePath("/", classController.value()),
 				Arrays.asList(classController.methods())));
 		methodHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
@@ -47,7 +47,7 @@ public class DefaultAction extends BeanAction {
 	@Override
 	public void optimization() {
 		this.httpHttpControllerDescriptors = Arrays.asList(httpHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
-		this.targetClassHttpControllerDescriptors = Arrays.asList(targetClassHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
+		this.sourceClassHttpControllerDescriptors = Arrays.asList(sourceClassHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
 		this.methodHttpControllerDescriptors = Arrays.asList(methodHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
 		super.optimization();
 	}
@@ -65,7 +65,7 @@ public class DefaultAction extends BeanAction {
 	}
 
 	protected List<ActionInterceptor> getControllerActionFilters() {
-		ActionInterceptors actionInterceptors = getTargetClassAnnotatedElement().getAnnotation(
+		ActionInterceptors actionInterceptors = getSourceClass().getAnnotation(
 				ActionInterceptors.class);
 		LinkedList<ActionInterceptor> list = new LinkedList<ActionInterceptor>();
 		if (actionInterceptors != null) {
@@ -76,7 +76,7 @@ public class DefaultAction extends BeanAction {
 			}
 		}
 
-		Controller controller = getTargetClassAnnotatedElement().getAnnotation(
+		Controller controller = getSourceClass().getAnnotation(
 				Controller.class);
 		if (controller != null) {
 			for (Class<? extends ActionInterceptor> f : controller.interceptors()) {
@@ -86,7 +86,7 @@ public class DefaultAction extends BeanAction {
 			}
 		}
 
-		actionInterceptors = getMethodAnnotatedElement().getAnnotation(ActionInterceptors.class);
+		actionInterceptors = getAnnotatedElement().getAnnotation(ActionInterceptors.class);
 		if (actionInterceptors != null) {
 			list.clear();
 			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
@@ -96,7 +96,7 @@ public class DefaultAction extends BeanAction {
 			}
 		}
 
-		controller = getMethodAnnotatedElement()
+		controller = getAnnotatedElement()
 				.getAnnotation(Controller.class);
 		if (controller != null) {
 			for (Class<? extends ActionInterceptor> f : controller.interceptors()) {
@@ -109,11 +109,11 @@ public class DefaultAction extends BeanAction {
 	}
 
 	private Collection<HttpMethod> getControllerHttpMethods() {
-		Controller classController = getTargetClassAnnotatedElement()
+		Controller classController = getSourceClass()
 				.getAnnotation(Controller.class);
-		Controller methodController = getMethodAnnotatedElement()
+		Controller methodController = getAnnotatedElement()
 				.getAnnotation(Controller.class);
-		Methods methods = getMethodAnnotatedElement().getAnnotation(
+		Methods methods = getAnnotatedElement().getAnnotation(
 				Methods.class);
 		Set<HttpMethod> httpMethods = new HashSet<HttpMethod>();
 		if (methods == null) {
@@ -146,8 +146,8 @@ public class DefaultAction extends BeanAction {
 		return httpHttpControllerDescriptors;
 	}
 
-	public Collection<HttpControllerDescriptor> getTargetClassHttpControllerDescriptors() {
-		return targetClassHttpControllerDescriptors;
+	public Collection<HttpControllerDescriptor> getSourceClassHttpControllerDescriptors() {
+		return sourceClassHttpControllerDescriptors;
 	}
 
 	public Collection<HttpControllerDescriptor> getMethodHttpControllerDescriptors() {

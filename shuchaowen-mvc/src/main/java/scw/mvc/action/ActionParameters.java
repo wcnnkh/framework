@@ -23,6 +23,14 @@ public class ActionParameters implements Serializable {
 		return parameters;
 	}
 
+	/**
+	 * 只有当参数不存在时才会从httpChannel中获取参数<br/>
+	 * doAction前会调用此方法{@see ActionInterceptorChain#intercept(HttpChannel, Action, ActionParameters)}
+	 * 
+	 * @param httpChannel
+	 * @param action
+	 * @return
+	 */
 	public Object[] getParameters(HttpChannel httpChannel, Action action) {
 		if (parameters == null) {
 			parameters = httpChannel.getParameters(action.getParameterDescriptors());

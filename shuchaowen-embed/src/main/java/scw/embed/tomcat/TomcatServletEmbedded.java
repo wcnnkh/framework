@@ -113,7 +113,7 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 	protected void addErrorPage(Context context, BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		if (beanFactory.isInstance(ActionManager.class)) {
 			for (Action action : beanFactory.getInstance(ActionManager.class).getActions()) {
-				ErrorCodeController errorCodeController = action.getMethodAnnotatedElement()
+				ErrorCodeController errorCodeController = action.getAnnotatedElement()
 						.getAnnotation(ErrorCodeController.class);
 				if (errorCodeController == null) {
 					continue;
