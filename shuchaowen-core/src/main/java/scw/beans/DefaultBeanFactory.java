@@ -1,6 +1,7 @@
 package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -137,27 +138,27 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 		}
 
 		AutoImpl autoImpl = context.getTargetClass().getAnnotation(AutoImpl.class);
-		if (autoImpl != null) {
-			Collection<Class<?>> impls = getAutoImplClass(autoImpl, context);
-			if (!CollectionUtils.isEmpty(impls)) {
-				for (Class<?> impl : impls) {
-					BeanDefinition definition = getDefinitionByCache(impl.getName());
-					if (definition == null) {
-						definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
-					}
-					if (definition != null && definition.isInstance()) {
-						return definition;
-					}
+		Collection<Class<?>> autoImpls = autoImpl == null? null:getAutoImplClass(autoImpl, context);
+		if (!CollectionUtils.isEmpty(autoImpls)) {
+			for (Class<?> impl : autoImpls) {
+				BeanDefinition definition = getDefinitionByCache(impl.getName());
+				if (definition == null) {
+					definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
+				}
+				if (definition != null && definition.isInstance()) {
+					return definition;
 				}
 			}
 		}
 
-		for (Class<?> impl : InstanceUtils.getConfigurationClassList(context.getTargetClass(), propertyFactory)) {
+		Collection<Class<Object>> configurationClassList = InstanceUtils.getConfigurationClassList(context.getTargetClass(), propertyFactory);
+		for (Class<?> impl : configurationClassList) {
 			BeanDefinition definition = getDefinitionByCache(impl.getName());
 			if (definition == null) {
 				definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 			}
-			if (definition != null && definition.isInstance()) {
+			
+			if (definition.isInstance()) {
 				logger.info("Configuration {} impl {}", context.getTargetClass(), impl);
 				return definition;
 			}
@@ -165,7 +166,28 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 
 		BeanDefinition definition = new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
 		if (definition == null) {
-			definition = new DefaultBeanDefinition(context);
+			if(context.getTargetClass().isInterface() || Modifier.isAbstract(context.getTargetClass().getModifiers())){
+				//如果是接口或抽象类
+				if (!CollectionUtils.isEmpty(autoImpls)) {
+					for (Class<?> impl : autoImpls) {
+						definition = getDefinitionByCache(impl.getName());
+						if (definition == null) {
+							definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
+						}
+						return definition;
+					}
+				}
+				
+				for(Class<?> impl : configurationClassList){
+					definition = getDefinitionByCache(impl.getName());
+					if (definition == null) {
+						definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
+					}
+					return definition;
+				}
+			}else{
+				definition = new DefaultBeanDefinition(context);
+			}
 		}
 		return definition;
 	}
