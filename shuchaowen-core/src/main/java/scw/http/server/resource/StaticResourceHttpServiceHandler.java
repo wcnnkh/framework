@@ -11,10 +11,18 @@ import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.net.MimeType;
 
-public final class StaticResourceHttpServerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
+public class StaticResourceHttpServiceHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	private StaticResourceLoader resourceLoader;
 
-	public StaticResourceHttpServerHandler(StaticResourceLoader resourceLoader) {
+	/**
+	 * @param root 根目录
+	 * @param paths 允许的路径
+	 */
+	public StaticResourceHttpServiceHandler(String root, String... paths) {
+		this.resourceLoader = new DefaultStaticResourceLoader(root, paths);
+	}
+
+	public StaticResourceHttpServiceHandler(StaticResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 	}
 

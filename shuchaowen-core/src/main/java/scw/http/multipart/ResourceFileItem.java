@@ -3,7 +3,11 @@ package scw.http.multipart;
 import java.io.IOException;
 import java.io.InputStream;
 
+import scw.http.ContentDisposition;
+import scw.http.MediaType;
 import scw.io.Resource;
+import scw.net.FileMimeTypeUitls;
+import scw.net.MimeType;
 
 class ResourceFileItem extends FileItem {
 	private Resource resource;
@@ -11,6 +15,13 @@ class ResourceFileItem extends FileItem {
 	public ResourceFileItem(String fieldName, Resource resource) {
 		super(fieldName);
 		this.resource = resource;
+		ContentDisposition contentDisposition = ContentDisposition.builder("form-data").name(fieldName)
+				.filename(getName()).build();
+		getHeaders().setContentDisposition(contentDisposition);
+		MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
+		if (mimeType != null) {
+			getHeaders().setContentType(new MediaType(mimeType));
+		}
 	}
 
 	public Resource getResource() {

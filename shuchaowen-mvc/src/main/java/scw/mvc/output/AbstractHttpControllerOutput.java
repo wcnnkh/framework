@@ -5,10 +5,12 @@ import java.io.IOException;
 import scw.core.utils.StringUtils;
 import scw.http.jsonp.JsonpUtils;
 import scw.io.IOUtils;
+import scw.io.Resource;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.view.View;
+import scw.net.FileMimeTypeUitls;
 import scw.net.InetUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -46,8 +48,8 @@ public abstract class AbstractHttpControllerOutput<T> implements HttpControllerO
 			return false;
 		}
 
-		return body instanceof View || body instanceof InputMessage || body instanceof Text || body instanceof Entity
-				|| canWriteInternal(httpChannel, body);
+		return body instanceof View || body instanceof InputMessage || body instanceof Text || body instanceof Resource
+				|| body instanceof Entity || canWriteInternal(httpChannel, body);
 	}
 
 	protected abstract boolean canWriteInternal(HttpChannel httpChannel, Object body);
@@ -91,11 +93,22 @@ public abstract class AbstractHttpControllerOutput<T> implements HttpControllerO
 			}
 			writeBodyBefore(httpChannel, b);
 			httpChannel.getResponse().getWriter().write(((Text) body).getTextContent());
-		} else if (body instanceof Entity) {
-			InetUtils.writeHeader((Entity<?>) body, httpChannel.getResponse());
+		} else if (body instanceof Resource) {
+			Resource resource = (Resource) body;
+			MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
+			if (mimeType != null) {
+				httpChannel.getResponse().setContentType(mimeType);
+			}
 			writeBodyBefore(httpChannel, b);
-			getMessageConverter().write(((Entity<?>) body).getBody(), ((Entity<?>) body).getContentType(),
-					httpChannel.getResponse());
+			IOUtils.write(resource.getInputStream(), httpChannel.getResponse().getBody());
+		} else if (body instanceof Entity) {
+			@SuppressWarnings("rawtypes")
+			Entity entity = (Entity) body;
+			if (getMessageConverter().canWrite(entity.getBody(), entity.getContentType())) {
+				InetUtils.writeHeader(entity, httpChannel.getResponse());
+				writeBodyBefore(httpChannel, b);
+				getMessageConverter().write(entity.getBody(), entity.getContentType(), httpChannel.getResponse());
+			}
 		} else {
 			writeBodyBefore(httpChannel, b);
 			writeBody(httpChannel, b);

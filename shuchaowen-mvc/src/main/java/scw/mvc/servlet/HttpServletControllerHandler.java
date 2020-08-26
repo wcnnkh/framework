@@ -5,6 +5,7 @@ import java.io.IOException;
 import scw.beans.BeanFactory;
 import scw.core.instance.annotation.Configuration;
 import scw.http.server.HttpServiceHandler;
+import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.mvc.HttpChannel;
@@ -15,13 +16,12 @@ import scw.servlet.http.ServletServerHttpResponse;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
-public class HttpServletControllerHandler extends HttpControllerHandler {
+public class HttpServletControllerHandler extends HttpControllerHandler implements HttpServiceHandlerAccept {
 
 	public HttpServletControllerHandler(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		super(beanFactory, propertyFactory);
 	}
 
-	@Override
 	public boolean accept(ServerHttpRequest request) {
 		return (request instanceof ServletServerHttpRequest);
 	}

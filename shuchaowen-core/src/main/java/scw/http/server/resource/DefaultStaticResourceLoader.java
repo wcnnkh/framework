@@ -13,12 +13,14 @@ public class DefaultStaticResourceLoader extends AbstractStaticResourceLoader {
 		this.resourceLoader = ResourceUtils.getResourceOperations();
 	}
 
-	public DefaultStaticResourceLoader(String resourceRoot,
-			String[] resourcePath, String defaultFileName,
+	public DefaultStaticResourceLoader(String root, String... paths) {
+		this(root, paths, null, null);
+	}
+
+	public DefaultStaticResourceLoader(String resourceRoot, String[] resourcePath, String defaultFileName,
 			ResourceLoader resourceLoader) {
 		super(resourceRoot, resourcePath, defaultFileName);
-		this.resourceLoader = resourceLoader == null ? ResourceUtils
-				.getResourceOperations() : resourceLoader;
+		this.resourceLoader = resourceLoader == null ? ResourceUtils.getResourceOperations() : resourceLoader;
 	}
 
 	@Override

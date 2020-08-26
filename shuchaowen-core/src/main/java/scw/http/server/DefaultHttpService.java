@@ -9,7 +9,7 @@ import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
 import scw.http.server.cors.CorsServiceInterceptor;
 import scw.http.server.resource.DefaultStaticResourceLoader;
-import scw.http.server.resource.StaticResourceHttpServerHandler;
+import scw.http.server.resource.StaticResourceHttpServiceHandler;
 import scw.http.server.resource.StaticResourceLoader;
 import scw.value.property.PropertyFactory;
 
@@ -24,14 +24,16 @@ public class DefaultHttpService implements HttpService {
 		StaticResourceLoader staticResourceLoader = beanFactory.isInstance(StaticResourceLoader.class)
 				? beanFactory.getInstance(StaticResourceLoader.class)
 				: new DefaultStaticResourceLoader(propertyFactory);
-		StaticResourceHttpServerHandler resourceHandler = new StaticResourceHttpServerHandler(staticResourceLoader);
+		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler(staticResourceLoader);
 		handlerAccessor.bind(resourceHandler);
 		interceptors.add(new CorsServiceInterceptor(beanFactory, propertyFactory));
 		interceptors
 				.addAll(InstanceUtils.getConfigurationList(HttpServiceInterceptor.class, beanFactory, propertyFactory));
 		interceptors = Arrays.asList(interceptors.toArray(new HttpServiceInterceptor[0]));
-		handlerAccessor
-				.bind(InstanceUtils.getConfigurationList(HttpServiceHandler.class, beanFactory, propertyFactory));
+		
+		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils.getConfigurationList(HttpServiceHandler.class,
+				beanFactory, propertyFactory);
+		handlerAccessor.bind(httpServiceHandlers);
 	}
 
 	public final HttpServiceHandlerAccessor getHandlerAccessor() {

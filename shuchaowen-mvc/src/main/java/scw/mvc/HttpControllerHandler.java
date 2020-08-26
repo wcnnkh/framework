@@ -8,7 +8,6 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.instance.InstanceUtils;
 import scw.http.server.HttpServiceHandler;
-import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
@@ -33,7 +32,7 @@ import scw.result.Result;
 import scw.util.MultiIterable;
 import scw.value.property.PropertyFactory;
 
-public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
+public class HttpControllerHandler implements HttpServiceHandler {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final LinkedList<ActionLookup> actionLookups = new LinkedList<ActionLookup>();
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
@@ -52,7 +51,8 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		this.notFoundActionService = beanFactory.isInstance(NotFoundActionService.class)
 				? beanFactory.getInstance(NotFoundActionService.class) : new DefaultNotfoundActionService();
 
-		this.actionInterceptor.addAll(InstanceUtils.getConfigurationList(ActionInterceptor.class, beanFactory, propertyFactory));
+		this.actionInterceptor
+				.addAll(InstanceUtils.getConfigurationList(ActionInterceptor.class, beanFactory, propertyFactory));
 
 		this.actionLookups.addAll(InstanceUtils.getConfigurationList(ActionLookup.class, beanFactory, propertyFactory));
 
@@ -71,10 +71,6 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 
 	public void setJsonSupport(JSONSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
-	}
-
-	public boolean accept(ServerHttpRequest request) {
-		return true;
 	}
 
 	public void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
