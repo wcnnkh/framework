@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
@@ -12,6 +11,7 @@ import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.io.serialzer.Serializer;
 import scw.util.StringCodec;
+import scw.value.AnyValue;
 
 public class RedisCASOperations implements CASOperations {
 	private static final String CAS_IS_NULL = "if (" + RedisUtils.isNullScript("cas") + ") then cas = 0 end";
@@ -46,34 +46,38 @@ public class RedisCASOperations implements CASOperations {
 	}
 
 	public boolean cas(String key, Object value, int exp, long cas) {
-		long v;
+		AnyValue[] values;
 		if (exp > 0) {
-			v = (Long) objectOperations.eval(CAS_EXP_SCRIPT,
-					Arrays.asList(key, CAS_KEY_PREFIX + key, cas + "", exp + ""), Arrays.asList(value));
+			values = objectOperations.eval(CAS_EXP_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + "", exp + ""),
+					Arrays.asList(value));
 		} else {
-			v = (Long) objectOperations.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
+			values = objectOperations.eval(CAS_SCRIPT, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""),
 					Arrays.asList(value));
 		}
-		return v == 1;
+		return values.length == 0 ? false : values[0].getAsBooleanValue();
 	}
 
 	public boolean delete(String key, long cas) {
-		long v = (Long) objectOperations.eval(CAS_DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""), null);
-		return v == 1;
+		AnyValue[] values = objectOperations.eval(CAS_DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key, cas + ""), null);
+		if (values.length == 0) {
+			return false;
+		}
+
+		return values[0].getAsBooleanValue();
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> CAS<T> get(String key) {
-		List<Object> list = (List<Object>) objectOperations.eval(CAS_GET, Arrays.asList(key, CAS_KEY_PREFIX + key),
-				null);
-		if (CollectionUtils.isEmpty(list)) {
+		AnyValue[] values = objectOperations.eval(CAS_GET, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
+		if (values.length != 2) {
 			return null;
 		}
 
-		byte[] v = (byte[]) list.get(0);
-		long version = Long.parseLong(stringCodec.decode((byte[]) list.get(1)));
+		byte[] v0 = values[0].getAsObject(byte[].class);
+		byte[] v1 = values[1].getAsObject(byte[].class);
+		long version = Long.parseLong(stringCodec.decode(v1));
 		try {
-			return new CAS<T>(version, v == null ? null : (T) serializer.deserialize(v));
+			return new CAS<T>(version, v0 == null ? null : (T) serializer.deserialize(v0));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -89,22 +93,22 @@ public class RedisCASOperations implements CASOperations {
 	}
 
 	public boolean delete(String key) {
-		long v = (Long) objectOperations.eval(DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
-		return v == 1;
+		AnyValue[] values = objectOperations.eval(DELETE, Arrays.asList(key, CAS_KEY_PREFIX + key), null);
+		return values.length == 0 ? false : values[0].getAsBooleanValue();
 	}
 
 	public boolean add(String key, Object value, int exp) {
-		long v;
+		AnyValue[] values;
 		if (exp > 0) {
-			v = (Long) objectOperations.eval(ADD_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, exp + ""),
+			values = objectOperations.eval(ADD_EXP, Arrays.asList(key, CAS_KEY_PREFIX + key, exp + ""),
 					Arrays.asList(value));
 		} else {
-			v = (Long) objectOperations.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
+			values = objectOperations.eval(ADD, Arrays.asList(key, CAS_KEY_PREFIX + key), Arrays.asList(value));
 		}
-		return v == 1;
+
+		return values.length == 0 ? false : values[0].getAsBooleanValue();
 	}
 
-	// TODO 后面改成lua脚本
 	@SuppressWarnings("unchecked")
 	public <T> Map<String, CAS<T>> get(Collection<String> keys) {
 		if (CollectionUtils.isEmpty(keys)) {

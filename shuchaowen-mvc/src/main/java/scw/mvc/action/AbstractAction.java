@@ -19,7 +19,7 @@ public abstract class AbstractAction implements Action {
 	private final AnnotatedElement targetClassAnnotatedElement;
 	private final AnnotatedElement methodAnnotatedElement;
 	private final ParameterDescriptors parameterDescriptors;
-	protected Collection<ActionFilter> actionFilters = new LinkedHashSet<ActionFilter>(4);
+	protected Collection<ActionInterceptor> actionInterceptor = new LinkedHashSet<ActionInterceptor>(4);
 
 	public AbstractAction(Class<?> sourceClass, Method method) {
 		this.sourceClass = sourceClass;
@@ -31,11 +31,11 @@ public abstract class AbstractAction implements Action {
 	}
 
 	public void optimization() {
-		this.actionFilters = Arrays.asList(actionFilters.toArray(new ActionFilter[0]));
+		this.actionInterceptor = Arrays.asList(actionInterceptor.toArray(new ActionInterceptor[0]));
 	}
 
-	public Iterable<? extends ActionFilter> getActionFilters() {
-		return Collections.unmodifiableCollection(actionFilters);
+	public Iterable<? extends ActionInterceptor> getActionInterceptors() {
+		return Collections.unmodifiableCollection(actionInterceptor);
 	}
 
 	public AnnotatedElement getAnnotatedElement() {

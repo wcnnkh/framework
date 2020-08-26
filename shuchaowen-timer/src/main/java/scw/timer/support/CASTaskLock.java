@@ -28,7 +28,8 @@ public class CASTaskLock extends AbstractLock {
 		}
 	}
 
-	public void unlock() {
+	public boolean unlock() {
+		return true;
 	}
 
 }

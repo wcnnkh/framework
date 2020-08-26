@@ -13,8 +13,8 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.XUtils;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
+import scw.mvc.annotation.ActionInterceptors;
 import scw.mvc.annotation.Controller;
-import scw.mvc.annotation.Filters;
 import scw.mvc.annotation.Methods;
 
 public class DefaultAction extends BeanAction {
@@ -41,7 +41,7 @@ public class DefaultAction extends BeanAction {
 		methodHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
 				methodController.value(),
 				Arrays.asList(methodController.methods())));
-		this.actionFilters.addAll(getControllerActionFilters());
+		this.actionInterceptor.addAll(getControllerActionFilters());
 	}
 	
 	@Override
@@ -64,13 +64,13 @@ public class DefaultAction extends BeanAction {
 		return descriptors;
 	}
 
-	protected List<ActionFilter> getControllerActionFilters() {
-		Filters filters = getTargetClassAnnotatedElement().getAnnotation(
-				Filters.class);
-		LinkedList<ActionFilter> list = new LinkedList<ActionFilter>();
-		if (filters != null) {
-			for (Class<? extends ActionFilter> f : filters.value()) {
-				if (ActionFilter.class.isAssignableFrom(f)) {
+	protected List<ActionInterceptor> getControllerActionFilters() {
+		ActionInterceptors actionInterceptors = getTargetClassAnnotatedElement().getAnnotation(
+				ActionInterceptors.class);
+		LinkedList<ActionInterceptor> list = new LinkedList<ActionInterceptor>();
+		if (actionInterceptors != null) {
+			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
+				if (ActionInterceptor.class.isAssignableFrom(f)) {
 					list.add(getBeanFactory().getInstance(f));
 				}
 			}
@@ -79,18 +79,18 @@ public class DefaultAction extends BeanAction {
 		Controller controller = getTargetClassAnnotatedElement().getAnnotation(
 				Controller.class);
 		if (controller != null) {
-			for (Class<? extends ActionFilter> f : controller.filters()) {
-				if (ActionFilter.class.isAssignableFrom(f)) {
+			for (Class<? extends ActionInterceptor> f : controller.interceptors()) {
+				if (ActionInterceptor.class.isAssignableFrom(f)) {
 					list.add(getBeanFactory().getInstance(f));
 				}
 			}
 		}
 
-		filters = getMethodAnnotatedElement().getAnnotation(Filters.class);
-		if (filters != null) {
+		actionInterceptors = getMethodAnnotatedElement().getAnnotation(ActionInterceptors.class);
+		if (actionInterceptors != null) {
 			list.clear();
-			for (Class<? extends ActionFilter> f : filters.value()) {
-				if (ActionFilter.class.isAssignableFrom(f)) {
+			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
+				if (ActionInterceptor.class.isAssignableFrom(f)) {
 					list.add(getBeanFactory().getInstance(f));
 				}
 			}
@@ -99,8 +99,8 @@ public class DefaultAction extends BeanAction {
 		controller = getMethodAnnotatedElement()
 				.getAnnotation(Controller.class);
 		if (controller != null) {
-			for (Class<? extends ActionFilter> f : controller.filters()) {
-				if (ActionFilter.class.isAssignableFrom(f)) {
+			for (Class<? extends ActionInterceptor> f : controller.interceptors()) {
+				if (ActionInterceptors.class.isAssignableFrom(f)) {
 					list.add(getBeanFactory().getInstance(f));
 				}
 			}

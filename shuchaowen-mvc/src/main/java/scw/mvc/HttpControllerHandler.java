@@ -18,9 +18,10 @@ import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
-import scw.mvc.action.ActionFilter;
-import scw.mvc.action.ActionFilterChain;
+import scw.mvc.action.ActionInterceptor;
+import scw.mvc.action.ActionInterceptorChain;
 import scw.mvc.action.ActionLookup;
+import scw.mvc.action.ActionParameters;
 import scw.mvc.action.DefaultNotfoundActionService;
 import scw.mvc.action.NotFoundActionService;
 import scw.mvc.exception.ExceptionHandler;
@@ -35,7 +36,7 @@ import scw.value.property.PropertyFactory;
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final LinkedList<ActionLookup> actionLookups = new LinkedList<ActionLookup>();
-	protected final LinkedList<ActionFilter> actionFilters = new LinkedList<ActionFilter>();
+	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	protected final LinkedList<HttpControllerOutput> httpControllerOutputs = new LinkedList<HttpControllerOutput>();
 
@@ -51,7 +52,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		this.notFoundActionService = beanFactory.isInstance(NotFoundActionService.class)
 				? beanFactory.getInstance(NotFoundActionService.class) : new DefaultNotfoundActionService();
 
-		this.actionFilters.addAll(InstanceUtils.getConfigurationList(ActionFilter.class, beanFactory, propertyFactory));
+		this.actionInterceptor.addAll(InstanceUtils.getConfigurationList(ActionInterceptor.class, beanFactory, propertyFactory));
 
 		this.actionLookups.addAll(InstanceUtils.getConfigurationList(ActionLookup.class, beanFactory, propertyFactory));
 
@@ -100,11 +101,11 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 				}
 			} else {
 				@SuppressWarnings("unchecked")
-				MultiIterable<ActionFilter> filters = new MultiIterable<ActionFilter>(actionFilters,
-						action.getActionFilters());
+				MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptor,
+						action.getActionInterceptors());
+				ActionParameters parameters = new ActionParameters();
 				try {
-					Object[] args = httpChannel.getParameters(action.getParameterDescriptors());
-					message = new ActionFilterChain(filters.iterator()).doFilter(httpChannel, action, args);
+					message = new ActionInterceptorChain(filters.iterator()).intercept(httpChannel, action, parameters);
 				} catch (Throwable e) {
 					message = doError(httpChannel, action, e);
 				}

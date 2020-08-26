@@ -1,4 +1,6 @@
-package scw.core;
+package scw.lang;
+
+import scw.core.Assert;
 
 /**
  * {@link ThreadLocal} subclass that exposes a specified name

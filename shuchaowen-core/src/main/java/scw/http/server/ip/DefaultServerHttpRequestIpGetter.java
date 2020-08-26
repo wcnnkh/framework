@@ -3,8 +3,8 @@ package scw.http.server.ip;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.event.support.DynamicValue;
 import scw.http.server.ServerHttpRequest;
-import scw.value.property.PropertyFactory.DynamicValue;
 
 public class DefaultServerHttpRequestIpGetter implements ServerHttpRequestIpGetter {
 	

@@ -1,4 +1,4 @@
-package scw.core;
+package scw.core.parameter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +15,8 @@ import scw.asm.Label;
 import scw.asm.MethodVisitor;
 import scw.asm.Opcodes;
 import scw.asm.Type;
+import scw.core.BridgeMethodResolver;
+import scw.core.Constants;
 import scw.core.utils.ClassUtils;
 
 /**

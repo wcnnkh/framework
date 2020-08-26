@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import scw.transaction.RollbackOnlyResult;
 
-public class Result implements Serializable, RollbackOnlyResult {
+public class Result implements Serializable, RollbackOnlyResult, ErrorCode {
 	private static final long serialVersionUID = 1L;
 	private boolean success;
 	private long code;

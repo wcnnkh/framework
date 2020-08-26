@@ -7,9 +7,11 @@ import java.util.Set;
 
 import redis.clients.jedis.JedisCluster;
 import scw.data.redis.AbstractRedisOperations;
+import scw.data.redis.RedisUtils;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
 import scw.data.redis.jedis.JedisUtils;
+import scw.value.AnyValue;
 
 public final class JedisClusterBinaryOperations extends AbstractRedisOperations<byte[], byte[]> {
 	private final JedisClusterResourceFactory jedisClusterResourceFactory;
@@ -310,11 +312,11 @@ public final class JedisClusterBinaryOperations extends AbstractRedisOperations<
 		}
 	}
 
-	public Object eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
+	public AnyValue[] eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
 		JedisCluster jedisCluster = null;
 		try {
 			jedisCluster = jedisClusterResourceFactory.getResource();
-			return jedisCluster.eval(script, keys, args);
+			return RedisUtils.wrapper(jedisCluster.eval(script, keys, args));
 		} finally {
 			jedisClusterResourceFactory.release(jedisCluster);
 		}

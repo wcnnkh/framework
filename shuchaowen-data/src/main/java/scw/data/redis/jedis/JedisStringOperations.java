@@ -8,8 +8,10 @@ import java.util.Set;
 
 import redis.clients.jedis.Jedis;
 import scw.data.redis.AbstractRedisOperations;
+import scw.data.redis.RedisUtils;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
+import scw.value.AnyValue;
 
 public final class JedisStringOperations extends AbstractRedisOperations<String, String>{
 	private final JedisResourceFactory jedisResourceFactory;
@@ -311,12 +313,13 @@ public final class JedisStringOperations extends AbstractRedisOperations<String,
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object eval(String script, List<String> keys, List<String> args) {
+	public AnyValue[] eval(String script, List<String> keys, List<String> args) {
 		Jedis jedis = null;
 		try {
 			jedis = jedisResourceFactory.getResource();
-			return jedis.eval(script, keys == null ? Collections.EMPTY_LIST : keys,
+			Object value = jedis.eval(script, keys == null ? Collections.EMPTY_LIST : keys,
 					args == null ? Collections.EMPTY_LIST : args);
+			return RedisUtils.wrapper(value);
 		} finally {
 			jedisResourceFactory.release(jedis);
 		}

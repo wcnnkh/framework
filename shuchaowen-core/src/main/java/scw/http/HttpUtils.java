@@ -21,6 +21,7 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
+import scw.event.support.DynamicValue;
 import scw.http.client.HttpClient;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ip.ServerHttpRequestIpGetter;
@@ -32,7 +33,6 @@ import scw.net.uri.UriComponentsBuilder;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.ToMap;
-import scw.value.property.PropertyFactory.DynamicValue;
 
 public final class HttpUtils {
 	private HttpUtils() {

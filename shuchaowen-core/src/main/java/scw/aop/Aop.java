@@ -35,8 +35,10 @@ public abstract class Aop implements ProxyFactory {
 		return getProxy(clazz, interfaces, Arrays.asList(preFilter), filters);
 	}
 
+	@SuppressWarnings("unchecked")
 	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> filters) {
-		return getProxy(clazz, interfaces, getFilters(), filters);
+		return getProxyFactory().getProxy(clazz, interfaces,
+				new MultiIterable<MethodInterceptor>(getFilters(), filters));
 	}
 
 	public final Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor... filters) {
@@ -187,7 +189,8 @@ public abstract class Aop implements ProxyFactory {
 			this.instance = instance;
 		}
 
-		public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
+		public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain)
+				throws Throwable {
 			MethodInvoker proxyInvoker = new DefaultMethodInvoker(instance, invoker.getSourceClass(),
 					invoker.getMethod(), true);
 			return filterChain.intercept(proxyInvoker, args);

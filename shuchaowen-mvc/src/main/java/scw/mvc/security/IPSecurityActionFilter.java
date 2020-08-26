@@ -6,15 +6,16 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
-import scw.mvc.action.ActionFilter;
-import scw.mvc.action.ActionFilterAccept;
-import scw.mvc.action.ActionFilterChain;
+import scw.mvc.action.ActionInterceptor;
+import scw.mvc.action.ActionInterceptorAccept;
+import scw.mvc.action.ActionInterceptorChain;
+import scw.mvc.action.ActionParameters;
 import scw.mvc.annotation.IPSecurity;
 import scw.security.ip.IPValidationFailedException;
 import scw.security.ip.IPVerification;
 
 @Configuration(order=Integer.MAX_VALUE)
-public final class IPSecurityActionFilter implements ActionFilter, ActionFilterAccept{
+public final class IPSecurityActionFilter implements ActionInterceptor, ActionInterceptorAccept{
 	private static Logger logger = LoggerFactory.getLogger(IPSecurityActionFilter.class);
 	private BeanFactory beanFactory;
 	
@@ -22,11 +23,11 @@ public final class IPSecurityActionFilter implements ActionFilter, ActionFilterA
 		this.beanFactory = beanFactory;
 	}
 	
-	public boolean isAccept(HttpChannel httpChannel, Action action, Object[] args) {
+	public boolean isAccept(HttpChannel httpChannel, Action action, ActionParameters parameters) {
 		return action.getAnnotatedElement().getAnnotation(IPSecurity.class) != null;
 	}
 	
-	public Object doFilter(HttpChannel httpChannel, Action action, Object[] args, ActionFilterChain filterChain)
+	public Object intercept(HttpChannel httpChannel, Action action, ActionParameters parameters, ActionInterceptorChain filterChain)
 			throws Throwable {
 		IPSecurity ipSecurity = action.getAnnotatedElement().getAnnotation(IPSecurity.class);
 		if (ipSecurity != null) {
@@ -35,7 +36,7 @@ public final class IPSecurityActionFilter implements ActionFilter, ActionFilterA
 				throw new IPValidationFailedException("ip验证失败");
 			}
 		}
-		return filterChain.doFilter(httpChannel, action, args);
+		return filterChain.intercept(httpChannel, action, parameters);
 	}
 
 	private boolean verificationIP(String ip, IPSecurity ipSecurity) {

@@ -34,6 +34,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
+import scw.event.support.DynamicValue;
 import scw.http.HttpMethod;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
@@ -57,7 +58,6 @@ import scw.value.AbstractStringValue;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.property.PropertyFactory.DynamicValue;
 
 public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends ServerHttpResponse>
 		extends AbstractParameterFactory implements HttpChannel, Destroy {

@@ -3,11 +3,12 @@ package scw.mvc.logger;
 import scw.core.instance.annotation.Configuration;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
-import scw.mvc.action.ActionFilter;
-import scw.mvc.action.ActionFilterChain;
+import scw.mvc.action.ActionInterceptor;
+import scw.mvc.action.ActionInterceptorChain;
+import scw.mvc.action.ActionParameters;
 
 @Configuration(order = Integer.MAX_VALUE)
-public class ActionLogFilter implements ActionFilter {
+public class ActionLogFilter implements ActionInterceptor {
 	private ActionLogService actionLogService;
 	private ActionLogFactory actionLogFactory;
 
@@ -16,11 +17,11 @@ public class ActionLogFilter implements ActionFilter {
 		this.actionLogService = actionLogService;
 	}
 
-	public Object doFilter(HttpChannel httpChannel, Action action, Object[] args, ActionFilterChain filterChain)
-			throws Throwable {
+	public Object intercept(HttpChannel httpChannel, Action action, ActionParameters parameters,
+			ActionInterceptorChain chain) throws Throwable {
 		ActionLog log = null;
 		try {
-			Object response = filterChain.doFilter(httpChannel, action, args);
+			Object response = chain.intercept(httpChannel, action, parameters);
 			log = actionLogFactory.createActionLog(action, httpChannel, response, null);
 			return response;
 		} catch (Throwable e) {

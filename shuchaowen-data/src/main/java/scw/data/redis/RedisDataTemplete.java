@@ -62,20 +62,11 @@ public class RedisDataTemplete implements DataTemplete {
 	}
 
 	public long incr(String key, long delta, long initialValue) {
-		return RedisUtils.incr(redis.getStringOperations(), key, delta, initialValue);
+		return RedisUtils.incr(redis.getStringOperations(), key, delta, initialValue, 0);
 	}
 
 	public long incr(String key, long delta, long initialValue, int exp) {
-		Long ttl = redis.getObjectOperations().ttl(key);
-		if (ttl == null || ttl <= 0) {
-			ttl = (long) exp;
-		}
-
-		try {
-			return RedisUtils.incr(redis.getStringOperations(), key, delta, initialValue);
-		} finally {
-			redis.getObjectOperations().expire(key, ttl.intValue());
-		}
+		return RedisUtils.incr(redis.getStringOperations(), key, delta, initialValue, exp);
 	}
 
 	public long decr(String key, long delta) {
@@ -83,20 +74,11 @@ public class RedisDataTemplete implements DataTemplete {
 	}
 
 	public long decr(String key, long delta, long initialValue) {
-		return RedisUtils.decr(redis.getStringOperations(), key, delta, initialValue);
+		return RedisUtils.decr(redis.getStringOperations(), key, delta, initialValue, 0);
 	}
 
 	public long decr(String key, long delta, long initialValue, int exp) {
-		Long ttl = redis.getObjectOperations().ttl(key);
-		if (ttl == null || ttl <= 0) {
-			ttl = (long) exp;
-		}
-
-		try {
-			return RedisUtils.decr(redis.getStringOperations(), key, delta, initialValue);
-		} finally {
-			redis.getObjectOperations().expire(key, ttl.intValue());
-		}
+		return RedisUtils.decr(redis.getStringOperations(), key, delta, initialValue, exp);
 	}
 
 	public void delete(Collection<String> keys) {

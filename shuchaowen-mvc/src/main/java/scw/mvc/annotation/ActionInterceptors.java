@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionInterceptor;
 
 /**
  * 此值会覆盖controller中的内容,如果要追加内容请在action中添加
@@ -14,10 +14,10 @@ import scw.mvc.action.ActionFilter;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Filters {
+public @interface ActionInterceptors {
 	/**
 	 * 此值会覆盖controller中的内容,如果要追加内容请在action中添加
 	 * @return
 	 */
-	public Class<? extends ActionFilter>[] value() default {};
+	public Class<? extends ActionInterceptor>[] value() default {};
 }

@@ -28,10 +28,12 @@ public final class JdkLockFactory extends AbstractLockFactory {
 			return atomicBoolean.compareAndSet(false, true);
 		}
 
-		public void unlock() {
+		public boolean unlock() {
 			if (atomicBoolean.compareAndSet(true, false)) {
 				lockMap.remove(name);
+				return true;
 			}
+			return false;
 		}
 	}
 }

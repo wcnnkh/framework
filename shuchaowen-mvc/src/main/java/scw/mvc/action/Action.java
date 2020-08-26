@@ -34,5 +34,5 @@ public interface Action extends MethodInvoker{
 
 	Collection<HttpControllerDescriptor> getMethodHttpControllerDescriptors();
 	
-	Iterable<? extends ActionFilter> getActionFilters();
+	Iterable<? extends ActionInterceptor> getActionInterceptors();
 }

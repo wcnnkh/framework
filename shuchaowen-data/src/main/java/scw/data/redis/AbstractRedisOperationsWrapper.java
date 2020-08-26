@@ -16,6 +16,7 @@ import java.util.Set;
 import scw.core.utils.CollectionUtils;
 import scw.data.redis.enums.EXPX;
 import scw.data.redis.enums.NXXX;
+import scw.value.AnyValue;
 
 public abstract class AbstractRedisOperationsWrapper<K, WK, V, WV> implements RedisOperations<K, V> {
 	protected abstract WK encodeKey(K key);
@@ -292,7 +293,7 @@ public abstract class AbstractRedisOperationsWrapper<K, WK, V, WV> implements Re
 		return getRedisOperations().llen(encodeKey(key));
 	}
 
-	public Object eval(K script, List<K> keys, List<V> args) {
+	public AnyValue[] eval(K script, List<K> keys, List<V> args) {
 		return getRedisOperations().eval(encodeKey(script), encodeKey(keys), encodeValue(args));
 	}
 

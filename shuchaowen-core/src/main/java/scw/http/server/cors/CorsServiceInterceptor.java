@@ -5,15 +5,15 @@ import java.io.IOException;
 import scw.beans.BeanFactory;
 import scw.core.utils.StringUtils;
 import scw.http.server.HttpService;
-import scw.http.server.HttpServiceFilter;
+import scw.http.server.HttpServiceInterceptor;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.value.property.PropertyFactory;
 
-public final class CorsServiceFilter implements HttpServiceFilter {
+public final class CorsServiceInterceptor implements HttpServiceInterceptor {
 	private final CorsConfigFactory corsConfigFactory;
 
-	public CorsServiceFilter(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	public CorsServiceInterceptor(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		String beanName = propertyFactory.getString("mvc.cross-domain.factory");
 		if (StringUtils.isEmpty(beanName)) {
 			this.corsConfigFactory = beanFactory.isInstance(CorsConfigFactory.class)
@@ -23,11 +23,11 @@ public final class CorsServiceFilter implements HttpServiceFilter {
 		}
 	}
 
-	public CorsServiceFilter(CorsConfigFactory corsConfigFactory) {
+	public CorsServiceInterceptor(CorsConfigFactory corsConfigFactory) {
 		this.corsConfigFactory = corsConfigFactory;
 	}
 
-	public void doFilter(ServerHttpRequest request, ServerHttpResponse response, HttpService httpService)
+	public void intercept(ServerHttpRequest request, ServerHttpResponse response, HttpService httpService)
 			throws IOException {
 		if (corsConfigFactory != null) {
 			CorsConfig corsConfig = corsConfigFactory.getCorsConfig(request);

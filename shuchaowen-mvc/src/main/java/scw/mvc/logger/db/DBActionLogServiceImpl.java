@@ -9,6 +9,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.db.DB;
+import scw.event.support.DynamicValue;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Copy;
@@ -23,7 +24,6 @@ import scw.timer.Task;
 import scw.timer.Timer;
 import scw.timer.support.SimpleCrontabConfig;
 import scw.util.Pagination;
-import scw.value.property.PropertyFactory.DynamicValue;
 
 public class DBActionLogServiceImpl implements ActionLogService, Task {
 	private static Logger logger = LoggerUtils.getLogger(DBActionLogServiceImpl.class);

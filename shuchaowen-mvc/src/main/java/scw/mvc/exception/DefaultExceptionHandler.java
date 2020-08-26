@@ -3,10 +3,10 @@ package scw.mvc.exception;
 import java.io.IOException;
 
 import scw.core.instance.annotation.Configuration;
-import scw.core.utils.StringUtils;
 import scw.lang.ParameterException;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
+import scw.result.ErrorCode;
 import scw.result.ResultFactory;
 import scw.security.authority.AuthorizationFailureException;
 
@@ -29,14 +29,11 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 			return resultFactory.parameterError();
 		} else if (error instanceof AuthorizationFailureException) {
 			return resultFactory.authorizationFailure();
-		} else if (error instanceof ErrorMessage) {
-			String msg = error.getMessage();
-			if (error instanceof ErrorMessage) {
-				msg = ((ErrorMessage) error).getErrorMessage();
+		} else {
+			if (error instanceof ErrorCode) {
+				return resultFactory.error(((ErrorCode) error).getCode(), error.getLocalizedMessage());
 			}
-
-			return StringUtils.isEmpty(msg) ? resultFactory.error() : resultFactory.error(msg);
+			return resultFactory.error(error.getLocalizedMessage());
 		}
-		return resultFactory.error();
 	}
 }

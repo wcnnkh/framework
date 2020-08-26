@@ -10,6 +10,7 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
+import scw.event.support.DynamicValue;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.HttpResponseEntity;
@@ -24,7 +25,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.InetUtils;
 import scw.net.message.converter.MultiMessageConverter;
-import scw.value.property.PropertyFactory.DynamicValue;
 
 public abstract class AbstractHttpClient extends HttpClientConfigAccessor implements HttpClient {
 	static final DynamicValue<String> DEFAULT_UA = GlobalPropertyFactory.getInstance().getDynamicValue(

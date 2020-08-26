@@ -7,6 +7,7 @@ import scw.aop.MethodInvoker;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
 import scw.core.instance.annotation.Configuration;
+import scw.data.TemporaryCounter;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.security.limit.annotation.CountLimitSecurity;
@@ -27,53 +28,40 @@ public final class CountLimitMethodInterceptor implements MethodInterceptor, Met
 	}
 
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
+		return getCountLimitSecurity(invoker) != null;
+	}
+
+	private CountLimitSecurity getCountLimitSecurity(MethodInvoker invoker) {
 		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
 				invoker.getSourceClass(), invoker.getMethod());
 		if (countLimitSecurity == null) {
-			return false;
+			return null;
 		}
 
-		return true;
+		return countLimitSecurity.enable() ? countLimitSecurity : null;
 	}
 
 	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
-		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
-				invoker.getSourceClass(), invoker.getMethod());
+		CountLimitSecurity countLimitSecurity = getCountLimitSecurity(invoker);
 		if (countLimitSecurity == null) {
 			return filterChain.intercept(invoker, args);
 		}
 
-		if (!instanceFactory.isInstance(countLimitSecurity.value())) {
-			logger.warn("初始化失败：" + countLimitSecurity.value());
-			throw new CountLimitException("系统错误");
-		}
-
-		CountLimitConfigFactory countLimitConfigFactory = instanceFactory.getInstance(countLimitSecurity.value());
-		CountLimitConfig config = countLimitConfigFactory.getCountLimitConfig(invoker.getSourceClass(),
-				invoker.getMethod(), args);
-		if (config == null) {
-			return filterChain.intercept(invoker, args);
-		}
-
-		if (!instanceFactory.isInstance(countLimitSecurity.factory())) {
-			logger.warn("初始化失败：" + countLimitSecurity.factory());
-			throw new CountLimitException("系统错误");
-		}
-
+		TemporaryCounter temporaryCounter = instanceFactory.getInstance(countLimitSecurity.counter());
 		CountLimitFactory countLimitFactory = instanceFactory.getInstance(countLimitSecurity.factory());
-		long count = countLimitFactory.incrAndGet(config.getName(), config.getTimeout(), config.getTimeUnit());
-		boolean b = count <= config.getMaxCount();
+		String key = countLimitFactory.getKey(countLimitSecurity, invoker, args);
+		int exp = (int) countLimitSecurity.timeUnit().toSeconds(countLimitSecurity.period());
+		long count = temporaryCounter.incr(key, 1, 1, exp);
 		if (logger.isDebugEnabled()) {
-			logger.debug("count limit key={}, method={}, max={}, count={}", config.getName(), invoker.getMethod(),
-					config.getMaxCount(), count);
+			logger.debug("count limit key={}, method={}, max={}, count={}", key, invoker.getMethod(),
+					countLimitSecurity.maxCount(), count);
 		}
 
-		if (b) {
-			return filterChain.intercept(invoker, args);
+		if (count > countLimitSecurity.maxCount()) {
+			logger.warn("Too frequent operation max={}, count={}, method={}", key, count, invoker.getMethod());
+			throw new CountLimitException("操作过于频繁");
 		}
-		logger.warn("Too frequent operation max={}, count={}, method={}", config.getMaxCount(), count,
-				invoker.getMethod());
-		throw new CountLimitException("操作过于频繁");
+		return filterChain.intercept(invoker, args);
 	}
 
 }
