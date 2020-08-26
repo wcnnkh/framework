@@ -13,10 +13,10 @@ import scw.mvc.view.View;
 import scw.result.Result;
 
 @Configuration(order=Integer.MAX_VALUE)
-public final class ResultFactoryActionFilter implements ActionInterceptor, ActionInterceptorAccept{
+public final class ResultFactoryActionInterceptor implements ActionInterceptor, ActionInterceptorAccept{
 	private BeanFactory beanFactory;
 	
-	public ResultFactoryActionFilter(BeanFactory beanFactory){
+	public ResultFactoryActionInterceptor(BeanFactory beanFactory){
 		this.beanFactory = beanFactory;
 	}
 	

@@ -15,11 +15,11 @@ import scw.security.ip.IPValidationFailedException;
 import scw.security.ip.IPVerification;
 
 @Configuration(order=Integer.MAX_VALUE)
-public final class IPSecurityActionFilter implements ActionInterceptor, ActionInterceptorAccept{
-	private static Logger logger = LoggerFactory.getLogger(IPSecurityActionFilter.class);
+public final class IPSecurityActionInterceptor implements ActionInterceptor, ActionInterceptorAccept{
+	private static Logger logger = LoggerFactory.getLogger(IPSecurityActionInterceptor.class);
 	private BeanFactory beanFactory;
 	
-	public IPSecurityActionFilter(BeanFactory beanFactory){
+	public IPSecurityActionInterceptor(BeanFactory beanFactory){
 		this.beanFactory = beanFactory;
 	}
 	

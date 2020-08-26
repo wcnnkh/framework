@@ -8,11 +8,11 @@ import scw.mvc.action.ActionInterceptorChain;
 import scw.mvc.action.ActionParameters;
 
 @Configuration(order = Integer.MAX_VALUE)
-public class ActionLogFilter implements ActionInterceptor {
+public class ActionLogInterceptor implements ActionInterceptor {
 	private ActionLogService actionLogService;
 	private ActionLogFactory actionLogFactory;
 
-	public ActionLogFilter(ActionLogService actionLogService, ActionLogFactory actionLogFactory) {
+	public ActionLogInterceptor(ActionLogService actionLogService, ActionLogFactory actionLogFactory) {
 		this.actionLogFactory = actionLogFactory;
 		this.actionLogService = actionLogService;
 	}
