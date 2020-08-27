@@ -3,6 +3,7 @@ package scw.mvc.exception;
 import java.io.IOException;
 
 import scw.core.instance.annotation.Configuration;
+import scw.lang.NestedExceptionUtils;
 import scw.lang.ParameterException;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
@@ -30,10 +31,12 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 		} else if (error instanceof AuthorizationFailureException) {
 			return resultFactory.authorizationFailure();
 		} else {
-			if (error instanceof ErrorCode) {
-				return resultFactory.error(((ErrorCode) error).getCode(), error.getLocalizedMessage());
+			Long code = error instanceof ErrorCode ? ((ErrorCode) error).getCode() : null;
+			String message = NestedExceptionUtils.getMostSpecificCause(error).getLocalizedMessage();
+			if (code != null) {
+				return resultFactory.error(code, message);
 			}
-			return resultFactory.error(error.getLocalizedMessage());
+			return resultFactory.error(message);
 		}
 	}
 }

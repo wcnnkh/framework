@@ -1,7 +1,6 @@
 package scw.security.limit;
 
 import scw.aop.MethodInvoker;
-import scw.core.Constants;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.security.limit.annotation.CountLimitParameter;
@@ -11,10 +10,6 @@ public class DefaultCountLimitFactory implements CountLimitFactory {
 
 	public String getKey(CountLimitSecurity countLimitSecurity, MethodInvoker invoker, Object[] args) {
 		StringBuilder sb = new StringBuilder();
-		if (Constants.DEFAULT_PREFIX != null) {
-			sb.append(Constants.DEFAULT_PREFIX);
-		}
-
 		sb.append("count-limit:");
 		sb.append(invoker.getMethod().getName());
 		ParameterDescriptor[] parameterConfigs = ParameterUtils.getParameterDescriptors(invoker.getMethod());

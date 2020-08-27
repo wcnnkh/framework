@@ -8,7 +8,6 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 
 public abstract class AbstractStringValue extends SupportDefaultValue {
-
 	public AbstractStringValue(Value defaultValue) {
 		super(defaultValue);
 	}
@@ -110,8 +109,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 	}
 
 	protected boolean parseBooleanValue(String value) {
-		return "1".equals(value) || "true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value)
-				|| "T".equalsIgnoreCase(value);
+		return StringUtils.parseBoolean(value);
 	}
 
 	public Boolean getAsBoolean() {

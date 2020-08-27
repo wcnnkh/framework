@@ -146,6 +146,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 					definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 				}
 				if (definition != null && definition.isInstance()) {
+					
+					logger.info("Auto {} impl {}", context.getTargetClass(), impl);
 					return definition;
 				}
 			}
@@ -174,6 +176,8 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 						if (definition == null) {
 							definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 						}
+						
+						logger.debug("Auto {} impl {}", context.getTargetClass(), impl);
 						return definition;
 					}
 				}
@@ -183,6 +187,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 					if (definition == null) {
 						definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 					}
+					logger.debug("Configuration {} impl {}", context.getTargetClass(), impl);
 					return definition;
 				}
 			}else{

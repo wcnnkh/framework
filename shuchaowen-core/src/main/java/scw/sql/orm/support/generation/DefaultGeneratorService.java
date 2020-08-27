@@ -1,7 +1,6 @@
 package scw.sql.orm.support.generation;
 
 import scw.aop.ProxyUtils;
-import scw.core.Constants;
 import scw.data.Counter;
 import scw.data.generator.SequenceId;
 import scw.data.generator.SequenceIdGenerator;
@@ -29,10 +28,6 @@ public class DefaultGeneratorService extends AbstractGeneratorService {
 
 	protected String getCacheKey(GeneratorContext generatorContext) {
 		StringBuilder sb = new StringBuilder(64);
-		if (Constants.DEFAULT_PREFIX != null) {
-			sb.append(Constants.DEFAULT_PREFIX);
-		}
-
 		sb.append("generator:");
 		sb.append(generatorContext.getColumn().getField().getSetter().getDeclaringClass().getName());
 		sb.append("&");

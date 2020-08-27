@@ -60,7 +60,7 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 
 		List<AuthorityTree<T>> treeList = new ArrayList<AuthorityTree<T>>(list.size());
 		for (T authority : list) {
-			treeList.add(new AuthorityTree<T>(authority, getAuthorityTreeList(authority.getId(), authorityFilter)));
+			treeList.add(new AuthorityTree<T>(authority, getAuthoritySubTreeList(authority.getId(), authorityFilter)));
 		}
 		return treeList;
 	}
@@ -85,7 +85,7 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 		return authorityFilter == null || authorityFilter.accept(authority);
 	}
 
-	public List<AuthorityTree<T>> getAuthorityTreeList(String id, AuthorityFilter<T> authorityFilter) {
+	public List<AuthorityTree<T>> getAuthoritySubTreeList(String id, AuthorityFilter<T> authorityFilter) {
 		List<T> list = getAuthoritySubList(id, authorityFilter);
 		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
@@ -93,7 +93,7 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 
 		List<AuthorityTree<T>> treeList = new ArrayList<AuthorityTree<T>>(list.size());
 		for (T authority : list) {
-			treeList.add(new AuthorityTree<T>(authority, getAuthorityTreeList(authority.getId(), authorityFilter)));
+			treeList.add(new AuthorityTree<T>(authority, getAuthoritySubTreeList(authority.getId(), authorityFilter)));
 		}
 		return treeList;
 	}
