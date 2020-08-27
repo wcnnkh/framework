@@ -1,26 +1,20 @@
 package scw.aop;
 
+import java.util.Arrays;
 
 public class DefaultAop extends Aop {
-	private final Filter[] filters;
-	private final ProxyFactory proxyFactory;
-	
-	public DefaultAop(Filter... filters) {
-		this(ProxyUtils.getProxyFactory(), filters);
+	private final Iterable<MethodInterceptor> filters;
+
+	public DefaultAop(MethodInterceptor... filters) {
+		this(Arrays.asList(filters));
 	}
 
-	public DefaultAop(ProxyFactory proxyFactory, Filter[] filters) {
+	public DefaultAop(Iterable<MethodInterceptor> filters) {
 		this.filters = filters;
-		this.proxyFactory = proxyFactory;
-	}
-	
-	@Override
-	public Filter[] getFilters() {
-		return filters.clone();
 	}
 
 	@Override
-	public ProxyFactory getProxyFactory() {
-		return proxyFactory;
+	public Iterable<MethodInterceptor> getFilters() {
+		return filters;
 	}
 }

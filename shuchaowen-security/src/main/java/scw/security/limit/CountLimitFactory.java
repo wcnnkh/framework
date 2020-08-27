@@ -1,10 +1,10 @@
 package scw.security.limit;
 
-import java.util.concurrent.TimeUnit;
-
+import scw.aop.MethodInvoker;
 import scw.beans.annotation.AutoImpl;
+import scw.security.limit.annotation.CountLimitSecurity;
 
 @AutoImpl({ DefaultCountLimitFactory.class })
 public interface CountLimitFactory {
-	long incrAndGet(String name, long timeout, TimeUnit timeUnit);
+	String getKey(CountLimitSecurity countLimitSecurity, MethodInvoker invoker, Object[] args);
 }

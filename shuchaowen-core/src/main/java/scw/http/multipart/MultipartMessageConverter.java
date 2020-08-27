@@ -20,6 +20,7 @@ import scw.core.utils.XUtils;
 import scw.http.DefaultHttpInputMessage;
 import scw.http.HttpInputMessage;
 import scw.io.IOUtils;
+import scw.io.Resource;
 import scw.lang.NotSupportedException;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -143,7 +144,20 @@ public class MultipartMessageConverter extends AbstractMessageConverter<Object> 
 			throws IOException {
 		FileItem item;
 		if (value instanceof File) {
+			File file = (File) value;
+			if(!file.exists()){
+				logger.info("non existent file: {}", file.getPath());
+				return ;
+			}
+			
 			item = new DefaultFileItem(fieldName, (File) value);
+		} else if(value instanceof Resource){
+			Resource resource = (Resource) value;
+			if(!resource.exists()){
+				logger.info("non existent resource: {}", resource.getDescription());
+				return ;
+			}
+			item = new ResourceFileItem(fieldName, resource);
 		} else {
 			item = new FormFileItem(fieldName, value, getCharset(outputMessage), getJsonSupport());
 		}

@@ -5,6 +5,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import scw.core.annotation.MultiAnnotatedElement;
+import scw.core.reflect.FieldHolder;
+import scw.core.reflect.MethodHolder;
 import scw.core.reflect.SerializableField;
 import scw.core.reflect.SerializableMethod;
 import scw.lang.NotSupportedException;
@@ -12,15 +14,15 @@ import scw.lang.NotSupportedException;
 public abstract class AbstractFieldDescriptor implements FieldDescriptor {
 	private static final long serialVersionUID = 1L;
 	private final Class<?> declaringClass;
-	private final SerializableField field;
-	private final SerializableMethod method;
+	private final FieldHolder field;
+	private final MethodHolder method;
 	private final AnnotatedElement annotatedElement;
 
 	public AbstractFieldDescriptor(Class<?> declaringClass, Field field, Method method) {
 		this.declaringClass = declaringClass;
 		this.annotatedElement = MultiAnnotatedElement.forAnnotatedElements(true, method, field);
-		this.field = field == null ? null : new SerializableField(declaringClass, field);
-		this.method = method == null ? null : new SerializableMethod(declaringClass, method);
+		this.field = field == null ? null : new SerializableField(field);
+		this.method = method == null ? null : new SerializableMethod(method);
 	}
 
 	public AnnotatedElement getAnnotatedElement() {

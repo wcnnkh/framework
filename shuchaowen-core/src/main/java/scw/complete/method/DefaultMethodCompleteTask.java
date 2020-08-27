@@ -6,8 +6,8 @@ public class DefaultMethodCompleteTask extends MethodCompleteTask {
 	private static final long serialVersionUID = 1L;
 	private final String beanName;
 
-	public DefaultMethodCompleteTask(Class<?> targetClass, Method method, String beanName, Object[] args) {
-		super(targetClass, method, args);
+	public DefaultMethodCompleteTask(Method method, String beanName, Object[] args) {
+		super(method, args);
 		this.beanName = beanName;
 	}
 

@@ -1,26 +1,29 @@
 package scw.hystrix;
 
-import scw.aop.ProxyInvoker;
-import scw.lang.NestedRuntimeException;
-
 import com.netflix.hystrix.HystrixCommand;
+
+import scw.aop.MethodInterceptorChain;
+import scw.aop.MethodInvoker;
+import scw.lang.NestedRuntimeException;
 
 public class HystrixFilterCommand extends HystrixCommand<Object> {
 	private Object fallback;
-	private ProxyInvoker invoker;
+	private MethodInvoker invoker;
 	private Object[] args;
+	private MethodInterceptorChain filterChain;
 
-	protected HystrixFilterCommand(Setter setter, Object fallback, ProxyInvoker invoker, Object[] args) {
+	protected HystrixFilterCommand(Setter setter, Object fallback, MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) {
 		super(setter);
 		this.fallback = fallback;
 		this.invoker = invoker;
 		this.args = args;
+		this.filterChain = filterChain;
 	}
 
 	@Override
 	protected Object run() throws Exception {
 		try {
-			return invoker.invoke(args);
+			return filterChain.intercept(invoker, args);
 		} catch (Throwable e) {
 			throw new NestedRuntimeException(e);
 		}

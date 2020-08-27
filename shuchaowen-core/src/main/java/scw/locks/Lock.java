@@ -186,5 +186,5 @@ public interface Lock {
 	 * violated. Any restrictions and the exception type must be documented by
 	 * that {@code Lock} implementation.
 	 */
-	void unlock();
+	boolean unlock();
 }

@@ -487,7 +487,7 @@ public final class ResourceUtils {
 
 		return new UnsafeByteArrayInputStream(data);
 	}
-	
+
 	public static void loadProperties(Properties properties, Resource resource, String charsetName) {
 		if (!resource.exists()) {
 			return;
@@ -522,5 +522,25 @@ public final class ResourceUtils {
 		} finally {
 			IOUtils.close(is);
 		}
+	}
+
+	public static String getContent(String location, Charset charset) {
+		Resource resource = getResourceOperations().getResource(location);
+		return getContent(resource, charset);
+	}
+
+	public static String getContent(String location, String charsetName) {
+		Resource resource = getResourceOperations().getResource(location);
+		return getContent(resource, charsetName);
+	}
+
+	public static List<String> getLines(String location, Charset charset) {
+		Resource resource = getResourceOperations().getResource(location);
+		return getLines(resource, charset);
+	}
+
+	public static List<String> getLines(String location, String charsetName) {
+		Resource resource = getResourceOperations().getResource(location);
+		return getLines(resource, charsetName);
 	}
 }

@@ -148,4 +148,19 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParam
 	public MultiValueMap<String, String> getRestfulParameterMap() {
 		return targetRequest.getRestfulParameterMap();
 	}
+	
+	@Override
+	public String toString() {
+		return targetRequest.toString();
+	}
+	
+	@Override
+	public int hashCode() {
+		return targetRequest.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return targetRequest.equals(obj);
+	}
 }

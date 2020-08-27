@@ -3,7 +3,7 @@ package scw.rpc.simple;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-import scw.aop.ReflectInvoker;
+import scw.aop.DefaultMethodInvoker;
 import scw.core.reflect.SerializableMethod;
 import scw.util.attribute.SimpleAttributes;
 
@@ -11,9 +11,10 @@ public class SimpleObjectRequestMessage extends SimpleAttributes<String, Object>
 	private static final long serialVersionUID = 1L;
 	private SerializableMethod serializableMethod;
 	private Object[] args;
+	private Class<?> sourceClass;
 
-	public SimpleObjectRequestMessage(Class<?> clz, Method method, Object[] args) {
-		this.serializableMethod = new SerializableMethod(clz, method);
+	public SimpleObjectRequestMessage(Class<?> sourceClass, Method method, Object[] args) {
+		this.serializableMethod = new SerializableMethod(method);
 		this.args = args;
 	}
 
@@ -21,14 +22,22 @@ public class SimpleObjectRequestMessage extends SimpleAttributes<String, Object>
 		return serializableMethod;
 	}
 
+	public Class<?> getSourceClass() {
+		return sourceClass == null ? serializableMethod.getDeclaringClass() : sourceClass;
+	}
+
+	public void setSourceClass(Class<?> sourceClass) {
+		this.sourceClass = sourceClass;
+	}
+
 	public Object[] getArgs() {
 		return args;
 	}
 
 	public Object invoke(Object instance) throws Throwable {
-		return new ReflectInvoker(instance, getSerializableMethod().getMethod()).invoke(getArgs());
+		return new DefaultMethodInvoker(instance, sourceClass, getSerializableMethod().getMethod()).invoke(getArgs());
 	}
-	
+
 	@Override
 	public String toString() {
 		return getSerializableMethod().toString();

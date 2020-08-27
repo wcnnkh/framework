@@ -58,6 +58,19 @@ public abstract class CollectionUtils {
 	}
 
 	@SuppressWarnings("rawtypes")
+	public static boolean isEmpty(Iterable iterable) {
+		if (iterable == null) {
+			return true;
+		}
+		
+		if(iterable instanceof Collection){
+			return ((Collection) iterable).isEmpty();
+		}
+
+		return !iterable.iterator().hasNext();
+	}
+
+	@SuppressWarnings("rawtypes")
 	public static boolean isEmpty(Collection... collections) {
 		for (Collection collection : collections) {
 			if (collection == null || collection.isEmpty()) {
@@ -402,10 +415,6 @@ public abstract class CollectionUtils {
 		return new EnumerationIterator<E>(enumeration);
 	}
 
-	public static <E> Enumeration<E> toEnumeration(Iterator<E> iterator) {
-		return new IteratorEnumeration<E>(iterator);
-	}
-
 	/**
 	 * Adapts a {@code Map<K, List<V>>} to an {@code MultiValueMap<K,V>}.
 	 *
@@ -456,7 +465,7 @@ public abstract class CollectionUtils {
 	/**
 	 * Iterator wrapping an Enumeration.
 	 */
-	private static class EnumerationIterator<E> extends scw.util.Iterator<E> {
+	private static class EnumerationIterator<E> extends scw.util.AbstractIterator<E> {
 
 		private Enumeration<E> enumeration;
 
@@ -470,22 +479,6 @@ public abstract class CollectionUtils {
 
 		public E next() {
 			return this.enumeration.nextElement();
-		}
-	}
-
-	private static class IteratorEnumeration<E> implements Enumeration<E> {
-		private final Iterator<E> iterator;
-
-		public IteratorEnumeration(Iterator<E> iterator) {
-			this.iterator = iterator;
-		}
-
-		public boolean hasMoreElements() {
-			return iterator.hasNext();
-		}
-
-		public E nextElement() {
-			return iterator.next();
 		}
 	}
 

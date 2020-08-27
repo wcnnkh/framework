@@ -3,7 +3,7 @@ package scw.rpc.http;
 import java.net.URI;
 import java.util.Map;
 
-import scw.aop.ProxyInvoker;
+import scw.aop.MethodInvoker;
 import scw.core.StringFormat;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterUtils;
@@ -36,8 +36,8 @@ public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements H
 		this.charsetName = charsetName;
 	}
 
-	public ClientHttpRequest getClientHttpRequest(ProxyInvoker invoker, Object[] args) throws Exception {
-		HttpClient rpc = AnnotationUtils.getAnnotation(HttpClient.class, invoker.getTargetClass(),
+	public ClientHttpRequest getClientHttpRequest(MethodInvoker invoker, Object[] args) throws Exception {
+		HttpClient rpc = AnnotationUtils.getAnnotation(HttpClient.class, invoker.getSourceClass(),
 				invoker.getMethod());
 		if (rpc == null) {
 			return null;

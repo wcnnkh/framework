@@ -21,10 +21,11 @@ public final class MemcachedLock extends AbstractLock {
 		return memcached.add(key, timeout, id);
 	}
 
-	public void unlock() {
+	public boolean unlock() {
 		CAS<String> cas = memcached.getCASOperations().get(key);
 		if (id.equals(cas.getValue())) {
-			memcached.getCASOperations().delete(key, cas.getCas());
+			return memcached.getCASOperations().delete(key, cas.getCas());
 		}
+		return false;
 	}
 }

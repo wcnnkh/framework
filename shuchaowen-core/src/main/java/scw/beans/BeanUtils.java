@@ -4,7 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import scw.aop.Filter;
+import scw.aop.MethodInterceptor;
 import scw.beans.annotation.AopEnable;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.Service;
@@ -39,7 +39,7 @@ public final class BeanUtils {
 			return false;
 		}
 
-		if (Filter.class.isAssignableFrom(type) || BeanConfiguration.class.isAssignableFrom(type)
+		if (MethodInterceptor.class.isAssignableFrom(type) || BeanConfiguration.class.isAssignableFrom(type)
 				|| BeanBuilderLoader.class.isAssignableFrom(type) || BeanBuilderLoaderChain.class.isAssignableFrom(type)
 				|| BeanDefinition.class.isAssignableFrom(type)) {
 			return false;

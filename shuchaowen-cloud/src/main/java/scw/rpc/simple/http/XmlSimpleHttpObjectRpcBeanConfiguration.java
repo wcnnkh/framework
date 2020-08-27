@@ -1,9 +1,11 @@
 package scw.rpc.simple.http;
 
+import java.util.Arrays;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.aop.Filter;
+import scw.aop.MethodInterceptor;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.builder.ProxyBeanDefinition;
@@ -54,8 +56,8 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfig
 						continue;
 					}
 
-					Filter filter = new SimpleHttpObjectRpcServiceFilter(ser, sign, responseThrowable, address);
-					BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, filter);
+					MethodInterceptor filter = new SimpleHttpObjectRpcMethodInterceptor(ser, sign, responseThrowable, address);
+					BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, Arrays.asList(filter));
 					beanDefinitions.add(beanBuilder);
 				}
 			}
@@ -83,8 +85,8 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfig
 					myAddress = address;
 				}
 
-				Filter filter = new SimpleHttpObjectRpcServiceFilter(ser, mySign, responseThrowable, myAddress);
-				BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, filter);
+				MethodInterceptor filter = new SimpleHttpObjectRpcMethodInterceptor(ser, mySign, responseThrowable, myAddress);
+				BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz, Arrays.asList(filter));
 				beanDefinitions.add(beanBuilder);
 			}
 		}

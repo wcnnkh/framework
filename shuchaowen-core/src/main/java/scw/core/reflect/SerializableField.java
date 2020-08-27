@@ -3,33 +3,33 @@ package scw.core.reflect;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-public class SerializableField implements Serializable{
+public final class SerializableField implements FieldHolder, Serializable {
 	private static final long serialVersionUID = 1L;
 	private volatile transient Field field;
-	private final Class<?> targetClass;
 	private final String fieldName;
-	
-	public SerializableField(Class<?> targetClass, Field field){
+	private final Class<?> declaringClass;
+
+	public SerializableField(Field field) {
 		this.field = field;
-		this.targetClass = targetClass;
-		this.fieldName = field == null? null:field.getName();
+		this.declaringClass = field == null ? null : field.getDeclaringClass();
+		this.fieldName = field == null ? null : field.getName();
 	}
-	
-	public Field getField(){
-		if(field == null){
+
+	public Field getField() {
+		if (field == null) {
 			synchronized (this) {
-				if(field == null){
-					field = ReflectionUtils.findField(targetClass, fieldName);
+				if (field == null) {
+					field = ReflectionUtils.findField(declaringClass, fieldName);
 				}
 			}
 		}
 		return field;
 	}
 
-	public Class<?> getTargetClass() {
-		return targetClass;
+	public Class<?> getDeclaringClass() {
+		return declaringClass;
 	}
-	
+
 	public String getFieldName() {
 		return fieldName;
 	}

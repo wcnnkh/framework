@@ -1,43 +1,28 @@
 package scw.mvc.action;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
 import java.util.Collection;
 
+import scw.aop.MethodInvoker;
 import scw.core.parameter.ParameterDescriptors;
 import scw.http.server.HttpControllerDescriptor;
-import scw.mvc.HttpChannel;
 
-public interface Action{
+public interface Action extends MethodInvoker {
 	/**
-	 * 返回合成后的注解元素
+	 * 一般情况 下返回方法上的注解元素(获取注解内容推荐使用此方法，因为Method的getAnnotation存在锁)<br/>
+	 * 这是一个无锁的方法
+	 * 
 	 * @return
 	 */
 	AnnotatedElement getAnnotatedElement();
-	
-	Class<?> getTargetClass();
-	
-	/**
-	 * 返回Class上的注解元素
-	 * @return
-	 */
-	AnnotatedElement getTargetClassAnnotatedElement();
-	
-	Method getMethod();
-	
-	/**
-	 * 返回方法上的注解元素
-	 * @return
-	 */
-	AnnotatedElement getMethodAnnotatedElement();
-	
+
 	ParameterDescriptors getParameterDescriptors();
-	
-	Object doAction(HttpChannel httpChannel) throws Throwable;
 
 	Collection<HttpControllerDescriptor> getHttpControllerDescriptors();
 
-	Collection<HttpControllerDescriptor> getTargetClassHttpControllerDescriptors();
+	Collection<HttpControllerDescriptor> getSourceClassHttpControllerDescriptors();
 
 	Collection<HttpControllerDescriptor> getMethodHttpControllerDescriptors();
+
+	Iterable<? extends ActionInterceptor> getActionInterceptors();
 }

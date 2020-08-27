@@ -17,7 +17,7 @@ class TableLock extends AbstractLock {
 		return db.update(sql) != 0;
 	}
 
-	public void unlock() {
-		// ignore
+	public boolean unlock() {
+		return true;
 	}
 }

@@ -1,6 +1,7 @@
 package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,9 +15,7 @@ import java.util.Map.Entry;
 
 import scw.aop.Aop;
 import scw.aop.DefaultAop;
-import scw.aop.Filter;
-import scw.aop.FilterProxyInvoker;
-import scw.aop.ProxyInvoker;
+import scw.aop.MethodInterceptor;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.IteratorBeanBuilderLoaderChain;
@@ -29,6 +28,7 @@ import scw.beans.service.ServiceBeanConfiguration;
 import scw.core.GlobalPropertyFactory;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceFactory;
+import scw.core.instance.InstanceIterable;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
@@ -50,7 +50,7 @@ import scw.util.JavaVersion;
 import scw.value.property.BasePropertyFactory;
 import scw.value.property.PropertyFactory;
 
-public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, Accept<Class<?>> {
+public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Class<?>> {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();
@@ -138,27 +138,29 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		}
 
 		AutoImpl autoImpl = context.getTargetClass().getAnnotation(AutoImpl.class);
-		if (autoImpl != null) {
-			Collection<Class<?>> impls = getAutoImplClass(autoImpl, context);
-			if (!CollectionUtils.isEmpty(impls)) {
-				for (Class<?> impl : impls) {
-					BeanDefinition definition = getDefinitionByCache(impl.getName());
-					if (definition == null) {
-						definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
-					}
-					if (definition != null && definition.isInstance()) {
-						return definition;
-					}
+		Collection<Class<?>> autoImpls = autoImpl == null? null:getAutoImplClass(autoImpl, context);
+		if (!CollectionUtils.isEmpty(autoImpls)) {
+			for (Class<?> impl : autoImpls) {
+				BeanDefinition definition = getDefinitionByCache(impl.getName());
+				if (definition == null) {
+					definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
+				}
+				if (definition != null && definition.isInstance()) {
+					
+					logger.info("Auto {} impl {}", context.getTargetClass(), impl);
+					return definition;
 				}
 			}
 		}
 
-		for (Class<?> impl : InstanceUtils.getConfigurationClassList(context.getTargetClass(), propertyFactory)) {
+		Collection<Class<Object>> configurationClassList = InstanceUtils.getConfigurationClassList(context.getTargetClass(), propertyFactory);
+		for (Class<?> impl : configurationClassList) {
 			BeanDefinition definition = getDefinitionByCache(impl.getName());
 			if (definition == null) {
 				definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 			}
-			if (definition != null && definition.isInstance()) {
+			
+			if (definition.isInstance()) {
 				logger.info("Configuration {} impl {}", context.getTargetClass(), impl);
 				return definition;
 			}
@@ -166,7 +168,31 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 
 		BeanDefinition definition = new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
 		if (definition == null) {
-			definition = new DefaultBeanDefinition(context);
+			if(context.getTargetClass().isInterface() || Modifier.isAbstract(context.getTargetClass().getModifiers())){
+				//如果是接口或抽象类
+				if (!CollectionUtils.isEmpty(autoImpls)) {
+					for (Class<?> impl : autoImpls) {
+						definition = getDefinitionByCache(impl.getName());
+						if (definition == null) {
+							definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
+						}
+						
+						logger.debug("Auto {} impl {}", context.getTargetClass(), impl);
+						return definition;
+					}
+				}
+				
+				for(Class<?> impl : configurationClassList){
+					definition = getDefinitionByCache(impl.getName());
+					if (definition == null) {
+						definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
+					}
+					logger.debug("Configuration {} impl {}", context.getTargetClass(), impl);
+					return definition;
+				}
+			}else{
+				definition = new DefaultBeanDefinition(context);
+			}
 		}
 		return definition;
 	}
@@ -439,12 +465,13 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		addBeanDefinition(new InternalBeanDefinition(instance, type, Arrays.asList(names)), false);
 	}
 
+	private Aop aop = new DefaultAop(new InstanceIterable<MethodInterceptor>(this, filterNameList));
 	public Aop getAop() {
-		return new DefaultAop(this);
+		return aop;
 	}
 
 	public void init() throws Exception {
-		for (Class<Filter> filter : InstanceUtils.getConfigurationClassList(Filter.class, propertyFactory)) {
+		for (Class<MethodInterceptor> filter : InstanceUtils.getConfigurationClassList(MethodInterceptor.class, propertyFactory)) {
 			filterNameList.add(filter.getName());
 		}
 		filterNameList = Arrays.asList(filterNameList.toArray(new String[0]));
@@ -580,10 +607,6 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Filter, A
 		public Iterator<ParameterDescriptors> iterator() {
 			return new ConstructorParameterDescriptorsIterator(getTargetClass());
 		}
-	}
-
-	public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
-		return new FilterProxyInvoker(invoker, this, filterNameList).invoke(args);
 	}
 
 	private Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, LoaderContext context) {

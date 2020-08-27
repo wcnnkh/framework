@@ -25,8 +25,8 @@ public final class EmptyLock implements Lock {
 		// ignore
 	}
 
-	public void unlock() {
-		// ignore
+	public boolean unlock() {
+		return false;
 	}
 
 }

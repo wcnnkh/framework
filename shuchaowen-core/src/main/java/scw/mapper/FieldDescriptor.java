@@ -5,8 +5,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import scw.core.parameter.ParameterDescriptor;
+import scw.core.reflect.FieldHolder;
+import scw.core.reflect.MethodHolder;
 
-public interface FieldDescriptor extends ParameterDescriptor, Serializable{
+public interface FieldDescriptor extends ParameterDescriptor, Serializable, MethodHolder, FieldHolder{
 	Class<?> getDeclaringClass();
 	
 	int getModifiers();

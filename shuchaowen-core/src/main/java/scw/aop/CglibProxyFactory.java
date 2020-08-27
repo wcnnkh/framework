@@ -4,13 +4,9 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Enumeration;
 
-import scw.aop.ProxyInvoker.AbstractInstanceProxyInvoker;
 import scw.cglib.proxy.Enhancer;
 import scw.cglib.proxy.Factory;
-import scw.cglib.proxy.MethodInterceptor;
 import scw.cglib.proxy.MethodProxy;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
@@ -49,9 +45,8 @@ public class CglibProxyFactory implements ProxyFactory {
 		return enhancer.createClass();
 	}
 
-	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Filter ...filters) {
-		return new CglibProxy(clazz, getInterfaces(clazz, interfaces),
-				new CglibMethodInterceptor(clazz, filters));
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> filters) {
+		return new CglibProxy(clazz, getInterfaces(clazz, interfaces), new CglibMethodInterceptor(clazz, filters));
 	}
 
 	private static Enhancer createEnhancer(Class<?> clazz, Class<?>[] interfaces) {
@@ -67,40 +62,38 @@ public class CglibProxyFactory implements ProxyFactory {
 		return enhancer;
 	}
 
-	private static final class CglibMethodInterceptor implements MethodInterceptor, Serializable {
+	private static final class CglibMethodInterceptor implements scw.cglib.proxy.MethodInterceptor, Serializable {
 		private static final long serialVersionUID = 1L;
 		private final Class<?> targetClass;
-		private final Filter[] filters;
+		private final Iterable<? extends MethodInterceptor> filters;
 
-		public CglibMethodInterceptor(Class<?> targetClass, Filter[] filters) {
+		public CglibMethodInterceptor(Class<?> targetClass, Iterable<? extends MethodInterceptor> filters) {
 			this.targetClass = targetClass;
 			this.filters = filters;
 		}
 
 		public Object intercept(Object obj, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-			Enumeration<Filter> enumeration = filters == null? null:Collections.enumeration(Arrays.asList(filters));
-			return new CglibProxyInvoker(obj, targetClass, method, methodProxy, enumeration).invoke(args);
+			CglibProxyInvoker invoker = new CglibProxyInvoker(obj, targetClass, method, methodProxy);
+			if (filters == null) {
+				return invoker.invoke(args);
+			}
+
+			return new MethodInterceptorChain(filters.iterator()).intercept(invoker, args);
 		}
 	}
 
-	private static final class CglibProxyInvoker extends AbstractInstanceProxyInvoker {
+	private static final class CglibProxyInvoker extends DefaultMethodInvoker {
+		private static final long serialVersionUID = 1L;
 		private final MethodProxy methodProxy;
-		private final Enumeration<Filter> filters;
-		
-		public CglibProxyInvoker(Object proxy, Class<?> targetClass,
-				Method method, MethodProxy methodProxy, Enumeration<Filter> filters) {
+
+		public CglibProxyInvoker(Object proxy, Class<?> targetClass, Method method, MethodProxy methodProxy) {
 			super(proxy, targetClass, method);
 			this.methodProxy = methodProxy;
-			this.filters = filters;
 		}
-		
+
 		public Object invoke(Object... args) throws Throwable {
-			if(filters.hasMoreElements()){
-				return filters.nextElement().doFilter(this, args);
-			}
-			
 			try {
-				return methodProxy.invokeSuper(getProxy(), args);
+				return methodProxy.invokeSuper(getInstance(), args);
 			} catch (Throwable e) {
 				throw NestedExceptionUtils.excludeInvalidNestedExcpetion(e);
 			}
@@ -118,7 +111,7 @@ public class CglibProxyFactory implements ProxyFactory {
 	public static final class CglibProxy extends AbstractProxy {
 		private Enhancer enhancer;
 
-		public CglibProxy(Class<?> clazz, Class<?>[] interfaces, MethodInterceptor methodInterceptor) {
+		public CglibProxy(Class<?> clazz, Class<?>[] interfaces, scw.cglib.proxy.MethodInterceptor methodInterceptor) {
 			super(clazz);
 			this.enhancer = createEnhancer(clazz, interfaces);
 			this.enhancer.setCallback(methodInterceptor);

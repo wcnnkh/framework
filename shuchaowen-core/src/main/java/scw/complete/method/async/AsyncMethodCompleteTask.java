@@ -7,13 +7,13 @@ import scw.complete.method.DefaultMethodCompleteTask;
 public class AsyncMethodCompleteTask extends DefaultMethodCompleteTask {
 	private static final long serialVersionUID = 1L;
 
-	public AsyncMethodCompleteTask(Class<?> targetClass, Method method, String beanName, Object[] args) {
-		super(targetClass, method, beanName, args);
+	public AsyncMethodCompleteTask(Method method, String beanName, Object[] args) {
+		super(method, beanName, args);
 	}
 
 	@Override
 	public Object process() throws Exception {
-		AsyncFilter.startAsync();
+		AsyncMethodInterceptor.startAsync();
 		return super.process();
 	}
 }

@@ -2,7 +2,7 @@ package scw.aop.support;
 
 import java.util.Map;
 
-import scw.aop.ProxyInvoker;
+import scw.aop.MethodInvoker;
 import scw.aop.WriteReplaceInterface;
 import scw.mapper.Field;
 
@@ -17,7 +17,7 @@ public interface FieldSetterListen extends WriteReplaceInterface{
 	 */
 	Map<String, Object> get_field_setter_map();
 
-	void field_setter(ProxyInvoker invoker, Field field, Object oldValue);
+	void field_setter(MethodInvoker invoker, Field field, Object oldValue);
 
 	/**
 	 * 清空监听数据

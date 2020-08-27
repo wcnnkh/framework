@@ -45,7 +45,7 @@ public final class SimpleObjectRpcService implements RpcService, RpcConstants {
 			throw new RuntimeException("RPC验证失败");
 		}
 
-		Object instance = instanceFactory.getInstance(requestMessage.getSerializableMethod().getTargetClass());
+		Object instance = instanceFactory.getInstance(requestMessage.getSourceClass());
 		return requestMessage.invoke(instance);
 	}
 

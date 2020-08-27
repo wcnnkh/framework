@@ -7,6 +7,7 @@ import java.util.Map;
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
 import scw.core.annotation.KeyValuePair;
+import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
@@ -26,7 +27,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 
 	public DefaultHttpActionAuthorityManager(ActionManager actionManager) {
 		for (Action action : actionManager.getActions()) {
-				register(action);
+			register(action);
 		}
 	}
 
@@ -40,13 +41,13 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 	}
 
 	public void register(Action action) {
-		ActionAuthority classAuthority = action.getTargetClassAnnotatedElement().getAnnotation(ActionAuthority.class);
+		ActionAuthority classAuthority = action.getSourceClass().getAnnotation(ActionAuthority.class);
 		if (classAuthority != null) {// 如果在类上存在此注解说明这是一个菜单
-			String id = action.getTargetClass().getName();
+			String id = action.getSourceClass().getName();
 			id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
 			HttpAuthority authority = getAuthority(id);
 			if (authority == null) {
-				String parentId = getParentId(action.getTargetClassAnnotatedElement(), null);
+				String parentId = getParentId(action.getSourceClass(), null);
 				boolean isMenu = classAuthority.menu();
 				if (isMenu) {
 					checkIsMenu(parentId, action);
@@ -57,7 +58,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			}
 		}
 
-		ActionAuthority methodAuthority = action.getMethodAnnotatedElement().getAnnotation(ActionAuthority.class);
+		ActionAuthority methodAuthority = action.getAnnotatedElement().getAnnotation(ActionAuthority.class);
 		if (methodAuthority == null) {
 			return;
 		}
@@ -68,7 +69,8 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			return;
 		}
 
-		String parentId = getParentId(action.getAnnotatedElement(), action.getTargetClass().getName());
+		String parentId = getParentId(new MultiAnnotatedElement(action.getSourceClass(), action.getAnnotatedElement()),
+				action.getSourceClass().getName());
 		boolean isMenu = methodAuthority.menu();
 		if (isMenu) {
 			checkIsMenu(parentId, action);

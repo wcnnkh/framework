@@ -3,20 +3,19 @@ package scw.http.server;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
-import scw.http.server.cors.CorsFilter;
+import scw.http.server.cors.CorsServiceInterceptor;
 import scw.http.server.resource.DefaultStaticResourceLoader;
-import scw.http.server.resource.StaticResourceHttpServerHandler;
+import scw.http.server.resource.StaticResourceHttpServiceHandler;
 import scw.http.server.resource.StaticResourceLoader;
 import scw.value.property.PropertyFactory;
 
 public class DefaultHttpService implements HttpService {
 	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
-	private List<HttpServiceFilter> filters = new ArrayList<HttpServiceFilter>();
+	private List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 
 	public DefaultHttpService() {
 	}
@@ -25,13 +24,16 @@ public class DefaultHttpService implements HttpService {
 		StaticResourceLoader staticResourceLoader = beanFactory.isInstance(StaticResourceLoader.class)
 				? beanFactory.getInstance(StaticResourceLoader.class)
 				: new DefaultStaticResourceLoader(propertyFactory);
-		StaticResourceHttpServerHandler resourceHandler = new StaticResourceHttpServerHandler(staticResourceLoader);
+		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler(staticResourceLoader);
 		handlerAccessor.bind(resourceHandler);
-		filters.add(new CorsFilter(beanFactory, propertyFactory));
-		filters.addAll(InstanceUtils.getConfigurationList(HttpServiceFilter.class, beanFactory, propertyFactory));
-		filters = Arrays.asList(filters.toArray(new HttpServiceFilter[0]));
-		handlerAccessor
-				.bind(InstanceUtils.getConfigurationList(HttpServiceHandler.class, beanFactory, propertyFactory));
+		interceptors.add(new CorsServiceInterceptor(beanFactory, propertyFactory));
+		interceptors
+				.addAll(InstanceUtils.getConfigurationList(HttpServiceInterceptor.class, beanFactory, propertyFactory));
+		interceptors = Arrays.asList(interceptors.toArray(new HttpServiceInterceptor[0]));
+		
+		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils.getConfigurationList(HttpServiceHandler.class,
+				beanFactory, propertyFactory);
+		handlerAccessor.bind(httpServiceHandlers);
 	}
 
 	public final HttpServiceHandlerAccessor getHandlerAccessor() {
@@ -39,9 +41,9 @@ public class DefaultHttpService implements HttpService {
 	}
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		FiltersHttpService service = new FiltersHttpService();
+		HttpServiceInterceptorChain chain = new HttpServiceInterceptorChain(interceptors.iterator(), handlerAccessor);
 		try {
-			service.service(request, response);
+			chain.service(request, response);
 		} finally {
 			if (!response.isCommitted()) {
 				if (request.isSupportAsyncControl()) {
@@ -57,26 +59,7 @@ public class DefaultHttpService implements HttpService {
 		}
 	}
 
-	protected void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		HttpServiceHandler handler = handlerAccessor.get(request);
-		if (handler != null) {
-			handler.doHandle(request, response);
-		}
-	}
-
-	public List<HttpServiceFilter> getFilters() {
-		return filters;
-	}
-
-	private final class FiltersHttpService implements HttpService {
-		private Iterator<HttpServiceFilter> iterator = filters.iterator();
-
-		public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-			if (iterator.hasNext()) {
-				iterator.next().doFilter(request, response, FiltersHttpService.this);
-			} else {
-				doHandle(request, response);
-			}
-		}
+	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {
+		return interceptors;
 	}
 }

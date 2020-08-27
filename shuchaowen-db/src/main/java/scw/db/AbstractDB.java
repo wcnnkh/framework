@@ -12,7 +12,6 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryAware;
 import scw.beans.Destroy;
-import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.data.memcached.Memcached;
@@ -44,6 +43,8 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	private final DefaultAsyncBasicEventDispatcher<AsyncExecuteEvent> asyncBasicEventDispatcher = new DefaultAsyncBasicEventDispatcher<AsyncExecuteEvent>(
 			false, getClass().getName(), true);
+	private static final String DEFAULT_CACHE_PREFIX = "db:";
+
 	private BeanFactory beanFactory;
 	private CacheManager cacheManager;
 	private GeneratorService generatorService;
@@ -86,10 +87,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	}
 
 	protected String getCachePrefix(PropertyFactory propertyFactory) {
-		if (propertyFactory == null) {
-			return null;
-		}
-		return StringUtils.toString(propertyFactory.getString("cache.prefix"), Constants.DEFAULT_PREFIX);
+		return StringUtils.toString(propertyFactory.getString("cache.prefix"), "") + DEFAULT_CACHE_PREFIX;
 	}
 
 	protected void createTableByProperties(PropertyFactory propertyFactory) {

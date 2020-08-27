@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,6 +45,19 @@ public final class StringUtils {
 	private static final String CURRENT_PATH = ".";
 
 	private static final char EXTENSION_SEPARATOR = '.';
+	
+	private static final Set<String> BOOLEANS;
+	static{
+		BOOLEANS = new HashSet<String>(8, 1);
+		BOOLEANS.add("1");
+		BOOLEANS.add("t");
+		BOOLEANS.add("ok");
+		BOOLEANS.add("yes");
+		BOOLEANS.add("right");
+		BOOLEANS.add("true");
+		BOOLEANS.add("success");
+		BOOLEANS.add("successful");
+	}
 
 	private StringUtils() {
 	};
@@ -2069,8 +2083,7 @@ public final class StringUtils {
 	}
 
 	private static boolean parseBooleanValue(String text) {
-		return "1".equals(text) || "true".equalsIgnoreCase(text) || "yes".equalsIgnoreCase(text)
-				|| "T".equalsIgnoreCase(text);
+		return BOOLEANS.contains(text) || BOOLEANS.contains(text.toLowerCase());
 	}
 
 	public static boolean parseBoolean(String text, boolean defaultValue) {

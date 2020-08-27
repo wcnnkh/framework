@@ -37,7 +37,8 @@ import scw.security.session.Session;
 import scw.util.LinkedCaseInsensitiveMap;
 import scw.util.MultiValueMap;
 
-public class ServletServerHttpRequest extends AbstractHttpInputMessage implements ServerHttpRequest, RestfulParameterMapAware {
+public class ServletServerHttpRequest extends AbstractHttpInputMessage
+		implements ServerHttpRequest, RestfulParameterMapAware {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletAsyncControl asyncControl;
@@ -191,11 +192,11 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage implement
 		}
 
 		Map<String, String[]> map = httpServletRequest.getParameterMap();
-		if(map.isEmpty()){
+		if (map.isEmpty()) {
 			this.parameterMap = CollectionUtils.emptyMultiValueMap();
-			return ;
+			return;
 		}
-		
+
 		Map<String, List<String>> valueMap = new HashMap<String, List<String>>();
 		for (Entry<String, String[]> entry : map.entrySet()) {
 			String[] values = entry.getValue();
@@ -205,7 +206,7 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage implement
 
 			valueMap.put(entry.getKey(), Arrays.asList(values));
 		}
-		
+
 		this.parameterMap = CollectionUtils.toMultiValueMap(Collections.unmodifiableMap(valueMap));
 	}
 
@@ -271,16 +272,21 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage implement
 	public String getIp() {
 		return HttpUtils.getServerHttpRequestIpGetter().getRequestIp(this);
 	}
-	
+
 	public MultiValueMap<String, String> getRestfulParameterMap() {
-		if(restfulParameterMap == null){
+		if (restfulParameterMap == null) {
 			return CollectionUtils.emptyMultiValueMap();
 		}
-		
+
 		return restfulParameterMap;
 	}
-	
+
 	public void setRestfulParameterMap(MultiValueMap<String, String> restfulParameterMap) {
 		this.restfulParameterMap = CollectionUtils.unmodifiableMultiValueMap(restfulParameterMap);
+	}
+
+	@Override
+	public String toString() {
+		return getRawMethod() + " " + getURI() + " " + httpServletRequest.getProtocol();
 	}
 }

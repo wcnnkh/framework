@@ -14,6 +14,8 @@ import scw.core.utils.CollectionUtils;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.method.MultiEventRegistration;
+import scw.event.support.AbstractDynamicValue;
+import scw.event.support.DynamicValue;
 import scw.event.support.ValueEvent;
 import scw.util.MultiEnumeration;
 import scw.value.AnyValue;
@@ -249,11 +251,11 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	}
 
 	public final <T> DynamicValue<T> getDynamicValue(String name, Class<? extends T> type, T defaultValue) {
-		return new DynamicValue<T>(name, type, defaultValue);
+		return new PropertyDynamicValue<T>(name, type, defaultValue);
 	}
 
 	public final DynamicValue<Object> getDynamicValue(String name, Type type, Object defaultValue) {
-		return new DynamicValue<Object>(name, type, defaultValue);
+		return new PropertyDynamicValue<Object>(name, type, defaultValue);
 	}
 
 	public class PropertyFactoryRegistration {
@@ -331,61 +333,26 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 	}
 
-	public final class DynamicValue<T> {
+	private final class PropertyDynamicValue<T> extends AbstractDynamicValue<T>{
 		private final String name;
-		private volatile T value;
 		private final T defaultValue;
 		private final Type type;
-		private EventRegistration eventRegistration;
 
-		public DynamicValue(String name, Type type, T defaultValue) {
+		public PropertyDynamicValue(String name, Type type, T defaultValue) {
 			this.name = name;
 			this.type = type;
 			this.defaultValue = defaultValue;
-			this.value = getNewValue();
-			eventRegistration = registerListener(new EventListener<ValueEvent<T>>() {
-
-				public void onEvent(ValueEvent<T> event) {
-					setValue(event.getValue());
-				}
-			});
-		}
-
-		@Override
-		protected void finalize() throws Throwable {
-			if (eventRegistration != null) {
-				eventRegistration.unregister();
-			}
-			super.finalize();
-		}
-
-		public T getValue() {
-			return value;
-		}
-
-		protected void setValue(T value) {
-			this.value = value;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public T getDefaultValue() {
-			return defaultValue;
-		}
-
-		public Type getType() {
-			return type;
+			setValue(getNewValue());
+			switchDynamicState(true);
 		}
 
 		@SuppressWarnings("unchecked")
 		protected T getNewValue() {
-			return (T) PropertyFactory.this.getValue(getName(), getType(), getDefaultValue());
+			return (T) PropertyFactory.this.getValue(name, type, defaultValue);
 		}
 
 		public EventRegistration registerListener(final EventListener<ValueEvent<T>> eventListener) {
-			return PropertyFactory.this.registerListener(getName(), new EventListener<PropertyEvent>() {
+			return PropertyFactory.this.registerListener(name, new EventListener<PropertyEvent>() {
 
 				public void onEvent(PropertyEvent event) {
 					eventListener.onEvent(new ValueEvent<T>(event, getNewValue()));

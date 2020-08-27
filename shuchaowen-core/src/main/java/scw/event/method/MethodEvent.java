@@ -2,7 +2,7 @@ package scw.event.method;
 
 import java.io.Serializable;
 
-import scw.aop.ProxyInvoker;
+import scw.aop.MethodInvoker;
 import scw.core.reflect.SerializableMethod;
 import scw.event.support.BasicEvent;
 
@@ -12,9 +12,9 @@ public class MethodEvent extends BasicEvent implements Serializable {
 	private final Object[] args;
 	private final Object result;
 
-	public MethodEvent(ProxyInvoker invoker, Object[] args) throws Throwable {
-		this(new SerializableMethod(invoker.getTargetClass(), invoker.getMethod()), args,
-				invoker.invoke(args));
+	public MethodEvent(Object result, MethodInvoker invoker, Object[] args) throws Throwable {
+		this(new SerializableMethod(invoker.getMethod()), args,
+				result);
 	}
 
 	public MethodEvent(SerializableMethod method, Object[] args, Object result) {

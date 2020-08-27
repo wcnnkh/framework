@@ -2,7 +2,6 @@ package scw.rpc.http;
 
 import java.util.Arrays;
 
-import scw.aop.MultiFilter;
 import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
@@ -20,10 +19,9 @@ public final class HttpRpcBeanBuilderLoader implements BeanBuilderLoader {
 		HttpClient httpClient = context.getTargetClass().getAnnotation(
 				HttpClient.class);
 		if (httpClient != null) {
-			String proxyName = HttpRpcProxyFilter.class.getName();
+			String proxyName = HttpRpcProxyMethodInterceptor.class.getName();
 			if (context.getBeanFactory().isInstance(proxyName)) {
-				return new ProxyBeanDefinition(context, new MultiFilter(
-						context.getBeanFactory(), Arrays.asList(proxyName)));
+				return new ProxyBeanDefinition(context, Arrays.asList(proxyName));
 			}
 		}
 		return serviceChain.loading(context);

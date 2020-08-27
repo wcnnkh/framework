@@ -39,7 +39,7 @@ public class AnnotationHttpActionAuthorityManager extends AnnotationAuthorityMan
 		this.actionManager = actionManager;
 		HashSet<Class<?>> classList = new HashSet<Class<?>>();
 		for (Action action : actionManager.getActions()) {
-			classList.add(action.getTargetClass());
+			classList.add(action.getSourceClass());
 		}
 		register(classList, new HashSet<Class<?>>());
 	}

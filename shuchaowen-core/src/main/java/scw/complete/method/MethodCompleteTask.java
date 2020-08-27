@@ -12,8 +12,8 @@ public abstract class MethodCompleteTask extends RelyOnBeanFactoryCompleteTask {
 	private final SerializableMethod method;
 	private final Object[] args;
 
-	public MethodCompleteTask(Class<?> targetClass, Method method, Object[] args) {
-		this.method = new SerializableMethod(targetClass, method);
+	public MethodCompleteTask(Method method, Object[] args) {
+		this.method = new SerializableMethod(method);
 		this.args = args;
 	}
 

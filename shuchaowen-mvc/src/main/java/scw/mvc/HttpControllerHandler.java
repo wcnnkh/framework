@@ -1,7 +1,6 @@
 package scw.mvc;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,7 +8,6 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.instance.InstanceUtils;
 import scw.http.server.HttpServiceHandler;
-import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
@@ -19,9 +17,10 @@ import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
-import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionInterceptor;
+import scw.mvc.action.ActionInterceptorChain;
 import scw.mvc.action.ActionLookup;
-import scw.mvc.action.ActionWrapper;
+import scw.mvc.action.ActionParameters;
 import scw.mvc.action.DefaultNotfoundActionService;
 import scw.mvc.action.NotFoundActionService;
 import scw.mvc.exception.ExceptionHandler;
@@ -30,12 +29,13 @@ import scw.mvc.output.HttpControllerOutput;
 import scw.net.InetUtils;
 import scw.net.message.converter.MessageConverter;
 import scw.result.Result;
+import scw.util.MultiIterable;
 import scw.value.property.PropertyFactory;
 
-public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
+public class HttpControllerHandler implements HttpServiceHandler {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final LinkedList<ActionLookup> actionLookups = new LinkedList<ActionLookup>();
-	protected final LinkedList<ActionFilter> actionFilters = new LinkedList<ActionFilter>();
+	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	protected final LinkedList<HttpControllerOutput> httpControllerOutputs = new LinkedList<HttpControllerOutput>();
 
@@ -51,7 +51,8 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		this.notFoundActionService = beanFactory.isInstance(NotFoundActionService.class)
 				? beanFactory.getInstance(NotFoundActionService.class) : new DefaultNotfoundActionService();
 
-		this.actionFilters.addAll(InstanceUtils.getConfigurationList(ActionFilter.class, beanFactory, propertyFactory));
+		this.actionInterceptor
+				.addAll(InstanceUtils.getConfigurationList(ActionInterceptor.class, beanFactory, propertyFactory));
 
 		this.actionLookups.addAll(InstanceUtils.getConfigurationList(ActionLookup.class, beanFactory, propertyFactory));
 
@@ -70,10 +71,6 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 
 	public void setJsonSupport(JSONSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
-	}
-
-	public boolean accept(ServerHttpRequest request) {
-		return true;
 	}
 
 	public void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
@@ -99,8 +96,12 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 					message = doError(httpChannel, action, e);
 				}
 			} else {
+				@SuppressWarnings("unchecked")
+				MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptor,
+						action.getActionInterceptors());
+				ActionParameters parameters = new ActionParameters();
 				try {
-					message = new FitlerAction(action).doAction(httpChannel);
+					message = new ActionInterceptorChain(filters.iterator()).intercept(httpChannel, action, parameters);
 				} catch (Throwable e) {
 					message = doError(httpChannel, action, e);
 				}
@@ -165,22 +166,5 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 		httpChannel.getResponse().sendError(500, "system error");
 		return null;
-	}
-
-	private final class FitlerAction extends ActionWrapper {
-		private Iterator<ActionFilter> iterator = actionFilters.iterator();
-
-		public FitlerAction(Action action) {
-			super(action);
-		}
-
-		@Override
-		public Object doAction(HttpChannel httpChannel) throws Throwable {
-			if (iterator.hasNext()) {
-				return iterator.next().doFilter(this, httpChannel);
-			}
-
-			return super.doAction(httpChannel);
-		}
 	}
 }

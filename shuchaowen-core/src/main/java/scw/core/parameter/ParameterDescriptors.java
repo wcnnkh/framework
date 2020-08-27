@@ -9,4 +9,8 @@ public interface ParameterDescriptors extends Iterable<ParameterDescriptor> {
 	Object getSource();
 	
 	Class<?>[] getTypes();
+	
+	ParameterDescriptor getParameterDescriptor(int index);
+	
+	ParameterDescriptor getParameterDescriptor(String name);
 }

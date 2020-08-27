@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import scw.http.HttpMethod;
-import scw.mvc.action.ActionFilter;
+import scw.mvc.action.ActionInterceptor;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -27,10 +27,5 @@ public @interface Controller {
 	 */
 	public HttpMethod[] methods() default {};
 
-	/**
-	 * filters
-	 * 
-	 * @return
-	 */
-	public Class<? extends ActionFilter>[] filters() default {};
+	public Class<? extends ActionInterceptor>[] interceptors() default {};
 }

@@ -39,7 +39,7 @@ public final class ProxyUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T proxyIngoreMethod(Class<? extends T> clazz, T instance, IgnoreMethodAccept ignoreMethodAccept) {
 		Proxy proxy = getProxyFactory().getProxy(clazz, new Class<?>[] { IgnoreMethodTarget.class },
-				new IgnoreMethodFilter(instance, ignoreMethodAccept));
+				Arrays.asList(new IgnoreMethodFilter(instance, ignoreMethodAccept)));
 		return (T) proxy.create();
 	}
 
@@ -47,7 +47,7 @@ public final class ProxyUtils {
 		Object getIgnoreMethodTarget();
 	}
 
-	private static final class IgnoreMethodFilter implements Filter {
+	private static final class IgnoreMethodFilter implements MethodInterceptor {
 		private final Object object;
 		private final IgnoreMethodAccept ignoreMethodAccept;
 
@@ -56,8 +56,8 @@ public final class ProxyUtils {
 			this.ignoreMethodAccept = ignoreMethodAccept;
 		}
 
-		public Object doFilter(ProxyInvoker invoker, Object[] args) throws Throwable {
-			if (ArrayUtils.isEmpty(args) && invoker.getMethod().equals("getIgnoreMethodTarget")) {
+		public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
+			if (ArrayUtils.isEmpty(args) && invoker.getMethod().getName().equals("getIgnoreMethodTarget")) {
 				return object;
 			}
 
@@ -65,7 +65,7 @@ public final class ProxyUtils {
 				return null;
 			}
 
-			return invoker.invoke(args);
+			return filterChain.intercept(invoker, args);
 		}
 	}
 
@@ -78,23 +78,23 @@ public final class ProxyUtils {
 				&& ReflectionUtils.isEqualsMethod(method);
 	}
 
-	public static int invokeHashCode(ProxyInvoker invoker) {
-		return System.identityHashCode(invoker.getProxy());
+	public static int invokeHashCode(MethodInvoker invoker) {
+		return System.identityHashCode(invoker.getInstance());
 	}
 
-	public static String invokeToString(ProxyInvoker invoker) {
-		return invoker.getProxy().getClass().getName() + "@" + Integer.toHexString(invokeHashCode(invoker));
+	public static String invokeToString(MethodInvoker invoker) {
+		return invoker.getInstance().getClass().getName() + "@" + Integer.toHexString(invokeHashCode(invoker));
 	}
 
-	public static boolean invokeEquals(ProxyInvoker invoker, Object[] args) {
+	public static boolean invokeEquals(MethodInvoker invoker, Object[] args) {
 		if (args == null || args[0] == null) {
 			return false;
 		}
 
-		return args[0].equals(invoker.getProxy());
+		return args[0].equals(invoker.getInstance());
 	}
 
-	public static Object invokeIgnoreMethod(ProxyInvoker invoker, Object[] args) {
+	public static Object invokeIgnoreMethod(MethodInvoker invoker, Object[] args) {
 		if (ReflectionUtils.isHashCodeMethod(invoker.getMethod())) {
 			return invokeHashCode(invoker);
 		}
@@ -115,8 +115,8 @@ public final class ProxyUtils {
 	 * 
 	 * @return
 	 */
-	public static boolean isWriteReplaceMethod(ProxyInvoker invoker) {
-		return ArrayUtils.isEmpty(invoker.getMethod().getParameterTypes()) && invoker.getProxy() instanceof Serializable
+	public static boolean isWriteReplaceMethod(MethodInvoker invoker) {
+		return ArrayUtils.isEmpty(invoker.getMethod().getParameterTypes()) && invoker.getInstance() instanceof Serializable
 				&& invoker.getMethod().getName().equals(WriteReplaceInterface.WRITE_REPLACE_METHOD);
 	}
 
@@ -127,14 +127,37 @@ public final class ProxyUtils {
 	 *            原始类型是否应该实现{@see WriteReplaceInterface}
 	 * @return
 	 */
-	public static boolean isWriteReplaceMethod(ProxyInvoker invoker, boolean writeReplaceInterface) {
+	public static boolean isWriteReplaceMethod(MethodInvoker invoker, boolean writeReplaceInterface) {
 		if (isWriteReplaceMethod(invoker)) {
 			if (writeReplaceInterface) {
-				return WriteReplaceInterface.class.isAssignableFrom(invoker.getTargetClass());
+				return WriteReplaceInterface.class.isAssignableFrom(invoker.getSourceClass());
 			} else {
-				return !WriteReplaceInterface.class.isAssignableFrom(invoker.getTargetClass());
+				return !WriteReplaceInterface.class.isAssignableFrom(invoker.getSourceClass());
 			}
 		}
 		return false;
+	}
+
+	public static MethodInvoker wrapper(MethodInvoker invoker, Iterable<? extends MethodInterceptor> filters) {
+		return new FilterProxyInvoker(invoker, filters);
+	}
+
+	private static class FilterProxyInvoker extends MethodInvokerWrapper implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private Iterable<? extends MethodInterceptor> filters;
+
+		public FilterProxyInvoker(MethodInvoker invoker, Iterable<? extends MethodInterceptor> filters) {
+			super(invoker);
+			this.filters = filters;
+		}
+
+		@Override
+		public Object invoke(Object... args) throws Throwable {
+			if (filters == null) {
+				return super.invoke(args);
+			}
+
+			return new MethodInterceptorChain(filters.iterator()).intercept(getSource(), args);
+		}
 	}
 }
