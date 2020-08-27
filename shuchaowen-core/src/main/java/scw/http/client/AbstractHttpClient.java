@@ -175,7 +175,7 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 				});
 		if(isDownloadSupportedRedirect()){
 			// 重定向
-			if (httpResponseEntity.getStatusCodeValue() == HttpStatus.MOVED_PERMANENTLY.value()) {
+			if (httpResponseEntity.getStatusCodeValue() == HttpStatus.MOVED_PERMANENTLY.value() || httpResponseEntity.getStatusCodeValue() == HttpStatus.FOUND.value()) {
 				URI location = httpResponseEntity.getHeaders().getLocation();
 				if (location != null) {
 					logger.info("download redirect {} ==> {}", uri, location);
