@@ -23,6 +23,7 @@ import scw.beans.Destroy;
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
+import scw.core.Target;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
@@ -31,11 +32,11 @@ import scw.core.parameter.RenameParameterDescriptor;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
+import scw.core.utils.XUtils;
 import scw.event.support.DynamicValue;
 import scw.http.HttpMethod;
 import scw.http.server.JsonServerHttpRequest;
@@ -67,7 +68,7 @@ import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public class DefaultHttpChannel extends AbstractParameterFactory implements HttpChannel, Destroy {
+public class DefaultHttpChannel extends AbstractParameterFactory implements HttpChannel, Destroy, Target {
 	private static Logger logger = LoggerUtils.getLogger(DefaultHttpChannel.class);
 	private static final DynamicValue<Long> WARN_TIMEOUT = GlobalPropertyFactory.getInstance()
 			.getDynamicValue("mvc.warn-execute-time", Long.class, 100L);
@@ -296,17 +297,27 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		Value value = getValue(parameterDescriptor.getName(), defaultValue);
 		return value.getAsObject(parameterDescriptor.getGenericType());
 	}
+	
+	public <T> T getTarget(Class<T> targetType) {
+		T target = XUtils.getTarget(getRequest(), targetType);
+		if(target != null){
+			return target;
+		}
+		
+		target = XUtils.getTarget(getResponse(), targetType);
+		if(target != null){
+			return target;
+		}
+		return null;
+	}
 
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
-		if (ClassUtils.isAssignableValue(parameterDescriptor.getType(), getRequest())) {
-			return getRequest();
+		Object target = XUtils.getTarget(this, parameterDescriptor.getType());
+		if(target != null){
+			return target;
 		}
-
-		if (ClassUtils.isAssignableValue(parameterDescriptor.getType(), getResponse())) {
-			return getResponse();
-		}
-
-		if (ClassUtils.isAssignableValue(parameterDescriptor.getType(), this)) {
+		
+		if(parameterDescriptor.getType().isInstance(this)){
 			return this;
 		} else if (Session.class == parameterDescriptor.getType()) {
 			return getRequest().getSession();

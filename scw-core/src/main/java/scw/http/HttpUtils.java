@@ -44,7 +44,7 @@ public final class HttpUtils {
 			"scw.http.client.SimpleHttpClient");
 	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils
 			.loadService(ServerHttpRequestIpGetter.class, "scw.http.server.ip.DefaultServerHttpRequestIpGetter");
-
+	
 	static {
 
 	}

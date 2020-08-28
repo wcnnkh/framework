@@ -9,7 +9,6 @@ import scw.io.Resource;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.mvc.HttpChannel;
-import scw.mvc.view.View;
 import scw.net.FileMimeTypeUitls;
 import scw.net.InetUtils;
 import scw.net.MimeType;
@@ -48,7 +47,7 @@ public abstract class AbstractHttpControllerOutput<T> implements HttpControllerO
 			return false;
 		}
 
-		return body instanceof View || body instanceof InputMessage || body instanceof Text || body instanceof Resource
+		return body instanceof InputMessage || body instanceof Text || body instanceof Resource
 				|| body instanceof Entity || canWriteInternal(httpChannel, body);
 	}
 
@@ -72,15 +71,6 @@ public abstract class AbstractHttpControllerOutput<T> implements HttpControllerO
 
 	@SuppressWarnings("unchecked")
 	public void write(HttpChannel httpChannel, Object body) throws IOException {
-		if (body == null) {
-			return;
-		}
-
-		if (body instanceof View) {
-			((View) body).render(httpChannel);
-			return;
-		}
-
 		T b = (T) body;
 		if (body instanceof InputMessage) {
 			InetUtils.writeHeader((InputMessage) body, httpChannel.getResponse());

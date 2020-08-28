@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
+import scw.core.Target;
+import scw.core.utils.XUtils;
 import scw.http.AbstractHttpOutputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
@@ -13,7 +15,7 @@ import scw.http.HttpStatus;
 import scw.http.server.ServerHttpResponse;
 import scw.net.MimeType;
 
-public class ServletServerHttpResponse extends AbstractHttpOutputMessage implements ServerHttpResponse {
+public class ServletServerHttpResponse extends AbstractHttpOutputMessage implements ServerHttpResponse, Target {
 	private HttpServletResponse httpServletResponse;
 	private HttpServletResponseHeaders headers;
 	private boolean bodyUse = false;
@@ -21,6 +23,10 @@ public class ServletServerHttpResponse extends AbstractHttpOutputMessage impleme
 	public ServletServerHttpResponse(HttpServletResponse httpServletResponse) {
 		this.httpServletResponse = httpServletResponse;
 		this.headers = new HttpServletResponseHeaders(httpServletResponse);
+	}
+	
+	public <T> T getTarget(Class<T> targetType) {
+		return XUtils.getTarget(httpServletResponse, targetType);
 	}
 
 	public OutputStream getBody() throws IOException {

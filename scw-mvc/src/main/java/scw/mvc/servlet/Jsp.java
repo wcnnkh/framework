@@ -8,14 +8,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import scw.core.utils.XUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.servlet.ServletUtils;
-import scw.servlet.http.ServletServerHttpRequest;
-import scw.servlet.http.ServletServerHttpResponse;
 
 public class Jsp extends AbstractPage {
 	private static final long serialVersionUID = 1L;
@@ -30,8 +29,8 @@ public class Jsp extends AbstractPage {
 	}
 
 	public void render(HttpChannel httpChannel) throws IOException {
-		ServletServerHttpRequest request = ServletUtils.getServletServerHttpRequest(httpChannel.getRequest());
-		ServletServerHttpResponse response = ServletUtils.getServletServerHttpResponse(httpChannel.getResponse());
+		HttpServletRequest request = XUtils.getTarget(httpChannel, HttpServletRequest.class);
+		HttpServletResponse response = XUtils.getTarget(httpChannel, HttpServletResponse.class);
 		if (request == null || response == null) {
 			throw new NotSupportedException(httpChannel.toString());
 		}
@@ -40,24 +39,22 @@ public class Jsp extends AbstractPage {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
 
-		HttpServletRequest httpServletRequest = request.getHttpServletRequest();
-		HttpServletResponse httpServletResponse = response.getHttpServletResponse();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> attributeMap = (Map<String, Object>) clone();
-		Enumeration<String> enumeration = httpServletRequest.getAttributeNames();
+		Enumeration<String> enumeration = request.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			attributeMap.remove(enumeration.nextElement());
 		}
 
 		for (java.util.Map.Entry<String, Object> entry : attributeMap.entrySet()) {
-			httpServletRequest.setAttribute(entry.getKey(), entry.getValue());
+			request.setAttribute(entry.getKey(), entry.getValue());
 		}
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("jsp:{}", getPage());
 		}
 		try {
-			ServletUtils.jsp(httpServletRequest, httpServletResponse, getPage());
+			ServletUtils.jsp(request, response, getPage());
 		} catch (ServletException e) {
 			logger.error(e, httpChannel.toString());
 		}

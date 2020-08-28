@@ -6,21 +6,25 @@ import scw.beans.BeanFactory;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.json.JSONSupport;
+import scw.json.JSONUtils;
 
 public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	protected final BeanFactory beanFactory;
-	private final JSONSupport jsonSupport;
+	private JSONSupport jsonSupport;
 
-	public DefaultHttpChannelFactory(BeanFactory beanFactory, JSONSupport jsonSupport) {
+	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-		this.jsonSupport = jsonSupport;
 	}
 
 	public final JSONSupport getJsonSupport() {
-		return jsonSupport;
+		return jsonSupport == null? JSONUtils.getJsonSupport():jsonSupport;
+	}
+
+	public void setJsonSupport(JSONSupport jsonSupport) {
+		this.jsonSupport = jsonSupport;
 	}
 
 	public HttpChannel create(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		return new DefaultHttpChannel(beanFactory, jsonSupport, request, response);
+		return new DefaultHttpChannel(beanFactory, getJsonSupport(), request, response);
 	}
 }

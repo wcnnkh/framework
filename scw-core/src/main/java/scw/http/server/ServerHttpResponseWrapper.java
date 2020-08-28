@@ -4,13 +4,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import scw.core.Target;
+import scw.core.utils.XUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.http.MediaType;
 import scw.net.MimeType;
 
-public class ServerHttpResponseWrapper implements ServerHttpResponse {
+public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 	private final ServerHttpResponse targetResponse;
 
 	public ServerHttpResponseWrapper(ServerHttpResponse targetResponse) {
@@ -20,17 +22,9 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse {
 	public ServerHttpResponse getTargetResponse() {
 		return targetResponse;
 	}
-
-	@SuppressWarnings("unchecked")
-	public <T extends ServerHttpResponse> T getTargetResponse(Class<? extends T> type) {
-		if (type.isInstance(targetResponse)) {
-			return (T) targetResponse;
-		}
-
-		if (targetResponse instanceof ServerHttpResponseWrapper) {
-			return ((ServerHttpResponseWrapper) targetResponse).getTargetResponse(type);
-		}
-		return null;
+	
+	public <T> T getTarget(Class<T> targetType) {
+		return XUtils.getTarget(targetResponse, targetType);
 	}
 
 	public void setContentType(MimeType contentType) {

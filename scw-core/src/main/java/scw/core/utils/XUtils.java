@@ -21,6 +21,7 @@ import java.util.concurrent.TimeoutException;
 
 import scw.core.Converter;
 import scw.core.ResourceFactory;
+import scw.core.Target;
 import scw.util.ToMap;
 
 public final class XUtils {
@@ -280,6 +281,18 @@ public final class XUtils {
 			if (obj != null) {
 				return obj;
 			}
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getTarget(Object wrapper, Class<T> targetType) {
+		if (targetType.isInstance(wrapper)) {
+			return (T) wrapper;
+		}
+
+		if (wrapper instanceof Target) {
+			return ((Target) wrapper).getTarget(targetType);
 		}
 		return null;
 	}

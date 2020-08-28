@@ -13,12 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpHeaders;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpRequestWrapper;
-import scw.http.server.ServerHttpResponse;
-import scw.http.server.ServerHttpResponseWrapper;
 import scw.servlet.http.ServletServerHttpRequest;
-import scw.servlet.http.ServletServerHttpResponse;
 
 public final class ServletUtils {
 	private static final boolean asyncSupport = ClassUtils.isPresent("javax.servlet.AsyncContext");// 是否支持异步处理
@@ -111,26 +106,5 @@ public final class ServletUtils {
 
 	public static String getForwardRequestUri(ServletRequest servletRequest) {
 		return (String) servletRequest.getAttribute(ATTRIBUTE_FORWARD_REQUEST_URI);
-	}
-
-	public static ServletServerHttpRequest getServletServerHttpRequest(ServerHttpRequest request) {
-		if (request instanceof ServletServerHttpRequest) {
-			return (ServletServerHttpRequest) request;
-		}
-
-		if (request instanceof ServerHttpRequestWrapper) {
-			return ((ServerHttpRequestWrapper) request).getTargetRequest(ServletServerHttpRequest.class);
-		}
-		return null;
-	}
-
-	public static ServletServerHttpResponse getServletServerHttpResponse(ServerHttpResponse response) {
-		if (response instanceof ServletServerHttpResponse) {
-			return (ServletServerHttpResponse) response;
-		}
-		if (response instanceof ServerHttpResponseWrapper) {
-			return ((ServerHttpResponseWrapper) response).getTargetResponse(ServletServerHttpResponse.class);
-		}
-		return null;
 	}
 }

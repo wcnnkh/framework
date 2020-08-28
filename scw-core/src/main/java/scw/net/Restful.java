@@ -5,6 +5,7 @@ import java.io.Serializable;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XUtils;
 import scw.http.server.ServerHttpRequest;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
@@ -131,8 +132,11 @@ public final class Restful {
 
 	public static boolean restfulParameterMapAware(Object instance, MultiValueMap<String, String> parameterMap) {
 		if (instance instanceof RestfulParameterMapAware) {
-			((RestfulParameterMapAware) instance).setRestfulParameterMap(parameterMap);
-			return true;
+			RestfulParameterMapAware aware = XUtils.getTarget(instance, RestfulParameterMapAware.class);
+			if(aware != null){
+				aware.setRestfulParameterMap(parameterMap);
+				return true;
+			}
 		}
 		return false;
 	}

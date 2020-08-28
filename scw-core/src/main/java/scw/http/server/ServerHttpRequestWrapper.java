@@ -8,16 +8,17 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
 
+import scw.core.Target;
+import scw.core.utils.XUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.MediaType;
 import scw.net.InetAddress;
-import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
 
-public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParameterMapAware {
+public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
 	private final ServerHttpRequest targetRequest;
 
 	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest) {
@@ -27,17 +28,9 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParam
 	public ServerHttpRequest getTargetRequest() {
 		return targetRequest;
 	}
-
-	@SuppressWarnings("unchecked")
-	public <T extends ServerHttpRequest> T getTargetRequest(Class<? extends T> type) {
-		if (type.isInstance(targetRequest)) {
-			return (T) targetRequest;
-		}
-
-		if (targetRequest instanceof ServerHttpRequestWrapper) {
-			return ((ServerHttpRequestWrapper) targetRequest).getTargetRequest(type);
-		}
-		return null;
+	
+	public <T> T getTarget(Class<T> targetType) {
+		return XUtils.getTarget(targetRequest, targetType);
 	}
 
 	public InputStream getBody() throws IOException {
@@ -146,12 +139,6 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParam
 
 	public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
 		targetRequest.setCharacterEncoding(env);
-	}
-
-	public void setRestfulParameterMap(MultiValueMap<String, String> parameterMap) {
-		if (targetRequest instanceof RestfulParameterMapAware) {
-			((RestfulParameterMapAware) targetRequest).setRestfulParameterMap(parameterMap);
-		}
 	}
 
 	public MultiValueMap<String, String> getRestfulParameterMap() {

@@ -6,15 +6,14 @@ import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
-import scw.core.utils.ClassUtils;
 import scw.http.server.HttpServiceHandler;
 import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
@@ -24,9 +23,11 @@ import scw.mvc.action.ActionInterceptor;
 import scw.mvc.action.ActionInterceptorChain;
 import scw.mvc.action.ActionLookup;
 import scw.mvc.action.ActionParameters;
+import scw.mvc.annotation.ResultFactory;
 import scw.mvc.exception.ExceptionHandler;
 import scw.mvc.output.DefaultHttpControllerOutput;
 import scw.mvc.output.HttpControllerOutput;
+import scw.mvc.view.View;
 import scw.net.message.converter.MessageConverter;
 import scw.result.Result;
 import scw.util.MultiIterable;
@@ -40,32 +41,14 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 	protected final LinkedList<HttpControllerOutput> httpControllerOutputs = new LinkedList<HttpControllerOutput>();
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
-	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
-
-	public HttpControllerHandler(HttpChannelFactory httpChannelFactory, ExceptionHandler exceptionHandler) {
-		this.httpChannelFactory = httpChannelFactory;
-		this.exceptionHandler = exceptionHandler;
-	}
-
-	public JSONSupport getJsonSupport() {
-		return jsonSupport;
-	}
-
-	public void setJsonSupport(JSONSupport jsonSupport) {
-		this.jsonSupport = jsonSupport;
-	}
+	protected final BeanFactory beanFactory;
 
 	public HttpControllerHandler(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		this.beanFactory = beanFactory;
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
 		} else {
-			String className = "scw.mvc.servlet.DefaultServletHttpChannelFactory";
-			if (ClassUtils.isPresent(className)) {
-				httpChannelFactory = InstanceUtils.INSTANCE_FACTORY.getInstance(className, beanFactory,
-						getJsonSupport());
-			} else {
-				httpChannelFactory = new DefaultHttpChannelFactory(beanFactory, getJsonSupport());
-			}
+			httpChannelFactory = new DefaultHttpChannelFactory(beanFactory);
 		}
 
 		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)
@@ -136,16 +119,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 				logger.error("fail:{}, result={}", httpChannel.toString(), JSONUtils.toJSONString(message));
 			}
 
-			for (HttpControllerOutput httpControllerOutput : httpControllerOutputs) {
-				if (httpControllerOutput.canWrite(httpChannel, message)) {
-					if (logger.isTraceEnabled()) {
-						logger.trace("{} output adapter is body:{}, channel:{}", httpControllerOutput, message,
-								httpChannel.toString());
-					}
-					httpControllerOutput.write(httpChannel, message);
-					return;
-				}
-			}
+			doResponse(httpChannel, action, message);
 
 			if (logger.isDebugEnabled()) {
 				logger.debug("not support output body:{}, channel:{}", message, httpChannel.toString());
@@ -176,5 +150,37 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 		httpChannel.getResponse().sendError(500, "system error");
 		return null;
+	}
+	
+	private final void doResponse(HttpChannel httpChannel, Action action, Object message) throws IOException{
+		if(message == null){
+			return ;
+		}
+		
+		if(message instanceof View){
+			((View) message).render(httpChannel);
+			return ;
+		}
+		
+		ResultFactory resultFactory = AnnotationUtils.getAnnotation(ResultFactory.class, action.getSourceClass(), action.getAnnotatedElement());
+		if (resultFactory != null && resultFactory.enable() && (resultFactory instanceof Result)) {
+			doResponseInternal(httpChannel, action, beanFactory.getInstance(resultFactory.value()).success(message));
+			return ;
+		}
+		
+		doResponseInternal(httpChannel, action, message);
+	}
+	
+	protected void doResponseInternal(HttpChannel httpChannel, Action action, Object message) throws IOException{
+		for (HttpControllerOutput httpControllerOutput : httpControllerOutputs) {
+			if (httpControllerOutput.canWrite(httpChannel, message)) {
+				if (logger.isTraceEnabled()) {
+					logger.trace("{} output adapter is body:{}, channel:{}", httpControllerOutput, message,
+							httpChannel.toString());
+				}
+				httpControllerOutput.write(httpChannel, message);
+				return;
+			}
+		}
 	}
 }
