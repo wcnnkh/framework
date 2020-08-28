@@ -14,6 +14,7 @@ import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
@@ -39,21 +40,31 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 	protected final LinkedList<HttpControllerOutput> httpControllerOutputs = new LinkedList<HttpControllerOutput>();
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
+	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 
 	public HttpControllerHandler(HttpChannelFactory httpChannelFactory, ExceptionHandler exceptionHandler) {
 		this.httpChannelFactory = httpChannelFactory;
 		this.exceptionHandler = exceptionHandler;
 	}
 
+	public JSONSupport getJsonSupport() {
+		return jsonSupport;
+	}
+
+	public void setJsonSupport(JSONSupport jsonSupport) {
+		this.jsonSupport = jsonSupport;
+	}
+
 	public HttpControllerHandler(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
 		} else {
-			if (ClassUtils.isPresent("scw.mvc.servlet.DefaultServletHttpChannelFactory")) {
-				httpChannelFactory = InstanceUtils.INSTANCE_FACTORY
-						.getInstance("scw.mvc.servlet.DefaultServletHttpChannelFactory", beanFactory);
+			String className = "scw.mvc.servlet.DefaultServletHttpChannelFactory";
+			if (ClassUtils.isPresent(className)) {
+				httpChannelFactory = InstanceUtils.INSTANCE_FACTORY.getInstance(className, beanFactory,
+						getJsonSupport());
 			} else {
-				httpChannelFactory = new DefaultHttpChannelFactory(beanFactory);
+				httpChannelFactory = new DefaultHttpChannelFactory(beanFactory, getJsonSupport());
 			}
 		}
 

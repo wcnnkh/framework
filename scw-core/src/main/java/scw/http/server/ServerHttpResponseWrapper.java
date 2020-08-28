@@ -13,12 +13,24 @@ import scw.net.MimeType;
 public class ServerHttpResponseWrapper implements ServerHttpResponse {
 	private final ServerHttpResponse targetResponse;
 
-	public ServerHttpResponseWrapper(ServerHttpResponse targetResponse){
+	public ServerHttpResponseWrapper(ServerHttpResponse targetResponse) {
 		this.targetResponse = targetResponse;
 	}
-	
+
 	public ServerHttpResponse getTargetResponse() {
 		return targetResponse;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends ServerHttpResponse> T getTargetResponse(Class<? extends T> type) {
+		if (type.isInstance(targetResponse)) {
+			return (T) targetResponse;
+		}
+
+		if (targetResponse instanceof ServerHttpResponseWrapper) {
+			return ((ServerHttpResponseWrapper) targetResponse).getTargetResponse(type);
+		}
+		return null;
 	}
 
 	public void setContentType(MimeType contentType) {

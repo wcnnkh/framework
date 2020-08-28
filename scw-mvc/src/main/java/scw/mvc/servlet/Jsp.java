@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
@@ -29,29 +30,34 @@ public class Jsp extends AbstractPage {
 	}
 
 	public void render(HttpChannel httpChannel) throws IOException {
-		HttpServletRequest request = ((ServletServerHttpRequest) httpChannel.getRequest()).getHttpServletRequest();
-		HttpServletResponse response = ((ServletServerHttpResponse) httpChannel.getResponse()).getHttpServletResponse();
+		ServletServerHttpRequest request = ServletUtils.getServletServerHttpRequest(httpChannel.getRequest());
+		ServletServerHttpResponse response = ServletUtils.getServletServerHttpResponse(httpChannel.getResponse());
+		if (request == null || response == null) {
+			throw new NotSupportedException(httpChannel.toString());
+		}
 
 		if (response.getContentType() == null) {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
 		}
 
+		HttpServletRequest httpServletRequest = request.getHttpServletRequest();
+		HttpServletResponse httpServletResponse = response.getHttpServletResponse();
 		@SuppressWarnings("unchecked")
 		Map<String, Object> attributeMap = (Map<String, Object>) clone();
-		Enumeration<String> enumeration = request.getAttributeNames();
+		Enumeration<String> enumeration = httpServletRequest.getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			attributeMap.remove(enumeration.nextElement());
 		}
 
 		for (java.util.Map.Entry<String, Object> entry : attributeMap.entrySet()) {
-			request.setAttribute(entry.getKey(), entry.getValue());
+			httpServletRequest.setAttribute(entry.getKey(), entry.getValue());
 		}
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("jsp:{}", getPage());
 		}
 		try {
-			ServletUtils.jsp(request, response, getPage());
+			ServletUtils.jsp(httpServletRequest, httpServletResponse, getPage());
 		} catch (ServletException e) {
 			logger.error(e, httpChannel.toString());
 		}

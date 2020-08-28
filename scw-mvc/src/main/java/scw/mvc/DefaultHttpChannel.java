@@ -67,8 +67,7 @@ import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public class DefaultHttpChannel<R extends ServerHttpRequest, P extends ServerHttpResponse>
-		extends AbstractParameterFactory implements HttpChannel, Destroy {
+public class DefaultHttpChannel extends AbstractParameterFactory implements HttpChannel, Destroy {
 	private static Logger logger = LoggerUtils.getLogger(DefaultHttpChannel.class);
 	private static final DynamicValue<Long> WARN_TIMEOUT = GlobalPropertyFactory.getInstance()
 			.getDynamicValue("mvc.warn-execute-time", Long.class, 100L);
@@ -76,11 +75,12 @@ public class DefaultHttpChannel<R extends ServerHttpRequest, P extends ServerHtt
 	private final BeanFactory beanFactory;
 	private final JSONSupport jsonSupport;
 	private boolean completed = false;
-	private final R request;
-	private final P response;
+	private final ServerHttpRequest request;
+	private final ServerHttpResponse response;
 	private volatile Map<String, Object> beanMap;
 
-	public DefaultHttpChannel(BeanFactory beanFactory, JSONSupport jsonSupport, R request, P response) {
+	public DefaultHttpChannel(BeanFactory beanFactory, JSONSupport jsonSupport, ServerHttpRequest request,
+			ServerHttpResponse response) {
 		this.createTime = System.currentTimeMillis();
 		this.beanFactory = beanFactory;
 		this.jsonSupport = jsonSupport;
@@ -454,11 +454,11 @@ public class DefaultHttpChannel<R extends ServerHttpRequest, P extends ServerHtt
 		return v;
 	}
 
-	public R getRequest() {
+	public ServerHttpRequest getRequest() {
 		return request;
 	}
 
-	public P getResponse() {
+	public ServerHttpResponse getResponse() {
 		return response;
 	}
 

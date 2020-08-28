@@ -29,13 +29,13 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParam
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T extends ServerHttpRequest> T accept(Class<? extends T> type) {
+	public <T extends ServerHttpRequest> T getTargetRequest(Class<? extends T> type) {
 		if (type.isInstance(targetRequest)) {
 			return (T) targetRequest;
 		}
 
 		if (targetRequest instanceof ServerHttpRequestWrapper) {
-			return ((ServerHttpRequestWrapper) targetRequest).accept(type);
+			return ((ServerHttpRequestWrapper) targetRequest).getTargetRequest(type);
 		}
 		return null;
 	}
