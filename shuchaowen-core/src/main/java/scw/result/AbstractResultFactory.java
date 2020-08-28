@@ -1,6 +1,16 @@
 package scw.result;
 
+import scw.core.GlobalPropertyFactory;
+import scw.event.support.DynamicValue;
+
 public abstract class AbstractResultFactory implements ResultFactory {
+	private static final DynamicValue<String> DEFAULT_ERROR_MESSAGE = GlobalPropertyFactory.getInstance()
+			.getDynamicValue("result.error.msg", String.class, "系统错误");
+	private static final DynamicValue<String> AUTHORIZATION_FAILURE_MESSAGE = GlobalPropertyFactory.getInstance()
+			.getDynamicValue("result.authorization.failure.msg", String.class, "登录状态已过期");
+	private static final DynamicValue<String> PARAMETER_ERROR_MESSAGE = GlobalPropertyFactory.getInstance()
+			.getDynamicValue("result.parameter.error.msg", String.class, "参数错误");
+
 	protected abstract String getMsg(long code);
 
 	public <T> DataResult<T> success() {
@@ -9,7 +19,7 @@ public abstract class AbstractResultFactory implements ResultFactory {
 
 	public <T> DataResult<T> error(long code) {
 		String msg = getMsg(code);
-		return error(code, msg == null ? "操作失败" : msg);
+		return error(code, msg == null ? DEFAULT_ERROR_MESSAGE.getValue() : msg);
 	}
 
 	public <T> DataResult<T> error(String msg) {
@@ -19,19 +29,19 @@ public abstract class AbstractResultFactory implements ResultFactory {
 	public <T> DataResult<T> error() {
 		long code = getDefaultErrorCode();
 		String msg = getMsg(code);
-		return error(code, msg == null ? "系统错误" : msg);
+		return error(code, msg == null ? DEFAULT_ERROR_MESSAGE.getValue() : msg);
 	}
 
 	public <T> DataResult<T> authorizationFailure() {
 		long code = getAuthorizationFailureCode();
 		String msg = getMsg(code);
-		return error(code, msg == null ? "登录状态已过期" : msg);
+		return error(code, msg == null ? AUTHORIZATION_FAILURE_MESSAGE.getValue() : msg);
 	}
 
 	public <T> DataResult<T> parameterError() {
 		long code = getParamterErrorCode();
 		String msg = getMsg(code);
-		return error(code, msg == null ? "参数错误" : msg);
+		return error(code, msg == null ? PARAMETER_ERROR_MESSAGE.getValue() : msg);
 	}
 
 	public <T> DataResult<T> error(Result result) {

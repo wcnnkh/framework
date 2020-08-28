@@ -33,10 +33,17 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 		} else {
 			Long code = error instanceof ErrorCode ? ((ErrorCode) error).getCode() : null;
 			String message = NestedExceptionUtils.getMostSpecificCause(error).getLocalizedMessage();
-			if (code != null) {
+			if (code == null) {
+				if (message == null) {
+					return resultFactory.error();
+				}
+				return resultFactory.error(message);
+			} else {
+				if (message == null) {
+					return resultFactory.error(code);
+				}
 				return resultFactory.error(code, message);
 			}
-			return resultFactory.error(message);
 		}
 	}
 }
