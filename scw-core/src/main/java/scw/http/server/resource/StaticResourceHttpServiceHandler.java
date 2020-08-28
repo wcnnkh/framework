@@ -3,6 +3,7 @@ package scw.http.server.resource;
 import java.io.IOException;
 
 import scw.http.HttpMethod;
+import scw.http.HttpStatus;
 import scw.http.server.HttpServiceHandler;
 import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpRequest;
@@ -42,7 +43,17 @@ public class StaticResourceHttpServiceHandler implements HttpServiceHandler, Htt
 			response.setContentType(mimeType);
 		}
 		
-		response.getHeaders().setLastModified(resource.lastModified());
+		long ifModifiedSince = request.getHeaders().getIfModifiedSince();
+		long lastModified = resource.lastModified();
+		if(lastModified <= ifModifiedSince){
+			//客户端缓存未过期
+			response.setStatusCode(HttpStatus.NOT_MODIFIED);
+			return ;
+		}
+		
+		if(lastModified > 0){
+			response.getHeaders().setLastModified(lastModified);
+		}
 		IOUtils.copy(resource.getInputStream(), response.getBody());
 	}
 }
