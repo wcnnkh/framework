@@ -1,5 +1,4 @@
-# shuchaowen
-AOP、事务、ORM、MVC、RPC、分布式TCC事务、分布式锁、dubbo(支持hystrix)、redis、memcached、rabbitmq、websocket、微信公众(开放)平台开发、权限管理
+# AOP、事务、ORM、MVC、RPC、分布式TCC事务、分布式锁、dubbo(支持hystrix)、redis、memcached、rabbitmq、websocket、微信公众(开放)平台开发、权限管理
 
 使用方式:
 ========
@@ -15,7 +14,7 @@ AOP、事务、ORM、MVC、RPC、分布式TCC事务、分布式锁、dubbo(支�
 2.引入dependency:
 -----------------
     <dependency>
-      <groupId>shuchaowen</groupId>
-      <artifactId>shuchaowen-integration</artifactId>
+      <groupId>scw</groupId>
+      <artifactId>scw-integration</artifactId>
       <version>1.0.0</version>
     </dependency>
