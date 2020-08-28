@@ -41,7 +41,8 @@ public class StaticResourceHttpServiceHandler implements HttpServiceHandler, Htt
 		if (mimeType != null) {
 			response.setContentType(mimeType);
 		}
-
+		
+		response.getHeaders().setLastModified(resource.lastModified());
 		IOUtils.copy(resource.getInputStream(), response.getBody());
 	}
 }
