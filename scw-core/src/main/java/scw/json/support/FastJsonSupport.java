@@ -3,6 +3,8 @@ package scw.json.support;
 import java.lang.reflect.Type;
 
 import scw.json.AbstractJSONSupport;
+import scw.json.EmptyJsonElement;
+import scw.json.JsonElement;
 import scw.json.JsonObject;
 
 import com.alibaba.fastjson.JSON;
@@ -33,5 +35,9 @@ public final class FastJsonSupport extends AbstractJSONSupport {
 	@Override
 	protected <T> T parseObjectInternal(String text, Type type) {
 		return JSON.parseObject(text, type, Feature.SupportNonPublicField);
+	}
+
+	public JsonElement parseJson(String text) {
+		return new FastJsonElement(text, EmptyJsonElement.INSTANCE);
 	}
 }

@@ -3,12 +3,10 @@ package scw.http.server;
 import java.io.IOException;
 import java.util.Iterator;
 
+import scw.http.HttpStatus;
 import scw.http.server.cors.CorsUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 
 public class HttpServiceInterceptorChain implements HttpService {
-	private static Logger logger = LoggerUtils.getLogger(HttpService.class);
 	private HttpServiceHandlerAccessor handlerAccessor;
 	private Iterator<? extends HttpServiceInterceptor> iterator;
 
@@ -21,15 +19,13 @@ public class HttpServiceInterceptorChain implements HttpService {
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		HttpServiceInterceptor interceptor = getNextHttpServiceInterceptor(request);
 		if (interceptor == null) {
-			if (handlerAccessor == null) {
+			HttpServiceHandler handler = handlerAccessor == null ? null : handlerAccessor.get(request);
+			if (handler == null) {
 				notfound(request, response);
 				return;
 			}
 
-			HttpServiceHandler handler = handlerAccessor.get(request);
-			if (handler != null) {
-				handler.doHandle(request, response);
-			}
+			handler.doHandle(request, response);
 			return;
 		}
 		interceptor.intercept(request, response, this);
@@ -39,9 +35,8 @@ public class HttpServiceInterceptorChain implements HttpService {
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return;
 		}
-		
-		logger.warn("not found：{}", request.toString());
-		response.sendError(404, "not found handler");
+
+		response.setStatusCode(HttpStatus.NOT_FOUND);
 	}
 
 	private HttpServiceInterceptor getNextHttpServiceInterceptor(ServerHttpRequest request) {

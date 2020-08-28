@@ -1,5 +1,6 @@
 package scw.mvc.action;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -10,8 +11,10 @@ import java.util.Set;
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
+import scw.http.server.JsonServerHttpRequest;
+import scw.http.server.ServerHttpRequest;
+import scw.json.JsonElement;
 import scw.lang.AlreadyExistsException;
-import scw.mvc.HttpChannel;
 import scw.mvc.MVCUtils;
 
 @Configuration(order = Integer.MIN_VALUE + 1)
@@ -33,22 +36,34 @@ public class ParameterActionLookup implements ActionLookup {
 		this.key = key;
 	}
 
-	public Action lookup(HttpChannel httpChannel) {
+	public Action lookup(ServerHttpRequest request) {
 		if (key == null) {
 			return null;
 		}
 
-		Map<HttpMethod, Map<String, Action>> map = actionMap.get(httpChannel.getRequest().getPath());
+		Map<HttpMethod, Map<String, Action>> map = actionMap.get(request.getPath());
 		if (map == null) {
 			return null;
 		}
 
-		Map<String, Action> methodMap = map.get(httpChannel.getRequest().getMethod());
+		Map<String, Action> methodMap = map.get(request.getMethod());
 		if (methodMap == null) {
 			return null;
 		}
 
-		String action = httpChannel.getValue(key).getAsString();
+		String action = request.getParameterMap().getFirst(key);
+		if (action == null && request instanceof JsonServerHttpRequest) {
+			JsonElement json;
+			try {
+				json = ((JsonServerHttpRequest) request).getJson();
+				if (json.isJsonObject()) {
+					action = json.getAsJsonObject().getString(key);
+				}
+			} catch (IOException e) {
+				// ignore
+			}
+		}
+
 		if (action == null) {
 			return null;
 		}

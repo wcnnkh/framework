@@ -30,6 +30,7 @@ import scw.http.MediaType;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.json.JSONUtils;
 import scw.net.InetAddress;
 import scw.net.InetUtils;
 import scw.net.RestfulParameterMapAware;
@@ -287,6 +288,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	@Override
 	public String toString() {
-		return getRawMethod() + " " + getURI() + " " + httpServletRequest.getProtocol();
+		return getRawMethod() + " " + getPath() + " " + httpServletRequest.getProtocol() + " parameters->" + JSONUtils.getJsonSupport().toJSONString(httpServletRequest.getParameterMap());
 	}
 }

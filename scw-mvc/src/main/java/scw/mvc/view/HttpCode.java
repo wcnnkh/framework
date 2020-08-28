@@ -2,9 +2,14 @@ package scw.mvc.view;
 
 import java.io.IOException;
 
+import scw.http.HttpStatus;
+import scw.logger.Level;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
 
 public class HttpCode implements View {
+	private static Logger logger = LoggerUtils.getLogger(HttpCode.class);
 	private int status;
 	private String msg;
 
@@ -19,10 +24,11 @@ public class HttpCode implements View {
 					.setContentType("text/html;charset=" + httpChannel.getResponse().getCharacterEncoding());
 		}
 
-		if (httpChannel.isLogEnabled()) {
-			httpChannel.log("path={},method={},status={},msg={}", httpChannel.getRequest().getPath(),
-					httpChannel.getRequest().getMethod(), status, msg);
+		HttpStatus status = HttpStatus.valueOf(this.status);
+		Level level = status.isError() ? Level.WARN : Level.DEBUG;
+		if (logger.isLogEnable(level)) {
+			logger.log(level, "{} -> {} {}", httpChannel.toString(), this.status, msg);
 		}
-		httpChannel.getResponse().sendError(status, msg);
+		httpChannel.getResponse().sendError(this.status, msg);
 	}
 }

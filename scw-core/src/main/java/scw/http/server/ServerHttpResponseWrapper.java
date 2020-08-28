@@ -11,10 +11,14 @@ import scw.http.MediaType;
 import scw.net.MimeType;
 
 public class ServerHttpResponseWrapper implements ServerHttpResponse {
-	protected final ServerHttpResponse targetResponse;
+	private final ServerHttpResponse targetResponse;
 
 	public ServerHttpResponseWrapper(ServerHttpResponse targetResponse){
 		this.targetResponse = targetResponse;
+	}
+	
+	public ServerHttpResponse getTargetResponse() {
+		return targetResponse;
 	}
 
 	public void setContentType(MimeType contentType) {

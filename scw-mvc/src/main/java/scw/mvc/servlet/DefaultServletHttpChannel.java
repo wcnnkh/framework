@@ -6,13 +6,13 @@ import javax.servlet.http.HttpServletResponse;
 import scw.beans.BeanFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.json.JSONSupport;
-import scw.mvc.JsonHttpChannel;
+import scw.mvc.DefaultHttpChannel;
 import scw.servlet.http.ServletServerHttpRequest;
 import scw.servlet.http.ServletServerHttpResponse;
 
-public class ServletJsonHttpChannel extends JsonHttpChannel<ServletServerHttpRequest, ServletServerHttpResponse>{
+public class DefaultServletHttpChannel extends DefaultHttpChannel<ServletServerHttpRequest, ServletServerHttpResponse>{
 
-	public ServletJsonHttpChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport,
+	public DefaultServletHttpChannel(BeanFactory beanFactory, JSONSupport jsonParseSupport,
 			ServletServerHttpRequest request, ServletServerHttpResponse response) {
 		super(beanFactory, jsonParseSupport, request, response);
 	}

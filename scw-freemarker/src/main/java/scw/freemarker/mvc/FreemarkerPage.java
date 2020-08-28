@@ -11,6 +11,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.net.MimeType;
@@ -18,6 +20,8 @@ import scw.net.MimeTypeUtils;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LoggerUtils.getLogger(FreemarkerPage.class);
+
 	private transient Configuration configuration;
 	private MimeType mimeType;
 
@@ -48,10 +52,10 @@ public class FreemarkerPage extends AbstractPage {
 		} else {
 			serverResponse.setContentType(MimeTypeUtils.TEXT_HTML);
 		}
-		
+
 		Map<String, Object> freemarkerMap = new HashMap<String, Object>(size());
 		freemarkerMap.put(CONTEXT_PATH_NAME, serverRequest.getContextPath());
-		
+
 		Enumeration<String> enumeration = httpChannel.getRequest().getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();
@@ -71,17 +75,17 @@ public class FreemarkerPage extends AbstractPage {
 
 			freemarkerMap.put(key, entry.getValue());
 		}
-		
+
 		freemarkerMap.putAll(this);
 		String page = getPage();
 		Template template = configuration.getTemplate(page, serverRequest.getCharacterEncoding());
 		try {
 			template.process(freemarkerMap, serverResponse.getWriter());
-			if (httpChannel.isLogEnabled()) {
-				httpChannel.log("freemarker:{}", page);
+			if (logger.isDebugEnabled()) {
+				logger.debug("freemarker:{}", page);
 			}
 		} catch (TemplateException e) {
-			httpChannel.getLogger().error(e, "freemarker:{}", page);
+			logger.error(e, "freemarker:{}", page);
 		}
 	}
 }

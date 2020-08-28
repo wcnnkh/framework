@@ -27,7 +27,11 @@ public final class SplitLineAppend implements Serializable, StringAppend {
 
 	public void appendTo(Appendable appendable) throws IOException {
 		appendable.append(DIVIDING_LINE);
-		appendable.append(msg.toString());
+		if (msg instanceof StringAppend) {
+			((StringAppend) msg).appendTo(appendable);
+		} else {
+			appendable.append(String.valueOf(msg));
+		}
 		appendable.append(DIVIDING_LINE);
 	}
 }

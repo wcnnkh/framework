@@ -8,6 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.servlet.ServletUtils;
@@ -16,6 +18,7 @@ import scw.servlet.http.ServletServerHttpResponse;
 
 public class Jsp extends AbstractPage {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LoggerUtils.getLogger(Jsp.class);
 
 	protected Jsp() {
 		super(null);
@@ -44,13 +47,13 @@ public class Jsp extends AbstractPage {
 			request.setAttribute(entry.getKey(), entry.getValue());
 		}
 
-		if (httpChannel.isLogEnabled()) {
-			httpChannel.log("jsp:{}", getPage());
+		if (logger.isDebugEnabled()) {
+			logger.debug("jsp:{}", getPage());
 		}
 		try {
 			ServletUtils.jsp(request, response, getPage());
 		} catch (ServletException e) {
-			httpChannel.getLogger().error(e, httpChannel.toString());
+			logger.error(e, httpChannel.toString());
 		}
 	}
 }

@@ -18,17 +18,26 @@ import scw.security.session.Session;
 import scw.util.MultiValueMap;
 
 public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParameterMapAware {
-	protected final ServerHttpRequest targetRequest;
+	private final ServerHttpRequest targetRequest;
 
 	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest) {
 		this.targetRequest = targetRequest;
 	}
 
 	public ServerHttpRequest getTargetRequest() {
-		if(targetRequest instanceof ServerHttpRequestWrapper){
-			return ((ServerHttpRequestWrapper) targetRequest).getTargetRequest();
-		}
 		return targetRequest;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends ServerHttpRequest> T accept(Class<? extends T> type) {
+		if (type.isInstance(targetRequest)) {
+			return (T) targetRequest;
+		}
+
+		if (targetRequest instanceof ServerHttpRequestWrapper) {
+			return ((ServerHttpRequestWrapper) targetRequest).accept(type);
+		}
+		return null;
 	}
 
 	public InputStream getBody() throws IOException {
@@ -134,13 +143,13 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParam
 	public String getIp() {
 		return targetRequest.getIp();
 	}
-	
+
 	public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
 		targetRequest.setCharacterEncoding(env);
 	}
 
 	public void setRestfulParameterMap(MultiValueMap<String, String> parameterMap) {
-		if(targetRequest instanceof RestfulParameterMapAware){
+		if (targetRequest instanceof RestfulParameterMapAware) {
 			((RestfulParameterMapAware) targetRequest).setRestfulParameterMap(parameterMap);
 		}
 	}
@@ -148,17 +157,17 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParam
 	public MultiValueMap<String, String> getRestfulParameterMap() {
 		return targetRequest.getRestfulParameterMap();
 	}
-	
+
 	@Override
 	public String toString() {
 		return targetRequest.toString();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return targetRequest.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return targetRequest.equals(obj);

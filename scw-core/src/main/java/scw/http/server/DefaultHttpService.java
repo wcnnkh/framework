@@ -11,9 +11,12 @@ import scw.http.server.cors.CorsServiceInterceptor;
 import scw.http.server.resource.DefaultStaticResourceLoader;
 import scw.http.server.resource.StaticResourceHttpServiceHandler;
 import scw.http.server.resource.StaticResourceLoader;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.value.property.PropertyFactory;
 
 public class DefaultHttpService implements HttpService {
+	private static Logger logger = LoggerFactory.getLogger(DefaultHttpService.class);
 	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
 	private List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 
@@ -30,7 +33,7 @@ public class DefaultHttpService implements HttpService {
 		interceptors
 				.addAll(InstanceUtils.getConfigurationList(HttpServiceInterceptor.class, beanFactory, propertyFactory));
 		interceptors = Arrays.asList(interceptors.toArray(new HttpServiceInterceptor[0]));
-		
+
 		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils.getConfigurationList(HttpServiceHandler.class,
 				beanFactory, propertyFactory);
 		handlerAccessor.bind(httpServiceHandlers);
@@ -41,13 +44,23 @@ public class DefaultHttpService implements HttpService {
 	}
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		HttpServiceInterceptorChain chain = new HttpServiceInterceptorChain(interceptors.iterator(), handlerAccessor);
+		ServerHttpRequest requestToUse = request;
+		// 如果是一个json请求，那么包装一下
+		if (requestToUse.getHeaders().isJsonContentType() && !(request instanceof JsonServerHttpRequest)) {
+			requestToUse = new JsonServerHttpRequest(request);
+		}
+
+		if (logger.isDebugEnabled()) {
+			logger.debug(request.toString());
+		}
+
+		HttpService service = createHttpService();
 		try {
-			chain.service(request, response);
+			service.service(requestToUse, response);
 		} finally {
 			if (!response.isCommitted()) {
-				if (request.isSupportAsyncControl()) {
-					ServerHttpAsyncControl serverHttpAsyncControl = request.getAsyncControl(response);
+				if (requestToUse.isSupportAsyncControl()) {
+					ServerHttpAsyncControl serverHttpAsyncControl = requestToUse.getAsyncControl(response);
 					if (serverHttpAsyncControl.isStarted()) {
 						serverHttpAsyncControl.addListener(new ServerHttpResponseAsyncFlushListener(response));
 						return;
@@ -57,6 +70,11 @@ public class DefaultHttpService implements HttpService {
 				response.flush();
 			}
 		}
+	}
+
+	// 每次请求得到使用的服务
+	protected HttpService createHttpService() {
+		return new HttpServiceInterceptorChain(interceptors.iterator(), handlerAccessor);
 	}
 
 	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {

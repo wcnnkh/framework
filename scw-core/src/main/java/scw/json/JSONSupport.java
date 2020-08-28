@@ -10,6 +10,8 @@ public interface JSONSupport {
 	JsonArray parseArray(String text);
 
 	JsonObject parseObject(String text);
+	
+	JsonElement parseJson(String text);
 
 	<T> T parseObject(String text, Class<T> type);
 
