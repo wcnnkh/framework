@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>shuchaowen</groupId>
-	<artifactId>shuchaowen</artifactId>
+	<groupId>scw</groupId>
+	<artifactId>scw</artifactId>
 	<version>1.0.0</version>
 	<packaging>pom</packaging>
 
@@ -31,116 +31,116 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-core</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-core</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-cloud</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-cloud</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-search</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-search</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-websocket</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-websocket</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-timer</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-timer</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-mvc</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-mvc</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-security</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-security</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-data</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-data</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-kdniao</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-kdniao</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-db</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-db</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-integration</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-integration</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-alibaba</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-alibaba</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-apple</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-apple</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-microsoft</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-microsoft</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-freemarker</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-freemarker</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-mail</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-mail</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-tencent</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-tencent</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-upload</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-upload</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
 			<dependency>
-				<groupId>shuchaowen</groupId>
-				<artifactId>shuchaowen-embed</artifactId>
+				<groupId>scw</groupId>
+				<artifactId>scw-embed</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -419,23 +419,23 @@
 		</plugins>
 	</build>
 	<modules>
-		<module>shuchaowen-core</module>
-		<module>shuchaowen-integration</module>
-		<module>shuchaowen-alibaba</module>
-		<module>shuchaowen-kdniao</module>
-		<module>shuchaowen-upload</module>
-		<module>shuchaowen-freemarker</module>
-		<module>shuchaowen-tencent</module>
-		<module>shuchaowen-apple</module>
-		<module>shuchaowen-embed</module>
-		<module>shuchaowen-timer</module>
-		<module>shuchaowen-db</module>
-		<module>shuchaowen-data</module>
-		<module>shuchaowen-mvc</module>
-		<module>shuchaowen-websocket</module>
-		<module>shuchaowen-cloud</module>
-		<module>shuchaowen-security</module>
-		<module>shuchaowen-search</module>
-		<module>shuchaowen-microsoft</module>
+		<module>scw-core</module>
+		<module>scw-integration</module>
+		<module>scw-alibaba</module>
+		<module>scw-kdniao</module>
+		<module>scw-upload</module>
+		<module>scw-freemarker</module>
+		<module>scw-tencent</module>
+		<module>scw-apple</module>
+		<module>scw-embed</module>
+		<module>scw-timer</module>
+		<module>scw-db</module>
+		<module>scw-data</module>
+		<module>scw-mvc</module>
+		<module>scw-websocket</module>
+		<module>scw-cloud</module>
+		<module>scw-security</module>
+		<module>scw-search</module>
+		<module>scw-microsoft</module>
 	</modules>
 </project>
