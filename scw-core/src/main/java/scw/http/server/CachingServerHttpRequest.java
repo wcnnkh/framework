@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import scw.core.Constants;
 import scw.http.HttpMethod;
 import scw.io.IOUtils;
+import scw.logger.SplitLineAppend;
 
 /**
  * 缓存body
@@ -57,12 +58,15 @@ public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 
 		StringBuilder sb = new StringBuilder();
 		sb.append(super.toString() + Constants.LINE_SEPARATOR);
-		sb.append("Content-Type: " + getRawContentType() + Constants.LINE_SEPARATOR);
+		sb.append(new SplitLineAppend("request body["+getRawContentType()+"] begin"));
+		sb.append(Constants.LINE_SEPARATOR);
 		try {
 			sb.append(IOUtils.read(getReader(), -1));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		sb.append(Constants.LINE_SEPARATOR);
+		sb.append(new SplitLineAppend("request body end"));
 		return sb.toString();
 	}
 }

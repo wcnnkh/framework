@@ -13,6 +13,7 @@ public class ServerHttpResponseAsyncFlushListener implements ServerHttpAsyncList
 		if(!response.isCommitted()){
 			response.flush();
 		}
+		response.close();
 	}
 
 	public void onTimeout(ServerHttpAsyncEvent event) throws IOException {

@@ -114,4 +114,8 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 	public void setContentType(MediaType contentType) {
 		targetResponse.setContentType(contentType);
 	}
+
+	public void close() throws IOException {
+		targetResponse.close();
+	}
 }

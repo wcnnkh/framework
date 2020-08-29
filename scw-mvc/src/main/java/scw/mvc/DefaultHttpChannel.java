@@ -198,7 +198,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		long useTime = System.currentTimeMillis() - createTime;
 		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.TRACE;
 		if (logger.isLogEnable(level)) {
-			logger.log(level, "execute：{}, use time:{}ms", toString(), useTime);
+			logger.log(level, "It took {}ms to execute execute {}", useTime, toString());
 		}
 	}
 

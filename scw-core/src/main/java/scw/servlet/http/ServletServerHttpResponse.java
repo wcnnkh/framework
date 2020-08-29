@@ -138,4 +138,11 @@ public class ServletServerHttpResponse extends AbstractHttpOutputMessage impleme
 			httpServletResponse.flushBuffer();
 		}
 	}
+
+	public void close() throws IOException {
+		headers.write();
+		if (bodyUse) {
+			httpServletResponse.flushBuffer();
+		}
+	}
 }

@@ -11,9 +11,9 @@ import scw.net.MimeTypeUtils;
 
 public class JsonpUtils {
 	public static final MimeType JSONP_CONTENT_TYPE = MimeTypeUtils.TEXT_JAVASCRIPT;
-	private static final String JSONP_RESP_PREFIX = "(";
-	private static final String JSONP_RESP_SUFFIX = ");";
-	private static final String JSONP_CALLBACK = "callback";
+	public static final String JSONP_RESP_PREFIX = "(";
+	public static final String JSONP_RESP_SUFFIX = ");";
+	public static final String JSONP_CALLBACK = "callback";
 
 	public static String getCallback(ServerHttpRequest request) {
 		// 非GET请求不支持jsonp
