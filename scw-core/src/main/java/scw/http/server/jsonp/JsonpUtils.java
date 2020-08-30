@@ -1,4 +1,4 @@
-package scw.http.jsonp;
+package scw.http.server.jsonp;
 
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;

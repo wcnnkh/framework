@@ -9,6 +9,7 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,7 +30,9 @@ import scw.http.server.ip.ServerHttpRequestIpGetter;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.json.JSONSupport;
+import scw.json.JsonArray;
 import scw.json.JsonElement;
+import scw.json.JsonObject;
 import scw.lang.NotSupportedException;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
@@ -405,18 +408,53 @@ public final class HttpUtils {
 	 * @return 如果不存在返回{@see EmptyValue}
 	 * @throws IOException
 	 */
-	public static Value getParameter(ServerHttpRequest request, String name) throws IOException{
+	public static Value getParameter(ServerHttpRequest request, String name){
 		String value = request.getParameterMap().getFirst(name);
 		if(value != null){
 			return new StringValue(value);
 		}
 		
 		if(request instanceof JsonServerHttpRequest){
-			JsonElement jsonElement = ((JsonServerHttpRequest) request).getJson();
-			if(jsonElement.isJsonObject()){
-				return jsonElement.getAsJsonObject().get(name);
+			JsonObject jsonObject = ((JsonServerHttpRequest) request).getJsonObject();
+			if(jsonObject != null){
+				return jsonObject.get(name);
 			}
 		}
 		return EmptyValue.INSTANCE;
+	}
+	
+	/**
+	 * 此方法不会返回空，如果不存在返回的数组长度为0
+	 * @param request
+	 * @param name
+	 * @return
+	 */
+	public static Value[] getParameterValues(ServerHttpRequest request, String name){
+		List<String> valueList = request.getParameterMap().get(name);
+		if(!CollectionUtils.isEmpty(valueList)){
+			Value[] values = new Value[valueList.size()];
+			int index = 0;
+			for(String value : valueList){
+				values[index++] = new StringValue(value);
+			}
+			return values;
+		}
+		
+		if(request instanceof JsonServerHttpRequest){
+			JsonObject jsonObject = ((JsonServerHttpRequest) request).getJsonObject();
+			if(jsonObject != null){
+				JsonElement jsonElement = jsonObject.get(name);
+				if(jsonElement.isJsonArray()){
+					JsonArray jsonArray = jsonElement.getAsJsonArray();
+					Value[] values = new Value[jsonArray.size()];
+					int index = 0;
+					for(JsonElement element : jsonElement.getAsJsonArray()){
+						values[index++] = element;
+					}
+					return values;
+				}
+			}
+		}
+		return new Value[0];
 	}
 }

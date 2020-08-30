@@ -1,4 +1,4 @@
-package scw.http.jsonp;
+package scw.http.server.jsonp;
 
 import java.io.IOException;
 import java.io.OutputStream;

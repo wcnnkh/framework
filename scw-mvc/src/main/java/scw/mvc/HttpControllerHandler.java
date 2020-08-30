@@ -5,19 +5,18 @@ import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
-import scw.core.Constants;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
-import scw.http.jsonp.JsonpUtils;
 import scw.http.server.HttpServiceHandler;
 import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.http.server.jsonp.JsonpUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.json.JSONSupport;
@@ -137,15 +136,6 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 				message = doError(httpChannel, action, e);
 			}
 
-			if (message == null) {
-				return;
-			}
-
-			if (message != null && logger.isErrorEnabled() && message instanceof Result
-					&& ((Result) message).isError()) {
-				logger.error("fail:{}, result={}", httpChannel.toString(), JSONUtils.toJSONString(message));
-			}
-
 			doResponse(httpChannel, action, message);
 		} finally {
 			if (!httpChannel.isCompleted()) {
@@ -187,6 +177,11 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			return ;
 		}
 		
+		if (logger.isErrorEnabled() && message instanceof Result
+				&& ((Result) message).isError()) {
+			logger.error("{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR +  "{}" + IOUtils.LINE_SEPARATOR, httpChannel.toString(), new SplitLineAppend("result begin"), getJsonSupport().toJSONString(message), new SplitLineAppend("result end"));
+		}
+		
 		if (httpChannel.getResponse().getContentType() == null) {
 			httpChannel.getResponse().setContentType(MediaType.TEXT_HTML);
 		}
@@ -225,7 +220,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 		httpChannel.getResponse().getWriter().write(body);
 		if(logger.isDebugEnabled()){
-			logger.debug("{}"+Constants.LINE_SEPARATOR+"{}"+Constants.LINE_SEPARATOR + "{}" + Constants.LINE_SEPARATOR + "{}", httpChannel.toString(), new SplitLineAppend("response body begin"), body, new SplitLineAppend("response body end"));
+			logger.debug("{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}", httpChannel.toString(), new SplitLineAppend("response body(" + httpChannel.getRequest().getRawContentType() + ") begin"), body, new SplitLineAppend("response body end"));
 		}
 	}
 }

@@ -12,22 +12,17 @@ import scw.http.server.cors.DefaultCorsConfigFactory;
 import scw.http.server.resource.DefaultStaticResourceLoader;
 import scw.http.server.resource.StaticResourceHttpServiceHandler;
 import scw.http.server.resource.StaticResourceLoader;
-import scw.io.FileUtils;
 import scw.value.property.PropertyFactory;
 
 public class DefaultHttpService extends AbstractHttpService {
 	//是否开启jsonp支持
 	private DynamicValue<Boolean> jsonpEnable;
-	//最大的json请求体大小
-	private DynamicValue<Long> maxJsonContentLength;
 	private CorsConfigFactory corsConfigFactory;
 	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 	
 	public DefaultHttpService(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
 		jsonpEnable = propertyFactory.getDynamicValue("http.server.jsonp", Boolean.class, false);
-		maxJsonContentLength = propertyFactory.getDynamicValue("http.server.json.request.maxContentLength", Long.class, FileUtils.ONE_MB);
-		
 		StaticResourceLoader staticResourceLoader = beanFactory
 				.isInstance(StaticResourceLoader.class) ? beanFactory
 				.getInstance(StaticResourceLoader.class)
@@ -49,11 +44,6 @@ public class DefaultHttpService extends AbstractHttpService {
 	
 	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {
 		return interceptors;
-	}
-	
-	@Override
-	public long getMaxJsonContentLength() {
-		return maxJsonContentLength.getValue();
 	}
 	
 	protected CorsConfig getCorsConfig(ServerHttpRequest request) {

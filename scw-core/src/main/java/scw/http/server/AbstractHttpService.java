@@ -2,10 +2,10 @@ package scw.http.server;
 
 import java.io.IOException;
 
-import scw.http.jsonp.JsonpUtils;
+import scw.http.HttpMethod;
 import scw.http.server.cors.CorsConfig;
 import scw.http.server.cors.CorsUtils;
-import scw.io.FileUtils;
+import scw.http.server.jsonp.JsonpUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
@@ -61,22 +61,16 @@ public abstract class AbstractHttpService implements HttpService{
 				handlerAccessor);
 	}
 	
-	public long getMaxJsonContentLength(){
-		return FileUtils.ONE_MB;
-	}
-	
 	protected ServerHttpRequest wrapperRequest(ServerHttpRequest request)
 			throws IOException {
-		// 如果是一个json请求，那么包装一下
-		if(!(request instanceof JsonServerHttpRequest) && request.getHeaders().isJsonContentType()){
-			if(getMaxJsonContentLength() > request.getContentLength()){
-				logger.warn("The json request body is too large: {}", request);
-				return request;
-			}
-			
-			return new JsonServerHttpRequest(request);		
+		if(request.getMethod() == HttpMethod.GET){
+			return request;
 		}
 		
+		// 如果是一个json请求，那么包装一下
+		if(!(request instanceof JsonServerHttpRequest) && request.getHeaders().isJsonContentType()){
+			return new JsonServerHttpRequest(request);
+		}
 		return request;
 	}
 	
