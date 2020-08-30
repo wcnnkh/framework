@@ -12,6 +12,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.ClassUtils;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
+import scw.http.jsonp.JsonpUtils;
 import scw.http.server.HttpServiceHandler;
 import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpAsyncControl;
@@ -30,6 +31,7 @@ import scw.mvc.action.ActionInterceptor;
 import scw.mvc.action.ActionInterceptorChain;
 import scw.mvc.action.ActionLookup;
 import scw.mvc.action.ActionParameters;
+import scw.mvc.annotation.Jsonp;
 import scw.mvc.annotation.ResultFactory;
 import scw.mvc.exception.ExceptionHandler;
 import scw.mvc.view.View;
@@ -112,8 +114,17 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			// 不应该到这里的，因为accept里面已经判断过了
 			throw new NotSupportedException(request.toString());
 		}
+		
+		ServerHttpRequest requestToUse = request;
+		ServerHttpResponse responseToUse = response;
+		
+		//jsonp支持
+		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getSourceClass(), action.getAnnotatedElement());
+		if(jsonp != null && jsonp.value()){
+			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
+		}
 
-		HttpChannel httpChannel = httpChannelFactory.create(request, response);
+		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		try {
 			@SuppressWarnings("unchecked")
 			MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptor,
@@ -138,8 +149,8 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			doResponse(httpChannel, action, message);
 		} finally {
 			if (!httpChannel.isCompleted()) {
-				if (request.isSupportAsyncControl()) {
-					ServerHttpAsyncControl asyncControl = request.getAsyncControl(response);
+				if (requestToUse.isSupportAsyncControl()) {
+					ServerHttpAsyncControl asyncControl = requestToUse.getAsyncControl(responseToUse);
 					if (asyncControl.isStarted()) {
 						asyncControl.addListener(new HttpChannelAsyncListener(httpChannel));
 						return;
@@ -152,6 +163,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 					logger.error(e, "destroy channel error: {}", httpChannel.toString());
 				}
 			}
+			responseToUse.close();
 		}
 	}
 

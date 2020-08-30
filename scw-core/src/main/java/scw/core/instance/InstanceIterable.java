@@ -17,13 +17,8 @@ public final class InstanceIterable<E> implements Iterable<E> {
 	private String[] nameArray;
 	private boolean optimization;
 	
-	/**
-	 * 默认进行优化，所以实例化较慢
-	 * @param instanceFactory
-	 * @param names
-	 */
 	public InstanceIterable(NoArgsInstanceFactory instanceFactory, Iterable<String> names){
-		this(instanceFactory, names, true);
+		this(instanceFactory, names, false);
 	}
 
 	/**

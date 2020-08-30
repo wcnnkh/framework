@@ -2,17 +2,14 @@ package scw.http.server;
 
 import java.io.IOException;
 
-public class ServerHttpResponseAsyncFlushListener implements ServerHttpAsyncListener{
+public class ServerHttpResponseCompleteAsyncListener implements ServerHttpAsyncListener{
 	private ServerHttpResponse response;
 	
-	public ServerHttpResponseAsyncFlushListener(ServerHttpResponse response){
+	public ServerHttpResponseCompleteAsyncListener(ServerHttpResponse response){
 		this.response = response;
 	}
 	
 	public void onComplete(ServerHttpAsyncEvent event) throws IOException {
-		if(!response.isCommitted()){
-			response.flush();
-		}
 		response.close();
 	}
 

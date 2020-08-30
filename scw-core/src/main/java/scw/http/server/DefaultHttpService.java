@@ -1,6 +1,5 @@
 package scw.http.server;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,18 +17,16 @@ import scw.value.property.PropertyFactory;
 
 public class DefaultHttpService extends AbstractHttpService {
 	//是否开启jsonp支持
-	private DynamicValue<Boolean> supportJsonp;
+	private DynamicValue<Boolean> jsonpEnable;
 	//最大的json请求体大小
 	private DynamicValue<Long> maxJsonContentLength;
-	private DynamicValue<String> jsonpDisableParameterName;
 	private CorsConfigFactory corsConfigFactory;
 	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 	
 	public DefaultHttpService(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
-		supportJsonp = propertyFactory.getDynamicValue("http.server.jsonp", Boolean.class, true);
+		jsonpEnable = propertyFactory.getDynamicValue("http.server.jsonp", Boolean.class, false);
 		maxJsonContentLength = propertyFactory.getDynamicValue("http.server.json.request.maxContentLength", Long.class, FileUtils.ONE_MB);
-		jsonpDisableParameterName = propertyFactory.getDynamicValue("http.server.jsonp.disable.parameterName", String.class, JSONP_DISABLE_PARAMETER_NAME);
 		
 		StaticResourceLoader staticResourceLoader = beanFactory
 				.isInstance(StaticResourceLoader.class) ? beanFactory
@@ -50,30 +47,21 @@ public class DefaultHttpService extends AbstractHttpService {
 					? beanFactory.getInstance(CorsConfigFactory.class) : new DefaultCorsConfigFactory(propertyFactory);
 	}
 	
-	public CorsConfig getCorsConfig(ServerHttpRequest request) {
-		return corsConfigFactory.getCorsConfig(request);
-	}
-	
 	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {
 		return interceptors;
 	}
 	
 	@Override
-	protected boolean isJsonRequest(ServerHttpRequest request) throws IOException {
-		if(request.getContentLength() > maxJsonContentLength.getValue()){
-			return false;
-		}
-		
-		return super.isJsonRequest(request);
+	public long getMaxJsonContentLength() {
+		return maxJsonContentLength.getValue();
+	}
+	
+	protected CorsConfig getCorsConfig(ServerHttpRequest request) {
+		return corsConfigFactory.getCorsConfig(request);
 	}
 	
 	@Override
-	protected boolean isSupportJsonp(ServerHttpRequest request)
-			throws IOException {
-		return supportJsonp.getValue() && super.isSupportJsonp(request);
-	}
-	
-	public String getDisableJsonpParameterName() {
-		return jsonpDisableParameterName.getValue();
+	protected boolean isEnableJsonp(ServerHttpRequest request) {
+		return jsonpEnable.getValue();
 	}
 }

@@ -2,19 +2,16 @@ package scw.http.server;
 
 import java.io.IOException;
 
-import scw.core.utils.StringUtils;
-import scw.http.HttpUtils;
-import scw.http.jsonp.JsonpServerHttpResponse;
 import scw.http.jsonp.JsonpUtils;
 import scw.http.server.cors.CorsConfig;
-import scw.http.server.cors.CorsConfigFactory;
 import scw.http.server.cors.CorsUtils;
+import scw.io.FileUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.value.Value;
 
-public abstract class AbstractHttpService implements HttpService, CorsConfigFactory{
-	static final String JSONP_DISABLE_PARAMETER_NAME = "_disableJsonp";
+public abstract class AbstractHttpService implements HttpService{
+	public static final String JSONP_CALLBACK = "callback";
+	
 	private final Logger logger = LoggerFactory.getLogger(HttpService.class);
 	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
 	
@@ -40,11 +37,10 @@ public abstract class AbstractHttpService implements HttpService, CorsConfigFact
 				if (requestToUse.isSupportAsyncControl()) {
 					ServerHttpAsyncControl serverHttpAsyncControl = requestToUse.getAsyncControl(responseToUse);
 					if (serverHttpAsyncControl.isStarted()) {
-						serverHttpAsyncControl.addListener(new ServerHttpResponseAsyncFlushListener(responseToUse));
+						serverHttpAsyncControl.addListener(new ServerHttpResponseCompleteAsyncListener(responseToUse));
 						return;
 					}
 				}
-				responseToUse.flush();
 			}
 			responseToUse.close();
 		}
@@ -53,8 +49,6 @@ public abstract class AbstractHttpService implements HttpService, CorsConfigFact
 	public HttpServiceHandlerAccessor getHandlerAccessor() {
 		return handlerAccessor;
 	}
-
-	protected abstract Iterable<? extends HttpServiceInterceptor> getHttpServiceInterceptors();
 
 	/**
 	 * 每次请求创建的服务
@@ -67,38 +61,36 @@ public abstract class AbstractHttpService implements HttpService, CorsConfigFact
 				handlerAccessor);
 	}
 	
-	protected boolean isJsonRequest(ServerHttpRequest request) throws IOException{
-		return request.getHeaders().isJsonContentType()
-				&& !(request instanceof JsonServerHttpRequest);
+	public long getMaxJsonContentLength(){
+		return FileUtils.ONE_MB;
 	}
 	
 	protected ServerHttpRequest wrapperRequest(ServerHttpRequest request)
 			throws IOException {
 		// 如果是一个json请求，那么包装一下
-		if(isJsonRequest(request)){
-			return new JsonServerHttpRequest(request);
+		if(!(request instanceof JsonServerHttpRequest) && request.getHeaders().isJsonContentType()){
+			if(getMaxJsonContentLength() > request.getContentLength()){
+				logger.warn("The json request body is too large: {}", request);
+				return request;
+			}
+			
+			return new JsonServerHttpRequest(request);		
 		}
+		
 		return request;
 	}
 	
-	protected boolean isSupportJsonp(ServerHttpRequest request) throws IOException{
-		return true;
-	}
-	
-	protected String getJsonpDisableParameterName(){
-		return JSONP_DISABLE_PARAMETER_NAME;
-	}
-
 	protected ServerHttpResponse wrapperResponse(ServerHttpRequest request,
 			ServerHttpResponse response) throws IOException {
-		String jsonp = JsonpUtils.getCallback(request);
-		if (StringUtils.isNotEmpty(jsonp) && isSupportJsonp(request)) {
-			Value value = HttpUtils.getParameter(request, getJsonpDisableParameterName());
-			if(value.isEmpty() || value.getAsBooleanValue()){
-				return response;
-			}
-			return new JsonpServerHttpResponse(jsonp, response);
+		if(isEnableJsonp(request)){
+			return JsonpUtils.wrapper(request, response);
 		}
 		return response;
 	}
+	
+	public abstract Iterable<? extends HttpServiceInterceptor> getHttpServiceInterceptors();
+	
+	protected abstract CorsConfig getCorsConfig(ServerHttpRequest request);
+	
+	protected abstract boolean isEnableJsonp(ServerHttpRequest request);
 }
