@@ -13,11 +13,6 @@ public class Constants {
 	public static final Charset US_ASCII = Charset.forName("US-ASCII");
 
 	/**
-	 * 系统换行符
-	 */
-	public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
-	/**
 	 * 系统包名
 	 */
 	public static final String SYSTEM_PACKAGE_NAME = StringUtils.split(Constants.class.getPackage().getName(), '.')[0];

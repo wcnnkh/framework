@@ -24,7 +24,7 @@ import scw.xml.XMLUtils;
 public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private List<String> names = new ArrayList<String>();
 	private final String id;
-	private final boolean singleton;
+	private final Boolean singleton;
 	private final XmlParameterFactory xmlParameterFactory;
 	private Iterable<? extends MethodInterceptor> filters;
 
@@ -52,7 +52,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 		this.names.addAll(super.getNames());
 		this.names.addAll(Arrays.asList(getNames(beanNode)));
 		this.names = Arrays.asList(this.names.toArray(new String[0]));
-		this.singleton = XmlBeanUtils.isSingleton(beanNode) ? true : super.isSingleton();
+		this.singleton = XmlBeanUtils.isSingleton(beanNode);
 	}
 	
 	@Override
@@ -82,7 +82,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public boolean isSingleton() {
-		return singleton;
+		return singleton == null? super.isSingleton() : singleton;
 	}
 
 	protected String getId(Node node) {

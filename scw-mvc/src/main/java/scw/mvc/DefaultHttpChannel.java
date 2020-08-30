@@ -1,6 +1,5 @@
 package scw.mvc;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
@@ -31,7 +30,6 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.parameter.RenameParameterDescriptor;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
@@ -39,13 +37,10 @@ import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.event.support.DynamicValue;
 import scw.http.HttpMethod;
-import scw.http.server.JsonServerHttpRequest;
+import scw.http.HttpUtils;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.json.JSONSupport;
-import scw.json.JsonArray;
-import scw.json.JsonElement;
-import scw.json.JsonObject;
 import scw.lang.ParameterException;
 import scw.logger.Level;
 import scw.logger.Logger;
@@ -241,30 +236,10 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 
 	@SuppressWarnings("unchecked")
 	public <E> E[] getArray(String name, Class<? extends E> type) {
-		JsonElement value = getJsonElementByBody(name);
-		if (value != null) {
-			Object array;
-			if (value.isJsonArray()) {
-				JsonArray jsonArray = value.getAsJsonArray();
-				if (jsonArray == null || jsonArray.isEmpty()) {
-					array = Array.newInstance(type, 0);
-				} else {
-					array = Array.newInstance(type, jsonArray.size());
-					for (int i = 0, len = jsonArray.size(); i < len; i++) {
-						Array.set(array, i, jsonArray.getObject(i, type));
-					}
-				}
-			} else {
-				array = Array.newInstance(type, 1);
-				Array.set(array, 0, value.getAsObject(type));
-			}
-			return (E[]) array;
-		}
-
-		E[] array = parseArray(request.getParameterMap(), name, type);
-		E[] restfulArray = parseArray(request.getRestfulParameterMap(), name, type);
-		if (restfulArray.length != 0) {
-			return ArrayUtils.merge(array, restfulArray);
+		Value[] values = HttpUtils.getParameterValues(getRequest(), name);
+		Object array = Array.newInstance(type, values.length);
+		for (int i = 0, len = values.length; i < len; i++) {
+			Array.set(array, i, values[i].getAsObject(type));
 		}
 		return (E[]) array;
 	}
@@ -427,34 +402,9 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		}
 	}
 
-	private JsonObject jsonObject;
-
-	protected JsonElement getJsonElementByBody(String name) {
-		if (request instanceof JsonServerHttpRequest) {
-			JsonElement jsonElement;
-			try {
-				jsonElement = ((JsonServerHttpRequest) request).getJson();
-				jsonObject = jsonElement.isJsonObject() ? jsonElement.getAsJsonObject() : null;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		if (jsonObject != null) {
-			return jsonObject.get(name);
-		}
-		return null;
-	}
-
 	protected String getStringValue(String name) {
-		String v = request.getParameterMap().getFirst(name);
-		if (v == null) {
-			Value value = getJsonElementByBody(name);
-			if (value != null) {
-				v = value.getAsString();
-			}
-		}
-
+		Value value = HttpUtils.getParameter(getRequest(), name);
+		String v = value.getAsString();
 		if (v == null && request instanceof RestfulParameterMapAware) {
 			v = request.getRestfulParameterMap().getFirst(name);
 		}
@@ -502,8 +452,8 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 				return getBean(type);
 			}
 
-			Value value = getJsonElementByBody(name);
-			if (value != null) {
+			Value value = HttpUtils.getParameter(getRequest(), name);
+			if (!value.isEmpty()) {
 				return value.getAsObject(type);
 			}
 
@@ -523,10 +473,11 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 
 		@Override
 		protected Object getAsObjectNotSupport(Type type) {
-			Value value = getJsonElementByBody(name);
-			if (value != null) {
+			Value value = HttpUtils.getParameter(getRequest(), name);
+			if (!value.isEmpty()) {
 				return value.getAsObject(type);
 			}
+			
 			return getAsObjectNotSupport(TypeUtils.toClass(type));
 		}
 	}

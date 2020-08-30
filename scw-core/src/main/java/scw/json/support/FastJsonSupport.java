@@ -23,7 +23,8 @@ public final class FastJsonSupport extends AbstractJSONSupport {
 		return jsonObject == null ? null : new FastJsonObject(jsonObject);
 	}
 
-	public String toJSONString(Object obj) {
+	@Override
+	protected String toJsonStringInternal(Object obj) {
 		return JSON.toJSONString(obj, FastJSONBaseProperyFilter.BASE_PROPERY_FILTER);
 	}
 

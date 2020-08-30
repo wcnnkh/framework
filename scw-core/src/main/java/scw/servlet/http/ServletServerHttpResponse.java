@@ -48,11 +48,16 @@ public class ServletServerHttpResponse extends AbstractHttpOutputMessage impleme
 	public String getCharacterEncoding() {
 		return httpServletResponse.getCharacterEncoding();
 	}
-
+	
+	@Override
+	public String getRawContentType() {
+		return httpServletResponse.getContentType();
+	}
+	
 	public boolean isCommitted() {
 		return httpServletResponse.isCommitted();
 	}
-
+	
 	public void setCharacterEncoding(String env) {
 		httpServletResponse.setCharacterEncoding(env);
 	}

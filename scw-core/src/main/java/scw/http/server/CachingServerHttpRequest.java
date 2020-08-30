@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import scw.core.Constants;
 import scw.http.HttpMethod;
 import scw.io.IOUtils;
 import scw.logger.SplitLineAppend;
@@ -20,7 +19,8 @@ import scw.logger.SplitLineAppend;
 public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 	private byte[] body;
 
-	public CachingServerHttpRequest(ServerHttpRequest targetRequest) throws IOException {
+	public CachingServerHttpRequest(ServerHttpRequest targetRequest)
+			throws IOException {
 		super(targetRequest);
 	}
 
@@ -29,17 +29,18 @@ public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 	}
 
 	@Override
-	public BufferedReader getReader() throws IOException {
+	public BufferedReader getReader() throws IOException, OutOfMemoryError {
 		if (getMethod() == HttpMethod.GET) {
 			return null;
 		}
 
-		InputStreamReader isr = new InputStreamReader(getBody(), getCharacterEncoding());
+		InputStreamReader isr = new InputStreamReader(getBody(),
+				getCharacterEncoding());
 		return new BufferedReader(isr);
 	}
 
 	@Override
-	public InputStream getBody() throws IOException {
+	public InputStream getBody() throws IOException, OutOfMemoryError {
 		if (getMethod() == HttpMethod.GET) {
 			return null;
 		}
@@ -55,18 +56,27 @@ public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 		if (getMethod() == HttpMethod.GET) {
 			return super.toString();
 		}
-
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString() + Constants.LINE_SEPARATOR);
-		sb.append(new SplitLineAppend("request body["+getRawContentType()+"] begin"));
-		sb.append(Constants.LINE_SEPARATOR);
+		
+		String body = null;
 		try {
-			sb.append(IOUtils.read(getReader(), -1));
-		} catch (IOException e) {
-			e.printStackTrace();
+			body = IOUtils.read(getReader(), -1);
+		} catch (OutOfMemoryError e1) {
+		} catch (IOException e1) {
 		}
-		sb.append(Constants.LINE_SEPARATOR);
+
+		if(body == null){
+			return super.toString();
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(super.toString());
+		sb.append(IOUtils.LINE_SEPARATOR);
+		sb.append(new SplitLineAppend("request body[" + getRawContentType()	+ "] begin"));
+		sb.append(IOUtils.LINE_SEPARATOR);
+		sb.append(body);
+		sb.append(IOUtils.LINE_SEPARATOR);
 		sb.append(new SplitLineAppend("request body end"));
+		sb.append(IOUtils.LINE_SEPARATOR);
 		return sb.toString();
 	}
 }

@@ -1,13 +1,20 @@
-package scw.http.jsonp;
+package scw.http.server.jsonp;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import scw.core.Assert;
+import scw.core.utils.StringUtils;
 import scw.http.MediaType;
 import scw.http.server.ServerHttpResponse;
 import scw.http.server.ServerHttpResponseWrapper;
 
+/**
+ * 使用结束后必须要调用close方法
+ * @author asus1
+ *
+ */
 public class JsonpServerHttpResponse extends ServerHttpResponseWrapper {
 	private final String jsonp;
 	private boolean writeJsonp = false;
@@ -16,6 +23,7 @@ public class JsonpServerHttpResponse extends ServerHttpResponseWrapper {
 	public JsonpServerHttpResponse(String jsonp,
 			ServerHttpResponse targetResponse) {
 		super(targetResponse);
+		Assert.requiredArgument(StringUtils.isNotEmpty(jsonp), "jsonp");
 		this.jsonp = jsonp;
 	}
 

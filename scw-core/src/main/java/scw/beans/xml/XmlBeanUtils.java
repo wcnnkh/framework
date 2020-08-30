@@ -45,8 +45,8 @@ public final class XmlBeanUtils {
 		}
 	}
 
-	public static boolean isSingleton(Node node) {
-		return XMLUtils.getBooleanValue(node, "singleton", true);
+	public static Boolean isSingleton(Node node) {
+		return XMLUtils.getBooleanValue(node, "singleton", null);
 	}
 
 	public static boolean getBooleanValue(PropertyFactory propertyFactory,

@@ -11,6 +11,7 @@ import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.event.support.DynamicValue;
+import scw.http.HttpEntity;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.HttpResponseEntity;
@@ -145,23 +146,23 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 		}
 	}
 
-	public final <T> HttpResponseEntity<T> execute(URI uri, HttpMethod method, SSLSocketFactory sslSocketFactory, Object body,
-			HttpHeaders httpHeaders, ClientHttpResponseExtractor<T> clientResponseExtractor)
+	public final <T> HttpResponseEntity<T> execute(URI uri, HttpMethod method, SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity, ClientHttpResponseExtractor<T> clientResponseExtractor)
 			throws HttpClientException {
 		ClientHttpRequestBuilder requestBuilder = createBuilder(uri, method, sslSocketFactory);
-		return execute(requestBuilder, createRequestBodyCallback(requestBuilder.getUri(), method, body, httpHeaders),
+		return execute(requestBuilder, createRequestBodyCallback(requestBuilder.getUri(), method, httpEntity),
 				clientResponseExtractor);
 	}
 
 	public final <T> HttpResponseEntity<T> execute(String url, HttpMethod method, SSLSocketFactory sslSocketFactory,
-			Object body, HttpHeaders httpHeaders, ClientHttpResponseExtractor<T> clientResponseExtractor)
+			HttpEntity<?> httpEntity, ClientHttpResponseExtractor<T> clientResponseExtractor)
 			throws HttpClientException {
-		return execute(InetUtils.toURI(url), method, sslSocketFactory, body, httpHeaders, clientResponseExtractor);
+		return execute(InetUtils.toURI(url), method, sslSocketFactory, httpEntity, clientResponseExtractor);
 	}
 
 	public final HttpResponseEntity<File> download(final File file, final URI uri, HttpHeaders httpHeaders,
 			SSLSocketFactory sslSocketFactory) throws HttpClientException {
-		HttpResponseEntity<File> httpResponseEntity = execute(uri, HttpMethod.GET, sslSocketFactory, null, httpHeaders,
+		HttpEntity<Object> httpEntity = new HttpEntity<Object>(httpHeaders);
+		HttpResponseEntity<File> httpResponseEntity = execute(uri, HttpMethod.GET, sslSocketFactory, httpEntity,
 				new ClientHttpResponseExtractor<File>() {
 					public File execute(ClientHttpResponse response) throws IOException {
 						if (response.getStatusCode() != HttpStatus.OK) {
@@ -194,16 +195,15 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 	protected abstract ClientHttpRequestBuilder createBuilder(URI uri, HttpMethod method,
 			SSLSocketFactory sslSocketFactory);
 
-	protected ClientHttpRequestCallback createRequestBodyCallback(URI uri, HttpMethod httpMethod, final Object body,
-			final HttpHeaders httpHeaders) {
-		if (httpMethod == HttpMethod.GET && body != null) {
+	protected ClientHttpRequestCallback createRequestBodyCallback(URI uri, HttpMethod httpMethod, final HttpEntity<?> httpEntity) {
+		if (httpMethod == HttpMethod.GET && httpEntity != null && httpEntity.hasBody()) {
 			logger.warn("Get request cannot set request body [{}]", uri);
 		}
 
-		final boolean canWrite = body != null && httpMethod != HttpMethod.GET;
-		if (canWrite) {
-			if (!getMessageConverter().canWrite(body, httpHeaders == null ? null : httpHeaders.getContentType())) {
-				throw new NotSupportedException("not supported write body=" + body + ", headers=" + httpHeaders);
+		final boolean needWriteBody = httpEntity != null && httpEntity.hasBody() && httpMethod != HttpMethod.GET;
+		if (needWriteBody) {
+			if (!getMessageConverter().canWrite(httpEntity.getBody(), httpEntity == null ? null : httpEntity.getContentType())) {
+				throw new NotSupportedException("not supported write " + httpEntity);
 			}
 		}
 
@@ -211,12 +211,12 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 
 			public void callback(ClientHttpRequest clientRequest) throws IOException {
 				clientRequest.getHeaders().set(HttpHeaders.USER_AGENT, DEFAULT_UA.getValue());
-				if (httpHeaders != null) {
-					clientRequest.getHeaders().putAll(httpHeaders);
+				if (httpEntity != null) {
+					clientRequest.getHeaders().putAll(httpEntity.getHeaders());
 				}
 
-				if (canWrite) {
-					getMessageConverter().write(body, httpHeaders == null ? null : httpHeaders.getContentType(),
+				if (needWriteBody) {
+					getMessageConverter().write(httpEntity.getBody(), httpEntity == null ? null : httpEntity.getContentType(),
 							clientRequest);
 				}
 			}
@@ -246,25 +246,25 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 	}
 
 	public final <T> HttpResponseEntity<T> execute(Class<? extends T> responseType, String url, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders) throws HttpClientException {
-		return execute(responseType, InetUtils.toURI(url), method, sslSocketFactory, body, httpHeaders);
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException {
+		return execute(responseType, InetUtils.toURI(url), method, sslSocketFactory, httpEntity);
 	}
 
 	@SuppressWarnings("unchecked")
 	public final <T> HttpResponseEntity<T> execute(Class<? extends T> responseType, URI uri, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders) throws HttpClientException {
-		return (HttpResponseEntity<T>) execute(uri, method, sslSocketFactory, body, httpHeaders,
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException {
+		return (HttpResponseEntity<T>) execute(uri, method, sslSocketFactory, httpEntity,
 				getClientHttpResponseExtractor(method, responseType));
 	}
 
 	public final HttpResponseEntity<Object> execute(Type responseType, String url, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders) throws HttpClientException {
-		return execute(responseType, InetUtils.toURI(url), method, sslSocketFactory, body, httpHeaders);
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException {
+		return execute(responseType, InetUtils.toURI(url), method, sslSocketFactory, httpEntity);
 	}
 
 	public final HttpResponseEntity<Object> execute(Type responseType, URI uri, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders) throws HttpClientException {
-		return execute(uri, method, sslSocketFactory, body, httpHeaders,
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException {
+		return execute(uri, method, sslSocketFactory, httpEntity,
 				getClientHttpResponseExtractor(method, responseType));
 	}
 
@@ -274,7 +274,7 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 
 	public final <T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url, SSLSocketFactory sslSocketFactory)
 			throws HttpClientException {
-		return execute(responseType, url, HttpMethod.GET, sslSocketFactory, null, null);
+		return execute(responseType, url, HttpMethod.GET, sslSocketFactory, null);
 	}
 
 	public final HttpResponseEntity<Object> get(Type responseType, String url) throws HttpClientException {
@@ -283,7 +283,7 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 
 	public final HttpResponseEntity<Object> get(Type responseType, String url, SSLSocketFactory sslSocketFactory)
 			throws HttpClientException {
-		return execute(responseType, url, HttpMethod.GET, sslSocketFactory, null, null);
+		return execute(responseType, url, HttpMethod.GET, sslSocketFactory, null);
 	}
 
 	public final <T> HttpResponseEntity<T> post(Class<? extends T> responseType, String url, Object body,
@@ -293,9 +293,9 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 
 	public final <T> HttpResponseEntity<T> post(Class<? extends T> responseType, String url,
 			SSLSocketFactory sslSocketFactory, Object body, MediaType contentType) throws HttpClientException {
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(contentType);
-		return execute(responseType, url, HttpMethod.POST, sslSocketFactory, body, httpHeaders);
+		HttpEntity<Object> httpEntity = new HttpEntity<Object>(body);
+		httpEntity.getHeaders().setContentType(contentType);
+		return execute(responseType, url, HttpMethod.POST, sslSocketFactory, httpEntity);
 	}
 
 	public final HttpResponseEntity<Object> post(Type responseType, String url, Object body, MediaType contentType)
@@ -305,8 +305,8 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 
 	public final HttpResponseEntity<Object> post(Type responseType, String url, SSLSocketFactory sslSocketFactory,
 			Object body, MediaType contentType) throws HttpClientException {
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(contentType);
-		return execute(responseType, url, HttpMethod.POST, sslSocketFactory, body, httpHeaders);
+		HttpEntity<Object> httpEntity = new HttpEntity<Object>(body);
+		httpEntity.getHeaders().setContentType(contentType);
+		return execute(responseType, url, HttpMethod.POST, sslSocketFactory, httpEntity);
 	}
 }

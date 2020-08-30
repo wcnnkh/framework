@@ -49,7 +49,7 @@ public class DefaultAction extends BeanAction {
 				methodController.value(),
 				Arrays.asList(methodController.methods())));
 		String[] names = getActionInterceptorNames();
-		this.actionInterceptors = new InstanceIterable<ActionInterceptor>(beanFactory, Arrays.asList(names));
+		this.actionInterceptors = new InstanceIterable<ActionInterceptor>(beanFactory, Arrays.asList(names), true);
 	}
 	
 	public Iterable<? extends ActionInterceptor> getActionInterceptors() {

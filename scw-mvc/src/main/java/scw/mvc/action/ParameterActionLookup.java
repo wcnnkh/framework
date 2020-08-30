@@ -1,6 +1,5 @@
 package scw.mvc.action;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -51,13 +50,7 @@ public class ParameterActionLookup implements ActionLookup {
 			return null;
 		}
 
-		Value action = null;
-		try {
-			action = HttpUtils.getParameter(request, key);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+		Value action = HttpUtils.getParameter(request, key);
 		if (action == null || action.isEmpty()) {
 			return null;
 		}

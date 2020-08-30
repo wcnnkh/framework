@@ -2066,7 +2066,7 @@ public final class StringUtils {
 		int pos = 0;
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
-			if (c == ' ' || c == ',') {
+			if (Character.isWhitespace(c) || c == ',') {
 				continue;
 			}
 			chars[pos++] = c;
@@ -2075,7 +2075,7 @@ public final class StringUtils {
 	}
 
 	public static Boolean parseBoolean(String text, Boolean defaultValue) {
-		if (isEmpty(text)) {
+		if (!hasText(text)) {
 			return defaultValue;
 		}
 
@@ -2086,20 +2086,12 @@ public final class StringUtils {
 		return BOOLEANS.contains(text) || BOOLEANS.contains(text.toLowerCase());
 	}
 
-	public static boolean parseBoolean(String text, boolean defaultValue) {
-		if (isEmpty(text)) {
-			return defaultValue;
-		}
-
-		return parseBooleanValue(text);
-	}
-
-	public static boolean parseBoolean(Object text, boolean defaultValue) {
+	public static boolean parseBoolean(Object text, Boolean defaultValue) {
 		if (text == null) {
 			return defaultValue;
 		}
 
-		return parseBoolean(text.toString(), defaultValue);
+		return parseBoolean(String.valueOf(text), defaultValue);
 	}
 
 	public static boolean parseBoolean(Object text) {

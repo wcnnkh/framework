@@ -13,10 +13,6 @@ import scw.json.gson.GsonJsonElement;
 public final class BuiltinGsonSupport extends AbstractJSONSupport {
 	private static final Gson GSON = new Gson();
 
-	public String toJSONString(Object obj) {
-		return GSON.toJson(obj);
-	}
-
 	public JsonArray parseArray(String text) {
 		GsonJsonElement gsonJsonElement = GSON.toJsonTree(text);
 		return new BuiltInGsonJsonArray(gsonJsonElement.getAsJsonArray(), GSON);
@@ -38,5 +34,10 @@ public final class BuiltinGsonSupport extends AbstractJSONSupport {
 	public JsonElement parseJson(String text) {
 		GsonJsonElement gsonJsonElement = GSON.toJsonTree(text);
 		return new BuiltInGsonElement(gsonJsonElement, GSON, EmptyJsonElement.INSTANCE);
+	}
+
+	@Override
+	protected String toJsonStringInternal(Object obj) {
+		return GSON.toJson(obj);
 	}
 }

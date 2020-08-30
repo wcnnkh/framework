@@ -1,25 +1,27 @@
 package scw.http.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import scw.core.utils.StringUtils;
-import scw.http.HttpUtils;
-import scw.http.jsonp.JsonpServerHttpResponse;
-import scw.http.jsonp.JsonpUtils;
+import scw.http.HttpMethod;
+import scw.http.server.cors.CorsConfig;
+import scw.http.server.cors.CorsUtils;
+import scw.http.server.jsonp.JsonpUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public abstract class AbstractHttpService implements HttpService{
-	static final String JSONP_DISABLE_PARAMETER_NAME = "_disableJsonp";
+	public static final String JSONP_CALLBACK = "callback";
 	
 	private final Logger logger = LoggerFactory.getLogger(HttpService.class);
 	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
-	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 	
 	public void service(ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException {
+		CorsConfig config = getCorsConfig(request);
+		if(config == null){
+			CorsUtils.write(config, response);
+		}
+		
 		ServerHttpRequest requestToUse = wrapperRequest(request);
 		ServerHttpResponse responseToUse = wrapperResponse(requestToUse, response);
 
@@ -35,11 +37,10 @@ public abstract class AbstractHttpService implements HttpService{
 				if (requestToUse.isSupportAsyncControl()) {
 					ServerHttpAsyncControl serverHttpAsyncControl = requestToUse.getAsyncControl(responseToUse);
 					if (serverHttpAsyncControl.isStarted()) {
-						serverHttpAsyncControl.addListener(new ServerHttpResponseAsyncFlushListener(responseToUse));
+						serverHttpAsyncControl.addListener(new ServerHttpResponseCompleteAsyncListener(responseToUse));
 						return;
 					}
 				}
-				responseToUse.flush();
 			}
 			responseToUse.close();
 		}
@@ -49,11 +50,6 @@ public abstract class AbstractHttpService implements HttpService{
 		return handlerAccessor;
 	}
 
-
-	public List<HttpServiceInterceptor> getInterceptors() {
-		return interceptors;
-	}
-
 	/**
 	 * 每次请求创建的服务
 	 * @param request
@@ -61,38 +57,34 @@ public abstract class AbstractHttpService implements HttpService{
 	 * @return
 	 */
 	protected HttpService createService(ServerHttpRequest request, ServerHttpResponse response){
-		return new HttpServiceInterceptorChain(interceptors.iterator(),
+		return new HttpServiceInterceptorChain(getHttpServiceInterceptors().iterator(),
 				handlerAccessor);
-	}
-	
-	protected boolean isJsonRequest(ServerHttpRequest request) throws IOException{
-		return request.getHeaders().isJsonContentType()
-				&& !(request instanceof JsonServerHttpRequest);
 	}
 	
 	protected ServerHttpRequest wrapperRequest(ServerHttpRequest request)
 			throws IOException {
+		if(request.getMethod() == HttpMethod.GET){
+			return request;
+		}
+		
 		// 如果是一个json请求，那么包装一下
-		if(isJsonRequest(request)){
+		if(!(request instanceof JsonServerHttpRequest) && request.getHeaders().isJsonContentType()){
 			return new JsonServerHttpRequest(request);
 		}
 		return request;
 	}
 	
-	protected boolean isSupportJsonp(ServerHttpRequest request) throws IOException{
-		return !HttpUtils.getParameter(request, getJsonpDisableParameterName()).getAsBooleanValue();
-	}
-	
-	protected String getJsonpDisableParameterName(){
-		return JSONP_DISABLE_PARAMETER_NAME;
-	}
-
 	protected ServerHttpResponse wrapperResponse(ServerHttpRequest request,
 			ServerHttpResponse response) throws IOException {
-		String jsonp = JsonpUtils.getCallback(request);
-		if (StringUtils.isNotEmpty(jsonp) && isSupportJsonp(request)) {
-			return new JsonpServerHttpResponse(jsonp, response);
+		if(isEnableJsonp(request)){
+			return JsonpUtils.wrapper(request, response);
 		}
 		return response;
 	}
+	
+	public abstract Iterable<? extends HttpServiceInterceptor> getHttpServiceInterceptors();
+	
+	protected abstract CorsConfig getCorsConfig(ServerHttpRequest request);
+	
+	protected abstract boolean isEnableJsonp(ServerHttpRequest request);
 }

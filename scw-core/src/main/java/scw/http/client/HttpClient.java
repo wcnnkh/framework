@@ -6,6 +6,7 @@ import java.net.URI;
 
 import javax.net.ssl.SSLSocketFactory;
 
+import scw.http.HttpEntity;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.HttpResponseEntity;
@@ -23,10 +24,10 @@ public interface HttpClient {
 			ClientHttpResponseExtractor<T> clientResponseExtractor) throws HttpClientException;
 	
 	<T> HttpResponseEntity<T> execute(String url, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders, ClientHttpResponseExtractor<T> clientResponseExtractor) throws HttpClientException;
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity, ClientHttpResponseExtractor<T> clientResponseExtractor) throws HttpClientException;
 	
 	<T> HttpResponseEntity<T> execute(URI uri, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders, ClientHttpResponseExtractor<T> clientResponseExtractor) throws HttpClientException;
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity, ClientHttpResponseExtractor<T> clientResponseExtractor) throws HttpClientException;
 	
 	/**
 	 * 下载文件
@@ -34,7 +35,7 @@ public interface HttpClient {
 	 * @param url
 	 * @param httpHeaders
 	 * @param sslSocketFactory
-	 * @return 如果返回的 body->file 为空，那么说明下载失败
+	 * @return 如果返回的 body(file) 为空，那么说明下载失败
 	 * @throws HttpClientException
 	 */
 	HttpResponseEntity<File> download(File file, String url, HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory) throws HttpClientException;
@@ -42,16 +43,16 @@ public interface HttpClient {
 	HttpResponseEntity<File> download(File file, URI uri, HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory) throws HttpClientException;
 	
 	HttpResponseEntity<Object> execute(Type responseType, String url, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders) throws HttpClientException;
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException;
 
 	HttpResponseEntity<Object> execute(Type responseType, URI uri, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders) throws HttpClientException;
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException;
 	
 	<T> HttpResponseEntity<T> execute(Class<? extends T> responseType, String url, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders) throws HttpClientException;
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException;
 
 	<T> HttpResponseEntity<T> execute(Class<? extends T> responseType, URI uri, HttpMethod method,
-			SSLSocketFactory sslSocketFactory, Object body, HttpHeaders httpHeaders) throws HttpClientException;
+			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException;
 	
 	<T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url, SSLSocketFactory sslSocketFactory)
 			throws HttpClientException;

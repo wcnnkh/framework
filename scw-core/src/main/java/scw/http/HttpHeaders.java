@@ -22,6 +22,7 @@ import java.util.regex.Pattern;
 import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -1319,7 +1320,10 @@ public class HttpHeaders extends Headers {
 	 */
 	public String getFirst(String headerName) {
 		List<String> headerValues = get(headerName);
-		return (headerValues != null ? headerValues.get(0) : null);
+		if(CollectionUtils.isEmpty(headerValues)){
+			return null;
+		}
+		return headerValues.get(0);
 	}
 
 	/**
