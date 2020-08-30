@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 
+import scw.core.utils.ClassUtils;
 import scw.io.IOUtils;
 
 public abstract class AbstractJSONSupport implements JSONSupport {
@@ -76,4 +77,22 @@ public abstract class AbstractJSONSupport implements JSONSupport {
 	protected <T> T parseObjectInternal(Reader reader, Type type) throws IOException {
 		return parseObject(new String(IOUtils.toCharArray(reader)), type);
 	}
+	
+	public String toJSONString(Object obj) {
+		if(obj == null){
+			return null;
+		}
+		
+		if(obj instanceof String){
+			return (String)obj;
+		}
+		
+		if(ClassUtils.isPrimitiveOrWrapper(obj.getClass())){
+			return String.valueOf(obj);
+		}
+		
+		return toJsonStringInternal(obj);
+	}
+	
+	protected abstract String toJsonStringInternal(Object obj);
 }

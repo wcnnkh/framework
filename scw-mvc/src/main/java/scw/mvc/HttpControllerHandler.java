@@ -22,6 +22,7 @@ import scw.io.Resource;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
+import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.logger.SplitLineAppend;
@@ -173,13 +174,9 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		
 		ResultFactory resultFactory = AnnotationUtils.getAnnotation(ResultFactory.class, action.getSourceClass(), action.getAnnotatedElement());
 		if (!(message instanceof Result) && resultFactory != null && resultFactory.enable()) {
-			doResponse(httpChannel, action, beanFactory.getInstance(resultFactory.value()).success(message));
+			Result result = beanFactory.getInstance(resultFactory.value()).success(message);
+			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON);
 			return ;
-		}
-		
-		if (logger.isErrorEnabled() && message instanceof Result
-				&& ((Result) message).isError()) {
-			logger.error("{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR +  "{}" + IOUtils.LINE_SEPARATOR, httpChannel.toString(), new SplitLineAppend("result begin"), getJsonSupport().toJSONString(message), new SplitLineAppend("result end"));
 		}
 		
 		if (httpChannel.getResponse().getContentType() == null) {
@@ -207,20 +204,24 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			}
 		} else{
 			if ((message instanceof String) || (ClassUtils.isPrimitiveOrWrapper(message.getClass()))) {
-				writeTextBody(httpChannel, message.toString(), MediaType.TEXT_HTML);
+				writeTextBody(httpChannel, message, MediaType.TEXT_HTML);
 			} else {
-				writeTextBody(httpChannel, getJsonSupport().toJSONString(message), MediaType.APPLICATION_JSON);
+				writeTextBody(httpChannel, message, MediaType.APPLICATION_JSON);
 			}
 		}
 	}
 	
-	protected void writeTextBody(HttpChannel httpChannel, String body, MimeType contentType) throws IOException{
+	protected void writeTextBody(HttpChannel httpChannel, Object body, MimeType contentType) throws IOException{
 		if(contentType != null){
 			httpChannel.getResponse().setContentType(contentType);
 		}
-		httpChannel.getResponse().getWriter().write(body);
-		if(logger.isDebugEnabled()){
-			logger.debug("{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}", httpChannel.toString(), new SplitLineAppend("response body(" + httpChannel.getRequest().getRawContentType() + ") begin"), body, new SplitLineAppend("response body end"));
+		
+		String text = getJsonSupport().toJSONString(body);
+		httpChannel.getResponse().getWriter().write(text);
+		
+		Level level = (body instanceof Result && ((Result)body).isError())? Level.ERROR:Level.DEBUG;
+		if(logger.isLogEnable(level)){
+			logger.log(level, "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}", httpChannel.toString(), new SplitLineAppend("response body(" + httpChannel.getRequest().getRawContentType() + ") begin"), text, new SplitLineAppend("response body end"));
 		}
 	}
 }
