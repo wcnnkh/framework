@@ -10,12 +10,12 @@ import java.util.Set;
 
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
+import scw.http.HttpUtils;
 import scw.http.server.HttpControllerDescriptor;
-import scw.http.server.JsonServerHttpRequest;
 import scw.http.server.ServerHttpRequest;
-import scw.json.JsonElement;
 import scw.lang.AlreadyExistsException;
 import scw.mvc.MVCUtils;
+import scw.value.Value;
 
 @Configuration(order = Integer.MIN_VALUE + 1)
 public class ParameterActionLookup implements ActionLookup {
@@ -51,23 +51,17 @@ public class ParameterActionLookup implements ActionLookup {
 			return null;
 		}
 
-		String action = request.getParameterMap().getFirst(key);
-		if (action == null && request instanceof JsonServerHttpRequest) {
-			JsonElement json;
-			try {
-				json = ((JsonServerHttpRequest) request).getJson();
-				if (json.isJsonObject()) {
-					action = json.getAsJsonObject().getString(key);
-				}
-			} catch (IOException e) {
-				// ignore
-			}
+		Value action = null;
+		try {
+			action = HttpUtils.getParameter(request, key);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-
-		if (action == null) {
+		
+		if (action == null || action.isEmpty()) {
 			return null;
 		}
-		return methodMap.get(action);
+		return methodMap.get(action.getAsString());
 	}
 
 	protected final void register(HttpMethod httpMethod, String classController, String methodController,

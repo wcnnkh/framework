@@ -13,8 +13,6 @@ import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = HttpServletService.class)
 public class DefaultHttpServletService extends DefaultHttpService implements HttpServletService {
-	public DefaultHttpServletService() {
-	}
 
 	public DefaultHttpServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		super(beanFactory, propertyFactory);
