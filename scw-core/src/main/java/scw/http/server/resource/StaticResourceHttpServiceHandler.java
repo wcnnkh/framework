@@ -3,11 +3,11 @@ package scw.http.server.resource;
 import java.io.IOException;
 
 import scw.http.HttpMethod;
+import scw.http.HttpUtils;
 import scw.http.server.HttpServiceHandler;
 import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.net.MimeType;
 
@@ -38,10 +38,6 @@ public class StaticResourceHttpServiceHandler implements HttpServiceHandler, Htt
 	public void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		Resource resource = resourceLoader.getResource(request.getPath());
 		MimeType mimeType = resourceLoader.getMimeType(resource);
-		if (mimeType != null) {
-			response.setContentType(mimeType);
-		}
-
-		IOUtils.copy(resource.getInputStream(), response.getBody());
+		HttpUtils.writeStaticResource(request, response, resource, mimeType);
 	}
 }

@@ -5,8 +5,8 @@ import java.io.Serializable;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XUtils;
 import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpRequestWrapper;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 
@@ -59,7 +59,7 @@ public final class Restful {
 	@Override
 	public int hashCode() {
 		int code = 0;
-		for(RestfulPath path : paths){
+		for (RestfulPath path : paths) {
 			code += path.hashCode();
 		}
 		return code;
@@ -74,21 +74,21 @@ public final class Restful {
 		if (obj == this) {
 			return true;
 		}
-		
-		if(obj instanceof Restful){
+
+		if (obj instanceof Restful) {
 			Restful restful = (Restful) obj;
-			if(restful.paths.length != paths.length){
+			if (restful.paths.length != paths.length) {
 				return false;
 			}
-			
+
 			for (int i = 0; i < paths.length; i++) {
-				if(!paths[i].equals(restful.paths[i])){
+				if (!paths[i].equals(restful.paths[i])) {
 					return false;
 				}
 			}
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -120,16 +120,7 @@ public final class Restful {
 		RestfulMatchingResult result = matching(request.getPath());
 		if (result.isSuccess()) {
 			ServerHttpRequest targetRequest = request;
-			if (restfulParameterMapAware(targetRequest, result.getParameterMap())) {
-				return result;
-			}
-
-			if (targetRequest instanceof ServerHttpRequestWrapper) {
-				targetRequest = ((ServerHttpRequestWrapper) targetRequest).getTargetRequest();
-				if (restfulParameterMapAware(targetRequest, result.getParameterMap())) {
-					return result;
-				}
-			}
+			restfulParameterMapAware(targetRequest, result.getParameterMap());
 		}
 		return result;
 	}
@@ -138,11 +129,14 @@ public final class Restful {
 	public String toString() {
 		return sourcePath;
 	}
-	
+
 	public static boolean restfulParameterMapAware(Object instance, MultiValueMap<String, String> parameterMap) {
 		if (instance instanceof RestfulParameterMapAware) {
-			((RestfulParameterMapAware) instance).setRestfulParameterMap(parameterMap);
-			return true;
+			RestfulParameterMapAware aware = XUtils.getTarget(instance, RestfulParameterMapAware.class);
+			if(aware != null){
+				aware.setRestfulParameterMap(parameterMap);
+				return true;
+			}
 		}
 		return false;
 	}
@@ -215,36 +209,36 @@ public final class Restful {
 				return this.path.equals(path);
 			}
 		}
-		
+
 		@Override
 		public String toString() {
 			return targetPath;
 		}
-		
+
 		@Override
 		public int hashCode() {
-			if(isWildcard() || isPlaceholder()){
+			if (isWildcard() || isPlaceholder()) {
 				return 0;
 			}
-			
+
 			return path.hashCode();
 		}
-		
+
 		@Override
 		public boolean equals(Object obj) {
-			if(obj == null){
+			if (obj == null) {
 				return false;
 			}
-			
-			if(obj == this){
+
+			if (obj == this) {
 				return true;
 			}
-			
-			if(obj instanceof RestfulPath){
-				if(isWildcard() || isPlaceholder()){
+
+			if (obj instanceof RestfulPath) {
+				if (isWildcard() || isPlaceholder()) {
 					return true;
 				}
-				
+
 				return path.equals(((RestfulPath) obj).path);
 			}
 			return false;

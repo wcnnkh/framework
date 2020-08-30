@@ -32,6 +32,9 @@ public final class InstanceUtils {
 
 	public static final ConfigurationScanner CONFIGURATION_SCANNER;
 
+	/**
+	 * 默认的实例工厂
+	 */
 	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
 			GlobalPropertyFactory.getInstance());
 

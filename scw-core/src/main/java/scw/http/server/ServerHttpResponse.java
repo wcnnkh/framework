@@ -1,5 +1,6 @@
 package scw.http.server;
 
+import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,7 +10,7 @@ import scw.http.HttpHeaders;
 import scw.http.HttpOutputMessage;
 import scw.http.HttpStatus;
 
-public interface ServerHttpResponse extends Flushable, HttpOutputMessage{
+public interface ServerHttpResponse extends Flushable, Closeable, HttpOutputMessage{
     void addCookie(HttpCookie cookie);
     
     void addCookie(String name, String value);

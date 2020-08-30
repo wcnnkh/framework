@@ -1,65 +1,65 @@
 package scw.http.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
+import scw.event.support.DynamicValue;
 import scw.http.server.cors.CorsServiceInterceptor;
 import scw.http.server.resource.DefaultStaticResourceLoader;
 import scw.http.server.resource.StaticResourceHttpServiceHandler;
 import scw.http.server.resource.StaticResourceLoader;
+import scw.io.FileUtils;
 import scw.value.property.PropertyFactory;
 
-public class DefaultHttpService implements HttpService {
-	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
-	private List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
-
-	public DefaultHttpService() {
-	}
-
-	public DefaultHttpService(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		StaticResourceLoader staticResourceLoader = beanFactory.isInstance(StaticResourceLoader.class)
-				? beanFactory.getInstance(StaticResourceLoader.class)
-				: new DefaultStaticResourceLoader(propertyFactory);
-		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler(staticResourceLoader);
-		handlerAccessor.bind(resourceHandler);
-		interceptors.add(new CorsServiceInterceptor(beanFactory, propertyFactory));
-		interceptors
-				.addAll(InstanceUtils.getConfigurationList(HttpServiceInterceptor.class, beanFactory, propertyFactory));
-		interceptors = Arrays.asList(interceptors.toArray(new HttpServiceInterceptor[0]));
+public class DefaultHttpService extends AbstractHttpService {
+	//是否开启jsonp支持
+	private DynamicValue<Boolean> supportJsonp;
+	//最大的json请求体大小
+	private DynamicValue<Long> maxJsonContentLength;
+	private DynamicValue<String> jsonpDisableParameterName;
+	
+	public DefaultHttpService(BeanFactory beanFactory,
+			PropertyFactory propertyFactory) {
+		supportJsonp = propertyFactory.getDynamicValue("http.server.jsonp", Boolean.class, true);
+		maxJsonContentLength = propertyFactory.getDynamicValue("http.server.json.request.maxContentLength", Long.class, FileUtils.ONE_MB);
+		jsonpDisableParameterName = propertyFactory.getDynamicValue("http.server.jsonp.disable.parameterName", String.class, JSONP_DISABLE_PARAMETER_NAME);
 		
-		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils.getConfigurationList(HttpServiceHandler.class,
-				beanFactory, propertyFactory);
-		handlerAccessor.bind(httpServiceHandlers);
+		StaticResourceLoader staticResourceLoader = beanFactory
+				.isInstance(StaticResourceLoader.class) ? beanFactory
+				.getInstance(StaticResourceLoader.class)
+				: new DefaultStaticResourceLoader(propertyFactory);
+		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler(
+				staticResourceLoader);
+		getHandlerAccessor().bind(resourceHandler);
+		getInterceptors().add(new CorsServiceInterceptor(beanFactory,
+				propertyFactory));
+		getInterceptors().addAll(InstanceUtils.getConfigurationList(
+				HttpServiceInterceptor.class, beanFactory, propertyFactory));
+
+		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils
+				.getConfigurationList(HttpServiceHandler.class, beanFactory,
+						propertyFactory);
+		getHandlerAccessor().bind(httpServiceHandlers);
 	}
-
-	public final HttpServiceHandlerAccessor getHandlerAccessor() {
-		return handlerAccessor;
-	}
-
-	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		HttpServiceInterceptorChain chain = new HttpServiceInterceptorChain(interceptors.iterator(), handlerAccessor);
-		try {
-			chain.service(request, response);
-		} finally {
-			if (!response.isCommitted()) {
-				if (request.isSupportAsyncControl()) {
-					ServerHttpAsyncControl serverHttpAsyncControl = request.getAsyncControl(response);
-					if (serverHttpAsyncControl.isStarted()) {
-						serverHttpAsyncControl.addListener(new ServerHttpResponseAsyncFlushListener(response));
-						return;
-					}
-				}
-
-				response.flush();
-			}
+	
+	@Override
+	protected boolean isJsonRequest(ServerHttpRequest request) throws IOException {
+		if(request.getContentLength() > maxJsonContentLength.getValue()){
+			return false;
 		}
+		
+		return super.isJsonRequest(request);
 	}
-
-	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {
-		return interceptors;
+	
+	@Override
+	protected boolean isSupportJsonp(ServerHttpRequest request)
+			throws IOException {
+		return supportJsonp.getValue() && super.isSupportJsonp(request);
+	}
+	
+	public String getDisableJsonpParameterName() {
+		return jsonpDisableParameterName.getValue();
 	}
 }

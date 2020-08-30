@@ -18,8 +18,10 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import scw.core.Target;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XUtils;
 import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
@@ -30,6 +32,7 @@ import scw.http.MediaType;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.json.JSONUtils;
 import scw.net.InetAddress;
 import scw.net.InetUtils;
 import scw.net.RestfulParameterMapAware;
@@ -38,7 +41,7 @@ import scw.util.LinkedCaseInsensitiveMap;
 import scw.util.MultiValueMap;
 
 public class ServletServerHttpRequest extends AbstractHttpInputMessage
-		implements ServerHttpRequest, RestfulParameterMapAware {
+		implements ServerHttpRequest, Target, RestfulParameterMapAware {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletAsyncControl asyncControl;
@@ -55,6 +58,10 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	public String getPath() {
 		return httpServletRequest.getServletPath();
+	}
+	
+	public <T> T getTarget(Class<T> targetType) {
+		return XUtils.getTarget(httpServletRequest, targetType);
 	}
 
 	public HttpCookie[] getCookies() {
@@ -287,6 +294,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	@Override
 	public String toString() {
-		return getRawMethod() + " " + getURI() + " " + httpServletRequest.getProtocol();
+		return getRawMethod() + " " + getPath() + " " + httpServletRequest.getProtocol() + " parameters->" + JSONUtils.getJsonSupport().toJSONString(httpServletRequest.getParameterMap());
 	}
 }

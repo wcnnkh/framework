@@ -4,10 +4,9 @@ import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.logger.LogService;
 import scw.value.Value;
 
-public interface HttpChannel extends LogService, ParameterFactory {
+public interface HttpChannel extends ParameterFactory {
 	long getCreateTime();
 
 	ServerHttpRequest getRequest();

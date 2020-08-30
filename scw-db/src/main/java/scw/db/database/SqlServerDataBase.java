@@ -1,8 +1,8 @@
 package scw.db.database;
 
-import scw.core.QueryString;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
+import scw.net.QueryString;
 import scw.sql.orm.dialect.mysql.MySqlSqlDialect;
 
 /**

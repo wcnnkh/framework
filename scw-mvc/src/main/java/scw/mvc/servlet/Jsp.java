@@ -8,14 +8,17 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import scw.core.utils.XUtils;
+import scw.lang.NotSupportedException;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.servlet.ServletUtils;
-import scw.servlet.http.ServletServerHttpRequest;
-import scw.servlet.http.ServletServerHttpResponse;
 
 public class Jsp extends AbstractPage {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = LoggerUtils.getLogger(Jsp.class);
 
 	protected Jsp() {
 		super(null);
@@ -26,8 +29,11 @@ public class Jsp extends AbstractPage {
 	}
 
 	public void render(HttpChannel httpChannel) throws IOException {
-		HttpServletRequest request = ((ServletServerHttpRequest) httpChannel.getRequest()).getHttpServletRequest();
-		HttpServletResponse response = ((ServletServerHttpResponse) httpChannel.getResponse()).getHttpServletResponse();
+		HttpServletRequest request = XUtils.getTarget(httpChannel, HttpServletRequest.class);
+		HttpServletResponse response = XUtils.getTarget(httpChannel, HttpServletResponse.class);
+		if (request == null || response == null) {
+			throw new NotSupportedException(httpChannel.toString());
+		}
 
 		if (response.getContentType() == null) {
 			response.setContentType("text/html;charset=" + response.getCharacterEncoding());
@@ -44,13 +50,13 @@ public class Jsp extends AbstractPage {
 			request.setAttribute(entry.getKey(), entry.getValue());
 		}
 
-		if (httpChannel.isLogEnabled()) {
-			httpChannel.log("jsp:{}", getPage());
+		if (logger.isDebugEnabled()) {
+			logger.debug("jsp:{}", getPage());
 		}
 		try {
 			ServletUtils.jsp(request, response, getPage());
 		} catch (ServletException e) {
-			httpChannel.getLogger().error(e, httpChannel.toString());
+			logger.error(e, httpChannel.toString());
 		}
 	}
 }

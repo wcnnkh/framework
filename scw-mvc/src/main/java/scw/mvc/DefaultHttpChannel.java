@@ -1,5 +1,6 @@
 package scw.mvc;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
@@ -22,6 +23,7 @@ import scw.beans.Destroy;
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
+import scw.core.Target;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
@@ -34,13 +36,20 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
+import scw.core.utils.XUtils;
 import scw.event.support.DynamicValue;
 import scw.http.HttpMethod;
+import scw.http.server.JsonServerHttpRequest;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.json.JSONSupport;
+import scw.json.JsonArray;
+import scw.json.JsonElement;
+import scw.json.JsonObject;
 import scw.lang.ParameterException;
 import scw.logger.Level;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mapper.MapperUtils;
 import scw.mapper.Mapping;
 import scw.mapper.support.AbstractParameterMapping;
@@ -59,19 +68,20 @@ import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends ServerHttpResponse>
-		extends AbstractParameterFactory implements HttpChannel, Destroy {
+public class DefaultHttpChannel extends AbstractParameterFactory implements HttpChannel, Destroy, Target {
+	private static Logger logger = LoggerUtils.getLogger(DefaultHttpChannel.class);
 	private static final DynamicValue<Long> WARN_TIMEOUT = GlobalPropertyFactory.getInstance()
 			.getDynamicValue("mvc.warn-execute-time", Long.class, 100L);
 	private final long createTime;
 	private final BeanFactory beanFactory;
 	private final JSONSupport jsonSupport;
 	private boolean completed = false;
-	private final R request;
-	private final P response;
+	private final ServerHttpRequest request;
+	private final ServerHttpResponse response;
 	private volatile Map<String, Object> beanMap;
 
-	public AbstractHttpChannel(BeanFactory beanFactory, JSONSupport jsonSupport, R request, P response) {
+	public DefaultHttpChannel(BeanFactory beanFactory, JSONSupport jsonSupport, ServerHttpRequest request,
+			ServerHttpResponse response) {
 		this.createTime = System.currentTimeMillis();
 		this.beanFactory = beanFactory;
 		this.jsonSupport = jsonSupport;
@@ -109,7 +119,7 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 			try {
 				beanDefinition.destroy(bean);
 			} catch (Exception e) {
-				getLogger().error(e, "销毁bean异常：" + name);
+				logger.error(e, "销毁bean异常：" + name);
 			}
 		}
 	}
@@ -180,30 +190,20 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		}
 
 		completed = true;
-		if (getLogger().isTraceEnabled()) {
-			getLogger().trace("destroy channel: {}", toString());
+		if (logger.isTraceEnabled()) {
+			logger.trace("destroy channel: {}", toString());
 		}
 
 		destroyBeans();
 		long useTime = System.currentTimeMillis() - createTime;
 		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.TRACE;
-		if (getLogger().isLogEnable(level)) {
-			getLogger().log(level, "execute：{}, use time:{}ms", toString(), useTime);
+		if (logger.isLogEnable(level)) {
+			logger.log(level, "It took {}ms to execute execute {}", useTime, toString());
 		}
 	}
 
 	protected long getExecuteWarnTime() {
 		return WARN_TIMEOUT.getValue();
-	}
-
-	public boolean isLogEnabled() {
-		return getLogger().isDebugEnabled();
-	}
-
-	public void log(Object format, Object... args) {
-		if (getLogger().isDebugEnabled()) {
-			getLogger().debug(format, args);
-		}
 	}
 
 	public final long getCreateTime() {
@@ -239,46 +239,34 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		return (E[]) array;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <E> E[] getArray(String name, Class<? extends E> type) {
+		JsonElement value = getJsonElementByBody(name);
+		if (value != null) {
+			Object array;
+			if (value.isJsonArray()) {
+				JsonArray jsonArray = value.getAsJsonArray();
+				if (jsonArray == null || jsonArray.isEmpty()) {
+					array = Array.newInstance(type, 0);
+				} else {
+					array = Array.newInstance(type, jsonArray.size());
+					for (int i = 0, len = jsonArray.size(); i < len; i++) {
+						Array.set(array, i, jsonArray.getObject(i, type));
+					}
+				}
+			} else {
+				array = Array.newInstance(type, 1);
+				Array.set(array, 0, value.getAsObject(type));
+			}
+			return (E[]) array;
+		}
+
 		E[] array = parseArray(request.getParameterMap(), name, type);
 		E[] restfulArray = parseArray(request.getRestfulParameterMap(), name, type);
 		if (restfulArray.length != 0) {
 			return ArrayUtils.merge(array, restfulArray);
 		}
 		return (E[]) array;
-	}
-
-	private final Object getObjectSupport(String key, Class<?> type) {
-		if (type.isArray()) {
-			return getArray(key, type.getComponentType());
-		}
-
-		// 不可以被实例化且不存在无参的构造方法
-		if (!ReflectionUtils.isInstance(type, true)) {
-			return getBean(type);
-		}
-
-		return getObjectIsNotBean(key, type);
-	}
-
-	protected Object getObjectIsNotBean(String name, Class<?> type) {
-		Mapping mapping = new AbstractParameterMapping(true, name) {
-
-			@Override
-			protected Object getValue(ParameterDescriptor parameterDescriptor) {
-				return getParameter(parameterDescriptor);
-			}
-		};
-		try {
-			return MapperUtils.getMapper().mapping(type, null, mapping);
-		} catch (Exception e) {
-			throw new ParameterException("name=" + name + ", type=" + type, e);
-		}
-	}
-
-	// 一般情况下建议重写止方法，因为默认的实现不支持泛型
-	protected Object getObjectSupport(String key, Type type) {
-		return getObjectSupport(key, TypeUtils.toClass(type));
 	}
 
 	@Override
@@ -309,13 +297,27 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		Value value = getValue(parameterDescriptor.getName(), defaultValue);
 		return value.getAsObject(parameterDescriptor.getGenericType());
 	}
+	
+	public <T> T getTarget(Class<T> targetType) {
+		T target = XUtils.getTarget(getRequest(), targetType);
+		if(target != null){
+			return target;
+		}
+		
+		target = XUtils.getTarget(getResponse(), targetType);
+		if(target != null){
+			return target;
+		}
+		return null;
+	}
 
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
-		if (ServerHttpRequest.class.isAssignableFrom(parameterDescriptor.getType())) {
-			return getRequest();
-		} else if (ServerHttpResponse.class.isAssignableFrom(parameterDescriptor.getType())) {
-			return getResponse();
-		} else if (HttpChannel.class.isAssignableFrom(parameterDescriptor.getType())) {
+		Object target = XUtils.getTarget(this, parameterDescriptor.getType());
+		if(target != null){
+			return target;
+		}
+		
+		if(parameterDescriptor.getType().isInstance(this)){
 			return this;
 		} else if (Session.class == parameterDescriptor.getType()) {
 			return getRequest().getSession();
@@ -365,7 +367,7 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 			try {
 				time = format.parse(value).getTime();
 			} catch (ParseException e) {
-				getLogger().error("{} format error value:{}", dateFormat.value(), value);
+				logger.error("{} format error value:{}", dateFormat.value(), value);
 			}
 		}
 
@@ -425,8 +427,34 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		}
 	}
 
+	private JsonObject jsonObject;
+
+	protected JsonElement getJsonElementByBody(String name) {
+		if (request instanceof JsonServerHttpRequest) {
+			JsonElement jsonElement;
+			try {
+				jsonElement = ((JsonServerHttpRequest) request).getJson();
+				jsonObject = jsonElement.isJsonObject() ? jsonElement.getAsJsonObject() : null;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		if (jsonObject != null) {
+			return jsonObject.get(name);
+		}
+		return null;
+	}
+
 	protected String getStringValue(String name) {
 		String v = request.getParameterMap().getFirst(name);
+		if (v == null) {
+			Value value = getJsonElementByBody(name);
+			if (value != null) {
+				v = value.getAsString();
+			}
+		}
+
 		if (v == null && request instanceof RestfulParameterMapAware) {
 			v = request.getRestfulParameterMap().getFirst(name);
 		}
@@ -437,21 +465,17 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		return v;
 	}
 
-	public R getRequest() {
+	public ServerHttpRequest getRequest() {
 		return request;
 	}
 
-	public P getResponse() {
+	public ServerHttpResponse getResponse() {
 		return response;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder appendable = new StringBuilder();
-		appendable.append("path=").append(getRequest().getPath());
-		appendable.append(",method=").append(getRequest().getMethod());
-		appendable.append(",").append(getJsonSupport().toJSONString(getRequest().getParameterMap()));
-		return appendable.toString();
+		return getRequest().toString();
 	}
 
 	private final class RequestValue extends AbstractStringValue {
@@ -463,18 +487,47 @@ public abstract class AbstractHttpChannel<R extends ServerHttpRequest, P extends
 		}
 
 		public String getAsString() {
-			return AbstractHttpChannel.this.getStringValue(name);
+			return DefaultHttpChannel.this.getStringValue(name);
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-			return (T) AbstractHttpChannel.this.getObjectSupport(name, type);
+			if (type.isArray()) {
+				return (T) getArray(name, type.getComponentType());
+			}
+
+			// 不可以被实例化且不存在无参的构造方法
+			if (!ReflectionUtils.isInstance(type, true)) {
+				return getBean(type);
+			}
+
+			Value value = getJsonElementByBody(name);
+			if (value != null) {
+				return value.getAsObject(type);
+			}
+
+			Mapping mapping = new AbstractParameterMapping(true, name) {
+
+				@Override
+				protected Object getValue(ParameterDescriptor parameterDescriptor) {
+					return getParameter(parameterDescriptor);
+				}
+			};
+			try {
+				return MapperUtils.getMapper().mapping(type, null, mapping);
+			} catch (Exception e) {
+				throw new ParameterException("name=" + name + ", type=" + type, e);
+			}
 		}
 
 		@Override
 		protected Object getAsObjectNotSupport(Type type) {
-			return AbstractHttpChannel.this.getObjectSupport(name, type);
+			Value value = getJsonElementByBody(name);
+			if (value != null) {
+				return value.getAsObject(type);
+			}
+			return getAsObjectNotSupport(TypeUtils.toClass(type));
 		}
 	}
 }

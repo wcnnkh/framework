@@ -7,8 +7,8 @@ import java.util.Map;
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
+import scw.http.server.ServerHttpRequest;
 import scw.lang.AlreadyExistsException;
-import scw.mvc.HttpChannel;
 import scw.mvc.MVCUtils;
 
 @Configuration(order=Integer.MIN_VALUE + 2)
@@ -21,14 +21,13 @@ public class PathActionLookup implements ActionLookup {
 		}
 	}
 	
-	public Action lookup(HttpChannel httpChannel) {
-		Map<HttpMethod, Action> map = actionMap.get(httpChannel
-				.getRequest().getPath());
+	public Action lookup(ServerHttpRequest request) {
+		Map<HttpMethod, Action> map = actionMap.get(request.getPath());
 		if (map == null) {
 			return null;
 		}
 
-		return map.get(httpChannel.getRequest().getMethod());
+		return map.get(request.getMethod());
 	}
 
 	public void register(Action action) {

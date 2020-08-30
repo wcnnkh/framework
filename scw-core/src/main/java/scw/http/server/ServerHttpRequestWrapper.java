@@ -8,27 +8,29 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
 
+import scw.core.Target;
+import scw.core.utils.XUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.MediaType;
 import scw.net.InetAddress;
-import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
 
-public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParameterMapAware {
-	protected final ServerHttpRequest targetRequest;
+public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
+	private final ServerHttpRequest targetRequest;
 
 	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest) {
 		this.targetRequest = targetRequest;
 	}
 
 	public ServerHttpRequest getTargetRequest() {
-		if(targetRequest instanceof ServerHttpRequestWrapper){
-			return ((ServerHttpRequestWrapper) targetRequest).getTargetRequest();
-		}
 		return targetRequest;
+	}
+	
+	public <T> T getTarget(Class<T> targetType) {
+		return XUtils.getTarget(targetRequest, targetType);
 	}
 
 	public InputStream getBody() throws IOException {
@@ -134,31 +136,25 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, RestfulParam
 	public String getIp() {
 		return targetRequest.getIp();
 	}
-	
+
 	public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
 		targetRequest.setCharacterEncoding(env);
-	}
-
-	public void setRestfulParameterMap(MultiValueMap<String, String> parameterMap) {
-		if(targetRequest instanceof RestfulParameterMapAware){
-			((RestfulParameterMapAware) targetRequest).setRestfulParameterMap(parameterMap);
-		}
 	}
 
 	public MultiValueMap<String, String> getRestfulParameterMap() {
 		return targetRequest.getRestfulParameterMap();
 	}
-	
+
 	@Override
 	public String toString() {
 		return targetRequest.toString();
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return targetRequest.hashCode();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return targetRequest.equals(obj);

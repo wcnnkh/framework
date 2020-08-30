@@ -9,8 +9,8 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
+import scw.http.server.ServerHttpRequest;
 import scw.lang.AlreadyExistsException;
-import scw.mvc.HttpChannel;
 import scw.mvc.MVCUtils;
 import scw.net.Restful;
 import scw.net.Restful.RestfulMatchingResult;
@@ -47,18 +47,18 @@ public class RestfulActionLookup implements ActionLookup {
 		}
 	}
 
-	public Action lookup(HttpChannel httpChannel) {
-		Map<Restful, Action> map = restMap.get(httpChannel.getRequest().getMethod());
+	public Action lookup(ServerHttpRequest request) {
+		Map<Restful, Action> map = restMap.get(request.getMethod());
 		if (map == null) {
 			return null;
 		}
 
-		String[] pathArr = StringUtils.split(httpChannel.getRequest().getPath(), '/');
+		String[] pathArr = StringUtils.split(request.getPath(), '/');
 		for (Entry<Restful, Action> entry : map.entrySet()) {
 			Restful restful = entry.getKey();
 			RestfulMatchingResult result = restful.matching(pathArr);
 			if (result.isSuccess()) {
-				Restful.restfulParameterMapAware(httpChannel.getRequest(), result.getParameterMap());
+				Restful.restfulParameterMapAware(request, result.getParameterMap());
 				return entry.getValue();
 			}
 		}

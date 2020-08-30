@@ -6,11 +6,15 @@ import scw.core.annotation.AnnotationUtils;
 import scw.http.server.HttpControllerDescriptor;
 import scw.http.server.ServerHttpRequest;
 import scw.json.JSONUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
 import scw.mvc.logger.annotation.ActionLogConfig;
 
 public abstract class AbstractActionLogFactory implements ActionLogFactory {
+	private static Logger logger = LoggerUtils.getLogger(AbstractActionLogFactory.class);
+
 	protected abstract String getIdentification(Action action, HttpChannel httpChannel);
 
 	protected abstract Map<String, String> getAttributeMap(Action action, HttpChannel httpChannel);
@@ -66,7 +70,7 @@ public abstract class AbstractActionLogFactory implements ActionLogFactory {
 				log.setResponseBody(response == null ? null : JSONUtils.toJSONString(response));
 			}
 		} catch (Throwable e) {
-			httpChannel.getLogger().error(e, "logger response error:{}", JSONUtils.toJSONString(log));
+			logger.error(e, "logger response error:{}", JSONUtils.toJSONString(log));
 		}
 	}
 }

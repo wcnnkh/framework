@@ -4,17 +4,27 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import scw.core.Target;
+import scw.core.utils.XUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.http.MediaType;
 import scw.net.MimeType;
 
-public class ServerHttpResponseWrapper implements ServerHttpResponse {
-	protected final ServerHttpResponse targetResponse;
+public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
+	private final ServerHttpResponse targetResponse;
 
-	public ServerHttpResponseWrapper(ServerHttpResponse targetResponse){
+	public ServerHttpResponseWrapper(ServerHttpResponse targetResponse) {
 		this.targetResponse = targetResponse;
+	}
+
+	public ServerHttpResponse getTargetResponse() {
+		return targetResponse;
+	}
+	
+	public <T> T getTarget(Class<T> targetType) {
+		return XUtils.getTarget(targetResponse, targetType);
 	}
 
 	public void setContentType(MimeType contentType) {
@@ -103,5 +113,9 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse {
 
 	public void setContentType(MediaType contentType) {
 		targetResponse.setContentType(contentType);
+	}
+
+	public void close() throws IOException {
+		targetResponse.close();
 	}
 }

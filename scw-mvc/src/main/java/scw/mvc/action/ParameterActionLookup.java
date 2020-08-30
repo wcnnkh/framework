@@ -1,5 +1,6 @@
 package scw.mvc.action;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -9,10 +10,12 @@ import java.util.Set;
 
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpMethod;
+import scw.http.HttpUtils;
 import scw.http.server.HttpControllerDescriptor;
+import scw.http.server.ServerHttpRequest;
 import scw.lang.AlreadyExistsException;
-import scw.mvc.HttpChannel;
 import scw.mvc.MVCUtils;
+import scw.value.Value;
 
 @Configuration(order = Integer.MIN_VALUE + 1)
 public class ParameterActionLookup implements ActionLookup {
@@ -33,26 +36,32 @@ public class ParameterActionLookup implements ActionLookup {
 		this.key = key;
 	}
 
-	public Action lookup(HttpChannel httpChannel) {
+	public Action lookup(ServerHttpRequest request) {
 		if (key == null) {
 			return null;
 		}
 
-		Map<HttpMethod, Map<String, Action>> map = actionMap.get(httpChannel.getRequest().getPath());
+		Map<HttpMethod, Map<String, Action>> map = actionMap.get(request.getPath());
 		if (map == null) {
 			return null;
 		}
 
-		Map<String, Action> methodMap = map.get(httpChannel.getRequest().getMethod());
+		Map<String, Action> methodMap = map.get(request.getMethod());
 		if (methodMap == null) {
 			return null;
 		}
 
-		String action = httpChannel.getValue(key).getAsString();
-		if (action == null) {
+		Value action = null;
+		try {
+			action = HttpUtils.getParameter(request, key);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if (action == null || action.isEmpty()) {
 			return null;
 		}
-		return methodMap.get(action);
+		return methodMap.get(action.getAsString());
 	}
 
 	protected final void register(HttpMethod httpMethod, String classController, String methodController,

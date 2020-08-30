@@ -1,5 +1,6 @@
 package scw.http;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,9 +24,14 @@ import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
 import scw.event.support.DynamicValue;
 import scw.http.client.HttpClient;
+import scw.http.server.JsonServerHttpRequest;
 import scw.http.server.ServerHttpRequest;
+import scw.http.server.ServerHttpResponse;
 import scw.http.server.ip.ServerHttpRequestIpGetter;
+import scw.io.IOUtils;
+import scw.io.Resource;
 import scw.json.JSONSupport;
+import scw.json.JsonElement;
 import scw.lang.NotSupportedException;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
@@ -33,6 +39,9 @@ import scw.net.uri.UriComponentsBuilder;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 import scw.util.ToMap;
+import scw.value.EmptyValue;
+import scw.value.StringValue;
+import scw.value.Value;
 
 public final class HttpUtils {
 	private HttpUtils() {
@@ -44,7 +53,7 @@ public final class HttpUtils {
 			"scw.http.client.SimpleHttpClient");
 	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils
 			.loadService(ServerHttpRequestIpGetter.class, "scw.http.server.ip.DefaultServerHttpRequestIpGetter");
-
+	
 	static {
 
 	}
@@ -372,5 +381,46 @@ public final class HttpUtils {
 		ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
 				.filename(fileName, Constants.UTF_8).build();
 		outputMessage.getHeaders().setContentDisposition(contentDisposition);
+	}
+	
+	public static void writeStaticResource(ServerHttpRequest request, ServerHttpResponse response, Resource resource, MimeType mimeType) throws IOException{
+		if (mimeType != null) {
+			response.setContentType(mimeType);
+		}
+		
+		long ifModifiedSince = request.getHeaders().getIfModifiedSince();
+		long lastModified = resource.lastModified();
+		if(lastModified <= ifModifiedSince){
+			//客户端缓存未过期
+			response.setStatusCode(HttpStatus.NOT_MODIFIED);
+			return ;
+		}
+		
+		if(lastModified > 0){
+			response.getHeaders().setLastModified(lastModified);
+		}
+		IOUtils.copy(resource.getInputStream(), response.getBody());
+	}
+	
+	/**
+	 * 根据参数名获取
+	 * @param request
+	 * @param name
+	 * @return 如果不存在返回{@see EmptyValue}
+	 * @throws IOException
+	 */
+	public static Value getParameter(ServerHttpRequest request, String name) throws IOException{
+		String value = request.getParameterMap().getFirst(name);
+		if(value != null){
+			return new StringValue(value);
+		}
+		
+		if(request instanceof JsonServerHttpRequest){
+			JsonElement jsonElement = ((JsonServerHttpRequest) request).getJson();
+			if(jsonElement.isJsonObject()){
+				return jsonElement.getAsJsonObject().get(name);
+			}
+		}
+		return EmptyValue.INSTANCE;
 	}
 }

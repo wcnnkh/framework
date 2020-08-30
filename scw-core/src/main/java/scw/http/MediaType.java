@@ -234,6 +234,8 @@ public class MediaType extends MimeType implements Serializable {
 	 * A String equivalent of {@link MediaType#TEXT_XML}.
 	 */
 	public final static String TEXT_XML_VALUE = "text/xml";
+	
+	public static final MediaType TEXT_JAVASCRIPT;
 
 	private static final String PARAM_QUALITY_FACTOR = "q";
 
@@ -257,6 +259,7 @@ public class MediaType extends MimeType implements Serializable {
 		TEXT_MARKDOWN = valueOf(TEXT_MARKDOWN_VALUE);
 		TEXT_PLAIN = valueOf(TEXT_PLAIN_VALUE);
 		TEXT_XML = valueOf(TEXT_XML_VALUE);
+		TEXT_JAVASCRIPT = valueOf(MimeTypeUtils.TEXT_JAVASCRIPT_VALUE);
 	}
 
 	/**

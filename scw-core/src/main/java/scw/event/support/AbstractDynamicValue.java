@@ -2,6 +2,7 @@ package scw.event.support;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import scw.core.utils.ObjectUtils;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 
@@ -50,5 +51,33 @@ public abstract class AbstractDynamicValue<T> implements DynamicValue<T> {
 
 	public void setValue(T value) {
 		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(value);
+	}
+
+	@Override
+	public int hashCode() {
+		return value == null ? 0 : value.hashCode();
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof AbstractDynamicValue) {
+			return ObjectUtils.equals(this.value, ((AbstractDynamicValue) obj).value);
+		}
+
+		if (obj instanceof DynamicValue) {
+			return ObjectUtils.equals(getValue(), ((DynamicValue) obj).getValue());
+		}
+
+		return false;
 	}
 }
