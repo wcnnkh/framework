@@ -3,6 +3,8 @@ package scw.http.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import scw.core.utils.StringUtils;
+import scw.http.HttpMethod;
 import scw.io.IOUtils;
 import scw.json.EmptyJsonElement;
 import scw.json.JSONSupport;
@@ -12,6 +14,7 @@ import scw.json.JsonElement;
 import scw.json.JsonObject;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.logger.SplitLineAppend;
 
 /**
  * 一个json请求
@@ -19,7 +22,7 @@ import scw.logger.LoggerUtils;
  * @author shuchaowen
  *
  */
-public class JsonServerHttpRequest extends CachingServerHttpRequest {
+public class JsonServerHttpRequest extends ServerHttpRequestWrapper {
 	private static Logger logger = LoggerUtils.getLogger(JsonServerHttpRequest.class);
 	private JSONSupport jsonSupport;
 
@@ -33,19 +36,6 @@ public class JsonServerHttpRequest extends CachingServerHttpRequest {
 
 	public void setJsonSupport(JSONSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getTarget(Class<T> targetType) {
-		T target = super.getTarget(targetType);
-		if(target == null){
-			Object json = getJson();
-			if(targetType.isInstance(json)){
-				return (T) json;
-			}
-		}
-		return null;
 	}
 
 	private Object json;
@@ -63,7 +53,7 @@ public class JsonServerHttpRequest extends CachingServerHttpRequest {
 			}
 			
 			if (text == null) {
-				return EmptyJsonElement.INSTANCE;
+				json = EmptyJsonElement.INSTANCE;
 			}
 			
 			JsonElement jsonElement = getJsonSupport().parseJson(text);
@@ -109,5 +99,36 @@ public class JsonServerHttpRequest extends CachingServerHttpRequest {
 			return (JsonElement) json;
 		}
 		return null;
+	}
+	
+	public String toUseJsonString(){
+		if(json == null){
+			return null;
+		}
+		
+		return json.toString();
+	}
+	
+	@Override
+	public String toString() {
+		if (getMethod() == HttpMethod.GET) {
+			return super.toString();
+		}
+		
+		String body = toUseJsonString();
+		if(StringUtils.isEmpty(body)){
+			return super.toString();
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(super.toString());
+		sb.append(IOUtils.LINE_SEPARATOR);
+		sb.append(new SplitLineAppend("request json begin"));
+		sb.append(IOUtils.LINE_SEPARATOR);
+		sb.append(body);
+		sb.append(IOUtils.LINE_SEPARATOR);
+		sb.append(new SplitLineAppend("request json end"));
+		sb.append(IOUtils.LINE_SEPARATOR);
+		return sb.toString();
 	}
 }

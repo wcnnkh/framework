@@ -5,8 +5,11 @@ import java.util.Iterator;
 
 import scw.http.HttpStatus;
 import scw.http.server.cors.CorsUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public class HttpServiceInterceptorChain implements HttpService {
+	private static Logger logger = LoggerUtils.getLogger(HttpService.class);
 	private HttpServiceHandlerAccessor handlerAccessor;
 	private Iterator<? extends HttpServiceInterceptor> iterator;
 
@@ -37,6 +40,7 @@ public class HttpServiceInterceptorChain implements HttpService {
 		}
 
 		response.setStatusCode(HttpStatus.NOT_FOUND);
+		logger.warn("Not found {}", request.toString());
 	}
 
 	private HttpServiceInterceptor getNextHttpServiceInterceptor(ServerHttpRequest request) {
