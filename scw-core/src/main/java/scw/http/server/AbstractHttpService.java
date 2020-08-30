@@ -1,25 +1,30 @@
 package scw.http.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import scw.core.utils.StringUtils;
 import scw.http.HttpUtils;
 import scw.http.jsonp.JsonpServerHttpResponse;
 import scw.http.jsonp.JsonpUtils;
+import scw.http.server.cors.CorsConfig;
+import scw.http.server.cors.CorsConfigFactory;
+import scw.http.server.cors.CorsUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.value.Value;
 
-public abstract class AbstractHttpService implements HttpService{
+public abstract class AbstractHttpService implements HttpService, CorsConfigFactory{
 	static final String JSONP_DISABLE_PARAMETER_NAME = "_disableJsonp";
-	
 	private final Logger logger = LoggerFactory.getLogger(HttpService.class);
 	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
-	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 	
 	public void service(ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException {
+		CorsConfig config = getCorsConfig(request);
+		if(config == null){
+			CorsUtils.write(config, response);
+		}
+		
 		ServerHttpRequest requestToUse = wrapperRequest(request);
 		ServerHttpResponse responseToUse = wrapperResponse(requestToUse, response);
 
@@ -49,10 +54,7 @@ public abstract class AbstractHttpService implements HttpService{
 		return handlerAccessor;
 	}
 
-
-	public List<HttpServiceInterceptor> getInterceptors() {
-		return interceptors;
-	}
+	protected abstract Iterable<? extends HttpServiceInterceptor> getHttpServiceInterceptors();
 
 	/**
 	 * 每次请求创建的服务
@@ -61,7 +63,7 @@ public abstract class AbstractHttpService implements HttpService{
 	 * @return
 	 */
 	protected HttpService createService(ServerHttpRequest request, ServerHttpResponse response){
-		return new HttpServiceInterceptorChain(interceptors.iterator(),
+		return new HttpServiceInterceptorChain(getHttpServiceInterceptors().iterator(),
 				handlerAccessor);
 	}
 	
@@ -80,7 +82,7 @@ public abstract class AbstractHttpService implements HttpService{
 	}
 	
 	protected boolean isSupportJsonp(ServerHttpRequest request) throws IOException{
-		return !HttpUtils.getParameter(request, getJsonpDisableParameterName()).getAsBooleanValue();
+		return true;
 	}
 	
 	protected String getJsonpDisableParameterName(){
@@ -91,6 +93,10 @@ public abstract class AbstractHttpService implements HttpService{
 			ServerHttpResponse response) throws IOException {
 		String jsonp = JsonpUtils.getCallback(request);
 		if (StringUtils.isNotEmpty(jsonp) && isSupportJsonp(request)) {
+			Value value = HttpUtils.getParameter(request, getJsonpDisableParameterName());
+			if(value.isEmpty() || value.getAsBooleanValue()){
+				return response;
+			}
 			return new JsonpServerHttpResponse(jsonp, response);
 		}
 		return response;

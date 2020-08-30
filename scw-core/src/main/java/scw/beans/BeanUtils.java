@@ -6,8 +6,8 @@ import java.util.List;
 
 import scw.aop.MethodInterceptor;
 import scw.beans.annotation.AopEnable;
-import scw.beans.annotation.Bean;
 import scw.beans.annotation.Service;
+import scw.beans.annotation.Singleton;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.core.Constants;
@@ -25,9 +25,19 @@ public final class BeanUtils {
 	private BeanUtils() {
 	};
 
-	public static boolean isSingletion(Class<?> type, AnnotatedElement annotatedElement) {
-		Bean bean = annotatedElement.getAnnotation(Bean.class);
-		return bean == null ? true : bean.singleton();
+	public static boolean isSingleton(Class<?> type, AnnotatedElement annotatedElement){
+		Singleton singleton = annotatedElement.getAnnotation(Singleton.class);
+		if(singleton != null){
+			return singleton.value();
+		}
+		
+		for(Class<?> interfaceClass : type.getInterfaces()){
+			if(!isSingleton(interfaceClass, annotatedElement)){
+				return false;
+			}
+		}
+		//默认是单例
+		return true;
 	}
 
 	public static boolean isAopEnable(Class<?> type, AnnotatedElement annotatedElement) {

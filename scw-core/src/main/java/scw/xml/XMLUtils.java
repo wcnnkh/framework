@@ -456,7 +456,7 @@ public final class XMLUtils {
 				throw new NotFoundException("not found attribute [" + n + "], " + toString(node));
 			}
 		}
-	}
+	} 
 
 	public static boolean getBooleanValueAndParent(Node node, String name, boolean defaultValue) {
 		Node parent = node.getParentNode();
@@ -464,7 +464,7 @@ public final class XMLUtils {
 				parent == null ? defaultValue : getBooleanValueAndParent(parent, name, defaultValue));
 	}
 
-	public static boolean getBooleanValue(Node node, String name, boolean defaultValue) {
+	public static Boolean getBooleanValue(Node node, String name, Boolean defaultValue) {
 		String value = getNodeAttributeValue(node, name);
 		return StringUtils.isNull(value) ? defaultValue : Boolean.parseBoolean(value);
 	}

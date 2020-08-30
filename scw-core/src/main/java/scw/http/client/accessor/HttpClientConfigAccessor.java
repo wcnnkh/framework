@@ -1,14 +1,18 @@
 package scw.http.client.accessor;
 
-import scw.http.HttpUtils;
+import scw.core.GlobalPropertyFactory;
+import scw.event.support.DynamicValue;
 
 public class HttpClientConfigAccessor {
+	public static final DynamicValue<Integer> DEFAULT_CONNECT_TIMEOUT = GlobalPropertyFactory.getInstance().getDynamicValue("scw.http.client.connect.timeout", Integer.class, 10000);
+	public static final DynamicValue<Integer> DEFAULT_READ_TIMEOUT = GlobalPropertyFactory.getInstance().getDynamicValue("scw.http.client.read.timeout", Integer.class, 10000);
+	
 	private Integer connectTimeout;
 
 	private Integer readTimeout;
 	
 	public int getConnectTimeout() {
-		return connectTimeout == null? HttpUtils.DEFAULT_CONNECT_TIMEOUT.getValue():connectTimeout;
+		return connectTimeout == null? DEFAULT_CONNECT_TIMEOUT.getValue():connectTimeout;
 	}
 
 	public void setConnectTimeout(Integer connectTimeout) {
@@ -16,7 +20,7 @@ public class HttpClientConfigAccessor {
 	}
 
 	public int getReadTimeout() {
-		return readTimeout == null? HttpUtils.DEFAULT_READ_TIMEOUT.getValue():readTimeout;
+		return readTimeout == null? DEFAULT_READ_TIMEOUT.getValue():readTimeout;
 	}
 
 	public void setReadTimeout(Integer readTimeout) {
@@ -24,7 +28,7 @@ public class HttpClientConfigAccessor {
 	}
 	
 	public void setConfig(HttpClientConfigAccessor httpClientConfigAccessor){
-		setReadTimeout(httpClientConfigAccessor.getReadTimeout());
-		setConnectTimeout(httpClientConfigAccessor.getConnectTimeout());
+		this.connectTimeout = httpClientConfigAccessor.connectTimeout;
+		this.readTimeout = httpClientConfigAccessor.readTimeout;
 	}
 }

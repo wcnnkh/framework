@@ -14,7 +14,6 @@ import java.util.Map.Entry;
 
 import scw.core.Assert;
 import scw.core.Constants;
-import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
@@ -22,7 +21,6 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.core.utils.XUtils;
-import scw.event.support.DynamicValue;
 import scw.http.client.HttpClient;
 import scw.http.server.JsonServerHttpRequest;
 import scw.http.server.ServerHttpRequest;
@@ -46,9 +44,7 @@ import scw.value.Value;
 public final class HttpUtils {
 	private HttpUtils() {
 	};
-
-	public static final DynamicValue<Integer> DEFAULT_CONNECT_TIMEOUT = GlobalPropertyFactory.getInstance().getDynamicValue("scw.http.client.connect.timeout", Integer.class, 10000);
-	public static final DynamicValue<Integer> DEFAULT_READ_TIMEOUT = GlobalPropertyFactory.getInstance().getDynamicValue("scw.http.client.read.timeout", Integer.class, 10000);
+	
 	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class,
 			"scw.http.client.SimpleHttpClient");
 	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils

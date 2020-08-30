@@ -1,12 +1,15 @@
 package scw.http.server;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
 import scw.event.support.DynamicValue;
-import scw.http.server.cors.CorsServiceInterceptor;
+import scw.http.server.cors.CorsConfig;
+import scw.http.server.cors.CorsConfigFactory;
+import scw.http.server.cors.DefaultCorsConfigFactory;
 import scw.http.server.resource.DefaultStaticResourceLoader;
 import scw.http.server.resource.StaticResourceHttpServiceHandler;
 import scw.http.server.resource.StaticResourceLoader;
@@ -19,6 +22,8 @@ public class DefaultHttpService extends AbstractHttpService {
 	//最大的json请求体大小
 	private DynamicValue<Long> maxJsonContentLength;
 	private DynamicValue<String> jsonpDisableParameterName;
+	private CorsConfigFactory corsConfigFactory;
+	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
 	
 	public DefaultHttpService(BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
@@ -33,15 +38,24 @@ public class DefaultHttpService extends AbstractHttpService {
 		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler(
 				staticResourceLoader);
 		getHandlerAccessor().bind(resourceHandler);
-		getInterceptors().add(new CorsServiceInterceptor(beanFactory,
-				propertyFactory));
-		getInterceptors().addAll(InstanceUtils.getConfigurationList(
+		interceptors.addAll(InstanceUtils.getConfigurationList(
 				HttpServiceInterceptor.class, beanFactory, propertyFactory));
 
 		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils
 				.getConfigurationList(HttpServiceHandler.class, beanFactory,
 						propertyFactory);
 		getHandlerAccessor().bind(httpServiceHandlers);
+		
+		this.corsConfigFactory = beanFactory.isInstance(CorsConfigFactory.class)
+					? beanFactory.getInstance(CorsConfigFactory.class) : new DefaultCorsConfigFactory(propertyFactory);
+	}
+	
+	public CorsConfig getCorsConfig(ServerHttpRequest request) {
+		return corsConfigFactory.getCorsConfig(request);
+	}
+	
+	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {
+		return interceptors;
 	}
 	
 	@Override

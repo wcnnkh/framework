@@ -23,7 +23,7 @@ import scw.net.message.AbstractMessage;
 import scw.net.message.Entity;
 import scw.util.MultiValueMap;
 
-public class HttpEntity<T> extends AbstractMessage implements Entity<T>, Serializable{
+public class HttpEntity<T> extends AbstractMessage implements Entity<T>, HttpMessage, Serializable{
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -132,4 +132,8 @@ public class HttpEntity<T> extends AbstractMessage implements Entity<T>, Seriali
 		return builder.toString();
 	}
 
+	@Override
+	public MediaType getContentType() {
+		return headers.getContentType();
+	}
 }

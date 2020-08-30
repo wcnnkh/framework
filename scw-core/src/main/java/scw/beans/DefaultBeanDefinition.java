@@ -96,11 +96,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 	}
 
 	public boolean isSingleton() {
-		Bean bean = getAnnotatedElement().getAnnotation(Bean.class);
-		if (bean == null) {
-			return true;
-		}
-		return bean.singleton();
+		return BeanUtils.isSingleton(getTargetClass(), getAnnotatedElement());
 	}
 
 	public AnnotatedElement getAnnotatedElement() {
