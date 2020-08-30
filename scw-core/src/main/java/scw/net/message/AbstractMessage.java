@@ -11,12 +11,12 @@ import scw.net.MimeTypeUtils;
 public abstract class AbstractMessage implements Message {
 	public long getContentLength() {
 		String len = getHeaders().getFirst(HttpHeaders.CONTENT_LENGTH);
-		return StringUtils.hasLength(len) ? StringUtils.parseLong(len) : -1;
+		return StringUtils.parseLong(len, -1);
 	}
 
 	public MimeType getContentType() {
 		String contentType = getRawContentType();
-		return StringUtils.hasLength(contentType) ? MimeTypeUtils.parseMimeType(contentType) : null;
+		return StringUtils.hasText(contentType) ? MimeTypeUtils.parseMimeType(contentType) : null;
 	}
 
 	public String getRawContentType() {

@@ -164,11 +164,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		return HttpMethod.resolve(getRawMethod());
 	}
 
-	public MediaType getContentType() {
-		String contentType = httpServletRequest.getContentType();
-		return contentType == null ? null : MediaType.parseMediaType(contentType);
-	}
-
 	public URI getURI() {
 		return InetUtils.toURI(httpServletRequest.getRequestURI());
 	}
@@ -183,10 +178,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	public BufferedReader getReader() throws IOException {
 		return httpServletRequest.getReader();
-	}
-
-	public String getRemoteAddr() {
-		return httpServletRequest.getRemoteAddr();
 	}
 
 	public InputStream getBody() throws IOException {
@@ -226,16 +217,8 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		return httpServletRequest.getMethod();
 	}
 
-	public String getRemoteHost() {
-		return httpServletRequest.getRemoteHost();
-	}
-
 	public String getContextPath() {
 		return httpServletRequest.getContextPath();
-	}
-
-	public String getController() {
-		return httpServletRequest.getServletPath();
 	}
 
 	@Override
