@@ -4,26 +4,33 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.core.instance.InstanceIterable;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.XUtils;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.mvc.annotation.ActionInterceptors;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Methods;
 
 public class DefaultAction extends BeanAction {
+	private static Logger logger = LoggerFactory.getLogger(DefaultAction.class);
 	protected Collection<HttpControllerDescriptor> httpHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
 	protected Collection<HttpControllerDescriptor> sourceClassHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
 	protected Collection<HttpControllerDescriptor> methodHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
+	private Iterable<ActionInterceptor> actionInterceptors;
 	
 	public DefaultAction(BeanFactory beanFactory, Class<?> targetClass,
 			Method method) {
@@ -41,7 +48,12 @@ public class DefaultAction extends BeanAction {
 		methodHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
 				methodController.value(),
 				Arrays.asList(methodController.methods())));
-		this.actionInterceptor.addAll(getControllerActionFilters());
+		String[] names = getActionInterceptorNames();
+		this.actionInterceptors = new InstanceIterable<ActionInterceptor>(beanFactory, Arrays.asList(names));
+	}
+	
+	public Iterable<? extends ActionInterceptor> getActionInterceptors() {
+		return actionInterceptors;
 	}
 	
 	@Override
@@ -49,7 +61,6 @@ public class DefaultAction extends BeanAction {
 		this.httpHttpControllerDescriptors = Arrays.asList(httpHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
 		this.sourceClassHttpControllerDescriptors = Arrays.asList(sourceClassHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
 		this.methodHttpControllerDescriptors = Arrays.asList(methodHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
-		super.optimization();
 	}
 
 	protected Collection<HttpControllerDescriptor> createHttpControllerDescriptors(
@@ -64,15 +75,20 @@ public class DefaultAction extends BeanAction {
 		return descriptors;
 	}
 
-	protected List<ActionInterceptor> getControllerActionFilters() {
+	protected String[] getActionInterceptorNames() {
+		LinkedHashSet<String> sets = new LinkedHashSet<String>();
 		ActionInterceptors actionInterceptors = getSourceClass().getAnnotation(
 				ActionInterceptors.class);
-		LinkedList<ActionInterceptor> list = new LinkedList<ActionInterceptor>();
 		if (actionInterceptors != null) {
 			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
-				if (ActionInterceptor.class.isAssignableFrom(f)) {
-					list.add(getBeanFactory().getInstance(f));
+				BeanDefinition definition = getBeanFactory().getDefinition(f);
+				if(definition == null){
+					logger.warn("not support interceptor: {}", f);
+					continue;
 				}
+
+				sets.remove(definition.getId());
+				sets.add(definition.getId());
 			}
 		}
 
@@ -80,19 +96,29 @@ public class DefaultAction extends BeanAction {
 				Controller.class);
 		if (controller != null) {
 			for (Class<? extends ActionInterceptor> f : controller.interceptors()) {
-				if (ActionInterceptor.class.isAssignableFrom(f)) {
-					list.add(getBeanFactory().getInstance(f));
+				BeanDefinition definition = getBeanFactory().getDefinition(f);
+				if(definition == null){
+					logger.warn("not support interceptor: {}", f);
+					continue;
 				}
+
+				sets.remove(definition.getId());
+				sets.add(definition.getId());
 			}
 		}
 
 		actionInterceptors = getAnnotatedElement().getAnnotation(ActionInterceptors.class);
 		if (actionInterceptors != null) {
-			list.clear();
+			sets.clear();
 			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
-				if (ActionInterceptor.class.isAssignableFrom(f)) {
-					list.add(getBeanFactory().getInstance(f));
+				BeanDefinition definition = getBeanFactory().getDefinition(f);
+				if(definition == null){
+					logger.warn("not support interceptor: {}", f);
+					continue;
 				}
+
+				sets.remove(definition.getId());
+				sets.add(definition.getId());
 			}
 		}
 
@@ -100,12 +126,17 @@ public class DefaultAction extends BeanAction {
 				.getAnnotation(Controller.class);
 		if (controller != null) {
 			for (Class<? extends ActionInterceptor> f : controller.interceptors()) {
-				if (ActionInterceptors.class.isAssignableFrom(f)) {
-					list.add(getBeanFactory().getInstance(f));
+				BeanDefinition definition = getBeanFactory().getDefinition(f);
+				if(definition == null){
+					logger.warn("not support interceptor: {}", f);
+					continue;
 				}
+
+				sets.remove(definition.getId());
+				sets.add(definition.getId());
 			}
 		}
-		return list;
+		return sets.toArray(new String[0]);
 	}
 
 	private Collection<HttpMethod> getControllerHttpMethods() {

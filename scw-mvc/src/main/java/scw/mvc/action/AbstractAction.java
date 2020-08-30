@@ -2,10 +2,6 @@ package scw.mvc.action;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.parameter.MethodParameterDescriptors;
@@ -16,7 +12,6 @@ public abstract class AbstractAction implements Action {
 	private final Class<?> sourceClass;
 	private final AnnotatedElement annotatedElement;
 	private final ParameterDescriptors parameterDescriptors;
-	protected Collection<ActionInterceptor> actionInterceptor = new LinkedHashSet<ActionInterceptor>(4);
 
 	public AbstractAction(Class<?> sourceClass, Method method) {
 		this.sourceClass = sourceClass;
@@ -25,13 +20,7 @@ public abstract class AbstractAction implements Action {
 		this.parameterDescriptors = new MethodParameterDescriptors(sourceClass, method);
 	}
 
-	public void optimization() {
-		this.actionInterceptor = Arrays.asList(actionInterceptor.toArray(new ActionInterceptor[0]));
-	}
-
-	public Iterable<? extends ActionInterceptor> getActionInterceptors() {
-		return Collections.unmodifiableCollection(actionInterceptor);
-	}
+	public abstract void optimization();
 
 	public Class<?> getSourceClass() {
 		return sourceClass;

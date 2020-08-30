@@ -3,9 +3,12 @@ package scw.core.instance;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.util.AbstractIterator;
 
 public final class InstanceIterable<E> implements Iterable<E> {
+	private static Logger logger = LoggerUtils.getLogger(InstanceIterable.class);
 	private NoArgsInstanceFactory instanceFactory;
 	private Iterable<String> names;
 
@@ -35,6 +38,8 @@ public final class InstanceIterable<E> implements Iterable<E> {
 				name = iterator.next();
 				if (instanceFactory.isInstance(name)) {
 					return true;
+				}else{
+					logger.debug("Cannot instantiate {}", name);
 				}
 				name = null;
 			}

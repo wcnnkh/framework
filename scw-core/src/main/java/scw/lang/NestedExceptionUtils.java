@@ -89,4 +89,15 @@ public abstract class NestedExceptionUtils {
 		return cause == null ? original : cause;
 	}
 
+	public static String getNonEmptyMessage(Throwable error, boolean localized){
+		String message = localized? error.getLocalizedMessage():error.getMessage();
+		while(message == null){
+			Throwable cause = error.getCause();
+			if(cause == null){
+				break;
+			}
+			message = localized? cause.getLocalizedMessage():cause.getMessage();
+		}
+		return message;
+	}
 }

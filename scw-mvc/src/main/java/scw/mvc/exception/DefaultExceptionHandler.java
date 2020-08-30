@@ -32,7 +32,7 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 			return resultFactory.authorizationFailure();
 		} else {
 			Long code = error instanceof ErrorCode ? ((ErrorCode) error).getCode() : null;
-			String message = NestedExceptionUtils.getMostSpecificCause(error).getLocalizedMessage();
+			String message = NestedExceptionUtils.getNonEmptyMessage(error, false);
 			if (code == null) {
 				if (message == null) {
 					return resultFactory.error();
