@@ -72,7 +72,6 @@ public class HttpEntity<T> extends AbstractMessage implements Entity<T>, HttpMes
 			tempHeaders.putAll(headers);
 		}
 		this.headers = tempHeaders;
-		this.headers.readyOnly();
 	}
 
 

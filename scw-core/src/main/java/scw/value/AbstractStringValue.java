@@ -12,10 +12,6 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 		super(defaultValue);
 	}
 
-	protected boolean isEmpty(String value) {
-		return value == null || value.length() == 0;
-	}
-
 	public int getNumberRadix() {
 		return 10;
 	}
@@ -27,25 +23,12 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 	 * @return
 	 */
 	public String formatNumberText(String value) {
-		if (isEmpty(value)) {
-			return value;
-		}
-
-		char[] chars = new char[value.length()];
-		int pos = 0;
-		for (int i = 0; i < chars.length; i++) {
-			char c = value.charAt(i);
-			if (c == ' ' || c == ',') {
-				continue;
-			}
-			chars[pos++] = c;
-		}
-		return pos == 0 ? null : new String(chars, 0, pos);
+		return StringUtils.formatNumberText(value);
 	}
 
 	public Byte getAsByte() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsByte();
 		}
 		return Byte.parseByte(v, getNumberRadix());
@@ -53,7 +36,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public byte getAsByteValue() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsByteValue();
 		}
 
@@ -62,7 +45,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Short getAsShort() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsShort();
 		}
 		return Short.parseShort(v, getNumberRadix());
@@ -70,7 +53,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public short getAsShortValue() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsShortValue();
 		}
 		return Short.parseShort(v, getNumberRadix());
@@ -78,7 +61,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Integer getAsInteger() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsInteger();
 		}
 		return Integer.parseInt(v, getNumberRadix());
@@ -86,7 +69,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public int getAsIntValue() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsIntValue();
 		}
 		return Integer.parseInt(v, getNumberRadix());
@@ -94,7 +77,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Long getAsLong() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsLong();
 		}
 		return Long.parseLong(v, getNumberRadix());
@@ -102,7 +85,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public long getAsLongValue() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsLongValue();
 		}
 		return Long.parseLong(v, getNumberRadix());
@@ -114,7 +97,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Boolean getAsBoolean() {
 		String v = getAsString();
-		if (isEmpty(v)) {
+		if (!StringUtils.hasText(v)) {
 			return getDefaultValue().getAsBoolean();
 		}
 		return parseBooleanValue(v);
@@ -122,7 +105,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public boolean getAsBooleanValue() {
 		String v = getAsString();
-		if (isEmpty(v)) {
+		if (!StringUtils.hasText(v)) {
 			return getDefaultValue().getAsBooleanValue();
 		}
 		return parseBooleanValue(v);
@@ -130,7 +113,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Float getAsFloat() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsFloat();
 		}
 		return Float.parseFloat(v);
@@ -138,7 +121,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public float getAsFloatValue() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsFloatValue();
 		}
 		return Float.parseFloat(v);
@@ -146,7 +129,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Double getAsDouble() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsDouble();
 		}
 		return Double.parseDouble(v);
@@ -154,7 +137,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public double getAsDoubleValue() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsDoubleValue();
 		}
 		return Double.parseDouble(v);
@@ -162,7 +145,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public char getAsChar() {
 		String v = getAsString();
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsChar();
 		}
 		return v.charAt(0);
@@ -170,7 +153,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Character getAsCharacter() {
 		String v = getAsString();
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsCharacter();
 		}
 
@@ -179,7 +162,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public BigInteger getAsBigInteger() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsBigInteger();
 		}
 		return new BigInteger(v, getNumberRadix());
@@ -187,7 +170,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public BigDecimal getAsBigDecimal() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsBigDecimal();
 		}
 		return new BigDecimal(v);
@@ -195,7 +178,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Class<?> getAsClass() {
 		String v = getAsString();
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsClass();
 		}
 
@@ -209,7 +192,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Enum<?> getAsEnum(Class<?> enumType) {
 		String v = getAsString();
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsEnum(enumType);
 		}
 		return Enum.valueOf((Class<? extends Enum>) enumType, v);
@@ -217,7 +200,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Number getAsNumber() {
 		String v = formatNumberText(getAsString());
-		if (isEmpty(v)) {
+		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsNumber();
 		}
 		return new BigDecimal(v);
@@ -248,6 +231,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public boolean isNumber() {
 		String value = getAsString();
+		value = formatNumberText(value);
 		return StringUtils.isNotEmpty(value) && StringUtils.isNumeric(value);
 	}
 	
