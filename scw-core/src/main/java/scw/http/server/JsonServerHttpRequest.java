@@ -34,19 +34,6 @@ public class JsonServerHttpRequest extends CachingServerHttpRequest {
 	public void setJsonSupport(JSONSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
 	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getTarget(Class<T> targetType) {
-		T target = super.getTarget(targetType);
-		if(target == null){
-			Object json = getJson();
-			if(targetType.isInstance(json)){
-				return (T) json;
-			}
-		}
-		return null;
-	}
 
 	private Object json;
 	public Object getJson() {
