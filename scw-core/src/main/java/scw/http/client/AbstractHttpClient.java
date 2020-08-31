@@ -1,6 +1,5 @@
 package scw.http.client;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -10,7 +9,9 @@ import javax.net.ssl.SSLSocketFactory;
 import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.utils.StringUtils;
 import scw.event.support.DynamicValue;
+import scw.http.ContentDisposition;
 import scw.http.HttpEntity;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
@@ -21,6 +22,7 @@ import scw.http.client.accessor.HttpClientConfigAccessor;
 import scw.http.client.exception.HttpClientException;
 import scw.http.client.exception.HttpClientResourceAccessException;
 import scw.io.FileUtils;
+import scw.io.support.TemporaryFile;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -42,13 +44,10 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 		COOKIE_MANAGER = InstanceUtils.loadService(HttpClientCookieManager.class);
 	}
 	
-	private static final DynamicValue<Boolean> DOWNLOAD_SUPPORTED_REDIRECT = GlobalPropertyFactory.getInstance().getDynamicValue("scw.http.client.download.support.redirect", boolean.class, true);
 	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
-	//下载文件时是否支持重定向
-	private Boolean downloadSupportedRedirect;
 	
 	public AbstractHttpClient() {
 		messageConverter.add(InetUtils.getMessageConverter());
@@ -56,14 +55,6 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 
 	public MultiMessageConverter getMessageConverter() {
 		return messageConverter;
-	}
-
-	public boolean isDownloadSupportedRedirect() {
-		return downloadSupportedRedirect == null? DOWNLOAD_SUPPORTED_REDIRECT.getValue():downloadSupportedRedirect;
-	}
-
-	public void setDownloadSupportedRedirect(Boolean downloadSupportedRedirect) {
-		this.downloadSupportedRedirect = downloadSupportedRedirect;
 	}
 
 	protected void requestCallback(ClientHttpRequestBuilder builder, ClientHttpRequest request,
@@ -158,38 +149,49 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 			throws HttpClientException {
 		return execute(InetUtils.toURI(url), method, sslSocketFactory, httpEntity, clientResponseExtractor);
 	}
-
-	public final HttpResponseEntity<File> download(final File file, final URI uri, HttpHeaders httpHeaders,
-			SSLSocketFactory sslSocketFactory) throws HttpClientException {
+	
+	public HttpResponseEntity<TemporaryFile> download(String uri, HttpHeaders httpHeaders,
+			SSLSocketFactory sslSocketFactory, boolean supportedRedirect) throws HttpClientException {
+		return download(InetUtils.toURI(uri), httpHeaders, sslSocketFactory, supportedRedirect);
+	}
+	
+	public final HttpResponseEntity<TemporaryFile> download(final URI uri, HttpHeaders httpHeaders,
+			SSLSocketFactory sslSocketFactory, boolean supportedRedirect) throws HttpClientException {
 		HttpEntity<Object> httpEntity = new HttpEntity<Object>(httpHeaders);
-		HttpResponseEntity<File> httpResponseEntity = execute(uri, HttpMethod.GET, sslSocketFactory, httpEntity,
-				new ClientHttpResponseExtractor<File>() {
-					public File execute(ClientHttpResponse response) throws IOException {
+		HttpResponseEntity<TemporaryFile> httpResponseEntity = execute(uri, HttpMethod.GET, sslSocketFactory, httpEntity,
+				new ClientHttpResponseExtractor<TemporaryFile>() {
+					public TemporaryFile execute(ClientHttpResponse response) throws IOException {
 						if (response.getStatusCode() != HttpStatus.OK) {
 							logger.error("Unable to download:{}, status:{}, statusText:{}", uri,
 									response.getRawStatusCode(), response.getStatusText());
 							return null;
 						}
+						
+						ContentDisposition contentDisposition = response.getHeaders().getContentDisposition();
+						String fileName = contentDisposition == null? null:contentDisposition.getFilename();
+						if(StringUtils.isEmpty(fileName)){
+							fileName = InetUtils.getFilename(uri.getPath());
+						}
+						
+						TemporaryFile file = new TemporaryFile(fileName);
+						if(logger.isDebugEnabled()){
+							logger.debug("{} download to {}", uri, file.getPath());
+						}
 						FileUtils.copyInputStreamToFile(response.getBody(), file);
 						return file;
 					}
 				});
-		if(isDownloadSupportedRedirect()){
+		if(supportedRedirect){
 			// 重定向
 			if (httpResponseEntity.getStatusCodeValue() == HttpStatus.MOVED_PERMANENTLY.value() || httpResponseEntity.getStatusCodeValue() == HttpStatus.FOUND.value()) {
 				URI location = httpResponseEntity.getHeaders().getLocation();
 				if (location != null) {
 					logger.info("download redirect {} ==> {}", uri, location);
-					return download(file, location, httpHeaders, sslSocketFactory);
+					return download(location, httpHeaders, sslSocketFactory, supportedRedirect);
 				}
 			}
 		}
 		return httpResponseEntity;
-	}
-
-	public final HttpResponseEntity<File> download(File file, String url, HttpHeaders httpHeaders,
-			SSLSocketFactory sslSocketFactory) throws HttpClientException {
-		return download(file, InetUtils.toURI(url), httpHeaders, sslSocketFactory);
 	}
 
 	protected abstract ClientHttpRequestBuilder createBuilder(URI uri, HttpMethod method,
