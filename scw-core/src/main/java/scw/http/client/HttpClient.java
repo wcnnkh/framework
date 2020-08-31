@@ -1,6 +1,5 @@
 package scw.http.client;
 
-import java.io.File;
 import java.lang.reflect.Type;
 import java.net.URI;
 
@@ -12,6 +11,7 @@ import scw.http.HttpMethod;
 import scw.http.HttpResponseEntity;
 import scw.http.MediaType;
 import scw.http.client.exception.HttpClientException;
+import scw.io.support.TemporaryFile;
 
 /**
  * 一个http客户端
@@ -31,16 +31,25 @@ public interface HttpClient {
 	
 	/**
 	 * 下载文件
-	 * @param file
-	 * @param url
+	 * @param uri
 	 * @param httpHeaders
 	 * @param sslSocketFactory
-	 * @return 如果返回的 body(file) 为空，那么说明下载失败
+	 * @param supportedRedirect 是否支持重定向
+	 * @return
 	 * @throws HttpClientException
 	 */
-	HttpResponseEntity<File> download(File file, String url, HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory) throws HttpClientException;
+	HttpResponseEntity<TemporaryFile> download(String uri, HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory, boolean supportedRedirect) throws HttpClientException;
 	
-	HttpResponseEntity<File> download(File file, URI uri, HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory) throws HttpClientException;
+	/**
+	 * 下载文件
+	 * @param uri
+	 * @param httpHeaders
+	 * @param sslSocketFactory
+	 * @param supportedRedirect 是否支持重定向
+	 * @return
+	 * @throws HttpClientException
+	 */
+	HttpResponseEntity<TemporaryFile> download(URI uri, HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory, boolean supportedRedirect) throws HttpClientException;
 	
 	HttpResponseEntity<Object> execute(Type responseType, String url, HttpMethod method,
 			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException;
