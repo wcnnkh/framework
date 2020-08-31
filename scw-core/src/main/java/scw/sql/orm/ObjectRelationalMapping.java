@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -25,6 +24,7 @@ import scw.mapper.Mapper;
 import scw.mapper.MapperUtils;
 import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.Table;
+import scw.util.AbstractIterator;
 import scw.util.Accept;
 
 /**
@@ -58,8 +58,8 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 *            指明父级字段
 	 * @return
 	 */
-	public Enumeration<Column> enumeration(Class<?> entityClass, Field parentField) {
-		return new EnumerationColumn(getMapper().enumeration(entityClass, true, parentField, this));
+	public Iterable<Column> iterable(Class<?> entityClass, Field parentField) {
+		return new ColumnIterable(getMapper().iterable(entityClass, true, parentField, this));
 	}
 
 	/**
@@ -68,8 +68,8 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 * @param entityClass
 	 * @return
 	 */
-	public final Enumeration<Column> enumeration(Class<?> entityClass) {
-		return enumeration(entityClass, null);
+	public final Iterable<Column> iterable(Class<?> entityClass) {
+		return iterable(entityClass, null);
 	}
 
 	/**
@@ -80,9 +80,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 */
 	public final Collection<Column> getColumns(Class<?> entityClass) {
 		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-		Enumeration<Column> enumeration = enumeration(entityClass);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
+		for(Column column : iterable(entityClass)){
 			if (column.isEntity() || columns.contains(column)) {
 				continue;
 			}
@@ -100,9 +98,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 */
 	public final Collection<Column> getPrimaryKeys(Class<?> entityClass) {
 		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-		Enumeration<Column> enumeration = enumeration(entityClass);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
+		for(Column column : iterable(entityClass)){
 			if (!column.isPrimaryKey() || column.isEntity() || columns.contains(column)) {
 				continue;
 			}
@@ -120,9 +116,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 */
 	public final Collection<Column> getNotPrimaryKeys(Class<?> entityClass) {
 		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-		Enumeration<Column> enumeration = enumeration(entityClass);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
+		for(Column column : iterable(entityClass)){
 			if (column.isPrimaryKey() || column.isEntity() || columns.contains(column)) {
 				continue;
 			}
@@ -184,9 +178,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	}
 
 	public Column getColumn(Class<?> entityClass, String name) {
-		Enumeration<Column> enumeration = enumeration(entityClass);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
+		for(Column column : iterable(entityClass)){
 			if (column.isEntity()) {
 				continue;
 			}
@@ -228,19 +220,31 @@ public class ObjectRelationalMapping implements FieldFilter {
 		return true;
 	}
 
-	protected final class EnumerationColumn implements Enumeration<Column> {
-		private Enumeration<Field> enumeration;
+	private final class ColumnIterable implements Iterable<Column> {
+		private Iterable<Field> iterable;
 
-		public EnumerationColumn(Enumeration<Field> enumeration) {
-			this.enumeration = enumeration;
+		public ColumnIterable(Iterable<Field> iterable) {
+			this.iterable = iterable;
 		}
 
-		public boolean hasMoreElements() {
-			return enumeration.hasMoreElements();
+		public Iterator<Column> iterator() {
+			return new ColumnIterator(iterable.iterator());
+		}
+	}
+
+	private final class ColumnIterator extends AbstractIterator<Column> {
+		private Iterator<Field> iterator;
+
+		public ColumnIterator(Iterator<Field> iterator) {
+			this.iterator = iterator;
 		}
 
-		public Column nextElement() {
-			return createColumn(enumeration.nextElement());
+		public boolean hasNext() {
+			return iterator.hasNext();
+		}
+
+		public Column next() {
+			return createColumn(iterator.next());
 		}
 	}
 
@@ -278,9 +282,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	}
 
 	public Column findColumn(Class<?> tableClass, Accept<Column> accept) {
-		Enumeration<Column> enumeration = enumeration(tableClass);
-		if (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
+		for(Column column : iterable(tableClass)){
 			if (accept.accept(column)) {
 				return column;
 			}

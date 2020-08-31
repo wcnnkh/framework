@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,10 +20,10 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.mapper.MapperUtils;
+import scw.sql.AbstractSqlOperations;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.Sql;
-import scw.sql.AbstractSqlOperations;
 import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.EntityOperations;
@@ -126,9 +125,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	 */
 	protected boolean orm(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
 		GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean, tableName);
-		Enumeration<Column> enumeration = SqlUtils.getObjectRelationalMapping().enumeration(clazz);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
+		for(Column column : SqlUtils.getObjectRelationalMapping().getColumns(clazz)){
 			generatorContext.setColumn(column);
 			getGeneratorService().process(generatorContext);
 		}

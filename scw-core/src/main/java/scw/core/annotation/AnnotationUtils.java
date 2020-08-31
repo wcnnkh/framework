@@ -2819,8 +2819,12 @@ public abstract class AnnotationUtils {
 		return nullable == null ? defaultValue : nullable.value();
 	}
 
-	public static String getDescription(AnnotatedElement annotatedElement, String defaultValue) {
+	/**
+	 * @param annotatedElement
+	 * @return 如果没有就返回空
+	 */
+	public static String getDescription(AnnotatedElement annotatedElement) {
 		Description description = annotatedElement.getAnnotation(Description.class);
-		return description == null ? defaultValue : description.value();
+		return description == null ? null : description.value();
 	}
 }

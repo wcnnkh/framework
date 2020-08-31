@@ -7,12 +7,12 @@ import java.io.InputStream;
 
 import scw.http.ContentDisposition;
 import scw.http.MediaType;
+import scw.io.support.TemporaryFile;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 
 class DefaultFileItem extends FileItem {
 	private final File file;
-	private final boolean temporaryFile;
 
 	public DefaultFileItem(String fieldName, File file) {
 		this(fieldName, file, false);
@@ -20,8 +20,7 @@ class DefaultFileItem extends FileItem {
 
 	public DefaultFileItem(String fieldName, File file, boolean temporaryFile) {
 		super(fieldName);
-		this.file = file;
-		this.temporaryFile = temporaryFile;
+		this.file = temporaryFile ? TemporaryFile.wrapper(file) : file;
 		ContentDisposition contentDisposition = ContentDisposition.builder("form-data").name(fieldName)
 				.filename(file.getName()).build();
 		getHeaders().setContentDisposition(contentDisposition);
@@ -32,28 +31,18 @@ class DefaultFileItem extends FileItem {
 		getHeaders().setContentLength(file.length());
 	}
 
-	public boolean isTemporaryFile() {
-		return temporaryFile;
-	}
-
-	public void close() throws IOException {
-		if (isTemporaryFile()) {
-			file.delete();
-		}
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		close();
-		super.finalize();
-	}
-
 	public InputStream getBody() throws IOException {
 		return new FileInputStream(file);
 	}
-	
+
 	@Override
 	public String getName() {
 		return file.getName();
+	}
+
+	public void close() throws IOException {
+		if (file instanceof TemporaryFile) {
+			file.delete();
+		}
 	}
 }

@@ -128,8 +128,10 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		T t = (T) body;
-		if (outputMessage.getContentType() == null) {
-			MimeType contentTypeToUse = contentType;
+		MimeType contentTypeToUse = contentType;
+		if(contentType == null){
+			contentTypeToUse = outputMessage.getContentType();
+		}else if (outputMessage.getContentType() == null) {
 			if (contentTypeToUse == null || contentTypeToUse.isWildcardType()
 					|| contentTypeToUse.isWildcardSubtype()) {
 				contentTypeToUse = getDefaultContentType(t);
@@ -159,11 +161,15 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 				}
 			}
 		}
-		writeInternal(t, contentType, outputMessage);
+		writeInternal(t, contentTypeToUse, outputMessage);
 	}
 
 	protected MimeType getDefaultContentType(T body) throws IOException {
-		return getSupportMimeTypes().getMimeTypes().first();
+		MimeType mimeType = getSupportMimeTypes().getMimeTypes().first();
+		if(mimeType.isWildcardType() || mimeType.isWildcardSubtype()){
+			return null;
+		}
+		return mimeType;
 	}
 
 	protected Long getContentLength(T body, MimeType contentType)

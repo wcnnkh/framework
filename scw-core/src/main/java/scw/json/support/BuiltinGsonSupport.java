@@ -14,13 +14,13 @@ public final class BuiltinGsonSupport extends AbstractJSONSupport {
 	private static final Gson GSON = new Gson();
 
 	public JsonArray parseArray(String text) {
-		GsonJsonElement gsonJsonElement = GSON.toJsonTree(text);
+		GsonJsonElement gsonJsonElement = GSON.fromJson(text, GsonJsonElement.class);
 		return new BuiltInGsonJsonArray(gsonJsonElement.getAsJsonArray(), GSON);
 	}
 
 	public JsonObject parseObject(String text) {
-		GsonJsonElement gsonJsonElement = GSON.toJsonTree(text);
-		return new BuiltInGsonJsonObject(gsonJsonElement.getAsJsonObject(), GSON);
+		GsonJsonElement jsonElement = GSON.fromJson(text, GsonJsonElement.class);
+		return new BuiltInGsonJsonObject(jsonElement.getAsJsonObject(), GSON);
 	}
 
 	public <T> T parseObjectInternal(String text, Class<T> type) {
@@ -32,7 +32,7 @@ public final class BuiltinGsonSupport extends AbstractJSONSupport {
 	}
 
 	public JsonElement parseJson(String text) {
-		GsonJsonElement gsonJsonElement = GSON.toJsonTree(text);
+		GsonJsonElement gsonJsonElement = GSON.fromJson(text, GsonJsonElement.class);
 		return new BuiltInGsonElement(gsonJsonElement, GSON, EmptyJsonElement.INSTANCE);
 	}
 

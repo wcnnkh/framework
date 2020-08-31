@@ -25,6 +25,7 @@ import scw.net.message.converter.HttpFormMessageConveter;
 import scw.net.message.converter.JsonMessageConverter;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MultiMessageConverter;
+import scw.net.message.converter.ResourceMessageConverter;
 import scw.net.message.converter.StringMessageConverter;
 import scw.net.message.converter.XmlMessageConverter;
 import scw.net.ssl.TrustAllManager;
@@ -76,6 +77,7 @@ public final class InetUtils {
 		MESSAGE_CONVERTER.add(new XmlMessageConverter());
 		MESSAGE_CONVERTER.add(new HttpFormMessageConveter());
 		MESSAGE_CONVERTER.add(new MultipartMessageConverter());
+		MESSAGE_CONVERTER.add(new ResourceMessageConverter());
 		MESSAGE_CONVERTER.addAll(InstanceUtils.loadAllService(MessageConverter.class));
 	}
 

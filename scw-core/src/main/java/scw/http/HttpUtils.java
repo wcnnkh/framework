@@ -71,9 +71,7 @@ public final class HttpUtils {
 			return null;
 		}
 
-		if (body instanceof String || TypeUtils.isPrimitiveOrWrapper(body.getClass())) {
-			return body.toString();
-		} else if (body instanceof ToMap) {
+		if (body instanceof ToMap) {
 			return jsonSupport.toJSONString(XUtils.toMap((ToMap) body));
 		} else {
 			return jsonSupport.toJSONString(body);

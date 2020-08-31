@@ -20,7 +20,7 @@ public final class BuiltInGsonElement extends AbstractJsonElement {
 	}
 
 	public String getAsString() {
-		return gsonJsonElement.toString();
+		return gsonJsonElement.getAsString();
 	}
 
 	@Override
