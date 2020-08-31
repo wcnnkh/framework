@@ -5,21 +5,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import scw.aop.ProxyUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.lang.NotFoundException;
-import scw.util.AbstractIterator;
 import scw.util.cache.CacheLoader;
 import scw.util.cache.CacheOperations;
 import scw.util.cache.CacheUtils;
@@ -311,84 +309,48 @@ public abstract class Mapper {
 				});
 	}
 
-	public final Iterable<Field> iterable(Class<?> entityClass, boolean useSuperClass, Field parentField,
+	public final Iterable<Field> iterable(Class<?> entityClass, boolean useSuperClass, final Field parentField,
 			FieldFilter fieldFilter) {
-		return new FieldIterable(entityClass, useSuperClass, parentField, fieldFilter);
+		return new FieldIterable(entityClass, useSuperClass, fieldFilter) {
+			
+			@Override
+			protected Iterator<FieldMetadata> getFieldMetadataIterator(
+					Class<?> entityClass) {
+				return Arrays.asList(getFieldMetadatas(entityClass)).iterator();
+			}
+			
+			@Override
+			protected Field createField(FieldMetadata fieldMetadata) {
+				return Mapper.this.createField(parentField, fieldMetadata);
+			}
+		};
 	}
-
-	private final class FieldIterable implements Iterable<Field> {
-		private final Class<?> entityClass;
-		private final boolean useSuperClass;
-		private final FieldFilter fieldFilter;
-		private final Field parentField;
-
-		public FieldIterable(Class<?> entityClass, boolean useSuperClass, Field parentField, FieldFilter fieldFilter) {
-			this.entityClass = entityClass;
-			this.useSuperClass = useSuperClass;
-			this.parentField = parentField;
-			this.fieldFilter = fieldFilter;
+	
+	/**
+	 * 验证一个对象所有的字段值
+	 * @param instance
+	 * @param useSuperClass
+	 * @param test
+	 * @throws IllegalArgumentException
+	 */
+	public void testFields(Object instance, boolean useSuperClass, FieldTest test) throws IllegalArgumentException {
+		if (instance == null) {
+			throw new IllegalArgumentException("Object cannot be empty");
 		}
 
-		public Iterator<Field> iterator() {
-			return new FieldIterator();
-		}
-
-		private final class FieldIterator extends AbstractIterator<Field> implements FieldFilter {
-			private Enumeration<FieldMetadata> enumeration;
-			private Field currentField;
-			private Class<?> currentClass = FieldIterable.this.entityClass;
-
-			public FieldIterator() {
-				this.enumeration = Collections.enumeration(Arrays.asList(getFieldMetadatas(currentClass)));
+		for (scw.mapper.Field field : iterable(instance.getClass(), useSuperClass,
+				FilterFeature.GETTER.getFilter())) {
+			if (AnnotationUtils.isNullable(field.getGetter().getAnnotatedElement(), false)) {
+				continue;
 			}
 
-			public boolean hasNext() {
-				if (currentField != null) {
-					return true;
-				}
-
-				while (enumeration.hasMoreElements()) {
-					FieldMetadata fieldMetadata = enumeration.nextElement();
-					Field field = createField(parentField, fieldMetadata);
-					if (FieldIterator.this.accept(field)) {
-						this.currentField = field;
-						return true;
-					}
-				}
-
-				if (useSuperClass) {
-					this.currentClass = this.currentClass.getSuperclass();
-					if (currentClass == null || currentClass == Object.class) {
-						return false;
-					}
-
-					this.enumeration = Collections.enumeration(Arrays.asList(getFieldMetadatas(currentClass)));
-					while (enumeration.hasMoreElements()) {
-						FieldMetadata fieldMetadata = enumeration.nextElement();
-						Field field = createField(parentField, fieldMetadata);
-						if (FieldIterator.this.accept(field)) {
-							this.currentField = field;
-							return true;
-						}
-					}
-				}
-				return false;
+			Object value = field.getGetter().get(instance);
+			if (value == null) {
+				throw new IllegalArgumentException(field.getGetter().toString());
 			}
 
-			public Field next() {
-				if (currentField == null && !hasNext()) {
-					throw new NoSuchElementException();
-				}
-
-				try {
-					return currentField.clone();
-				} finally {
-					this.currentField = null;
-				}
-			}
-
-			public boolean accept(Field field) {
-				return fieldFilter == null ? true : fieldFilter.accept(field);
+			if (!test.test(field, value)) {
+				throw new IllegalArgumentException(field.getGetter().toString());
 			}
 		}
 	}
