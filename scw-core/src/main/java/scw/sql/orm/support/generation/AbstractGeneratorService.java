@@ -110,7 +110,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 			Long createTime = (Long) generatorContext.getAttribute(CreateTime.class);
 			if (createTime == null) {
 				Column createTimeColumn = SqlUtils.getObjectRelationalMapping()
-						.findColumn(generatorContext.getBean().getClass(), new Accept<Column>() {
+						.getColumns(generatorContext.getBean().getClass()).find(new Accept<Column>() {
 
 							public boolean accept(Column e) {
 								return e.getAnnotatedElement().getAnnotation(CreateTime.class) != null;

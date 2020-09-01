@@ -130,22 +130,14 @@ public abstract class ObjectUtils {
 	public static boolean isEmpty(Object obj) {
 		if (obj == null) {
 			return true;
-		} else if (obj instanceof String) {
-			if (((String) obj).length() == 0) {
-				return true;
-			}
+		} else if (obj instanceof CharSequence) {
+			return StringUtils.isEmpty((CharSequence) obj);
 		} else if (obj instanceof Collection) {
-			if (((Collection) obj).isEmpty()) {
-				return true;
-			}
+			return CollectionUtils.isEmpty((Collection) obj);
 		} else if (obj instanceof Map) {
-			if (((Map) obj).isEmpty()) {
-				return true;
-			}
+			return CollectionUtils.isEmpty((Map) obj);
 		} else if (obj.getClass().isArray()) {
-			if (Array.getLength(obj) == 0) {
-				return true;
-			}
+			return Array.getLength(obj) == 0;
 		}
 		return false;
 	}

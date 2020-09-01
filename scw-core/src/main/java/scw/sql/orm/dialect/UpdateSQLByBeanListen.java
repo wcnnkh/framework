@@ -26,7 +26,7 @@ public final class UpdateSQLByBeanListen extends DialectSql {
 
 	public UpdateSQLByBeanListen(Class<?> clazz, FieldSetterListen beanFieldListen, String tableName,
 			DialectHelper dialectHelper) {
-		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
+		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getColumns(clazz).getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NotFoundException("not found primary key");
 		}
@@ -44,7 +44,7 @@ public final class UpdateSQLByBeanListen extends DialectSql {
 		int index = 0;
 		StringBuilder where = null;
 		List<Object> paramList = new ArrayList<Object>();
-		Collection<Column> notPrimaryKeys = SqlUtils.getObjectRelationalMapping().getNotPrimaryKeys(clazz);
+		Collection<Column> notPrimaryKeys = SqlUtils.getObjectRelationalMapping().getColumns(clazz).getNotPrimaryKeys();
 		Iterator<Column> iterator = notPrimaryKeys.iterator();
 		// 处理CasType.AUTO_INCREMENT字段
 		while (iterator.hasNext()) {

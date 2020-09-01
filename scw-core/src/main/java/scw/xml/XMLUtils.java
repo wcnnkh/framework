@@ -42,6 +42,7 @@ import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
 import scw.mapper.Field;
+import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.KeyValuePair;
@@ -456,7 +457,7 @@ public final class XMLUtils {
 				throw new NotFoundException("not found attribute [" + n + "], " + toString(node));
 			}
 		}
-	} 
+	}
 
 	public static Boolean getBooleanValueAndParent(Node node, String name, Boolean defaultValue) {
 		Node parent = node.getParentNode();
@@ -471,6 +472,8 @@ public final class XMLUtils {
 
 	public static <T> T getBean(NoArgsInstanceFactory instanceFactory, Node node, Class<T> type) {
 		T t = null;
+		Fields fields = MapperUtils.getMapper().getFields(type, FilterFeature.SUPPORT_SETTER,
+				FilterFeature.SETTER_IGNORE_STATIC);
 		NodeList nodeList = node.getChildNodes();
 		for (int i = 0; i < nodeList.getLength(); i++) {
 			Node n = nodeList.item(i);
@@ -478,8 +481,7 @@ public final class XMLUtils {
 				continue;
 			}
 
-			Field field = MapperUtils.getMapper().getField(type, n.getNodeName(), null, FilterFeature.SUPPORT_SETTER,
-					FilterFeature.SETTER_IGNORE_STATIC);
+			Field field = fields.find(n.getNodeName(), null);
 			if (field == null) {
 				continue;
 			}

@@ -5,18 +5,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 import scw.aop.ProxyUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.ObjectUtils;
 import scw.lang.NotFoundException;
 import scw.util.cache.CacheLoader;
 import scw.util.cache.CacheOperations;
@@ -61,101 +61,13 @@ public abstract class Mapper {
 		return filter == null || filter.accept(field);
 	}
 
-	public final LinkedList<Field> getFields(Class<?> clazz, boolean useSuperClass, Field parentField,
-			FieldFilter filter, FilterFeature... filterFeatures) {
-		LinkedList<Field> list = new LinkedList<Field>();
-		Class<?> classToUse = clazz;
-		while (classToUse != null && classToUse != Object.class) {
-			for (FieldMetadata fieldMetadata : getFieldMetadatas(classToUse)) {
-				Field field = createField(parentField, fieldMetadata);
-				if (acceptInternal(field, filter, filterFeatures)) {
-					list.add(field);
-				}
-			}
-
-			if (!useSuperClass) {
-				break;
-			}
-
-			classToUse = classToUse.getSuperclass();
-		}
-		return list;
-	}
-
-	public final LinkedList<Field> getFields(Class<?> clazz, Field parentField, FieldFilter filter,
-			FilterFeature... filterFeatures) {
-		return getFields(clazz, true, parentField, filter, filterFeatures);
-	}
-	
-	public final LinkedList<Field> getFields(Class<?> clazz, FilterFeature... filterFeatures) {
-		return getFields(clazz, true, null, null, filterFeatures);
-	}
-
-	protected Field createField(Field parentField, FieldMetadata fieldMetadata) {
-		return new Field(parentField, fieldMetadata.getGetter(), fieldMetadata.getSetter());
-	}
-
-	public final Field getField(Class<?> clazz, boolean useSuperClass, Field parentField, FieldFilter filter,
-			FilterFeature... filterFeatures) {
-		Class<?> classToUse = clazz;
-		while (classToUse != null && classToUse != Object.class) {
-			for (FieldMetadata fieldMetadata : getFieldMetadatas(classToUse)) {
-				Field field = createField(parentField, fieldMetadata);
-				if (acceptInternal(field, filter, filterFeatures)) {
-					return field;
-				}
-			}
-
-			if (!useSuperClass) {
-				break;
-			}
-			classToUse = classToUse.getSuperclass();
-		}
-		return null;
-	}
-
-	public final Field getField(Class<?> clazz, FieldFilter filter, FilterFeature... filterFeatures) {
-		return getField(clazz, true, null, filter, filterFeatures);
-	}
-
-	public final Field getField(Class<?> clazz, boolean useSuperClass, final String name, final Class<?> type,
-			Field parentField, final FieldFilter filter, final FilterFeature... filterFeatures) {
-		return getField(clazz, useSuperClass, parentField, new FieldFilter() {
-
-			public boolean accept(Field field) {
-				if (!acceptInternal(field, filter, filterFeatures)) {
-					return false;
-				}
-
-				if (field.isSupportGetter()) {
-					if ((type == null || field.getGetter().getType() == type)
-							&& field.getGetter().getName().equals(name)) {
-						return true;
-					}
-				}
-
-				if (field.isSupportSetter()) {
-					if ((type == null || field.getSetter().getType() == type)
-							&& field.getSetter().getName().equals(name)) {
-						return true;
-					}
-				}
-				return false;
-			}
-		});
-	}
-
-	public final Field getField(Class<?> clazz, String name, Class<?> type, FilterFeature... filterFeatures) {
-		return getField(clazz, true, name, type, null, null, filterFeatures);
-	}
-
 	public final Map<String, Object> getFieldValueMap(Object entity, final FieldFilter fieldFilter) {
 		if (entity == null) {
 			return Collections.emptyMap();
 		}
 
 		final Map<String, Object> map = new LinkedHashMap<String, Object>();
-		for (Field field : getFields(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), null,
+		for (Field field : getFields(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), true, null,
 				new FieldFilter() {
 
 					public boolean accept(Field field) {
@@ -248,14 +160,15 @@ public abstract class Mapper {
 			}
 
 			if (field == null) {
-				field = getField(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), new FieldFilter() {
+				field = getFields(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), true)
+						.find(new FieldFilter() {
 
-					public boolean accept(Field field) {
-						return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
-								&& field.getGetter().getName().equals(fieldName)
-								&& (type == null || type == field.getGetter().getType());
-					}
-				});
+							public boolean accept(Field field) {
+								return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
+										&& field.getGetter().getName().equals(fieldName)
+										&& (type == null || type == field.getGetter().getType());
+							}
+						});
 
 				if (field == null) {
 					throw new NotFoundException(entity.getClass() + " [" + fieldName + "]");
@@ -270,108 +183,128 @@ public abstract class Mapper {
 			list.add((T) value);
 		}
 		return list;
+
 	}
 
 	public final <T> T mapping(Class<? extends T> entityClass, Field parentField, Mapping mapping) throws Exception {
-		return mapping.mapping(entityClass, getFields(entityClass, parentField, mapping, FilterFeature.SUPPORT_SETTER),
-				this);
+		return mapping.mapping(entityClass,
+				getFields(entityClass, parentField, FilterFeature.SUPPORT_SETTER.getFilter(), mapping), this);
 	}
 
 	public final <T> T mapping(Class<? extends T> entityClass, Mapping mapping) throws Exception {
 		return mapping(entityClass, null, mapping);
 	}
 
-	public final Enumeration<Field> enumeration(Class<?> entityClass, boolean useSuperClass, Field parentField,
-			Collection<FieldFilter> fieldFilters, FilterFeature... filterFeatures) {
-		return new EnumerationField(entityClass, useSuperClass, parentField, fieldFilters, filterFeatures);
+	public final Fields getFields(Class<?> entityClass, FieldFilter... filters) {
+		return getFields(entityClass, true, filters);
 	}
 
-	public final Enumeration<Field> enumeration(Class<?> entityClass, boolean useSuperClass, Field parentField,
-			FieldFilter... fieldFilters) {
-		return enumeration(entityClass, useSuperClass, parentField, Arrays.asList(fieldFilters));
+	public final Fields getFields(Class<?> entityClass, Field parentField, FieldFilter... filters) {
+		return getFields(entityClass, true, parentField, filters);
 	}
 
-	private final class EnumerationField implements Enumeration<Field>, FieldFilter {
-		private Class<?> entityClass;
-		private final boolean useSuperClass;
-		private final Collection<FieldFilter> fieldFilters;
-		private final Field parentField;
-		private Enumeration<FieldMetadata> enumeration;
-		private Field currentField;
-		private final FilterFeature[] filterFeatures;
+	public final Fields getFields(Class<?> entityClass, boolean useSuperClass, FieldFilter... filters) {
+		return getFields(entityClass, useSuperClass, null, filters);
+	}
 
-		public EnumerationField(Class<?> entityClass, boolean useSuperClass, Field parentField,
-				Collection<FieldFilter> fieldFilters, FilterFeature[] filterFeatures) {
-			this.entityClass = entityClass;
-			this.fieldFilters = fieldFilters;
-			this.useSuperClass = useSuperClass;
-			this.parentField = parentField;
-			this.filterFeatures = filterFeatures;
-			this.enumeration = Collections.enumeration(Arrays.asList(getFieldMetadatas(entityClass)));
-		}
+	public final Fields getFields(Class<?> entityClass, boolean useSuperClass, Field parentField,
+			final FieldFilter... filters) {
+		return getFields(entityClass, useSuperClass, parentField,
+				ArrayUtils.isEmpty(filters) ? null : new FieldFilter() {
+					public boolean accept(Field field) {
+						for (FieldFilter fieldFilter : filters) {
+							if (fieldFilter == null) {
+								continue;
+							}
 
-		public boolean accept(Field field) {
-			if (filterFeatures != null && filterFeatures.length != 0) {
-				for (FilterFeature feature : filterFeatures) {
-					if (feature != null && !feature.getFilter().accept(field)) {
-						return false;
-					}
-				}
-			}
-
-			if (fieldFilters != null && fieldFilters.size() != 0) {
-				for (FieldFilter filter : fieldFilters) {
-					if (filter != null && !filter.accept(field)) {
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-
-		public boolean hasMoreElements() {
-			if (currentField != null) {
-				return true;
-			}
-
-			while (enumeration.hasMoreElements()) {
-				FieldMetadata fieldMetadata = enumeration.nextElement();
-				Field field = createField(parentField, fieldMetadata);
-				if (EnumerationField.this.accept(field)) {
-					this.currentField = field;
-					return true;
-				}
-			}
-
-			if (useSuperClass) {
-				this.entityClass = entityClass.getSuperclass();
-				if (entityClass == null || entityClass == Object.class) {
-					return false;
-				}
-
-				this.enumeration = Collections.enumeration(Arrays.asList(getFieldMetadatas(entityClass)));
-				while (enumeration.hasMoreElements()) {
-					FieldMetadata fieldMetadata = enumeration.nextElement();
-					Field field = createField(parentField, fieldMetadata);
-					if (EnumerationField.this.accept(field)) {
-						this.currentField = field;
+							if (!fieldFilter.accept(field)) {
+								return false;
+							}
+						}
 						return true;
 					}
-				}
+				});
+	}
+
+	public final Fields getFields(Class<?> entityClass) {
+		return getFields(entityClass, true, null, (FieldFilter) null);
+	}
+
+	public Fields getFields(Class<?> entityClass, boolean useSuperClass, Field parentField, FieldFilter filter) {
+		return new IterableFields(entityClass, useSuperClass, filter, parentField) {
+
+			@Override
+			protected Iterator<FieldMetadata> getFieldMetadataIterator(Class<?> entityClass) {
+				return Arrays.asList(getFieldMetadatas(entityClass)).iterator();
 			}
-			return false;
+		};
+	}
+	
+	public final void testFields(Object instance, FieldTest test)
+			throws IllegalArgumentException{
+		testFields(instance, false, test);
+	}
+
+	/**
+	 * 验证一个对象所有的字段值
+	 * 
+	 * @param instance
+	 * @param useSuperClass
+	 * @param test
+	 * @throws IllegalArgumentException
+	 */
+	public final void testFields(Object instance, boolean useSuperClass, FieldTest test)
+			throws IllegalArgumentException {
+		if (instance == null) {
+			throw new IllegalArgumentException("Object cannot be empty");
 		}
 
-		public Field nextElement() {
-			if (currentField == null && !hasMoreElements()) {
-				throw new NoSuchElementException();
+		for (scw.mapper.Field field : getFields(instance.getClass(), useSuperClass, FilterFeature.GETTER.getFilter())) {
+			if(field.getGetter().getField() == null){
+				continue;
+			}
+			
+			if (AnnotationUtils.isNullable(field.getGetter().getAnnotatedElement(), false)) {
+				continue;
 			}
 
-			try {
-				return currentField.clone();
-			} finally {
-				this.currentField = null;
+			Object value = field.getGetter().get(instance);
+			if(ObjectUtils.isEmpty(value)){
+				throw new IllegalArgumentException(field.getGetter().toString());
 			}
+			
+			if(test == null || test.test(field, value)){
+				continue;
+			}
+
+			throw new IllegalArgumentException(field.getGetter().toString());
 		}
+	}
+
+	public final Fields getFields(Class<?> entityClass, boolean useSuperClass, Field parentField,
+			final FilterFeature... filterFeatures) {
+		return getFields(entityClass, useSuperClass, parentField,
+				ArrayUtils.isEmpty(filterFeatures) ? null : new FieldFilter() {
+					public boolean accept(Field field) {
+						for (FilterFeature feature : filterFeatures) {
+							if (feature == null) {
+								continue;
+							}
+
+							if (!feature.getFilter().accept(field)) {
+								return false;
+							}
+						}
+						return true;
+					}
+				});
+	}
+
+	public final Fields getFields(Class<?> entityClass, Field parentField, final FilterFeature... filterFeatures) {
+		return getFields(entityClass, true, parentField, filterFeatures);
+	}
+
+	public final Fields getFields(Class<?> entityClass, final FilterFeature... filterFeatures) {
+		return getFields(entityClass, null, filterFeatures);
 	}
 }

@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import scw.core.utils.StringUtils;
-import scw.lang.Description;
 import scw.util.cache.LocalCacheType;
 import scw.value.ValueUtils;
 
@@ -63,7 +62,7 @@ public class MapperUtils {
 		if (!field.isSupportGetter()) {
 			return false;
 		}
-		
+
 		if (field.getGetter().getType().isPrimitive()) {// 如果是值类型，那么是不可能为空的
 			Object value = field.getGetter().get(instance);
 			if (value != null && value instanceof Number) {
@@ -73,9 +72,5 @@ public class MapperUtils {
 		} else {
 			return field.getGetter().get(instance) != null;
 		}
-	}
-
-	public static boolean isDescription(FieldDescriptor descriptor) {
-		return descriptor.getAnnotatedElement().getAnnotation(Description.class) != null;
 	}
 }

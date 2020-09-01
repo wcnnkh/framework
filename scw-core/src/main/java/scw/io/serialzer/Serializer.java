@@ -6,7 +6,11 @@ import java.io.OutputStream;
 
 import scw.lang.NotSupportedException;
 
-
+/**
+ * 序列化
+ * @author shuchaowen
+ *
+ */
 public abstract class Serializer implements NoTypeSpecifiedSerializer, SpecifiedTypeSerializer {
 
 	public <T> T deserialize(byte[] data) throws IOException, ClassNotFoundException{

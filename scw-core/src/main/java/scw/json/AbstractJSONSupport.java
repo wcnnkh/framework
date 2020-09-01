@@ -6,6 +6,7 @@ import java.lang.reflect.Type;
 
 import scw.core.utils.ClassUtils;
 import scw.io.IOUtils;
+import scw.value.ValueUtils;
 
 public abstract class AbstractJSONSupport implements JSONSupport {
 
@@ -15,6 +16,12 @@ public abstract class AbstractJSONSupport implements JSONSupport {
 			return (T) parseObject(text);
 		} else if (type == JsonArray.class) {
 			return (T) parseArray(text);
+		} else if(type == JsonElement.class){
+			return (T) parseJson(text);
+		}else if(type == String.class){
+			return (T) text;
+		} else if(ClassUtils.isPrimitiveOrWrapper(type)){
+			return ValueUtils.parse(text, type);
 		}
 		return parseObjectInternal(text, (Class<T>) type);
 	}
@@ -26,13 +33,6 @@ public abstract class AbstractJSONSupport implements JSONSupport {
 		if (type instanceof Class) {
 			return parseObject(text, (Class<T>) type);
 		}
-
-		if (type == JsonObject.class) {
-			return (T) parseObject(text);
-		} else if (type == JsonArray.class) {
-			return (T) parseArray(text);
-		}
-
 		return parseObjectInternal(text, type);
 	}
 
@@ -89,6 +89,18 @@ public abstract class AbstractJSONSupport implements JSONSupport {
 		
 		if(ClassUtils.isPrimitiveOrWrapper(obj.getClass())){
 			return String.valueOf(obj);
+		}
+		
+		if(obj instanceof JsonElement){
+			return obj.toString();
+		}
+		
+		if(obj instanceof JsonObject){
+			return ((JsonObject) obj).toJsonString();
+		}
+		
+		if(obj instanceof JsonArray){
+			return ((JsonArray) obj).toJsonString();
 		}
 		
 		return toJsonStringInternal(obj);

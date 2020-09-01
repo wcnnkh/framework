@@ -153,7 +153,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 
 		TemporaryCacheConfig config = getCacheConfig(type);
 		if (config.isEnable() && config.isKeys()) {
-			if (getObjectRelationalMapping().getPrimaryKeys(type).size() != params.length) {
+			if (getObjectRelationalMapping().getColumns(type).getPrimaryKeys().size() != params.length) {
 				return true;
 			}
 

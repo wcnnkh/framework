@@ -16,7 +16,7 @@ public final class SelectByIdSQL extends DialectSql {
 		StringBuilder sb = new StringBuilder();
 		sb.append(SELECT_ALL_PREFIX);
 		dialectHelper.keywordProcessing(sb, tableName);
-		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
+		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getColumns(clazz).getPrimaryKeys();
 		Iterator<Column> iterator = primaryKeys.iterator();
 		Iterator<Object> valueIterator = ids.iterator();
 		if (iterator.hasNext() && valueIterator.hasNext()) {

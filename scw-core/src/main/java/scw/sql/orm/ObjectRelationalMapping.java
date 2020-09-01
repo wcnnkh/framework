@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +23,6 @@ import scw.mapper.Mapper;
 import scw.mapper.MapperUtils;
 import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.Table;
-import scw.util.Accept;
 
 /**
  * 默认的orm定义
@@ -58,8 +55,14 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 *            指明父级字段
 	 * @return
 	 */
-	public Enumeration<Column> enumeration(Class<?> entityClass, Field parentField) {
-		return new EnumerationColumn(getMapper().enumeration(entityClass, true, parentField, this));
+	public Columns getColumns(Class<?> entityClass, Field parentField) {
+		return new IterableColumns(getMapper().getFields(entityClass, true, parentField, this)) {
+
+			@Override
+			protected Column create(Field field) {
+				return new Column(field);
+			}
+		};
 	}
 
 	/**
@@ -68,78 +71,14 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 * @param entityClass
 	 * @return
 	 */
-	public final Enumeration<Column> enumeration(Class<?> entityClass) {
-		return enumeration(entityClass, null);
-	}
-
-	/**
-	 * 获取数据库字段
-	 * 
-	 * @param entityClass
-	 * @return
-	 */
-	public final Collection<Column> getColumns(Class<?> entityClass) {
-		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-		Enumeration<Column> enumeration = enumeration(entityClass);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
-			if (column.isEntity() || columns.contains(column)) {
-				continue;
-			}
-
-			columns.add(column);
-		}
-		return columns;
-	}
-
-	/**
-	 * 获取主键字段
-	 * 
-	 * @param entityClass
-	 * @return
-	 */
-	public final Collection<Column> getPrimaryKeys(Class<?> entityClass) {
-		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-		Enumeration<Column> enumeration = enumeration(entityClass);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
-			if (!column.isPrimaryKey() || column.isEntity() || columns.contains(column)) {
-				continue;
-			}
-
-			columns.add(column);
-		}
-		return columns;
-	}
-
-	/**
-	 * 获取非主键字段
-	 * 
-	 * @param entityClass
-	 * @return
-	 */
-	public final Collection<Column> getNotPrimaryKeys(Class<?> entityClass) {
-		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-		Enumeration<Column> enumeration = enumeration(entityClass);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
-			if (column.isPrimaryKey() || column.isEntity() || columns.contains(column)) {
-				continue;
-			}
-
-			columns.add(column);
-		}
-		return columns;
-	}
-
-	protected Column createColumn(Field field) {
-		return new Column(field);
+	public final Columns getColumns(Class<?> entityClass) {
+		return getColumns(entityClass, null);
 	}
 
 	public final <T> String getObjectKey(Class<? extends T> clazz, final T bean) {
 		final StringBuilder sb = new StringBuilder(128);
 		sb.append(clazz.getName());
-		for (Column column : getPrimaryKeys(clazz)) {
+		for (Column column : getColumns(clazz).getPrimaryKeys()) {
 			Object value = column.get(bean);
 			appendObjectKeyByValue(sb, column, value);
 		}
@@ -149,7 +88,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	public final String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(clazz.getName());
-		Iterator<Column> columnIterator = getPrimaryKeys(clazz).iterator();
+		Iterator<Column> columnIterator = getColumns(clazz).getPrimaryKeys().iterator();
 		Iterator<Object> valueIterator = primaryKeys.iterator();
 		while (columnIterator.hasNext() && valueIterator.hasNext()) {
 			Column column = columnIterator.next();
@@ -183,22 +122,6 @@ public class ObjectRelationalMapping implements FieldFilter {
 		return keyMap;
 	}
 
-	public Column getColumn(Class<?> entityClass, String name) {
-		Enumeration<Column> enumeration = enumeration(entityClass);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
-			if (column.isEntity()) {
-				continue;
-			}
-
-			if (column.getName().equals(name) || column.getField().getGetter().getName().equalsIgnoreCase(name)
-					|| column.getField().getSetter().getName().equalsIgnoreCase(name)) {
-				return column;
-			}
-		}
-		return null;
-	}
-
 	public boolean isTable(Class<?> clazz) {
 		return clazz.getAnnotation(Table.class) != null;
 	}
@@ -226,22 +149,6 @@ public class ObjectRelationalMapping implements FieldFilter {
 			return false;
 		}
 		return true;
-	}
-
-	protected final class EnumerationColumn implements Enumeration<Column> {
-		private Enumeration<Field> enumeration;
-
-		public EnumerationColumn(Enumeration<Field> enumeration) {
-			this.enumeration = enumeration;
-		}
-
-		public boolean hasMoreElements() {
-			return enumeration.hasMoreElements();
-		}
-
-		public Column nextElement() {
-			return createColumn(enumeration.nextElement());
-		}
 	}
 
 	public Map<IndexInfo, List<IndexInfo>> getIndexInfoMap(Class<?> entityClass) {
@@ -275,17 +182,6 @@ public class ObjectRelationalMapping implements FieldFilter {
 			return StringUtils.humpNamingReplacement(tableClass.getSimpleName(), "_");
 		}
 		return table.name();
-	}
-
-	public Column findColumn(Class<?> tableClass, Accept<Column> accept) {
-		Enumeration<Column> enumeration = enumeration(tableClass);
-		if (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
-			if (accept.accept(column)) {
-				return column;
-			}
-		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")

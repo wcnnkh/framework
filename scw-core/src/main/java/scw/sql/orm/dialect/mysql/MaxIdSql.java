@@ -10,7 +10,7 @@ public class MaxIdSql extends DialectSql {
 	private String sql;
 
 	public MaxIdSql(Class<?> clazz, String tableName, String idField, DialectHelper dialectHelper) {
-		Column column = SqlUtils.getObjectRelationalMapping().getColumn(clazz, idField);
+		Column column = SqlUtils.getObjectRelationalMapping().getColumns(clazz).find(idField);
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ");
 		dialectHelper.keywordProcessing(sb, column.getName());

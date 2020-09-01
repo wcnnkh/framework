@@ -3,8 +3,6 @@ package scw.mapper;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.Enumeration;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
@@ -112,12 +110,11 @@ public class Copy {
 		this.genericTypeEqual = genericTypeEqual;
 	}
 
-	protected Object cloneArray(Class<?> sourceClass, Object array, Field parentField, FieldFilter filter,
-			FilterFeature... filterFeatures) {
+	protected Object cloneArray(Class<?> sourceClass, Object array, Field parentField, FieldFilter ...filters) {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(sourceClass.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, copy(Array.get(array, i), parentField, filter, filterFeatures));
+			Array.set(newArr, i, copy(Array.get(array, i), parentField, filters));
 		}
 		return newArr;
 	}
@@ -128,8 +125,8 @@ public class Copy {
 	 * @param targetField 要插入的字段
 	 * @return
 	 */
-	protected Field getSourceField(Class<?> sourceClass, final Field targetField) {
-		return mapper.getField(sourceClass, new FieldFilter() {
+	protected Field getSourceField(Class<?> sourceClass, Fields sourceFields, final Field targetField) {
+		return sourceFields.find(new FieldFilter() {
 
 			public boolean accept(Field field) {
 				if (!field.isSupportGetter()) {
@@ -160,11 +157,9 @@ public class Copy {
 	}
 
 	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source,
-			Field parentField, FieldFilter filter, FilterFeature... filterFeatures) {
-		Enumeration<Field> enumeration = mapper.enumeration(targetClass, true, parentField,
-				filter == null ? null : Arrays.asList(filter), filterFeatures);
-		while (enumeration.hasMoreElements()) {
-			Field field = enumeration.nextElement();
+			Field parentField, FieldFilter ...filters) {
+		Fields sourceFields = mapper.getFields(sourceClass, parentField, filters);
+		for(Field field : mapper.getFields(targetClass, parentField, filters)){
 			if (!field.isSupportSetter()) {
 				continue;
 			}
@@ -176,7 +171,7 @@ public class Copy {
 				continue;
 			}
 
-			Field sourceField = getSourceField(sourceClass, field);
+			Field sourceField = getSourceField(sourceClass, sourceFields, field);
 			if (sourceField == null) {
 				continue;
 			}
@@ -189,10 +184,10 @@ public class Copy {
 			if (isClone()) {
 				if (Modifier.isTransient(field.getSetter().getModifiers())) {
 					if (isCloneTransientField()) {
-						value = copy(value, field, filter, filterFeatures);
+						value = copy(value, field, filters);
 					}
 				} else {
-					value = copy(value, field, filter, filterFeatures);
+					value = copy(value, field, filters);
 				}
 			}
 
@@ -201,7 +196,7 @@ public class Copy {
 	}
 
 	public <T, S> T copy(Class<? extends T> targetClass, Class<? extends S> sourceClass, S source, Field parentField,
-			FieldFilter filter, FilterFeature... filterFeatures) {
+			FieldFilter ...filters) {
 		if (!getInstanceFactory().isInstance(targetClass)) {
 			return (T) source;
 		}
@@ -211,11 +206,11 @@ public class Copy {
 			return target;
 		}
 
-		copy(targetClass, target, sourceClass, source, parentField, filter, filterFeatures);
+		copy(targetClass, target, sourceClass, source, parentField, filters);
 		return target;
 	}
 
-	public <T> T copy(T source, Field parentField, FieldFilter filter, FilterFeature... filterFeatures) {
+	public <T> T copy(T source, Field parentField, FieldFilter ...filters) {
 		if (source == null) {
 			return null;
 		}
@@ -232,40 +227,38 @@ public class Copy {
 		if (sourceClass.isPrimitive() || sourceClass.isEnum()) {
 			return source;
 		} else if (sourceClass.isArray()) {
-			return (T) cloneArray(sourceClass, source, parentField, filter, filterFeatures);
+			return (T) cloneArray(sourceClass, source, parentField, filters);
 		} else if (isInvokeCloneableMethod() && source instanceof Cloneable) {
 			return (T) ReflectionUtils.invokeMethod(CLONE_METOHD, source);
 		}
-		return copy(sourceClass, sourceClass, source, parentField, filter, filterFeatures);
+		return copy(sourceClass, sourceClass, source, parentField, filters);
 	}
 
 	private static final Copy DEFAULT_COPY = new Copy();
 	private static final Copy CLONE_COPY = new Copy();
-	private static final Copy INVOKER_SETTER_COPY = new Copy();
 
 	static {
 		CLONE_COPY.setClone(true);
 	}
 
-	public static <T> T clone(T source, FieldFilter filter, FilterFeature... filterFeatures) {
-		return CLONE_COPY.copy(source, null, filter, filterFeatures);
+	public static <T> T clone(T source, FieldFilter ...filters) {
+		return CLONE_COPY.copy(source, null, filters);
 	}
 
 	public static <T> T clone(T source) {
-		return clone(source, null, FilterFeature.GETTER_IGNORE_STATIC, FilterFeature.SETTER_IGNORE_STATIC);
+		return clone(source, FilterFeature.GETTER_IGNORE_STATIC.getFilter(), FilterFeature.SETTER_IGNORE_STATIC.getFilter());
 	}
 
-	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldFilter filter,
-			FilterFeature... filterFeatures) {
-		return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null, filter, filterFeatures);
+	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldFilter ...filters) {
+		return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null, filters);
 	}
 
 	public static <T> T copy(Class<? extends T> targetClass, Object source) {
-		return copy(targetClass, source, null, FilterFeature.GETTER_IGNORE_STATIC, FilterFeature.SETTER_IGNORE_STATIC);
+		return copy(targetClass, source, FilterFeature.GETTER_IGNORE_STATIC.getFilter(), FilterFeature.SETTER_IGNORE_STATIC.getFilter());
 	}
 
-	public static void copy(Object target, Object source, FieldFilter filter, FilterFeature... filterFeatures) {
-		INVOKER_SETTER_COPY.copy(target.getClass(), target, source.getClass(), source, null, filter, filterFeatures);
+	public static void copy(Object target, Object source, FieldFilter ...filters) {
+		DEFAULT_COPY.copy(target.getClass(), target, source.getClass(), source, null, filters);
 	}
 
 	/**
@@ -275,6 +268,6 @@ public class Copy {
 	 * @param source
 	 */
 	public static void copy(Object target, Object source) {
-		copy(target, source, null, FilterFeature.GETTER_IGNORE_STATIC, FilterFeature.SETTER_IGNORE_STATIC);
+		copy(target, source, FilterFeature.GETTER_IGNORE_STATIC.getFilter(), FilterFeature.SETTER_IGNORE_STATIC.getFilter());
 	}
 }

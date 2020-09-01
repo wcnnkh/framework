@@ -11,8 +11,8 @@ public class XmlPropertiesIocProcessor extends AbstractFieldIocProcessor {
 	private XmlBeanParameter xmlBeanParameter;
 
 	public XmlPropertiesIocProcessor(Class<?> targetClass, XmlBeanParameter xmlBeanParameter) {
-		super(MapperUtils.getMapper().getField(targetClass, xmlBeanParameter.getName(), null,
-				FilterFeature.SUPPORT_SETTER));
+		super(MapperUtils.getMapper().getFields(targetClass, FilterFeature.SUPPORT_SETTER)
+				.find(xmlBeanParameter.getName(), null));
 		this.xmlBeanParameter = xmlBeanParameter;
 	}
 

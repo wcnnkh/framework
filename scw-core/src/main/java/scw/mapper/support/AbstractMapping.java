@@ -1,6 +1,5 @@
 package scw.mapper.support;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -9,6 +8,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
+import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
 import scw.mapper.Mapper;
 import scw.mapper.Mapping;
@@ -19,7 +19,7 @@ public abstract class AbstractMapping implements Mapping {
 		return InstanceUtils.INSTANCE_FACTORY.getInstance(type);
 	}
 	
-	public <T> T mapping(Class<? extends T> entityClass, Collection<Field> fields, Mapper mapper) throws Exception {
+	public <T> T mapping(Class<? extends T> entityClass, Fields fields, Mapper mapper) throws Exception {
 		T entity = newInstance(entityClass);
 		for(Field field : fields){
 			Object value;

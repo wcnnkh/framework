@@ -2,7 +2,6 @@ package scw.sql.orm.support;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Enumeration;
 
 import scw.aop.support.FieldSetterListen;
 import scw.core.utils.StringUtils;
@@ -65,9 +64,7 @@ public class DefaultResultMapping extends AbstractResultMapping {
 			ObjectRelationalMapping objectRelationalMapping, Field parentField) {
 		String tableName = getTableName(clazz, tableNameMapping, objectRelationalMapping);
 		T entity = objectRelationalMapping.newEntity(clazz);
-		Enumeration<Column> enumeration = objectRelationalMapping.enumeration(clazz);
-		while (enumeration.hasMoreElements()) {
-			Column column = enumeration.nextElement();
+		for(Column column : objectRelationalMapping.getColumns(clazz, parentField)){
 			Object value;
 			if (column.isEntity()) {
 				value = mapping(column.getField().getSetter().getType(), tableNameMapping, objectRelationalMapping,

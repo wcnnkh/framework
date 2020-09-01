@@ -26,7 +26,7 @@ public final class ValueUtils {
 		return v == null ? defaultValue : v;
 	}
 
-	public static Object parse(String text, Class<?> type) {
+	public static <T> T parse(String text, Class<T> type) {
 		return new StringValue(text).getAsObject(type);
 	}
 

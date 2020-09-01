@@ -17,7 +17,7 @@ public abstract class AbstractCacheManager<C extends Cache> implements CacheMana
 	}
 
 	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIds, Object... params) {
-		if (params.length != getObjectRelationalMapping().getPrimaryKeys(type).size() - 1) {
+		if (params.length != getObjectRelationalMapping().getColumns(type).getPrimaryKeys().size() - 1) {
 			return null;
 		}
 
