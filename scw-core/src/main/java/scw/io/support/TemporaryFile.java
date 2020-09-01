@@ -7,7 +7,7 @@ import scw.core.utils.XUtils;
 import scw.io.FileUtils;
 
 /**
- * 这是一个临时文件，在系统回收时会自动删除，但推荐使用结束后删除
+ * 这是一个临时文件，在系统回收时会自动删除，但推荐使用结束主动后删除
  * 
  * @author shuchaowen
  *

@@ -243,10 +243,6 @@ public final class XmlDubboUtils {
 				continue;
 			}
 
-			if (MapperUtils.isDescription(field.getSetter())) {
-				logger.warn("{} set value={} description field: {}", instance.getClass(), value, field);
-			}
-
 			if (logger.isDebugEnabled()) {
 				logger.debug("{} set name={}, value={}", instance.getClass(), name, value);
 			}

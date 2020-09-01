@@ -2820,6 +2820,7 @@ public abstract class AnnotationUtils {
 	}
 
 	/**
+	 * 获取描述
 	 * @param annotatedElement
 	 * @return 如果没有就返回空
 	 */

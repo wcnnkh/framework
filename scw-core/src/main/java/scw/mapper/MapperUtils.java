@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 
 import scw.core.utils.StringUtils;
-import scw.lang.Description;
 import scw.util.cache.LocalCacheType;
 import scw.value.ValueUtils;
 
@@ -73,9 +72,5 @@ public class MapperUtils {
 		} else {
 			return field.getGetter().get(instance) != null;
 		}
-	}
-
-	public static boolean isDescription(FieldDescriptor descriptor) {
-		return descriptor.getAnnotatedElement().getAnnotation(Description.class) != null;
 	}
 }

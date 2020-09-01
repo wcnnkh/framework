@@ -6,6 +6,11 @@ import java.io.OutputStream;
 
 import scw.beans.annotation.AopEnable;
 
+/**
+ * 不指定类型的序列化
+ * @author shuchaowen
+ *
+ */
 @AopEnable(false)
 public interface NoTypeSpecifiedSerializer {
 	void serialize(OutputStream out, Object data) throws IOException;

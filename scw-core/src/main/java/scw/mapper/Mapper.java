@@ -16,6 +16,7 @@ import scw.aop.ProxyUtils;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.ObjectUtils;
 import scw.lang.NotFoundException;
 import scw.util.cache.CacheLoader;
 import scw.util.cache.CacheOperations;
@@ -259,7 +260,7 @@ public abstract class Mapper {
 			}
 
 			Object value = field.getGetter().get(instance);
-			if (value == null) {
+			if(ObjectUtils.isEmpty(value)){
 				throw new IllegalArgumentException(field.getGetter().toString());
 			}
 
