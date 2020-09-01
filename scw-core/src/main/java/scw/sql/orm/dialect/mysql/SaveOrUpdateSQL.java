@@ -22,7 +22,7 @@ public class SaveOrUpdateSQL extends DialectSql {
 	private Object[] params;
 
 	public SaveOrUpdateSQL(Class<?> clazz, Object obj, String tableName, DialectHelper dialectHelper) {
-		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getColumns(clazz);
+		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getColumns(clazz).getColumns();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}

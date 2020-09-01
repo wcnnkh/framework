@@ -64,7 +64,7 @@ public class DefaultResultMapping extends AbstractResultMapping {
 			ObjectRelationalMapping objectRelationalMapping, Field parentField) {
 		String tableName = getTableName(clazz, tableNameMapping, objectRelationalMapping);
 		T entity = objectRelationalMapping.newEntity(clazz);
-		for(Column column : objectRelationalMapping.iterable(clazz)){
+		for(Column column : objectRelationalMapping.getColumns(clazz, parentField)){
 			Object value;
 			if (column.isEntity()) {
 				value = mapping(column.getField().getSetter().getType(), tableNameMapping, objectRelationalMapping,

@@ -56,8 +56,7 @@ public final class MysqlSelect extends Select {
 			whereSql.append(UpdateSQL.AND);
 		}
 
-		getDialectHelper().keywordProcessing(whereSql, tableName,
-				SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name).getName());
+		getDialectHelper().keywordProcessing(whereSql, tableName, getColumn(tableClass, name).getName());
 		whereSql.append("=?");
 		paramList.add(value);
 
@@ -77,8 +76,7 @@ public final class MysqlSelect extends Select {
 			whereSql.append(UpdateSQL.OR);
 		}
 
-		getDialectHelper().keywordProcessing(whereSql, tableName,
-				SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name).getName());
+		getDialectHelper().keywordProcessing(whereSql, tableName, getColumn(tableClass, name).getName());
 		whereSql.append("=?");
 		paramList.add(value);
 		addSelectTable(tableName);
@@ -101,8 +99,7 @@ public final class MysqlSelect extends Select {
 			whereSql.append(" and ");
 		}
 
-		getDialectHelper().keywordProcessing(whereSql, tableName,
-				SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name).getName());
+		getDialectHelper().keywordProcessing(whereSql, tableName, getColumn(tableClass, name).getName());
 		whereSql.append(" in(");
 		Iterator<?> iterator = values.iterator();
 		while (iterator.hasNext()) {
@@ -118,7 +115,7 @@ public final class MysqlSelect extends Select {
 	}
 
 	public Column getColumn(Class<?> tableClass, String name) {
-		return SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name);
+		return SqlUtils.getObjectRelationalMapping().getColumns(tableClass).find(name);
 	}
 
 	@Override

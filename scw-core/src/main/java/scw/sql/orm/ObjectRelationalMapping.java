@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -24,8 +23,6 @@ import scw.mapper.Mapper;
 import scw.mapper.MapperUtils;
 import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.Table;
-import scw.util.AbstractIterator;
-import scw.util.Accept;
 
 /**
  * 默认的orm定义
@@ -58,8 +55,14 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 *            指明父级字段
 	 * @return
 	 */
-	public Iterable<Column> iterable(Class<?> entityClass, Field parentField) {
-		return new ColumnIterable(getMapper().iterable(entityClass, true, parentField, this));
+	public Columns getColumns(Class<?> entityClass, Field parentField) {
+		return new IterableColumns(getMapper().getFields(entityClass, true, parentField, this)) {
+
+			@Override
+			protected Column create(Field field) {
+				return new Column(field);
+			}
+		};
 	}
 
 	/**
@@ -68,72 +71,14 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 * @param entityClass
 	 * @return
 	 */
-	public final Iterable<Column> iterable(Class<?> entityClass) {
-		return iterable(entityClass, null);
-	}
-
-	/**
-	 * 获取数据库字段
-	 * 
-	 * @param entityClass
-	 * @return
-	 */
-	public final Collection<Column> getColumns(Class<?> entityClass) {
-		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-		for(Column column : iterable(entityClass)){
-			if (column.isEntity() || columns.contains(column)) {
-				continue;
-			}
-
-			columns.add(column);
-		}
-		return columns;
-	}
-
-	/**
-	 * 获取主键字段
-	 * 
-	 * @param entityClass
-	 * @return
-	 */
-	public final Collection<Column> getPrimaryKeys(Class<?> entityClass) {
-		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-		for(Column column : iterable(entityClass)){
-			if (!column.isPrimaryKey() || column.isEntity() || columns.contains(column)) {
-				continue;
-			}
-
-			columns.add(column);
-		}
-		return columns;
-	}
-
-	/**
-	 * 获取非主键字段
-	 * 
-	 * @param entityClass
-	 * @return
-	 */
-	public final Collection<Column> getNotPrimaryKeys(Class<?> entityClass) {
-		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
-		for(Column column : iterable(entityClass)){
-			if (column.isPrimaryKey() || column.isEntity() || columns.contains(column)) {
-				continue;
-			}
-
-			columns.add(column);
-		}
-		return columns;
-	}
-
-	protected Column createColumn(Field field) {
-		return new Column(field);
+	public final Columns getColumns(Class<?> entityClass) {
+		return getColumns(entityClass, null);
 	}
 
 	public final <T> String getObjectKey(Class<? extends T> clazz, final T bean) {
 		final StringBuilder sb = new StringBuilder(128);
 		sb.append(clazz.getName());
-		for (Column column : getPrimaryKeys(clazz)) {
+		for (Column column : getColumns(clazz).getPrimaryKeys()) {
 			Object value = column.get(bean);
 			appendObjectKeyByValue(sb, column, value);
 		}
@@ -143,7 +88,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	public final String getObjectKeyById(Class<?> clazz, Collection<Object> primaryKeys) {
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(clazz.getName());
-		Iterator<Column> columnIterator = getPrimaryKeys(clazz).iterator();
+		Iterator<Column> columnIterator = getColumns(clazz).getPrimaryKeys().iterator();
 		Iterator<Object> valueIterator = primaryKeys.iterator();
 		while (columnIterator.hasNext() && valueIterator.hasNext()) {
 			Column column = columnIterator.next();
@@ -177,20 +122,6 @@ public class ObjectRelationalMapping implements FieldFilter {
 		return keyMap;
 	}
 
-	public Column getColumn(Class<?> entityClass, String name) {
-		for(Column column : iterable(entityClass)){
-			if (column.isEntity()) {
-				continue;
-			}
-
-			if (column.getName().equals(name) || column.getField().getGetter().getName().equalsIgnoreCase(name)
-					|| column.getField().getSetter().getName().equalsIgnoreCase(name)) {
-				return column;
-			}
-		}
-		return null;
-	}
-
 	public boolean isTable(Class<?> clazz) {
 		return clazz.getAnnotation(Table.class) != null;
 	}
@@ -218,34 +149,6 @@ public class ObjectRelationalMapping implements FieldFilter {
 			return false;
 		}
 		return true;
-	}
-
-	private final class ColumnIterable implements Iterable<Column> {
-		private Iterable<Field> iterable;
-
-		public ColumnIterable(Iterable<Field> iterable) {
-			this.iterable = iterable;
-		}
-
-		public Iterator<Column> iterator() {
-			return new ColumnIterator(iterable.iterator());
-		}
-	}
-
-	private final class ColumnIterator extends AbstractIterator<Column> {
-		private Iterator<Field> iterator;
-
-		public ColumnIterator(Iterator<Field> iterator) {
-			this.iterator = iterator;
-		}
-
-		public boolean hasNext() {
-			return iterator.hasNext();
-		}
-
-		public Column next() {
-			return createColumn(iterator.next());
-		}
 	}
 
 	public Map<IndexInfo, List<IndexInfo>> getIndexInfoMap(Class<?> entityClass) {
@@ -279,15 +182,6 @@ public class ObjectRelationalMapping implements FieldFilter {
 			return StringUtils.humpNamingReplacement(tableClass.getSimpleName(), "_");
 		}
 		return table.name();
-	}
-
-	public Column findColumn(Class<?> tableClass, Accept<Column> accept) {
-		for(Column column : iterable(tableClass)){
-			if (accept.accept(column)) {
-				return column;
-			}
-		}
-		return null;
 	}
 
 	@SuppressWarnings("unchecked")

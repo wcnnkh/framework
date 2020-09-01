@@ -11,7 +11,8 @@ import scw.core.utils.TypeUtils;
 import scw.io.ResourceUtils;
 import scw.io.event.ObservableResource;
 import scw.mapper.Field;
-import scw.mapper.FieldFilter;
+import scw.mapper.Fields;
+import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.value.ValueUtils;
 import scw.value.property.PropertyFactory;
@@ -37,16 +38,9 @@ public final class PropertiesFileValueProcesser extends AbstractObservableValueP
 		} else {
 			Class<?> fieldType = field.getSetter().getType();
 			Object obj = InstanceUtils.INSTANCE_FACTORY.getInstance(fieldType);
+			Fields fields = MapperUtils.getMapper().getFields(fieldType, FilterFeature.SUPPORT_SETTER);
 			for (final Object key : properties.keySet()) {
-				Field keyField = MapperUtils.getMapper().getField(fieldType, new FieldFilter() {
-
-					public boolean accept(Field field) {
-						if (field.isSupportSetter()) {
-							return field.getSetter().getName().equals(key.toString());
-						}
-						return false;
-					}
-				});
+				Field keyField = fields.findSetter(key.toString(), null);
 				if (keyField == null) {
 					continue;
 				}

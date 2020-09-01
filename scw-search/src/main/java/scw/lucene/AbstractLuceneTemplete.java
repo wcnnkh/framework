@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -23,6 +21,7 @@ import org.apache.lucene.search.TopFieldDocs;
 import scw.core.instance.InstanceUtils;
 import scw.json.JSONUtils;
 import scw.mapper.FieldDescriptor;
+import scw.mapper.FieldFilter;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.transaction.TransactionManager;
@@ -36,7 +35,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	protected abstract IndexWriter getIndexWrite() throws IOException;
 
 	protected abstract IndexReader getIndexReader() throws IOException;
-	
+
 	public <T> T indexWriter(IndexWriterExecutor<T> indexWriterExecutor) throws IOException {
 		IndexWriter indexWriter = null;
 		try {
@@ -61,15 +60,12 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	protected abstract Field toField(FieldDescriptor fieldDescriptor, Value value);
 
 	private Collection<scw.mapper.Field> getFields(Class<?> clazz) {
-		Set<scw.mapper.Field> fields = new LinkedHashSet<scw.mapper.Field>();
-		for (scw.mapper.Field field : MapperUtils.getMapper().getFields(clazz, FilterFeature.GETTER)) {
-			if (field.getGetter().getField() == null) {
-				continue;
-			}
+		return MapperUtils.getMapper().getFields(clazz, FilterFeature.GETTER).toSet(new FieldFilter() {
 
-			fields.add(field);
-		}
-		return fields;
+			public boolean accept(scw.mapper.Field field) {
+				return field.getGetter().getField() != null;
+			}
+		});
 	}
 
 	public Document createDocument(Object instance) {
@@ -136,10 +132,10 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 
 	@SuppressWarnings("unchecked")
 	public <T> T parse(Class<? extends T> type, Document document) {
-		if(Document.class.isAssignableFrom(type)){
+		if (Document.class.isAssignableFrom(type)) {
 			return (T) document;
 		}
-		
+
 		T instance = newInstance(type);
 		for (scw.mapper.Field field : getFields(type)) {
 			String value = document.get(field.getGetter().getName());

@@ -11,6 +11,9 @@ public enum FilterFeature {
 	SETTER_IGNORE_STATIC(new IgnoreSetterStaticFieldFilter()),
 	GETTER_IGNORE_TRANSIENT(new IgnoreGetterTransientFieldFilter()),
 	SETTER_IGNORE_TRANSIENT(new IgnoreSetterTransientFieldFilter()),
+	/**
+	 * 忽略静态字段
+	 */
 	IGNORE_STATIC(new IgnoreStaticFieldFilter()),
 	/**
 	 * 对象公有的setter字段，忽略static, final字段,必须存在实际的java.lang.Field

@@ -26,6 +26,7 @@ import scw.sql.RowCallback;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
+import scw.sql.orm.Columns;
 import scw.sql.orm.EntityOperations;
 import scw.sql.orm.ORMException;
 import scw.sql.orm.ResultMapping;
@@ -261,7 +262,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		}
 
 		if (primaryKeys != null
-				&& primaryKeys.length > SqlUtils.getObjectRelationalMapping().getPrimaryKeys(type).size() - 1) {
+				&& primaryKeys.length > SqlUtils.getObjectRelationalMapping().getColumns(type).getPrimaryKeys().size() - 1) {
 			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
 		}
 
@@ -507,10 +508,11 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		List<String[]> list = select(String[].class, sql);
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
+		Columns columns = SqlUtils.getObjectRelationalMapping().getColumns(tableClass);
 		for (String[] names : list) {
 			String name = names[0];
 			hashSet.add(name);
-			Column column = SqlUtils.getObjectRelationalMapping().getColumn(tableClass, name);
+			Column column = columns.find(name);
 			if (column == null) {// 在现在的表结构中不存在，应该删除
 				deleteList.add(name);
 			}

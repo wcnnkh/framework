@@ -22,7 +22,7 @@ public final class SelectInIdSQL extends DialectSql {
 			throw new SqlDialectException("in 语句至少要有一个in条件");
 		}
 
-		Collection<Column> primaryKeyColumns = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
+		Collection<Column> primaryKeyColumns = SqlUtils.getObjectRelationalMapping().getColumns(clazz).getPrimaryKeys();
 		int whereSize = ArrayUtils.isEmpty(primaryKeys) ? 0 : primaryKeys.length;
 		if (whereSize > primaryKeyColumns.size()) {
 			throw new NullPointerException("primaryKeys length  greater than primary key lenght");

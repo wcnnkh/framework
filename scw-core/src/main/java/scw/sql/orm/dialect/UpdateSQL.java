@@ -7,6 +7,7 @@ import java.util.List;
 
 import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
+import scw.sql.orm.Columns;
 import scw.sql.orm.enums.CasType;
 
 public class UpdateSQL extends DialectSql {
@@ -15,12 +16,13 @@ public class UpdateSQL extends DialectSql {
 	private Object[] params;
 
 	public UpdateSQL(Class<?> clazz, Object obj, String tableName, DialectHelper dialectHelper) {
-		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
+		Columns columns = SqlUtils.getObjectRelationalMapping().getColumns(clazz);
+		Collection<Column> primaryKeys = columns.getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException(tableName + " not found primary key");
 		}
 
-		Collection<Column> notPrimaryKeys = SqlUtils.getObjectRelationalMapping().getNotPrimaryKeys(clazz);
+		Collection<Column> notPrimaryKeys = columns.getNotPrimaryKeys();
 		StringBuilder sb = new StringBuilder(512);
 		sb.append(UPDATE_PREFIX);
 		dialectHelper.keywordProcessing(sb, tableName);

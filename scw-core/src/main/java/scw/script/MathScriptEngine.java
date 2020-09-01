@@ -9,7 +9,7 @@ import java.util.List;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
 import scw.mapper.Field;
-import scw.mapper.FieldFilter;
+import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.math.BigDecimalHolder;
@@ -237,9 +237,11 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	 */
 	public static final class ObjectFieldScriptResolver implements ScriptResolver<NumberHolder> {
 		private Object instance;
+		private Fields fields;
 
 		public ObjectFieldScriptResolver(Object instance) {
 			this.instance = instance;
+			this.fields = instance == null? null:MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SUPPORT_GETTER);
 		}
 
 		public boolean isSupport(String script) {
@@ -251,12 +253,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		}
 
 		public Field getField(final String name) {
-			return MapperUtils.getMapper().getField(instance.getClass(), new FieldFilter() {
-
-				public boolean accept(Field field) {
-					return field.getGetter().getName().equals(name);
-				}
-			}, FilterFeature.SUPPORT_GETTER);
+			return fields == null? null:fields.find(name, null);
 		}
 
 		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {

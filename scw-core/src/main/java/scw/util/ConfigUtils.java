@@ -29,6 +29,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
+import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.value.Value;
@@ -44,9 +45,9 @@ public final class ConfigUtils {
 
 	public static <T> T parseObject(Map<String, String> map, Class<T> clz) {
 		T t = InstanceUtils.INSTANCE_FACTORY.getInstance(clz);
+		Fields fields = MapperUtils.getMapper().getFields(clz, FilterFeature.SUPPORT_GETTER);
 		for (Entry<String, String> entry : map.entrySet()) {
-			scw.mapper.Field field = MapperUtils.getMapper().getField(clz, entry.getKey(), null,
-					FilterFeature.SUPPORT_SETTER);
+			scw.mapper.Field field = fields.find(entry.getKey(), null);
 			if (field == null) {
 				continue;
 			}
@@ -142,8 +143,9 @@ public final class ConfigUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, InputStream inputStream) throws IOException {
-		Field keyField = MapperUtils.getMapper().getField(valueType, null, FilterFeature.SETTER_IGNORE_STATIC,
+		Fields fields = MapperUtils.getMapper().getFields(valueType, FilterFeature.SETTER_IGNORE_STATIC,
 				FilterFeature.SUPPORT_GETTER);
+		Field keyField = fields.getFirst();
 		if (keyField == null) {
 			throw new NullPointerException("打不到主键字段");
 		}
@@ -164,9 +166,10 @@ public final class ConfigUtils {
 
 	public static <T> T setProperties(Object obj, Properties properties, StringFormat stringFormat) {
 		T t = null;
+		Fields fields = MapperUtils.getMapper().getFields(obj.getClass());
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			String key = stringFormat.format(entry.getKey().toString());
-			scw.mapper.Field fieldContext = MapperUtils.getMapper().getField(obj.getClass(), key, null);
+			scw.mapper.Field fieldContext = fields.find(key, null);
 			if (fieldContext == null) {
 				continue;
 			}
@@ -225,8 +228,8 @@ public final class ConfigUtils {
 			nameList = new ArrayList<String>(asNameList);
 		}
 
-		for (Field field : MapperUtils.getMapper().getFields(instance.getClass(), null, fieldFilter,
-				FilterFeature.SETTER)) {
+		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER.getFilter(), fieldFilter);
+		for (Field field : fields) {
 			String name = field.getSetter().getName();
 			Value value = propertyFactory.get(StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
 			if (value == null && nameList != null) {
@@ -299,8 +302,8 @@ public final class ConfigUtils {
 			map.put(key.toString(), value.toString());
 		}
 
-		for (Field field : MapperUtils.getMapper().getFields(instance.getClass(), null, fieldFilter,
-				FilterFeature.SETTER)) {
+		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER.getFilter(), fieldFilter);
+		for (Field field : fields) {
 			String name = field.getSetter().getName();
 			String value = null;
 			if (CollectionUtils.isEmpty(nameList)) {

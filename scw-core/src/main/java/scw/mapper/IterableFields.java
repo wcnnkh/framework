@@ -5,31 +5,33 @@ import java.util.NoSuchElementException;
 
 import scw.util.AbstractIterator;
 
-public abstract class FieldIterable implements Iterable<Field> {
+public abstract class IterableFields extends AbstractFields {
 	private final Class<?> entityClass;
 	private final boolean useSuperClass;
 	private final FieldFilter fieldFilter;
+	private final Field parentField;
 
-	public FieldIterable(Class<?> entityClass, boolean useSuperClass,
-			FieldFilter fieldFilter) {
+	public IterableFields(Class<?> entityClass, boolean useSuperClass, FieldFilter fieldFilter, Field parentField) {
 		this.entityClass = entityClass;
 		this.useSuperClass = useSuperClass;
 		this.fieldFilter = fieldFilter;
+		this.parentField = parentField;
 	}
 
 	public Iterator<Field> iterator() {
 		return new FieldIterator();
 	}
 
-	protected abstract Iterator<FieldMetadata> getFieldMetadataIterator(
-			Class<?> entityClass);
+	protected abstract Iterator<FieldMetadata> getFieldMetadataIterator(Class<?> entityClass);
 
-	protected abstract Field createField(FieldMetadata fieldMetadata);
+	protected Field createField(FieldMetadata fieldMetadata) {
+		return new Field(parentField, fieldMetadata.getGetter(), fieldMetadata.getSetter());
+	}
 
 	private final class FieldIterator extends AbstractIterator<Field> {
 		private Iterator<FieldMetadata> iterator;
 		private Field currentField;
-		private Class<?> entityClass = FieldIterable.this.entityClass;
+		private Class<?> entityClass = IterableFields.this.entityClass;
 
 		public FieldIterator() {
 			this.iterator = getFieldMetadataIterator(entityClass);

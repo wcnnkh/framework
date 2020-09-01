@@ -13,7 +13,7 @@ public class DeleteByIdSql extends DialectSql {
 	private Object[] params;
 
 	public DeleteByIdSql(Class<?> clazz, String tableName, Object[] parimayKeys, DialectHelper dialectHelper) {
-		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
+		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getColumns(clazz).getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}

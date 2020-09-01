@@ -15,7 +15,7 @@ public class DeleteSQL extends DialectSql {
 	private Object[] params;
 
 	public <T> DeleteSQL(Class<? extends T> clazz, T obj, String tableName, DialectHelper dialectHelper) {
-		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getPrimaryKeys(clazz);
+		Collection<Column> primaryKeys = SqlUtils.getObjectRelationalMapping().getColumns(clazz).getPrimaryKeys();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
@@ -36,7 +36,7 @@ public class DeleteSQL extends DialectSql {
 			}
 		}
 
-		iterator = SqlUtils.getObjectRelationalMapping().getNotPrimaryKeys(clazz).iterator();
+		iterator = SqlUtils.getObjectRelationalMapping().getColumns(clazz).getNotPrimaryKeys().iterator();
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			if (column.getCasType() == CasType.NOTHING) {

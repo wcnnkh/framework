@@ -125,8 +125,8 @@ public class Copy {
 	 * @param targetField 要插入的字段
 	 * @return
 	 */
-	protected Field getSourceField(Class<?> sourceClass, final Field targetField) {
-		return mapper.getField(sourceClass, new FieldFilter() {
+	protected Field getSourceField(Class<?> sourceClass, Fields sourceFields, final Field targetField) {
+		return sourceFields.find(new FieldFilter() {
 
 			public boolean accept(Field field) {
 				if (!field.isSupportGetter()) {
@@ -158,7 +158,8 @@ public class Copy {
 
 	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source,
 			Field parentField, FieldFilter ...filters) {
-		for(Field field : mapper.iterable(targetClass, true, parentField, filters)){
+		Fields sourceFields = mapper.getFields(sourceClass, parentField, filters);
+		for(Field field : mapper.getFields(targetClass, parentField, filters)){
 			if (!field.isSupportSetter()) {
 				continue;
 			}
@@ -170,7 +171,7 @@ public class Copy {
 				continue;
 			}
 
-			Field sourceField = getSourceField(sourceClass, field);
+			Field sourceField = getSourceField(sourceClass, sourceFields, field);
 			if (sourceField == null) {
 				continue;
 			}
