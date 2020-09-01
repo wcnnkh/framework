@@ -10,7 +10,7 @@ public abstract class AbstractColumns implements Columns {
 	public Set<Column> toSet() {
 		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
 		for (Column column : this) {
-			if (column.isEntity() || columns.contains(column)) {
+			if (columns.contains(column)) {
 				continue;
 			}
 

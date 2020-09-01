@@ -239,6 +239,11 @@ public abstract class Mapper {
 			}
 		};
 	}
+	
+	public final void testFields(Object instance, FieldTest test)
+			throws IllegalArgumentException{
+		testFields(instance, false, test);
+	}
 
 	/**
 	 * 验证一个对象所有的字段值
@@ -255,6 +260,10 @@ public abstract class Mapper {
 		}
 
 		for (scw.mapper.Field field : getFields(instance.getClass(), useSuperClass, FilterFeature.GETTER.getFilter())) {
+			if(field.getGetter().getField() == null){
+				continue;
+			}
+			
 			if (AnnotationUtils.isNullable(field.getGetter().getAnnotatedElement(), false)) {
 				continue;
 			}
@@ -263,10 +272,12 @@ public abstract class Mapper {
 			if(ObjectUtils.isEmpty(value)){
 				throw new IllegalArgumentException(field.getGetter().toString());
 			}
-
-			if (!test.test(field, value)) {
-				throw new IllegalArgumentException(field.getGetter().toString());
+			
+			if(test == null || test.test(field, value)){
+				continue;
 			}
+
+			throw new IllegalArgumentException(field.getGetter().toString());
 		}
 	}
 

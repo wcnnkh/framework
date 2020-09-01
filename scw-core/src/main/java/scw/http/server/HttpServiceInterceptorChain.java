@@ -39,7 +39,7 @@ public class HttpServiceInterceptorChain implements HttpService {
 			return;
 		}
 
-		response.setStatusCode(HttpStatus.NOT_FOUND);
+		response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
 		logger.warn("Not found {}", request.toString());
 	}
 
