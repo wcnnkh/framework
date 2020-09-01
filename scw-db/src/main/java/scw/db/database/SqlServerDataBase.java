@@ -2,8 +2,9 @@ package scw.db.database;
 
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
-import scw.net.QueryString;
+import scw.net.uri.UriUtils;
 import scw.sql.orm.dialect.mysql.MySqlSqlDialect;
+import scw.util.MultiValueMap;
 
 /**
  * Sql Server7.0/2000数据库
@@ -29,8 +30,8 @@ public class SqlServerDataBase extends AbstractDataBase {
 		}
 
 		String query = url.substring(databaseBeginIndex + 1);
-		QueryString queryString = new QueryString(query);
-		this.name = queryString.getFirst("DatabaseName");
+		MultiValueMap<String, String> parameters = UriUtils.getParameterMap(query);
+		this.name = parameters.getFirst("DatabaseName");
 		if (StringUtils.isEmpty(this.name)) {
 			throw new NotFoundException("无法解析数据库名称：" + url);
 		}

@@ -10,6 +10,7 @@ import scw.http.MediaType;
 import scw.net.MimeType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
+import scw.net.uri.UriUtils;
 import scw.util.MultiValueMap;
 
 public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
@@ -34,7 +35,7 @@ public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
 			return null;
 		}
 
-		MultiValueMap<String, String> map = HttpUtils.toFormMap(content);
+		MultiValueMap<String, String> map = UriUtils.getParameterMap(content);
 		String json = getJsonSupport().toJSONString(map);
 		return getJsonSupport().parseObject(json, type);
 	}

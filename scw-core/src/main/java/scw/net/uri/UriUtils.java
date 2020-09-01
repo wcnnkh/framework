@@ -4,14 +4,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 
 import scw.core.Assert;
+import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
+import scw.util.MultiValueMap;
 
 public class UriUtils {
 	/**
 	 * Encode the given URI scheme with the given encoding.
-	 * @param scheme the scheme to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param scheme
+	 *            the scheme to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded scheme
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodeScheme(String scheme, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(scheme, encoding, HierarchicalUriComponents.Type.SCHEME);
@@ -19,32 +26,46 @@ public class UriUtils {
 
 	/**
 	 * Encode the given URI authority with the given encoding.
-	 * @param authority the authority to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param authority
+	 *            the authority to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded authority
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodeAuthority(String authority, String encoding) throws UnsupportedEncodingException {
-		return HierarchicalUriComponents.encodeUriComponent(authority, encoding, HierarchicalUriComponents.Type.AUTHORITY);
+		return HierarchicalUriComponents.encodeUriComponent(authority, encoding,
+				HierarchicalUriComponents.Type.AUTHORITY);
 	}
 
 	/**
 	 * Encode the given URI user info with the given encoding.
-	 * @param userInfo the user info to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param userInfo
+	 *            the user info to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded user info
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodeUserInfo(String userInfo, String encoding) throws UnsupportedEncodingException {
-		return HierarchicalUriComponents.encodeUriComponent(userInfo, encoding, HierarchicalUriComponents.Type.USER_INFO);
+		return HierarchicalUriComponents.encodeUriComponent(userInfo, encoding,
+				HierarchicalUriComponents.Type.USER_INFO);
 	}
 
 	/**
 	 * Encode the given URI host with the given encoding.
-	 * @param host the host to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param host
+	 *            the host to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded host
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodeHost(String host, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(host, encoding, HierarchicalUriComponents.Type.HOST_IPV4);
@@ -52,10 +73,14 @@ public class UriUtils {
 
 	/**
 	 * Encode the given URI port with the given encoding.
-	 * @param port the port to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param port
+	 *            the port to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded port
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodePort(String port, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(port, encoding, HierarchicalUriComponents.Type.PORT);
@@ -63,10 +88,14 @@ public class UriUtils {
 
 	/**
 	 * Encode the given URI path with the given encoding.
-	 * @param path the path to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param path
+	 *            the path to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded path
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodePath(String path, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(path, encoding, HierarchicalUriComponents.Type.PATH);
@@ -74,21 +103,30 @@ public class UriUtils {
 
 	/**
 	 * Encode the given URI path segment with the given encoding.
-	 * @param segment the segment to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param segment
+	 *            the segment to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded segment
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodePathSegment(String segment, String encoding) throws UnsupportedEncodingException {
-		return HierarchicalUriComponents.encodeUriComponent(segment, encoding, HierarchicalUriComponents.Type.PATH_SEGMENT);
+		return HierarchicalUriComponents.encodeUriComponent(segment, encoding,
+				HierarchicalUriComponents.Type.PATH_SEGMENT);
 	}
 
 	/**
 	 * Encode the given URI query with the given encoding.
-	 * @param query the query to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param query
+	 *            the query to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded query
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodeQuery(String query, String encoding) throws UnsupportedEncodingException {
 		return HierarchicalUriComponents.encodeUriComponent(query, encoding, HierarchicalUriComponents.Type.QUERY);
@@ -96,35 +134,51 @@ public class UriUtils {
 
 	/**
 	 * Encode the given URI query parameter with the given encoding.
-	 * @param queryParam the query parameter to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param queryParam
+	 *            the query parameter to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded query parameter
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodeQueryParam(String queryParam, String encoding) throws UnsupportedEncodingException {
-		return HierarchicalUriComponents.encodeUriComponent(queryParam, encoding, HierarchicalUriComponents.Type.QUERY_PARAM);
+		return HierarchicalUriComponents.encodeUriComponent(queryParam, encoding,
+				HierarchicalUriComponents.Type.QUERY_PARAM);
 	}
 
 	/**
 	 * Encode the given URI fragment with the given encoding.
-	 * @param fragment the fragment to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param fragment
+	 *            the fragment to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded fragment
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encodeFragment(String fragment, String encoding) throws UnsupportedEncodingException {
-		return HierarchicalUriComponents.encodeUriComponent(fragment, encoding, HierarchicalUriComponents.Type.FRAGMENT);
+		return HierarchicalUriComponents.encodeUriComponent(fragment, encoding,
+				HierarchicalUriComponents.Type.FRAGMENT);
 	}
 
 	/**
 	 * Encode characters outside the unreserved character set as defined in
-	 * <a href="https://tools.ietf.org/html/rfc3986#section-2">RFC 3986 Section 2</a>.
-	 * <p>This can be used to ensure the given String will not contain any
+	 * <a href="https://tools.ietf.org/html/rfc3986#section-2">RFC 3986 Section
+	 * 2</a>.
+	 * <p>
+	 * This can be used to ensure the given String will not contain any
 	 * characters with reserved URI meaning regardless of URI component.
-	 * @param source the String to be encoded
-	 * @param encoding the character encoding to encode to
+	 * 
+	 * @param source
+	 *            the String to be encoded
+	 * @param encoding
+	 *            the character encoding to encode to
 	 * @return the encoded String
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 */
 	public static String encode(String source, String encoding) throws UnsupportedEncodingException {
 		HierarchicalUriComponents.Type type = HierarchicalUriComponents.Type.URI;
@@ -134,16 +188,24 @@ public class UriUtils {
 	/**
 	 * Decode the given encoded URI component.
 	 * <ul>
-	 * <li>Alphanumeric characters {@code "a"} through {@code "z"}, {@code "A"} through {@code "Z"}, and
-	 * {@code "0"} through {@code "9"} stay the same.</li>
-	 * <li>Special characters {@code "-"}, {@code "_"}, {@code "."}, and {@code "*"} stay the same.</li>
-	 * <li>A sequence "{@code %<i>xy</i>}" is interpreted as a hexadecimal representation of the character.</li>
+	 * <li>Alphanumeric characters {@code "a"} through {@code "z"}, {@code "A"}
+	 * through {@code "Z"}, and {@code "0"} through {@code "9"} stay the
+	 * same.</li>
+	 * <li>Special characters {@code "-"}, {@code "_"}, {@code "."}, and
+	 * {@code "*"} stay the same.</li>
+	 * <li>A sequence "{@code %<i>xy</i>}" is interpreted as a hexadecimal
+	 * representation of the character.</li>
 	 * </ul>
-	 * @param source the encoded String
-	 * @param encoding the encoding
+	 * 
+	 * @param source
+	 *            the encoded String
+	 * @param encoding
+	 *            the encoding
 	 * @return the decoded value
-	 * @throws IllegalArgumentException when the given source contains invalid encoded sequences
-	 * @throws UnsupportedEncodingException when the given encoding parameter is not supported
+	 * @throws IllegalArgumentException
+	 *             when the given source contains invalid encoded sequences
+	 * @throws UnsupportedEncodingException
+	 *             when the given encoding parameter is not supported
 	 * @see java.net.URLDecoder#decode(String, String)
 	 */
 	public static String decode(String source, String encoding) throws UnsupportedEncodingException {
@@ -168,12 +230,10 @@ public class UriUtils {
 					bos.write((char) ((u << 4) + l));
 					i += 2;
 					changed = true;
-				}
-				else {
+				} else {
 					throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
 				}
-			}
-			else {
+			} else {
 				bos.write(ch);
 			}
 		}
@@ -182,7 +242,9 @@ public class UriUtils {
 
 	/**
 	 * Extract the file extension from the given URI path.
-	 * @param path the URI path (e.g. "/products/index.html")
+	 * 
+	 * @param path
+	 *            the URI path (e.g. "/products/index.html")
 	 * @return the extracted file extension (e.g. "html")
 	 * @since 4.3.2
 	 */
@@ -203,5 +265,19 @@ public class UriUtils {
 			return path.substring(extIndex + 1, end);
 		}
 		return null;
+	}
+
+	public static MultiValueMap<String, String> getParameterMap(String content) {
+		if (!StringUtils.hasText(content)) {
+			return CollectionUtils.emptyMultiValueMap();
+		}
+
+		int index = content.indexOf("?");
+		String queryString = index == -1 ? content : content.substring(index + 1);
+		index = queryString.indexOf("#");
+		if (index != -1) {
+			queryString = queryString.substring(0, index - 1);
+		}
+		return UriComponentsBuilder.newInstance().query(queryString).build().getQueryParams();
 	}
 }

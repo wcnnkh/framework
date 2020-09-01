@@ -8,7 +8,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,8 +36,6 @@ import scw.lang.NotSupportedException;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 import scw.net.uri.UriComponentsBuilder;
-import scw.util.LinkedMultiValueMap;
-import scw.util.MultiValueMap;
 import scw.util.ToMap;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
@@ -125,20 +122,13 @@ public final class HttpUtils {
 		return sb.toString();
 	}
 
-	public static MultiValueMap<String, String> toFormMap(String form) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		String[] kvArray = StringUtils.split(form, '&');
-		for (String kv : kvArray) {
-			int index = kv.indexOf("=");
-			if (index == -1) {
-				continue;
-			}
-
-			map.add(kv.substring(0, index), kv.substring(index, kv.length()));
-		}
-		return map;
-	}
-
+	/**
+	 * 将map转换为表单参数结构
+	 * @param parameterMap
+	 * @param charsetName
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	@SuppressWarnings("rawtypes")
 	public static String toFormBody(Map<?, ?> parameterMap, String charsetName) throws UnsupportedEncodingException {
 		if (CollectionUtils.isEmpty(parameterMap)) {
@@ -175,6 +165,14 @@ public final class HttpUtils {
 		return sb.toString();
 	}
 
+	/**
+	 * 在url后面追加参数
+	 * @param url
+	 * @param paramMap
+	 * @param charsetName
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	public static String appendParameters(String url, Map<String, ?> paramMap, String charsetName)
 			throws UnsupportedEncodingException {
 		if (paramMap == null || paramMap.isEmpty()) {
@@ -254,20 +252,6 @@ public final class HttpUtils {
 		return newContent;
 	}
 
-	public static Map<String, String> paramsToMap(String params) {
-		Map<String, String> map = new Hashtable<String, String>();
-		if (params != null) {
-			String[] strs = params.split("&");
-			for (String str : strs) {
-				String[] temp = str.split("=");
-				if (temp.length == 2) {
-					map.put(temp[0], temp[1]);
-				}
-			}
-		}
-		return map;
-	}
-
 	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {
 		Assert.notNull(request, "Request must not be null");
 		Assert.notNull(allowedOrigins, "Allowed origins must not be null");
@@ -298,6 +282,12 @@ public final class HttpUtils {
 		return isSameOrigin(request.getURI(), UriComponentsBuilder.fromOriginHeader(origin).build().toUri());
 	}
 	
+	/**
+	 * 判断两个url是否同源
+	 * @param url1
+	 * @param url2
+	 * @return
+	 */
 	public static boolean isSameOrigin(String url1, String url2){
 		if(url1 == null || url2 == null){
 			return false;
@@ -314,6 +304,12 @@ public final class HttpUtils {
 		}
 	}
 
+	/**
+	 * 判断两个uri是否同源
+	 * @param uri1
+	 * @param uri2
+	 * @return
+	 */
 	public static boolean isSameOrigin(URI uri1, URI uri2) {
 		if(uri1 == null || uri2 == null){
 			return false;
@@ -370,6 +366,11 @@ public final class HttpUtils {
 		return null;
 	}
 	
+	/**
+	 * 将文件信息写入ContentDisposition
+	 * @param outputMessage
+	 * @param fileName
+	 */
 	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName) {
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
 		if (mimeType != null) {
@@ -380,7 +381,20 @@ public final class HttpUtils {
 		outputMessage.getHeaders().setContentDisposition(contentDisposition);
 	}
 	
+	/**
+	 * 写入一个静态资源
+	 * @param request
+	 * @param response
+	 * @param resource
+	 * @param mimeType
+	 * @throws IOException
+	 */
 	public static void writeStaticResource(ServerHttpRequest request, ServerHttpResponse response, Resource resource, MimeType mimeType) throws IOException{
+		if(!resource.exists()){
+			response.sendError(HttpStatus.NOT_FOUND.value(), "The resource does not exist!");
+			return ;
+		}
+		
 		if (mimeType != null) {
 			response.setContentType(mimeType);
 		}
