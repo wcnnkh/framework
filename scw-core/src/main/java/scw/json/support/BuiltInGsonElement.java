@@ -52,4 +52,11 @@ public final class BuiltInGsonElement extends AbstractJsonElement {
 	public boolean isEmpty() {
 		return gsonJsonElement.isJsonNull();
 	}
+	
+	public String toJsonString() {
+		if(gsonJsonElement.isJsonArray() || gsonJsonElement.isJsonObject()){
+			return gsonJsonElement.toString();
+		}
+		return gsonJsonElement.getAsString();
+	}
 }
