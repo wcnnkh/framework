@@ -3,27 +3,28 @@ package scw.json.support;
 import java.util.Iterator;
 
 import scw.core.Converter;
-import scw.core.IteratorConvert;
+import scw.core.IteratorConverter;
+import scw.json.EmptyJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.gson.Gson;
+import scw.json.gson.GsonJsonElement;
 
-public final class BuiltInGsonJsonArray extends JsonArray {
+public final class BuiltInGsonJsonArray extends JsonArray implements Converter<GsonJsonElement, JsonElement> {
 	private scw.json.gson.GsonJsonArray gsonJsonArray;
 	private Gson gson;
 
 	public BuiltInGsonJsonArray(scw.json.gson.GsonJsonArray gsonJsonArray, Gson gson) {
 		this.gsonJsonArray = gsonJsonArray;
+		this.gson = gson;
+	}
+
+	public JsonElement convert(GsonJsonElement gsonJsonElement) {
+		return new BuiltInGsonElement(gsonJsonElement, gson, EmptyJsonElement.INSTANCE);
 	}
 
 	public Iterator<scw.json.JsonElement> iterator() {
-		return new IteratorConvert<scw.json.gson.GsonJsonElement, JsonElement>(gsonJsonArray.iterator(),
-				new Converter<scw.json.gson.GsonJsonElement, JsonElement>() {
-
-					public JsonElement convert(scw.json.gson.GsonJsonElement k) {
-						return new BuiltInGsonElement(k, gson, getDefaultValue(null));
-					}
-				});
+		return new IteratorConverter<scw.json.gson.GsonJsonElement, JsonElement>(gsonJsonArray.iterator(), this);
 	}
 
 	public JsonElement get(Integer index) {

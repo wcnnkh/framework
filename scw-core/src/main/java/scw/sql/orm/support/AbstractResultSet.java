@@ -11,6 +11,7 @@ import scw.sql.SqlUtils;
 import scw.sql.orm.ResultMapping;
 import scw.sql.orm.ResultSet;
 import scw.sql.orm.TableNameMapping;
+import scw.util.AbstractIterator;
 
 public abstract class AbstractResultSet implements ResultSet {
 	private static final long serialVersionUID = 1L;
@@ -119,7 +120,7 @@ public abstract class AbstractResultSet implements ResultSet {
 		return list;
 	}
 
-	final class ResultIterator implements Iterator<ResultMapping> {
+	final class ResultIterator extends AbstractIterator<ResultMapping> {
 		private Iterator<Object[]> iterator;
 
 		public ResultIterator() {
