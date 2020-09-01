@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 
+import scw.util.AbstractIterator;
+
 public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	private final T source;
 	private final Class<?> declaringClass;
@@ -38,7 +40,7 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 		return names.length;
 	}
 
-	private class InternalIterator implements Iterator<ParameterDescriptor> {
+	private class InternalIterator extends AbstractIterator<ParameterDescriptor> {
 		private int index = 0;
 
 		public boolean hasNext() {
@@ -47,10 +49,6 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 
 		public ParameterDescriptor next() {
 			return getParameterDescriptor(index++);
-		}
-
-		public void remove() {
-			throw new UnsupportedOperationException("remove");
 		}
 	}
 

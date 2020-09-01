@@ -59,4 +59,8 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	public boolean isEmpty() {
 		return StringUtils.isEmpty(text);
 	}
+
+	public String toJsonString() {
+		return text;
+	}
 }

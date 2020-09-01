@@ -21,4 +21,8 @@ public class EmptyJsonElement extends EmptyValue implements JsonElement {
 	public boolean isJsonObject() {
 		return false;
 	}
+
+	public String toJsonString() {
+		return null;
+	}
 }

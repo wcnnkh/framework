@@ -10,4 +10,6 @@ public interface JsonElement extends Value {
 	boolean isJsonArray();
 	
 	boolean isJsonObject();
+	
+	String toJsonString();
 }

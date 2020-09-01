@@ -8,9 +8,9 @@ public abstract class AbstractJsonElement extends AbstractStringValue implements
 	public AbstractJsonElement(Value defaultValue) {
 		super(defaultValue);
 	}
-
+	
 	@Override
 	public String toString() {
-		return getAsString();
+		return toJsonString();
 	}
 }

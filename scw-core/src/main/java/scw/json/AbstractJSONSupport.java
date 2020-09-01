@@ -92,7 +92,7 @@ public abstract class AbstractJSONSupport implements JSONSupport {
 		}
 		
 		if(obj instanceof JsonElement){
-			return obj.toString();
+			return ((JsonElement) obj).toJsonString();
 		}
 		
 		if(obj instanceof JsonObject){

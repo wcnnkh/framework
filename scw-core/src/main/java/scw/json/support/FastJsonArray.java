@@ -5,7 +5,8 @@ import java.lang.reflect.Type;
 import java.util.Iterator;
 
 import scw.core.Converter;
-import scw.core.IteratorConvert;
+import scw.core.IteratorConverter;
+import scw.json.EmptyJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
@@ -14,7 +15,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONAware;
 
-public final class FastJsonArray extends JsonArray implements JSONAware, Serializable {
+public final class FastJsonArray extends JsonArray implements JSONAware, Serializable, Converter<Object, JsonElement> {
 	private static final long serialVersionUID = 1L;
 	private JSONArray jsonArray;
 
@@ -22,20 +23,19 @@ public final class FastJsonArray extends JsonArray implements JSONAware, Seriali
 		this.jsonArray = jsonArray;
 	}
 
+	public JsonElement convert(Object k) {
+		if (k == null) {
+			return null;
+		}
+
+		if (k instanceof JsonElement) {
+			return (JsonElement) k;
+		}
+		return new FastJsonElement(k.toString(), EmptyJsonElement.INSTANCE);
+	}
+
 	public Iterator<JsonElement> iterator() {
-		return new IteratorConvert<Object, JsonElement>(jsonArray.iterator(), new Converter<Object, JsonElement>() {
-
-			public JsonElement convert(Object k) {
-				if (k == null) {
-					return null;
-				}
-
-				if (k instanceof JsonElement) {
-					return (JsonElement) k;
-				}
-				return new FastJsonElement(k.toString(), getDefaultValue(null));
-			}
-		});
+		return new IteratorConverter<Object, JsonElement>(jsonArray.iterator(), this);
 	}
 
 	public JsonElement get(Integer index) {
