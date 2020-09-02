@@ -1,6 +1,10 @@
 package scw.net.ssl;
 
-//信任所有
+/**
+ * 信任所有
+ * @author shuchaowen
+ *
+ */
 public class TrustAllManager implements javax.net.ssl.TrustManager,
 		javax.net.ssl.X509TrustManager {
 	public java.security.cert.X509Certificate[] getAcceptedIssuers() {

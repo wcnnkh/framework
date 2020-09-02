@@ -9,6 +9,7 @@ import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
+import scw.net.uri.UriUtils;
 import scw.security.SignType;
 import scw.security.SignatureUtils;
 import scw.util.ToMap;
@@ -84,12 +85,12 @@ public class KDNiao {
 	public String doRequest(String requestUrl, String requestType, Map<String, ?> businessParameterMap) {
 		String requestData = JSONUtils.toJSONString(businessParameterMap);
 		Map<String, String> parameterMap = new LinkedHashMap<String, String>(8, 1);
-		parameterMap.put("RequestData", HttpUtils.encode(requestData, CHARSET_NAME));
+		parameterMap.put("RequestData", UriUtils.encode(requestData, CHARSET_NAME));
 		parameterMap.put("EBusinessID", businessId);
 		parameterMap.put("RequestType", requestType);
 		String dataSign = SignatureUtils.sign(requestData + apiKey, CHARSET_NAME, SignType.MD5, SignType.BASE64);
 		if (dataSignIsUrlEncodeByRequestType(requestType)) {
-			dataSign = HttpUtils.encode(dataSign, CHARSET_NAME);
+			dataSign = UriUtils.encode(dataSign, CHARSET_NAME);
 		}
 		parameterMap.put("DataSign", dataSign);
 		parameterMap.put("DataType", "2");

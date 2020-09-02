@@ -8,11 +8,11 @@ import scw.core.StringFormat;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.StringUtils;
-import scw.http.HttpUtils;
 import scw.http.client.ClientHttpRequest;
 import scw.http.client.accessor.HttpAccessor;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
+import scw.net.uri.UriUtils;
 import scw.rpc.http.annotation.HttpClient;
 import scw.rpc.http.annotation.HttpClient.ContentType;
 import scw.util.FormatUtils;
@@ -73,7 +73,7 @@ public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements H
 		host = stringFormat.format(host);
 		host = FormatUtils.format(host, propertyFactory);
 
-		host = httpMethod == scw.http.HttpMethod.GET ? HttpUtils.appendParameters(host, parameterMap, charsetName)
+		host = httpMethod == scw.http.HttpMethod.GET ? UriUtils.appendQueryParams(host, parameterMap, charsetName)
 				: host;
 
 		ClientHttpRequest clientHttpRequest = createRequest(new URI(host), httpMethod);

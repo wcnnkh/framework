@@ -7,6 +7,7 @@ import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
+import scw.net.uri.UriUtils;
 import scw.oauth2.AccessToken;
 import scw.security.SignatureUtils;
 import scw.security.Token;
@@ -35,7 +36,7 @@ public final class WeiXinUtils {
 	public static String authorizeUlr(String appid, String redirect_uri, String scope, String state) {
 		StringBuilder sb = new StringBuilder(weixin_authorize_url);
 		sb.append("?appid=").append(appid);
-		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
+		sb.append("&redirect_uri=").append(UriUtils.encode(redirect_uri));
 		sb.append("&response_type=code");
 		sb.append("&scope=").append(scope);
 		sb.append("&state=").append(state);
@@ -55,7 +56,7 @@ public final class WeiXinUtils {
 	public static String qrcodeAuthorizeUrl(String appid, String redirect_uri, String scope, String state) {
 		StringBuilder sb = new StringBuilder(weixin_qrconnect_url);
 		sb.append("?appid=").append(appid);
-		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
+		sb.append("&redirect_uri=").append(UriUtils.encode(redirect_uri));
 		sb.append("&response_type=code");
 		sb.append("&scope=").append(scope);
 		sb.append("&state=").append(state);

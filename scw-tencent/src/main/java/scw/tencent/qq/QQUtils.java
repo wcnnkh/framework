@@ -7,6 +7,7 @@ import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
+import scw.net.uri.UriUtils;
 import scw.oauth2.AccessToken;
 import scw.security.Token;
 
@@ -35,7 +36,7 @@ public final class QQUtils {
 		sb.append("?");
 		sb.append("response_type=code");
 		sb.append("&client_id=").append(appId);
-		sb.append("&redirect_uri=").append(HttpUtils.encode(redirect_uri));
+		sb.append("&redirect_uri=").append(UriUtils.encode(redirect_uri));
 		sb.append("&state=" + state);
 		return sb.toString();
 	}

@@ -30,7 +30,7 @@ public class SqlServerDataBase extends AbstractDataBase {
 		}
 
 		String query = url.substring(databaseBeginIndex + 1);
-		MultiValueMap<String, String> parameters = UriUtils.getParameterMap(query);
+		MultiValueMap<String, String> parameters = UriUtils.getQueryParams(query);
 		this.name = parameters.getFirst("DatabaseName");
 		if (StringUtils.isEmpty(this.name)) {
 			throw new NotFoundException("无法解析数据库名称：" + url);
