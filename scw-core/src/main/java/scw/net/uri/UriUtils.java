@@ -334,6 +334,12 @@ public class UriUtils {
 		return sb.toString();
 	}
 
+	/**
+	 * @param source
+	 * @param charsetName
+	 * @return
+	 * @see URLEncoder#encode(java.lang.String, java.lang.String)
+	 */
 	public static String encode(String source, String charsetName) {
 		if (source == null) {
 			return null;
@@ -347,10 +353,23 @@ public class UriUtils {
 		}
 	}
 
+	/**
+	 * The World Wide Web Consortium Recommendation states that UTF-8 should be
+	 * used.
+	 * 
+	 * @param source
+	 * @return
+	 */
 	public static String encode(String source) {
 		return encode(source, Constants.UTF_8.name());
 	}
 
+	/**
+	 * @param source
+	 * @param charsetName
+	 * @return
+	 * @see URLEncoder#decode(java.lang.String, java.lang.String)
+	 */
 	public static String decode(String source, String charsetName) {
 		if (source == null) {
 			return null;
@@ -364,6 +383,13 @@ public class UriUtils {
 		}
 	}
 
+	/**
+	 * The World Wide Web Consortium Recommendation states that UTF-8 should be
+	 * used.
+	 * 
+	 * @param source
+	 * @return
+	 */
 	public static String decode(String source) {
 		return decode(source, Constants.UTF_8.name());
 	}

@@ -51,20 +51,8 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 		targetResponse.flush();
 	}
 
-	public String getRawContentType() {
-		return targetResponse.getRawContentType();
-	}
-
-	public void setContentType(String contentType) {
-		targetResponse.setContentType(contentType);
-	}
-
 	public boolean isCommitted() {
 		return targetResponse.isCommitted();
-	}
-
-	public String getCharacterEncoding() {
-		return targetResponse.getCharacterEncoding();
 	}
 
 	public PrintWriter getWriter() throws IOException {
@@ -107,15 +95,19 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 		return targetResponse.getHeaders();
 	}
 
-	public void setCharacterEncoding(String charset) {
-		targetResponse.setCharacterEncoding(charset);
-	}
-
 	public void setContentType(MediaType contentType) {
 		targetResponse.setContentType(contentType);
 	}
 
 	public void close() throws IOException {
 		targetResponse.close();
+	}
+
+	public String getCharacterEncoding() {
+		return targetResponse.getCharacterEncoding();
+	}
+
+	public void setCharacterEncoding(String env) {
+		targetResponse.setCharacterEncoding(env);
 	}
 }

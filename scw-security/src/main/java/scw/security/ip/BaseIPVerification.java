@@ -11,6 +11,7 @@ import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.StringMatcher;
 
 public class BaseIPVerification extends HashSet<String> implements IPVerification {
 	private static final long serialVersionUID = 1L;
@@ -53,7 +54,7 @@ public class BaseIPVerification extends HashSet<String> implements IPVerificatio
 
 	protected final boolean testIp(String matchIp) {
 		for (String ip : this) {
-			if (StringUtils.test(matchIp, ip)) {
+			if (StringMatcher.DEFAULT.match(ip, matchIp)) {
 				return true;
 			}
 		}

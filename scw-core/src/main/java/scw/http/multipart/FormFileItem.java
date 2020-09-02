@@ -31,16 +31,11 @@ class FormFileItem extends FileItem {
 	}
 
 	public byte[] getBytes() {
-		return CompatibleUtils.getStringOperations().getBytes(this.body, getCharset());
+		return CompatibleUtils.getStringOperations().getBytes(this.body, charset);
 	}
 
 	public InputStream getBody() {
 		return new UnsafeByteArrayInputStream(getBytes());
-	}
-
-	@Override
-	protected Charset getDefaultCharset() {
-		return charset;
 	}
 
 	public void close() throws IOException {

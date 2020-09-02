@@ -6,6 +6,6 @@ public interface Message {
 	Headers getHeaders();
 
 	MimeType getContentType();
-
+	
 	long getContentLength();
 }

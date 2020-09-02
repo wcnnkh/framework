@@ -9,8 +9,8 @@ import scw.value.property.PropertyFactory;
 
 @AopEnable(false)
 public interface ServletEmbedded {
-	void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet destroy, Servlet service,
-			Class<?> mainClass, MainArgs args) throws Exception;
+	void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet service, Class<?> mainClass,
+			MainArgs args) throws Exception;
 
 	void destroy() throws Exception;
 }

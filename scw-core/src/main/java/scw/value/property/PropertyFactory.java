@@ -138,7 +138,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 	public EventRegistration registerListener(String key, EventListener<PropertyEvent> eventListener) {
 		EventRegistration registration = dynamicMap.getEventDispatcher().registerListener(key,
-				new PropertyEventListener(key.toString(), eventListener));
+				new PropertyEventListener(key, eventListener));
 		EventRegistration[] registrations = new EventRegistration[basePropertyFactories.size() + 1];
 		registrations[0] = registration;
 		int index = 1;

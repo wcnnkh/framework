@@ -7,11 +7,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import feign.RequestTemplate;
+import scw.http.AbstractHttpOutputMessage;
 import scw.http.HttpHeaders;
-import scw.net.message.AbstractOutputMessage;
-import scw.net.message.Headers;
-	
-public class FeignOutputMessage extends AbstractOutputMessage {
+
+public class FeignOutputMessage extends AbstractHttpOutputMessage {
 	private RequestTemplate requestTemplate;
 	private OutputStream body;
 	private HttpHeaders headers;
@@ -25,7 +24,7 @@ public class FeignOutputMessage extends AbstractOutputMessage {
 		return body;
 	}
 
-	public Headers getHeaders() {
+	public HttpHeaders getHeaders() {
 		if (headers == null) {
 			headers = new HttpHeaders();
 			Map<String, Collection<String>> headerMap = requestTemplate.headers();

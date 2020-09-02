@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import scw.http.HttpCookie;
-import scw.http.HttpHeaders;
 import scw.http.HttpOutputMessage;
 import scw.http.HttpStatus;
 
@@ -27,19 +26,11 @@ public interface ServerHttpResponse extends Flushable, Closeable, HttpOutputMess
 
     int getStatus();
 
-    void setContentLength(long length);
-
-    HttpHeaders getHeaders();
-    
-    String getRawContentType();
-	
-	void setContentType(String contentType);
-	
-	String getCharacterEncoding();
-	
-	void setCharacterEncoding(String charset);
-
 	PrintWriter getWriter() throws IOException;
 	
 	boolean isCommitted();
+	
+	String getCharacterEncoding();
+	
+	void setCharacterEncoding(String env);
 }

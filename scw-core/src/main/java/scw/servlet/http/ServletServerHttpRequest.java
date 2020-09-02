@@ -3,7 +3,6 @@ package scw.servlet.http;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.Principal;
@@ -102,14 +101,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 				this.httpServletRequest.getRemotePort());
 	}
 
-	public void setCharacterEncoding(String enc) {
-		try {
-			httpServletRequest.setCharacterEncoding(enc);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public HttpHeaders getHeaders() {
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
@@ -168,14 +159,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		return InetUtils.toURI(httpServletRequest.getRequestURI());
 	}
 
-	public long getContentLength() {
-		return httpServletRequest.getContentLength();
-	}
-
-	public String getCharacterEncoding() {
-		return httpServletRequest.getCharacterEncoding();
-	}
-
 	public BufferedReader getReader() throws IOException {
 		return httpServletRequest.getReader();
 	}
@@ -219,11 +202,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	public String getContextPath() {
 		return httpServletRequest.getContextPath();
-	}
-
-	@Override
-	public String getRawContentType() {
-		return httpServletRequest.getContentType();
 	}
 
 	public void setAttribute(String name, Object o) {

@@ -3,7 +3,6 @@ package scw.http.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
@@ -43,10 +42,6 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
 
 	public String getPath() {
 		return targetRequest.getPath();
-	}
-
-	public String getRawContentType() {
-		return targetRequest.getRawContentType();
 	}
 
 	public String getContextPath() {
@@ -135,10 +130,6 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
 
 	public String getIp() {
 		return targetRequest.getIp();
-	}
-
-	public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
-		targetRequest.setCharacterEncoding(env);
 	}
 
 	public MultiValueMap<String, String> getRestfulParameterMap() {

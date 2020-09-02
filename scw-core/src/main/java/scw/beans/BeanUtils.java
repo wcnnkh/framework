@@ -13,8 +13,8 @@ import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.core.Constants;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
-import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
+import scw.util.StringMatcher;
 import scw.value.ValueFactory;
 
 public final class BeanUtils {
@@ -56,7 +56,7 @@ public final class BeanUtils {
 		}
 
 		for (String name : DISABLE_PROXY_BEANS) {
-			if (StringUtils.test(type.getName(), name)) {
+			if (StringMatcher.DEFAULT.match(name, type.getName())) {
 				return false;
 			}
 		}

@@ -3,6 +3,8 @@ package scw.http.server.resource;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
 import scw.io.ResourceUtils;
+import scw.util.DefaultStringMatcher;
+import scw.util.StringMatcher;
 import scw.value.property.PropertyFactory;
 
 public class DefaultStaticResourceLoader extends AbstractStaticResourceLoader {
@@ -14,12 +16,12 @@ public class DefaultStaticResourceLoader extends AbstractStaticResourceLoader {
 	}
 
 	public DefaultStaticResourceLoader(String root, String... paths) {
-		this(root, paths, null, null);
+		this(root, paths, null, null, new DefaultStringMatcher());
 	}
 
 	public DefaultStaticResourceLoader(String resourceRoot, String[] resourcePath, String defaultFileName,
-			ResourceLoader resourceLoader) {
-		super(resourceRoot, resourcePath, defaultFileName);
+			ResourceLoader resourceLoader, StringMatcher matcher) {
+		super(resourceRoot, resourcePath, defaultFileName, matcher);
 		this.resourceLoader = resourceLoader == null ? ResourceUtils.getResourceOperations() : resourceLoader;
 	}
 

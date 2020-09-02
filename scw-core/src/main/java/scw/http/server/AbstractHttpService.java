@@ -3,8 +3,6 @@ package scw.http.server;
 import java.io.IOException;
 
 import scw.http.HttpMethod;
-import scw.http.server.cors.CorsConfig;
-import scw.http.server.cors.CorsUtils;
 import scw.http.server.jsonp.JsonpUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -17,11 +15,6 @@ public abstract class AbstractHttpService implements HttpService{
 	
 	public void service(ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException {
-		CorsConfig config = getCorsConfig(request);
-		if(config == null){
-			CorsUtils.write(config, response);
-		}
-		
 		ServerHttpRequest requestToUse = wrapperRequest(request);
 		ServerHttpResponse responseToUse = wrapperResponse(requestToUse, response);
 
@@ -83,8 +76,6 @@ public abstract class AbstractHttpService implements HttpService{
 	}
 	
 	public abstract Iterable<? extends HttpServiceInterceptor> getHttpServiceInterceptors();
-	
-	protected abstract CorsConfig getCorsConfig(ServerHttpRequest request);
 	
 	protected abstract boolean isEnableJsonp(ServerHttpRequest request);
 }

@@ -16,9 +16,10 @@ public class ServletEmbeddedApplication extends MainApplication {
 	}
 
 	@Override
-	protected void initInternal() throws Exception{
+	protected void initInternal() throws Exception {
 		super.initInternal();
-		embedded = InstanceUtils.loadService(ServletEmbedded.class, getBeanFactory(), getPropertyFactory(), "scw.embed.tomcat.TomcatServletEmbedded");
+		embedded = InstanceUtils.loadService(ServletEmbedded.class, getBeanFactory(), getPropertyFactory(),
+				"scw.embed.tomcat.TomcatServletEmbedded");
 		if (embedded == null) {
 			throw new NotSupportedException("未找到支持的embedded, 如需支持请导入对应的jar");
 		}
@@ -28,13 +29,12 @@ public class ServletEmbeddedApplication extends MainApplication {
 		if (propertyFactory.getValue("http.servlet.service.startup", boolean.class, true)) {
 			dispatcherServlet.setHttpServletService(getBeanFactory().getInstance(HttpServletService.class));
 		}
-		embedded.init(getBeanFactory(), getPropertyFactory(), new ShutdownHttpServlet(getPropertyFactory(), this),
-				dispatcherServlet, getMainClass(), getArgs());
+		embedded.init(getBeanFactory(), getPropertyFactory(), dispatcherServlet, getMainClass(), getArgs());
 	}
-	
+
 	@Override
 	protected void destroyInternal() throws Exception {
-		if(embedded != null){
+		if (embedded != null) {
 			embedded.destroy();
 		}
 		super.destroyInternal();

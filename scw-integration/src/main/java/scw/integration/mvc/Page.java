@@ -20,8 +20,6 @@ import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.mvc.servlet.Jsp;
-import scw.net.MimeType;
-import scw.net.MimeTypeUtils;
 
 /**
  * 不再推荐使用，下个版本弃用
@@ -158,10 +156,6 @@ public class Page extends AbstractPage {
 
 		switch (pageType) {
 		case JSP:
-			if (httpChannel.getResponse().getContentType() == null) {
-				httpChannel.getResponse().setContentType(MimeTypeUtils.TEXT_HTML_VALUE);
-			}
-
 			Jsp jsp = new Jsp(realPage);
 			jsp.putAll(this);
 			jsp.render(httpChannel);
@@ -170,12 +164,9 @@ public class Page extends AbstractPage {
 			if (freemarkerConfiguration == null) {
 				defaultInitFreemarker();
 			}
-
-			if (httpChannel.getResponse().getContentType() == null) {
-				httpChannel.getResponse()
-						.setContentType(new MimeType(MimeTypeUtils.TEXT_HTML_VALUE, freemarker_default_encoding));
-			}
-
+			
+			httpChannel.getResponse().setCharacterEncoding(freemarker_default_encoding);
+			
 			if (freemarkerAppendAttrs) {
 				Enumeration<?> enumeration = httpChannel.getRequest().getAttributeNames();
 				while (enumeration.hasMoreElements()) {
