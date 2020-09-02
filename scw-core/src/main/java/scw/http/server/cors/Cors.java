@@ -1,46 +1,49 @@
 package scw.http.server.cors;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import scw.core.utils.CollectionUtils;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpHeaders;
+import scw.lang.NotSupportedException;
 
 public class Cors {
-	private static final String[] DEFAULT_HEADERS = new String[] { HttpHeaders.X_REQUESTED_WITH,
-			HttpHeaders.CONTENT_TYPE, HttpHeaders.X_FORWARDED_FOR, HttpHeaders.COOKIE,
-			HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, HttpHeaders.ACCEPT,
+	private static final String[] DEFAULT_HEADERS = new String[] {
+			HttpHeaders.X_REQUESTED_WITH, HttpHeaders.CONTENT_TYPE,
+			HttpHeaders.X_FORWARDED_FOR, HttpHeaders.COOKIE,
+			HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS,
+			HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, HttpHeaders.ACCEPT,
 			HttpHeaders.ORIGIN };
-	public static final Cors DEFAULT = new Cors(Arrays.asList(DEFAULT_HEADERS), null, null, false, -1);
+	public static final Cors DEFAULT = new Cors().readyOnly();
+	private static final String[] EMPTY = new String[0];
 
 	/**
 	 * 允许跨域的请求头
 	 */
-	private List<String> headers;
+	private String[] headers;
 	/**
 	 * 允许跨域的方法
 	 */
-	private List<String> methods;
+	private String[] methods;
 	/**
 	 * 允许跨域的主机地址
 	 */
-	private List<String> origins;
+	private String[] origins;
 	/**
 	 * 是否携带cookie
 	 */
-	private boolean credentials = true;
+	private Boolean credentials;
 	/**
 	 * 重新预检验跨域的缓存时间 (s)
 	 */
 	private int maxAge = -1;
 
+	private boolean readyOnly = false;
+
 	public Cors() {
+		this(DEFAULT_HEADERS, null, null, false, -1);
 	};
 
-	public Cors(List<String> headers, List<String> methods, List<String> origins, boolean credentials, int maxAge) {
+	public Cors(String[] headers, String[] methods, String[] origins,
+			boolean credentials, int maxAge) {
 		this.headers = headers;
 		this.methods = methods;
 		this.origins = origins;
@@ -48,48 +51,53 @@ public class Cors {
 		this.maxAge = maxAge;
 	}
 
-	public List<String> getHeaders() {
-		if (headers == null) {
-			return Collections.emptyList();
-		}
-
-		return Collections.unmodifiableList(headers);
+	public String[] getHeaders() {
+		return headers == null ? EMPTY : headers.clone();
 	}
 
-	public Cors setHeaders(List<String> headers) {
+	public Cors setHeaders(String... headers) {
+		if (readyOnly) {
+			throw new NotSupportedException("setMaxAge");
+		}
+
 		this.headers = headers;
 		return this;
 	}
 
-	public List<String> getMethods() {
-		if (methods == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(methods);
+	public String[] getMethods() {
+		return methods == null ? EMPTY : headers.clone();
 	}
 
-	public Cors setMethods(List<String> methods) {
+	public Cors setMethods(String... methods) {
+		if (readyOnly) {
+			throw new NotSupportedException("setMaxAge");
+		}
+
 		this.methods = methods;
 		return this;
 	}
 
-	public List<String> getOrigins() {
-		if (origins == null) {
-			return Collections.emptyList();
+	public String[] getOrigins() {
+		return origins == null ? EMPTY : origins.clone();
+	}
+
+	public void setOrigins(String... origins) {
+		if (readyOnly) {
+			throw new NotSupportedException("setMaxAge");
 		}
-		return Collections.unmodifiableList(origins);
-	}
 
-	public Cors setOrigins(List<String> origins) {
 		this.origins = origins;
-		return this;
 	}
 
-	public boolean isCredentials() {
+	public Boolean isCredentials() {
 		return credentials;
 	}
 
-	public Cors setCredentials(boolean credentials) {
+	public Cors setCredentials(Boolean credentials) {
+		if (readyOnly) {
+			throw new NotSupportedException("setMaxAge");
+		}
+
 		this.credentials = credentials;
 		return this;
 	}
@@ -99,12 +107,31 @@ public class Cors {
 	}
 
 	public Cors setMaxAge(int maxAge) {
+		if (readyOnly) {
+			throw new NotSupportedException("setMaxAge");
+		}
+
 		this.maxAge = maxAge;
 		return this;
 	}
 
-	private void write(HttpHeaders headers, String headerName, Collection<String> values, String defaultValue) {
-		if (CollectionUtils.isEmpty(values)) {
+	public final boolean isReadyOnly() {
+		return readyOnly;
+	}
+
+	public Cors readyOnly() {
+		this.readyOnly = true;
+		return this;
+	}
+
+	@Override
+	public Object clone() {
+		return new Cors(headers, methods, origins, credentials, maxAge);
+	}
+
+	private void write(HttpHeaders headers, String headerName, String[] values,
+			String defaultValue) {
+		if (ArrayUtils.isEmpty(values)) {
 			headers.set(headerName, defaultValue);
 		} else {
 			int size = 0;
@@ -123,12 +150,19 @@ public class Cors {
 	}
 
 	public void write(HttpHeaders headers) {
-		write(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, this.origins, "*");
-		write(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, this.methods, "*");
-		write(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, this.headers, "*");
+		write(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, this.origins,
+				"*");
+		write(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, this.methods,
+				"*");
+		write(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, this.headers,
+				"*");
 		if (maxAge > 0) {
 			headers.set(HttpHeaders.ACCESS_CONTROL_MAX_AGE, maxAge + "");
 		}
-		headers.set(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, credentials + "");
+
+		if (credentials != null) {
+			headers.set(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS,
+					credentials + "");
+		}
 	}
 }
