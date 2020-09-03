@@ -1,5 +1,6 @@
 package scw.http.client;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.URI;
@@ -26,6 +27,8 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.InetUtils;
 import scw.net.message.converter.MultiMessageConverter;
+import scw.net.uri.UriUtils;
+import scw.util.XUtils;
 
 public abstract class AbstractHttpClient extends HttpClientConfigAccessor implements HttpClient {
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
@@ -38,12 +41,12 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 
 		COOKIE_MANAGER = InstanceUtils.loadService(HttpClientCookieManager.class);
 	}
-	
+
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
-	
+
 	public AbstractHttpClient() {
 		messageConverter.add(InetUtils.getMessageConverter());
 	}
@@ -111,7 +114,7 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 		ClientHttpRequest request;
 		HttpClientCookieManager cookieManager = getCookieManager();
 		try {
-			request = builder.builder();
+			request = builder.build();
 			requestCallback(builder, request, requestCallback);
 			if (cookieManager != null) {
 				cookieManager.accept(request);
@@ -132,7 +135,8 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 		}
 	}
 
-	public final <T> HttpResponseEntity<T> execute(URI uri, HttpMethod method, SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity, ClientHttpResponseExtractor<T> clientResponseExtractor)
+	public final <T> HttpResponseEntity<T> execute(URI uri, HttpMethod method, SSLSocketFactory sslSocketFactory,
+			HttpEntity<?> httpEntity, ClientHttpResponseExtractor<T> clientResponseExtractor)
 			throws HttpClientException {
 		ClientHttpRequestBuilder requestBuilder = createBuilder(uri, method, sslSocketFactory);
 		return execute(requestBuilder, createRequestBodyCallback(requestBuilder.getUri(), method, httpEntity),
@@ -144,45 +148,106 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 			throws HttpClientException {
 		return execute(InetUtils.toURI(url), method, sslSocketFactory, httpEntity, clientResponseExtractor);
 	}
-	
-	public HttpResponseEntity<TemporaryFile> download(String uri, HttpHeaders httpHeaders,
-			SSLSocketFactory sslSocketFactory, boolean supportedRedirect) throws HttpClientException {
-		return download(InetUtils.toURI(uri), httpHeaders, sslSocketFactory, supportedRedirect);
+
+	public HttpResponseEntity<File> download(String uri, HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory,
+			boolean supportedRedirect) throws HttpClientException {
+		return download(uri, httpHeaders, sslSocketFactory, false, supportedRedirect);
 	}
-	
-	public final HttpResponseEntity<TemporaryFile> download(final URI uri, HttpHeaders httpHeaders,
-			SSLSocketFactory sslSocketFactory, boolean supportedRedirect) throws HttpClientException {
-		HttpEntity<Object> httpEntity = new HttpEntity<Object>(httpHeaders);
-		HttpResponseEntity<TemporaryFile> httpResponseEntity = execute(uri, HttpMethod.GET, sslSocketFactory, httpEntity,
-				new ClientHttpResponseExtractor<TemporaryFile>() {
+
+	public HttpResponseEntity<File> download(String uri, HttpHeaders httpHeaders, SSLSocketFactory sslSocketFactory,
+			boolean cache, boolean supportedRedirect) throws HttpClientException {
+		return download(InetUtils.toURI(uri), httpHeaders, sslSocketFactory, cache, supportedRedirect);
+	}
+
+	// 创建缓存文件
+	private TemporaryFile createCacheFile(URI uri) {
+		String tempoaryFileName = UriUtils.encode(uri.toString());
+		return TemporaryFile.createInTempDirectory(tempoaryFileName);
+	}
+
+	public final HttpResponseEntity<File> download(final URI uri, HttpHeaders httpHeaders,
+			SSLSocketFactory sslSocketFactory, final boolean cache, final boolean supportedRedirect)
+			throws HttpClientException {
+		final TemporaryFile cacheFile = cache ? createCacheFile(uri) : null;
+		HttpHeaders httpHeadersToUse = httpHeaders == null ? new HttpHeaders() : httpHeaders;
+		httpHeadersToUse.remove(HttpHeaders.IF_MODIFIED_SINCE);
+		final boolean existCacheFile = cache && cacheFile != null && cacheFile.exists();
+		if (existCacheFile) {
+			httpHeadersToUse.setIfModifiedSince(cacheFile.lastModified());
+		}
+
+		HttpEntity<Object> httpEntity = new HttpEntity<Object>(httpHeadersToUse);
+		HttpResponseEntity<File> httpResponseEntity = execute(uri, HttpMethod.GET, sslSocketFactory, httpEntity,
+				new ClientHttpResponseExtractor<File>() {
 					public TemporaryFile execute(ClientHttpResponse response) throws IOException {
 						if (response.getStatusCode() != HttpStatus.OK) {
-							logger.error("Unable to download:{}, status:{}, statusText:{}", uri,
-									response.getRawStatusCode(), response.getStatusText());
-							return null;
+							// 如果不是304
+							if (response.getStatusCode() != HttpStatus.NOT_MODIFIED) {
+								logger.error("Unable to download:{}, status:{}, statusText:{}", uri,
+										response.getRawStatusCode(), response.getStatusText());
+								return null;
+							}
 						}
-						
+
 						ContentDisposition contentDisposition = response.getHeaders().getContentDisposition();
-						String fileName = contentDisposition == null? null:contentDisposition.getFilename();
-						if(StringUtils.isEmpty(fileName)){
+						String fileName = contentDisposition == null ? null : contentDisposition.getFilename();
+						if (StringUtils.isEmpty(fileName)) {
 							fileName = InetUtils.getFilename(uri.getPath());
 						}
-						
-						TemporaryFile file = new TemporaryFile(fileName);
-						if(logger.isDebugEnabled()){
+
+						TemporaryFile file = TemporaryFile
+								.createInTempDirectory(XUtils.getUUID() + File.separator + fileName);
+						// 304未变动
+						if (response.getStatusCode() == HttpStatus.NOT_MODIFIED) {
+							// 如果缓存文件存在
+							if (existCacheFile) {
+								if (logger.isDebugEnabled()) {
+									logger.debug("Using cache files:{}", uri);
+								}
+
+								FileUtils.copyFile(cacheFile, file, FileUtils.ONE_MB);
+								return file;
+							} else {
+								// 如果不存在
+								// 理念上不应该存在这样的情况
+								logger.warn("The cache file does not exist: {}", uri);
+								return null;
+							}
+						}
+
+						if (logger.isDebugEnabled()) {
 							logger.debug("{} download to {}", uri, file.getPath());
 						}
-						FileUtils.copyInputStreamToFile(response.getBody(), file);
+
+						// 使用缓存
+						if (cache) {
+							long lastModified = response.getHeaders().getLastModified();
+							if (lastModified != -1) {
+								// 创建缓存文件
+								TemporaryFile temporaryFile = createCacheFile(uri);
+								// 保存到缓存文件
+								FileUtils.copyInputStreamToFile(response.getBody(), temporaryFile);
+								temporaryFile.setLastModified(lastModified);
+								FileUtils.copyFile(temporaryFile, file, FileUtils.ONE_MB);
+							} else {
+								FileUtils.copyInputStreamToFile(response.getBody(), file);
+							}
+						} else {
+							FileUtils.copyInputStreamToFile(response.getBody(), file);
+						}
+						// 设置在垃圾回收时也进行删除
+						file.setDeleteOnFinalize(true);
 						return file;
 					}
 				});
-		if(supportedRedirect){
+		if (supportedRedirect) {
 			// 重定向
-			if (httpResponseEntity.getStatusCodeValue() == HttpStatus.MOVED_PERMANENTLY.value() || httpResponseEntity.getStatusCodeValue() == HttpStatus.FOUND.value()) {
+			if (httpResponseEntity.getStatusCodeValue() == HttpStatus.MOVED_PERMANENTLY.value()
+					|| httpResponseEntity.getStatusCodeValue() == HttpStatus.FOUND.value()) {
 				URI location = httpResponseEntity.getHeaders().getLocation();
 				if (location != null) {
 					logger.info("download redirect {} ==> {}", uri, location);
-					return download(location, httpHeaders, sslSocketFactory, supportedRedirect);
+					return download(location, httpHeaders, sslSocketFactory, cache, supportedRedirect);
 				}
 			}
 		}
@@ -192,14 +257,16 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 	protected abstract ClientHttpRequestBuilder createBuilder(URI uri, HttpMethod method,
 			SSLSocketFactory sslSocketFactory);
 
-	protected ClientHttpRequestCallback createRequestBodyCallback(URI uri, HttpMethod httpMethod, final HttpEntity<?> httpEntity) {
+	protected ClientHttpRequestCallback createRequestBodyCallback(URI uri, HttpMethod httpMethod,
+			final HttpEntity<?> httpEntity) {
 		if (httpMethod == HttpMethod.GET && httpEntity != null && httpEntity.hasBody()) {
 			logger.warn("Get request cannot set request body [{}]", uri);
 		}
 
 		final boolean needWriteBody = httpEntity != null && httpEntity.hasBody() && httpMethod != HttpMethod.GET;
 		if (needWriteBody) {
-			if (!getMessageConverter().canWrite(httpEntity.getBody(), httpEntity == null ? null : httpEntity.getContentType())) {
+			if (!getMessageConverter().canWrite(httpEntity.getBody(),
+					httpEntity == null ? null : httpEntity.getContentType())) {
 				throw new NotSupportedException("not supported write " + httpEntity);
 			}
 		}
@@ -213,8 +280,8 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 				}
 
 				if (needWriteBody) {
-					getMessageConverter().write(httpEntity.getBody(), httpEntity == null ? null : httpEntity.getContentType(),
-							clientRequest);
+					getMessageConverter().write(httpEntity.getBody(),
+							httpEntity == null ? null : httpEntity.getContentType(), clientRequest);
 				}
 			}
 		};
@@ -261,16 +328,15 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 
 	public final HttpResponseEntity<Object> execute(Type responseType, URI uri, HttpMethod method,
 			SSLSocketFactory sslSocketFactory, HttpEntity<?> httpEntity) throws HttpClientException {
-		return execute(uri, method, sslSocketFactory, httpEntity,
-				getClientHttpResponseExtractor(method, responseType));
+		return execute(uri, method, sslSocketFactory, httpEntity, getClientHttpResponseExtractor(method, responseType));
 	}
 
 	public final <T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url) throws HttpClientException {
 		return get(responseType, url, null);
 	}
 
-	public final <T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url, SSLSocketFactory sslSocketFactory)
-			throws HttpClientException {
+	public final <T> HttpResponseEntity<T> get(Class<? extends T> responseType, String url,
+			SSLSocketFactory sslSocketFactory) throws HttpClientException {
 		return execute(responseType, url, HttpMethod.GET, sslSocketFactory, null);
 	}
 

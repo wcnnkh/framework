@@ -45,7 +45,7 @@ public class CorsRegistry {
 	}
 
 	public void addMapping(String path, Cors cors) {
-		Cors corsToUse = cors.clone().readyOnly();
+		Cors corsToUse = cors.isReadyOnly()? cors:cors.clone().readyOnly();
 		if (matcher.isPattern(path)) {
 			matchers.add(new KeyValuePair<String, Cors>(path, corsToUse));
 		} else {

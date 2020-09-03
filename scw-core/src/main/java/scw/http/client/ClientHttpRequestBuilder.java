@@ -10,5 +10,5 @@ public interface ClientHttpRequestBuilder {
 	
 	URI getUri();
 
-	ClientHttpRequest builder() throws IOException;
+	ClientHttpRequest build() throws IOException;
 }
