@@ -7,8 +7,6 @@ import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
 
-import scw.core.Target;
-import scw.core.utils.XUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
@@ -16,6 +14,8 @@ import scw.http.MediaType;
 import scw.net.InetAddress;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
+import scw.util.Target;
+import scw.util.XUtils;
 
 public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
 	private final ServerHttpRequest targetRequest;

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.core.utils.XUtils;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
@@ -13,6 +12,7 @@ import scw.net.uri.UriUtils;
 import scw.security.SignType;
 import scw.security.SignatureUtils;
 import scw.util.ToMap;
+import scw.util.XUtils;
 
 /**
  * 快递鸟接口

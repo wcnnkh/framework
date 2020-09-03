@@ -6,13 +6,13 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.core.Target;
-import scw.core.utils.XUtils;
 import scw.http.AbstractHttpOutputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.http.server.ServerHttpResponse;
+import scw.util.Target;
+import scw.util.XUtils;
 
 public class ServletServerHttpResponse extends AbstractHttpOutputMessage implements ServerHttpResponse, Target {
 	private HttpServletResponse httpServletResponse;

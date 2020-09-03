@@ -3,8 +3,8 @@ package scw.io.support;
 import java.io.File;
 
 import scw.core.utils.StringUtils;
-import scw.core.utils.XUtils;
 import scw.io.FileUtils;
+import scw.util.XUtils;
 
 /**
  * 这是一个临时文件，在系统回收时会自动删除，但推荐使用结束主动后删除

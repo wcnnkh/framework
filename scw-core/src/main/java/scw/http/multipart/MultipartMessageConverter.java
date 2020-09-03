@@ -16,7 +16,6 @@ import scw.core.ResolvableType;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
-import scw.core.utils.XUtils;
 import scw.http.DefaultHttpInputMessage;
 import scw.http.HttpInputMessage;
 import scw.io.IOUtils;
@@ -28,6 +27,7 @@ import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 import scw.net.message.converter.AbstractMessageConverter;
 import scw.net.message.converter.MessageConvertException;
+import scw.util.XUtils;
 
 public class MultipartMessageConverter extends AbstractMessageConverter<Object> {
 	private static final String DEFAULT_BOUNDARY = XUtils.getUUID();

@@ -6,12 +6,12 @@ import java.util.NoSuchElementException;
 
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XUtils;
 import scw.io.serialzer.JavaSerializer;
 import scw.io.serialzer.NoTypeSpecifiedSerializer;
 import scw.io.support.LocalLogger.Record;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.XUtils;
 import scw.value.property.SystemPropertyFactory;
 
 public final class SystemLocalLogger<T> {

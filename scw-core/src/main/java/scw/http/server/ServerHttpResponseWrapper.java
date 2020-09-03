@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import scw.core.Target;
-import scw.core.utils.XUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.http.MediaType;
 import scw.net.MimeType;
+import scw.util.Target;
+import scw.util.XUtils;
 
 public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 	private final ServerHttpResponse targetResponse;

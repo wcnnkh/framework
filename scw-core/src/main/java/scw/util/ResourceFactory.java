@@ -1,4 +1,4 @@
-package scw.core;
+package scw.util;
 
 public interface ResourceFactory<T> {
 	T getResource();

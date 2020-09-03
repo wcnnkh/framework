@@ -20,10 +20,10 @@ import scw.lang.AlreadyExistsException;
 import scw.lang.NotFoundException;
 import scw.lang.ParameterException;
 import scw.net.ProtocolType;
+import scw.util.XUtils;
 import scw.alibaba.oss.ObjectListing;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
-import scw.core.utils.XUtils;
 
 public final class OSS {
 	private static final int DEFAULT_EXPIRE = 120;

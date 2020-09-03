@@ -3,13 +3,13 @@ package scw.net.message.converter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import scw.core.utils.XUtils;
 import scw.json.JSONSupport;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 import scw.util.ToMap;
+import scw.util.XUtils;
 
 public final class JsonMessageConverter extends AbstractMessageConverter<Object> {
 	public static final MimeType JSON_ALL = new MimeType("application", "*+json");

@@ -17,10 +17,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import scw.core.Target;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XUtils;
 import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
@@ -38,6 +36,8 @@ import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
 import scw.util.LinkedCaseInsensitiveMap;
 import scw.util.MultiValueMap;
+import scw.util.Target;
+import scw.util.XUtils;
 
 public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		implements ServerHttpRequest, Target, RestfulParameterMapAware {
