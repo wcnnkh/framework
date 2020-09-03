@@ -194,6 +194,12 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		initParameterMap();
 		return parameterMap;
 	}
+	
+	@Override
+	public String getCharacterEncoding() {
+		String charsetName = super.getCharacterEncoding();
+		return charsetName == null? httpServletRequest.getCharacterEncoding():charsetName;
+	}
 
 	public String getRawMethod() {
 		return httpServletRequest.getMethod();
