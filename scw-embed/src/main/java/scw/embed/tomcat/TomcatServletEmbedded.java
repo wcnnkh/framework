@@ -237,21 +237,6 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	protected void configShutdown(Context context, PropertyFactory propertyFactory, Servlet destroy) throws Exception {
-		String tomcatShutdownServletPath = EmbeddedUtils.getShutdownPath(propertyFactory);
-		if (StringUtils.isEmpty(tomcatShutdownServletPath)) {
-			return;
-		}
-
-		String tomcatShutdownServletName = EmbeddedUtils.getShutdownName(propertyFactory);
-		if (StringUtils.isEmpty(tomcatShutdownServletName)) {
-			tomcatShutdownServletName = "shutdown";
-		}
-
-		Tomcat.addServlet(context, tomcatShutdownServletName, destroy);
-		addServletMapping(context, tomcatShutdownServletPath, tomcatShutdownServletName);
-	}
-
 	protected void addServletMapping(Context context, String pattern, String servletName) throws Exception {
 		Method method = ReflectionUtils.getMethod(Context.class, "addServletMappingDecoded", String.class,
 				String.class);
@@ -298,7 +283,7 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet destroy, Servlet service,
+	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet service,
 			Class<?> mainClass, MainArgs args) throws Exception {
 		try {
 			tomcat8(mainClass.getClassLoader());
@@ -310,7 +295,6 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		configureLifecycleListener(context);
 		configureJSP(context, propertyFactory);
 		configureServlet(context, service, propertyFactory, mainClass);
-		configShutdown(context, propertyFactory, destroy);
 		tomcat.start();
 	}
 }

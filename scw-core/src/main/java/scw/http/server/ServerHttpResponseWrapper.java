@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import scw.core.Target;
-import scw.core.utils.XUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.http.MediaType;
 import scw.net.MimeType;
+import scw.util.Target;
+import scw.util.XUtils;
 
 public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 	private final ServerHttpResponse targetResponse;
@@ -51,20 +51,8 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 		targetResponse.flush();
 	}
 
-	public String getRawContentType() {
-		return targetResponse.getRawContentType();
-	}
-
-	public void setContentType(String contentType) {
-		targetResponse.setContentType(contentType);
-	}
-
 	public boolean isCommitted() {
 		return targetResponse.isCommitted();
-	}
-
-	public String getCharacterEncoding() {
-		return targetResponse.getCharacterEncoding();
 	}
 
 	public PrintWriter getWriter() throws IOException {
@@ -107,15 +95,19 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 		return targetResponse.getHeaders();
 	}
 
-	public void setCharacterEncoding(String charset) {
-		targetResponse.setCharacterEncoding(charset);
-	}
-
 	public void setContentType(MediaType contentType) {
 		targetResponse.setContentType(contentType);
 	}
 
 	public void close() throws IOException {
 		targetResponse.close();
+	}
+
+	public String getCharacterEncoding() {
+		return targetResponse.getCharacterEncoding();
+	}
+
+	public void setCharacterEncoding(String env) {
+		targetResponse.setCharacterEncoding(env);
 	}
 }

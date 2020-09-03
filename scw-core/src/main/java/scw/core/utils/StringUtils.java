@@ -23,8 +23,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -531,43 +529,46 @@ public final class StringUtils {
 	public static String unqualify(String qualifiedName, char separator) {
 		return qualifiedName.substring(qualifiedName.lastIndexOf(separator) + 1);
 	}
-
+	
 	/**
-	 * Capitalize a {@code String}, changing the first letter to upper case as
-	 * per {@link Character#toUpperCase(char)}. No other letters are changed.
-	 * 
-	 * @param str
-	 *            the String to capitalize, may be {@code null}
-	 * @return the capitalized String, {@code null} if null
+	 * 合并多个路径
+	 * @param path
+	 * @return
 	 */
-	public static String capitalize(String str) {
-		return changeFirstCharacterCase(str, true);
+	public static String mergePath(String... paths) {
+		if (paths.length == 0) {
+			return null;
+		}
+
+		if (paths.length == 1) {
+			return paths[0];
+		}
+
+		String p = addPath(paths[0], paths[1]);
+		for (int i = 2; i < paths.length; i++) {
+			p = addPath(p, paths[i]);
+		}
+		return p;
 	}
 
-	/**
-	 * Uncapitalize a {@code String}, changing the first letter to lower case as
-	 * per {@link Character#toLowerCase(char)}. No other letters are changed.
-	 * 
-	 * @param str
-	 *            the String to uncapitalize, may be {@code null}
-	 * @return the uncapitalized String, {@code null} if null
-	 */
-	public static String uncapitalize(String str) {
-		return changeFirstCharacterCase(str, false);
-	}
+	private static String addPath(String path1, String path2) {
+		String p1 = path1 == null ? "" : path1;
+		String p2 = path2 == null ? "" : path2;
+		p1 = p1.replaceAll("\\\\", "/");
+		p2 = p2.replaceAll("\\\\", "/");
 
-	private static String changeFirstCharacterCase(String str, boolean capitalize) {
-		if (str == null || str.length() == 0) {
-			return str;
+		if (!StringUtils.isNull(p2)) {
+			if (!p1.endsWith("/")) {
+				p1 = p1 + "/";
+			}
 		}
-		StringBuilder sb = new StringBuilder(str.length());
-		if (capitalize) {
-			sb.append(Character.toUpperCase(str.charAt(0)));
-		} else {
-			sb.append(Character.toLowerCase(str.charAt(0)));
+
+		if (!StringUtils.isNull(p1)) {
+			if (p2.startsWith("/")) {
+				p2 = p2.substring(1);
+			}
 		}
-		sb.append(str.substring(1));
-		return sb.toString();
+		return p1 + p2;
 	}
 
 	/**
@@ -1609,39 +1610,16 @@ public final class StringUtils {
 		return true;
 	}
 
-	/**
-	 * 检测字符串,只能中\英文\数字
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static boolean checkName(String name, int len) {
-		String reg = "^[\\u4E00-\\u9FA5\\uF900-\\uFA2D\\w]{1," + len + "}$";
-		Pattern p = Pattern.compile(reg);
-		Matcher m = p.matcher(name);
-		return m.matches();
-	}
-
-	/**
-	 * 隐藏部分手机号
-	 * 
-	 * @param phone
-	 * @return
-	 */
-	public static String hidePhone(String phone) {
-		return phone.replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2");
-	}
-
-	public static String toUpperCase(String str, int begin, int end) {
-		char[] chars = str.toCharArray();
+	public static String toUpperCase(String text, int begin, int end) {
+		char[] chars = text.toCharArray();
 		for (int i = begin; i < end; i++) {
 			chars[i] = Character.toUpperCase(chars[i]);
 		}
 		return new String(chars);
 	}
 
-	public static String toLowerCase(String str, int begin, int end) {
-		char[] chars = str.toCharArray();
+	public static String toLowerCase(String text, int begin, int end) {
+		char[] chars = text.toCharArray();
 		for (int i = begin; i < end; i++) {
 			chars[i] = Character.toLowerCase(chars[i]);
 		}
@@ -1805,144 +1783,6 @@ public final class StringUtils {
 		}
 		DecimalFormat decimalFormat = new DecimalFormat(new String(charBuffer.array()));
 		return decimalFormat.format(number);
-	}
-
-	public static boolean isSupportTestMatching(String matching) {
-		return !StringUtils.isEmpty(matching)
-				&& (matching.indexOf("!") != -1 || matching.indexOf("?") != -1 || matching.indexOf("*") != -1);
-	}
-
-	/**
-	 * 判断字符串是否与通配符匹配 只能存在通配符*和? ?代表1个 *代表0个或多个<br/>
-	 * !开头代表非(只支持开头使用!)
-	 * 
-	 * @param text
-	 *            可以为空
-	 * @param match
-	 * @return
-	 */
-	public static boolean test(String text, String match) {
-		Assert.notNull(match, "'match' must not be null");
-		if (StringUtils.isEmpty(match)) {
-			return false;
-		}
-
-		if (match.startsWith("!")) {
-			// 是否进行'非'处理
-			return !testInternal(text, match.substring(1));
-		}
-		return testInternal(text, match);
-	}
-
-	private static boolean testInternal(String text, String match) {
-		if (text == null) {
-			return "*".equals(match);
-		}
-
-		if ("*".equals(match)) {
-			return true;
-		}
-
-		if (match.indexOf("*") == -1) {
-			if (match.indexOf("?") == -1) {
-				return text.equals(match);
-			} else {
-				return test(text, match, '?', false);
-			}
-		}
-
-		String[] arr = split(match, false, '*');
-		if (!match.startsWith("*")) {
-			if (!text.startsWith(arr[0])) {
-				return false;
-			}
-		}
-
-		if (!match.endsWith("*")) {
-			if (!text.endsWith(arr[arr.length - 1])) {
-				return false;
-			}
-		}
-
-		int begin = 0;
-		int len = text.length();
-		for (String v : arr) {
-			int vLen = v.length();
-			if (len < vLen) {
-				return false;
-			}
-
-			boolean b = false;
-			int a = begin;
-			for (; a < len; a++) {
-				int end = a + vLen;
-				if (end > text.length()) {
-					return false;
-				}
-
-				String c = text.substring(a, end);
-				if (test(c, v, '?', false)) {
-					b = true;
-					break;
-				}
-			}
-
-			if (!b) {
-				return false;
-			}
-
-			begin = a + vLen;
-		}
-
-		return true;
-	}
-
-	public static boolean test(String text, String match, char matchChar, boolean multiple) {
-		if (match.indexOf(matchChar) == -1) {
-			return text.equals(match);
-		}
-
-		int size = match.length();
-		if (multiple) {
-			int index = 0;
-			int findIndex = 0;
-			for (int i = 0; i < size; i++) {
-				char c = match.charAt(i);
-				if (c != matchChar) {
-					continue;
-				}
-
-				String v = match.substring(index, i);
-				index = i;
-				if (v.length() == 0) {
-					continue;
-				}
-
-				int tempIndex = text.indexOf(v, findIndex);
-				if (tempIndex == -1) {
-					return false;
-				}
-
-				findIndex = tempIndex + v.length();
-			}
-			return true;
-		} else {
-			if (text.length() != size) {
-				return false;
-			}
-
-			for (int i = 0; i < size; i++) {
-				if (match.charAt(i) == matchChar) {
-					continue;
-				}
-
-				if (match.charAt(i) != text.charAt(i)) {
-					return false;
-				}
-			}
-
-			return true;
-		}
 	}
 
 	public static String[] split(String str, char... filters) {

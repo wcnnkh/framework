@@ -1,6 +1,5 @@
 package scw.sql.orm.support.generation;
 
-import scw.core.utils.XUtils;
 import scw.data.generator.SequenceId;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -12,6 +11,7 @@ import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.support.generation.annotation.CreateTime;
 import scw.sql.orm.support.generation.annotation.Generator;
 import scw.util.Accept;
+import scw.util.XUtils;
 
 public abstract class AbstractGeneratorService implements GeneratorService {
 	protected Logger logger = LoggerUtils.getLogger(getClass());

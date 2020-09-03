@@ -221,7 +221,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		
 		Level level = (body instanceof Result && ((Result)body).isError())? Level.ERROR:Level.DEBUG;
 		if(logger.isLogEnable(level)){
-			logger.log(level, "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}", httpChannel.toString(), new SplitLineAppend("response text begin " + httpChannel.getResponse().getRawContentType()), text, new SplitLineAppend("response text end"));
+			logger.log(level, "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}", httpChannel.toString(), new SplitLineAppend("response text begin " + httpChannel.getResponse().getContentType()), text, new SplitLineAppend("response text end"));
 		}
 	}
 }

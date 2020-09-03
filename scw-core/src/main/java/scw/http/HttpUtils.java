@@ -1,27 +1,17 @@
 package scw.http;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import scw.core.Assert;
 import scw.core.Constants;
 import scw.core.instance.InstanceUtils;
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
-import scw.core.utils.XUtils;
 import scw.http.client.HttpClient;
 import scw.http.server.JsonServerHttpRequest;
 import scw.http.server.ServerHttpRequest;
@@ -29,17 +19,12 @@ import scw.http.server.ServerHttpResponse;
 import scw.http.server.ip.ServerHttpRequestIpGetter;
 import scw.io.IOUtils;
 import scw.io.Resource;
-import scw.json.JSONSupport;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
-import scw.lang.NotSupportedException;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 import scw.net.uri.UriComponentsBuilder;
-import scw.util.LinkedMultiValueMap;
-import scw.util.MultiValueMap;
-import scw.util.ToMap;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
@@ -63,209 +48,6 @@ public final class HttpUtils {
 
 	public static ServerHttpRequestIpGetter getServerHttpRequestIpGetter() {
 		return SERVER_HTTP_REQUEST_IP_GETTER;
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static String toJsonString(Object body, JSONSupport jsonSupport) {
-		if (body == null) {
-			return null;
-		}
-
-		if (body instanceof ToMap) {
-			return jsonSupport.toJSONString(XUtils.toMap((ToMap) body));
-		} else {
-			return jsonSupport.toJSONString(body);
-		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static String toFormString(Object body, String charsetName, JSONSupport jsonSupport)
-			throws UnsupportedEncodingException {
-		if (body == null) {
-			return null;
-		}
-
-		if (body instanceof String || TypeUtils.isPrimitiveOrWrapper(body.getClass())) {
-			return body.toString();
-		} else if (body instanceof ToMap) {
-			return toFormBody(((ToMap) body).toMap(), charsetName);
-		} else if (body instanceof Map) {
-			return toFormBody((Map) body, charsetName);
-		} else {
-			String json = jsonSupport.toJSONString(body);
-			Map map = jsonSupport.parseObject(json, Map.class);
-			return toFormBody(map, charsetName);
-		}
-	}
-
-	public static String toFormBody(String key, Collection<?> values, String charsetName)
-			throws UnsupportedEncodingException {
-		if (StringUtils.isEmpty(key) || CollectionUtils.isEmpty(values)) {
-			return null;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		for (Object value : values) {
-			if (value == null) {
-				continue;
-			}
-
-			if (sb.length() > 0) {
-				sb.append("&");
-			}
-
-			sb.append(key);
-			sb.append("=");
-			if (StringUtils.isEmpty(charsetName)) {
-				sb.append(URLEncoder.encode(value.toString(), charsetName));
-			} else {
-				sb.append(value.toString());
-			}
-		}
-		return sb.toString();
-	}
-
-	public static MultiValueMap<String, String> toFormMap(String form) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		String[] kvArray = StringUtils.split(form, '&');
-		for (String kv : kvArray) {
-			int index = kv.indexOf("=");
-			if (index == -1) {
-				continue;
-			}
-
-			map.add(kv.substring(0, index), kv.substring(index, kv.length()));
-		}
-		return map;
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static String toFormBody(Map<?, ?> parameterMap, String charsetName) throws UnsupportedEncodingException {
-		if (CollectionUtils.isEmpty(parameterMap)) {
-			return null;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		for (Entry<?, ?> entry : parameterMap.entrySet()) {
-			Object value = entry.getValue();
-			if (value == null) {
-				continue;
-			}
-
-			String key = entry.getKey().toString();
-			String text;
-			if (value instanceof Collection) {
-				text = toFormBody(key, (Collection) value, charsetName);
-			} else if (value.getClass().isArray()) {
-				text = toFormBody(key, ArrayUtils.toList(value), charsetName);
-			} else {
-				text = toFormBody(key, Arrays.asList(value), charsetName);
-			}
-
-			if (text == null) {
-				continue;
-			}
-
-			if (sb.length() != 0) {
-				sb.append("&");
-			}
-
-			sb.append(text);
-		}
-		return sb.toString();
-	}
-
-	public static String appendParameters(String url, Map<String, ?> paramMap, String charsetName)
-			throws UnsupportedEncodingException {
-		if (paramMap == null || paramMap.isEmpty()) {
-			return url;
-		}
-
-		StringBuilder sb = new StringBuilder(128);
-		if (!StringUtils.isEmpty(url)) {
-			sb.append(url);
-			if (url.lastIndexOf("?") == -1) {
-				sb.append("?");
-			} else {
-				sb.append("&");
-			}
-		}
-
-		String text = toFormBody(paramMap, charsetName);
-		if (text != null) {
-			sb.append(text);
-		}
-		return sb.toString();
-	}
-
-	public static String encode(Object value, String charsetName) {
-		if (value == null) {
-			return null;
-		}
-
-		try {
-			return URLEncoder.encode(value.toString(), charsetName);
-		} catch (UnsupportedEncodingException e) {
-			throw new NotSupportedException(e);
-		}
-	}
-
-	public static String encode(Object value) {
-		return encode(value, Constants.DEFAULT_CHARSET_NAME);
-	}
-
-	public static String decode(String value, String charsetName) {
-		if (value == null) {
-			return null;
-		}
-
-		try {
-			return URLDecoder.decode(value, charsetName);
-		} catch (UnsupportedEncodingException e) {
-			throw new NotSupportedException(e);
-		}
-	}
-
-	public static String decode(String value) {
-		return decode(value, Constants.DEFAULT_CHARSET_NAME);
-	}
-
-	public static String decode(String content, String charsetName, int count) throws UnsupportedEncodingException {
-		if (count <= 0) {
-			return content;
-		}
-
-		String newContent = content;
-		for (int i = 0; i < count; i++) {
-			newContent = decode(newContent, charsetName);
-		}
-		return newContent;
-	}
-
-	public static String encode(Object content, String charsetName, int count) throws UnsupportedEncodingException {
-		if (count <= 0 || content == null) {
-			return content == null ? null : content.toString();
-		}
-
-		String newContent = content.toString();
-		for (int i = 0; i < count; i++) {
-			newContent = encode(newContent, charsetName);
-		}
-		return newContent;
-	}
-
-	public static Map<String, String> paramsToMap(String params) {
-		Map<String, String> map = new Hashtable<String, String>();
-		if (params != null) {
-			String[] strs = params.split("&");
-			for (String str : strs) {
-				String[] temp = str.split("=");
-				if (temp.length == 2) {
-					map.put(temp[0], temp[1]);
-				}
-			}
-		}
-		return map;
 	}
 
 	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {
@@ -298,6 +80,12 @@ public final class HttpUtils {
 		return isSameOrigin(request.getURI(), UriComponentsBuilder.fromOriginHeader(origin).build().toUri());
 	}
 	
+	/**
+	 * 判断两个url是否同源
+	 * @param url1
+	 * @param url2
+	 * @return
+	 */
 	public static boolean isSameOrigin(String url1, String url2){
 		if(url1 == null || url2 == null){
 			return false;
@@ -314,6 +102,12 @@ public final class HttpUtils {
 		}
 	}
 
+	/**
+	 * 判断两个uri是否同源
+	 * @param uri1
+	 * @param uri2
+	 * @return
+	 */
 	public static boolean isSameOrigin(URI uri1, URI uri2) {
 		if(uri1 == null || uri2 == null){
 			return false;
@@ -370,6 +164,11 @@ public final class HttpUtils {
 		return null;
 	}
 	
+	/**
+	 * 将文件信息写入ContentDisposition
+	 * @param outputMessage
+	 * @param fileName
+	 */
 	public static void writeFileMessageHeaders(HttpOutputMessage outputMessage, String fileName) {
 		MimeType mimeType = FileMimeTypeUitls.getMimeType(fileName);
 		if (mimeType != null) {
@@ -380,7 +179,20 @@ public final class HttpUtils {
 		outputMessage.getHeaders().setContentDisposition(contentDisposition);
 	}
 	
+	/**
+	 * 写入一个静态资源
+	 * @param request
+	 * @param response
+	 * @param resource
+	 * @param mimeType
+	 * @throws IOException
+	 */
 	public static void writeStaticResource(ServerHttpRequest request, ServerHttpResponse response, Resource resource, MimeType mimeType) throws IOException{
+		if(!resource.exists()){
+			response.sendError(HttpStatus.NOT_FOUND.value(), "The resource does not exist!");
+			return ;
+		}
+		
 		if (mimeType != null) {
 			response.setContentType(mimeType);
 		}

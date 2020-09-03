@@ -8,13 +8,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.core.utils.XUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.servlet.ServletUtils;
+import scw.util.XUtils;
 
 public class Jsp extends AbstractPage {
 	private static final long serialVersionUID = 1L;

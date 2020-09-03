@@ -6,14 +6,13 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.core.Target;
-import scw.core.utils.XUtils;
 import scw.http.AbstractHttpOutputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.http.server.ServerHttpResponse;
-import scw.net.MimeType;
+import scw.util.Target;
+import scw.util.XUtils;
 
 public class ServletServerHttpResponse extends AbstractHttpOutputMessage implements ServerHttpResponse, Target {
 	private HttpServletResponse httpServletResponse;
@@ -44,34 +43,11 @@ public class ServletServerHttpResponse extends AbstractHttpOutputMessage impleme
 	public HttpHeaders getHeaders() {
 		return headers;
 	}
-
-	public String getCharacterEncoding() {
-		return httpServletResponse.getCharacterEncoding();
-	}
-	
-	@Override
-	public String getRawContentType() {
-		return httpServletResponse.getContentType();
-	}
 	
 	public boolean isCommitted() {
 		return httpServletResponse.isCommitted();
 	}
 	
-	public void setCharacterEncoding(String env) {
-		httpServletResponse.setCharacterEncoding(env);
-	}
-
-	@Override
-	public void setContentType(MimeType contentType) {
-		setContentType(contentType.toString());
-	}
-
-	@Override
-	public void setContentLength(long contentLength) {
-		httpServletResponse.setContentLength((int) contentLength);
-	}
-
 	public void sendError(int sc, String msg) throws IOException {
 		try {
 			httpServletResponse.sendError(sc, msg);
@@ -129,10 +105,6 @@ public class ServletServerHttpResponse extends AbstractHttpOutputMessage impleme
 		return httpServletResponse.getStatus();
 	}
 
-	public void setContentType(String contentType) {
-		httpServletResponse.setContentType(contentType);
-	}
-
 	public HttpServletResponse getHttpServletResponse() {
 		return httpServletResponse;
 	}
@@ -145,9 +117,6 @@ public class ServletServerHttpResponse extends AbstractHttpOutputMessage impleme
 	}
 
 	public void close() throws IOException {
-		headers.write();
-		if (bodyUse) {
-			httpServletResponse.flushBuffer();
-		}
+		flush();
 	}
 }

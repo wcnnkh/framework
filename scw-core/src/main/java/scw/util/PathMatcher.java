@@ -19,7 +19,7 @@ package scw.util;
 import java.util.Comparator;
 import java.util.Map;
 
-public interface PathMatcher {
+public interface PathMatcher extends StringMatcher{
 
 	/**
 	 * Does the given {@code path} represent a pattern that can be matched

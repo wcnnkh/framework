@@ -3,7 +3,6 @@ package scw.servlet.http;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.Principal;
@@ -18,10 +17,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import scw.core.Target;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XUtils;
 import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
@@ -39,6 +36,8 @@ import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
 import scw.util.LinkedCaseInsensitiveMap;
 import scw.util.MultiValueMap;
+import scw.util.Target;
+import scw.util.XUtils;
 
 public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		implements ServerHttpRequest, Target, RestfulParameterMapAware {
@@ -102,18 +101,9 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 				this.httpServletRequest.getRemotePort());
 	}
 
-	public void setCharacterEncoding(String enc) {
-		try {
-			httpServletRequest.setCharacterEncoding(enc);
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public HttpHeaders getHeaders() {
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
-
 			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names.hasMoreElements();) {
 				String headerName = (String) names.nextElement();
 				for (Enumeration<?> headerValues = httpServletRequest.getHeaders(headerName); headerValues
@@ -168,14 +158,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		return InetUtils.toURI(httpServletRequest.getRequestURI());
 	}
 
-	public long getContentLength() {
-		return httpServletRequest.getContentLength();
-	}
-
-	public String getCharacterEncoding() {
-		return httpServletRequest.getCharacterEncoding();
-	}
-
 	public BufferedReader getReader() throws IOException {
 		return httpServletRequest.getReader();
 	}
@@ -219,11 +201,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	public String getContextPath() {
 		return httpServletRequest.getContextPath();
-	}
-
-	@Override
-	public String getRawContentType() {
-		return httpServletRequest.getContentType();
 	}
 
 	public void setAttribute(String name, Object o) {

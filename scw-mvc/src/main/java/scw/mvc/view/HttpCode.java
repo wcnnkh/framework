@@ -19,11 +19,6 @@ public class HttpCode implements View {
 	}
 
 	public void render(HttpChannel httpChannel) throws IOException {
-		if (httpChannel.getResponse().getContentType() == null) {
-			httpChannel.getResponse()
-					.setContentType("text/html;charset=" + httpChannel.getResponse().getCharacterEncoding());
-		}
-
 		HttpStatus status = HttpStatus.valueOf(this.status);
 		Level level = status.isError() ? Level.WARN : Level.DEBUG;
 		if (logger.isLogEnable(level)) {

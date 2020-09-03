@@ -7,10 +7,8 @@ import java.net.URI;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.Assert;
-import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
-import scw.event.support.DynamicValue;
 import scw.http.ContentDisposition;
 import scw.http.HttpEntity;
 import scw.http.HttpHeaders;
@@ -30,9 +28,6 @@ import scw.net.InetUtils;
 import scw.net.message.converter.MultiMessageConverter;
 
 public abstract class AbstractHttpClient extends HttpClientConfigAccessor implements HttpClient {
-	static final DynamicValue<String> DEFAULT_UA = GlobalPropertyFactory.getInstance().getDynamicValue(
-			"scw.http.client.headers.ua", String.class,
-			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	static final HttpClientCookieManager COOKIE_MANAGER;
 
@@ -44,7 +39,7 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 		COOKIE_MANAGER = InstanceUtils.loadService(HttpClientCookieManager.class);
 	}
 	
-	protected final transient Logger logger = LoggerUtils.getLogger(getClass());
+	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
@@ -212,7 +207,7 @@ public abstract class AbstractHttpClient extends HttpClientConfigAccessor implem
 		return new ClientHttpRequestCallback() {
 
 			public void callback(ClientHttpRequest clientRequest) throws IOException {
-				clientRequest.getHeaders().set(HttpHeaders.USER_AGENT, DEFAULT_UA.getValue());
+				clientRequest.getHeaders().set(HttpHeaders.USER_AGENT, getUserAgent());
 				if (httpEntity != null) {
 					clientRequest.getHeaders().putAll(httpEntity.getHeaders());
 				}

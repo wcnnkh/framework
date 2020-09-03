@@ -3,8 +3,8 @@ package scw.security.login;
 import scw.core.Assert;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XUtils;
 import scw.data.TemporaryCache;
+import scw.util.XUtils;
 
 public abstract class AbstractLoginService<T> implements LoginService<T> {
 	private final TemporaryCache cacheService;

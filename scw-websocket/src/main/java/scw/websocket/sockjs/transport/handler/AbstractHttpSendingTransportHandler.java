@@ -17,7 +17,6 @@
 package scw.websocket.sockjs.transport.handler;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.regex.Pattern;
 
 import scw.core.utils.StringUtils;
@@ -36,7 +35,8 @@ import scw.websocket.sockjs.transport.SockJsSessionFactory;
 import scw.websocket.sockjs.transport.session.AbstractHttpSockJsSession;
 
 /**
- * Base class for HTTP transport handlers that push messages to connected clients.
+ * Base class for HTTP transport handlers that push messages to connected
+ * clients.
  *
  * @author Rossen Stoyanchev
  * @since 4.0
@@ -49,13 +49,12 @@ public abstract class AbstractHttpSendingTransportHandler extends AbstractTransp
 	 */
 	private static final Pattern CALLBACK_PARAM_PATTERN = Pattern.compile("[0-9A-Za-z_\\.]*");
 
-
-	public final void handleRequest(ServerHttpRequest request, ServerHttpResponse response,
-			WebSocketHandler wsHandler, SockJsSession wsSession) throws SockJsException {
+	public final void handleRequest(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
+			SockJsSession wsSession) throws SockJsException {
 
 		AbstractHttpSockJsSession sockJsSession = (AbstractHttpSockJsSession) wsSession;
 
-		String protocol = null;  // https://github.com/sockjs/sockjs-client/issues/130
+		String protocol = null; // https://github.com/sockjs/sockjs-client/issues/130
 		sockJsSession.setAcceptedProtocol(protocol);
 
 		// Set content type before writing
@@ -72,44 +71,37 @@ public abstract class AbstractHttpSendingTransportHandler extends AbstractTransp
 				logger.debug(request.getMethod() + " " + request.getURI());
 			}
 			sockJsSession.handleInitialRequest(request, response, getFrameFormat(request));
-		}
-		else if (sockJsSession.isClosed()) {
+		} else if (sockJsSession.isClosed()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Connection already closed (but not removed yet) for " + sockJsSession);
 			}
 			SockJsFrame frame = SockJsFrame.closeFrameGoAway();
 			try {
 				response.getBody().write(frame.getContentBytes());
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new SockJsException("Failed to send " + frame, sockJsSession.getId(), ex);
 			}
-		}
-		else if (!sockJsSession.isActive()) {
+		} else if (!sockJsSession.isActive()) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("Starting " + getTransportType() + " async request.");
 			}
 			sockJsSession.handleSuccessiveRequest(request, response, getFrameFormat(request));
-		}
-		else {
+		} else {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Another " + getTransportType() + " connection still open for " + sockJsSession);
 			}
 			String formattedFrame = getFrameFormat(request).format(SockJsFrame.closeFrameAnotherConnectionOpen());
 			try {
 				response.getBody().write(formattedFrame.getBytes(SockJsFrame.CHARSET));
-			}
-			catch (IOException ex) {
+			} catch (IOException ex) {
 				throw new SockJsException("Failed to send " + formattedFrame, sockJsSession.getId(), ex);
 			}
 		}
 	}
 
-
 	protected abstract MediaType getContentType();
 
 	protected abstract SockJsFrameFormat getFrameFormat(ServerHttpRequest request);
-
 
 	protected final String getCallbackParam(ServerHttpRequest request) {
 		String query = request.getURI().getQuery();
@@ -118,14 +110,9 @@ public abstract class AbstractHttpSendingTransportHandler extends AbstractTransp
 		if (StringUtils.isEmpty(value)) {
 			return null;
 		}
-		try {
-			String result = UriUtils.decode(value, "UTF-8");
-			return (CALLBACK_PARAM_PATTERN.matcher(result).matches() ? result : null);
-		}
-		catch (UnsupportedEncodingException ex) {
-			// should never happen
-			throw new SockJsException("Unable to decode callback query parameter", null, ex);
-		}
+		
+		String result = UriUtils.decode(value, "UTF-8");
+		return (CALLBACK_PARAM_PATTERN.matcher(result).matches() ? result : null);
 	}
 
 }
