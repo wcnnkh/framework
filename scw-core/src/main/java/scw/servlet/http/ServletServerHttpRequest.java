@@ -104,7 +104,6 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 	public HttpHeaders getHeaders() {
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
-
 			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names.hasMoreElements();) {
 				String headerName = (String) names.nextElement();
 				for (Enumeration<?> headerValues = httpServletRequest.getHeaders(headerName); headerValues

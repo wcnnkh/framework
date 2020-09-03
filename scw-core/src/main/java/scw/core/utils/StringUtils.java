@@ -23,8 +23,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -530,44 +528,6 @@ public final class StringUtils {
 	 */
 	public static String unqualify(String qualifiedName, char separator) {
 		return qualifiedName.substring(qualifiedName.lastIndexOf(separator) + 1);
-	}
-
-	/**
-	 * Capitalize a {@code String}, changing the first letter to upper case as
-	 * per {@link Character#toUpperCase(char)}. No other letters are changed.
-	 * 
-	 * @param str
-	 *            the String to capitalize, may be {@code null}
-	 * @return the capitalized String, {@code null} if null
-	 */
-	public static String capitalize(String str) {
-		return changeFirstCharacterCase(str, true);
-	}
-
-	/**
-	 * Uncapitalize a {@code String}, changing the first letter to lower case as
-	 * per {@link Character#toLowerCase(char)}. No other letters are changed.
-	 * 
-	 * @param str
-	 *            the String to uncapitalize, may be {@code null}
-	 * @return the uncapitalized String, {@code null} if null
-	 */
-	public static String uncapitalize(String str) {
-		return changeFirstCharacterCase(str, false);
-	}
-
-	private static String changeFirstCharacterCase(String str, boolean capitalize) {
-		if (str == null || str.length() == 0) {
-			return str;
-		}
-		StringBuilder sb = new StringBuilder(str.length());
-		if (capitalize) {
-			sb.append(Character.toUpperCase(str.charAt(0)));
-		} else {
-			sb.append(Character.toLowerCase(str.charAt(0)));
-		}
-		sb.append(str.substring(1));
-		return sb.toString();
 	}
 
 	/**
@@ -1609,39 +1569,16 @@ public final class StringUtils {
 		return true;
 	}
 
-	/**
-	 * 检测字符串,只能中\英文\数字
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public static boolean checkName(String name, int len) {
-		String reg = "^[\\u4E00-\\u9FA5\\uF900-\\uFA2D\\w]{1," + len + "}$";
-		Pattern p = Pattern.compile(reg);
-		Matcher m = p.matcher(name);
-		return m.matches();
-	}
-
-	/**
-	 * 隐藏部分手机号
-	 * 
-	 * @param phone
-	 * @return
-	 */
-	public static String hidePhone(String phone) {
-		return phone.replaceAll("(\\d{3})\\d{4}(\\d{4})", "$1****$2");
-	}
-
-	public static String toUpperCase(String str, int begin, int end) {
-		char[] chars = str.toCharArray();
+	public static String toUpperCase(String text, int begin, int end) {
+		char[] chars = text.toCharArray();
 		for (int i = begin; i < end; i++) {
 			chars[i] = Character.toUpperCase(chars[i]);
 		}
 		return new String(chars);
 	}
 
-	public static String toLowerCase(String str, int begin, int end) {
-		char[] chars = str.toCharArray();
+	public static String toLowerCase(String text, int begin, int end) {
+		char[] chars = text.toCharArray();
 		for (int i = begin; i < end; i++) {
 			chars[i] = Character.toLowerCase(chars[i]);
 		}

@@ -29,7 +29,7 @@ import scw.logger.LoggerUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
-import scw.util.StringMatcher;
+import scw.util.DefaultStringMatcher;
 import scw.value.Value;
 import scw.value.property.DynamicMap;
 import scw.value.property.DynamicMap.ValueCreator;
@@ -1417,7 +1417,7 @@ public class HttpHeaders extends Headers {
 	}
 
 	private boolean matchHeader(String name, String value, String match) {
-		boolean b = StringMatcher.DEFAULT.match(value, match);
+		boolean b = DefaultStringMatcher.getInstance().match(match, value);
 		if (logger.isDebugEnabled()) {
 			logger.debug("check ajax header name={}, value={}, match={}, result={}", name, value, match, b);
 		}

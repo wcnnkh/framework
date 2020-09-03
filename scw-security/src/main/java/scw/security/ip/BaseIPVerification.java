@@ -11,11 +11,21 @@ import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
 
 public class BaseIPVerification extends HashSet<String> implements IPVerification {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerUtils.getLogger(getClass());
+	private StringMatcher matcher = DefaultStringMatcher.getInstance();
+	
+	public StringMatcher getMatcher() {
+		return matcher;
+	}
+
+	public void setMatcher(StringMatcher matcher) {
+		this.matcher = matcher;
+	}
 
 	protected void appendIPFile(String path) {
 		Resource resource = ResourceUtils.getResourceOperations().getResource(path);
@@ -54,7 +64,7 @@ public class BaseIPVerification extends HashSet<String> implements IPVerificatio
 
 	protected final boolean testIp(String matchIp) {
 		for (String ip : this) {
-			if (StringMatcher.DEFAULT.match(ip, matchIp)) {
+			if (getMatcher().match(ip, matchIp)) {
 				return true;
 			}
 		}

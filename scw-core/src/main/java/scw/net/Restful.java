@@ -7,9 +7,9 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XUtils;
 import scw.http.server.ServerHttpRequest;
+import scw.util.DefaultStringMatcher;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
-import scw.util.StringMatcher;
 
 /**
  * REST全称是Representational State Transfer，中文意思是表述（编者注：通常译为表征）性状态转移。 <br/>
@@ -180,7 +180,7 @@ public final class Restful {
 			Assert.requiredArgument(path != null, "path");
 			this.targetPath = path;
 			this.placeholder = path.startsWith(PLACEHOLDER_BEGIN) && path.endsWith(PLACEHOLDER_END);
-			this.wildcard = StringMatcher.DEFAULT.isPattern(path);
+			this.wildcard = DefaultStringMatcher.getInstance().isPattern(path);
 			this.path = placeholder
 					? path.substring(PLACEHOLDER_BEGIN.length(), path.length() - PLACEHOLDER_END.length()) : path;
 		}
@@ -203,7 +203,7 @@ public final class Restful {
 
 		public boolean match(String path) {
 			if (isWildcard()) {
-				return StringMatcher.DEFAULT.match(this.path, path);
+				return DefaultStringMatcher.getInstance().match(this.path, path);
 			} else if (isPlaceholder()) {
 				return true;
 			} else {

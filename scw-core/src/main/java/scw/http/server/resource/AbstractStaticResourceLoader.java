@@ -23,7 +23,7 @@ public abstract class AbstractStaticResourceLoader implements StaticResourceLoad
 	public AbstractStaticResourceLoader(PropertyFactory propertyFactory) {
 		this(propertyFactory.getString("http.static.resource.root"),
 				propertyFactory.getObject("http.static.resource.path", String[].class),
-				propertyFactory.getString("http.static.resource.default.name"), new DefaultStringMatcher());
+				propertyFactory.getString("http.static.resource.default.name"), DefaultStringMatcher.getInstance());
 	}
 
 	public AbstractStaticResourceLoader(String resourceRoot, String[] resourcePath, String defaultFileName,

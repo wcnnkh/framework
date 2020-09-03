@@ -16,7 +16,7 @@ public class DefaultStaticResourceLoader extends AbstractStaticResourceLoader {
 	}
 
 	public DefaultStaticResourceLoader(String root, String... paths) {
-		this(root, paths, null, null, new DefaultStringMatcher());
+		this(root, paths, null, null, DefaultStringMatcher.getInstance());
 	}
 
 	public DefaultStaticResourceLoader(String resourceRoot, String[] resourcePath, String defaultFileName,

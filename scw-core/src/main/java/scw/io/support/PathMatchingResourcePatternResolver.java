@@ -509,7 +509,7 @@ public class PathMatchingResourcePatternResolver implements
 					if (prefixIndex == 1) {
 						// Possibly "c:" drive prefix on Windows, to be
 						// upper-cased for proper duplicate detection
-						filePath = StringUtils.capitalize(filePath);
+						filePath = StringUtils.toUpperCase(filePath, 0, 1);
 					}
 					UrlResource jarResource = new UrlResource(
 							ResourceUtils.JAR_URL_PREFIX

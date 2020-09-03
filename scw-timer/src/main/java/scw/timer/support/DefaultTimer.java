@@ -22,6 +22,7 @@ import scw.timer.TaskConfig;
 import scw.timer.TaskContext;
 import scw.timer.TaskFactory;
 import scw.timer.TaskLockFactory;
+import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
 
 /**
@@ -37,7 +38,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 	private final java.util.Timer timer;
 	private final ExecutorService executorService;
 	private final TaskFactory taskFactory;
-	private StringMatcher matcher = StringMatcher.DEFAULT;
+	private StringMatcher matcher = DefaultStringMatcher.getInstance();
 
 	public DefaultTimer(TaskLockFactory taskLockFactory, ExecutorService executorService, TaskFactory taskFactory) {
 		this.taskLockFactory = taskLockFactory;

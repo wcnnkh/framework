@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
+import scw.util.DefaultStringMatcher;
 import scw.util.KeyValuePair;
 import scw.util.StringMatcher;
 
@@ -30,6 +31,10 @@ public class CorsRegistry {
 		}
 	});
 	private final StringMatcher matcher;
+	
+	public CorsRegistry() {
+		this(DefaultStringMatcher.getInstance());
+	}
 
 	public CorsRegistry(StringMatcher matcher) {
 		this.matcher = matcher;
@@ -40,10 +45,11 @@ public class CorsRegistry {
 	}
 
 	public void addMapping(String path, Cors cors) {
+		Cors corsToUse = cors.clone().readyOnly();
 		if (matcher.isPattern(path)) {
-			matchers.add(new KeyValuePair<String, Cors>(path, cors));
+			matchers.add(new KeyValuePair<String, Cors>(path, corsToUse));
 		} else {
-			corsMap.put(path, cors);
+			corsMap.put(path, corsToUse);
 		}
 	}
 

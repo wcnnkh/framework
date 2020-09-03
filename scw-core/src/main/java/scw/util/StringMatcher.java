@@ -2,12 +2,11 @@ package scw.util;
 
 /**
  * 字符串匹配
+ * 
  * @author shuchaowen
  *
  */
 public interface StringMatcher {
-	static final StringMatcher DEFAULT = new DefaultStringMatcher();
-	
 	/**
 	 * Does the given {@code text} represent a pattern that can be matched by an
 	 * implementation of this interface?

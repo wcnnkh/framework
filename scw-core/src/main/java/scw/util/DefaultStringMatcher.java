@@ -1,6 +1,5 @@
 package scw.util;
 
-import scw.core.Assert;
 import scw.core.utils.StringUtils;
 
 /**
@@ -11,9 +10,14 @@ import scw.core.utils.StringUtils;
  *
  */
 public class DefaultStringMatcher implements StringMatcher {
-	private static final char ALL = '*';
-	private static final char SINGLE_WILDCARD = '?';
-	private static final String NOT_PREFIX = "!";
+	private static final DefaultStringMatcher INSTANCE = new DefaultStringMatcher();
+	
+	public static DefaultStringMatcher getInstance(){
+		return INSTANCE;
+	}
+	
+	private DefaultStringMatcher() {
+	}
 
 	private boolean testInternal(String text, String match) {
 		if (text == null) {
@@ -62,7 +66,7 @@ public class DefaultStringMatcher implements StringMatcher {
 				}
 
 				String c = text.substring(a, end);
-				if (test(c, v, SINGLE_WILDCARD, false)) {
+				if (test(c, v, '?', false)) {
 					b = true;
 					break;
 				}
@@ -78,7 +82,7 @@ public class DefaultStringMatcher implements StringMatcher {
 		return true;
 	}
 
-	public static boolean test(String text, String match, char matchChar, boolean multiple) {
+	private boolean test(String text, String match, char matchChar, boolean multiple) {
 		if (match.indexOf(matchChar) == -1) {
 			return text.equals(match);
 		}
@@ -128,19 +132,17 @@ public class DefaultStringMatcher implements StringMatcher {
 
 	public boolean isPattern(String text) {
 		return !StringUtils.isEmpty(text)
-				&& (text.indexOf(NOT_PREFIX) != -1 || text.indexOf(SINGLE_WILDCARD) != -1 || text.indexOf(ALL) != -1);
+				&& (text.indexOf("!") != -1 || text.indexOf("?") != -1 || text.indexOf("*") != -1);
 	}
 
 	public boolean match(String pattern, String text) {
-		Assert.requiredArgument(pattern != null, "pattern");
-
 		if (StringUtils.isEmpty(pattern)) {
 			return false;
 		}
 
-		if (pattern.startsWith(NOT_PREFIX)) {
+		if (pattern.startsWith("!")) {
 			// 是否进行'非'处理
-			return !testInternal(text, pattern.substring(NOT_PREFIX.length()));
+			return !testInternal(text, pattern.substring(1));
 		}
 		return testInternal(text, pattern);
 	}

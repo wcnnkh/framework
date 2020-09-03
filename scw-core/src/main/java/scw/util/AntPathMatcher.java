@@ -63,13 +63,6 @@ import scw.core.utils.StringUtils;
  * that users of this implementation to sanitize patterns in order to prefix
  * them with "/" as it makes sense in the context in which they're used.
  *
- * @author Alef Arendsen
- * @author Juergen Hoeller
- * @author Rob Harrop
- * @author Arjen Poutsma
- * @author Rossen Stoyanchev
- * @author Sam Brannen
- * @since 16.07.2003
  */
 public class AntPathMatcher implements PathMatcher {
 
@@ -109,7 +102,6 @@ public class AntPathMatcher implements PathMatcher {
 	/**
 	 * A convenient, alternative constructor to use with a custom path separator.
 	 * @param pathSeparator the path separator to use, must not be {@code null}.
-	 * @since 4.1
 	 */
 	public AntPathMatcher(String pathSeparator) {
 		Assert.notNull(pathSeparator, "'pathSeparator' is required");
@@ -153,7 +145,6 @@ public class AntPathMatcher implements PathMatcher {
 	 * turn it off when encountering too many patterns to cache at runtime
 	 * (the threshold is 65536), assuming that arbitrary permutations of patterns
 	 * are coming in, with little chance for encountering a recurring pattern.
-	 * @since 4.0.1
 	 * @see #getStringMatcher(String)
 	 */
 	public void setCachePatterns(boolean cachePatterns) {
