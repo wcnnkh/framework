@@ -25,13 +25,21 @@ public final class DBManager {
 	 * @param clazz
 	 * @param db
 	 */
-	public synchronized static void register(Class<?> clazz, DB db) {
-		if (CLASS_TO_DB.containsKey(clazz)) {
-			DB originDB = CLASS_TO_DB.get(clazz);
-			throw new AlreadyExistsException(clazz + "已经存在了:" + originDB.getClass().getName());
-		}
+	public static void register(Class<?> clazz, DB db) {
+		synchronized (CLASS_TO_DB) {
+			if (CLASS_TO_DB.containsKey(clazz)) {
+				DB originDB = CLASS_TO_DB.get(clazz);
+				throw new AlreadyExistsException(clazz + "已经存在了:" + originDB.getClass().getName());
+			}
 
-		CLASS_TO_DB.put(clazz, db);
+			CLASS_TO_DB.put(clazz, db);
+		}
+	}
+
+	public static boolean unregister(Class<?> clazz) {
+		synchronized (CLASS_TO_DB) {
+			return CLASS_TO_DB.remove(clazz) != null;
+		}
 	}
 
 	/**
