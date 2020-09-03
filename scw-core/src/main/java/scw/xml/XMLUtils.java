@@ -47,6 +47,7 @@ import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.KeyValuePair;
 import scw.util.ToMap;
+import scw.util.XUtils;
 import scw.value.ValueUtils;
 import scw.value.property.PropertyFactory;
 
@@ -362,7 +363,7 @@ public final class XMLUtils {
 				appendElement(document, parent, name, item);
 			}
 		} else if (value instanceof ToMap) {
-			appendElement(document, parent, ((ToMap) value).toMap());
+			appendElement(document, parent, XUtils.toMap(value, false));
 		} else if (value.getClass().isArray()) {
 			for (int i = 0, len = Array.getLength(value); i < len; i++) {
 				appendElement(document, parent, name, Array.get(value, i));

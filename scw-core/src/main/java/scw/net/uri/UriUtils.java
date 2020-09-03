@@ -13,10 +13,9 @@ import scw.core.Constants;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
-import scw.json.JSONSupport;
 import scw.util.MultiValueMap;
-import scw.util.ToMap;
+import scw.util.XUtils;
+import scw.value.ValueUtils;
 
 public class UriUtils {
 	/**
@@ -221,27 +220,20 @@ public class UriUtils {
 		return UriComponentsBuilder.newInstance().query(queryString).build().getQueryParams();
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static String toQueryString(Object body, String charsetName, JSONSupport jsonSupport) {
+	public static String toQueryString(Object body, String charsetName) {
 		if (body == null) {
 			return null;
 		}
 
-		if (body instanceof String || TypeUtils.isPrimitiveOrWrapper(body.getClass())) {
+		if (ValueUtils.isBaseType(body.getClass())) {
 			return body.toString();
-		} else if (body instanceof ToMap) {
-			return toQueryString(((ToMap) body).toMap(), charsetName);
-		} else if (body instanceof Map) {
-			return toQueryString((Map) body, charsetName);
-		} else {
-			String json = jsonSupport.toJSONString(body);
-			Map map = jsonSupport.parseObject(json, Map.class);
-			return toQueryString(map, charsetName);
 		}
+
+		return toQueryString(XUtils.toMap(body), charsetName);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static String toQueryString(String key, Collection values, String charsetName) {
+	private static String toQueryString(String key, Collection values, String charsetName) {
 		if (StringUtils.isEmpty(key) || CollectionUtils.isEmpty(values)) {
 			return null;
 		}
@@ -265,6 +257,11 @@ public class UriUtils {
 			}
 		}
 		return sb.toString();
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static String toQueryString(Map parameterMap) {
+		return toQueryString(parameterMap, Constants.UTF_8.name());
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -302,6 +299,18 @@ public class UriUtils {
 			sb.append(text);
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * The World Wide Web Consortium Recommendation states that UTF-8 should be
+	 * used.
+	 * 
+	 * @param url
+	 * @param paramMap
+	 * @return
+	 */
+	public static String appendQueryParams(String url, Map<String, ?> paramMap) {
+		return appendQueryParams(url, paramMap, Constants.UTF_8.name());
 	}
 
 	/**

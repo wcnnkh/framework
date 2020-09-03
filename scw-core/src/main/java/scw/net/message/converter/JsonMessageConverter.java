@@ -42,14 +42,13 @@ public final class JsonMessageConverter extends AbstractMessageConverter<Object>
 		writeTextBody(text, contentType, outputMessage);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static String toJsonString(Object body, JSONSupport jsonSupport) {
 		if (body == null) {
 			return null;
 		}
 
 		if (body instanceof ToMap) {
-			return jsonSupport.toJSONString(XUtils.toMap((ToMap) body));
+			return jsonSupport.toJSONString(XUtils.toMap(body));
 		} else {
 			return jsonSupport.toJSONString(body);
 		}

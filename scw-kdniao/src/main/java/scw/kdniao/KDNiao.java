@@ -82,7 +82,7 @@ public class KDNiao {
 	 * @param businessParameterMap
 	 * @return
 	 */
-	public String doRequest(String requestUrl, String requestType, Map<String, ?> businessParameterMap) {
+	public String doRequest(String requestUrl, String requestType, Map<?, ?> businessParameterMap) {
 		String requestData = JSONUtils.toJSONString(businessParameterMap);
 		Map<String, String> parameterMap = new LinkedHashMap<String, String>(8, 1);
 		parameterMap.put("RequestData", UriUtils.encode(requestData, CHARSET_NAME));

@@ -50,37 +50,29 @@ public abstract class Mapper {
 		return fieldMetadatas.clone();
 	}
 
-	protected boolean acceptInternal(Field field, FieldFilter filter, FilterFeature... filterFeatures) {
-		if (filterFeatures != null && filterFeatures.length != 0) {
-			for (FilterFeature filterFeature : filterFeatures) {
-				if (filterFeature != null && !filterFeature.getFilter().accept(field)) {
-					return false;
-				}
-			}
-		}
-		return filter == null || filter.accept(field);
+	public final Map<String, Object> getFieldValueMap(Object entity, FieldFilter fieldFilter) {
+		return getFieldValueMap(entity, fieldFilter, null);
 	}
 
-	public final Map<String, Object> getFieldValueMap(Object entity, final FieldFilter fieldFilter) {
+	public final Map<String, Object> getFieldValueMap(Object entity, FieldFilter fieldFilter, NameGetter nameGetter) {
 		if (entity == null) {
 			return Collections.emptyMap();
 		}
 
-		final Map<String, Object> map = new LinkedHashMap<String, Object>();
-		for (Field field : getFields(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), true, null,
-				new FieldFilter() {
+		Map<String, Object> map = new LinkedHashMap<String, Object>();
+		Fields fields = getFields(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()),
+				FilterFeature.GETTER.getFilter(), fieldFilter);
+		for (Field field : fields) {
+			String name = nameGetter == null ? field.getGetter().getName() : nameGetter.getName(field);
+			if (map.containsKey(name)) {
+				continue;
+			}
 
-					public boolean accept(Field field) {
-						return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
-								&& !map.containsKey(field.getGetter().getName()) && acceptInternal(field, fieldFilter);
-					}
-				})) {
 			Object value = field.getGetter().get(entity);
 			if (value == null) {
 				continue;
 			}
-
-			map.put(field.getGetter().getName(), value);
+			map.put(name, value);
 		}
 		return map;
 	}
@@ -239,9 +231,8 @@ public abstract class Mapper {
 			}
 		};
 	}
-	
-	public final void testFields(Object instance, FieldTest test)
-			throws IllegalArgumentException{
+
+	public final void testFields(Object instance, FieldTest test) throws IllegalArgumentException {
 		testFields(instance, false, test);
 	}
 
@@ -260,20 +251,20 @@ public abstract class Mapper {
 		}
 
 		for (scw.mapper.Field field : getFields(instance.getClass(), useSuperClass, FilterFeature.GETTER.getFilter())) {
-			if(field.getGetter().getField() == null){
+			if (field.getGetter().getField() == null) {
 				continue;
 			}
-			
+
 			if (AnnotationUtils.isNullable(field.getGetter().getAnnotatedElement(), false)) {
 				continue;
 			}
 
 			Object value = field.getGetter().get(instance);
-			if(ObjectUtils.isEmpty(value)){
+			if (ObjectUtils.isEmpty(value)) {
 				throw new IllegalArgumentException(field.getGetter().toString());
 			}
-			
-			if(test == null || test.test(field, value)){
+
+			if (test == null || test.test(field, value)) {
 				continue;
 			}
 

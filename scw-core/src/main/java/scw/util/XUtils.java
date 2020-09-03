@@ -15,6 +15,9 @@ import java.util.UUID;
 import scw.core.Converter;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.NotSupportedException;
+import scw.mapper.MapperUtils;
+import scw.value.ValueUtils;
 
 public final class XUtils {
 	private XUtils() {
@@ -46,36 +49,71 @@ public final class XUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <K> Map<K, Object> toMap(ToMap<? extends K, ?> toMap) {
-		if (toMap == null) {
-			return null;
+	/**
+	 * 递归解析
+	 * 
+	 * @param instance
+	 * @return
+	 */
+	@SuppressWarnings("rawtypes")
+	public static Map toMap(Object instance) {
+		return toMap(instance, true);
+	}
+
+	/**
+	 * 将对象转换为map
+	 * 
+	 * @see ValueUtils#isBaseType(Class) 此类型无法解析
+	 * @param instance
+	 * @param recursion
+	 *            是否递归
+	 * @return
+	 */
+	@SuppressWarnings({ "rawtypes" })
+	public static Map toMap(Object instance, boolean recursion) {
+		if (instance == null) {
+			return Collections.emptyMap();
 		}
 
-		Map<? extends K, ?> map = toMap.toMap();
-		if (map == null) {
-			return null;
+		if (instance instanceof ToMap) {
+			ToMap toMap = (ToMap) instance;
+			return recursion ? parseMap(toMap.toMap()) : toMap.toMap();
+		} else if (instance instanceof Map) {
+			return parseMap((Map) instance);
 		}
 
-		if (map.isEmpty()) {
+		if (ValueUtils.isBaseType(instance.getClass())) {
+			throw new NotSupportedException(instance.getClass().getName());
+		}
+
+		Map<String, Object> valueMap = MapperUtils.getMapper().getFieldValueMap(instance);
+		return recursion ? parseMap(valueMap) : valueMap;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private static Map parseMap(Map map) {
+		if (CollectionUtils.isEmpty(map)) {
 			return Collections.EMPTY_MAP;
 		}
 
-		Map<K, Object> valueMap = new LinkedHashMap<K, Object>();
-		for (Entry<? extends K, ?> entry : map.entrySet()) {
-			valueMap.put(entry.getKey(), toParameterMapTransformation(entry.getValue()));
+		Set<Entry> entries = map.entrySet();
+		Map valueMap = new LinkedHashMap();
+		for (Entry entry : entries) {
+			valueMap.put(entry.getKey(), parseValue(entry.getValue()));
 		}
 		return valueMap;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Object toParameterMapTransformation(Object value) {
+	@SuppressWarnings({ "rawtypes" })
+	private static Object parseValue(Object value) {
 		if (value == null) {
 			return value;
 		}
 
-		if (value instanceof ToMap) {
-			return toMap((ToMap) value);
+		if (ValueUtils.isBaseType(value.getClass())) {
+			return value;
+		} else if (value instanceof ToMap) {
+			return parseMap(((ToMap) value).toMap());
 		} else if (value instanceof Collection) {
 			Collection list = (Collection) value;
 			if (CollectionUtils.isEmpty(list)) {
@@ -84,35 +122,26 @@ public final class XUtils {
 
 			List<Object> newList = new ArrayList<Object>(list.size());
 			for (Object v : list) {
-				Object tmp = toParameterMapTransformation(v);
-				if (tmp == null) {
-					continue;
-				}
-				newList.add(tmp);
+				newList.add(parseValue(v));
 			}
 			return newList;
 		} else if (value instanceof Map) {
-			Map map = (Map) value;
-			if (CollectionUtils.isEmpty(map)) {
-				return value;
-			}
-
-			Set<Map.Entry> set = map.entrySet();
-			for (Map.Entry entry : set) {
-				entry.setValue(toParameterMapTransformation(entry.getValue()));
-			}
+			return parseMap((Map) value);
 		} else if (value.getClass().isArray()) {
 			int len = Array.getLength(value);
 			if (len == 0) {
 				return value;
 			}
 
+			Object[] array = new Object[len];
 			for (int i = 0; i < len; i++) {
-				Object v = Array.get(value, i);
-				Array.set(value, i, toParameterMapTransformation(v));
+				array[i] = parseValue(Array.get(value, i));
 			}
+			return array;
+		} else {
+			Map<String, Object> valueMap = MapperUtils.getMapper().getFieldValueMap(value);
+			return parseMap(valueMap);
 		}
-		return value;
 	}
 
 	public static void appendToMap(Properties properties, Map<String, String> map) {
