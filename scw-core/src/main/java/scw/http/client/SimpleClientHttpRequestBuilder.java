@@ -55,7 +55,7 @@ public class SimpleClientHttpRequestBuilder extends HttpClientConfigAccessor imp
 		this.proxy = proxy;
 	}
 
-	public ClientHttpRequest builder() throws IOException {
+	public ClientHttpRequest build() throws IOException {
 		SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
 		if (getSslSocketFactory() != null) {
 			clientHttpRequestFactory.setSSLSocketFactory(getSslSocketFactory());
