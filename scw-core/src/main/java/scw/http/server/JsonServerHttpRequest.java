@@ -128,7 +128,6 @@ public class JsonServerHttpRequest extends ServerHttpRequestWrapper {
 		sb.append(body);
 		sb.append(IOUtils.LINE_SEPARATOR);
 		sb.append(new SplitLineAppend("request json end"));
-		sb.append(IOUtils.LINE_SEPARATOR);
 		return sb.toString();
 	}
 }
