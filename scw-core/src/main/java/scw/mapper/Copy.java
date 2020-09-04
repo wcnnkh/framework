@@ -7,12 +7,15 @@ import java.lang.reflect.Modifier;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.ArrayUtils;
 
 @SuppressWarnings("unchecked")
 public class Copy {
 	static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 	private NoArgsInstanceFactory instanceFactory = InstanceUtils.INSTANCE_FACTORY;
 	private Mapper mapper = MapperUtils.getMapper();
+	private FieldFilter[] filters;
+
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
 	 */
@@ -21,6 +24,11 @@ public class Copy {
 	 * 当使用克隆的时候默认不克隆transient修辞符字段
 	 */
 	private boolean cloneTransientField = false;
+
+	/**
+	 * 默认忽略静态字段
+	 */
+	private boolean ignoreStaticField = true;
 
 	/**
 	 * 是否要求字段泛型相同
@@ -36,16 +44,41 @@ public class Copy {
 		return clone;
 	}
 
-	public void setClone(boolean clone) {
+	public Copy setClone(boolean clone) {
 		this.clone = clone;
+		return this;
 	}
 
 	public final Mapper getMapper() {
 		return mapper;
 	}
 
-	public void setMapper(Mapper mapper) {
+	public Copy setMapper(Mapper mapper) {
 		this.mapper = mapper;
+		return this;
+	}
+
+	public final boolean isIgnoreStaticField() {
+		return ignoreStaticField;
+	}
+
+	public Copy setIgnoreStaticField(boolean ignoreStaticField) {
+		this.ignoreStaticField = ignoreStaticField;
+		return this;
+	}
+
+	public final FieldFilter[] getFilters() {
+		return filters == null ? new FieldFilter[0] : filters.clone();
+	}
+
+	public Copy setFilters(FieldFilter... filters) {
+		this.filters = filters;
+		return this;
+	}
+
+	public Copy addFilters(FieldFilter... filters) {
+		this.filters = ArrayUtils.merge(this.filters, filters);
+		return this;
 	}
 
 	/**
@@ -62,16 +95,18 @@ public class Copy {
 	 * 
 	 * @param invokeCloneableMethod
 	 */
-	public void setInvokeCloneableMethod(boolean invokeCloneableMethod) {
+	public Copy setInvokeCloneableMethod(boolean invokeCloneableMethod) {
 		this.invokeCloneableMethod = invokeCloneableMethod;
+		return this;
 	}
 
 	public final NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory;
 	}
 
-	public void setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
+	public Copy setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
+		return this;
 	}
 
 	/**
@@ -88,8 +123,9 @@ public class Copy {
 	 * 
 	 * @param cloneTransientField
 	 */
-	public void setCloneTransientField(boolean cloneTransientField) {
+	public Copy setCloneTransientField(boolean cloneTransientField) {
 		this.cloneTransientField = cloneTransientField;
+		return this;
 	}
 
 	/**
@@ -106,15 +142,16 @@ public class Copy {
 	 * 
 	 * @param genericTypeEqual
 	 */
-	public void setGenericTypeEqual(boolean genericTypeEqual) {
+	public Copy setGenericTypeEqual(boolean genericTypeEqual) {
 		this.genericTypeEqual = genericTypeEqual;
+		return this;
 	}
 
-	protected Object cloneArray(Class<?> sourceClass, Object array, Field parentField, FieldFilter... filters) {
+	protected Object cloneArray(Class<?> sourceClass, Object array, Field parentField) {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(sourceClass.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, copy(Array.get(array, i), parentField, filters));
+			Array.set(newArr, i, copy(Array.get(array, i), parentField));
 		}
 		return newArr;
 	}
@@ -158,7 +195,7 @@ public class Copy {
 	}
 
 	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source,
-			Field parentField, FieldFilter... filters) {
+			Field parentField) {
 		Fields sourceFields = mapper.getFields(sourceClass, parentField, filters);
 		for (Field field : mapper.getFields(targetClass, parentField, filters)) {
 			if (!field.isSupportSetter()) {
@@ -169,6 +206,11 @@ public class Copy {
 			 * 目标字段应该存在实际的java.lang.Field
 			 */
 			if (field.getSetter().getField() == null) {
+				continue;
+			}
+
+			// 是否忽略静态字段
+			if (isIgnoreStaticField() && Modifier.isStatic(field.getSetter().getModifiers())) {
 				continue;
 			}
 
@@ -185,10 +227,10 @@ public class Copy {
 			if (isClone()) {
 				if (Modifier.isTransient(field.getSetter().getModifiers())) {
 					if (isCloneTransientField()) {
-						value = copy(value, field, filters);
+						value = copy(value, field);
 					}
 				} else {
-					value = copy(value, field, filters);
+					value = copy(value, field);
 				}
 			}
 
@@ -196,8 +238,7 @@ public class Copy {
 		}
 	}
 
-	public <T, S> T copy(Class<? extends T> targetClass, Class<? extends S> sourceClass, S source, Field parentField,
-			FieldFilter... filters) {
+	public <T, S> T copy(Class<? extends T> targetClass, Class<? extends S> sourceClass, S source, Field parentField) {
 		if (!getInstanceFactory().isInstance(targetClass)) {
 			return (T) source;
 		}
@@ -207,11 +248,11 @@ public class Copy {
 			return target;
 		}
 
-		copy(targetClass, target, sourceClass, source, parentField, filters);
+		copy(targetClass, target, sourceClass, source, parentField);
 		return target;
 	}
 
-	public <T> T copy(T source, Field parentField, FieldFilter... filters) {
+	public <T> T copy(T source, Field parentField) {
 		if (source == null) {
 			return null;
 		}
@@ -224,11 +265,11 @@ public class Copy {
 		if (sourceClass.isPrimitive() || sourceClass.isEnum()) {
 			return source;
 		} else if (sourceClass.isArray()) {
-			return (T) cloneArray(sourceClass, source, parentField, filters);
+			return (T) cloneArray(sourceClass, source, parentField);
 		} else if (isInvokeCloneableMethod() && source instanceof Cloneable) {
 			return (T) ReflectionUtils.invokeMethod(CLONE_METOHD, source);
 		}
-		return copy(sourceClass, sourceClass, source, parentField, filters);
+		return copy(sourceClass, sourceClass, source, parentField);
 	}
 
 	private static final Copy DEFAULT_COPY = new Copy();
@@ -238,24 +279,12 @@ public class Copy {
 		CLONE_COPY.setClone(true);
 	}
 
-	public static <T> T clone(T source, FieldFilter... filters) {
-		return CLONE_COPY.copy(source, null, filters);
-	}
-
 	public static <T> T clone(T source) {
-		return clone(source, FilterFeature.IGNORE_STATIC.getFilter());
-	}
-
-	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldFilter... filters) {
-		return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null, filters);
+		return CLONE_COPY.copy(source, null);
 	}
 
 	public static <T> T copy(Class<? extends T> targetClass, Object source) {
-		return copy(targetClass, source, FilterFeature.IGNORE_STATIC.getFilter());
-	}
-
-	public static void copy(Object target, Object source, FieldFilter... filters) {
-		DEFAULT_COPY.copy(target.getClass(), target, source.getClass(), source, null, filters);
+		return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null);
 	}
 
 	/**
@@ -265,6 +294,6 @@ public class Copy {
 	 * @param source
 	 */
 	public static void copy(Object target, Object source) {
-		copy(target, source, FilterFeature.IGNORE_STATIC.getFilter());
+		DEFAULT_COPY.copy(target.getClass(), target, source.getClass(), source, null);
 	}
 }
