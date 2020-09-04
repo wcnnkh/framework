@@ -23,7 +23,7 @@ public class ServletServerHttpResponse extends AbstractHttpOutputMessage impleme
 		this.httpServletResponse = httpServletResponse;
 		this.headers = new HttpServletResponseHeaders(httpServletResponse);
 	}
-	
+
 	public <T> T getTarget(Class<T> targetType) {
 		return XUtils.getTarget(httpServletResponse, targetType);
 	}
@@ -43,11 +43,11 @@ public class ServletServerHttpResponse extends AbstractHttpOutputMessage impleme
 	public HttpHeaders getHeaders() {
 		return headers;
 	}
-	
+
 	public boolean isCommitted() {
 		return httpServletResponse.isCommitted();
 	}
-	
+
 	public void sendError(int sc, String msg) throws IOException {
 		try {
 			httpServletResponse.sendError(sc, msg);
@@ -59,26 +59,19 @@ public class ServletServerHttpResponse extends AbstractHttpOutputMessage impleme
 	}
 
 	public void addCookie(HttpCookie cookie) {
-		if (cookie instanceof ServletHttpCookie) {
-			httpServletResponse.addCookie(((ServletHttpCookie) cookie).getCookie());
-		} else if (cookie instanceof javax.servlet.http.Cookie) {
-			httpServletResponse.addCookie((javax.servlet.http.Cookie) cookie);
-		} else {
-			javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
-
-			if (cookie.getMaxAge() >= 0) {
-				c.setMaxAge(cookie.getMaxAge());
-			}
-
-			if (cookie.getPath() != null) {
-				c.setPath(cookie.getPath());
-			}
-
-			if (cookie.getDomain() != null) {
-				c.setDomain(cookie.getDomain());
-			}
-			httpServletResponse.addCookie(c);
+		javax.servlet.http.Cookie c = new javax.servlet.http.Cookie(cookie.getName(), cookie.getValue());
+		if (cookie.getMaxAge() >= 0) {
+			c.setMaxAge(cookie.getMaxAge());
 		}
+
+		if (cookie.getPath() != null) {
+			c.setPath(cookie.getPath());
+		}
+
+		if (cookie.getDomain() != null) {
+			c.setDomain(cookie.getDomain());
+		}
+		httpServletResponse.addCookie(c);
 	}
 
 	public void addCookie(String name, String value) {

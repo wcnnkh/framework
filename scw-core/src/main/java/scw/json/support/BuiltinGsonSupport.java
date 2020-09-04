@@ -11,7 +11,8 @@ import scw.json.gson.Gson;
 import scw.json.gson.GsonJsonElement;
 
 public final class BuiltinGsonSupport extends AbstractJSONSupport {
-	private static final Gson GSON = new Gson();
+	private static final Gson GSON = new Gson().newBuilder().registerTypeAdapterFactory(BuiltInGsonProxyTypeAdapter.FACTORY)
+			.create();
 
 	public JsonArray parseArray(String text) {
 		GsonJsonElement gsonJsonElement = GSON.fromJson(text, GsonJsonElement.class);

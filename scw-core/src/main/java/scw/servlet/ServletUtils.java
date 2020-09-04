@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.servlet.http.ServletServerHttpRequest;
 
@@ -106,5 +107,10 @@ public final class ServletUtils {
 
 	public static String getForwardRequestUri(ServletRequest servletRequest) {
 		return (String) servletRequest.getAttribute(ATTRIBUTE_FORWARD_REQUEST_URI);
+	}
+
+	public static HttpCookie wrapper(Cookie cookie) {
+		return new HttpCookie(cookie.getName(), cookie.getValue()).setDomain(cookie.getDomain())
+				.setMaxAge(cookie.getMaxAge()).setSecure(cookie.getSecure()).setPath(cookie.getPath());
 	}
 }

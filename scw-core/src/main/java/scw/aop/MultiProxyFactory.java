@@ -2,25 +2,24 @@ package scw.aop;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
-import scw.util.Enumerable;
 
-public class MultiProxyFactory implements ProxyFactory, Enumerable<ProxyFactory> {
+public class MultiProxyFactory implements ProxyFactory, Iterable<ProxyFactory> {
 	private final Collection<ProxyFactory> proxyFactories;
 
 	public MultiProxyFactory(Collection<ProxyFactory> proxyFactories) {
-		this.proxyFactories = proxyFactories;
+		this.proxyFactories = Collections.unmodifiableCollection(proxyFactories);
 	}
 
-	public Enumeration<ProxyFactory> enumeration() {
-		return Collections.enumeration(proxyFactories);
+	public Iterator<ProxyFactory> iterator() {
+		return proxyFactories.iterator();
 	}
 
 	public boolean isSupport(Class<?> clazz) {
-		for (ProxyFactory proxyFactory : proxyFactories) {
+		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isSupport(clazz)) {
 				return true;
 			}
@@ -29,7 +28,7 @@ public class MultiProxyFactory implements ProxyFactory, Enumerable<ProxyFactory>
 	}
 
 	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
-		for (ProxyFactory proxyFactory : proxyFactories) {
+		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isSupport(clazz)) {
 				return proxyFactory.getProxyClass(clazz, interfaces);
 			}
@@ -38,16 +37,16 @@ public class MultiProxyFactory implements ProxyFactory, Enumerable<ProxyFactory>
 	}
 
 	public boolean isProxy(Class<?> clazz) {
-		for (ProxyFactory proxyFactory : proxyFactories) {
+		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isProxy(clazz)) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> filters) {
-		for (ProxyFactory proxyFactory : proxyFactories) {
+		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isSupport(clazz)) {
 				return proxyFactory.getProxy(clazz, interfaces, filters);
 			}
@@ -56,7 +55,7 @@ public class MultiProxyFactory implements ProxyFactory, Enumerable<ProxyFactory>
 	}
 
 	public Class<?> getUserClass(Class<?> proxyClass) {
-		for (ProxyFactory proxyFactory : proxyFactories) {
+		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isProxy(proxyClass)) {
 				return proxyFactory.getUserClass(proxyClass);
 			}
@@ -66,7 +65,7 @@ public class MultiProxyFactory implements ProxyFactory, Enumerable<ProxyFactory>
 
 	public boolean isProxy(String className, ClassLoader classLoader) {
 		ClassLoader classLoaderToUse = classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
-		for (ProxyFactory proxyFactory : proxyFactories) {
+		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isProxy(className, classLoaderToUse)) {
 				return true;
 			}
@@ -77,7 +76,7 @@ public class MultiProxyFactory implements ProxyFactory, Enumerable<ProxyFactory>
 	public Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		ClassLoader classLoaderToUse = classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
-		for (ProxyFactory proxyFactory : proxyFactories) {
+		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isProxy(className, classLoaderToUse)) {
 				return proxyFactory.getUserClass(className, initialize, classLoaderToUse);
 			}

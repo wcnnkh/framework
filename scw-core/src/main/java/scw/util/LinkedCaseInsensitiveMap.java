@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.function.Function;
 
 import scw.lang.Nullable;
-import scw.mapper.Cloneable;
 
 public class LinkedCaseInsensitiveMap<V> implements Map<String, V>, Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;

@@ -333,7 +333,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 	}
 
-	private final class PropertyDynamicValue<T> extends AbstractDynamicValue<T>{
+	private final class PropertyDynamicValue<T> extends AbstractDynamicValue<T> {
 		private final String name;
 		private final T defaultValue;
 		private final Type type;

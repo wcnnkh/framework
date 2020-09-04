@@ -2,7 +2,6 @@ package scw.oauth2;
 
 import java.io.Serializable;
 
-import scw.mapper.Cloneable;
 import scw.security.Token;
 
 public class AccessToken implements Serializable, Cloneable {

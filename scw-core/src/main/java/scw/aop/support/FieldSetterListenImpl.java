@@ -9,6 +9,8 @@ import scw.aop.MethodInvoker;
 import scw.mapper.Field;
 
 public class FieldSetterListenImpl implements FieldSetterListen, Serializable {
+	public static final String FIELD_SETTER_MAP_FIELD_NAME = "field_setter_map";
+	
 	private Map<String, Object> field_setter_map;
 
 	public Map<String, Object> get_field_setter_map() {

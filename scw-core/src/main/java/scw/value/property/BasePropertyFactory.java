@@ -8,7 +8,7 @@ import scw.value.BaseValueFactory;
 
 public interface BasePropertyFactory extends BaseValueFactory<String>{
 	/**
-	 * 能获取到值不一定代表可以通过此方法枚举到key
+	 * 能获取到值不一定代表可以通过此方法枚举到
 	 * @return
 	 */
 	Enumeration<String> enumerationKeys();
