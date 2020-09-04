@@ -2,7 +2,7 @@ package scw.value.property;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -17,7 +17,7 @@ import scw.event.method.MultiEventRegistration;
 import scw.event.support.AbstractDynamicValue;
 import scw.event.support.DynamicValue;
 import scw.event.support.ValueEvent;
-import scw.util.MultiIterable;
+import scw.util.MultiEnumeration;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.StringValueFactory;
@@ -100,9 +100,13 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		return value;
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Iterator<String> iterator() {
-		return new MultiIterable(new MultiIterable<String>(basePropertyFactories), dynamicMap.keySet()).iterator();
+	public Enumeration<String> enumerationKeys() {
+		List<Enumeration<String>> enumerations = new LinkedList<Enumeration<String>>();
+		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
+			enumerations.add(basePropertyFactory.enumerationKeys());
+		}
+		enumerations.add(Collections.enumeration(dynamicMap.keySet()));
+		return new MultiEnumeration<String>(enumerations);
 	}
 
 	public boolean containsKey(String key) {
