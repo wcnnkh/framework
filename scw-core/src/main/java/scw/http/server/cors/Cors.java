@@ -57,7 +57,7 @@ public class Cors {
 
 	public Cors setHeaders(String... headers) {
 		if (isReadyOnly()) {
-			throw new NotSupportedException("setMaxAge");
+			throw new NotSupportedException("setHeaders");
 		}
 
 		this.headers = headers;
@@ -70,7 +70,7 @@ public class Cors {
 
 	public Cors setMethods(String... methods) {
 		if (isReadyOnly()) {
-			throw new NotSupportedException("setMaxAge");
+			throw new NotSupportedException("setMethods");
 		}
 
 		this.methods = methods;
@@ -83,7 +83,7 @@ public class Cors {
 
 	public void setOrigins(String... origins) {
 		if (isReadyOnly()) {
-			throw new NotSupportedException("setMaxAge");
+			throw new NotSupportedException("setOrigins");
 		}
 
 		this.origins = origins;
@@ -95,7 +95,7 @@ public class Cors {
 
 	public Cors setCredentials(Boolean credentials) {
 		if (isReadyOnly()) {
-			throw new NotSupportedException("setMaxAge");
+			throw new NotSupportedException("setCredentials");
 		}
 
 		this.credentials = credentials;

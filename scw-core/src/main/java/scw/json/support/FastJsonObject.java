@@ -48,7 +48,7 @@ public final class FastJsonObject extends JsonObject implements JSONAware, Seria
 	}
 
 	public String toJsonString() {
-		return JSON.toJSONString(jsonObject, FastJSONBaseProperyFilter.BASE_PROPERY_FILTER);
+		return JSON.toJSONString(jsonObject, FastJsonProxyValueFilter.INSTANCE);
 	}
 	
 	public <T> T getObjectSupport(String key, Class<? extends T> type) {

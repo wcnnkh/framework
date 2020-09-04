@@ -2,14 +2,14 @@ package scw.json.support;
 
 import java.lang.reflect.Type;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.parser.Feature;
+
 import scw.json.AbstractJSONSupport;
 import scw.json.EmptyJsonElement;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.parser.Feature;
 
 public final class FastJsonSupport extends AbstractJSONSupport {
 
@@ -25,7 +25,7 @@ public final class FastJsonSupport extends AbstractJSONSupport {
 
 	@Override
 	protected String toJsonStringInternal(Object obj) {
-		return JSON.toJSONString(obj, FastJSONBaseProperyFilter.BASE_PROPERY_FILTER);
+		return JSON.toJSONString(obj, FastJsonProxyValueFilter.INSTANCE);
 	}
 
 	@Override

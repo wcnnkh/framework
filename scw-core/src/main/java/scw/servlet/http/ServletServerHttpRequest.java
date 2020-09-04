@@ -34,6 +34,7 @@ import scw.net.InetAddress;
 import scw.net.InetUtils;
 import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
+import scw.servlet.ServletUtils;
 import scw.util.LinkedCaseInsensitiveMap;
 import scw.util.MultiValueMap;
 import scw.util.Target;
@@ -71,7 +72,7 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 		HttpCookie[] values = new HttpCookie[cookies.length];
 		for (int i = 0; i < cookies.length; i++) {
-			values[i] = new ServletHttpCookie(cookies[i]);
+			values[i] = ServletUtils.wrapper(cookies[i]).readyOnly();
 		}
 		return values;
 	}
