@@ -15,8 +15,8 @@ public interface ProxyFactory {
 	 */
 	boolean isSupport(Class<?> clazz);
 
-	Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> filters);
-
+	Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<MethodInterceptor> filters);
+	
 	/**
 	 * 获取代理类
 	 * 

@@ -37,14 +37,14 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	}
 
 	public int size() {
-		return names.length;
+		return names == null ? 0 : names.length;
 	}
 
 	private class InternalIterator extends AbstractIterator<ParameterDescriptor> {
 		private int index = 0;
 
 		public boolean hasNext() {
-			return index < names.length;
+			return names != null && index < names.length;
 		}
 
 		public ParameterDescriptor next() {
@@ -57,6 +57,9 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	}
 
 	public ParameterDescriptor getParameterDescriptor(int index) {
+		if (index >= size()) {
+			throw new IndexOutOfBoundsException(index + "");
+		}
 		return new DefaultParameterDescriptor(names[index], annotations[index], types[index], genericTypes[index]);
 	}
 

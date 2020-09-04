@@ -18,7 +18,7 @@ public class Copy {
 	 */
 	private boolean invokeCloneableMethod = true;
 	/**
-	 * 默认不克隆transient修辞符字段
+	 * 当使用克隆的时候默认不克隆transient修辞符字段
 	 */
 	private boolean cloneTransientField = false;
 
@@ -110,7 +110,7 @@ public class Copy {
 		this.genericTypeEqual = genericTypeEqual;
 	}
 
-	protected Object cloneArray(Class<?> sourceClass, Object array, Field parentField, FieldFilter ...filters) {
+	protected Object cloneArray(Class<?> sourceClass, Object array, Field parentField, FieldFilter... filters) {
 		int size = Array.getLength(array);
 		Object newArr = Array.newInstance(sourceClass.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
@@ -121,8 +121,11 @@ public class Copy {
 
 	/**
 	 * 获取对应的数据来源字段
-	 * @param sourceClass 数据来源
-	 * @param targetField 要插入的字段
+	 * 
+	 * @param sourceClass
+	 *            数据来源
+	 * @param targetField
+	 *            要插入的字段
 	 * @return
 	 */
 	protected Field getSourceField(Class<?> sourceClass, Fields sourceFields, final Field targetField) {
@@ -132,7 +135,7 @@ public class Copy {
 				if (!field.isSupportGetter()) {
 					return false;
 				}
-				
+
 				if (!targetField.getSetter().getName().equals(field.getGetter().getName())) {
 					return false;
 				}
@@ -147,27 +150,25 @@ public class Copy {
 					}
 				}
 
-				if (Modifier.isStatic(targetField.getSetter().getModifiers())) {
-					return Modifier.isStatic(field.getGetter().getModifiers());
-				} else {
-					return !Modifier.isStatic(field.getGetter().getModifiers());
-				}
+				// 使用异或，只有两个都是静态或都不是静态时才通过
+				return !(Modifier.isStatic(targetField.getSetter().getModifiers())
+						^ Modifier.isStatic(field.getGetter().getModifiers()));
 			}
 		});
 	}
 
 	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source,
-			Field parentField, FieldFilter ...filters) {
+			Field parentField, FieldFilter... filters) {
 		Fields sourceFields = mapper.getFields(sourceClass, parentField, filters);
-		for(Field field : mapper.getFields(targetClass, parentField, filters)){
+		for (Field field : mapper.getFields(targetClass, parentField, filters)) {
 			if (!field.isSupportSetter()) {
 				continue;
 			}
-			
+
 			/**
 			 * 目标字段应该存在实际的java.lang.Field
 			 */
-			if(field.getSetter().getField() == null){
+			if (field.getSetter().getField() == null) {
 				continue;
 			}
 
@@ -196,7 +197,7 @@ public class Copy {
 	}
 
 	public <T, S> T copy(Class<? extends T> targetClass, Class<? extends S> sourceClass, S source, Field parentField,
-			FieldFilter ...filters) {
+			FieldFilter... filters) {
 		if (!getInstanceFactory().isInstance(targetClass)) {
 			return (T) source;
 		}
@@ -210,13 +211,9 @@ public class Copy {
 		return target;
 	}
 
-	public <T> T copy(T source, Field parentField, FieldFilter ...filters) {
+	public <T> T copy(T source, Field parentField, FieldFilter... filters) {
 		if (source == null) {
 			return null;
-		}
-
-		if (source instanceof scw.mapper.Cloneable) {
-			return (T) ((scw.mapper.Cloneable) source).clone();
 		}
 
 		Class<T> sourceClass = (Class<T>) source.getClass();
@@ -241,23 +238,23 @@ public class Copy {
 		CLONE_COPY.setClone(true);
 	}
 
-	public static <T> T clone(T source, FieldFilter ...filters) {
+	public static <T> T clone(T source, FieldFilter... filters) {
 		return CLONE_COPY.copy(source, null, filters);
 	}
 
 	public static <T> T clone(T source) {
-		return clone(source, FilterFeature.GETTER_IGNORE_STATIC.getFilter(), FilterFeature.SETTER_IGNORE_STATIC.getFilter());
+		return clone(source, FilterFeature.IGNORE_STATIC.getFilter());
 	}
 
-	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldFilter ...filters) {
+	public static <T> T copy(Class<? extends T> targetClass, Object source, FieldFilter... filters) {
 		return DEFAULT_COPY.copy(targetClass, source.getClass(), source, null, filters);
 	}
 
 	public static <T> T copy(Class<? extends T> targetClass, Object source) {
-		return copy(targetClass, source, FilterFeature.GETTER_IGNORE_STATIC.getFilter(), FilterFeature.SETTER_IGNORE_STATIC.getFilter());
+		return copy(targetClass, source, FilterFeature.IGNORE_STATIC.getFilter());
 	}
 
-	public static void copy(Object target, Object source, FieldFilter ...filters) {
+	public static void copy(Object target, Object source, FieldFilter... filters) {
 		DEFAULT_COPY.copy(target.getClass(), target, source.getClass(), source, null, filters);
 	}
 
@@ -268,6 +265,6 @@ public class Copy {
 	 * @param source
 	 */
 	public static void copy(Object target, Object source) {
-		copy(target, source, FilterFeature.GETTER_IGNORE_STATIC.getFilter(), FilterFeature.SETTER_IGNORE_STATIC.getFilter());
+		copy(target, source, FilterFeature.IGNORE_STATIC.getFilter());
 	}
 }

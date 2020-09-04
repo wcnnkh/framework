@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 import scw.core.utils.StringUtils;
-import scw.mapper.Cloneable;
 
 /**
  * 一个令牌的定义
