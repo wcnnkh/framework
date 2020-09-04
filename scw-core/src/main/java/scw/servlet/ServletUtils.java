@@ -110,7 +110,7 @@ public final class ServletUtils {
 	}
 
 	public static HttpCookie wrapper(Cookie cookie) {
-		return new HttpCookie(cookie.getName(), cookie.getName()).setDomain(cookie.getDomain())
+		return new HttpCookie(cookie.getName(), cookie.getValue()).setDomain(cookie.getDomain())
 				.setMaxAge(cookie.getMaxAge()).setSecure(cookie.getSecure()).setPath(cookie.getPath());
 	}
 }
