@@ -15,44 +15,40 @@ import scw.http.server.resource.StaticResourceLoader;
 import scw.value.property.PropertyFactory;
 
 public class DefaultHttpService extends AbstractHttpService {
-	//是否开启jsonp支持
+	// 是否开启jsonp支持
 	private DynamicValue<Boolean> jsonpEnable;
 	private CorsRegistry corsRegistry;
 	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
-	
-	public DefaultHttpService(BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
+
+	public DefaultHttpService(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		jsonpEnable = propertyFactory.getDynamicValue("http.server.jsonp", Boolean.class, false);
 		this.corsRegistry = beanFactory.getInstance(CorsRegistry.class);
-		StaticResourceLoader staticResourceLoader = beanFactory
-				.isInstance(StaticResourceLoader.class) ? beanFactory
-				.getInstance(StaticResourceLoader.class)
+		StaticResourceLoader staticResourceLoader = beanFactory.isInstance(StaticResourceLoader.class)
+				? beanFactory.getInstance(StaticResourceLoader.class)
 				: new DefaultStaticResourceLoader(propertyFactory);
-		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler(
-				staticResourceLoader);
+		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler(staticResourceLoader);
 		getHandlerAccessor().bind(resourceHandler);
-		interceptors.addAll(InstanceUtils.getConfigurationList(
-				HttpServiceInterceptor.class, beanFactory, propertyFactory));
+		interceptors
+				.addAll(InstanceUtils.getConfigurationList(HttpServiceInterceptor.class, beanFactory, propertyFactory));
 
-		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils
-				.getConfigurationList(HttpServiceHandler.class, beanFactory,
-						propertyFactory);
+		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils.getConfigurationList(HttpServiceHandler.class,
+				beanFactory, propertyFactory);
 		getHandlerAccessor().bind(httpServiceHandlers);
 	}
-	
+
 	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {
 		return interceptors;
 	}
-	
+
 	@Override
 	protected boolean isEnableJsonp(ServerHttpRequest request) {
 		return jsonpEnable.getValue();
 	}
-	
+
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		Cors cors = corsRegistry.getCors(request.getPath());
-		if(cors != null){
+		if (cors != null) {
 			cors.write(response.getHeaders());
 		}
 		super.service(request, response);

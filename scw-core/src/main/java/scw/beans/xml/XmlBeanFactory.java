@@ -11,9 +11,13 @@ import scw.beans.BeanFactoryLifeCycle;
 import scw.beans.DefaultBeanFactory;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.xml.XMLUtils;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
+	private static Logger logger = LoggerUtils.getLogger(XmlBeanFactory.class);
+
 	private NodeList nodeList;
 	private String xmlConfigPath;
 

@@ -1395,7 +1395,6 @@ public abstract class ReflectionUtils {
 	 *
 	 * @return true if and only if this method is a default method as defined by
 	 *         the Java Language Specification.
-	 * @since 1.8
 	 */
 	public boolean isDefault(Method method) {
 		// Default methods are public non-abstract instance methods
