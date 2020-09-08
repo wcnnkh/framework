@@ -14,7 +14,9 @@ public class Cors {
 			HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, HttpHeaders.ACCEPT,
 			HttpHeaders.ORIGIN };
 	public static final Cors DEFAULT = new Cors().readyOnly();
-	private static final String[] EMPTY = new String[0];
+	public static final Cors EMPTY = new Cors().readyOnly();
+	
+	private static final String[] EMPTY_ARRAY = new String[0];
 
 	/**
 	 * 允许跨域的请求头
@@ -52,7 +54,7 @@ public class Cors {
 	}
 
 	public String[] getHeaders() {
-		return headers == null ? EMPTY : headers.clone();
+		return headers == null ? EMPTY_ARRAY : headers.clone();
 	}
 
 	public Cors setHeaders(String... headers) {
@@ -65,7 +67,7 @@ public class Cors {
 	}
 
 	public String[] getMethods() {
-		return methods == null ? EMPTY : headers.clone();
+		return methods == null ? EMPTY_ARRAY : headers.clone();
 	}
 
 	public Cors setMethods(String... methods) {
@@ -78,7 +80,7 @@ public class Cors {
 	}
 
 	public String[] getOrigins() {
-		return origins == null ? EMPTY : origins.clone();
+		return origins == null ? EMPTY_ARRAY : origins.clone();
 	}
 
 	public void setOrigins(String... origins) {
