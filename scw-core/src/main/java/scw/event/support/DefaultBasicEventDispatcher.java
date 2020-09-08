@@ -5,8 +5,8 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import scw.core.Assert;
-import scw.event.Event;
 import scw.event.BasicEventDispatcher;
+import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.lang.AlreadyExistsException;

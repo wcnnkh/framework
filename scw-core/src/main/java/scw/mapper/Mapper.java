@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import scw.aop.ProxyUtils;
+import scw.core.Assert;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
@@ -60,8 +61,7 @@ public abstract class Mapper {
 		}
 
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
-		Fields fields = getFields(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()),
-				FilterFeature.GETTER.getFilter(), fieldFilter);
+		Fields fields = getFields(getUserClass(entity), FilterFeature.GETTER.getFilter(), fieldFilter);
 		for (Field field : fields) {
 			String name = nameGetter == null ? field.getGetter().getName() : nameGetter.getName(field);
 			if (map.containsKey(name)) {
@@ -152,15 +152,14 @@ public abstract class Mapper {
 			}
 
 			if (field == null) {
-				field = getFields(ProxyUtils.getProxyFactory().getUserClass(entity.getClass()), true)
-						.find(new FieldFilter() {
+				field = getFields(getUserClass(entity), true).find(new FieldFilter() {
 
-							public boolean accept(Field field) {
-								return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
-										&& field.getGetter().getName().equals(fieldName)
-										&& (type == null || type == field.getGetter().getType());
-							}
-						});
+					public boolean accept(Field field) {
+						return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
+								&& field.getGetter().getName().equals(fieldName)
+								&& (type == null || type == field.getGetter().getType());
+					}
+				});
 
 				if (field == null) {
 					throw new NotFoundException(entity.getClass() + " [" + fieldName + "]");
@@ -297,5 +296,24 @@ public abstract class Mapper {
 
 	public final Fields getFields(Class<?> entityClass, final FilterFeature... filterFeatures) {
 		return getFields(entityClass, null, filterFeatures);
+	}
+
+	public Class<?> getUserClass(Object instance) {
+		Assert.requiredArgument(instance != null, "instance");
+		return ProxyUtils.getProxyFactory().getUserClass(instance.getClass());
+	}
+
+	public final String toString(Object instance) {
+		if (instance == null) {
+			return null;
+		}
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		for (scw.mapper.Field field : getFields(getUserClass(instance), FilterFeature.GETTER)) {
+			sb.append(field.getGetter().getName()).append("=").append(field.getGetter().get(instance));
+		}
+		sb.append("}");
+		return sb.toString();
 	}
 }

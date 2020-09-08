@@ -7,8 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import scw.core.utils.StringUtils;
-import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
+import scw.mapper.MapperUtils;
 
 /**
  * Http Cookie
@@ -223,6 +223,6 @@ public class HttpCookie implements Serializable {
 
 	@Override
 	public String toString() {
-		return JSONUtils.toJSONString(this);
+		return MapperUtils.getMapper().toString(this);
 	}
 }

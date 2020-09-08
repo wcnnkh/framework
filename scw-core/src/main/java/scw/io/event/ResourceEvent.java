@@ -20,9 +20,4 @@ public class ResourceEvent extends BasicTypeEvent {
 	public Resource getResource() {
 		return resource;
 	}
-
-	@Override
-	public String toString() {
-		return super.toString() + ", resource=[" + resource + "]";
-	}
 }

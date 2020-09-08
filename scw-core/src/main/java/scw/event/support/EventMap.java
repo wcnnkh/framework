@@ -16,7 +16,7 @@ public class EventMap<K, V> extends DefaultCompatibleMap<K, V> {
 	private NamedEventDispatcher<ValueEvent<V>> eventDispatcher;
 
 	public EventMap(boolean concurrent) {
-		this(new DefaultEventDispatcher<ValueEvent<V>>(concurrent),
+		this(new DefaultNamedEventDispatcher<ValueEvent<V>>(concurrent),
 				concurrent ? new ConcurrentHashMap<K, V>() : new HashMap<K, V>());
 	}
 

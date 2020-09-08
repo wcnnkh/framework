@@ -1,12 +1,12 @@
 package scw.event.support;
 
+import scw.event.BasicEventDispatcher;
 import scw.event.Event;
-import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
+import scw.event.NamedEventDispatcher;
 
-public class EmptyEventDispatcher<T extends Event> implements
-		EventDispatcher<T> {
+public class EmptyEventDispatcher<T extends Event> implements BasicEventDispatcher<T>, NamedEventDispatcher<T> {
 
 	public EventRegistration registerListener(EventListener<T> eventListener) {
 		return EventRegistration.EMPTY;
@@ -16,25 +16,11 @@ public class EmptyEventDispatcher<T extends Event> implements
 		// ignore
 	}
 
-	public void unregister(Class<? extends T> eventType) {
-		// ignore
-	}
-
-	public <E extends T> EventRegistration registerListener(Class<E> eventType,
-			EventListener<E> eventListener) {
-		return EventRegistration.EMPTY;
-	}
-
-	public <E extends T> void publishEvent(Class<E> eventType, E event) {
-		// ignore
-	}
-
 	public void unregister(Object name) {
 		// ignore
 	}
 
-	public EventRegistration registerListener(Object name,
-			EventListener<T> eventListener) {
+	public EventRegistration registerListener(Object name, EventListener<T> eventListener) {
 		return EventRegistration.EMPTY;
 	}
 

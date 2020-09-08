@@ -5,7 +5,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
 import scw.core.annotation.AnnotatedElementUtils;
-import scw.json.JSONUtils;
+import scw.mapper.MapperUtils;
 
 public class DefaultParameterDescriptor implements ParameterDescriptor {
 	private final String name;
@@ -46,6 +46,6 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 
 	@Override
 	public String toString() {
-		return JSONUtils.toJSONString(this);
+		return MapperUtils.getMapper().toString(this);
 	}
 }
