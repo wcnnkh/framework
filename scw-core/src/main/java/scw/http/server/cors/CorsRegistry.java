@@ -1,37 +1,34 @@
 package scw.http.server.cors;
 
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import scw.util.DefaultStringMatcher;
-import scw.util.KeyValuePair;
 import scw.util.StringMatcher;
 
 public class CorsRegistry {
-	private Map<String, Cors> corsMap = new HashMap<String, Cors>();
-	private TreeSet<KeyValuePair<String, Cors>> matchers = new TreeSet<KeyValuePair<String, Cors>>(new Comparator<KeyValuePair<String, Cors>>() {
+	private TreeMap<String, Cors> corsMap = new TreeMap<String, Cors>(new Comparator<String>() {
 
-		public int compare(KeyValuePair<String, Cors> o1, KeyValuePair<String, Cors> o2) {
-			if(matcher.isPattern(o1.getKey()) && matcher.isPattern(o2.getKey())){
-				if(matcher.match(o1.getKey(), o2.getKey())){
+		public int compare(String o1, String o2) {
+			if (matcher.isPattern(o1) && matcher.isPattern(o2)) {
+				if (matcher.match(o1, o2)) {
 					return 1;
-				}else if(matcher.match(o2.getKey(), o1.getKey())){
+				} else if (matcher.match(o2, o1)) {
 					return -1;
-				}else{
+				} else {
 					return -1;
 				}
-			}else if(matcher.isPattern(o1.getKey())){
+			} else if (matcher.isPattern(o1)) {
 				return 1;
-			}else if(matcher.isPattern(o2.getKey())){
+			} else if (matcher.isPattern(o2)) {
 				return -1;
 			}
-			return o1.getKey().equals(o1.getKey())? 0:-1;
+			return o1.equals(o1) ? 0 : -1;
 		}
 	});
 	private final StringMatcher matcher;
-	
+
 	public CorsRegistry() {
 		this(DefaultStringMatcher.getInstance());
 	}
@@ -44,13 +41,15 @@ public class CorsRegistry {
 		return matcher;
 	}
 
+	/**
+	 * 线程不安全的
+	 * 
+	 * @param path
+	 * @param cors
+	 */
 	public void addMapping(String path, Cors cors) {
-		Cors corsToUse = cors.isReadyOnly()? cors:cors.clone().readyOnly();
-		if (matcher.isPattern(path)) {
-			matchers.add(new KeyValuePair<String, Cors>(path, corsToUse));
-		} else {
-			corsMap.put(path, corsToUse);
-		}
+		Cors corsToUse = cors.isReadyOnly() ? cors : cors.clone().readyOnly();
+		corsMap.put(path, corsToUse);
 	}
 
 	public Cors getCors(String path) {
@@ -59,11 +58,16 @@ public class CorsRegistry {
 			return cors;
 		}
 
-		for (KeyValuePair<String, Cors> pair : matchers) {
+		for (Entry<String, Cors> pair : corsMap.entrySet()) {
 			if (matcher.match(pair.getKey(), path)) {
 				return pair.getValue();
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return corsMap.toString();
 	}
 }
