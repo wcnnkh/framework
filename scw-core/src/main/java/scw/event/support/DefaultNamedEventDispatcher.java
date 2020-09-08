@@ -32,14 +32,14 @@ public class DefaultNamedEventDispatcher<T extends Event> implements NamedEventD
 		namedEventListenerMap.remove(name);
 	}
 
-	protected BasicEventDispatcher<T> create(Object name) {
+	protected BasicEventDispatcher<T> createBasicEventDispatcher(Object name) {
 		return new DefaultBasicEventDispatcher<T>(isConcurrent());
 	}
 
 	public EventRegistration registerListener(Object name, EventListener<T> eventListener) {
 		BasicEventDispatcher<T> eventDispatcher = namedEventListenerMap.get(name);
 		if (eventDispatcher == null) {
-			eventDispatcher = create(name);
+			eventDispatcher = createBasicEventDispatcher(name);
 			BasicEventDispatcher<T> dispatcher = namedEventListenerMap.putIfAbsent(name, eventDispatcher);
 			if (dispatcher != null) {
 				eventDispatcher = dispatcher;

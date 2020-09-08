@@ -21,9 +21,8 @@ public class AmqpBasicEventDisabtcher<T extends Event> extends DefaultBasicEvent
 	private QueueDeclare queueDeclare;
 	private Serializer serializer = SerializerUtils.DEFAULT_SERIALIZER;
 
-	public AmqpBasicEventDisabtcher(Exchange exchange, String routingKey, QueueDeclare queueDeclare,
-			boolean concurrent) {
-		super(concurrent);
+	public AmqpBasicEventDisabtcher(Exchange exchange, String routingKey, QueueDeclare queueDeclare) {
+		super(true);
 		this.exchange = exchange;
 		this.queueDeclare = queueDeclare;
 	}
