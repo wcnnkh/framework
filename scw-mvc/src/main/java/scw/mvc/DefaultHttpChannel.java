@@ -21,7 +21,6 @@ import scw.beans.BeansException;
 import scw.beans.Destroy;
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
-import scw.core.GlobalPropertyFactory;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
@@ -33,14 +32,12 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
-import scw.event.support.DynamicValue;
 import scw.http.HttpMethod;
 import scw.http.HttpUtils;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
-import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.MapperUtils;
@@ -65,8 +62,6 @@ import scw.value.Value;
 
 public class DefaultHttpChannel extends AbstractParameterFactory implements HttpChannel, Destroy, Target {
 	private static Logger logger = LoggerUtils.getLogger(DefaultHttpChannel.class);
-	private static final DynamicValue<Long> WARN_TIMEOUT = GlobalPropertyFactory.getInstance()
-			.getDynamicValue("mvc.warn-execute-time", Long.class, 100L);
 	private final long createTime;
 	private final BeanFactory beanFactory;
 	private final JSONSupport jsonSupport;
@@ -190,15 +185,6 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		}
 
 		destroyBeans();
-		long useTime = System.currentTimeMillis() - createTime;
-		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.TRACE;
-		if (logger.isLogEnable(level)) {
-			logger.log(level, "It took {}ms to execute execute {}", useTime, toString());
-		}
-	}
-
-	protected long getExecuteWarnTime() {
-		return WARN_TIMEOUT.getValue();
 	}
 
 	public final long getCreateTime() {

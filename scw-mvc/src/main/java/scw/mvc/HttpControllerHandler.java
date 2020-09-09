@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
@@ -24,7 +23,6 @@ import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.logger.SplitLineAppend;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionInterceptor;
 import scw.mvc.action.ActionInterceptorChain;
@@ -68,11 +66,13 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)
 				? beanFactory.getInstance(ExceptionHandler.class) : null;
 
-		this.actionInterceptor.addAll(InstanceUtils.getConfigurationList(ActionInterceptor.class, beanFactory, propertyFactory));
+		this.actionInterceptor
+				.addAll(InstanceUtils.getConfigurationList(ActionInterceptor.class, beanFactory, propertyFactory));
 		this.actionLookups.addAll(InstanceUtils.getConfigurationList(ActionLookup.class, beanFactory, propertyFactory));
-		messageConverter.addAll(InstanceUtils.getConfigurationList(MessageConverter.class, beanFactory, propertyFactory));
+		messageConverter
+				.addAll(InstanceUtils.getConfigurationList(MessageConverter.class, beanFactory, propertyFactory));
 	}
-	
+
 	public MultiMessageConverter getMessageConverter() {
 		return messageConverter;
 	}
@@ -113,17 +113,18 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			// 不应该到这里的，因为accept里面已经判断过了
 			throw new NotSupportedException(request.toString());
 		}
-		
+
 		ServerHttpRequest requestToUse = request;
 		ServerHttpResponse responseToUse = response;
-		
-		//jsonp支持
+
+		// jsonp支持
 		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getSourceClass(), action.getAnnotatedElement());
-		if(jsonp != null && jsonp.value()){
+		if (jsonp != null && jsonp.value()) {
 			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
 		}
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
+		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
 		try {
 			@SuppressWarnings("unchecked")
 			MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptor,
@@ -136,22 +137,18 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 				message = doError(httpChannel, action, e);
 			}
 
-			doResponse(httpChannel, action, message);
+			doResponse(httpChannel, action, message, httpChannelDestroy);
 		} finally {
 			if (!httpChannel.isCompleted()) {
 				if (requestToUse.isSupportAsyncControl()) {
 					ServerHttpAsyncControl asyncControl = requestToUse.getAsyncControl(responseToUse);
 					if (asyncControl.isStarted()) {
-						asyncControl.addListener(new HttpChannelAsyncListener(httpChannel));
+						asyncControl.addListener(httpChannelDestroy);
 						return;
 					}
 				}
 
-				try {
-					BeanUtils.destroy(httpChannel);
-				} catch (Exception e) {
-					logger.error(e, "destroy channel error: {}", httpChannel.toString());
-				}
+				httpChannelDestroy.destroy();
 			}
 			responseToUse.close();
 		}
@@ -165,61 +162,59 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		httpChannel.getResponse().sendError(500, "system error");
 		return null;
 	}
-	
-	protected void doResponse(HttpChannel httpChannel, Action action, Object message) throws IOException{
-		if(message == null){
-			return ;
+
+	protected void doResponse(HttpChannel httpChannel, Action action, Object message, HttpChannelDestroy httpChannelDestroy) throws IOException {
+		if (message == null) {
+			return;
 		}
-		
-		ResultFactory resultFactory = AnnotationUtils.getAnnotation(ResultFactory.class, action.getSourceClass(), action.getAnnotatedElement());
+
+		ResultFactory resultFactory = AnnotationUtils.getAnnotation(ResultFactory.class, action.getSourceClass(),
+				action.getAnnotatedElement());
 		if (!(message instanceof Result) && resultFactory != null && resultFactory.enable()) {
 			Result result = beanFactory.getInstance(resultFactory.value()).success(message);
-			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON);
-			return ;
+			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON, httpChannelDestroy);
+			return;
 		}
-		
+
 		if (httpChannel.getResponse().getContentType() == null) {
 			httpChannel.getResponse().setContentType(MediaType.TEXT_HTML);
 		}
-		
-		if(message instanceof View){
+
+		if (message instanceof View) {
 			((View) message).render(httpChannel);
-			return ;
-		} else if(message instanceof InputMessage){
+			return;
+		} else if (message instanceof InputMessage) {
 			InetUtils.writeHeader((InputMessage) message, httpChannel.getResponse());
 			IOUtils.write(((InputMessage) message).getBody(), httpChannel.getResponse().getBody());
-		} else if(message instanceof Text){
-			writeTextBody(httpChannel, ((Text) message).getTextContent(), ((Text) message).getMimeType());
-		} else if(message instanceof Resource){
+		} else if (message instanceof Text) {
+			writeTextBody(httpChannel, ((Text) message).getTextContent(), ((Text) message).getMimeType(), httpChannelDestroy);
+		} else if (message instanceof Resource) {
 			Resource resource = (Resource) message;
 			MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
 			HttpUtils.writeStaticResource(httpChannel.getRequest(), httpChannel.getResponse(), resource, mimeType);
-		} else if(message instanceof Entity){
+		} else if (message instanceof Entity) {
 			@SuppressWarnings("rawtypes")
 			Entity entity = (Entity) message;
 			if (getMessageConverter().canWrite(entity.getBody(), entity.getContentType())) {
 				InetUtils.writeHeader(entity, httpChannel.getResponse());
 				getMessageConverter().write(entity.getBody(), entity.getContentType(), httpChannel.getResponse());
 			}
-		} else{
+		} else {
 			if ((message instanceof String) || (ClassUtils.isPrimitiveOrWrapper(message.getClass()))) {
-				writeTextBody(httpChannel, message, MediaType.TEXT_HTML);
+				writeTextBody(httpChannel, message, MediaType.TEXT_HTML, httpChannelDestroy);
 			} else {
-				writeTextBody(httpChannel, message, MediaType.APPLICATION_JSON);
+				writeTextBody(httpChannel, message, MediaType.APPLICATION_JSON, httpChannelDestroy);
 			}
 		}
 	}
-	
-	protected void writeTextBody(HttpChannel httpChannel, Object body, MimeType contentType) throws IOException{
-		if(contentType != null){
+
+	protected void writeTextBody(HttpChannel httpChannel, Object body, MimeType contentType, HttpChannelDestroy httpChannelDestroy) throws IOException {
+		if (contentType != null) {
 			httpChannel.getResponse().setContentType(contentType);
 		}
-		
+
+		httpChannelDestroy.setResponseBody(body);
 		String text = getJsonSupport().toJSONString(body);
 		httpChannel.getResponse().getWriter().write(text);
-		
-		if(body instanceof Result && ((Result) body).isError() && logger.isErrorEnabled()){
-			logger.error("{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}", httpChannel.toString(), new SplitLineAppend("response text begin " + httpChannel.getResponse().getContentType()), text, new SplitLineAppend("response text end"));
-		}
 	}
 }
