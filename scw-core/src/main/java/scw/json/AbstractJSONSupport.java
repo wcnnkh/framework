@@ -78,7 +78,7 @@ public abstract class AbstractJSONSupport implements JSONSupport {
 		return parseObject(new String(IOUtils.toCharArray(reader)), type);
 	}
 	
-	public String toJSONString(Object obj) {
+	public final String toJSONString(Object obj) {
 		if(obj == null){
 			return null;
 		}
