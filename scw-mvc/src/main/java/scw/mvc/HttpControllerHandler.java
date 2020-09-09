@@ -138,11 +138,11 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 				message = new ActionInterceptorChain(filters.iterator()).intercept(httpChannel, action, parameters);
 			} catch (Throwable e) {
 				httpChannelDestroy.setError(e);
-				message = doError(httpChannel, action, e);
+				message = doError(httpChannel, action, e, httpChannelDestroy);
 			}
 
 			httpChannelDestroy.setResponseBody(message);
-			doResponse(httpChannel, action, message);
+			doResponse(httpChannel, action, message, httpChannelDestroy);
 		} finally {
 			if (!httpChannel.isCompleted()) {
 				if (requestToUse.isSupportAsyncControl()) {
@@ -159,7 +159,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 	}
 
-	protected Object doError(HttpChannel httpChannel, Action action, Throwable error) throws IOException {
+	protected Object doError(HttpChannel httpChannel, Action action, Throwable error, HttpChannelDestroy httpChannelDestroy) throws IOException {
 		if (exceptionHandler != null) {
 			return exceptionHandler.doHandle(httpChannel, action, error);
 		}
@@ -167,7 +167,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		return null;
 	}
 
-	protected void doResponse(HttpChannel httpChannel, Action action, Object message) throws IOException {
+	protected void doResponse(HttpChannel httpChannel, Action action, Object message, HttpChannelDestroy httpChannelDestroy) throws IOException {
 		if (message == null) {
 			return;
 		}
@@ -176,7 +176,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 				action.getAnnotatedElement());
 		if (!(message instanceof Result) && resultFactory != null && resultFactory.enable()) {
 			Result result = beanFactory.getInstance(resultFactory.value()).success(message);
-			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON);
+			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON, httpChannelDestroy);
 			return;
 		}
 
@@ -191,7 +191,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			InetUtils.writeHeader((InputMessage) message, httpChannel.getResponse());
 			IOUtils.write(((InputMessage) message).getBody(), httpChannel.getResponse().getBody());
 		} else if (message instanceof Text) {
-			writeTextBody(httpChannel, ((Text) message).getTextContent(), ((Text) message).getMimeType());
+			writeTextBody(httpChannel, ((Text) message).getTextContent(), ((Text) message).getMimeType(), httpChannelDestroy);
 		} else if (message instanceof Resource) {
 			Resource resource = (Resource) message;
 			MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
@@ -205,14 +205,14 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			}
 		} else {
 			if ((message instanceof String) || (ClassUtils.isPrimitiveOrWrapper(message.getClass()))) {
-				writeTextBody(httpChannel, message, MediaType.TEXT_HTML);
+				writeTextBody(httpChannel, message, MediaType.TEXT_HTML, httpChannelDestroy);
 			} else {
-				writeTextBody(httpChannel, message, MediaType.APPLICATION_JSON);
+				writeTextBody(httpChannel, message, MediaType.APPLICATION_JSON, httpChannelDestroy);
 			}
 		}
 	}
 
-	protected void writeTextBody(HttpChannel httpChannel, Object body, MimeType contentType) throws IOException {
+	protected void writeTextBody(HttpChannel httpChannel, Object body, MimeType contentType, HttpChannelDestroy httpChannelDestroy) throws IOException {
 		if (contentType != null) {
 			httpChannel.getResponse().setContentType(contentType);
 		}
