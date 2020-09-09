@@ -22,7 +22,6 @@ import scw.io.Resource;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
-import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.logger.SplitLineAppend;
@@ -219,9 +218,8 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		String text = getJsonSupport().toJSONString(body);
 		httpChannel.getResponse().getWriter().write(text);
 		
-		Level level = (body instanceof Result && ((Result)body).isError())? Level.ERROR:Level.DEBUG;
-		if(logger.isLogEnable(level)){
-			logger.log(level, "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}", httpChannel.toString(), new SplitLineAppend("response text begin " + httpChannel.getResponse().getContentType()), text, new SplitLineAppend("response text end"));
+		if(body instanceof Result && ((Result) body).isError() && logger.isErrorEnabled()){
+			logger.error("{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}", httpChannel.toString(), new SplitLineAppend("response text begin " + httpChannel.getResponse().getContentType()), text, new SplitLineAppend("response text end"));
 		}
 	}
 }

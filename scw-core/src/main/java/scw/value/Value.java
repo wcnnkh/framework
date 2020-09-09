@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public interface Value {
+	public static Value[] EMPTY_ARRAY = new Value[0];
+	
 	<T> T getAsObject(Class<? extends T> type);
 
 	Object getAsObject(Type type);

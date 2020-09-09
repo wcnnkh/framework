@@ -37,8 +37,8 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.event.EventDispatcher;
-import scw.event.support.DefaultEventDispatcher;
+import scw.event.BasicEventDispatcher;
+import scw.event.support.DefaultBasicEventDispatcher;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.lang.NotSupportedException;
@@ -59,14 +59,14 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 	private List<BeanFactoryLifeCycle> beanFactoryLifeCycles = new ArrayList<BeanFactoryLifeCycle>();
 	private List<String> filterNameList = new ArrayList<String>();
 	private List<BeanBuilderLoader> beanBuilderLoaders = new ArrayList<BeanBuilderLoader>();
-	private final EventDispatcher<BeanEvent> eventDispatcher = new DefaultEventDispatcher<BeanEvent>(true);
+	private final BasicEventDispatcher<BeanEvent> eventDispatcher = new DefaultBasicEventDispatcher<BeanEvent>(true);
 
 	public DefaultBeanFactory() {
 		propertyFactory.addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
 		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
 				NoArgsInstanceFactory.class.getName());
 		addInternalSingleton(PropertyFactory.class, propertyFactory);
-		eventDispatcher.registerListener(DependenceRefreshEvent.class, new DependenceRefreshEventListener());
+		eventDispatcher.registerListener(new DependenceRefreshEventListener());
 	}
 
 	protected BeanDefinition getDefinitionByCache(String name) {
@@ -649,11 +649,11 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 		return list;
 	}
 
-	public final EventDispatcher<BeanEvent> getEventDispatcher() {
+	public final BasicEventDispatcher<BeanEvent> getEventDispatcher() {
 		return eventDispatcher;
 	}
 
-	private final class DependenceRefreshEventListener implements scw.event.EventListener<DependenceRefreshEvent> {
+	private final class DependenceRefreshEventListener implements scw.event.EventListener<BeanEvent> {
 
 		public void onEvent(DependenceRefreshEvent event) {
 			for (Entry<String, BeanDefinition> entry : beanMap.entrySet()) {
@@ -665,6 +665,12 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 						logger.error(e, "refresh Dependence error, id={}", entry.getKey());
 					}
 				}
+			}
+		}
+
+		public void onEvent(BeanEvent event) {
+			if (event instanceof DependenceRefreshEvent) {
+				onEvent((DependenceRefreshEvent) event);
 			}
 		}
 	}

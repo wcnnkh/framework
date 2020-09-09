@@ -21,9 +21,4 @@ public class ValueEvent<V> extends BasicTypeEvent {
 	public V getValue() {
 		return value;
 	}
-
-	@Override
-	public String toString() {
-		return super.toString() + ", value=" + value;
-	}
 }

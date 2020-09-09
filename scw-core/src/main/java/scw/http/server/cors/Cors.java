@@ -5,8 +5,8 @@ import java.util.Arrays;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpHeaders;
-import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
+import scw.mapper.MapperUtils;
 
 public class Cors {
 	private static final String[] DEFAULT_HEADERS = new String[] { HttpHeaders.X_REQUESTED_WITH,
@@ -156,6 +156,6 @@ public class Cors {
 
 	@Override
 	public String toString() {
-		return JSONUtils.toJSONString(this);
+		return MapperUtils.getMapper().toString(this);
 	}
 }

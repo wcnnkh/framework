@@ -38,7 +38,7 @@ public class DefaultGeneratorService extends AbstractGeneratorService {
 	@Override
 	public SequenceId generateSequeueId(GeneratorContext generatorContext) {
 		Long createTime = getTemporaryVariable().getCreateTime(generatorContext);
-		if(createTime == null){
+		if(createTime == null || createTime == 0){
 			return sequeueIdGenerator.next();
 		}
 		return sequeueIdGenerator.next(createTime);

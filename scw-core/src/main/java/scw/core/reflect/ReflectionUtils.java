@@ -47,7 +47,7 @@ public abstract class ReflectionUtils {
 		if (!ClassUtils.isPresent(clazz.getName(), clazz.getClassLoader())) {
 			return false;
 		}
-		
+
 		try {
 			for (Method method : CLASS_PRESENT_METHODS) {
 				method.invoke(clazz);
@@ -1326,7 +1326,7 @@ public abstract class ReflectionUtils {
 		autoList.addAll(defList);
 		return autoList;
 	}
-	
+
 	private static final Comparator<Method> METHOD_COMPARATOR = new Comparator<Method>() {
 
 		public int compare(Method o1, Method o2) {
@@ -1352,8 +1352,8 @@ public abstract class ReflectionUtils {
 			return CompareUtils.compare(v1, v2, false);
 		}
 	};
-	
-	public static List<Method> getMethodOrderList(Class<?> targetClass, Method referenceMethod){
+
+	public static List<Method> getMethodOrderList(Class<?> targetClass, Method referenceMethod) {
 		List<Method> autoList = new ArrayList<Method>();
 		List<Method> defList = new ArrayList<Method>();
 		for (Method method : targetClass.getDeclaredMethods()) {
@@ -1396,7 +1396,7 @@ public abstract class ReflectionUtils {
 	 * @return true if and only if this method is a default method as defined by
 	 *         the Java Language Specification.
 	 */
-	public boolean isDefault(Method method) {
+	public static boolean isDefault(Method method) {
 		// Default methods are public non-abstract instance methods
 		// declared in an interface.
 		return ((method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC)

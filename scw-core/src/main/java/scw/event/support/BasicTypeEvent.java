@@ -20,9 +20,4 @@ public class BasicTypeEvent extends BasicEvent {
 	public EventType getEventType() {
 		return eventType;
 	}
-
-	@Override
-	public String toString() {
-		return "eventType=" + eventType + ", " + super.toString();
-	}
 }

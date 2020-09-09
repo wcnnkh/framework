@@ -40,16 +40,8 @@ public class DataResult<T> extends Result {
 		super.setSuccess(success);
 		return this;
 	}
-	
-	public Result result(){
-		Result result = new Result(getCode(), getMsg());
-		result.setRollbackOnlyResult(result.getRollbackOnlyResult());
-		result.setSuccess(isSuccess());
-		return result;
-	}
-	
-	@Override
-	public String toString() {
-		return super.toString() + ", data=" + data;
+
+	public Result result() {
+		return new Result(this);
 	}
 }

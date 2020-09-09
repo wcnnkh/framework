@@ -3,7 +3,8 @@ package scw.db;
 import java.io.Serializable;
 
 /**
- * 注意，在插入时推荐对此实例克隆
+ * 推荐使用克隆
+ * 
  * @author shuchaowen
  *
  */
