@@ -21,8 +21,7 @@ import scw.io.Resource;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.Level;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionInterceptor;
 import scw.mvc.action.ActionInterceptorChain;
@@ -46,7 +45,6 @@ import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
-	private static Logger logger = LoggerUtils.getLogger(HttpControllerHandler.class);
 	protected final LinkedList<ActionLookup> actionLookups = new LinkedList<ActionLookup>();
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
@@ -125,6 +123,11 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
+		if (!MVCUtils.isLoggerEnable(action)) {
+			// 禁用error级别以下的日志
+			httpChannelDestroy.setDisableLevel(Level.ERROR);
+		}
+
 		try {
 			@SuppressWarnings("unchecked")
 			MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptor,
@@ -134,10 +137,12 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			try {
 				message = new ActionInterceptorChain(filters.iterator()).intercept(httpChannel, action, parameters);
 			} catch (Throwable e) {
+				httpChannelDestroy.setError(e);
 				message = doError(httpChannel, action, e);
 			}
 
-			doResponse(httpChannel, action, message, httpChannelDestroy);
+			httpChannelDestroy.setResponseBody(message);
+			doResponse(httpChannel, action, message);
 		} finally {
 			if (!httpChannel.isCompleted()) {
 				if (requestToUse.isSupportAsyncControl()) {
@@ -155,7 +160,6 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 	}
 
 	protected Object doError(HttpChannel httpChannel, Action action, Throwable error) throws IOException {
-		logger.error(error, httpChannel.toString());
 		if (exceptionHandler != null) {
 			return exceptionHandler.doHandle(httpChannel, action, error);
 		}
@@ -163,7 +167,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		return null;
 	}
 
-	protected void doResponse(HttpChannel httpChannel, Action action, Object message, HttpChannelDestroy httpChannelDestroy) throws IOException {
+	protected void doResponse(HttpChannel httpChannel, Action action, Object message) throws IOException {
 		if (message == null) {
 			return;
 		}
@@ -172,7 +176,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 				action.getAnnotatedElement());
 		if (!(message instanceof Result) && resultFactory != null && resultFactory.enable()) {
 			Result result = beanFactory.getInstance(resultFactory.value()).success(message);
-			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON, httpChannelDestroy);
+			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON);
 			return;
 		}
 
@@ -187,7 +191,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			InetUtils.writeHeader((InputMessage) message, httpChannel.getResponse());
 			IOUtils.write(((InputMessage) message).getBody(), httpChannel.getResponse().getBody());
 		} else if (message instanceof Text) {
-			writeTextBody(httpChannel, ((Text) message).getTextContent(), ((Text) message).getMimeType(), httpChannelDestroy);
+			writeTextBody(httpChannel, ((Text) message).getTextContent(), ((Text) message).getMimeType());
 		} else if (message instanceof Resource) {
 			Resource resource = (Resource) message;
 			MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
@@ -201,19 +205,18 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			}
 		} else {
 			if ((message instanceof String) || (ClassUtils.isPrimitiveOrWrapper(message.getClass()))) {
-				writeTextBody(httpChannel, message, MediaType.TEXT_HTML, httpChannelDestroy);
+				writeTextBody(httpChannel, message, MediaType.TEXT_HTML);
 			} else {
-				writeTextBody(httpChannel, message, MediaType.APPLICATION_JSON, httpChannelDestroy);
+				writeTextBody(httpChannel, message, MediaType.APPLICATION_JSON);
 			}
 		}
 	}
 
-	protected void writeTextBody(HttpChannel httpChannel, Object body, MimeType contentType, HttpChannelDestroy httpChannelDestroy) throws IOException {
+	protected void writeTextBody(HttpChannel httpChannel, Object body, MimeType contentType) throws IOException {
 		if (contentType != null) {
 			httpChannel.getResponse().setContentType(contentType);
 		}
 
-		httpChannelDestroy.setResponseBody(body);
 		String text = getJsonSupport().toJSONString(body);
 		httpChannel.getResponse().getWriter().write(text);
 	}

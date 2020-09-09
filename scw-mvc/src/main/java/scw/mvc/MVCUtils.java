@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.beans.BeanUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.http.server.ServerHttpRequest;
 import scw.mvc.action.Action;
+import scw.mvc.annotation.LoggerEnable;
 import scw.util.MultiValueMap;
 import scw.value.ValueFactory;
 
@@ -77,5 +79,11 @@ public final class MVCUtils {
 	public static String getScanAnnotationPackageName(ValueFactory<String> propertyFactory) {
 		return propertyFactory.getValue("scw.scan.mvc.package", String.class,
 				BeanUtils.getScanAnnotationPackageName(propertyFactory));
+	}
+
+	public static boolean isLoggerEnable(Action action) {
+		LoggerEnable loggerEnable = AnnotationUtils.getAnnotation(LoggerEnable.class, action.getSourceClass(),
+				action.getAnnotatedElement());
+		return loggerEnable == null ? true : loggerEnable.value();
 	}
 }
