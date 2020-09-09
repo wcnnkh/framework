@@ -22,6 +22,7 @@ import scw.event.support.BasicEvent;
 import scw.event.support.DefaultAsyncBasicEventDispatcher;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.Copy;
 import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.orm.Column;
@@ -273,7 +274,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		private final AsyncExecute asyncExecute;
 
 		public AsyncExecuteEvent(AsyncExecute asyncExecute) {
-			this.asyncExecute = asyncExecute;
+			this.asyncExecute = Copy.clone(asyncExecute);
 		}
 
 		public AsyncExecute getAsyncExecute() {

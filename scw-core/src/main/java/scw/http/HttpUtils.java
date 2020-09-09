@@ -25,6 +25,7 @@ import scw.json.JsonObject;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 import scw.net.uri.UriComponentsBuilder;
+import scw.util.XUtils;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
@@ -249,10 +250,14 @@ public final class HttpUtils {
 			return new StringValue(value);
 		}
 
-		if (request instanceof JsonServerHttpRequest) {
-			JsonObject jsonObject = ((JsonServerHttpRequest) request).getJsonObject();
+		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
+		if (jsonServerHttpRequest != null) {
+			JsonObject jsonObject = jsonServerHttpRequest.getJsonObject();
 			if (jsonObject != null) {
-				return jsonObject.get(name);
+				JsonElement element = jsonObject.get(name);
+				if (element != null) {
+					return element;
+				}
 			}
 		}
 		return EmptyValue.INSTANCE;
@@ -276,8 +281,9 @@ public final class HttpUtils {
 			return values;
 		}
 
-		if (request instanceof JsonServerHttpRequest) {
-			JsonObject jsonObject = ((JsonServerHttpRequest) request).getJsonObject();
+		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
+		if (jsonServerHttpRequest != null) {
+			JsonObject jsonObject = jsonServerHttpRequest.getJsonObject();
 			if (jsonObject != null) {
 				JsonElement jsonElement = jsonObject.get(name);
 				if (jsonElement.isJsonArray()) {
@@ -291,6 +297,6 @@ public final class HttpUtils {
 				}
 			}
 		}
-		return new Value[0];
+		return Value.EMPTY_ARRAY;
 	}
 }

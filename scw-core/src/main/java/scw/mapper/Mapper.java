@@ -304,14 +304,24 @@ public abstract class Mapper {
 	}
 
 	public final String toString(Object instance) {
+		return toString(instance == null ? null : getUserClass(instance), instance);
+	}
+
+	public final <T> String toString(Class<? extends T> entityClass, T instance) {
 		if (instance == null) {
 			return null;
 		}
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("{");
-		for (scw.mapper.Field field : getFields(getUserClass(instance), FilterFeature.GETTER)) {
+		Iterator<Field> iterator = getFields(entityClass == null ? instance.getClass() : entityClass,
+				FilterFeature.GETTER).iterator();
+		while (iterator.hasNext()) {
+			Field field = iterator.next();
 			sb.append(field.getGetter().getName()).append("=").append(field.getGetter().get(instance));
+			if (iterator.hasNext()) {
+				sb.append(", ");
+			}
 		}
 		sb.append("}");
 		return sb.toString();

@@ -1402,30 +1402,4 @@ public abstract class ReflectionUtils {
 		return ((method.getModifiers() & (Modifier.ABSTRACT | Modifier.PUBLIC | Modifier.STATIC)) == Modifier.PUBLIC)
 				&& method.getDeclaringClass().isInterface();
 	}
-
-	public static String toString(Object instance) {
-		if (instance == null) {
-			return null;
-		}
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		for (Field field : instance.getClass().getDeclaredFields()) {
-			if (Modifier.isStatic(field.getModifiers())) {
-				continue;
-			}
-
-			Object value = null;
-			try {
-				value = field.get(instance);
-			} catch (IllegalArgumentException e) {
-				value = e;
-			} catch (IllegalAccessException e) {
-				value = e;
-			}
-			sb.append(field.getName()).append("=").append(value);
-		}
-		sb.append("}");
-		return sb.toString();
-	}
 }

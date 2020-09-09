@@ -309,4 +309,9 @@ public class Column implements Serializable {
 	public boolean isForceUpdate(){
 		return getAnnotatedElement().getAnnotation(ForceUpdate.class) != null;
 	}
+	
+	@Override
+	public String toString() {
+		return field.toString();
+	}
 }
