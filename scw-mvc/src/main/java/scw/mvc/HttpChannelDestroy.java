@@ -1,19 +1,20 @@
 package scw.mvc;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import scw.beans.BeanUtils;
 import scw.beans.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.event.support.DynamicValue;
+import scw.http.HttpStatus;
 import scw.http.server.ServerHttpAsyncEvent;
 import scw.http.server.ServerHttpAsyncListener;
 import scw.io.IOUtils;
-import scw.json.JSONUtils;
 import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.logger.SplitLineAppend;
 import scw.result.BaseResult;
 
 public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
@@ -21,15 +22,17 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 			.getDynamicValue("mvc.warn-execute-time", Long.class, 100L);
 	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);
 
-	private final HttpChannel httpChannel;
 	private Long executeWarnTime;
+	private Level enableLevel = Level.ALL;
+	private final HttpChannel httpChannel;
 	private Object responseBody;
+	private Throwable error;
 
 	public HttpChannelDestroy(HttpChannel httpChannel) {
 		this.httpChannel = httpChannel;
 	}
 
-	public Object getResponseBody() {
+	public final Object getResponseBody() {
 		return responseBody;
 	}
 
@@ -37,11 +40,27 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 		this.responseBody = responseBody;
 	}
 
+	public final Throwable getError() {
+		return error;
+	}
+
+	public void setError(Throwable error) {
+		this.error = error;
+	}
+
 	public void setExecuteWarnTime(Long executeWarnTime) {
 		this.executeWarnTime = executeWarnTime;
 	}
 
-	protected long getExecuteWarnTime() {
+	public final Level getEnableLevel() {
+		return enableLevel;
+	}
+
+	public void setEnableLevel(Level enableLevel) {
+		this.enableLevel = enableLevel;
+	}
+
+	protected final long getExecuteWarnTime() {
 		return executeWarnTime == null ? WARN_TIMEOUT.getValue() : executeWarnTime;
 	}
 
@@ -52,31 +71,35 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 			} catch (Exception e) {
 				logger.error(e, "destroy channel error: " + httpChannel.toString());
 			}
-
-			long useTime = System.currentTimeMillis() - httpChannel.getCreateTime();
-			Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.DEBUG;
-			if (responseBody == null) {
-				if (logger.isLogEnable(level)) {
-					logger.log(level, "Execution {}ms of {}", useTime, httpChannel.toString());
-				}
-			} else {
-				if (responseBody instanceof BaseResult && ((BaseResult) responseBody).isError()) {
-					level = Level.ERROR;
-				}
-
-				if (logger.isLogEnable(level)) {
-					String text = responseBody instanceof String ? (String) responseBody
-							: JSONUtils.toJSONString(responseBody);
-					logger.log(level,
-							"Execution {}ms of {}" + IOUtils.LINE_SEPARATOR + "{}" + IOUtils.LINE_SEPARATOR + "{}"
-									+ IOUtils.LINE_SEPARATOR + "{}",
-							useTime, httpChannel.toString(),
-							new SplitLineAppend("response text begin " + httpChannel.getResponse().getContentType()),
-							text, new SplitLineAppend("response text end"));
-				}
-			}
+			log();
 		}
 		httpChannel.getResponse().close();
+	}
+
+	protected void log() {
+		long useTime = System.currentTimeMillis() - httpChannel.getCreateTime();
+		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.DEBUG;
+		if (error != null) {
+			logger.error(error, "Execution {}ms of {}", useTime, this);
+			return;
+		}
+
+		if ((responseBody != null && responseBody instanceof BaseResult && ((BaseResult) responseBody).isError())) {
+			level = Level.ERROR;
+		}
+
+		if (!level.equals(Level.ERROR)) {
+			HttpStatus status = HttpStatus.valueOf(httpChannel.getResponse().getStatus());
+			if (status != null && status.isError()) {
+				level = Level.ERROR;
+			}
+		}
+
+		// 禁用指定级别级别以下的日志
+		if (level.isGreaterOrEqual(getEnableLevel()) && logger.isLogEnable(level)) {
+			Object messag = (logger.isDebugEnabled() || !level.equals(Level.WARN)) ? this : httpChannel.getRequest();
+			logger.log(level, "Execution {}ms of {}", useTime, messag);
+		}
 	}
 
 	public void onComplete(ServerHttpAsyncEvent event) throws IOException {
@@ -84,18 +107,30 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 	}
 
 	public void onTimeout(ServerHttpAsyncEvent event) throws IOException {
-		// TODO Auto-generated method stub
-
+		// ignore
 	}
 
 	public void onError(ServerHttpAsyncEvent event) throws IOException {
-		// TODO Auto-generated method stub
-
+		// ignore
 	}
 
 	public void onStartAsync(ServerHttpAsyncEvent event) throws IOException {
-		// TODO Auto-generated method stub
-
+		// ignore
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(httpChannel.getRequest());
+		sb.append(IOUtils.LINE_SEPARATOR);
+		Map<String, Object> responseMap = new HashMap<String, Object>(4, 1);
+		responseMap.put("status", httpChannel.getResponse().getStatus());
+		if (responseBody != null) {
+			responseMap.put("Content-Type", httpChannel.getResponse().getContentType());
+			responseMap.put("body", responseBody);
+			responseMap.put("class", responseBody.getClass().getName());
+		}
+		sb.append(responseMap);
+		return sb.toString();
+	}
 }

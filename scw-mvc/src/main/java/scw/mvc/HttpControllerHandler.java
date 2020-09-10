@@ -21,8 +21,7 @@ import scw.io.Resource;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.Levels;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionInterceptor;
 import scw.mvc.action.ActionInterceptorChain;
@@ -46,7 +45,6 @@ import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
-	private static Logger logger = LoggerUtils.getLogger(HttpControllerHandler.class);
 	protected final LinkedList<ActionLookup> actionLookups = new LinkedList<ActionLookup>();
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
@@ -125,6 +123,11 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
+		Levels level = MVCUtils.getActionLoggerLevel(action);
+		if(level != null){
+			httpChannelDestroy.setEnableLevel(level.getValue());
+		}
+
 		try {
 			@SuppressWarnings("unchecked")
 			MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptor,
@@ -134,9 +137,11 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			try {
 				message = new ActionInterceptorChain(filters.iterator()).intercept(httpChannel, action, parameters);
 			} catch (Throwable e) {
-				message = doError(httpChannel, action, e);
+				httpChannelDestroy.setError(e);
+				message = doError(httpChannel, action, e, httpChannelDestroy);
 			}
 
+			httpChannelDestroy.setResponseBody(message);
 			doResponse(httpChannel, action, message, httpChannelDestroy);
 		} finally {
 			if (!httpChannel.isCompleted()) {
@@ -154,8 +159,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 	}
 
-	protected Object doError(HttpChannel httpChannel, Action action, Throwable error) throws IOException {
-		logger.error(error, httpChannel.toString());
+	protected Object doError(HttpChannel httpChannel, Action action, Throwable error, HttpChannelDestroy httpChannelDestroy) throws IOException {
 		if (exceptionHandler != null) {
 			return exceptionHandler.doHandle(httpChannel, action, error);
 		}
@@ -213,7 +217,6 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			httpChannel.getResponse().setContentType(contentType);
 		}
 
-		httpChannelDestroy.setResponseBody(body);
 		String text = getJsonSupport().toJSONString(body);
 		httpChannel.getResponse().getWriter().write(text);
 	}

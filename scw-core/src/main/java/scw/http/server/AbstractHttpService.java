@@ -17,9 +17,9 @@ public abstract class AbstractHttpService implements HttpService{
 			throws IOException {
 		ServerHttpRequest requestToUse = wrapperRequest(request);
 		ServerHttpResponse responseToUse = wrapperResponse(requestToUse, response);
-
+		
 		if (logger.isDebugEnabled()) {
-			logger.debug(requestToUse.toString());
+			logger.debug(requestToUse);
 		}
 
 		HttpService service = createService(requestToUse, responseToUse);

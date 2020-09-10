@@ -13,11 +13,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.ResolvableType;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.http.DefaultHttpInputMessage;
 import scw.http.HttpInputMessage;
+import scw.http.HttpUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.lang.NotSupportedException;
@@ -34,9 +34,8 @@ public class MultipartMessageConverter extends AbstractMessageConverter<Object> 
 	private static final String BOUNDARY_NAME = "boundary";
 	private static final String LINE = "\r\n";
 	private static final String BOUNDARY_APPEND = "--";
-	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class, "scw.http.multipart.ApacheFileItemParser");
 	
-	private FileItemParser fileItemParser = FILE_ITEM_PARSER;
+	private FileItemParser fileItemParser = HttpUtils.getFileItemParser();
 	public MultipartMessageConverter() {
 		supportMimeTypes.add(MimeTypeUtils.MULTIPART_FORM_DATA);
 	}

@@ -17,4 +17,13 @@ public abstract class AbstractPage extends LinkedHashMap<String, Object> impleme
 	public void setPage(String page) {
 		this.page = page;
 	}
+	
+	@Override
+	public String toString() {
+		if(super.isEmpty()){
+			return page;
+		}
+		
+		return page + " --> " + super.toString();
+	}
 }

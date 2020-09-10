@@ -192,9 +192,5 @@ public class Page extends AbstractPage {
 		default:
 			break;
 		}
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("{}:{}", pageType, realPage);
-		}
 	}
 }
