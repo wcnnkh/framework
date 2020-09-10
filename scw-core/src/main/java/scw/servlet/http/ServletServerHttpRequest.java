@@ -270,7 +270,7 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 			sb.append(" " + contentType);
 		}
 		
-		Map<String, String[]> parameters = httpServletRequest.getParameterMap();
+		MultiValueMap<String, String> parameters = getParameterMap();
 		if (!CollectionUtils.isEmpty(parameters)) {
 			sb.append(" parameters->").append(parameters);
 		}
