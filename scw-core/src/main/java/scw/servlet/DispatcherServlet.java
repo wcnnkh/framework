@@ -37,32 +37,38 @@ public class DispatcherServlet extends HttpServlet {
 	public void setHttpServletService(HttpServletService httpServletService) {
 		this.httpServletService = httpServletService;
 	}
-	
+
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		if(httpServletService == null){
+			//未初始化或初始化错误 
+			resp.sendError(500, "Uninitialized or initialization error");
+			return ;
+		}
 		getServletService().service(req, resp);
 	}
-	
+
 	@Override
 	public final void init(ServletConfig servletConfig) throws ServletException {
 		logger.info("Servlet context realPath / in {}", servletConfig.getServletContext().getRealPath("/"));
-		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(
-				servletConfig);
-		if (getApplication() == null) {
-			reference = false;
-			this.application = new CommonApplication(
-					propertyFactory.getConfigXml());
-		}
+		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(servletConfig);
+		try {
+			if (getApplication() == null) {
+				reference = false;
+				this.application = new CommonApplication(propertyFactory.getConfigXml());
+			}
 
-		getApplication().getPropertyFactory().addLastBasePropertyFactory(
-				propertyFactory);
+			getApplication().getPropertyFactory().addLastBasePropertyFactory(propertyFactory);
 
-		if (!reference) {
-			getApplication().init();
-		}
-		
-		if(httpServletService == null && getApplication() != null){
-			this.httpServletService = getApplication().getBeanFactory().getInstance(HttpServletService.class);
+			if (!reference) {
+				getApplication().init();
+			}
+
+			if (httpServletService == null && getApplication() != null) {
+				this.httpServletService = getApplication().getBeanFactory().getInstance(HttpServletService.class);
+			}
+		} catch (Exception e) {
+			logger.error(e, "初始化异常");
 		}
 	}
 
