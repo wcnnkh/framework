@@ -22,11 +22,11 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 			.getDynamicValue("mvc.warn-execute-time", Long.class, 100L);
 	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);
 
-	private final HttpChannel httpChannel;
 	private Long executeWarnTime;
+	private Level enableLevel = Level.ALL;
+	private final HttpChannel httpChannel;
 	private Object responseBody;
 	private Throwable error;
-	private Level enableLevel = Level.ALL;
 
 	public HttpChannelDestroy(HttpChannel httpChannel) {
 		this.httpChannel = httpChannel;
@@ -71,27 +71,35 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 			} catch (Exception e) {
 				logger.error(e, "destroy channel error: " + httpChannel.toString());
 			}
-
-			long useTime = System.currentTimeMillis() - httpChannel.getCreateTime();
-			Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.DEBUG;
-			if (error != null || (responseBody != null && responseBody instanceof BaseResult
-					&& ((BaseResult) responseBody).isError())) {
-				level = Level.ERROR;
-			}
-
-			if (level != Level.ERROR) {
-				HttpStatus status = HttpStatus.valueOf(httpChannel.getResponse().getStatus());
-				if (status != null && status.isError()) {
-					level = Level.ERROR;
-				}
-			}
-
-			// 禁用指定级别级别以下的日志
-			if (level.isGreaterOrEqual(enableLevel) && logger.isLogEnable(level)) {
-				logger.log(level, error, "Execution {}ms of {}", useTime, this);
-			}
+			log();
 		}
 		httpChannel.getResponse().close();
+	}
+
+	protected void log() {
+		long useTime = System.currentTimeMillis() - httpChannel.getCreateTime();
+		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.DEBUG;
+		if (error != null) {
+			logger.error(error, "Execution {}ms of {}", useTime, this);
+			return;
+		}
+
+		if ((responseBody != null && responseBody instanceof BaseResult && ((BaseResult) responseBody).isError())) {
+			level = Level.ERROR;
+		}
+
+		if (!level.equals(Level.ERROR)) {
+			HttpStatus status = HttpStatus.valueOf(httpChannel.getResponse().getStatus());
+			if (status != null && status.isError()) {
+				level = Level.ERROR;
+			}
+		}
+
+		// 禁用指定级别级别以下的日志
+		if (level.isGreaterOrEqual(getEnableLevel()) && logger.isLogEnable(level)) {
+			Object messag = (logger.isDebugEnabled() || !level.equals(Level.WARN)) ? this : httpChannel.getRequest();
+			logger.log(level, "Execution {}ms of {}", useTime, messag);
+		}
 	}
 
 	public void onComplete(ServerHttpAsyncEvent event) throws IOException {
@@ -122,7 +130,7 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 			responseMap.put("body", responseBody);
 			responseMap.put("class", responseBody.getClass().getName());
 		}
-		sb.append("response->" + responseMap);
+		sb.append(responseMap);
 		return sb.toString();
 	}
 }

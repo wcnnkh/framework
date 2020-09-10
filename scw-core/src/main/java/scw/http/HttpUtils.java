@@ -13,6 +13,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.http.client.HttpClient;
+import scw.http.multipart.FileItemParser;
 import scw.http.server.JsonServerHttpRequest;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
@@ -38,6 +39,8 @@ public final class HttpUtils {
 			"scw.http.client.SimpleHttpClient");
 	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils
 			.loadService(ServerHttpRequestIpGetter.class, "scw.http.server.ip.DefaultServerHttpRequestIpGetter");
+	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
+			"scw.http.multipart.ApacheFileItemParser");
 
 	static {
 
@@ -49,6 +52,10 @@ public final class HttpUtils {
 
 	public static ServerHttpRequestIpGetter getServerHttpRequestIpGetter() {
 		return SERVER_HTTP_REQUEST_IP_GETTER;
+	}
+
+	public static FileItemParser getFileItemParser() {
+		return FILE_ITEM_PARSER;
 	}
 
 	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {

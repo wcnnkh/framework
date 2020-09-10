@@ -8,9 +8,14 @@ import java.lang.annotation.Target;
 
 import scw.logger.Levels;
 
+/**
+ * 仅显示指定级别的日志
+ * @author shuchaowen
+ *
+ */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface LoggerEnable {
-	Levels value() default Levels.DEBUG;
+	Levels value() default Levels.ALL;
 }
