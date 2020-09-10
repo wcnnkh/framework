@@ -6,9 +6,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import scw.logger.Levels;
+
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface LoggerEnable {
-	boolean value() default true;
+	Levels value() default Levels.DEBUG;
 }

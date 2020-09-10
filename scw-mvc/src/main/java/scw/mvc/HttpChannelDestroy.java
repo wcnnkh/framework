@@ -1,6 +1,8 @@
 package scw.mvc;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import scw.beans.BeanUtils;
 import scw.beans.Destroy;
@@ -13,7 +15,6 @@ import scw.io.IOUtils;
 import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.logger.SplitLineAppend;
 import scw.result.BaseResult;
 
 public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
@@ -25,7 +26,7 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 	private Long executeWarnTime;
 	private Object responseBody;
 	private Throwable error;
-	private Level disableLevel = Level.ALL;
+	private Level enableLevel = Level.ALL;
 
 	public HttpChannelDestroy(HttpChannel httpChannel) {
 		this.httpChannel = httpChannel;
@@ -51,12 +52,12 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 		this.executeWarnTime = executeWarnTime;
 	}
 
-	public final Level getDisableLevel() {
-		return disableLevel;
+	public final Level getEnableLevel() {
+		return enableLevel;
 	}
 
-	public void setDisableLevel(Level disableLevel) {
-		this.disableLevel = disableLevel;
+	public void setEnableLevel(Level enableLevel) {
+		this.enableLevel = enableLevel;
 	}
 
 	protected final long getExecuteWarnTime() {
@@ -86,11 +87,7 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 			}
 
 			// 禁用指定级别级别以下的日志
-			if (!level.isGreaterOrEqual(disableLevel)) {
-				return;
-			}
-
-			if (logger.isLogEnable(level)) {
+			if (level.isGreaterOrEqual(enableLevel) && logger.isLogEnable(level)) {
 				logger.log(level, error, "Execution {}ms of {}", useTime, this);
 			}
 		}
@@ -115,19 +112,17 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 
 	@Override
 	public String toString() {
-		if (responseBody == null) {
-			return httpChannel.toString();
-		}
-
 		StringBuilder sb = new StringBuilder();
-		sb.append(httpChannel.toString());
+		sb.append(httpChannel.getRequest());
 		sb.append(IOUtils.LINE_SEPARATOR);
-		sb.append(new SplitLineAppend("response (" + responseBody.getClass().getName() + ") Content-Type ("
-				+ httpChannel.getResponse().getContentType() + ") begin "));
-		sb.append(IOUtils.LINE_SEPARATOR);
-		sb.append(responseBody);
-		sb.append(IOUtils.LINE_SEPARATOR);
-		sb.append(new SplitLineAppend("response end"));
+		Map<String, Object> responseMap = new HashMap<String, Object>(4, 1);
+		responseMap.put("status", httpChannel.getResponse().getStatus());
+		if (responseBody != null) {
+			responseMap.put("Content-Type", httpChannel.getResponse().getContentType());
+			responseMap.put("body", responseBody);
+			responseMap.put("class", responseBody.getClass().getName());
+		}
+		sb.append("response->" + responseMap);
 		return sb.toString();
 	}
 }

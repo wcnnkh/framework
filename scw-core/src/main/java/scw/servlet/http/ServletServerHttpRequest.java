@@ -29,7 +29,6 @@ import scw.http.MediaType;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.json.JSONUtils;
 import scw.net.InetAddress;
 import scw.net.InetUtils;
 import scw.net.RestfulParameterMapAware;
@@ -59,7 +58,7 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 	public String getPath() {
 		return httpServletRequest.getServletPath();
 	}
-	
+
 	public <T> T getTarget(Class<T> targetType) {
 		return XUtils.getTarget(httpServletRequest, targetType);
 	}
@@ -195,11 +194,11 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		initParameterMap();
 		return parameterMap;
 	}
-	
+
 	@Override
 	public String getCharacterEncoding() {
 		String charsetName = super.getCharacterEncoding();
-		return charsetName == null? httpServletRequest.getCharacterEncoding():charsetName;
+		return charsetName == null ? httpServletRequest.getCharacterEncoding() : charsetName;
 	}
 
 	public String getRawMethod() {
@@ -261,6 +260,24 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	@Override
 	public String toString() {
-		return getRawMethod() + " " + getPath() + " " + httpServletRequest.getProtocol() + " parameters->" + JSONUtils.getJsonSupport().toJSONString(httpServletRequest.getParameterMap());
+		StringBuilder sb = new StringBuilder();
+		sb.append(httpServletRequest.getMethod());
+		sb.append(" " + httpServletRequest.getServletPath());
+		sb.append(" " + httpServletRequest.getProtocol());
+
+		String contentType = httpServletRequest.getContentType();
+		if(StringUtils.isNotEmpty(contentType)){
+			sb.append(" " + contentType);
+		}
+		
+		Map<String, String[]> parameters = httpServletRequest.getParameterMap();
+		if (!CollectionUtils.isEmpty(parameters)) {
+			sb.append(" parameters->").append(parameters);
+		}
+
+		if (!CollectionUtils.isEmpty(restfulParameterMap)) {
+			sb.append(" restful->").append(restfulParameterMap);
+		}
+		return sb.toString();
 	}
 }

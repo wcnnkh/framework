@@ -14,7 +14,6 @@ import scw.json.JsonElement;
 import scw.json.JsonObject;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.logger.SplitLineAppend;
 
 /**
  * 一个json请求
@@ -39,8 +38,9 @@ public class JsonServerHttpRequest extends ServerHttpRequestWrapper {
 	}
 
 	private Object json;
+
 	public Object getJson() {
-		if(json == null){
+		if (json == null) {
 			BufferedReader reader;
 			String text = null;
 			try {
@@ -51,17 +51,17 @@ public class JsonServerHttpRequest extends ServerHttpRequestWrapper {
 			} catch (IOException e) {
 				logger.error(e, toString());
 			}
-			
+
 			if (text == null) {
 				json = EmptyJsonElement.INSTANCE;
 			}
-			
+
 			JsonElement jsonElement = getJsonSupport().parseJson(text);
-			if(jsonElement.isJsonArray()){
+			if (jsonElement.isJsonArray()) {
 				json = jsonElement.getAsJsonArray();
-			}else if(jsonElement.isJsonObject()){
+			} else if (jsonElement.isJsonObject()) {
 				json = jsonElement.getAsJsonObject();
-			}else{
+			} else {
 				json = jsonElement;
 			}
 		}
@@ -71,63 +71,55 @@ public class JsonServerHttpRequest extends ServerHttpRequestWrapper {
 	/**
 	 * @return 如果不是一个JsonObject, 那么返回空
 	 */
-	public JsonObject getJsonObject(){
+	public JsonObject getJsonObject() {
 		Object json = getJson();
-		if(json instanceof JsonObject){
+		if (json instanceof JsonObject) {
 			return (JsonObject) json;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @return 如果不是一个JsonArray, 那么返回空
 	 */
-	public JsonArray getJsonArray(){
+	public JsonArray getJsonArray() {
 		Object json = getJson();
-		if(json instanceof JsonArray){
+		if (json instanceof JsonArray) {
 			return (JsonArray) json;
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @return 如果不是一个JsonElement, 那么返回空
 	 */
-	public JsonElement getJsonElement(){
+	public JsonElement getJsonElement() {
 		Object json = getJson();
-		if(json instanceof JsonElement){
+		if (json instanceof JsonElement) {
 			return (JsonElement) json;
 		}
 		return null;
 	}
-	
-	public String toUseJsonString(){
-		if(json == null){
+
+	public String toUseJsonString() {
+		if (json == null) {
 			return null;
 		}
-		
+
 		return json.toString();
 	}
-	
+
 	@Override
 	public String toString() {
 		if (getMethod() == HttpMethod.GET) {
 			return super.toString();
 		}
-		
+
 		String body = toUseJsonString();
-		if(StringUtils.isEmpty(body)){
+		if (StringUtils.isEmpty(body)) {
 			return super.toString();
 		}
-		
-		StringBuilder sb = new StringBuilder();
-		sb.append(super.toString());
-		sb.append(IOUtils.LINE_SEPARATOR);
-		sb.append(new SplitLineAppend("request json begin"));
-		sb.append(IOUtils.LINE_SEPARATOR);
-		sb.append(body);
-		sb.append(IOUtils.LINE_SEPARATOR);
-		sb.append(new SplitLineAppend("request json end"));
-		return sb.toString();
+
+		return super.toString() + " body->" + body;
 	}
 }

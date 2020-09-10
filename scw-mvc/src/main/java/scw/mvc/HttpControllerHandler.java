@@ -21,7 +21,7 @@ import scw.io.Resource;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
-import scw.logger.Level;
+import scw.logger.Levels;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionInterceptor;
 import scw.mvc.action.ActionInterceptorChain;
@@ -123,9 +123,9 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
-		if (!MVCUtils.isLoggerEnable(action)) {
-			// 禁用error级别以下的日志
-			httpChannelDestroy.setDisableLevel(Level.ERROR);
+		Levels level = MVCUtils.getActionLoggerLevel(action);
+		if(level != null){
+			httpChannelDestroy.setEnableLevel(level.getValue());
 		}
 
 		try {

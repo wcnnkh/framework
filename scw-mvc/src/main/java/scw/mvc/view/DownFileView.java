@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import scw.http.MediaType;
 import scw.http.server.ServerHttpResponse;
 import scw.io.IOUtils;
+import scw.mapper.MapperUtils;
 import scw.mvc.HttpChannel;
 
 public final class DownFileView implements View {
@@ -46,5 +47,10 @@ public final class DownFileView implements View {
 	public static void setResponseFileDisposition(String fileName, ServerHttpResponse serverHttpResponse) throws UnsupportedEncodingException{
 		fileName = new String(fileName.getBytes(), "iso-8859-1");
 		serverHttpResponse.getHeaders().set("Content-Disposition", "attachment;filename=" + fileName);
+	}
+	
+	@Override
+	public String toString() {
+		return MapperUtils.getMapper().toString(this);
 	}
 }

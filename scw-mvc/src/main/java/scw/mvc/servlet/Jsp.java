@@ -49,10 +49,7 @@ public class Jsp extends AbstractPage {
 		for (java.util.Map.Entry<String, Object> entry : attributeMap.entrySet()) {
 			request.setAttribute(entry.getKey(), entry.getValue());
 		}
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("jsp:{}", getPage());
-		}
+		
 		try {
 			ServletUtils.jsp(request, response, getPage());
 		} catch (ServletException e) {

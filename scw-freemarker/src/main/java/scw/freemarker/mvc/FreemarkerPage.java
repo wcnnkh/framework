@@ -81,9 +81,6 @@ public class FreemarkerPage extends AbstractPage {
 		Template template = configuration.getTemplate(page, serverRequest.getCharacterEncoding());
 		try {
 			template.process(freemarkerMap, serverResponse.getWriter());
-			if (logger.isDebugEnabled()) {
-				logger.debug("freemarker:{}", page);
-			}
 		} catch (TemplateException e) {
 			logger.error(e, "freemarker:{}", page);
 		}
