@@ -1,9 +1,12 @@
 package scw.http.server.resource;
 
+import scw.beans.annotation.AopEnable;
 import scw.io.Resource;
-import scw.io.ResourceLoader;
 import scw.net.MimeType;
 
-public interface StaticResourceLoader extends ResourceLoader {
+@AopEnable(false)
+public interface StaticResourceLoader {
+	Resource getResource(String location);
+
 	MimeType getMimeType(Resource resource);
 }

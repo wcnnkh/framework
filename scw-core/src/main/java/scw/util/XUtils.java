@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -174,5 +175,27 @@ public final class XUtils {
 			return ((Target) wrapper).getTarget(targetType);
 		}
 		return null;
+	}
+
+	public static Comparator<String> getComparator(final StringMatcher matcher) {
+		return new Comparator<String>() {
+
+			public int compare(String o1, String o2) {
+				if (matcher.isPattern(o1) && matcher.isPattern(o2)) {
+					if (matcher.match(o1, o2)) {
+						return 1;
+					} else if (matcher.match(o2, o1)) {
+						return -1;
+					} else {
+						return -1;
+					}
+				} else if (matcher.isPattern(o1)) {
+					return 1;
+				} else if (matcher.isPattern(o2)) {
+					return -1;
+				}
+				return o1.equals(o1) ? 0 : -1;
+			}
+		};
 	}
 }

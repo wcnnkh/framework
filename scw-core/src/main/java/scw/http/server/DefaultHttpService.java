@@ -26,7 +26,8 @@ public class DefaultHttpService extends AbstractHttpService {
 		StaticResourceLoader staticResourceLoader = beanFactory.isInstance(StaticResourceLoader.class)
 				? beanFactory.getInstance(StaticResourceLoader.class)
 				: new DefaultStaticResourceLoader(propertyFactory);
-		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler(staticResourceLoader);
+		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler();
+		resourceHandler.setResourceLoader(staticResourceLoader);
 		getHandlerAccessor().bind(resourceHandler);
 		interceptors
 				.addAll(InstanceUtils.getConfigurationList(HttpServiceInterceptor.class, beanFactory, propertyFactory));

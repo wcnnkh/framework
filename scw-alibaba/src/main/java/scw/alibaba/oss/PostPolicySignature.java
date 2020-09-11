@@ -54,7 +54,7 @@ public final class PostPolicySignature implements Text, Serializable {
 		this.key = key;
 	}
 
-	public String getTextContent() {
+	public String toTextContent() {
 		Map<String, Object> map = new HashMap<String, Object>(4, 1);
 		map.put("key", key);
 		map.put("OSSAccessKeyId", accessId);

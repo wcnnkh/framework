@@ -1,32 +1,14 @@
 package scw.http.server.cors;
 
-import java.util.Comparator;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
+import scw.util.XUtils;
 
 public class CorsRegistry {
-	private TreeMap<String, Cors> corsMap = new TreeMap<String, Cors>(new Comparator<String>() {
-
-		public int compare(String o1, String o2) {
-			if (matcher.isPattern(o1) && matcher.isPattern(o2)) {
-				if (matcher.match(o1, o2)) {
-					return 1;
-				} else if (matcher.match(o2, o1)) {
-					return -1;
-				} else {
-					return -1;
-				}
-			} else if (matcher.isPattern(o1)) {
-				return 1;
-			} else if (matcher.isPattern(o2)) {
-				return -1;
-			}
-			return o1.equals(o1) ? 0 : -1;
-		}
-	});
+	private TreeMap<String, Cors> corsMap;
 	private final StringMatcher matcher;
 
 	public CorsRegistry() {
@@ -35,6 +17,7 @@ public class CorsRegistry {
 
 	public CorsRegistry(StringMatcher matcher) {
 		this.matcher = matcher;
+		this.corsMap = new TreeMap<String, Cors>(XUtils.getComparator(this.matcher));
 	}
 
 	public final StringMatcher getMatcher() {

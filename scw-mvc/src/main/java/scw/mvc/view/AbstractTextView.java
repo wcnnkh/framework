@@ -10,7 +10,7 @@ import scw.net.message.Text;
 public abstract class AbstractTextView implements View, Text {
 
 	public void render(HttpChannel httpChannel) throws IOException {
-		String content = getTextContent();
+		String content = toTextContent();
 		MimeType mimeType = getMimeType();
 		if (mimeType != null) {
 			httpChannel.getResponse().setContentType(mimeType);
@@ -27,6 +27,6 @@ public abstract class AbstractTextView implements View, Text {
 	
 	@Override
 	public String toString() {
-		return getTextContent();
+		return toTextContent();
 	}
 }

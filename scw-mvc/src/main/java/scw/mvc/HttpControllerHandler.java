@@ -191,7 +191,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			InetUtils.writeHeader((InputMessage) message, httpChannel.getResponse());
 			IOUtils.write(((InputMessage) message).getBody(), httpChannel.getResponse().getBody());
 		} else if (message instanceof Text) {
-			writeTextBody(httpChannel, ((Text) message).getTextContent(), ((Text) message).getMimeType(), httpChannelDestroy);
+			writeTextBody(httpChannel, ((Text) message).toTextContent(), ((Text) message).getMimeType(), httpChannelDestroy);
 		} else if (message instanceof Resource) {
 			Resource resource = (Resource) message;
 			MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
