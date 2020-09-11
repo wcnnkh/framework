@@ -13,15 +13,13 @@ import scw.core.utils.XTime;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
+import scw.json.JsonObject;
 import scw.result.DataResult;
 import scw.result.ResultFactory;
 import scw.security.SignatureUtils;
 
 @AopEnable(false)
 public class Sender {
-	private static Logger logger = LoggerFactory.getLogger(Sender.class);
 	private final String host;
 	private final String appKey;
 	private final String version;
@@ -70,10 +68,18 @@ public class Sender {
 		map.put("sms_type", "normal");
 		map.put("rec_num", StringUtils.collectionToCommaDelimitedString(phones));
 		map.put("sign", getSign(map));
-		String content = HttpUtils.getHttpClient().post(String.class, host, map, MediaType.APPLICATION_FORM_URLENCODED)
-				.getBody();
-		logger.info(content);
-		return resultFactory.success(content);
+		JsonObject response = HttpUtils.getHttpClient()
+				.post(JsonObject.class, host, map, MediaType.APPLICATION_FORM_URLENCODED).getBody();
+		if (response.containsKey("err_code") && response.getIntValue("err_code") == 0) {
+			return resultFactory.success(response.toJsonString());
+		}
+
+		JsonObject errorResponse = response.getJsonObject("error_response");
+		String msg = errorResponse.getString("sub_msg");
+		if (StringUtils.isEmpty(msg)) {
+			msg = errorResponse.getString("msg");
+		}
+		return resultFactory.error(msg, response.toJsonString());
 	}
 
 	/**
