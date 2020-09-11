@@ -20,7 +20,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
 
-public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable{
+public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
@@ -41,7 +41,9 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		beanFactory.getEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
-			Ioc.forClass(instance.getClass()).getDependence().process(this, instance, beanFactory, propertyFactory);
+			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
+				ioc.getDependence().process(this, instance, beanFactory, propertyFactory);
+			}
 			ioc.getDependence().process(this, instance, beanFactory, propertyFactory);
 			BeanUtils.aware(instance, beanFactory, this);
 		}
@@ -53,7 +55,9 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		beanFactory.getEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_INIT));
 		if (instance != null) {
-			Ioc.forClass(instance.getClass()).getInit().process(this, instance, beanFactory, propertyFactory);
+			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
+				ioc.getInit().process(this, instance, beanFactory, propertyFactory);
+			}
 			ioc.getInit().process(this, instance, beanFactory, propertyFactory);
 			BeanUtils.init(instance);
 		}
@@ -67,7 +71,9 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		if (instance != null) {
 			BeanUtils.destroy(instance);
 			ioc.getDestroy().process(this, instance, beanFactory, propertyFactory);
-			Ioc.forClass(instance.getClass()).getDestroy().process(this, instance, beanFactory, propertyFactory);
+			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
+				ioc.getDestroy().process(this, instance, beanFactory, propertyFactory);
+			}
 		}
 		beanFactory.getEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DESTROY));
@@ -102,11 +108,11 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 	public AnnotatedElement getAnnotatedElement() {
 		return getTargetClass();
 	}
-	
-	public Iterable<? extends MethodInterceptor> getFilters(){
+
+	public Iterable<? extends MethodInterceptor> getFilters() {
 		return null;
 	}
-	
+
 	@Override
 	public boolean isInstance() {
 		return super.isInstance(isProxy() && !CollectionUtils.isEmpty(getFilters()));

@@ -25,6 +25,8 @@ import scw.util.cache.CacheUtils;
 import scw.util.cache.LocalCacheType;
 
 public abstract class Mapper {
+	private static final FilterFeature[] EMPTY_FILTER = new FilterFeature[0];
+
 	private transient final CacheOperations<Class<?>, FieldMetadata[]> cacheOperations;
 
 	public Mapper(LocalCacheType localCacheType) {
@@ -194,6 +196,10 @@ public abstract class Mapper {
 		return getFields(entityClass, true, parentField, filters);
 	}
 
+	public final Fields getFields(Class<?> entityClass, boolean useSuperClass) {
+		return getFields(entityClass, useSuperClass, EMPTY_FILTER);
+	}
+
 	public final Fields getFields(Class<?> entityClass, boolean useSuperClass, FieldFilter... filters) {
 		return getFields(entityClass, useSuperClass, null, filters);
 	}
@@ -218,7 +224,7 @@ public abstract class Mapper {
 	}
 
 	public final Fields getFields(Class<?> entityClass) {
-		return getFields(entityClass, true, null, (FieldFilter) null);
+		return getFields(entityClass, true);
 	}
 
 	public Fields getFields(Class<?> entityClass, boolean useSuperClass, Field parentField, FieldFilter filter) {
@@ -269,6 +275,10 @@ public abstract class Mapper {
 
 			throw new IllegalArgumentException(field.getGetter().toString());
 		}
+	}
+
+	public final Fields getFields(Class<?> entityClass, boolean useSuperClass, final FilterFeature... filterFeatures) {
+		return getFields(entityClass, useSuperClass, null, filterFeatures);
 	}
 
 	public final Fields getFields(Class<?> entityClass, boolean useSuperClass, Field parentField,

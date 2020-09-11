@@ -2,6 +2,8 @@ package scw.beans.ioc;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.Destroy;
@@ -14,6 +16,7 @@ import scw.logger.LoggerUtils;
 import scw.mapper.Field;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
+import scw.util.AbstractIterator;
 import scw.util.ConcurrentReferenceHashMap;
 
 public final class Ioc {
@@ -26,17 +29,17 @@ public final class Ioc {
 	};
 
 	private Ioc(Class<?> targetClass) {
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, true, true, InitMethod.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, false, true, InitMethod.class)) {
 			method.setAccessible(true);
 			init.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, true, true, Destroy.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, false, true, Destroy.class)) {
 			method.setAccessible(true);
 			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		for (Field field : MapperUtils.getMapper().getFields(targetClass, FilterFeature.SUPPORT_SETTER)) {
+		for (Field field : MapperUtils.getMapper().getFields(targetClass, false, FilterFeature.SUPPORT_SETTER)) {
 			AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
 			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
 			if (autowired != null) {
@@ -49,7 +52,7 @@ public final class Ioc {
 			}
 		}
 
-		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, true, true, Value.class)) {
+		for (Method method : AnnotationUtils.getAnnoationMethods(targetClass, false, true, Value.class)) {
 			if (method.getParameterTypes().length != 1) {
 				logger.error("@Value method one parameter must exis: {}", method);
 				continue;
@@ -82,15 +85,53 @@ public final class Ioc {
 
 	private static ConcurrentReferenceHashMap<Class<?>, Ioc> iocCache = new ConcurrentReferenceHashMap<Class<?>, Ioc>();
 
-	public static Ioc forClass(Class<?> clazz) {
-		Ioc ioc = iocCache.get(clazz);
-		if (ioc == null) {
-			ioc = new Ioc(clazz);
-			Ioc old = iocCache.putIfAbsent(clazz, ioc);
-			if (old != null) {
-				ioc = old;
-			}
+	public static Iterable<Ioc> forClass(Class<?> clazz) {
+		return new IocIterable(clazz);
+	}
+
+	private static final class IocIterable implements Iterable<Ioc> {
+		private Class<?> clazz;
+
+		public IocIterable(Class<?> clazz) {
+			this.clazz = clazz;
 		}
-		return ioc;
+
+		public Iterator<Ioc> iterator() {
+			return new IocIterator(clazz);
+		}
+	}
+
+	private static final class IocIterator extends AbstractIterator<Ioc> {
+		private Class<?> clazz;
+
+		public IocIterator(Class<?> clazz) {
+			this.clazz = clazz;
+		}
+
+		public boolean hasNext() {
+			if (clazz == null || clazz == Object.class) {
+				return false;
+			}
+
+			return true;
+		}
+
+		public Ioc next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
+
+			Ioc ioc = iocCache.get(clazz);
+			if (ioc == null) {
+				ioc = new Ioc(clazz);
+				Ioc old = iocCache.putIfAbsent(clazz, ioc);
+				if (old != null) {
+					ioc = old;
+				}
+			}
+
+			this.clazz = clazz.getSuperclass();
+			return ioc;
+		}
 	}
 }

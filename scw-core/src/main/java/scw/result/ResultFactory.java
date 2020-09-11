@@ -80,6 +80,9 @@ public class ResultFactory {
 	}
 
 	public final <T> DataResult<T> error(long code, String msg) {
+		if (code == getSuccessCode()) {
+			throw new IllegalArgumentException("Error code cannot be " + getSuccessCode());
+		}
 		return error(code, msg, null);
 	}
 
