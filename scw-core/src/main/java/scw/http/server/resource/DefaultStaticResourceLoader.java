@@ -1,5 +1,6 @@
 package scw.http.server.resource;
 
+import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
@@ -26,6 +27,7 @@ public class DefaultStaticResourceLoader extends AbstractStaticResourceLoader {
 	}
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {
+		Assert.requiredArgument(resourceLoader != null, "resourceLoader");
 		this.resourceLoader = resourceLoader;
 	}
 

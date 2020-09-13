@@ -30,6 +30,7 @@ public abstract class AbstractStaticResourceLoader implements StaticResourceLoad
 	}
 
 	public void setMatcher(StringMatcher matcher) {
+		Assert.requiredArgument(matcher != null, "matcher");
 		this.matcher = matcher;
 	}
 
@@ -38,6 +39,7 @@ public abstract class AbstractStaticResourceLoader implements StaticResourceLoad
 	}
 
 	public void setDefaultFileName(String defaultFileName) {
+		Assert.requiredArgument(StringUtils.isNotEmpty(defaultFileName), "defaultFileName");
 		this.defaultFileName = defaultFileName;
 	}
 
