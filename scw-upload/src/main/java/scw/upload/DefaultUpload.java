@@ -57,19 +57,7 @@ public class DefaultUpload implements Upload {
 		sb.append(uploadItem.getName());
 		String path = sb.toString();
 
-		FileUtils.copyInputStreamToFile(uploadItem.getBody(), new File(appendPath(rootPath, path)));
-		return appendPath(rootUrl, path);
-	}
-
-	public static String appendPath(String path1, String path2) {
-		String path = path2;
-		if (StringUtils.isNotEmpty(path1)) {
-			if (path1.endsWith("/")) {
-				path = path1 + path;
-			} else {
-				path = path1 + "/" + path;
-			}
-		}
-		return path;
+		FileUtils.copyInputStreamToFile(uploadItem.getBody(), new File(StringUtils.mergePath(rootPath, path)));
+		return StringUtils.mergePath(rootUrl, path);
 	}
 }

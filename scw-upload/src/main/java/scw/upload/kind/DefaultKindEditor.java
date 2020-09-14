@@ -11,7 +11,6 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.FileUtils;
-import scw.upload.DefaultUpload;
 import scw.upload.UploadItem;
 import scw.util.comparator.FileComparator;
 
@@ -36,14 +35,14 @@ public class DefaultKindEditor extends AbstractKindUpload {
 
 		String pathToUse = sb.toString();
 		String currentDirPath = path == null ? "" : path;
-		String currentUrl = DefaultUpload.appendPath(rootUrl, pathToUse);
+		String currentUrl = StringUtils.mergePath(rootUrl, pathToUse);
 		String moveupDirPath = "";
 		if (StringUtils.isNotEmpty(path)) {
 			String str = currentDirPath.substring(0, currentDirPath.length() - 1);
 			moveupDirPath = str.lastIndexOf("/") >= 0 ? str.substring(0, str.lastIndexOf("/") + 1) : "";
 		}
 
-		List<KindFileItem> fileList = list(new File(DefaultUpload.appendPath(rootPath, pathToUse)), orderType);
+		List<KindFileItem> fileList = list(new File(StringUtils.mergePath(rootPath, pathToUse)), orderType);
 
 		KindManagerResult kindManagerResult = new KindManagerResult();
 		kindManagerResult.setFile_list(fileList);
