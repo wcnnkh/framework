@@ -6,14 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.fileupload.FileItemIterator;
-import org.apache.commons.fileupload.FileItemStream;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
-
+import scw.http.multipart.FileItem;
+import scw.http.server.MultiPartServerHttpRequest;
 import scw.upload.ueditor.PathFormat;
 import scw.upload.ueditor.define.AppInfo;
 import scw.upload.ueditor.define.BaseState;
@@ -22,39 +16,16 @@ import scw.upload.ueditor.define.State;
 
 public class BinaryUploader {
 
-	public static final State save(HttpServletRequest request,
+	public static final State save(MultiPartServerHttpRequest request,
 			Map<String, Object> conf) {
-		FileItemStream fileStream = null;
-		boolean isAjaxUpload = request.getHeader( "X_Requested_With" ) != null;
-
-		if (!ServletFileUpload.isMultipartContent(request)) {
-			return new BaseState(false, AppInfo.NOT_MULTIPART_CONTENT);
+		FileItem fileItem = request.getFirstFile();
+		if (fileItem == null) {
+			return new BaseState(false, AppInfo.NOTFOUND_UPLOAD_DATA);
 		}
-
-		ServletFileUpload upload = new ServletFileUpload(
-				new DiskFileItemFactory());
-
-        if ( isAjaxUpload ) {
-            upload.setHeaderEncoding( "UTF-8" );
-        }
-
+		
 		try {
-			FileItemIterator iterator = upload.getItemIterator(request);
-
-			while (iterator.hasNext()) {
-				fileStream = iterator.next();
-
-				if (!fileStream.isFormField())
-					break;
-				fileStream = null;
-			}
-
-			if (fileStream == null) {
-				return new BaseState(false, AppInfo.NOTFOUND_UPLOAD_DATA);
-			}
-
 			String savePath = (String) conf.get("savePath");
-			String originFileName = fileStream.getName();
+			String originFileName = fileItem.getName();
 			String suffix = FileType.getSuffixByFilename(originFileName);
 
 			originFileName = originFileName.substring(0,
@@ -71,7 +42,7 @@ public class BinaryUploader {
 
 			String physicalPath = (String) conf.get("rootPath") + savePath;
 
-			InputStream is = fileStream.openStream();
+			InputStream is = fileItem.getBody();
 			State storageState = StorageManager.saveFileByInputStream(is,
 					physicalPath, maxSize);
 			is.close();
@@ -83,9 +54,6 @@ public class BinaryUploader {
 			}
 
 			return storageState;
-		} catch (FileUploadException e) {
-			e.printStackTrace();
-			return new BaseState(false, AppInfo.PARSE_REQUEST_ERROR);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

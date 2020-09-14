@@ -6,26 +6,36 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 
 public final class JsonpUtils {
-	private JsonpUtils(){};
+	private JsonpUtils() {
+	};
+
 	public static final String JSONP_RESP_PREFIX = "(";
 	public static final String JSONP_RESP_SUFFIX = ");";
 	public static final String JSONP_CALLBACK = "callback";
-	
-	
-	public static ServerHttpResponse wrapper(ServerHttpRequest request, ServerHttpResponse response){
-		if(request.getMethod() != HttpMethod.GET){
+	private static final String JSONP_CALLBACK_VALID = "^[a-zA-Z_]+[\\w0-9_]*$";
+
+	public static ServerHttpResponse wrapper(ServerHttpRequest request, ServerHttpResponse response) {
+		if (request.getMethod() != HttpMethod.GET) {
 			return response;
 		}
-		
-		if(response instanceof JsonpServerHttpResponse){
+
+		if (response instanceof JsonpServerHttpResponse) {
 			return response;
 		}
-		
+
 		String jsonp = request.getParameterMap().getFirst(JSONP_CALLBACK);
-		if(StringUtils.isEmpty(jsonp)){
+		if (StringUtils.isEmpty(jsonp) || !validCallbackName(jsonp)) {
 			return response;
 		}
-		
+
 		return new JsonpServerHttpResponse(jsonp, response);
+	}
+
+	public static boolean validCallbackName(String name) {
+		if (name.matches(JSONP_CALLBACK_VALID)) {
+			return true;
+		}
+
+		return false;
 	}
 }

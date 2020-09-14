@@ -1,9 +1,10 @@
 package scw.upload.ueditor;
 
+import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
+import scw.http.server.MultiPartServerHttpRequest;
+import scw.http.server.ServerHttpRequest;
 import scw.upload.ueditor.define.ActionMap;
 import scw.upload.ueditor.define.AppInfo;
 import scw.upload.ueditor.define.BaseState;
@@ -11,10 +12,11 @@ import scw.upload.ueditor.define.State;
 import scw.upload.ueditor.hunter.FileManager;
 import scw.upload.ueditor.hunter.ImageHunter;
 import scw.upload.ueditor.upload.Uploader;
+import scw.util.XUtils;
 
 public class ActionEnter {
 
-	private HttpServletRequest request = null;
+	private ServerHttpRequest request = null;
 
 	private String rootPath = null;
 	private String contextPath = null;
@@ -23,51 +25,13 @@ public class ActionEnter {
 
 	private ConfigManager configManager = null;
 
-	public ActionEnter(HttpServletRequest request, String rootPath) {
+	public ActionEnter(ServerHttpRequest request, String rootPath) {
 
 		this.request = request;
 		this.rootPath = rootPath;
-		this.actionType = request.getParameter("action");
+		this.actionType = request.getParameterMap().getFirst("action");
 		this.contextPath = request.getContextPath();
-		this.configManager = ConfigManager.getInstance(this.rootPath, this.contextPath, request.getRequestURI());
-
-	}
-
-	public static String getResponse(HttpServletRequest httpServletRequest, State state) {
-		String callbackName = httpServletRequest.getParameter("callback");
-		if (callbackName != null) {
-
-			if (!validCallbackName(callbackName)) {
-				return new BaseState(false, AppInfo.ILLEGAL).toJSONString();
-			}
-
-			StringBuilder sb = new StringBuilder();
-			sb.append(callbackName);
-			sb.append("(");
-			sb.append(state.toJSONString());
-			sb.append(");");
-			return sb.toString();
-		} else {
-			return state.toJSONString();
-		}
-	}
-
-	public String exec() {
-
-		String callbackName = this.request.getParameter("callback");
-
-		if (callbackName != null) {
-
-			if (!validCallbackName(callbackName)) {
-				return new BaseState(false, AppInfo.ILLEGAL).toJSONString();
-			}
-
-			return callbackName + "(" + this.invoke() + ");";
-
-		} else {
-			return this.invoke();
-		}
-
+		this.configManager = ConfigManager.getInstance(this.rootPath, this.contextPath, request.getURI().toString());
 	}
 
 	public String invoke() {
@@ -96,12 +60,18 @@ public class ActionEnter {
 		case ActionMap.UPLOAD_VIDEO:
 		case ActionMap.UPLOAD_FILE:
 			conf = this.configManager.getConfig(actionCode);
-			state = new Uploader(request, conf).doExec();
+			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
+					MultiPartServerHttpRequest.class);
+			if (multiPartServerHttpRequest == null) {
+				state = new BaseState(false, AppInfo.NOT_MULTIPART_CONTENT);
+			} else {
+				state = new Uploader(multiPartServerHttpRequest, conf).doExec();
+			}
 			break;
 
 		case ActionMap.CATCH_IMAGE:
 			conf = configManager.getConfig(actionCode);
-			String[] list = this.request.getParameterValues((String) conf.get("fieldName"));
+			List<String> list = this.request.getParameterMap().get((String) conf.get("fieldName"));
 			state = new ImageHunter(conf).capture(list);
 			break;
 
@@ -120,26 +90,13 @@ public class ActionEnter {
 
 	public int getStartIndex() {
 
-		String start = this.request.getParameter("start");
+		String start = this.request.getParameterMap().getFirst("start");
 
 		try {
 			return Integer.parseInt(start);
 		} catch (Exception e) {
 			return 0;
 		}
-
-	}
-
-	/**
-	 * callback参数验证
-	 */
-	public static boolean validCallbackName(String name) {
-
-		if (name.matches("^[a-zA-Z_]+[\\w0-9_]*$")) {
-			return true;
-		}
-
-		return false;
 
 	}
 

@@ -18,6 +18,7 @@
   	<dependency>
   		<groupId>scw</groupId>
   		<artifactId>scw-data</artifactId>
+  		<scope>provided</scope>
   	</dependency>
   </dependencies>
 </project>

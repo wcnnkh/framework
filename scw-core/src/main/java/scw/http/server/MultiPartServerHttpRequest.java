@@ -81,6 +81,18 @@ public class MultiPartServerHttpRequest extends ServerHttpRequestWrapper impleme
 		return multiPartMap;
 	}
 
+	public FileItem getFirstFile() {
+		for (FileItem fileItem : getMultiPartList()) {
+			if (fileItem.isFormField()) {
+				continue;
+			}
+
+			return fileItem;
+		}
+
+		return null;
+	}
+
 	/**
 	 * 关闭所有的item
 	 * 
