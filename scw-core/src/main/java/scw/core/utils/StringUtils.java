@@ -43,9 +43,9 @@ public final class StringUtils {
 	private static final String CURRENT_PATH = ".";
 
 	private static final char EXTENSION_SEPARATOR = '.';
-	
+
 	private static final Set<String> BOOLEANS;
-	static{
+	static {
 		BOOLEANS = new HashSet<String>(8, 1);
 		BOOLEANS.add("1");
 		BOOLEANS.add("t");
@@ -529,9 +529,10 @@ public final class StringUtils {
 	public static String unqualify(String qualifiedName, char separator) {
 		return qualifiedName.substring(qualifiedName.lastIndexOf(separator) + 1);
 	}
-	
+
 	/**
 	 * 合并多个路径
+	 * 
 	 * @param path
 	 * @return
 	 */
@@ -550,23 +551,19 @@ public final class StringUtils {
 		}
 		return p;
 	}
-
+	
 	private static String addPath(String path1, String path2) {
 		String p1 = path1 == null ? "" : path1;
 		String p2 = path2 == null ? "" : path2;
 		p1 = p1.replaceAll("\\\\", "/");
 		p2 = p2.replaceAll("\\\\", "/");
 
-		if (!StringUtils.isNull(p2)) {
-			if (!p1.endsWith("/")) {
-				p1 = p1 + "/";
-			}
+		if (!p1.endsWith("/")) {
+			p1 = p1 + "/";
 		}
 
-		if (!StringUtils.isNull(p1)) {
-			if (p2.startsWith("/")) {
-				p2 = p2.substring(1);
-			}
+		if (p2.startsWith("/")) {
+			p2 = p2.substring(1);
 		}
 		return p1 + p2;
 	}

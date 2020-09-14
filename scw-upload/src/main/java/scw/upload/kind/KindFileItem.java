@@ -12,9 +12,8 @@ public class KindFileItem implements Serializable {
 	private boolean dir;
 	private boolean hasFile;
 	private long size;
-	private String dirPath;
 	private boolean photo;
-	private String type;
+	private String ext;
 	private String name;
 	private long dateTime;
 
@@ -42,14 +41,6 @@ public class KindFileItem implements Serializable {
 		this.size = size;
 	}
 
-	public String getDirPath() {
-		return dirPath;
-	}
-
-	public void setDirPath(String dirPath) {
-		this.dirPath = dirPath;
-	}
-
 	public boolean isPhoto() {
 		return photo;
 	}
@@ -58,12 +49,12 @@ public class KindFileItem implements Serializable {
 		this.photo = photo;
 	}
 
-	public String getType() {
-		return type;
+	public String getExt() {
+		return ext;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setExt(String ext) {
+		this.ext = ext;
 	}
 
 	public String getName() {
@@ -87,10 +78,9 @@ public class KindFileItem implements Serializable {
 		map.put("is_dir", isDir());
 		map.put("has_file", hasFile);
 		map.put("filesize", getSize());
-		map.put("dir_path", getDirPath());
 		map.put("is_photo", isPhoto());
-		map.put("filetype", getType());
-		map.put("name", getName());
+		map.put("filetype", getExt());
+		map.put("filename", getName());
 		map.put("datetime", XTime.format(getDateTime(), "yyyy-MM-dd HH:mm:ss"));
 		return map;
 	}

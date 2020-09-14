@@ -10,7 +10,7 @@ import scw.http.MediaType;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 
-class DefaultFileItem extends FileItem {
+class DefaultFileItem extends AbstractFileItem {
 	private final File file;
 
 	public DefaultFileItem(String fieldName, File file) {
@@ -35,7 +35,11 @@ class DefaultFileItem extends FileItem {
 		return file.getName();
 	}
 
-	public void close() throws IOException {
+	public void close() {
 		//ignore
+	}
+
+	public long getSize() {
+		return file.length();
 	}
 }

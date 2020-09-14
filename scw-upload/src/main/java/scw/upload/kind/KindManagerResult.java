@@ -9,6 +9,7 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
+import scw.mapper.MapperUtils;
 import scw.net.MimeType;
 import scw.net.message.Text;
 
@@ -72,10 +73,16 @@ public class KindManagerResult implements Serializable, Text {
 				list.add(item.toResponseResult());
 			}
 		}
+		map.put("file_list", list);
 		return JSONUtils.toJSONString(map);
 	}
 
 	public MimeType getMimeType() {
 		return MediaType.APPLICATION_JSON;
+	}
+	
+	@Override
+	public String toString() {
+		return MapperUtils.getMapper().toString(this);
 	}
 }

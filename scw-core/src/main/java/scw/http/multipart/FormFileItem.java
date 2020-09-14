@@ -12,7 +12,7 @@ import scw.json.JSONSupport;
 import scw.net.message.converter.JsonMessageConverter;
 import scw.value.ValueUtils;
 
-class FormFileItem extends FileItem {
+class FormFileItem extends AbstractFileItem {
 	private String body;
 	private Charset charset;
 
@@ -38,12 +38,16 @@ class FormFileItem extends FileItem {
 		return new UnsafeByteArrayInputStream(getBytes());
 	}
 
-	public void close() throws IOException {
+	public void close() {
 		// ignore
 	}
 
 	@Override
 	public String getTextBody() throws IOException {
 		return body;
+	}
+
+	public long getSize() {
+		return getBytes().length;
 	}
 }
