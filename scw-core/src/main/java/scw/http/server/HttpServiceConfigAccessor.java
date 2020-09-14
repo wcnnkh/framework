@@ -4,25 +4,15 @@ import scw.beans.annotation.AopEnable;
 
 @AopEnable(false)
 public class HttpServiceConfigAccessor {
-	private HttpServiceConfig<Boolean> jsonpSupportConfig;
-	private HttpServiceConfig<Boolean> jsonSupportWrapperConfig;
+	private final HttpServiceConfig<Boolean> jsonpSupportConfig = new HttpServiceConfig<Boolean>();
+	private final HttpServiceConfig<Boolean> jsonSupportWrapperConfig = new HttpServiceConfig<Boolean>();
 
-	public HttpServiceConfig<Boolean> getJsonpSupportConfig() {
+	public final HttpServiceConfig<Boolean> getJsonpSupportConfig() {
 		return jsonpSupportConfig;
 	}
 
-	public void setJsonpSupportConfig(
-			HttpServiceConfig<Boolean> jsonpSupportConfig) {
-		this.jsonpSupportConfig = jsonpSupportConfig;
-	}
-
-	public HttpServiceConfig<Boolean> getJsonSupportWrapperConfig() {
+	public final HttpServiceConfig<Boolean> getJsonSupportWrapperConfig() {
 		return jsonSupportWrapperConfig;
-	}
-
-	public void setJsonSupportWrapperConfig(
-			HttpServiceConfig<Boolean> jsonSupportWrapperConfig) {
-		this.jsonSupportWrapperConfig = jsonSupportWrapperConfig;
 	}
 
 	public <V> V getConfig(HttpServiceConfig<V> config, String path,
