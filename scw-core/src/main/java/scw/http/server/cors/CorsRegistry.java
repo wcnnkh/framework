@@ -7,6 +7,11 @@ import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
 import scw.util.XUtils;
 
+/**
+ * 
+ * @author shuchaowen
+ *
+ */
 public class CorsRegistry {
 	private TreeMap<String, Cors> corsMap;
 	private final StringMatcher matcher;
@@ -24,12 +29,6 @@ public class CorsRegistry {
 		return matcher;
 	}
 
-	/**
-	 * 线程不安全的
-	 * 
-	 * @param path
-	 * @param cors
-	 */
 	public void addMapping(String path, Cors cors) {
 		Cors corsToUse = cors.isReadyOnly() ? cors : cors.clone().readyOnly();
 		corsMap.put(path, corsToUse);

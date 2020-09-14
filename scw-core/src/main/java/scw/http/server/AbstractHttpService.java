@@ -12,10 +12,11 @@ public abstract class AbstractHttpService implements HttpService {
 	public static final String JSONP_CALLBACK = "callback";
 	private static Logger logger = LoggerFactory.getLogger(HttpService.class);
 	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
+	private HttpServiceConfigAccessor httpServiceConfigAccessor;
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		ServerHttpRequest requestToUse = wrapperRequest(request);
-		ServerHttpResponse responseToUse = wrapperResponse(requestToUse, response);
+		ServerHttpRequest requestToUse = wrapperRequest(request, getHttpServiceConfigAccessor());
+		ServerHttpResponse responseToUse = wrapperResponse(requestToUse, response, getHttpServiceConfigAccessor());
 
 		if (logger.isDebugEnabled()) {
 			logger.debug(requestToUse);
@@ -52,14 +53,14 @@ public abstract class AbstractHttpService implements HttpService {
 	protected HttpService createService(ServerHttpRequest request, ServerHttpResponse response) {
 		return new HttpServiceInterceptorChain(getHttpServiceInterceptors().iterator(), handlerAccessor);
 	}
-
-	protected ServerHttpRequest wrapperRequest(ServerHttpRequest request) throws IOException {
+	
+	protected ServerHttpRequest wrapperRequest(ServerHttpRequest request, HttpServiceConfigAccessor configAccessor) throws IOException {
 		if (request.getMethod() == HttpMethod.GET) {
 			return request;
 		}
-
+		
 		// 如果是一个json请求，那么包装一下
-		if (!(request instanceof JsonServerHttpRequest) && request.getHeaders().isJsonContentType()) {
+		if (!(request instanceof JsonServerHttpRequest) && request.getHeaders().isJsonContentType() && (configAccessor == null || configAccessor.isSupportJsonWrapper(request.getPath()))) {
 			return new JsonServerHttpRequest(request);
 		}
 
@@ -74,12 +75,21 @@ public abstract class AbstractHttpService implements HttpService {
 		return request;
 	}
 
-	protected ServerHttpResponse wrapperResponse(ServerHttpRequest request, ServerHttpResponse response)
+	protected ServerHttpResponse wrapperResponse(ServerHttpRequest request, ServerHttpResponse response, HttpServiceConfigAccessor configAccessor)
 			throws IOException {
-		if (isEnableJsonp(request)) {
+		if (isEnableJsonp(request) && (configAccessor == null || configAccessor.isSupportJsonp(request.getPath()))) {
 			return JsonpUtils.wrapper(request, response);
 		}
 		return response;
+	}
+
+	public HttpServiceConfigAccessor getHttpServiceConfigAccessor() {
+		return httpServiceConfigAccessor;
+	}
+
+	public void setHttpServiceConfigAccessor(
+			HttpServiceConfigAccessor httpServiceConfigAccessor) {
+		this.httpServiceConfigAccessor = httpServiceConfigAccessor;
 	}
 
 	public abstract Iterable<? extends HttpServiceInterceptor> getHttpServiceInterceptors();

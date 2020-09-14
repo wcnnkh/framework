@@ -35,6 +35,10 @@ public class DefaultHttpService extends AbstractHttpService {
 		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils.getConfigurationList(HttpServiceHandler.class,
 				beanFactory, propertyFactory);
 		getHandlerAccessor().bind(httpServiceHandlers);
+		
+		if(beanFactory.isInstance(HttpServiceConfigAccessor.class)){
+			setHttpServiceConfigAccessor(beanFactory.getInstance(HttpServiceConfigAccessor.class));
+		}
 	}
 
 	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {

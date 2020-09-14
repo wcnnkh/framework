@@ -22,7 +22,7 @@ import scw.util.MultiValueMap;
  * @see MediaType#MULTIPART_FORM_DATA
  *
  */
-public class MultiPartServerHttpRequest extends ServerHttpRequestWrapper implements Closeable {
+public class MultiPartServerHttpRequest extends FileCachingServerHttpRequest implements Closeable {
 	private static Logger logger = LoggerUtils.getLogger(MultiPartServerHttpRequest.class);
 	private FileItemParser fileItemParser;
 

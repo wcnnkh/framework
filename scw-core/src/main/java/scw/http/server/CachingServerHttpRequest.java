@@ -1,11 +1,8 @@
 package scw.http.server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
-import scw.core.Constants;
 import scw.http.HttpMethod;
 import scw.io.IOUtils;
 import scw.io.UnsafeByteArrayInputStream;
@@ -19,7 +16,7 @@ import scw.util.XUtils;
 public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 
 	public CachingServerHttpRequest(ServerHttpRequest targetRequest) {
-		super(targetRequest);
+		super(targetRequest, true);
 	}
 
 	private byte[] bytes;
@@ -53,19 +50,5 @@ public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 			return null;
 		}
 		return new UnsafeByteArrayInputStream(bytes);
-	}
-
-	@Override
-	public BufferedReader getReader() throws IOException {
-		InputStream inputStream = getBody();
-		if (inputStream == null) {
-			return null;
-		}
-
-		String charsetName = getCharacterEncoding();
-		if (charsetName == null) {
-			charsetName = Constants.UTF_8.name();
-		}
-		return new BufferedReader(new InputStreamReader(inputStream, charsetName));
 	}
 }

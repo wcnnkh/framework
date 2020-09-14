@@ -3,10 +3,12 @@ package scw.http.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
 
+import scw.core.Constants;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
@@ -19,15 +21,26 @@ import scw.util.XUtils;
 
 public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
 	private final ServerHttpRequest targetRequest;
+	private final boolean overrideBody;
 
 	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest) {
+		this(targetRequest, false);
+	}
+
+	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest,
+			boolean overrideBody) {
 		this.targetRequest = targetRequest;
+		this.overrideBody = overrideBody;
+	}
+
+	public final boolean isOverrideBody() {
+		return overrideBody;
 	}
 
 	public ServerHttpRequest getTargetRequest() {
 		return targetRequest;
 	}
-	
+
 	public <T> T getTarget(Class<T> targetType) {
 		return XUtils.getTarget(targetRequest, targetType);
 	}
@@ -52,7 +65,25 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
 		return targetRequest.getCharacterEncoding();
 	}
 
+	private BufferedReader reader;
+
 	public BufferedReader getReader() throws IOException {
+		if (isOverrideBody()) {
+			if (reader == null) {
+				InputStream inputStream = getBody();
+				if (inputStream == null) {
+					return null;
+				}
+
+				String charsetName = getCharacterEncoding();
+				if (charsetName == null) {
+					charsetName = Constants.UTF_8.name();
+				}
+				reader = new BufferedReader(new InputStreamReader(inputStream,
+						charsetName));
+			}
+			return reader;
+		}
 		return targetRequest.getReader();
 	}
 
