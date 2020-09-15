@@ -61,7 +61,7 @@ public abstract class AbstractHttpService implements HttpService {
 		}
 		
 		// 如果是一个json请求，那么包装一下
-		if(request.getHeaders().isJsonContentType() && (configAccessor == null || configAccessor.isSupportJsonWrapper(request.getPath()))){
+		if(request.getHeaders().isJsonContentType() && (configAccessor == null || configAccessor.isSupportJsonWrapper(request))){
 			JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
 			if(jsonServerHttpRequest != null){
 				//返回原始对象
@@ -90,7 +90,7 @@ public abstract class AbstractHttpService implements HttpService {
 
 	protected ServerHttpResponse wrapperResponse(ServerHttpRequest request, ServerHttpResponse response, HttpServiceConfigAccessor configAccessor)
 			throws IOException {
-		if (isEnableJsonp(request) && (configAccessor == null || configAccessor.isSupportJsonp(request.getPath()))) {
+		if (isEnableJsonp(request) && (configAccessor == null || configAccessor.isSupportJsonp(request))) {
 			return JsonpUtils.wrapper(request, response);
 		}
 		return response;

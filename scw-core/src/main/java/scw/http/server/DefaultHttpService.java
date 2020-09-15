@@ -52,7 +52,7 @@ public class DefaultHttpService extends AbstractHttpService {
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		Cors cors = corsRegistry.getConfig(request.getPath());
+		Cors cors = corsRegistry.getConfig(request);
 		if (cors != null) {
 			cors.write(response.getHeaders());
 		}
