@@ -1,55 +1,33 @@
 package scw.http.server.cors;
 
-import java.util.Map.Entry;
-import java.util.TreeMap;
-
-import scw.util.DefaultStringMatcher;
+import scw.http.server.HttpServiceConfig;
 import scw.util.StringMatcher;
-import scw.util.XUtils;
 
 /**
- * 
+ * 跨域路径注册
  * @author shuchaowen
  *
  */
-public class CorsRegistry {
-	private TreeMap<String, Cors> corsMap;
-	private final StringMatcher matcher;
+public class CorsRegistry extends HttpServiceConfig<Cors> {
 
 	public CorsRegistry() {
-		this(DefaultStringMatcher.getInstance());
+		super();
 	}
 
 	public CorsRegistry(StringMatcher matcher) {
-		this.matcher = matcher;
-		this.corsMap = new TreeMap<String, Cors>(XUtils.getComparator(this.matcher));
-	}
-
-	public final StringMatcher getMatcher() {
-		return matcher;
-	}
-
-	public void addMapping(String path, Cors cors) {
-		Cors corsToUse = cors.isReadyOnly() ? cors : cors.clone().readyOnly();
-		corsMap.put(path, corsToUse);
-	}
-
-	public Cors getCors(String path) {
-		Cors cors = corsMap.get(path);
-		if (cors != null) {
-			return cors;
-		}
-
-		for (Entry<String, Cors> pair : corsMap.entrySet()) {
-			if (matcher.match(pair.getKey(), path)) {
-				return pair.getValue();
-			}
-		}
-		return null;
+		super(matcher);
 	}
 
 	@Override
-	public String toString() {
-		return corsMap.toString();
+	public HttpServiceConfig<Cors> addMapping(String pattern, Cors cors) {
+		Cors corsToUse = cors.isReadyOnly() ? cors : cors.clone().readyOnly();
+		super.addMapping(pattern, corsToUse);
+		return this;
+	}
+
+	@Override
+	public HttpServiceConfig<Cors> clear() {
+		super.clear();
+		return this;
 	}
 }
