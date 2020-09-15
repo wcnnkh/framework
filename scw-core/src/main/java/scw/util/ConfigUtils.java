@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -151,7 +151,7 @@ public final class ConfigUtils {
 		}
 
 		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
-		Map<K, V> map = new HashMap<K, V>();
+		Map<K, V> map = new LinkedHashMap<K, V>();
 		for (Map<String, String> tempMap : list) {
 			Object obj = ConfigUtils.parseObject(tempMap, valueType);
 			Object kV = keyField.getGetter().get(obj);
@@ -292,7 +292,7 @@ public final class ConfigUtils {
 			nameList = new ArrayList<String>(asNameList);
 		}
 
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new LinkedHashMap<String, String>();
 		for (Entry<?, ?> entry : properties.entrySet()) {
 			Object key = entry.getKey();
 			Object value = entry.getValue();
