@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import scw.http.HttpMethod;
 import scw.http.HttpUtils;
+import scw.http.multipart.FileItemParser;
 import scw.http.server.jsonp.JsonpUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -14,6 +15,7 @@ public abstract class AbstractHttpService implements HttpService {
 	private static Logger logger = LoggerFactory.getLogger(HttpService.class);
 	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
 	private HttpServiceConfigAccessor httpServiceConfigAccessor;
+	private FileItemParser fileItemParser;
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		ServerHttpRequest requestToUse = wrapperRequest(request, getHttpServiceConfigAccessor());
@@ -54,54 +56,65 @@ public abstract class AbstractHttpService implements HttpService {
 	protected HttpService createService(ServerHttpRequest request, ServerHttpResponse response) {
 		return new HttpServiceInterceptorChain(getHttpServiceInterceptors().iterator(), handlerAccessor);
 	}
-	
-	protected ServerHttpRequest wrapperRequest(ServerHttpRequest request, HttpServiceConfigAccessor configAccessor) throws IOException {
+
+	protected ServerHttpRequest wrapperRequest(ServerHttpRequest request, HttpServiceConfigAccessor configAccessor)
+			throws IOException {
 		if (request.getMethod() == HttpMethod.GET) {
 			return request;
 		}
-		
+
 		// 如果是一个json请求，那么包装一下
-		if(request.getHeaders().isJsonContentType() && (configAccessor == null || configAccessor.isSupportJsonWrapper(request))){
+		if (request.getHeaders().isJsonContentType()
+				&& (configAccessor == null || configAccessor.isSupportJsonWrapper(request))) {
 			JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
-			if(jsonServerHttpRequest != null){
-				//返回原始对象
+			if (jsonServerHttpRequest != null) {
+				// 返回原始对象
 				return request;
 			}
-			
+
 			return new JsonServerHttpRequest(request);
 		}
 
 		// 如果是 一个MultiParty请求，那么包装一下
-		if(request.getHeaders().isMultipartFormContentType()){
-			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request, MultiPartServerHttpRequest.class);
-			if(multiPartServerHttpRequest != null){
-				//返回原始对象
+		if (request.getHeaders().isMultipartFormContentType()) {
+			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
+					MultiPartServerHttpRequest.class);
+			if (multiPartServerHttpRequest != null) {
+				// 返回原始对象
 				return request;
 			}
-			
-			if (HttpUtils.isSupportMultiPart()) {
-				return new MultiPartServerHttpRequest(request);
-			} else {
+
+			FileItemParser fileItemParser = getFileItemParser();
+			if (fileItemParser == null) {
 				logger.warn("Multipart is not supported: {}", request);
+			} else {
+				return new MultiPartServerHttpRequest(request, fileItemParser);
 			}
 		}
 		return request;
 	}
 
-	protected ServerHttpResponse wrapperResponse(ServerHttpRequest request, ServerHttpResponse response, HttpServiceConfigAccessor configAccessor)
-			throws IOException {
+	protected ServerHttpResponse wrapperResponse(ServerHttpRequest request, ServerHttpResponse response,
+			HttpServiceConfigAccessor configAccessor) throws IOException {
 		if (isEnableJsonp(request) && (configAccessor == null || configAccessor.isSupportJsonp(request))) {
 			return JsonpUtils.wrapper(request, response);
 		}
 		return response;
 	}
 
+	public FileItemParser getFileItemParser() {
+		return fileItemParser == null ? HttpUtils.getFileItemParser() : fileItemParser;
+	}
+
+	public void setFileItemParser(FileItemParser fileItemParser) {
+		this.fileItemParser = fileItemParser;
+	}
+
 	public HttpServiceConfigAccessor getHttpServiceConfigAccessor() {
 		return httpServiceConfigAccessor;
 	}
 
-	public void setHttpServiceConfigAccessor(
-			HttpServiceConfigAccessor httpServiceConfigAccessor) {
+	public void setHttpServiceConfigAccessor(HttpServiceConfigAccessor httpServiceConfigAccessor) {
 		this.httpServiceConfigAccessor = httpServiceConfigAccessor;
 	}
 

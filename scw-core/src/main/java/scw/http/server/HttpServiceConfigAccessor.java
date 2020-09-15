@@ -1,22 +1,11 @@
 package scw.http.server;
 
 import scw.beans.annotation.AopEnable;
-import scw.util.DefaultStringMatcher;
-import scw.util.StringMatcher;
 
 @AopEnable(false)
 public class HttpServiceConfigAccessor {
-	private final HttpServiceConfig<Boolean> jsonpSupportConfig;
-	private final HttpServiceConfig<Boolean> jsonSupportWrapperConfig;
-
-	public HttpServiceConfigAccessor(){
-		this(DefaultStringMatcher.getInstance());
-	}
-	
-	public HttpServiceConfigAccessor(StringMatcher matcher) {
-		this.jsonSupportWrapperConfig = new HttpServiceConfig<Boolean>(matcher);
-		this.jsonpSupportConfig = new HttpServiceConfig<Boolean>(matcher);
-	}
+	private final HttpServiceConfig<Boolean> jsonpSupportConfig = new HttpServiceConfig<Boolean>();
+	private final HttpServiceConfig<Boolean> jsonSupportWrapperConfig = new HttpServiceConfig<Boolean>();
 
 	public final HttpServiceConfig<Boolean> getJsonpSupportConfig() {
 		return jsonpSupportConfig;
@@ -26,13 +15,17 @@ public class HttpServiceConfigAccessor {
 		return jsonSupportWrapperConfig;
 	}
 
-	public <V> V getConfig(HttpServiceConfig<V> config, ServerHttpRequest request, V defaultValue) {
+	public <V> V getConfig(HttpServiceConfig<V> config, String path, V defaultValue) {
 		if (config == null) {
 			return defaultValue;
 		}
 
-		V v = config.getConfig(request);
+		V v = config.getConfig(path);
 		return v == null ? defaultValue : v;
+	}
+
+	public <V> V getConfig(HttpServiceConfig<V> config, ServerHttpRequest request, V defaultValue) {
+		return getConfig(config, request.getPath(), defaultValue);
 	}
 
 	public boolean isSupportJsonWrapper(ServerHttpRequest request) {
