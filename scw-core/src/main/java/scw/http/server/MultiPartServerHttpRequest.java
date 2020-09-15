@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.List;
 
 import scw.core.utils.CollectionUtils;
-import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.http.multipart.FileItem;
 import scw.http.multipart.FileItemParser;
@@ -24,17 +23,10 @@ import scw.util.MultiValueMap;
  */
 public class MultiPartServerHttpRequest extends FileCachingServerHttpRequest implements Closeable {
 	private static Logger logger = LoggerUtils.getLogger(MultiPartServerHttpRequest.class);
-	private FileItemParser fileItemParser;
+	private final FileItemParser fileItemParser;
 
-	public MultiPartServerHttpRequest(ServerHttpRequest targetRequest) {
+	public MultiPartServerHttpRequest(ServerHttpRequest targetRequest, FileItemParser fileItemParser) {
 		super(targetRequest);
-	}
-
-	public FileItemParser getFileItemParser() {
-		return fileItemParser == null ? HttpUtils.getFileItemParser() : fileItemParser;
-	}
-
-	public void setFileItemParser(FileItemParser fileItemParser) {
 		this.fileItemParser = fileItemParser;
 	}
 
@@ -43,7 +35,7 @@ public class MultiPartServerHttpRequest extends FileCachingServerHttpRequest imp
 	public List<FileItem> getMultiPartList() {
 		if (fileItems == null) {
 			try {
-				fileItems = getFileItemParser().parse(this);
+				fileItems = fileItemParser.parse(this);
 			} catch (IOException e) {
 				logger.error(e, toString());
 			}

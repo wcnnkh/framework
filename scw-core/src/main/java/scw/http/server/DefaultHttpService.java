@@ -7,6 +7,7 @@ import java.util.List;
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
 import scw.event.support.DynamicValue;
+import scw.http.multipart.FileItemParser;
 import scw.http.server.cors.Cors;
 import scw.http.server.cors.CorsRegistry;
 import scw.http.server.resource.DefaultStaticResourceLoader;
@@ -38,6 +39,10 @@ public class DefaultHttpService extends AbstractHttpService {
 		
 		if(beanFactory.isInstance(HttpServiceConfigAccessor.class)){
 			setHttpServiceConfigAccessor(beanFactory.getInstance(HttpServiceConfigAccessor.class));
+		}
+		
+		if(beanFactory.isInstance(FileItemParser.class)){
+			setFileItemParser(beanFactory.getInstance(FileItemParser.class));
 		}
 	}
 
