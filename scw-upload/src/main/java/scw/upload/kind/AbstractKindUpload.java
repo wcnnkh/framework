@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import scw.core.Assert;
@@ -77,4 +78,37 @@ public abstract class AbstractKindUpload implements KindEditor {
 
 	protected abstract String uploadInternal(String group, KindDirType dir, UploadItem item)
 			throws IOException, UploadException;
+
+	protected abstract String getRootUrl(KindDirType dir);
+
+	public KindManagerResult manager(String group, KindDirType dir, String path, KindOrderType orderType) {
+		StringBuilder sb = new StringBuilder();
+		if (StringUtils.isNotEmpty(group)) {
+			sb.append(group).append("/");
+		}
+		sb.append(dir).append("/");
+		if (StringUtils.isNotEmpty(path)) {
+			sb.append(path);
+		}
+
+		String pathToUse = sb.toString();
+		String currentDirPath = path == null ? "" : path;
+		String currentUrl = StringUtils.mergePath(getRootUrl(dir), pathToUse);
+		String moveupDirPath = "";
+		if (StringUtils.isNotEmpty(path)) {
+			String str = currentDirPath.substring(0, currentDirPath.length() - 1);
+			moveupDirPath = str.lastIndexOf("/") >= 0 ? str.substring(0, str.lastIndexOf("/") + 1) : "";
+		}
+
+		KindManagerResult kindManagerResult = new KindManagerResult();
+		kindManagerResult.setFile_list(managerInternal(group, dir, pathToUse, orderType));
+		kindManagerResult.setCurrent_dir_path(currentDirPath);
+		kindManagerResult.setMoveup_dir_path(moveupDirPath);
+		kindManagerResult.setCurrent_url(currentUrl);
+		kindManagerResult.setTotal_count(kindManagerResult.getFile_list().size());
+		return kindManagerResult;
+	}
+
+	protected abstract List<KindFileItem> managerInternal(String group, KindDirType dir, String path,
+			KindOrderType orderType);
 }

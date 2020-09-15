@@ -23,34 +23,14 @@ public class DefaultKindEditor extends AbstractKindUpload {
 		this.rootUrl = StringUtils.cleanPath(rootUrl);
 	}
 
-	public KindManagerResult manager(String group, KindDirType dir, String path, KindOrderType orderType) {
-		StringBuilder sb = new StringBuilder();
-		if (StringUtils.isNotEmpty(group)) {
-			sb.append(group).append("/");
-		}
-		sb.append(dir).append("/");
-		if (StringUtils.isNotEmpty(path)) {
-			sb.append(path);
-		}
+	@Override
+	protected String getRootUrl(KindDirType dir) {
+		return rootUrl;
+	}
 
-		String pathToUse = sb.toString();
-		String currentDirPath = path == null ? "" : path;
-		String currentUrl = StringUtils.mergePath(rootUrl, pathToUse);
-		String moveupDirPath = "";
-		if (StringUtils.isNotEmpty(path)) {
-			String str = currentDirPath.substring(0, currentDirPath.length() - 1);
-			moveupDirPath = str.lastIndexOf("/") >= 0 ? str.substring(0, str.lastIndexOf("/") + 1) : "";
-		}
-
-		List<KindFileItem> fileList = list(new File(StringUtils.mergePath(rootPath, pathToUse)), orderType);
-
-		KindManagerResult kindManagerResult = new KindManagerResult();
-		kindManagerResult.setFile_list(fileList);
-		kindManagerResult.setCurrent_dir_path(currentDirPath);
-		kindManagerResult.setMoveup_dir_path(moveupDirPath);
-		kindManagerResult.setCurrent_url(currentUrl);
-		kindManagerResult.setTotal_count(fileList.size());
-		return kindManagerResult;
+	@Override
+	protected List<KindFileItem> managerInternal(String group, KindDirType dir, String path, KindOrderType orderType) {
+		return list(new File(StringUtils.mergePath(rootPath, path)), orderType);
 	}
 
 	private List<KindFileItem> list(File rootFile, KindOrderType type) {
