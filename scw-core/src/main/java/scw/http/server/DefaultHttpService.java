@@ -26,7 +26,8 @@ public class DefaultHttpService extends AbstractHttpService {
 		StaticResourceLoader staticResourceLoader = beanFactory.isInstance(StaticResourceLoader.class)
 				? beanFactory.getInstance(StaticResourceLoader.class)
 				: new DefaultStaticResourceLoader(propertyFactory);
-		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler(staticResourceLoader);
+		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler();
+		resourceHandler.setResourceLoader(staticResourceLoader);
 		getHandlerAccessor().bind(resourceHandler);
 		interceptors
 				.addAll(InstanceUtils.getConfigurationList(HttpServiceInterceptor.class, beanFactory, propertyFactory));
@@ -34,6 +35,10 @@ public class DefaultHttpService extends AbstractHttpService {
 		List<HttpServiceHandler> httpServiceHandlers = InstanceUtils.getConfigurationList(HttpServiceHandler.class,
 				beanFactory, propertyFactory);
 		getHandlerAccessor().bind(httpServiceHandlers);
+		
+		if(beanFactory.isInstance(HttpServiceConfigAccessor.class)){
+			setHttpServiceConfigAccessor(beanFactory.getInstance(HttpServiceConfigAccessor.class));
+		}
 	}
 
 	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {
@@ -47,7 +52,7 @@ public class DefaultHttpService extends AbstractHttpService {
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		Cors cors = corsRegistry.getCors(request.getPath());
+		Cors cors = corsRegistry.getConfig(request.getPath());
 		if (cors != null) {
 			cors.write(response.getHeaders());
 		}

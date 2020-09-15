@@ -10,6 +10,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
+			<artifactId>scw-core</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
 			<artifactId>scw-data</artifactId>
 			<scope>provided</scope>
 		</dependency>

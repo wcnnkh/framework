@@ -499,9 +499,10 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 				continue;
 			}
 
-			Ioc ioc = Ioc.forClass(clazz);
-			ioc.getDependence().process(null, null, this, propertyFactory);
-			ioc.getInit().process(null, null, this, propertyFactory);
+			for (Ioc ioc : Ioc.forClass(clazz)) {
+				ioc.getDependence().process(null, null, this, propertyFactory);
+				ioc.getInit().process(null, null, this, propertyFactory);
+			}
 		}
 
 		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class,
@@ -541,7 +542,9 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 
 		for (Class<?> clazz : ClassScanner.getInstance()
 				.getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
-			Ioc.forClass(clazz).getDestroy().process(null, null, this, propertyFactory);
+			for (Ioc ioc : Ioc.forClass(clazz)) {
+				ioc.getDestroy().process(null, null, this, propertyFactory);
+			}
 		}
 	}
 
@@ -594,8 +597,9 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 
 		public void dependence(Object instance) throws Exception {
 			if (instance != null) {
-				Ioc ioc = Ioc.forClass(instance.getClass());
-				ioc.getDependence().process(this, instance, DefaultBeanFactory.this, propertyFactory);
+				for (Ioc ioc : Ioc.forClass(instance.getClass())) {
+					ioc.getDependence().process(this, instance, DefaultBeanFactory.this, propertyFactory);
+				}
 			}
 		}
 

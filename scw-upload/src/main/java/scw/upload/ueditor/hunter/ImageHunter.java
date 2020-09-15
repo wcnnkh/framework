@@ -42,7 +42,7 @@ public class ImageHunter {
 		
 	}
 	
-	public State capture ( String[] list ) {
+	public State capture ( List<String> list ) {
 		
 		MultiState state = new MultiState( true );
 		

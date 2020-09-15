@@ -4,10 +4,12 @@ import scw.transaction.RollbackOnlyResult;
 
 public class Result extends BaseResult implements RollbackOnlyResult, ErrorCode {
 	private static final long serialVersionUID = 1L;
-	private long code;
+	private final long code;
 	private Boolean rollbackOnlyResult;
 
-	public Result() {
+	public Result(boolean success, long code) {
+		super(success);
+		this.code = code;
 	}
 
 	public Result(Result result) {
@@ -16,7 +18,7 @@ public class Result extends BaseResult implements RollbackOnlyResult, ErrorCode 
 		this.rollbackOnlyResult = result.rollbackOnlyResult;
 	}
 
-	public long getCode() {
+	public final long getCode() {
 		return code;
 	}
 
@@ -26,16 +28,6 @@ public class Result extends BaseResult implements RollbackOnlyResult, ErrorCode 
 
 	public boolean isRollbackOnly() {
 		return rollbackOnlyResult == null ? isError() : rollbackOnlyResult;
-	}
-
-	public Result setSuccess(boolean success) {
-		super.setSuccess(success);
-		return this;
-	}
-
-	public Result setCode(long code) {
-		this.code = code;
-		return this;
 	}
 
 	public Result setMsg(String msg) {
@@ -62,9 +54,8 @@ public class Result extends BaseResult implements RollbackOnlyResult, ErrorCode 
 	}
 
 	public <T> DataResult<T> dataResult(T data) {
-		DataResult<T> dataResult = new DataResult<T>();
-		dataResult.setCode(getCode()).setMsg(getMsg()).setRollbackOnlyResult(getRollbackOnlyResult())
-				.setSuccess(isSuccess());
+		DataResult<T> dataResult = new DataResult<T>(isSuccess(), code);
+		dataResult.setMsg(getMsg()).setRollbackOnlyResult(getRollbackOnlyResult());
 		if (data != null) {
 			dataResult.setData(data);
 		}

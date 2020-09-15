@@ -6,10 +6,11 @@ import scw.mapper.MapperUtils;
 
 public class BaseResult implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private boolean success;
+	private final boolean success;
 	private String msg;
 
-	public BaseResult() {
+	public BaseResult(boolean success) {
+		this.success = success;
 	}
 
 	public BaseResult(BaseResult baseResult) {
@@ -17,13 +18,8 @@ public class BaseResult implements Serializable {
 		this.msg = baseResult.msg;
 	}
 
-	public boolean isSuccess() {
+	public final boolean isSuccess() {
 		return success;
-	}
-
-	public BaseResult setSuccess(boolean success) {
-		this.success = success;
-		return this;
 	}
 
 	public String getMsg() {

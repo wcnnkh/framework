@@ -42,10 +42,6 @@ public final class HttpUtils {
 	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
 			"scw.http.multipart.ApacheFileItemParser");
 
-	static {
-
-	}
-
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;
 	}
@@ -56,6 +52,10 @@ public final class HttpUtils {
 
 	public static FileItemParser getFileItemParser() {
 		return FILE_ITEM_PARSER;
+	}
+
+	public static boolean isSupportMultiPart() {
+		return FILE_ITEM_PARSER != null;
 	}
 
 	public static boolean isValidOrigin(HttpRequest request, Collection<String> allowedOrigins) {
@@ -249,7 +249,6 @@ public final class HttpUtils {
 	 * @param request
 	 * @param name
 	 * @return 如果不存在返回{@see EmptyValue}
-	 * @throws IOException
 	 */
 	public static Value getParameter(ServerHttpRequest request, String name) {
 		String value = request.getParameterMap().getFirst(name);

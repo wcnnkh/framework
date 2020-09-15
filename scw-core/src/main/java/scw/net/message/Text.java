@@ -12,7 +12,7 @@ public interface Text {
 	 * 转化为文本
 	 * @return
 	 */
-	String getTextContent();
+	String toTextContent();
 
 	/**
 	 * 数据类型

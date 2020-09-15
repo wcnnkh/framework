@@ -1,5 +1,6 @@
 package scw.http.multipart;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -9,7 +10,7 @@ import scw.io.Resource;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 
-class ResourceFileItem extends FileItem {
+class ResourceFileItem extends AbstractFileItem {
 	private Resource resource;
 
 	public ResourceFileItem(String fieldName, Resource resource) {
@@ -32,12 +33,22 @@ class ResourceFileItem extends FileItem {
 		return resource.getInputStream();
 	}
 
-	public void close() throws IOException {
+	public void close() {
 		// ignore
 	}
 
 	@Override
 	public String getName() {
 		return resource.getFilename();
+	}
+
+	public long getSize() {
+		try {
+			return resource.getFile().length();
+		} catch (FileNotFoundException e) {
+			return -1;
+		} catch (IOException e) {
+			return -1;
+		}
 	}
 }

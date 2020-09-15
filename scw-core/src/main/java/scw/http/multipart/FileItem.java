@@ -2,40 +2,27 @@ package scw.http.multipart;
 
 import java.io.Closeable;
 
-import scw.core.utils.StringUtils;
-import scw.http.AbstractHttpInputMessage;
-import scw.http.HttpHeaders;
 import scw.http.HttpInputMessage;
 
-public abstract class FileItem extends AbstractHttpInputMessage implements HttpInputMessage, Closeable {
-	private final HttpHeaders httpHeaders = new HttpHeaders();
-	private final String fieldName;
+public interface FileItem extends HttpInputMessage, Closeable {
 
-	public FileItem(String fieldName) {
-		this.fieldName = fieldName;
-	}
-
-	public HttpHeaders getHeaders() {
-		return httpHeaders;
-	}
+	long getSize();
 
 	/**
 	 * 获取文件名
+	 * 
 	 * @return
 	 */
-	public String getName() {
-		return null;
-	}
-	
-	public boolean isFormField(){
-		return StringUtils.isEmpty(getName());
-	}
+	String getName();
+
+	boolean isFormField();
 
 	/**
 	 * 字段名
+	 * 
 	 * @return
 	 */
-	public String getFieldName() {
-		return fieldName;
-	}
+	String getFieldName();
+
+	void close();
 }

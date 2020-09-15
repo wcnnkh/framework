@@ -16,6 +16,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
+import scw.http.HttpUtils;
 import scw.http.multipart.MultipartMessageConverter;
 import scw.net.message.Headers;
 import scw.net.message.Message;
@@ -76,7 +77,11 @@ public final class InetUtils {
 		MESSAGE_CONVERTER.add(new ByteArrayMessageConverter());
 		MESSAGE_CONVERTER.add(new XmlMessageConverter());
 		MESSAGE_CONVERTER.add(new HttpFormMessageConveter());
-		MESSAGE_CONVERTER.add(new MultipartMessageConverter());
+		
+		if (HttpUtils.isSupportMultiPart()) {
+			MESSAGE_CONVERTER.add(new MultipartMessageConverter());
+		}
+		
 		MESSAGE_CONVERTER.add(new ResourceMessageConverter());
 		MESSAGE_CONVERTER.addAll(InstanceUtils.loadAllService(MessageConverter.class));
 	}

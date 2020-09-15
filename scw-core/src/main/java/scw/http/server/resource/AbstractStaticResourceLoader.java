@@ -1,8 +1,14 @@
 package scw.http.server.resource;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
+import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Resource;
 import scw.logger.Logger;
@@ -11,53 +17,79 @@ import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
-import scw.value.property.PropertyFactory;
+import scw.util.XUtils;
 
 public abstract class AbstractStaticResourceLoader implements StaticResourceLoader {
-	final Logger logger = LoggerUtils.getLogger(getClass());
-	private final StringMatcher matcher;
-	private final String resourceRoot;
-	private final String[] resourcePath;
-	private final String defaultFileName;
+	private static Logger logger = LoggerUtils.getLogger(StaticResourceLoader.class);
+	private final TreeMap<String, TreeSet<String>> mappingMap = new TreeMap<String, TreeSet<String>>();
+	private StringMatcher matcher = DefaultStringMatcher.getInstance();
+	private String defaultFileName = "index.html";
 
-	public AbstractStaticResourceLoader(PropertyFactory propertyFactory) {
-		this(propertyFactory.getString("http.static.resource.root"),
-				propertyFactory.getObject("http.static.resource.path", String[].class),
-				propertyFactory.getString("http.static.resource.default.name"), DefaultStringMatcher.getInstance());
+	public StringMatcher getMatcher() {
+		return matcher;
 	}
 
-	public AbstractStaticResourceLoader(String resourceRoot, String[] resourcePath, String defaultFileName,
-			StringMatcher matcher) {
+	public void setMatcher(StringMatcher matcher) {
+		Assert.requiredArgument(matcher != null, "matcher");
 		this.matcher = matcher;
-		this.resourceRoot = StringUtils.isEmpty(resourceRoot) ? "/" : StringUtils.cleanPath(resourceRoot);
-		this.resourcePath = resourcePath;
-		this.defaultFileName = StringUtils.isEmpty(defaultFileName) ? "index.html" : defaultFileName;
-		if (!ArrayUtils.isEmpty(resourcePath)) {
-			logger.info("resourceDefaultFileName:{}", this.defaultFileName);
-			logger.info("resourceRoot:{}", this.resourceRoot);
-			logger.info("resourcePath:{}", Arrays.toString(this.resourcePath));
+	}
+
+	public String getDefaultFileName() {
+		return defaultFileName;
+	}
+
+	public void setDefaultFileName(String defaultFileName) {
+		Assert.requiredArgument(StringUtils.isNotEmpty(defaultFileName), "defaultFileName");
+		this.defaultFileName = defaultFileName;
+	}
+
+	public void addMapping(String location, Collection<String> mappings) {
+		Assert.requiredArgument(!CollectionUtils.isEmpty(mappings), "mappings");
+		Assert.requiredArgument(location != null, "location");
+
+		TreeSet<String> paths = mappingMap.get(location);
+		if (paths == null) {
+			paths = new TreeSet<String>(XUtils.getComparator(getMatcher()));
 		}
+
+		for (String mapping : mappings) {
+			paths.add(mapping);
+		}
+		mappingMap.put(location, paths);
+		logger.info("add mapping {} -> {}", location, mappings);
+	}
+
+	public final void addMapping(String location, String... mappings) {
+		Assert.requiredArgument(!ArrayUtils.isEmpty(mappings) && StringUtils.isNotEmpty(mappings), "mapping");
+		addMapping(location, Arrays.asList(mappings));
+	}
+
+	public MimeType getMimeType(Resource resource) {
+		return FileMimeTypeUitls.getMimeType(resource);
 	}
 
 	public Resource getResource(String location) {
-		if (ArrayUtils.isEmpty(resourcePath)) {
+		if (mappingMap.isEmpty()) {
 			return null;
 		}
 
-		String locationToUse = location.endsWith("/") ? (location + defaultFileName) : location;
-		for (String p : resourcePath) {
-			boolean accept = matcher.isPattern(p) ? matcher.match(p, location) : p.equals(location);
-			if (accept) {
-				if (resourceRoot.endsWith("/")) {
-					locationToUse = resourceRoot
-							+ (locationToUse.startsWith("/") ? locationToUse.substring(1) : locationToUse);
-				} else {
-					locationToUse = resourceRoot
-							+ (locationToUse.startsWith("/") ? locationToUse : ("/" + locationToUse));
-				}
+		String locationToUse = location.endsWith("/") ? (location + getDefaultFileName()) : location;
+		for (Entry<String, TreeSet<String>> entry : mappingMap.entrySet()) {
+			for (String path : entry.getValue()) {
+				boolean accept = matcher.isPattern(path) ? matcher.match(path, location) : path.equals(location);
+				if (accept) {
+					String resourceRoot = entry.getKey();
+					if (resourceRoot.endsWith("/")) {
+						locationToUse = resourceRoot
+								+ (locationToUse.startsWith("/") ? locationToUse.substring(1) : locationToUse);
+					} else {
+						locationToUse = resourceRoot
+								+ (locationToUse.startsWith("/") ? locationToUse : ("/" + locationToUse));
+					}
 
-				locationToUse = StringUtils.cleanPath(locationToUse);
-				return getResourceInternal(locationToUse);
+					locationToUse = StringUtils.cleanPath(locationToUse);
+					return getResourceInternal(locationToUse);
+				}
 			}
 		}
 		return null;
@@ -65,7 +97,8 @@ public abstract class AbstractStaticResourceLoader implements StaticResourceLoad
 
 	protected abstract Resource getResourceInternal(String location);
 
-	public MimeType getMimeType(Resource resource) {
-		return FileMimeTypeUitls.getMimeType(resource);
+	@Override
+	public String toString() {
+		return mappingMap.toString();
 	}
 }

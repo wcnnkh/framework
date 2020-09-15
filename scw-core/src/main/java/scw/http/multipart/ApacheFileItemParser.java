@@ -11,9 +11,11 @@ import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 
 import scw.http.HttpInputMessage;
-import scw.net.message.converter.MessageConvertException;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 
 public class ApacheFileItemParser implements FileItemParser {
+	private static Logger logger = LoggerUtils.getLogger(ApacheFileItemParser.class);
 	static {
 		org.apache.commons.fileupload.FileItem.class.getName();
 	}
@@ -32,18 +34,22 @@ public class ApacheFileItemParser implements FileItemParser {
 		this.fileUpload = fileUpload;
 	}
 
-	public List<FileItem> parse(HttpInputMessage httpInputMessage)
-			throws IOException {
+	public List<FileItem> parse(HttpInputMessage httpInputMessage) throws IOException {
 		List<org.apache.commons.fileupload.FileItem> list;
 		try {
-			list = fileUpload.parseRequest(new HttpRequestContext(
-					httpInputMessage));
+			list = fileUpload.parseRequest(new HttpRequestContext(httpInputMessage));
 		} catch (FileUploadException e) {
-			throw new MessageConvertException(e);
+			throw new IOException(e);
 		}
 
 		List<FileItem> fileItems = new ArrayList<FileItem>(list.size());
 		for (org.apache.commons.fileupload.FileItem fileItem : list) {
+			if (fileItem.isFormField()) {
+				logger.debug("form表单字段name={}", fileItem.getFieldName());
+			} else {
+				logger.debug("form表单文件[name={}, size={}, fileName={}]", fileItem.getFieldName(), fileItem.getSize(),
+						fileItem.getName());
+			}
 			fileItems.add(new ApacheFileItem(fileItem));
 		}
 		return fileItems;

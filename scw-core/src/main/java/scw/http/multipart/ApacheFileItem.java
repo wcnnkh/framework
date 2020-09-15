@@ -6,18 +6,19 @@ import java.util.Iterator;
 
 import org.apache.commons.fileupload.FileItemHeaders;
 
-public class ApacheFileItem extends FileItem {
+import scw.http.HttpHeaders;
+import scw.http.MediaType;
+
+public class ApacheFileItem implements FileItem {
 	private final org.apache.commons.fileupload.FileItem fileItem;
 
 	public ApacheFileItem(org.apache.commons.fileupload.FileItem fileItem) {
-		super(fileItem.getFieldName());
 		this.fileItem = fileItem;
 		FileItemHeaders fileItemHeaders = fileItem.getHeaders();
 		Iterator<String> iterator = fileItemHeaders.getHeaderNames();
 		while (iterator.hasNext()) {
 			String name = iterator.next();
-			Iterator<String> valueIterator = fileItemHeaders
-					.getHeaders(name);
+			Iterator<String> valueIterator = fileItemHeaders.getHeaders(name);
 			while (valueIterator.hasNext()) {
 				getHeaders().add(name, valueIterator.next());
 			}
@@ -25,21 +26,45 @@ public class ApacheFileItem extends FileItem {
 		getHeaders().readyOnly();
 	}
 
+	private HttpHeaders httpHeaders;
+
+	public HttpHeaders getHeaders() {
+		if (httpHeaders == null) {
+			httpHeaders = new HttpHeaders();
+			FileItemHeaders fileItemHeaders = fileItem.getHeaders();
+			Iterator<String> iterator = fileItemHeaders.getHeaderNames();
+			while (iterator.hasNext()) {
+				String name = iterator.next();
+				Iterator<String> valueIterator = fileItemHeaders.getHeaders(name);
+				while (valueIterator.hasNext()) {
+					httpHeaders.add(name, valueIterator.next());
+				}
+			}
+			getHeaders().readyOnly();
+		}
+		return httpHeaders;
+	}
+
 	public org.apache.commons.fileupload.FileItem getFileItem() {
 		return fileItem;
 	}
 
-	@Override
+	public String getName() {
+		return fileItem.getName();
+	}
+
+	public String getFieldName() {
+		return fileItem.getFieldName();
+	}
+
 	public long getContentLength() {
 		return fileItem.getSize();
 	}
 
-	@Override
 	public String getTextBody() {
 		return fileItem.getString();
 	}
-	
-	@Override
+
 	public byte[] getBytes() {
 		return fileItem.get();
 	}
@@ -47,18 +72,25 @@ public class ApacheFileItem extends FileItem {
 	public InputStream getBody() throws IOException {
 		return fileItem.getInputStream();
 	}
-	
-	@Override
+
 	public boolean isFormField() {
 		return fileItem.isFormField();
 	}
 
-	public void close() throws IOException {
+	public void close() {
 		fileItem.delete();
 	}
-	
+
+	public long getSize() {
+		return fileItem.getSize();
+	}
+
 	@Override
 	public String toString() {
 		return fileItem.toString();
+	}
+
+	public MediaType getContentType() {
+		return getHeaders().getContentType();
 	}
 }

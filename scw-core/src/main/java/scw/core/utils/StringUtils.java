@@ -43,9 +43,9 @@ public final class StringUtils {
 	private static final String CURRENT_PATH = ".";
 
 	private static final char EXTENSION_SEPARATOR = '.';
-	
+
 	private static final Set<String> BOOLEANS;
-	static{
+	static {
 		BOOLEANS = new HashSet<String>(8, 1);
 		BOOLEANS.add("1");
 		BOOLEANS.add("t");
@@ -529,19 +529,21 @@ public final class StringUtils {
 	public static String unqualify(String qualifiedName, char separator) {
 		return qualifiedName.substring(qualifiedName.lastIndexOf(separator) + 1);
 	}
-	
+
 	/**
-	 * 合并多个路径
-	 * @param path
+	 * 合并多个路径<br/>
+	 * 注意：该方法使用原始的字符串拼接方式(a + b)，不推荐被动态的多次调用，否则可能成为性能瓶颈
+	 * @param paths
 	 * @return
 	 */
 	public static String mergePath(String... paths) {
-		if (paths.length == 0) {
+		if (ArrayUtils.isEmpty(paths)) {
 			return null;
 		}
 
 		if (paths.length == 1) {
-			return paths[0];
+			String path = paths[0];
+			return path == null ? null : replacePath(path);
 		}
 
 		String p = addPath(paths[0], paths[1]);
@@ -551,20 +553,22 @@ public final class StringUtils {
 		return p;
 	}
 
+	private static String replacePath(String path) {
+		return path.replaceAll("\\\\", FOLDER_SEPARATOR);
+	}
+
 	private static String addPath(String path1, String path2) {
 		String p1 = path1 == null ? "" : path1;
 		String p2 = path2 == null ? "" : path2;
-		p1 = p1.replaceAll("\\\\", "/");
-		p2 = p2.replaceAll("\\\\", "/");
+		p1 = replacePath(p1);
+		p2 = replacePath(p2);
 
 		if (!StringUtils.isNull(p2)) {
-			if (!p1.endsWith("/")) {
-				p1 = p1 + "/";
+			if (!p1.endsWith(FOLDER_SEPARATOR)) {
+				p1 = p1 + FOLDER_SEPARATOR;
 			}
-		}
 
-		if (!StringUtils.isNull(p1)) {
-			if (p2.startsWith("/")) {
+			if (p2.startsWith(FOLDER_SEPARATOR)) {
 				p2 = p2.substring(1);
 			}
 		}
@@ -1637,10 +1641,10 @@ public final class StringUtils {
 			return path;
 		}
 
-		if (File.separator.equals("/")) {
-			return path.replaceAll("\\\\", "/");
+		if (File.separator.equals(FOLDER_SEPARATOR)) {
+			return path.replaceAll("\\\\", FOLDER_SEPARATOR);
 		} else {
-			return path.replaceAll("/", "\\\\");
+			return path.replaceAll(FOLDER_SEPARATOR, "\\\\");
 		}
 	}
 

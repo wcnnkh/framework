@@ -1,11 +1,11 @@
 package scw.http.server;
 
-import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
+import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
-import scw.io.IOUtils;
 import scw.json.EmptyJsonElement;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
@@ -21,7 +21,7 @@ import scw.logger.LoggerUtils;
  * @author shuchaowen
  *
  */
-public class JsonServerHttpRequest extends ServerHttpRequestWrapper {
+public class JsonServerHttpRequest extends CachingServerHttpRequest {
 	private static Logger logger = LoggerUtils.getLogger(JsonServerHttpRequest.class);
 	private JSONSupport jsonSupport;
 
@@ -39,21 +39,32 @@ public class JsonServerHttpRequest extends ServerHttpRequestWrapper {
 
 	private Object json;
 
-	public Object getJson() {
+	private Object getJson() {
 		if (json == null) {
-			BufferedReader reader;
-			String text = null;
-			try {
-				reader = getReader();
-				text = IOUtils.read(reader, -1);
-			} catch (OutOfMemoryError e) {
-				logger.error(e, toString());
-			} catch (IOException e) {
-				logger.error(e, toString());
+			String charsetName = getCharacterEncoding();
+			if (charsetName == null) {
+				charsetName = Constants.UTF_8.name();
 			}
 
-			if (text == null) {
+			byte[] bytes = null;
+			try {
+				bytes = getBytes();
+			} catch (IOException e) {
+				logger.error(e, "Unable to get request body");
+			}
+
+			if (bytes == null) {
 				json = EmptyJsonElement.INSTANCE;
+				return json;
+			}
+
+			String text;
+			try {
+				text = new String(bytes, charsetName);
+			} catch (UnsupportedEncodingException e) {
+				logger.error(e, "Unsupported character {}", charsetName);
+				json = EmptyJsonElement.INSTANCE;
+				return json;
 			}
 
 			JsonElement jsonElement = getJsonSupport().parseJson(text);
@@ -101,21 +112,13 @@ public class JsonServerHttpRequest extends ServerHttpRequestWrapper {
 		return null;
 	}
 
-	public String toUseJsonString() {
-		if (json == null) {
-			return null;
-		}
-
-		return json.toString();
-	}
-
 	@Override
 	public String toString() {
 		if (getMethod() == HttpMethod.GET) {
 			return super.toString();
 		}
 
-		String body = toUseJsonString();
+		String body = json == null ? null : json.toString();
 		if (StringUtils.isEmpty(body)) {
 			return super.toString();
 		}
