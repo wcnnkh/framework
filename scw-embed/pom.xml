@@ -22,7 +22,6 @@
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-mvc</artifactId>
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->

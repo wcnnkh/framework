@@ -4,6 +4,7 @@ import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.util.XUtils;
 
 public final class JsonpUtils {
 	private JsonpUtils() {
@@ -19,12 +20,13 @@ public final class JsonpUtils {
 			return response;
 		}
 
-		if (response instanceof JsonpServerHttpResponse) {
+		String jsonp = request.getParameterMap().getFirst(JSONP_CALLBACK);
+		if (StringUtils.isEmpty(jsonp) || !validCallbackName(jsonp)) {
 			return response;
 		}
 
-		String jsonp = request.getParameterMap().getFirst(JSONP_CALLBACK);
-		if (StringUtils.isEmpty(jsonp) || !validCallbackName(jsonp)) {
+		JsonpServerHttpResponse jsonpServerHttpResponse = XUtils.getTarget(request, JsonpServerHttpResponse.class);
+		if (jsonpServerHttpResponse != null) {
 			return response;
 		}
 

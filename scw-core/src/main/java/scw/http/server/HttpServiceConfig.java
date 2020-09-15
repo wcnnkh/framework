@@ -10,7 +10,7 @@ import scw.util.StringMatcher;
 import scw.util.XUtils;
 
 public class HttpServiceConfig<V> {
-	private Map<String, V> configMap;
+	private volatile Map<String, V> configMap;
 	private final StringMatcher matcher;
 
 	public HttpServiceConfig() {
@@ -28,12 +28,16 @@ public class HttpServiceConfig<V> {
 	}
 
 	public HttpServiceConfig<V> addMapping(String pattern, V value) {
-		configMap.put(pattern, value);
+		synchronized (configMap) {
+			configMap.put(pattern, value);
+		}
 		return this;
 	}
 
 	public HttpServiceConfig<V> clear() {
-		configMap.clear();
+		synchronized (configMap) {
+			configMap.clear();
+		}
 		return this;
 	}
 

@@ -7,6 +7,7 @@ import scw.http.HttpUtils;
 import scw.http.server.jsonp.JsonpUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.XUtils;
 
 public abstract class AbstractHttpService implements HttpService {
 	public static final String JSONP_CALLBACK = "callback";
@@ -60,12 +61,24 @@ public abstract class AbstractHttpService implements HttpService {
 		}
 		
 		// 如果是一个json请求，那么包装一下
-		if (!(request instanceof JsonServerHttpRequest) && request.getHeaders().isJsonContentType() && (configAccessor == null || configAccessor.isSupportJsonWrapper(request.getPath()))) {
+		if(request.getHeaders().isJsonContentType() && (configAccessor == null || configAccessor.isSupportJsonWrapper(request.getPath()))){
+			JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
+			if(jsonServerHttpRequest != null){
+				//返回原始对象
+				return request;
+			}
+			
 			return new JsonServerHttpRequest(request);
 		}
 
 		// 如果是 一个MultiParty请求，那么包装一下
-		if (!(request instanceof MultiPartServerHttpRequest) && request.getHeaders().isMultipartFormContentType()) {
+		if(request.getHeaders().isMultipartFormContentType()){
+			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request, MultiPartServerHttpRequest.class);
+			if(multiPartServerHttpRequest != null){
+				//返回原始对象
+				return request;
+			}
+			
 			if (HttpUtils.isSupportMultiPart()) {
 				return new MultiPartServerHttpRequest(request);
 			} else {

@@ -26,7 +26,6 @@ public class ActionEnter {
 	private ConfigManager configManager = null;
 
 	public ActionEnter(ServerHttpRequest request, String rootPath) {
-
 		this.request = request;
 		this.rootPath = rootPath;
 		this.actionType = request.getParameterMap().getFirst("action");
