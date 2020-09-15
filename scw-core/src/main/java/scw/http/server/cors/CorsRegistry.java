@@ -5,6 +5,7 @@ import scw.util.StringMatcher;
 
 /**
  * 跨域路径注册
+ * 
  * @author shuchaowen
  *
  */
@@ -19,15 +20,8 @@ public class CorsRegistry extends HttpServiceConfig<Cors> {
 	}
 
 	@Override
-	public HttpServiceConfig<Cors> addMapping(String pattern, Cors cors) {
+	public void addMapping(String pattern, Cors cors) {
 		Cors corsToUse = cors.isReadyOnly() ? cors : cors.clone().readyOnly();
 		super.addMapping(pattern, corsToUse);
-		return this;
-	}
-
-	@Override
-	public HttpServiceConfig<Cors> clear() {
-		super.clear();
-		return this;
 	}
 }

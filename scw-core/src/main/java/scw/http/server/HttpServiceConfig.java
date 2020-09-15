@@ -29,18 +29,16 @@ public class HttpServiceConfig<V> {
 		return matcher;
 	}
 
-	public HttpServiceConfig<V> addMapping(String pattern, V value) {
+	public void addMapping(String pattern, V value) {
 		synchronized (configMap) {
 			configMap.put(pattern, value);
 		}
-		return this;
 	}
 
-	public HttpServiceConfig<V> clear() {
+	public void clear() {
 		synchronized (configMap) {
 			configMap.clear();
 		}
-		return this;
 	}
 
 	public V getConfig(String path) {
