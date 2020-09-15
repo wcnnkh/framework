@@ -26,20 +26,20 @@ public class HttpServiceConfigAccessor {
 		return jsonSupportWrapperConfig;
 	}
 
-	public <V> V getConfig(HttpServiceConfig<V> config, String path, V defaultValue) {
+	public <V> V getConfig(HttpServiceConfig<V> config, ServerHttpRequest request, V defaultValue) {
 		if (config == null) {
 			return defaultValue;
 		}
 
-		V v = config.getConfig(path);
+		V v = config.getConfig(request);
 		return v == null ? defaultValue : v;
 	}
 
-	public boolean isSupportJsonWrapper(String path) {
-		return getConfig(getJsonSupportWrapperConfig(), path, true);
+	public boolean isSupportJsonWrapper(ServerHttpRequest request) {
+		return getConfig(getJsonSupportWrapperConfig(), request, true);
 	}
 
-	public boolean isSupportJsonp(String path) {
-		return getConfig(getJsonpSupportConfig(), path, true);
+	public boolean isSupportJsonp(ServerHttpRequest request) {
+		return getConfig(getJsonpSupportConfig(), request, true);
 	}
 }

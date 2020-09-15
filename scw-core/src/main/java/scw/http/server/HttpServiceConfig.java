@@ -4,11 +4,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import scw.beans.annotation.AopEnable;
 import scw.core.Assert;
 import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
 import scw.util.XUtils;
 
+@AopEnable(false)
 public class HttpServiceConfig<V> {
 	private volatile Map<String, V> configMap;
 	private final StringMatcher matcher;
@@ -53,6 +55,10 @@ public class HttpServiceConfig<V> {
 			}
 		}
 		return null;
+	}
+
+	public V getConfig(ServerHttpRequest request) {
+		return getConfig(request.getPath());
 	}
 
 	@Override
