@@ -118,7 +118,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		// jsonp支持
 		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getSourceClass(), action.getAnnotatedElement());
 		if (jsonp != null && jsonp.value()) {
-			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
+			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse, null);
 		}
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);

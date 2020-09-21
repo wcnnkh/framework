@@ -10,7 +10,6 @@ import scw.websocket.WebSocketSession;
 public class ExceptionWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 	private static final Logger logger = LoggerUtils.getLogger(ExceptionWebSocketHandlerDecorator.class);
 
-
 	public ExceptionWebSocketHandlerDecorator(WebSocketHandler delegate) {
 		super(delegate);
 	}

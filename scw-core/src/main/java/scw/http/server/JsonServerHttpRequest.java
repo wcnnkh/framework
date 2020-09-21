@@ -25,7 +25,7 @@ public class JsonServerHttpRequest extends CachingServerHttpRequest {
 	private static Logger logger = LoggerUtils.getLogger(JsonServerHttpRequest.class);
 	private JSONSupport jsonSupport;
 
-	public JsonServerHttpRequest(ServerHttpRequest targetRequest) throws IOException {
+	public JsonServerHttpRequest(ServerHttpRequest targetRequest) {
 		super(targetRequest);
 	}
 

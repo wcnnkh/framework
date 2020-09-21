@@ -13,11 +13,6 @@
 			<artifactId>scw-core</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-mvc</artifactId>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
 		<dependency>
 			<groupId>javax.websocket</groupId>

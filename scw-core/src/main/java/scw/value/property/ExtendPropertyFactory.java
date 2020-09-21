@@ -3,9 +3,9 @@ package scw.value.property;
 import scw.value.AnyValue;
 import scw.value.Value;
 
-public abstract class ExtendGetPropertyFactory extends PropertyFactory {
+public abstract class ExtendPropertyFactory extends PropertyFactory {
 
-	public ExtendGetPropertyFactory(boolean concurrent, boolean priorityOfUseSelf) {
+	public ExtendPropertyFactory(boolean concurrent, boolean priorityOfUseSelf) {
 		super(concurrent, priorityOfUseSelf);
 	}
 	

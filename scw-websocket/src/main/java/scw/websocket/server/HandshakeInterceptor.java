@@ -28,7 +28,6 @@ import scw.websocket.WebSocketHandler;
  * {@link WebSocketHandler}.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  * @see scw.websocket.server.support.WebSocketHttpRequestHandler
  * @see scw.websocket.sockjs.transport.handler.DefaultSockJsService
  */

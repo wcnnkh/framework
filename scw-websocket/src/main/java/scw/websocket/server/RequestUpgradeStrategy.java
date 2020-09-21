@@ -29,7 +29,6 @@ import scw.websocket.WebSocketHandler;
  * A server-specific strategy for performing the actual upgrade to a WebSocket exchange.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  */
 public interface RequestUpgradeStrategy {
 

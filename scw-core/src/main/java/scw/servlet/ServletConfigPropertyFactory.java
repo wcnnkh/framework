@@ -5,9 +5,9 @@ import java.util.Enumeration;
 import javax.servlet.ServletConfig;
 
 import scw.util.MultiEnumeration;
-import scw.value.property.ExtendGetPropertyFactory;
+import scw.value.property.ExtendPropertyFactory;
 
-public class ServletConfigPropertyFactory extends ExtendGetPropertyFactory {
+public class ServletConfigPropertyFactory extends ExtendPropertyFactory {
 	private final ServletConfig servletConfig;
 
 	public ServletConfigPropertyFactory(ServletConfig servletConfig) {

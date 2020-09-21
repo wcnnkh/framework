@@ -1,9 +1,9 @@
 package scw.logger;
 
 import scw.core.GlobalPropertyFactory;
-import scw.value.property.ExtendGetPropertyFactory;
+import scw.value.property.ExtendPropertyFactory;
 
-public class LoggerPropertyFactory extends ExtendGetPropertyFactory {
+public class LoggerPropertyFactory extends ExtendPropertyFactory {
 	private static LoggerPropertyFactory instance = new LoggerPropertyFactory();
 
 	public static LoggerPropertyFactory getInstance() {

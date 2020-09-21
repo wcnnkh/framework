@@ -7,7 +7,7 @@ import scw.core.utils.StringUtils;
 import scw.util.EnumerationConvert;
 import scw.util.MultiEnumeration;
 
-public final class SystemPropertyFactory extends ExtendGetPropertyFactory {
+public final class SystemPropertyFactory extends ExtendPropertyFactory {
 	public static final String PROPERTY_MAVEN_HOME = "maven.home";
 	public static final String PROPERTY_PATH_SEPARATOR = "path.separator";
 	public static final String PROPERTY_JAVA_CLASS_PATH = "java.class.path";
