@@ -45,6 +45,10 @@ public interface ServerHttpRequest extends Attributes<String, Object>, HttpInput
 
 	ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response);
 	
+	/**
+	 * 获取客户端请求的ip
+	 * @return
+	 */
 	String getIp();
 	
 	MultiValueMap<String, String> getParameterMap();
