@@ -1,5 +1,6 @@
 package scw.http;
 
+//注意：如果定义新的可用的code，那么应该定义在被弃用的code之前 , 可查看resolve方法查看，因为是按顺序解析的
 public enum HttpStatus {
 	// 1xx Informational
 
@@ -295,7 +296,6 @@ public enum HttpStatus {
 	/**
 	 * {@code 413 Payload Too Large}.
 	 * 
-	 * @since 4.1
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-6.5.11">
 	 *      HTTP/1.1: Semantics and Content, section 6.5.11</a>
 	 */
@@ -314,7 +314,6 @@ public enum HttpStatus {
 	/**
 	 * {@code 414 URI Too Long}.
 	 * 
-	 * @since 4.1
 	 * @see <a href="https://tools.ietf.org/html/rfc7231#section-6.5.12">
 	 *      HTTP/1.1: Semantics and Content, section 6.5.12</a>
 	 */
@@ -403,7 +402,6 @@ public enum HttpStatus {
 	/**
 	 * {@code 425 Too Early}.
 	 * 
-	 * @since 5.2
 	 * @see <a href="https://tools.ietf.org/html/rfc8470">RFC 8470</a>
 	 */
 	TOO_EARLY(425, "Too Early"),
@@ -441,7 +439,6 @@ public enum HttpStatus {
 	 * @see <a href=
 	 *      "https://tools.ietf.org/html/draft-ietf-httpbis-legally-restricted-status-04">
 	 *      An HTTP Status Code to Report Legal Obstacles</a>
-	 * @since 4.3
 	 */
 	UNAVAILABLE_FOR_LEGAL_REASONS(451, "Unavailable For Legal Reasons"),
 
@@ -573,7 +570,6 @@ public enum HttpStatus {
 	 * {@link scw.net.http.springframework.http.HttpStatus.Series#INFORMATIONAL}. This is
 	 * a shortcut for checking the value of {@link #series()}.
 	 * 
-	 * @since 4.0
 	 * @see #series()
 	 */
 	public boolean is1xxInformational() {
@@ -585,7 +581,6 @@ public enum HttpStatus {
 	 * {@link scw.net.http.springframework.http.HttpStatus.Series#SUCCESSFUL}. This is a
 	 * shortcut for checking the value of {@link #series()}.
 	 * 
-	 * @since 4.0
 	 * @see #series()
 	 */
 	public boolean is2xxSuccessful() {
@@ -597,7 +592,6 @@ public enum HttpStatus {
 	 * {@link scw.net.http.springframework.http.HttpStatus.Series#REDIRECTION}. This is a
 	 * shortcut for checking the value of {@link #series()}.
 	 * 
-	 * @since 4.0
 	 * @see #series()
 	 */
 	public boolean is3xxRedirection() {
@@ -609,7 +603,6 @@ public enum HttpStatus {
 	 * {@link scw.net.http.springframework.http.HttpStatus.Series#CLIENT_ERROR}. This is
 	 * a shortcut for checking the value of {@link #series()}.
 	 * 
-	 * @since 4.0
 	 * @see #series()
 	 */
 	public boolean is4xxClientError() {
@@ -621,7 +614,6 @@ public enum HttpStatus {
 	 * {@link scw.net.http.springframework.http.HttpStatus.Series#SERVER_ERROR}. This is
 	 * a shortcut for checking the value of {@link #series()}.
 	 * 
-	 * @since 4.0
 	 * @see #series()
 	 */
 	public boolean is5xxServerError() {
@@ -634,7 +626,6 @@ public enum HttpStatus {
 	 * {@link scw.net.http.springframework.http.HttpStatus.Series#SERVER_ERROR}. This is
 	 * a shortcut for checking the value of {@link #series()}.
 	 * 
-	 * @since 5.0
 	 * @see #is4xxClientError()
 	 * @see #is5xxServerError()
 	 */
@@ -674,7 +665,6 @@ public enum HttpStatus {
 	 *            the HTTP status code (potentially non-standard)
 	 * @return the corresponding {@code HttpStatus}, or {@code null} if not
 	 *         found
-	 * @since 5.0
 	 */
 	public static HttpStatus resolve(int statusCode) {
 		for (HttpStatus status : values()) {
@@ -745,7 +735,6 @@ public enum HttpStatus {
 		 *            the HTTP status code (potentially non-standard)
 		 * @return the corresponding {@code Series}, or {@code null} if not
 		 *         found
-		 * @since 5.1.3
 		 */
 		public static Series resolve(int statusCode) {
 			int seriesCode = statusCode / 100;

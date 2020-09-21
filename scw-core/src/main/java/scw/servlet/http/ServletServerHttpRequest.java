@@ -3,6 +3,7 @@ package scw.servlet.http;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.Principal;
@@ -29,7 +30,6 @@ import scw.http.MediaType;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.net.InetAddress;
 import scw.net.InetUtils;
 import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
@@ -90,15 +90,24 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		return httpServletRequest.getUserPrincipal();
 	}
 
-	public InetAddress getLocalAddress() {
+	private InetSocketAddress localAddress;
 
-		return new InetAddress.DefaultInetAddress(this.httpServletRequest.getLocalName(),
-				this.httpServletRequest.getLocalPort());
+	public InetSocketAddress getLocalAddress() {
+		if (localAddress == null) {
+			localAddress = new InetSocketAddress(this.httpServletRequest.getLocalName(),
+					this.httpServletRequest.getLocalPort());
+		}
+		return localAddress;
 	}
 
-	public InetAddress getRemoteAddress() {
-		return new InetAddress.DefaultInetAddress(this.httpServletRequest.getRemoteHost(),
-				this.httpServletRequest.getRemotePort());
+	private InetSocketAddress remoteAddress;
+
+	public InetSocketAddress getRemoteAddress() {
+		if (remoteAddress == null) {
+			remoteAddress = new InetSocketAddress(this.httpServletRequest.getRemoteHost(),
+					this.httpServletRequest.getRemotePort());
+		}
+		return remoteAddress;
 	}
 
 	public HttpHeaders getHeaders() {
@@ -266,10 +275,10 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		sb.append(" " + httpServletRequest.getProtocol());
 
 		String contentType = httpServletRequest.getContentType();
-		if(StringUtils.isNotEmpty(contentType)){
+		if (StringUtils.isNotEmpty(contentType)) {
 			sb.append(" " + contentType);
 		}
-		
+
 		MultiValueMap<String, String> parameters = getParameterMap();
 		if (!CollectionUtils.isEmpty(parameters)) {
 			sb.append(" parameters->").append(parameters);

@@ -52,6 +52,6 @@ public class DefaultServerHttpRequestIpGetter implements ServerHttpRequestIpGett
 			return ip;
 		}
 		
-		return serverHttpRequest.getRemoteAddress().getHost();
+		return serverHttpRequest.getRemoteAddress().getAddress().getHostAddress();
 	}
 }

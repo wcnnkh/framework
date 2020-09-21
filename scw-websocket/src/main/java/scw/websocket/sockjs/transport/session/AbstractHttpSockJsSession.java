@@ -174,12 +174,12 @@ public abstract class AbstractHttpSockJsSession extends AbstractSockJsSession {
 		this.handshakeHeaders = request.getHeaders();
 		this.principal = request.getPrincipal();
 		try {
-			this.localAddress = request.getLocalAddress().getInetSocketAddress();
+			this.localAddress = request.getLocalAddress();
 		} catch (Exception ex) {
 			// Ignore
 		}
 		try {
-			this.remoteAddress = request.getRemoteAddress().getInetSocketAddress();
+			this.remoteAddress = request.getRemoteAddress();
 		} catch (Exception ex) {
 			// Ignore
 		}
