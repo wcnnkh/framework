@@ -24,7 +24,6 @@ import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
-import scw.http.HttpUtils;
 import scw.http.InvalidMediaTypeException;
 import scw.http.MediaType;
 import scw.http.server.ServerHttpAsyncControl;
@@ -252,7 +251,8 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 	}
 
 	public String getIp() {
-		return HttpUtils.getServerHttpRequestIpGetter().getRequestIp(this);
+		String ip = getHeaders().getIp();
+		return ip == null ? httpServletRequest.getRemoteHost() : ip;
 	}
 
 	public MultiValueMap<String, String> getRestfulParameterMap() {

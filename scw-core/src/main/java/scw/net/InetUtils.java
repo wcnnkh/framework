@@ -288,7 +288,6 @@ public final class InetUtils {
 		Set<InetAddress> ips = new LinkedHashSet<InetAddress>(8);
 		while (allNetInterfaces.hasMoreElements()) {
 			NetworkInterface netInterface = allNetInterfaces.nextElement();
-			// 排除虚拟接口和没有启动运行的接口
 			if (netInterface == null
 					|| (networkInterfaceAccept != null && !networkInterfaceAccept.accept(netInterface))) {
 				continue;

@@ -17,7 +17,6 @@ import scw.http.multipart.FileItemParser;
 import scw.http.server.JsonServerHttpRequest;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.http.server.ip.ServerHttpRequestIpGetter;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.json.JsonArray;
@@ -37,17 +36,11 @@ public final class HttpUtils {
 
 	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class,
 			"scw.http.client.SimpleHttpClient");
-	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils
-			.loadService(ServerHttpRequestIpGetter.class, "scw.http.server.ip.DefaultServerHttpRequestIpGetter");
 	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
 			"scw.http.multipart.ApacheFileItemParser");
 
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;
-	}
-
-	public static ServerHttpRequestIpGetter getServerHttpRequestIpGetter() {
-		return SERVER_HTTP_REQUEST_IP_GETTER;
 	}
 
 	public static FileItemParser getFileItemParser() {

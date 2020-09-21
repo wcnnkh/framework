@@ -1,6 +1,8 @@
 package scw.http;
 
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,9 +28,11 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.net.InetUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
+import scw.servlet.http.ServletServerHttpRequest;
 import scw.util.DefaultStringMatcher;
 import scw.value.Value;
 import scw.value.property.DynamicMap;
@@ -821,11 +825,14 @@ public class HttpHeaders extends Headers {
 
 	/**
 	 * Set the {@literal Content-Disposition} header.
-	 * <p>This could be used on a response to indicate if the content is
-	 * expected to be displayed inline in the browser or as an attachment to be
-	 * saved locally.
-	 * <p>It can also be used for a {@code "multipart/form-data"} request.
-	 * For more details see notes on {@link #setContentDispositionFormData}.
+	 * <p>
+	 * This could be used on a response to indicate if the content is expected
+	 * to be displayed inline in the browser or as an attachment to be saved
+	 * locally.
+	 * <p>
+	 * It can also be used for a {@code "multipart/form-data"} request. For more
+	 * details see notes on {@link #setContentDispositionFormData}.
+	 * 
 	 * @since 5.0
 	 * @see #getContentDisposition()
 	 */
@@ -834,7 +841,9 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return a parsed representation of the {@literal Content-Disposition} header.
+	 * Return a parsed representation of the {@literal Content-Disposition}
+	 * header.
+	 * 
 	 * @since 5.0
 	 * @see #setContentDisposition(ContentDisposition)
 	 */
@@ -1321,7 +1330,7 @@ public class HttpHeaders extends Headers {
 	 */
 	public String getFirst(String headerName) {
 		List<String> headerValues = get(headerName);
-		if(CollectionUtils.isEmpty(headerValues)){
+		if (CollectionUtils.isEmpty(headerValues)) {
 			return null;
 		}
 		return headerValues.get(0);
@@ -1499,6 +1508,44 @@ public class HttpHeaders extends Headers {
 		return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '!' || c == '#'
 				|| c == '$' || c == '&' || c == '+' || c == '-' || c == '.' || c == '^' || c == '_' || c == '`'
 				|| c == '|' || c == '~';
+	}
+
+	private static final String[] GET_IP_HEADERES = new String[] { X_FORWARDED_FOR, X_REAL_IP };
+
+	/**
+	 * 如果无法通过header获取ip就返回null
+	 * 
+	 * @see ServletServerHttpRequest#getIp()
+	 * @return
+	 */
+	public String getIp() {
+		for (String name : GET_IP_HEADERES) {
+			String value = getFirst(name);
+			if (value == null) {
+				continue;
+			}
+
+			String[] ips = StringUtils.split(value, ",");
+			for (String ip : ips) {
+				if (StringUtils.isEmpty(ip) || "unKnown".equals(ip) || InetUtils.isInnerIP(ip)) {
+					continue;
+				}
+
+				InetAddress inetAddress;
+				try {
+					inetAddress = InetAddress.getByName(ip);
+				} catch (UnknownHostException e) {
+					continue;
+				}
+
+				if (inetAddress.isMCGlobal()) {
+					continue;
+				}
+
+				return inetAddress.getHostAddress();
+			}
+		}
+		return null;
 	}
 
 }
