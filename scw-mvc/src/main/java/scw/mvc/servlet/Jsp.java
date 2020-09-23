@@ -27,8 +27,9 @@ public class Jsp extends AbstractPage {
 	public Jsp(String page) {
 		super(page);
 	}
-
-	public void render(HttpChannel httpChannel) throws IOException {
+	
+	@Override
+	protected void renderInternal(HttpChannel httpChannel) throws IOException {
 		HttpServletRequest request = XUtils.getTarget(httpChannel, HttpServletRequest.class);
 		HttpServletResponse response = XUtils.getTarget(httpChannel, HttpServletResponse.class);
 		if (request == null || response == null) {

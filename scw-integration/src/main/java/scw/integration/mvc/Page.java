@@ -132,8 +132,9 @@ public class Page extends AbstractPage {
 		super.put(name, value);
 		return this;
 	}
-
-	public void render(HttpChannel httpChannel) throws IOException {
+	
+	@Override
+	protected void renderInternal(HttpChannel httpChannel) throws IOException {
 		String realPage = getPage();
 		if (StringUtils.isEmpty(realPage)) {
 			realPage = httpChannel.getRequest().getPath();
