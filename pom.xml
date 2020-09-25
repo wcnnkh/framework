@@ -53,6 +53,12 @@
 				<artifactId>scw-websocket</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-dubbo</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -119,10 +125,10 @@
 				<artifactId>scw-freemarker</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-mail</artifactId>
+				<artifactId>scw-mq</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -448,5 +454,7 @@
 		<module>scw-security</module>
 		<module>scw-search</module>
 		<module>scw-microsoft</module>
+		<module>scw-dubbo</module>
+		<module>scw-mq</module>
 	</modules>
 </project>

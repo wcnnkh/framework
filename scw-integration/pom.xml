@@ -26,11 +26,6 @@
 		
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-search</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>scw</groupId>
 			<artifactId>scw-cloud</artifactId>
 		</dependency>
 
@@ -42,6 +37,16 @@
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-embed</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-dubbo</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-mq</artifactId>
 		</dependency>
 
 		<dependency>
@@ -67,11 +72,6 @@
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-upload</artifactId>
 		</dependency>
 	</dependencies>
 </project>
