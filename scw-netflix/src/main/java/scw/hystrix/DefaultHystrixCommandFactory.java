@@ -19,7 +19,6 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 		this.instanceFactory = instanceFactory;
 	}
 
-	@Override
 	public HystrixCommand<?> getHystrixCommandFactory(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain)
 			throws Exception {
 		Hystrix hystrix = invoker.getSourceClass().getAnnotation(Hystrix.class);

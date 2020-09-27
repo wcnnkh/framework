@@ -17,12 +17,10 @@ public class HystrixCommandMethodInterceptor implements MethodInterceptor, Metho
 		this.hystrixCommandFactory = hystrixCommandFactory;
 	}
 	
-	@Override
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
 		return invoker.getSourceClass().getAnnotation(Hystrix.class) != null;
 	}
 
-	@Override
 	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain chain) throws Throwable {
 		HystrixCommand<?> command = hystrixCommandFactory.getHystrixCommandFactory(invoker, args, chain);
 		if (command == null) {

@@ -47,6 +47,12 @@
 				<artifactId>scw-search</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-netflix</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -456,5 +462,6 @@
 		<module>scw-microsoft</module>
 		<module>scw-dubbo</module>
 		<module>scw-mq</module>
+		<module>scw-netflix</module>
 	</modules>
 </project>

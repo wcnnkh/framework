@@ -14,14 +14,6 @@
 			<artifactId>scw-core</artifactId>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.netflix.hystrix/hystrix-core -->
-		<dependency>
-			<groupId>com.netflix.hystrix</groupId>
-			<artifactId>hystrix-core</artifactId>
-			<version>1.5.18</version>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- feign相关 -->
 		<!-- https://mvnrepository.com/artifact/io.github.openfeign/feign-core -->
 		<dependency>
