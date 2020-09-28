@@ -16,10 +16,6 @@ public class EmptyEventDispatcher<T extends Event> implements BasicEventDispatch
 		// ignore
 	}
 
-	public void unregister(Object name) {
-		// ignore
-	}
-
 	public EventRegistration registerListener(Object name, EventListener<T> eventListener) {
 		return EventRegistration.EMPTY;
 	}
