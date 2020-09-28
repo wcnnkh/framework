@@ -4,20 +4,30 @@ import java.io.IOException;
 
 import scw.http.HttpMethod;
 import scw.http.HttpUtils;
-import scw.http.multipart.FileItemParser;
+import scw.http.server.cors.Cors;
+import scw.http.server.cors.CorsRegistry;
+import scw.http.server.cors.CorsUtils;
 import scw.http.server.jsonp.JsonpUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.util.XUtils;
 
 public abstract class AbstractHttpService implements HttpService {
-	public static final String JSONP_CALLBACK = "callback";
 	private static Logger logger = LoggerFactory.getLogger(HttpService.class);
 	private final HttpServiceHandlerAccessor handlerAccessor = new HttpServiceHandlerAccessor();
 	private HttpServiceConfigAccessor httpServiceConfigAccessor;
-	private FileItemParser fileItemParser;
+	private CorsRegistry corsRegistry;
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+		CorsRegistry corsRegistry = getCorsRegistry();
+		if (corsRegistry != null) {
+			if (CorsUtils.isCorsRequest(request)) {
+				Cors cors = corsRegistry.getConfig(request);
+				if (cors != null) {
+					cors.write(request, response.getHeaders());
+				}
+			}
+		}
+
 		ServerHttpRequest requestToUse = wrapperRequest(request, getHttpServiceConfigAccessor());
 		ServerHttpResponse responseToUse = wrapperResponse(requestToUse, response, getHttpServiceConfigAccessor());
 
@@ -25,7 +35,9 @@ public abstract class AbstractHttpService implements HttpService {
 			logger.debug(requestToUse);
 		}
 
-		HttpService service = createService(requestToUse, responseToUse);
+		Iterable<? extends HttpServiceInterceptor> interceptors = getHttpServiceInterceptors();
+		HttpService service = new HttpServiceInterceptorChain(interceptors == null ? null : interceptors.iterator(),
+				handlerAccessor);
 		try {
 			service.service(requestToUse, responseToUse);
 		} finally {
@@ -46,68 +58,20 @@ public abstract class AbstractHttpService implements HttpService {
 		return handlerAccessor;
 	}
 
-	/**
-	 * 每次请求创建的服务
-	 * 
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	protected HttpService createService(ServerHttpRequest request, ServerHttpResponse response) {
-		return new HttpServiceInterceptorChain(getHttpServiceInterceptors().iterator(), handlerAccessor);
-	}
-
 	protected ServerHttpRequest wrapperRequest(ServerHttpRequest request, HttpServiceConfigAccessor configAccessor)
 			throws IOException {
 		if (request.getMethod() == HttpMethod.GET) {
 			return request;
 		}
 
-		// 如果是一个json请求，那么包装一下
-		if (request.getHeaders().isJsonContentType()
-				&& (configAccessor == null || configAccessor.isSupportJsonWrapper(request))) {
-			JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
-			if (jsonServerHttpRequest != null) {
-				// 返回原始对象
-				return request;
-			}
-
-			return new JsonServerHttpRequest(request);
-		}
-
-		// 如果是 一个MultiParty请求，那么包装一下
-		if (request.getHeaders().isMultipartFormContentType()) {
-			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
-					MultiPartServerHttpRequest.class);
-			if (multiPartServerHttpRequest != null) {
-				// 返回原始对象
-				return request;
-			}
-
-			FileItemParser fileItemParser = getFileItemParser();
-			if (fileItemParser == null) {
-				logger.warn("Multipart is not supported: {}", request);
-			} else {
-				return new MultiPartServerHttpRequest(request, fileItemParser);
-			}
-		}
-		return request;
+		ServerHttpRequest requestToUse = HttpUtils.wrapperServerJsonRequest(request, configAccessor);
+		requestToUse = HttpUtils.wrapperServerMultipartFormRequest(requestToUse, configAccessor);
+		return requestToUse;
 	}
 
 	protected ServerHttpResponse wrapperResponse(ServerHttpRequest request, ServerHttpResponse response,
 			HttpServiceConfigAccessor configAccessor) throws IOException {
-		if (isEnableJsonp(request) && (configAccessor == null || configAccessor.isSupportJsonp(request))) {
-			return JsonpUtils.wrapper(request, response);
-		}
-		return response;
-	}
-
-	public FileItemParser getFileItemParser() {
-		return fileItemParser == null ? HttpUtils.getFileItemParser() : fileItemParser;
-	}
-
-	public void setFileItemParser(FileItemParser fileItemParser) {
-		this.fileItemParser = fileItemParser;
+		return JsonpUtils.wrapper(request, response, configAccessor);
 	}
 
 	public HttpServiceConfigAccessor getHttpServiceConfigAccessor() {
@@ -118,7 +82,13 @@ public abstract class AbstractHttpService implements HttpService {
 		this.httpServiceConfigAccessor = httpServiceConfigAccessor;
 	}
 
-	public abstract Iterable<? extends HttpServiceInterceptor> getHttpServiceInterceptors();
+	public CorsRegistry getCorsRegistry() {
+		return corsRegistry;
+	}
 
-	protected abstract boolean isEnableJsonp(ServerHttpRequest request);
+	public void setCorsRegistry(CorsRegistry corsRegistry) {
+		this.corsRegistry = corsRegistry;
+	}
+
+	public abstract Iterable<? extends HttpServiceInterceptor> getHttpServiceInterceptors();
 }

@@ -137,27 +137,4 @@ public final class ProxyUtils {
 		}
 		return false;
 	}
-
-	public static MethodInvoker wrapper(MethodInvoker invoker, Iterable<? extends MethodInterceptor> filters) {
-		return new FilterProxyInvoker(invoker, filters);
-	}
-
-	private static class FilterProxyInvoker extends MethodInvokerWrapper implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private Iterable<? extends MethodInterceptor> filters;
-
-		public FilterProxyInvoker(MethodInvoker invoker, Iterable<? extends MethodInterceptor> filters) {
-			super(invoker);
-			this.filters = filters;
-		}
-
-		@Override
-		public Object invoke(Object... args) throws Throwable {
-			if (filters == null) {
-				return super.invoke(args);
-			}
-
-			return new MethodInterceptorChain(filters.iterator()).intercept(getSource(), args);
-		}
-	}
 }

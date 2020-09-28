@@ -27,7 +27,6 @@ import scw.websocket.handler.PerConnectionWebSocketHandler;
  * Contract for processing a WebSocket handshake request.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  * @see HandshakeInterceptor
  * @see scw.websocket.server.support.WebSocketHttpRequestHandler
  * @see scw.websocket.sockjs.SockJsService

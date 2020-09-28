@@ -9,6 +9,8 @@ import scw.core.Constants;
 import scw.core.annotation.KeyValuePair;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.instance.annotation.Configuration;
+import scw.event.EventListener;
+import scw.event.ObjectEvent;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
 import scw.lang.NotSupportedException;
@@ -29,6 +31,13 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		for (Action action : actionManager.getActions()) {
 			register(action);
 		}
+		
+		actionManager.registerListener(new EventListener<ObjectEvent<Action>>() {
+			
+			public void onEvent(ObjectEvent<Action> event) {
+				register(event.getSource());
+			}
+		});
 	}
 
 	private String getParentId(AnnotatedElement annotatedElement, String defaultId) {

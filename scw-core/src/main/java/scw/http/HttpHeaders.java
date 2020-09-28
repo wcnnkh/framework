@@ -1,6 +1,8 @@
 package scw.http;
 
+import java.net.InetAddress;
 import java.net.URI;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -24,11 +26,14 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.net.InetUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
+import scw.servlet.http.ServletServerHttpRequest;
 import scw.util.DefaultStringMatcher;
 import scw.value.Value;
 import scw.value.property.DynamicMap;
@@ -60,7 +65,6 @@ import scw.value.property.DynamicMap.ValueCreator;
  * @author Brian Clozel
  * @author Juergen Hoeller
  * @author Josh Long
- * @since 3.0
  */
 public class HttpHeaders extends Headers {
 	private static Logger logger = LoggerUtils.getLogger(HttpHeaders.class);
@@ -821,12 +825,14 @@ public class HttpHeaders extends Headers {
 
 	/**
 	 * Set the {@literal Content-Disposition} header.
-	 * <p>This could be used on a response to indicate if the content is
-	 * expected to be displayed inline in the browser or as an attachment to be
-	 * saved locally.
-	 * <p>It can also be used for a {@code "multipart/form-data"} request.
-	 * For more details see notes on {@link #setContentDispositionFormData}.
-	 * @since 5.0
+	 * <p>
+	 * This could be used on a response to indicate if the content is expected
+	 * to be displayed inline in the browser or as an attachment to be saved
+	 * locally.
+	 * <p>
+	 * It can also be used for a {@code "multipart/form-data"} request. For more
+	 * details see notes on {@link #setContentDispositionFormData}.
+	 * 
 	 * @see #getContentDisposition()
 	 */
 	public void setContentDisposition(ContentDisposition contentDisposition) {
@@ -834,8 +840,9 @@ public class HttpHeaders extends Headers {
 	}
 
 	/**
-	 * Return a parsed representation of the {@literal Content-Disposition} header.
-	 * @since 5.0
+	 * Return a parsed representation of the {@literal Content-Disposition}
+	 * header.
+	 * 
 	 * @see #setContentDisposition(ContentDisposition)
 	 */
 	public ContentDisposition getContentDisposition() {
@@ -956,7 +963,6 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Set the (new) value of the {@code If-Match} header.
 	 * 
-	 * @since 4.3
 	 */
 	public void setIfMatch(String ifMatch) {
 		set(IF_MATCH, ifMatch);
@@ -965,7 +971,6 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Set the (new) value of the {@code If-Match} header.
 	 * 
-	 * @since 4.3
 	 */
 	public void setIfMatch(List<String> ifMatchList) {
 		set(IF_MATCH, toCommaDelimitedString(ifMatchList));
@@ -974,7 +979,6 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Return the value of the {@code If-Match} header.
 	 * 
-	 * @since 4.3
 	 */
 	public List<String> getIfMatch() {
 		return getETagValuesAsList(IF_MATCH);
@@ -1027,7 +1031,6 @@ public class HttpHeaders extends Headers {
 	 * The date should be specified as the number of milliseconds since January
 	 * 1, 1970 GMT.
 	 * 
-	 * @since 4.3
 	 */
 	public void setIfUnmodifiedSince(long ifUnmodifiedSince) {
 		setDate(IF_UNMODIFIED_SINCE, ifUnmodifiedSince);
@@ -1039,7 +1042,6 @@ public class HttpHeaders extends Headers {
 	 * The date is returned as the number of milliseconds since January 1, 1970
 	 * GMT. Returns -1 when the date is unknown.
 	 * 
-	 * @since 4.3
 	 */
 	public long getIfUnmodifiedSince() {
 		return getFirstDate(IF_UNMODIFIED_SINCE, false);
@@ -1153,7 +1155,6 @@ public class HttpHeaders extends Headers {
 	 * 
 	 * @param requestHeaders
 	 *            the request header names
-	 * @since 4.3
 	 */
 	public void setVary(List<String> requestHeaders) {
 		set(VARY, toCommaDelimitedString(requestHeaders));
@@ -1162,7 +1163,6 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Return the request header names subject to content negotiation.
 	 * 
-	 * @since 4.3
 	 */
 	public List<String> getVary() {
 		return getValuesAsList(VARY);
@@ -1173,7 +1173,6 @@ public class HttpHeaders extends Headers {
 	 * string using the pattern {@code "EEE, dd MMM yyyy HH:mm:ss zzz"}. The
 	 * equivalent of {@link #set(String, String)} but for date headers.
 	 * 
-	 * @since 3.2.4
 	 */
 	public void setDate(String headerName, long date) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMATS[0], Locale.US);
@@ -1189,7 +1188,6 @@ public class HttpHeaders extends Headers {
 	 * @param headerName
 	 *            the header name
 	 * @return the parsed date header, or -1 if none
-	 * @since 3.2.4
 	 */
 	public long getFirstDate(String headerName) {
 		return getFirstDate(headerName, true);
@@ -1251,7 +1249,6 @@ public class HttpHeaders extends Headers {
 	 * @param headerName
 	 *            the header name
 	 * @return the combined result
-	 * @since 4.3
 	 */
 	protected List<String> getETagValuesAsList(String headerName) {
 		List<String> values = get(headerName);
@@ -1284,7 +1281,6 @@ public class HttpHeaders extends Headers {
 	 * @param headerName
 	 *            the header name
 	 * @return the combined result
-	 * @since 4.3
 	 */
 	protected String getFieldValues(String headerName) {
 		List<String> headerValues = get(headerName);
@@ -1321,7 +1317,7 @@ public class HttpHeaders extends Headers {
 	 */
 	public String getFirst(String headerName) {
 		List<String> headerValues = get(headerName);
-		if(CollectionUtils.isEmpty(headerValues)){
+		if (CollectionUtils.isEmpty(headerValues)) {
 			return null;
 		}
 		return headerValues.get(0);
@@ -1499,6 +1495,45 @@ public class HttpHeaders extends Headers {
 		return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '!' || c == '#'
 				|| c == '$' || c == '&' || c == '+' || c == '-' || c == '.' || c == '^' || c == '_' || c == '`'
 				|| c == '|' || c == '~';
+	}
+
+	private static final String[] GET_IP_HEADERES = new String[] { X_FORWARDED_FOR, X_REAL_IP };
+
+	/**
+	 * 通过headers获取客户端ip(一般来说获取的都是代理工具的ip)
+	 * 
+	 * @see ServletServerHttpRequest#getIp()
+	 * @return
+	 */
+	@Nullable
+	public String getIp() {
+		for (String name : GET_IP_HEADERES) {
+			String value = getFirst(name);
+			if (value == null) {
+				continue;
+			}
+
+			String[] ips = StringUtils.split(value, ",");
+			for (String ip : ips) {
+				if (StringUtils.isEmpty(ip) || "unKnown".equals(ip) || InetUtils.isInnerIP(ip)) {
+					continue;
+				}
+
+				InetAddress inetAddress;
+				try {
+					inetAddress = InetAddress.getByName(ip);
+				} catch (UnknownHostException e) {
+					continue;
+				}
+
+				if (inetAddress.isMCGlobal()) {
+					continue;
+				}
+
+				return inetAddress.getHostAddress();
+			}
+		}
+		return null;
 	}
 
 }

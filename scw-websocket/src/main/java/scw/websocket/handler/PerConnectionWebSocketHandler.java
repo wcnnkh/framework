@@ -45,7 +45,6 @@ import scw.websocket.WebSocketSession;
  * created using the default constructor.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  */
 public class PerConnectionWebSocketHandler extends BeanFactoryAccessor implements WebSocketHandler {
 

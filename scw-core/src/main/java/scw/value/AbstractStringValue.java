@@ -16,19 +16,17 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 		return 10;
 	}
 
-	/**
-	 * 可以解决1,234这种问题
-	 * 
-	 * @param text
-	 * @return
-	 */
-	public String formatNumberText(String value) {
+	protected String formatNumberText(String value) {
 		return StringUtils.formatNumberText(value);
+	}
+
+	protected boolean isNumeric(String value) {
+		return StringUtils.isNumeric(value);
 	}
 
 	public Byte getAsByte() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsByte();
 		}
 		return Byte.parseByte(v, getNumberRadix());
@@ -36,7 +34,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public byte getAsByteValue() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsByteValue();
 		}
 
@@ -45,7 +43,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Short getAsShort() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsShort();
 		}
 		return Short.parseShort(v, getNumberRadix());
@@ -53,7 +51,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public short getAsShortValue() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsShortValue();
 		}
 		return Short.parseShort(v, getNumberRadix());
@@ -61,7 +59,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Integer getAsInteger() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsInteger();
 		}
 		return Integer.parseInt(v, getNumberRadix());
@@ -69,7 +67,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public int getAsIntValue() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsIntValue();
 		}
 		return Integer.parseInt(v, getNumberRadix());
@@ -77,7 +75,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Long getAsLong() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsLong();
 		}
 		return Long.parseLong(v, getNumberRadix());
@@ -85,7 +83,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public long getAsLongValue() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsLongValue();
 		}
 		return Long.parseLong(v, getNumberRadix());
@@ -113,7 +111,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Float getAsFloat() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsFloat();
 		}
 		return Float.parseFloat(v);
@@ -121,7 +119,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public float getAsFloatValue() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsFloatValue();
 		}
 		return Float.parseFloat(v);
@@ -129,7 +127,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public Double getAsDouble() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsDouble();
 		}
 		return Double.parseDouble(v);
@@ -137,7 +135,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 
 	public double getAsDoubleValue() {
 		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
+		if (StringUtils.isEmpty(v) || !isNumeric(v)) {
 			return getDefaultValue().getAsDoubleValue();
 		}
 		return Double.parseDouble(v);
@@ -165,7 +163,12 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsBigInteger();
 		}
-		return new BigInteger(v, getNumberRadix());
+
+		try {
+			return new BigInteger(v, getNumberRadix());
+		} catch (NumberFormatException e) {
+			return getDefaultValue().getAsBigInteger();
+		}
 	}
 
 	public BigDecimal getAsBigDecimal() {
@@ -173,7 +176,12 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 		if (StringUtils.isEmpty(v)) {
 			return getDefaultValue().getAsBigDecimal();
 		}
-		return new BigDecimal(v);
+
+		try {
+			return new BigDecimal(v);
+		} catch (NumberFormatException e) {
+			return getDefaultValue().getAsBigDecimal();
+		}
 	}
 
 	public Class<?> getAsClass() {
@@ -199,11 +207,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 	}
 
 	public Number getAsNumber() {
-		String v = formatNumberText(getAsString());
-		if (StringUtils.isEmpty(v)) {
-			return getDefaultValue().getAsNumber();
-		}
-		return new BigDecimal(v);
+		return getAsBigDecimal();
 	}
 
 	@Override
@@ -232,9 +236,24 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 	public boolean isNumber() {
 		String value = getAsString();
 		value = formatNumberText(value);
-		return StringUtils.isNotEmpty(value) && StringUtils.isNumeric(value);
+		if (StringUtils.isNotEmpty(value)) {
+			return false;
+		}
+
+		if (isNumeric(value)) {
+			return true;
+		}
+
+		if (value.lastIndexOf('e') != -1 || value.lastIndexOf('E') != -1) {
+			try {
+				new BigDecimal(value);
+				return true;
+			} catch (NumberFormatException e) {
+			}
+		}
+		return false;
 	}
-	
+
 	public boolean isEmpty() {
 		return StringUtils.isEmpty(getAsString());
 	}

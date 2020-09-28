@@ -46,27 +46,38 @@ public class HttpServiceConfig<V> {
 		}
 	}
 
-	private void init(String pattern) {
-		if (getMatcher().isPattern(pattern)) {
-			if (patternConfigMap == null) {
-				patternConfigMap = new TreeMap<String, V>(XUtils.getComparator(getMatcher()));
-			}
-		} else {
-			if (configMap == null) {
-				configMap = new HashMap<String, V>();
-			}
-		}
-	}
-
 	public void addMapping(String pattern, V value) {
 		Assert.requiredArgument(StringUtils.isNotEmpty(pattern), "pattern");
 
 		synchronized (this) {
-			init(pattern);
 			if (getMatcher().isPattern(pattern)) {
+				if (patternConfigMap == null) {
+					patternConfigMap = new TreeMap<String, V>(XUtils.getComparator(getMatcher()));
+				}
 				patternConfigMap.put(pattern, value);
 			} else {
+				if (configMap == null) {
+					configMap = new HashMap<String, V>();
+				}
 				configMap.put(pattern, value);
+			}
+		}
+	}
+
+	public void removeMapping(String pattern) {
+		synchronized (this) {
+			if (getMatcher().isPattern(pattern)) {
+				if (patternConfigMap != null) {
+					for (String key : patternConfigMap.keySet()) {
+						if (getMatcher().match(pattern, key)) {
+							patternConfigMap.remove(key);
+						}
+					}
+				}
+			} else {
+				if (configMap != null) {
+					configMap.remove(pattern);
+				}
 			}
 		}
 	}
@@ -83,10 +94,10 @@ public class HttpServiceConfig<V> {
 		}
 	}
 
-	public V getConfig(String path) {
+	public V getConfig(ServerHttpRequest request) {
 		V value = null;
 		if (configMap != null) {
-			value = configMap.get(path);
+			value = configMap.get(request.getPath());
 		}
 
 		if (value != null) {
@@ -95,15 +106,11 @@ public class HttpServiceConfig<V> {
 
 		if (patternConfigMap != null) {
 			for (Entry<String, V> entry : patternConfigMap.entrySet()) {
-				if (getMatcher().match(entry.getKey(), path)) {
+				if (getMatcher().match(entry.getKey(), request.getPath())) {
 					return entry.getValue();
 				}
 			}
 		}
 		return value;
-	}
-
-	public V getConfig(ServerHttpRequest request) {
-		return getConfig(request.getPath());
 	}
 }

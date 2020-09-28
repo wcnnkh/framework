@@ -5,6 +5,7 @@ import java.util.Arrays;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpHeaders;
+import scw.http.server.ServerHttpRequest;
 import scw.lang.NotSupportedException;
 import scw.mapper.MapperUtils;
 
@@ -141,8 +142,13 @@ public class Cors {
 		}
 	}
 
-	public void write(HttpHeaders headers) {
-		writeValues(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, this.origins, "*");
+	public void write(ServerHttpRequest request, HttpHeaders headers) {
+		String origin = request.getHeaders().getOrigin();
+		if(StringUtils.isEmpty(origin)){
+			return ;
+		}
+		
+		writeValues(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, this.origins, origin);
 		writeValues(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, this.methods, "*");
 		writeValues(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, this.headers, "*");
 		if (maxAge != null) {

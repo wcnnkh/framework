@@ -29,7 +29,6 @@ import scw.lang.NestedRuntimeException;
  * customize updates to the response in those cases.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  */
 @SuppressWarnings("serial")
 public class HandshakeFailureException extends NestedRuntimeException {

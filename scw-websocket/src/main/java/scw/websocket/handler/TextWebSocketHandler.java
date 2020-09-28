@@ -32,7 +32,6 @@ import scw.websocket.WebSocketSession;
  *
  * @author Rossen Stoyanchev
  * @author Phillip Webb
- * @since 4.0
  */
 public class TextWebSocketHandler extends AbstractWebSocketHandler {
 

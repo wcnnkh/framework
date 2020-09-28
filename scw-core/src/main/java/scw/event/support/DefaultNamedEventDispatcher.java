@@ -28,10 +28,6 @@ public class DefaultNamedEventDispatcher<T extends Event> implements NamedEventD
 		return concurrent;
 	}
 
-	public void unregister(Object name) {
-		namedEventListenerMap.remove(name);
-	}
-
 	protected BasicEventDispatcher<T> createBasicEventDispatcher(Object name) {
 		return new DefaultBasicEventDispatcher<T>(isConcurrent());
 	}

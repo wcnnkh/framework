@@ -36,7 +36,6 @@ import scw.websocket.server.HandshakeInterceptor;
  * under the key {@link #HTTP_SESSION_ID_ATTR_NAME}.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  */
 public class HttpSessionHandshakeInterceptor implements HandshakeInterceptor {
 

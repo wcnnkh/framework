@@ -2,11 +2,16 @@ package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorChain;
+import scw.aop.MethodInterceptors;
+import scw.aop.MethodInvoker;
 import scw.aop.Proxy;
 import scw.beans.annotation.Bean;
 import scw.beans.builder.LoaderContext;
@@ -14,13 +19,15 @@ import scw.beans.event.BeanLifeCycleEvent;
 import scw.beans.event.BeanLifeCycleEvent.Step;
 import scw.beans.ioc.Ioc;
 import scw.core.instance.DefaultInstanceBuilder;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
 
-public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable {
+public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
+		implements BeanDefinition, Cloneable, MethodInterceptor {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
@@ -97,6 +104,17 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		return Arrays.asList(bean.names());
 	}
 
+	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain chain) throws Throwable {
+		if (ArrayUtils.isEmpty(args)) {
+			Method method = invoker.getMethod();
+			if ((Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers()))
+					&& method.getName().equals(BeanDefinitionAccessor.METHOD_NAME)) {
+				return this;
+			}
+		}
+		return chain.intercept(invoker, args);
+	}
+
 	protected boolean isProxy() {
 		return BeanUtils.isAopEnable(getTargetClass(), getTargetClass());
 	}
@@ -128,11 +146,31 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 	}
 
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
-		return beanFactory.getAop().getProxy(targetClass, interfaces, getFilters());
+		Class<?>[] interfacesToUse = interfaces;
+		if (ArrayUtils.isEmpty(interfacesToUse)) {
+			interfacesToUse = BeanDefinitionAccessor.PROXY_INTERFACES;
+		} else {
+			interfacesToUse = ArrayUtils.merge(interfacesToUse, BeanDefinitionAccessor.PROXY_INTERFACES);
+		}
+
+		MethodInterceptors methodInterceptors = new MethodInterceptors();
+		methodInterceptors.addLast(this);
+		methodInterceptors.addLast(getFilters());
+		return beanFactory.getAop().getProxy(targetClass, interfacesToUse, methodInterceptors);
 	}
 
 	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass, Class<?>[] interfaces) {
-		return beanFactory.getAop().getProxyInstance(targetClass, instance, interfaces, getFilters());
+		Class<?>[] interfacesToUse = interfaces;
+		if (ArrayUtils.isEmpty(interfacesToUse)) {
+			interfacesToUse = BeanDefinitionAccessor.PROXY_INTERFACES;
+		} else {
+			interfacesToUse = ArrayUtils.merge(interfacesToUse, BeanDefinitionAccessor.PROXY_INTERFACES);
+		}
+
+		MethodInterceptors methodInterceptors = new MethodInterceptors();
+		methodInterceptors.addLast(this);
+		methodInterceptors.addLast(getFilters());
+		return beanFactory.getAop().getProxyInstance(targetClass, instance, interfaces, methodInterceptors);
 	}
 
 	protected Object createProxyInstance(Class<?> targetClass, Class<?>[] parameterTypes, Object[] args) {

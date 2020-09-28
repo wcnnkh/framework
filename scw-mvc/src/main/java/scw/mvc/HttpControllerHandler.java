@@ -25,10 +25,10 @@ import scw.logger.Levels;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionInterceptor;
 import scw.mvc.action.ActionInterceptorChain;
-import scw.mvc.action.ActionLookup;
+import scw.mvc.action.ActionManager;
 import scw.mvc.action.ActionParameters;
 import scw.mvc.annotation.Jsonp;
-import scw.mvc.annotation.ResultFactory;
+import scw.mvc.annotation.FactoryResult;
 import scw.mvc.exception.ExceptionHandler;
 import scw.mvc.view.View;
 import scw.net.FileMimeTypeUitls;
@@ -45,13 +45,13 @@ import scw.value.property.PropertyFactory;
 
 @Configuration(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
-	protected final LinkedList<ActionLookup> actionLookups = new LinkedList<ActionLookup>();
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	private final MultiMessageConverter messageConverter = new MultiMessageConverter();
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
 	protected final BeanFactory beanFactory;
+	private ActionManager actionManager;
 
 	public HttpControllerHandler(BeanFactory beanFactory, PropertyFactory propertyFactory) {
 		this.beanFactory = beanFactory;
@@ -61,12 +61,12 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			httpChannelFactory = new DefaultHttpChannelFactory(beanFactory);
 		}
 
+		this.actionManager = beanFactory.getInstance(ActionManager.class);
 		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)
 				? beanFactory.getInstance(ExceptionHandler.class) : null;
 
 		this.actionInterceptor
 				.addAll(InstanceUtils.getConfigurationList(ActionInterceptor.class, beanFactory, propertyFactory));
-		this.actionLookups.addAll(InstanceUtils.getConfigurationList(ActionLookup.class, beanFactory, propertyFactory));
 		messageConverter
 				.addAll(InstanceUtils.getConfigurationList(MessageConverter.class, beanFactory, propertyFactory));
 	}
@@ -93,16 +93,11 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			return (Action) value;
 		}
 
-		for (ActionLookup actionLookup : actionLookups) {
-			Action action = actionLookup.lookup(request);
-			if (action != null) {
-				if (value != null) {
-					request.setAttribute(Action.class.getName(), action);
-				}
-				return action;
-			}
+		Action action = actionManager.getAction(request);
+		if (value != null) {
+			request.setAttribute(Action.class.getName(), action);
 		}
-		return null;
+		return action;
 	}
 
 	public void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
@@ -118,13 +113,13 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		// jsonp支持
 		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getSourceClass(), action.getAnnotatedElement());
 		if (jsonp != null && jsonp.value()) {
-			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
+			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse, null);
 		}
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
 		Levels level = MVCUtils.getActionLoggerLevel(action);
-		if(level != null){
+		if (level != null) {
 			httpChannelDestroy.setEnableLevel(level.getValue());
 		}
 
@@ -159,7 +154,8 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 	}
 
-	protected Object doError(HttpChannel httpChannel, Action action, Throwable error, HttpChannelDestroy httpChannelDestroy) throws IOException {
+	protected Object doError(HttpChannel httpChannel, Action action, Throwable error,
+			HttpChannelDestroy httpChannelDestroy) throws IOException {
 		if (exceptionHandler != null) {
 			return exceptionHandler.doHandle(httpChannel, action, error);
 		}
@@ -167,15 +163,16 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		return null;
 	}
 
-	protected void doResponse(HttpChannel httpChannel, Action action, Object message, HttpChannelDestroy httpChannelDestroy) throws IOException {
+	protected void doResponse(HttpChannel httpChannel, Action action, Object message,
+			HttpChannelDestroy httpChannelDestroy) throws IOException {
 		if (message == null) {
 			return;
 		}
 
-		ResultFactory resultFactory = AnnotationUtils.getAnnotation(ResultFactory.class, action.getSourceClass(),
+		FactoryResult factoryResult = AnnotationUtils.getAnnotation(FactoryResult.class, action.getSourceClass(),
 				action.getAnnotatedElement());
-		if (!(message instanceof Result) && resultFactory != null && resultFactory.enable()) {
-			Result result = beanFactory.getInstance(resultFactory.value()).success(message);
+		if (!(message instanceof Result) && factoryResult != null && factoryResult.enable()) {
+			Result result = beanFactory.getInstance(factoryResult.value()).success(message);
 			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON, httpChannelDestroy);
 			return;
 		}
@@ -191,7 +188,8 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			InetUtils.writeHeader((InputMessage) message, httpChannel.getResponse());
 			IOUtils.write(((InputMessage) message).getBody(), httpChannel.getResponse().getBody());
 		} else if (message instanceof Text) {
-			writeTextBody(httpChannel, ((Text) message).toTextContent(), ((Text) message).getMimeType(), httpChannelDestroy);
+			writeTextBody(httpChannel, ((Text) message).toTextContent(), ((Text) message).getMimeType(),
+					httpChannelDestroy);
 		} else if (message instanceof Resource) {
 			Resource resource = (Resource) message;
 			MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
@@ -212,7 +210,8 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 	}
 
-	protected void writeTextBody(HttpChannel httpChannel, Object body, MimeType contentType, HttpChannelDestroy httpChannelDestroy) throws IOException {
+	protected void writeTextBody(HttpChannel httpChannel, Object body, MimeType contentType,
+			HttpChannelDestroy httpChannelDestroy) throws IOException {
 		if (contentType != null) {
 			httpChannel.getResponse().setContentType(contentType);
 		}

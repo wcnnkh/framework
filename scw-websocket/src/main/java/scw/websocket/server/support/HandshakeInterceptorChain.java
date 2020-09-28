@@ -31,7 +31,6 @@ import scw.websocket.server.HandshakeInterceptor;
  * A helper class that assists with invoking a list of handshake interceptors.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  */
 public class HandshakeInterceptorChain {
 

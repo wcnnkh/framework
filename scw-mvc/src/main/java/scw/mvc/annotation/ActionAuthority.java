@@ -7,6 +7,11 @@ import java.lang.annotation.Target;
 
 import scw.core.annotation.KeyValuePair;
 
+/**
+ * 配置权限，如果是定义的类上的就是父级
+ * @author shuchaowen
+ *
+ */
 @Target({ ElementType.METHOD, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ActionAuthority {

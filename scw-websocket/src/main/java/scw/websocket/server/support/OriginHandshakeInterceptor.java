@@ -37,7 +37,6 @@ import scw.websocket.server.HandshakeInterceptor;
  * collection of allowed origins.
  *
  * @author Sebastien Deleuze
- * @since 4.1.2
  */
 public class OriginHandshakeInterceptor implements HandshakeInterceptor {
 
@@ -77,7 +76,6 @@ public class OriginHandshakeInterceptor implements HandshakeInterceptor {
 	}
 
 	/**
-	 * @since 4.1.5
 	 * @see #setAllowedOrigins
 	 */
 	public Collection<String> getAllowedOrigins() {

@@ -1,14 +1,22 @@
 package scw.net;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +38,7 @@ import scw.net.message.converter.ResourceMessageConverter;
 import scw.net.message.converter.StringMessageConverter;
 import scw.net.message.converter.XmlMessageConverter;
 import scw.net.ssl.TrustAllManager;
+import scw.util.Accept;
 
 public final class InetUtils {
 	private InetUtils() {
@@ -77,11 +86,11 @@ public final class InetUtils {
 		MESSAGE_CONVERTER.add(new ByteArrayMessageConverter());
 		MESSAGE_CONVERTER.add(new XmlMessageConverter());
 		MESSAGE_CONVERTER.add(new HttpFormMessageConveter());
-		
+
 		if (HttpUtils.isSupportMultiPart()) {
 			MESSAGE_CONVERTER.add(new MultipartMessageConverter());
 		}
-		
+
 		MESSAGE_CONVERTER.add(new ResourceMessageConverter());
 		MESSAGE_CONVERTER.addAll(InstanceUtils.loadAllService(MessageConverter.class));
 	}
@@ -231,5 +240,73 @@ public final class InetUtils {
 		}
 
 		return StringUtils.getFilename(urlToUse);
+	}
+
+	/**
+	 * 排除虚拟接口和没有启动运行的接口
+	 */
+	public static final Accept<NetworkInterface> LOCAL_IP_NETWORK_INTERFACE_ACCEPT = new Accept<NetworkInterface>() {
+		public boolean accept(NetworkInterface networkInterface) {
+			if (networkInterface.isVirtual()) {
+				return false;
+			}
+
+			try {
+				if (!networkInterface.isUp()) {
+					return false;
+				}
+			} catch (SocketException e) {
+				return false;
+			}
+			return true;
+		};
+	};
+
+	public static final Accept<InetAddress> IPV4_INET_ADDRESS_ACCEPT = new Accept<InetAddress>() {
+		public boolean accept(InetAddress inetAddress) {
+			return inetAddress instanceof Inet4Address;
+		};
+	};
+
+	public static Set<InetAddress> getLocalIpAddresses() {
+		return getLocalIpAddresses(LOCAL_IP_NETWORK_INTERFACE_ACCEPT, true);
+	}
+
+	public static Set<InetAddress> getLocalIpAddresses(Accept<NetworkInterface> networkInterfaceAccept, boolean ipv4) {
+		return getLocalIpAddresses(networkInterfaceAccept, ipv4 ? IPV4_INET_ADDRESS_ACCEPT : null);
+	}
+
+	public static Set<InetAddress> getLocalIpAddresses(Accept<NetworkInterface> networkInterfaceAccept,
+			Accept<InetAddress> accept) {
+		Enumeration<NetworkInterface> allNetInterfaces;
+		try {
+			allNetInterfaces = NetworkInterface.getNetworkInterfaces();
+		} catch (SocketException e) {
+			return Collections.emptySet();
+		}
+
+		Set<InetAddress> ips = new LinkedHashSet<InetAddress>(8);
+		while (allNetInterfaces.hasMoreElements()) {
+			NetworkInterface netInterface = allNetInterfaces.nextElement();
+			if (netInterface == null
+					|| (networkInterfaceAccept != null && !networkInterfaceAccept.accept(netInterface))) {
+				continue;
+			}
+
+			Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+			while (addresses.hasMoreElements()) {
+				InetAddress address = addresses.nextElement();
+				if (address == null || (accept != null && !accept.accept(address))) {
+					continue;
+				}
+
+				if (isLocalIP(address.getHostAddress())) {
+					continue;
+				}
+
+				ips.add(address);
+			}
+		}
+		return ips;
 	}
 }

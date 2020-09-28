@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Enumeration;
@@ -13,7 +14,6 @@ import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.MediaType;
-import scw.net.InetAddress;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
 import scw.util.Target;
@@ -87,11 +87,11 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
 		return targetRequest.getReader();
 	}
 
-	public InetAddress getLocalAddress() {
+	public InetSocketAddress getLocalAddress() {
 		return targetRequest.getLocalAddress();
 	}
 
-	public InetAddress getRemoteAddress() {
+	public InetSocketAddress getRemoteAddress() {
 		return targetRequest.getRemoteAddress();
 	}
 

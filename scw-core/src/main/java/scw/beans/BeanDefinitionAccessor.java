@@ -1,14 +1,8 @@
 package scw.beans;
 
+public interface BeanDefinitionAccessor {
+	static final Class<?>[] PROXY_INTERFACES = new Class<?>[] { BeanDefinitionAccessor.class };
+	static final String METHOD_NAME = "getBeanDefinition";
 
-public class BeanDefinitionAccessor implements BeanDefinitionAware {
-	private transient BeanDefinition beanDefinition;
-
-	public BeanDefinition getBeanDefinition() {
-		return beanDefinition;
-	}
-
-	public void setBeanDefinition(BeanDefinition beanDefinition) {
-		this.beanDefinition = beanDefinition;
-	}
+	BeanDefinition getBeanDefinition();
 }

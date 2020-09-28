@@ -25,18 +25,18 @@ public final class BeanUtils {
 	private BeanUtils() {
 	};
 
-	public static boolean isSingleton(Class<?> type, AnnotatedElement annotatedElement){
+	public static boolean isSingleton(Class<?> type, AnnotatedElement annotatedElement) {
 		Singleton singleton = annotatedElement.getAnnotation(Singleton.class);
-		if(singleton != null){
+		if (singleton != null) {
 			return singleton.value();
 		}
-		
-		for(Class<?> interfaceClass : type.getInterfaces()){
-			if(!isSingleton(interfaceClass, annotatedElement)){
+
+		for (Class<?> interfaceClass : type.getInterfaces()) {
+			if (!isSingleton(interfaceClass, annotatedElement)) {
 				return false;
 			}
 		}
-		//默认是单例
+		// 默认是单例
 		return true;
 	}
 
@@ -96,12 +96,16 @@ public final class BeanUtils {
 	}
 
 	public static Class<?> getServiceInterface(Class<?> clazz) {
-		for (Class<?> i : clazz.getInterfaces()) {
-			if (AnnotationUtils.isIgnore(clazz) || i.getMethods().length == 0) {
-				continue;
-			}
+		Class<?> classToUse = clazz;
+		while (classToUse != null && classToUse != Object.class) {
+			for (Class<?> i : classToUse.getInterfaces()) {
+				if (AnnotationUtils.isIgnore(classToUse) || i.getMethods().length == 0) {
+					continue;
+				}
 
-			return i;
+				return i;
+			}
+			classToUse = classToUse.getSuperclass();
 		}
 		return null;
 	}
@@ -134,5 +138,24 @@ public final class BeanUtils {
 		if (instance instanceof BeanDefinitionAware) {
 			((BeanDefinitionAware) instance).setBeanDefinition(beanDefinition);
 		}
+	}
+
+	/**
+	 * 获取实例中的BeanDefinition定义
+	 * 
+	 * @param instance
+	 * @return
+	 * @see BeanDefinitionAccessor#getBeanDefinition()
+	 */
+	public static BeanDefinition getBeanDefinition(Object instance) {
+		if (instance == null) {
+			return null;
+		}
+
+		if (instance instanceof BeanDefinitionAccessor) {
+			return ((BeanDefinitionAccessor) instance).getBeanDefinition();
+		}
+
+		return null;
 	}
 }

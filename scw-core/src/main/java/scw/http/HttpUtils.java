@@ -14,15 +14,18 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.http.client.HttpClient;
 import scw.http.multipart.FileItemParser;
+import scw.http.server.HttpServiceConfigAccessor;
 import scw.http.server.JsonServerHttpRequest;
+import scw.http.server.MultiPartServerHttpRequest;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.http.server.ip.ServerHttpRequestIpGetter;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 import scw.net.uri.UriComponentsBuilder;
@@ -35,19 +38,14 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
+	private static Logger logger = LoggerUtils.getLogger(HttpUtils.class);
 	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class,
 			"scw.http.client.SimpleHttpClient");
-	private static final ServerHttpRequestIpGetter SERVER_HTTP_REQUEST_IP_GETTER = InstanceUtils
-			.loadService(ServerHttpRequestIpGetter.class, "scw.http.server.ip.DefaultServerHttpRequestIpGetter");
 	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
 			"scw.http.multipart.ApacheFileItemParser");
 
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;
-	}
-
-	public static ServerHttpRequestIpGetter getServerHttpRequestIpGetter() {
-		return SERVER_HTTP_REQUEST_IP_GETTER;
 	}
 
 	public static FileItemParser getFileItemParser() {
@@ -304,5 +302,54 @@ public final class HttpUtils {
 			}
 		}
 		return Value.EMPTY_ARRAY;
+	}
+
+	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request,
+			HttpServiceConfigAccessor configAccessor) {
+		if (request.getMethod() == HttpMethod.GET) {
+			return request;
+		}
+
+		// 如果是一个json请求，那么包装一下
+		if (request.getHeaders().isJsonContentType()
+				&& (configAccessor == null || configAccessor.isSupportJsonWrapper(request))) {
+			JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
+			if (jsonServerHttpRequest != null) {
+				// 返回原始对象
+				return request;
+			}
+
+			return new JsonServerHttpRequest(request);
+		}
+		return request;
+	}
+
+	private static FileItemParser getFileItemParser(HttpServiceConfigAccessor configAccessor) {
+		return configAccessor == null ? getFileItemParser() : configAccessor.getFileItemParser();
+	}
+
+	public static ServerHttpRequest wrapperServerMultipartFormRequest(ServerHttpRequest request,
+			HttpServiceConfigAccessor configAccessor) {
+		if (request.getMethod() == HttpMethod.GET) {
+			return request;
+		}
+
+		// 如果是 一个MultiParty请求，那么包装一下
+		if (request.getHeaders().isMultipartFormContentType()) {
+			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
+					MultiPartServerHttpRequest.class);
+			if (multiPartServerHttpRequest != null) {
+				// 返回原始对象
+				return request;
+			}
+
+			FileItemParser fileItemParser = getFileItemParser(configAccessor);
+			if (fileItemParser == null) {
+				logger.warn("Multipart is not supported: {}", request);
+			} else {
+				return new MultiPartServerHttpRequest(request, fileItemParser);
+			}
+		}
+		return request;
 	}
 }

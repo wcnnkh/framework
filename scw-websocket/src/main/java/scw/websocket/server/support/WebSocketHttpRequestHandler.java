@@ -43,7 +43,6 @@ import scw.websocket.server.HandshakeInterceptor;
  * {@link ServerHttpRequest} and {@link ServerHttpResponse}, respectively.
  *
  * @author Rossen Stoyanchev
- * @since 4.0
  */
 public class WebSocketHttpRequestHandler {
 
@@ -54,11 +53,6 @@ public class WebSocketHttpRequestHandler {
 	private final HandshakeHandler handshakeHandler;
 
 	private final List<HandshakeInterceptor> interceptors = new ArrayList<HandshakeInterceptor>();
-
-
-	public WebSocketHttpRequestHandler(WebSocketHandler wsHandler) {
-		this(wsHandler, new DefaultHandshakeHandler());
-	}
 
 	public WebSocketHttpRequestHandler(WebSocketHandler wsHandler, HandshakeHandler handshakeHandler) {
 		Assert.notNull(wsHandler, "wsHandler must not be null");

@@ -24,7 +24,7 @@ public class TccMethodInterceptor implements MethodInterceptor, MethodIntercepto
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
 		return invoker.getMethod().getAnnotation(Tcc.class) != null;
 	}
-
+	
 	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
 		final Tcc tcc = invoker.getMethod().getAnnotation(Tcc.class);
 		if (tcc == null) {

@@ -3,7 +3,6 @@ package scw.freemarker.mvc;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import freemarker.template.Configuration;
@@ -43,7 +42,8 @@ public class FreemarkerPage extends AbstractPage {
 		this.mimeType = mimeType;
 	}
 
-	public void render(HttpChannel httpChannel) throws IOException {
+	@Override
+	protected void renderInternal(HttpChannel httpChannel) throws IOException {
 		ServerHttpRequest serverRequest = httpChannel.getRequest();
 		ServerHttpResponse serverResponse = httpChannel.getResponse();
 
@@ -54,8 +54,6 @@ public class FreemarkerPage extends AbstractPage {
 		}
 
 		Map<String, Object> freemarkerMap = new HashMap<String, Object>(size());
-		freemarkerMap.put(CONTEXT_PATH_NAME, serverRequest.getContextPath());
-
 		Enumeration<String> enumeration = httpChannel.getRequest().getAttributeNames();
 		while (enumeration.hasMoreElements()) {
 			String key = enumeration.nextElement();
@@ -64,16 +62,6 @@ public class FreemarkerPage extends AbstractPage {
 			}
 
 			freemarkerMap.put(key, httpChannel.getRequest().getAttribute(key));
-		}
-
-		ServerHttpRequest serverHttpRequest = (ServerHttpRequest) serverRequest;
-		for (java.util.Map.Entry<String, List<String>> entry : serverHttpRequest.getParameterMap().entrySet()) {
-			String key = entry.getKey();
-			if (key == null || containsKey(key)) {
-				continue;
-			}
-
-			freemarkerMap.put(key, entry.getValue());
 		}
 
 		freemarkerMap.putAll(this);
