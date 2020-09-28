@@ -76,7 +76,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 				Node root = XmlBeanUtils.getRootNode(xmlConfigPath);
 				this.nodeList = XMLUtils.getChildNodes(root, true);
 			} else {
-				logger.info("not use:{}", xmlConfigPath);
+				logger.info("Not used {}", xmlConfigPath);
 			}
 
 			propertyFactory.addLastBasePropertyFactory(new XmlPropertyFactory(propertyFactory, nodeList));
