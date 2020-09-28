@@ -17,15 +17,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface Async {
 	/**
-	 * 声明调用此方法的beanName
-	 * 
-	 * 默认情况下使用方法所在的类调用
-	 * 
-	 * @return
-	 */
-	public String beanName() default "";
-
-	/**
 	 * 实现方式
 	 * 
 	 * @return

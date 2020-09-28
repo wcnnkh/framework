@@ -96,12 +96,16 @@ public final class BeanUtils {
 	}
 
 	public static Class<?> getServiceInterface(Class<?> clazz) {
-		for (Class<?> i : clazz.getInterfaces()) {
-			if (AnnotationUtils.isIgnore(clazz) || i.getMethods().length == 0) {
-				continue;
-			}
+		Class<?> classToUse = clazz;
+		while (classToUse != null && classToUse != Object.class) {
+			for (Class<?> i : classToUse.getInterfaces()) {
+				if (AnnotationUtils.isIgnore(classToUse) || i.getMethods().length == 0) {
+					continue;
+				}
 
-			return i;
+				return i;
+			}
+			classToUse = classToUse.getSuperclass();
 		}
 		return null;
 	}
