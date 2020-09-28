@@ -16,11 +16,6 @@
 		<xmemcached.version>2.4.6</xmemcached.version>
 		<fastjson.version>1.2.61</fastjson.version>
 		<amqp-client.version>5.7.3</amqp-client.version>
-		<!-- tomcat7只支持jdk1.6及以上的版本 -->
-		<!-- tomcat8只支持jdk1.7及以上的版本 -->
-		<tomcat.version>8.5.55</tomcat.version>
-
-		<netty-socketio.version>1.7.17</netty-socketio.version>
 		<jstl.version>1.2</jstl.version>
 		<mysql-connector-java.version>8.0.16</mysql-connector-java.version>
 		<lucene.version>8.5.1</lucene.version>
@@ -257,20 +252,6 @@
 				<version>3.3.1</version>
 			</dependency>
 
-			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-core</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-websocket -->
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-websocket</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-
 			<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
 			<dependency>
 				<groupId>javax.websocket</groupId>
@@ -298,20 +279,6 @@
 				<groupId>javax.servlet</groupId>
 				<artifactId>jstl</artifactId>
 				<version>${jstl.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-jasper</artifactId>
-				<version>${tomcat.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.corundumstudio.socketio/netty-socketio -->
-			<dependency>
-				<groupId>com.corundumstudio.socketio</groupId>
-				<artifactId>netty-socketio</artifactId>
-				<version>${netty-socketio.version}</version>
 			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->

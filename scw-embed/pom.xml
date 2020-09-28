@@ -7,6 +7,11 @@
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>scw-embed</artifactId>
+	<properties>
+		<!-- tomcat7只支持jdk1.6及以上的版本 -->
+		<!-- tomcat8只支持jdk1.7及以上的版本 -->
+		<tomcat.version>8.5.55</tomcat.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
@@ -14,26 +19,28 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.apache.tomcat.embed</groupId>
-			<artifactId>tomcat-embed-websocket</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-mvc</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-websocket</artifactId>
+			<version>${tomcat.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-core</artifactId>
+			<version>${tomcat.version}</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper -->
 		<dependency>
 			<groupId>org.apache.tomcat.embed</groupId>
 			<artifactId>tomcat-embed-jasper</artifactId>
+			<version>${tomcat.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.apache.tomcat.embed</groupId>
