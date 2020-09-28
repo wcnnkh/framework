@@ -28,7 +28,7 @@ import scw.mvc.action.ActionInterceptorChain;
 import scw.mvc.action.ActionManager;
 import scw.mvc.action.ActionParameters;
 import scw.mvc.annotation.Jsonp;
-import scw.mvc.annotation.ResultFactory;
+import scw.mvc.annotation.FactoryResult;
 import scw.mvc.exception.ExceptionHandler;
 import scw.mvc.view.View;
 import scw.net.FileMimeTypeUitls;
@@ -169,10 +169,10 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			return;
 		}
 
-		ResultFactory resultFactory = AnnotationUtils.getAnnotation(ResultFactory.class, action.getSourceClass(),
+		FactoryResult factoryResult = AnnotationUtils.getAnnotation(FactoryResult.class, action.getSourceClass(),
 				action.getAnnotatedElement());
-		if (!(message instanceof Result) && resultFactory != null && resultFactory.enable()) {
-			Result result = beanFactory.getInstance(resultFactory.value()).success(message);
+		if (!(message instanceof Result) && factoryResult != null && factoryResult.enable()) {
+			Result result = beanFactory.getInstance(factoryResult.value()).success(message);
 			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON, httpChannelDestroy);
 			return;
 		}

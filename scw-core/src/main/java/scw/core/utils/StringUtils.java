@@ -533,6 +533,7 @@ public final class StringUtils {
 	/**
 	 * 合并多个路径<br/>
 	 * 注意：该方法使用原始的字符串拼接方式(a + b)，不推荐被动态的多次调用，否则可能成为性能瓶颈
+	 * 
 	 * @param paths
 	 * @return
 	 */
@@ -1586,30 +1587,34 @@ public final class StringUtils {
 			return false;
 		}
 
-		int i = str.length();
-		if (i == 1) {
-			return Character.isDigit(str.charAt(0));
-		}
-
 		boolean findPoint = false;
-		for (; --i >= 0;) {
-			int chr = str.charAt(i);
-			if (i == 0 && chr == '-') {
-				continue;
-			}
+		int effectiveCount = 0;
+		for (int i = 0, len = str.length(); i < len; i++) {
+			char chr = str.charAt(i);
+			if (chr == '-' || chr == '+') {
+				if (effectiveCount == 0) {
+					effectiveCount++;
+					continue;
+				}
 
+				return false;
+			}
+			
 			if (chr == '.') {
 				if (findPoint) {
 					return false;
 				}
 
 				findPoint = true;
+				effectiveCount++;
 				continue;
 			}
 
 			if (!Character.isDigit(chr)) {
 				return false;
 			}
+
+			effectiveCount++;
 		}
 		return true;
 	}
@@ -1903,7 +1908,7 @@ public final class StringUtils {
 	 */
 	public static String formatNumberText(String text) {
 		if (isEmpty(text)) {
-			return text;
+			return null;
 		}
 
 		char[] chars = new char[text.length()];
@@ -1915,6 +1920,7 @@ public final class StringUtils {
 			}
 			chars[pos++] = c;
 		}
+
 		return pos == 0 ? null : new String(chars, 0, pos);
 	}
 
