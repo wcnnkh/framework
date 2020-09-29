@@ -25,6 +25,6 @@ public class ObjectEvent<T> extends EventObject implements Event {
 
 	@Override
 	public String toString() {
-		return "createTime=" + XTime.format(createTime, "yyyy-MM-dd HH:mm:ss,SSS") + super.toString();
+		return "createTime=" + XTime.format(createTime, "yyyy-MM-dd HH:mm:ss,SSS") + " " + super.toString();
 	}
 }

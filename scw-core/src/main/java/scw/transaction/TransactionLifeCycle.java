@@ -14,7 +14,7 @@ public interface TransactionLifeCycle {
 	void beforeCommit() throws Throwable;
 
 	/**
-	 * 在commit之后调用
+	 * 在commit之后调用(此时事务已提交，如果发生错误是无法回滚的)
 	 */
 	void afterCommit();
 
@@ -31,7 +31,7 @@ public interface TransactionLifeCycle {
 	void afterRollback();
 
 	/**
-	 * 事务结束后调用(一定会被调用)
+	 * 事务结束后调用
 	 */
 	void completion();
 }

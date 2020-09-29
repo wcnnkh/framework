@@ -6,7 +6,8 @@ import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.NamedEventDispatcher;
 
-public class EmptyEventDispatcher<T extends Event> implements BasicEventDispatcher<T>, NamedEventDispatcher<T> {
+public class EmptyEventDispatcher<T extends Event>
+		implements BasicEventDispatcher<T>, NamedEventDispatcher<T> {
 
 	public EventRegistration registerListener(EventListener<T> eventListener) {
 		return EventRegistration.EMPTY;
@@ -23,5 +24,4 @@ public class EmptyEventDispatcher<T extends Event> implements BasicEventDispatch
 	public void publishEvent(Object name, T event) {
 		// ignore
 	}
-
 }

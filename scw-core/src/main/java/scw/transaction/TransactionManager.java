@@ -98,6 +98,7 @@ public final class TransactionManager {
 		if (transaction.isRollbackOnly()) {// 直接回滚
 			rollback(transaction);
 		} else {
+			//这里不使用try-finally,所以外部使用出现异常时一定要调用rollback
 			transaction.commit();
 			try {
 				transaction.completion();

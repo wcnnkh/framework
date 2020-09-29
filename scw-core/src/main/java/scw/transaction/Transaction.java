@@ -20,7 +20,15 @@ public final class Transaction {
 	private Savepoint tempSavepoint;
 	private boolean complete;
 	private boolean rollbackOnly;// 此事务直接回滚，不再提供服务
+	private boolean commit;// 是否已经提交
 
+	/**
+	 * 创建一个新的事务
+	 * 
+	 * @param parent
+	 * @param transactionDefinition
+	 * @param active
+	 */
 	protected Transaction(Transaction parent, TransactionDefinition transactionDefinition, boolean active) {
 		this.parent = parent;
 		this.active = active;
@@ -28,6 +36,12 @@ public final class Transaction {
 		this.transactionDefinition = transactionDefinition;
 	}
 
+	/**
+	 * 包装旧的事务
+	 * 
+	 * @param parent
+	 * @param transactionDefinition
+	 */
 	protected Transaction(Transaction parent, TransactionDefinition transactionDefinition) {
 		this.parent = parent;
 		this.active = parent.isActive();
@@ -37,11 +51,15 @@ public final class Transaction {
 
 	private void checkStatus() {
 		if (complete) {
-			throw new TransactionException("当前事务已经结束，不能进行后序操作");
+			throw new TransactionException("当前事务已经结束，无法进行后序操作");
 		}
 
 		if (rollbackOnly) {// 当前事务应该直接回滚，不能继续操作了
-			throw new TransactionException("当前事务已经被设置为只能回滚，不能进行后序操作");
+			throw new TransactionException("当前事务已设置为回滚，无法进行后序操作");
+		}
+
+		if (isCommit()) {
+			throw new TransactionException("当前事务已经提交，无法进行后序操作");
 		}
 	}
 
@@ -61,8 +79,6 @@ public final class Transaction {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getResource(Object name) {
-		checkStatus();
-
 		if (!newTransaction) {
 			return parent.getResource(name);
 		}
@@ -179,10 +195,20 @@ public final class Transaction {
 			return;
 		}
 
+		commit = true;
 		init();
 		if (tslc != null) {
 			tslc.commit();
 		}
+	}
+
+	/**
+	 * 是否已经提交
+	 * 
+	 * @return
+	 */
+	public boolean isCommit() {
+		return isNewTransaction() ? commit : parent.commit;
 	}
 
 	protected void rollback() throws TransactionException {
@@ -198,6 +224,7 @@ public final class Transaction {
 			return;
 		}
 
+		commit = true;
 		init();
 		if (tslc != null) {
 			tslc.rollback();
