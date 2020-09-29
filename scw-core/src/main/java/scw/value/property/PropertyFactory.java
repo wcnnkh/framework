@@ -13,7 +13,7 @@ import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.method.MultiEventRegistration;
+import scw.event.MultiEventRegistration;
 import scw.event.support.AbstractDynamicValue;
 import scw.event.support.DynamicValue;
 import scw.event.support.ValueEvent;

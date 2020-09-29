@@ -1,10 +1,8 @@
-package scw.event.method;
+package scw.event;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-
-import scw.event.EventRegistration;
 
 public class MultiEventRegistration implements EventRegistration {
 	private List<EventRegistration> eventRegistrations;

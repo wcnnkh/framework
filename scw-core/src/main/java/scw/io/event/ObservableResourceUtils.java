@@ -9,7 +9,7 @@ import java.util.Properties;
 import scw.core.Converter;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.method.MultiEventRegistration;
+import scw.event.MultiEventRegistration;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.io.UnsafeByteArrayInputStream;
