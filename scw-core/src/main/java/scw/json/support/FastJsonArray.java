@@ -10,12 +10,12 @@ import com.alibaba.fastjson.JSONAware;
 
 import scw.core.Converter;
 import scw.core.IteratorConverter;
+import scw.json.AbstractJsonArray;
 import scw.json.EmptyJsonElement;
-import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
 
-public final class FastJsonArray extends JsonArray implements JSONAware, Serializable, Converter<Object, JsonElement> {
+public final class FastJsonArray extends AbstractJsonArray implements JSONAware, Serializable, Converter<Object, JsonElement> {
 	private static final long serialVersionUID = 1L;
 	private JSONArray jsonArray;
 

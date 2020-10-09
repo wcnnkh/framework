@@ -1,6 +1,8 @@
 package scw.net.uri;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.Arrays;
@@ -401,5 +403,18 @@ public class UriUtils {
 	 */
 	public static String decode(String source) {
 		return decode(source, Constants.UTF_8.name());
+	}
+
+	public static boolean isUri(String uri) {
+		if(StringUtils.isEmpty(uri)){
+			return false;
+		}
+		
+		try {
+			new URI(uri);
+			return true;
+		} catch (URISyntaxException e) {
+			return false;
+		}
 	}
 }

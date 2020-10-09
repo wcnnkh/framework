@@ -8,7 +8,6 @@ import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.Flushable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -73,6 +72,8 @@ public final class IOUtils {
 	 * {@link #copyLarge(Reader, Writer)}
 	 */
 	private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
+	private static final int DEFAULT_READ_BUFFER_SIZE = 256;
 
 	/**
 	 * The default buffer size to use for the skip() methods.
@@ -277,24 +278,6 @@ public final class IOUtils {
 		}
 	}
 
-	public static long write(OutputStream os, InputStream is, int buffSize, int mark) throws IOException {
-		if (mark >= 0) {
-			if (is.markSupported()) {
-				is.mark(0);
-			}
-		}
-
-		try {
-			return write(is, os, buffSize);
-		} finally {
-			if (mark >= 0) {
-				if (is.markSupported()) {
-					is.reset();
-				}
-			}
-		}
-	}
-
 	/**
 	 * write.
 	 * 
@@ -383,113 +366,32 @@ public final class IOUtils {
 	 * 
 	 * @param in
 	 * @param buffSize
-	 * @param mark
-	 *            标记的位置 如果小于0就不标记
 	 * @return
 	 * @throws IOException
 	 */
-	public static ByteArray read(InputStream in, int buffSize, int mark) throws IOException {
+	public static ByteArray read(InputStream in, int buffSize) throws IOException {
 		ByteArray byteArray = new ByteArray(buffSize);
 		byte[] b = new byte[buffSize];
 		int len;
-		try {
-			if (mark >= 0) {
-				if (in.markSupported()) {
-					in.mark(0);
-				}
-			}
 
-			while ((len = in.read(b)) != -1) {
-				byteArray.write(b, 0, len);
-			}
-			return byteArray;
-		} finally {
-			if (mark >= 0) {
-				if (in.markSupported()) {
-					in.reset();
-				}
-			}
+		while ((len = in.read(b)) != -1) {
+			byteArray.write(b, 0, len);
 		}
+		return byteArray;
 	}
 
-	public static String read(Reader reader, int buffSize, int mark) throws IOException {
+	public static String read(Reader reader, int buffSize) throws IOException {
 		StringBuilder sb = new StringBuilder(buffSize);
 		char[] buff = new char[buffSize];
 		int len;
-		try {
-			if (mark >= 0) {
-				if (reader.markSupported()) {
-					reader.mark(0);
-				}
-			}
-
-			while ((len = reader.read(buff)) != -1) {
-				sb.append(buff, 0, len);
-			}
-			return sb.toString();
-		} finally {
-			if (mark >= 0) {
-				if (reader.markSupported()) {
-					reader.reset();
-				}
-			}
+		while ((len = reader.read(buff)) != -1) {
+			sb.append(buff, 0, len);
 		}
+		return sb.toString();
 	}
 
-	public static String read(BufferedReader br, int mark) throws IOException {
-		StringBuilder sb = new StringBuilder();
-		String line;
-		try {
-			if (mark >= 0) {
-				if (br.markSupported()) {
-					br.mark(0);
-				}
-			}
-
-			while ((line = br.readLine()) != null) {
-				sb.append(line);
-			}
-			return sb.toString();
-		} finally {
-			if (mark >= 0) {
-				if (br.markSupported()) {
-					br.reset();
-				}
-			}
-		}
-	}
-
-	public static List<String> readLineList(BufferedReader br, int mark) throws IOException {
-		List<String> list = new ArrayList<String>();
-		String line;
-		try {
-			if (mark >= 0) {
-				if (br.markSupported()) {
-					br.mark(0);
-				}
-			}
-
-			while ((line = br.readLine()) != null) {
-				list.add(line);
-			}
-			return list;
-		} finally {
-			if (mark >= 0) {
-				if (br.markSupported()) {
-					br.reset();
-				}
-			}
-		}
-	}
-	
-	public static void flush(Object flushable) throws IOException {
-		if (flushable == null) {
-			return;
-		}
-
-		if (flushable instanceof Flushable) {
-			((Flushable) flushable).flush();
-		}
+	public static String read(Reader reader) throws IOException {
+		return read(reader, DEFAULT_READ_BUFFER_SIZE);
 	}
 
 	public static void close(Closeable closeable) {
@@ -1511,8 +1413,7 @@ public final class IOUtils {
 	 * @throws IOException
 	 *             if an I/O error occurs
 	 */
-	public static long copy(InputStream input, OutputStream output, long inputOffset, long length)
-			throws IOException {
+	public static long copy(InputStream input, OutputStream output, long inputOffset, long length) throws IOException {
 		return copy(input, output, inputOffset, length, new byte[DEFAULT_BUFFER_SIZE]);
 	}
 
@@ -1703,8 +1604,7 @@ public final class IOUtils {
 	 * @throws IOException
 	 *             if an I/O error occurs
 	 */
-	public static long copy(Reader input, Writer output, final long inputOffset, final long length)
-			throws IOException {
+	public static long copy(Reader input, Writer output, final long inputOffset, final long length) throws IOException {
 		return copy(input, output, inputOffset, length, new char[DEFAULT_BUFFER_SIZE]);
 	}
 
@@ -2204,7 +2104,7 @@ public final class IOUtils {
 	 *             if the number of characters read was incorrect
 	 */
 	public static void readFully(Reader input, char[] buffer, int offset, int length) throws IOException {
-		long actual = read(input, buffer, offset, length);
+		int actual = read(input, buffer, offset, length);
 		if (actual != length) {
 			throw new EOFException("Length to read: " + length + " actual: " + actual);
 		}
@@ -2287,14 +2187,18 @@ public final class IOUtils {
 		readFully(input, buffer, 0, buffer.length);
 	}
 
-	public static String readContent(InputStream inputStream, String charsetName) throws IOException {
+	public static String readContent(InputStream inputStream, int buffSize, String charsetName) throws IOException {
 		InputStreamReader isr = null;
 		try {
 			isr = new InputStreamReader(inputStream, charsetName);
-			return IOUtils.read(isr, 256, 0);
+			return read(isr, buffSize);
 		} finally {
 			close(isr);
 		}
+	}
+
+	public static String readContent(InputStream inputStream, String charsetName) throws IOException {
+		return readContent(inputStream, DEFAULT_READ_BUFFER_SIZE, charsetName);
 	}
 
 	/**

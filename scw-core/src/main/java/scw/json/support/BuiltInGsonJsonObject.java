@@ -2,11 +2,11 @@ package scw.json.support;
 
 import java.util.Collection;
 
+import scw.json.AbstractJsonObject;
 import scw.json.JsonElement;
-import scw.json.JsonObject;
 import scw.json.gson.Gson;
 
-public final class BuiltInGsonJsonObject extends JsonObject {
+public final class BuiltInGsonJsonObject extends AbstractJsonObject {
 	private scw.json.gson.GsonJsonObject gsonJsonObject;
 	private Gson gson;
 

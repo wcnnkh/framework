@@ -2,10 +2,11 @@ package scw.json;
 
 import java.util.Collection;
 
-public abstract class JsonObject extends AbstractJson<String> {
-	public abstract void put(String key, Object value);
+public interface JsonObject extends BasicJsonDefinition<String> {
 
-	public abstract boolean containsKey(String key);
+	void put(String key, Object value);
 
-	public abstract Collection<String> keys();
+	boolean containsKey(String key);
+
+	Collection<String> keys();
 }

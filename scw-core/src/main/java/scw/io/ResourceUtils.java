@@ -24,6 +24,7 @@ import scw.core.utils.StringUtils;
 import scw.io.support.ResourceOperations;
 import scw.lang.NestedRuntimeException;
 import scw.lang.Nullable;
+import scw.net.InetUtils;
 import scw.util.FormatUtils;
 import scw.value.property.SystemPropertyFactory;
 
@@ -107,12 +108,8 @@ public final class ResourceUtils {
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
 			return true;
 		}
-		try {
-			new URL(resourceLocation);
-			return true;
-		} catch (MalformedURLException ex) {
-			return false;
-		}
+
+		return InetUtils.isUrl(resourceLocation);
 	}
 
 	/**
