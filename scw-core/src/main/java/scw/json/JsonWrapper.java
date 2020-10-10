@@ -2,10 +2,10 @@ package scw.json;
 
 import scw.value.ValueFactoryWrapper;
 
-public class BasicJsonDefinitionWrapper<K> extends ValueFactoryWrapper<K> implements BasicJsonDefinition<K> {
-	private final BasicJsonDefinition<K> target;
+public class JsonWrapper<K> extends ValueFactoryWrapper<K> implements Json<K> {
+	private final Json<K> target;
 
-	public BasicJsonDefinitionWrapper(BasicJsonDefinition<K> target) {
+	public JsonWrapper(Json<K> target) {
 		super(target);
 		this.target = target;
 	}

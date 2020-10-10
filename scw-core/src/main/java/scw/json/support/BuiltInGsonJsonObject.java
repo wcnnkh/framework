@@ -2,11 +2,12 @@ package scw.json.support;
 
 import java.util.Collection;
 
-import scw.json.AbstractJsonObject;
+import scw.json.AbstractJson;
 import scw.json.JsonElement;
+import scw.json.JsonObject;
 import scw.json.gson.Gson;
 
-public final class BuiltInGsonJsonObject extends AbstractJsonObject {
+public final class BuiltInGsonJsonObject extends AbstractJson<String> implements JsonObject {
 	private scw.json.gson.GsonJsonObject gsonJsonObject;
 	private Gson gson;
 
@@ -40,7 +41,6 @@ public final class BuiltInGsonJsonObject extends AbstractJsonObject {
 		return gsonJsonObject.toString();
 	}
 
-	@Override
 	public int size() {
 		return gsonJsonObject.size();
 	}

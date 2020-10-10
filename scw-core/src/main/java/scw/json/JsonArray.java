@@ -1,6 +1,6 @@
 package scw.json;
 
-public interface JsonArray extends Iterable<JsonElement>, BasicJsonDefinition<Integer> {
+public interface JsonArray extends Iterable<JsonElement>, Json<Integer> {
 	void add(Object value);
 
 	JsonElement get(Integer index);

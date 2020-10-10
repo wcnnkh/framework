@@ -2,7 +2,7 @@ package scw.json;
 
 import java.util.Collection;
 
-public class JsonObjectWrapper extends BasicJsonDefinitionWrapper<String> implements JsonObject {
+public class JsonObjectWrapper extends JsonWrapper<String> implements JsonObject {
 	private JsonObject target;
 
 	public JsonObjectWrapper(JsonObject target) {

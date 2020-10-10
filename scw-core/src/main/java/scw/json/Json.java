@@ -2,7 +2,7 @@ package scw.json;
 
 import scw.value.ValueFactory;
 
-public interface BasicJsonDefinition<K> extends ValueFactory<K> {
+public interface Json<K> extends ValueFactory<K> {
 	int size();
 
 	boolean isEmpty();

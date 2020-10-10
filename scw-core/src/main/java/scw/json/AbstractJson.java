@@ -1,17 +1,13 @@
 package scw.json;
 
-import scw.value.DefaultValueFactory;
+import scw.value.AbstractValueFactory;
 
-public abstract class AbstractJson<K> extends DefaultValueFactory<K> {
-	
-	public abstract JsonElement get(K key);
+public abstract class AbstractJson<K> extends AbstractValueFactory<K> implements Json<K> {
 
 	@Override
 	public JsonElement getDefaultValue(K key) {
 		return EmptyJsonElement.INSTANCE;
 	}
-
-	public abstract int size();
 
 	public JsonObject getJsonObject(K key) {
 		JsonElement jsonElement = get(key);
@@ -26,8 +22,6 @@ public abstract class AbstractJson<K> extends DefaultValueFactory<K> {
 	public boolean isEmpty() {
 		return size() == 0;
 	}
-
-	public abstract String toJsonString();
 
 	@Override
 	public String toString() {
