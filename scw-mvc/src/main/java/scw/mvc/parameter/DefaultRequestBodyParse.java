@@ -11,11 +11,11 @@ import org.xml.sax.InputSource;
 
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.CollectionUtils;
+import scw.io.IOUtils;
 import scw.json.JSONSupport;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
-import scw.net.InetUtils;
 import scw.util.MultiValueMap;
 import scw.value.StringValue;
 import scw.xml.XMLUtils;
@@ -26,9 +26,9 @@ public class DefaultRequestBodyParse implements RequestBodyParse {
 	public Object requestBodyParse(HttpChannel httpChannel, JSONSupport jsonParseSupport,
 			ParameterDescriptor parameterDescriptor) throws Exception {
 		String body = null;
-		if (InetUtils.isJsonMessage(httpChannel.getRequest())) {
-			body = httpChannel.getBean(Body.class).getBody();
-		} else if (InetUtils.isXmlMessage(httpChannel.getRequest())) {
+		if (httpChannel.getRequest().getHeaders().isJsonContentType()) {
+			body = IOUtils.read(httpChannel.getRequest().getReader());
+		} else if (httpChannel.getRequest().getHeaders().isXmlContentType()) {
 			Document document = XMLUtils.parse(new InputSource(httpChannel.getRequest().getReader()));
 			Element element = document.getDocumentElement();
 			body = jsonParseSupport.toJSONString(XMLUtils.toRecursionMap(element));

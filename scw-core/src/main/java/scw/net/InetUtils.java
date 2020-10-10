@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -144,38 +146,6 @@ public final class InetUtils {
 		}
 	}
 
-	/**
-	 * 判断是否是json消息
-	 * 
-	 * @param serverRequest
-	 * @return
-	 */
-	public static boolean isJsonMessage(Message message) {
-		return isDesignatedContentTypeMessage(message, MimeTypeUtils.APPLICATION_JSON_VALUE)
-				|| isDesignatedContentTypeMessage(message, MimeTypeUtils.TEXT_JSON_VALUE);
-	}
-
-	public static boolean isXmlMessage(Message message) {
-		return isDesignatedContentTypeMessage(message, MimeTypeUtils.APPLICATION_XML_VALUE)
-				|| isDesignatedContentTypeMessage(message, MimeTypeUtils.TEXT_XML_VALUE);
-	}
-
-	public static boolean isFormMessage(Message message) {
-		return isDesignatedContentTypeMessage(message, MimeTypeUtils.APPLICATION_X_WWW_FORM_URLENCODED_VALUE);
-	}
-
-	public static boolean isMultipartMessage(Message message) {
-		return isDesignatedContentTypeMessage(message, MimeTypeUtils.MULTIPART_FORM_DATA_VALUE);
-	}
-
-	public static boolean isDesignatedContentTypeMessage(Message message, String contentType) {
-		MimeType mimeType = message.getContentType();
-		if (mimeType == null) {
-			return false;
-		}
-		return StringUtils.contains(mimeType.toString(), contentType, true);
-	}
-
 	public static boolean isLocalIP(String ip) {
 		if (StringUtils.isEmpty(ip)) {
 			return false;
@@ -308,5 +278,18 @@ public final class InetUtils {
 			}
 		}
 		return ips;
+	}
+
+	public static boolean isUrl(String url) {
+		if(StringUtils.isEmpty(url)){
+			return false;
+		}
+		
+		try {
+			new URL(url);
+			return true;
+		} catch (MalformedURLException e) {
+			return false;
+		}
 	}
 }

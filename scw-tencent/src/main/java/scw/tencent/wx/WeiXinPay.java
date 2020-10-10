@@ -17,6 +17,7 @@ import scw.http.MediaType;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
+import scw.json.JsonObject;
 import scw.lang.NestedRuntimeException;
 import scw.lang.NotSupportedException;
 import scw.lang.ParameterException;
@@ -25,7 +26,6 @@ import scw.logger.LoggerFactory;
 import scw.net.MimeTypeUtils;
 import scw.net.ssl.SSLContexts;
 import scw.security.SignatureUtils;
-import scw.tencent.wx.pay.UnifiedOrderResponse;
 import scw.util.RandomUtils;
 import scw.xml.XMLUtils;
 
@@ -34,12 +34,14 @@ public final class WeiXinPay {
 	private static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 	private static final String DEFAULT_DEVICE_INFO = "WEB";
 	private static final String REFUND_URL = "https://api.mch.weixin.qq.com/secapi/pay/refund";
-
+	private static final String CLOSEORDER_URL = "https://api.mch.weixin.qq.com/pay/closeorder";
+	
 	private final String appId;
 	private final String mch_id;
 	private final String apiKey;
 	private final String sign_type;// 签名类型，默认为MD5，支持HMAC-SHA256和MD5。
 	private final String charsetName;
+	private String notifyUrl;
 	private String certTrustFile;
 	private SSLSocketFactory sslSocketFactory;
 
@@ -62,16 +64,20 @@ public final class WeiXinPay {
 		this.sslSocketFactory = initSSLSocketFactory(certTrustFile);
 	}
 
+	public String getNotifyUrl() {
+		return notifyUrl;
+	}
+
 	private SSLSocketFactory initSSLSocketFactory(String certTrustFile) {
 		if (StringUtils.isEmpty(certTrustFile)) {
 			return null;
 		}
 
 		Resource resource = ResourceUtils.getResourceOperations().getResource(certTrustFile);
-		if(!resource.exists()){
+		if (!resource.exists()) {
 			return null;
 		}
-		
+
 		InputStream is = ResourceUtils.getInputStream(resource);
 		char[] password = mch_id.toCharArray();
 		try {
@@ -122,10 +128,10 @@ public final class WeiXinPay {
 			String detail, String attach, String out_trade_no, String fee_type, int total_fee, String spbill_create_ip,
 			String time_start, String time_expire, String goods_tag, String notify_url, String trade_type,
 			String product_id, String limit_pay, String openid) {
-		Map<String, String> map = getUnifiedorder(device_info, nonce_str, body, detail, attach, out_trade_no, fee_type,
-				total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type, product_id,
-				limit_pay, openid);
-		String prepay_id = map.get("prepay_id");
+		WeiXinPayResponse response = getUnifiedorder(device_info, nonce_str, body, detail, attach, out_trade_no,
+				fee_type, total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type,
+				product_id, limit_pay, openid);
+		String prepay_id = response.getString("prepay_id");
 		Unifiedorder unifiedorder = new Unifiedorder();
 		unifiedorder.setTimestamp(timestamp);
 		unifiedorder.setNonce_str(nonce_str);
@@ -259,7 +265,7 @@ public final class WeiXinPay {
 	 * @param openid
 	 * @return
 	 */
-	public UnifiedOrderResponse getUnifiedorder(String device_info, String nonce_str, String body, String detail,
+	public WeiXinPayResponse getUnifiedorder(String device_info, String nonce_str, String body, String detail,
 			String attach, String out_trade_no, String fee_type, int total_fee, String spbill_create_ip,
 			String time_start, String time_expire, String goods_tag, String notify_url, String trade_type,
 			String product_id, String limit_pay, String openid) {
@@ -284,15 +290,19 @@ public final class WeiXinPay {
 		map.put("time_start", time_start);
 		map.put("time_expire", time_expire);
 		map.put("goods_tag", goods_tag);
-		map.put("notify_url", notify_url);
+		map.put("notify_url", StringUtils.isEmpty(notify_url) ? getNotifyUrl() : notify_url);
 		map.put("trade_type", trade_type);
 		map.put("product_id", product_id);
 		map.put("limit_pay", limit_pay);
 		map.put("openid", openid);
-		Map<String, String> responseMap = invoke(weixin_unifiedorder_url, map, false);
-		return new UnifiedOrderResponse(responseMap);
+		return invoke(weixin_unifiedorder_url, map, false);
 	}
 
+	/**
+	 * 检查签名
+	 * @param params
+	 * @return
+	 */
 	public boolean checkSign(Map<String, String> params) {
 		Map<String, String> cloneParams = new HashMap<String, String>(params);
 		String sign = cloneParams.get("sign");
@@ -328,7 +338,7 @@ public final class WeiXinPay {
 	 *            请求中是否包含证书
 	 * @return
 	 */
-	public Map<String, String> invoke(String url, Map<String, ?> parameterMap, boolean isCertTrustFile) {
+	public WeiXinPayResponse invoke(String url, Map<String, ?> parameterMap, boolean isCertTrustFile) {
 		if (isCertTrustFile && StringUtils.isEmpty(certTrustFile)) {
 			throw new ParameterException("未配置API证书目录");
 		}
@@ -378,21 +388,8 @@ public final class WeiXinPay {
 		logger.debug("请求：{}，返回{}", url, res);
 
 		Map<String, String> map = XMLUtils.xmlToMap(res);
-		String return_code = map.get("return_code");
-		if (!"SUCCESS".equals(return_code)) {
-			throw new RuntimeException(res);
-		}
-
-		String result_code = map.get("result_code");
-		if (!"SUCCESS".equals(result_code)) {
-			throw new RuntimeException(res);
-		}
-
-		if (!checkSign(map)) {
-			throw new WeiXinException("签名错误");
-		}
-
-		return map;
+		JsonObject jsonObject = JSONUtils.parseObject(JSONUtils.toJSONString(map));
+		return new WeiXinPayResponse(jsonObject);
 	}
 
 	private String toSign(String str) {
@@ -405,22 +402,99 @@ public final class WeiXinPay {
 			throw new NotSupportedException("不支持的签名方式:" + sign_type);
 		}
 	}
+	
+	/**
+	 * 统一下单接口
+	 * @param request
+	 * @return
+	 */
+	public Unifiedorder getUnifiedorder(UnifiedorderRequest request) {
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("appid", appId);
+		map.put("mch_id", mch_id);
+		map.put("device_info", request.getDevice_info());
+		map.put("nonce_str", request.getNonce_str());
+		map.put("sign_type", sign_type);
+		if (request.getBody().length() >= 128) {
+			map.put("body", request.getBody().substring(0, 120) + "...");
+		} else {
+			map.put("body", request.getBody());
+		}
 
-	public Map<String, String> refund(String transaction_id, String out_trade_no, String out_refund_no, int total_fee,
-			int refund_fee, String refund_fee_type, String refund_desc, String notify_url) {
+		map.put("detail", request.getDetail());
+		map.put("attach", request.getAttach());
+		map.put("out_trade_no", request.getOut_trade_no());
+		map.put("fee_type", request.getFee_type());
+		map.put("total_fee", request.getTotal_fee() + "");
+		map.put("spbill_create_ip", request.getSpbill_create_ip());
+		map.put("time_start", request.getTime_start());
+		map.put("time_expire", request.getTime_expire());
+		map.put("goods_tag", request.getGoods_tag());
+		map.put("notify_url", StringUtils.isEmpty(request.getNotify_url()) ? getNotifyUrl() : request.getNotify_url());
+		map.put("trade_type", request.getTrade_type());
+		map.put("product_id", request.getProduct_id());
+		map.put("limit_pay", request.getLimit_pay());
+		map.put("openid", request.getOpenid());
+
+		WeiXinPayResponse response = invoke(weixin_unifiedorder_url, map, false);
+		if (!response.isReturnSuccess()) {
+			throw new WeiXinException(response.getReturnMsg());
+		}
+
+		if (!response.isResultSuccess()) {
+			throw new WeiXinException(response.getResultErrCodeDes());
+		}
+
+		String prepay_id = response.getString("prepay_id");
+		Unifiedorder unifiedorder = new Unifiedorder();
+		unifiedorder.setTimestamp(request.getTimestamp());
+		unifiedorder.setNonce_str(request.getNonce_str());
+		if (!StringUtils.isEmpty(request.getOpenid())) {
+			unifiedorder.setPaySign(WeiXinUtils.getBrandWCPayRequestSign(appId, apiKey,
+					String.valueOf(unifiedorder.getTimestamp()), unifiedorder.getNonce_str(), prepay_id));
+		} else {
+			unifiedorder.setPaySign(WeiXinUtils.getAppPayRequestSign(appId, mch_id, apiKey, unifiedorder.getTimestamp(),
+					unifiedorder.getNonce_str(), prepay_id));
+		}
+		unifiedorder.setPrepay_id(prepay_id);
+		return unifiedorder;
+	}
+
+
+	/**
+	 * 退款
+	 * @param request
+	 * @return
+	 */
+	public WeiXinPayResponse refund(RefundRequest request) {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("appid", appId);
 		map.put("mch_id", mch_id);
 		map.put("nonce_str", RandomUtils.getRandomStr(10));
 		map.put("sign_type", sign_type);
-		map.put("transaction_id", transaction_id);
-		map.put("out_trade_no", out_trade_no);
-		map.put("out_refund_no", out_refund_no);
-		map.put("total_fee", total_fee + "");
-		map.put("refund_fee", refund_fee + "");
-		map.put("refund_fee_type", refund_fee_type);
-		map.put("refund_desc", refund_desc);
-		map.put("notify_url", notify_url);
+		map.put("transaction_id", request.getTransaction_id());
+		map.put("out_trade_no", request.getOut_trade_no());
+		map.put("out_refund_no", request.getOut_refund_no());
+		map.put("total_fee", request.getTotal_fee() + "");
+		map.put("refund_fee", request.getRefund_fee() + "");
+		map.put("refund_fee_type", request.getRefund_fee_type());
+		map.put("refund_desc", request.getRefund_desc());
+		map.put("notify_url", StringUtils.isNotEmpty(request.getNotify_url()) ? getNotifyUrl() : request.getNotify_url());
 		return invoke(REFUND_URL, map, true);
+	}
+
+	/**
+	 * 关闭订单
+	 * @param out_trade_no 商户订单号
+	 * @return
+	 */
+	public WeiXinPayResponse closeorder(String out_trade_no){
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("appid", appId);
+		map.put("mch_id", mch_id);
+		map.put("nonce_str", RandomUtils.getRandomStr(10));
+		map.put("sign_type", sign_type);
+		map.put("out_trade_no", out_trade_no);
+		return invoke(CLOSEORDER_URL, map, false);
 	}
 }

@@ -23,7 +23,7 @@ public abstract class AbstractHttpInputMessage extends AbstractHttpMessage imple
 		String charsetName = getCharacterEncoding();
 		try {
 			is = getBody();
-			return IOUtils.readContent(getBody(), charsetName == null ? Constants.UTF_8.name() : charsetName);
+			return IOUtils.readContent(getBody(), 256, charsetName == null ? Constants.UTF_8.name() : charsetName);
 		} finally {
 			IOUtils.close(is);
 		}

@@ -4,13 +4,14 @@ import java.util.Iterator;
 
 import scw.core.Converter;
 import scw.core.IteratorConverter;
+import scw.json.AbstractJson;
 import scw.json.EmptyJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.gson.Gson;
 import scw.json.gson.GsonJsonElement;
 
-public final class BuiltInGsonJsonArray extends JsonArray implements Converter<GsonJsonElement, JsonElement> {
+public final class BuiltInGsonJsonArray extends AbstractJson<Integer> implements JsonArray, Converter<GsonJsonElement, JsonElement> {
 	private scw.json.gson.GsonJsonArray gsonJsonArray;
 	private Gson gson;
 

@@ -1,7 +1,11 @@
 package scw.json;
 
-public abstract class JsonArray extends AbstractJson<Integer> implements Iterable<JsonElement> {
-	public abstract void add(Object value);
+public interface JsonArray extends Iterable<JsonElement>, Json<Integer> {
+	void add(Object value);
 
-	public abstract JsonElement get(Integer index);
+	JsonElement get(Integer index);
+
+	JsonArray getJsonArray(Integer index);
+
+	JsonObject getJsonObject(Integer index);
 }

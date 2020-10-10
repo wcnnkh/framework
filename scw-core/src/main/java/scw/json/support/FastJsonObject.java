@@ -4,15 +4,16 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Collection;
 
-import scw.json.JsonArray;
-import scw.json.JsonElement;
-import scw.json.JsonObject;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;
 import com.alibaba.fastjson.JSONObject;
 
-public final class FastJsonObject extends JsonObject implements JSONAware, Serializable {
+import scw.json.AbstractJson;
+import scw.json.JsonArray;
+import scw.json.JsonElement;
+import scw.json.JsonObject;
+
+public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;
 	private JSONObject jsonObject;
 
@@ -50,7 +51,7 @@ public final class FastJsonObject extends JsonObject implements JSONAware, Seria
 	public String toJsonString() {
 		return JSON.toJSONString(jsonObject, FastJsonProxyValueFilter.INSTANCE);
 	}
-	
+
 	public <T> T getObjectSupport(String key, Class<? extends T> type) {
 		return jsonObject.getObject(key, type);
 	}
@@ -59,7 +60,6 @@ public final class FastJsonObject extends JsonObject implements JSONAware, Seria
 		return jsonObject.getObject(key, type);
 	}
 
-	@Override
 	public int size() {
 		return jsonObject.size();
 	}

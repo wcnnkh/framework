@@ -1,6 +1,5 @@
 package scw.io;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileInputStream;
@@ -2503,30 +2502,6 @@ public final class FileUtils {
 		}
 	}
 
-	// 自己的
-	public static void toFile(String pathName, InputStream is) {
-		OutputStream os = null;
-		try {
-			File file = new File(pathName);
-			if (file.exists()) {
-				file.delete();
-			}
-
-			os = new FileOutputStream(file);
-			IOUtils.write(os, is, 10 * 1024 * 1024, -1);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (os != null) {
-					os.close();
-				}
-			} catch (Exception e2) {
-				e2.printStackTrace();
-			}
-		}
-	}
-
 	public static String pathToName(String path) {
 		int index = path.indexOf("/");
 		if (index != -1) {
@@ -2534,18 +2509,6 @@ public final class FileUtils {
 			return path.substring(index);
 		}
 		return path;
-	}
-
-	public static void downUrlFile(String url, String pathName) {
-		try {
-			URL connUrl = new URL(url);
-			URLConnection conn = connUrl.openConnection();
-			InputStream is = conn.getInputStream();
-			toFile(pathName, is);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	public static boolean unZip(String zipPath, String toPath) {
@@ -2769,12 +2732,11 @@ public final class FileUtils {
 		}
 	}
 
-	public static String readerFileContent(File file, String charsetName) {
+	public static String readerFileContent(File file, int buffSize, String charsetName) {
 		FileInputStream fileInputStream = null;
 		try {
 			fileInputStream = new FileInputStream(file);
-			InputStreamReader isr = new InputStreamReader(fileInputStream, Charset.forName(charsetName));
-			return IOUtils.read(isr, 256, 0);
+			return IOUtils.readContent(fileInputStream, buffSize, charsetName);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -2784,31 +2746,13 @@ public final class FileUtils {
 
 	public static List<String> getFileContentLineList(File file, String charsetName) {
 		FileInputStream fis = null;
-		InputStreamReader isr = null;
-		BufferedReader br = null;
 		try {
 			fis = new FileInputStream(file);
-			isr = new InputStreamReader(fis, charsetName);
-			br = new BufferedReader(isr);
-			return IOUtils.readLineList(br, -1);
+			return IOUtils.readLines(fis, charsetName);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		} finally {
-			IOUtils.close(br, isr, fis);
-		}
-	}
-
-	public static List<String> getLineList(InputStream inputStream, String charsetName) {
-		InputStreamReader isr = null;
-		BufferedReader br = null;
-		try {
-			isr = new InputStreamReader(inputStream, charsetName);
-			br = new BufferedReader(isr);
-			return IOUtils.readLineList(br, -1);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			IOUtils.close(br, isr, inputStream);
+			IOUtils.close(fis);
 		}
 	}
 

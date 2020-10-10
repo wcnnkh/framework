@@ -33,6 +33,7 @@ import scw.util.XUtils;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
+import scw.value.ValueUtils;
 
 public final class HttpUtils {
 	private HttpUtils() {
@@ -301,7 +302,7 @@ public final class HttpUtils {
 				}
 			}
 		}
-		return Value.EMPTY_ARRAY;
+		return ValueUtils.EMPTY_ARRAY;
 	}
 
 	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request,

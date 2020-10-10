@@ -36,16 +36,16 @@ public class Copy {
 	private boolean genericTypeEqual = true;
 
 	/**
-	 * 是否使用clone方式复制
+	 * 是否深拷贝
 	 */
-	private boolean clone = false;
+	private boolean deepCopy = false;
 
-	public final boolean isClone() {
-		return clone;
+	public boolean isDeepCopy() {
+		return deepCopy;
 	}
 
-	public Copy setClone(boolean clone) {
-		this.clone = clone;
+	public Copy setDeepCopy(boolean deepCopy) {
+		this.deepCopy = deepCopy;
 		return this;
 	}
 
@@ -58,7 +58,7 @@ public class Copy {
 		return this;
 	}
 
-	public final boolean isIgnoreStaticField() {
+	public boolean isIgnoreStaticField() {
 		return ignoreStaticField;
 	}
 
@@ -86,7 +86,7 @@ public class Copy {
 	 * 
 	 * @return
 	 */
-	public final boolean isInvokeCloneableMethod() {
+	public boolean isInvokeCloneableMethod() {
 		return invokeCloneableMethod;
 	}
 
@@ -147,13 +147,13 @@ public class Copy {
 		return this;
 	}
 
-	protected Object cloneArray(Class<?> sourceClass, Object array, Field parentField) {
+	protected <T> T cloneArray(Class<T> targetClass, Object array, Field parentField) {
 		int size = Array.getLength(array);
-		Object newArr = Array.newInstance(sourceClass.getComponentType(), size);
+		Object newArr = Array.newInstance(targetClass.getComponentType(), size);
 		for (int i = 0; i < size; i++) {
-			Array.set(newArr, i, copy(Array.get(array, i), parentField));
+			Array.set(newArr, i, clone(Array.get(array, i), parentField));
 		}
-		return newArr;
+		return (T) newArr;
 	}
 
 	/**
@@ -196,6 +196,10 @@ public class Copy {
 
 	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source,
 			Field parentField) {
+		if (source == null) {
+			return;
+		}
+
 		Fields sourceFields = mapper.getFields(sourceClass, parentField, filters);
 		for (Field field : mapper.getFields(targetClass, parentField, filters)) {
 			if (!field.isSupportSetter()) {
@@ -224,23 +228,44 @@ public class Copy {
 				continue;
 			}
 
-			if (isClone()) {
-				if (Modifier.isTransient(field.getSetter().getModifiers())) {
-					if (isCloneTransientField()) {
-						value = copy(value, field);
-					}
-				} else {
-					value = copy(value, field);
-				}
-			}
-
+			value = copyValue(field, value);
 			field.getSetter().set(target, value);
 		}
 	}
 
+	private Object copyValue(Field field, Object value) {
+		Object valueToUse = value;
+		if (isDeepCopy()) {
+			if (Modifier.isTransient(field.getSetter().getModifiers())) {
+				if (isCloneTransientField()) {
+					valueToUse = clone(valueToUse, field);
+				}
+			} else {
+				valueToUse = clone(valueToUse, field);
+			}
+		}
+		return valueToUse;
+	}
+
 	public <T, S> T copy(Class<? extends T> targetClass, Class<? extends S> sourceClass, S source, Field parentField) {
+		if (source == null) {
+			return null;
+		}
+
+		if (getInstanceFactory().isSingleton(targetClass)) {
+			return getInstanceFactory().getInstance(targetClass);
+		}
+
+		if (targetClass.isArray() && sourceClass.isArray()) {
+			return cloneArray(targetClass, source, parentField);
+		}
+
 		if (!getInstanceFactory().isInstance(targetClass)) {
-			return (T) source;
+			// 如果无法实例化
+			if (targetClass.isInstance(source)) {
+				return targetClass.cast(source);
+			}
+			throw new RuntimeException("Unable to copy " + sourceClass + " -> " + targetClass);
 		}
 
 		T target = getInstanceFactory().getInstance(targetClass);
@@ -252,35 +277,67 @@ public class Copy {
 		return target;
 	}
 
-	public <T> T copy(T source, Field parentField) {
+	public <T> T clone(T source, Field parentField) {
 		if (source == null) {
 			return null;
 		}
 
-		Class<T> sourceClass = (Class<T>) source.getClass();
-		if (getInstanceFactory().isSingleton(sourceClass)) {
+		Class<?> sourceClass = source.getClass();
+		if (sourceClass.isPrimitive() || sourceClass.isEnum() || getInstanceFactory().isSingleton(sourceClass)
+				|| !getInstanceFactory().isInstance(sourceClass)) {
 			return source;
 		}
 
-		if (sourceClass.isPrimitive() || sourceClass.isEnum()) {
-			return source;
-		} else if (sourceClass.isArray()) {
+		if (sourceClass.isArray()) {
 			return (T) cloneArray(sourceClass, source, parentField);
-		} else if (isInvokeCloneableMethod() && source instanceof Cloneable) {
+		}
+
+		if (isInvokeCloneableMethod() && source instanceof Cloneable) {
 			return (T) ReflectionUtils.invokeMethod(CLONE_METOHD, source);
 		}
-		return copy(sourceClass, sourceClass, source, parentField);
+
+		Object target = getInstanceFactory().getInstance(sourceClass);
+		while (sourceClass != null && sourceClass != Object.class) {
+			Fields fields = mapper.getFields(sourceClass, false, parentField, filters);
+			for (Field field : fields) {
+				if (!(field.isSupportGetter() && field.isSupportSetter() && field.getGetter().getField() != null
+						&& field.getSetter().getField() != null)) {
+					continue;
+				}
+
+				// 是否忽略静态字段
+				if (isIgnoreStaticField() && Modifier.isStatic(field.getSetter().getModifiers())) {
+					continue;
+				}
+
+				Object value = field.getGetter().get(source);
+				if (value == null) {
+					continue;
+				}
+
+				value = copyValue(field, value);
+				field.getSetter().set(target, value);
+			}
+			sourceClass = sourceClass.getSuperclass();
+		}
+		return (T) target;
 	}
 
 	private static final Copy DEFAULT_COPY = new Copy();
 	private static final Copy CLONE_COPY = new Copy();
 
 	static {
-		CLONE_COPY.setClone(true);
+		CLONE_COPY.setDeepCopy(true);
 	}
 
+	/**
+	 * 深拷贝
+	 * 
+	 * @param source
+	 * @return
+	 */
 	public static <T> T clone(T source) {
-		return CLONE_COPY.copy(source, null);
+		return CLONE_COPY.clone(source, null);
 	}
 
 	public static <T> T copy(Class<? extends T> targetClass, Object source) {

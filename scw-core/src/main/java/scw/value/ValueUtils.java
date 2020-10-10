@@ -6,6 +6,8 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
 
 public final class ValueUtils {
+	public static final Value[] EMPTY_ARRAY = new Value[0];
+	
 	private ValueUtils() {
 	};
 
