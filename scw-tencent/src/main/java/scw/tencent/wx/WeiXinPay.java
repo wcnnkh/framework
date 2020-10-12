@@ -409,11 +409,14 @@ public final class WeiXinPay {
 	 * @return
 	 */
 	public Unifiedorder getUnifiedorder(UnifiedorderRequest request) {
+		String nonce_str = RandomUtils.getRandomStr(16);
+		long timestamp = System.currentTimeMillis() / 1000;
+		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("appid", appId);
 		map.put("mch_id", mch_id);
 		map.put("device_info", request.getDevice_info());
-		map.put("nonce_str", request.getNonce_str());
+		map.put("nonce_str", nonce_str);
 		map.put("sign_type", sign_type);
 		if (request.getBody().length() >= 128) {
 			map.put("body", request.getBody().substring(0, 120) + "...");
@@ -447,8 +450,8 @@ public final class WeiXinPay {
 
 		String prepay_id = response.getString("prepay_id");
 		Unifiedorder unifiedorder = new Unifiedorder();
-		unifiedorder.setTimestamp(request.getTimestamp());
-		unifiedorder.setNonce_str(request.getNonce_str());
+		unifiedorder.setTimestamp(timestamp);
+		unifiedorder.setNonce_str(nonce_str);
 		if (!StringUtils.isEmpty(request.getOpenid())) {
 			unifiedorder.setPaySign(WeiXinUtils.getBrandWCPayRequestSign(appId, apiKey,
 					String.valueOf(unifiedorder.getTimestamp()), unifiedorder.getNonce_str(), prepay_id));
