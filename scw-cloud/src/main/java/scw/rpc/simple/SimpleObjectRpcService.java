@@ -92,7 +92,7 @@ public final class SimpleObjectRpcService implements RpcService, RpcConstants {
 	 * @param objectRpcRequestMessage
 	 */
 	private boolean rpcAuthorize(SimpleObjectRequestMessage objectRpcRequestMessage) {
-		if (StringUtils.isNull(sign)) {// 不校验签名
+		if (StringUtils.isEmpty(sign)) {// 不校验签名
 			logger.warn("RPC Signature verification not opened(未开启签名验证)");
 			return true;
 		}

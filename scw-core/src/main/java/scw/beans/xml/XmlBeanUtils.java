@@ -28,7 +28,7 @@ public final class XmlBeanUtils {
 		String type = XMLUtils.getNodeAttributeValue(node, "type");
 		String property = XMLUtils.getNodeAttributeValue(node, "property");
 
-		Class<?> typeClass = StringUtils.isNull(type) ? null : ClassUtils
+		Class<?> typeClass = StringUtils.isEmpty(type) ? null : ClassUtils
 				.forName(type);
 		if (!StringUtils.isEmpty(ref)) {
 			return new XmlBeanParameter(EParameterType.ref, typeClass, name,
@@ -122,13 +122,13 @@ public final class XmlBeanUtils {
 			Node node, String defaultValue) {
 		String charsetName = XMLUtils.getNodeAttributeValue(propertyFactory,
 				node, "charsetName");
-		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
+		return StringUtils.isEmpty(charsetName) ? defaultValue : charsetName;
 	}
 
 	public static String getCharsetName(Node node, String defaultValue) {
 		String charsetName = XMLUtils
 				.getNodeAttributeValue(node, "charsetName");
-		return StringUtils.isNull(charsetName) ? defaultValue : charsetName;
+		return StringUtils.isEmpty(charsetName) ? defaultValue : charsetName;
 	}
 
 	public static List<XmlMethodIocProcessor> getMethodIocProcessos(Class<?> clz,

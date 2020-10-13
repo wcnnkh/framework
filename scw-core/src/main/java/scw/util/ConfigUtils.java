@@ -2,6 +2,7 @@ package scw.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
+import scw.json.JSONSupport;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
@@ -228,7 +230,8 @@ public final class ConfigUtils {
 			nameList = new ArrayList<String>(asNameList);
 		}
 
-		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER.getFilter(), fieldFilter);
+		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER.getFilter(),
+				fieldFilter);
 		for (Field field : fields) {
 			String name = field.getSetter().getName();
 			Value value = propertyFactory.get(StringUtils.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
@@ -302,7 +305,8 @@ public final class ConfigUtils {
 			map.put(key.toString(), value.toString());
 		}
 
-		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER.getFilter(), fieldFilter);
+		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER.getFilter(),
+				fieldFilter);
 		for (Field field : fields) {
 			String name = field.getSetter().getName();
 			String value = null;
@@ -342,5 +346,26 @@ public final class ConfigUtils {
 			logger.info(LOG_MESSAGE, name, instance.getClass().getName(), value);
 			MapperUtils.setStringValue(field, instance, value);
 		}
+	}
+
+	public static Object parse(Type type, Resource resource, JSONSupport jsonSupport) throws IOException {
+		if (!resource.exists()) {
+			return Collections.emptyList();
+		}
+
+		InputStream inputStream = null;
+		try {
+			inputStream = resource.getInputStream();
+			return parse(type, inputStream, jsonSupport);
+		} finally {
+			IOUtils.close(inputStream);
+		}
+	}
+
+	public static Object parse(Type type, InputStream inputStream, JSONSupport jsonSupport) throws IOException {
+		Document document = XMLUtils.parse(inputStream);
+		Element element = document.getDocumentElement();
+		String body = jsonSupport.toJSONString(XMLUtils.toRecursionMap(element));
+		return jsonSupport.parseObject(body, type);
 	}
 }

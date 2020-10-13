@@ -24,7 +24,7 @@ public enum ProtocolType {
 	}
 	
 	public static ProtocolType getHttpProtocolType(String url){
-		if(StringUtils.isNull(url)){
+		if(StringUtils.isEmpty(url)){
 			return null;
 		}
 		

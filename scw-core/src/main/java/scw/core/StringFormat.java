@@ -25,7 +25,7 @@ public abstract class StringFormat {
 	}
 
 	public final String format(final String text) {
-		if (StringUtils.isNull(text)) {
+		if (StringUtils.isEmpty(text)) {
 			return text;
 		}
 

@@ -124,7 +124,7 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 				return new Date(value.getAsLong());
 			} else {
 				String dateFormat = xmlValue.getNodeAttributeValue("date-format");
-				if (StringUtils.isNull(dateFormat)) {
+				if (StringUtils.isEmpty(dateFormat)) {
 					throw new NotFoundException("data-format [" + value + "]");
 				}
 

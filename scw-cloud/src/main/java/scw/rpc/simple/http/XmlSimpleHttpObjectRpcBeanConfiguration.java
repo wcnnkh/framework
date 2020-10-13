@@ -50,7 +50,7 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfig
 
 			Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 					: (Serializer) beanFactory.getInstance(serializer);
-			if (!StringUtils.isNull(packageName)) {
+			if (!StringUtils.isEmpty(packageName)) {
 				for (Class<?> clz : ClassScanner.getInstance().getClasses(packageName)) {
 					if (!clz.isInterface() || AnnotationUtils.isIgnore(clz)) {
 						continue;
@@ -70,18 +70,18 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends XmlBeanConfig
 				}
 
 				String className = XMLUtils.getNodeAttributeValue(propertyFactory, node, "interface");
-				if (StringUtils.isNull(className)) {
+				if (StringUtils.isEmpty(className)) {
 					continue;
 				}
 
 				Class<?> clz = ClassUtils.forName(className);
 				String mySign = XMLUtils.getNodeAttributeValue(propertyFactory, node, "sign");
-				if (StringUtils.isNull(mySign)) {
+				if (StringUtils.isEmpty(mySign)) {
 					mySign = sign;
 				}
 
 				String myAddress = XmlBeanUtils.getAddress(propertyFactory, node);
-				if (StringUtils.isNull(myAddress)) {
+				if (StringUtils.isEmpty(myAddress)) {
 					myAddress = address;
 				}
 

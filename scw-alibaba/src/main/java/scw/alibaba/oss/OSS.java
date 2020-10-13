@@ -90,7 +90,7 @@ public final class OSS {
 	}
 
 	public String getUrl(ProtocolType protocol, String bucketName, String objectKey) {
-		if (protocol == null || StringUtils.isNull(bucketName, objectKey)) {
+		if (protocol == null || StringUtils.isEmpty(bucketName, objectKey)) {
 			throw new NullPointerException();
 		}
 
@@ -112,7 +112,7 @@ public final class OSS {
 	}
 
 	public void deleteObjectKey(String bucketName, String objectKey) {
-		if (StringUtils.isNull(objectKey)) {
+		if (StringUtils.isEmpty(objectKey)) {
 			return;
 		}
 
@@ -130,7 +130,7 @@ public final class OSS {
 	}
 
 	public void deleteByURL(String bucketUrl) {
-		if (StringUtils.isNull(bucketUrl)) {
+		if (StringUtils.isEmpty(bucketUrl)) {
 			return;
 		}
 
@@ -158,7 +158,7 @@ public final class OSS {
 
 	public String newObjectKey(String root, long uid, String suffix) {
 		StringBuilder sb = new StringBuilder();
-		if (!StringUtils.isNull(root)) {
+		if (!StringUtils.isEmpty(root)) {
 			sb.append(root);
 			sb.append("/");
 		}
@@ -168,7 +168,7 @@ public final class OSS {
 		sb.append("/");
 		sb.append(XUtils.getUUID());
 		sb.append(StringUtils.complemented(Long.toString(System.currentTimeMillis(), 32), '0', 13));
-		if (!StringUtils.isNull(suffix)) {
+		if (!StringUtils.isEmpty(suffix)) {
 			sb.append(".");
 			sb.append(suffix);
 		}
@@ -188,7 +188,7 @@ public final class OSS {
 	}
 
 	public String getUrlAndCheck(ProtocolType protocol, String bucketName, String root, long uid, String objectKey) {
-		if (protocol == null || StringUtils.isNull(bucketName, objectKey)) {
+		if (protocol == null || StringUtils.isEmpty(bucketName, objectKey)) {
 			throw new NullPointerException();
 		}
 
@@ -219,7 +219,7 @@ public final class OSS {
 		listObjectsRequest.setBucketName(bucketName);
 		String newPrefix = debug ? debugPrefix + prefix : prefix;
 		listObjectsRequest.setPrefix(newPrefix);
-		if (!StringUtils.isNull(nextMarker)) {
+		if (!StringUtils.isEmpty(nextMarker)) {
 			listObjectsRequest.setMarker(nextMarker);
 		}
 
@@ -241,7 +241,7 @@ public final class OSS {
 		listObjectsRequest.setBucketName(bucketName);
 		String newPrefix = debug ? debugPrefix + prefix : prefix;
 		listObjectsRequest.setPrefix(newPrefix);
-		if (!StringUtils.isNull(nextMarker)) {
+		if (!StringUtils.isEmpty(nextMarker)) {
 			listObjectsRequest.setMarker(nextMarker);
 		}
 
@@ -275,7 +275,7 @@ public final class OSS {
 
 	public PostPolicySignature getPostPolicySignatureByUrl(String bucketUrl, String root, long uid, String suffix,
 			int expire) {
-		if (StringUtils.isNull(bucketUrl)) {
+		if (StringUtils.isEmpty(bucketUrl)) {
 			return getPostPolicySignature(root, uid, suffix, expire);
 		}
 
