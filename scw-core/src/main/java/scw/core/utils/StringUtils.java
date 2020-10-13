@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,9 +25,7 @@ import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import scw.compatible.CompatibleUtils;
 import scw.core.Assert;
-import scw.io.UnsafeByteArrayOutputStream;
 import scw.lang.ParameterException;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
@@ -1319,10 +1316,6 @@ public final class StringUtils {
 		return equals(a, b, false);
 	}
 
-	public static boolean isAeqB(String strA, String strB) {
-		return equals(strA, strA, false);
-	}
-
 	public static String[] commonSplit(String str) {
 		return split(str, DEFAULT_SPLIT_CHARS);
 	}
@@ -1534,7 +1527,7 @@ public final class StringUtils {
 	 *            String.
 	 * @return 全角字符串.
 	 */
-	public static String ToSBC(String input) {
+	public static String toSBC(String input) {
 		char c[] = input.toCharArray();
 		for (int i = 0; i < c.length; i++) {
 			if (c[i] == ' ') {
@@ -1554,7 +1547,7 @@ public final class StringUtils {
 	 *            String.
 	 * @return 半角字符串
 	 */
-	public static String ToDBC(String input) {
+	public static String toDBC(String input) {
 		char c[] = input.toCharArray();
 		for (int i = 0; i < c.length; i++) {
 			if (c[i] == '\u3000') {
@@ -2383,39 +2376,6 @@ public final class StringUtils {
 			throw new IllegalArgumentException("Invalid time zone specification '" + timeZoneString + "'");
 		}
 		return timeZone;
-	}
-
-	public static String uriDecode(String source, Charset charset) {
-		int length = source.length();
-		if (length == 0) {
-			return source;
-		}
-		Assert.notNull(charset, "Charset must not be null");
-		@SuppressWarnings("resource")
-		UnsafeByteArrayOutputStream bos = new UnsafeByteArrayOutputStream(length);
-		boolean changed = false;
-		for (int i = 0; i < length; i++) {
-			int ch = source.charAt(i);
-			if (ch == '%') {
-				if (i + 2 < length) {
-					char hex1 = source.charAt(i + 1);
-					char hex2 = source.charAt(i + 2);
-					int u = Character.digit(hex1, 16);
-					int l = Character.digit(hex2, 16);
-					if (u == -1 || l == -1) {
-						throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
-					}
-					bos.write((char) ((u << 4) + l));
-					i += 2;
-					changed = true;
-				} else {
-					throw new IllegalArgumentException("Invalid encoded sequence \"" + source.substring(i) + "\"");
-				}
-			} else {
-				bos.write(ch);
-			}
-		}
-		return (changed ? CompatibleUtils.getStringOperations().createString(bos.toByteArray(), charset) : source);
 	}
 
 	public static String removeChar(String text, char remove) {
