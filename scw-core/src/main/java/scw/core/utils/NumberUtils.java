@@ -29,10 +29,6 @@ import scw.lang.ParameterException;
  * Miscellaneous utility methods for number conversion and parsing. Mainly for
  * internal use within the framework; consider Jakarta's Commons Lang for a more
  * comprehensive suite of string utilities.
- *
- * @author Juergen Hoeller
- * @author Rob Harrop
- * @since 1.1.2
  */
 public abstract class NumberUtils {
 
