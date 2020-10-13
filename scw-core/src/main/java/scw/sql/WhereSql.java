@@ -135,8 +135,8 @@ public class WhereSql implements Sql {
 			arr = list.toArray(new Object[list.size()]);
 		}
 
-		if (sb == null || sb.length() == 0) {
-			if (StringUtils.isNull(afterSql)) {
+		if (StringUtils.isEmpty(sb)) {
+			if (StringUtils.isEmpty(afterSql)) {
 				return new SimpleSql(beforeSql, arr);
 			} else {
 				return new SimpleSql(beforeSql + " " + afterSql, arr);
@@ -144,9 +144,13 @@ public class WhereSql implements Sql {
 		} else {
 			StringBuilder sql = new StringBuilder();
 			sql.append(beforeSql);
-			sql.append(" where ");
+			if(beforeSql.indexOf(" where ") != -1){
+				sql.append(" and ");
+			}else{
+				sql.append(" where ");
+			}
 			sql.append(sb);
-			if (!StringUtils.isNull(afterSql)) {
+			if (!StringUtils.isEmpty(afterSql)) {
 				sql.append(" ");
 				sql.append(afterSql);
 			}

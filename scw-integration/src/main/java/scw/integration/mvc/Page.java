@@ -66,7 +66,7 @@ public class Page extends AbstractPage {
 		}
 
 		try {
-			freemarkerConfiguration.setDirectoryForTemplateLoading(new File(StringUtils.isNull(rootPath) ? workPath
+			freemarkerConfiguration.setDirectoryForTemplateLoading(new File(StringUtils.isEmpty(rootPath) ? workPath
 					: GlobalPropertyFactory.getInstance().format(rootPath, true)));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -82,7 +82,7 @@ public class Page extends AbstractPage {
 		}
 
 		initFreemarker(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS, freemarker_default_encoding,
-				StringUtils.isNull(rootPath) ? workPath : GlobalPropertyFactory.getInstance().format(rootPath, true));
+				StringUtils.isEmpty(rootPath) ? workPath : GlobalPropertyFactory.getInstance().format(rootPath, true));
 	}
 
 	public static Configuration getFreemarkerConfiguration() {

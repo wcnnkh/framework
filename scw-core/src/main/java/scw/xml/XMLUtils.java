@@ -446,7 +446,7 @@ public final class XMLUtils {
 
 	public static String getRequireNodeAttributeValue(Node node, String name) {
 		String value = getNodeAttributeValue(node, name);
-		if (StringUtils.isNull(value)) {
+		if (StringUtils.isEmpty(value)) {
 			throw new NotFoundException("not found attribute [" + name + "], " + toString(node));
 		}
 		return value;
@@ -454,7 +454,7 @@ public final class XMLUtils {
 
 	public static void requireAttribute(Node node, String... name) {
 		for (String n : name) {
-			if (StringUtils.isNull(XMLUtils.getNodeAttributeValue(node, n))) {
+			if (StringUtils.isEmpty(XMLUtils.getNodeAttributeValue(node, n))) {
 				throw new NotFoundException("not found attribute [" + n + "], " + toString(node));
 			}
 		}

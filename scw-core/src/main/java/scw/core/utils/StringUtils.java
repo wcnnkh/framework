@@ -564,7 +564,7 @@ public final class StringUtils {
 		p1 = replacePath(p1);
 		p2 = replacePath(p2);
 
-		if (!StringUtils.isNull(p2)) {
+		if (!StringUtils.isEmpty(p2)) {
 			if (!p1.endsWith(FOLDER_SEPARATOR)) {
 				p1 = p1 + FOLDER_SEPARATOR;
 			}
@@ -1282,14 +1282,6 @@ public final class StringUtils {
 	/** ------------------传说中的分割线----------------------- **/
 	public static final char[] DEFAULT_SPLIT_CHARS = new char[] { ' ', ',', ';', '、' };
 
-	public static boolean isNull(String... text) {
-		return isEmpty(text);
-	}
-
-	public static boolean isNull(CharSequence text) {
-		return isEmpty(text);
-	}
-
 	public static boolean isNotEmpty(CharSequence text) {
 		return !isEmpty(text);
 	}
@@ -1455,14 +1447,14 @@ public final class StringUtils {
 	}
 
 	public static List<String> toStrList(String strs, boolean isTrim) {
-		if (isNull(strs)) {
+		if (isEmpty(strs)) {
 			return null;
 		}
 
 		List<String> list = new ArrayList<String>();
 		String[] strList = strs.split(",");
 		for (String str : strList) {
-			if (isNull(str)) {
+			if (isEmpty(str)) {
 				continue;
 			}
 
@@ -1470,7 +1462,7 @@ public final class StringUtils {
 				str = str.trim();
 			}
 
-			if (isNull(str)) {
+			if (isEmpty(str)) {
 				continue;
 			}
 			list.add(str);

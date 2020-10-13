@@ -102,7 +102,7 @@ public class Sender {
 
 		for (String key : keys) {
 			String value = map.get(key);
-			if (StringUtils.isNull(key, value)) {
+			if (StringUtils.isEmpty(key, value)) {
 				continue;
 			}
 			// sb.append(key).append(Http.encode(value, "utf-8"));
