@@ -2,7 +2,7 @@ package scw.json;
 
 import scw.value.ValueFactory;
 
-public interface Json<K> extends ValueFactory<K> {
+public interface Json<K> extends ValueFactory<K>, JsonAware{
 	int size();
 
 	boolean isEmpty();
@@ -12,6 +12,4 @@ public interface Json<K> extends ValueFactory<K> {
 	JsonArray getJsonArray(K key);
 
 	JsonObject getJsonObject(K key);
-
-	String toJsonString();
 }

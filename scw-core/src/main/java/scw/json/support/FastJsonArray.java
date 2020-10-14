@@ -63,7 +63,7 @@ public final class FastJsonArray extends AbstractJson<Integer> implements JsonAr
 	}
 
 	public String toJsonString() {
-		return JSON.toJSONString(jsonArray, FastJsonProxyValueFilter.INSTANCE);
+		return JSON.toJSONString(jsonArray, ExtendFastJsonValueFilter.INSTANCE);
 	}
 
 	public <T> T getObject(int index, Class<? extends T> type) {
@@ -80,5 +80,23 @@ public final class FastJsonArray extends AbstractJson<Integer> implements JsonAr
 
 	public String toJSONString() {
 		return toJsonString();
+	}
+	
+	@Override
+	public int hashCode() {
+		return jsonArray.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null){
+			return false;
+		}
+		
+		if(obj instanceof FastJsonArray){
+			return jsonArray.equals(((FastJsonArray) obj).jsonArray);
+		}
+		
+		return false;
 	}
 }

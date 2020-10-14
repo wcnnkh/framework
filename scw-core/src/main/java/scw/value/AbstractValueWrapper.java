@@ -110,4 +110,9 @@ public abstract class AbstractValueWrapper implements Value{
 	public Enum<?> getAsEnum(Class<?> enumType) {
 		return getValue().getAsEnum(enumType);
 	}
+	
+	@Override
+	public String toString() {
+		return getValue().toString();
+	}
 }

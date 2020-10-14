@@ -52,11 +52,28 @@ public final class BuiltInGsonElement extends AbstractJsonElement {
 	public boolean isEmpty() {
 		return gsonJsonElement.isJsonNull();
 	}
-	
+
 	public String toJsonString() {
-		if(gsonJsonElement.isJsonArray() || gsonJsonElement.isJsonObject()){
+		if (gsonJsonElement.isJsonArray() || gsonJsonElement.isJsonObject()) {
 			return gsonJsonElement.toString();
 		}
 		return gsonJsonElement.getAsString();
+	}
+
+	@Override
+	public int hashCode() {
+		return gsonJsonElement.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof BuiltInGsonElement) {
+			return gsonJsonElement.equals(((BuiltInGsonElement) obj).gsonJsonElement);
+		}
+		return false;
 	}
 }

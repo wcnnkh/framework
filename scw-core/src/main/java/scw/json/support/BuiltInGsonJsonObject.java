@@ -44,4 +44,22 @@ public final class BuiltInGsonJsonObject extends AbstractJson<String> implements
 	public int size() {
 		return gsonJsonObject.size();
 	}
+
+	@Override
+	public int hashCode() {
+		return gsonJsonObject.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null){
+			return false;
+		}
+		
+		if(obj instanceof BuiltInGsonJsonObject){
+			return gsonJsonObject.equals(((BuiltInGsonJsonObject) obj).gsonJsonObject);
+		}
+		
+		return false;
+	}
 }

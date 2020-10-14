@@ -12,6 +12,7 @@ import scw.json.JsonElement;
 import scw.json.JsonObject;
 
 public final class FastJsonSupport extends AbstractJSONSupport {
+	public static final FastJsonSupport INSTANCE = new FastJsonSupport();
 
 	public scw.json.JsonArray parseArray(String text) {
 		JSONArray jArray = com.alibaba.fastjson.JSONArray.parseArray(text);
@@ -25,7 +26,7 @@ public final class FastJsonSupport extends AbstractJSONSupport {
 
 	@Override
 	protected String toJsonStringInternal(Object obj) {
-		return JSON.toJSONString(obj, FastJsonProxyValueFilter.INSTANCE);
+		return JSON.toJSONString(obj, ExtendFastJsonValueFilter.INSTANCE);
 	}
 
 	@Override

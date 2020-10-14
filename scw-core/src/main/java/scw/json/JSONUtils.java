@@ -10,8 +10,6 @@ public final class JSONUtils {
 	private JSONUtils() {
 	};
 
-	public static final BuiltinGsonSupport BUILTIN_GSON_SUPPORT = new BuiltinGsonSupport();
-
 	/**
 	 * 默认的json序列化工具
 	 */
@@ -19,7 +17,7 @@ public final class JSONUtils {
 
 	static {
 		JSONSupport jsonSupport = InstanceUtils.loadService(JSONSupport.class, "scw.json.support.FastJsonSupport");
-		JSON_SUPPORT = jsonSupport == null ? BUILTIN_GSON_SUPPORT : jsonSupport;
+		JSON_SUPPORT = jsonSupport == null ? BuiltinGsonSupport.INSTANCE : jsonSupport;
 		FormatUtils.info(JSONUtils.class, "using json support：{}", JSON_SUPPORT.getClass().getName());
 	}
 

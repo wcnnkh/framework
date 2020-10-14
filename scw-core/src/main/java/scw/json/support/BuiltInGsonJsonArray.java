@@ -11,7 +11,8 @@ import scw.json.JsonElement;
 import scw.json.gson.Gson;
 import scw.json.gson.GsonJsonElement;
 
-public final class BuiltInGsonJsonArray extends AbstractJson<Integer> implements JsonArray, Converter<GsonJsonElement, JsonElement> {
+public final class BuiltInGsonJsonArray extends AbstractJson<Integer>
+		implements JsonArray, Converter<GsonJsonElement, JsonElement> {
 	private scw.json.gson.GsonJsonArray gsonJsonArray;
 	private Gson gson;
 
@@ -46,5 +47,22 @@ public final class BuiltInGsonJsonArray extends AbstractJson<Integer> implements
 
 	public String toJsonString() {
 		return gsonJsonArray.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return gsonJsonArray.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof BuiltInGsonJsonArray) {
+			return gsonJsonArray.equals(((BuiltInGsonJsonArray) obj).gsonJsonArray);
+		}
+		return false;
 	}
 }
