@@ -49,7 +49,7 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 	}
 
 	public String toJsonString() {
-		return JSON.toJSONString(jsonObject, FastJsonProxyValueFilter.INSTANCE);
+		return JSON.toJSONString(jsonObject, ExtendFastJsonValueFilter.INSTANCE);
 	}
 
 	public <T> T getObjectSupport(String key, Class<? extends T> type) {
@@ -66,5 +66,23 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 
 	public String toJSONString() {
 		return toJsonString();
+	}
+	
+	@Override
+	public int hashCode() {
+		return jsonObject.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null){
+			return false;
+		}
+		
+		if(obj instanceof FastJsonObject){
+			return jsonObject.equals(((FastJsonObject) obj).jsonObject);
+		}
+
+		return false;
 	}
 }

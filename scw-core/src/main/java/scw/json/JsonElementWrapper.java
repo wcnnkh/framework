@@ -29,4 +29,27 @@ public class JsonElementWrapper extends ValueWrapper implements JsonElement {
 	public String toJsonString() {
 		return target.toJsonString();
 	}
+	
+	@Override
+	public String toString() {
+		return target.toString();
+	}
+	
+	@Override
+	public int hashCode() {
+		return target.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null){
+			return false;
+		}
+		
+		if(obj instanceof JsonElementWrapper){
+			return target.equals(((JsonElementWrapper) obj).target);
+		}
+		
+		return target.equals(obj);
+	}
 }

@@ -33,4 +33,28 @@ public class JsonWrapper<K> extends ValueFactoryWrapper<K> implements Json<K> {
 	public String toJsonString() {
 		return target.toJsonString();
 	}
+
+	@Override
+	public String toString() {
+		return target.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		return target.hashCode();
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof JsonWrapper) {
+			return ((JsonWrapper) obj).target.equals(target);
+		}
+
+		return target.equals(obj);
+	}
 }

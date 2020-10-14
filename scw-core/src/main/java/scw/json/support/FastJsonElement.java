@@ -63,4 +63,21 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	public String toJsonString() {
 		return text;
 	}
+
+	@Override
+	public int hashCode() {
+		return text.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+
+		if (obj instanceof FastJsonElement) {
+			return StringUtils.equals(text, ((FastJsonElement) obj).text);
+		}
+		return false;
+	}
 }
