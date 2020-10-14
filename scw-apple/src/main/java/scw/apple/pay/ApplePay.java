@@ -27,6 +27,11 @@ public class ApplePay {
 		this(null);
 	}
 
+	/**
+	 * 应用程序的共享机密（十六进制字符串）。仅对包含自动续订的收据使用此字段。
+	 * 
+	 * @param password
+	 */
 	public ApplePay(String password) {
 		this.password = password;
 	}
@@ -47,10 +52,14 @@ public class ApplePay {
 			map.put("exclude-old-transactions", excludeOldTransactions);
 		}
 
-		JsonObject response = HttpUtils.getHttpClient().post(JsonObject.class, host, map, MediaType.APPLICATION_JSON)
+		JsonObject json = HttpUtils.getHttpClient().post(JsonObject.class, host, map, MediaType.APPLICATION_JSON)
 				.getBody();
-		logger.debug(response);
-		return new VerifyReceiptResponse(response);
+		logger.debug(json);
+		VerifyReceiptResponse response = new VerifyReceiptResponse(json);
+		if (response.isUseRetryable() && response.isRetryable()) {
+			return verifyReceipt(host, request);
+		}
+		return response;
 	}
 
 	/**

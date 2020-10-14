@@ -69,6 +69,16 @@ public class VerifyReceiptResponse extends JsonObjectWrapper {
 	}
 
 	/**
+	 * 是否可以使用is_retryable字段，该字段要求错误码为21100-21199。
+	 * 
+	 * @return
+	 */
+	public boolean isUseRetryable() {
+		int status = getStatus();
+		return status >= 21100 && status <= 21199;
+	}
+
+	/**
 	 * 最新的Base64编码的应用程序收据。仅针对包含自动续订的收据返回。
 	 * 
 	 * @return

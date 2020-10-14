@@ -44,6 +44,7 @@ public class LatestReceiptInfo extends InApp {
 		for (int i = 0; i < jsonArray.size(); i++) {
 			list.add(new LatestReceiptInfo(jsonArray.getJsonObject(i)));
 		}
+		list.sort(COMPARATOR);
 		return list;
 	}
 }

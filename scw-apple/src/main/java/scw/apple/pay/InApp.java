@@ -1,7 +1,14 @@
 package scw.apple.pay;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.json.JsonObjectWrapper;
+import scw.util.comparator.CompareUtils;
 
 /**
  * 所述阵列是不按时间顺序。解析数组时，请遍历所有项以确保满足所有项。例如，您不能假定数组中的最后一项是最新的。<br/>
@@ -15,6 +22,12 @@ import scw.json.JsonObjectWrapper;
  *
  */
 public class InApp extends JsonObjectWrapper {
+	public static final Comparator<InApp> COMPARATOR = new Comparator<InApp>() {
+
+		public int compare(InApp o1, InApp o2) {
+			return CompareUtils.compare(o1.getPurchaseDate().getMs(), o2.getPurchaseDate().getMs(), false);
+		}
+	};
 
 	public InApp(JsonObject target) {
 		super(target);
@@ -138,5 +151,22 @@ public class InApp extends JsonObjectWrapper {
 	 */
 	public String getWebOrderLineItemId() {
 		return getString("web_order_line_item_id");
+	}
+
+	public static List<InApp> parseApps(JsonArray jsonArray) {
+		if (jsonArray == null) {
+			return null;
+		}
+
+		if (jsonArray.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<InApp> apps = new ArrayList<InApp>();
+		for (int i = 0; i < jsonArray.size(); i++) {
+			apps.add(new InApp(jsonArray.getJsonObject(i)));
+		}
+		apps.sort(COMPARATOR);
+		return apps;
 	}
 }
