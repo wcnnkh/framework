@@ -2,6 +2,8 @@ package scw.tencent.wx.pay;
 
 import java.io.Serializable;
 
+import scw.lang.Nullable;
+
 /**
  * 统一下单 字段说明见：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
  * 
@@ -36,7 +38,7 @@ public class UnifiedorderRequest implements Serializable {
 	 * @param trade_type 支付类型
 	 */
 	public UnifiedorderRequest(String body, String out_trade_no, int total_fee, String spbill_create_ip,
-			String notify_url, String trade_type) {
+			@Nullable String notify_url, String trade_type) {
 		this.body = body;
 		this.out_trade_no = out_trade_no;
 		this.total_fee = total_fee;

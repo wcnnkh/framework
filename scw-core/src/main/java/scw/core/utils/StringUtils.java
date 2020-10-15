@@ -43,8 +43,9 @@ public final class StringUtils {
 
 	private static final Set<String> BOOLEANS;
 	static {
-		BOOLEANS = new HashSet<String>(8, 1);
+		BOOLEANS = new HashSet<String>();
 		BOOLEANS.add("1");
+		BOOLEANS.add("y");
 		BOOLEANS.add("t");
 		BOOLEANS.add("ok");
 		BOOLEANS.add("yes");

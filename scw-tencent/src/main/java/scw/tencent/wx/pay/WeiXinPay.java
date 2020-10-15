@@ -10,7 +10,9 @@ import javax.net.ssl.SSLSocketFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import scw.beans.annotation.AopEnable;
 import scw.core.Constants;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
@@ -31,13 +33,14 @@ import scw.tencent.wx.WeiXinUtils;
 import scw.util.RandomUtils;
 import scw.xml.XMLUtils;
 
-public final class WeiXinPay {
+@AopEnable(false)
+public class WeiXinPay {
 	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);
 	private static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-	private static final String DEFAULT_DEVICE_INFO = "WEB";
 	private static final String REFUND_URL = "https://api.mch.weixin.qq.com/secapi/pay/refund";
 	private static final String CLOSEORDER_URL = "https://api.mch.weixin.qq.com/pay/closeorder";
-	
+	private static final String ORDER_QUERY = "https://api.mch.weixin.qq.com/pay/orderquery";
+
 	private final String appId;
 	private final String mch_id;
 	private final String apiKey;
@@ -89,139 +92,6 @@ public final class WeiXinPay {
 		}
 	}
 
-	/**
-	 * 统一下单 字段说明见：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
-	 * 
-	 * @param appid
-	 *            微信支付分配的公众账号ID（企业号corpid即为此appId）
-	 * @param mch_id
-	 *            微信支付分配的商户号
-	 * @param device_info
-	 *            自定义参数，可以为终端设备号(门店号或收银设备ID)，PC网页或公众号内支付可以传"WEB"
-	 * @param nonce_str
-	 *            随机字符串，长度要求在32位以内。推荐随机数生成算法
-	 * @param timestamp
-	 *            时间戳 单位:秒
-	 * @param sign
-	 *            通过签名算法计算得出的签名值，详见签名生成算法
-	 * @param sign_type
-	 *            签名类型，默认为MD5，支持HMAC-SHA256和MD5。
-	 * @param body
-	 *            商品简单描述，该字段请按照规范传递，具体请见参数规定
-	 * @param detail
-	 * @param attach
-	 * @param out_trade_no
-	 * @param fee_type
-	 *            货币类型 人民币CNY
-	 * @param total_fee
-	 * @param spbill_create_ip
-	 * @param time_start
-	 * @param time_expire
-	 * @param goods_tag
-	 * @param notify_url
-	 * @param trade_type
-	 *            类型 APP JSAPI
-	 * @param product_id
-	 * @param limit_pay
-	 * @param openid
-	 * @return
-	 */
-	public Unifiedorder getUnifiedorder(String device_info, String nonce_str, long timestamp, String body,
-			String detail, String attach, String out_trade_no, String fee_type, int total_fee, String spbill_create_ip,
-			String time_start, String time_expire, String goods_tag, String notify_url, String trade_type,
-			String product_id, String limit_pay, String openid) {
-		WeiXinPayResponse response = getUnifiedorder(device_info, nonce_str, body, detail, attach, out_trade_no,
-				fee_type, total_fee, spbill_create_ip, time_start, time_expire, goods_tag, notify_url, trade_type,
-				product_id, limit_pay, openid);
-		String prepay_id = response.getString("prepay_id");
-		Unifiedorder unifiedorder = new Unifiedorder();
-		unifiedorder.setTimestamp(timestamp);
-		unifiedorder.setNonce_str(nonce_str);
-		if (!StringUtils.isEmpty(openid)) {
-			unifiedorder.setPaySign(WeiXinUtils.getBrandWCPayRequestSign(appId, apiKey,
-					String.valueOf(unifiedorder.getTimestamp()), nonce_str, prepay_id));
-		} else {
-			unifiedorder.setPaySign(WeiXinUtils.getAppPayRequestSign(appId, mch_id, apiKey, unifiedorder.getTimestamp(),
-					nonce_str, prepay_id));
-		}
-
-		unifiedorder.setPrepay_id(prepay_id);
-		return unifiedorder;
-	}
-
-	/**
-	 * 生成微信公众号支付临时订单
-	 * 
-	 * @param trade_type
-	 *            类型 APP JSAPI
-	 * @param body
-	 *            商品简单描述
-	 * @param out_trade_no
-	 *            商户系统内部订单号，要求32个字符内、且在同一个商户号下唯一。 详见商户订单号
-	 * @param fee_type
-	 *            货币类型 人民币CNY
-	 * @param total_fee
-	 *            订单总金额，单位为分，详见支付金额
-	 * @param spbill_create_ip
-	 *            APP和网页支付提交用户端ip，Native支付填调用微信支付API的机器IP。
-	 * @param time_start
-	 *            订单生成时间，格式为yyyyMMddHHmmss
-	 * @param time_expire
-	 *            订单失效时间，格式为yyyyMMddHHmmss
-	 * @param limit_pay
-	 *            指定支付方式 上传此参数no_credit--可限制用户不能使用信用卡支付
-	 * @param openid
-	 * @param notify_url
-	 *            回调url
-	 * @return
-	 */
-	public Unifiedorder getDefaultUnifiedorder(String trade_type, String body, String out_trade_no, String fee_type,
-			int total_fee, String spbill_create_ip, String time_start, String time_expire, String limit_pay,
-			String openid, String notify_url) {
-		return getUnifiedorder(DEFAULT_DEVICE_INFO, RandomUtils.getRandomStr(16), System.currentTimeMillis() / 1000,
-				body, null, null, out_trade_no, fee_type, total_fee, spbill_create_ip, time_start, time_expire, null,
-				notify_url, trade_type, null, limit_pay, openid);
-	}
-
-	/**
-	 * 生成一个简单的订单
-	 * 
-	 * @param device_info
-	 *            自定义参数，可以为终端设备号(门店号或收银设备ID)，PC网页或公众号内支付可以传"WEB"
-	 * @param trade_type
-	 *            类型 APP JSAPI
-	 * @param name
-	 * @param orderId
-	 * @param amount
-	 * @param ip
-	 * @param notify_url
-	 * @return
-	 */
-	public Unifiedorder getSimpleUnifiedorder(String trade_type, String name, String orderId, int amount, String ip,
-			String notify_url) {
-		return getDefaultUnifiedorder(trade_type, name, orderId, "CNY", amount, ip, null, null, null, null, notify_url);
-	}
-
-	public String getPaySign(Map<String, String> paramMap) {
-		return WeiXinUtils.getPaySign(paramMap, apiKey);
-	}
-
-	/**
-	 * 获取微信公众号支付签名
-	 * 
-	 * @param timeStamp
-	 * @param nonceStr
-	 * @param prepay_id
-	 * @return
-	 */
-	public String getBrandWCPayRequestSign(String timeStamp, String nonceStr, String prepay_id) {
-		return WeiXinUtils.getBrandWCPayRequestSign(appId, apiKey, timeStamp, nonceStr, prepay_id);
-	}
-
-	public String getAppPayRequestSign(long timeStamp, String noceStr, String prepay_id) {
-		return WeiXinUtils.getAppPayRequestSign(appId, mch_id, apiKey, timeStamp, noceStr, prepay_id);
-	}
-
 	public String getAppId() {
 		return appId;
 	}
@@ -235,73 +105,8 @@ public final class WeiXinPay {
 	}
 
 	/**
-	 * 统一下单 字段说明见：https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
-	 * 
-	 * @param appid
-	 *            微信支付分配的公众账号ID（企业号corpid即为此appId）
-	 * @param mch_id
-	 *            微信支付分配的商户号
-	 * @param device_info
-	 *            自定义参数，可以为终端设备号(门店号或收银设备ID)，PC网页或公众号内支付可以传"WEB"
-	 * @param nonce_str
-	 *            随机字符串，长度要求在32位以内。推荐随机数生成算法
-	 * @param sign
-	 *            通过签名算法计算得出的签名值，详见签名生成算法
-	 * @param sign_type
-	 *            签名类型，默认为MD5，支持HMAC-SHA256和MD5。
-	 * @param body
-	 *            商品简单描述，该字段请按照规范传递，具体请见参数规定
-	 * @param detail
-	 * @param attach
-	 * @param out_trade_no
-	 * @param fee_type
-	 * @param total_fee
-	 * @param spbill_create_ip
-	 * @param time_start
-	 * @param time_expire
-	 * @param goods_tag
-	 * @param notify_url
-	 * @param trade_type
-	 * @param product_id
-	 * @param limit_pay
-	 * @param openid
-	 * @return
-	 */
-	public WeiXinPayResponse getUnifiedorder(String device_info, String nonce_str, String body, String detail,
-			String attach, String out_trade_no, String fee_type, int total_fee, String spbill_create_ip,
-			String time_start, String time_expire, String goods_tag, String notify_url, String trade_type,
-			String product_id, String limit_pay, String openid) {
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("appid", appId);
-		map.put("mch_id", mch_id);
-		map.put("device_info", device_info);
-		map.put("nonce_str", nonce_str);
-		map.put("sign_type", sign_type);
-		if (body.length() >= 128) {
-			map.put("body", body.substring(0, 120) + "...");
-		} else {
-			map.put("body", body);
-		}
-
-		map.put("detail", detail);
-		map.put("attach", attach);
-		map.put("out_trade_no", out_trade_no);
-		map.put("fee_type", fee_type);
-		map.put("total_fee", total_fee + "");
-		map.put("spbill_create_ip", spbill_create_ip);
-		map.put("time_start", time_start);
-		map.put("time_expire", time_expire);
-		map.put("goods_tag", goods_tag);
-		map.put("notify_url", StringUtils.isEmpty(notify_url) ? getNotifyUrl() : notify_url);
-		map.put("trade_type", trade_type);
-		map.put("product_id", product_id);
-		map.put("limit_pay", limit_pay);
-		map.put("openid", openid);
-		return invoke(weixin_unifiedorder_url, map, false);
-	}
-
-	/**
 	 * 检查签名
+	 * 
 	 * @param params
 	 * @return
 	 */
@@ -345,7 +150,17 @@ public final class WeiXinPay {
 			throw new ParameterException("未配置API证书目录");
 		}
 
-		String[] keys = parameterMap.keySet().toArray(new String[0]);
+		Map<String, Object> params = new HashMap<String, Object>();
+		if (!CollectionUtils.isEmpty(parameterMap)) {
+			params.putAll(parameterMap);
+		}
+
+		params.put("nonce_str", RandomUtils.getRandomStr(10));
+		params.put("appid", appId);
+		params.put("mch_id", mch_id);
+		params.put("sign_type", sign_type);
+
+		String[] keys = params.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
 		StringBuilder sb = new StringBuilder();
 		Document document = XMLUtils.newDocumentBuilder().newDocument();
@@ -356,7 +171,7 @@ public final class WeiXinPay {
 				continue;
 			}
 
-			Object v = parameterMap.get(k);
+			Object v = params.get(k);
 			if (v == null) {
 				continue;
 			}
@@ -404,22 +219,16 @@ public final class WeiXinPay {
 			throw new NotSupportedException("不支持的签名方式:" + sign_type);
 		}
 	}
-	
+
 	/**
 	 * 统一下单接口
+	 * 
 	 * @param request
 	 * @return
 	 */
-	public Unifiedorder getUnifiedorder(UnifiedorderRequest request) {
-		String nonce_str = RandomUtils.getRandomStr(16);
-		long timestamp = System.currentTimeMillis() / 1000;
-		
+	public UnifiedorderResponse getUnifiedorder(UnifiedorderRequest request) {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("appid", appId);
-		map.put("mch_id", mch_id);
 		map.put("device_info", request.getDevice_info());
-		map.put("nonce_str", nonce_str);
-		map.put("sign_type", sign_type);
 		if (request.getBody().length() >= 128) {
 			map.put("body", request.getBody().substring(0, 120) + "...");
 		} else {
@@ -440,8 +249,16 @@ public final class WeiXinPay {
 		map.put("product_id", request.getProduct_id());
 		map.put("limit_pay", request.getLimit_pay());
 		map.put("openid", request.getOpenid());
-
 		WeiXinPayResponse response = invoke(weixin_unifiedorder_url, map, false);
+		return new UnifiedorderResponse(response);
+	}
+
+	public Unifiedorder payment(UnifiedorderRequest request) {
+		UnifiedorderResponse response = getUnifiedorder(request);
+		return payment(response);
+	}
+
+	public Unifiedorder payment(UnifiedorderResponse response) {
 		if (!response.isReturnSuccess()) {
 			throw new WeiXinException(response.getReturnMsg());
 		}
@@ -450,11 +267,12 @@ public final class WeiXinPay {
 			throw new WeiXinException(response.getResultErrCodeDes());
 		}
 
-		String prepay_id = response.getString("prepay_id");
+		long timestamp = System.currentTimeMillis() / 1000;
+		String prepay_id = response.getPrepayId();
 		Unifiedorder unifiedorder = new Unifiedorder();
 		unifiedorder.setTimestamp(timestamp);
-		unifiedorder.setNonce_str(nonce_str);
-		if (!StringUtils.isEmpty(request.getOpenid())) {
+		unifiedorder.setNonce_str(response.getNonceStr());
+		if (response.getTradeType() == TradeType.JSAPI || response.getTradeType() == TradeType.MWEB) {
 			unifiedorder.setPaySign(WeiXinUtils.getBrandWCPayRequestSign(appId, apiKey,
 					String.valueOf(unifiedorder.getTimestamp()), unifiedorder.getNonce_str(), prepay_id));
 		} else {
@@ -465,18 +283,14 @@ public final class WeiXinPay {
 		return unifiedorder;
 	}
 
-
 	/**
 	 * 退款
+	 * 
 	 * @param request
 	 * @return
 	 */
 	public WeiXinPayResponse refund(RefundRequest request) {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("appid", appId);
-		map.put("mch_id", mch_id);
-		map.put("nonce_str", RandomUtils.getRandomStr(10));
-		map.put("sign_type", sign_type);
 		map.put("transaction_id", request.getTransaction_id());
 		map.put("out_trade_no", request.getOut_trade_no());
 		map.put("out_refund_no", request.getOut_refund_no());
@@ -484,22 +298,43 @@ public final class WeiXinPay {
 		map.put("refund_fee", request.getRefund_fee() + "");
 		map.put("refund_fee_type", request.getRefund_fee_type());
 		map.put("refund_desc", request.getRefund_desc());
-		map.put("notify_url", StringUtils.isNotEmpty(request.getNotify_url()) ? getNotifyUrl() : request.getNotify_url());
+		map.put("notify_url",
+				StringUtils.isNotEmpty(request.getNotify_url()) ? getNotifyUrl() : request.getNotify_url());
 		return invoke(REFUND_URL, map, true);
 	}
 
 	/**
 	 * 关闭订单
-	 * @param out_trade_no 商户订单号
+	 * 
+	 * @param out_trade_no
+	 *            商户订单号
 	 * @return
 	 */
-	public WeiXinPayResponse closeorder(String out_trade_no){
+	public WeiXinPayResponse closeorder(String out_trade_no) {
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("appid", appId);
-		map.put("mch_id", mch_id);
-		map.put("nonce_str", RandomUtils.getRandomStr(10));
-		map.put("sign_type", sign_type);
 		map.put("out_trade_no", out_trade_no);
 		return invoke(CLOSEORDER_URL, map, false);
+	}
+
+	/**
+	 * 两个参数选择其中一个
+	 * 
+	 * @param transactionId
+	 *            微信的订单号，优先使用
+	 * @param outTradeNo
+	 *            商户系统内部的订单号，当没提供transaction_id时需要传这个。
+	 * @return
+	 */
+	public OrderQueryResponse orderQuery(String transactionId, String outTradeNo) {
+		Map<String, String> map = new HashMap<String, String>();
+		if (StringUtils.isNotEmpty(transactionId)) {
+			map.put("out_trade_no", outTradeNo);
+		}
+
+		if (StringUtils.isNotEmpty(outTradeNo)) {
+			map.put("transaction_id", transactionId);
+		}
+		WeiXinPayResponse response = invoke(ORDER_QUERY, map, false);
+		return new OrderQueryResponse(response);
 	}
 }
