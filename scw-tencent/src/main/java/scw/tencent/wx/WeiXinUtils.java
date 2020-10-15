@@ -11,6 +11,7 @@ import scw.net.uri.UriUtils;
 import scw.oauth2.AccessToken;
 import scw.security.SignatureUtils;
 import scw.security.Token;
+import scw.tencent.wx.miniprogram.BaseResponse;
 import scw.tencent.wx.miniprogram.WeappTemplateMsg;
 
 /**

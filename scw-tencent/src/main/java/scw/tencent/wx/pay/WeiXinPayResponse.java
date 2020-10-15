@@ -1,4 +1,4 @@
-package scw.tencent.wx;
+package scw.tencent.wx.pay;
 
 import scw.json.JsonObject;
 import scw.json.JsonObjectWrapper;
@@ -34,22 +34,42 @@ public class WeiXinPayResponse extends JsonObjectWrapper {
 		return isReturnSuccess() && isResultSuccess();
 	}
 
+	/**
+	 * 应用APPID
+	 * @return
+	 */
 	public String getAppId() {
 		return getString("appid");
 	}
 
+	/**
+	 * 商户号
+	 * @return
+	 */
 	public String getMchId() {
 		return getString("mch_id");
 	}
 
+	/**
+	 * 微信支付分配的终端设备号，
+	 * @return
+	 */
 	public String getDeviceInfo() {
 		return getString("device_info");
 	}
 
+	/**
+	 * 随机字符串
+	 * @return
+	 */
 	public String getNonceStr() {
 		return getString("nonce_str");
 	}
 
+	/**
+	 * 签名
+	 * @return
+	 */
 	public String getSign() {
 		return getString("sign");
 	}

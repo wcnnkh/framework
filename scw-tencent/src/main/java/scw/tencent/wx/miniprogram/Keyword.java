@@ -1,31 +1,44 @@
 package scw.tencent.wx.miniprogram;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public final class Keyword implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private String keyword_id;// keyword_id
-	private String name;// name
-	private String example;// example
+import scw.json.JsonArray;
+import scw.json.JsonObject;
+import scw.json.JsonObjectWrapper;
 
-	Keyword() {
-	};
+public final class Keyword extends JsonObjectWrapper {
 
-	public Keyword(String keyword_id, String name, String example) {
-		this.keyword_id = keyword_id;
-		this.name = name;
-		this.example = example;
+	public Keyword(JsonObject target) {
+		super(target);
 	}
 
 	public String getKeyword_id() {
-		return keyword_id;
+		return getString("keyword_id");
 	}
 
 	public String getName() {
-		return name;
+		return getString("name");
 	}
 
 	public String getExample() {
-		return example;
+		return getString("example");
+	}
+
+	public static List<Keyword> parse(JsonArray jsonArray) {
+		if (jsonArray == null) {
+			return null;
+		}
+
+		if (jsonArray.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<Keyword> list = new ArrayList<Keyword>();
+		for (int i = 0; i < jsonArray.size(); i++) {
+			list.add(new Keyword(jsonArray.getJsonObject(i)));
+		}
+		return list;
 	}
 }

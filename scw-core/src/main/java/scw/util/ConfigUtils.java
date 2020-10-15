@@ -147,14 +147,25 @@ public final class ConfigUtils {
 	public static <K, V> Map<K, V> xmlToMap(Class<V> valueType, InputStream inputStream) throws IOException {
 		Fields fields = MapperUtils.getMapper().getFields(valueType, FilterFeature.SETTER_IGNORE_STATIC,
 				FilterFeature.SUPPORT_GETTER);
-		Field keyField = fields.getFirst();
-		if (keyField == null) {
-			throw new NullPointerException("打不到主键字段");
-		}
-
+		Field keyField = null;
 		List<Map<String, String>> list = ConfigUtils.getDefaultXmlContent(inputStream, "config");
 		Map<K, V> map = new LinkedHashMap<K, V>();
 		for (Map<String, String> tempMap : list) {
+			if (keyField == null) {
+				for (Entry<String, String> entry : tempMap.entrySet()) {
+					keyField = fields.find(entry.getKey(), null);
+					if (keyField == null) {
+						continue;
+					}
+					
+					break;
+				}
+			}
+
+			if (keyField == null) {
+				continue;
+			}
+
 			Object obj = ConfigUtils.parseObject(tempMap, valueType);
 			Object kV = keyField.getGetter().get(obj);
 			if (map.containsKey(kV)) {
