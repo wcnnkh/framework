@@ -44,7 +44,7 @@ public class OrderQueryResponse extends WeiXinPayResponse {
 		return (TradeState) getEnum("trade_state", TradeState.class);
 	}
 
-	public String getRawtradeState() {
+	public String getRawTradeState() {
 		return getString("trade_state");
 	}
 
