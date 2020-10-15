@@ -14,7 +14,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 import scw.compatible.CompatibleUtils;
 import scw.json.JsonObject;
-import scw.tencent.wx.BaseResponse;
 import scw.tencent.wx.WeiXinUtils;
 import scw.util.Base64;
 

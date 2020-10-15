@@ -1,4 +1,4 @@
-package scw.tencent.wx;
+package scw.tencent.wx.pay;
 
 import scw.json.JsonObject;
 import scw.json.JsonObjectWrapper;

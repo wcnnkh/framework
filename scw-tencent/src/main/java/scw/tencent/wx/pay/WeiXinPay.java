@@ -1,4 +1,4 @@
-package scw.tencent.wx;
+package scw.tencent.wx.pay;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -26,6 +26,8 @@ import scw.logger.LoggerFactory;
 import scw.net.MimeTypeUtils;
 import scw.net.ssl.SSLContexts;
 import scw.security.SignatureUtils;
+import scw.tencent.wx.WeiXinException;
+import scw.tencent.wx.WeiXinUtils;
 import scw.util.RandomUtils;
 import scw.xml.XMLUtils;
 
