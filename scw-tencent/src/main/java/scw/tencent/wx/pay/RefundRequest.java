@@ -1,4 +1,4 @@
-package scw.tencent.wx;
+package scw.tencent.wx.pay;
 
 import java.io.Serializable;
 

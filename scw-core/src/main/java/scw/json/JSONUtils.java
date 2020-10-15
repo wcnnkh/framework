@@ -1,6 +1,9 @@
 package scw.json;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import scw.core.instance.InstanceUtils;
 import scw.json.support.BuiltinGsonSupport;
@@ -43,5 +46,23 @@ public final class JSONUtils {
 
 	public static <T> T parseObject(String text, Type type) {
 		return JSON_SUPPORT.parseObject(text, type);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> List<T> parseArray(JsonArray jsonArray, Type type) {
+		if (jsonArray == null) {
+			return null;
+		}
+
+		if (jsonArray.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<T> list = new ArrayList<T>(jsonArray.size());
+		for (int i = 0, len = jsonArray.size(); i < len; i++) {
+			T value = (T) jsonArray.getObject(i, type);
+			list.add(value);
+		}
+		return list;
 	}
 }

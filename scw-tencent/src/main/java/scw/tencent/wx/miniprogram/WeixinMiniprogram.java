@@ -1,18 +1,8 @@
-package scw.tencent.wx;
+package scw.tencent.wx.miniprogram;
 
 import java.util.Collection;
 import java.util.EnumMap;
 
-import scw.tencent.wx.miniprogram.AddTemplateResponse;
-import scw.tencent.wx.miniprogram.CreateActivityIdResponse;
-import scw.tencent.wx.miniprogram.GetTemplateLibraryByIdResponse;
-import scw.tencent.wx.miniprogram.GetTemplateLibraryListResponse;
-import scw.tencent.wx.miniprogram.GetTemplateListResponse;
-import scw.tencent.wx.miniprogram.Session;
-import scw.tencent.wx.miniprogram.TargetState;
-import scw.tencent.wx.miniprogram.TemplateParameterName;
-import scw.tencent.wx.miniprogram.WeappTemplateMsg;
-import scw.tencent.wx.miniprogram.WeiXinMiniprogramUtils;
 import scw.tencent.wx.token.AccessTokenFactory;
 
 /**
