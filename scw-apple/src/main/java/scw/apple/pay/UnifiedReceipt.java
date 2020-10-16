@@ -2,6 +2,7 @@ package scw.apple.pay;
 
 import java.util.List;
 
+import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.json.JsonObjectWrapper;
 
@@ -42,7 +43,7 @@ public class UnifiedReceipt extends JsonObjectWrapper {
 	 * @return
 	 */
 	public List<LatestReceiptInfo> getLatestReceiptInfos() {
-		return LatestReceiptInfo.parse(getJsonArray("latest_receipt_info"));
+		return InApp.parse(getJsonArray("latest_receipt_info"), LatestReceiptInfo.class);
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class UnifiedReceipt extends JsonObjectWrapper {
 	 * @return
 	 */
 	public List<PendingRenewalInfo> getPendingRenewalInfos() {
-		return PendingRenewalInfo.parse(getJsonArray("pending_renewal_info"));
+		return JSONUtils.wrapper(getJsonArray("pending_renewal_info"), PendingRenewalInfo.class);
 	}
 
 	/**

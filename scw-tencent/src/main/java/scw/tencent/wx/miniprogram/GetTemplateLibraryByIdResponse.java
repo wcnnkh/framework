@@ -2,6 +2,7 @@ package scw.tencent.wx.miniprogram;
 
 import java.util.List;
 
+import scw.json.JSONUtils;
 import scw.json.JsonObject;
 
 public final class GetTemplateLibraryByIdResponse extends BaseResponse {
@@ -34,6 +35,6 @@ public final class GetTemplateLibraryByIdResponse extends BaseResponse {
 	 * @return
 	 */
 	public List<Keyword> getKeywordList() {
-		return Keyword.parse(getJsonArray("keyword_list"));
+		return JSONUtils.wrapper(getJsonArray("keyword_list"), Keyword.class);
 	}
 }
