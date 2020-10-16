@@ -80,7 +80,7 @@ public class Receipt extends JsonObjectWrapper {
 	 * @return
 	 */
 	public List<InApp> getInApps() {
-		return InApp.parseApps(getJsonArray("in_app"));
+		return InApp.parse(getJsonArray("in_app"), InApp.class);
 	}
 
 	/**

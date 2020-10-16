@@ -25,6 +25,7 @@ import scw.lang.NotSupportedException;
 import scw.lang.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.mapper.MapperUtils;
 import scw.net.MimeTypeUtils;
 import scw.net.ssl.SSLContexts;
 import scw.security.SignatureUtils;
@@ -36,37 +37,42 @@ import scw.xml.XMLUtils;
 @AopEnable(false)
 public class WeiXinPay {
 	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);
+
 	private static final String weixin_unifiedorder_url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 	private static final String REFUND_URL = "https://api.mch.weixin.qq.com/secapi/pay/refund";
 	private static final String CLOSEORDER_URL = "https://api.mch.weixin.qq.com/pay/closeorder";
 	private static final String ORDER_QUERY = "https://api.mch.weixin.qq.com/pay/orderquery";
+	private static final String SENDREDPACK = "https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack";
+	private static final String SENDGROUPREDPACK = "https://api.mch.weixin.qq.com/mmpaymkttransfers/sendgroupredpack";
+	private static final String GETHBINFO = "https://api.mch.weixin.qq.com/mmpaymkttransfers/gethbinfo";
 
 	private final String appId;
 	private final String mch_id;
 	private final String apiKey;
-	private final String sign_type;// 签名类型，默认为MD5，支持HMAC-SHA256和MD5。
-	private final String charsetName;
+	private SignType signType;
+	private String charsetName = Constants.UTF_8.name();
 	private String notifyUrl;
 	private String certTrustFile;
 	private SSLSocketFactory sslSocketFactory;
 
 	public WeiXinPay(String appId, String mch_id, String apiKey) {
-		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET_NAME, null);
+		this(appId, mch_id, apiKey, null);
 	}
 
 	public WeiXinPay(String appId, String mch_id, String apiKey, String certTrustFile) {
-		this(appId, mch_id, apiKey, "MD5", Constants.DEFAULT_CHARSET_NAME, certTrustFile);
-	}
-
-	public WeiXinPay(String appId, String mch_id, String apiKey, String sign_type, String charsetName,
-			String certTrustFile) {
 		this.appId = appId;
 		this.mch_id = mch_id;
 		this.apiKey = apiKey;
-		this.sign_type = sign_type.toUpperCase();
-		this.charsetName = charsetName;
 		this.certTrustFile = certTrustFile;
 		this.sslSocketFactory = initSSLSocketFactory(certTrustFile);
+	}
+
+	public final SignType getSignType() {
+		return signType;
+	}
+
+	public void setSignType(SignType signType) {
+		this.signType = signType;
 	}
 
 	public String getNotifyUrl() {
@@ -104,6 +110,14 @@ public class WeiXinPay {
 		return apiKey;
 	}
 
+	public final String getCharsetName() {
+		return charsetName;
+	}
+
+	public void setCharsetName(String charsetName) {
+		this.charsetName = charsetName;
+	}
+
 	/**
 	 * 检查签名
 	 * 
@@ -120,12 +134,21 @@ public class WeiXinPay {
 		cloneParams.remove("sign");
 		StringBuilder checkStr = SignatureUtils.formatSortParams(cloneParams);
 		checkStr.append("&key=").append(apiKey);
-		String mySign = toSign(checkStr.toString());
+
+		String mySign = toSign(getSignType(cloneParams), checkStr.toString());
 		boolean b = sign.equals(mySign);
 		if (!b) {
 			logger.error("签名检验失败：{}------>{}", JSONUtils.toJSONString(params), mySign);
 		}
 		return b;
+	}
+
+	private SignType getSignType(Map<String, ?> params) {
+		SignType signTypeToUse = signType;
+		if (params.containsKey("sign_type")) {
+			signTypeToUse = SignType.valueOf(params.get("sign_type").toString());
+		}
+		return signTypeToUse;
 	}
 
 	public SSLSocketFactory getSslSocketFactory() {
@@ -155,10 +178,22 @@ public class WeiXinPay {
 			params.putAll(parameterMap);
 		}
 
-		params.put("nonce_str", RandomUtils.getRandomStr(10));
-		params.put("appid", appId);
-		params.put("mch_id", mch_id);
-		params.put("sign_type", sign_type);
+		if (!params.containsKey("nonce_str")) {
+			params.put("nonce_str", RandomUtils.getRandomStr(10));
+		}
+
+		if (!params.containsKey("wxappid") && !params.containsKey("appid")) {
+			params.put("appid", appId);
+		}
+
+		if (!params.containsKey("mch_id")) {
+			params.put("mch_id", mch_id);
+		}
+
+		SignType signTypeToUse = getSignType(params);
+		if (signTypeToUse != null) {
+			params.put("sign_type", signType.getValue());
+		}
 
 		String[] keys = params.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
@@ -188,7 +223,7 @@ public class WeiXinPay {
 		}
 		sb.append("&key=").append(apiKey);
 		logger.debug("微信支付签名字符串：{}", sb);
-		String sign = toSign(sb.toString());
+		String sign = toSign(signTypeToUse, sb.toString());
 		Element c = document.createElement("sign");
 		c.setTextContent(sign);
 		element.appendChild(c);
@@ -209,15 +244,11 @@ public class WeiXinPay {
 		return new WeiXinPayResponse(jsonObject);
 	}
 
-	private String toSign(String str) {
-		if ("MD5".equalsIgnoreCase(sign_type)) {
+	protected String toSign(SignType signType, String str) {
+		if (signType == null || signType == SignType.MD5) {
 			return SignatureUtils.md5(str, charsetName).toUpperCase();
-		} else if ("HMAC-SHA256".equalsIgnoreCase(sign_type)) {
-			// TODO
-			throw new NotSupportedException(sign_type);
-		} else {
-			throw new NotSupportedException("不支持的签名方式:" + sign_type);
 		}
+		throw new NotSupportedException("不支持的签名方式:" + signType);
 	}
 
 	/**
@@ -336,5 +367,40 @@ public class WeiXinPay {
 		}
 		WeiXinPayResponse response = invoke(ORDER_QUERY, map, false);
 		return new OrderQueryResponse(response);
+	}
+
+	/**
+	 * 现金红包发放后会以公众号消息的形式触达用户，不同情况下触达消息的形式会有差别，相关规则如下：<br/>
+	 * 1.已关注公众号的用户，使用“防伪消息”触达；<br/>
+	 * 2.未关注公众号的用户，使用“模板消息”触达。
+	 * 
+	 * {@link https://pay.weixin.qq.com/wiki/doc/api/tools/cash_coupon.php?chapter=13_4&index=3}
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public SendredpackResponse sendredpack(SendredpackRequest request) {
+		Map<String, Object> parameter = MapperUtils.getMapper().getFieldValueMap(request);
+		WeiXinPayResponse response = invoke(SENDREDPACK, parameter, true);
+		return new SendredpackResponse(response);
+	}
+
+	/**
+	 * 裂变红包：一次可以发放一组红包。首先领取的用户为种子用户，种子用户领取一组红包当中的一个，并可以通过社交分享将剩下的红包给其他用户。裂变红包充分利用了人际传播的优势。
+	 * {@link https://pay.weixin.qq.com/wiki/doc/api/tools/cash_coupon.php?chapter=13_5&index=4}
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public SendredpackResponse sendgroupredpack(SendgroupredpackRequest request) {
+		Map<String, Object> parameter = MapperUtils.getMapper().getFieldValueMap(request);
+		WeiXinPayResponse response = invoke(SENDGROUPREDPACK, parameter, true);
+		return new SendredpackResponse(response);
+	}
+
+	public GethbinfoResponse gethbinfo(GethbinfoRequest request) {
+		Map<String, Object> parameter = MapperUtils.getMapper().getFieldValueMap(request);
+		WeiXinPayResponse response = invoke(GETHBINFO, parameter, true);
+		return new GethbinfoResponse(response);
 	}
 }

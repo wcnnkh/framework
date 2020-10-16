@@ -12,9 +12,6 @@ public class VerifyReceiptRequest implements Serializable {
 	private String receiptData;
 	private Boolean excludeOldTransactions;
 
-	public VerifyReceiptRequest() {
-	}
-
 	public VerifyReceiptRequest(String receiptData) {
 		this.receiptData = receiptData;
 	}

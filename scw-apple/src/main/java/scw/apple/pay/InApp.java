@@ -1,10 +1,10 @@
 package scw.apple.pay;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import scw.core.utils.CollectionUtils;
+import scw.json.JSONUtils;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.json.JsonObjectWrapper;
@@ -153,20 +153,12 @@ public class InApp extends JsonObjectWrapper {
 		return getString("web_order_line_item_id");
 	}
 
-	public static List<InApp> parseApps(JsonArray jsonArray) {
-		if (jsonArray == null) {
-			return null;
+	public static <T extends InApp> List<T> parse(JsonArray jsonArray, Class<T> type) {
+		List<T> list = JSONUtils.wrapper(jsonArray, type);
+		if (CollectionUtils.isEmpty(list)) {
+			return list;
 		}
-
-		if (jsonArray.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		List<InApp> apps = new ArrayList<InApp>();
-		for (int i = 0; i < jsonArray.size(); i++) {
-			apps.add(new InApp(jsonArray.getJsonObject(i)));
-		}
-		apps.sort(COMPARATOR);
-		return apps;
+		list.sort(InApp.COMPARATOR);
+		return list;
 	}
 }
