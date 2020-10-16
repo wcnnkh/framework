@@ -245,7 +245,7 @@ public class WeiXinPay {
 	}
 
 	protected String toSign(SignType signType, String str) {
-		if (signType == SignType.MD5) {
+		if (signType == null || signType == SignType.MD5) {
 			return SignatureUtils.md5(str, charsetName).toUpperCase();
 		}
 		throw new NotSupportedException("不支持的签名方式:" + signType);
