@@ -65,4 +65,21 @@ public final class JSONUtils {
 		}
 		return list;
 	}
+
+	public static <T extends JsonObjectWrapper> List<T> wrapper(JsonArray jsonArray, Class<? extends T> type) {
+		if (jsonArray == null) {
+			return null;
+		}
+
+		if (jsonArray.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		List<T> list = new ArrayList<T>(jsonArray.size());
+		for (int i = 0, len = jsonArray.size(); i < len; i++) {
+			T value = InstanceUtils.INSTANCE_FACTORY.getInstance(type, jsonArray.getJsonObject(i));
+			list.add(value);
+		}
+		return list;
+	}
 }
