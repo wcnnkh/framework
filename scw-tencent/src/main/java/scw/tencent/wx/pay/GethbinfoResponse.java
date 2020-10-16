@@ -1,10 +1,8 @@
 package scw.tencent.wx.pay;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import scw.json.JsonArray;
+import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.json.JsonObjectWrapper;
 
@@ -116,20 +114,7 @@ public class GethbinfoResponse extends WeiXinPayResponse {
 	 * @return
 	 */
 	public List<HbInfo> getHbList() {
-		JsonArray jsonArray = getJsonArray("hblist");
-		if (jsonArray == null) {
-			return null;
-		}
-
-		if (jsonArray.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		List<HbInfo> list = new ArrayList<HbInfo>();
-		for (int i = 0, len = jsonArray.size(); i < len; i++) {
-			list.add(new HbInfo(jsonArray.getJsonObject(i)));
-		}
-		return list;
+		return JSONUtils.wrapper(getJsonArray("hblist"), HbInfo.class);
 	}
 
 	public static class HbInfo extends JsonObjectWrapper {

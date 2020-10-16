@@ -83,7 +83,7 @@ public class Notification extends JsonObjectWrapper {
 	 * @return
 	 */
 	public List<LatestReceiptInfo> getLatestExpiredReceiptInfos() {
-		return LatestReceiptInfo.parse(getJsonArray("latest_expired_receipt_info"));
+		return InApp.parse(getJsonArray("latest_expired_receipt_info"), LatestReceiptInfo.class);
 	}
 
 	/**

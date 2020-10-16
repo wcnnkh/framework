@@ -1,10 +1,5 @@
 package scw.apple.pay;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import scw.json.JsonArray;
 import scw.json.JsonObject;
 import scw.json.JsonObjectWrapper;
 
@@ -103,21 +98,5 @@ public class PendingRenewalInfo extends JsonObjectWrapper {
 	 */
 	public String getProductId() {
 		return getString("product_id");
-	}
-
-	public static List<PendingRenewalInfo> parse(JsonArray jsonArray) {
-		if (jsonArray == null) {
-			return null;
-		}
-
-		if (jsonArray.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		List<PendingRenewalInfo> list = new ArrayList<PendingRenewalInfo>();
-		for (int i = 0; i < jsonArray.size(); i++) {
-			list.add(new PendingRenewalInfo(jsonArray.getJsonObject(i)));
-		}
-		return list;
 	}
 }
