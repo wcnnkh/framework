@@ -1,14 +1,19 @@
 package scw.util.attribute;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class SimpleAttributes<K, V> implements Attributes<K, V>, Serializable {
-	private static final long serialVersionUID = 1L;
+public class SimpleAttributes<K, V> implements Attributes<K, V> {
 	private Map<K, V> attributeMap;
+
+	public SimpleAttributes() {
+	}
+
+	public SimpleAttributes(SimpleAttributes<K, V> simpleAttributes) {
+		this.attributeMap = simpleAttributes.attributeMap;
+	}
 
 	public V getAttribute(K name) {
 		return attributeMap == null ? null : attributeMap.get(name);

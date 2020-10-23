@@ -5,7 +5,6 @@ import scw.sql.orm.EntityOperations;
 import scw.sql.orm.enums.OperationType;
 import scw.util.attribute.SimpleAttributes;
 
-@SuppressWarnings("serial")
 public final class GeneratorContext extends SimpleAttributes<Object, Object> {
 	private Column column;
 	private final EntityOperations entityOperations;
