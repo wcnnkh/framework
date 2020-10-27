@@ -1,6 +1,5 @@
 package scw.util.attribute;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -8,19 +7,18 @@ import java.util.Map;
 
 import scw.core.utils.ObjectUtils;
 
-public class SimpleAttributes<K, V> implements Attributes<K, V>, Serializable {
-	private static final long serialVersionUID = 1L;
+public class DefaultAttributes<K, V> implements Attributes<K, V> {
 	private Map<K, V> attributeMap;
 
-	public SimpleAttributes() {
+	public DefaultAttributes() {
 	}
 
-	public SimpleAttributes(Map<K, V> attributeMap) {
+	public DefaultAttributes(Map<K, V> attributeMap) {
 		this.attributeMap = attributeMap;
 	}
 
-	public SimpleAttributes(SimpleAttributes<K, V> simpleAttributes) {
-		this.attributeMap = simpleAttributes.attributeMap;
+	public DefaultAttributes(DefaultAttributes<K, V> attributes) {
+		this.attributeMap = attributes.attributeMap;
 	}
 
 	public V getAttribute(K name) {
@@ -74,8 +72,8 @@ public class SimpleAttributes<K, V> implements Attributes<K, V>, Serializable {
 			return true;
 		}
 
-		if (obj instanceof SimpleAttributes) {
-			return ObjectUtils.equals(attributeMap, ((SimpleAttributes) obj).attributeMap);
+		if (obj instanceof DefaultAttributes) {
+			return ObjectUtils.equals(attributeMap, ((DefaultAttributes) obj).attributeMap);
 		}
 
 		return false;

@@ -15,9 +15,9 @@ import scw.beans.annotation.AopEnable;
 public interface NoTypeSpecifiedSerializer {
 	void serialize(OutputStream out, Object data) throws IOException;
 
-	byte[] serialize(Object data) throws IOException;
+	byte[] serialize(Object data);
 	
 	<T> T deserialize(InputStream input) throws IOException, ClassNotFoundException;
 
-	<T> T deserialize(byte[] data) throws IOException, ClassNotFoundException;
+	<T> T deserialize(byte[] data) throws ClassNotFoundException;
 }

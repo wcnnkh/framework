@@ -5,12 +5,12 @@ import java.util.List;
 
 import scw.mapper.MapperUtils;
 
-public class ZookeeperTreePath implements Serializable {
+public class ZooKeeperTreePath implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String path;
-	private List<ZookeeperTreePath> childrens;
+	private List<ZooKeeperTreePath> childrens;
 
-	public ZookeeperTreePath(String path) {
+	public ZooKeeperTreePath(String path) {
 		this.path = path;
 	}
 
@@ -18,11 +18,11 @@ public class ZookeeperTreePath implements Serializable {
 		return path;
 	}
 
-	public List<ZookeeperTreePath> getChildrens() {
+	public List<ZooKeeperTreePath> getChildrens() {
 		return childrens;
 	}
 
-	public void setChildrens(List<ZookeeperTreePath> childrens) {
+	public void setChildrens(List<ZooKeeperTreePath> childrens) {
 		this.childrens = childrens;
 	}
 

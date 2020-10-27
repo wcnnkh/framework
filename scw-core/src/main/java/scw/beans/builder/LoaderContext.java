@@ -1,10 +1,10 @@
 package scw.beans.builder;
 
 import scw.beans.BeanFactory;
-import scw.util.attribute.SimpleAttributes;
+import scw.util.attribute.DefaultAttributes;
 import scw.value.property.PropertyFactory;
 
-public class LoaderContext extends SimpleAttributes<Object, Object> {
+public class LoaderContext extends DefaultAttributes<Object, Object> {
 	private final Class<?> targetClass;
 	private final BeanFactory beanFactory;
 	private final PropertyFactory propertyFactory;

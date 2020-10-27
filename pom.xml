@@ -143,6 +143,12 @@
 				<artifactId>scw-upload</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-registry</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -422,5 +428,6 @@
 		<module>scw-dubbo</module>
 		<module>scw-mq</module>
 		<module>scw-netflix</module>
+		<module>scw-registry</module>
 	</modules>
 </project>
