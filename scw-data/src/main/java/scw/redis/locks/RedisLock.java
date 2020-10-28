@@ -1,4 +1,4 @@
-package scw.locks;
+package scw.redis.locks;
 
 import java.util.Collections;
 

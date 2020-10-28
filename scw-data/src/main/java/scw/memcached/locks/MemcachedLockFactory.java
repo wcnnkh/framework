@@ -1,4 +1,4 @@
-package scw.locks;
+package scw.memcached.locks;
 
 import java.util.concurrent.TimeUnit;
 
