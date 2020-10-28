@@ -2,7 +2,7 @@ package scw.registry;
 
 import java.util.List;
 
-import scw.beans.annotation.AopEnable;
+import scw.aop.annotation.AopEnable;
 import scw.event.BasicEventRegister;
 
 /**

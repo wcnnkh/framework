@@ -29,7 +29,7 @@
 				<artifactId>scw-core</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-cloud</artifactId>
