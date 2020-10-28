@@ -1,11 +1,11 @@
 package scw.tencent.wx.token;
 
 import scw.core.parameter.annotation.ParameterName;
-import scw.data.locks.RedisLockFactory;
-import scw.data.redis.Redis;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
+import scw.locks.RedisLockFactory;
 import scw.oauth2.AccessToken;
+import scw.redis.Redis;
 import scw.tencent.wx.WeiXinUtils;
 
 public final class RedisAccessTokenFactory extends AbstractAccessTokenFactory {
