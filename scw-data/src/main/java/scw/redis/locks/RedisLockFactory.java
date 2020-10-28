@@ -1,10 +1,11 @@
-package scw.locks;
+package scw.redis.locks;
 
 import java.util.concurrent.TimeUnit;
 
 import scw.core.instance.annotation.Configuration;
 import scw.locks.AbstractLockFactory;
 import scw.locks.Lock;
+import scw.locks.LockFactory;
 import scw.redis.Redis;
 import scw.util.XUtils;
 

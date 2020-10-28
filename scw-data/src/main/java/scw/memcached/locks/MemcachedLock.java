@@ -1,4 +1,4 @@
-package scw.locks;
+package scw.memcached.locks;
 
 import scw.data.cas.CAS;
 import scw.locks.AbstractLock;
