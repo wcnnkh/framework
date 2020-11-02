@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import scw.event.EventRegistration;
-import scw.event.NamedEventDispatcher;
 import scw.event.support.EventMap;
-import scw.event.support.ValueEvent;
 import scw.io.ResourceUtils;
 import scw.io.event.ObservableResource;
 import scw.io.event.ObservableResourceEvent;
@@ -24,8 +22,8 @@ public class DynamicMap extends EventMap<String, Value> {
 		super(concurrent);
 	}
 
-	public DynamicMap(NamedEventDispatcher<ValueEvent<Value>> eventDispatcher, Map<String, Value> targetMap) {
-		super(eventDispatcher, targetMap);
+	public DynamicMap(Map<String, Value> targetMap, boolean concurrent) {
+		super(targetMap, concurrent);
 	}
 
 	public DynamicMapRegistration loadProperties(String resource, ValueCreator creator) {

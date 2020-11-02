@@ -16,16 +16,7 @@ public class ZooKeeperServiceRegistryInstance extends ServiceRegistryInstance {
 		super(name);
 		this.zooKeeper = zooKeeper;
 		this.path = path;
-		byte[] data = ZooKeeperUtils.getData(zooKeeper, path);
-		if (data != null && data.length != 0) {
-			ServiceRegistryInstanceData serviceRegistryInstanceData;
-			try {
-				serviceRegistryInstanceData = JavaSerializer.INSTANCE.deserialize(data);
-				setData(serviceRegistryInstanceData);
-			} catch (ClassNotFoundException e) {
-				throw new ServiceRegistryException(e);
-			}
-		}
+		refresh();
 	}
 
 	@Override
@@ -60,5 +51,19 @@ public class ZooKeeperServiceRegistryInstance extends ServiceRegistryInstance {
 		}
 
 		return false;
+	}
+	
+	@Override
+	public void refresh() throws ServiceRegistryException {
+		byte[] data = ZooKeeperUtils.getData(zooKeeper, path);
+		if (data != null && data.length != 0) {
+			ServiceRegistryInstanceData serviceRegistryInstanceData;
+			try {
+				serviceRegistryInstanceData = JavaSerializer.INSTANCE.deserialize(data);
+				setData(serviceRegistryInstanceData);
+			} catch (ClassNotFoundException e) {
+				throw new ServiceRegistryException(e);
+			}
+		}
 	}
 }

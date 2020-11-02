@@ -28,12 +28,40 @@
 			<version>2.1.9</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.netflix.eureka2/eureka-server -->
+		<!-- https://mvnrepository.com/artifact/com.netflix.eureka/eureka-client -->
 		<dependency>
-			<groupId>com.netflix.eureka2</groupId>
-			<artifactId>eureka-server</artifactId>
-			<version>2.0.0-DP4</version>
+			<groupId>com.netflix.eureka</groupId>
+			<artifactId>eureka-client</artifactId>
+			<version>1.10.7</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jersey</groupId>
+					<artifactId>jersey-client</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jersey</groupId>
+					<artifactId>jersey-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.sun.jersey.contribs</groupId>
+					<artifactId>jersey-apache-client4</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.netflix.eureka/eureka-core -->
+		<dependency>
+			<groupId>com.netflix.eureka</groupId>
+			<artifactId>eureka-core</artifactId>
+			<version>1.10.7</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>blitz4j</artifactId>
+					<groupId>com.netflix.blitz4j</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -1,16 +1,61 @@
 package scw.application;
 
 import scw.beans.BeanFactory;
+import scw.beans.event.BeanEvent;
+import scw.beans.event.BeanLifeCycleEvent;
+import scw.beans.event.BeanLifeCycleEvent.Step;
 import scw.beans.xml.XmlBeanFactory;
 import scw.core.utils.StringUtils;
+import scw.event.BasicEventDispatcher;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
+import scw.event.support.DefaultBasicEventDispatcher;
+import scw.lang.AlreadyExistsException;
 import scw.logger.LoggerFactory;
 
-public class CommonApplication extends XmlBeanFactory implements Application {
+public class CommonApplication extends XmlBeanFactory implements Application, EventListener<BeanEvent> {
 	public static final String DEFAULT_BEANS_PATH = "beans.xml";
-	private volatile boolean start = false;
+	private volatile boolean init = false;
+	private volatile boolean started = false;
+	private volatile BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer;
 
 	public CommonApplication(String xmlConfigPath) {
 		super(StringUtils.isEmpty(xmlConfigPath) ? DEFAULT_BEANS_PATH : xmlConfigPath);
+		addInternalSingleton(Application.class, this);
+		getBeanEventDispatcher().registerListener(this);
+	}
+
+	public void onEvent(BeanEvent event) {
+		if (event instanceof BeanLifeCycleEvent) {
+			BeanLifeCycleEvent beanLifeCycleEvent = (BeanLifeCycleEvent) event;
+			if (beanLifeCycleEvent.getStep() == Step.AFTER_INIT) {
+				Object source = event.getSource();
+				if (source != null && source instanceof ApplicationAware) {
+					((ApplicationAware) source).setApplication(this);
+				}
+			}
+		}
+	}
+
+	protected void initDefaultApplicationEventDispathcer() {
+		if (applicationEventDispathcer == null) {
+			synchronized (this) {
+				if (applicationEventDispathcer == null) {
+					applicationEventDispathcer = new DefaultBasicEventDispatcher<ApplicationEvent>(true);
+				}
+			}
+		}
+	}
+
+	public final BasicEventDispatcher<ApplicationEvent> getApplicationEventDispathcer() {
+		return applicationEventDispathcer;
+	}
+
+	public void setApplicationEventDispathcer(BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer) {
+		if (applicationEventDispathcer != null) {
+			throw new AlreadyExistsException("ApplicationEventDispathcer");
+		}
+		this.applicationEventDispathcer = applicationEventDispathcer;
 	}
 
 	public BeanFactory getBeanFactory() {
@@ -18,11 +63,11 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 	}
 
 	public final synchronized void init() {
-		if (start) {
+		if (init) {
 			throw new ApplicationException("已经启动了");
 		}
 
-		start = true;
+		init = true;
 
 		try {
 			super.init();
@@ -32,7 +77,10 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 				throw (RuntimeException) e;
 			}
 			throw new ApplicationException("Initialization exception", e);
+		} finally {
+			started = true;
 		}
+		publishEvent(new ApplicationAfterInitEvent(this));
 	}
 
 	protected void initInternal() throws Exception {
@@ -41,22 +89,23 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 	protected void destroyInternal() throws Exception {
 	}
 
-	public boolean isStart() {
-		return start;
+	public boolean isStarted() {
+		return started;
 	}
 
 	public final synchronized void destroy() {
-		if (!start) {
+		if (!init) {
 			return;
 		}
 
-		start = false;
 		try {
 			try {
 				destroyInternal();
 			} finally {
 				super.destroy();
 			}
+			init = false;
+			started = false;
 		} catch (Exception e) {
 			if (e instanceof RuntimeException) {
 				throw (RuntimeException) e;
@@ -65,5 +114,15 @@ public class CommonApplication extends XmlBeanFactory implements Application {
 		} finally {
 			LoggerFactory.getILoggerFactory().destroy();
 		}
+	}
+
+	public void publishEvent(ApplicationEvent event) {
+		initDefaultApplicationEventDispathcer();
+		applicationEventDispathcer.publishEvent(event);
+	}
+
+	public EventRegistration registerListener(EventListener<ApplicationEvent> eventListener) {
+		initDefaultApplicationEventDispathcer();
+		return applicationEventDispathcer.registerListener(eventListener);
 	}
 }

@@ -58,4 +58,10 @@ public abstract class ServiceRegistryInstance implements Closeable, Flushable {
 	 * 将修改内容推送
 	 */
 	public abstract void flush() throws ServiceRegistryException;
+	
+	/**
+	 * 刷新内容
+	 * @throws ServiceRegistryException
+	 */
+	public abstract void refresh() throws ServiceRegistryException;
 }

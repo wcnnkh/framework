@@ -17,5 +17,5 @@ public interface BeanFactory extends InstanceFactory {
 	 * 
 	 * @return
 	 */
-	BasicEventDispatcher<BeanEvent> getEventDispatcher();
+	BasicEventDispatcher<BeanEvent> getBeanEventDispatcher();
 }

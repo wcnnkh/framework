@@ -59,14 +59,23 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 	private List<BeanFactoryLifeCycle> beanFactoryLifeCycles = new ArrayList<BeanFactoryLifeCycle>();
 	private List<String> filterNameList = new ArrayList<String>();
 	private List<BeanBuilderLoader> beanBuilderLoaders = new ArrayList<BeanBuilderLoader>();
-	private final BasicEventDispatcher<BeanEvent> eventDispatcher = new DefaultBasicEventDispatcher<BeanEvent>(true);
+	private final BasicEventDispatcher<BeanEvent> beanEventDispatcher;
 
-	public DefaultBeanFactory() {
+	public DefaultBeanFactory(){
+		this(new DefaultBasicEventDispatcher<BeanEvent>(true));
+	}
+	
+	public DefaultBeanFactory(BasicEventDispatcher<BeanEvent> beanEventDispatcher) {
+		this.beanEventDispatcher = beanEventDispatcher;
 		propertyFactory.addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
 		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
 				NoArgsInstanceFactory.class.getName());
 		addInternalSingleton(PropertyFactory.class, propertyFactory);
-		eventDispatcher.registerListener(new DependenceRefreshEventListener());
+		beanEventDispatcher.registerListener(new DependenceRefreshEventListener());
+	}
+
+	public final BasicEventDispatcher<BeanEvent> getBeanEventDispatcher() {
+		return beanEventDispatcher;
 	}
 
 	protected BeanDefinition getDefinitionByCache(String name) {
@@ -651,10 +660,6 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 			}
 		}
 		return list;
-	}
-
-	public final BasicEventDispatcher<BeanEvent> getEventDispatcher() {
-		return eventDispatcher;
 	}
 
 	private final class DependenceRefreshEventListener implements scw.event.EventListener<BeanEvent> {

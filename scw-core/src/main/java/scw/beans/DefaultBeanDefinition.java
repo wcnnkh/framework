@@ -46,7 +46,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 	}
 
 	public void dependence(Object instance) throws Exception {
-		beanFactory.getEventDispatcher().publishEvent(
+		beanFactory.getBeanEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
@@ -55,12 +55,12 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 			ioc.getDependence().process(this, instance, beanFactory, propertyFactory);
 			BeanUtils.aware(instance, beanFactory, this);
 		}
-		beanFactory.getEventDispatcher().publishEvent(
+		beanFactory.getBeanEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DEPENDENCE));
 	}
 
 	public void init(Object instance) throws Exception {
-		beanFactory.getEventDispatcher()
+		beanFactory.getBeanEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_INIT));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
@@ -69,12 +69,12 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 			ioc.getInit().process(this, instance, beanFactory, propertyFactory);
 			BeanUtils.init(instance);
 		}
-		beanFactory.getEventDispatcher()
+		beanFactory.getBeanEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_INIT));
 	}
 
 	public void destroy(Object instance) throws Exception {
-		beanFactory.getEventDispatcher().publishEvent(
+		beanFactory.getBeanEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
 			BeanUtils.destroy(instance);
@@ -83,7 +83,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 				ioc.getDestroy().process(this, instance, beanFactory, propertyFactory);
 			}
 		}
-		beanFactory.getEventDispatcher()
+		beanFactory.getBeanEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DESTROY));
 	}
 

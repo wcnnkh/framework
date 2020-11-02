@@ -13,7 +13,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.logger.SplitLineAppend;
 
-public class MainApplication extends CommonApplication implements Application, Runnable {
+public class MainApplication extends CommonApplication implements Application {
 	private final Logger logger;
 	private final Class<?> mainClass;
 	private final MainArgs args;
@@ -57,7 +57,7 @@ public class MainApplication extends CommonApplication implements Application, R
 	}
 
 	@Override
-	protected void initInternal() throws Exception{
+	protected void initInternal() throws Exception {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
@@ -72,31 +72,34 @@ public class MainApplication extends CommonApplication implements Application, R
 	}
 
 	@Override
-	protected void destroyInternal() throws Exception{
+	protected void destroyInternal() throws Exception {
 		logger.info(new SplitLineAppend("destroy"));
 		super.destroyInternal();
 	}
 
-	public void run() {
-		init();
-		while (true) {
-			try {
-				Thread.sleep(Long.MAX_VALUE);
-			} catch (InterruptedException e) {
-				break;
-			}
-		}
-	}
-
-	public static void run(MainApplication application) {
-		Thread run = new Thread(application);
-		run.setContextClassLoader(application.getMainClass().getClassLoader());
-		run.setName(application.getMainClass().getName());
+	public void start() {
+		Thread run = new MainApplicationThread();
+		run.setContextClassLoader(mainClass.getClassLoader());
+		run.setName(mainClass.getName());
 		run.setDaemon(false);
 		run.start();
 	}
 
-	public static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, String[] args) {
+	private class MainApplicationThread extends Thread {
+		@Override
+		public void run() {
+			init();
+			while (true) {
+				try {
+					Thread.sleep(Long.MAX_VALUE);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
+		}
+	}
+
+	protected static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, String[] args) {
 		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class,
 				GlobalPropertyFactory.getInstance());
 		if (!CollectionUtils.isEmpty(impls)) {
@@ -117,13 +120,23 @@ public class MainApplication extends CommonApplication implements Application, R
 		return new MainApplication(mainClass, args);
 	}
 
-	public static void run(Class<?> mainClass, String[] args) {
+	public static MainApplication getMainApplication(Class<?> mainClass, String[] args) {
 		MainApplication application = getAutoMainApplicationImpl(mainClass, args);
 		application.getLogger().info("using application: {}", application.getClass().getName());
-		run(application);
+		return application;
 	}
 
-	public static void run(Class<?> mainClass) {
-		run(mainClass, null);
+	public final static MainApplication getMainApplication(Class<?> mainClass) {
+		return getMainApplication(mainClass, null);
+	}
+
+	public static final MainApplication run(Class<?> mainClass, String[] args) {
+		MainApplication application = getMainApplication(mainClass, args);
+		application.start();
+		return application;
+	}
+
+	public static final MainApplication run(Class<?> mainClass) {
+		return run(mainClass, null);
 	}
 }
