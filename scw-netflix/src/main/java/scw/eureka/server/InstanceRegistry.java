@@ -110,6 +110,9 @@ public class InstanceRegistry extends PeerAwareInstanceRegistryImpl implements A
 	}
 
 	private void publishEvent(ApplicationEvent applicationEvent) {
+		if(application == null){
+			return ;
+		}
 		this.application.publishEvent(applicationEvent);
 	}
 

@@ -32,7 +32,7 @@ import scw.core.Assert;
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
  */
-public class ListenableFutureCallbackRegistry<T> {
+public class ListenableFutureCallbackRegistry<T>{
 
 	private final Queue<SuccessCallback<? super T>> successCallbacks = new LinkedList<SuccessCallback<? super T>>();
 
@@ -43,6 +43,16 @@ public class ListenableFutureCallbackRegistry<T> {
 	private Object result = null;
 
 	private final Object mutex = new Object();
+	
+	public void addCallback(SuccessCallback<? super T> successCallback, FailureCallback failureCallback) {
+		if(successCallback != null){
+			addSuccessCallback(successCallback);
+		}
+		
+		if(failureCallback != null){
+			addFailureCallback(failureCallback);
+		}
+	}
 
 	/**
 	 * Add the given callback to this registry.

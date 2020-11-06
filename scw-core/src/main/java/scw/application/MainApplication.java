@@ -12,6 +12,7 @@ import scw.core.utils.CollectionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.logger.SplitLineAppend;
+import scw.util.concurrent.ListenableFuture;
 
 public class MainApplication extends CommonApplication implements Application {
 	private final Logger logger;
@@ -77,28 +78,6 @@ public class MainApplication extends CommonApplication implements Application {
 		super.destroyInternal();
 	}
 
-	public void start() {
-		Thread run = new MainApplicationThread();
-		run.setContextClassLoader(mainClass.getClassLoader());
-		run.setName(mainClass.getName());
-		run.setDaemon(false);
-		run.start();
-	}
-
-	private class MainApplicationThread extends Thread {
-		@Override
-		public void run() {
-			init();
-			while (true) {
-				try {
-					Thread.sleep(Long.MAX_VALUE);
-				} catch (InterruptedException e) {
-					break;
-				}
-			}
-		}
-	}
-
 	protected static MainApplication getAutoMainApplicationImpl(Class<?> mainClass, String[] args) {
 		Collection<Class<MainApplication>> impls = InstanceUtils.getConfigurationClassList(MainApplication.class,
 				GlobalPropertyFactory.getInstance());
@@ -120,23 +99,19 @@ public class MainApplication extends CommonApplication implements Application {
 		return new MainApplication(mainClass, args);
 	}
 
-	public static MainApplication getMainApplication(Class<?> mainClass, String[] args) {
+	public static final ListenableFuture<MainApplication> run(Class<?> mainClass, String[] args) {
 		MainApplication application = getAutoMainApplicationImpl(mainClass, args);
 		application.getLogger().info("using application: {}", application.getClass().getName());
-		return application;
+		ApplicationBootstrap<MainApplication> bootstrap = new ApplicationBootstrap<MainApplication>(application);
+		Thread run = new Thread(bootstrap);
+		run.setContextClassLoader(mainClass.getClassLoader());
+		run.setName(mainClass.getName());
+		run.setDaemon(false);
+		run.start();
+		return bootstrap;
 	}
 
-	public final static MainApplication getMainApplication(Class<?> mainClass) {
-		return getMainApplication(mainClass, null);
-	}
-
-	public static final MainApplication run(Class<?> mainClass, String[] args) {
-		MainApplication application = getMainApplication(mainClass, args);
-		application.start();
-		return application;
-	}
-
-	public static final MainApplication run(Class<?> mainClass) {
+	public static final ListenableFuture<MainApplication> run(Class<?> mainClass) {
 		return run(mainClass, null);
 	}
 }

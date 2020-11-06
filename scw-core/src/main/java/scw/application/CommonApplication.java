@@ -15,7 +15,6 @@ import scw.logger.LoggerFactory;
 
 public class CommonApplication extends XmlBeanFactory implements Application, EventListener<BeanEvent> {
 	public static final String DEFAULT_BEANS_PATH = "beans.xml";
-	private volatile boolean init = false;
 	private volatile boolean started = false;
 	private volatile BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer;
 
@@ -63,11 +62,9 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 	}
 
 	public final synchronized void init() {
-		if (init) {
+		if (started) {
 			throw new ApplicationException("已经启动了");
 		}
-
-		init = true;
 
 		try {
 			super.init();
@@ -80,7 +77,6 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 		} finally {
 			started = true;
 		}
-		publishEvent(new ApplicationAfterInitEvent(this));
 	}
 
 	protected void initInternal() throws Exception {
@@ -89,12 +85,8 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 	protected void destroyInternal() throws Exception {
 	}
 
-	public boolean isStarted() {
-		return started;
-	}
-
 	public final synchronized void destroy() {
-		if (!init) {
+		if (!started) {
 			return;
 		}
 
@@ -104,7 +96,6 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 			} finally {
 				super.destroy();
 			}
-			init = false;
 			started = false;
 		} catch (Exception e) {
 			if (e instanceof RuntimeException) {

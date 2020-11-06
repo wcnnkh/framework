@@ -1,7 +1,5 @@
 package scw.eureka.server;
 
-import javax.servlet.ServletContext;
-
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.DataCenterInfo;
 import com.netflix.appinfo.InstanceInfo;
@@ -18,10 +16,12 @@ import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.util.EurekaMonitors;
 import com.thoughtworks.xstream.XStream;
 
+import scw.beans.Destroy;
+import scw.beans.Init;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public class EurekaServerBootstrap {
+public class EurekaServerBootstrap implements Init, Destroy {
 	private static final Logger log = LoggerFactory.getLogger(EurekaServerBootstrap.class);
 
 	protected EurekaServerConfig eurekaServerConfig;
@@ -46,29 +46,25 @@ public class EurekaServerBootstrap {
 		this.serverContext = serverContext;
 	}
 
-	public void contextInitialized(ServletContext context) {
+	@Override
+	public void init() throws Exception {
 		try {
 			initEurekaEnvironment();
 			initEurekaServerContext();
-
-			context.setAttribute(EurekaServerContext.class.getName(), this.serverContext);
-		}
-		catch (Throwable e) {
+		} catch (Throwable e) {
 			log.error("Cannot bootstrap eureka server :", e);
 			throw new RuntimeException("Cannot bootstrap eureka server :", e);
 		}
 	}
 
-	public void contextDestroyed(ServletContext context) {
+	@Override
+	public void destroy() throws Exception {
 		try {
 			log.info("Shutting down Eureka Server..");
-			context.removeAttribute(EurekaServerContext.class.getName());
-
 			destroyEurekaServerContext();
 			destroyEurekaEnvironment();
 
-		}
-		catch (Throwable e) {
+		} catch (Throwable e) {
 			log.error("Error shutting down eureka", e);
 		}
 		log.info("Eureka Service is now shutdown...");
@@ -76,7 +72,6 @@ public class EurekaServerBootstrap {
 
 	protected void initEurekaEnvironment() throws Exception {
 		log.info("Setting the eureka configuration..");
-
 	}
 
 	protected void initEurekaServerContext() throws Exception {
@@ -104,8 +99,11 @@ public class EurekaServerBootstrap {
 
 	/**
 	 * Server context shutdown hook. Override for custom logic
-	 * @throws Exception - calling {@link AwsBinder#shutdown()} or
-	 * {@link EurekaServerContext#shutdown()} may result in an exception
+	 * 
+	 * @throws Exception
+	 *             - calling {@link AwsBinder#shutdown()} or
+	 *             {@link EurekaServerContext#shutdown()} may result in an
+	 *             exception
 	 */
 	protected void destroyEurekaServerContext() throws Exception {
 		EurekaMonitors.shutdown();
@@ -119,7 +117,9 @@ public class EurekaServerBootstrap {
 
 	/**
 	 * Users can override to clean up the environment themselves.
-	 * @throws Exception - shutting down Eureka servers may result in an exception
+	 * 
+	 * @throws Exception
+	 *             - shutting down Eureka servers may result in an exception
 	 */
 	protected void destroyEurekaEnvironment() throws Exception {
 	}
