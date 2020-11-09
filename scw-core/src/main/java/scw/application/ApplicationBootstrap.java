@@ -1,11 +1,11 @@
 package scw.application;
 
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.util.concurrent.SettableListenableFuture;
 
 public class ApplicationBootstrap<T extends Application> extends SettableListenableFuture<T> implements Runnable {
-	private static Logger logger = LoggerUtils.getLogger(ApplicationBootstrap.class);
+	private static Logger logger = LoggerFactory.getLogger(ApplicationBootstrap.class);
 	private final T application;
 
 	public ApplicationBootstrap(T application) {
@@ -24,7 +24,7 @@ public class ApplicationBootstrap<T extends Application> extends SettableListena
 				}
 			}
 		} catch (Throwable e) {
-			logger.error(e);
+			logger.error(e, "Running error");
 			setException(e);
 		}
 	}

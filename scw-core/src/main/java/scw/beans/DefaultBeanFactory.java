@@ -60,18 +60,22 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 	private List<String> filterNameList = new ArrayList<String>();
 	private List<BeanBuilderLoader> beanBuilderLoaders = new ArrayList<BeanBuilderLoader>();
 	private final BasicEventDispatcher<BeanEvent> beanEventDispatcher;
+	private volatile boolean init = false;
 
-	public DefaultBeanFactory(){
+	public DefaultBeanFactory() {
 		this(new DefaultBasicEventDispatcher<BeanEvent>(true));
 	}
-	
+
 	public DefaultBeanFactory(BasicEventDispatcher<BeanEvent> beanEventDispatcher) {
 		this.beanEventDispatcher = beanEventDispatcher;
+		afterStructure();
+	}
+	
+	protected void afterStructure(){
 		propertyFactory.addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
 		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
 				NoArgsInstanceFactory.class.getName());
 		addInternalSingleton(PropertyFactory.class, propertyFactory);
-		beanEventDispatcher.registerListener(new DependenceRefreshEventListener());
 	}
 
 	public final BasicEventDispatcher<BeanEvent> getBeanEventDispatcher() {
@@ -292,7 +296,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 		try {
 			obj = definition.create();
 			init(t, definition, obj);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new BeansException(definition.getId(), e);
 		}
 		return obj;
@@ -349,7 +353,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 		try {
 			obj = definition.create(params);
 			init(t, definition, obj);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new BeansException(definition.getId(), e);
 		}
 		return obj;
@@ -393,7 +397,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 		try {
 			obj = definition.create(parameterTypes, params);
 			init(t, definition, obj);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new BeansException(definition.getId(), e);
 		}
 		return obj;
@@ -483,17 +487,21 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 		return aop;
 	}
 
-	public void init() throws Exception {
+	public synchronized void init() throws Exception {
+		if (init) {
+			throw new BeansException("Already initialized");
+		}
+
+		beanEventDispatcher.registerListener(new DependenceRefreshEventListener());
+
 		for (Class<MethodInterceptor> filter : InstanceUtils.getConfigurationClassList(MethodInterceptor.class,
 				propertyFactory)) {
 			filterNameList.add(filter.getName());
 		}
-		filterNameList = Arrays.asList(filterNameList.toArray(new String[0]));
 
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
 		beanBuilderLoaders.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, propertyFactory));
-		beanBuilderLoaders = Arrays.asList(beanBuilderLoaders.toArray(new BeanBuilderLoader[0]));
 
 		propertyFactory.addLastBasePropertyFactory(
 				InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, propertyFactory));
@@ -514,18 +522,30 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 			}
 		}
 
+		afterInit();
+		init = true;
+	}
+
+	protected void afterInit() throws Exception {
 		for (BeanFactoryLifeCycle beanFactoryLifeCycle : InstanceUtils.getConfigurationList(BeanFactoryLifeCycle.class,
 				this, propertyFactory)) {
 			addBeanFactoryLifeCycle(beanFactoryLifeCycle);
 		}
-		beanFactoryLifeCycles = Arrays.asList(beanFactoryLifeCycles.toArray(new BeanFactoryLifeCycle[0]));
 	}
 
-	public void destroy() throws Exception {
+	protected void beforDestroy() throws Exception {
 		ListIterator<BeanFactoryLifeCycle> iterator = beanFactoryLifeCycles.listIterator(beanFactoryLifeCycles.size());
 		while (iterator.hasPrevious()) {
 			beanFactoryLifeCycleDestroy(iterator.previous());
 		}
+	}
+
+	public synchronized void destroy() throws Exception {
+		if (!init) {
+			throw new BeansException("Not yet initialized");
+		}
+
+		beforDestroy();
 
 		synchronized (singletonMap) {
 			List<String> beanKeyList = new ArrayList<String>();
@@ -555,6 +575,16 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 				ioc.getDestroy().process(null, null, this, propertyFactory);
 			}
 		}
+
+		singletonMap.clear();
+		beanMap.clear();
+		nameMappingMap.clear();
+		propertyFactory.clear();
+		beanFactoryLifeCycles.clear();
+		filterNameList.clear();
+		beanBuilderLoaders.clear();
+		afterStructure();
+		init = false;
 	}
 
 	protected final class InternalBeanDefinition implements BeanDefinition {

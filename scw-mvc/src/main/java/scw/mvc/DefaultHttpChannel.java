@@ -153,7 +153,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 								beanMap.put(beanDefinition.getId(), bean);
 								beanDefinition.dependence(bean);
 								beanDefinition.init(bean);
-							} catch (Exception e) {
+							} catch (Throwable e) {
 								throw new BeansException(beanDefinition.getId(), e);
 							}
 						}
@@ -164,7 +164,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 								getParameters(parameterDescriptors));
 						beanDefinition.dependence(bean);
 						beanDefinition.init(bean);
-					} catch (Exception e) {
+					} catch (Throwable e) {
 						throw new BeansException(beanDefinition.getId(), e);
 					}
 				}

@@ -2,16 +2,12 @@ package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
 import scw.aop.MethodInterceptor;
-import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInterceptors;
-import scw.aop.MethodInvoker;
 import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
 import scw.beans.annotation.Bean;
@@ -27,8 +23,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
 
-public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
-		implements BeanDefinition, Cloneable, MethodInterceptor {
+public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
@@ -46,6 +41,10 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 	}
 
 	public void dependence(Object instance) throws Exception {
+		scw.beans.RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(instance);
+		if (runtimeBean != null && !runtimeBean._dependence()) {
+			return;
+		}
 		beanFactory.getBeanEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
@@ -60,6 +59,10 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 	}
 
 	public void init(Object instance) throws Exception {
+		scw.beans.RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(instance);
+		if (runtimeBean != null && !runtimeBean._init()) {
+			return;
+		}
 		beanFactory.getBeanEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_INIT));
 		if (instance != null) {
@@ -74,6 +77,11 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 	}
 
 	public void destroy(Object instance) throws Exception {
+		scw.beans.RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(instance);
+		if (runtimeBean != null && !runtimeBean._destroy()) {
+			return;
+		}
+
 		beanFactory.getBeanEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
@@ -103,17 +111,6 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 		}
 
 		return Arrays.asList(bean.names());
-	}
-
-	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain chain) throws Throwable {
-		if (ArrayUtils.isEmpty(args)) {
-			Method method = invoker.getMethod();
-			if ((Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers()))
-					&& method.getName().equals(BeanDefinitionAccessor.METHOD_NAME)) {
-				return this;
-			}
-		}
-		return chain.intercept(invoker, args);
 	}
 
 	protected boolean isProxy() {
@@ -149,13 +146,13 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
 		Class<?>[] interfacesToUse = interfaces;
 		if (ArrayUtils.isEmpty(interfacesToUse)) {
-			interfacesToUse = BeanDefinitionAccessor.PROXY_INTERFACES;
+			interfacesToUse = scw.beans.RuntimeBean.PROXY_INTERFACES;
 		} else {
-			interfacesToUse = ArrayUtils.merge(interfacesToUse, BeanDefinitionAccessor.PROXY_INTERFACES);
+			interfacesToUse = ArrayUtils.merge(interfacesToUse, scw.beans.RuntimeBean.PROXY_INTERFACES);
 		}
 
 		MethodInterceptors methodInterceptors = new MethodInterceptors();
-		methodInterceptors.addLast(this);
+		methodInterceptors.addLast(new RuntimeBean.RuntimeBeanMethodInterceptor(this));
 		methodInterceptors.addLast(getFilters());
 		return beanFactory.getAop().getProxy(targetClass, interfacesToUse, methodInterceptors);
 	}
@@ -163,13 +160,13 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass, Class<?>[] interfaces) {
 		Class<?>[] interfacesToUse = interfaces;
 		if (ArrayUtils.isEmpty(interfacesToUse)) {
-			interfacesToUse = BeanDefinitionAccessor.PROXY_INTERFACES;
+			interfacesToUse = RuntimeBean.PROXY_INTERFACES;
 		} else {
-			interfacesToUse = ArrayUtils.merge(interfacesToUse, BeanDefinitionAccessor.PROXY_INTERFACES);
+			interfacesToUse = ArrayUtils.merge(interfacesToUse, RuntimeBean.PROXY_INTERFACES);
 		}
 
 		MethodInterceptors methodInterceptors = new MethodInterceptors();
-		methodInterceptors.addLast(this);
+		methodInterceptors.addLast(new RuntimeBean.RuntimeBeanMethodInterceptor(this));
 		methodInterceptors.addLast(getFilters());
 		return beanFactory.getAop().getProxyInstance(targetClass, instance, interfaces, methodInterceptors);
 	}

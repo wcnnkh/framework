@@ -5,6 +5,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +25,7 @@ import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.JavaVersion;
+import scw.util.MultiEnumeration;
 import scw.value.ValueFactory;
 
 @SuppressWarnings("rawtypes")
@@ -55,77 +60,36 @@ public final class InstanceUtils {
 		}
 	}
 
-	public static <T> T loadService(Class<? extends T> clazz, String... names) {
-		return loadService(clazz, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(), names);
+	public static <T> T loadService(Class<? extends T> clazz, String... defaultNames) {
+		return loadService(clazz, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(), defaultNames);
 	}
 
-	public static <T> List<T> loadAllService(Class<? extends T> clazz, String... names) {
-		return loadAllService(clazz, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(), names);
+	public static <T> List<T> loadAllService(Class<? extends T> clazz, String... defaultNames) {
+		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(),
+				defaultNames);
+		return Collections.list(CollectionUtils.toEnumeration(serviceLoader.iterator()));
 	}
 
-	/**
-	 * 使用java spi机制
-	 * 
-	 * @param clazz
-	 * @param names
-	 * @return
-	 */
 	public static <T> T loadService(Class<? extends T> clazz, NoArgsInstanceFactory instanceFactory,
-			ValueFactory<String> propertyFactory, String... names) {
-		String[] configNames = propertyFactory.getObject(clazz.getName(), String[].class);
-		if (!ArrayUtils.isEmpty(configNames)) {
-			for (String name : configNames) {
-				if (instanceFactory.isInstance(name)) {
-					return instanceFactory.getInstance(name);
-				}
-			}
+			ValueFactory<String> propertyFactory, String... defaultNames) {
+		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, instanceFactory, propertyFactory, defaultNames);
+		Iterator<T> iterator = serviceLoader.iterator();
+		while (iterator.hasNext()) {
+			return iterator.next();
 		}
+		return null;
+	}
 
-		T service = null;
-		ServiceLoader<? extends T> serviceLoader = CompatibleUtils.getSpi().load(clazz);
-		for (T s : serviceLoader) {
-			service = s;
-			break;
-		}
-
-		if (service == null && !ArrayUtils.isEmpty(names)) {
-			for (String name : names) {
-				if (instanceFactory.isInstance(name)) {
-					service = instanceFactory.getInstance(name);
-					break;
-				}
-			}
-		}
-		return service;
+	public static <S> ServiceLoader<S> getServiceLoader(Class<? extends S> clazz, NoArgsInstanceFactory instanceFactory,
+			ValueFactory<String> propertyFactory, String... defaultNames) {
+		return new ConfigurableServiceLoader<S>(CompatibleUtils.getSpi().load(clazz), clazz, instanceFactory,
+				propertyFactory, defaultNames);
 	}
 
 	public static <T> List<T> loadAllService(Class<? extends T> clazz, NoArgsInstanceFactory instanceFactory,
-			ValueFactory<String> propertyFactory, String... names) {
-		List<T> list = new ArrayList<T>();
-		String[] configNames = propertyFactory.getObject(clazz.getName(), String[].class);
-		if (!ArrayUtils.isEmpty(configNames)) {
-			for (String name : configNames) {
-				if (instanceFactory.isInstance(name)) {
-					T t = instanceFactory.getInstance(name);
-					list.add(t);
-				}
-			}
-		}
-
-		ServiceLoader<? extends T> serviceLoader = CompatibleUtils.getSpi().load(clazz);
-		for (T s : serviceLoader) {
-			list.add(s);
-		}
-
-		if (!ArrayUtils.isEmpty(names)) {
-			for (String name : names) {
-				if (instanceFactory.isInstance(name)) {
-					T t = instanceFactory.getInstance(name);
-					list.add(t);
-				}
-			}
-		}
-		return list;
+			ValueFactory<String> propertyFactory, String... defaultNames) {
+		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, instanceFactory, propertyFactory, defaultNames);
+		return Collections.list(CollectionUtils.toEnumeration(serviceLoader.iterator()));
 	}
 
 	/**
@@ -249,5 +213,55 @@ public final class InstanceUtils {
 	public static boolean isSupport(Class<?> clazz) {
 		return !ClassUtils.isPrimitiveOrWrapper(clazz) && JavaVersion.isSupported(clazz)
 				&& ReflectionUtils.isPresent(clazz);
+	}
+
+	private static class ConfigurableServiceLoader<T> implements ServiceLoader<T> {
+		private Class<? extends T> clazz;
+		private NoArgsInstanceFactory instanceFactory;
+		private ValueFactory<String> propertyFactory;
+		private String[] configNames;
+		private String[] defaultNames;
+		private ServiceLoader<? extends T> parentServiceLoader;
+
+		public ConfigurableServiceLoader(ServiceLoader<? extends T> serviceLoader, Class<? extends T> clazz,
+				NoArgsInstanceFactory instanceFactory, ValueFactory<String> propertyFactory, String... defaultNames) {
+			this.clazz = clazz;
+			this.propertyFactory = propertyFactory;
+			this.instanceFactory = instanceFactory;
+			this.defaultNames = defaultNames;
+			this.parentServiceLoader = serviceLoader;
+
+			this.configNames = propertyFactory.getObject(clazz.getName(), String[].class);
+		}
+
+		public void reload() {
+			if (parentServiceLoader != null) {
+				parentServiceLoader.reload();
+			}
+			this.configNames = propertyFactory.getObject(clazz.getName(), String[].class);
+		}
+
+		public Iterator<T> iterator() {
+			List<Enumeration<T>> enumerations = new LinkedList<Enumeration<T>>();
+			if (!ArrayUtils.isEmpty(configNames)) {
+				InstanceIterable<T> instanceIterable = new InstanceIterable<T>(instanceFactory,
+						Arrays.asList(configNames));
+				enumerations.add(CollectionUtils.toEnumeration(instanceIterable.iterator()));
+			}
+
+			if (parentServiceLoader != null) {
+				enumerations.add(CollectionUtils.toEnumeration(parentServiceLoader.iterator()));
+			}
+
+			if (!ArrayUtils.isEmpty(defaultNames)) {
+				InstanceIterable<T> instanceIterable = new InstanceIterable<T>(instanceFactory,
+						Arrays.asList(defaultNames));
+				enumerations.add(CollectionUtils.toEnumeration(instanceIterable.iterator()));
+			}
+
+			Enumeration<T> enumeration = new MultiEnumeration<T>(enumerations);
+			return CollectionUtils.toIterator(enumeration);
+		}
+
 	}
 }

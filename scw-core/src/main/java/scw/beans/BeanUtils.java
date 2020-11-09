@@ -76,20 +76,13 @@ public final class BeanUtils {
 		}
 	}
 
-	/**
-	 * 获取实例中的BeanDefinition定义
-	 * 
-	 * @param instance
-	 * @return
-	 * @see BeanDefinitionAccessor#getBeanDefinition()
-	 */
-	public static BeanDefinition getBeanDefinition(Object instance) {
+	public static RuntimeBean getRuntimeBean(Object instance) {
 		if (instance == null) {
 			return null;
 		}
 
-		if (instance instanceof BeanDefinitionAccessor) {
-			return ((BeanDefinitionAccessor) instance).getBeanDefinition();
+		if (instance instanceof RuntimeBean) {
+			return ((RuntimeBean) instance);
 		}
 
 		return null;

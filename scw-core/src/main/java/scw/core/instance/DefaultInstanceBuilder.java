@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import scw.compatible.ServiceLoader;
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.reflect.ReflectionUtils;
@@ -16,8 +17,10 @@ public class DefaultInstanceBuilder<T> extends DefaultParameterFactory implement
 	private Class<? extends T> targetClass;
 	private NoArgsInstanceFactory instanceFactory;
 	private PropertyFactory propertyFactory;
+	private ServiceLoader<T> serviceLoader;
 
-	public DefaultInstanceBuilder(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory, Class<? extends T> targetClass) {
+	public DefaultInstanceBuilder(NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory,
+			Class<? extends T> targetClass) {
 		this.targetClass = targetClass;
 		this.instanceFactory = instanceFactory;
 		this.propertyFactory = propertyFactory;
@@ -27,7 +30,7 @@ public class DefaultInstanceBuilder<T> extends DefaultParameterFactory implement
 	public NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory;
 	}
-	
+
 	@Override
 	public PropertyFactory getPropertyFactory() {
 		return propertyFactory;
@@ -65,40 +68,56 @@ public class DefaultInstanceBuilder<T> extends DefaultParameterFactory implement
 
 		return createInternal(getTargetClass(), constructor, params);
 	}
-	
+
 	public Iterator<ParameterDescriptors> iterator() {
 		return new ConstructorParameterDescriptorsIterator(getTargetClass());
 	}
-	
+
 	public boolean isInstance() {
 		return isInstance(false);
 	}
-	
+
 	private volatile AtomicBoolean init = new AtomicBoolean(false);
 	private ParameterDescriptors parameterDescriptors;
+
 	public boolean isInstance(boolean supportAbstract) {
 		if (init.get()) {
+			if (serviceLoader != null) {
+				return serviceLoader.iterator().hasNext();
+			}
+
 			return parameterDescriptors != null;
 		}
-		
+
 		if (init.compareAndSet(false, true)) {
-			if(!supportAbstract && Modifier.isAbstract(getTargetClass().getModifiers())){
+			if (!supportAbstract && Modifier.isAbstract(getTargetClass().getModifiers())) {
 				return false;
 			}
-			
+
 			for (ParameterDescriptors parameterDescriptors : this) {
 				if (isAccept(parameterDescriptors)) {
 					this.parameterDescriptors = parameterDescriptors;
-					break;
+					return true;
 				}
 			}
+
+			if (serviceLoader == null) {
+				serviceLoader = InstanceUtils.getServiceLoader(targetClass, instanceFactory, propertyFactory);
+				return serviceLoader.iterator().hasNext();
+			}
 		}
-		return parameterDescriptors != null;
+		return false;
 	}
-	
+
 	public T create() throws Exception {
 		if (!isInstance()) {
 			throw new NotSupportedException(getTargetClass().getName());
+		}
+
+		if (serviceLoader != null) {
+			for (T instance : serviceLoader) {
+				return instance;
+			}
 		}
 
 		return create(parameterDescriptors.getTypes(), getParameters(parameterDescriptors));
