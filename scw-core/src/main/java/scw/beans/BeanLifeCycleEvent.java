@@ -1,7 +1,6 @@
-package scw.beans.event;
+package scw.beans;
 
-import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
+import scw.event.ObjectEvent;
 import scw.value.property.PropertyFactory;
 
 /**
@@ -9,17 +8,23 @@ import scw.value.property.PropertyFactory;
  * @author shuchaowen
  *
  */
-public class BeanLifeCycleEvent extends BeanEvent{
+public class BeanLifeCycleEvent extends ObjectEvent<Object>{
 	private static final long serialVersionUID = 1L;
 	private transient final PropertyFactory propertyFactory;
+	private transient final BeanFactory beanFactory;
 	private final Step step;
 	private final BeanDefinition beanDefinition;
 
 	public BeanLifeCycleEvent(BeanDefinition beanDefinition, Object source, BeanFactory beanFactory, PropertyFactory propertyFactory, Step step) {
-		super(source, beanFactory);
+		super(source);
+		this.beanFactory = beanFactory;
 		this.beanDefinition = beanDefinition;
 		this.propertyFactory = propertyFactory;
 		this.step = step;
+	}
+	
+	public BeanFactory getBeanFactory() {
+		return beanFactory;
 	}
 
 	public PropertyFactory getPropertyFactory() {

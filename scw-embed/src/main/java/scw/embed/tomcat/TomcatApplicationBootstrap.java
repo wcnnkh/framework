@@ -21,23 +21,24 @@ import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 
+import scw.application.ApplicationBootstrap;
 import scw.application.MainArgs;
 import scw.beans.BeanFactory;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
+import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;
-import scw.embed.annotation.ErrorCodeController;
 import scw.embed.servlet.FilterConfiguration;
 import scw.embed.servlet.MultiFilter;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
-import scw.embed.servlet.ServletEmbedded;
 import scw.embed.servlet.support.RootServletContainerInitializerConfiguration;
 import scw.embed.servlet.support.ServletRootFilterConfiguration;
+import scw.embed.tomcat.annotation.ErrorCodeController;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
 import scw.logger.Logger;
@@ -47,8 +48,9 @@ import scw.mvc.action.ActionManager;
 import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
-public class TomcatServletEmbedded implements ServletEmbedded {
-	private static Logger logger = LoggerUtils.getLogger(TomcatServletEmbedded.class);
+@Configuration(order = -1)
+public class TomcatApplicationBootstrap extends ApplicationBootstrap {
+	private static Logger logger = LoggerUtils.getLogger(TomcatApplicationBootstrap.class);
 	private Tomcat tomcat;
 
 	protected Tomcat createTomcat(BeanFactory beanFactory, PropertyFactory propertyFactory, MainArgs args) {
@@ -58,7 +60,7 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		tomcat.setPort(port);
 
 		String basedir = EmbeddedUtils.getBaseDir(propertyFactory);
-		if(StringUtils.isNotEmpty(basedir)){
+		if (StringUtils.isNotEmpty(basedir)) {
 			tomcat.setBaseDir(basedir);
 		}
 
@@ -257,7 +259,7 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 			if (!ArrayUtils.isEmpty(patternArr)) {
 				Tomcat.addServlet(context, "default", "org.apache.catalina.servlets.DefaultServlet");
 				for (String pattern : patternArr) {
-					LoggerUtils.getLogger(TomcatServletEmbedded.class).info("default mapping [{}]", pattern);
+					logger.info("default mapping [{}]", pattern);
 					addServletMapping(context, pattern, "default");
 				}
 			}
@@ -273,7 +275,28 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 		}
 	}
 
-	public void destroy() throws Exception {
+	@Override
+	public void start() throws Throwable {
+		Servlet servlet = getApplication().getBeanFactory().getInstance(Servlet.class);
+		try {
+			tomcat8(getApplication().getClassLoader());
+		} catch (Throwable e1) {
+		}
+
+		this.tomcat = createTomcat(getApplication().getBeanFactory(), getApplication().getPropertyFactory(),
+				getMainArgs());
+		Context context = createContext(getApplication().getBeanFactory(), getApplication().getPropertyFactory(),
+				getApplication().getClassLoader());
+		
+		configureLifecycleListener(context);
+		configureJSP(context, getApplication().getPropertyFactory());
+		configureServlet(context, servlet, getApplication().getPropertyFactory(), getMainClass());
+		tomcat.start();
+		super.start();
+	}
+
+	@Override
+	protected void shutdown() {
 		if (tomcat != null) {
 			try {
 				tomcat.destroy();
@@ -281,20 +304,6 @@ public class TomcatServletEmbedded implements ServletEmbedded {
 				// ignore
 			}
 		}
-	}
-
-	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory, Servlet service,
-			Class<?> mainClass, MainArgs args) throws Exception {
-		try {
-			tomcat8(mainClass.getClassLoader());
-		} catch (Throwable e1) {
-		}
-
-		this.tomcat = createTomcat(beanFactory, propertyFactory, args);
-		Context context = createContext(beanFactory, propertyFactory, mainClass.getClassLoader());
-		configureLifecycleListener(context);
-		configureJSP(context, propertyFactory);
-		configureServlet(context, service, propertyFactory, mainClass);
-		tomcat.start();
+		super.shutdown();
 	}
 }

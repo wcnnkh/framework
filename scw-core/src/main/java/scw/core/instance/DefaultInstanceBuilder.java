@@ -82,14 +82,22 @@ public class DefaultInstanceBuilder<T> extends DefaultParameterFactory implement
 
 	public boolean isInstance(boolean supportAbstract) {
 		if (init.get()) {
-			if (serviceLoader != null) {
-				return serviceLoader.iterator().hasNext();
+			if (serviceLoader != null && serviceLoader.iterator().hasNext()) {
+				return true;
 			}
 
 			return parameterDescriptors != null;
 		}
 
 		if (init.compareAndSet(false, true)) {
+			if (serviceLoader == null) {
+				serviceLoader = InstanceUtils.getServiceLoader(targetClass, instanceFactory, propertyFactory);
+			}
+			
+			if(serviceLoader.iterator().hasNext()){
+				return true;
+			}
+			
 			if (!supportAbstract && Modifier.isAbstract(getTargetClass().getModifiers())) {
 				return false;
 			}
@@ -99,11 +107,6 @@ public class DefaultInstanceBuilder<T> extends DefaultParameterFactory implement
 					this.parameterDescriptors = parameterDescriptors;
 					return true;
 				}
-			}
-
-			if (serviceLoader == null) {
-				serviceLoader = InstanceUtils.getServiceLoader(targetClass, instanceFactory, propertyFactory);
-				return serviceLoader.iterator().hasNext();
 			}
 		}
 		return false;

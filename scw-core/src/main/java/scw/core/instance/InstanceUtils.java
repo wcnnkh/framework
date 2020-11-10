@@ -1,7 +1,5 @@
 package scw.core.instance;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,13 +8,11 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import scw.compatible.CompatibleUtils;
 import scw.compatible.ServiceLoader;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
-import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -90,54 +86,6 @@ public final class InstanceUtils {
 			ValueFactory<String> propertyFactory, String... defaultNames) {
 		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, instanceFactory, propertyFactory, defaultNames);
 		return Collections.list(CollectionUtils.toEnumeration(serviceLoader.iterator()));
-	}
-
-	/**
-	 * 根据参数名来调用构造方法
-	 * 
-	 * @param type
-	 * @param isPublic
-	 * @param parameterMap
-	 * @return
-	 * @throws NoSuchMethodException
-	 */
-	public static <T> T newInstance(InstanceFactory instanceFactory, Class<T> type, boolean isPublic,
-			Map<String, Object> parameterMap) throws NoSuchMethodException {
-		if (CollectionUtils.isEmpty(parameterMap)) {
-			try {
-				return ReflectionUtils.getConstructor(type, isPublic).newInstance();
-			} catch (InstantiationException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalAccessException e) {
-				throw new RuntimeException(e);
-			} catch (IllegalArgumentException e) {
-				throw new RuntimeException(e);
-			} catch (InvocationTargetException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		int size = parameterMap.size();
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
-			if (size == constructor.getParameterTypes().length) {
-				String[] names = ParameterUtils.getParameterNames(constructor);
-				Object[] args = new Object[size];
-				boolean find = true;
-				for (int i = 0; i < names.length; i++) {
-					if (!parameterMap.containsKey(names[i])) {
-						find = false;
-						break;
-					}
-
-					args[i] = parameterMap.get(names[i]);
-				}
-
-				if (find) {
-					return instanceFactory.getInstance(type, constructor.getParameterTypes(), args);
-				}
-			}
-		}
-		throw new NoSuchMethodException(type.getName());
 	}
 
 	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type,

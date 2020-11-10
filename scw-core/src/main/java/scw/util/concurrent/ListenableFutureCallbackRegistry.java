@@ -32,7 +32,7 @@ import scw.core.Assert;
  * @author Sebastien Deleuze
  * @author Rossen Stoyanchev
  */
-public class ListenableFutureCallbackRegistry<T>{
+public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
 
 	private final Queue<SuccessCallback<? super T>> successCallbacks = new LinkedList<SuccessCallback<? super T>>();
 

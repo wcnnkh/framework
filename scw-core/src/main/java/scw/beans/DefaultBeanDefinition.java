@@ -10,10 +10,9 @@ import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptors;
 import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
+import scw.beans.BeanLifeCycleEvent.Step;
 import scw.beans.annotation.Bean;
 import scw.beans.builder.LoaderContext;
-import scw.beans.event.BeanLifeCycleEvent;
-import scw.beans.event.BeanLifeCycleEvent.Step;
 import scw.beans.ioc.Ioc;
 import scw.core.instance.DefaultInstanceBuilder;
 import scw.core.utils.ArrayUtils;
@@ -45,7 +44,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		if (runtimeBean != null && !runtimeBean._dependence()) {
 			return;
 		}
-		beanFactory.getBeanEventDispatcher().publishEvent(
+		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
@@ -54,7 +53,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 			ioc.getDependence().process(this, instance, beanFactory, propertyFactory);
 			BeanUtils.aware(instance, beanFactory, this);
 		}
-		beanFactory.getBeanEventDispatcher().publishEvent(
+		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DEPENDENCE));
 	}
 
@@ -63,7 +62,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		if (runtimeBean != null && !runtimeBean._init()) {
 			return;
 		}
-		beanFactory.getBeanEventDispatcher()
+		beanFactory.getBeanLifeCycleEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_INIT));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
@@ -72,7 +71,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 			ioc.getInit().process(this, instance, beanFactory, propertyFactory);
 			BeanUtils.init(instance);
 		}
-		beanFactory.getBeanEventDispatcher()
+		beanFactory.getBeanLifeCycleEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_INIT));
 	}
 
@@ -82,7 +81,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 			return;
 		}
 
-		beanFactory.getBeanEventDispatcher().publishEvent(
+		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
 			BeanUtils.destroy(instance);
@@ -91,7 +90,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 				ioc.getDestroy().process(this, instance, beanFactory, propertyFactory);
 			}
 		}
-		beanFactory.getBeanEventDispatcher()
+		beanFactory.getBeanLifeCycleEventDispatcher()
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DESTROY));
 	}
 

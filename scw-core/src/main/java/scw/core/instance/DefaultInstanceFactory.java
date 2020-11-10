@@ -7,6 +7,7 @@ import scw.value.property.PropertyFactory;
 public class DefaultInstanceFactory extends AbstractInstanceFactory {
 	private final ConcurrentReferenceHashMap<String, InstanceBuilder<?>> builderMap = new ConcurrentReferenceHashMap<String, InstanceBuilder<?>>();
 	private final PropertyFactory propertyFactory;
+	private ClassLoader classLoader;
 
 	public DefaultInstanceFactory(PropertyFactory propertyFactory) {
 		this.propertyFactory = propertyFactory;
@@ -56,5 +57,13 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 		public T create() throws Exception {
 			return instance;
 		}
+	}
+
+	public void setClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
+	public ClassLoader getClassLoader() {
+		return classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
 	}
 }

@@ -10,31 +10,31 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.application.Application;
+import scw.application.ApplicationAware;
 import scw.application.CommonApplication;
-import scw.beans.event.BeanEvent;
-import scw.beans.event.BeanLifeCycleEvent;
-import scw.beans.event.BeanLifeCycleEvent.Step;
+import scw.beans.BeanLifeCycleEvent;
+import scw.beans.BeanLifeCycleEvent.Step;
+import scw.core.instance.annotation.Configuration;
 import scw.event.EventListener;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.servlet.beans.ServletContextAware;
 import scw.servlet.http.HttpServletService;
 
-public class DispatcherServlet extends HttpServlet {
+@Configuration(order = Integer.MIN_VALUE)
+public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerUtils.getLogger(DispatcherServlet.class);
 	private Application application;
 	private HttpServletService httpServletService;
-	private boolean reference = false;
 	private ServletContext servletContext;
+
+	public void setApplication(Application application) {
+		this.application = application;
+	}
 
 	public Application getApplication() {
 		return application;
-	}
-
-	public void setApplication(Application application) {
-		this.reference = true;
-		this.application = application;
 	}
 
 	public HttpServletService getServletService() {
@@ -61,32 +61,30 @@ public class DispatcherServlet extends HttpServlet {
 		logger.info("Servlet context realPath / in {}", servletContext.getRealPath("/"));
 		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(servletConfig);
 		try {
-			if (getApplication() == null) {
-				reference = false;
+			if (application == null) {
 				this.application = new CommonApplication(propertyFactory.getConfigXml());
 			}
 
-			getApplication().getBeanFactory().getBeanEventDispatcher().registerListener(new EventListener<BeanEvent>() {
+			application.getBeanFactory().getBeanLifeCycleEventDispatcher()
+					.registerListener(new EventListener<BeanLifeCycleEvent>() {
 
-				public void onEvent(BeanEvent event) {
-					if (event instanceof BeanLifeCycleEvent) {
-						if (((BeanLifeCycleEvent) event).getStep() == Step.BEFORE_INIT) {
-							Object source = event.getSource();
-							if (source != null && source instanceof ServletContextAware) {
-								((ServletContextAware) source).setServletContext(servletContext);
+						public void onEvent(BeanLifeCycleEvent event) {
+							if (event.getStep() == Step.BEFORE_INIT) {
+								Object source = event.getSource();
+								if (source != null && source instanceof ServletContextAware) {
+									((ServletContextAware) source).setServletContext(servletContext);
+								}
 							}
 						}
-					}
-				}
-			});
-			getApplication().getPropertyFactory().addLastBasePropertyFactory(propertyFactory);
-
-			if (!reference) {
-				getApplication().init();
+					});
+			application.getPropertyFactory().addLastBasePropertyFactory(propertyFactory);
+			// 如果未初始化就在这里初始化
+			if (!application.isInitialized()) {
+				application.init();
 			}
 
-			if (httpServletService == null && getApplication() != null) {
-				this.httpServletService = getApplication().getBeanFactory().getInstance(HttpServletService.class);
+			if (httpServletService == null && application != null) {
+				this.httpServletService = application.getBeanFactory().getInstance(HttpServletService.class);
 			}
 		} catch (Exception e) {
 			logger.error(e, "初始化异常");
@@ -95,8 +93,8 @@ public class DispatcherServlet extends HttpServlet {
 
 	@Override
 	public void destroy() {
-		if (!reference && getApplication() != null) {
-			getApplication().destroy();
+		if (application != null && application.isInitialized()) {
+			application.destroy();
 		}
 		super.destroy();
 	}

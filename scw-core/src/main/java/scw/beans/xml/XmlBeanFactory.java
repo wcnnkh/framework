@@ -26,7 +26,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 		this.xmlConfigPath = xmlConfigPath;
 	}
 
-	protected NodeList getNodeList() {
+	public NodeList getNodeList() {
 		return nodeList;
 	}
 

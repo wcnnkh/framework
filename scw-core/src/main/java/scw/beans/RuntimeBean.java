@@ -19,7 +19,7 @@ public interface RuntimeBean {
 
 	boolean _destroy();
 
-	static class RuntimeBeanMethodInterceptor implements MethodInterceptor, RuntimeBean {
+	static class RuntimeBeanMethodInterceptor implements MethodInterceptor {
 		private boolean _dependence;
 		private boolean _init;
 		private boolean _destroy;
@@ -34,54 +34,38 @@ public interface RuntimeBean {
 				Method method = invoker.getMethod();
 				if ((Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers()))) {
 					if (method.getName().equals("getBeanDefinition")) {
-						return getBeanDefinition();
+						return beanDefinition;
 					}
 
 					if (method.getName().equals("_dependence")) {
-						return _dependence();
+						if (_dependence) {
+							return false;
+						}
+
+						_dependence = true;
+						return true;
 					}
 
 					if (method.getName().equals("_init")) {
-						return _init();
+						if (_init) {
+							return false;
+						}
+
+						_init = true;
+						return true;
 					}
 
 					if (method.getName().equals("_destroy")) {
-						return _destroy();
+						if (_destroy) {
+							return false;
+						}
+
+						_destroy = true;
+						return true;
 					}
 				}
 			}
 			return chain.intercept(invoker, args);
-		}
-
-		public boolean _dependence() {
-			if (_dependence) {
-				return false;
-			}
-
-			_dependence = true;
-			return true;
-		}
-
-		public boolean _init() {
-			if (_init) {
-				return false;
-			}
-
-			_init = true;
-			return true;
-		}
-
-		public boolean _destroy() {
-			if (_destroy) {
-				return false;
-			}
-
-			_destroy = true;
-			return true;
-		}
-
-		public BeanDefinition getBeanDefinition() {
-			return beanDefinition;
 		}
 	}
 }

@@ -20,8 +20,6 @@ import scw.beans.annotation.AutoImpl;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.IteratorBeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
-import scw.beans.event.BeanEvent;
-import scw.beans.event.DependenceRefreshEvent;
 import scw.beans.ioc.Ioc;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
@@ -59,27 +57,36 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 	private List<BeanFactoryLifeCycle> beanFactoryLifeCycles = new ArrayList<BeanFactoryLifeCycle>();
 	private List<String> filterNameList = new ArrayList<String>();
 	private List<BeanBuilderLoader> beanBuilderLoaders = new ArrayList<BeanBuilderLoader>();
-	private final BasicEventDispatcher<BeanEvent> beanEventDispatcher;
+	private final BasicEventDispatcher<BeanLifeCycleEvent> beanLifeCycleEventDispatcher;
 	private volatile boolean init = false;
+	private ClassLoader classLoader;
 
 	public DefaultBeanFactory() {
-		this(new DefaultBasicEventDispatcher<BeanEvent>(true));
+		this(new DefaultBasicEventDispatcher<BeanLifeCycleEvent>(true));
 	}
 
-	public DefaultBeanFactory(BasicEventDispatcher<BeanEvent> beanEventDispatcher) {
-		this.beanEventDispatcher = beanEventDispatcher;
+	public DefaultBeanFactory(BasicEventDispatcher<BeanLifeCycleEvent> beanLifeCycleEventDispatcher) {
+		this.beanLifeCycleEventDispatcher = beanLifeCycleEventDispatcher;
 		afterStructure();
 	}
-	
-	protected void afterStructure(){
+
+	protected void afterStructure() {
 		propertyFactory.addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
 		addInternalSingleton(BeanFactory.class, this, InstanceFactory.class.getName(),
 				NoArgsInstanceFactory.class.getName());
 		addInternalSingleton(PropertyFactory.class, propertyFactory);
 	}
 
-	public final BasicEventDispatcher<BeanEvent> getBeanEventDispatcher() {
-		return beanEventDispatcher;
+	public ClassLoader getClassLoader() {
+		return classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
+	}
+
+	public void setClassLoader(ClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
+	public final BasicEventDispatcher<BeanLifeCycleEvent> getBeanLifeCycleEventDispatcher() {
+		return beanLifeCycleEventDispatcher;
 	}
 
 	protected BeanDefinition getDefinitionByCache(String name) {
@@ -492,8 +499,6 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 			throw new BeansException("Already initialized");
 		}
 
-		beanEventDispatcher.registerListener(new DependenceRefreshEventListener());
-
 		for (Class<MethodInterceptor> filter : InstanceUtils.getConfigurationClassList(MethodInterceptor.class,
 				propertyFactory)) {
 			filterNameList.add(filter.getName());
@@ -533,7 +538,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 		}
 	}
 
-	protected void beforDestroy() throws Exception {
+	protected void beforeDestroy() throws Exception {
 		ListIterator<BeanFactoryLifeCycle> iterator = beanFactoryLifeCycles.listIterator(beanFactoryLifeCycles.size());
 		while (iterator.hasPrevious()) {
 			beanFactoryLifeCycleDestroy(iterator.previous());
@@ -545,7 +550,7 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 			throw new BeansException("Not yet initialized");
 		}
 
-		beforDestroy();
+		beforeDestroy();
 
 		synchronized (singletonMap) {
 			List<String> beanKeyList = new ArrayList<String>();
@@ -690,27 +695,5 @@ public class DefaultBeanFactory implements BeanFactory, Init, Destroy, Accept<Cl
 			}
 		}
 		return list;
-	}
-
-	private final class DependenceRefreshEventListener implements scw.event.EventListener<BeanEvent> {
-
-		public void onEvent(DependenceRefreshEvent event) {
-			for (Entry<String, BeanDefinition> entry : beanMap.entrySet()) {
-				Object instance = singletonMap.get(entry.getKey());
-				if (instance != null) {
-					try {
-						entry.getValue().dependence(instance);
-					} catch (Exception e) {
-						logger.error(e, "refresh Dependence error, id={}", entry.getKey());
-					}
-				}
-			}
-		}
-
-		public void onEvent(BeanEvent event) {
-			if (event instanceof DependenceRefreshEvent) {
-				onEvent((DependenceRefreshEvent) event);
-			}
-		}
 	}
 }

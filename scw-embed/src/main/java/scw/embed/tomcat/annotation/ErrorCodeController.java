@@ -1,4 +1,4 @@
-package scw.embed.annotation;
+package scw.embed.tomcat.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
