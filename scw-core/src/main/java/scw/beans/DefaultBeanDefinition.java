@@ -39,7 +39,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 		this(loaderContext.getBeanFactory(), loaderContext.getPropertyFactory(), loaderContext.getTargetClass());
 	}
 
-	public void dependence(Object instance) throws Exception {
+	public void dependence(Object instance) throws Throwable {
 		scw.beans.RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(instance);
 		if (runtimeBean != null && !runtimeBean._dependence()) {
 			return;
@@ -57,7 +57,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DEPENDENCE));
 	}
 
-	public void init(Object instance) throws Exception {
+	public void init(Object instance) throws Throwable {
 		scw.beans.RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(instance);
 		if (runtimeBean != null && !runtimeBean._init()) {
 			return;
@@ -75,7 +75,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 				.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_INIT));
 	}
 
-	public void destroy(Object instance) throws Exception {
+	public void destroy(Object instance) throws Throwable {
 		scw.beans.RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(instance);
 		if (runtimeBean != null && !runtimeBean._destroy()) {
 			return;
@@ -185,6 +185,12 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 
 	public void setNew(boolean isNew) {
 		this.isNew = isNew;
+	}
+
+	@Override
+	public Object create() throws Exception {
+		logger.info("create:" + getTargetClass());
+		return super.create();
 	}
 
 	@Override

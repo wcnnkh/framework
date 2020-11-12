@@ -2,35 +2,26 @@ package scw.application;
 
 import java.util.Map.Entry;
 
-import scw.core.GlobalPropertyFactory;
 import scw.logger.LoggerUtils;
 import scw.util.concurrent.ListenableFuture;
 
-public class MainApplication extends CommonApplication implements Application {
+public class MainApplication extends CommonApplication implements Application, Runnable {
 	private final Class<?> mainClass;
-	private final MainArgs args;
+	private final MainArgs mainArgs;
+	private Main main;
 
 	public MainApplication(Class<?> mainClass, String[] args) {
 		this.mainClass = mainClass;
-		this.args = new MainArgs(args);
+		this.mainArgs = new MainArgs(args);
 		setClassLoader(mainClass.getClassLoader());
-		BasePackage basePackage = mainClass.getAnnotation(BasePackage.class);
-		if (basePackage == null) {
-			Package p = mainClass.getPackage();
-			if (p != null) {
-				GlobalPropertyFactory.getInstance().setBasePackageName(p.getName());
-			}
-		} else {
-			GlobalPropertyFactory.getInstance().setBasePackageName(basePackage.value());
-		}
-
-		for (Entry<String, String> entry : this.args.getParameterMap().entrySet()) {
+		ApplicationUtils.main(mainClass, mainArgs);
+		for (Entry<String, String> entry : this.mainArgs.getParameterMap().entrySet()) {
 			getPropertyFactory().put(entry.getKey(), entry.getValue());
 		}
 
 		setLogger(LoggerUtils.getLogger(mainClass));
 		if (args != null) {
-			getLogger().debug("args: {}", this.args);
+			getLogger().debug("args: {}", this.mainArgs);
 		}
 	}
 
@@ -38,26 +29,47 @@ public class MainApplication extends CommonApplication implements Application {
 		return mainClass;
 	}
 
-	public MainArgs getArgs() {
-		return args;
+	public MainArgs getMainArgs() {
+		return mainArgs;
 	}
 
-	public static final ListenableFuture<Application> run(MainApplication application) {
-		ApplicationBootstrap bootstrap = application.getBeanFactory().getInstance(ApplicationBootstrap.class);
-		application.getLogger().info("using bootstrap: {}", bootstrap.getClass().getName());
-		bootstrap.setMainArgs(application.getArgs());
-		Thread run = new Thread(bootstrap);
-		run.setContextClassLoader(application.getClassLoader());
-		run.setName(application.getMainClass().getName());
-		run.setDaemon(false);
-		run.start();
-		return bootstrap;
+	@Override
+	public void beforeInit() throws Throwable {
+		Thread shutdown = new Thread(new Runnable() {
+
+			public void run() {
+				if (MainApplication.this.isInitialized()) {
+					MainApplication.this.destroy();
+				}
+			}
+		}, mainClass.getSimpleName() + "-shutdown");
+		Runtime.getRuntime().addShutdownHook(shutdown);
+		super.beforeInit();
 	}
 
-	public static final ListenableFuture<Application> run(Class<?> mainClass, String[] args) {
-		MainApplication application = new MainApplication(mainClass, args);
-		application.init();
-		return run(application);
+	@Override
+	public void afterInit() throws Throwable {
+		if (getBeanFactory().isInstance(Main.class)) {
+			main = getBeanFactory().getInstance(Main.class);
+			main.main(this, mainClass, mainArgs);
+		}
+		super.afterInit();
+	}
+
+	public void run() {
+		init();
+		while (true) {
+			try {
+				Thread.sleep(Long.MAX_VALUE);
+			} catch (InterruptedException e) {
+				break;
+			}
+		}
+	}
+
+	public static ListenableFuture<Application> run(Class<?> mainClass, String[] args) {
+		MainApplication mainApplication = new MainApplication(mainClass, args);
+		return ApplicationUtils.run(mainApplication);
 	}
 
 	public static final ListenableFuture<Application> run(Class<?> mainClass) {

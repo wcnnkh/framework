@@ -11,7 +11,6 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.descriptor.JspConfigDescriptor;
 
 import org.apache.catalina.Context;
-import org.apache.catalina.LifecycleException;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
@@ -21,9 +20,11 @@ import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 
-import scw.application.ApplicationBootstrap;
+import scw.application.Application;
+import scw.application.Main;
 import scw.application.MainArgs;
 import scw.beans.BeanFactory;
+import scw.beans.Destroy;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
@@ -49,8 +50,8 @@ import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
 @Configuration(order = -1)
-public class TomcatApplicationBootstrap extends ApplicationBootstrap {
-	private static Logger logger = LoggerUtils.getLogger(TomcatApplicationBootstrap.class);
+public class TomcatStart implements Main, Destroy {
+	private static Logger logger = LoggerUtils.getLogger(TomcatStart.class);
 	private Tomcat tomcat;
 
 	protected Tomcat createTomcat(BeanFactory beanFactory, PropertyFactory propertyFactory, MainArgs args) {
@@ -275,35 +276,24 @@ public class TomcatApplicationBootstrap extends ApplicationBootstrap {
 		}
 	}
 
-	@Override
-	public void start() throws Throwable {
-		Servlet servlet = getApplication().getBeanFactory().getInstance(Servlet.class);
+	public void main(Application application, Class<?> mainClass, MainArgs mainArgs) throws Throwable {
+		Servlet servlet = application.getBeanFactory().getInstance(Servlet.class);
 		try {
-			tomcat8(getApplication().getClassLoader());
+			tomcat8(application.getClassLoader());
 		} catch (Throwable e1) {
 		}
 
-		this.tomcat = createTomcat(getApplication().getBeanFactory(), getApplication().getPropertyFactory(),
-				getMainArgs());
-		Context context = createContext(getApplication().getBeanFactory(), getApplication().getPropertyFactory(),
-				getApplication().getClassLoader());
-		
+		this.tomcat = createTomcat(application.getBeanFactory(), application.getPropertyFactory(), mainArgs);
+		Context context = createContext(application.getBeanFactory(), application.getPropertyFactory(),
+				application.getClassLoader());
+
 		configureLifecycleListener(context);
-		configureJSP(context, getApplication().getPropertyFactory());
-		configureServlet(context, servlet, getApplication().getPropertyFactory(), getMainClass());
+		configureJSP(context, application.getPropertyFactory());
+		configureServlet(context, servlet, application.getPropertyFactory(), mainClass);
 		tomcat.start();
-		super.start();
 	}
 
-	@Override
-	protected void shutdown() {
-		if (tomcat != null) {
-			try {
-				tomcat.destroy();
-			} catch (LifecycleException e) {
-				// ignore
-			}
-		}
-		super.shutdown();
+	public void destroy() throws Throwable {
+		tomcat.destroy();
 	}
 }

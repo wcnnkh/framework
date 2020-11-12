@@ -23,12 +23,12 @@ import scw.value.StringValue;
 import scw.value.StringValueFactory;
 import scw.value.Value;
 import scw.value.ValueWrapper;
-import scw.value.property.DynamicMap.DynamicMapRegistration;
-import scw.value.property.DynamicMap.ValueCreator;
+import scw.value.property.DynamicProperties.DynamicMapRegistration;
+import scw.value.property.DynamicProperties.ValueCreator;
 
 public class PropertyFactory extends StringValueFactory implements BasePropertyFactory {
 	private final List<BasePropertyFactory> basePropertyFactories;
-	private final DynamicMap dynamicMap;
+	private final DynamicProperties dynamicProperties;
 	private final boolean priorityOfUseSelf;
 
 	/**
@@ -37,7 +37,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	 *            是否优先使用自身的值
 	 */
 	public PropertyFactory(boolean concurrent, boolean priorityOfUseSelf) {
-		this.dynamicMap = new DynamicMap(concurrent);
+		this.dynamicProperties = new DynamicProperties(concurrent);
 		this.basePropertyFactories = concurrent ? new CopyOnWriteArrayList<BasePropertyFactory>()
 				: new LinkedList<BasePropertyFactory>();
 		this.priorityOfUseSelf = priorityOfUseSelf;
@@ -80,7 +80,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	@Override
 	public Value get(String key) {
 		if (priorityOfUseSelf) {
-			Value value = dynamicMap.get(key);
+			Value value = dynamicProperties.get(key);
 			if (value != null) {
 				return value;
 			}
@@ -95,7 +95,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 		Value value = super.get(key);
 		if (value == null && !priorityOfUseSelf) {
-			value = dynamicMap.get(key);
+			value = dynamicProperties.get(key);
 		}
 		return value;
 	}
@@ -105,12 +105,12 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
 			enumerations.add(basePropertyFactory.enumerationKeys());
 		}
-		enumerations.add(Collections.enumeration(dynamicMap.keySet()));
+		enumerations.add(Collections.enumeration(dynamicProperties.keySet()));
 		return new MultiEnumeration<String>(enumerations);
 	}
 
 	public boolean containsKey(String key) {
-		if (dynamicMap.containsKey(key)) {
+		if (dynamicProperties.containsKey(key)) {
 			return true;
 		}
 
@@ -137,7 +137,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	}
 
 	public EventRegistration registerListener(String key, EventListener<PropertyEvent> eventListener) {
-		EventRegistration registration = dynamicMap.getEventDispatcher().registerListener(key,
+		EventRegistration registration = dynamicProperties.getEventDispatcher().registerListener(key,
 				new PropertyEventListener(key, eventListener));
 		EventRegistration[] registrations = new EventRegistration[basePropertyFactories.size() + 1];
 		registrations[0] = registration;
@@ -150,7 +150,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 	public Value remove(String key) {
 		Assert.requiredArgument(key != null, "key");
-		return dynamicMap.remove(key);
+		return dynamicProperties.remove(key);
 	}
 
 	public Value put(String key, Object value) {
@@ -160,7 +160,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	public Value put(String key, Object value, boolean format) {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
-		return dynamicMap.put(key, toValue(value, format));
+		return dynamicProperties.put(key, toValue(value, format));
 	}
 
 	private Value toValue(Object value, boolean format) {
@@ -186,11 +186,11 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	public Value putIfAbsent(String key, Object value, boolean format) {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
-		return dynamicMap.putIfAbsent(key, toValue(value, format));
+		return dynamicProperties.putIfAbsent(key, toValue(value, format));
 	}
 
 	public void clear() {
-		dynamicMap.clear();
+		dynamicProperties.clear();
 	}
 
 	public PropertyFactoryRegistration loadProperties(String resource) {
@@ -215,7 +215,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 	public PropertyFactoryRegistration loadProperties(final String keyPrefix, String resource, String charsetName,
 			final boolean format) {
-		DynamicMapRegistration propertiesRegistration = dynamicMap.loadProperties(keyPrefix, resource, charsetName,
+		DynamicMapRegistration propertiesRegistration = dynamicProperties.loadProperties(keyPrefix, resource, charsetName,
 				new ValueCreator() {
 
 					public Value create(String key, Object value) {

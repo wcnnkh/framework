@@ -14,19 +14,21 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.logger.LoggerUtils;
 import scw.logger.SplitLineAppend;
+import scw.util.concurrent.SettableListenableFuture;
+import scw.value.property.PropertyFactory;
 
 public class CommonApplication extends XmlBeanFactory implements Application, EventListener<BeanLifeCycleEvent> {
 	public static final String DEFAULT_BEANS_PATH = "beans.xml";
-	private volatile boolean initialized = false;
 	private volatile BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer;
 	private volatile Logger logger;
+	private final SettableListenableFuture<Application> initializationListenableFuture = new SettableListenableFuture<Application>();
 
 	public CommonApplication() {
 		this(DEFAULT_BEANS_PATH);
 	}
 
-	public CommonApplication(String xmlConfigPath) {
-		super(StringUtils.isEmpty(xmlConfigPath) ? DEFAULT_BEANS_PATH : xmlConfigPath);
+	public CommonApplication(String xml) {
+		super(new PropertyFactory(true, true), StringUtils.isEmpty(xml) ? DEFAULT_BEANS_PATH : xml);
 		addInternalSingleton(Application.class, this);
 		getBeanLifeCycleEventDispatcher().registerListener(this);
 	}
@@ -76,58 +78,50 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 		this.applicationEventDispathcer = applicationEventDispathcer;
 	}
 
-	public BeanFactory getBeanFactory() {
-		return this;
-	}
-
-	public final synchronized void init() {
-		if (initialized) {
-			throw new ApplicationException("已经启动了");
-		}
-
+	@Override
+	public final void init() {
 		try {
-			beforeInit();
 			super.init();
-		} catch (Exception e) {
-			if (e instanceof RuntimeException) {
-				throw (RuntimeException) e;
-			}
-			throw new ApplicationException("Initialization exception", e);
-		} finally {
-			initialized = true;
+			initializationListenableFuture.set(this);
+		} catch (Throwable e) {
+			getLogger().error(e, "Initialization error");
+			initializationListenableFuture.setException(e);
 		}
 	}
 
-	protected void beforeInit() throws Exception {
+	public SettableListenableFuture<Application> getInitializationListenableFuture() {
+		return initializationListenableFuture;
 	}
 
-	protected void afterDestroy() throws Exception {
-	}
-
-	public final synchronized void destroy() {
-		if (!initialized) {
-			return;
-		}
-
-		if (logger != null) {
-			logger.info(new SplitLineAppend("destroy"));
-		}
-
+	@Override
+	public final void destroy() {
 		try {
-			try {
-				super.destroy();
-			} finally {
-				afterDestroy();
-			}
-			initialized = false;
-		} catch (Exception e) {
-			if (e instanceof RuntimeException) {
-				throw (RuntimeException) e;
-			}
-			throw new ApplicationException("Destroy exception", e);
+			super.destroy();
+		} catch (Throwable e) {
+			getLogger().error(e, "Destroy error");
 		} finally {
 			LoggerFactory.getILoggerFactory().destroy();
 		}
+	}
+
+	@Override
+	public void afterInit() throws Throwable {
+		for (ApplicationInitialization initialization : ApplicationUtils.loadAllService(ApplicationInitialization.class,
+				this)) {
+			initialization.init(this);
+		}
+		super.afterInit();
+	}
+
+	@Override
+	public void beforeDestroy() throws Throwable {
+		getLogger().info(new SplitLineAppend("destroy"));
+		super.beforeDestroy();
+	}
+
+	@Override
+	public void destroyComplete() throws Throwable {
+		super.destroyComplete();
 	}
 
 	public void publishEvent(ApplicationEvent event) {
@@ -140,7 +134,7 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 		return applicationEventDispathcer.registerListener(eventListener);
 	}
 
-	public boolean isInitialized() {
-		return initialized;
+	public BeanFactory getBeanFactory() {
+		return this;
 	}
 }

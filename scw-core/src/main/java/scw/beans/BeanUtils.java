@@ -46,7 +46,7 @@ public final class BeanUtils {
 		return null;
 	}
 
-	public static void init(Object init) throws Exception {
+	public static void init(Object init) throws Throwable {
 		if (init == null) {
 			return;
 		}
@@ -56,7 +56,7 @@ public final class BeanUtils {
 		}
 	}
 
-	public static void destroy(Object destroy) throws Exception {
+	public static void destroy(Object destroy) throws Throwable {
 		if (destroy == null) {
 			return;
 		}

@@ -14,7 +14,7 @@ import scw.event.NamedEventDispatcher;
 
 public class DefaultNamedEventDispatcher<K, T extends Event> implements NamedEventDispatcher<K, T> {
 	private final CompatibleMap<K, BasicEventDispatcher<T>> namedEventListenerMap;
-	private boolean concurrent;
+	private final boolean concurrent;
 
 	public DefaultNamedEventDispatcher(boolean concurrent) {
 		this.concurrent = concurrent;
@@ -25,6 +25,10 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements NamedEve
 
 	public final boolean isConcurrent() {
 		return concurrent;
+	}
+
+	public CompatibleMap<K, BasicEventDispatcher<T>> getNamedEventListenerMap() {
+		return namedEventListenerMap;
 	}
 
 	protected BasicEventDispatcher<T> createBasicEventDispatcher(K name) {

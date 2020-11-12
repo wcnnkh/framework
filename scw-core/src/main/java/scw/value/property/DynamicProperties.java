@@ -16,13 +16,13 @@ import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public class DynamicMap extends EventMap<String, Value> {
+public class DynamicProperties extends EventMap<String, Value> {
 
-	public DynamicMap(boolean concurrent) {
+	public DynamicProperties(boolean concurrent) {
 		super(concurrent);
 	}
 
-	public DynamicMap(Map<String, Value> targetMap, boolean concurrent) {
+	public DynamicProperties(Map<String, Value> targetMap, boolean concurrent) {
 		super(targetMap, concurrent);
 	}
 

@@ -9,9 +9,9 @@ import scw.value.property.PropertyFactory;
 
 public interface Application extends Init, Destroy, BasicEventDispatcher<ApplicationEvent> {
 	void init();
-
+	
 	void destroy();
-
+	
 	BeanFactory getBeanFactory();
 
 	PropertyFactory getPropertyFactory();

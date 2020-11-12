@@ -108,7 +108,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 
 			try {
 				beanDefinition.destroy(bean);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				logger.error(e, "销毁bean异常：" + name);
 			}
 		}

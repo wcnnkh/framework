@@ -1,6 +1,6 @@
 package scw.beans.xml;
 
-public enum EParameterType {
+public enum XmlParameterType {
 	value,
 	ref,
 	property,

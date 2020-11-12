@@ -31,16 +31,16 @@ public final class XmlBeanUtils {
 		Class<?> typeClass = StringUtils.isEmpty(type) ? null : ClassUtils
 				.forName(type);
 		if (!StringUtils.isEmpty(ref)) {
-			return new XmlBeanParameter(EParameterType.ref, typeClass, name,
+			return new XmlBeanParameter(XmlParameterType.ref, typeClass, name,
 					ref, node);
 		} else if (!StringUtils.isEmpty(property)) {
-			return new XmlBeanParameter(EParameterType.property, typeClass,
+			return new XmlBeanParameter(XmlParameterType.property, typeClass,
 					name, property, node);
 		} else {
 			if (StringUtils.isEmpty(value)) {
 				value = node.getNodeValue();
 			}
-			return new XmlBeanParameter(EParameterType.value, typeClass, name,
+			return new XmlBeanParameter(XmlParameterType.value, typeClass, name,
 					value, node);
 		}
 	}

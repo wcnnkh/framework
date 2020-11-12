@@ -78,8 +78,8 @@ public final class InstanceUtils {
 
 	public static <S> ServiceLoader<S> getServiceLoader(Class<? extends S> clazz, NoArgsInstanceFactory instanceFactory,
 			ValueFactory<String> propertyFactory, String... defaultNames) {
-		return new ConfigurableServiceLoader<S>(CompatibleUtils.getSpi().load(clazz), clazz, instanceFactory,
-				propertyFactory, defaultNames);
+		return new SpiServiceLoader<S>(CompatibleUtils.getSpi().load(clazz), clazz, instanceFactory, propertyFactory,
+				defaultNames);
 	}
 
 	public static <T> List<T> loadAllService(Class<? extends T> clazz, NoArgsInstanceFactory instanceFactory,
@@ -163,7 +163,60 @@ public final class InstanceUtils {
 				&& ReflectionUtils.isPresent(clazz);
 	}
 
-	private static class ConfigurableServiceLoader<T> implements ServiceLoader<T> {
+	public static <T> ServiceLoader<T> getConfigurationServiceLoader(Class<? extends T> serviceClass,
+			NoArgsInstanceFactory instanceFactory, Collection<? extends Class> excludeTypes,
+			Collection<String> packageNames) {
+		return new ConfigurationServiceLoader<T>(serviceClass, instanceFactory, excludeTypes, packageNames);
+	}
+
+	public static <T> ServiceLoader<T> getConfigurationServiceLoader(Class<? extends T> serviceClass,
+			NoArgsInstanceFactory instanceFactory, ValueFactory<String> propertyFactory,
+			Collection<? extends Class> excludeTypes) {
+		return getConfigurationServiceLoader(serviceClass, instanceFactory, excludeTypes,
+				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName(propertyFactory)));
+	}
+
+	private static class ConfigurationServiceLoader<T> implements ServiceLoader<T> {
+		private NoArgsInstanceFactory instanceFactory;
+		private Collection<? extends Class> excludeTypes;
+		private Collection<String> packageNames;
+		private Class<? extends T> serviceClass;
+		private Iterable<T> iterable;
+
+		public ConfigurationServiceLoader(Class<? extends T> serviceClass, NoArgsInstanceFactory instanceFactory,
+				Collection<? extends Class> excludeTypes, Collection<String> packageNames) {
+			this.instanceFactory = instanceFactory;
+			this.excludeTypes = excludeTypes;
+			this.packageNames = packageNames;
+			this.serviceClass = serviceClass;
+			this.iterable = getIterable();
+		}
+
+		private Iterable<T> getIterable() {
+			Collection<Class<T>> serviceClasses = getConfigurationClassList(serviceClass, excludeTypes, packageNames);
+			if (CollectionUtils.isEmpty(serviceClasses)) {
+				return Collections.emptyList();
+			}
+
+			String[] names = new String[serviceClasses.size()];
+			Iterator<Class<T>> iterator = serviceClasses.iterator();
+			for (int i = 0; iterator.hasNext(); i++) {
+				names[i] = iterator.next().getName();
+			}
+			return new InstanceIterable<T>(instanceFactory, Arrays.asList(names));
+		}
+
+		public void reload() {
+			iterable = getIterable();
+		}
+
+		public Iterator<T> iterator() {
+			return iterable.iterator();
+		}
+
+	}
+
+	private static class SpiServiceLoader<T> implements ServiceLoader<T> {
 		private Class<? extends T> clazz;
 		private NoArgsInstanceFactory instanceFactory;
 		private ValueFactory<String> propertyFactory;
@@ -171,7 +224,7 @@ public final class InstanceUtils {
 		private String[] defaultNames;
 		private ServiceLoader<? extends T> parentServiceLoader;
 
-		public ConfigurableServiceLoader(ServiceLoader<? extends T> serviceLoader, Class<? extends T> clazz,
+		public SpiServiceLoader(ServiceLoader<? extends T> serviceLoader, Class<? extends T> clazz,
 				NoArgsInstanceFactory instanceFactory, ValueFactory<String> propertyFactory, String... defaultNames) {
 			this.clazz = clazz;
 			this.propertyFactory = propertyFactory;

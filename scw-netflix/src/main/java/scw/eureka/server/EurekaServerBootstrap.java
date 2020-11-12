@@ -1,4 +1,22 @@
+/*
+ * Copyright 2013-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package scw.eureka.server;
+
+import javax.servlet.ServletContext;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.DataCenterInfo;
@@ -16,13 +34,14 @@ import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.util.EurekaMonitors;
 import com.thoughtworks.xstream.XStream;
 
-import scw.beans.Destroy;
-import scw.beans.Init;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public class EurekaServerBootstrap implements Init, Destroy {
-	private static final Logger log = LoggerFactory.getLogger(EurekaServerBootstrap.class);
+/**
+ * @author Spencer Gibb
+ */
+public class EurekaServerBootstrap {
+	private static Logger log = LoggerFactory.getLogger(EurekaServerBootstrap.class);
 
 	protected EurekaServerConfig eurekaServerConfig;
 
@@ -46,32 +65,35 @@ public class EurekaServerBootstrap implements Init, Destroy {
 		this.serverContext = serverContext;
 	}
 
-	@Override
-	public void init() throws Exception {
+	public void contextInitialized(ServletContext context) {
 		try {
 			initEurekaEnvironment();
 			initEurekaServerContext();
+
+			context.setAttribute(EurekaServerContext.class.getName(), this.serverContext);
 		} catch (Throwable e) {
-			log.error("Cannot bootstrap eureka server :", e);
+			log.error(e, "Cannot bootstrap eureka server :");
 			throw new RuntimeException("Cannot bootstrap eureka server :", e);
 		}
 	}
 
-	@Override
-	public void destroy() throws Exception {
+	public void contextDestroyed(ServletContext context) {
 		try {
 			log.info("Shutting down Eureka Server..");
+			context.removeAttribute(EurekaServerContext.class.getName());
+
 			destroyEurekaServerContext();
 			destroyEurekaEnvironment();
 
 		} catch (Throwable e) {
-			log.error("Error shutting down eureka", e);
+			log.error(e, "Error shutting down eureka");
 		}
 		log.info("Eureka Service is now shutdown...");
 	}
 
 	protected void initEurekaEnvironment() throws Exception {
 		log.info("Setting the eureka configuration..");
+
 	}
 
 	protected void initEurekaServerContext() throws Exception {
@@ -129,4 +151,5 @@ public class EurekaServerBootstrap implements Init, Destroy {
 		log.info("isAws returned " + result);
 		return result;
 	}
+
 }

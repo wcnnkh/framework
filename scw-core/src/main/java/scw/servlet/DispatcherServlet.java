@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.application.Application;
 import scw.application.ApplicationAware;
+import scw.application.ApplicationUtils;
 import scw.application.CommonApplication;
 import scw.beans.BeanLifeCycleEvent;
 import scw.beans.BeanLifeCycleEvent.Step;
@@ -28,8 +29,10 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	private Application application;
 	private HttpServletService httpServletService;
 	private ServletContext servletContext;
+	private boolean reference = false;
 
 	public void setApplication(Application application) {
+		reference = true;
 		this.application = application;
 	}
 
@@ -83,17 +86,22 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 				application.init();
 			}
 
+			for (ServletContextBootstrap bootstrap : ApplicationUtils.loadAllService(ServletContextBootstrap.class,
+					application)) {
+				bootstrap.init(servletContext);
+			}
+
 			if (httpServletService == null && application != null) {
 				this.httpServletService = application.getBeanFactory().getInstance(HttpServletService.class);
 			}
-		} catch (Exception e) {
-			logger.error(e, "初始化异常");
+		} catch (Throwable e) {
+			logger.error(e, "Initialization error");
 		}
 	}
 
 	@Override
 	public void destroy() {
-		if (application != null && application.isInitialized()) {
+		if (application != null && !reference && application.isInitialized()) {
 			application.destroy();
 		}
 		super.destroy();

@@ -44,6 +44,15 @@ public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
 
 	private final Object mutex = new Object();
 	
+	public void reset(){
+		synchronized (this.mutex) {
+			result = null;
+			state = State.NEW;
+			failureCallbacks.clear();
+			successCallbacks.clear();
+		}
+	}
+	
 	public void addCallback(SuccessCallback<? super T> successCallback, FailureCallback failureCallback) {
 		if(successCallback != null){
 			addSuccessCallback(successCallback);
