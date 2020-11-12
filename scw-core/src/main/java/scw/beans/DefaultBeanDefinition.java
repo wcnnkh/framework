@@ -188,12 +188,6 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 	}
 
 	@Override
-	public Object create() throws Exception {
-		logger.info("create:" + getTargetClass());
-		return super.create();
-	}
-
-	@Override
 	public BeanDefinition clone() {
 		try {
 			DefaultBeanDefinition beanDefinition = (DefaultBeanDefinition) super.clone();

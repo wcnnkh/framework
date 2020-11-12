@@ -20,8 +20,9 @@ import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 
-import scw.application.Application;
+import scw.application.ApplicationUtils;
 import scw.application.Main;
+import scw.application.MainApplication;
 import scw.application.MainArgs;
 import scw.beans.BeanFactory;
 import scw.beans.Destroy;
@@ -39,13 +40,8 @@ import scw.embed.servlet.MultiFilter;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
 import scw.embed.servlet.support.RootServletContainerInitializerConfiguration;
 import scw.embed.servlet.support.ServletRootFilterConfiguration;
-import scw.embed.tomcat.annotation.ErrorCodeController;
-import scw.http.HttpMethod;
-import scw.http.server.HttpControllerDescriptor;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.action.Action;
-import scw.mvc.action.ActionManager;
 import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
@@ -105,46 +101,10 @@ public class TomcatStart implements Main, Destroy {
 			addFilter(context, filterConfiguration);
 		}
 
-		addErrorPage(context, beanFactory, propertyFactory);
-
 		if (beanFactory.isInstance(JspConfigDescriptor.class)) {
 			context.setJspConfigDescriptor(beanFactory.getInstance(JspConfigDescriptor.class));
 		}
 		return context;
-	}
-
-	protected void addErrorPage(Context context, BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		if (beanFactory.isInstance(ActionManager.class)) {
-			for (Action action : beanFactory.getInstance(ActionManager.class).getActions()) {
-				ErrorCodeController errorCodeController = action.getAnnotatedElement()
-						.getAnnotation(ErrorCodeController.class);
-				if (errorCodeController == null) {
-					continue;
-				}
-
-				HttpControllerDescriptor controllerDescriptorToUse = null;
-				for (HttpControllerDescriptor httpControllerDescriptor : action.getHttpControllerDescriptors()) {
-					if (httpControllerDescriptor.getMethod() == HttpMethod.GET
-							&& !httpControllerDescriptor.getRestful().isRestful()) {
-						controllerDescriptorToUse = httpControllerDescriptor;
-					}
-				}
-
-				if (controllerDescriptorToUse == null) {
-					logger.warn("not support error controller action: {}", action);
-					continue;
-				}
-
-				if (errorCodeController != null) {
-					for (int code : errorCodeController.value()) {
-						ErrorPage errorPage = new ErrorPage();
-						errorPage.setErrorCode(code);
-						errorPage.setLocation(controllerDescriptorToUse.getPath());
-						context.addErrorPage(errorPage);
-					}
-				}
-			}
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -276,20 +236,32 @@ public class TomcatStart implements Main, Destroy {
 		}
 	}
 
-	public void main(Application application, Class<?> mainClass, MainArgs mainArgs) throws Throwable {
+	public void main(MainApplication application) throws Throwable {
 		Servlet servlet = application.getBeanFactory().getInstance(Servlet.class);
 		try {
 			tomcat8(application.getClassLoader());
 		} catch (Throwable e1) {
 		}
 
-		this.tomcat = createTomcat(application.getBeanFactory(), application.getPropertyFactory(), mainArgs);
+		this.tomcat = createTomcat(application.getBeanFactory(), application.getPropertyFactory(), application.getMainArgs());
 		Context context = createContext(application.getBeanFactory(), application.getPropertyFactory(),
 				application.getClassLoader());
+		
+		for(ErrorPage errorPage : ApplicationUtils.loadAllService(ErrorPage.class, application)){
+			context.addErrorPage(errorPage);
+		}
+		
+		for(ErrorPage errorPage : application.getBeanFactory().getInstance(ErrorPages.class)){
+			context.addErrorPage(errorPage);
+		}
 
 		configureLifecycleListener(context);
 		configureJSP(context, application.getPropertyFactory());
-		configureServlet(context, servlet, application.getPropertyFactory(), mainClass);
+		configureServlet(context, servlet, application.getPropertyFactory(), application.getMainClass());
+		
+		for(TomcatContextConfiguration configuration : ApplicationUtils.loadAllService(TomcatContextConfiguration.class, application)){
+			configuration.configuration(application, context);
+		}
 		tomcat.start();
 	}
 

@@ -51,7 +51,7 @@ public class MainApplication extends CommonApplication implements Application, R
 	public void afterInit() throws Throwable {
 		if (getBeanFactory().isInstance(Main.class)) {
 			main = getBeanFactory().getInstance(Main.class);
-			main.main(this, mainClass, mainArgs);
+			main.main(this);
 		}
 		super.afterInit();
 	}
