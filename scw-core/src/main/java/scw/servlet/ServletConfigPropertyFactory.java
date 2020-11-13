@@ -15,16 +15,11 @@ public class ServletConfigPropertyFactory extends ExtendPropertyFactory {
 		this.servletConfig = servletConfig;
 	}
 
-	public String getConfigXml() {
-		// 兼容老版本
-		return getString("shuchaowen");
-	}
-	
 	@Override
 	protected Object getExtendValue(String key) {
 		return servletConfig.getInitParameter(key);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Enumeration<String> enumerationKeys() {

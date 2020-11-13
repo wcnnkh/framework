@@ -3,6 +3,7 @@ package scw.eureka.server;
 import java.util.Collections;
 
 import com.netflix.appinfo.ApplicationInfoManager;
+import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.eureka.DefaultEurekaServerContext;
@@ -22,7 +23,6 @@ import scw.core.instance.annotation.Configuration;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class EurekaServerBeanBuilder implements BeanBuilderLoader {
-
 	@Override
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
 		if (context.getTargetClass() == ServerCodecs.class) {
@@ -41,6 +41,10 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 			return new EurekaServerContextBuilder(context);
 		}
 
+		if (context.getTargetClass() == EurekaClient.class) {
+			return new EurekaClientBuilder(context);
+		}
+		
 		return loaderChain.loading(context);
 	}
 
@@ -75,6 +79,25 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 			return new ReplicationClientAdditionalFilters(Collections.emptySet());
 		}
 		return beanFactory.getInstance(ReplicationClientAdditionalFilters.class);
+	}
+
+	private static class EurekaClientBuilder extends DefaultBeanDefinition {
+
+		public EurekaClientBuilder(LoaderContext loaderContext) {
+			super(loaderContext);
+		}
+
+		@Override
+		public boolean isInstance() {
+			return beanFactory.isInstance(ApplicationInfoManager.class)
+					&& beanFactory.isInstance(EurekaClientConfig.class);
+		}
+
+		@Override
+		public Object create() throws Exception {
+			return new DiscoveryClient(beanFactory.getInstance(ApplicationInfoManager.class),
+					beanFactory.getInstance(EurekaClientConfig.class));
+		}
 	}
 
 	private static class PeerEurekaNodesBuilder extends DefaultBeanDefinition {

@@ -7,6 +7,11 @@
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>scw-netflix</artifactId>
+	<properties>
+		<!-- Sonar -->
+		<eureka-jersey.version>1.19.4</eureka-jersey.version>
+		<xstream.version>1.4.13</xstream.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -26,6 +31,12 @@
 			<groupId>com.netflix.zuul</groupId>
 			<artifactId>zuul-core</artifactId>
 			<version>2.1.9</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jersey</groupId>
+					<artifactId>jersey-client</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.netflix.eureka/eureka-client -->
@@ -36,11 +47,7 @@
 			<exclusions>
 				<exclusion>
 					<groupId>com.sun.jersey</groupId>
-					<artifactId>jersey-core</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>com.sun.jersey.contribs</groupId>
-					<artifactId>jersey-apache-client4</artifactId>
+					<artifactId>jersey-client</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -58,6 +65,43 @@
 			</exclusions>
 		</dependency>
 
+		<!-- Eureka core dep that is now optional -->
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-servlet</artifactId>
+			<version>${eureka-jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+			<version>${eureka-jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${eureka-jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${eureka-jersey.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.contribs</groupId>
+			<artifactId>jersey-apache-client4</artifactId>
+			<version>${eureka-jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>com.sun.jersey</groupId>
+					<artifactId>jersey-client</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>${xstream.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>

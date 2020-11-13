@@ -14,6 +14,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.logger.LoggerUtils;
 import scw.logger.SplitLineAppend;
+import scw.util.concurrent.CountLatch;
 import scw.util.concurrent.SettableListenableFuture;
 import scw.value.property.PropertyFactory;
 
@@ -22,6 +23,7 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 	private volatile BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer;
 	private volatile Logger logger;
 	private final SettableListenableFuture<Application> initializationListenableFuture = new SettableListenableFuture<Application>();
+	private final CountLatch countLatch = new CountLatch(0);
 
 	public CommonApplication() {
 		this(DEFAULT_BEANS_PATH);
@@ -51,8 +53,17 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 	public void onEvent(BeanLifeCycleEvent event) {
 		if (event.getStep() == Step.AFTER_INIT) {
 			Object source = event.getSource();
-			if (source != null && source instanceof ApplicationAware) {
+			if (source == null) {
+				return;
+			}
+
+			if (source instanceof ApplicationAware) {
 				((ApplicationAware) source).setApplication(this);
+			}
+
+			if (source instanceof ApplicationCountLatchAware) {
+				countLatch.countUp();
+				((ApplicationCountLatchAware) source).setInitializationCountLatch(countLatch);
 			}
 		}
 	}
@@ -82,6 +93,7 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 	public final void init() {
 		try {
 			super.init();
+			countLatch.await();
 			initializationListenableFuture.set(this);
 		} catch (Throwable e) {
 			getLogger().error(e, "Initialization error");

@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -17,9 +18,11 @@ import scw.aop.Aop;
 import scw.aop.DefaultAop;
 import scw.aop.MethodInterceptor;
 import scw.beans.annotation.AutoImpl;
+import scw.beans.annotation.Proxy;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.IteratorBeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
+import scw.beans.builder.ProxyBeanDefinition;
 import scw.beans.ioc.Ioc;
 import scw.beans.method.MethodBeanConfiguration;
 import scw.beans.service.ServiceBeanConfiguration;
@@ -147,6 +150,23 @@ public class DefaultBeanFactory extends DefaultBeanLifeCycle implements BeanFact
 		return beanDefinition;
 	}
 
+	private static List<String> getProxyNames(Proxy proxy) {
+		if (proxy == null) {
+			return Collections.emptyList();
+		}
+
+		List<String> list = new ArrayList<String>();
+		for (String name : proxy.names()) {
+			list.add(name);
+		}
+
+		for (Class<? extends MethodInterceptor> c : proxy.value()) {
+			list.add(c.getName());
+		}
+
+		return Arrays.asList(list.toArray(new String[0]));
+	}
+
 	private BeanDefinition loading(LoaderContext context) {
 		if (!accept(context.getTargetClass())) {
 			return null;
@@ -184,6 +204,35 @@ public class DefaultBeanFactory extends DefaultBeanLifeCycle implements BeanFact
 
 		BeanDefinition definition = new IteratorBeanBuilderLoaderChain(beanBuilderLoaders).loading(context);
 		if (definition == null) {
+			// 未注解service时接口默认实现
+			if (context.getTargetClass().isInterface()) {
+				String name = context.getTargetClass().getName() + "Impl";
+				if (ClassUtils.isPresent(name) && context.getBeanFactory().isInstance(name)) {
+					logger.info("{} reference {}", context.getTargetClass().getName(), name);
+					definition = new DefaultBeanDefinition(context.getBeanFactory(), context.getPropertyFactory(),
+							ClassUtils.forNameNullable(name));
+				} else {
+					int index = context.getTargetClass().getName().lastIndexOf(".");
+					name = index == -1 ? (context.getTargetClass().getName() + "Impl")
+							: (context.getTargetClass().getName().substring(0, index) + ".impl."
+									+ context.getTargetClass().getSimpleName() + "Impl");
+					if (ClassUtils.isPresent(name) && context.getBeanFactory().isInstance(name)) {
+						logger.info("{} reference {}", context.getTargetClass().getName(), name);
+						definition = context.getBeanFactory().getDefinition(name);
+					}
+				}
+			}
+		}
+
+		if (definition == null) {
+			if (context.getTargetClass().isInterface()
+					|| Modifier.isAbstract(context.getTargetClass().getModifiers())) {
+				Proxy proxy = context.getTargetClass().getAnnotation(Proxy.class);
+				if (proxy != null) {
+					definition = new ProxyBeanDefinition(context, getProxyNames(proxy));
+				}
+			}
+
 			if (context.getTargetClass().isInterface()
 					|| Modifier.isAbstract(context.getTargetClass().getModifiers())) {
 				// 如果是接口或抽象类
@@ -412,7 +461,7 @@ public class DefaultBeanFactory extends DefaultBeanLifeCycle implements BeanFact
 	public void addBeanDefinition(BeanDefinition beanDefinition, boolean throwExistError) {
 		BeanDefinition definition = getDefinitionByCache(beanDefinition.getId());
 		if (definition != null) {
-			logger.warn("Already exist definition:{}, cache:{}", JSONUtils.toJSONString(beanDefinition),
+			logger.warn("Already exist definition:\r\n{}\r\n---\r\n{}", JSONUtils.toJSONString(beanDefinition),
 					JSONUtils.toJSONString(definition));
 			if (throwExistError) {
 				throw new AlreadyExistsException("存在相同ID的映射:" + JSONUtils.toJSONString(beanDefinition));

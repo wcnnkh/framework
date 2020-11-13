@@ -2,7 +2,6 @@ package scw.embed.tomcat;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -30,6 +29,7 @@ import scw.application.MainApplication;
 import scw.application.MainArgs;
 import scw.beans.BeanFactory;
 import scw.beans.Destroy;
+import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.annotation.Configuration;
@@ -39,17 +39,16 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;
-import scw.embed.servlet.FilterConfiguration;
-import scw.embed.servlet.MultiFilter;
-import scw.embed.servlet.ServletContainerInitializerConfiguration;
-import scw.embed.servlet.support.RootServletContainerInitializerConfiguration;
-import scw.embed.servlet.support.ServletRootFilterConfiguration;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionManager;
+import scw.servlet.FilterRegistration;
+import scw.servlet.ServletUtils;
+import scw.util.ClassScanner;
+import scw.util.XUtils;
 import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
@@ -83,36 +82,57 @@ public class TomcatStart implements Main, Destroy {
 		return StringUtils.isEmpty(contextPath) ? "" : contextPath;
 	}
 
-	protected JarScanner getJarScanner(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		return InstanceUtils.loadService(JarScanner.class, beanFactory, propertyFactory,
-				"scw.embed.tomcat.Tomcat8AboveStandardJarScanner");
+	protected JarScanner getJarScanner(Application application) {
+		return InstanceUtils.loadService(JarScanner.class, application.getBeanFactory(),
+				application.getPropertyFactory(), "scw.embed.tomcat.Tomcat8AboveStandardJarScanner");
 	}
 
-	protected Context createContext(BeanFactory beanFactory, PropertyFactory propertyFactory, ClassLoader classLoader) {
-		Context context = tomcat.addContext(getContextPath(propertyFactory), getDocBase(propertyFactory));
-		context.setParentClassLoader(classLoader);
-		JarScanner jarScanner = getJarScanner(beanFactory, propertyFactory);
+	protected Context createContext(MainApplication application) {
+		Context context = tomcat.addContext(getContextPath(application.getPropertyFactory()),
+				getDocBase(application.getPropertyFactory()));
+		context.setParentClassLoader(application.getClassLoader());
+		JarScanner jarScanner = getJarScanner(application);
 		if (jarScanner != null) {
 			context.setJarScanner(jarScanner);
 		}
-
-		addServletContainerInitializer(context,
-				new RootServletContainerInitializerConfiguration(beanFactory, propertyFactory));
-		for (ServletContainerInitializerConfiguration configuration : InstanceUtils
-				.getConfigurationList(ServletContainerInitializerConfiguration.class, beanFactory, propertyFactory)) {
-			addServletContainerInitializer(context, configuration);
+		
+		Set<Class<?>> classes = ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
+				InstanceUtils.getScanAnnotationPackageName(application.getPropertyFactory()));
+		for (ServletContainerInitializer initializer : ApplicationUtils
+				.loadAllService(ServletContainerInitializer.class, application)) {
+			context.addServletContainerInitializer(initializer, classes);
 		}
 
-		addFilter(context, new ServletRootFilterConfiguration(beanFactory, propertyFactory));
-		for (FilterConfiguration filterConfiguration : InstanceUtils.getConfigurationList(FilterConfiguration.class,
-				beanFactory, propertyFactory)) {
-			addFilter(context, filterConfiguration);
-		}
+		configurationWebSocket(context, application, classes);
 
-		if (beanFactory.isInstance(JspConfigDescriptor.class)) {
-			context.setJspConfigDescriptor(beanFactory.getInstance(JspConfigDescriptor.class));
+		addFilter(context, ApplicationUtils.loadAllService(FilterRegistration.class, application));
+		
+		if (AprLifecycleListener.isAprAvailable()) {
+			context.addLifecycleListener(new AprLifecycleListener());
 		}
 		return context;
+	}
+
+	private void configurationWebSocket(Context context, Application application, Set<Class<?>> classes) {
+		String wsClassName = "org.apache.tomcat.websocket.server.WsSci";
+		if (InstanceUtils.INSTANCE_FACTORY.isInstance(wsClassName)) {
+			ServletContainerInitializer initializer = InstanceUtils.INSTANCE_FACTORY.getInstance(wsClassName);
+			context.addServletContainerInitializer(initializer, classes);
+		}
+
+		String filterClassName = "org.apache.tomcat.websocket.server.WsFilter";
+		if (InstanceUtils.INSTANCE_FACTORY.isInstance(filterClassName)) {
+			Filter filter = InstanceUtils.INSTANCE_FACTORY.getInstance(filterClassName);
+			String filterName = filter.getClass().getSimpleName();
+			FilterDef filterDef = new FilterDef();
+			filterDef.setFilter(filter);
+			filterDef.setFilterName(filterName);
+			FilterMap filterMap = new FilterMap();
+			filterMap.setFilterName(filterName);
+			filterMap.addURLPattern("/*");
+			context.addFilterDef(filterDef);
+			context.addFilterMap(filterMap);
+		}
 	}
 
 	protected void addErrorPage(Context context, Application application) {
@@ -149,49 +169,30 @@ public class TomcatStart implements Main, Destroy {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	protected void addServletContainerInitializer(Context context,
-			ServletContainerInitializerConfiguration configuration) {
-		Collection<? extends ServletContainerInitializer> initializers = configuration
-				.getServletContainerInitializers();
-		if (CollectionUtils.isEmpty(initializers)) {
-			return;
-		}
-
-		Set<Class<?>> classSet = configuration.getClassSet();
-		classSet = classSet == null ? Collections.EMPTY_SET : classSet;
-		for (ServletContainerInitializer initializer : initializers) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("add ServletContainerInitializer: {} by config: {}", initializer.getClass().getName(),
-						configuration.getClass().getName());
+	protected void addFilter(Context context, Collection<FilterRegistration> filterRegistrations) {
+		int i = 0;
+		for (FilterRegistration registry : filterRegistrations) {
+			Filter filter = registry.getFilter();
+			if (filter == null) {
+				continue;
 			}
 
-			context.addServletContainerInitializer(initializer, classSet);
-		}
-	}
-
-	protected void addFilter(Context context, FilterConfiguration filterConfiguration) {
-		Collection<? extends Filter> filters = filterConfiguration.getFilters();
-		if (CollectionUtils.isEmpty(filters)) {
-			return;
-		}
-
-		FilterDef filterDef = new FilterDef();
-		MultiFilter multiFilter = new MultiFilter();
-		for (Filter filter : filters) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("add Filter: {}", filter.getClass().getName());
+			String name = XUtils.getName(filter, FilterRegistration.class.getSimpleName() + (i++));
+			FilterDef filterDef = new FilterDef();
+			filterDef.setFilter(filter);
+			filterDef.setFilterName(name);
+			FilterMap filterMap = new FilterMap();
+			filterMap.setFilterName(name);
+			Collection<String> urlPatterns = registry.getUrlPatterns();
+			if (CollectionUtils.isEmpty(urlPatterns)) {
+				filterMap.addURLPattern(FilterRegistration.ALL);
+			} else {
+				for (String urlPattern : urlPatterns) {
+					filterMap.addURLPattern(urlPattern);
+				}
 			}
-			multiFilter.add(filter);
-		}
-		filterDef.setFilter(multiFilter);
-		filterDef.setFilterName(filterConfiguration.getName());
-		context.addFilterDef(filterDef);
-
-		FilterMap filterMap = new FilterMap();
-		filterMap.setFilterName(filterConfiguration.getName());
-		for (String url : filterConfiguration.getURLPatterns()) {
-			filterMap.addURLPattern(url);
+			context.addFilterDef(filterDef);
+			context.addFilterMap(filterMap);
 		}
 	}
 
@@ -222,13 +223,11 @@ public class TomcatStart implements Main, Destroy {
 		}
 	}
 
-	protected void configureLifecycleListener(Context context) {
-		if (AprLifecycleListener.isAprAvailable()) {
-			context.addLifecycleListener(new AprLifecycleListener());
+	protected void configureJSP(Context context, MainApplication application) throws Exception {
+		if (application.getBeanFactory().isInstance(JspConfigDescriptor.class)) {
+			context.setJspConfigDescriptor(application.getBeanFactory().getInstance(JspConfigDescriptor.class));
 		}
-	}
-
-	protected void configureJSP(Context context, PropertyFactory propertyFactory) throws Exception {
+		
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet")) {
 			ServletContainerInitializer containerInitializer = InstanceUtils.INSTANCE_FACTORY
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
@@ -251,17 +250,16 @@ public class TomcatStart implements Main, Destroy {
 		method.invoke(context, pattern, servletName);
 	}
 
-	protected void configureServlet(Context context, Servlet servlet, PropertyFactory propertyFactory,
-			Class<?> mainClass) throws Exception {
-		String servletName = mainClass == null ? "scw" : mainClass.getSimpleName();
+	protected void configureServlet(Context context, Servlet servlet, MainApplication application) throws Exception {
+		String servletName = application.getMainClass().getSimpleName();
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
 		Properties properties = EmbeddedUtils.getServletInitParametersConfig(servletName, true);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			wrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 		}
-
+		
 		addServletMapping(context, "/", servletName);
-		String sourceMapping = EmbeddedUtils.getDefaultServletMapping(propertyFactory);
+		String sourceMapping = EmbeddedUtils.getDefaultServletMapping(application.getPropertyFactory());
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
@@ -298,23 +296,21 @@ public class TomcatStart implements Main, Destroy {
 
 		this.tomcat = createTomcat(application.getBeanFactory(), application.getPropertyFactory(),
 				application.getMainArgs());
-		Context context = createContext(application.getBeanFactory(), application.getPropertyFactory(),
-				application.getClassLoader());
-		addErrorPage(context, application);
-		configureLifecycleListener(context);
-		configureJSP(context, application.getPropertyFactory());
-		configureServlet(context, servlet, application.getPropertyFactory(), application.getMainClass());
+		Context context = createContext(application);
+		configureJSP(context, application);
+		configureServlet(context, servlet, application);
 
 		for (TomcatContextConfiguration configuration : ApplicationUtils
 				.loadAllService(TomcatContextConfiguration.class, application)) {
 			configuration.configuration(application, context);
 		}
-		tomcat.init();
+
+		ServletUtils.servletContextInitialization(context.getServletContext(), application);
 		tomcat.start();
+		//addErrorPage(context, application);
 	}
 
 	public void destroy() throws Throwable {
 		tomcat.stop();
-		tomcat.destroy();
 	}
 }
