@@ -8,7 +8,6 @@ import scw.util.concurrent.ListenableFuture;
 public class MainApplication extends CommonApplication implements Application, Runnable {
 	private final Class<?> mainClass;
 	private final MainArgs mainArgs;
-	private Main main;
 
 	public MainApplication(Class<?> mainClass, String[] args) {
 		this.mainClass = mainClass;
@@ -50,8 +49,7 @@ public class MainApplication extends CommonApplication implements Application, R
 	@Override
 	public void afterInit() throws Throwable {
 		if (getBeanFactory().isInstance(Main.class)) {
-			main = getBeanFactory().getInstance(Main.class);
-			main.main(this);
+			getBeanFactory().getInstance(Main.class).main(this);
 		}
 		super.afterInit();
 	}

@@ -7,11 +7,15 @@ import java.util.Map;
 import java.util.Properties;
 
 import scw.event.EventRegistration;
+import scw.event.support.DefaultNamedEventDispatcher;
 import scw.event.support.EventMap;
+import scw.event.support.StringNamedEventDispatcher;
+import scw.event.support.ValueEvent;
 import scw.io.ResourceUtils;
 import scw.io.event.ObservableResource;
 import scw.io.event.ObservableResourceEvent;
 import scw.io.event.ObservableResourceEventListener;
+import scw.util.DefaultStringMatcher;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
@@ -24,6 +28,14 @@ public class DynamicProperties extends EventMap<String, Value> {
 
 	public DynamicProperties(Map<String, Value> targetMap, boolean concurrent) {
 		super(targetMap, concurrent);
+	}
+	
+	@Override
+	protected DefaultNamedEventDispatcher<String, ValueEvent<Value>> createDefaultNamedEventDispatcher(
+			boolean concurrent) {
+		StringNamedEventDispatcher<ValueEvent<Value>> dispatcher = new StringNamedEventDispatcher<ValueEvent<Value>>(concurrent);
+		dispatcher.setStringMatcher(DefaultStringMatcher.getInstance());
+		return dispatcher;
 	}
 
 	public DynamicMapRegistration loadProperties(String resource, ValueCreator creator) {

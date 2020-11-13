@@ -3,6 +3,8 @@ package scw.embed.tomcat;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.Filter;
@@ -11,6 +13,7 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.descriptor.JspConfigDescriptor;
 
 import org.apache.catalina.Context;
+import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
@@ -20,6 +23,7 @@ import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 
+import scw.application.Application;
 import scw.application.ApplicationUtils;
 import scw.application.Main;
 import scw.application.MainApplication;
@@ -40,8 +44,12 @@ import scw.embed.servlet.MultiFilter;
 import scw.embed.servlet.ServletContainerInitializerConfiguration;
 import scw.embed.servlet.support.RootServletContainerInitializerConfiguration;
 import scw.embed.servlet.support.ServletRootFilterConfiguration;
+import scw.http.HttpMethod;
+import scw.http.server.HttpControllerDescriptor;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mvc.action.Action;
+import scw.mvc.action.ActionManager;
 import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
@@ -105,6 +113,40 @@ public class TomcatStart implements Main, Destroy {
 			context.setJspConfigDescriptor(beanFactory.getInstance(JspConfigDescriptor.class));
 		}
 		return context;
+	}
+
+	protected void addErrorPage(Context context, Application application) {
+		if (application.getBeanFactory().isInstance(ActionManager.class)) {
+			for (Action action : application.getBeanFactory().getInstance(ActionManager.class).getActions()) {
+				ErrorPageController errorCodeController = action.getAnnotatedElement()
+						.getAnnotation(ErrorPageController.class);
+				if (errorCodeController == null) {
+					continue;
+				}
+
+				HttpControllerDescriptor controllerDescriptorToUse = null;
+				for (HttpControllerDescriptor httpControllerDescriptor : action.getHttpControllerDescriptors()) {
+					if (httpControllerDescriptor.getMethod() == HttpMethod.GET
+							&& !httpControllerDescriptor.getRestful().isRestful()) {
+						controllerDescriptorToUse = httpControllerDescriptor;
+					}
+				}
+
+				if (controllerDescriptorToUse == null) {
+					logger.warn("not support error controller action: {}", action);
+					continue;
+				}
+
+				if (errorCodeController != null) {
+					for (int code : errorCodeController.value()) {
+						ErrorPage errorPage = new ErrorPage();
+						errorPage.setErrorCode(code);
+						errorPage.setLocation(controllerDescriptorToUse.getPath());
+						context.addErrorPage(errorPage);
+					}
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -212,16 +254,27 @@ public class TomcatStart implements Main, Destroy {
 	protected void configureServlet(Context context, Servlet servlet, PropertyFactory propertyFactory,
 			Class<?> mainClass) throws Exception {
 		String servletName = mainClass == null ? "scw" : mainClass.getSimpleName();
-		Tomcat.addServlet(context, servletName, servlet);
+		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
+		Properties properties = EmbeddedUtils.getServletInitParametersConfig(servletName, true);
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			wrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
+		}
+
 		addServletMapping(context, "/", servletName);
 		String sourceMapping = EmbeddedUtils.getDefaultServletMapping(propertyFactory);
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
-				Tomcat.addServlet(context, "default", "org.apache.catalina.servlets.DefaultServlet");
+				String tempServletName = "default";
+				Wrapper tempWrapper = Tomcat.addServlet(context, tempServletName,
+						"org.apache.catalina.servlets.DefaultServlet");
+				Properties tempProperties = EmbeddedUtils.getServletInitParametersConfig(tempServletName, false);
+				for (Entry<Object, Object> entry : tempProperties.entrySet()) {
+					tempWrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
+				}
 				for (String pattern : patternArr) {
 					logger.info("default mapping [{}]", pattern);
-					addServletMapping(context, pattern, "default");
+					addServletMapping(context, pattern, tempServletName);
 				}
 			}
 		}
@@ -243,29 +296,25 @@ public class TomcatStart implements Main, Destroy {
 		} catch (Throwable e1) {
 		}
 
-		this.tomcat = createTomcat(application.getBeanFactory(), application.getPropertyFactory(), application.getMainArgs());
+		this.tomcat = createTomcat(application.getBeanFactory(), application.getPropertyFactory(),
+				application.getMainArgs());
 		Context context = createContext(application.getBeanFactory(), application.getPropertyFactory(),
 				application.getClassLoader());
-		
-		for(ErrorPage errorPage : ApplicationUtils.loadAllService(ErrorPage.class, application)){
-			context.addErrorPage(errorPage);
-		}
-		
-		for(ErrorPage errorPage : application.getBeanFactory().getInstance(ErrorPages.class)){
-			context.addErrorPage(errorPage);
-		}
-
+		addErrorPage(context, application);
 		configureLifecycleListener(context);
 		configureJSP(context, application.getPropertyFactory());
 		configureServlet(context, servlet, application.getPropertyFactory(), application.getMainClass());
-		
-		for(TomcatContextConfiguration configuration : ApplicationUtils.loadAllService(TomcatContextConfiguration.class, application)){
+
+		for (TomcatContextConfiguration configuration : ApplicationUtils
+				.loadAllService(TomcatContextConfiguration.class, application)) {
 			configuration.configuration(application, context);
 		}
+		tomcat.init();
 		tomcat.start();
 	}
 
 	public void destroy() throws Throwable {
+		tomcat.stop();
 		tomcat.destroy();
 	}
 }

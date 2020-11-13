@@ -59,7 +59,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	}
 
 	@Override
-	public final void init(ServletConfig servletConfig) throws ServletException {
+	public void init(ServletConfig servletConfig) throws ServletException {
 		this.servletContext = servletConfig.getServletContext();
 		logger.info("Servlet context realPath / in {}", servletContext.getRealPath("/"));
 		ServletConfigPropertyFactory propertyFactory = new ServletConfigPropertyFactory(servletConfig);

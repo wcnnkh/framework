@@ -1,6 +1,9 @@
 package scw.embed;
 
+import java.util.Properties;
+
 import scw.core.utils.StringUtils;
+import scw.io.ResourceUtils;
 import scw.value.property.PropertyFactory;
 
 public final class EmbeddedUtils {
@@ -81,5 +84,18 @@ public final class EmbeddedUtils {
 
 	public static boolean tomcatScanTld(PropertyFactory propertyFactory) {
 		return StringUtils.parseBoolean(propertyFactory.getString(getTomcatKey("scan.tld")), true);
+	}
+
+	public static Properties getServletInitParametersConfig(String servletName, boolean loadOnStartup) {
+		String path = servletName + "-servlet-init-params.properties";
+		Properties properties = new Properties();
+		if (loadOnStartup) {
+			properties.put("load-on-startup", 1);
+		}
+
+		if (ResourceUtils.getResourceOperations().isExist(path)) {
+			properties.putAll(ResourceUtils.getResourceOperations().getProperties(path).getResource());
+		}
+		return properties;
 	}
 }

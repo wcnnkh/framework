@@ -21,7 +21,11 @@ public class EventMap<K, V> extends DefaultCompatibleMap<K, V> {
 
 	public EventMap(Map<K, V> targetMap, boolean concurrent) {
 		super(targetMap);
-		this.eventDispatcher = new DefaultNamedEventDispatcher<K, ValueEvent<V>>(concurrent);
+		this.eventDispatcher = createDefaultNamedEventDispatcher(concurrent);
+	}
+
+	protected DefaultNamedEventDispatcher<K, ValueEvent<V>> createDefaultNamedEventDispatcher(boolean concurrent) {
+		return new DefaultNamedEventDispatcher<K, ValueEvent<V>>(concurrent);
 	}
 
 	public NamedEventDispatcher<K, ValueEvent<V>> getEventDispatcher() {

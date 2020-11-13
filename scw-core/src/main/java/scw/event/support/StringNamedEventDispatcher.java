@@ -33,4 +33,9 @@ public class StringNamedEventDispatcher<T extends Event> extends DefaultNamedEve
 		}
 	}
 
+	@Override
+	public void publishEventByObjectName(Object name, T event) {
+		publishEvent(name.toString(), event);
+	}
+
 }
