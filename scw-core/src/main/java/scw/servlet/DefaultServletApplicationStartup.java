@@ -58,16 +58,14 @@ public class DefaultServletApplicationStartup implements ServletApplicationStart
 		}
 
 		servletContext.setAttribute(nameToUse, true);
-		application.getBeanFactory().getBeanLifeCycleEventDispatcher()
-		.registerListener(new EventListener<BeanLifeCycleEvent>() {
+		
+		application.getBeanFactory().getBeanLifeCycleEventDispatcher().registerListener(new EventListener<BeanLifeCycleEvent>() {
 
 			public void onEvent(BeanLifeCycleEvent event) {
 				if (event.getStep() == Step.BEFORE_INIT) {
 					Object source = event.getSource();
-					if (source != null
-							&& source instanceof ServletContextAware) {
-						((ServletContextAware) source)
-								.setServletContext(servletContext);
+					if (source != null && source instanceof ServletContextAware) {
+						((ServletContextAware) source).setServletContext(servletContext);
 					}
 				}
 			}

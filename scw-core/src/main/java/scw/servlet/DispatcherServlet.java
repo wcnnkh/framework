@@ -75,10 +75,14 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware, 
 
 			initialized = true;
 			try {
-				StartUp startUp = ServletUtils.getServletApplicationStartup().start(servletConfig.getServletContext());
-				if(startUp.isNew()){
-					reference = false;
+				if(application == null){
+					StartUp startUp = ServletUtils.getServletApplicationStartup().start(servletConfig.getServletContext());
+					this.application = startUp.getApplication();
+					if(startUp.isNew()){
+						reference = false;
+					}
 				}
+				
 
 				if (httpServletService == null && application != null) {
 					this.httpServletService = application.getBeanFactory().getInstance(HttpServletService.class);
@@ -105,7 +109,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware, 
 			}
 
 			initialized = false;
-			if (application != null && !reference && application.isInitialized()) {
+			if (application != null && !reference) {
 				application.destroy();
 			}
 			super.destroy();
