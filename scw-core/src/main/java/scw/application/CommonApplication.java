@@ -60,11 +60,6 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 			if (source instanceof ApplicationAware) {
 				((ApplicationAware) source).setApplication(this);
 			}
-
-			if (source instanceof ApplicationCountLatchAware) {
-				countLatch.countUp();
-				((ApplicationCountLatchAware) source).setInitializationCountLatch(countLatch);
-			}
 		}
 	}
 
@@ -93,13 +88,10 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 	public final void init() {
 		try {
 			super.init();
-			boolean start = countLatch.getCount() != 0;
-			getLogger().info(new SplitLineAppend("Initialized"));
+			getLogger().info(new SplitLineAppend("Initialized(latchCount={})"), countLatch.getCount());
 			countLatch.await();
 			initializationListenableFuture.set(this);
-			if(start){
-				getLogger().info(new SplitLineAppend("Start up complete"));
-			}
+			getLogger().info(new SplitLineAppend("Start up complete"));
 		} catch (Throwable e) {
 			getLogger().error(e, "Initialization error");
 			initializationListenableFuture.setException(e);
@@ -153,5 +145,9 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 
 	public BeanFactory getBeanFactory() {
 		return this;
+	}
+
+	public CountLatch getInitializationLatch() {
+		return countLatch;
 	}
 }

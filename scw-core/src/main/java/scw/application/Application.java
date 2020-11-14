@@ -5,6 +5,7 @@ import scw.beans.Destroy;
 import scw.beans.Init;
 import scw.event.BasicEventDispatcher;
 import scw.logger.Logger;
+import scw.util.concurrent.CountLatch;
 import scw.value.property.PropertyFactory;
 
 public interface Application extends Init, Destroy, BasicEventDispatcher<ApplicationEvent> {
@@ -22,6 +23,12 @@ public interface Application extends Init, Destroy, BasicEventDispatcher<Applica
 	 * @return
 	 */
 	boolean isInitialized();
+	
+	/**
+	 * 初始化时的计数锁，仅在未初始化完时有效
+	 * @return
+	 */
+	CountLatch getInitializationLatch();
 
 	Logger getLogger();
 

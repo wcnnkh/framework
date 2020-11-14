@@ -11,24 +11,21 @@ import javax.servlet.http.HttpServletResponse;
 import scw.aop.annotation.AopEnable;
 import scw.application.Application;
 import scw.application.ApplicationAware;
-import scw.application.ApplicationCountLatchAware;
 import scw.core.instance.annotation.Configuration;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.servlet.ServletApplicationStartup.StartUp;
 import scw.servlet.http.HttpServletService;
-import scw.util.concurrent.CountLatch;
 
 @Configuration(order = Integer.MIN_VALUE)
 @AopEnable(false)
-public class DispatcherServlet extends HttpServlet implements ApplicationAware, ApplicationCountLatchAware {
+public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerUtils.getLogger(DispatcherServlet.class);
 	private Application application;
 	private HttpServletService httpServletService;
 	private boolean reference = false;
-	private CountLatch countLatch;
 	private volatile boolean initialized = false;
 
 	public void setApplication(Application application) {
@@ -38,10 +35,6 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware, 
 
 	public Application getApplication() {
 		return application;
-	}
-
-	public void setInitializationCountLatch(CountLatch countLatch) {
-		this.countLatch = countLatch;
 	}
 
 	public HttpServletService getServletService() {
@@ -82,14 +75,11 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware, 
 						reference = false;
 					}
 				}
-				
 
 				if (httpServletService == null && application != null) {
+					application.getInitializationLatch().countUp();
 					this.httpServletService = application.getBeanFactory().getInstance(HttpServletService.class);
-				}
-
-				if (countLatch != null) {
-					countLatch.countDown();
+					application.getInitializationLatch().countDown();
 				}
 			} catch (Throwable e) {
 				logger.error(e, "Initialization error");
