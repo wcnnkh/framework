@@ -1,30 +1,40 @@
 package scw.servlet;
 
-import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 
 import scw.application.CommonApplication;
+import scw.core.GlobalPropertyFactory;
+import scw.core.utils.StringUtils;
 
 public class ServletApplication extends CommonApplication {
 
-	public ServletApplication(ServletConfig servletConfig) {
-		super(getConfigXml(servletConfig));
-		getPropertyFactory().addLastBasePropertyFactory(new ServletConfigPropertyFactory(servletConfig));
+	public ServletApplication(ServletContext servletContext) {
+		super(getConfigXml(servletContext));
+		setBasePackageName(servletContext);
+		getPropertyFactory().addLastBasePropertyFactory(new ServletContextPropertyFactory(servletContext));
+	}
+	
+	public  void setBasePackageName(ServletContext servletContext){
+		String name = servletContext.getInitParameter("packageName");
+		if(StringUtils.isNotEmpty(name)){
+			GlobalPropertyFactory.getInstance().setBasePackageName(name);
+		}
 	}
 
 	/**
 	 * 兼容老版本
 	 * 
-	 * @param servletConfig
+	 * @param servletContext
 	 * @return
 	 */
-	public static String getConfigXml(ServletConfig servletConfig) {
-		String config = servletConfig.getInitParameter("shuchaowen");
+	public static String getConfigXml(ServletContext servletContext) {
+		String config = servletContext.getInitParameter("shuchaowen");
 		if (config == null) {
-			config = servletConfig.getInitParameter("scw");
+			config = servletContext.getInitParameter("scw");
 		}
 
 		if (config == null) {
-			config = servletConfig.getInitParameter("beans");
+			config = servletContext.getInitParameter("beans");
 		}
 
 		return config;

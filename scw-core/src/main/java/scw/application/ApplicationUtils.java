@@ -3,6 +3,7 @@ package scw.application;
 import java.util.ArrayList;
 import java.util.List;
 
+import scw.compatible.CompatibleUtils;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.util.concurrent.ListenableFuture;
@@ -29,11 +30,15 @@ public final class ApplicationUtils {
 			GlobalPropertyFactory.getInstance().setBasePackageName(basePackage.value());
 		}
 	}
+	
+	public static <T> List<T> loadAllService(Class<? extends T> clazz, Application application){
+		return loadAllService(clazz, application, true);
+	}
 
-	public static <T> List<T> loadAllService(Class<? extends T> clazz, Application application) {
+	public static <T> List<T> loadAllService(Class<? extends T> clazz, Application application, boolean spi) {
 		List<T> list = new ArrayList<T>();
 		for (T instance : InstanceUtils.getServiceLoader(clazz, application.getBeanFactory(),
-				application.getPropertyFactory())) {
+				application.getPropertyFactory(), spi? CompatibleUtils.getSpi():null)) {
 			list.add(instance);
 		}
 

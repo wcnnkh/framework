@@ -51,7 +51,7 @@ import scw.util.JavaVersion;
 import scw.value.property.BasePropertyFactory;
 import scw.value.property.PropertyFactory;
 
-public class DefaultBeanFactory extends DefaultBeanLifeCycle implements BeanFactory, Accept<Class<?>> {
+public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Accept<Class<?>> {
 	private static Logger logger = LoggerUtils.getLogger(DefaultBeanFactory.class);
 	protected volatile LinkedHashMap<String, Object> singletonMap = new LinkedHashMap<String, Object>();
 	private volatile Map<String, BeanDefinition> beanMap = new HashMap<String, BeanDefinition>();

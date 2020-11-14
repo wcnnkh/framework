@@ -93,8 +93,13 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 	public final void init() {
 		try {
 			super.init();
+			boolean start = countLatch.getCount() != 0;
+			getLogger().info(new SplitLineAppend("Initialized"));
 			countLatch.await();
 			initializationListenableFuture.set(this);
+			if(start){
+				getLogger().info(new SplitLineAppend("Start up complete"));
+			}
 		} catch (Throwable e) {
 			getLogger().error(e, "Initialization error");
 			initializationListenableFuture.setException(e);

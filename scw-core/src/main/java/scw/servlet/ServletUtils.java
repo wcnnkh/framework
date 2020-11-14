@@ -12,22 +12,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.application.Application;
-import scw.beans.BeanLifeCycleEvent;
-import scw.beans.BeanLifeCycleEvent.Step;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
-import scw.event.EventListener;
 import scw.http.HttpCookie;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.servlet.beans.ServletContextAware;
 import scw.util.XUtils;
 
 public final class ServletUtils {
 	private static final boolean asyncSupport = ClassUtils.isPresent("javax.servlet.AsyncContext");// 是否支持异步处理
 	public static final String ATTRIBUTE_FORWARD_REQUEST_URI = "javax.servlet.forward.request_uri";
-	private static final ServletOperations SERVLET_OPERATIONS = InstanceUtils.loadService(ServletOperations.class,
-			"scw.servlet.DefaultServletOperations");
+	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = InstanceUtils.loadService(ServletApplicationStartup.class,
+			"scw.servlet.Servlet3ApplicationStartup", "scw.servlet.DefaultServletApplicationStartup");
 
 	private ServletUtils() {
 	};
@@ -64,28 +60,15 @@ public final class ServletUtils {
 		return XUtils.getTarget(response, HttpServletResponse.class);
 	}
 
-	public static synchronized void servletContextInitialization(final ServletContext servletContext,
-			Application application) throws ServletException {
-		String name = ServletContext.class.getName() + "-init";
-		if (servletContext.getAttribute(name) != null) {
-			return;
-		}
+	public static Application getApplication(ServletContext servletContext){
+		return (Application) servletContext.getAttribute(Application.class.getName());
+	}
+	
+	public static void setApplication(ServletContext servletContext, Application application){
+		servletContext.setAttribute(Application.class.getName(), application);
+	}
 
-		servletContext.setAttribute(name, true);
-
-		application.getBeanFactory().getBeanLifeCycleEventDispatcher()
-				.registerListener(new EventListener<BeanLifeCycleEvent>() {
-
-					public void onEvent(BeanLifeCycleEvent event) {
-						if (event.getStep() == Step.BEFORE_INIT) {
-							Object source = event.getSource();
-							if (source != null && source instanceof ServletContextAware) {
-								((ServletContextAware) source).setServletContext(servletContext);
-							}
-						}
-					}
-				});
-
-		SERVLET_OPERATIONS.servletContainerInitializer(servletContext, application);
+	public static ServletApplicationStartup getServletApplicationStartup() {
+		return SERVLET_APPLICATION_STARTUP;
 	}
 }

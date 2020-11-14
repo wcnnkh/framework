@@ -8,8 +8,10 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import scw.compatible.CompatibleUtils;
+import scw.compatible.SPI;
 import scw.compatible.ServiceLoader;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
@@ -20,9 +22,11 @@ import scw.core.utils.CollectionUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.util.ClassScanner;
 import scw.util.JavaVersion;
 import scw.util.MultiEnumeration;
 import scw.value.ValueFactory;
+import scw.value.property.PropertyFactory;
 
 @SuppressWarnings("rawtypes")
 public final class InstanceUtils {
@@ -77,9 +81,14 @@ public final class InstanceUtils {
 	}
 
 	public static <S> ServiceLoader<S> getServiceLoader(Class<? extends S> clazz, NoArgsInstanceFactory instanceFactory,
-			ValueFactory<String> propertyFactory, String... defaultNames) {
-		return new SpiServiceLoader<S>(CompatibleUtils.getSpi().load(clazz), clazz, instanceFactory, propertyFactory,
+			ValueFactory<String> propertyFactory, SPI spi, String... defaultNames) {
+		return new SpiServiceLoader<S>(spi == null? null:spi.load(clazz), clazz, instanceFactory, propertyFactory,
 				defaultNames);
+	}
+	
+	public static <S> ServiceLoader<S> getServiceLoader(Class<? extends S> clazz, NoArgsInstanceFactory instanceFactory,
+			ValueFactory<String> propertyFactory, String... defaultNames) {
+		return getServiceLoader(clazz, instanceFactory, propertyFactory, CompatibleUtils.getSpi(), defaultNames);
 	}
 
 	public static <T> List<T> loadAllService(Class<? extends T> clazz, NoArgsInstanceFactory instanceFactory,
@@ -90,8 +99,7 @@ public final class InstanceUtils {
 
 	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type,
 			ValueFactory<String> propertyFactory, Collection<? extends Class> excludeTypes) {
-		return getConfigurationClassList(type, excludeTypes,
-				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName(propertyFactory)));
+		return getConfigurationClassList(type, excludeTypes, getScannerClassPackages(propertyFactory));
 	}
 
 	public static <T> Collection<Class<T>> getConfigurationClassList(Class<? extends T> type,
@@ -106,8 +114,7 @@ public final class InstanceUtils {
 
 	public static <T> List<T> getConfigurationList(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
 			ValueFactory<String> propertyFactory, Collection<? extends Class> excludeTypes) {
-		return getConfigurationList(type, instanceFactory, excludeTypes,
-				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName(propertyFactory)));
+		return getConfigurationList(type, instanceFactory, excludeTypes, getScannerClassPackages(propertyFactory));
 	}
 
 	public static <T> List<T> getConfigurationList(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
@@ -149,8 +156,7 @@ public final class InstanceUtils {
 
 	public static <T> T getConfiguration(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
 			ValueFactory<String> propertyFactory, Collection<? extends Class> excludeTypes) {
-		return getConfiguration(type, instanceFactory, excludeTypes,
-				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName(propertyFactory)));
+		return getConfiguration(type, instanceFactory, excludeTypes, getScannerClassPackages(propertyFactory));
 	}
 
 	public static <T> T getConfiguration(Class<? extends T> type, NoArgsInstanceFactory instanceFactory,
@@ -173,7 +179,15 @@ public final class InstanceUtils {
 			NoArgsInstanceFactory instanceFactory, ValueFactory<String> propertyFactory,
 			Collection<? extends Class> excludeTypes) {
 		return getConfigurationServiceLoader(serviceClass, instanceFactory, excludeTypes,
-				Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName(propertyFactory)));
+				getScannerClassPackages(propertyFactory));
+	}
+	
+	private static Collection<String> getScannerClassPackages(ValueFactory<String> propertyFactory){
+		return Arrays.asList(Constants.SYSTEM_PACKAGE_NAME, getScanAnnotationPackageName(propertyFactory));
+	}
+	
+	public static Set<Class<?>> getClasses(PropertyFactory propertyFactory){
+		return ClassScanner.getInstance().getClasses(getScannerClassPackages(propertyFactory));
 	}
 
 	private static class ConfigurationServiceLoader<T> implements ServiceLoader<T> {

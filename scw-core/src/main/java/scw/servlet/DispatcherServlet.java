@@ -3,7 +3,6 @@ package scw.servlet;
 import java.io.IOException;
 
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +16,7 @@ import scw.core.instance.annotation.Configuration;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.servlet.ServletApplicationStartup.StartUp;
 import scw.servlet.http.HttpServletService;
 import scw.util.concurrent.CountLatch;
 
@@ -27,7 +27,6 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware, 
 	private static Logger logger = LoggerUtils.getLogger(DispatcherServlet.class);
 	private Application application;
 	private HttpServletService httpServletService;
-	private ServletContext servletContext;
 	private boolean reference = false;
 	private CountLatch countLatch;
 	private volatile boolean initialized = false;
@@ -56,7 +55,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware, 
 	@Override
 	protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		if (httpServletService == null) {
-			// 未初始化或初始化错误
+			//服务未初始化或初始化失败
 			resp.sendError(HttpStatus.SERVICE_UNAVAILABLE.value(), "Uninitialized or initialization error");
 			return;
 		}
@@ -75,25 +74,11 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware, 
 			}
 
 			initialized = true;
-			this.servletContext = servletConfig.getServletContext();
-			logger.info("Servlet context realPath / in {}", servletContext.getRealPath("/"));
 			try {
-				if (application == null) {
-					application = (Application) servletConfig.getServletContext()
-							.getAttribute(Application.class.getName());
-					if (application == null) {
-						application = new ServletApplication(servletConfig);
-					} else {
-						reference = true;
-					}
+				StartUp startUp = ServletUtils.getServletApplicationStartup().start(servletConfig.getServletContext());
+				if(startUp.isNew()){
+					reference = false;
 				}
-
-				// 如果未初始化就在这里初始化
-				if (!application.isInitialized()) {
-					application.init();
-				}
-
-				ServletUtils.servletContextInitialization(servletContext, application);
 
 				if (httpServletService == null && application != null) {
 					this.httpServletService = application.getBeanFactory().getInstance(HttpServletService.class);

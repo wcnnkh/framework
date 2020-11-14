@@ -1,12 +1,9 @@
 package scw.embed.tomcat;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Set;
 
-import javax.servlet.Filter;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.descriptor.JspConfigDescriptor;
@@ -19,8 +16,6 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.JarScanner;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
-import org.apache.tomcat.util.descriptor.web.FilterDef;
-import org.apache.tomcat.util.descriptor.web.FilterMap;
 
 import scw.application.Application;
 import scw.application.ApplicationUtils;
@@ -36,7 +31,6 @@ import scw.core.instance.annotation.Configuration;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.embed.EmbeddedUtils;
 import scw.http.HttpMethod;
@@ -45,10 +39,9 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionManager;
-import scw.servlet.FilterRegistration;
+import scw.servlet.ApplicationServletContainerInitializer;
 import scw.servlet.ServletUtils;
 import scw.util.ClassScanner;
-import scw.util.XUtils;
 import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
@@ -95,44 +88,7 @@ public class TomcatStart implements Main, Destroy {
 		if (jarScanner != null) {
 			context.setJarScanner(jarScanner);
 		}
-		
-		Set<Class<?>> classes = ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
-				InstanceUtils.getScanAnnotationPackageName(application.getPropertyFactory()));
-		for (ServletContainerInitializer initializer : ApplicationUtils
-				.loadAllService(ServletContainerInitializer.class, application)) {
-			context.addServletContainerInitializer(initializer, classes);
-		}
-
-		configurationWebSocket(context, application, classes);
-
-		addFilter(context, ApplicationUtils.loadAllService(FilterRegistration.class, application));
-		
-		if (AprLifecycleListener.isAprAvailable()) {
-			context.addLifecycleListener(new AprLifecycleListener());
-		}
 		return context;
-	}
-
-	private void configurationWebSocket(Context context, Application application, Set<Class<?>> classes) {
-		String wsClassName = "org.apache.tomcat.websocket.server.WsSci";
-		if (InstanceUtils.INSTANCE_FACTORY.isInstance(wsClassName)) {
-			ServletContainerInitializer initializer = InstanceUtils.INSTANCE_FACTORY.getInstance(wsClassName);
-			context.addServletContainerInitializer(initializer, classes);
-		}
-
-		String filterClassName = "org.apache.tomcat.websocket.server.WsFilter";
-		if (InstanceUtils.INSTANCE_FACTORY.isInstance(filterClassName)) {
-			Filter filter = InstanceUtils.INSTANCE_FACTORY.getInstance(filterClassName);
-			String filterName = filter.getClass().getSimpleName();
-			FilterDef filterDef = new FilterDef();
-			filterDef.setFilter(filter);
-			filterDef.setFilterName(filterName);
-			FilterMap filterMap = new FilterMap();
-			filterMap.setFilterName(filterName);
-			filterMap.addURLPattern("/*");
-			context.addFilterDef(filterDef);
-			context.addFilterMap(filterMap);
-		}
 	}
 
 	protected void addErrorPage(Context context, Application application) {
@@ -166,33 +122,6 @@ public class TomcatStart implements Main, Destroy {
 					}
 				}
 			}
-		}
-	}
-
-	protected void addFilter(Context context, Collection<FilterRegistration> filterRegistrations) {
-		int i = 0;
-		for (FilterRegistration registry : filterRegistrations) {
-			Filter filter = registry.getFilter();
-			if (filter == null) {
-				continue;
-			}
-
-			String name = XUtils.getName(filter, FilterRegistration.class.getSimpleName() + (i++));
-			FilterDef filterDef = new FilterDef();
-			filterDef.setFilter(filter);
-			filterDef.setFilterName(name);
-			FilterMap filterMap = new FilterMap();
-			filterMap.setFilterName(name);
-			Collection<String> urlPatterns = registry.getUrlPatterns();
-			if (CollectionUtils.isEmpty(urlPatterns)) {
-				filterMap.addURLPattern(FilterRegistration.ALL);
-			} else {
-				for (String urlPattern : urlPatterns) {
-					filterMap.addURLPattern(urlPattern);
-				}
-			}
-			context.addFilterDef(filterDef);
-			context.addFilterMap(filterMap);
 		}
 	}
 
@@ -287,16 +216,20 @@ public class TomcatStart implements Main, Destroy {
 		}
 	}
 
-	public void main(MainApplication application) throws Throwable {
+	public void main(final MainApplication application) throws Throwable {
 		Servlet servlet = application.getBeanFactory().getInstance(Servlet.class);
 		try {
 			tomcat8(application.getClassLoader());
 		} catch (Throwable e1) {
 		}
-
+		
 		this.tomcat = createTomcat(application.getBeanFactory(), application.getPropertyFactory(),
 				application.getMainArgs());
-		Context context = createContext(application);
+		final Context context = createContext(application);
+		if (AprLifecycleListener.isAprAvailable()) {
+			context.addLifecycleListener(new AprLifecycleListener());
+		}
+		
 		configureJSP(context, application);
 		configureServlet(context, servlet, application);
 
@@ -304,10 +237,11 @@ public class TomcatStart implements Main, Destroy {
 				.loadAllService(TomcatContextConfiguration.class, application)) {
 			configuration.configuration(application, context);
 		}
-
-		ServletUtils.servletContextInitialization(context.getServletContext(), application);
+		
+		ServletUtils.setApplication(context.getServletContext(), application);
+		context.addServletContainerInitializer(new ApplicationServletContainerInitializer(), ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME, InstanceUtils.getScanAnnotationPackageName(application.getPropertyFactory())));
 		tomcat.start();
-		//addErrorPage(context, application);
+		addErrorPage(context, application);
 	}
 
 	public void destroy() throws Throwable {

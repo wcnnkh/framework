@@ -65,10 +65,8 @@ public class ZooKeeperServerStart extends Thread {
 	@Override
 	public void run() {
 		ZooKeeperServerMain zooKeeperServerMain = new ZooKeeperServerMain();
-		if (logger.isDebugEnabled()) {
-			logger.debug("start zookeeper server: {}",
-					JSONUtils.toJSONString(serverConfig));
-		}
+		logger.info("start zookeeper server: {}",
+				JSONUtils.toJSONString(serverConfig));
 		try {
 			zooKeeperServerMain.runFromConfig(serverConfig);
 		} catch (Exception e) {

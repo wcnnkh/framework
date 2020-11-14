@@ -24,7 +24,7 @@ public final class MultiEnumeration<E> implements Enumeration<E> {
 			return enumeration.hasMoreElements();
 		}
 
-		while (iterator.hasNext()) {
+		while (iterator != null && iterator.hasNext()) {
 			enumeration = iterator.next();
 			if (enumeration.hasMoreElements()) {
 				return true;

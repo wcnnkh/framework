@@ -54,7 +54,7 @@ public class EurekaServerFilterRegistration implements FilterRegistration {
 
 	@Override
 	public Collection<String> getUrlPatterns() {
-		return Collections.singletonList(EurekaConstants.DEFAULT_PREFIX + "/*");
+		return Collections.singletonList(EurekaConstants.DEFAULT_PREFIX + ALL);
 	}
 
 }

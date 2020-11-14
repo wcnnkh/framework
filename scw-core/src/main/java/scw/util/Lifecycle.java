@@ -1,6 +1,6 @@
-package scw.beans;
+package scw.util;
 
-public interface BeanLifeCycle {
+public interface Lifecycle {
 	/**
 	 * 初始化前执行
 	 * 
