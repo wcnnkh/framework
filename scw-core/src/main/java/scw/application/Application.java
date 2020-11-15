@@ -26,6 +26,8 @@ public interface Application extends Init, Destroy, BasicEventDispatcher<Applica
 	
 	/**
 	 * 初始化时的计数锁，仅在未初始化完时有效
+	 * @see #init()
+	 * @see #isInitialized()
 	 * @return
 	 */
 	CountLatch getInitializationLatch();

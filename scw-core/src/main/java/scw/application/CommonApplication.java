@@ -19,18 +19,17 @@ import scw.util.concurrent.SettableListenableFuture;
 import scw.value.property.PropertyFactory;
 
 public class CommonApplication extends XmlBeanFactory implements Application, EventListener<BeanLifeCycleEvent> {
-	public static final String DEFAULT_BEANS_PATH = "beans.xml";
 	private volatile BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer;
 	private volatile Logger logger;
 	private final SettableListenableFuture<Application> initializationListenableFuture = new SettableListenableFuture<Application>();
 	private final CountLatch countLatch = new CountLatch(0);
 
 	public CommonApplication() {
-		this(DEFAULT_BEANS_PATH);
+		this(DEFAULT_CONFIG);
 	}
 
 	public CommonApplication(String xml) {
-		super(new PropertyFactory(true, true), StringUtils.isEmpty(xml) ? DEFAULT_BEANS_PATH : xml);
+		super(new PropertyFactory(true, true), StringUtils.isEmpty(xml) ? DEFAULT_CONFIG : xml);
 		addInternalSingleton(Application.class, this);
 		getBeanLifeCycleEventDispatcher().registerListener(this);
 	}

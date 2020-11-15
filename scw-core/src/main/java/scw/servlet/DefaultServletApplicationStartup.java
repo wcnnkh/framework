@@ -31,13 +31,25 @@ public class DefaultServletApplicationStartup implements ServletApplicationStart
 		if(application == null){
 			logger.info("Start servlet context[{}] realPath / in {}", servletContext.getContextPath(), servletContext.getRealPath("/"));
 			application = new ServletApplication(servletContext);
+			addServletContextPropertyFactory(servletContext, application);
 			application.init();
 			ServletUtils.setApplication(servletContext, application);
 			startUp = new StartUp(application, true);
 		}else{
+			addServletContextPropertyFactory(servletContext, application);
 			startUp = new StartUp(application, false);
 		}
 		return startUp;
+	}
+	
+	private void addServletContextPropertyFactory(ServletContext servletContext, Application application) throws ServletException{
+		if(servletContext.getAttribute(ServletContextPropertyFactory.class.getName()) != null){
+			return ;
+		}
+		
+		ServletContextPropertyFactory servletContextPropertyFactory = new ServletContextPropertyFactory(servletContext);
+		servletContext.setAttribute(ServletContextPropertyFactory.class.getName(), servletContextPropertyFactory);
+		application.getPropertyFactory().addLastBasePropertyFactory(servletContextPropertyFactory);
 	}
 	
 	protected Set<Class<?>> getClasses(Application application){

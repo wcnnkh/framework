@@ -3,6 +3,7 @@ package scw.servlet;
 import javax.servlet.ServletContext;
 
 import scw.application.CommonApplication;
+import scw.beans.xml.XmlBeanFactory;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 
@@ -11,7 +12,6 @@ public class ServletApplication extends CommonApplication {
 	public ServletApplication(ServletContext servletContext) {
 		super(getConfigXml(servletContext));
 		setBasePackageName(servletContext);
-		getPropertyFactory().addLastBasePropertyFactory(new ServletContextPropertyFactory(servletContext));
 	}
 	
 	public  void setBasePackageName(ServletContext servletContext){
@@ -34,9 +34,8 @@ public class ServletApplication extends CommonApplication {
 		}
 
 		if (config == null) {
-			config = servletContext.getInitParameter("beans");
+			config = servletContext.getInitParameter(XmlBeanFactory.CONFIG_NAME);
 		}
-
 		return config;
 	}
 }

@@ -9,6 +9,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanDefinition;
 import scw.beans.DefaultBeanFactory;
 import scw.core.utils.StringUtils;
+import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -16,31 +17,49 @@ import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
+	public static final String DEFAULT_CONFIG = "beans.xml";
+	public static final String CONFIG_NAME = "contextConfigLocation";
 	private static Logger logger = LoggerUtils.getLogger(XmlBeanFactory.class);
 	private static final String TAG_NAME = "bean";
 	private NodeList nodeList;
-
+	private String xml;
+	
 	public XmlBeanFactory(PropertyFactory propertyFactory, String xml) {
 		super(propertyFactory);
-		if (StringUtils.isNotEmpty(xml)) {
-			if (ResourceUtils.getResourceOperations().isExist(xml)) {
-				Node root = XmlBeanUtils.getRootNode(xml);
-				this.nodeList = XMLUtils.getChildNodes(root, true);
-			} else {
-				logger.info("Not used {}", xml);
-			}
-		}
+		this.xml = xml;
 	}
 
 	public NodeList getNodeList() {
 		return nodeList == null ? XMLUtils.EMPTY_NODE_LIST : nodeList;
 	}
+	
+	public String getXml() {
+		return xml;
+	}
 
 	@Override
 	public void beforeInit() throws Throwable {
-		if (nodeList == null) {
-			return;
+		Resource resource = null;
+		if(StringUtils.isNotEmpty(xml)){
+			resource = ResourceUtils.getResourceOperations().getResource(xml);
 		}
+		
+		if(resource == null || !resource.exists()){
+			String config = getPropertyFactory().getString(CONFIG_NAME);
+			if(StringUtils.isNotEmpty(config)){
+				resource = ResourceUtils.getResourceOperations().getResource(config);
+			}
+		}
+		
+		if(resource == null || !resource.exists()){
+			resource = ResourceUtils.getResourceOperations().getResource(DEFAULT_CONFIG);
+		}
+		
+		if(resource != null && resource.exists()){
+			this.nodeList = XmlBeanUtils.getRootNodeList(resource);
+			logger.info("Use config {}", resource);
+		}
+		
 
 		getPropertyFactory().addLastBasePropertyFactory(new XmlPropertyFactory(getPropertyFactory(), nodeList));
 		addXmlBeanNameMapping(nodeList);

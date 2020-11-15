@@ -14,6 +14,11 @@ import scw.logger.LoggerFactory;
 import scw.logger.SplitLineAppend;
 import scw.servlet.ServletApplicationStartup.StartUp;
 
+/**
+ * servlet会使用spi机制初始化此类,对于嵌入式应当手动初始化(如:tomcat embedded)
+ * @author shuchaowen
+ *
+ */
 public class ApplicationServletContainerInitializer implements ServletContainerInitializer, ServletContextListener{
 	private static Logger logger = LoggerFactory.getLogger(ApplicationServletContainerInitializer.class);
 	
