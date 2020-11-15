@@ -25,12 +25,13 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	private static Logger logger = LoggerUtils.getLogger(DispatcherServlet.class);
 	private Application application;
 	private HttpServletService httpServletService;
-	private boolean reference = false;
+	private boolean reference = true;
 	private volatile boolean initialized = false;
 
 	public void setApplication(Application application) {
 		reference = true;
 		this.application = application;
+		application.getInitializationLatch().countUp();
 	}
 
 	public Application getApplication() {
@@ -77,8 +78,10 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 				}
 
 				if (httpServletService == null && application != null) {
-					application.getInitializationLatch().countUp();
 					this.httpServletService = application.getBeanFactory().getInstance(HttpServletService.class);
+				}
+				
+				if(reference){
 					application.getInitializationLatch().countDown();
 				}
 			} catch (Throwable e) {

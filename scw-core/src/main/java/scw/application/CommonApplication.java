@@ -88,7 +88,7 @@ public class CommonApplication extends XmlBeanFactory implements Application, Ev
 	public final void init() {
 		try {
 			super.init();
-			getLogger().info(new SplitLineAppend("Initialized(latchCount={})"), countLatch.getCount());
+			getLogger().info(new SplitLineAppend("Initialized(countLatch={})"), countLatch.getCount());
 			countLatch.await();
 			initializationListenableFuture.set(this);
 			getLogger().info(new SplitLineAppend("Start up complete"));
