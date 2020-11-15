@@ -58,17 +58,15 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 		if(resource != null && resource.exists()){
 			this.nodeList = XmlBeanUtils.getRootNodeList(resource);
 			logger.info("Use config {}", resource);
-		}
-		
+			getPropertyFactory().addLastBasePropertyFactory(new XmlPropertyFactory(getPropertyFactory(), nodeList));
+			addXmlBeanNameMapping(nodeList);
 
-		getPropertyFactory().addLastBasePropertyFactory(new XmlPropertyFactory(getPropertyFactory(), nodeList));
-		addXmlBeanNameMapping(nodeList);
-
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node nRoot = nodeList.item(i);
-			if (TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
-				BeanDefinition beanDefinition = new XmlBeanDefinition(this, getPropertyFactory(), nRoot);
-				addBeanDefinition(beanDefinition, true);
+			for (int i = 0; i < nodeList.getLength(); i++) {
+				Node nRoot = nodeList.item(i);
+				if (TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
+					BeanDefinition beanDefinition = new XmlBeanDefinition(this, getPropertyFactory(), nRoot);
+					addBeanDefinition(beanDefinition, true);
+				}
 			}
 		}
 		super.beforeInit();
