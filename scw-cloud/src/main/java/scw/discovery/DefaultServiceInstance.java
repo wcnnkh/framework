@@ -78,37 +78,30 @@ public class DefaultServiceInstance implements ServiceInstance, Serializable {
 		return URI.create(uri);
 	}
 
-	@Override
 	public URI getUri() {
 		return getUri(this);
 	}
 
-	@Override
 	public Map<String, String> getMetadata() {
 		return metadata;
 	}
 
-	@Override
 	public String getId() {
 		return id;
 	}
 
-	@Override
 	public String getName() {
 		return name;
 	}
 
-	@Override
 	public String getHost() {
 		return host;
 	}
 
-	@Override
 	public int getPort() {
 		return port;
 	}
 
-	@Override
 	public boolean isSecure() {
 		return secure;
 	}

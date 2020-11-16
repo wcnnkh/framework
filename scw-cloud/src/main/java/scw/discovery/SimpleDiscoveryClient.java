@@ -28,7 +28,6 @@ import scw.core.utils.CollectionUtils;
 public class SimpleDiscoveryClient<T extends ServiceInstance> implements DiscoveryClient, ServiceRegistry<T> {
 	private final ConcurrentHashMap<String, Map<String, T>> instanceMap = new ConcurrentHashMap<String, Map<String, T>>();
 
-	@Override
 	public List<ServiceInstance> getInstances(String name) {
 		Map<String, T> serviceInstanceForService = instanceMap.get(name);
 		if (CollectionUtils.isEmpty(serviceInstanceForService)) {
@@ -38,12 +37,10 @@ public class SimpleDiscoveryClient<T extends ServiceInstance> implements Discove
 		return new ArrayList<ServiceInstance>(serviceInstanceForService.values());
 	}
 
-	@Override
 	public List<String> getServices() {
 		return new ArrayList<String>(instanceMap.keySet());
 	}
 
-	@Override
 	public void register(T instance) {
 		Map<String, T> serviceInstanceForService = instanceMap.get(instance.getName());
 		if (serviceInstanceForService == null) {
@@ -56,7 +53,6 @@ public class SimpleDiscoveryClient<T extends ServiceInstance> implements Discove
 		}
 	}
 
-	@Override
 	public void deregister(T instance) {
 		Map<String, T> serviceInstanceForService = instanceMap.get(instance.getName());
 		if (serviceInstanceForService == null) {

@@ -6,12 +6,18 @@
 		<artifactId>scw</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>scw-cloud</artifactId>
-
+	<artifactId>scw-netflix-hystrix</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-core</artifactId>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.netflix.hystrix/hystrix-core -->
+		<dependency>
+			<groupId>com.netflix.hystrix</groupId>
+			<artifactId>hystrix-core</artifactId>
+			<version>1.5.18</version>
 		</dependency>
 	</dependencies>
 </project>
