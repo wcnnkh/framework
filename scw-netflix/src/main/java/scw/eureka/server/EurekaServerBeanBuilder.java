@@ -3,7 +3,6 @@ package scw.eureka.server;
 import java.util.Collections;
 
 import com.netflix.appinfo.ApplicationInfoManager;
-import com.netflix.discovery.DiscoveryClient;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.eureka.DefaultEurekaServerContext;
@@ -41,11 +40,34 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 			return new EurekaServerContextBuilder(context);
 		}
 
-		if (context.getTargetClass() == EurekaClient.class) {
-			return new EurekaClientBuilder(context);
+		if(context.getTargetClass() == EurekaServerConfig.class){
+			return new EurekaServerConfigBuilder(context);
 		}
 		
 		return loaderChain.loading(context);
+	}
+	
+	private static class EurekaServerConfigBuilder extends DefaultBeanDefinition{
+
+		public EurekaServerConfigBuilder(LoaderContext loaderContext) {
+			super(loaderContext);
+		}
+		
+		@Override
+		public boolean isInstance() {
+			return beanFactory.isInstance(EurekaClientConfig.class);
+		}
+		
+		@Override
+		public Object create() throws Exception {
+			EurekaClientConfig clientConfig = beanFactory.getInstance(EurekaClientConfig.class);
+			EurekaServerConfigBean server = new EurekaServerConfigBean();
+			if (clientConfig.shouldRegisterWithEureka()) {
+				// Set a sensible default if we are supposed to replicate
+				server.setRegistrySyncRetries(5);
+			}
+			return server;
+		}
 	}
 
 	private static class EurekaServerContextBuilder extends DefaultBeanDefinition {
@@ -79,25 +101,6 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 			return new ReplicationClientAdditionalFilters(Collections.emptySet());
 		}
 		return beanFactory.getInstance(ReplicationClientAdditionalFilters.class);
-	}
-
-	private static class EurekaClientBuilder extends DefaultBeanDefinition {
-
-		public EurekaClientBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
-		}
-
-		@Override
-		public boolean isInstance() {
-			return beanFactory.isInstance(ApplicationInfoManager.class)
-					&& beanFactory.isInstance(EurekaClientConfig.class);
-		}
-
-		@Override
-		public Object create() throws Exception {
-			return new DiscoveryClient(beanFactory.getInstance(ApplicationInfoManager.class),
-					beanFactory.getInstance(EurekaClientConfig.class));
-		}
 	}
 
 	private static class PeerEurekaNodesBuilder extends DefaultBeanDefinition {

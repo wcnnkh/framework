@@ -12,6 +12,7 @@ import scw.aop.Proxy;
 import scw.aop.ProxyUtils;
 import scw.beans.BeanLifeCycleEvent.Step;
 import scw.beans.annotation.Bean;
+import scw.beans.annotation.ConfigurationProperties;
 import scw.beans.builder.LoaderContext;
 import scw.beans.ioc.Ioc;
 import scw.core.instance.DefaultInstanceBuilder;
@@ -20,6 +21,11 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.Field;
+import scw.mapper.Fields;
+import scw.mapper.FilterFeature;
+import scw.mapper.MapperUtils;
+import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
 public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable {
@@ -51,10 +57,46 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 				ioc.getDependence().process(this, instance, beanFactory, propertyFactory);
 			}
 			ioc.getDependence().process(this, instance, beanFactory, propertyFactory);
+
+			// @ConfigurationProperties
+			ConfigurationProperties configurationProperties = instance.getClass()
+					.getAnnotation(ConfigurationProperties.class);
+			if (configurationProperties != null) {
+				configurationProperties(configurationProperties, instance);
+			}
+
+			configurationProperties = getAnnotatedElement().getAnnotation(ConfigurationProperties.class);
+			if (configurationProperties != null) {
+				configurationProperties(configurationProperties, instance);
+			}
+
 			BeanUtils.aware(instance, beanFactory, this);
 		}
 		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DEPENDENCE));
+	}
+	
+	protected Value getConfigurationPropertiesValue(ConfigurationProperties configurationProperties, String name){
+		String prefix = configurationProperties.prefix();
+		if(StringUtils.isEmpty(prefix)){
+			prefix = configurationProperties.value();
+		}
+		
+		return propertyFactory.get((StringUtils.isEmpty(prefix)? "":(prefix + ".")) + name);
+	}
+
+	protected void configurationProperties(ConfigurationProperties configurationProperties, Object instance) {
+		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER_IGNORE_STATIC, FilterFeature.EXISTING_SETTER_FIELD);
+		for(Field field : fields){
+			Value value = getConfigurationPropertiesValue(configurationProperties, field.getSetter().getName());
+			if(value == null || value.isEmpty()){
+				value = getConfigurationPropertiesValue(configurationProperties, StringUtils.humpNamingReplacement(field.getSetter().getName(), "-"));
+			}
+			
+			if(value != null && !value.isEmpty()){
+				field.getSetter().set(instance, value.getAsObject(field.getSetter().getGenericType()));
+			}
+		}
 	}
 
 	public void init(Object instance) throws Throwable {

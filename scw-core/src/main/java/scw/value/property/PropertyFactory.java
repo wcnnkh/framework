@@ -163,18 +163,18 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		return dynamicProperties.put(key, toValue(value, format));
 	}
 
-	private Value toValue(Object value, boolean format) {
+	private Value toValue(Object value, boolean resolvePlaceholders) {
 		Value v;
 		if (value instanceof Value) {
 			if (value instanceof StringFormatValue || value instanceof AnyFormatValue || value instanceof FormatValue) {
 				v = (Value) value;
 			} else {
-				v = format ? new FormatValue((Value) value) : (Value) value;
+				v = resolvePlaceholders ? new FormatValue((Value) value) : (Value) value;
 			}
 		} else if (value instanceof String) {
-			v = format ? new StringFormatValue((String) value) : new StringValue((String) value);
+			v = resolvePlaceholders ? new StringFormatValue((String) value) : new StringValue((String) value);
 		} else {
-			v = format ? new AnyFormatValue(value) : new AnyValue(value);
+			v = resolvePlaceholders ? new AnyFormatValue(value) : new AnyValue(value);
 		}
 		return v;
 	}
@@ -202,7 +202,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	}
 
 	public PropertyFactoryRegistration loadProperties(final String keyPrefix, String resource, String charsetName) {
-		return loadProperties(keyPrefix, resource, charsetName, false);
+		return loadProperties(keyPrefix, resource, charsetName, true);
 	}
 
 	public PropertyFactoryRegistration loadProperties(String resource, boolean format) {
@@ -303,7 +303,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		@Override
 		public String getAsString() {
 			String value = super.getAsString();
-			return format(value, true);
+			return resolvePlaceholders(value);
 		}
 	}
 
@@ -316,7 +316,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 		public String getAsString() {
 			String value = super.getAsString();
-			return format(value, true);
+			return resolvePlaceholders(value);
 		};
 	}
 
@@ -329,7 +329,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		@Override
 		public String getAsString() {
 			String value = super.getAsString();
-			return format(value, true);
+			return resolvePlaceholders(value);
 		}
 	}
 

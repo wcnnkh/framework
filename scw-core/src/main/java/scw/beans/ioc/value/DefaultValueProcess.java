@@ -7,6 +7,8 @@ import scw.core.ResolvableType;
 import scw.event.EventListener;
 import scw.event.support.DynamicValue;
 import scw.mapper.Field;
+import scw.util.PropertyPlaceholderHelper;
+import scw.value.StringValue;
 import scw.value.property.PropertyEvent;
 import scw.value.property.PropertyFactory;
 
@@ -22,6 +24,12 @@ public class DefaultValueProcess extends AbstractValueProcesser {
 			DynamicValue<Object> dynamicValue = propertyFactory.getDynamicValue(name, valueType.getType(), null);
 			field.getSetter().set(bean, dynamicValue);
 			//如果是一个动态值就不用进行监听了
+			return ;
+		}
+		
+		if(name.startsWith(PropertyPlaceholderHelper.PLACEHOLDER_PREFIX) && name.endsWith(PropertyPlaceholderHelper.PLACEHOLDER_SUFFIX)){
+			String v = propertyFactory.resolvePlaceholders(name);
+			set(bean, field, charsetName, new StringValue(v));
 			return ;
 		}
 		
@@ -47,7 +55,6 @@ public class DefaultValueProcess extends AbstractValueProcesser {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Changes in progress name [{}] field [{}] value [{}]", name, field.getSetter(), value);
 		}
-
 		field.getSetter().set(bean, value == null ? null : value.getAsObject(field.getSetter().getGenericType()));
 	}
 }

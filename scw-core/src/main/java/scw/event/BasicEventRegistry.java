@@ -1,5 +1,5 @@
 package scw.event;
 
-public interface BasicEventRegister<T extends Event> {
+public interface BasicEventRegistry<T extends Event> {
 	EventRegistration registerListener(EventListener<T> eventListener);
 }

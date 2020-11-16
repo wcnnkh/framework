@@ -9,7 +9,6 @@ import scw.io.ResourceUtils;
 public final class AutoZooKeeperServerStart implements ApplicationInitialization {
 	private static final String DEFAULT_ZOOKEEPER_CONFIG = "zookeeper.properties";
 
-	@Override
 	public void init(Application application) throws Throwable {
 		ZooKeeperServerStart start = null;
 		if (ResourceUtils.getResourceOperations().isExist(DEFAULT_ZOOKEEPER_CONFIG)) {

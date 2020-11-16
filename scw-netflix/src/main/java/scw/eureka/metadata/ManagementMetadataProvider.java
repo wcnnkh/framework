@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 the original author or authors.
+ * Copyright 2017-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package scw.eureka;
+package scw.eureka.metadata;
 
-import com.netflix.appinfo.EurekaInstanceConfig;
-import com.netflix.appinfo.InstanceInfo;
-
-import scw.aop.annotation.AopEnable;
+import scw.eureka.EurekaInstanceConfigBean;
 
 /**
- * @author Spencer Gibb
+ * Provider for Eureka-specific management metadata.
+ *
+ * @author Anastasiia Smirnova
  */
-@AopEnable(false)
-public interface CloudEurekaInstanceConfig extends EurekaInstanceConfig {
+public interface ManagementMetadataProvider {
 
-	void setNonSecurePort(int port);
+	ManagementMetadata get(EurekaInstanceConfigBean instance, int serverPort, String serverContextPath,
+			String managementContextPath, Integer managementPort);
 
-	void setSecurePort(int securePort);
-
-	InstanceInfo.InstanceStatus getInitialStatus();
 }

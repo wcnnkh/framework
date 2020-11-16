@@ -36,18 +36,23 @@ public class EurekaServerInitializer implements ServletContextInitialization, De
 		if (eurekaServerBootstrap == null) {
 			return;
 		}
+		
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
 
-		new Thread(() -> {
-			try {
-				// TODO: is this class even needed now?
-				eurekaServerBootstrap.contextInitialized(servletContext);
-				logger.info("Started Eureka Server");
+				try {
+					// TODO: is this class even needed now?
+					eurekaServerBootstrap.contextInitialized(servletContext);
+					logger.info("Started Eureka Server");
 
-				application.publishEvent(new EurekaRegistryAvailableEvent(eurekaServerConfig));
-				application.publishEvent(new EurekaServerStartedEvent(eurekaServerConfig));
-			} catch (Exception ex) {
-				// Help!
-				logger.error(ex, "Could not initialize Eureka servlet context");
+					application.publishEvent(new EurekaRegistryAvailableEvent(eurekaServerConfig));
+					application.publishEvent(new EurekaServerStartedEvent(eurekaServerConfig));
+				} catch (Exception ex) {
+					// Help!
+					logger.error(ex, "Could not initialize Eureka servlet context");
+				}
 			}
 		}).start();
 	}

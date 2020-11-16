@@ -27,6 +27,7 @@ import com.netflix.eureka.EurekaServerConfig;
 import com.netflix.eureka.aws.AwsBindingStrategy;
 
 import scw.beans.annotation.Autowired;
+import scw.beans.annotation.ConfigurationProperties;
 import scw.mapper.MapperUtils;
 import scw.value.property.PropertyFactory;
 
@@ -34,6 +35,7 @@ import scw.value.property.PropertyFactory;
  * @author Dave Syer
  * @author Gregor Zurowski
  */
+@ConfigurationProperties(EurekaServerConfigBean.PREFIX)
 public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	/**

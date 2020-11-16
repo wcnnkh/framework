@@ -26,10 +26,10 @@ public class PropertyPlaceholderHelper {
 	private static final Map<String, String> wellKnownSimplePrefixes = new HashMap<String, String>(4);
 
 	/** Prefix for system property placeholders: "${" */
-	private static final String PLACEHOLDER_PREFIX = "${";
+	public static final String PLACEHOLDER_PREFIX = "${";
 
 	/** Suffix for system property placeholders: "}" */
-	private static final String PLACEHOLDER_SUFFIX = "}";
+	public static final String PLACEHOLDER_SUFFIX = "}";
 
 	/** Value separator for system property placeholders: ":" */
 	private static final String VALUE_SEPARATOR = ":";

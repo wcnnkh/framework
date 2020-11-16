@@ -146,7 +146,7 @@
 			
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-registry</artifactId>
+				<artifactId>scw-zookeeper</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -428,6 +428,6 @@
 		<module>scw-dubbo</module>
 		<module>scw-mq</module>
 		<module>scw-netflix</module>
-		<module>scw-registry</module>
+		<module>scw-zookeeper</module>
 	</modules>
 </project>

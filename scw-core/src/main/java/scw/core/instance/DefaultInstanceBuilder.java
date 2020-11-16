@@ -5,12 +5,12 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import scw.compatible.ServiceLoader;
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotFoundException;
 import scw.lang.NotSupportedException;
+import scw.util.ServiceLoader;
 import scw.value.property.PropertyFactory;
 
 public class DefaultInstanceBuilder<T> extends DefaultParameterFactory implements InstanceBuilder<T> {

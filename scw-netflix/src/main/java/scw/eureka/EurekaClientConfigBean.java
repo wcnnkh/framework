@@ -16,6 +16,8 @@
 
 package scw.eureka;
 
+import static scw.eureka.EurekaConstants.DEFAULT_PREFIX;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,8 +29,8 @@ import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.discovery.shared.transport.EurekaTransportConfig;
 
 import scw.beans.annotation.Autowired;
+import scw.beans.annotation.ConfigurationProperties;
 import scw.core.utils.StringUtils;
-import scw.mapper.MapperUtils;
 import scw.value.property.PropertyFactory;
 
 /**
@@ -37,6 +39,7 @@ import scw.value.property.PropertyFactory;
  * @author Dave Syer
  * @author Gregor Zurowski
  */
+@ConfigurationProperties(EurekaClientConfigBean.PREFIX)
 public class EurekaClientConfigBean implements EurekaClientConfig {
 
 	/**
@@ -47,7 +50,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	/**
 	 * Default Eureka URL.
 	 */
-	public static final String DEFAULT_URL = "http://localhost:8761" + EurekaConstants.DEFAULT_PREFIX + "/";
+	public static final String DEFAULT_URL = "http://localhost:8080" + DEFAULT_PREFIX + "/";
 
 	/**
 	 * Default availability zone if none is resolved based on region.
@@ -57,7 +60,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private static final int MINUTES = 60;
 
 	@Autowired(required = false)
-	PropertyFactory propertyFactory;
+	private PropertyFactory propertyFactory;
 
 	/**
 	 * Flag to indicate that the Eureka client is enabled.
@@ -412,6 +415,12 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	 * initialization. Defaults to false.
 	 */
 	private boolean shouldEnforceRegistrationAtInit = false;
+
+	/**
+	 * Order of the discovery client used by `CompositeDiscoveryClient` for
+	 * sorting available clients.
+	 */
+	private int order = 0;
 
 	@Override
 	public boolean shouldGZipContent() {
@@ -967,7 +976,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 				&& Objects.equals(dollarReplacement, that.dollarReplacement)
 				&& Objects.equals(escapeCharReplacement, that.escapeCharReplacement)
 				&& Objects.equals(encoderName, that.encoderName) && Objects.equals(decoderName, that.decoderName)
-				&& Objects.equals(clientDataAccept, that.clientDataAccept);
+				&& Objects.equals(clientDataAccept, that.clientDataAccept) && Objects.equals(order, that.order);
 	}
 
 	@Override
@@ -984,12 +993,52 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 				registerWithEureka, preferSameZoneEureka, logDeltaDiff, disableDelta, fetchRemoteRegionsRegistry,
 				availabilityZones, filterOnlyUpInstances, fetchRegistry, dollarReplacement, escapeCharReplacement,
 				allowRedirects, onDemandUpdateStatusChange, encoderName, decoderName, clientDataAccept,
-				shouldUnregisterOnShutdown, shouldEnforceRegistrationAtInit);
+				shouldUnregisterOnShutdown, shouldEnforceRegistrationAtInit, order);
 	}
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().toString(this);
+		return new StringBuilder("EurekaClientConfigBean{").append("propertyResolver=").append(propertyFactory)
+				.append(", ").append("enabled=").append(enabled).append(", ").append("transport=").append(transport)
+				.append(", ").append("registryFetchIntervalSeconds=").append(registryFetchIntervalSeconds).append(", ")
+				.append("instanceInfoReplicationIntervalSeconds=").append(instanceInfoReplicationIntervalSeconds)
+				.append(", ").append("initialInstanceInfoReplicationIntervalSeconds=")
+				.append(initialInstanceInfoReplicationIntervalSeconds).append(", ")
+				.append("eurekaServiceUrlPollIntervalSeconds=").append(eurekaServiceUrlPollIntervalSeconds).append(", ")
+				.append("proxyPort='").append(proxyPort).append("', ").append("proxyHost='").append(proxyHost)
+				.append("', ").append("proxyUserName='").append(proxyUserName).append("', ").append("proxyPassword='")
+				.append(proxyPassword).append("', ").append("eurekaServerReadTimeoutSeconds=")
+				.append(eurekaServerReadTimeoutSeconds).append(", ").append("eurekaServerConnectTimeoutSeconds=")
+				.append(eurekaServerConnectTimeoutSeconds).append(", ").append("backupRegistryImpl='")
+				.append(backupRegistryImpl).append("', ").append("eurekaServerTotalConnections=")
+				.append(eurekaServerTotalConnections).append(", ").append("eurekaServerTotalConnectionsPerHost=")
+				.append(eurekaServerTotalConnectionsPerHost).append(", ").append("eurekaServerURLContext='")
+				.append(eurekaServerURLContext).append("', ").append("eurekaServerPort='").append(eurekaServerPort)
+				.append("', ").append("eurekaServerDNSName='").append(eurekaServerDNSName).append("', ")
+				.append("region='").append(region).append("', ").append("eurekaConnectionIdleTimeoutSeconds=")
+				.append(eurekaConnectionIdleTimeoutSeconds).append(", ").append("registryRefreshSingleVipAddress='")
+				.append(registryRefreshSingleVipAddress).append("', ").append("heartbeatExecutorThreadPoolSize=")
+				.append(heartbeatExecutorThreadPoolSize).append(", ")
+				.append("heartbeatExecutorExponentialBackOffBound=").append(heartbeatExecutorExponentialBackOffBound)
+				.append(", ").append("cacheRefreshExecutorThreadPoolSize=").append(cacheRefreshExecutorThreadPoolSize)
+				.append(", ").append("cacheRefreshExecutorExponentialBackOffBound=")
+				.append(cacheRefreshExecutorExponentialBackOffBound).append(", ").append("serviceUrl=")
+				.append(serviceUrl).append(", ").append("gZipContent=").append(gZipContent).append(", ")
+				.append("useDnsForFetchingServiceUrls=").append(useDnsForFetchingServiceUrls).append(", ")
+				.append("registerWithEureka=").append(registerWithEureka).append(", ").append("preferSameZoneEureka=")
+				.append(preferSameZoneEureka).append(", ").append("logDeltaDiff=").append(logDeltaDiff).append(", ")
+				.append("disableDelta=").append(disableDelta).append(", ").append("fetchRemoteRegionsRegistry='")
+				.append(fetchRemoteRegionsRegistry).append("', ").append("availabilityZones=").append(availabilityZones)
+				.append(", ").append("filterOnlyUpInstances=").append(filterOnlyUpInstances).append(", ")
+				.append("fetchRegistry=").append(fetchRegistry).append(", ").append("dollarReplacement='")
+				.append(dollarReplacement).append("', ").append("escapeCharReplacement='").append(escapeCharReplacement)
+				.append("', ").append("allowRedirects=").append(allowRedirects).append(", ")
+				.append("onDemandUpdateStatusChange=").append(onDemandUpdateStatusChange).append(", ")
+				.append("encoderName='").append(encoderName).append("', ").append("decoderName='").append(decoderName)
+				.append("', ").append("clientDataAccept='").append(clientDataAccept).append("', ")
+				.append("shouldUnregisterOnShutdown='").append(shouldUnregisterOnShutdown)
+				.append("shouldEnforceRegistrationAtInit='").append(shouldEnforceRegistrationAtInit).append("', ")
+				.append("order='").append(order).append("'}").toString();
 	}
 
 }

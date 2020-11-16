@@ -7,6 +7,7 @@ import scw.compatible.CompatibleUtils;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.util.concurrent.ListenableFuture;
+import scw.value.property.PropertyFactory;
 
 public final class ApplicationUtils {
 
@@ -48,5 +49,13 @@ public final class ApplicationUtils {
 		}
 
 		return list;
+	}
+	
+	public static String getApplicatoinName(PropertyFactory propertyFactory){
+		return propertyFactory.getString("application.name");
+	}
+	
+	public static int getApplicationPort(PropertyFactory propertyFactory){
+		return propertyFactory.getValue("server.port", int.class, propertyFactory.getValue("port", int.class, 8080));
 	}
 }

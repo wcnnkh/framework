@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.servlet.Filter;
+import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import javax.servlet.FilterRegistration.Dynamic;
 
 import scw.application.Application;
 import scw.application.ApplicationUtils;
@@ -21,10 +21,6 @@ public class Servlet3ApplicationStartup extends DefaultServletApplicationStartup
 	protected void afterStarted(Set<Class<?>> classes,
 			ServletContext servletContext, Application application)
 			throws ServletException {
-		for (ServletContainerInitializer initializer : ApplicationUtils.loadAllService(ServletContainerInitializer.class, application, false)) {
-			initializer.onStartup(classes, servletContext);
-		}
-		
 		int i = 0;
 		for (FilterRegistration registration : ApplicationUtils.loadAllService(FilterRegistration.class, application)) {
 			Filter filter = registration.getFilter();
@@ -52,6 +48,11 @@ public class Servlet3ApplicationStartup extends DefaultServletApplicationStartup
 			dynamic.setAsyncSupported(true);
 			dynamic.setLoadOnStartup(1);
 		}
+		
+		for (ServletContainerInitializer initializer : ApplicationUtils.loadAllService(ServletContainerInitializer.class, application, false)) {
+			initializer.onStartup(classes, servletContext);
+		}
+		
 		super.afterStarted(classes, servletContext, application);
 	}
 }
