@@ -5,6 +5,9 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptors;
@@ -15,6 +18,7 @@ import scw.beans.annotation.Bean;
 import scw.beans.annotation.ConfigurationProperties;
 import scw.beans.builder.LoaderContext;
 import scw.beans.ioc.Ioc;
+import scw.core.ResolvableType;
 import scw.core.instance.DefaultInstanceBuilder;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
@@ -25,6 +29,7 @@ import scw.mapper.Field;
 import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
+import scw.util.StringMatcher;
 import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
@@ -76,21 +81,45 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 				new BeanLifeCycleEvent(this, instance, beanFactory, propertyFactory, Step.AFTER_DEPENDENCE));
 	}
 	
-	protected Value getConfigurationPropertiesValue(ConfigurationProperties configurationProperties, String name){
+	private void appendMapFieldValue(Map<String, Object> mapValue, String key, ResolvableType resolvableType){
+		for(Entry<String, Value> entry : propertyFactory.getByMatcher(key, StringMatcher.PREFIX_MATCHER).entrySet()){
+			if(entry.getKey().equals(key)){
+				continue;
+			}
+			
+			String fieldKey = entry.getKey().substring(key.length() + 1);
+			mapValue.put(fieldKey, entry.getValue().getAsObject(resolvableType.getGeneric(1).getType()));
+		}
+	}
+
+	protected void configurationProperties(ConfigurationProperties configurationProperties, Object instance) {
 		String prefix = configurationProperties.prefix();
 		if(StringUtils.isEmpty(prefix)){
 			prefix = configurationProperties.value();
 		}
 		
-		return propertyFactory.get((StringUtils.isEmpty(prefix)? "":(prefix + ".")) + name);
-	}
-
-	protected void configurationProperties(ConfigurationProperties configurationProperties, Object instance) {
+		prefix = StringUtils.isEmpty(prefix)? "":(prefix + ".");
+		
 		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER_IGNORE_STATIC, FilterFeature.EXISTING_SETTER_FIELD);
 		for(Field field : fields){
-			Value value = getConfigurationPropertiesValue(configurationProperties, field.getSetter().getName());
+			if(field.getSetter().getType() == Map.class){
+				ResolvableType resolvableType = ResolvableType.forType(field.getSetter().getGenericType());
+				if(resolvableType.getGeneric(0).getRawClass() == String.class){
+					//这是一个key是String的map
+					Map<String, Object> valueMap = new LinkedHashMap<String, Object>();
+					appendMapFieldValue(valueMap, prefix + field.getSetter().getName(), resolvableType);
+					appendMapFieldValue(valueMap, prefix + StringUtils.humpNamingReplacement(field.getSetter().getName(), "-"), resolvableType);
+					if(!valueMap.isEmpty()){
+						System.out.println(valueMap);
+						field.getSetter().set(instance, valueMap);
+						continue;
+					}
+				}
+			}
+			
+			Value value = propertyFactory.get(prefix + field.getSetter().getName());
 			if(value == null || value.isEmpty()){
-				value = getConfigurationPropertiesValue(configurationProperties, StringUtils.humpNamingReplacement(field.getSetter().getName(), "-"));
+				value = propertyFactory.get(prefix + StringUtils.humpNamingReplacement(field.getSetter().getName(), "-"));
 			}
 			
 			if(value != null && !value.isEmpty()){

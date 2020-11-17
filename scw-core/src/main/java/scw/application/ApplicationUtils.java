@@ -55,7 +55,7 @@ public final class ApplicationUtils {
 		return propertyFactory.getString("application.name");
 	}
 	
-	public static int getApplicationPort(PropertyFactory propertyFactory){
-		return propertyFactory.getValue("server.port", int.class, propertyFactory.getValue("port", int.class, 8080));
+	public static int getApplicationPort(PropertyFactory propertyFactory, int defaultPort){
+		return propertyFactory.getValue("server.port", int.class, propertyFactory.getValue("port", int.class, defaultPort));
 	}
 }

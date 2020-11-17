@@ -2,9 +2,11 @@ package scw.value.property;
 
 import java.lang.reflect.Type;
 import java.util.Collections;
-import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -17,7 +19,8 @@ import scw.event.MultiEventRegistration;
 import scw.event.support.AbstractDynamicValue;
 import scw.event.support.DynamicValue;
 import scw.event.support.ValueEvent;
-import scw.util.MultiEnumeration;
+import scw.util.MultiIterator;
+import scw.util.StringMatcher;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.StringValueFactory;
@@ -76,6 +79,61 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 	public List<BasePropertyFactory> getBasePropertyFactories() {
 		return Collections.unmodifiableList(basePropertyFactories);
 	}
+	
+	private void appendByMatcher(Map<String, Value> map, String pattern, StringMatcher stringMatcher){
+		for (Entry<String, Value> entry : dynamicProperties.entrySet()) {
+			if (map.containsKey(entry.getKey()) || entry.getValue() == null) {
+				continue;
+			}
+			
+			if(stringMatcher.match(pattern, entry.getKey())){
+				map.put(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+	
+	/**
+	 * 根据匹配规则获取结果
+	 * @param pattern
+	 * @param stringMatcher
+	 * @return
+	 */
+	public Map<String, Value> getByMatcher(String pattern, StringMatcher stringMatcher) {
+		if(!stringMatcher.isPattern(pattern)){
+			Value value = get(pattern);
+			if(value == null){
+				return Collections.emptyMap();
+			}
+			
+			return Collections.singletonMap(pattern, value);
+		}
+		
+		Map<String, Value> map = new LinkedHashMap<String, Value>();
+		if (priorityOfUseSelf) {
+			appendByMatcher(map, pattern, stringMatcher);
+		}
+
+		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
+			for(String key : basePropertyFactory){
+				if (map.containsKey(key)) {
+					continue;
+				}
+
+				if(stringMatcher.match(pattern, key)){
+					Value value = basePropertyFactory.get(key);
+					if(value == null){
+						continue;
+					}
+					map.put(key, value);
+				}
+			}
+		}
+
+		if (!priorityOfUseSelf) {
+			appendByMatcher(map, pattern, stringMatcher);
+		}
+		return map;
+	}
 
 	@Override
 	public Value get(String key) {
@@ -99,14 +157,22 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 		return value;
 	}
-
-	public Enumeration<String> enumerationKeys() {
-		List<Enumeration<String>> enumerations = new LinkedList<Enumeration<String>>();
-		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
-			enumerations.add(basePropertyFactory.enumerationKeys());
+	
+	public Iterator<String> iterator() {
+		List<Iterator<String>> iterators = new LinkedList<Iterator<String>>();
+		if(priorityOfUseSelf){
+			iterators.add(dynamicProperties.keySet().iterator());
 		}
-		enumerations.add(Collections.enumeration(dynamicProperties.keySet()));
-		return new MultiEnumeration<String>(enumerations);
+		
+		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
+			iterators.add(basePropertyFactory.iterator());
+		}
+		
+		if(!priorityOfUseSelf){
+			iterators.add(dynamicProperties.keySet().iterator());
+		}
+		
+		return new MultiIterator<String>(iterators);
 	}
 
 	public boolean containsKey(String key) {
@@ -215,8 +281,8 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 	public PropertyFactoryRegistration loadProperties(final String keyPrefix, String resource, String charsetName,
 			final boolean format) {
-		DynamicMapRegistration propertiesRegistration = dynamicProperties.loadProperties(keyPrefix, resource, charsetName,
-				new ValueCreator() {
+		DynamicMapRegistration propertiesRegistration = dynamicProperties.loadProperties(keyPrefix, resource,
+				charsetName, new ValueCreator() {
 
 					public Value create(String key, Object value) {
 						return toValue(value, format);

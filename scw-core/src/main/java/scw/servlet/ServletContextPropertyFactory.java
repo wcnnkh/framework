@@ -1,10 +1,11 @@
 package scw.servlet;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import javax.servlet.ServletContext;
 
-import scw.util.MultiEnumeration;
+import scw.core.utils.CollectionUtils;
+import scw.util.MultiIterator;
 import scw.value.property.ExtendPropertyFactory;
 
 public class ServletContextPropertyFactory extends ExtendPropertyFactory {
@@ -19,10 +20,10 @@ public class ServletContextPropertyFactory extends ExtendPropertyFactory {
 	protected Object getExtendValue(String key) {
 		return servletContext.getInitParameter(key);
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Enumeration<String> enumerationKeys() {
-		return new MultiEnumeration<String>(servletContext.getInitParameterNames(), super.enumerationKeys());
+	public Iterator<String> iterator() {
+		return new MultiIterator<String>(CollectionUtils.toIterator(servletContext.getInitParameterNames()), super.iterator());
 	}
 }

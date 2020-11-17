@@ -20,13 +20,13 @@ public final class MultiEnumeration<E> implements Enumeration<E> {
 	}
 
 	public boolean hasMoreElements() {
-		if (enumeration != null) {
-			return enumeration.hasMoreElements();
+		if(enumeration != null && enumeration.hasMoreElements()){
+			return true;
 		}
-
+		
 		while (iterator != null && iterator.hasNext()) {
 			enumeration = iterator.next();
-			if (enumeration.hasMoreElements()) {
+			if (enumeration != null && enumeration.hasMoreElements()) {
 				return true;
 			}
 

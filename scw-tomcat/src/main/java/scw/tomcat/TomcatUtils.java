@@ -1,37 +1,24 @@
-package scw.embed;
+package scw.tomcat;
 
 import java.util.Properties;
 
+import scw.application.ApplicationUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.value.property.PropertyFactory;
 
-public final class EmbeddedUtils {
-	private EmbeddedUtils() {
+public final class TomcatUtils {
+	private TomcatUtils() {
 	};
 
-	private static String getApplicationKey(String name) {
-		return "application." + name;
-	}
-
-	private static String getTomcatKey(String name) {
-		return "tomcat." + name;
-	}
-
 	private static String getProperty(PropertyFactory propertyFactory, String name) {
-		String v = propertyFactory.getString(getApplicationKey(name));
-		if (StringUtils.isEmpty(v)) {
-			v = propertyFactory.getString(getTomcatKey(name));
-		}
-		return v;
+		return propertyFactory.getString("tomcat." + name);
 	}
 
 	public static int getPort(PropertyFactory propertyFactory) {
-		return StringUtils.parseInt(getProperty(propertyFactory, "port"), 8080);
-	}
-
-	public static String getEmbeddedName(PropertyFactory propertyFactory) {
-		return propertyFactory.getString(getApplicationKey("embedded"));
+		//兼容老版本
+		int defaultPort = StringUtils.parseInt(getProperty(propertyFactory, "port"), 8080);
+		return ApplicationUtils.getApplicationPort(propertyFactory, defaultPort);
 	}
 
 	public static String getBaseDir(PropertyFactory propertyFactory) {
@@ -47,15 +34,15 @@ public final class EmbeddedUtils {
 	}
 
 	public static String getTomcatProtocol(PropertyFactory propertyFactory) {
-		return propertyFactory.getString(getTomcatKey("protocol"));
+		return getProperty(propertyFactory, "protocol");
 	}
 
 	public static String getTomcatConnectorName(PropertyFactory propertyFactory) {
-		return propertyFactory.getString(getTomcatKey("connector"));
+		return getProperty(propertyFactory, "connector");
 	}
 
 	public static String getTomcatContextManager(PropertyFactory propertyFactory) {
-		return propertyFactory.getString(getTomcatKey("context.manager"));
+		return getProperty(propertyFactory, "context.manager");
 	}
 
 	private static String getShutdownProperty(PropertyFactory propertyFactory, String name) {
@@ -83,7 +70,7 @@ public final class EmbeddedUtils {
 	}
 
 	public static boolean tomcatScanTld(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(propertyFactory.getString(getTomcatKey("scan.tld")), true);
+		return StringUtils.parseBoolean(getProperty(propertyFactory, "scan.tld"), true);
 	}
 
 	public static Properties getServletInitParametersConfig(String servletName, boolean loadOnStartup) {

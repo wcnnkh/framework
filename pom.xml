@@ -44,12 +44,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-netflix</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-websocket</artifactId>
 				<version>1.0.0</version>
 			</dependency>
@@ -176,7 +170,7 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-embed</artifactId>
+				<artifactId>scw-tomcat</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -439,7 +433,6 @@
 		<module>scw-freemarker</module>
 		<module>scw-tencent</module>
 		<module>scw-apple</module>
-		<module>scw-embed</module>
 		<module>scw-timer</module>
 		<module>scw-db</module>
 		<module>scw-data</module>
@@ -451,11 +444,11 @@
 		<module>scw-microsoft</module>
 		<module>scw-dubbo</module>
 		<module>scw-mq</module>
-		<module>scw-netflix</module>
 		<module>scw-zookeeper</module>
 		<module>scw-netflix-eureka-client</module>
 		<module>scw-netflix-eureka-server</module>
 		<module>scw-netflix-hystrix</module>
 		<module>scw-feign</module>
+		<module>scw-tomcat</module>
 	</modules>
 </project>

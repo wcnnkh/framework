@@ -1,4 +1,4 @@
-package scw.embed.tomcat;
+package scw.tomcat;
 
 import org.apache.catalina.Context;
 

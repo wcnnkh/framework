@@ -113,7 +113,7 @@ public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 			boolean isSecurePortEnabled = propertyFactory.getBooleanValue("eureka.instance.secure-port-enabled");
 
 			String serverContextPath = propertyFactory.getValue("server.servlet.context-path", String.class, "/");
-			int serverPort = ApplicationUtils.getApplicationPort(propertyFactory);
+			int serverPort = ApplicationUtils.getApplicationPort(propertyFactory, 8080);
 
 			Integer managementPort = propertyFactory.getValue("management.server.port", Integer.class, null);
 			String managementContextPath = propertyFactory.getString("management.server.servlet.context-path");

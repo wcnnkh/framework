@@ -1,4 +1,4 @@
-package scw.embed.tomcat;
+package scw.tomcat;
 
 import javax.servlet.ServletContext;
 
@@ -7,7 +7,6 @@ import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
 import scw.aop.annotation.AopEnable;
-import scw.embed.EmbeddedUtils;
 import scw.value.property.PropertyFactory;
 
 /**
@@ -21,7 +20,7 @@ public class Tomcat8AboveStandardJarScanner extends StandardJarScanner {
 	private boolean scanTdl;
 
 	public Tomcat8AboveStandardJarScanner(PropertyFactory propertyFactory) {
-		this.scanTdl = EmbeddedUtils.tomcatScanTld(propertyFactory);
+		this.scanTdl = TomcatUtils.tomcatScanTld(propertyFactory);
 		setScanManifest(false);
 	}
 

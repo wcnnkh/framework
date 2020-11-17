@@ -1,4 +1,4 @@
-package scw.embed.tomcat;
+package scw.tomcat;
 
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
@@ -32,7 +32,6 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.embed.EmbeddedUtils;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
 import scw.logger.Logger;
@@ -53,10 +52,10 @@ public class TomcatStart implements Main, Destroy {
 	protected Tomcat createTomcat(BeanFactory beanFactory, PropertyFactory propertyFactory, MainArgs args) {
 		Tomcat tomcat = new Tomcat();
 		Value value = args.getInstruction("-p");
-		int port = value == null ? EmbeddedUtils.getPort(propertyFactory) : value.getAsInteger();
+		int port = value == null ? TomcatUtils.getPort(propertyFactory) : value.getAsInteger();
 		tomcat.setPort(port);
 
-		String basedir = EmbeddedUtils.getBaseDir(propertyFactory);
+		String basedir = TomcatUtils.getBaseDir(propertyFactory);
 		if (StringUtils.isNotEmpty(basedir)) {
 			tomcat.setBaseDir(basedir);
 		}
@@ -71,7 +70,7 @@ public class TomcatStart implements Main, Destroy {
 	}
 
 	protected String getContextPath(PropertyFactory propertyFactory) {
-		String contextPath = EmbeddedUtils.getContextPath(propertyFactory);
+		String contextPath = TomcatUtils.getContextPath(propertyFactory);
 		return StringUtils.isEmpty(contextPath) ? "" : contextPath;
 	}
 
@@ -132,11 +131,11 @@ public class TomcatStart implements Main, Destroy {
 	protected void configureConnector(Tomcat tomcat, int port, BeanFactory beanFactory,
 			PropertyFactory propertyFactory) {
 		Connector connector = null;
-		String connectorName = EmbeddedUtils.getTomcatConnectorName(propertyFactory);
+		String connectorName = TomcatUtils.getTomcatConnectorName(propertyFactory);
 		if (!StringUtils.isEmpty(connectorName)) {
 			connector = beanFactory.getInstance(connectorName);
 		} else {
-			String protocol = EmbeddedUtils.getTomcatProtocol(propertyFactory);
+			String protocol = TomcatUtils.getTomcatProtocol(propertyFactory);
 			if (!StringUtils.isEmpty(protocol)) {
 				connector = new Connector(protocol);
 			} else {
@@ -182,20 +181,20 @@ public class TomcatStart implements Main, Destroy {
 	protected void configureServlet(Context context, Servlet servlet, MainApplication application) throws Exception {
 		String servletName = application.getMainClass().getSimpleName();
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
-		Properties properties = EmbeddedUtils.getServletInitParametersConfig(servletName, true);
+		Properties properties = TomcatUtils.getServletInitParametersConfig(servletName, true);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			wrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 		}
 		
 		addServletMapping(context, "/", servletName);
-		String sourceMapping = EmbeddedUtils.getDefaultServletMapping(application.getPropertyFactory());
+		String sourceMapping = TomcatUtils.getDefaultServletMapping(application.getPropertyFactory());
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
 				String tempServletName = "default";
 				Wrapper tempWrapper = Tomcat.addServlet(context, tempServletName,
 						"org.apache.catalina.servlets.DefaultServlet");
-				Properties tempProperties = EmbeddedUtils.getServletInitParametersConfig(tempServletName, false);
+				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(tempServletName, false);
 				for (Entry<Object, Object> entry : tempProperties.entrySet()) {
 					tempWrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 				}
