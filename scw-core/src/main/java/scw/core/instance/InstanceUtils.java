@@ -84,7 +84,7 @@ public final class InstanceUtils {
 	
 	public static <S> ServiceLoader<S> getServiceLoader(Class<? extends S> clazz, NoArgsInstanceFactory instanceFactory,
 			ValueFactory<String> propertyFactory, String... defaultNames) {
-		return getServiceLoader(clazz, instanceFactory, propertyFactory, CompatibleUtils.getSpi(), defaultNames);
+		return getServiceLoader(clazz, instanceFactory, propertyFactory, clazz.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME)? CompatibleUtils.getSpi():null, defaultNames);
 	}
 
 	public static <T> List<T> loadAllService(Class<? extends T> clazz, NoArgsInstanceFactory instanceFactory,

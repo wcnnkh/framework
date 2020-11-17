@@ -108,7 +108,7 @@ public class EurekaServerBootstrap {
 		}
 
 		EurekaServerContextHolder.initialize(this.serverContext);
-
+		serverContext.initialize();
 		log.info("Initialized server context");
 
 		// Copy registry from neighboring eureka node

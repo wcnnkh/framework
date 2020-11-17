@@ -8,6 +8,7 @@ import javax.servlet.FilterRegistration.Dynamic;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
@@ -49,7 +50,11 @@ public class Servlet3ApplicationStartup extends DefaultServletApplicationStartup
 			dynamic.setLoadOnStartup(1);
 		}
 		
-		for (ServletContainerInitializer initializer : ApplicationUtils.loadAllService(ServletContainerInitializer.class, application, false)) {
+		for(ServletContextListener listener : ApplicationUtils.loadAllService(ServletContextListener.class, application)){
+			servletContext.addListener(listener);
+		}
+		
+		for (ServletContainerInitializer initializer : ApplicationUtils.loadAllService(ServletContainerInitializer.class, application)) {
 			initializer.onStartup(classes, servletContext);
 		}
 		

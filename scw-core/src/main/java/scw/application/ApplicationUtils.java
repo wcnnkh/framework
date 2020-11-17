@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import scw.compatible.CompatibleUtils;
+import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
 import scw.util.concurrent.ListenableFuture;
@@ -33,7 +34,7 @@ public final class ApplicationUtils {
 	}
 	
 	public static <T> List<T> loadAllService(Class<? extends T> clazz, Application application){
-		return loadAllService(clazz, application, true);
+		return loadAllService(clazz, application, clazz.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME));
 	}
 
 	public static <T> List<T> loadAllService(Class<? extends T> clazz, Application application, boolean spi) {

@@ -110,7 +110,6 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 					appendMapFieldValue(valueMap, prefix + field.getSetter().getName(), resolvableType);
 					appendMapFieldValue(valueMap, prefix + StringUtils.humpNamingReplacement(field.getSetter().getName(), "-"), resolvableType);
 					if(!valueMap.isEmpty()){
-						System.out.println(valueMap);
 						field.getSetter().set(instance, valueMap);
 						continue;
 					}

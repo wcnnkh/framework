@@ -150,6 +150,7 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 			EurekaServerConfig serverConfig = beanFactory.getInstance(EurekaServerConfig.class);
 			EurekaClientConfig clientConfig = beanFactory.getInstance(EurekaClientConfig.class);
 			EurekaClient eurekaClient = beanFactory.getInstance(EurekaClient.class);
+			eurekaClient.getApplications(); // force initialization
 			InstanceRegistryProperties instanceRegistryProperties = beanFactory
 					.getInstance(InstanceRegistryProperties.class);
 			return new InstanceRegistry(serverConfig, clientConfig, serverCodecs, eurekaClient,
