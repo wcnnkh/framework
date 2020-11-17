@@ -127,7 +127,7 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 			ReplicationClientAdditionalFilters replicationClientAdditionalFilters = getReplicationClientAdditionalFilters(
 					beanFactory);
 			return new RefreshablePeerEurekaNodes(registry, serverConfig, clientConfig, serverCodecs,
-					applicationInfoManager, replicationClientAdditionalFilters);
+					applicationInfoManager, replicationClientAdditionalFilters, propertyFactory);
 		}
 	}
 

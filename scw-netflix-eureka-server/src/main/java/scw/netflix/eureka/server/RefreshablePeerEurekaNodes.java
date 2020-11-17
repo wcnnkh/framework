@@ -1,7 +1,5 @@
 package scw.netflix.eureka.server;
 
-import java.util.Set;
-
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.eureka.EurekaServerConfig;
@@ -11,16 +9,24 @@ import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 import com.netflix.eureka.transport.JerseyReplicationClient;
 
-public class RefreshablePeerEurekaNodes extends PeerEurekaNodes {
+import scw.event.EventListener;
+import scw.value.property.PropertyEvent;
+import scw.value.property.PropertyFactory;
 
+public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements EventListener<PropertyEvent> {
+	private static final String[] KEYS = new String[]{"eureka.client.region*", "eureka.client.service-url.*", "eureka.client.availability-zones."}; 
+	
 	private ReplicationClientAdditionalFilters replicationClientAdditionalFilters;
 
-	public RefreshablePeerEurekaNodes(final PeerAwareInstanceRegistry registry, final EurekaServerConfig serverConfig,
+	RefreshablePeerEurekaNodes(final PeerAwareInstanceRegistry registry, final EurekaServerConfig serverConfig,
 			final EurekaClientConfig clientConfig, final ServerCodecs serverCodecs,
 			final ApplicationInfoManager applicationInfoManager,
-			final ReplicationClientAdditionalFilters replicationClientAdditionalFilters) {
+			final ReplicationClientAdditionalFilters replicationClientAdditionalFilters, PropertyFactory propertyFactory) {
 		super(registry, serverConfig, clientConfig, serverCodecs, applicationInfoManager);
 		this.replicationClientAdditionalFilters = replicationClientAdditionalFilters;
+		for(String key : KEYS){
+			propertyFactory.registerListener(key, this);
+		}
 	}
 
 	@Override
@@ -37,29 +43,13 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes {
 		return new PeerEurekaNode(registry, targetHost, peerEurekaNodeUrl, replicationClient, serverConfig);
 	}
 
-	/*
-	 * Check whether specific properties have changed.
-	 */
-	protected boolean shouldUpdate(final Set<String> changedKeys) {
-		assert changedKeys != null;
-
-		// if eureka.client.use-dns-for-fetching-service-urls is true, then
-		// service-url will not be fetched from environment.
-		if (this.clientConfig.shouldUseDnsForFetchingServiceUrls()) {
-			return false;
+	@Override
+	public void onEvent(PropertyEvent event) {
+		if(clientConfig.shouldUseDnsForFetchingServiceUrls()){
+			return ;
 		}
-
-		if (changedKeys.contains("eureka.client.region")) {
-			return true;
-		}
-
-		for (final String key : changedKeys) {
-			// property keys are not expected to be null.
-			if (key.startsWith("eureka.client.service-url.") || key.startsWith("eureka.client.availability-zones.")) {
-				return true;
-			}
-		}
-		return false;
+		
+		updatePeerEurekaNodes(resolvePeerUrls());
 	}
 
 }

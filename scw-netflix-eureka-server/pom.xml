@@ -24,13 +24,17 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/com.netflix.eureka/eureka-core -->
 		<dependency>
 			<groupId>com.netflix.eureka</groupId>
 			<artifactId>eureka-core</artifactId>
 			<version>1.10.7</version>
 			<exclusions>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpclient</artifactId>
+				</exclusion>
 				<exclusion>
 					<artifactId>blitz4j</artifactId>
 					<groupId>com.netflix.blitz4j</groupId>
@@ -64,6 +68,10 @@
 			<artifactId>jersey-apache-client4</artifactId>
 			<version>${eureka-jersey.version}</version>
 			<exclusions>
+				<exclusion>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>httpclient</artifactId>
+				</exclusion>
 				<exclusion>
 					<groupId>com.sun.jersey</groupId>
 					<artifactId>jersey-client</artifactId>
