@@ -359,7 +359,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 	}
 
-	class StringFormatValue extends StringValue {
+	private class StringFormatValue extends StringValue {
 		private static final long serialVersionUID = 1L;
 
 		public StringFormatValue(String value) {
@@ -368,12 +368,11 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 		@Override
 		public String getAsString() {
-			String value = super.getAsString();
-			return resolvePlaceholders(value);
+			return format(super.getAsString());
 		}
 	}
 
-	class AnyFormatValue extends AnyValue {
+	private class AnyFormatValue extends AnyValue {
 		private static final long serialVersionUID = 1L;
 
 		public AnyFormatValue(Object value) {
@@ -381,12 +380,11 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 		}
 
 		public String getAsString() {
-			String value = super.getAsString();
-			return resolvePlaceholders(value);
+			return format(super.getAsString());
 		};
 	}
 
-	class FormatValue extends ValueWrapper {
+	private class FormatValue extends ValueWrapper {
 
 		public FormatValue(Value value) {
 			super(value);
@@ -394,8 +392,7 @@ public class PropertyFactory extends StringValueFactory implements BasePropertyF
 
 		@Override
 		public String getAsString() {
-			String value = super.getAsString();
-			return resolvePlaceholders(value);
+			return format(super.getAsString());
 		}
 	}
 

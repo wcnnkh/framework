@@ -683,7 +683,7 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 				continue;
 			}
 
-			name = context.getPropertyFactory().format(name, true);
+			name = context.getPropertyFactory().format(name);
 			Class<?> clz = ClassUtils.forNameNullable(name);
 			if (clz == null) {
 				continue;

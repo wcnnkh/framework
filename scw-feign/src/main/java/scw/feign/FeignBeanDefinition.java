@@ -21,7 +21,7 @@ public class FeignBeanDefinition extends DefaultBeanDefinition {
 		if(StringUtils.isEmpty(host)){
 			host = propertyFactory.getString("feign.host");
 		}else{
-			host = propertyFactory.format(host, true);
+			host = propertyFactory.format(host);
 		}
 		return host;
 	}
