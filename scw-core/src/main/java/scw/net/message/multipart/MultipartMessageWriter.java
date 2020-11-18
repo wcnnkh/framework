@@ -1,4 +1,4 @@
-package scw.net.message.converter;
+package scw.net.message.multipart;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,70 +12,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.core.ResolvableType;
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
-import scw.http.DefaultHttpInputMessage;
-import scw.http.HttpInputMessage;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.lang.NotSupportedException;
+import scw.logger.Logger;
+import scw.logger.LoggerUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.net.message.multipart.DefaultFileItem;
-import scw.net.message.multipart.FileItem;
-import scw.net.message.multipart.FileItemParser;
-import scw.net.message.multipart.FormFileItem;
-import scw.net.message.multipart.ResourceFileItem;
+import scw.net.message.converter.AbstractMessageConverter;
+import scw.net.message.converter.MessageConvertException;
 import scw.util.XUtils;
 
-public class MultipartMessageConverter extends AbstractMessageConverter<Object> {
+public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
+	private static Logger logger = LoggerUtils.getLogger(MultipartMessageWriter.class);
 	private static final String DEFAULT_BOUNDARY = XUtils.getUUID();
 	private static final String BOUNDARY_NAME = "boundary";
 	private static final String LINE = "\r\n";
 	private static final String BOUNDARY_APPEND = "--";
-	
-	private final FileItemParser fileItemParser;
-	public MultipartMessageConverter(FileItemParser fileItemParser) {
-		this.fileItemParser = fileItemParser;
-		supportMimeTypes.add(MimeTypeUtils.MULTIPART_FORM_DATA);
-	}
 
-	public FileItemParser getFileItemParser() {
-		return fileItemParser;
+	public MultipartMessageWriter() {
+		supportMimeTypes.add(MimeTypeUtils.MULTIPART_FORM_DATA);
 	}
 
 	@Override
 	public boolean support(Class<?> clazz) {
 		return true;
 	}
-	
+
 	@Override
 	public boolean canRead(Type type) {
-		if(getFileItemParser() == null){
-			return false;
-		}
-		
-		ResolvableType resolvableType = ResolvableType.forType(type);
-		if(Iterable.class.isAssignableFrom(resolvableType.getRawClass())){
-			return resolvableType.getGeneric(0).getRawClass() == FileItem.class	;
-		}else if(resolvableType.isArray()){
-			return resolvableType.getComponentType().getRawClass() == FileItem.class;
-		}
 		return false;
 	}
-	
+
 	@Override
 	protected Object readInternal(Type type, InputMessage inputMessage) throws IOException, MessageConvertException {
-		List<FileItem> fileItems = getFileItemParser().parse(inputMessage instanceof HttpInputMessage? (HttpInputMessage)inputMessage:new DefaultHttpInputMessage(inputMessage));
-		if(TypeUtils.toClass(type).isArray()){
-			return fileItems.toArray(new FileItem[0]);
-		}
-		return fileItems;
+		return null;
 	}
-	
+
 	@SuppressWarnings("rawtypes")
 	@Override
 	protected void writeInternal(Object body, MimeType contentType, OutputMessage outputMessage)
@@ -143,17 +119,17 @@ public class MultipartMessageConverter extends AbstractMessageConverter<Object> 
 		FileItem item;
 		if (value instanceof File) {
 			File file = (File) value;
-			if(!file.exists()){
-				logger.info("non existent file: {}", file.getPath());
-				return ;
+			if (!file.exists()) {
+				logger.error("non existent file [{}]", file.getPath());
+				return;
 			}
-			
+
 			item = new DefaultFileItem(fieldName, (File) value);
-		} else if(value instanceof Resource){
+		} else if (value instanceof Resource) {
 			Resource resource = (Resource) value;
-			if(!resource.exists()){
-				logger.info("non existent resource: {}", resource.getDescription());
-				return ;
+			if (!resource.exists()) {
+				logger.error("non existent resource [{}]", resource.getDescription());
+				return;
 			}
 			item = new ResourceFileItem(fieldName, resource);
 		} else {
@@ -197,7 +173,7 @@ public class MultipartMessageConverter extends AbstractMessageConverter<Object> 
 					writeItem(boundary, key.toString(), value, outputMessage);
 				}
 			}
-		}else{
+		} else {
 			throw new NotSupportedException(multipartItem.toString());
 		}
 	}

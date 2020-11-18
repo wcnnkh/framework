@@ -34,11 +34,12 @@ import scw.net.message.converter.HttpFormMessageConveter;
 import scw.net.message.converter.JsonMessageConverter;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MultiMessageConverter;
-import scw.net.message.converter.MultipartMessageConverter;
 import scw.net.message.converter.ResourceMessageConverter;
 import scw.net.message.converter.StringMessageConverter;
 import scw.net.message.converter.XmlMessageConverter;
 import scw.net.message.multipart.FileItemParser;
+import scw.net.message.multipart.MultipartMessageWriter;
+import scw.net.message.multipart.apache.MultipartMessageConverter;
 import scw.net.ssl.TrustAllManager;
 import scw.util.Accept;
 
@@ -91,7 +92,8 @@ public final class InetUtils {
 		MESSAGE_CONVERTER.add(new ByteArrayMessageConverter());
 		MESSAGE_CONVERTER.add(new XmlMessageConverter());
 		MESSAGE_CONVERTER.add(new HttpFormMessageConveter());
-
+		MESSAGE_CONVERTER.add(new MultipartMessageWriter());
+		
 		if (FILE_ITEM_PARSER != null) {
 			MESSAGE_CONVERTER.add(new MultipartMessageConverter(FILE_ITEM_PARSER));
 		}
