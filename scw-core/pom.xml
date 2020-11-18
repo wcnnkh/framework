@@ -72,12 +72,6 @@
 			<scope>provided</scope>
 		</dependency>
 		
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- begin 可以不强制依赖, 但默认使用 -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
@@ -88,6 +82,11 @@
 		<dependency>
 			<groupId>com.caucho</groupId>
 			<artifactId>hessian</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
 		</dependency>
 		<!-- end 可以不强制依赖, 但默认使用 -->
 	</dependencies>
