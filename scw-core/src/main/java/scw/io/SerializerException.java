@@ -1,4 +1,4 @@
-package scw.io.serialzer;
+package scw.io;
 
 public class SerializerException extends RuntimeException {
 	private static final long serialVersionUID = 5341163945147654715L;

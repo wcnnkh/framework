@@ -50,6 +50,12 @@
 			
 			<dependency>
 				<groupId>scw</groupId>
+				<artifactId>scw-serializer</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
 				<artifactId>scw-sql-orm</artifactId>
 				<version>1.0.0</version>
 			</dependency>
@@ -478,5 +484,6 @@
 		<module>scw-web</module>
 		<module>scw-memcached</module>
 		<module>scw-redis</module>
+		<module>scw-serializer</module>
 	</modules>
 </project>

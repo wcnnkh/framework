@@ -1,4 +1,4 @@
-package scw.json.support;
+package scw.fastjson;
 
 import com.alibaba.fastjson.serializer.ValueFilter;
 

@@ -9,7 +9,7 @@ import java.util.Map;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
-import scw.io.serialzer.Serializer;
+import scw.io.Serializer;
 import scw.util.StringCodec;
 import scw.value.AnyValue;
 

@@ -3,8 +3,8 @@ package scw.data.file;
 import java.io.File;
 
 import scw.core.Converter;
-import scw.io.serialzer.NoTypeSpecifiedSerializer;
-import scw.io.serialzer.SerializerUtils;
+import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.SerializerUtils;
 
 public class AutoRefreshFileCache extends FileCache {
 	private final Converter<String, ?> converter;

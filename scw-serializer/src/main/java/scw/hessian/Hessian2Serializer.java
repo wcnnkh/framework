@@ -1,16 +1,16 @@
-package scw.io.serialzer.hessian;
+package scw.hessian;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import scw.io.UnsafeByteArrayInputStream;
-import scw.io.UnsafeByteArrayOutputStream;
-import scw.io.serialzer.Serializer;
-import scw.io.serialzer.SerializerException;
-
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
+
+import scw.io.Serializer;
+import scw.io.SerializerException;
+import scw.io.UnsafeByteArrayInputStream;
+import scw.io.UnsafeByteArrayOutputStream;
 
 public class Hessian2Serializer extends Serializer {
 

@@ -1,8 +1,8 @@
 package scw.redis.jedis;
 
 import scw.core.instance.annotation.Configuration;
-import scw.io.serialzer.Serializer;
-import scw.io.serialzer.SerializerUtils;
+import scw.io.Serializer;
+import scw.io.SerializerUtils;
 import scw.redis.RedisImpl;
 import scw.util.StringCodec;
 

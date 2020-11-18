@@ -1,17 +1,17 @@
-package scw.io.serialzer.protostuff;
+package scw.protostuff;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import scw.io.Bits;
-import scw.io.serialzer.Serializer;
-import scw.io.serialzer.SerializerUtils;
-
 import com.dyuproject.protostuff.LinkedBuffer;
 import com.dyuproject.protostuff.ProtostuffIOUtil;
 import com.dyuproject.protostuff.Schema;
 import com.dyuproject.protostuff.runtime.RuntimeSchema;
+
+import scw.io.Bits;
+import scw.io.Serializer;
+import scw.io.SerializerUtils;
 
 public class ProtostuffSerializer extends Serializer {
 	private static final ThreadLocal<LinkedBuffer> bufferLocal = new ThreadLocal<LinkedBuffer>() {

@@ -11,7 +11,7 @@ import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.core.instance.annotation.Configuration;
-import scw.io.serialzer.SerializerUtils;
+import scw.io.SerializerUtils;
 import scw.net.InetUtils;
 
 @Configuration(order = Integer.MIN_VALUE)

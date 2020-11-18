@@ -1,4 +1,4 @@
-package scw.io.serialzer;
+package scw.io;
 
 import java.io.IOException;
 import java.lang.reflect.Type;

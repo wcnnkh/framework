@@ -1,4 +1,4 @@
-package scw.io.serialzer.hessian;
+package scw.hessian;
 
 import java.io.InputStream;
 import java.io.OutputStream;

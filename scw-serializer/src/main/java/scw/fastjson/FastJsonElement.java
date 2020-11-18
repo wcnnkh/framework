@@ -1,4 +1,4 @@
-package scw.json.support;
+package scw.fastjson;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
