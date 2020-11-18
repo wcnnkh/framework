@@ -55,7 +55,12 @@
 
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-data</artifactId>
+			<artifactId>scw-memcached</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-redis</artifactId>
 		</dependency>
 
 		<dependency>
