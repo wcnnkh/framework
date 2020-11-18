@@ -1,10 +1,9 @@
-package scw.db;
+package scw.sql.orm.support.generation;
 
 import scw.data.generator.SequenceIdGenerator;
 import scw.redis.Redis;
 import scw.redis.RedisDataTemplete;
 import scw.redis.locks.RedisLockFactory;
-import scw.sql.orm.support.generation.DefaultGeneratorService;
 
 public class RedisGeneratorService extends DefaultGeneratorService {
 

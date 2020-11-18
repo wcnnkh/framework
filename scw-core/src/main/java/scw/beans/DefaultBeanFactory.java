@@ -538,11 +538,12 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
-		beanBuilderLoaders.addAll(InstanceUtils.getConfigurationList(BeanBuilderLoader.class, this, propertyFactory));
-
+		beanBuilderLoaders.addAll(BeanUtils.loadAllService(BeanBuilderLoader.class, this, propertyFactory));
+		
 		propertyFactory.addLastBasePropertyFactory(
-				InstanceUtils.getConfigurationList(BasePropertyFactory.class, this, propertyFactory));
-		for (BeanConfiguration configuration : InstanceUtils.getConfigurationList(BeanConfiguration.class, this,
+				BeanUtils.loadAllService(BasePropertyFactory.class, this, propertyFactory));
+		
+		for (BeanConfiguration configuration : BeanUtils.getServiceLoader(BeanConfiguration.class, this,
 				propertyFactory)) {
 			addBeanConfiguration(configuration);
 		}

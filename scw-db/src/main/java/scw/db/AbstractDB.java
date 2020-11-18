@@ -34,6 +34,8 @@ import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.support.AbstractEntityOperations;
 import scw.sql.orm.support.generation.DefaultGeneratorService;
 import scw.sql.orm.support.generation.GeneratorService;
+import scw.sql.orm.support.generation.MemcachedGeneratorService;
+import scw.sql.orm.support.generation.RedisGeneratorService;
 import scw.sql.transaction.SqlTransactionUtils;
 import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
