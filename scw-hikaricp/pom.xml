@@ -6,7 +6,7 @@
 		<artifactId>scw</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>scw-sql-orm</artifactId>
+	<artifactId>scw-hikaricp</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
@@ -14,17 +14,27 @@
 		</dependency>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-data</artifactId>
+			<artifactId>scw-db</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-redis</artifactId>
-			<scope>provided</scope>
+			<groupId>com.zaxxer</groupId>
+			<artifactId>HikariCP</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
-		
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-memcached</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-redis</artifactId>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

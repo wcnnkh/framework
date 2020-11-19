@@ -530,7 +530,7 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 	}
 
 	@Override
-	protected void initInternal() throws Throwable {
+	public void beforeInit() throws Throwable {
 		for (Class<MethodInterceptor> filter : InstanceUtils.getConfigurationClassList(MethodInterceptor.class,
 				propertyFactory)) {
 			filterNameList.add(filter.getName());
@@ -547,12 +547,11 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 				propertyFactory)) {
 			addBeanConfiguration(configuration);
 		}
-		super.initInternal();
+		super.beforeInit();
 	}
-
+	
 	@Override
 	public void afterInit() throws Throwable {
-		super.afterInit();
 		for (Class<?> clazz : ClassScanner.getInstance()
 				.getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
 			if (!accept(clazz)) {
@@ -564,10 +563,11 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 				ioc.getInit().process(null, null, this, propertyFactory);
 			}
 		}
+		super.afterInit();
 	}
-
+	
 	@Override
-	protected void destroyInternal() throws Throwable {
+	public void beforeDestroy() throws Throwable {
 		synchronized (singletonMap) {
 			List<String> beanKeyList = new ArrayList<String>();
 			for (Entry<String, Object> entry : singletonMap.entrySet()) {
@@ -589,12 +589,10 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 				}
 			}
 		}
-		super.destroyInternal();
+		super.beforeDestroy();
 	}
 
-	@Override
 	public void afterDestroy() throws Throwable {
-		super.afterDestroy();
 		for (Class<?> clazz : ClassScanner.getInstance()
 				.getClasses(BeanUtils.getScanAnnotationPackageName(propertyFactory))) {
 			for (Ioc ioc : Ioc.forClass(clazz)) {

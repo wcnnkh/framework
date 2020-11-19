@@ -6,18 +6,16 @@
 		<artifactId>scw</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>scw-db</artifactId>
+	<artifactId>scw-ibatis</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-sql-orm</artifactId>
+			<artifactId>scw-core</artifactId>
 		</dependency>
-
+		<!-- mybatis相关 -->
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.16</version>
-			<scope>runtime</scope>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis</artifactId>
 		</dependency>
 	</dependencies>
 </project>
