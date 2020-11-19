@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.http;
+package scw.web;
 
 /**
  * Utility class for JavaScript escaping. Escapes based on the JavaScript 1.5
