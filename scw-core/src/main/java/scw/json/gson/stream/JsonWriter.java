@@ -109,7 +109,6 @@ import java.io.Writer;
  * malformed JSON string will fail with an {@link IllegalStateException}.
  *
  * @author Jesse Wilson
- * @since 1.6
  */
 public class JsonWriter implements Closeable, Flushable {
 

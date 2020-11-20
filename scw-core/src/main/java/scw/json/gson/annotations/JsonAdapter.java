@@ -69,8 +69,6 @@ import scw.json.gson.TypeAdapterFactory;
  * Using {@link TypeAdapterFactory} makes it possible to delegate 
  * to the enclosing {@code Gson} instance.
  *
- * @since 2.3
- *
  * @author Inderjeet Singh
  * @author Joel Leitch
  * @author Jesse Wilson

@@ -311,7 +311,6 @@ public final class GsonBuilder {
    *
    * @param strategies the set of strategy object to apply during object (de)serialization.
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.4
    */
   public GsonBuilder setExclusionStrategies(ExclusionStrategy... strategies) {
     for (ExclusionStrategy strategy : strategies) {
@@ -330,7 +329,6 @@ public final class GsonBuilder {
    *
    * @param strategy an exclusion strategy to apply during serialization.
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.7
    */
   public GsonBuilder addSerializationExclusionStrategy(ExclusionStrategy strategy) {
     excluder = excluder.withExclusionStrategy(strategy, true, false);
@@ -347,7 +345,6 @@ public final class GsonBuilder {
    *
    * @param strategy an exclusion strategy to apply during deserialization.
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.7
    */
   public GsonBuilder addDeserializationExclusionStrategy(ExclusionStrategy strategy) {
     excluder = excluder.withExclusionStrategy(strategy, false, true);
@@ -383,7 +380,6 @@ public final class GsonBuilder {
    * Gson to pass-through HTML characters as is.
    *
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.3
    */
   public GsonBuilder disableHtmlEscaping() {
     this.escapeHtmlChars = false;
@@ -404,7 +400,6 @@ public final class GsonBuilder {
    *
    * @param pattern the pattern that dates will be serialized/deserialized to/from
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.2
    */
   public GsonBuilder setDateFormat(String pattern) {
     // TODO(Joel): Make this fail fast if it is an invalid date format
@@ -424,7 +419,6 @@ public final class GsonBuilder {
    * @param style the predefined date style that date objects will be serialized/deserialized
    * to/from
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.2
    */
   public GsonBuilder setDateFormat(int style) {
     this.dateStyle = style;
@@ -445,7 +439,6 @@ public final class GsonBuilder {
    * to/from
    * @param timeStyle the predefined style for the time portion of the date objects
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.2
    */
   public GsonBuilder setDateFormat(int dateStyle, int timeStyle) {
     this.dateStyle = dateStyle;
@@ -495,7 +488,6 @@ public final class GsonBuilder {
    * is designed to handle a large number of factories, so you should consider registering
    * them to be at par with registering an individual type adapter.
    *
-   * @since 2.1
    */
   public GsonBuilder registerTypeAdapterFactory(TypeAdapterFactory factory) {
     factories.add(factory);
@@ -514,7 +506,6 @@ public final class GsonBuilder {
    * @param typeAdapter This object must implement at least one of {@link TypeAdapter},
    *        {@link JsonSerializer} or {@link JsonDeserializer} interfaces.
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.7
    */
   @SuppressWarnings({"unchecked", "rawtypes"})
   public GsonBuilder registerTypeHierarchyAdapter(Class<?> baseType, Object typeAdapter) {
@@ -548,7 +539,6 @@ public final class GsonBuilder {
    * values.
    *
    * @return a reference to this {@code GsonBuilder} object to fulfill the "Builder" pattern
-   * @since 1.3
    */
   public GsonBuilder serializeSpecialFloatingPointValues() {
     this.serializeSpecialFloatingPointValues = true;

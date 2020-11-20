@@ -4,7 +4,6 @@ package scw.json.gson.stream;
  * A structure, name or value type in a JSON-encoded string.
  *
  * @author Jesse Wilson
- * @since 1.6
  */
 public enum JsonToken {
 

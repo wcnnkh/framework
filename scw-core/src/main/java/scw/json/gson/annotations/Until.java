@@ -37,7 +37,6 @@ import java.lang.annotation.Target;
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
- * @since 1.3
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

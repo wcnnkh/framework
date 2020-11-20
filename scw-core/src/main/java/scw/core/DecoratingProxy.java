@@ -31,8 +31,6 @@ package scw.core;
  * (and potential other candidates without spring-aop dependencies) to use it
  * for introspection purposes, in particular annotation lookups.
  *
- * @author Juergen Hoeller
- * @since 4.3
  */
 public interface DecoratingProxy {
 

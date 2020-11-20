@@ -72,7 +72,6 @@ public final class JsonParser {
    *
    * @throws JsonParseException if there is an IOException or if the specified
    *     text is not valid JSON
-   * @since 1.6
    */
   public GsonJsonElement parse(JsonReader json) throws JsonIOException, JsonSyntaxException {
     boolean lenient = json.isLenient();

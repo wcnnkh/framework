@@ -19,7 +19,6 @@ package scw.json.gson;
 /**
  * Defines the expected format for a {@code long} or {@code Long} type when its serialized.
  *
- * @since 1.3
  *
  * @author Inderjeet Singh
  * @author Joel Leitch

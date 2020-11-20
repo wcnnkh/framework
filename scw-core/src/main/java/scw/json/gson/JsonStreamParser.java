@@ -47,7 +47,6 @@ import scw.json.gson.stream.MalformedJsonException;
  *
  * @author Inderjeet Singh
  * @author Joel Leitch
- * @since 1.4
  */
 public final class JsonStreamParser implements Iterator<GsonJsonElement> {
   private final JsonReader parser;
@@ -55,7 +54,6 @@ public final class JsonStreamParser implements Iterator<GsonJsonElement> {
 
   /**
    * @param json The string containing JSON elements concatenated to each other.
-   * @since 1.4
    */
   public JsonStreamParser(String json) {
     this(new StringReader(json));      
@@ -63,7 +61,6 @@ public final class JsonStreamParser implements Iterator<GsonJsonElement> {
   
   /**
    * @param reader The data stream containing JSON elements concatenated to each other.
-   * @since 1.4
    */
   public JsonStreamParser(Reader reader) {
     parser = new JsonReader(reader);
@@ -76,7 +73,6 @@ public final class JsonStreamParser implements Iterator<GsonJsonElement> {
    * 
    * @return the next available {@link GsonJsonElement} on the reader. Null if none available.
    * @throws JsonParseException if the incoming stream is malformed JSON.
-   * @since 1.4
    */
   public GsonJsonElement next() throws JsonParseException {
     if (!hasNext()) {
@@ -97,7 +93,6 @@ public final class JsonStreamParser implements Iterator<GsonJsonElement> {
   /**
    * Returns true if a {@link GsonJsonElement} is available on the input for consumption
    * @return true if a {@link GsonJsonElement} is available on the input, false otherwise
-   * @since 1.4
    */
   public boolean hasNext() {
     synchronized (lock) {
@@ -114,7 +109,6 @@ public final class JsonStreamParser implements Iterator<GsonJsonElement> {
   /**
    * This optional {@link Iterator} method is not relevant for stream parsing and hence is not
    * implemented.
-   * @since 1.4
    */
   public void remove() {
     throw new UnsupportedOperationException();

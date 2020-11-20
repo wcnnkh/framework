@@ -158,7 +158,6 @@ import scw.json.gson.reflect.TypeToken;
  * {@code create()} method; this ensures potentially-expensive type adapter
  * creation happens only once.
  *
- * @since 2.1
  */
 public interface TypeAdapterFactory {
 

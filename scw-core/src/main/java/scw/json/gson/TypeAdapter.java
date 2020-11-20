@@ -93,7 +93,6 @@ import scw.json.gson.stream.JsonWriter;
  *   Gson gson = builder.create();
  * }</pre>
  *
- * @since 2.1
  */
 // non-Javadoc:
 //
@@ -136,7 +135,6 @@ public abstract class TypeAdapter<T> {
    * writing.
    *
    * @param value the Java object to convert. May be null.
-   * @since 2.2
    */
   public final void toJson(Writer out, T value) throws IOException {
     JsonWriter writer = new JsonWriter(out);
@@ -210,7 +208,6 @@ public abstract class TypeAdapter<T> {
    * writing.
    *
    * @param value the Java object to convert. May be null.
-   * @since 2.2
    */
   public final String toJson(T value) {
     StringWriter stringWriter = new StringWriter();
@@ -227,7 +224,6 @@ public abstract class TypeAdapter<T> {
    *
    * @param value the Java object to convert. May be null.
    * @return the converted JSON tree. May be {@link JsonNull}.
-   * @since 2.2
    */
   public final GsonJsonElement toJsonTree(T value) {
     try {
@@ -254,7 +250,6 @@ public abstract class TypeAdapter<T> {
    * {@code JsonReader} and call {@link #read(JsonReader)} for lenient reading.
    *
    * @return the converted Java object. May be null.
-   * @since 2.2
    */
   public final T fromJson(Reader in) throws IOException {
     JsonReader reader = new JsonReader(in);
@@ -268,7 +263,6 @@ public abstract class TypeAdapter<T> {
    * JsonReader} and call {@link #read(JsonReader)} for lenient reading.
    *
    * @return the converted Java object. May be null.
-   * @since 2.2
    */
   public final T fromJson(String json) throws IOException {
     return fromJson(new StringReader(json));
@@ -278,7 +272,6 @@ public abstract class TypeAdapter<T> {
    * Converts {@code jsonTree} to a Java object.
    *
    * @param jsonTree the Java object to convert. May be {@link JsonNull}.
-   * @since 2.2
    */
   public final T fromJsonTree(GsonJsonElement jsonTree) {
     try {

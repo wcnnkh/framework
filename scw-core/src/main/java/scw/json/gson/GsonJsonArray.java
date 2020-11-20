@@ -229,7 +229,6 @@ public final class GsonJsonArray extends GsonJsonElement implements Iterable<Gso
    * @throws ClassCastException if the element in the array is of not a {@link JsonPrimitive}.
    * @throws NumberFormatException if the element at index 0 is not a valid {@link BigDecimal}.
    * @throws IllegalStateException if the array has more than one element.
-   * @since 1.2
    */
   @Override
   public BigDecimal getAsBigDecimal() {

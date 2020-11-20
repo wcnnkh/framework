@@ -170,7 +170,6 @@ import scw.json.gson.internal.bind.JsonTreeReader;
  * of this class are not thread safe.
  *
  * @author Jesse Wilson
- * @since 1.6
  */
 public class JsonReader implements Closeable {
   /** The only non-execute prefix this parser permits */
