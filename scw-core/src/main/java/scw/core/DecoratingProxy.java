@@ -27,7 +27,7 @@ package scw.core;
  * class there anyway.
  *
  * <p>Defined in the core module in order to allow
- * #{@link org.springframework.core.annotation.AnnotationAwareOrderComparator}
+ * #{@link scw.core.annotation.AnnotationAwareOrderComparator}
  * (and potential other candidates without spring-aop dependencies) to use it
  * for introspection purposes, in particular annotation lookups.
  *

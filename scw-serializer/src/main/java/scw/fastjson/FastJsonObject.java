@@ -2,7 +2,7 @@ package scw.fastjson;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
-import java.util.Collection;
+import java.util.Set;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;
@@ -21,8 +21,9 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 		this.jsonObject = jsonObject;
 	}
 
-	public void put(String key, Object value) {
+	public boolean put(String key, Object value) {
 		jsonObject.put(key, value);
+		return true;
 	}
 
 	public scw.json.JsonObject getJsonObject(String key) {
@@ -35,13 +36,9 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 		return json == null ? null : new FastJsonArray(json);
 	}
 
-	public JsonElement get(String key) {
+	public JsonElement getValue(String key) {
 		String text = jsonObject.getString(key);
 		return text == null ? null : new FastJsonElement(text, getDefaultValue(key));
-	}
-
-	public Collection<String> keys() {
-		return jsonObject.keySet();
 	}
 
 	public boolean containsKey(String key) {
@@ -84,5 +81,13 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 		}
 
 		return false;
+	}
+
+	public Set<String> keySet() {
+		return jsonObject.keySet();
+	}
+
+	public boolean remove(String key) {
+		return jsonObject.remove(key) != null;
 	}
 }

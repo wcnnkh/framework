@@ -33,7 +33,7 @@ public class DefaultValueProcess extends AbstractValueProcesser {
 			return ;
 		}
 		
-		scw.value.Value v = propertyFactory.get(name);
+		scw.value.Value v = propertyFactory.getValue(name);
 		set(bean, field, name, v);
 
 		if (isRegisterListener(beanDefinition, field, value)) {
