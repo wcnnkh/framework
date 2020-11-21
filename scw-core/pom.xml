@@ -58,9 +58,6 @@
 						<include>*:asm*</include>
 						<include>*:cglib*</include>
 					</includes>
-					<excludes>
-						<exclude>module-info.class</exclude>
-					</excludes>
 					<rules>
 						<rule>
 							<pattern>org.objectweb.asm.*</pattern>
