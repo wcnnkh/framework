@@ -1,5 +1,6 @@
 package scw.json.parser;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import scw.core.Converter;
@@ -9,7 +10,8 @@ import scw.json.JSONException;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 
-public class DefaultJsonArray extends AbstractJson<Integer> implements JsonArray, Converter<Object, JsonElement>{
+public class DefaultJsonArray extends AbstractJson<Integer> implements JsonArray, Converter<Object, JsonElement>, Serializable{
+	private static final long serialVersionUID = 1L;
 	private SimpleJSONArray simpleJSONArray;
 	
 	public DefaultJsonArray(String text){

@@ -6,12 +6,17 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import scw.json.AbstractJsonElement;
+import scw.json.EmptyJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
 
 public final class GsonElement extends AbstractJsonElement {
 	private JsonElement gsonJsonElement;
 	private Gson gson;
+	
+	public GsonElement(JsonElement gsonJsonElement, Gson gson) {
+		this(gsonJsonElement, gson, EmptyJsonElement.INSTANCE);
+	}
 
 	public GsonElement(JsonElement gsonJsonElement, Gson gson, scw.json.JsonElement defaultValue) {
 		super(defaultValue);

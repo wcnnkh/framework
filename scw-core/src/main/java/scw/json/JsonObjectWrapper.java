@@ -1,6 +1,9 @@
 package scw.json;
 
+import java.util.Iterator;
 import java.util.Set;
+
+import scw.util.KeyValuePair;
 
 public class JsonObjectWrapper extends JsonWrapper<String> implements JsonObject {
 	private JsonObject target;
@@ -24,5 +27,9 @@ public class JsonObjectWrapper extends JsonWrapper<String> implements JsonObject
 
 	public Set<String> keySet() {
 		return target.keySet();
+	}
+
+	public Iterator<KeyValuePair<String, JsonElement>> iterator() {
+		return target.iterator();
 	}
 }

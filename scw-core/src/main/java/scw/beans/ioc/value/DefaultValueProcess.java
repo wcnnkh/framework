@@ -50,7 +50,7 @@ public class DefaultValueProcess extends AbstractValueProcesser {
 		}
 	}
 
-	protected void set(final Object bean, final Field field, final String name, scw.value.Value value)
+	protected synchronized void set(final Object bean, final Field field, final String name, scw.value.Value value)
 			throws Exception {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Changes in progress name [{}] field [{}] value [{}]", name, field.getSetter(), value);

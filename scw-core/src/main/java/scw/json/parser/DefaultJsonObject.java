@@ -1,14 +1,22 @@
 package scw.json.parser;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 
+import scw.core.Converter;
+import scw.core.IteratorConverter;
 import scw.json.AbstractJson;
 import scw.json.JSONException;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
+import scw.util.KeyValuePair;
 
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultJsonObject extends AbstractJson<String> implements
-		JsonObject {
+		JsonObject, Converter<Entry, KeyValuePair<String, JsonElement>>, Serializable {
+	private static final long serialVersionUID = 1L;
 	private SimpleJSONObject simpleJSONObject;
 
 	public DefaultJsonObject(String text) {
@@ -33,7 +41,6 @@ public class DefaultJsonObject extends AbstractJson<String> implements
 		return simpleJSONObject.toJSONString();
 	}
 
-	@SuppressWarnings("unchecked")
 	public Set<String> keySet() {
 		return simpleJSONObject.keySet();
 	}
@@ -46,10 +53,19 @@ public class DefaultJsonObject extends AbstractJson<String> implements
 		return simpleJSONObject.remove(key) != null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public boolean put(String key, Object value) {
 		simpleJSONObject.put(key, value);
 		return true;
+	}
+	
+	public KeyValuePair<String, JsonElement> convert(Entry k) {
+		Object key = k.getValue();
+		Object value = simpleJSONObject.get(key);
+		return new KeyValuePair<String, JsonElement>(String.valueOf(key), value == null ? null : new DefaultJsonElement(value));
+	}
+
+	public Iterator<KeyValuePair<String, JsonElement>> iterator() {
+		return new IteratorConverter<Entry, KeyValuePair<String, JsonElement>>(simpleJSONObject.entrySet().iterator(), this);
 	}
 
 }

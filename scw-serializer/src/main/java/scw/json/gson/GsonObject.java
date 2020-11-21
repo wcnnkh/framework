@@ -1,14 +1,19 @@
 package scw.json.gson;
 
+import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import com.google.gson.Gson;
-
+import scw.core.Converter;
+import scw.core.IteratorConverter;
 import scw.json.AbstractJson;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
+import scw.util.KeyValuePair;
 
-public final class GsonObject extends AbstractJson<String> implements JsonObject {
+import com.google.gson.Gson;
+
+public final class GsonObject extends AbstractJson<String> implements JsonObject, Converter<Entry<String, com.google.gson.JsonElement>, KeyValuePair<String, JsonElement>> {
 	private com.google.gson.JsonObject gsonJsonObject;
 	private Gson gson;
 
@@ -67,5 +72,14 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 
 	public boolean remove(String key) {
 		return gsonJsonObject.remove(key) != null;
+	}
+	
+	public KeyValuePair<String, JsonElement> convert(
+			Entry<String, com.google.gson.JsonElement> k) {
+		return new KeyValuePair<String, JsonElement>(k.getKey(), new GsonElement(k.getValue(), gson));
+	}
+
+	public Iterator<KeyValuePair<String, JsonElement>> iterator() {
+		return new IteratorConverter<Entry<String, com.google.gson.JsonElement>, KeyValuePair<String,JsonElement>>(gsonJsonObject.entrySet().iterator(), this);
 	}
 }
