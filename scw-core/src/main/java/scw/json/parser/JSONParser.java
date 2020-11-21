@@ -7,8 +7,6 @@ package scw.json.parser;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -273,21 +271,21 @@ public class JSONParser {
 	
 	private Map createObjectContainer(ContainerFactory containerFactory){
 		if(containerFactory == null)
-			return new LinkedHashMap();
+			return new SimpleJSONObject();
 		Map m = containerFactory.createObjectContainer();
 		
 		if(m == null)
-			return new LinkedHashMap();
+			return new SimpleJSONObject();
 		return m;
 	}
 	
 	private List createArrayContainer(ContainerFactory containerFactory){
 		if(containerFactory == null)
-			return new ArrayList();
+			return new SimpleJSONArray();
 		List l = containerFactory.creatArrayContainer();
 		
 		if(l == null)
-			return new ArrayList();
+			return new SimpleJSONArray();
 		return l;
 	}
 	

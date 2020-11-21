@@ -6,14 +6,14 @@ package scw.json.parser;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import scw.json.JSONAware;
 import scw.json.JSONStreamAware;
+import scw.mapper.MapperUtils;
+import scw.value.ValueUtils;
 
 
 /**
@@ -22,46 +22,14 @@ import scw.json.JSONStreamAware;
 @SuppressWarnings("rawtypes")
 public class JSONValue {
 	/**
-	 * Parse JSON text into java object from the input source. 
-	 * Please use parseWithException() if you don't want to ignore the exception.
-	 * 
-	 * @see scw.json.parser.JSONParser#parse(Reader)
-	 * @see #parseWithException(Reader)
-	 * 
-	 * @param in
-	 * @return Instance of the following:
-	 *	org.json.simple.JSONObject,
-	 * 	org.json.simple.JSONArray,
-	 * 	java.lang.String,
-	 * 	java.lang.Number,
-	 * 	java.lang.Boolean,
-	 * 	null
-	 * 
-	 */
-	public static Object parse(Reader in){
-		try{
-			JSONParser parser=new JSONParser();
-			return parser.parse(in);
-		}
-		catch(Exception e){
-			return null;
-		}
-	}
-	
-	public static Object parse(String s){
-		StringReader in=new StringReader(s);
-		return parse(in);
-	}
-	
-	/**
 	 * Parse JSON text into java object from the input source.
 	 * 
 	 * @see scw.json.parser.JSONParser
 	 * 
 	 * @param in
 	 * @return Instance of the following:
-	 * 	org.json.simple.JSONObject,
-	 * 	org.json.simple.JSONArray,
+	 * 	SimpleJSONObject,
+	 * 	SimpleJSONArray,
 	 * 	java.lang.String,
 	 * 	java.lang.Number,
 	 * 	java.lang.Boolean,
@@ -70,12 +38,12 @@ public class JSONValue {
 	 * @throws IOException
 	 * @throws ParseException
 	 */
-	public static Object parseWithException(Reader in) throws IOException, ParseException{
+	public static Object parse(Reader in) throws IOException, ParseException{
 		JSONParser parser=new JSONParser();
 		return parser.parse(in);
 	}
 	
-	public static Object parseWithException(String s) throws ParseException{
+	public static Object parse(String s) throws ParseException{
 		JSONParser parser=new JSONParser();
 		return parser.parse(s);
 	}
@@ -162,10 +130,10 @@ public class JSONValue {
 	 * If this object is a Map or a List, and it's also a JSONAware, JSONAware will be considered firstly.
 	 * <p>
 	 * DO NOT call this method from toJSONString() of a class that implements both JSONAware and Map or List with 
-	 * "this" as the parameter, use JSONObject.toJSONString(Map) or JSONArray.toJSONString(List) instead. 
+	 * "this" as the parameter, use SimpleJSONObject.toJSONString(Map) or SimpleJSONArray.toJSONString(List) instead. 
 	 * 
-	 * @see org.json.simple.JSONObject#toJSONString(Map)
-	 * @see org.json.simple.JSONArray#toJSONString(List)
+	 * @see SimpleJSONObject#toJSONString(Map)
+	 * @see SimpleJSONArray#toJSONString(List)
 	 * 
 	 * @param value
 	 * @return JSON text, or "null" if value is null or it's an NaN or an INF number.
@@ -189,7 +157,7 @@ public class JSONValue {
 				return "null";
 			else
 				return value.toString();
-		}		
+		}
 		
 		if(value instanceof Number)
 			return value.toString();
@@ -201,12 +169,16 @@ public class JSONValue {
 			return ((JSONAware)value).toJSONString();
 		
 		if(value instanceof Map)
-			return toJSONString((Map)value);
+			return SimpleJSONObject.toJSONString((Map)value);
 		
 		if(value instanceof List)
-			return toJSONString((List)value);
+			return SimpleJSONArray.toJSONString((List)value);
 		
-		return value.toString();
+		if(ValueUtils.isBaseType(value.getClass())){
+			return String.valueOf(value);
+		}
+		
+		return toJSONString(MapperUtils.getMapper().getFieldValueMap(value));
 	}
 
 	/**
@@ -217,7 +189,7 @@ public class JSONValue {
 	public static String escape(String s){
 		if(s==null)
 			return null;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         escape(s, sb);
         return sb.toString();
     }
@@ -226,7 +198,7 @@ public class JSONValue {
      * @param s - Must not be null.
      * @param sb
      */
-    static void escape(String s, StringBuffer sb) {
+    static void escape(String s, StringBuilder sb) {
 		for(int i=0;i<s.length();i++){
 			char ch=s.charAt(i);
 			switch(ch){
@@ -269,160 +241,5 @@ public class JSONValue {
 				}
 			}
 		}//for
-	}
-
-    /**
-     * Encode a list into JSON text and write it to out. 
-     * If this list is also a JSONStreamAware or a JSONAware, JSONStreamAware and JSONAware specific behaviours will be ignored at this top level.
-     * 
-     * @see #writeJSONString(Object, Writer)
-     * 
-     * @param list
-     * @param out
-     */
-	public static void writeJSONString(List list, Writer out) throws IOException{
-		if(list == null){
-			out.write("null");
-			return;
-		}
-		
-		boolean first = true;
-		Iterator iter=list.iterator();
-		
-        out.write('[');
-		while(iter.hasNext()){
-            if(first)
-                first = false;
-            else
-                out.write(',');
-            
-			Object value=iter.next();
-			if(value == null){
-				out.write("null");
-				continue;
-			}
-			
-			JSONValue.writeJSONString(value, out);
-		}
-		out.write(']');
-	}
-	
-	/**
-	 * Convert a list to JSON text. The result is a JSON array. 
-	 * If this list is also a JSONAware, JSONAware specific behaviours will be omitted at this top level.
-	 * 
-	 * @see scw.json.parser.JSONValue#toJSONString(Object)
-	 * 
-	 * @param list
-	 * @return JSON text, or "null" if list is null.
-	 */
-	public static String toJSONString(List list){
-		if(list == null)
-			return "null";
-		
-        boolean first = true;
-        StringBuffer sb = new StringBuffer();
-		Iterator iter=list.iterator();
-        
-        sb.append('[');
-		while(iter.hasNext()){
-            if(first)
-                first = false;
-            else
-                sb.append(',');
-            
-			Object value=iter.next();
-			if(value == null){
-				sb.append("null");
-				continue;
-			}
-			sb.append(JSONValue.toJSONString(value));
-		}
-        sb.append(']');
-		return sb.toString();
-	}
-	
-	/**
-     * Encode a map into JSON text and write it to out.
-     * If this map is also a JSONAware or JSONStreamAware, JSONAware or JSONStreamAware specific behaviours will be ignored at this top level.
-     * 
-     * @see scw.json.parser.JSONValue#writeJSONString(Object, Writer)
-     * 
-     * @param map
-     * @param out
-     */
-	public static void writeJSONString(Map map, Writer out) throws IOException {
-		if(map == null){
-			out.write("null");
-			return;
-		}
-		
-		boolean first = true;
-		Iterator iter=map.entrySet().iterator();
-		
-        out.write('{');
-		while(iter.hasNext()){
-            if(first)
-                first = false;
-            else
-                out.write(',');
-			Map.Entry entry=(Map.Entry)iter.next();
-            out.write('\"');
-            out.write(escape(String.valueOf(entry.getKey())));
-            out.write('\"');
-            out.write(':');
-			JSONValue.writeJSONString(entry.getValue(), out);
-		}
-		out.write('}');
-	}
-	
-	/**
-	 * Convert a map to JSON text. The result is a JSON object. 
-	 * If this map is also a JSONAware, JSONAware specific behaviours will be omitted at this top level.
-	 * 
-	 * @see scw.json.parser.JSONValue#toJSONString(Object)
-	 * 
-	 * @param map
-	 * @return JSON text, or "null" if map is null.
-	 */
-	public static String toJSONString(Map map){
-		if(map == null)
-			return "null";
-		
-        StringBuffer sb = new StringBuffer();
-        boolean first = true;
-		Iterator iter=map.entrySet().iterator();
-		
-        sb.append('{');
-		while(iter.hasNext()){
-            if(first)
-                first = false;
-            else
-                sb.append(',');
-            
-			Map.Entry entry=(Map.Entry)iter.next();
-			toJSONString(String.valueOf(entry.getKey()),entry.getValue(), sb);
-		}
-        sb.append('}');
-		return sb.toString();
-	}
-	
-	private static String toJSONString(String key,Object value, StringBuffer sb){
-		sb.append('\"');
-        if(key == null)
-            sb.append("null");
-        else
-            JSONValue.escape(key, sb);
-		sb.append('\"').append(':');
-		
-		sb.append(JSONValue.toJSONString(value));
-		
-		return sb.toString();
-	}
-	
-	public static String toString(String key,Object value){
-        StringBuffer sb = new StringBuffer();
-		toJSONString(key, value, sb);
-        return sb.toString();
-	}
+	}	
 }

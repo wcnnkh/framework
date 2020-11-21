@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import scw.core.instance.InstanceUtils;
+import scw.json.parser.DefaultJSONSupport;
 import scw.logger.LoggerFactory;
 
 public final class JSONUtils {
@@ -20,7 +21,7 @@ public final class JSONUtils {
 	static {
 		JSONSupport jsonSupport = InstanceUtils.loadService(JSONSupport.class);
 		//TODO
-		JSON_SUPPORT = jsonSupport == null ? null : jsonSupport;
+		JSON_SUPPORT = jsonSupport == null ? new DefaultJSONSupport() : jsonSupport;
 		LoggerFactory.getLogger(JSONUtils.class).info("The JSON support used is {}", JSON_SUPPORT);
 	}
 

@@ -1,12 +1,14 @@
 package scw.json.parser;
 
+import scw.json.JSONException;
+
 /**
  * ParseException explains why and where the error occurs in source JSON text.
  * 
  * @author FangYidong<fangyidong@yahoo.com.cn>
  *
  */
-public class ParseException extends Exception {
+public class ParseException extends JSONException {
 	private static final long serialVersionUID = -7880698968187728548L;
 	
 	public static final int ERROR_UNEXPECTED_CHAR = 0;
