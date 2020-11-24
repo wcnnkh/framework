@@ -50,7 +50,7 @@ import scw.mvc.annotation.IP;
 import scw.mvc.annotation.RequestBean;
 import scw.mvc.annotation.RequestBody;
 import scw.mvc.parameter.RequestBodyParse;
-import scw.mvc.security.UserSessionAnalysis;
+import scw.mvc.security.UserSessionResolver;
 import scw.mvc.security.UserSessionFactoryAdapter;
 import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
@@ -430,14 +430,14 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		return getRequest().toString();
 	}
 	
-	private volatile UserSessionAnalysis userSessionAnalysis;
-	private UserSessionAnalysis getUserSessionAnalysis(){
+	private volatile UserSessionResolver userSessionAnalysis;
+	private UserSessionResolver getUserSessionAnalysis(){
 		if(userSessionAnalysis == null){
 			synchronized (this) {
 				if(userSessionAnalysis == null){
-					UserSessionAnalysis userSessionAnalysis = (UserSessionAnalysis) getRequest().getAttribute(UserSessionAnalysis.class.getName());
-					if(userSessionAnalysis == null && beanFactory != null && beanFactory.isInstance(UserSessionAnalysis.class)){
-						userSessionAnalysis = beanFactory.getInstance(UserSessionAnalysis.class);
+					UserSessionResolver userSessionAnalysis = (UserSessionResolver) getRequest().getAttribute(UserSessionResolver.class.getName());
+					if(userSessionAnalysis == null && beanFactory != null && beanFactory.isInstance(UserSessionResolver.class)){
+						userSessionAnalysis = beanFactory.getInstance(UserSessionResolver.class);
 					}
 				}
 			}
@@ -446,7 +446,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 	}
 	
 	public <T> T getUid(Class<T> type) {
-		UserSessionAnalysis userSessionAnalysis = getUserSessionAnalysis();
+		UserSessionResolver userSessionAnalysis = getUserSessionAnalysis();
 		if(userSessionAnalysis == null){
 			return null;
 		}
@@ -455,7 +455,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 	}
 	
 	public String getSessionId() {
-		UserSessionAnalysis userSessionAnalysis = getUserSessionAnalysis();
+		UserSessionResolver userSessionAnalysis = getUserSessionAnalysis();
 		if(userSessionAnalysis == null){
 			return null;
 		}

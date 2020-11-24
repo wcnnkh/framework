@@ -4,6 +4,7 @@ import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.lang.Nullable;
 import scw.mvc.security.UserSessionFactoryAdapter;
 import scw.security.session.UserSession;
 import scw.value.Value;
@@ -29,9 +30,12 @@ public interface HttpChannel extends ParameterFactory, UserSessionFactoryAdapter
 
 	<T> T getBean(String name);
 	
+	@Nullable
 	<T> T getUid(Class<T> type);
 	
+	@Nullable
 	String getSessionId();
 	
+	@Nullable
 	<T> UserSession<T> getUserSession(Class<T> type);
 }
