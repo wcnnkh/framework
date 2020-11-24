@@ -4,9 +4,11 @@ import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.mvc.security.UserSessionFactoryAdapter;
+import scw.security.session.UserSession;
 import scw.value.Value;
 
-public interface HttpChannel extends ParameterFactory {
+public interface HttpChannel extends ParameterFactory, UserSessionFactoryAdapter {
 	long getCreateTime();
 
 	ServerHttpRequest getRequest();
@@ -26,4 +28,10 @@ public interface HttpChannel extends ParameterFactory {
 	<T> T getBean(Class<T> type);
 
 	<T> T getBean(String name);
+	
+	<T> T getUid(Class<T> type);
+	
+	String getSessionId();
+	
+	<T> UserSession<T> getUserSession(Class<T> type);
 }

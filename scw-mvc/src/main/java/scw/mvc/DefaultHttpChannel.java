@@ -21,6 +21,7 @@ import scw.beans.BeansException;
 import scw.beans.Destroy;
 import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
+import scw.core.ResolvableType;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
@@ -49,8 +50,12 @@ import scw.mvc.annotation.IP;
 import scw.mvc.annotation.RequestBean;
 import scw.mvc.annotation.RequestBody;
 import scw.mvc.parameter.RequestBodyParse;
+import scw.mvc.security.UserSessionAnalysis;
+import scw.mvc.security.UserSessionFactoryAdapter;
 import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
+import scw.security.session.UserSession;
+import scw.security.session.UserSessionFactory;
 import scw.util.MultiValueMap;
 import scw.util.Target;
 import scw.util.XUtils;
@@ -271,6 +276,10 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		}
 		return null;
 	}
+	
+	public Session getSession(boolean create){
+		return getRequest().getSession(create);
+	}
 
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
 		Object target = XUtils.getTarget(this, parameterDescriptor.getType());
@@ -280,8 +289,15 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		
 		if(parameterDescriptor.getType().isInstance(this)){
 			return this;
-		} else if (Session.class == parameterDescriptor.getType()) {
-			return getRequest().getSession();
+		}
+		
+		if(UserSession.class == parameterDescriptor.getType()){
+			ResolvableType resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
+			return getUserSession(resolvableType.getGeneric(0).getRawClass());
+		}
+		
+		if (Session.class == parameterDescriptor.getType()) {
+			return getSession(false);
 		}
 
 		if (parameterDescriptor.getAnnotatedElement().getAnnotation(IP.class) != null) {
@@ -413,6 +429,39 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 	public String toString() {
 		return getRequest().toString();
 	}
+	
+	private volatile UserSessionAnalysis userSessionAnalysis;
+	private UserSessionAnalysis getUserSessionAnalysis(){
+		if(userSessionAnalysis == null){
+			synchronized (this) {
+				if(userSessionAnalysis == null){
+					UserSessionAnalysis userSessionAnalysis = (UserSessionAnalysis) getRequest().getAttribute(UserSessionAnalysis.class.getName());
+					if(userSessionAnalysis == null && beanFactory != null && beanFactory.isInstance(UserSessionAnalysis.class)){
+						userSessionAnalysis = beanFactory.getInstance(UserSessionAnalysis.class);
+					}
+				}
+			}
+		}
+		return userSessionAnalysis;
+	}
+	
+	public <T> T getUid(Class<T> type) {
+		UserSessionAnalysis userSessionAnalysis = getUserSessionAnalysis();
+		if(userSessionAnalysis == null){
+			return null;
+		}
+		
+		return userSessionAnalysis.getUid(this, type);
+	}
+	
+	public String getSessionId() {
+		UserSessionAnalysis userSessionAnalysis = getUserSessionAnalysis();
+		if(userSessionAnalysis == null){
+			return null;
+		}
+		
+		return userSessionAnalysis.getSessionId(this);
+	}
 
 	private final class RequestValue extends AbstractStringValue {
 		private final String name;
@@ -466,5 +515,37 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			
 			return getAsObjectNotSupport(TypeUtils.toClass(type));
 		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> UserSessionFactory<T> getUserSessionFactory(Class<T> type) {
+		UserSessionFactory<T> userSessionFactory = (UserSessionFactory<T>) getRequest().getAttribute(UserSessionFactory.class.getName());
+		if(userSessionFactory == null && beanFactory != null && beanFactory.isInstance(UserSessionFactoryAdapter.class)){
+			userSessionFactory = beanFactory.getInstance(UserSessionFactoryAdapter.class).getUserSessionFactory(type);
+		}
+		
+		if(userSessionFactory == null && beanFactory != null && beanFactory.isInstance(UserSessionFactory.class)){
+			userSessionFactory = beanFactory.getInstance(UserSessionFactory.class);
+		}
+		return userSessionFactory;
+	}
+
+	public <T> UserSession<T> getUserSession(Class<T> type) {
+		T uid = getUid(type);
+		if(uid == null){
+			return null;
+		}
+		
+		String sessionId = getSessionId();
+		if(StringUtils.isEmpty(sessionId)){
+			return null;
+		}
+		
+		UserSessionFactory<T> userSessionFactory = getUserSessionFactory(type);
+		if(userSessionFactory == null){
+			return null;
+		}
+		
+		return userSessionFactory.getUserSession(uid, sessionId);
 	}
 }
