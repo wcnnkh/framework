@@ -63,15 +63,15 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 	}
 
 	@Override
-	public void write(Object body, MimeType contentType, OutputMessage outputMessage)
+	public void write(Type type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		Resource resource = getResource(body);
 		MimeType mimeType = contentType == null ? FileMimeTypeUitls.getMimeType(resource) : contentType;
-		super.write(resource, mimeType, outputMessage);
+		super.write(type, resource, mimeType, outputMessage);
 	}
 
 	@Override
-	protected void writeInternal(Resource body, MimeType contentType, OutputMessage outputMessage)
+	protected void writeInternal(Type type, Resource body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		Resource resource = (Resource) body;
 		if (!resource.exists()) {

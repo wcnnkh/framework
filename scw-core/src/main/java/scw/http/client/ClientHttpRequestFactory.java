@@ -6,5 +6,5 @@ import java.net.URI;
 import scw.http.HttpMethod;
 
 public interface ClientHttpRequestFactory {
-	ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException;
+	ClientHttpRequest createRequest(URI url, HttpMethod httpMethod) throws IOException;
 }

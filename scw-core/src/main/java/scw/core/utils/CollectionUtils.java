@@ -412,10 +412,18 @@ public abstract class CollectionUtils {
 	 * @return the iterator
 	 */
 	public static <E> Iterator<E> toIterator(Enumeration<? extends E> enumeration) {
+		if(enumeration == null || !enumeration.hasMoreElements()){
+			return Collections.emptyIterator();
+		}
+		
 		return new EnumerationIterator<E>(enumeration);
 	}
 
 	public static <E> Enumeration<E> toEnumeration(final Iterator<? extends E> iterator) {
+		if(iterator == null || !iterator.hasNext()){
+			return Collections.emptyEnumeration();
+		}
+		
 		return new Enumeration<E>() {
 
 			public boolean hasMoreElements() {

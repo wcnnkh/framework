@@ -1,5 +1,7 @@
 package scw.timer.db;
 
+import java.util.concurrent.TimeUnit;
+
 import scw.db.DB;
 import scw.locks.AbstractLock;
 import scw.sql.Sql;
@@ -19,5 +21,13 @@ class TableLock extends AbstractLock {
 
 	public boolean unlock() {
 		return true;
+	}
+
+	public boolean renewal() {
+		return false;
+	}
+
+	public boolean renewal(long time, TimeUnit unit) {
+		return false;
 	}
 }

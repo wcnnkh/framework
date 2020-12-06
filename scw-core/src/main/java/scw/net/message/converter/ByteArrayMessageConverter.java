@@ -28,7 +28,7 @@ public class ByteArrayMessageConverter extends AbstractMessageConverter<byte[]>{
 	}
 
 	@Override
-	protected void writeInternal(byte[] body, MimeType contentType,
+	protected void writeInternal(Type type, byte[] body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		outputMessage.getBody().write(body);

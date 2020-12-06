@@ -1,6 +1,5 @@
 package scw.tencent.wx.pay;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,20 +13,18 @@ import scw.aop.annotation.AopEnable;
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.http.HttpMethod;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
-import scw.io.Resource;
-import scw.io.ResourceUtils;
+import scw.http.client.HttpConnection;
+import scw.http.client.SimpleClientHttpRequestFactory;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
-import scw.lang.NestedRuntimeException;
 import scw.lang.NotSupportedException;
 import scw.lang.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.MapperUtils;
-import scw.net.MimeTypeUtils;
-import scw.net.ssl.SSLContexts;
 import scw.security.SignatureUtils;
 import scw.tencent.wx.WeiXinException;
 import scw.tencent.wx.WeiXinUtils;
@@ -45,14 +42,14 @@ public class WeiXinPay {
 	private static final String SENDREDPACK = "https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack";
 	private static final String SENDGROUPREDPACK = "https://api.mch.weixin.qq.com/mmpaymkttransfers/sendgroupredpack";
 	private static final String GETHBINFO = "https://api.mch.weixin.qq.com/mmpaymkttransfers/gethbinfo";
-
+	
+	private final SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 	private final String appId;
 	private final String mch_id;
 	private final String apiKey;
 	private SignType signType;
 	private String charsetName = Constants.UTF_8.name();
 	private String notifyUrl;
-	private String certTrustFile;
 	private SSLSocketFactory sslSocketFactory;
 
 	public WeiXinPay(String appId, String mch_id, String apiKey) {
@@ -63,8 +60,7 @@ public class WeiXinPay {
 		this.appId = appId;
 		this.mch_id = mch_id;
 		this.apiKey = apiKey;
-		this.certTrustFile = certTrustFile;
-		this.sslSocketFactory = initSSLSocketFactory(certTrustFile);
+		requestFactory.setSSLSocketFactory(certTrustFile, mch_id, mch_id);
 	}
 
 	public final SignType getSignType() {
@@ -77,25 +73,6 @@ public class WeiXinPay {
 
 	public String getNotifyUrl() {
 		return notifyUrl;
-	}
-
-	private SSLSocketFactory initSSLSocketFactory(String certTrustFile) {
-		if (StringUtils.isEmpty(certTrustFile)) {
-			return null;
-		}
-
-		Resource resource = ResourceUtils.getResourceOperations().getResource(certTrustFile);
-		if (!resource.exists()) {
-			return null;
-		}
-
-		InputStream is = ResourceUtils.getInputStream(resource);
-		char[] password = mch_id.toCharArray();
-		try {
-			return SSLContexts.custom().loadKeyMaterial(is, password, password).build().getSocketFactory();
-		} catch (Exception e) {
-			throw new NestedRuntimeException(certTrustFile, e);
-		}
 	}
 
 	public String getAppId() {
@@ -169,7 +146,7 @@ public class WeiXinPay {
 	 * @return
 	 */
 	public WeiXinPayResponse invoke(String url, Map<String, ?> parameterMap, boolean isCertTrustFile) {
-		if (isCertTrustFile && StringUtils.isEmpty(certTrustFile)) {
+		if (isCertTrustFile && requestFactory.getSslSocketFactory() == null) {
 			throw new ParameterException("未配置API证书目录");
 		}
 
@@ -230,9 +207,9 @@ public class WeiXinPay {
 		final String content = XMLUtils.toString(element);
 
 		logger.debug("微信支付请求xml内容:{}", content);
-
-		String res = HttpUtils.getHttpClient().post(String.class, url, sslSocketFactory, content,
-				new MediaType(MimeTypeUtils.APPLICATION_XML, charsetName)).getBody();
+		
+		HttpConnection httpConnection = HttpUtils.getHttpClient().createConnection(HttpMethod.POST, url).setRequestFactory(requestFactory).body(content).contentType(MediaType.APPLICATION_XML, charsetName);
+		String res = httpConnection.execute(String.class).getBody();
 		if (res == null) {
 			throw new RuntimeException("请求：" + url + "失败");
 		}

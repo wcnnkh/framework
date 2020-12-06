@@ -61,7 +61,11 @@ public final class InstanceUtils {
 	public static <T> List<T> loadAllService(Class<? extends T> clazz, String... defaultNames) {
 		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(),
 				defaultNames);
-		return Collections.list(CollectionUtils.toEnumeration(serviceLoader.iterator()));
+		Iterator<T> iterator = serviceLoader.iterator();
+		if(!iterator.hasNext()){
+			return Collections.emptyList();
+		}
+		return Collections.list(CollectionUtils.toEnumeration(iterator));
 	}
 
 	public static <T> T loadService(Class<? extends T> clazz, NoArgsInstanceFactory instanceFactory,
