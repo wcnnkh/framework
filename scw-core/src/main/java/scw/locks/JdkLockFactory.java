@@ -35,5 +35,13 @@ public final class JdkLockFactory extends AbstractLockFactory {
 			}
 			return false;
 		}
+
+		public boolean renewal() {
+			return true;
+		}
+
+		public boolean renewal(long time, TimeUnit unit) {
+			return true;
+		}
 	}
 }

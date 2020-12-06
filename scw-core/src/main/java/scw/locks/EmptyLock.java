@@ -29,4 +29,12 @@ public final class EmptyLock implements Lock {
 		return false;
 	}
 
+	public boolean renewal() {
+		return false;
+	}
+
+	public boolean renewal(long time, TimeUnit unit) {
+		return false;
+	}
+
 }

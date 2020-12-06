@@ -1,5 +1,7 @@
 package scw.memcached.locks;
 
+import java.util.concurrent.TimeUnit;
+
 import scw.data.cas.CAS;
 import scw.locks.AbstractLock;
 import scw.memcached.Memcached;
@@ -18,14 +20,34 @@ public final class MemcachedLock extends AbstractLock {
 	}
 
 	public boolean tryLock() {
-		return memcached.add(key, timeout, id);
+		boolean b = memcached.add(key, timeout, id);
+		if(b){
+			autoRenewal(timeout/2, TimeUnit.SECONDS);
+		}
+		return b;
 	}
 
 	public boolean unlock() {
 		CAS<String> cas = memcached.getCASOperations().get(key);
 		if (id.equals(cas.getValue())) {
-			return memcached.getCASOperations().delete(key, cas.getCas());
+			boolean b = memcached.getCASOperations().delete(key, cas.getCas());
+			if(b){
+				cancelAutoRenewal();
+			}
+			return b;
 		}
 		return false;
+	}
+
+	public boolean renewal() {
+		return renewal(timeout, TimeUnit.SECONDS);
+	}
+
+	public boolean renewal(long time, TimeUnit unit) {
+		CAS<String> cas = memcached.getCASOperations().get(key);
+		if(!id.equals(cas.getValue())){
+			return false;
+		}
+		return memcached.getCASOperations().cas(key, id, (int)unit.toSeconds(time), cas.getCas());
 	}
 }
