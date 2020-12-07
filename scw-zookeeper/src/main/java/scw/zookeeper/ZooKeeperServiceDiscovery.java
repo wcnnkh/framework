@@ -6,23 +6,25 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
+import scw.core.instance.annotation.Configuration;
 import scw.discovery.ServiceInstance;
 import scw.discovery.SimpleDiscoveryClient;
 import scw.io.JavaSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public class ZooKeeperServiceRegistryDiscovery extends SimpleDiscoveryClient<ServiceInstance> implements Watcher {
-	private static Logger logger = LoggerFactory.getLogger(ZooKeeperServiceRegistryDiscovery.class);
+@Configuration(order=Integer.MIN_VALUE + 1)
+public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInstance> implements Watcher {
+	private static Logger logger = LoggerFactory.getLogger(ZooKeeperServiceDiscovery.class);
 	public static final String DEFAULT_PARENT_PATH = "/scw";
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
 
-	public ZooKeeperServiceRegistryDiscovery(ZooKeeper zooKeeper) {
+	public ZooKeeperServiceDiscovery(ZooKeeper zooKeeper) {
 		this(zooKeeper, DEFAULT_PARENT_PATH);
 	}
 
-	public ZooKeeperServiceRegistryDiscovery(ZooKeeper zooKeeper, String parentPath) {
+	public ZooKeeperServiceDiscovery(ZooKeeper zooKeeper, String parentPath) {
 		this.zooKeeper = zooKeeper;
 		this.parentPath = ZooKeeperUtils.cleanPath(parentPath);
 		zooKeeper.register(this);

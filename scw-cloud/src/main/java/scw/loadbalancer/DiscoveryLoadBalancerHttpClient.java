@@ -11,6 +11,7 @@ import scw.http.client.ClientHttpRequestFactory;
 import scw.http.client.ClientHttpResponseExtractor;
 import scw.http.client.DefaultHttpClient;
 import scw.http.client.exception.HttpClientException;
+import scw.net.uri.UriComponentsBuilder;
 
 public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient{
 	private DiscoveryLoadBalancer loadbalancer;
@@ -34,8 +35,11 @@ public class DiscoveryLoadBalancerHttpClient extends DefaultHttpClient{
 		
 		final HashSet<String> errorSets = new HashSet<String>();
 		while(server != null){
+			UriComponentsBuilder builder = UriComponentsBuilder.fromUri(url);
+			builder = builder.host(server.getService().getHost());
+			builder = builder.port(server.getService().getPort());
 			try {
-				return super.execute(url, method, requestFactory, requestCallback,
+				return super.execute(builder.build().toUri(), method, requestFactory, requestCallback,
 						responseExtractor);
 			} catch (HttpClientException e) {
 				errorSets.add(server.getId());
