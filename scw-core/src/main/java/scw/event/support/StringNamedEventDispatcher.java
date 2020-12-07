@@ -4,6 +4,7 @@ import java.util.Map.Entry;
 
 import scw.event.BasicEventDispatcher;
 import scw.event.Event;
+import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
 
 public class StringNamedEventDispatcher<T extends Event> extends DefaultNamedEventDispatcher<String, T> {
@@ -11,6 +12,7 @@ public class StringNamedEventDispatcher<T extends Event> extends DefaultNamedEve
 
 	public StringNamedEventDispatcher(boolean concurrent) {
 		super(concurrent);
+		setStringMatcher(DefaultStringMatcher.getInstance());
 	}
 
 	public StringMatcher getStringMatcher() {
