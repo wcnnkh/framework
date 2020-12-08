@@ -11,12 +11,12 @@ import scw.core.utils.CollectionUtils;
  * @author shuchaowen
  *
  */
-public class TableChange {
+public class TableChanges {
 	private Collection<String> deleteColumns;
 	private Collection<Column> addColumns;
 
 	@SuppressWarnings("unchecked")
-	public TableChange(Collection<String> deleteColumns, Collection<Column> addColumns) {
+	public TableChanges(Collection<String> deleteColumns, Collection<Column> addColumns) {
 		this.deleteColumns = CollectionUtils.isEmpty(deleteColumns) ? Collections.EMPTY_LIST
 				: Collections.unmodifiableCollection(deleteColumns);
 		this.addColumns = CollectionUtils.isEmpty(addColumns) ? Collections.EMPTY_LIST

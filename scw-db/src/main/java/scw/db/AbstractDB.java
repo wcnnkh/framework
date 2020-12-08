@@ -22,7 +22,7 @@ import scw.logger.LoggerFactory;
 import scw.sql.ConnectionFactory;
 import scw.sql.Sql;
 import scw.sql.orm.Column;
-import scw.sql.orm.TableChange;
+import scw.sql.orm.TableChanges;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.cache.CacheManager;
 import scw.sql.orm.cache.DefaultCacheManager;
@@ -232,7 +232,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 
 	// 检查表变更
 	protected void checkTableChange(Class<?> tableClass) {
-		TableChange tableChange = getTableChange(tableClass);
+		TableChanges tableChange = getTableChanges(tableClass);
 		List<String> addList = new LinkedList<String>();
 		if (!CollectionUtils.isEmpty(tableChange.getAddColumnss())) {
 			for (Column column : tableChange.getAddColumnss()) {

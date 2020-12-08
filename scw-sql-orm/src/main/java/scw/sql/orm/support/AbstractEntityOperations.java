@@ -3,7 +3,6 @@ package scw.sql.orm.support;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -23,6 +22,7 @@ import scw.mapper.MapperUtils;
 import scw.sql.AbstractSqlOperations;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
+import scw.sql.RowMapper;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
@@ -32,14 +32,14 @@ import scw.sql.orm.ORMException;
 import scw.sql.orm.OrmUtils;
 import scw.sql.orm.ResultMapping;
 import scw.sql.orm.ResultSet;
-import scw.sql.orm.TableChange;
+import scw.sql.orm.TableChanges;
 import scw.sql.orm.TableName;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.cache.CacheManager;
 import scw.sql.orm.dialect.PaginationSql;
 import scw.sql.orm.dialect.SqlDialect;
+import scw.sql.orm.dialect.TableStructureMapping;
 import scw.sql.orm.enums.OperationType;
-import scw.sql.orm.enums.TableStructureResultField;
 import scw.sql.orm.support.generation.GeneratorContext;
 import scw.sql.orm.support.generation.GeneratorService;
 import scw.util.ClassScanner;
@@ -499,19 +499,24 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		return getMaxValue(type, tableClass, null, idField);
 	}
 
-	public TableChange getTableChange(Class<?> tableClass) {
-		return getTableChange(tableClass, null);
+	public TableChanges getTableChanges(Class<?> tableClass) {
+		return getTableChanges(tableClass, null);
 	}
 
-	public TableChange getTableChange(Class<?> tableClass, String tableName) {
+	public TableChanges getTableChanges(Class<?> tableClass, String tableName) {
 		String tName = getTableName(tableClass, tableName);
-		Sql sql = getSqlDialect().toTableStructureSql(tableClass, tName, Arrays.asList(TableStructureResultField.NAME));
-		List<String[]> list = select(String[].class, sql);
+		final TableStructureMapping tableStructureMapping = getSqlDialect().getTableStructureMapping(tableClass, tName);
+		List<String> list = query(tableStructureMapping.getSql(), new RowMapper<String>() {
+
+			public String mapRow(java.sql.ResultSet rs, int rowNum)
+					throws SQLException {
+				return tableStructureMapping.getName(rs);
+			}
+		});
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
 		Columns columns = OrmUtils.getObjectRelationalMapping().getColumns(tableClass);
-		for (String[] names : list) {
-			String name = names[0];
+		for (String name : list) {
 			hashSet.add(name);
 			Column column = columns.find(name);
 			if (column == null) {// 在现在的表结构中不存在，应该删除
@@ -526,6 +531,6 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 			}
 		}
 
-		return new TableChange(deleteList, addList);
+		return new TableChanges(deleteList, addList);
 	}
 }

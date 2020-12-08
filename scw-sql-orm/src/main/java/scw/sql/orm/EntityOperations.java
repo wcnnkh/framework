@@ -258,7 +258,7 @@ public interface EntityOperations {
 	 * @param tableClass
 	 * @return
 	 */
-	TableChange getTableChange(Class<?> tableClass);
+	TableChanges getTableChanges(Class<?> tableClass);
 
 	/**
 	 * 获取表的变更
@@ -266,5 +266,5 @@ public interface EntityOperations {
 	 * @param tableName
 	 * @return
 	 */
-	TableChange getTableChange(Class<?> tableClass, String tableName);
+	TableChanges getTableChanges(Class<?> tableClass, String tableName);
 }

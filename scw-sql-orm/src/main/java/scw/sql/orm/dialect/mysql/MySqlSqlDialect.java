@@ -1,15 +1,14 @@
 package scw.sql.orm.dialect.mysql;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import scw.core.utils.CollectionUtils;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.dialect.AbstractSqlDialect;
 import scw.sql.orm.dialect.DialectHelper;
 import scw.sql.orm.dialect.SqlDialectException;
-import scw.sql.orm.enums.TableStructureResultField;
+import scw.sql.orm.dialect.TableStructureMapping;
 
 public class MySqlSqlDialect extends AbstractSqlDialect {
 
@@ -39,36 +38,17 @@ public class MySqlSqlDialect extends AbstractSqlDialect {
 		return new MaxIdSql(clazz, tableName, idField, getDialectHelper());
 	}
 
-	protected String getTableStructureField(TableStructureResultField field) {
-		switch (field) {
-		case NAME:
-			return "COLUMN_NAME";
-		default:
-			return null;
-		}
-	}
-
-	public Sql toTableStructureSql(Class<?> clazz, String tableName, Collection<TableStructureResultField> fields) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("select ");
-		if (CollectionUtils.isEmpty(fields)) {
-			sb.append("*");
-		} else {
-			Iterator<TableStructureResultField> iterator = fields.iterator();
-			while (iterator.hasNext()) {
-				String name = getTableStructureField(iterator.next());
-				if (name == null) {
-					continue;
-				}
-
-				sb.append(name);
-				if (iterator.hasNext()) {
-					sb.append(",");
-				}
+	public TableStructureMapping getTableStructureMapping(Class<?> clazz, final String tableName) {
+		return new TableStructureMapping() {
+			
+			public Sql getSql() {
+				return new SimpleSql("select * from INFORMATION_SCHEMA.COLUMNS where table_schema=database() and table_name=?", tableName);
 			}
-		}
-		sb.append(" from INFORMATION_SCHEMA.COLUMNS where table_schema=database() and table_name=?");
-		return new SimpleSql(sb.toString(), tableName);
+			
+			public String getName(ResultSet resultSet) throws SQLException {
+				return resultSet.getString("COLUMN_NAME");
+			}
+		};
 	}
 
 	public Sql toCopyTableStructureSql(String newTableName, String oldTableName) throws SqlDialectException {

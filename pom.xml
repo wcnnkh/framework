@@ -59,6 +59,18 @@
 				<artifactId>scw-sql-orm</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-mysql</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-sqlite</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -534,5 +546,7 @@
 		<module>scw-ibatis</module>
 		<module>scw-druid</module>
 		<module>scw-hikaricp</module>
+		<module>scw-sqlite</module>
+		<module>scw-mysql</module>
 	</modules>
 </project>
