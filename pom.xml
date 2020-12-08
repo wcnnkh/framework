@@ -41,6 +41,12 @@
 				<artifactId>scw-search</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-lucene</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -548,5 +554,6 @@
 		<module>scw-hikaricp</module>
 		<module>scw-sqlite</module>
 		<module>scw-mysql</module>
+		<module>scw-lucene</module>
 	</modules>
 </project>

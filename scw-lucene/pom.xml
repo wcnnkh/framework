@@ -6,11 +6,19 @@
 		<artifactId>scw</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>scw-search</artifactId>
+	<artifactId>scw-lucene</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-core</artifactId>
+			<artifactId>scw-search</artifactId>
 		</dependency>
+
+		<!-- lucene相关 -->
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+		</dependency>
+		<!-- lucene相关 -->
 	</dependencies>
 </project>
