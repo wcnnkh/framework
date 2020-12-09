@@ -36,4 +36,6 @@ public interface Columns extends Iterable<Column> {
 	Column find(String name);
 	
 	Column find(Accept<Column> accept);
+	
+	Set<Column> findAll(Accept<Column> accept);
 }

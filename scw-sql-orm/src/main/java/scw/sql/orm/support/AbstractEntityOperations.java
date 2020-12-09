@@ -18,13 +18,14 @@ import scw.core.IteratorCallback.Row;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.mapper.MapperUtils;
 import scw.sql.AbstractSqlOperations;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.RowMapper;
 import scw.sql.Sql;
-import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.Columns;
 import scw.sql.orm.EntityOperations;
@@ -46,7 +47,8 @@ import scw.util.ClassScanner;
 import scw.util.Pagination;
 
 public abstract class AbstractEntityOperations extends AbstractSqlOperations implements EntityOperations {
-
+	private static Logger logger = LoggerFactory.getLogger(AbstractEntityOperations.class);
+	
 	public abstract SqlDialect getSqlDialect();
 
 	public abstract CacheManager getCacheManager();
@@ -142,7 +144,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 				if (column.isAutoIncrement()) {
 					if (operationType == OperationType.SAVE || operationType == OperationType.SAVE_OR_UPDATE) {
 						if (count == 0) {
-							logger.warn("Number of rows affected is 0, execute: {}", SqlUtils.getSqlId(sql));
+							logger.warn("Number of rows affected is 0, execute: {}", sql);
 						} else if (count == 1) {
 							if (operationType == OperationType.SAVE
 									|| !MapperUtils.isExistValue(column.getField(), bean)) {
@@ -154,7 +156,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 			}
 			return count != 0;
 		} catch (SQLException e) {
-			throw new ORMException(SqlUtils.getSqlId(sql), e);
+			throw new ORMException(sql, e);
 		} finally {
 			close(connection);
 		}
@@ -371,7 +373,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 
 	public <T> Pagination<T> select(Class<? extends T> type, long page, int limit, Sql sql) {
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql, page == 0 ? 1 : page, limit);
-		Long count = select(paginationSql.getCountSql()).getFirst().get(0);
+		Long count = select(paginationSql.getCountSql()).getFirst().get(Long.class, 0);
 		Pagination<T> pagination = new Pagination<T>(limit);
 		if (count == null || count == 0) {
 			pagination.setData(Collections.emptyList());

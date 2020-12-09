@@ -64,7 +64,7 @@ public abstract class AbstractDataBase implements DataBase {
 
 	public void execute(Sql sql) {
 		Connection connection = null;
-		logger.info(SqlUtils.getSqlId(sql));
+		logger.info(sql);
 		try {
 			connection = getConnection();
 			SqlUtils.execute(connection, sql);

@@ -77,4 +77,14 @@ public abstract class AbstractColumns implements Columns {
 		}
 		return null;
 	}
+	
+	public Set<Column> findAll(Accept<Column> accept) {
+		LinkedHashSet<Column> columns = new LinkedHashSet<Column>();
+		for (Column column : this) {
+			if (accept == null || accept.accept(column)) {
+				columns.add(column);
+			}
+		}
+		return columns;
+	}
 }

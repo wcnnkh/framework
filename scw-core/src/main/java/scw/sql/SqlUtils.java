@@ -19,18 +19,17 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
 public final class SqlUtils {
-
-	public static String getSqlId(Sql sql) {
-		Object[] params = sql.getParams();
-		if (params == null || params.length == 0) {
-			return sql.getSql();
+	
+	public static String toString(String sql, Object... args){
+		if (args == null || args.length == 0) {
+			return sql;
 		} else {
 			StringBuilder sb = new StringBuilder();
 			sb.append("[");
-			sb.append(sql.getSql());
+			sb.append(sql);
 			sb.append("]");
 			sb.append(" - ");
-			sb.append(Arrays.toString(params));
+			sb.append(Arrays.toString(args));
 			return sb.toString();
 		}
 	}

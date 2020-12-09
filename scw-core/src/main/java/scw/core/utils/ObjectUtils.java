@@ -371,12 +371,12 @@ public abstract class ObjectUtils {
 		}
 		return obj.hashCode();
 	}
-
+	
 	/**
 	 * Return a hash code based on the contents of the specified array. If
 	 * {@code array} is {@code null}, this method returns 0.
 	 */
-	public static int nullSafeHashCode(Object[] array) {
+	public static int nullSafeHashCode(Object... array) {
 		if (array == null) {
 			return 0;
 		}

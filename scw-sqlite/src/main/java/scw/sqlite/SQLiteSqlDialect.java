@@ -5,10 +5,28 @@ import java.sql.SQLException;
 
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
+import scw.sql.orm.dialect.SqlDialectException;
 import scw.sql.orm.dialect.TableStructureMapping;
 import scw.sql.orm.dialect.mysql.MySqlSqlDialect;
 
 public class SQLiteSqlDialect extends MySqlSqlDialect{
+	
+	@Override
+	public Sql toCreateTableSql(Class<?> clazz, String tableName)
+			throws SqlDialectException {
+		return new CreateTableSql(clazz, tableName, getDialectHelper());
+	}
+	
+	@Override
+	public Sql toLastInsertIdSql(String tableName) throws SqlDialectException {
+		return new SimpleSql("SELECT last_insert_rowid()");
+	}
+	
+	@Override
+	public Sql toSaveOrUpdateSql(Object obj, Class<?> clazz, String tableName)
+			throws SqlDialectException {
+		return new ReplaceSql(clazz, obj, tableName, getDialectHelper());
+	}
 	
 	@Override
 	public TableStructureMapping getTableStructureMapping(Class<?> clazz,

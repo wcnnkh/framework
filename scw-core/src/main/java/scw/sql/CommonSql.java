@@ -5,7 +5,7 @@ import java.util.List;
 
 import scw.core.utils.ArrayUtils;
 
-public class CommonSql implements Sql {
+public class CommonSql extends SerializableSql{
 	private static final long serialVersionUID = 1L;
 	private StringBuilder sb;
 	private List<Object> paramList;
@@ -85,9 +85,5 @@ public class CommonSql implements Sql {
 
 	public String getSql() {
 		return sb == null ? null : sb.toString();
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 }

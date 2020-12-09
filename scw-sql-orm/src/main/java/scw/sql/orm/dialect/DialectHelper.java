@@ -1,10 +1,27 @@
 package scw.sql.orm.dialect;
 
+import scw.core.instance.InstanceUtils;
+
 public class DialectHelper {
+	private static final SqlTypeFactory SQL_TYPE_FACTORY = InstanceUtils.loadService(SqlTypeFactory.class, "scw.sql.orm.dialect.DefaultSqlTypeFactory");
 	private static final char POINT = '.';
+	private String escapeCharacter = "`";
+	private SqlTypeFactory sqlTypeFactory;
+
+	public SqlTypeFactory getSqlTypeFactory() {
+		return sqlTypeFactory == null? SQL_TYPE_FACTORY : sqlTypeFactory;
+	}
+
+	public void setSqlTypeFactory(SqlTypeFactory sqlTypeFactory) {
+		this.sqlTypeFactory = sqlTypeFactory;
+	}
 
 	public String getEscapeCharacter() {
-		return "`";
+		return escapeCharacter;
+	}
+
+	public void setEscapeCharacter(String escapeCharacter) {
+		this.escapeCharacter = escapeCharacter;
 	}
 
 	public void keywordProcessing(StringBuilder sb, String column) {

@@ -75,6 +75,11 @@
 		
 		<dependency>
 			<groupId>scw</groupId>
+			<artifactId>scw-mysql</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
 			<artifactId>scw-mvc</artifactId>
 		</dependency>
 

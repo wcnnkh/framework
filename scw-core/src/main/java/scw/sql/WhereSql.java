@@ -8,7 +8,7 @@ import java.util.List;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 
-public class WhereSql implements Sql {
+public class WhereSql extends SerializableSql {
 	private static final long serialVersionUID = 1L;
 	private List<Object> paramList;
 	private StringBuilder sb;
@@ -156,9 +156,5 @@ public class WhereSql implements Sql {
 			}
 			return new SimpleSql(sql.toString(), arr);
 		}
-	}
-
-	public boolean isStoredProcedure() {
-		return false;
 	}
 }
