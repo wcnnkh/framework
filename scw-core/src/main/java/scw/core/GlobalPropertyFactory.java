@@ -25,9 +25,9 @@ public final class GlobalPropertyFactory extends PropertyFactory {
 	}
 
 	static {
-		instance.loadProperties("global.properties", "UTF-8").registerListener();
+		instance.loadProperties("global.properties", "UTF-8").register();
 		instance.loadProperties(instance.getValue("scw.properties.private", String.class, "/private.properties"),
-				"UTF-8").registerListener();
+				"UTF-8").register();
 	}
 
 	private GlobalPropertyFactory() {

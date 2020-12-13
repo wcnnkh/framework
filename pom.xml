@@ -68,6 +68,12 @@
 			
 			<dependency>
 				<groupId>scw</groupId>
+				<artifactId>scw-yaml</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
 				<artifactId>scw-mysql</artifactId>
 				<version>1.0.0</version>
 			</dependency>
@@ -555,5 +561,6 @@
 		<module>scw-sqlite</module>
 		<module>scw-mysql</module>
 		<module>scw-lucene</module>
+		<module>scw-yaml</module>
 	</modules>
 </project>

@@ -2,14 +2,10 @@ package scw.rabbitmq;
 
 import java.util.Properties;
 
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ConnectionFactoryConfigurator;
-
 import scw.amqp.Exchange;
 import scw.amqp.ExchangeDeclare;
-import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -18,6 +14,10 @@ import scw.core.instance.annotation.Configuration;
 import scw.io.ResourceUtils;
 import scw.io.SerializerUtils;
 import scw.util.ConfigUtils;
+
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.ConnectionFactoryConfigurator;
 
 @Configuration(order = Integer.MIN_VALUE)
 public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
@@ -72,7 +72,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 
 		public Object create() throws Exception {
 			ConnectionFactory connectionFactory = new ConnectionFactory();
-			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).getResource();
+			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get();
 			ConnectionFactoryConfigurator.load(connectionFactory, properties, null);
 			ConnectionFactoryConfigurator.load(connectionFactory, properties);
 			return connectionFactory;
@@ -110,7 +110,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 
 		@Override
 		public Object create() throws Exception {
-			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).getResource();
+			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
 			ConfigUtils.loadProperties(exchangeDeclare, properties, null, "exchange.");
 			return exchangeDeclare;

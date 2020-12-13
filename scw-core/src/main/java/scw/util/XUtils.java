@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import scw.core.Converter;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
@@ -23,7 +24,14 @@ import scw.value.ValueUtils;
 public final class XUtils {
 	private XUtils() {
 	};
+	
+	private static final ServiceLoaderFactory SERVICE_LOADER_FACTORY = (ServiceLoaderFactory) (JavaVersion.INSTANCE
+			.getMasterVersion() >= 6 ? ClassUtils.createInstance("scw.util.Jdk6ServiceLoaderFactory") : new Jdk5ServiceLoaderFactory());
 
+	public static ServiceLoaderFactory getServiceLoaderFactory() {
+		return SERVICE_LOADER_FACTORY;
+	}
+	
 	public static String getUUID() {
 		return StringUtils.removeChar(UUID.randomUUID().toString(), '-');
 	}

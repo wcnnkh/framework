@@ -13,7 +13,7 @@ public final class AutoZooKeeperServerStart implements ApplicationInitialization
 		ZooKeeperServerStart start = null;
 		if (ResourceUtils.getResourceOperations().isExist(DEFAULT_ZOOKEEPER_CONFIG)) {
 			start = new ZooKeeperServerStart(
-					ResourceUtils.getResourceOperations().getProperties(DEFAULT_ZOOKEEPER_CONFIG).getResource());
+					ResourceUtils.getResourceOperations().getProperties(DEFAULT_ZOOKEEPER_CONFIG).get());
 		} else {
 			Integer port = application.getPropertyFactory().getInteger("zookeeper.port");
 			if (port != null) {

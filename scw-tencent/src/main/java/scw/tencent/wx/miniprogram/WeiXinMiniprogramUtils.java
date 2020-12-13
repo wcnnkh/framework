@@ -12,8 +12,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
+import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.tencent.wx.WeiXinUtils;
@@ -162,7 +162,7 @@ public final class WeiXinMiniprogramUtils {
 			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
 			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(ivKeys));
 			byte[] data = cipher.doFinal(dataBytes);
-			String content = CompatibleUtils.getStringOperations().createString(data, Constants.UTF_8_NAME).trim();
+			String content = StringUtils.getStringOperations().createString(data, Constants.UTF_8_NAME).trim();
 			return JSONUtils.getJsonSupport().parseObject(content, PhoneNumber.class);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

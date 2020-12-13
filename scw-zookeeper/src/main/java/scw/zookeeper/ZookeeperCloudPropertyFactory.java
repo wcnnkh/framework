@@ -1,6 +1,9 @@
 package scw.zookeeper;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
@@ -8,20 +11,19 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
-import scw.compatible.CompatibleUtils;
 import scw.config.CloudPropertyFactory;
 import scw.core.Constants;
 import scw.core.instance.annotation.Configuration;
-import scw.event.EventListener;
-import scw.event.EventRegistration;
-import scw.event.NamedEventDispatcher;
-import scw.event.support.EventType;
-import scw.event.support.StringNamedEventDispatcher;
-import scw.event.support.ValueEvent;
+import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
+import scw.event.EventType;
+import scw.event.KeyValuePairEvent;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
+import scw.value.property.AbstractBasePropertyFactory;
 import scw.value.property.PropertyEvent;
 
 /**
@@ -30,40 +32,67 @@ import scw.value.property.PropertyEvent;
  *
  */
 @Configuration(order=Integer.MIN_VALUE)
-public class ZookeeperCloudPropertyFactory implements CloudPropertyFactory, Watcher{
+public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory implements CloudPropertyFactory, Watcher{
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
-	private final NamedEventDispatcher<String, PropertyEvent> eventDispatcher = new StringNamedEventDispatcher<PropertyEvent>(true);
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
 	
 	public ZookeeperCloudPropertyFactory(ZooKeeper zooKeeper, String parentPath){
+		super(true);
 		this.zooKeeper = zooKeeper;
 		this.parentPath = ZooKeeperUtils.cleanPath(parentPath);
 		zooKeeper.register(this);
 	}
 	
+	private String getKey(String path){
+		String key = path.substring(parentPath.length());
+		if(key.startsWith("/")){
+			key = key.substring(1);
+		}
+		return key;
+	}
+	
 	public Iterator<String> iterator() {
-		return ZooKeeperUtils.getChildren(zooKeeper, parentPath).iterator();
+		List<String> paths = ZooKeeperUtils.getChildren(zooKeeper, parentPath);
+		if(CollectionUtils.isEmpty(paths)){
+			return Collections.emptyIterator();
+		}
+		
+		List<String> list = new ArrayList<String>();
+		for(String path : paths){
+			list.add(getKey(path));
+		}
+		return list.iterator();
 	}
 
 	public boolean containsKey(String key) {
+		if(StringUtils.isEmpty(key)){
+			return false;
+		}
+		
 		String path = ZooKeeperUtils.cleanPath(parentPath, key);
 		return ZooKeeperUtils.isExist(zooKeeper, path);
 	}
 
-	public EventRegistration registerListener(String key,
-			EventListener<PropertyEvent> eventListener) {
-		return eventDispatcher.registerListener(key, eventListener);
-	}
-
 	public Value getValue(String key) {
+		if(StringUtils.isEmpty(key)){
+			return EmptyValue.INSTANCE;
+		}
+		
 		String path = ZooKeeperUtils.cleanPath(parentPath, key);
 		byte[] data = ZooKeeperUtils.getData(zooKeeper, path);
-		String text = CompatibleUtils.getStringOperations().createString(data, Constants.UTF_8);
+		if(data == null){
+			return EmptyValue.INSTANCE;
+		}
+		String text = StringUtils.getStringOperations().createString(data, Constants.UTF_8);
 		return new StringValue(text);
 	}
 
 	public boolean remove(String key) {
+		if(StringUtils.isEmpty(key)){
+			return false;
+		}
+		
 		String path = ZooKeeperUtils.cleanPath(parentPath, key);
 		return ZooKeeperUtils.delete(zooKeeper, path, -1);
 	}
@@ -78,31 +107,31 @@ public class ZookeeperCloudPropertyFactory implements CloudPropertyFactory, Watc
 			return;
 		}
 		
-		String key = eventPath.substring(parentPath.length());
-		if(key.startsWith("/")){
-			key = key.substring(1);
-		}
-		
-		ValueEvent<Value> valueEvent;
+		String key = getKey(eventPath);
+		KeyValuePairEvent<String, Value> keyValuePairEvent;
 		switch (event.getType()) {
 		case NodeDeleted:
-			valueEvent = new ValueEvent<Value>(EventType.DELETE, getValue(key));
+			keyValuePairEvent = new KeyValuePairEvent<String, Value>(EventType.DELETE, key, getValue(key));
 			break;
 		case NodeCreated:
-			valueEvent = new ValueEvent<Value>(EventType.CREATE, getValue(key));
+			keyValuePairEvent = new KeyValuePairEvent<String, Value>(EventType.CREATE, key, getValue(key));
 			break;
 		default:
-			valueEvent = new ValueEvent<Value>(EventType.UPDATE, getValue(key));
+			keyValuePairEvent = new KeyValuePairEvent<String, Value>(EventType.UPDATE, key, getValue(key));
 			break;
 		}
 		
-		eventDispatcher.publishEvent(key, new PropertyEvent(this, key, valueEvent));
+		getEventDispatcher().publishEvent(key, new PropertyEvent(this, keyValuePairEvent));
 	}
 
-	public void put(String key, String value) {
+	public boolean put(String key, String value) {
+		if(StringUtils.isEmpty(key)){
+			return false;
+		}
+		
 		String path = ZooKeeperUtils.cleanPath(parentPath, key);
 		ZooKeeperUtils.createNotExist(zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-		ZooKeeperUtils.setData(zooKeeper, path, CompatibleUtils.getStringOperations().getBytes(path, Constants.UTF_8));
+		return ZooKeeperUtils.setData(zooKeeper, path, StringUtils.getStringOperations().getBytes(value, Constants.UTF_8));
 	}
 
 }

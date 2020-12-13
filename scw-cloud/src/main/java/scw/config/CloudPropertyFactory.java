@@ -8,7 +8,7 @@ import scw.value.property.BasePropertyFactory;
  *
  */
 public interface CloudPropertyFactory extends BasePropertyFactory{
-	void put(String key, String value);
+	boolean put(String key, String value);
 	
 	boolean remove(String key);
 }

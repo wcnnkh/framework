@@ -11,11 +11,11 @@ import java.util.concurrent.ConcurrentMap;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
+import scw.event.EmptyObservable;
+import scw.event.Observable;
 import scw.io.DefaultResourceLoader;
 import scw.io.Resource;
-import scw.io.event.NonexistentObservableResource;
-import scw.io.event.ObservableResource;
-import scw.io.event.ObservableResourceUtils;
+import scw.io.event.ObservableProperties;
 import scw.util.ConcurrentReferenceHashMap;
 
 public class ResourceOperations extends DefaultResourceLoader {
@@ -126,20 +126,20 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return null;
 	}
 
-	public ObservableResource<Properties> getProperties(String resource) {
+	public Observable<Properties> getProperties(String resource) {
 		return getProperties(resource, null);
 	}
 
-	public ObservableResource<Properties> getProperties(String resource, String charsetName) {
+	public Observable<Properties> getProperties(String resource, String charsetName) {
 		List<Resource> resources = getResources(resource);
 		if (CollectionUtils.isEmpty(resources)) {
-			return new NonexistentObservableResource<Properties>();
+			return new EmptyObservable<Properties>();
 		}
-
-		return ObservableResourceUtils.getProperties(CollectionUtils.reversal(resources), charsetName);
+		
+		return new ObservableProperties(resources, charsetName);
 	}
 
-	public ObservableResource<Properties> getProperties(Collection<String> resources, String charsetName) {
+	public Observable<Properties> getProperties(Collection<String> resources, String charsetName) {
 		List<Resource> list = new ArrayList<Resource>(resources.size());
 		for (String resource : resources) {
 			Resource res = getResource(resource);
@@ -149,7 +149,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 
 			list.add(res);
 		}
-		return ObservableResourceUtils.getProperties(list, charsetName);
+		return new ObservableProperties(list, charsetName);
 	}
 
 	public boolean isExist(String resource) {

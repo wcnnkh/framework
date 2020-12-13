@@ -2,16 +2,16 @@ package scw.result;
 
 import scw.aop.annotation.AopEnable;
 import scw.core.GlobalPropertyFactory;
-import scw.event.support.DynamicValue;
+import scw.event.Observable;
 
 @AopEnable(false)
 public class ResultFactory {
-	static final DynamicValue<String> DEFAULT_ERROR_MESSAGE = GlobalPropertyFactory.getInstance()
-			.getDynamicValue("result.error.msg", String.class, "系统错误");
-	static final DynamicValue<String> AUTHORIZATION_FAILURE_MESSAGE = GlobalPropertyFactory.getInstance()
-			.getDynamicValue("result.authorization.failure.msg", String.class, "登录状态已过期");
-	static final DynamicValue<String> PARAMETER_ERROR_MESSAGE = GlobalPropertyFactory.getInstance()
-			.getDynamicValue("result.parameter.error.msg", String.class, "参数错误");
+	static final Observable<String> DEFAULT_ERROR_MESSAGE = GlobalPropertyFactory.getInstance()
+			.getObservableValue("result.error.msg", String.class, "系统错误");
+	static final Observable<String> AUTHORIZATION_FAILURE_MESSAGE = GlobalPropertyFactory.getInstance()
+			.getObservableValue("result.authorization.failure.msg", String.class, "登录状态已过期");
+	static final Observable<String> PARAMETER_ERROR_MESSAGE = GlobalPropertyFactory.getInstance()
+			.getObservableValue("result.parameter.error.msg", String.class, "参数错误");
 
 	private final ResultMessageFactory resultMessageFactory;
 	private final int defaultErrorCode;
@@ -42,7 +42,7 @@ public class ResultFactory {
 
 	public final <T> DataResult<T> error(long code) {
 		String msg = getMsg(code);
-		return error(code, msg == null ? DEFAULT_ERROR_MESSAGE.getValue() : msg);
+		return error(code, msg == null ? DEFAULT_ERROR_MESSAGE.get() : msg);
 	}
 
 	public final <T> DataResult<T> error(String msg) {
@@ -52,19 +52,19 @@ public class ResultFactory {
 	public final <T> DataResult<T> error() {
 		long code = getDefaultErrorCode();
 		String msg = getMsg(code);
-		return error(code, msg == null ? DEFAULT_ERROR_MESSAGE.getValue() : msg);
+		return error(code, msg == null ? DEFAULT_ERROR_MESSAGE.get() : msg);
 	}
 
 	public final <T> DataResult<T> authorizationFailure() {
 		long code = getAuthorizationFailureCode();
 		String msg = getMsg(code);
-		return error(code, msg == null ? AUTHORIZATION_FAILURE_MESSAGE.getValue() : msg);
+		return error(code, msg == null ? AUTHORIZATION_FAILURE_MESSAGE.get() : msg);
 	}
 
 	public final <T> DataResult<T> parameterError() {
 		long code = getParameterErrorCode();
 		String msg = getMsg(code);
-		return error(code, msg == null ? PARAMETER_ERROR_MESSAGE.getValue() : msg);
+		return error(code, msg == null ? PARAMETER_ERROR_MESSAGE.get() : msg);
 	}
 
 	public final <T> DataResult<T> error(Result result) {

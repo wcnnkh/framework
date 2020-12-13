@@ -4,8 +4,8 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
+import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
@@ -39,7 +39,7 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 		public Object create() throws Exception {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
 			ConfigUtils.loadProperties(connectionFactory,
-					ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).getResource(), null, null);
+					ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get(), null, null);
 			return connectionFactory;
 		}
 	}

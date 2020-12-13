@@ -2,16 +2,16 @@ package scw.rabbitmq;
 
 import java.io.IOException;
 
-import com.rabbitmq.client.Channel;
-
 import scw.amqp.ExchangeDeclare;
 import scw.amqp.MessageListener;
 import scw.amqp.QueueDeclare;
 import scw.amqp.support.AbstractExchange;
-import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
+import scw.core.utils.StringUtils;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.json.JSONUtils;
+
+import com.rabbitmq.client.Channel;
 
 public abstract class AbstractRabbitmqExchange extends AbstractExchange {
 	static final String DIX_ROUTING_KEY = "scw.dix.routingKey";
@@ -98,7 +98,7 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange {
 		if (logger.isDebugEnabled()) {
 			logger.debug("push exchange={}, routingKey={}, properties={}, body={}", exchangeDeclare.getName(),
 					message.getRoutingKey(), JSONUtils.toJSONString(message.getMessageProperties()),
-					CompatibleUtils.getStringOperations().createString(message.getBody(), Constants.DEFAULT_CHARSET));
+					StringUtils.getStringOperations().createString(message.getBody(), Constants.DEFAULT_CHARSET));
 		}
 
 		if (message.getMessageProperties().getDeliveryMode() == null) {

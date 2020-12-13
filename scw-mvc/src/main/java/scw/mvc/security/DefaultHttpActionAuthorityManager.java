@@ -4,11 +4,11 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
 import scw.core.annotation.KeyValuePair;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.instance.annotation.Configuration;
+import scw.core.utils.StringUtils;
 import scw.event.EventListener;
 import scw.event.ObjectEvent;
 import scw.http.HttpMethod;
@@ -44,7 +44,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		ActionAuthorityParent actionAuthorityParent = annotatedElement.getAnnotation(ActionAuthorityParent.class);
 		String parentId = actionAuthorityParent == null ? defaultId : actionAuthorityParent.value().getName();
 		if (parentId != null) {
-			parentId = Base64.encode(CompatibleUtils.getStringOperations().getBytes(parentId, Constants.ISO_8859_1));
+			parentId = Base64.encode(StringUtils.getStringOperations().getBytes(parentId, Constants.ISO_8859_1));
 		}
 		return parentId;
 	}
@@ -53,7 +53,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		ActionAuthority classAuthority = action.getSourceClass().getAnnotation(ActionAuthority.class);
 		if (classAuthority != null) {// 如果在类上存在此注解说明这是一个菜单
 			String id = action.getSourceClass().getName();
-			id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
+			id = Base64.encode(StringUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
 			HttpAuthority authority = getAuthority(id);
 			if (authority == null) {
 				String parentId = getParentId(action.getSourceClass(), null);
@@ -86,7 +86,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		}
 
 		String id = descriptor.getMethod() + "&" + descriptor.getPath();
-		id = Base64.encode(CompatibleUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
+		id = Base64.encode(StringUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
 
 		register(new DefaultHttpAuthority(id, parentId, methodAuthority.value(),
 				getAttributeMap(classAuthority, methodAuthority), isMenu, descriptor.getPath(),

@@ -9,7 +9,7 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.utils.XTime;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.support.EventType;
+import scw.event.EventType;
 import scw.io.Resource;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;

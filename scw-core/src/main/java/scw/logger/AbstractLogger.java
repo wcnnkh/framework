@@ -1,8 +1,8 @@
 package scw.logger;
 
+import scw.event.BasicEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.support.BasicEvent;
 
 public abstract class AbstractLogger implements Logger {
 	private static final Object[] EMPTY_ARGS = new Object[0];

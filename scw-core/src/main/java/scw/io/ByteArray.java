@@ -7,8 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
+import scw.core.utils.StringUtils;
 
 /**
  * 此类非线程安全的
@@ -59,12 +59,12 @@ public class ByteArray implements Serializable {
 	}
 
 	public ByteArray(String body, Charset charset) {
-		this.buf = CompatibleUtils.getStringOperations().getBytes(body, charset);
+		this.buf = StringUtils.getStringOperations().getBytes(body, charset);
 		this.count = buf.length;
 	}
 
 	public ByteArray(String body, String charsetName) throws UnsupportedEncodingException {
-		this.buf = CompatibleUtils.getStringOperations().getBytes(body, charsetName);
+		this.buf = StringUtils.getStringOperations().getBytes(body, charsetName);
 		this.count = buf.length;
 	}
 

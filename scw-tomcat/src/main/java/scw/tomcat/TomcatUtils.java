@@ -81,7 +81,7 @@ public final class TomcatUtils {
 		}
 
 		if (ResourceUtils.getResourceOperations().isExist(path)) {
-			properties.putAll(ResourceUtils.getResourceOperations().getProperties(path).getResource());
+			properties.putAll(ResourceUtils.getResourceOperations().getProperties(path).get());
 		}
 		return properties;
 	}

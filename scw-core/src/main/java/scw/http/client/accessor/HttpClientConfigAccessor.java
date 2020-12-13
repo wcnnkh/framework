@@ -1,14 +1,14 @@
 package scw.http.client.accessor;
 
 import scw.core.GlobalPropertyFactory;
-import scw.event.support.DynamicValue;
+import scw.event.Observable;
 
 public class HttpClientConfigAccessor {
-	private static final DynamicValue<Integer> DEFAULT_CONNECT_TIMEOUT = GlobalPropertyFactory.getInstance()
-			.getDynamicValue("scw.http.client.connect.timeout", Integer.class, 10000);
-	private static final DynamicValue<Integer> DEFAULT_READ_TIMEOUT = GlobalPropertyFactory.getInstance()
-			.getDynamicValue("scw.http.client.read.timeout", Integer.class, 10000);
-	private static final DynamicValue<String> DEFAULT_UA = GlobalPropertyFactory.getInstance().getDynamicValue(
+	private static final Observable<Integer> DEFAULT_CONNECT_TIMEOUT = GlobalPropertyFactory.getInstance()
+			.getObservableValue("scw.http.client.connect.timeout", Integer.class, 10000);
+	private static final Observable<Integer> DEFAULT_READ_TIMEOUT = GlobalPropertyFactory.getInstance()
+			.getObservableValue("scw.http.client.read.timeout", Integer.class, 10000);
+	private static final Observable<String> DEFAULT_UA = GlobalPropertyFactory.getInstance().getObservableValue(
 			"scw.http.client.headers.ua", String.class,
 			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
 
@@ -25,7 +25,7 @@ public class HttpClientConfigAccessor {
 	}
 
 	public int getConnectTimeout() {
-		return connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT.getValue() : connectTimeout;
+		return connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT.get() : connectTimeout;
 	}
 
 	public void setConnectTimeout(Integer connectTimeout) {
@@ -33,7 +33,7 @@ public class HttpClientConfigAccessor {
 	}
 
 	public int getReadTimeout() {
-		return readTimeout == null ? DEFAULT_READ_TIMEOUT.getValue() : readTimeout;
+		return readTimeout == null ? DEFAULT_READ_TIMEOUT.get() : readTimeout;
 	}
 
 	public void setReadTimeout(Integer readTimeout) {
@@ -41,7 +41,7 @@ public class HttpClientConfigAccessor {
 	}
 
 	public String getUserAgent() {
-		return userAgent == null ? DEFAULT_UA.getValue() : userAgent;
+		return userAgent == null ? DEFAULT_UA.get() : userAgent;
 	}
 
 	public void setUserAgent(String userAgent) {

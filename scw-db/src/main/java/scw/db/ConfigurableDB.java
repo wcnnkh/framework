@@ -44,7 +44,7 @@ public abstract class ConfigurableDB extends AbstractDB {
 			}
 		}
 
-		propertyFactory.loadProperties(configLocation, Constants.UTF_8_NAME).registerListener();
+		propertyFactory.loadProperties(configLocation, Constants.UTF_8_NAME).register();
 	}
 
 	/**

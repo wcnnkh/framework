@@ -8,8 +8,8 @@ import scw.beans.annotation.Value;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
+import scw.event.Observable;
 import scw.io.ResourceUtils;
-import scw.io.event.ObservableResource;
 import scw.mapper.Field;
 import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
@@ -20,7 +20,7 @@ import scw.value.property.PropertyFactory;
 public final class PropertiesFileValueProcesser extends AbstractObservableValueProcesser<Properties> {
 
 	@Override
-	protected ObservableResource<Properties> getObservableResource(BeanDefinition beanDefinition,
+	protected Observable<Properties> getObservableResource(BeanDefinition beanDefinition,
 			BeanFactory beanFactory, PropertyFactory propertyFactory, Object bean, Field field, Value value,
 			String name, String charsetName) {
 		return ResourceUtils.getResourceOperations().getProperties(name, charsetName);

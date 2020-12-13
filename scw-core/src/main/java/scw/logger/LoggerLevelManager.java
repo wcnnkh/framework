@@ -7,18 +7,21 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.TreeMap;
 
+import scw.core.Converter;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
+import scw.event.BasicEvent;
 import scw.event.BasicEventDispatcher;
 import scw.event.EventListener;
-import scw.event.ObjectEvent;
-import scw.event.support.BasicEvent;
+import scw.event.Observable;
+import scw.event.ObservableConvert;
+import scw.event.ObservableEvent;
 import scw.event.support.DefaultBasicEventDispatcher;
 import scw.io.ClassPathResource;
 import scw.io.ResourceUtils;
-import scw.io.support.DynamicProperties;
+import scw.io.event.MultipleObservableProperties;
 
-public class LoggerLevelManager {
+public class LoggerLevelManager implements Converter<Properties, TreeMap<String, Level>>{
 	public static final Map<String, Level> DEFAULT_LEVEL_MAP;
 
 	private static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
@@ -57,25 +60,23 @@ public class LoggerLevelManager {
 	}
 
 	private final Level defaultLevel;
-	private volatile TreeMap<String, Level> levelMap;
 	private final BasicEventDispatcher<BasicEvent> eventDispatcher = new DefaultBasicEventDispatcher<BasicEvent>(
 			true);
-	private final DynamicProperties dynamicProperties = new DynamicProperties(
-			false);
+	private final MultipleObservableProperties properties = new MultipleObservableProperties(true);
+	private final Observable<TreeMap<String, Level>> levelMap = new ObservableConvert<Properties, TreeMap<String, Level>>(properties, this);
 
 	private LoggerLevelManager(Level defaultLevel) {
 		this.defaultLevel = defaultLevel;
-		dynamicProperties.getEventDispatcher().registerListener(
-				new EventListener<ObjectEvent<Properties>>() {
-					public void onEvent(ObjectEvent<Properties> event) {
-						levelMap = parse(event.getSource(), getDefaultLevel());
-						eventDispatcher.publishEvent(new BasicEvent());
-					};
-				});
+		properties.registerListener(new EventListener<ObservableEvent<Properties>>() {
+			
+			public void onEvent(ObservableEvent<Properties> event) {
+				eventDispatcher.publishEvent(new BasicEvent());
+			}
+		});
 	}
 
-	public boolean loadProperties(String properties) {
-		return dynamicProperties.load(properties);
+	public Observable<Properties> loadProperties(String resource) {
+		return properties.loadProperties(resource);
 	}
 
 	private static TreeMap<String, Level> parse(Properties properties,
@@ -123,7 +124,7 @@ public class LoggerLevelManager {
 	}
 
 	public Level getLevel(String name) {
-		Level level = levelMap == null ? null : getLevel(levelMap, name);
+		Level level = levelMap == null ? null : getLevel(levelMap.get(), name);
 		if (level == null) {
 			level = getLevel(DEFAULT_LEVEL_MAP, name);
 		}
@@ -133,10 +134,14 @@ public class LoggerLevelManager {
 	@SuppressWarnings("unchecked")
 	public Map<String, Level> getLevelMap() {
 		return (Map<String, Level>) (levelMap == null ? Collections.emptyMap()
-				: Collections.unmodifiableMap(levelMap));
+				: Collections.unmodifiableMap(levelMap.get()));
 	}
 
 	public BasicEventDispatcher<BasicEvent> getEventDispatcher() {
 		return eventDispatcher;
+	}
+
+	public TreeMap<String, Level> convert(Properties properties) {
+		return parse(properties, defaultLevel);
 	}
 }

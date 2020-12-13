@@ -1,8 +1,8 @@
 package scw.logger;
 
 import scw.core.UnsafeStringBuffer;
+import scw.event.BasicEvent;
 import scw.event.EventListener;
-import scw.event.support.BasicEvent;
 import scw.event.support.DefaultAsyncBasicEventDispatcher;
 import scw.logger.AsyncConsoleLoggerFactory.MessageEvent;
 

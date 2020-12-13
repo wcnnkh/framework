@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import scw.aop.Aop;
 import scw.aop.DefaultAop;
@@ -38,6 +39,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.event.BasicEventDispatcher;
+import scw.event.Observable;
 import scw.event.support.DefaultBasicEventDispatcher;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
@@ -538,6 +540,14 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 		addBeanConfiguration(new MethodBeanConfiguration());
 		addBeanConfiguration(new ServiceBeanConfiguration());
 		beanBuilderLoaders.addAll(BeanUtils.loadAllService(BeanBuilderLoader.class, this, propertyFactory));
+		
+		for(PropertiesRegistration registration : BeanUtils.loadAllService(PropertiesRegistration.class, this, propertyFactory)){
+			Observable<Properties> properties = registration.getProperties();
+			if(properties == null){
+				continue;
+			}
+			propertyFactory.loadProperties(properties, registration.getPrefix(), registration.isFormat());
+		}
 		
 		propertyFactory.addLastBasePropertyFactory(
 				BeanUtils.loadAllService(BasePropertyFactory.class, this, propertyFactory));
