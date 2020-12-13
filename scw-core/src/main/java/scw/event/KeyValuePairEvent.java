@@ -1,5 +1,7 @@
 package scw.event;
 
+import scw.core.utils.XTime;
+import scw.mapper.MapperUtils;
 import scw.util.KeyValuePair;
 
 public class KeyValuePairEvent<K, V> extends KeyValuePair<K, V> implements Event{
@@ -25,5 +27,10 @@ public class KeyValuePairEvent<K, V> extends KeyValuePair<K, V> implements Event
 
 	public EventType getEventType() {
 		return eventType;
+	}
+	
+	@Override
+	public String toString() {
+		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.getMapper().toString(this) + ">";
 	}
 }

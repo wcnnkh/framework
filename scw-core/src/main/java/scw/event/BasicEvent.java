@@ -32,11 +32,7 @@ public class BasicEvent implements Event {
 		return createTime;
 	}
 
-	public final String getCreateTimeAfterFormatting() {
-		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss:SSS");
-	}
-
 	public String toString() {
-		return MapperUtils.getMapper().toString(this);
+		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.getMapper().toString(this) + ">";
 	};
 }

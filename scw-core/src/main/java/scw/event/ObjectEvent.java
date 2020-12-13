@@ -3,6 +3,7 @@ package scw.event;
 import java.util.EventObject;
 
 import scw.core.utils.XTime;
+import scw.mapper.MapperUtils;
 
 public class ObjectEvent<T> extends EventObject implements Event {
 	private static final long serialVersionUID = 1L;
@@ -35,8 +36,6 @@ public class ObjectEvent<T> extends EventObject implements Event {
 
 	@Override
 	public String toString() {
-		return "eventType=" + eventType + " createTime="
-				+ XTime.format(createTime, "yyyy-MM-dd HH:mm:ss,SSS") + " "
-				+ super.toString();
+		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.getMapper().toString(this) + ">";
 	}
 }

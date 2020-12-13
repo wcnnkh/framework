@@ -21,9 +21,4 @@ public class PropertyEvent extends KeyValuePairEvent<String, Value> {
 	public BasePropertyFactory getBasePropertyFactory() {
 		return basePropertyFactory;
 	}
-
-	@Override
-	public String toString() {
-		return "propertyFactory=" + basePropertyFactory + ", " + super.toString();
-	}
 }
