@@ -577,6 +577,11 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 		if (value instanceof Number) {
 			return true;
 		}
+		
+		if(value instanceof String){
+			StringValue textValue = new StringValue((String)value);
+			return textValue.isNumber();
+		}
 
 		if (value instanceof CharSequence) {
 			return StringUtils.isNumeric((CharSequence) value);

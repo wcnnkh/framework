@@ -7,6 +7,8 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
 public class BigDecimalHolder extends AbstractNumberHolder {
+	private static final long serialVersionUID = 1L;
+
 	public static final BigDecimalHolder ZERO = new BigDecimalHolder(BigDecimal.ZERO);
 	
 	private static Logger logger = LoggerUtils.getLogger(BigDecimalHolder.class);

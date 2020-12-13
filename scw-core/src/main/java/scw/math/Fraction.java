@@ -11,7 +11,9 @@ import scw.math.gcd.GreatestCommonDivisor;
  * @author shuchaowen
  *
  */
-public class Fraction implements NumberHolder {
+public class Fraction extends Number implements NumberHolder {
+	private static final long serialVersionUID = 1L;
+
 	public static final Fraction ZERO = new Fraction(BigIntegerHolder.ZERO, BigIntegerHolder.ONE);
 
 	/**
@@ -222,5 +224,25 @@ public class Fraction implements NumberHolder {
 		}
 
 		return new Fraction(new BigDecimalHolder(molecule.divide(gcd)), new BigDecimalHolder(denominator.divide(gcd)));
+	}
+
+	@Override
+	public int intValue() {
+		return toBigDecimal().intValue();
+	}
+
+	@Override
+	public long longValue() {
+		return toBigDecimal().longValue();
+	}
+
+	@Override
+	public float floatValue() {
+		return toBigDecimal().floatValue();
+	}
+
+	@Override
+	public double doubleValue() {
+		return toBigDecimal().doubleValue();
 	}
 }
