@@ -11,13 +11,6 @@
 			  <url>http://maven.shuchaowen.com</url>
 		  </repository>
     </repositories>
-2.引入dependency:
------------------
-    <dependency>
-      <groupId>scw</groupId>
-      <artifactId>scw-integration</artifactId>
-      <version>1.0.0</version>
-    </dependency>
-3.示例:
+2.示例:
 -----------------
 [示例](https://github.com/wcnnkh/scw-app/blob/master/scw-app-example/src/main/java/scw/app/example/ExampleApplication.java)
