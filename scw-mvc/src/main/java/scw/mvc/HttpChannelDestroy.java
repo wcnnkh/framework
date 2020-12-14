@@ -7,7 +7,7 @@ import java.util.Map;
 import scw.beans.BeanUtils;
 import scw.beans.Destroy;
 import scw.core.GlobalPropertyFactory;
-import scw.event.support.DynamicValue;
+import scw.event.Observable;
 import scw.http.HttpStatus;
 import scw.http.server.ServerHttpAsyncEvent;
 import scw.http.server.ServerHttpAsyncListener;
@@ -18,8 +18,8 @@ import scw.logger.LoggerFactory;
 import scw.result.BaseResult;
 
 public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
-	private static final DynamicValue<Long> WARN_TIMEOUT = GlobalPropertyFactory.getInstance()
-			.getDynamicValue("mvc.warn-execute-time", Long.class, 100L);
+	private static final Observable<Long> WARN_TIMEOUT = GlobalPropertyFactory.getInstance()
+			.getObservableValue("mvc.warn-execute-time", Long.class, 100L);
 	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);
 
 	private Long executeWarnTime;
@@ -61,7 +61,7 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 	}
 
 	protected final long getExecuteWarnTime() {
-		return executeWarnTime == null ? WARN_TIMEOUT.getValue() : executeWarnTime;
+		return executeWarnTime == null ? WARN_TIMEOUT.get() : executeWarnTime;
 	}
 
 	public void destroy() throws IOException {

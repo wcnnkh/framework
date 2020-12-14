@@ -7,7 +7,7 @@ import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.event.EventListener;
-import scw.event.support.EventType;
+import scw.event.EventType;
 import scw.io.event.ResourceEvent;
 import scw.io.event.ResourceEventDispatcher;
 import scw.io.event.SimpleResourceEventDispatcher;

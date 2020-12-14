@@ -1,11 +1,11 @@
 package scw.mvc.servlet;
 
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 import scw.mvc.page.Page;
 import scw.mvc.page.PageFactory;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class JspPageFactory implements PageFactory {
 	public final static JspPageFactory instance = new JspPageFactory();
 

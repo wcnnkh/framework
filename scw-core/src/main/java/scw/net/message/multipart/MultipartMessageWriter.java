@@ -54,16 +54,16 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected void writeInternal(Object body, MimeType contentType, OutputMessage outputMessage)
+	protected void writeInternal(Type type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		String boundary;
 		MimeType mimeType = contentType;
 		if (contentType != null) {
 			boundary = contentType.getParameter(BOUNDARY_NAME);
 			if (StringUtils.isEmpty(boundary)) {
-				MimeType type = outputMessage.getContentType();
-				if (type != null) {
-					boundary = type.getParameter(BOUNDARY_NAME);
+				MimeType outputMessageContentType = outputMessage.getContentType();
+				if (outputMessageContentType != null) {
+					boundary = outputMessageContentType.getParameter(BOUNDARY_NAME);
 				}
 			}
 

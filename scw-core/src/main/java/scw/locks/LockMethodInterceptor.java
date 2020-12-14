@@ -5,7 +5,7 @@ import scw.aop.MethodInterceptorAccept;
 import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.json.JSONUtils;
@@ -18,7 +18,7 @@ import scw.locks.annotation.LockParameter;
  * @author shuchaowen
  *
  */
-@Configuration(order=Integer.MAX_VALUE)
+@SPI(order=Integer.MAX_VALUE)
 public final class LockMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private LockFactory lockFactory;
 

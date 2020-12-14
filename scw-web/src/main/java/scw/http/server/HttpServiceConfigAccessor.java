@@ -1,10 +1,8 @@
 package scw.http.server;
 
-import scw.aop.annotation.AopEnable;
 import scw.net.InetUtils;
 import scw.net.message.multipart.FileItemParser;
 
-@AopEnable(false)
 public class HttpServiceConfigAccessor {
 	private FileItemParser fileItemParser;
 	private final HttpServiceConfig<Boolean> jsonpSupportConfig = new HttpServiceConfig<Boolean>();

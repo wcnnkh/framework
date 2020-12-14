@@ -10,10 +10,6 @@ public final class EmptyResultMapping implements ResultMapping {
 		return new Object[0];
 	}
 
-	public <T> T get(int index) {
-		return null;
-	}
-
 	public int size() {
 		return 0;
 	}

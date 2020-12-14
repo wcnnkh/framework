@@ -12,10 +12,10 @@ import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.core.GlobalPropertyFactory;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 	private static final int DEFAULT_CORE_POOL_SIZE = StringUtils
 			.parseInt(GlobalPropertyFactory.getInstance().getString("executor.pool.core.size"), 16);
@@ -68,12 +68,7 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 		public boolean isInstance() {
 			return true;
 		}
-
-		@Override
-		protected boolean isProxy() {
-			return false;
-		}
-
+		
 		@Override
 		public Object create() throws Exception {
 			return new ThreadPoolExecutor(DEFAULT_CORE_POOL_SIZE, DEFAULT_MAXMUM_POOL_SIZE, DEFAULT_KEEP_ALIVE_TIME,

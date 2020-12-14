@@ -5,11 +5,11 @@ import java.io.IOException;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
+import scw.event.BasicEvent;
 import scw.event.BasicEventDispatcher;
 import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.support.BasicEvent;
 import scw.event.support.DefaultBasicEventDispatcher;
 import scw.io.FileUtils;
 

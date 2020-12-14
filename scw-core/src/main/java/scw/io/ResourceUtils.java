@@ -428,7 +428,9 @@ public final class ResourceUtils {
 		} catch (IOException e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
-			IOUtils.close(is);
+			if(!resource.isOpen()){
+				IOUtils.close(is);
+			}
 		}
 	}
 
@@ -448,7 +450,9 @@ public final class ResourceUtils {
 		} catch (IOException e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
-			IOUtils.close(is);
+			if(!resource.isOpen()){
+				IOUtils.close(is);
+			}
 		}
 	}
 
@@ -468,7 +472,9 @@ public final class ResourceUtils {
 		} catch (IOException e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
-			IOUtils.close(is);
+			if(!resource.isOpen()){
+				IOUtils.close(is);
+			}
 		}
 	}
 
@@ -505,7 +511,9 @@ public final class ResourceUtils {
 							isr = new InputStreamReader(is, charsetName);
 							method.invoke(properties, isr);
 						} finally {
-							IOUtils.close(isr);
+							if(!resource.isOpen()){
+								IOUtils.close(isr);
+							}
 						}
 					}
 				}
@@ -513,7 +521,9 @@ public final class ResourceUtils {
 		} catch (Exception e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
-			IOUtils.close(is);
+			if(!resource.isOpen()){
+				IOUtils.close(is);
+			}
 		}
 	}
 

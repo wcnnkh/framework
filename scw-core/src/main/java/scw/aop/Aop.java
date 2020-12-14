@@ -46,6 +46,13 @@ public abstract class Aop implements ProxyFactory {
 	public final Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
 		return getProxyFactory().getProxyClass(clazz, interfaces);
 	}
+	
+	public boolean isProxy(Object instance){
+		if(instance == null){
+			return false;
+		}
+		return isProxy(instance.getClass());
+	}
 
 	public final boolean isProxy(Class<?> clazz) {
 		return getProxyFactory().isProxy(clazz);
@@ -75,6 +82,15 @@ public abstract class Aop implements ProxyFactory {
 	public final <T> Proxy getProxyInstance(Class<? extends T> clazz, T instance, Class<?>[] interfaces,
 			MethodInterceptor... filters) {
 		return getProxyInstance(clazz, instance, interfaces, Arrays.asList(filters));
+	}
+	
+	private boolean isProxyMethod(Object instance, Method method) {
+		boolean isProxy = !(Modifier.isPrivate(method.getModifiers()) || Modifier.isStatic(method.getModifiers())
+				|| Modifier.isFinal(method.getModifiers()) || Modifier.isNative(method.getModifiers()));
+		if (isProxy) {
+			isProxy = instance != null && isProxy(instance);
+		}
+		return isProxy;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -157,15 +173,6 @@ public abstract class Aop implements ProxyFactory {
 	public final MethodInvoker getProxyMethod(NoArgsInstanceFactory noArgsInstanceFactory, Class<?> targetClass,
 			Method method, MethodInterceptor... filters) {
 		return getProxyMethod(noArgsInstanceFactory, targetClass, method, Arrays.asList(filters));
-	}
-
-	public boolean isProxyMethod(Object instance, Method method) {
-		boolean isProxy = !(Modifier.isPrivate(method.getModifiers()) || Modifier.isStatic(method.getModifiers())
-				|| Modifier.isFinal(method.getModifiers()) || Modifier.isNative(method.getModifiers()));
-		if (isProxy) {
-			isProxy = instance != null && isProxy(instance.getClass());
-		}
-		return isProxy;
 	}
 
 	private static final class InstanceMethodInterceptor implements MethodInterceptor, Serializable {

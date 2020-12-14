@@ -1,6 +1,7 @@
 package scw.sql;
 
-public class SimpleSql implements Sql {
+
+public class SimpleSql extends SerializableSql{
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

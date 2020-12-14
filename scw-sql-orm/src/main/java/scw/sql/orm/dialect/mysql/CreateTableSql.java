@@ -3,8 +3,11 @@ package scw.sql.orm.dialect.mysql;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import scw.core.utils.StringUtils;
+import scw.sql.orm.Column;
+import scw.sql.orm.Columns;
 import scw.sql.orm.IndexInfo;
 import scw.sql.orm.OrmUtils;
 import scw.sql.orm.annotation.Table;
@@ -18,43 +21,54 @@ public class CreateTableSql extends DialectSql {
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
-	protected void appendColumnType(StringBuilder sb, SqlType sqlType) {
-		sb.append(sqlType.getName());
-		if (sqlType.getLength() > 0) {
-			sb.append("(").append(sqlType.getLength()).append(")");
-		}
-	}
-
-	public CreateTableSql(Class<?> clazz, String tableName, DialectHelper dialectHelper) {
+	public CreateTableSql(Class<?> clazz, String tableName,
+			DialectHelper dialectHelper) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(dialectHelper.getCreateTablePrefix());
 		sb.append(" ");
 		dialectHelper.keywordProcessing(sb, tableName);
 		sb.append(" (");
 
-		Iterator<scw.sql.orm.Column> iterator = OrmUtils.getObjectRelationalMapping().getColumns(clazz).iterator();
+		Columns columns = OrmUtils.getObjectRelationalMapping().getColumns(
+				clazz);
+		Iterator<scw.sql.orm.Column> iterator = columns.iterator();
+		Set<Column> primaryKeys = columns.getPrimaryKeys();
 		while (iterator.hasNext()) {
 			scw.sql.orm.Column col = iterator.next();
-			SqlType sqlType = col.getSqlType(OrmUtils.getSqlTypeFactory());
+			SqlType sqlType = col.getSqlType(dialectHelper.getSqlTypeFactory());
 			dialectHelper.keywordProcessing(sb, col.getName());
+
 			sb.append(" ");
-			appendColumnType(sb, sqlType);
-			sb.append(" ");
+			sb.append(sqlType.getName());
+			if (sqlType.getLength() > 0) {
+				sb.append("(").append(sqlType.getLength()).append(")");
+			}
 
 			if (!StringUtils.isEmpty(col.getCharsetName())) {
-				sb.append("character set ").append(col.getCharsetName()).append(" ");
+				sb.append(" character set ").append(col.getCharsetName());
+			}
+
+			if(primaryKeys.size() == 1){
+				if (col.isPrimaryKey()) {
+					sb.append(" PRIMARY KEY");
+				}
+
+				if (col.isAutoIncrement()) {
+					sb.append(" AUTO_INCREMENT");
+				}
+			}
+
+			if (col.isUnique()) {
+				sb.append(" UNIQUE");
 			}
 
 			if (!col.isNullable()) {
-				sb.append("not null ");
+				sb.append(" not null");
 			}
 
 			if (StringUtils.isNotEmpty(col.getDescription())) {
-				sb.append(" comment \'").append(col.getDescription()).append("\'");
-			}
-
-			if (col.isAutoIncrement()) {
-				sb.append(" AUTO_INCREMENT");
+				sb.append(" comment \'").append(col.getDescription())
+						.append("\'");
 			}
 
 			if (iterator.hasNext()) {
@@ -62,21 +76,8 @@ public class CreateTableSql extends DialectSql {
 			}
 		}
 
-		iterator = OrmUtils.getObjectRelationalMapping().getColumns(clazz).iterator();
-		while (iterator.hasNext()) {
-			scw.sql.orm.Column column = iterator.next();
-			if (!column.isUnique()) {
-				continue;
-			}
-
-			sb.append(",");
-			sb.append("UNIQUE (");
-			dialectHelper.keywordProcessing(sb, column.getName());
-			sb.append(")");
-		}
-
-		for (Entry<IndexInfo, List<IndexInfo>> entry : OrmUtils.getObjectRelationalMapping().getIndexInfoMap(clazz)
-				.entrySet()) {
+		for (Entry<IndexInfo, List<IndexInfo>> entry : OrmUtils
+				.getObjectRelationalMapping().getIndexInfoMap(clazz).entrySet()) {
 			sb.append(",");
 			if (entry.getKey().getMethod() != IndexMethod.DEFAULT) {
 				sb.append(" ");
@@ -94,7 +95,8 @@ public class CreateTableSql extends DialectSql {
 			Iterator<IndexInfo> indexIterator = entry.getValue().iterator();
 			while (indexIterator.hasNext()) {
 				IndexInfo indexInfo = indexIterator.next();
-				dialectHelper.keywordProcessing(sb, indexInfo.getColumn().getName());
+				dialectHelper.keywordProcessing(sb, indexInfo.getColumn()
+						.getName());
 				if (indexInfo.getLength() != -1) {
 					sb.append("(");
 					sb.append(indexInfo.getLength());
@@ -103,7 +105,8 @@ public class CreateTableSql extends DialectSql {
 
 				if (indexInfo.getOrder() != IndexOrder.DEFAULT) {
 					sb.append(" ");
-					dialectHelper.keywordProcessing(sb, indexInfo.getOrder().name());
+					dialectHelper.keywordProcessing(sb, indexInfo.getOrder()
+							.name());
 				}
 
 				if (indexIterator.hasNext()) {
@@ -112,29 +115,23 @@ public class CreateTableSql extends DialectSql {
 			}
 			sb.append(")");
 		}
-
-		StringBuilder primaryKeySql = new StringBuilder();
-		iterator = OrmUtils.getObjectRelationalMapping().getColumns(clazz).iterator();
-		while (iterator.hasNext()) {
-			scw.sql.orm.Column column = iterator.next();
-			if (!column.isPrimaryKey()) {
-				continue;
+		
+		//primary keys
+		if(primaryKeys.size() > 1){
+			//多主键
+			sb.append(",primary key(");
+			iterator = primaryKeys.iterator();
+			while(iterator.hasNext()){
+				Column column = iterator.next();
+				dialectHelper.keywordProcessing(sb, column.getName());
+				if(iterator.hasNext()){
+					sb.append(",");
+				}
 			}
-			if (primaryKeySql.length() > 0) {
-				primaryKeySql.append(",");
-			}
-
-			dialectHelper.keywordProcessing(primaryKeySql, column.getName());
-		}
-
-		if (primaryKeySql.length() > 0) {
-			sb.append(",");
-			sb.append("primary key (");
-			sb.append(primaryKeySql);
 			sb.append(")");
 		}
-
 		sb.append(")");
+
 		Table table = clazz.getAnnotation(Table.class);
 		if (table != null) {
 			if (StringUtils.isNotEmpty(table.engine())) {

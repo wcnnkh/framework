@@ -5,7 +5,7 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
 import scw.core.ResolvableType;
 import scw.event.EventListener;
-import scw.event.support.DynamicValue;
+import scw.event.Observable;
 import scw.mapper.Field;
 import scw.util.PropertyPlaceholderHelper;
 import scw.value.StringValue;
@@ -18,10 +18,10 @@ public class DefaultValueProcess extends AbstractValueProcesser {
 	protected void processInteranl(BeanDefinition beanDefinition, BeanFactory beanFactory,
 			PropertyFactory propertyFactory, final Object bean, final Field field, Value value, final String name,
 			String charsetName) throws Exception{
-		if(field.getSetter().getType() == DynamicValue.class){
+		if(field.getSetter().getType() == Observable.class){
 			ResolvableType valueType = ResolvableType.forType(field.getSetter().getGenericType());
 			valueType = valueType.getGeneric(0);
-			DynamicValue<Object> dynamicValue = propertyFactory.getDynamicValue(name, valueType.getType(), null);
+			Observable<Object> dynamicValue = propertyFactory.getObservableValue(name, valueType.getType(), null);
 			field.getSetter().set(bean, dynamicValue);
 			//如果是一个动态值就不用进行监听了
 			return ;

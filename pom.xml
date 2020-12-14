@@ -29,6 +29,18 @@
 				<artifactId>scw-core</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-log4j</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-log4j2</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -39,6 +51,12 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-search</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-lucene</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -57,6 +75,24 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-sql-orm</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-yaml</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-mysql</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-sqlite</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -534,5 +570,11 @@
 		<module>scw-ibatis</module>
 		<module>scw-druid</module>
 		<module>scw-hikaricp</module>
+		<module>scw-sqlite</module>
+		<module>scw-mysql</module>
+		<module>scw-lucene</module>
+		<module>scw-yaml</module>
+		<module>scw-log4j</module>
+		<module>scw-log4j2</module>
 	</modules>
 </project>

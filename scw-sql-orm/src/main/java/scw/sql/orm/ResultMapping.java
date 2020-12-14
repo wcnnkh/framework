@@ -18,8 +18,6 @@ public interface ResultMapping extends Serializable {
 
 	<T> T get(Class<? extends T> type, int index);
 
-	<T> T get(int index);
-
 	int size();
 
 	boolean isEmpty();

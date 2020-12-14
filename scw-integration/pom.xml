@@ -27,12 +27,12 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-cloud</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-		</dependency>
 		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-log4j</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-serializer</artifactId>
@@ -71,6 +71,11 @@
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-druid</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-mysql</artifactId>
 		</dependency>
 		
 		<dependency>

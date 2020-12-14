@@ -20,13 +20,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import scw.core.instance.annotation.SPI;
+import scw.discovery.DiscoveryClient;
+import scw.discovery.ServiceInstance;
+
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
-
-import scw.discovery.DiscoveryClient;
-import scw.discovery.ServiceInstance;
 
 /**
  * A {@link DiscoveryClient} implementation for Eureka.
@@ -34,6 +35,7 @@ import scw.discovery.ServiceInstance;
  * @author Spencer Gibb
  * @author Tim Ysewyn
  */
+@SPI(order=Integer.MIN_VALUE)
 public class EurekaDiscoveryClient implements DiscoveryClient {
 
 	private final EurekaClient eurekaClient;

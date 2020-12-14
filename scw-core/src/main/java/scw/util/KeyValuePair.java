@@ -10,6 +10,10 @@ public class KeyValuePair<K, V> implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private K key;
 	private V value;
+	
+	public KeyValuePair(KeyValuePair<K, V> keyValuePair) {
+		this(keyValuePair.key, keyValuePair.value);
+	}
 
 	public KeyValuePair(K key, V value) {
 		this.key = key;

@@ -5,7 +5,7 @@ import javax.servlet.ServletContext;
 import scw.application.Application;
 import scw.beans.Destroy;
 import scw.beans.annotation.Autowired;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.servlet.ServletContextInitialization;
 
 /**
@@ -14,7 +14,7 @@ import scw.servlet.ServletContextInitialization;
  * @author shuchaowen
  *
  */
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class EurekaServerInitializer implements ServletContextInitialization, Destroy {
 	@Autowired
 	private EurekaServerBootstrap eurekaServerBootstrap;

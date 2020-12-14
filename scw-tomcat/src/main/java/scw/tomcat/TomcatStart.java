@@ -26,7 +26,7 @@ import scw.beans.Destroy;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
@@ -40,10 +40,9 @@ import scw.mvc.action.ActionManager;
 import scw.servlet.ApplicationServletContainerInitializer;
 import scw.servlet.ServletUtils;
 import scw.util.ClassScanner;
-import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
-@Configuration(order = -1)
+@SPI(order = -1)
 public class TomcatStart implements Main, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(TomcatStart.class);
 	private Tomcat tomcat;
@@ -200,9 +199,7 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		this.tomcat = new Tomcat();
-		Value value = application.getMainArgs().getInstruction("-p");
-		int port = (value != null && value.isNumber()) ? value.getAsIntValue()
-				: TomcatUtils.getPort(application.getPropertyFactory());
+		int port = ApplicationUtils.getApplicationPort(application);
 		tomcat.setPort(port);
 		logger.info("The boot port is {}", port);
 

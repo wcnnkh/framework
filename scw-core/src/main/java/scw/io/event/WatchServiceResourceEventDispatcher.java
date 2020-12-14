@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import scw.event.support.EventType;
+import scw.event.EventType;
 import scw.io.Resource;
 import scw.lang.RequiredJavaVersion;
 import scw.util.KeyValuePair;

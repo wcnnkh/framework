@@ -10,6 +10,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Stat;
 
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 
@@ -17,48 +18,36 @@ public final class ZooKeeperUtils {
 	public static final String PATH_PREFIX = "/";
 
 	public static String cleanPath(String... paths) {
-		if (paths == null || paths.length == 0) {
-			return "/";
+		if (ArrayUtils.isEmpty(paths)) {
+			return PATH_PREFIX;
 		}
-
-		String firstPath = paths[0];
-		firstPath = firstPath == null ? PATH_PREFIX
-				: ((firstPath.startsWith(PATH_PREFIX) ? "" : PATH_PREFIX) + firstPath);
-		if (paths.length == 1) {
-			return firstPath;
-		}
-
-		if (!firstPath.endsWith(PATH_PREFIX)) {
-			firstPath = firstPath + PATH_PREFIX;
-		}
-
+		
 		StringBuilder sb = new StringBuilder();
-		sb.append(firstPath);
-		for (int i = 1; i < paths.length; i++) {
-			String path = paths[i];
-			if (StringUtils.isEmpty(path)) {
+		for(String path : paths){
+			if(StringUtils.isEmpty(path)){
 				continue;
 			}
-
-			if (i == paths.length) {
-				// 最后一个
-				if (path.endsWith(PATH_PREFIX)) {
-					path = path.substring(0, path.length() - 2);
-				}
-			} else {
-				if (!path.endsWith(PATH_PREFIX)) {
-					path = path + PATH_PREFIX;
-				}
+			
+			sb.append(PATH_PREFIX).append(path);
+		}
+		
+		if(sb.length() == 0){
+			return PATH_PREFIX;
+		}
+		
+		String[] pathsToUse = StringUtils.split(sb.toString(), PATH_PREFIX);
+		sb = new StringBuilder();
+		for(String path : pathsToUse){
+			if(StringUtils.isEmpty(path)){
+				continue;
 			}
-
-			sb.append(path);
+			sb.append(PATH_PREFIX).append(path);
 		}
-
-		firstPath = sb.toString();
-		if (!firstPath.equals(PATH_PREFIX) && firstPath.endsWith(PATH_PREFIX)) {
-			firstPath = firstPath.substring(0, firstPath.length() - 1);
+		
+		if(sb.length() == 0){
+			return PATH_PREFIX;
 		}
-		return firstPath;
+		return sb.toString();
 	}
 
 	public static boolean isExist(ZooKeeper zooKeeper, String path) {

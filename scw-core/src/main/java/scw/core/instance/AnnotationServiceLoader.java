@@ -5,13 +5,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.CollectionUtils;
 import scw.util.ServiceLoader;
 
 /**
  * 基于注解的spi机制
- * @see Configuration
+ * @see SPI
  * @author shuchaowen
  *
  * @param <S>

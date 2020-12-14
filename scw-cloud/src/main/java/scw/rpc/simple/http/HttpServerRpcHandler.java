@@ -3,7 +3,7 @@ package scw.rpc.simple.http;
 import java.io.IOException;
 
 import scw.beans.BeanFactory;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
@@ -15,7 +15,7 @@ import scw.http.server.ServerHttpResponse;
 import scw.rpc.RpcService;
 import scw.value.property.PropertyFactory;
 
-@Configuration(order=Integer.MAX_VALUE)
+@SPI(order=Integer.MAX_VALUE)
 public final class HttpServerRpcHandler implements HttpServiceHandler, HttpServiceHandlerControllerDesriptor, HttpServiceHandlerAccept {
 	private final HttpControllerDescriptor controllerDescriptor;
 	private final RpcService rpcService;

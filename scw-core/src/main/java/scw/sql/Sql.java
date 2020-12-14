@@ -1,13 +1,12 @@
 package scw.sql;
 
-import java.io.Serializable;
 
 /**
  * sql语句
  * @author shuchaowen
  *
  */
-public interface Sql extends Serializable {
+public interface Sql {
 	/**
 	 * sql语句
 	 * @return

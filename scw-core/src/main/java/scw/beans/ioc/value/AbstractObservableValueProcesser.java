@@ -3,9 +3,9 @@ package scw.beans.ioc.value;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
-import scw.io.event.ObservableResource;
-import scw.io.event.ObservableResourceEvent;
-import scw.io.event.ObservableResourceEventListener;
+import scw.event.EventListener;
+import scw.event.Observable;
+import scw.event.ObservableEvent;
 import scw.mapper.Field;
 import scw.value.property.PropertyFactory;
 
@@ -15,15 +15,15 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 	protected void processInteranl(final BeanDefinition beanDefinition, final BeanFactory beanFactory,
 			final PropertyFactory propertyFactory, final Object bean, final Field field, final Value value,
 			final String name, final String charsetName) throws Exception {
-		ObservableResource<R> res = getObservableResource(beanDefinition, beanFactory, propertyFactory, bean, field,
+		Observable<R> res = getObservableResource(beanDefinition, beanFactory, propertyFactory, bean, field,
 				value, name, charsetName);
-		set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res.getResource(),
+		set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res.get(),
 				false);
 
 		if (isRegisterListener(beanDefinition, field, value)) {
-			res.registerListener(new ObservableResourceEventListener<R>() {
+			res.registerListener(new EventListener<ObservableEvent<R>>() {
 
-				public void onEvent(ObservableResourceEvent<R> event) {
+				public void onEvent(ObservableEvent<R> event) {
 					try {
 						set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName,
 								event.getSource(), true);
@@ -72,7 +72,7 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 		field.getSetter().set(bean, v);
 	}
 
-	protected abstract ObservableResource<R> getObservableResource(BeanDefinition beanDefinition,
+	protected abstract Observable<R> getObservableResource(BeanDefinition beanDefinition,
 			BeanFactory beanFactory, PropertyFactory propertyFactory, Object bean, Field field, Value value,
 			String name, String charsetName);
 

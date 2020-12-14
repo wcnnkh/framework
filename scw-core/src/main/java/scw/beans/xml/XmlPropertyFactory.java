@@ -34,38 +34,44 @@ public class XmlPropertyFactory extends PropertyFactory {
 		}
 	}
 
-	private void load(PropertyFactory propertyFactory, String prefix, String charsetName, Node node) {
+	private void load(PropertyFactory propertyFactory, String prefix,
+			String charsetName, Node node) {
 		String prefixToUse = XMLUtils.getNodeAttributeValue(node, "prefix");
 		if (StringUtils.isEmpty(prefixToUse)) {
 			prefixToUse = prefix;
 		} else {
-			prefixToUse = StringUtils.isEmpty(prefix) ? prefixToUse : (prefix + prefixToUse);
+			prefixToUse = StringUtils.isEmpty(prefix) ? prefixToUse
+					: (prefix + prefixToUse);
 		}
 
-		String charsetNameToUse = XMLUtils.getNodeAttributeValue(node, "charsetName");
+		String charsetNameToUse = XMLUtils.getNodeAttributeValue(node,
+				"charsetName");
 		if (StringUtils.isEmpty(charsetNameToUse)) {
 			charsetNameToUse = charsetName;
 		} else {
-			charsetNameToUse = StringUtils.isEmpty(charsetName) ? charsetNameToUse : charsetName;
+			charsetNameToUse = StringUtils.isEmpty(charsetName) ? charsetNameToUse
+					: charsetName;
 		}
 
 		String file = XMLUtils.getNodeAttributeValue(node, "file");
 		if (!StringUtils.isEmpty(file)) {
-			loadProperties(prefixToUse, file, charsetNameToUse)
-					.registerListener();
+			loadProperties(prefixToUse, file, charsetNameToUse).register();
 		}
 
 		String name = XMLUtils.getNodeAttributeValue(node, "name");
 		if (StringUtils.isNotEmpty(name)) {
-			name = StringUtils.isEmpty(prefixToUse) ? name : (prefixToUse + name);
+			name = StringUtils.isEmpty(prefixToUse) ? name
+					: (prefixToUse + name);
 
 			String url = getURL(node);
 			if (StringUtils.isNotEmpty(url)) {
-				String value = HttpUtils.getHttpClient().get(String.class, url).getBody();
+				String value = HttpUtils.getHttpClient().get(String.class, url)
+						.getBody();
 				put(name, value);
 			}
 
-			String value = XMLUtils.getNodeAttributeValueOrNodeContent(propertyFactory, node, "value");
+			String value = XMLUtils.getNodeAttributeValueOrNodeContent(
+					propertyFactory, node, "value");
 			if (StringUtils.isNotEmpty(value)) {
 				put(name, value, true);
 			}

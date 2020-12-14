@@ -89,15 +89,6 @@ public abstract class AbstractResultMapping implements ResultMapping {
 		return dest;
 	}
 
-	@SuppressWarnings("unchecked")
-	public final <T> T get(int index) {
-		if (values == null) {
-			return null;
-		}
-
-		return (T) values[index];
-	}
-
 	public final int size() {
 		return values == null ? 0 : values.length;
 	}

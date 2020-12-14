@@ -32,14 +32,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import scw.aop.annotation.AopEnable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 /**
  * @author Spencer Gibb
  */
-@AopEnable(false)
 public class InetUtils implements Closeable {
 
 	// TODO: maybe shutdown the thread pool if it isn't being used?

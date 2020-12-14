@@ -1,33 +1,27 @@
 package scw.event.support;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import scw.compatible.CompatibleUtils;
-import scw.compatible.map.CompatibleMap;
 import scw.event.BasicEventDispatcher;
 import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.NamedEventDispatcher;
+import scw.util.CollectionFactory;
+import scw.util.GenericMap;
 
 public class DefaultNamedEventDispatcher<K, T extends Event> implements NamedEventDispatcher<K, T> {
-	private final CompatibleMap<K, BasicEventDispatcher<T>> namedEventListenerMap;
+	private final GenericMap<K, BasicEventDispatcher<T>> namedEventListenerMap;
 	private final boolean concurrent;
 
 	public DefaultNamedEventDispatcher(boolean concurrent) {
 		this.concurrent = concurrent;
-		Map<K, BasicEventDispatcher<T>> namedEventListenerMap = concurrent
-				? new ConcurrentHashMap<K, BasicEventDispatcher<T>>(8) : new HashMap<K, BasicEventDispatcher<T>>(8);
-		this.namedEventListenerMap = CompatibleUtils.getMapCompatible().wrapper(namedEventListenerMap);
+		this.namedEventListenerMap = CollectionFactory.createHashMap(concurrent);
 	}
 
 	public final boolean isConcurrent() {
 		return concurrent;
 	}
 
-	public CompatibleMap<K, BasicEventDispatcher<T>> getNamedEventListenerMap() {
+	public GenericMap<K, BasicEventDispatcher<T>> getNamedEventListenerMap() {
 		return namedEventListenerMap;
 	}
 
@@ -49,10 +43,6 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements NamedEve
 	}
 
 	public void publishEvent(K name, T event) {
-		publishEventByObjectName(name, event);
-	}
-
-	public void publishEventByObjectName(Object name, T event) {
 		BasicEventDispatcher<T> dispatcher = namedEventListenerMap.get(name);
 		if (dispatcher == null) {
 			return;

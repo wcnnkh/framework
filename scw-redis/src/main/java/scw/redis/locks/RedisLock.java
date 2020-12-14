@@ -1,6 +1,7 @@
 package scw.redis.locks;
 
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 
 import scw.core.Constants;
 import scw.io.ResourceUtils;
@@ -26,12 +27,33 @@ public final class RedisLock extends AbstractLock {
 	}
 
 	public boolean tryLock() {
-		return redis.getStringOperations().set(key, id, NXXX.NX, EXPX.EX, timeout);
+		boolean b = redis.getStringOperations().set(key, id, NXXX.NX, EXPX.EX, timeout);
+		if(b){
+			autoRenewal(timeout/2, TimeUnit.SECONDS);
+		}
+		return b;
 	}
 
 	public boolean unlock() {
 		AnyValue[] values = redis.getStringOperations().eval(UNLOCK_SCRIPT, Collections.singletonList(key),
 				Collections.singletonList(id));
-		return values.length == 0 ? false : values[0].getAsBooleanValue();
+		boolean b = values.length == 0 ? false : values[0].getAsBooleanValue();
+		if(b){
+			cancelAutoRenewal();
+		}
+		return b;
+	}
+
+	public boolean renewal() {
+		return renewal(timeout, TimeUnit.SECONDS);
+	}
+
+	public boolean renewal(long time, TimeUnit unit) {
+		if(!id.equals(redis.getStringOperations().get(key))){
+			return false;
+		}
+		
+		Boolean b = redis.getStringOperations().set(key, id, NXXX.XX, EXPX.EX, (int)unit.toSeconds(time));
+		return b == null? false:b;
 	}
 }

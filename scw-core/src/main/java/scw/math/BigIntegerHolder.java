@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class BigIntegerHolder extends AbstractNumberHolder {
+	private static final long serialVersionUID = 1L;
+
 	public static final BigIntegerHolder ZERO = new BigIntegerHolder(BigInteger.ZERO);
 	
 	public static final BigIntegerHolder ONE = new BigIntegerHolder(BigInteger.ONE);

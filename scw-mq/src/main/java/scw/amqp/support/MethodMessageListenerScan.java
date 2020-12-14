@@ -8,11 +8,11 @@ import scw.application.Application;
 import scw.application.ApplicationInitialization;
 import scw.beans.BeanUtils;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.util.ClassScanner;
 import scw.value.ValueFactory;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public final class MethodMessageListenerScan implements ApplicationInitialization {
 
 	@SuppressWarnings("unchecked")

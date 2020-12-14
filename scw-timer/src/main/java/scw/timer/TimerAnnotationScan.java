@@ -10,7 +10,7 @@ import scw.application.ApplicationInitialization;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.timer.annotation.Crontab;
@@ -20,7 +20,7 @@ import scw.timer.support.SimpleTimerTaskConfig;
 import scw.util.ClassScanner;
 import scw.value.ValueFactory;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public final class TimerAnnotationScan implements ApplicationInitialization {
 
 	public void init(Application application) throws Throwable {

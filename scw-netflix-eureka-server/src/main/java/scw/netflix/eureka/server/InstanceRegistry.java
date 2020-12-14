@@ -2,7 +2,6 @@ package scw.netflix.eureka.server;
 
 import java.util.List;
 
-import scw.aop.annotation.AopEnable;
 import scw.application.ApplicationAware;
 import scw.application.ApplicationEvent;
 import scw.logger.Logger;
@@ -21,7 +20,6 @@ import com.netflix.eureka.lease.Lease;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistryImpl;
 import com.netflix.eureka.resources.ServerCodecs;
 
-@AopEnable(false)
 public class InstanceRegistry extends PeerAwareInstanceRegistryImpl implements ApplicationAware {
 	private static Logger logger = LoggerFactory.getLogger(InstanceRegistry.class);
 	private scw.application.Application application;

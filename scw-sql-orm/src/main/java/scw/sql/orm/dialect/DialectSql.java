@@ -1,8 +1,8 @@
 package scw.sql.orm.dialect;
 
-import scw.sql.Sql;
+import scw.sql.SerializableSql;
 
-public abstract class DialectSql implements Sql {
+public abstract class DialectSql extends SerializableSql {
 	private static final long serialVersionUID = 1L;
 	protected static final String UPDATE_PREFIX = "update ";
 	protected static final String DELETE_PREFIX = "delete from ";
@@ -14,8 +14,4 @@ public abstract class DialectSql implements Sql {
 	protected static final String WHERE = " where ";
 	protected static final String AND = " and ";
 	protected static final String OR = " or ";
-
-	public final boolean isStoredProcedure() {
-		return false;
-	}
 }

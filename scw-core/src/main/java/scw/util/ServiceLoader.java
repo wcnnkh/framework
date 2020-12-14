@@ -3,8 +3,6 @@ package scw.util;
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
 
-import scw.aop.annotation.AopEnable;
-
 /**
  * A simple service-provider loading facility.
  *
@@ -184,7 +182,6 @@ import scw.aop.annotation.AopEnable;
  * @author Mark Reinhold
  */
 
-@AopEnable(false)
 public interface ServiceLoader<S> extends Iterable<S> {
 	/**
 	 * Clear this loader's provider cache so that all providers will be

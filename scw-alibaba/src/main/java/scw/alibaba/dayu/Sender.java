@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.aop.annotation.AopEnable;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -20,7 +19,6 @@ import scw.result.DataResult;
 import scw.result.ResultFactory;
 import scw.security.SignatureUtils;
 
-@AopEnable(false)
 public class Sender {
 	private static Logger logger = LoggerFactory.getLogger(Sender.class);
 	

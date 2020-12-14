@@ -12,22 +12,5 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-core</artifactId>
 		</dependency>
-
-		<!-- lucene相关 -->
-		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- lucene相关 -->
-
-		<!-- https://mvnrepository.com/artifact/org.apache.solr/solr-solrj -->
-		<!-- <dependency>
-			<groupId>org.apache.solr</groupId>
-			<artifactId>solr-solrj</artifactId>
-			<version>8.5.2</version> 
-			<scope>provided</scope>
-		</dependency> -->
 	</dependencies>
 </project>

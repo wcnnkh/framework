@@ -51,7 +51,7 @@ public abstract class IterableFields extends AbstractFields {
 				}
 			}
 
-			if (useSuperClass) {
+			if (useSuperClass && entityClass !=null && entityClass != Object.class) {
 				this.entityClass = entityClass.getSuperclass();
 				if (entityClass == null || entityClass == Object.class) {
 					return false;

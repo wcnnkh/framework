@@ -2,8 +2,8 @@ package scw.dubbo;
 
 import org.apache.dubbo.config.ReferenceConfig;
 
-import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.DefaultBeanDefinition;
 import scw.value.property.PropertyFactory;
 
 public class DubboBeanDefinition extends DefaultBeanDefinition {

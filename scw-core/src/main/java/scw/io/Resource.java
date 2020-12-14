@@ -45,8 +45,8 @@ public interface Resource extends InputStreamSource, OutputStreamSource {
 	boolean isWritable();
 
 	/**
-	 * 是否是已打开的资源
-	 * 
+	 * 是否是已打开的资源,如果是的那么无需关闭
+	 * @see InputStreamResource#isOpen()
 	 * @return
 	 */
 	boolean isOpen();

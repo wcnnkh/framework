@@ -3,7 +3,7 @@ package scw.rpc.simple;
 import java.io.IOException;
 
 import scw.core.instance.InstanceFactory;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
@@ -20,7 +20,7 @@ import scw.rpc.RpcService;
 import scw.rpc.RpcServiceException;
 import scw.security.SignatureUtils;
 
-@Configuration(order = Integer.MIN_VALUE, value = RpcService.class)
+@SPI(order = Integer.MIN_VALUE, value = RpcService.class)
 public final class SimpleObjectRpcService implements RpcService, RpcConstants {
 	private static Logger logger = LoggerUtils.getLogger(SimpleObjectRpcService.class);
 	private final String sign;

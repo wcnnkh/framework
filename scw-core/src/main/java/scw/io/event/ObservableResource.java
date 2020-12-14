@@ -1,31 +1,24 @@
 package scw.io.event;
 
-import scw.event.EventRegistration;
+import scw.core.Converter;
+import scw.io.Resource;
 
-public abstract class ObservableResource<T> {
-	private final T resource;
+public class ObservableResource<T> extends AbstractObservableResource<T> {
+	private final Resource resource;
+	private final Converter<Resource, T> converter;
 
-	public ObservableResource(T resource) {
+	public ObservableResource(Resource resource,
+			Converter<Resource, T> converter) {
 		this.resource = resource;
+		this.converter = converter;
 	}
 
-	public T getResource() {
+	@Override
+	public Resource getResource() {
 		return resource;
 	}
 
-	/**
-	 * 默认情况下只有当资源存在时才会监听
-	 * @param eventListener
-	 * @return
-	 */
-	public EventRegistration registerListener(ObservableResourceEventListener<T> eventListener){
-		return registerListener(eventListener, true);
+	public T forceGet() {
+		return converter.convert(resource);
 	}
-
-	/**
-	 * @param eventListener
-	 * @param isExist true表示只有在资源存在时才注册此监听
-	 * @return
-	 */
-	public abstract EventRegistration registerListener(ObservableResourceEventListener<T> eventListener, boolean isExist);
 }

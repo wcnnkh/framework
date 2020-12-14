@@ -1,6 +1,6 @@
 package scw.mvc.security;
 
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.http.HttpCookie;
 import scw.mvc.HttpChannel;
 import scw.value.EmptyValue;
@@ -8,7 +8,7 @@ import scw.value.StringValue;
 import scw.value.Value;
 import scw.web.WebUtils;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class DefaultUserSessionResolver implements UserSessionResolver {
 
 	public <T> T getUid(HttpChannel httpChannel, Class<T> type) {

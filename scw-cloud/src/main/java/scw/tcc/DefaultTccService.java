@@ -8,11 +8,11 @@ import scw.beans.BeanUtils;
 import scw.beans.RuntimeBean;
 import scw.complete.Complete;
 import scw.complete.CompleteService;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 import scw.tcc.annotation.Tcc;
 
-@Configuration(order = Integer.MIN_VALUE, value = TccService.class)
+@SPI(order = Integer.MIN_VALUE, value = TccService.class)
 public class DefaultTccService implements TccService {
 	private BeanFactory beanFactory;
 	private CompleteService completeService;

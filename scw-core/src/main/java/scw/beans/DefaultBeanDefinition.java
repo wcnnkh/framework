@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptors;
 import scw.aop.Proxy;
-import scw.aop.ProxyUtils;
 import scw.beans.BeanLifeCycleEvent.Step;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.ConfigurationProperties;
@@ -33,7 +32,7 @@ import scw.util.StringMatcher;
 import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
-public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable {
+public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implements BeanDefinition, Cloneable, AopEnableSpi {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected final PropertyFactory propertyFactory;
@@ -181,9 +180,13 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 
 		return Arrays.asList(bean.names());
 	}
+	
+	public boolean isAopEnable(){
+		return isAopEnable(getTargetClass(), getAnnotatedElement());
+	}
 
-	protected boolean isProxy() {
-		return ProxyUtils.isAopEnable(getTargetClass(), getTargetClass());
+	public boolean isAopEnable(Class<?> clazz, AnnotatedElement annotatedElement) {
+		return BeanUtils.isAopEnable(clazz, annotatedElement);
 	}
 
 	public boolean isSingleton() {
@@ -200,13 +203,14 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 
 	@Override
 	public boolean isInstance() {
-		return super.isInstance(isProxy() && !CollectionUtils.isEmpty(getFilters()));
+		return super.isInstance(isAopEnable() && !CollectionUtils.isEmpty(getFilters()));
 	}
+	
 
 	@Override
 	protected Object createInternal(Class<?> targetClass, Constructor<? extends Object> constructor, Object[] params)
 			throws Exception {
-		if (isProxy()) {
+		if (isAopEnable(targetClass, getAnnotatedElement())) {
 			return createProxyInstance(targetClass, constructor.getParameterTypes(), params);
 		}
 		return super.createInternal(targetClass, constructor, params);

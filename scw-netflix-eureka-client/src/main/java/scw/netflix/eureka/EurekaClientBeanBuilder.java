@@ -12,7 +12,7 @@ import scw.beans.builder.LoaderContext;
 import scw.commons.util.IdUtils;
 import scw.commons.util.InetUtils;
 import scw.commons.util.InetUtilsProperties;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 import scw.netflix.eureka.metadata.DefaultManagementMetadataProvider;
 import scw.netflix.eureka.metadata.ManagementMetadata;
@@ -24,7 +24,7 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 
 	@Override
@@ -98,7 +98,7 @@ public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 
 		@Override
 		public boolean isInstance() {
-			return beanFactory.isInstance(InetUtils.class);
+			return beanFactory.isInstance(InetUtils.class) && beanFactory.isInstance(Application.class);
 		}
 
 		@Override	
@@ -113,7 +113,8 @@ public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 			boolean isSecurePortEnabled = propertyFactory.getBooleanValue("eureka.instance.secure-port-enabled");
 
 			String serverContextPath = propertyFactory.getValue("server.servlet.context-path", String.class, "/");
-			int serverPort = ApplicationUtils.getApplicationPort(propertyFactory, 8080);
+			Application application = beanFactory.getInstance(Application.class);
+			int serverPort = ApplicationUtils.getApplicationPort(application);
 
 			Integer managementPort = propertyFactory.getValue("management.server.port", Integer.class, null);
 			String managementContextPath = propertyFactory.getString("management.server.servlet.context-path");

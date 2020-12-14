@@ -1,9 +1,7 @@
 package scw.amqp;
 
 import scw.aop.MethodInvoker;
-import scw.aop.annotation.AopEnable;
 
-@AopEnable(false)
 public interface Exchange {
 	void bind(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener);
 

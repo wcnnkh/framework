@@ -1,8 +1,8 @@
 package scw.sql.orm.dialect.oracle;
 
-import scw.sql.Sql;
+import scw.sql.orm.dialect.DialectSql;
 
-public final class LastInsertIdSql implements Sql {
+public final class LastInsertIdSql extends DialectSql{
 	private static final long serialVersionUID = 1L;
 	private String sql;
 
@@ -19,9 +19,4 @@ public final class LastInsertIdSql implements Sql {
 	public Object[] getParams() {
 		return null;
 	}
-
-	public boolean isStoredProcedure() {
-		return false;
-	}
-
 }

@@ -15,10 +15,10 @@ import org.w3c.dom.NodeList;
 import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanFactory;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.value.property.PropertyFactory;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public final class XmlDubboBeanConfiguration extends AbstractBeanConfiguration {
 
 	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {

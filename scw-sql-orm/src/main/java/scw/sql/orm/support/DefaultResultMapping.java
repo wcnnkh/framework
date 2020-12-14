@@ -5,13 +5,14 @@ import java.sql.SQLException;
 
 import scw.aop.support.FieldSetterListen;
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
 import scw.sql.orm.Column;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.TableNameMapping;
+import scw.value.AnyValue;
+import scw.value.Value;
 
 public class DefaultResultMapping extends AbstractResultMapping {
 	private static final long serialVersionUID = 1L;
@@ -81,57 +82,12 @@ public class DefaultResultMapping extends AbstractResultMapping {
 		return entity;
 	}
 
-	@SuppressWarnings("unchecked")
 	public final <T> T get(Class<? extends T> type, int index) {
 		if (values == null) {
 			return null;
 		}
-
-		return (T) parse(type, values[index]);
-	}
-
-	protected Object parse(Class<?> type, Object value) {
-		if (value == null) {
-			return value;
-		}
-
-		if (type == Object.class) {
-			return value;
-		}
-
-		if (TypeUtils.isBoolean(type)) {
-			if (value != null) {
-				if (value instanceof Number) {
-					return ((Number) value).intValue() == 1;
-				} else if (value instanceof String) {
-					return StringUtils.parseBoolean((String) value);
-				}
-			}
-		} else if (TypeUtils.isInt(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).intValue();
-			}
-		} else if (TypeUtils.isLong(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).longValue();
-			}
-		} else if (TypeUtils.isByte(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).byteValue();
-			}
-		} else if (TypeUtils.isFloat(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).floatValue();
-			}
-		} else if (TypeUtils.isDouble(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).doubleValue();
-			}
-		} else if (TypeUtils.isShort(type)) {
-			if (value instanceof Number) {
-				return ((Number) value).shortValue();
-			}
-		}
-		return value;
+		
+		Value value = new AnyValue(values[index]);
+		return value.getAsObject(type);
 	}
 }

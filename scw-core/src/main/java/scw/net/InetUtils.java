@@ -10,8 +10,6 @@ import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -21,8 +19,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
@@ -40,7 +36,6 @@ import scw.net.message.converter.XmlMessageConverter;
 import scw.net.message.multipart.FileItemParser;
 import scw.net.message.multipart.MultipartMessageWriter;
 import scw.net.message.multipart.apache.MultipartMessageConverter;
-import scw.net.ssl.TrustAllManager;
 import scw.util.Accept;
 
 public final class InetUtils {
@@ -60,33 +55,12 @@ public final class InetUtils {
 			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
 			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
 
-	/**
-	 * 一个信任所有的ssl socket factory <br/>
-	 * 注意:在初始化失败后可能为空
-	 */
-	public static final SSLSocketFactory TRUSE_ALL_SSL_SOCKET_FACTORY;
-
 	private static final MultiMessageConverter MESSAGE_CONVERTER = new MultiMessageConverter();
 	
 	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
 			"scw.net.message.multipart.apache.ApacheFileItemParser");
 
 	static {
-		// 创建一个信任所有的
-		javax.net.ssl.TrustManager[] trustAllCerts = new javax.net.ssl.TrustManager[1];
-		javax.net.ssl.TrustManager tm = new TrustAllManager();
-		trustAllCerts[0] = tm;
-		javax.net.ssl.SSLContext sc = null;
-		try {
-			sc = javax.net.ssl.SSLContext.getInstance("SSL");
-			sc.init(null, trustAllCerts, null);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		} catch (KeyManagementException e) {
-			e.printStackTrace();
-		}
-		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
-
 		MESSAGE_CONVERTER.add(new JsonMessageConverter());
 		MESSAGE_CONVERTER.add(new StringMessageConverter());
 		MESSAGE_CONVERTER.add(new ByteArrayMessageConverter());

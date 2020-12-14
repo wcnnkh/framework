@@ -2,7 +2,7 @@ package scw.mvc.security;
 
 import scw.beans.BeanFactory;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
@@ -15,7 +15,7 @@ import scw.mvc.annotation.IPSecurity;
 import scw.security.ip.IPValidationFailedException;
 import scw.security.ip.IPVerification;
 
-@Configuration(order = Integer.MAX_VALUE)
+@SPI(order = Integer.MAX_VALUE)
 public final class IPSecurityActionInterceptor implements ActionInterceptor, ActionInterceptorAccept {
 	private static Logger logger = LoggerFactory.getLogger(IPSecurityActionInterceptor.class);
 	private BeanFactory beanFactory;

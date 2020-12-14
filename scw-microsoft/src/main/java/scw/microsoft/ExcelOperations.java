@@ -5,9 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import scw.aop.annotation.AopEnable;
-
-@AopEnable(false)
 public interface ExcelOperations extends ExcelReader {
 	Excel create(InputStream inputStream) throws IOException, ExcelException;
 

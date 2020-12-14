@@ -20,7 +20,7 @@ public final class HttpUtils {
 	};
 
 	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class,
-			"scw.http.client.SimpleHttpClient");
+			"scw.http.client.DefaultHttpClient");
 
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;

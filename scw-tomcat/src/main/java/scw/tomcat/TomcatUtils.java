@@ -2,7 +2,6 @@ package scw.tomcat;
 
 import java.util.Properties;
 
-import scw.application.ApplicationUtils;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.value.property.PropertyFactory;
@@ -13,12 +12,6 @@ public final class TomcatUtils {
 
 	private static String getProperty(PropertyFactory propertyFactory, String name) {
 		return propertyFactory.getString("tomcat." + name);
-	}
-
-	public static int getPort(PropertyFactory propertyFactory) {
-		//兼容老版本
-		int defaultPort = StringUtils.parseInt(getProperty(propertyFactory, "port"), 8080);
-		return ApplicationUtils.getApplicationPort(propertyFactory, defaultPort);
 	}
 
 	public static String getBaseDir(PropertyFactory propertyFactory) {
@@ -81,7 +74,7 @@ public final class TomcatUtils {
 		}
 
 		if (ResourceUtils.getResourceOperations().isExist(path)) {
-			properties.putAll(ResourceUtils.getResourceOperations().getProperties(path).getResource());
+			properties.putAll(ResourceUtils.getResourceOperations().getProperties(path).get());
 		}
 		return properties;
 	}

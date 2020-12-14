@@ -13,7 +13,7 @@ import scw.beans.builder.ProxyBeanDefinition;
 import scw.beans.xml.XmlBeanFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Serializer;
@@ -22,7 +22,7 @@ import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public final class XmlSimpleHttpObjectRpcBeanConfiguration extends AbstractBeanConfiguration {
 	private static final String TAG_NAME = "http:reference";
 

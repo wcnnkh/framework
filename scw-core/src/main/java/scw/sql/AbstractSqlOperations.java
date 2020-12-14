@@ -11,14 +11,8 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public abstract class AbstractSqlOperations implements SqlOperations {
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
+	private static Logger logger = LoggerFactory.getLogger(AbstractSqlOperations.class);
 
-	protected void logger(Sql sql) {
-		if (logger.isDebugEnabled()) {
-			logger.debug(SqlUtils.getSqlId(sql));
-		}
-	}
-	
 	protected abstract Connection getUserConnection() throws SQLException;
 
 	protected void close(Connection connection) throws SqlException {
@@ -32,8 +26,10 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 	}
 
 	protected boolean execute(Sql sql, Connection connection) throws SQLException {
-		logger(sql);
-
+		if (logger.isDebugEnabled()) {
+			logger.debug(sql);
+		}
+		
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -51,7 +47,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 			connection = getUserConnection();
 			return execute(sql, connection);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSqlId(sql), e);
+			throw new SqlException(sql, e);
 		} finally {
 			close(connection);
 		}
@@ -70,8 +66,10 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 	}
 
 	protected void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
-		logger(sql);
-
+		if (logger.isDebugEnabled()) {
+			logger.debug(sql);
+		}
+		
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -89,7 +87,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 			connection = getUserConnection();
 			query(sql, connection, resultSetCallback);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSqlId(sql), e);
+			throw new SqlException(sql, e);
 		} finally {
 			close(connection);
 		}
@@ -101,7 +99,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 			connection = getUserConnection();
 			query(sql, connection, new DefaultResultSetCallback(rowCallback));
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSqlId(sql), e);
+			throw new SqlException(sql, e);
 		} finally {
 			close(connection);
 		}
@@ -120,8 +118,10 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 	}
 
 	protected <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		logger(sql);
-
+		if (logger.isDebugEnabled()) {
+			logger.debug(sql);
+		}
+		
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -139,7 +139,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 			connection = getUserConnection();
 			return query(sql, connection, resultSetMapper);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSqlId(sql), e);
+			throw new SqlException(sql, e);
 		} finally {
 			close(connection);
 		}
@@ -151,7 +151,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 			connection = getUserConnection();
 			return query(sql, connection, new DefaultResultSetMapper<T>(rowMapper));
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSqlId(sql), e);
+			throw new SqlException(sql, e);
 		} finally {
 			close(connection);
 		}
@@ -168,7 +168,10 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 	}
 
 	protected int update(Sql sql, Connection connection) throws SQLException {
-		logger(sql);
+		if (logger.isDebugEnabled()) {
+			logger.debug(sql);
+		}
+		
 		PreparedStatement statement = null;
 		try {
 			statement = SqlUtils.createPreparedStatement(connection, sql);
@@ -186,7 +189,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 			connection = getUserConnection();
 			return update(sql, connection);
 		} catch (SQLException e) {
-			throw new SqlException(SqlUtils.getSqlId(sql), e);
+			throw new SqlException(sql, e);
 		} finally {
 			close(connection);
 		}
@@ -198,6 +201,9 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 		try {
 			for (String sql : sqls) {
 				currentSql = sql;
+				if(logger.isDebugEnabled()){
+					logger.debug(SqlUtils.toString(sql));
+				}
 				if (preparedStatement == null) {
 					preparedStatement = connection.prepareStatement(sql);
 				} else {
@@ -232,6 +238,9 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 		try {
 			preparedStatement = connection.prepareStatement(sql);
 			for (Object[] args : batchArgs) {
+				if(logger.isDebugEnabled()){
+					logger.debug(SqlUtils.toString(sql, args));
+				}
 				SqlUtils.setSqlParams(preparedStatement, args);
 				preparedStatement.addBatch();
 			}

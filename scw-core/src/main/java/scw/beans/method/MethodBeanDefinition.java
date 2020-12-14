@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
-import scw.aop.ProxyUtils;
 import scw.beans.BeanFactory;
 import scw.beans.DefaultBeanDefinition;
 import scw.core.parameter.MethodParameterDescriptors;
@@ -34,11 +33,6 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		return method;
 	}
 
-	@Override
-	protected boolean isProxy() {
-		return ProxyUtils.isAopEnable(method.getReturnType(), method) && method.getReturnType().isInterface();
-	}
-
 	public boolean isInstance() {
 		return isAccept(methodParameterDescriptors);
 	}
@@ -51,13 +45,24 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		Object[] args = getParameters(methodParameterDescriptors);
 		return invoke(method, args);
 	}
-
+	
+	@Override
+	public boolean isAopEnable() {
+		//必须要是接口，因为非接口不一定是无法保证一定可以代理实例
+		return getTargetClass().isInterface() && super.isAopEnable();
+	}
+	
 	private Object invoke(Method method, Object[] args) throws Exception {
 		ReflectionUtils.makeAccessible(method);
 		Object bean = method.invoke(
 				Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), args);
-
-		if (isProxy()) {
+		if(beanFactory.getAop().isProxy(bean)){
+			//已经被代理过的
+			return bean;
+		}
+		
+		//必须要是接口，因为非接口不一定是无法保证一定可以代理实例
+		if (method.getReturnType().isInterface() && (isAopEnable(method.getReturnType(), method) || isAopEnable(bean.getClass(), method))) {
 			return createInstanceProxy(bean, getTargetClass(), null).create();
 		}
 		return bean;

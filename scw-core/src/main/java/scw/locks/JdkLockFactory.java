@@ -4,9 +4,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public final class JdkLockFactory extends AbstractLockFactory {
 	private final ConcurrentHashMap<String, JdkLock> lockMap = new ConcurrentHashMap<String, JdkLock>();
 
@@ -34,6 +34,14 @@ public final class JdkLockFactory extends AbstractLockFactory {
 				return true;
 			}
 			return false;
+		}
+
+		public boolean renewal() {
+			return true;
+		}
+
+		public boolean renewal(long time, TimeUnit unit) {
+			return true;
 		}
 	}
 }

@@ -3,7 +3,6 @@ package scw.sql.orm.dialect;
 import java.util.Collection;
 
 import scw.sql.Sql;
-import scw.sql.orm.enums.TableStructureResultField;
 
 public interface SqlDialect {
 	DialectHelper getDialectHelper();
@@ -40,5 +39,5 @@ public interface SqlDialect {
 
 	Sql toMaxIdSql(Class<?> clazz, String tableName, String idField) throws SqlDialectException;
 
-	Sql toTableStructureSql(Class<?> clazz, String tableName, Collection<TableStructureResultField> fields);
+	TableStructureMapping getTableStructureMapping(Class<?> clazz, String tableName);
 }

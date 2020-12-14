@@ -1,8 +1,6 @@
 package scw.event.support;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 import scw.core.Assert;
 import scw.event.BasicEventDispatcher;
@@ -10,6 +8,7 @@ import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.lang.AlreadyExistsException;
+import scw.util.CollectionFactory;
 
 public class DefaultBasicEventDispatcher<T extends Event> implements BasicEventDispatcher<T> {
 	private final Collection<EventRegistrationInternal> eventListeners;
@@ -17,8 +16,7 @@ public class DefaultBasicEventDispatcher<T extends Event> implements BasicEventD
 
 	public DefaultBasicEventDispatcher(boolean concurrent) {
 		this.concurrent = concurrent;
-		this.eventListeners = concurrent ? new CopyOnWriteArraySet<EventRegistrationInternal>()
-				: new LinkedHashSet<EventRegistrationInternal>(8);
+		this.eventListeners = CollectionFactory.createSet(concurrent);
 	}
 
 	public final boolean isConcurrent() {

@@ -1,28 +1,24 @@
 package scw.value.property;
 
-import scw.event.support.ValueEvent;
+import scw.event.EventType;
+import scw.event.KeyValuePairEvent;
 import scw.value.Value;
 
-public class PropertyEvent extends ValueEvent<Value> {
+@SuppressWarnings("serial")
+public class PropertyEvent extends KeyValuePairEvent<String, Value> {
 	private final BasePropertyFactory basePropertyFactory;
-	private final String key;
 
-	public PropertyEvent(BasePropertyFactory basePropertyFactory, String key, ValueEvent<Value> valueEvent) {
-		super(valueEvent);
+	public PropertyEvent(BasePropertyFactory basePropertyFactory, KeyValuePairEvent<String, Value> event) {
+		super(event);
 		this.basePropertyFactory = basePropertyFactory;
-		this.key = key;
 	}
-
-	public String getKey() {
-		return key;
+	
+	public PropertyEvent(BasePropertyFactory basePropertyFactory, EventType eventType, String key, Value value) {
+		super(eventType, key, value);
+		this.basePropertyFactory = basePropertyFactory;
 	}
 
 	public BasePropertyFactory getBasePropertyFactory() {
 		return basePropertyFactory;
-	}
-
-	@Override
-	public String toString() {
-		return "propertyFactory=" + basePropertyFactory + ", key=" + key + ", " + super.toString();
 	}
 }

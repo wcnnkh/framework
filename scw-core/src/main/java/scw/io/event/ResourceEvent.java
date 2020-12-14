@@ -1,10 +1,10 @@
 package scw.io.event;
 
-import scw.event.support.BasicTypeEvent;
-import scw.event.support.EventType;
+import scw.event.BasicEvent;
+import scw.event.EventType;
 import scw.io.Resource;
 
-public class ResourceEvent extends BasicTypeEvent {
+public class ResourceEvent extends BasicEvent {
 	private final Resource resource;
 
 	public ResourceEvent(EventType eventType, Resource resource) {

@@ -1,5 +1,7 @@
 package scw.timer.support;
 
+import java.util.concurrent.TimeUnit;
+
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.locks.AbstractLock;
@@ -30,6 +32,14 @@ public class CASTaskLock extends AbstractLock {
 
 	public boolean unlock() {
 		return true;
+	}
+
+	public boolean renewal() {
+		return false;
+	}
+
+	public boolean renewal(long time, TimeUnit unit) {
+		return false;
 	}
 
 }

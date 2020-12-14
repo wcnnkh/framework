@@ -10,13 +10,13 @@ import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.core.Constants;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
 import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
-@Configuration(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
+@SPI(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
 public class JedisBeanBuilderLoader implements BeanBuilderLoader {
 	private static final String HOST_CONFIG_KEY = "redis.host";
 	private static final String CONFIG_KEY = "redis.configuration";
@@ -47,7 +47,7 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader {
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);
 			if (host == null && isExist) {
 				Properties properties = ResourceUtils.getResourceOperations()
-						.getProperties(configName, Constants.DEFAULT_CHARSET_NAME).getResource();
+						.getProperties(configName, Constants.DEFAULT_CHARSET_NAME).get();
 				host = properties.getProperty(HOST_CONFIG_KEY);
 				if (host == null) {
 					host = properties.getProperty("host");// 兼容老版本

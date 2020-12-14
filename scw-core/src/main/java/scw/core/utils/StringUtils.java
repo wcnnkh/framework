@@ -29,6 +29,7 @@ import scw.core.Assert;
 import scw.lang.ParameterException;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
+import scw.util.StringOperations;
 
 public final class StringUtils {
 	private static final String FOLDER_SEPARATOR = "/";
@@ -54,9 +55,13 @@ public final class StringUtils {
 		BOOLEANS.add("success");
 		BOOLEANS.add("successful");
 	}
-
+	
 	private StringUtils() {
 	};
+	
+	public static StringOperations getStringOperations() {
+		return StringOperations.INSTANCE;
+	}
 
 	/**
 	 * spring拷贝过来的
@@ -65,6 +70,7 @@ public final class StringUtils {
 	// ---------------------------------------------------------------------
 	// General convenience methods for working with Strings
 	// ---------------------------------------------------------------------
+
 
 	/**
 	 * Check that the given CharSequence is neither {@code null} nor of length
@@ -2621,4 +2627,5 @@ public final class StringUtils {
 			return start - sourceOffset + 1;
 		}
 	}
+	
 }

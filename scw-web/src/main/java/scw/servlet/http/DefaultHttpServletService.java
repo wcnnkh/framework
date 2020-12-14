@@ -7,11 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.core.Constants;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.http.server.DefaultHttpService;
 import scw.value.property.PropertyFactory;
 
-@Configuration(order = Integer.MIN_VALUE, value = HttpServletService.class)
+@SPI(order = Integer.MIN_VALUE, value = HttpServletService.class)
 public class DefaultHttpServletService extends DefaultHttpService implements HttpServletService {
 
 	public DefaultHttpServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) {

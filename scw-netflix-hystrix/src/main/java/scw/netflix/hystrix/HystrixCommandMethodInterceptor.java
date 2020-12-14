@@ -6,10 +6,10 @@ import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
 import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.netflix.hystrix.annotation.Hystrix;
 
-@Configuration(order = Integer.MAX_VALUE)
+@SPI(order = Integer.MAX_VALUE)
 public class HystrixCommandMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private HystrixCommandFactory hystrixCommandFactory;
 

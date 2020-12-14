@@ -14,7 +14,6 @@ import java.util.List;
 import scw.beans.BeanFactory;
 import scw.beans.Destroy;
 import scw.beans.ExtendBeanFactory;
-import scw.compatible.CompatibleUtils;
 import scw.core.Constants;
 import scw.core.ResolvableType;
 import scw.core.instance.NoArgsInstanceFactory;
@@ -309,7 +308,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		}
 
 		try {
-			return new String(CompatibleUtils.getStringOperations().getBytes(value, Constants.ISO_8859_1),
+			return new String(StringUtils.getStringOperations().getBytes(value, Constants.ISO_8859_1),
 					request.getCharacterEncoding());
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

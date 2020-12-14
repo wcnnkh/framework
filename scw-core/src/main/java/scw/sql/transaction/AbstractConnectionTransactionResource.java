@@ -1,11 +1,10 @@
 package scw.sql.transaction;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.Map.Entry;
+import java.util.LinkedHashSet;
 
+import scw.core.utils.CollectionUtils;
 import scw.sql.Sql;
 import scw.sql.SqlUtils;
 import scw.transaction.Savepoint;
@@ -18,7 +17,7 @@ public abstract class AbstractConnectionTransactionResource implements Transacti
 	private final TransactionDefinition transactionDefinition;
 	private final boolean active;
 	private int savepointCounter;
-	private LinkedHashMap<String, Sql> sqlMap;
+	private LinkedHashSet<Sql> sqls;
 
 	public AbstractConnectionTransactionResource(TransactionDefinition transactionDefinition, boolean active) {
 		this.transactionDefinition = transactionDefinition;
@@ -33,16 +32,16 @@ public abstract class AbstractConnectionTransactionResource implements Transacti
 		return transactionDefinition;
 	}
 
-	public void addSql(Sql sql) {
+	public boolean addSql(Sql sql) {
 		if (sql == null) {
-			return;
+			return false;
 		}
 
-		if (sqlMap == null) {
-			sqlMap = new LinkedHashMap<String, Sql>(8);
+		if (sqls == null) {
+			sqls = new LinkedHashSet<Sql>();
 		}
 
-		sqlMap.put(SqlUtils.getSqlId(sql), sql);
+		return sqls.add(sql);
 	}
 
 	public boolean isActive() {
@@ -59,17 +58,9 @@ public abstract class AbstractConnectionTransactionResource implements Transacti
 	}
 
 	public void commit() throws Throwable {
-		if (sqlMap != null && !sqlMap.isEmpty()) {
-			for (Entry<String, Sql> entry : sqlMap.entrySet()) {
-				PreparedStatement preparedStatement = SqlUtils.createPreparedStatement(getConnection(),
-						entry.getValue());
-				try {
-					preparedStatement.execute();
-				} catch (SQLException e) {
-					throw new TransactionException(SqlUtils.getSqlId(entry.getValue()), e);
-				} finally {
-					preparedStatement.close();
-				}
+		if(!CollectionUtils.isEmpty(sqls)){
+			for(Sql sql : sqls){
+				SqlUtils.execute(getConnection(), sql);
 			}
 		}
 

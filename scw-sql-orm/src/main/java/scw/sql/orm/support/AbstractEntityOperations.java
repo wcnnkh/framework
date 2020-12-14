@@ -3,7 +3,6 @@ package scw.sql.orm.support;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -19,12 +18,14 @@ import scw.core.IteratorCallback.Row;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.mapper.MapperUtils;
 import scw.sql.AbstractSqlOperations;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
+import scw.sql.RowMapper;
 import scw.sql.Sql;
-import scw.sql.SqlUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.Columns;
 import scw.sql.orm.EntityOperations;
@@ -32,21 +33,22 @@ import scw.sql.orm.ORMException;
 import scw.sql.orm.OrmUtils;
 import scw.sql.orm.ResultMapping;
 import scw.sql.orm.ResultSet;
-import scw.sql.orm.TableChange;
+import scw.sql.orm.TableChanges;
 import scw.sql.orm.TableName;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.cache.CacheManager;
 import scw.sql.orm.dialect.PaginationSql;
 import scw.sql.orm.dialect.SqlDialect;
+import scw.sql.orm.dialect.TableStructureMapping;
 import scw.sql.orm.enums.OperationType;
-import scw.sql.orm.enums.TableStructureResultField;
 import scw.sql.orm.support.generation.GeneratorContext;
 import scw.sql.orm.support.generation.GeneratorService;
 import scw.util.ClassScanner;
 import scw.util.Pagination;
 
 public abstract class AbstractEntityOperations extends AbstractSqlOperations implements EntityOperations {
-
+	private static Logger logger = LoggerFactory.getLogger(AbstractEntityOperations.class);
+	
 	public abstract SqlDialect getSqlDialect();
 
 	public abstract CacheManager getCacheManager();
@@ -142,7 +144,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 				if (column.isAutoIncrement()) {
 					if (operationType == OperationType.SAVE || operationType == OperationType.SAVE_OR_UPDATE) {
 						if (count == 0) {
-							logger.warn("Number of rows affected is 0, execute: {}", SqlUtils.getSqlId(sql));
+							logger.warn("Number of rows affected is 0, execute: {}", sql);
 						} else if (count == 1) {
 							if (operationType == OperationType.SAVE
 									|| !MapperUtils.isExistValue(column.getField(), bean)) {
@@ -154,7 +156,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 			}
 			return count != 0;
 		} catch (SQLException e) {
-			throw new ORMException(SqlUtils.getSqlId(sql), e);
+			throw new ORMException(sql, e);
 		} finally {
 			close(connection);
 		}
@@ -371,7 +373,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 
 	public <T> Pagination<T> select(Class<? extends T> type, long page, int limit, Sql sql) {
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql, page == 0 ? 1 : page, limit);
-		Long count = select(paginationSql.getCountSql()).getFirst().get(0);
+		Long count = select(paginationSql.getCountSql()).getFirst().get(Long.class, 0);
 		Pagination<T> pagination = new Pagination<T>(limit);
 		if (count == null || count == 0) {
 			pagination.setData(Collections.emptyList());
@@ -499,19 +501,24 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		return getMaxValue(type, tableClass, null, idField);
 	}
 
-	public TableChange getTableChange(Class<?> tableClass) {
-		return getTableChange(tableClass, null);
+	public TableChanges getTableChanges(Class<?> tableClass) {
+		return getTableChanges(tableClass, null);
 	}
 
-	public TableChange getTableChange(Class<?> tableClass, String tableName) {
+	public TableChanges getTableChanges(Class<?> tableClass, String tableName) {
 		String tName = getTableName(tableClass, tableName);
-		Sql sql = getSqlDialect().toTableStructureSql(tableClass, tName, Arrays.asList(TableStructureResultField.NAME));
-		List<String[]> list = select(String[].class, sql);
+		final TableStructureMapping tableStructureMapping = getSqlDialect().getTableStructureMapping(tableClass, tName);
+		List<String> list = query(tableStructureMapping.getSql(), new RowMapper<String>() {
+
+			public String mapRow(java.sql.ResultSet rs, int rowNum)
+					throws SQLException {
+				return tableStructureMapping.getName(rs);
+			}
+		});
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
 		Columns columns = OrmUtils.getObjectRelationalMapping().getColumns(tableClass);
-		for (String[] names : list) {
-			String name = names[0];
+		for (String name : list) {
 			hashSet.add(name);
 			Column column = columns.find(name);
 			if (column == null) {// 在现在的表结构中不存在，应该删除
@@ -526,6 +533,6 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 			}
 		}
 
-		return new TableChange(deleteList, addList);
+		return new TableChanges(deleteList, addList);
 	}
 }

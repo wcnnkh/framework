@@ -82,8 +82,13 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 
 	public abstract boolean support(Class<?> clazz);
 	
-	public boolean canWrite(Class<?> clazz){
-		return support(clazz);
+	public boolean canWrite(Type type){
+		if(type instanceof Class){
+			return support((Class<?>)type);
+		}
+		
+		ResolvableType resolvableType = ResolvableType.forType(type);
+		return support(resolvableType.getRawClass());
 	}
 	
 	public boolean canRead(Type type){
@@ -103,7 +108,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 		return canRead(type) && canRead(contentType);
 	}
 
-	public boolean canWrite(Object body, MimeType contentType) {
+	public boolean canWrite(Type type, Object body, MimeType contentType) {
 		if (body == null) {
 			return false;
 		}
@@ -114,14 +119,32 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 
 		return canWrite(body.getClass()) && canWrite(contentType);
 	}
+	
+	public boolean canWrite(Object body, MimeType contentType) {
+		if (body == null) {
+			return false;
+		}
+		
+		return canWrite(body.getClass(), body, contentType);
+	}
 
 	public Object read(Type type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		return readInternal(type, inputMessage);
 	}
-
-	@SuppressWarnings("unchecked")
+	
 	public void write(Object body, MimeType contentType,
+			OutputMessage outputMessage) throws IOException,
+			MessageConvertException {
+		if(body == null){
+			return ;
+		}
+		
+		write(body.getClass(), body, contentType, outputMessage);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void write(Type type, Object body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		T t = (T) body;
@@ -131,7 +154,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 		}else if (outputMessage.getContentType() == null) {
 			if (contentTypeToUse == null || contentTypeToUse.isWildcardType()
 					|| contentTypeToUse.isWildcardSubtype()) {
-				contentTypeToUse = getDefaultContentType(t);
+				contentTypeToUse = getDefaultContentType(type, t);
 			}
 
 			if (contentTypeToUse != null && !contentTypeToUse.isWildcardType()
@@ -158,10 +181,10 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 				}
 			}
 		}
-		writeInternal(t, contentTypeToUse, outputMessage);
+		writeInternal(type, t, contentTypeToUse, outputMessage);
 	}
 
-	protected MimeType getDefaultContentType(T body) throws IOException {
+	protected MimeType getDefaultContentType(Type type, T body) throws IOException {
 		MimeType mimeType = getSupportMimeTypes().getMimeTypes().first();
 		if(mimeType.isWildcardType() || mimeType.isWildcardSubtype()){
 			return null;
@@ -205,7 +228,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	protected abstract T readInternal(Type type, InputMessage inputMessage)
 			throws IOException, MessageConvertException;
 
-	protected abstract void writeInternal(T body, MimeType contentType,
+	protected abstract void writeInternal(Type type, T body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException;
 }

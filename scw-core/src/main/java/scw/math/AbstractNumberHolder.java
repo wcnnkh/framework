@@ -1,6 +1,7 @@
 package scw.math;
 
-public abstract class AbstractNumberHolder implements NumberHolder {
+public abstract class AbstractNumberHolder extends Number implements NumberHolder {
+	private static final long serialVersionUID = 1L;
 
 	public int compareTo(NumberHolder o) {
 		return toBigDecimal().compareTo(o.toBigDecimal());
@@ -106,5 +107,25 @@ public abstract class AbstractNumberHolder implements NumberHolder {
 	@Override
 	public String toString() {
 		return toBigDecimal().toString();
+	}
+	
+	@Override
+	public int intValue() {
+		return toBigDecimal().intValue();
+	}
+	
+	@Override
+	public double doubleValue() {
+		return toBigDecimal().doubleValue();
+	}
+	
+	@Override
+	public float floatValue() {
+		return toBigDecimal().floatValue();
+	}
+	
+	@Override
+	public long longValue() {
+		return toBigDecimal().longValue();
 	}
 }

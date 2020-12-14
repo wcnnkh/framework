@@ -187,4 +187,18 @@ public interface Lock {
 	 * that {@code Lock} implementation.
 	 */
 	boolean unlock();
+	
+	/**
+	 * 续期
+	 * @return
+	 */
+	boolean renewal();
+	
+	/**
+	 * 续期
+	 * @param time
+	 * @param unit
+	 * @return
+	 */
+	boolean renewal(long time, TimeUnit unit);
 }
