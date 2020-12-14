@@ -4,13 +4,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import scw.aop.annotation.AopEnable;
 import scw.core.IteratorCallback;
 import scw.core.IteratorCallback.Row;
 import scw.sql.Sql;
 import scw.util.Pagination;
 
-@AopEnable(false)
 public interface EntityOperations {
 	/**
 	 * 根据主键获取一条数据

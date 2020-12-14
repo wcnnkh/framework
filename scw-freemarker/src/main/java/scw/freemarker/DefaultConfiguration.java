@@ -2,13 +2,6 @@ package scw.freemarker;
 
 import java.io.IOException;
 
-import freemarker.cache.TemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
-import scw.aop.annotation.AopEnable;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.Constants;
@@ -18,9 +11,14 @@ import scw.logger.LoggerUtils;
 import scw.util.ClassScanner;
 import scw.value.ValueFactory;
 import scw.value.property.PropertyFactory;
+import freemarker.cache.TemplateLoader;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.TemplateExceptionHandler;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
 
-@scw.core.instance.annotation.Configuration(order = Integer.MIN_VALUE, value = Configuration.class)
-@AopEnable(false)
+@scw.core.instance.annotation.SPI(order = Integer.MIN_VALUE, value = Configuration.class)
 public class DefaultConfiguration extends Configuration {
 	private static scw.logger.Logger logger = LoggerUtils.getLogger(DefaultConfiguration.class);
 

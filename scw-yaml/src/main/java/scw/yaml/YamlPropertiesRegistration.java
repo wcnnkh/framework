@@ -3,11 +3,11 @@ package scw.yaml;
 import java.util.Properties;
 
 import scw.beans.PropertiesRegistration;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.event.Observable;
 import scw.io.ResourceUtils;
 
-@Configuration
+@SPI
 public class YamlPropertiesRegistration implements PropertiesRegistration {
 	private static final String CONFIGURATION = "application.yaml";
 

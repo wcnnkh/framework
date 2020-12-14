@@ -6,14 +6,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 全局配置
- * 
+ * 使用类扫描实现Service Provider Interface
  * @author shuchaowen
  *
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Configuration {
+public @interface SPI {
 	public Class<?>[] value() default {};
 	
 	public boolean assignableValue() default true;

@@ -9,11 +9,11 @@ import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain serviceChain) {

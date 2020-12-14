@@ -3,9 +3,9 @@ package scw.hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 
-@Configuration(order = Integer.MIN_VALUE, value = Hibernate.class)
+@SPI(order = Integer.MIN_VALUE, value = Hibernate.class)
 public class DefaultHibernate implements Hibernate {
 	private final SessionFactory sessionFactory;
 

@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.ClassUtils;
 import scw.http.MediaType;
 import scw.http.server.HttpServiceHandler;
@@ -43,7 +43,7 @@ import scw.util.MultiIterable;
 import scw.value.property.PropertyFactory;
 import scw.web.WebUtils;
 
-@Configuration(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
+@SPI(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();

@@ -5,14 +5,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
-import scw.aop.annotation.AopEnable;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
 import scw.util.XUtils;
 
-@AopEnable(false)
 public class HttpServiceConfig<V> {
 	private volatile Map<String, V> configMap;
 	private volatile Map<String, V> patternConfigMap;

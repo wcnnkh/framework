@@ -3,7 +3,6 @@ package scw.apple.pay;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.aop.annotation.AopEnable;
 import scw.core.utils.StringUtils;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
@@ -17,7 +16,6 @@ import scw.logger.LoggerFactory;
  * @author shuchaowen
  *
  */
-@AopEnable(false)
 public class ApplePay {
 	private static Logger logger = LoggerFactory.getLogger(ApplePay.class);
 	static final String SANDBOX_URL = "https://sandbox.itunes.apple.com/verifyReceipt";

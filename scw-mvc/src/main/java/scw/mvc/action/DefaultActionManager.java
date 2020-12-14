@@ -13,7 +13,7 @@ import java.util.Set;
 import scw.beans.BeanFactory;
 import scw.core.Constants;
 import scw.core.annotation.Order;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 import scw.event.BasicEventDispatcher;
 import scw.event.EventListener;
@@ -35,7 +35,7 @@ import scw.value.Value;
 import scw.value.property.PropertyFactory;
 import scw.web.WebUtils;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class DefaultActionManager implements ActionManager {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	private Map<Method, Action> actionMap = new LinkedHashMap<Method, Action>();

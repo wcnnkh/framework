@@ -1,5 +1,6 @@
 package scw.beans.builder;
 
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 
 import scw.aop.MethodInterceptor;
@@ -33,6 +34,11 @@ public class ProxyBeanDefinition extends DefaultBeanDefinition {
 	@Override
 	public Iterable<? extends MethodInterceptor> getFilters() {
 		return filters;
+	}
+	
+	@Override
+	protected boolean isProxy() {
+		return Modifier.isAbstract(getTargetClass().getModifiers()) || getTargetClass().isInterface() || super.isProxy();
 	}
 
 	@Override

@@ -5,12 +5,12 @@ import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.db.DB;
 import scw.db.DBUtils;
 import scw.io.ResourceUtils;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class HikariBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {

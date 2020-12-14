@@ -2,11 +2,9 @@ package scw.upload.kind;
 
 import java.io.IOException;
 
-import scw.upload.UploadItem;
-import scw.aop.annotation.AopEnable;
 import scw.upload.UploadException;
+import scw.upload.UploadItem;
 
-@AopEnable(false)
 public interface KindEditor {
 	/**
 	 * 上传成功后返回url

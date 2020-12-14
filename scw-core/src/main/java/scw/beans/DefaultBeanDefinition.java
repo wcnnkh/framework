@@ -12,7 +12,6 @@ import java.util.Map.Entry;
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptors;
 import scw.aop.Proxy;
-import scw.aop.ProxyUtils;
 import scw.beans.BeanLifeCycleEvent.Step;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.ConfigurationProperties;
@@ -183,7 +182,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object> implem
 	}
 
 	protected boolean isProxy() {
-		return ProxyUtils.isAopEnable(getTargetClass(), getTargetClass());
+		return BeanUtils.isAopEnable(getTargetClass(), getAnnotatedElement());
 	}
 
 	public boolean isSingleton() {

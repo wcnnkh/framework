@@ -18,9 +18,9 @@ import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 	@Override
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {

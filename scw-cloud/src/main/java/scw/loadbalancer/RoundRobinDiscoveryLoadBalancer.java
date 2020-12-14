@@ -4,12 +4,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import scw.application.ApplicationUtils;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.discovery.DiscoveryClient;
 import scw.discovery.ServiceInstance;
 import scw.value.property.PropertyFactory;
 
-@Configuration(order=Integer.MIN_VALUE, value=DiscoveryLoadBalancer.class, assignableValue=false)
+@SPI(order=Integer.MIN_VALUE, value=DiscoveryLoadBalancer.class, assignableValue=false)
 public class RoundRobinDiscoveryLoadBalancer implements DiscoveryLoadBalancer{
 	private DiscoveryClient discoveryClient;
 	private String name;

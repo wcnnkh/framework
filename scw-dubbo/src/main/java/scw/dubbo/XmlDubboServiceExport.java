@@ -11,7 +11,7 @@ import scw.application.Application;
 import scw.application.ApplicationInitialization;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanFactory;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.logger.SplitLineAppend;
@@ -21,7 +21,7 @@ import scw.logger.SplitLineAppend;
  * @author shuchaowen
  *
  */
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class XmlDubboServiceExport implements ApplicationInitialization {
 	private static Logger logger = LoggerFactory.getLogger(XmlDubboServiceExport.class);
 

@@ -3,13 +3,13 @@ package scw.security.session;
 import java.util.HashSet;
 
 import scw.core.annotation.Order;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.data.TemporaryCache;
 import scw.data.memory.MemoryDataTemplete;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T> {
 	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionFactory.class);
 	private final TemporaryCache temporaryCache;

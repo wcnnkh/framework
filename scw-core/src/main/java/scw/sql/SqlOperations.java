@@ -3,9 +3,6 @@ package scw.sql;
 import java.util.Collection;
 import java.util.List;
 
-import scw.aop.annotation.AopEnable;
-
-@AopEnable(false)
 public interface SqlOperations {
 	/**
 	 * 执行一条sql语句

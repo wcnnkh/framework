@@ -6,7 +6,6 @@ import org.apache.tomcat.JarScanType;
 import org.apache.tomcat.JarScannerCallback;
 import org.apache.tomcat.util.scan.StandardJarScanner;
 
-import scw.aop.annotation.AopEnable;
 import scw.value.property.PropertyFactory;
 
 /**
@@ -15,7 +14,6 @@ import scw.value.property.PropertyFactory;
  * @author shuchaowen
  *
  */
-@AopEnable(false)
 public class Tomcat8AboveStandardJarScanner extends StandardJarScanner {
 	private boolean scanTdl;
 

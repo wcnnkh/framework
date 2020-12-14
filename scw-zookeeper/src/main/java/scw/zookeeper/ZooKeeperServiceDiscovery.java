@@ -6,14 +6,14 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.discovery.ServiceInstance;
 import scw.discovery.SimpleDiscoveryClient;
 import scw.io.JavaSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-@Configuration(order=Integer.MIN_VALUE + 1)
+@SPI(order=Integer.MIN_VALUE + 1)
 public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInstance> implements Watcher {
 	private static Logger logger = LoggerFactory.getLogger(ZooKeeperServiceDiscovery.class);
 	public static final String DEFAULT_PARENT_PATH = "/scw";

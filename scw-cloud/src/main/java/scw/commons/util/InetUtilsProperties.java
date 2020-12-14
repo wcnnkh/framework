@@ -20,14 +20,11 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import scw.aop.annotation.AopEnable;
-
 /**
  * Properties for {@link InetUtils}.
  *
  * @author Spencer Gibb
  */
-@AopEnable(false)
 public class InetUtilsProperties {
 
 	/**

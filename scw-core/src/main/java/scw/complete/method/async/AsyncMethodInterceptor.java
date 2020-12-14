@@ -7,10 +7,10 @@ import scw.aop.MethodInvoker;
 import scw.beans.BeanUtils;
 import scw.beans.RuntimeBean;
 import scw.core.instance.NoArgsInstanceFactory;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.lang.NotSupportedException;
 
-@Configuration(order = Integer.MAX_VALUE)
+@SPI(order = Integer.MAX_VALUE)
 public final class AsyncMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private static ThreadLocal<Boolean> TAG_THREAD_LOCAL = new ThreadLocal<Boolean>();
 	private final NoArgsInstanceFactory instanceFactory;

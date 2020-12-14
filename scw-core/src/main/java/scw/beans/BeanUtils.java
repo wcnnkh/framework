@@ -1,6 +1,7 @@
 package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -9,8 +10,12 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.beans.annotation.AopEnable;
+import scw.beans.annotation.Service;
 import scw.beans.annotation.Singleton;
 import scw.core.Constants;
+import scw.core.OrderComparator;
+import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.CollectionUtils;
@@ -21,6 +26,9 @@ import scw.value.ValueFactory;
 import scw.value.property.PropertyFactory;
 
 public final class BeanUtils {
+	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = InstanceUtils
+			.loadAllService(AopEnableSpi.class);
+
 	private BeanUtils() {
 	};
 
@@ -92,11 +100,25 @@ public final class BeanUtils {
 			((BeanDefinitionAware) instance).setBeanDefinition(beanDefinition);
 		}
 	}
-	
-	public static <T> List<T> loadAllService(
-			Class<? extends T> clazz, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		return Collections.list(CollectionUtils.toEnumeration(getServiceLoader(clazz, beanFactory, propertyFactory).iterator()));
+
+	/**
+	 * 此结果已排序
+	 * @see Ordered
+	 * @param clazz
+	 * @param beanFactory
+	 * @param propertyFactory
+	 * @return
+	 */
+	public static <T> List<T> loadAllService(Class<? extends T> clazz,
+			BeanFactory beanFactory, PropertyFactory propertyFactory) {
+		List<T> services = Collections.list(CollectionUtils.toEnumeration(getServiceLoader(
+				clazz, beanFactory, propertyFactory).iterator()));
+		if(CollectionUtils.isEmpty(services)){
+			return services;
+		}
+		
+		Collections.sort(services, OrderComparator.INSTANCE);
+		return services;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,16 +143,19 @@ public final class BeanUtils {
 
 		return null;
 	}
-	
-	public static void destroy(BeanFactory beanFactory, Map<String, Object> instanceMap, Logger logger){
+
+	public static void destroy(BeanFactory beanFactory,
+			Map<String, Object> instanceMap, Logger logger) {
 		List<String> beanKeyList = new ArrayList<String>();
 		for (Entry<String, Object> entry : instanceMap.entrySet()) {
 			beanKeyList.add(entry.getKey());
 		}
 
-		ListIterator<String> keyIterator = beanKeyList.listIterator(beanKeyList.size());
+		ListIterator<String> keyIterator = beanKeyList.listIterator(beanKeyList
+				.size());
 		while (keyIterator.hasPrevious()) {
-			BeanDefinition beanDefinition = beanFactory.getDefinition(keyIterator.previous());
+			BeanDefinition beanDefinition = beanFactory
+					.getDefinition(keyIterator.previous());
 			if (beanDefinition == null) {
 				continue;
 			}
@@ -142,5 +167,49 @@ public final class BeanUtils {
 				logger.error(e, "destroy error: {}", beanDefinition.getId());
 			}
 		}
+	}
+
+	public static boolean isAopEnable(Class<?> clazz,
+			AnnotatedElement annotatedElement) {
+		if (Modifier.isFinal(clazz.getModifiers())) {// final修饰的类无法代理
+			return false;
+		}
+
+		AopEnable aopEnable = clazz.getAnnotation(AopEnable.class);
+		if (aopEnable != null) {
+			return aopEnable.value();
+		}
+
+		// 如果是一个服务那么应该默认使用aop
+		Service service = clazz.getAnnotation(Service.class);
+		if (service != null) {
+			return true;
+		}
+
+		for (AopEnableSpi spi : AOP_ENABLE_SPIS) {
+			if (spi.isAopEnable(clazz, annotatedElement)) {
+				return true;
+			}
+		}
+		
+		aopEnable = annotatedElement.getAnnotation(AopEnable.class);
+		if (aopEnable != null) {
+			return aopEnable.value();
+		}
+
+		Class<?> classToUse = clazz.getSuperclass();
+		while (classToUse != null && classToUse != Object.class) {
+			if (isAopEnable(classToUse, classToUse)) {
+				return true;
+			}
+
+			for (Class<?> interfaceClass : classToUse.getInterfaces()) {
+				if (isAopEnable(interfaceClass, interfaceClass)) {
+					return true;
+				}
+			}
+			classToUse = classToUse.getSuperclass();
+		}
+		return false;
 	}
 }

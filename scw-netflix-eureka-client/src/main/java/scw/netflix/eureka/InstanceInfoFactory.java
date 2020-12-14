@@ -18,20 +18,18 @@ package scw.netflix.eureka;
 
 import java.util.Map;
 
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
+
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.appinfo.LeaseInfo;
-
-import scw.aop.annotation.AopEnable;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
 
 /**
  * See com.netflix.appinfo.providers.EurekaConfigBasedInstanceInfoProvider.
  *
  * @author Spencer Gibb
  */
-@AopEnable(false)
 public class InstanceInfoFactory {
 
 	private static final Logger log = LoggerFactory.getLogger(InstanceInfoFactory.class);

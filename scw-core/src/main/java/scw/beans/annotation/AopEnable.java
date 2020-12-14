@@ -1,4 +1,4 @@
-package scw.aop.annotation;
+package scw.beans.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -15,5 +15,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface AopEnable {
-	boolean value();
+	boolean value() default true;
 }

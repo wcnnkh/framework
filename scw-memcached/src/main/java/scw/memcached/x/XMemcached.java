@@ -7,13 +7,13 @@ import java.util.Map.Entry;
 
 import net.rubyeye.xmemcached.GetsResponse;
 import net.rubyeye.xmemcached.MemcachedClient;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.memcached.Memcached;
 
-@Configuration(order=Integer.MIN_VALUE + 100)
+@SPI(order=Integer.MIN_VALUE + 100)
 public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
 	private final CASOperations casOperations;

@@ -13,7 +13,7 @@ import org.apache.zookeeper.ZooKeeper;
 
 import scw.config.CloudPropertyFactory;
 import scw.core.Constants;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.event.EventType;
@@ -31,7 +31,7 @@ import scw.value.property.PropertyEvent;
  * @author asus1
  *
  */
-@Configuration(order=Integer.MIN_VALUE)
+@SPI(order=Integer.MIN_VALUE)
 public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory implements CloudPropertyFactory, Watcher{
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
 	private final ZooKeeper zooKeeper;

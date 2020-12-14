@@ -10,11 +10,11 @@ import scw.beans.BeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.io.SerializerUtils;
 import scw.net.InetUtils;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 
 	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {

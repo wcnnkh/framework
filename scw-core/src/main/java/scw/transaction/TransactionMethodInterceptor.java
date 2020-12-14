@@ -4,7 +4,7 @@ import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorChain;
 import scw.aop.MethodInvoker;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -13,7 +13,7 @@ import scw.logger.LoggerUtils;
  * @author shuchaowen
  *
  */
-@Configuration(order = Integer.MAX_VALUE)
+@SPI(order = Integer.MAX_VALUE)
 public final class TransactionMethodInterceptor implements MethodInterceptor{
 	private static Logger logger = LoggerUtils.getLogger(TransactionMethodInterceptor.class);
 	private final TransactionDefinition transactionDefinition;

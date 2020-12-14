@@ -1,10 +1,8 @@
 package scw.security.login;
 
-import scw.aop.annotation.AopEnable;
 import scw.beans.annotation.AutoImpl;
 
 @AutoImpl(DefaultLoginService.class)
-@AopEnable(false)
 public interface LoginService<T> {
 	UserToken<T> getUserToken(String token);
 

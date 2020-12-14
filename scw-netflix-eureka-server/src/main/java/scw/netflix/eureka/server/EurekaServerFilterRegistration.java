@@ -14,12 +14,12 @@ import javax.ws.rs.core.Application;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.netflix.eureka.EurekaConstants;
 import scw.servlet.FilterRegistration;
 import scw.util.ClassScanner;
 
-@Configuration(order = Integer.MIN_VALUE)
+@SPI(order = Integer.MIN_VALUE)
 public class EurekaServerFilterRegistration implements FilterRegistration {
 	/**
 	 * List of packages containing Jersey resources required by the Eureka

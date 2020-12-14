@@ -10,6 +10,8 @@ import java.util.Set;
 
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
+import scw.core.OrderComparator;
+import scw.core.Ordered;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -29,7 +31,7 @@ public final class InstanceUtils {
 	private InstanceUtils() {
 	};
 
-	public static final ConfigurationScanner CONFIGURATION_SCANNER;
+	public static final SPIScanner CONFIGURATION_SCANNER;
 
 	/**
 	 * 默认的实例工厂
@@ -43,8 +45,8 @@ public final class InstanceUtils {
 	public static final NoArgsInstanceFactory NO_ARGS_INSTANCE_FACTORY;
 
 	static {
-		ConfigurationScanner configurationScanner = loadService(ConfigurationScanner.class);
-		CONFIGURATION_SCANNER = configurationScanner == null ? new ConfigurationScanner() : configurationScanner;
+		SPIScanner configurationScanner = loadService(SPIScanner.class);
+		CONFIGURATION_SCANNER = configurationScanner == null ? new SPIScanner() : configurationScanner;
 
 		NoArgsInstanceFactory noArgsInstanceFactory = loadService(NoArgsInstanceFactory.class,
 				"scw.core.instance.SunNoArgsInstanceFactory", "scw.core.instance.UnsafeNoArgsInstanceFactory");
@@ -58,6 +60,13 @@ public final class InstanceUtils {
 		return loadService(clazz, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(), defaultNames);
 	}
 
+	/**
+	 * 该结果是经过排序的
+	 * @see Ordered
+	 * @param clazz
+	 * @param defaultNames
+	 * @return
+	 */
 	public static <T> List<T> loadAllService(Class<? extends T> clazz, String... defaultNames) {
 		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, INSTANCE_FACTORY, GlobalPropertyFactory.getInstance(),
 				defaultNames);
@@ -65,7 +74,10 @@ public final class InstanceUtils {
 		if(!iterator.hasNext()){
 			return Collections.emptyList();
 		}
-		return Collections.list(CollectionUtils.toEnumeration(iterator));
+		
+		List<T> services = Collections.list(CollectionUtils.toEnumeration(iterator));
+		Collections.sort(services, OrderComparator.INSTANCE);
+		return services;
 	}
 
 	public static <T> T loadService(Class<? extends T> clazz, NoArgsInstanceFactory instanceFactory,

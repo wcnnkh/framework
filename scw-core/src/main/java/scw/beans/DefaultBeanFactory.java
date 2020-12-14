@@ -665,7 +665,7 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 			return new ConstructorParameterDescriptorsIterator(getTargetClass());
 		}
 	}
-
+	
 	private Collection<Class<?>> getAutoImplClass(AutoImpl autoConfig, LoaderContext context) {
 		List<Class<?>> list = new ArrayList<Class<?>>();
 		for (String name : autoConfig.className()) {

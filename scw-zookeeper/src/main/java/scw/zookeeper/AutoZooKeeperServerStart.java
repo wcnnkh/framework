@@ -2,10 +2,10 @@ package scw.zookeeper;
 
 import scw.application.Application;
 import scw.application.ApplicationInitialization;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.io.ResourceUtils;
 
-@Configuration(order = Integer.MAX_VALUE)
+@SPI(order = Integer.MAX_VALUE)
 public final class AutoZooKeeperServerStart implements ApplicationInitialization {
 	private static final String DEFAULT_ZOOKEEPER_CONFIG = "zookeeper.properties";
 

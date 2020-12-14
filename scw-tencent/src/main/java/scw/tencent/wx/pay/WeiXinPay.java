@@ -9,7 +9,6 @@ import javax.net.ssl.SSLSocketFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import scw.aop.annotation.AopEnable;
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -31,7 +30,6 @@ import scw.tencent.wx.WeiXinUtils;
 import scw.util.RandomUtils;
 import scw.xml.XMLUtils;
 
-@AopEnable(false)
 public class WeiXinPay {
 	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);
 

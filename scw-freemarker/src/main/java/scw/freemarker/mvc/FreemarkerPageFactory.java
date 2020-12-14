@@ -5,7 +5,7 @@ import scw.http.MediaType;
 import scw.net.MimeType;
 import freemarker.template.Configuration;
 
-@scw.core.instance.annotation.Configuration(order = Integer.MIN_VALUE)
+@scw.core.instance.annotation.SPI(order = Integer.MIN_VALUE)
 public class FreemarkerPageFactory extends AbstractFreemarkerPageFactory {
 	private final Configuration configuration;
 	private final MimeType mimeType;

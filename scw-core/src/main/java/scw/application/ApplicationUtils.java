@@ -6,6 +6,7 @@ import scw.beans.BeanUtils;
 import scw.core.GlobalPropertyFactory;
 import scw.util.ServiceLoader;
 import scw.util.concurrent.ListenableFuture;
+import scw.value.Value;
 import scw.value.property.PropertyFactory;
 
 public final class ApplicationUtils {
@@ -43,7 +44,26 @@ public final class ApplicationUtils {
 		return propertyFactory.getString("application.name");
 	}
 	
-	public static int getApplicationPort(PropertyFactory propertyFactory, int defaultPort){
-		return propertyFactory.getValue("server.port", int.class, propertyFactory.getValue("port", int.class, defaultPort));
+	/**
+	 * 默认为8080端口
+	 * @param application
+	 * @return
+	 */
+	public static int getApplicationPort(Application application){
+		return getApplicationPort(application, 8080);
+	}
+	
+	public static int getApplicationPort(Application application, int defaultPort){
+		if(application instanceof MainApplication){
+			Value value = ((MainApplication)application).getMainArgs().getInstruction("-p");
+			if(value != null && value.isNumber()){
+				return value.getAsIntValue();
+			}
+		}
+		
+		//tomcat.port兼容老版本
+		int port = application.getPropertyFactory().getValue("tomcat.port", int.class, defaultPort);
+		port = application.getPropertyFactory().getValue("port", int.class, port);
+		return application.getPropertyFactory().getValue("server.port", int.class, port);
 	}
 }

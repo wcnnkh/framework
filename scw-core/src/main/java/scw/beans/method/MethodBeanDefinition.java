@@ -5,8 +5,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
-import scw.aop.ProxyUtils;
 import scw.beans.BeanFactory;
+import scw.beans.BeanUtils;
 import scw.beans.DefaultBeanDefinition;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.parameter.MethodParameterDescriptorsIterator;
@@ -36,7 +36,7 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 
 	@Override
 	protected boolean isProxy() {
-		return ProxyUtils.isAopEnable(method.getReturnType(), method) && method.getReturnType().isInterface();
+		return BeanUtils.isAopEnable(method.getReturnType(), method);
 	}
 
 	public boolean isInstance() {

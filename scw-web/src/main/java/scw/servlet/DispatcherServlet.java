@@ -8,18 +8,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.aop.annotation.AopEnable;
 import scw.application.Application;
 import scw.application.ApplicationAware;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.servlet.ServletApplicationStartup.StartUp;
 import scw.servlet.http.HttpServletService;
 
-@Configuration(order = Integer.MIN_VALUE)
-@AopEnable(false)
+@SPI(order = Integer.MIN_VALUE)
 public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerUtils.getLogger(DispatcherServlet.class);

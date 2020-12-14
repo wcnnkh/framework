@@ -10,7 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
@@ -19,12 +19,12 @@ import scw.util.ClassScanner;
 import scw.util.comparator.CompareUtils;
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public class ConfigurationScanner implements Comparator<Class<?>> {
+public class SPIScanner implements Comparator<Class<?>> {
 	protected Logger logger = LoggerUtils.getLogger(getClass());
 
 	public int compare(Class<?> o1, Class<?> o2) {
-		Configuration c1 = o1.getAnnotation(Configuration.class);
-		Configuration c2 = o2.getAnnotation(Configuration.class);
+		SPI c1 = o1.getAnnotation(SPI.class);
+		SPI c2 = o2.getAnnotation(SPI.class);
 		return CompareUtils.compare(c1.order(), c2.order(), true);
 	}
 
@@ -39,7 +39,7 @@ public class ConfigurationScanner implements Comparator<Class<?>> {
 				continue;
 			}
 
-			Configuration configuration = clazz.getAnnotation(Configuration.class);
+			SPI configuration = clazz.getAnnotation(SPI.class);
 			if (configuration == null) {
 				continue;
 			}
@@ -71,7 +71,7 @@ public class ConfigurationScanner implements Comparator<Class<?>> {
 			Collection<? extends Class> excludeTypes, Collection<String> packageNames) {
 		Set<Class<T>> set = new LinkedHashSet<Class<T>>();
 		for (Class<?> clazz : scan(type, packageNames)) {
-			Configuration configuration = clazz.getAnnotation(Configuration.class);
+			SPI configuration = clazz.getAnnotation(SPI.class);
 			if (configuration == null) {
 				continue;
 			}
@@ -85,7 +85,7 @@ public class ConfigurationScanner implements Comparator<Class<?>> {
 		}
 
 		for (Class<? extends T> clazz : set) {
-			Configuration c = clazz.getAnnotation(Configuration.class);
+			SPI c = clazz.getAnnotation(SPI.class);
 			for (Class<?> e : c.excludes()) {
 				if (e == clazz) {
 					continue;

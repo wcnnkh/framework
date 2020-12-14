@@ -11,7 +11,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.Destroy;
 import scw.core.GlobalPropertyFactory;
-import scw.core.instance.annotation.Configuration;
+import scw.core.instance.annotation.SPI;
 import scw.core.utils.ClassUtils;
 import scw.io.support.LocalLogger.Record;
 import scw.io.support.SystemLocalLogger;
@@ -26,7 +26,7 @@ import scw.logger.LoggerUtils;
  *
  */
 
-@Configuration(order = Integer.MIN_VALUE, value = CompleteService.class)
+@SPI(order = Integer.MIN_VALUE, value = CompleteService.class)
 public final class LocalCompleteService implements CompleteService, Destroy {
 	private static Logger logger = LoggerUtils.getLogger(LocalCompleteService.class);
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);

@@ -19,12 +19,9 @@ package scw.netflix.eureka;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
 
-import scw.aop.annotation.AopEnable;
-
 /**
  * @author Spencer Gibb
  */
-@AopEnable(false)
 public interface CloudEurekaInstanceConfig extends EurekaInstanceConfig {
 
 	void setNonSecurePort(int port);

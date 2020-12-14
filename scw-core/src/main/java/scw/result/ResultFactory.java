@@ -1,10 +1,8 @@
 package scw.result;
 
-import scw.aop.annotation.AopEnable;
 import scw.core.GlobalPropertyFactory;
 import scw.event.Observable;
 
-@AopEnable(false)
 public class ResultFactory {
 	static final Observable<String> DEFAULT_ERROR_MESSAGE = GlobalPropertyFactory.getInstance()
 			.getObservableValue("result.error.msg", String.class, "系统错误");

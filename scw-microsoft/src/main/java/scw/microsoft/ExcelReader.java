@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import scw.aop.annotation.AopEnable;
-
-@AopEnable(false)
 public interface ExcelReader {
 	/**
 	 * 逐行读取(内存消耗小)
