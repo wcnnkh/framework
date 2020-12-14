@@ -29,6 +29,18 @@
 				<artifactId>scw-core</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-log4j</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-log4j2</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -562,5 +574,7 @@
 		<module>scw-mysql</module>
 		<module>scw-lucene</module>
 		<module>scw-yaml</module>
+		<module>scw-log4j</module>
+		<module>scw-log4j2</module>
 	</modules>
 </project>

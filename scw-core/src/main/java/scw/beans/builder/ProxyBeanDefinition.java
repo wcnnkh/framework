@@ -1,5 +1,6 @@
 package scw.beans.builder;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 
@@ -37,8 +38,8 @@ public class ProxyBeanDefinition extends DefaultBeanDefinition {
 	}
 	
 	@Override
-	protected boolean isProxy() {
-		return Modifier.isAbstract(getTargetClass().getModifiers()) || getTargetClass().isInterface() || super.isProxy();
+	public boolean isAopEnable(Class<?> clazz, AnnotatedElement annotatedElement) {
+		return Modifier.isAbstract(clazz.getModifiers()) || clazz.isInterface() || super.isAopEnable(clazz, annotatedElement);
 	}
 
 	@Override

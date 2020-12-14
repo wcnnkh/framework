@@ -169,13 +169,27 @@ public final class BeanUtils {
 		}
 	}
 
+	/**
+	 * 默认是不使用代理的，除非使用以下方式(see)：
+	 * @see AopEnable
+	 * @see Service
+	 * @see AopEnableSpi
+	 * @param clazz
+	 * @param annotatedElement
+	 * @return
+	 */
 	public static boolean isAopEnable(Class<?> clazz,
 			AnnotatedElement annotatedElement) {
 		if (Modifier.isFinal(clazz.getModifiers())) {// final修饰的类无法代理
 			return false;
 		}
+		
+		AopEnable aopEnable = annotatedElement.getAnnotation(AopEnable.class);
+		if (aopEnable != null) {
+			return aopEnable.value();
+		}
 
-		AopEnable aopEnable = clazz.getAnnotation(AopEnable.class);
+		aopEnable = clazz.getAnnotation(AopEnable.class);
 		if (aopEnable != null) {
 			return aopEnable.value();
 		}
@@ -190,11 +204,6 @@ public final class BeanUtils {
 			if (spi.isAopEnable(clazz, annotatedElement)) {
 				return true;
 			}
-		}
-		
-		aopEnable = annotatedElement.getAnnotation(AopEnable.class);
-		if (aopEnable != null) {
-			return aopEnable.value();
 		}
 
 		Class<?> classToUse = clazz.getSuperclass();

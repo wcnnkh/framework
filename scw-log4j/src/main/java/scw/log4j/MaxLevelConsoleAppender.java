@@ -1,4 +1,4 @@
-package scw.logger.log4j;
+package scw.log4j;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Priority;

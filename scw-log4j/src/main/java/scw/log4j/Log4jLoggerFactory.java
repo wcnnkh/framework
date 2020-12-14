@@ -1,4 +1,4 @@
-package scw.logger.log4j;
+package scw.log4j;
 
 import scw.logger.AbstractILoggerFactory;
 import scw.logger.Logger;

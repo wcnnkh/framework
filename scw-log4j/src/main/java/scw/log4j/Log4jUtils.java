@@ -1,4 +1,4 @@
-package scw.logger.log4j;
+package scw.log4j;
 
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
@@ -57,7 +57,7 @@ public final class Log4jUtils {
 		}
 
 		Properties properties = ResourceUtils.getResourceOperations()
-				.getProperties("classpath:/scw/logger/log4j/default-log4j.properties").get();
+				.getProperties("classpath:/scw/log4j/default-log4j.properties").get();
 		for (Entry<String, Level> entry : LoggerLevelManager.DEFAULT_LEVEL_MAP.entrySet()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().getName());
 		}

@@ -68,12 +68,7 @@ public class ExecutorBeanBuilderLoader implements BeanBuilderLoader {
 		public boolean isInstance() {
 			return true;
 		}
-
-		@Override
-		protected boolean isProxy() {
-			return false;
-		}
-
+		
 		@Override
 		public Object create() throws Exception {
 			return new ThreadPoolExecutor(DEFAULT_CORE_POOL_SIZE, DEFAULT_MAXMUM_POOL_SIZE, DEFAULT_KEEP_ALIVE_TIME,

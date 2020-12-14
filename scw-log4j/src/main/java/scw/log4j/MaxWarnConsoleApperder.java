@@ -1,4 +1,4 @@
-package scw.logger.log4j;
+package scw.log4j;
 
 public class MaxWarnConsoleApperder extends MaxLevelConsoleAppender {
 

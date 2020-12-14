@@ -198,7 +198,7 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 			}
 
 			if (definition.isInstance()) {
-				logger.info("Configuration {} impl {}", context.getTargetClass(), impl);
+				logger.info("Service provider {} impl {}", context.getTargetClass(), impl);
 				return definition;
 			}
 		}
@@ -254,7 +254,7 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 					if (definition == null) {
 						definition = new DefaultBeanDefinition(new LoaderContext(impl, context));
 					}
-					logger.debug("Configuration {} impl {}", context.getTargetClass(), impl);
+					logger.debug("Service provider {} impl {}", context.getTargetClass(), impl);
 					return definition;
 				}
 			} else {
@@ -462,9 +462,9 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 	public void addBeanDefinition(BeanDefinition beanDefinition, boolean throwExistError) {
 		BeanDefinition definition = getDefinitionByCache(beanDefinition.getId());
 		if (definition != null) {
-			logger.warn("Already exist definition:\r\n{}\r\n---\r\n{}", JSONUtils.toJSONString(beanDefinition),
-					JSONUtils.toJSONString(definition));
 			if (throwExistError) {
+				logger.warn("Already exist definition:\r\n{}\r\n---\r\n{}", JSONUtils.toJSONString(beanDefinition),
+						JSONUtils.toJSONString(definition));
 				throw new AlreadyExistsException("存在相同ID的映射:" + JSONUtils.toJSONString(beanDefinition));
 			}
 
@@ -484,8 +484,8 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 		for (String name : names) {
 			BeanDefinition definition = getDefinitionByCache(name);
 			if (definition != null) {
-				logger.warn("Already exist name:{}, definition:{}", name, JSONUtils.toJSONString(definition));
 				if (throwExistError) {
+					logger.warn("Already exist name:{}, definition:{}", name, JSONUtils.toJSONString(definition));
 					throw new AlreadyExistsException("存在相同名称的映射:" + JSONUtils.toJSONString(definition));
 				}
 				return false;
@@ -524,7 +524,15 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 		addBeanDefinition(new InternalBeanDefinition(instance, type, Arrays.asList(names)), false);
 	}
 
-	private Aop aop = new DefaultAop(new InstanceIterable<MethodInterceptor>(this, filterNameList));
+	private final Aop aop = new DefaultAop(new InstanceIterable<MethodInterceptor>(this, filterNameList)){
+		public boolean isProxy(Object instance) {
+			if(instance == null){
+				return false;
+			}
+			
+			return BeanUtils.getRuntimeBean(instance) != null;
+		};
+	};
 
 	public Aop getAop() {
 		return aop;
