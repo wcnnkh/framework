@@ -12,14 +12,14 @@ import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 import scw.event.BasicEvent;
 import scw.event.BasicEventDispatcher;
+import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.Observable;
 import scw.event.ObservableConvert;
-import scw.event.ObservableEvent;
 import scw.event.support.DefaultBasicEventDispatcher;
 import scw.io.ClassPathResource;
 import scw.io.ResourceUtils;
-import scw.io.event.MultipleObservableProperties;
+import scw.io.event.ObservablesProperties;
 
 public class LoggerLevelManager implements Converter<Properties, TreeMap<String, Level>>{
 	public static final Map<String, Level> DEFAULT_LEVEL_MAP;
@@ -62,17 +62,18 @@ public class LoggerLevelManager implements Converter<Properties, TreeMap<String,
 	private final Level defaultLevel;
 	private final BasicEventDispatcher<BasicEvent> eventDispatcher = new DefaultBasicEventDispatcher<BasicEvent>(
 			true);
-	private final MultipleObservableProperties properties = new MultipleObservableProperties(true);
+	private final ObservablesProperties properties = new ObservablesProperties(true);
 	private final Observable<TreeMap<String, Level>> levelMap = new ObservableConvert<Properties, TreeMap<String, Level>>(properties, this);
 
 	private LoggerLevelManager(Level defaultLevel) {
 		this.defaultLevel = defaultLevel;
-		properties.registerListener(new EventListener<ObservableEvent<Properties>>() {
+		levelMap.registerListener(false, new EventListener<ChangeEvent<TreeMap<String, Level>>>() {
 			
-			public void onEvent(ObservableEvent<Properties> event) {
+			public void onEvent(ChangeEvent<TreeMap<String, Level>> event) {
 				eventDispatcher.publishEvent(new BasicEvent());
 			}
 		});
+		levelMap.register();
 	}
 
 	public Observable<Properties> loadProperties(String resource) {
@@ -137,6 +138,10 @@ public class LoggerLevelManager implements Converter<Properties, TreeMap<String,
 				: Collections.unmodifiableMap(levelMap.get()));
 	}
 
+	/**
+	 * 当配置发生变更时的事件分发
+	 * @return
+	 */
 	public BasicEventDispatcher<BasicEvent> getEventDispatcher() {
 		return eventDispatcher;
 	}

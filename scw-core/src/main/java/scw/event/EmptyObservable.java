@@ -7,7 +7,7 @@ public final class EmptyObservable<T> extends AbstractObservable<T> {
 	}
 
 	public EventRegistration registerListener(boolean exists,
-			EventListener<ObservableEvent<T>> eventListener) {
+			EventListener<ChangeEvent<T>> eventListener) {
 		return EventRegistration.EMPTY;
 	}
 }

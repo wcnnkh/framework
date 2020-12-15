@@ -9,17 +9,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<junit.version>4.12</junit.version>
-		<freemarker.version>2.3.23</freemarker.version>
 		<commons-fileupload.version>1.3.3</commons-fileupload.version>
-		<jxl.version>2.4.2</jxl.version>
-		<jedis.version>3.1.0</jedis.version>
-		<xmemcached.version>2.4.6</xmemcached.version>
-		<fastjson.version>1.2.61</fastjson.version>
-		<amqp-client.version>5.7.3</amqp-client.version>
-		<jstl.version>1.2</jstl.version>
-		<mysql-connector-java.version>8.0.16</mysql-connector-java.version>
-		<lucene.version>8.5.1</lucene.version>
-		<poi.version>4.1.2</poi.version>
 	</properties>
 
 	<dependencyManagement>
@@ -209,6 +199,12 @@
 				<artifactId>scw-freemarker</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-mail</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -264,214 +260,11 @@
 				<version>1.0.0</version>
 			</dependency>
 
-			<!-- 分割线 -->
-			<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>2.13.2</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/log4j/log4j -->
-			<dependency>
-				<groupId>log4j</groupId>
-				<artifactId>log4j</artifactId>
-				<version>1.2.17</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.freemarker</groupId>
-				<artifactId>freemarker</artifactId>
-				<version>${freemarker.version}</version>
-			</dependency>
-
 			<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
 			<dependency>
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
 				<version>${commons-fileupload.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>redis.clients</groupId>
-				<artifactId>jedis</artifactId>
-				<version>${jedis.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.googlecode.xmemcached/xmemcached -->
-			<dependency>
-				<groupId>com.googlecode.xmemcached</groupId>
-				<artifactId>xmemcached</artifactId>
-				<version>${xmemcached.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
-			<dependency>
-				<groupId>com.alibaba</groupId>
-				<artifactId>fastjson</artifactId>
-				<version>${fastjson.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.rabbitmq</groupId>
-				<artifactId>amqp-client</artifactId>
-				<version>${amqp-client.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.8.5</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java -->
-			<dependency>
-				<groupId>com.google.protobuf</groupId>
-				<artifactId>protobuf-java</artifactId>
-				<version>3.6.1</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.esotericsoftware/kryo -->
-			<dependency>
-				<groupId>com.esotericsoftware</groupId>
-				<artifactId>kryo</artifactId>
-				<version>4.0.2</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-core -->
-			<dependency>
-				<groupId>com.dyuproject.protostuff</groupId>
-				<artifactId>protostuff-core</artifactId>
-				<version>1.1.3</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.dyuproject.protostuff/protostuff-runtime -->
-			<dependency>
-				<groupId>com.dyuproject.protostuff</groupId>
-				<artifactId>protostuff-runtime</artifactId>
-				<version>1.1.3</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
-			<dependency>
-				<groupId>com.caucho</groupId>
-				<artifactId>hessian</artifactId>
-				<version>4.0.60</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.alibaba</groupId>
-				<artifactId>druid</artifactId>
-				<version>1.1.14</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
-			<dependency>
-				<groupId>com.zaxxer</groupId>
-				<artifactId>HikariCP</artifactId>
-				<version>3.3.1</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/javax.websocket/javax.websocket-api -->
-			<dependency>
-				<groupId>javax.websocket</groupId>
-				<artifactId>javax.websocket-api</artifactId>
-				<version>1.1</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<!-- 非core的引用 -->
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-log4j12</artifactId>
-				<version>1.7.30</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/jexcelapi/jxl -->
-			<dependency>
-				<groupId>jexcelapi</groupId>
-				<artifactId>jxl</artifactId>
-				<version>${jxl.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>jstl</artifactId>
-				<version>${jstl.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-			<dependency>
-				<groupId>javax.servlet</groupId>
-				<artifactId>javax.servlet-api</artifactId>
-				<version>3.0.1</version>
-				<scope>provided</scope>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/javax.mail/javax.mail-api -->
-			<dependency>
-				<groupId>javax.mail</groupId>
-				<artifactId>javax.mail-api</artifactId>
-				<version>1.6.2</version>
-			</dependency>
-
-			<!-- hiberante相关 -->
-			<!-- https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-core -->
-			<dependency>
-				<groupId>org.hibernate.orm</groupId>
-				<artifactId>hibernate-core</artifactId>
-				<version>6.0.0.Alpha4</version>
-			</dependency>
-
-			<!-- mybatis相关 -->
-			<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
-			<dependency>
-				<groupId>org.mybatis</groupId>
-				<artifactId>mybatis</artifactId>
-				<version>3.4.6</version>
-			</dependency>
-
-			<!-- lucene相关 -->
-			<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-core -->
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-core</artifactId>
-				<version>${lucene.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.lucene</groupId>
-				<artifactId>lucene-queryparser</artifactId>
-				<version>${lucene.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/com.janeluo/ikanalyzer -->
-			<dependency>
-				<groupId>com.janeluo</groupId>
-				<artifactId>ikanalyzer</artifactId>
-				<version>2012_u6</version>
-			</dependency>
-			<!-- lucene相关 -->
-
-			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-csv</artifactId>
-				<version>1.4</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.apache.poi</groupId>
-				<artifactId>poi</artifactId>
-				<version>${poi.version}</version>
-			</dependency>
-
-			<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
-			<dependency>
-				<groupId>org.apache.poi</groupId>
-				<artifactId>poi-ooxml</artifactId>
-				<version>${poi.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -576,5 +369,6 @@
 		<module>scw-yaml</module>
 		<module>scw-log4j</module>
 		<module>scw-log4j2</module>
+		<module>scw-mail</module>
 	</modules>
 </project>

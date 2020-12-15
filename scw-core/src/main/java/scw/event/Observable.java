@@ -1,6 +1,6 @@
 package scw.event;
 
-public interface Observable<T> extends EventRegistration, BasicEventRegistry<ObservableEvent<T>>{
+public interface Observable<T> extends EventRegistration, BasicEventRegistry<ChangeEvent<T>>{
 	T get();
 	
 	T forceGet();
@@ -20,5 +20,5 @@ public interface Observable<T> extends EventRegistration, BasicEventRegistry<Obs
 	 * @param eventListener
 	 * @return
 	 */
-	EventRegistration registerListener(boolean exists, EventListener<ObservableEvent<T>> eventListener);
+	EventRegistration registerListener(boolean exists, EventListener<ChangeEvent<T>> eventListener);
 }

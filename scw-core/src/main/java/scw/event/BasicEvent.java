@@ -5,29 +5,19 @@ import scw.mapper.MapperUtils;
 
 public class BasicEvent implements Event {
 	private final long createTime;
-	private final EventType eventType;
 	
-	public BasicEvent() {
-		this(EventType.UPDATE);
-	}
-
-	public BasicEvent(EventType eventType) {
-		this(eventType, System.currentTimeMillis());
+	public BasicEvent(){
+		this(System.currentTimeMillis());
 	}
 
 	public BasicEvent(BasicEvent basicEvent) {
-		this(basicEvent.eventType, basicEvent.createTime);
+		this(basicEvent.createTime);
 	}
 
-	public BasicEvent(EventType eventType, long createTime) {
-		this.eventType = eventType;
+	public BasicEvent(long createTime) {
 		this.createTime = createTime;
 	}
 	
-	public EventType getEventType() {
-		return eventType;
-	}
-
 	public final long getCreateTime() {
 		return createTime;
 	}

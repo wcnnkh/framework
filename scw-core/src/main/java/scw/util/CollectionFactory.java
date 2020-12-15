@@ -452,11 +452,20 @@ public final class CollectionFactory {
 	}
 
 	public static <E> List<E> createArrayList(boolean concurrent) {
-		return concurrent ? new CopyOnWriteArrayList<E>() : new ArrayList<E>();
+		return createArrayList(concurrent, 16);
 	}
-
+	
+	public static <E> List<E> createArrayList(boolean concurrent, int initialCapacity) {
+		return concurrent ? new CopyOnWriteArrayList<E>() : new ArrayList<E>(initialCapacity);
+	}
+	
 	public static <E> Set<E> createSet(boolean concurrent) {
 		return concurrent ? new CopyOnWriteArraySet<E>()
 				: new LinkedHashSet<E>();
+	}
+
+	public static <E> Set<E> createSet(boolean concurrent, int initialCapacity) {
+		return concurrent ? new CopyOnWriteArraySet<E>()
+				: new LinkedHashSet<E>(initialCapacity);
 	}
 }

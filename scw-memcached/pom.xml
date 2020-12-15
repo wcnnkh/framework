@@ -7,6 +7,9 @@
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>scw-memcached</artifactId>
+	<properties>
+		<xmemcached.version>2.4.6</xmemcached.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
@@ -17,6 +20,7 @@
 		<dependency>
 			<groupId>com.googlecode.xmemcached</groupId>
 			<artifactId>xmemcached</artifactId>
+			<version>${xmemcached.version}</version>
 		</dependency>
 	</dependencies>
 </project>

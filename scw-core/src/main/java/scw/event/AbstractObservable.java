@@ -2,7 +2,7 @@ package scw.event;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractObservable<T> implements Observable<T>, EventListener<ObservableEvent<T>>{
+public abstract class AbstractObservable<T> implements Observable<T>, EventListener<ChangeEvent<T>>{
 	private volatile T value;
 	private volatile EventRegistration eventRegistration;
 	private volatile AtomicBoolean registered = new AtomicBoolean(false);
@@ -47,11 +47,11 @@ public abstract class AbstractObservable<T> implements Observable<T>, EventListe
 	}
 	
 	public EventRegistration registerListener(
-			EventListener<ObservableEvent<T>> eventListener) {
+			EventListener<ChangeEvent<T>> eventListener) {
 		return registerListener(true, eventListener);
 	}
 	
-	public void onEvent(ObservableEvent<T> event) {
+	public void onEvent(ChangeEvent<T> event) {
 		set(forceGet());
 	}
 }

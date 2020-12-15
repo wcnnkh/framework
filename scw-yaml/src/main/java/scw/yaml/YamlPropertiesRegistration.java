@@ -21,9 +21,14 @@ public class YamlPropertiesRegistration implements PropertiesRegistration {
 
 	public Observable<Properties> getProperties() {
 		if (ResourceUtils.getResourceOperations().isExist(CONFIGURATION)) {
-			return new ObservableYamlProperties(ResourceUtils
-					.getResourceOperations().getResources(CONFIGURATION));
+			Observable<Properties> properies = new YamlProperties(CONFIGURATION);
+			properies.register();
+			return properies;
 		}
 		return null;
+	}
+
+	public boolean isAutoRefresh() {
+		return true;
 	}
 }

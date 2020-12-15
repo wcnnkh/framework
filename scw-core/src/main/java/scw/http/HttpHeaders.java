@@ -30,7 +30,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.event.Observable;
 import scw.event.ObservableConvert;
-import scw.io.event.MultipleObservableProperties;
+import scw.io.event.ObservablesProperties;
 import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -513,7 +513,7 @@ public class HttpHeaders extends Headers {
 	private static final Observable<Map<String, String[]>> AJAX_HEADERS;
 	
 	static {
-		MultipleObservableProperties properties = new MultipleObservableProperties(false);
+		ObservablesProperties properties = new ObservablesProperties(false);
 		properties.loadProperties("/scw/net/headers/ajax.headers.properties");
 		properties.loadProperties(GlobalPropertyFactory.getInstance().getValue("scw.net.ajax.headers", String.class,
 				"/ajax-headers.properties")).register();

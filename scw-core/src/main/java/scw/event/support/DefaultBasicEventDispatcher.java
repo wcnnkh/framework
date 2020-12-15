@@ -11,12 +11,28 @@ import scw.lang.AlreadyExistsException;
 import scw.util.CollectionFactory;
 
 public class DefaultBasicEventDispatcher<T extends Event> implements BasicEventDispatcher<T> {
-	private final Collection<EventRegistrationInternal> eventListeners;
+	private volatile Collection<EventRegistrationInternal> eventListeners;
 	private final boolean concurrent;
-
+	private final int initialCapacity;
+	
 	public DefaultBasicEventDispatcher(boolean concurrent) {
+		this(concurrent, 8);
+	}
+
+	public DefaultBasicEventDispatcher(boolean concurrent, int initialCapacity) {
 		this.concurrent = concurrent;
-		this.eventListeners = CollectionFactory.createSet(concurrent);
+		this.initialCapacity = initialCapacity;
+	}
+
+	public Collection<EventRegistrationInternal> getEventListeners() {
+		if(eventListeners == null){
+			synchronized (this) {
+				if(eventListeners == null){
+					this.eventListeners = CollectionFactory.createSet(concurrent, initialCapacity);
+				}
+			}
+		}
+		return eventListeners;
 	}
 
 	public final boolean isConcurrent() {
@@ -27,18 +43,18 @@ public class DefaultBasicEventDispatcher<T extends Event> implements BasicEventD
 		Assert.requiredArgument(eventListener != null, "eventListener");
 
 		EventRegistration eventRegistration = new EventRegistrationInternal(eventListener);
-		if (eventListeners.contains(eventRegistration)) {
+		if (getEventListeners().contains(eventRegistration)) {
 			throw new AlreadyExistsException(eventRegistration.toString());
 		}
 
-		eventListeners.add(new EventRegistrationInternal(eventListener));
+		getEventListeners().add(new EventRegistrationInternal(eventListener));
 		return eventRegistration;
 	}
 
 	public void publishEvent(T event) {
 		Assert.requiredArgument(event != null, "event");
 
-		for (EventRegistrationInternal registrationInternal : eventListeners) {
+		for (EventRegistrationInternal registrationInternal : getEventListeners()) {
 			registrationInternal.getEventListener().onEvent(event);
 		}
 	}
@@ -51,7 +67,7 @@ public class DefaultBasicEventDispatcher<T extends Event> implements BasicEventD
 		}
 
 		public void unregister() {
-			eventListeners.remove(this);
+			getEventListeners().remove(this);
 		}
 
 		public EventListener<T> getEventListener() {

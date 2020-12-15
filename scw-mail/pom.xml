@@ -6,26 +6,16 @@
 		<artifactId>scw</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>scw-freemarker</artifactId>
-	<properties>
-		<freemarker.version>2.3.23</freemarker.version>
-	</properties>
+	<artifactId>scw-mail</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-core</artifactId>
 		</dependency>
-		
 		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-			<version>${freemarker.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-mvc</artifactId>
-			<scope>provided</scope>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.6.2</version>
 		</dependency>
 	</dependencies>
 </project>

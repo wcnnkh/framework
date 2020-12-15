@@ -8,13 +8,19 @@ import scw.event.NamedEventDispatcher;
 import scw.util.CollectionFactory;
 import scw.util.GenericMap;
 
-public class DefaultNamedEventDispatcher<K, T extends Event> implements NamedEventDispatcher<K, T> {
-	private final GenericMap<K, BasicEventDispatcher<T>> namedEventListenerMap;
+public class DefaultNamedEventDispatcher<K, T extends Event> implements
+		NamedEventDispatcher<K, T> {
+	private volatile GenericMap<K, BasicEventDispatcher<T>> namedEventListenerMap;
 	private final boolean concurrent;
+	private final int initialCapacity;
 
 	public DefaultNamedEventDispatcher(boolean concurrent) {
+		this(concurrent, 8);
+	}
+
+	public DefaultNamedEventDispatcher(boolean concurrent, int initialCapacity) {
 		this.concurrent = concurrent;
-		this.namedEventListenerMap = CollectionFactory.createHashMap(concurrent);
+		this.initialCapacity = initialCapacity;
 	}
 
 	public final boolean isConcurrent() {
@@ -22,6 +28,14 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements NamedEve
 	}
 
 	public GenericMap<K, BasicEventDispatcher<T>> getNamedEventListenerMap() {
+		if (namedEventListenerMap == null) {
+			synchronized (this) {
+				if (namedEventListenerMap == null) {
+					this.namedEventListenerMap = CollectionFactory
+							.createHashMap(concurrent, initialCapacity);
+				}
+			}
+		}
 		return namedEventListenerMap;
 	}
 
@@ -29,11 +43,14 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements NamedEve
 		return new DefaultBasicEventDispatcher<T>(isConcurrent());
 	}
 
-	public EventRegistration registerListener(K name, EventListener<T> eventListener) {
-		BasicEventDispatcher<T> eventDispatcher = namedEventListenerMap.get(name);
+	public EventRegistration registerListener(K name,
+			EventListener<T> eventListener) {
+		BasicEventDispatcher<T> eventDispatcher = getNamedEventListenerMap()
+				.get(name);
 		if (eventDispatcher == null) {
 			eventDispatcher = createBasicEventDispatcher(name);
-			BasicEventDispatcher<T> dispatcher = namedEventListenerMap.putIfAbsent(name, eventDispatcher);
+			BasicEventDispatcher<T> dispatcher = getNamedEventListenerMap()
+					.putIfAbsent(name, eventDispatcher);
 			if (dispatcher != null) {
 				eventDispatcher = dispatcher;
 			}
@@ -43,7 +60,8 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements NamedEve
 	}
 
 	public void publishEvent(K name, T event) {
-		BasicEventDispatcher<T> dispatcher = namedEventListenerMap.get(name);
+		BasicEventDispatcher<T> dispatcher = getNamedEventListenerMap().get(
+				name);
 		if (dispatcher == null) {
 			return;
 		}

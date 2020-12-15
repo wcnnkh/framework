@@ -9,13 +9,14 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.event.EventType;
 import scw.io.Resource;
 import scw.lang.RequiredJavaVersion;
-import scw.util.KeyValuePair;
 
 /**
  * 使用WatchService实现resource监听<br/>
@@ -78,22 +79,13 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 		super(resource, listenerPeriod);
 	}
 
-	private volatile boolean isRegisterWatchService = false;
-
+	private AtomicBoolean registred = new AtomicBoolean();
 	private boolean watchServiceRegister() {
 		if (WATCH_SERVICE == null) {
 			return false;
 		}
-
-		if (isRegisterWatchService) {
-			return false;
-		}
-
-		synchronized (this) {
-			if (isRegisterWatchService) {
-				return false;
-			}
-
+		
+		if(!registred.get() && registred.compareAndSet(false, true)){
 			File file;
 			try {
 				file = getResource().getFile();
@@ -116,18 +108,20 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 				}
 
 				resourceWatchKey.register(file, getResource());
-				isRegisterWatchService = true;
 				return true;
 			} catch (IOException e) {
 				// 如果出现异常就使用默认的方式来实现监听
+				registred.compareAndSet(true, false);
 				return false;
 			}
 		}
+		return false;
 	}
 
 	@Override
 	protected void onChange(ResourceEvent resourceEvent) {
 		if (resourceEvent.getEventType() == EventType.CREATE) {
+			//如果资源创建了，那么尝试重新注册
 			if (watchServiceRegister()) {
 				cancelListener();
 			}
@@ -140,15 +134,52 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 		if (watchServiceRegister()) {
 			return;
 		}
+		//注册失败就使用默认的方式实现
 		super.listener();
+	}
+	
+	private static final class ResourceItem{
+		private final String name;
+		private final Resource resource;
+		
+		public ResourceItem(String name, Resource resource) {
+			this.name = name;
+			this.resource = resource;
+		}
+		
+		public String getName() {
+			return name;
+		}
+
+		public Resource getResource() {
+			return resource;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if(obj == null){
+				return false;
+			}
+			
+			if(obj instanceof ResourceItem){
+				return ((ResourceItem) obj).resource == resource;
+			}
+			
+			return false;
+		}
+		
+		@Override
+		public int hashCode() {
+			return resource.hashCode();
+		}
 	}
 
 	private static class ResourceWatchKey implements Runnable {
 		private WatchKey watchKey;
-		private CopyOnWriteArrayList<KeyValuePair<String, Resource>> resourceList = new CopyOnWriteArrayList<KeyValuePair<String, Resource>>();
+		private final Set<ResourceItem> resources = new CopyOnWriteArraySet<ResourceItem>();
 
 		public void register(File file, Resource resource) {
-			resourceList.add(new KeyValuePair<String, Resource>(file.getName(), resource));
+			resources.add(new ResourceItem(file.getName(), resource));
 		}
 
 		public void setWatchKey(WatchKey watchKey) {
@@ -159,14 +190,14 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 			if (watchKey == null || !watchKey.isValid()) {
 				return;
 			}
-
+			
 			List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
 			for (WatchEvent<?> event : watchEvents) {
 				Object context = event.context();
 				if (!(context instanceof Path)) {
 					continue;
 				}
-
+				
 				Path path = (Path) context;
 				EventType eventType = null;
 				if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
@@ -181,13 +212,11 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 				}
 
 				File file = path.toFile();
-				for (KeyValuePair<String, Resource> keyValuePair : resourceList) {
-					if (file.getName().equals(keyValuePair.getKey())) {
-						keyValuePair.getValue().getEventDispatcher()
-								.publishEvent(new ResourceEvent(eventType, keyValuePair.getValue()));
+				for(ResourceItem item : resources){
+					if (file.getName().equals(item.getName())) {
+						item.getResource().getEventDispatcher().publishEvent(new ResourceEvent(eventType, item.getResource()));
 					}
-				}
-				;
+				};
 			}
 
 			watchKey.reset();

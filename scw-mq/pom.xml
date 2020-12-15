@@ -7,6 +7,9 @@
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>scw-mq</artifactId>
+	<properties>
+		<amqp-client.version>5.7.3</amqp-client.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
@@ -16,6 +19,7 @@
 		<dependency>
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>
+			<version>${amqp-client.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.slf4j</groupId>

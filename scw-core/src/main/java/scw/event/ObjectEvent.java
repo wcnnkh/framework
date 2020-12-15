@@ -8,24 +8,22 @@ import scw.mapper.MapperUtils;
 public class ObjectEvent<T> extends EventObject implements Event {
 	private static final long serialVersionUID = 1L;
 	private final long createTime;
-	private final EventType eventType;
-	
-	public ObjectEvent(T source) {
-		this(EventType.UPDATE, source);
+
+	public ObjectEvent(ObjectEvent<T> event) {
+		this(event.getSource(), event.createTime);
 	}
 
-	public ObjectEvent(EventType eventType, T source) {
+	public ObjectEvent(T source) {
+		this(source, System.currentTimeMillis());
+	}
+
+	public ObjectEvent(T source, long createTime) {
 		super(source);
-		this.eventType = eventType;
-		this.createTime = System.currentTimeMillis();
+		this.createTime = createTime;
 	}
 
 	public long getCreateTime() {
 		return createTime;
-	}
-	
-	public EventType getEventType() {
-		return eventType;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -36,6 +34,7 @@ public class ObjectEvent<T> extends EventObject implements Event {
 
 	@Override
 	public String toString() {
-		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <" + MapperUtils.getMapper().toString(this) + ">";
+		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <"
+				+ MapperUtils.getMapper().toString(this) + ">";
 	}
 }

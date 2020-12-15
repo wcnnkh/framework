@@ -10,4 +10,6 @@ public interface PropertiesRegistration {
 	boolean isFormat();
 
 	Observable<Properties> getProperties();
+	
+	boolean isAutoRefresh();
 }
