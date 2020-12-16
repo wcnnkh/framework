@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.utils.CollectionUtils;
-import scw.event.AbstractObservableConvert;
+import scw.event.ConvertibleObservable;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
@@ -23,7 +23,7 @@ import scw.value.StringValue;
 import scw.value.Value;
 
 public class PropertiesPropertyFactory extends
-		AbstractObservableConvert<Properties, Map<String, Value>> implements
+		ConvertibleObservable<Properties, Map<String, Value>> implements
 		BasePropertyFactory {
 	private final NamedEventDispatcher<String, PropertyEvent> eventDispatcher;
 	private final ValueCreator valueCreator;

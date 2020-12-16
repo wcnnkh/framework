@@ -410,23 +410,13 @@ public class PropertyFactory extends StringValueFactory implements
 			this.name = name;
 			this.type = type;
 			this.defaultValue = defaultValue;
+			setRegisterOnlyExists(false);
 			register();
 		}
 
 		@SuppressWarnings("unchecked")
 		public T forceGet() {
 			return (T) PropertyFactory.this.getValue(name, type, defaultValue);
-		}
-
-		@Override
-		public boolean register() {
-			return register(false);
-		}
-
-		@Override
-		public EventRegistration registerListener(
-				EventListener<ChangeEvent<T>> eventListener) {
-			return registerListener(false, eventListener);
 		}
 
 		public EventRegistration registerListener(boolean exists,
@@ -438,8 +428,7 @@ public class PropertyFactory extends StringValueFactory implements
 			return PropertyFactory.this.registerListener(name,
 					new EventListener<PropertyEvent>() {
 						public void onEvent(PropertyEvent event) {
-							eventListener.onEvent(new ChangeEvent<T>(event
-									.getEventType(), forceGet()));
+							eventListener.onEvent(new ChangeEvent<T>(event, forceGet()));
 						}
 					});
 		}

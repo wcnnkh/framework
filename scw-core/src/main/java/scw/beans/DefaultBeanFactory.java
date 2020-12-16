@@ -49,7 +49,6 @@ import scw.logger.LoggerUtils;
 import scw.util.Accept;
 import scw.util.ClassScanner;
 import scw.util.JavaVersion;
-import scw.value.Value;
 import scw.value.property.BasePropertyFactory;
 import scw.value.property.PropertyFactory;
 
@@ -556,10 +555,7 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 				continue;
 			}
 			
-			Observable<Map<String, Value>> observable = propertyFactory.loadProperties(properties, registration.getPrefix(), registration.isFormat());
-			if(registration.isAutoRefresh()){
-				observable.register();
-			}
+			propertyFactory.loadProperties(properties, registration.getPrefix(), registration.isFormat());
 		}
 		
 		propertyFactory.addLastBasePropertyFactory(

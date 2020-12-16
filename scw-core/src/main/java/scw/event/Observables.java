@@ -3,6 +3,7 @@ package scw.event;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -10,27 +11,34 @@ import scw.core.utils.CollectionUtils;
 import scw.event.support.DefaultBasicEventDispatcher;
 import scw.util.CollectionFactory;
 
-public abstract class Observables<T> extends
-		AbstractObservable<T> {
+public abstract class Observables<T> extends AbstractObservable<T> {
 	private final AtomicReference<BasicEventDispatcher<ChangeEvent<T>>> existsDispatcher = new AtomicReference<BasicEventDispatcher<ChangeEvent<T>>>();
 	private final AtomicReference<BasicEventDispatcher<ChangeEvent<T>>> notExistsDispatcher = new AtomicReference<BasicEventDispatcher<ChangeEvent<T>>>();
-	private final List<ObservableRegistion> observables;
+	private final Set<ObservableRegistion> observables;
 
 	private final boolean concurrent;
 
 	public Observables(boolean concurrent) {
 		this.concurrent = concurrent;
-		this.observables = CollectionFactory.createArrayList(concurrent);
+		this.observables = CollectionFactory.createSet(concurrent);
 	}
 
 	public boolean isConcurrent() {
 		return concurrent;
 	}
 
-	public void addObservable(Observable<T> observable) {
-		this.observables.add(new ObservableRegistion(observable));
+	public boolean addObservable(Observable<T> observable) {
+		if(this.observables.add(new ObservableRegistion(observable))){
+			ChangeEvent<T> event = new ChangeEvent<T>(EventType.CREATE, forceGet());
+			onEvent(event);
+			onEvent(event, false);
+			onEvent(event, true);
+			observable.getRegistry().registerListener(new ObservableSyncListener<T, T>(this, true, this));
+			return true;
+		}
+		return false;
 	}
-
+	
 	public T forceGet() {
 		List<T> list;
 		if (CollectionUtils.isEmpty(observables)) {
@@ -54,7 +62,7 @@ public abstract class Observables<T> extends
 		if (dispatcher == null) {
 			dispatcher = new DefaultBasicEventDispatcher<ChangeEvent<T>>(
 					isConcurrent());
-			while (dispatcherReference.compareAndSet(null, dispatcher)) {
+			while (dispatcherReference.get() == null && dispatcherReference.compareAndSet(null, dispatcher)) {
 				break;
 			}
 			dispatcher = dispatcherReference.get();
@@ -97,10 +105,42 @@ public abstract class Observables<T> extends
 		public Observable<T> getObservable() {
 			return observable;
 		}
+		
+		@Override
+		public int hashCode() {
+			return observable.hashCode();
+		}
+		
+		@SuppressWarnings("rawtypes")
+		@Override
+		public boolean equals(Object obj) {
+			if(obj == null){
+				return false;
+			}
+			
+			if(obj instanceof Observables.ObservableRegistion){
+				return ((Observables.ObservableRegistion) obj).observable == this.observable;
+			}
+			
+			return false;
+		}
+	}
+	
+	private void onEvent(ChangeEvent<T> event, boolean exists){
+		BasicEventDispatcher<ChangeEvent<T>> dispatcher;
+		if (exists) {
+			dispatcher = Observables.this.existsDispatcher.get();
+		} else {
+			dispatcher = Observables.this.notExistsDispatcher.get();
+		}
+		
+		if(dispatcher == null){
+			return ;
+		}
+		dispatcher.publishEvent(event);
 	}
 
-	private final class ObservableItem implements
-			EventListener<ChangeEvent<T>> {
+	private final class ObservableItem implements EventListener<ChangeEvent<T>> {
 		private final AtomicBoolean registered = new AtomicBoolean();
 		private Observable<T> observable;
 		private boolean exists;
@@ -127,18 +167,7 @@ public abstract class Observables<T> extends
 		}
 
 		public void onEvent(ChangeEvent<T> event) {
-			BasicEventDispatcher<ChangeEvent<T>> dispatcher;
-			if (exists) {
-				dispatcher = Observables.this.existsDispatcher
-						.get();
-			} else{
-				dispatcher = Observables.this.notExistsDispatcher
-						.get();
-			}
-
-			ChangeEvent<T> eventToUse = new ChangeEvent<T>(
-					event.getEventType(), forceGet());
-			dispatcher.publishEvent(eventToUse);
+			Observables.this.onEvent(new ChangeEvent<T>(event, forceGet()), exists);
 		}
 	}
 }

@@ -21,8 +21,7 @@ public abstract class AbstractObservableResource<T> extends
 		return resource.getEventDispatcher().registerListener(
 				new EventListener<ResourceEvent>() {
 					public void onEvent(ResourceEvent event) {
-						eventListener.onEvent(new ChangeEvent<T>(event
-								.getEventType(), forceGet()));
+						eventListener.onEvent(new ChangeEvent<T>(event, forceGet()));
 					}
 				});
 	}

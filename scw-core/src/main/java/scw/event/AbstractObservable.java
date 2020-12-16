@@ -2,26 +2,35 @@ package scw.event;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class AbstractObservable<T> implements Observable<T>, EventListener<ChangeEvent<T>>{
+import scw.event.support.DefaultBasicEventDispatcher;
+
+public abstract class AbstractObservable<T> implements Observable<T>,
+		EventListener<ChangeEvent<T>> {
+	private BasicEventDispatcher<ChangeEvent<T>> dispatcher = new DefaultBasicEventDispatcher<ChangeEvent<T>>(
+			true);
 	private volatile T value;
 	private volatile EventRegistration eventRegistration;
 	private volatile AtomicBoolean registered = new AtomicBoolean(false);
 	private volatile AtomicBoolean firstGet = new AtomicBoolean(false);
-	
-	public void unregister() {
-		if(eventRegistration != null && registered.compareAndSet(true, false)){
+	private boolean registerOnlyExists = true;
+
+	public boolean unregister() {
+		if (eventRegistration != null && registered.compareAndSet(true, false)) {
 			eventRegistration.unregister();
 			eventRegistration = null;
+			return true;
 		}
+		return false;
 	}
 
 	public T get() {
-		if(value == null && !firstGet.get() && firstGet.compareAndSet(false, true)){
+		if (value == null && !firstGet.get()
+				&& firstGet.compareAndSet(false, true)) {
 			set(forceGet());
 		}
 		return value;
 	}
-	
+
 	protected void set(T value) {
 		this.value = value;
 	}
@@ -29,29 +38,46 @@ public abstract class AbstractObservable<T> implements Observable<T>, EventListe
 	public boolean isRegistered() {
 		return registered.get();
 	}
-	
-	public boolean register() {
-		return register(true);
+
+	public boolean isRegisterOnlyExists() {
+		return registerOnlyExists;
+	}
+
+	public void setRegisterOnlyExists(boolean registerOnlyExists) {
+		this.registerOnlyExists = registerOnlyExists;
+	}
+
+	/**
+	 * @see #isRegisterOnlyExists()
+	 * @see #register(boolean)
+	 */
+	public final boolean register() {
+		return register(isRegisterOnlyExists());
 	}
 
 	public boolean register(boolean exists) {
-		if(isRegistered()){
+		if (isRegistered()) {
 			return false;
 		}
-		
-		if(registered.compareAndSet(false, true)){
+
+		if (registered.compareAndSet(false, true)) {
 			eventRegistration = registerListener(exists, this);
 			return true;
 		}
 		return false;
 	}
-	
-	public EventRegistration registerListener(
-			EventListener<ChangeEvent<T>> eventListener) {
-		return registerListener(true, eventListener);
+
+	public BasicEventRegistry<ChangeEvent<T>> getRegistry() {
+		return dispatcher;
 	}
-	
+
+	public final EventRegistration registerListener(
+			EventListener<ChangeEvent<T>> eventListener) {
+		return registerListener(isRegisterOnlyExists(), eventListener);
+	}
+
 	public void onEvent(ChangeEvent<T> event) {
-		set(forceGet());
+		set(event.getSource());
+		dispatcher.publishEvent(event);
 	}
 }
