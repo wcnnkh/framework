@@ -1,9 +1,11 @@
 package scw.event;
 
-public interface Observable<T> extends EventRegistration, BasicEventRegistry<ObservableEvent<T>>{
+public interface Observable<T> extends BasicEventRegistry<ChangeEvent<T>>{
 	T get();
 	
 	T forceGet();
+	
+	boolean unregister();
 	
 	boolean isRegistered();
 	
@@ -15,10 +17,7 @@ public interface Observable<T> extends EventRegistration, BasicEventRegistry<Obs
 	 */
 	boolean register(boolean exists);
 	
-	/**
-	 * @param exists true表示仅当存在时才注册
-	 * @param eventListener
-	 * @return
-	 */
-	EventRegistration registerListener(boolean exists, EventListener<ObservableEvent<T>> eventListener);
+	BasicEventRegistry<ChangeEvent<T>> getRegistry();
+	
+	EventRegistration registerListener(boolean exists, EventListener<ChangeEvent<T>> eventListener);
 }

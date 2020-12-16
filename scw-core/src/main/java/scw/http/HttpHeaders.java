@@ -23,14 +23,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import scw.core.Assert;
-import scw.core.Converter;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.event.Observable;
-import scw.event.ObservableConvert;
-import scw.io.event.MultipleObservableProperties;
+import scw.io.event.ConvertibleObservablesProperties;
 import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -510,43 +507,41 @@ public class HttpHeaders extends Headers {
 
 	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 	
-	private static final Observable<Map<String, String[]>> AJAX_HEADERS;
+	private static final ConvertibleObservablesProperties<Map<String, String[]>> AJAX_HEADERS = new ConvertibleObservablesProperties<Map<String, String[]>>(false) {
+
+		public Map<String, String[]> convert(Properties properties) {
+			if(CollectionUtils.isEmpty(properties)){
+				return Collections.emptyMap();
+			}
+			
+			LinkedHashMap<String, String[]> map = new LinkedHashMap<String, String[]>();
+			for(Entry<Object, Object> entry : properties.entrySet()){
+				Object key = entry.getKey();
+				Object value = entry.getValue();
+				if(key == null || value == null){
+					continue;
+				}
+				
+				String[] values = StringUtils.commonSplit(String.valueOf(value));
+				if(ArrayUtils.isEmpty(values)){
+					continue;
+				}
+				
+				map.put(String.valueOf(key), values);
+			}
+			
+			if(map.isEmpty()){
+				return Collections.emptyMap();
+			}
+			
+			return Collections.unmodifiableMap(map);
+		}
+	};
 	
 	static {
-		MultipleObservableProperties properties = new MultipleObservableProperties(false);
-		properties.loadProperties("/scw/net/headers/ajax.headers.properties");
-		properties.loadProperties(GlobalPropertyFactory.getInstance().getValue("scw.net.ajax.headers", String.class,
+		AJAX_HEADERS.loadProperties("/scw/net/headers/ajax.headers.properties");
+		AJAX_HEADERS.loadProperties(GlobalPropertyFactory.getInstance().getValue("scw.net.ajax.headers", String.class,
 				"/ajax-headers.properties")).register();
-		AJAX_HEADERS = new ObservableConvert<Properties, Map<String, String[]>>(properties, new Converter<Properties, Map<String, String[]>>() {
-
-			public Map<String, String[]> convert(Properties properties) {
-				if(CollectionUtils.isEmpty(properties)){
-					return Collections.emptyMap();
-				}
-				
-				LinkedHashMap<String, String[]> map = new LinkedHashMap<String, String[]>();
-				for(Entry<Object, Object> entry : properties.entrySet()){
-					Object key = entry.getKey();
-					Object value = entry.getValue();
-					if(key == null || value == null){
-						continue;
-					}
-					
-					String[] values = StringUtils.commonSplit(String.valueOf(value));
-					if(ArrayUtils.isEmpty(values)){
-						continue;
-					}
-					
-					map.put(String.valueOf(key), values);
-				}
-				
-				if(map.isEmpty()){
-					return Collections.emptyMap();
-				}
-				
-				return Collections.unmodifiableMap(map);
-			}
-		});
 	}
 
 	public HttpHeaders() {

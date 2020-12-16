@@ -5,24 +5,19 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
-import scw.core.Converter;
 import scw.core.GlobalPropertyFactory;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.event.BasicEvent;
-import scw.event.BasicEventDispatcher;
-import scw.event.EventListener;
-import scw.event.Observable;
-import scw.event.ObservableConvert;
-import scw.event.ObservableEvent;
-import scw.event.support.DefaultBasicEventDispatcher;
 import scw.io.ClassPathResource;
 import scw.io.ResourceUtils;
-import scw.io.event.MultipleObservableProperties;
+import scw.io.event.ConvertibleObservablesProperties;
 
-public class LoggerLevelManager implements Converter<Properties, TreeMap<String, Level>>{
-	public static final Map<String, Level> DEFAULT_LEVEL_MAP;
+public class LoggerLevelManager extends
+		ConvertibleObservablesProperties<SortedMap<String, Level>> {
+	public static final SortedMap<String, Level> DEFAULT_LEVEL_MAP;
 
 	private static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
 		public int compare(String o1, String o2) {
@@ -46,13 +41,13 @@ public class LoggerLevelManager implements Converter<Properties, TreeMap<String,
 				"scw/logger/logger-level.properties");
 		Properties properties = new Properties();
 		ResourceUtils.loadProperties(properties, resource, null);
-		DEFAULT_LEVEL_MAP = Collections.unmodifiableMap(parse(properties,
-				defLevel));
+		DEFAULT_LEVEL_MAP = parse(properties, defLevel);
 
 		loggerLevelManager = new LoggerLevelManager(defLevel);
-		loggerLevelManager.loadProperties(GlobalPropertyFactory.getInstance()
-				.getValue("scw.logger.level.config", String.class,
-						"/logger-level.properties"));
+		loggerLevelManager.loadProperties(
+				GlobalPropertyFactory.getInstance().getValue(
+						"scw.logger.level.config", String.class,
+						"/logger-level.properties")).register();
 	}
 
 	public static LoggerLevelManager getInstance() {
@@ -60,27 +55,21 @@ public class LoggerLevelManager implements Converter<Properties, TreeMap<String,
 	}
 
 	private final Level defaultLevel;
-	private final BasicEventDispatcher<BasicEvent> eventDispatcher = new DefaultBasicEventDispatcher<BasicEvent>(
-			true);
-	private final MultipleObservableProperties properties = new MultipleObservableProperties(true);
-	private final Observable<TreeMap<String, Level>> levelMap = new ObservableConvert<Properties, TreeMap<String, Level>>(properties, this);
-
 	private LoggerLevelManager(Level defaultLevel) {
+		super(true);
 		this.defaultLevel = defaultLevel;
-		properties.registerListener(new EventListener<ObservableEvent<Properties>>() {
-			
-			public void onEvent(ObservableEvent<Properties> event) {
-				eventDispatcher.publishEvent(new BasicEvent());
-			}
-		});
 	}
 
-	public Observable<Properties> loadProperties(String resource) {
-		return properties.loadProperties(resource);
+	public SortedMap<String, Level> convert(Properties properties) {
+		return parse(properties, defaultLevel);
 	}
 
-	private static TreeMap<String, Level> parse(Properties properties,
+	private static SortedMap<String, Level> parse(Properties properties,
 			Level defaultLevel) {
+		if (CollectionUtils.isEmpty(properties)) {
+			return Collections.emptySortedMap();
+		}
+
 		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(
 				LEVEL_NAME_COMPARATOR);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
@@ -102,7 +91,11 @@ public class LoggerLevelManager implements Converter<Properties, TreeMap<String,
 
 			levelMap.put(key.toString(), level);
 		}
-		return levelMap;
+
+		if (levelMap.isEmpty()) {
+			return Collections.emptySortedMap();
+		}
+		return Collections.unmodifiableSortedMap(levelMap);
 	}
 
 	public Level getDefaultLevel() {
@@ -124,24 +117,23 @@ public class LoggerLevelManager implements Converter<Properties, TreeMap<String,
 	}
 
 	public Level getLevel(String name) {
-		Level level = levelMap == null ? null : getLevel(levelMap.get(), name);
+		Level level = getLevel(get(), name);
 		if (level == null) {
 			level = getLevel(DEFAULT_LEVEL_MAP, name);
 		}
 		return level == null ? defaultLevel : level;
 	}
 
-	@SuppressWarnings("unchecked")
-	public Map<String, Level> getLevelMap() {
-		return (Map<String, Level>) (levelMap == null ? Collections.emptyMap()
-				: Collections.unmodifiableMap(levelMap.get()));
+	@Override
+	public SortedMap<String, Level> get() {
+		SortedMap<String, Level> map = super.get();
+		if (map == null) {
+			return Collections.emptySortedMap();
+		}
+		return map;
 	}
 
-	public BasicEventDispatcher<BasicEvent> getEventDispatcher() {
-		return eventDispatcher;
-	}
-
-	public TreeMap<String, Level> convert(Properties properties) {
-		return parse(properties, defaultLevel);
+	public SortedMap<String, Level> getLevelMap() {
+		return get();
 	}
 }

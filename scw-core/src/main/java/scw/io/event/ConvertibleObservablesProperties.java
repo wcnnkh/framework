@@ -3,13 +3,13 @@ package scw.io.event;
 import java.util.List;
 import java.util.Properties;
 
-import scw.event.AbstractMultipleObservable;
+import scw.event.ConvertibleObservables;
 import scw.event.Observable;
 import scw.io.ResourceUtils;
 
-public class MultipleObservableProperties extends AbstractMultipleObservable<Properties>{
+public abstract class ConvertibleObservablesProperties<T> extends ConvertibleObservables<Properties, T>{
 
-	public MultipleObservableProperties(boolean concurrent) {
+	public ConvertibleObservablesProperties(boolean concurrent) {
 		super(concurrent);
 	}
 

@@ -554,6 +554,7 @@ public class DefaultBeanFactory extends BeanLifecycle implements BeanFactory, Ac
 			if(properties == null){
 				continue;
 			}
+			
 			propertyFactory.loadProperties(properties, registration.getPrefix(), registration.isFormat());
 		}
 		

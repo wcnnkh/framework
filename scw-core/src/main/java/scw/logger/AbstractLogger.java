@@ -1,6 +1,8 @@
 package scw.logger;
 
-import scw.event.BasicEvent;
+import java.util.SortedMap;
+
+import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 
@@ -29,21 +31,21 @@ public abstract class AbstractLogger implements Logger {
 	 * 
 	 * @return 如果已经注册过了就返回false, 否则返回true
 	 */
-	public boolean registerLevelListener() {
+	public synchronized boolean registerLevelListener() {
 		if (eventRegistration != null) {
 			// 已经注册过吧
 			return false;
 		}
+		
+		eventRegistration = LoggerLevelManager.getInstance().getRegistry().registerListener(new EventListener<ChangeEvent<SortedMap<String,Level>>>() {
 
-		eventRegistration = LoggerLevelManager.getInstance().getEventDispatcher()
-				.registerListener(new EventListener<BasicEvent>() {
-					public void onEvent(BasicEvent event) {
-						Level level = LoggerLevelManager.getInstance().getLevel(getName());
-						if (!level.equals(getLevel())) {
-							setLevel(level);
-						}
-					}
-				});
+			public void onEvent(ChangeEvent<SortedMap<String, Level>> event) {
+				Level level = LoggerLevelManager.getInstance().getLevel(getName());
+				if (!level.equals(getLevel())) {
+					setLevel(level);
+				}
+			}
+		});
 		return true;
 	}
 
@@ -53,7 +55,7 @@ public abstract class AbstractLogger implements Logger {
 
 	public void setLevel(Level level) {
 		//这里使用off是为了任意日志级别都会显示该日志
-		log(Level.OFF, "level change [{}]", level);
+		log(Level.OFF, "Level [{}] change to [{}]", getLevel(), level);
 		this.level = level;
 	}
 

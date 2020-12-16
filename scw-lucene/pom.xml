@@ -7,6 +7,9 @@
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>scw-lucene</artifactId>
+	<properties>
+		<lucene.version>8.5.1</lucene.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
@@ -18,6 +21,70 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-queryparser -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-analyzers-common -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-highlighter -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-highlighter</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-memory -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-memory</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-suggest -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-suggest</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-join -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-join</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-grouping -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-grouping</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-sandbox -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-sandbox</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.janeluo/ikanalyzer -->
+		<dependency>
+			<groupId>com.janeluo</groupId>
+			<artifactId>ikanalyzer</artifactId>
+			<version>2012_u6</version>
 		</dependency>
 		<!-- lucene相关 -->
 	</dependencies>

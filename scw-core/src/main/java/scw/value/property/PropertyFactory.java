@@ -9,19 +9,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.event.AbstractObservable;
+import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.KeyValuePairEvent;
-import scw.event.MultiEventRegistration;
+import scw.event.NamedEventDispatcher;
 import scw.event.Observable;
-import scw.event.ObservableEvent;
 import scw.event.support.ObservableMap;
+import scw.event.support.StringNamedEventDispatcher;
 import scw.io.ResourceUtils;
+import scw.util.CollectionFactory;
 import scw.util.MultiIterator;
 import scw.util.StringMatcher;
 import scw.value.AnyValue;
@@ -32,7 +33,8 @@ import scw.value.ValueWrapper;
 import scw.value.property.PropertiesPropertyFactory.ValueCreator;
 
 public class PropertyFactory extends StringValueFactory implements
-		BasePropertyFactory {
+		BasePropertyFactory, EventListener<PropertyEvent> {
+	private final NamedEventDispatcher<String, PropertyEvent> dispatcher;
 	private final ObservableMap<String, Value> propertyMap;
 	private final List<BasePropertyFactory> basePropertyFactories;
 	private final boolean priorityOfUseSelf;
@@ -43,14 +45,28 @@ public class PropertyFactory extends StringValueFactory implements
 	 *            是否优先使用自身的值
 	 */
 	public PropertyFactory(boolean concurrent, boolean priorityOfUseSelf) {
-		this.propertyMap = new ObservableMap<String, Value>(concurrent);
-		this.basePropertyFactories = concurrent ? new CopyOnWriteArrayList<BasePropertyFactory>()
-				: new LinkedList<BasePropertyFactory>();
+		this.dispatcher = new StringNamedEventDispatcher<PropertyEvent>(concurrent);
+		this.propertyMap = new ObservableMap<String, Value>(concurrent, new StringNamedEventDispatcher<KeyValuePairEvent<String, Value>>(concurrent));
+		this.basePropertyFactories = CollectionFactory.createArrayList(concurrent, 8);
 		this.priorityOfUseSelf = priorityOfUseSelf;
+		this.propertyMap.getEventDispatcher().registerListener("*",  new EventListener<KeyValuePairEvent<String,Value>>() {
+
+			public void onEvent(KeyValuePairEvent<String, Value> event) {
+				PropertyFactory.this.onEvent(new PropertyEvent(PropertyFactory.this, event));
+			}
+		});
+	}
+	
+	public void onEvent(PropertyEvent event) {
+		dispatcher.publishEvent(event.getSource().getKey(), event);
 	}
 
 	public boolean isPriorityOfUseSelf() {
 		return priorityOfUseSelf;
+	}
+	
+	protected void register(BasePropertyFactory propertyFactory){
+		propertyFactory.registerListener("*", this);
 	}
 
 	public void addFirstBasePropertyFactory(
@@ -59,6 +75,7 @@ public class PropertyFactory extends StringValueFactory implements
 			return;
 		}
 
+		register(basePropertyFactory);
 		basePropertyFactories.add(0, basePropertyFactory);
 	}
 
@@ -68,6 +85,7 @@ public class PropertyFactory extends StringValueFactory implements
 			return;
 		}
 
+		register(basePropertyFactory);
 		basePropertyFactories.add(basePropertyFactory);
 	}
 
@@ -197,34 +215,9 @@ public class PropertyFactory extends StringValueFactory implements
 		return false;
 	}
 
-	private class PropertyEventListener implements
-			EventListener<KeyValuePairEvent<String, Value>> {
-		private final EventListener<PropertyEvent> eventListener;
-
-		public PropertyEventListener(EventListener<PropertyEvent> eventListener) {
-			this.eventListener = eventListener;
-		}
-
-		public void onEvent(KeyValuePairEvent<String, Value> event) {
-			eventListener
-					.onEvent(new PropertyEvent(PropertyFactory.this, event));
-		}
-	}
-
 	public EventRegistration registerListener(String key,
 			EventListener<PropertyEvent> eventListener) {
-		EventRegistration registration = propertyMap
-				.getEventDispatcher()
-				.registerListener(key, new PropertyEventListener(eventListener));
-		EventRegistration[] registrations = new EventRegistration[basePropertyFactories
-				.size() + 1];
-		registrations[0] = registration;
-		int index = 1;
-		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
-			registrations[index++] = basePropertyFactory.registerListener(key,
-					eventListener);
-		}
-		return new MultiEventRegistration(registrations);
+		return dispatcher.registerListener(key, eventListener);
 	}
 
 	public Value remove(String key) {
@@ -417,6 +410,7 @@ public class PropertyFactory extends StringValueFactory implements
 			this.name = name;
 			this.type = type;
 			this.defaultValue = defaultValue;
+			setRegisterOnlyExists(false);
 			register();
 		}
 
@@ -425,19 +419,8 @@ public class PropertyFactory extends StringValueFactory implements
 			return (T) PropertyFactory.this.getValue(name, type, defaultValue);
 		}
 
-		@Override
-		public boolean register() {
-			return register(false);
-		}
-
-		@Override
-		public EventRegistration registerListener(
-				EventListener<ObservableEvent<T>> eventListener) {
-			return registerListener(false, eventListener);
-		}
-
 		public EventRegistration registerListener(boolean exists,
-				final EventListener<ObservableEvent<T>> eventListener) {
+				final EventListener<ChangeEvent<T>> eventListener) {
 			if (exists && !containsKey(name)) {
 				return EventRegistration.EMPTY;
 			}
@@ -445,8 +428,7 @@ public class PropertyFactory extends StringValueFactory implements
 			return PropertyFactory.this.registerListener(name,
 					new EventListener<PropertyEvent>() {
 						public void onEvent(PropertyEvent event) {
-							eventListener.onEvent(new ObservableEvent<T>(event
-									.getEventType(), forceGet()));
+							eventListener.onEvent(new ChangeEvent<T>(event, forceGet()));
 						}
 					});
 		}

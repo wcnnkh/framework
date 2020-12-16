@@ -16,7 +16,7 @@ public class DefaultValueProcess extends AbstractValueProcesser {
 
 	@Override
 	protected void processInteranl(BeanDefinition beanDefinition, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, final Object bean, final Field field, Value value, final String name,
+			final PropertyFactory propertyFactory, final Object bean, final Field field, Value value, final String name,
 			String charsetName) throws Exception{
 		if(field.getSetter().getType() == Observable.class){
 			ResolvableType valueType = ResolvableType.forType(field.getSetter().getGenericType());
@@ -35,13 +35,12 @@ public class DefaultValueProcess extends AbstractValueProcesser {
 		
 		scw.value.Value v = propertyFactory.getValue(name);
 		set(bean, field, name, v);
-
 		if (isRegisterListener(beanDefinition, field, value)) {
 			propertyFactory.registerListener(name, new EventListener<PropertyEvent>() {
 
 				public void onEvent(PropertyEvent event) {
 					try {
-						set(bean, field, name, event.getValue());
+						set(bean, field, name, propertyFactory.getValue(name));
 					} catch (Exception e) {
 						logger.error(e, field);
 					}

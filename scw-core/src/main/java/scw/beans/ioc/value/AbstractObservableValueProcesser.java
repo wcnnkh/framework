@@ -3,9 +3,9 @@ package scw.beans.ioc.value;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
+import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.Observable;
-import scw.event.ObservableEvent;
 import scw.mapper.Field;
 import scw.value.property.PropertyFactory;
 
@@ -21,9 +21,9 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 				false);
 
 		if (isRegisterListener(beanDefinition, field, value)) {
-			res.registerListener(new EventListener<ObservableEvent<R>>() {
+			res.registerListener(new EventListener<ChangeEvent<R>>() {
 
-				public void onEvent(ObservableEvent<R> event) {
+				public void onEvent(ChangeEvent<R> event) {
 					try {
 						set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName,
 								event.getSource(), true);

@@ -178,7 +178,7 @@ public class JSONValue {
 			return String.valueOf(value);
 		}
 		
-		return toJSONString(MapperUtils.getMapper().getFieldValueMap(value));
+		return SimpleJSONObject.toJSONString(MapperUtils.getMapper().getFieldValueMap(value));
 	}
 
 	/**

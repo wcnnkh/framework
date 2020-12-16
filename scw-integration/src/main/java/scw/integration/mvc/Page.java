@@ -14,16 +14,20 @@ import freemarker.template.TemplateException;
 import freemarker.template.Version;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
+import scw.freemarker.mvc.FreemarkerPage;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
+import scw.mvc.page.PageFactory;
 import scw.mvc.servlet.Jsp;
 
 /**
- * 不再推荐使用，下个版本弃用
- * 
+ * 不再推荐使用
+ * @see PageFactory#getPage(String)
+ * @see FreemarkerPage
+ * @see Jsp
  * @author shuchaowen
  *
  */

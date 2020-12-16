@@ -82,10 +82,5 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-mvc</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
-		</dependency>
 	</dependencies>
 </project>

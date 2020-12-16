@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import scw.core.utils.ObjectUtils;
 import scw.lang.Ignore;
+import scw.mapper.MapperUtils;
 
 @Ignore
 public class KeyValuePair<K, V> implements Serializable {
@@ -69,6 +70,6 @@ public class KeyValuePair<K, V> implements Serializable {
 
 	@Override
 	public String toString() {
-		return "{" + getKey() + ":" + getValue() + "}";
+		return MapperUtils.getMapper().toString(this);
 	}
 }

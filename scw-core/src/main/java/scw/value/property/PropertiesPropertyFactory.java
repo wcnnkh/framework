@@ -9,12 +9,12 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.utils.CollectionUtils;
-import scw.event.AbstractObservable;
+import scw.event.ConvertibleObservable;
+import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.NamedEventDispatcher;
 import scw.event.Observable;
-import scw.event.ObservableEvent;
 import scw.event.support.StringNamedEventDispatcher;
 import scw.io.Resource;
 import scw.io.event.ObservableProperties;
@@ -23,30 +23,30 @@ import scw.value.StringValue;
 import scw.value.Value;
 
 public class PropertiesPropertyFactory extends
-		AbstractObservable<Map<String, Value>> implements BasePropertyFactory {
+		ConvertibleObservable<Properties, Map<String, Value>> implements
+		BasePropertyFactory {
 	private final NamedEventDispatcher<String, PropertyEvent> eventDispatcher;
-	private final Observable<Properties> observableProperties;
 	private final ValueCreator valueCreator;
 	private final String keyPrefix;
 
 	public PropertiesPropertyFactory(boolean concurrent,
 			ValueCreator valueCreator, String keyPrefix,
 			Collection<Resource> resources, String charsetName) {
-		this(new ObservableProperties(resources, charsetName), keyPrefix, concurrent, valueCreator);
+		this(new ObservableProperties(resources, charsetName), keyPrefix,
+				concurrent, valueCreator);
 	}
 
 	public PropertiesPropertyFactory(
 			Observable<Properties> observableProperties, String keyPrefix,
 			boolean concurrent, ValueCreator valueCreator) {
+		super(observableProperties);
 		this.eventDispatcher = new StringNamedEventDispatcher<PropertyEvent>(
 				concurrent);
-		this.observableProperties = observableProperties;
 		this.keyPrefix = keyPrefix;
 		this.valueCreator = valueCreator;
 	}
 
-	public Map<String, Value> forceGet() {
-		Properties properties = observableProperties.forceGet();
+	public Map<String, Value> convert(Properties properties) {
 		if (CollectionUtils.isEmpty(properties)) {
 			return Collections.emptyMap();
 		}
@@ -96,7 +96,7 @@ public class PropertiesPropertyFactory extends
 	}
 
 	@Override
-	public void onEvent(ObservableEvent<Map<String, Value>> event) {
+	public void onEvent(ChangeEvent<Map<String, Value>> event) {
 		Map<String, Value> oldValueMap = new LinkedHashMap<String, Value>(get());
 		super.onEvent(event);
 		for (Entry<String, Value> entry : oldValueMap.entrySet()) {
@@ -107,20 +107,6 @@ public class PropertiesPropertyFactory extends
 		}
 	}
 
-	public EventRegistration registerListener(
-			boolean exists,
-			final EventListener<ObservableEvent<Map<String, Value>>> eventListener) {
-		return observableProperties.registerListener(exists,
-				new EventListener<ObservableEvent<Properties>>() {
-
-					public void onEvent(ObservableEvent<Properties> event) {
-						eventListener
-								.onEvent(new ObservableEvent<Map<String, Value>>(
-										event.getEventType(), forceGet()));
-					}
-				});
-	}
-	
 	public interface ValueCreator {
 		static final ValueCreator CREATOR = new ValueCreator() {
 

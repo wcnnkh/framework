@@ -7,7 +7,10 @@
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>scw-microsoft</artifactId>
-
+	<properties>
+		<poi.version>4.1.2</poi.version>
+		<jxl.version>2.4.2</jxl.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
@@ -16,15 +19,18 @@
 		<dependency>
 			<groupId>jexcelapi</groupId>
 			<artifactId>jxl</artifactId>
+			<version>${jxl.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
+			<version>1.4</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
+			<version>${poi.version}</version>
 		</dependency>
 
 		<dependency>
