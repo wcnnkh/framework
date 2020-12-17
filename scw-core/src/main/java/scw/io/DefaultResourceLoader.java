@@ -11,6 +11,7 @@ import java.util.Set;
 import scw.core.Assert;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 
 public class DefaultResourceLoader implements ResourceLoader {
@@ -102,7 +103,8 @@ public class DefaultResourceLoader implements ResourceLoader {
 
 			list.add(new FileSystemResource(pathTouse));
 		}
-		return new AutomaticResource(list);
+		//颠倒一下，优先使用FileSystemResource
+		return new AutomaticResource(CollectionUtils.reversal(list));
 	}
 
 	protected static class ClassPathContextResource extends ClassPathResource implements ContextResource {

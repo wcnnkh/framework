@@ -11,6 +11,10 @@ public class ObservableProperties extends
 	private final Collection<Resource> resources;
 	private final String charsetName;
 
+	/**
+	 * @param resources 传入多个资源，后面的会覆盖前面的
+	 * @param charsetName
+	 */
 	public ObservableProperties(Collection<Resource> resources,
 			String charsetName) {
 		this.resources = resources;

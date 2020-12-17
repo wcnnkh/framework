@@ -15,7 +15,6 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
-import org.apache.tomcat.JarScanner;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 
 import scw.application.Application;
@@ -56,19 +55,10 @@ public class TomcatStart implements Main, Destroy {
 		return StringUtils.isEmpty(contextPath) ? "" : contextPath;
 	}
 
-	protected JarScanner getJarScanner(Application application) {
-		return InstanceUtils.loadService(JarScanner.class, application.getBeanFactory(),
-				application.getPropertyFactory(), "scw.embed.tomcat.Tomcat8AboveStandardJarScanner");
-	}
-
 	protected Context createContext(MainApplication application) {
 		Context context = tomcat.addContext(getContextPath(application.getPropertyFactory()),
 				getDocBase(application.getPropertyFactory()));
 		context.setParentClassLoader(application.getClassLoader());
-		JarScanner jarScanner = getJarScanner(application);
-		if (jarScanner != null) {
-			context.setJarScanner(jarScanner);
-		}
 		return context;
 	}
 

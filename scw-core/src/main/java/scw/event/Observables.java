@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import scw.core.OrderComparator;
 import scw.core.utils.CollectionUtils;
 import scw.event.support.DefaultBasicEventDispatcher;
 import scw.util.CollectionFactory;
@@ -14,13 +15,13 @@ import scw.util.CollectionFactory;
 public abstract class Observables<T> extends AbstractObservable<T> {
 	private final AtomicReference<BasicEventDispatcher<ChangeEvent<T>>> existsDispatcher = new AtomicReference<BasicEventDispatcher<ChangeEvent<T>>>();
 	private final AtomicReference<BasicEventDispatcher<ChangeEvent<T>>> notExistsDispatcher = new AtomicReference<BasicEventDispatcher<ChangeEvent<T>>>();
-	private final Set<ObservableRegistion> observables;
+	private final Set<ObservableRegistion> registions;
 
 	private final boolean concurrent;
 
 	public Observables(boolean concurrent) {
 		this.concurrent = concurrent;
-		this.observables = CollectionFactory.createSet(concurrent);
+		this.registions = CollectionFactory.createSet(concurrent);
 	}
 
 	public boolean isConcurrent() {
@@ -28,7 +29,7 @@ public abstract class Observables<T> extends AbstractObservable<T> {
 	}
 
 	public boolean addObservable(Observable<T> observable) {
-		if(this.observables.add(new ObservableRegistion(observable))){
+		if(this.registions.add(new ObservableRegistion(observable))){
 			ChangeEvent<T> event = new ChangeEvent<T>(EventType.CREATE, forceGet());
 			onEvent(event);
 			onEvent(event, false);
@@ -39,14 +40,30 @@ public abstract class Observables<T> extends AbstractObservable<T> {
 		return false;
 	}
 	
+	public List<Observable<T>> getObservables(){
+		if(CollectionUtils.isEmpty(registions)){
+			return Collections.emptyList();
+		}
+		
+		List<Observable<T>> observables = new ArrayList<Observable<T>>(this.registions.size());
+		for (ObservableRegistion registion : this.registions) {
+			observables.add(registion.getObservable());
+		}
+		
+		//排序,优先级降序排列，那么一般情况下进行合并后面的会覆盖前面的
+		observables.sort(OrderComparator.INSTANCE);
+		return observables;
+	}
+	
 	public T forceGet() {
+		List<Observable<T>> observables = getObservables();
 		List<T> list;
 		if (CollectionUtils.isEmpty(observables)) {
 			list = Collections.emptyList();
 		} else {
 			list = new ArrayList<T>(observables.size());
-			for (ObservableRegistion observable : observables) {
-				list.add(observable.getObservable().forceGet());
+			for(Observable<T> observable : observables){
+				list.add(observable.forceGet());
 			}
 		}
 		return merge(list);
@@ -74,7 +91,7 @@ public abstract class Observables<T> extends AbstractObservable<T> {
 			final EventListener<ChangeEvent<T>> eventListener) {
 		EventRegistration eventRegistration = registerListener(eventListener,
 				exists ? existsDispatcher : notExistsDispatcher);
-		for (ObservableRegistion observable : observables) {
+		for (ObservableRegistion observable : registions) {
 			observable.register();
 		}
 		return eventRegistration;

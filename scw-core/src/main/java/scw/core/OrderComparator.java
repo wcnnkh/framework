@@ -9,7 +9,7 @@ import scw.core.utils.ObjectUtils;
 
 /**
  * {@link Comparator} implementation for {@link Ordered} objects, sorting by
- * order value ascending, respectively by priority descending.
+ * order value ascending(根据数值进行升序), respectively by priority descending(根据优先级进行降序).
  *
  * <h3>Same Order Objects</h3>
  * <p>

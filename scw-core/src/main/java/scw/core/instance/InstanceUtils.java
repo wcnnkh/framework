@@ -21,6 +21,7 @@ import scw.logger.LoggerUtils;
 import scw.util.ClassScanner;
 import scw.util.JavaVersion;
 import scw.util.ServiceLoader;
+import scw.util.SpiServiceLoader;
 import scw.value.ValueFactory;
 import scw.value.property.PropertyFactory;
 
@@ -90,9 +91,10 @@ public final class InstanceUtils {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <S> ServiceLoader<S> getServiceLoader(Class<? extends S> clazz, NoArgsInstanceFactory instanceFactory,
 			ValueFactory<String> propertyFactory, String... defaultNames) {
-		return new ConfigurableServiceLoader<S>(clazz.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME)? new SpiServiceLoader<S>(clazz, instanceFactory):null, clazz, instanceFactory, propertyFactory,
+		return new ConfigurableServiceLoader<S>(clazz.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME)? new SpiServiceLoader<S>((Class<S>)clazz, instanceFactory):null, clazz, instanceFactory, propertyFactory,
 				defaultNames);
 	}
 
