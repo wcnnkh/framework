@@ -13,7 +13,9 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 
@@ -84,8 +86,22 @@ public final class ResourceUtils {
 	/** Special separator between WAR URL and jar part on Tomcat. */
 	public static final String WAR_URL_SEPARATOR = "*/";
 
+	/**
+	 * 因为eclipse默认打包为可执行jar会将资源打包在resources目录下，所以会尝试在此目录下查找资源
+	 * @see #getResource(Class, String)
+	 * @see #getResource(ClassLoader, String)
+	 * @see #getResourceAsStream(Class, String)
+	 * @see #getResourceAsStream(ClassLoader, String)
+	 * @see #getResources(ClassLoader, String)
+	 * @see #getClassLoaderResources(String)
+	 * @see #getClassLoaderResource(String)
+	 * @see #getClassLoaderResourceAsStream(String)
+	 */
+	private static final String RESOURCE_PREFIX = "resources/";
+
 	private static final ResourceOperations RESOURCE_OPERATIONS = new ResourceOperations(
-			SystemPropertyFactory.getInstance().getValue("resource.cache.enable", boolean.class, true));
+			SystemPropertyFactory.getInstance().getValue(
+					"resource.cache.enable", boolean.class, true));
 
 	public static final ResourceOperations getResourceOperations() {
 		return RESOURCE_OPERATIONS;
@@ -125,15 +141,20 @@ public final class ResourceUtils {
 	 * @throws FileNotFoundException
 	 *             if the resource cannot be resolved to a URL
 	 */
-	public static URL getURL(String resourceLocation) throws FileNotFoundException {
+	public static URL getURL(String resourceLocation)
+			throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
-			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
+			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX
+					.length());
 			ClassLoader cl = ClassUtils.getDefaultClassLoader();
-			URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
+			URL url = (cl != null ? cl.getResource(path) : ClassLoader
+					.getSystemResource(path));
 			if (url == null) {
 				String description = "class path resource [" + path + "]";
-				throw new FileNotFoundException(description + " cannot be resolved to URL because it does not exist");
+				throw new FileNotFoundException(
+						description
+								+ " cannot be resolved to URL because it does not exist");
 			}
 			return url;
 		}
@@ -145,8 +166,9 @@ public final class ResourceUtils {
 			try {
 				return new File(resourceLocation).toURI().toURL();
 			} catch (MalformedURLException ex2) {
-				throw new FileNotFoundException(
-						"Resource location [" + resourceLocation + "] is neither a URL not a well-formed file path");
+				throw new FileNotFoundException("Resource location ["
+						+ resourceLocation
+						+ "] is neither a URL not a well-formed file path");
 			}
 		}
 	}
@@ -166,16 +188,20 @@ public final class ResourceUtils {
 	 *             if the resource cannot be resolved to a file in the file
 	 *             system
 	 */
-	public static File getFile(String resourceLocation) throws FileNotFoundException {
+	public static File getFile(String resourceLocation)
+			throws FileNotFoundException {
 		Assert.notNull(resourceLocation, "Resource location must not be null");
 		if (resourceLocation.startsWith(CLASSPATH_URL_PREFIX)) {
-			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX.length());
+			String path = resourceLocation.substring(CLASSPATH_URL_PREFIX
+					.length());
 			String description = "class path resource [" + path + "]";
 			ClassLoader cl = ClassUtils.getDefaultClassLoader();
-			URL url = (cl != null ? cl.getResource(path) : ClassLoader.getSystemResource(path));
+			URL url = (cl != null ? cl.getResource(path) : ClassLoader
+					.getSystemResource(path));
 			if (url == null) {
 				throw new FileNotFoundException(
-						description + " cannot be resolved to absolute file path because it does not exist");
+						description
+								+ " cannot be resolved to absolute file path because it does not exist");
 			}
 			return getFile(url, description);
 		}
@@ -215,11 +241,14 @@ public final class ResourceUtils {
 	 * @throws FileNotFoundException
 	 *             if the URL cannot be resolved to a file in the file system
 	 */
-	public static File getFile(URL resourceUrl, String description) throws FileNotFoundException {
+	public static File getFile(URL resourceUrl, String description)
+			throws FileNotFoundException {
 		Assert.notNull(resourceUrl, "Resource URL must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUrl.getProtocol())) {
-			throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
-					+ "because it does not reside in the file system: " + resourceUrl);
+			throw new FileNotFoundException(description
+					+ " cannot be resolved to absolute file path "
+					+ "because it does not reside in the file system: "
+					+ resourceUrl);
 		}
 		try {
 			return new File(toURI(resourceUrl).getSchemeSpecificPart());
@@ -257,11 +286,14 @@ public final class ResourceUtils {
 	 * @throws FileNotFoundException
 	 *             if the URL cannot be resolved to a file in the file system
 	 */
-	public static File getFile(URI resourceUri, String description) throws FileNotFoundException {
+	public static File getFile(URI resourceUri, String description)
+			throws FileNotFoundException {
 		Assert.notNull(resourceUri, "Resource URI must not be null");
 		if (!URL_PROTOCOL_FILE.equals(resourceUri.getScheme())) {
-			throw new FileNotFoundException(description + " cannot be resolved to absolute file path "
-					+ "because it does not reside in the file system: " + resourceUri);
+			throw new FileNotFoundException(description
+					+ " cannot be resolved to absolute file path "
+					+ "because it does not reside in the file system: "
+					+ resourceUri);
 		}
 		return new File(resourceUri.getSchemeSpecificPart());
 	}
@@ -276,8 +308,9 @@ public final class ResourceUtils {
 	 */
 	public static boolean isFileURL(URL url) {
 		String protocol = url.getProtocol();
-		return (URL_PROTOCOL_FILE.equals(protocol) || URL_PROTOCOL_VFSFILE.equals(protocol)
-				|| URL_PROTOCOL_VFS.equals(protocol));
+		return (URL_PROTOCOL_FILE.equals(protocol)
+				|| URL_PROTOCOL_VFSFILE.equals(protocol) || URL_PROTOCOL_VFS
+					.equals(protocol));
 	}
 
 	/**
@@ -290,9 +323,11 @@ public final class ResourceUtils {
 	 */
 	public static boolean isJarURL(URL url) {
 		String protocol = url.getProtocol();
-		return (URL_PROTOCOL_JAR.equals(protocol) || URL_PROTOCOL_WAR.equals(protocol)
-				|| URL_PROTOCOL_ZIP.equals(protocol) || URL_PROTOCOL_VFSZIP.equals(protocol)
-				|| URL_PROTOCOL_WSJAR.equals(protocol));
+		return (URL_PROTOCOL_JAR.equals(protocol)
+				|| URL_PROTOCOL_WAR.equals(protocol)
+				|| URL_PROTOCOL_ZIP.equals(protocol)
+				|| URL_PROTOCOL_VFSZIP.equals(protocol) || URL_PROTOCOL_WSJAR
+					.equals(protocol));
 	}
 
 	/**
@@ -304,8 +339,8 @@ public final class ResourceUtils {
 	 * @return whether the URL has been identified as a JAR file URL
 	 */
 	public static boolean isJarFileURL(URL url) {
-		return (URL_PROTOCOL_FILE.equals(url.getProtocol())
-				&& url.getPath().toLowerCase().endsWith(JAR_FILE_EXTENSION));
+		return (URL_PROTOCOL_FILE.equals(url.getProtocol()) && url.getPath()
+				.toLowerCase().endsWith(JAR_FILE_EXTENSION));
 	}
 
 	/**
@@ -318,7 +353,8 @@ public final class ResourceUtils {
 	 * @throws MalformedURLException
 	 *             if no valid jar file URL could be extracted
 	 */
-	public static URL extractJarFileURL(URL jarUrl) throws MalformedURLException {
+	public static URL extractJarFileURL(URL jarUrl)
+			throws MalformedURLException {
 		String urlFile = jarUrl.getFile();
 		int separatorIndex = urlFile.indexOf(JAR_URL_SEPARATOR);
 		if (separatorIndex != -1) {
@@ -354,7 +390,8 @@ public final class ResourceUtils {
 	 *             if no valid jar file URL could be extracted
 	 * @see #extractJarFileURL(URL)
 	 */
-	public static URL extractArchiveURL(URL jarUrl) throws MalformedURLException {
+	public static URL extractArchiveURL(URL jarUrl)
+			throws MalformedURLException {
 		String urlFile = jarUrl.getFile();
 
 		int endIndex = urlFile.indexOf(WAR_URL_SEPARATOR);
@@ -367,7 +404,8 @@ public final class ResourceUtils {
 			}
 			int startIndex = warFile.indexOf(WAR_URL_PREFIX);
 			if (startIndex != -1) {
-				return new URL(warFile.substring(startIndex + WAR_URL_PREFIX.length()));
+				return new URL(warFile.substring(startIndex
+						+ WAR_URL_PREFIX.length()));
 			}
 		}
 
@@ -416,6 +454,174 @@ public final class ResourceUtils {
 		con.setUseCaches(con.getClass().getSimpleName().startsWith("JNLP"));
 	}
 
+	private static String cleanClassLoaderResourceName(String name) {
+		String nameToUse = name;
+		while (nameToUse.length() != 0 && nameToUse.startsWith("/")) {
+			nameToUse = nameToUse.substring(1);
+		}
+		return nameToUse;
+	}
+
+	public static URL getResource(ClassLoader classLoader, String name) {
+		String nameToUse = cleanClassLoaderResourceName(name);
+		URL url = classLoader.getResource(nameToUse);
+		if (url == null) {
+			url = classLoader.getResource(RESOURCE_PREFIX + nameToUse);
+		}
+		return url;
+	}
+	
+	public static URL getResource(Class<?> clazz, String name){
+		if(clazz == null || name == null){
+			return null;
+		}
+		
+		String nameToUse = cleanClassLoaderResourceName(name);
+		URL url = clazz.getResource(nameToUse);
+		if(url == null){
+			url = clazz.getClassLoader().getResource(nameToUse);
+		}
+		
+		if(url == null){
+			url = clazz.getResource(RESOURCE_PREFIX + nameToUse);
+		}
+		
+		if(url == null){
+			url = clazz.getClassLoader().getResource(RESOURCE_PREFIX + nameToUse);
+		}
+		return url;
+	}
+
+	public static InputStream getResourceAsStream(ClassLoader classLoader,
+			String name) {
+		if(classLoader == null || name == null){
+			return null;
+		}
+		
+		String nameToUse = cleanClassLoaderResourceName(name);
+		InputStream is = classLoader.getResourceAsStream(nameToUse);
+		if (is == null) {
+			is = classLoader.getResourceAsStream(RESOURCE_PREFIX + nameToUse);
+		}
+		return is;
+	}
+	
+	public static InputStream getResourceAsStream(Class<?> clazz, String name){
+		if(clazz == null || name == null){
+			return null;
+		}
+		
+		String nameToUse = cleanClassLoaderResourceName(name);
+		InputStream is = clazz.getResourceAsStream(nameToUse);
+		if(is == null){
+			is = clazz.getClassLoader().getResourceAsStream(nameToUse);
+		}
+		
+		if(is == null){
+			is = clazz.getResourceAsStream(RESOURCE_PREFIX + nameToUse);
+		}
+		
+		if(is == null){
+			is = clazz.getClassLoader().getResourceAsStream(RESOURCE_PREFIX + nameToUse);
+		}
+		return is;
+	}
+
+	/**
+	 * @param classLoader
+	 * @param name
+	 * @return 不会为空
+	 * @see Enumeration#hasMoreElements()
+	 * @throws IOException
+	 */
+	public static Enumeration<URL> getResources(ClassLoader classLoader, String name) throws IOException{
+		if(classLoader == null || name == null){
+			return Collections.emptyEnumeration();
+		}
+		
+		String nameToUse = cleanClassLoaderResourceName(name);
+		Enumeration<URL> urls = classLoader.getResources(nameToUse);
+		if(urls == null || !urls.hasMoreElements()){
+			urls = classLoader.getResources(RESOURCE_PREFIX + nameToUse);
+		}
+		
+		if(urls == null){
+			return Collections.emptyEnumeration();
+		}
+		return urls;
+	}
+	
+	public static URL getClassLoaderResource(String name){
+		if(name == null){
+			return null;
+		}
+		
+		URL url = getResource(ClassUtils.getDefaultClassLoader(), name);
+		if(url == null){
+			String nameToUse = cleanClassLoaderResourceName(name);
+			url = ClassLoader.getSystemResource(nameToUse);
+			if(url == null){
+				url = ClassLoader.getSystemResource(RESOURCE_PREFIX + nameToUse);
+			}
+		}
+		return url;
+	}
+	
+	/**
+	 * @param name
+	 * @return 不会为空
+	 * @see Enumeration#hasMoreElements()
+	 * @throws IOException
+	 */
+	public static Enumeration<URL> getClassLoaderResources(String name) throws IOException{
+		if(name == null){
+			return null;
+		}
+		
+		Enumeration<URL> urls = getResources(ClassUtils.getDefaultClassLoader(), name);
+		if(urls == null || !urls.hasMoreElements()){
+			String nameToUse = cleanClassLoaderResourceName(name);
+			urls = ClassLoader.getSystemResources(nameToUse);
+			if(urls == null || !urls.hasMoreElements()){
+				urls = ClassLoader.getSystemResources(RESOURCE_PREFIX + nameToUse);
+			}
+		}
+		return urls.hasMoreElements()? urls : null;
+	}
+	
+	public static InputStream getClassLoaderResourceAsStream(String name){
+		if(name == null){
+			return null;
+		}
+		
+		InputStream is = getResourceAsStream(ClassUtils.getDefaultClassLoader(), name);
+		if(is == null){
+			String nameToUse = cleanClassLoaderResourceName(name);
+			is = ClassLoader.getSystemResourceAsStream(nameToUse);
+			if(is == null){
+				is = ClassLoader.getSystemResourceAsStream(RESOURCE_PREFIX + nameToUse);
+			}
+		}
+		return is;
+	}
+	
+	public static List<Resource> toUrlResources(Enumeration<URL> urls){
+		if(urls == null || !urls.hasMoreElements()){
+			return Collections.emptyList();
+		}
+		
+		List<Resource> list = new ArrayList<Resource>(8);
+		while(urls.hasMoreElements()){
+			URL url = urls.nextElement();
+			if(url == null){
+				continue;
+			}
+			
+			list.add(new UrlResource(url));
+		}
+		return list;
+	}
+	
 	public static List<String> getLines(Resource resource, String charsetName) {
 		if (resource == null || !resource.exists()) {
 			return Collections.emptyList();
@@ -428,7 +634,7 @@ public final class ResourceUtils {
 		} catch (IOException e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
-			if(!resource.isOpen()){
+			if (!resource.isOpen()) {
 				IOUtils.close(is);
 			}
 		}
@@ -450,7 +656,7 @@ public final class ResourceUtils {
 		} catch (IOException e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
-			if(!resource.isOpen()){
+			if (!resource.isOpen()) {
 				IOUtils.close(is);
 			}
 		}
@@ -472,7 +678,7 @@ public final class ResourceUtils {
 		} catch (IOException e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
-			if(!resource.isOpen()){
+			if (!resource.isOpen()) {
 				IOUtils.close(is);
 			}
 		}
@@ -487,7 +693,8 @@ public final class ResourceUtils {
 		return new UnsafeByteArrayInputStream(data);
 	}
 
-	public static void loadProperties(Properties properties, Resource resource, String charsetName) {
+	public static void loadProperties(Properties properties, Resource resource,
+			String charsetName) {
 		if (!resource.exists()) {
 			return;
 		}
@@ -501,9 +708,13 @@ public final class ResourceUtils {
 				if (StringUtils.isEmpty(charsetName)) {
 					properties.load(is);
 				} else {
-					Method method = ReflectionUtils.getMethod(Properties.class, "load", Reader.class);
+					Method method = ReflectionUtils.getMethod(Properties.class,
+							"load", Reader.class);
 					if (method == null) {
-						FormatUtils.warn(ResourceUtils.class, "jdk1.6及以上的版本才支持指定字符集: {}" + resource.getDescription());
+						FormatUtils.warn(
+								ResourceUtils.class,
+								"jdk1.6及以上的版本才支持指定字符集: {}"
+										+ resource.getDescription());
 						properties.load(is);
 					} else {
 						InputStreamReader isr = null;
@@ -511,7 +722,7 @@ public final class ResourceUtils {
 							isr = new InputStreamReader(is, charsetName);
 							method.invoke(properties, isr);
 						} finally {
-							if(!resource.isOpen()){
+							if (!resource.isOpen()) {
 								IOUtils.close(isr);
 							}
 						}
@@ -521,7 +732,7 @@ public final class ResourceUtils {
 		} catch (Exception e) {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
-			if(!resource.isOpen()){
+			if (!resource.isOpen()) {
 				IOUtils.close(is);
 			}
 		}

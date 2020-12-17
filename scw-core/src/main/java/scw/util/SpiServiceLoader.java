@@ -1,4 +1,4 @@
-package scw.core.instance;
+package scw.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,23 +18,18 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.ServiceConfigurationError;
 
-import scw.util.ServiceLoader;
+import scw.core.instance.NoArgsInstanceFactory;
+import scw.io.ResourceUtils;
 
-/**
- * java的spi机制
- * @author shuchaowen
- *
- * @param <S>
- */
-public class SpiServiceLoader<S> implements ServiceLoader<S> {
+public final class SpiServiceLoader <S> implements ServiceLoader<S> {
 
 	private static final String PREFIX = "META-INF/services/";
 
 	// The class or interface representing the service being loaded
-	private final Class<? extends S> service;
+	private final Class<S> service;
 
 	// The class loader used to locate, load, and instantiate providers
-	private final NoArgsInstanceFactory instanceFactory;
+	private final ClassLoader loader;
 
 	// The access control context taken when the ServiceLoader is created
 	private final AccessControlContext acc;
@@ -44,29 +39,21 @@ public class SpiServiceLoader<S> implements ServiceLoader<S> {
 
 	// The current lazy-lookup iterator
 	private LazyIterator lookupIterator;
+	
+	private NoArgsInstanceFactory instanceFactory;
 
-	/**
-	 * Clear this loader's provider cache so that all providers will be
-	 * reloaded.
-	 *
-	 * <p>
-	 * After invoking this method, subsequent invocations of the
-	 * {@link #iterator() iterator} method will lazily look up and
-	 * instantiate providers from scratch, just as is done by a
-	 * newly-created loader.
-	 *
-	 * <p>
-	 * This method is intended for use in situations in which new providers
-	 * can be installed into a running Java virtual machine.
-	 */
-	public void reload() {
-		providers.clear();
-		lookupIterator = new LazyIterator();
+	public SpiServiceLoader(Class<S> svc, ClassLoader cl) {
+		this(svc, cl, null);
 	}
-
-	public SpiServiceLoader(Class<? extends S> svc, NoArgsInstanceFactory instanceFactory) {
+	
+	public SpiServiceLoader(Class<S> svc, NoArgsInstanceFactory instanceFactory) {
+		this(svc, instanceFactory == null? null:instanceFactory.getClassLoader(), instanceFactory);
+	}
+	
+	public SpiServiceLoader(Class<S> svc, ClassLoader cl, NoArgsInstanceFactory instanceFactory) {
 		service = Objects.requireNonNull(svc, "Service interface cannot be null");
 		this.instanceFactory = instanceFactory;
+		loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
 		acc = (System.getSecurityManager() != null) ? AccessController.getContext() : null;
 		reload();
 	}
@@ -161,9 +148,17 @@ public class SpiServiceLoader<S> implements ServiceLoader<S> {
 	// Private inner class implementing fully-lazy provider lookup
 	//
 	private class LazyIterator implements Iterator<S> {
+
+		Class<S> service;
+		ClassLoader loader;
 		Enumeration<URL> configs = null;
 		Iterator<String> pending = null;
 		String nextName = null;
+
+		private LazyIterator(Class<S> service, ClassLoader loader) {
+			this.service = service;
+			this.loader = loader;
+		}
 
 		private boolean hasNextService() {
 			if (nextName != null) {
@@ -172,7 +167,10 @@ public class SpiServiceLoader<S> implements ServiceLoader<S> {
 			if (configs == null) {
 				try {
 					String fullName = PREFIX + service.getName();
-					configs = instanceFactory.getClassLoader().getResources(fullName);
+					if (loader == null)
+						configs = ResourceUtils.getClassLoaderResources(fullName);
+					else
+						configs = ResourceUtils.getResources(loader, fullName);
 				} catch (IOException x) {
 					fail(service, "Error locating configuration files", x);
 				}
@@ -192,11 +190,23 @@ public class SpiServiceLoader<S> implements ServiceLoader<S> {
 				throw new NoSuchElementException();
 			String cn = nextName;
 			nextName = null;
-			if(!instanceFactory.isInstance(cn)){
+			Class<?> c = null;
+			try {
+				c = Class.forName(cn, false, loader);
+			} catch (ClassNotFoundException x) {
+				fail(service, "Provider " + cn + " not found");
+			}
+			if (!service.isAssignableFrom(c)) {
+				fail(service, "Provider " + cn + " not a subtype");
+			}
+			
+			if(instanceFactory != null && !instanceFactory.isInstance(c)){
 				fail(service, "Provider " + cn + " not instantiation");
 			}
+			
 			try {
-				S p = instanceFactory.getInstance(cn);
+				Object instance = instanceFactory == null? c.newInstance():instanceFactory.getInstance(c);
+				S p = service.cast(instance);
 				providers.put(cn, p);
 				return p;
 			} catch (Throwable x) {
@@ -319,6 +329,33 @@ public class SpiServiceLoader<S> implements ServiceLoader<S> {
 	 * @return A descriptive string
 	 */
 	public String toString() {
-		return "java.util.ServiceLoader[" + service.getName() + "]";
+		return getClass().getName() + "[" + service.getName() + "]";
+	}
+	
+	public NoArgsInstanceFactory getInstanceFactory() {
+		return instanceFactory;
+	}
+
+	public void setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
+		this.instanceFactory = instanceFactory;
+	}
+
+	/**
+	 * Clear this loader's provider cache so that all providers will be
+	 * reloaded.
+	 *
+	 * <p>
+	 * After invoking this method, subsequent invocations of the
+	 * {@link #iterator() iterator} method will lazily look up and
+	 * instantiate providers from scratch, just as is done by a
+	 * newly-created loader.
+	 *
+	 * <p>
+	 * This method is intended for use in situations in which new providers
+	 * can be installed into a running Java virtual machine.
+	 */
+	public void reload() {
+		providers.clear();
+		lookupIterator = new LazyIterator(service, loader);
 	}
 }

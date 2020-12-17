@@ -2,10 +2,11 @@ package scw.event;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import scw.core.Ordered;
 import scw.event.support.DefaultBasicEventDispatcher;
 
 public abstract class AbstractObservable<T> implements Observable<T>,
-		EventListener<ChangeEvent<T>> {
+		EventListener<ChangeEvent<T>>, Ordered{
 	private BasicEventDispatcher<ChangeEvent<T>> dispatcher = new DefaultBasicEventDispatcher<ChangeEvent<T>>(
 			true);
 	private volatile T value;
@@ -13,6 +14,20 @@ public abstract class AbstractObservable<T> implements Observable<T>,
 	private volatile AtomicBoolean registered = new AtomicBoolean(false);
 	private volatile AtomicBoolean firstGet = new AtomicBoolean(false);
 	private boolean registerOnlyExists = true;
+	private int order;
+	
+	public int getOrder() {
+		return order;
+	}
+
+	/**
+	 * 当存在多个Observable时，获取数据的优先级
+	 * @see Observables#forceGet()
+	 * @param order
+	 */
+	public void setOrder(int order) {
+		this.order = order;
+	}
 
 	public boolean unregister() {
 		if (eventRegistration != null && registered.compareAndSet(true, false)) {

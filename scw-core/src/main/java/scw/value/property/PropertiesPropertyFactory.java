@@ -1,6 +1,5 @@
 package scw.value.property;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -9,15 +8,13 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.core.utils.CollectionUtils;
-import scw.event.ConvertibleObservable;
 import scw.event.ChangeEvent;
+import scw.event.ConvertibleObservable;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.NamedEventDispatcher;
 import scw.event.Observable;
 import scw.event.support.StringNamedEventDispatcher;
-import scw.io.Resource;
-import scw.io.event.ObservableProperties;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
@@ -29,17 +26,10 @@ public class PropertiesPropertyFactory extends
 	private final ValueCreator valueCreator;
 	private final String keyPrefix;
 
-	public PropertiesPropertyFactory(boolean concurrent,
-			ValueCreator valueCreator, String keyPrefix,
-			Collection<Resource> resources, String charsetName) {
-		this(new ObservableProperties(resources, charsetName), keyPrefix,
-				concurrent, valueCreator);
-	}
-
 	public PropertiesPropertyFactory(
-			Observable<Properties> observableProperties, String keyPrefix,
+			Observable<Properties> properties, String keyPrefix,
 			boolean concurrent, ValueCreator valueCreator) {
-		super(observableProperties);
+		super(properties);
 		this.eventDispatcher = new StringNamedEventDispatcher<PropertyEvent>(
 				concurrent);
 		this.keyPrefix = keyPrefix;

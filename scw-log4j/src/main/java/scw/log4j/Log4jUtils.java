@@ -58,11 +58,7 @@ public final class Log4jUtils {
 
 		Properties properties = ResourceUtils.getResourceOperations()
 				.getProperties("classpath:/scw/log4j/default-log4j.properties").get();
-		for (Entry<String, Level> entry : LoggerLevelManager.DEFAULT_LEVEL_MAP.entrySet()) {
-			properties.put("log4j.logger." + entry.getKey(), entry.getValue().getName());
-		}
-		
-		for (Entry<String, Level> entry : LoggerLevelManager.getInstance().getLevelMap().entrySet()) {
+		for (Entry<String, Level> entry : LoggerLevelManager.getInstance().get().entrySet()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().getName());
 		}
 		initByProperties(properties);

@@ -18,11 +18,11 @@ public class AutomaticResource extends ResourceWrapper {
 
 	/**
 	 * 从多个resource中自动选择一个可用的
-	 * @param resources 使用优先级从低到高
+	 * @param resources 使用优先级从高到低
 	 */
 	public AutomaticResource(Collection<Resource> resources) {
 		Assert.requiredArgument(!CollectionUtils.isEmpty(resources), "resources");
-		this.resources = CollectionUtils.reversal(resources);
+		this.resources = resources;
 		this.currentResource = getCurrentResource();
 	}
 

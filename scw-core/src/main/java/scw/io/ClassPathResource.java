@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.net.URL;
 
 import scw.core.Assert;
-import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
@@ -21,13 +20,6 @@ import scw.core.utils.StringUtils;
  * resolution as URL.
  */
 public class ClassPathResource extends AbstractFileResolvingResource {
-	/**
-	 * 在可执行jar中resources资源会被统一打包到resources目录中
-	 */
-	private static final String RESOURCES_PREFIX = GlobalPropertyFactory
-			.getInstance().getValue("scw.classpath.resources.prefix",
-					String.class, "resources/");
-
 	private final String path;
 
 	private ClassLoader classLoader;
@@ -141,9 +133,13 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 * @return the resolved URL, or {@code null} if not resolvable
 	 */
 	protected URL resolveURL() {
-		URL url = resolveURLInternal(RESOURCES_PREFIX + this.path);
-		if (url == null) {
-			url = resolveURLInternal(this.path);
+		URL url = ResourceUtils.getResource(clazz, this.path);
+		if(url == null){
+			url = ResourceUtils.getResource(getClassLoader(), this.path);
+		}
+		
+		if(url == null){
+			url = ResourceUtils.getClassLoaderResource(this.path);
 		}
 		return url;
 	}
@@ -197,9 +193,13 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 * @see java.lang.Class#getResourceAsStream(String)
 	 */
 	public InputStream getInputStream() throws IOException {
-		InputStream is = getInputStreamInternal(RESOURCES_PREFIX + this.path);
-		if (is == null) {
-			is = getInputStreamInternal(this.path);
+		InputStream is = ResourceUtils.getResourceAsStream(clazz, this.path);
+		if(is == null){
+			is = ResourceUtils.getResourceAsStream(getClassLoader(), this.path);
+		}
+		
+		if(is == null){
+			is = ResourceUtils.getClassLoaderResourceAsStream(this.path);
 		}
 		if (is == null) {
 			throw new FileNotFoundException(getDescription()

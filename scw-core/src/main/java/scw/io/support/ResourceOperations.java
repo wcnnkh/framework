@@ -2,7 +2,6 @@ package scw.io.support;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
@@ -44,7 +43,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 	}
 
 	/**
-	 * 可使用的资源列表，使用优先级从左到右
+	 * 预计使用的资源列表，返回的资源并不一定存在, 使用优先级从高到低
 	 * 
 	 * @param resourceName
 	 * @return
@@ -94,8 +93,8 @@ public class ResourceOperations extends DefaultResourceLoader {
 	}
 
 	/**
-	 * 可使用的资源列表，使用优先级从左到右,从高到低
-	 * 
+	 * 以及使用的资源的资源(并不表示资源已存在),使用优先级从高到低
+	 * @see Resource#exists()
 	 * @param resource
 	 * @return
 	 */
@@ -126,7 +125,7 @@ public class ResourceOperations extends DefaultResourceLoader {
 		return null;
 	}
 
-	public Observable<Properties> getProperties(String resource) {
+	public final Observable<Properties> getProperties(String resource) {
 		return getProperties(resource, null);
 	}
 
@@ -135,24 +134,11 @@ public class ResourceOperations extends DefaultResourceLoader {
 		if (CollectionUtils.isEmpty(resources)) {
 			return new EmptyObservable<Properties>();
 		}
-		
-		return new ObservableProperties(resources, charsetName);
+		//颠倒一下，优先级高的覆盖优先级低的
+		return new ObservableProperties(CollectionUtils.reversal(resources), charsetName);
 	}
 
-	public Observable<Properties> getProperties(Collection<String> resources, String charsetName) {
-		List<Resource> list = new ArrayList<Resource>(resources.size());
-		for (String resource : resources) {
-			Resource res = getResource(resource);
-			if (res == null) {
-				continue;
-			}
-
-			list.add(res);
-		}
-		return new ObservableProperties(list, charsetName);
-	}
-
-	public boolean isExist(String resource) {
+	public final boolean isExist(String resource) {
 		Resource res = getResource(resource);
 		return res != null && res.exists();
 	}

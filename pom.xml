@@ -259,6 +259,30 @@
 				<artifactId>scw-tomcat</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-quartz</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-rmi</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-elasticsearch</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-jmx</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
 			<dependency>
@@ -370,5 +394,10 @@
 		<module>scw-log4j</module>
 		<module>scw-log4j2</module>
 		<module>scw-mail</module>
+		<module>scw-quartz</module>
+		<module>scw-jmx</module>
+		<module>scw-elasticsearch</module>
+		<module>scw-rmi</module>
+		<module>scw-solr</module>
 	</modules>
 </project>
