@@ -11,7 +11,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.application.Application;
+import scw.boot.Application;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.http.HttpCookie;

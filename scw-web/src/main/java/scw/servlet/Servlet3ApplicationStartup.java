@@ -12,8 +12,8 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-import scw.application.Application;
-import scw.application.ApplicationUtils;
+import scw.boot.Application;
+import scw.boot.ApplicationUtils;
 import scw.core.utils.CollectionUtils;
 import scw.util.XUtils;
 

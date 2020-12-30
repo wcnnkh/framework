@@ -12,16 +12,23 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-core</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.zookeeper</groupId>
+			<artifactId>zookeeper</artifactId>
+			<version>3.4.14</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-cloud</artifactId>
 			<scope>provided</scope>
 		</dependency>
-	
+		
 		<dependency>
-			<groupId>org.apache.zookeeper</groupId>
-			<artifactId>zookeeper</artifactId>
-			<version>3.4.14</version>
+			<groupId>scw</groupId>
+			<artifactId>scw-boot</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

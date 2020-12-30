@@ -9,6 +9,9 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.function.Supplier;
 
+import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -28,9 +31,6 @@ import com.netflix.discovery.converters.EurekaJacksonCodec.InstanceInfoSerialize
 import com.netflix.discovery.converters.wrappers.CodecWrappers.LegacyJacksonJson;
 import com.netflix.discovery.shared.Application;
 import com.netflix.discovery.shared.Applications;
-
-import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.StringUtils;
 
 public class CloudJacksonJson extends LegacyJacksonJson {
 

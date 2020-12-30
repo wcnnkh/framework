@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import scw.application.Application;
-import scw.application.ApplicationAware;
+import scw.boot.Application;
+import scw.boot.ApplicationAware;
 import scw.core.instance.annotation.SPI;
 import scw.http.HttpStatus;
 import scw.logger.Logger;

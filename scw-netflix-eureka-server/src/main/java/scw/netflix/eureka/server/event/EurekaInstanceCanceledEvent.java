@@ -2,7 +2,7 @@ package scw.netflix.eureka.server.event;
 
 import java.util.Objects;
 
-import scw.application.ApplicationEvent;
+import scw.boot.ApplicationEvent;
 
 public class EurekaInstanceCanceledEvent extends ApplicationEvent {
 	private static final long serialVersionUID = 1L;

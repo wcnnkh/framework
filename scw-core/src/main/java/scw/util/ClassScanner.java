@@ -2,15 +2,18 @@ package scw.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
+import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
@@ -19,11 +22,27 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Resource;
+import scw.io.ResourceUtils;
 import scw.io.support.PathMatchingResourcePatternResolver;
 import scw.io.support.ResourcePatternResolver;
 import scw.lang.Ignore;
 
 public class ClassScanner implements Accept<Class<?>> {
+	private static final String[] IGNORES;
+	
+	static{
+		Set<String> ignores = new HashSet<String>();
+		Enumeration<URL> urls;
+		try {
+			urls = ResourceUtils.getClassLoaderResources("scw/class.ignores");
+			for(Resource resource : ResourceUtils.toUrlResources(urls)){
+				ignores.addAll(ResourceUtils.getLines(resource, Constants.UTF_8));
+			}
+		} catch (IOException e) {
+		}
+		IGNORES = ignores.toArray(new String[0]);
+	}
+	
 	public static final String ALL = "*";
 	static final String CLASS_RESOURCE = "**/*.class";
 	private final ResourcePatternResolver resourcePatternResolver;
@@ -50,6 +69,15 @@ public class ClassScanner implements Accept<Class<?>> {
 		this.resourcePatternResolver = resourcePatternResolver;
 		this.metadataReaderFactory = metadataReaderFactory;
 		this.useCache = useCache;
+	}
+	
+	public boolean ignore(String name){
+		for(String ignore : IGNORES){
+			if(DefaultStringMatcher.getInstance().match(ignore, name)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public final ResourcePatternResolver getResourcePatternResolver() {
@@ -107,8 +135,12 @@ public class ClassScanner implements Accept<Class<?>> {
 		if (reader == null) {
 			return;
 		}
-
-		Class<?> clazz = ClassUtils.forNameNullable(reader.getClassMetadata().getClassName(), initialize, classLoader);
+		
+		String name = reader.getClassMetadata().getClassName();
+		if(ignore(name)){
+			return ;
+		}
+		Class<?> clazz = ClassUtils.forNameNullable(name, initialize, classLoader);
 		if (clazz == null || !accept(clazz)) {
 			return;
 		}
@@ -210,6 +242,11 @@ public class ClassScanner implements Accept<Class<?>> {
 		String name = classFile.substring(0, classFile.length() - 6);
 		name = name.replaceAll("\\\\", ".");
 		name = name.replaceAll("/", ".");
+		
+		if(ignore(name)){
+			return null;
+		}
+		
 		Class<?> clazz = ClassUtils.forNameNullable(name, initialize, classLoader);
 		if (clazz != null && accept(clazz)) {
 			return clazz;

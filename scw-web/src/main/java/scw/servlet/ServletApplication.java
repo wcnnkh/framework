@@ -2,8 +2,8 @@ package scw.servlet;
 
 import javax.servlet.ServletContext;
 
-import scw.application.CommonApplication;
 import scw.beans.xml.XmlBeanFactory;
+import scw.boot.CommonApplication;
 import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
 

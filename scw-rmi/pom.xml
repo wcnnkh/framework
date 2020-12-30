@@ -11,5 +11,10 @@
   		<groupId>scw</groupId>
   		<artifactId>scw-core</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>scw</groupId>
+  		<artifactId>scw-beans</artifactId>
+  		<scope>provided</scope>
+  	</dependency>
   </dependencies>
 </project>

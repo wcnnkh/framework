@@ -6,13 +6,13 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Enumeration;
 
+import scw.configure.support.ConfigureUtils;
 import scw.core.utils.StringUtils;
 import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
 import scw.lang.NotSupportedException;
-import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
 public final class DBUtils {
@@ -22,7 +22,7 @@ public final class DBUtils {
 	};
 
 	public static void loadProperties(Object instance, PropertyFactory properties) {
-		ConfigUtils.loadProperties(instance, properties, Arrays.asList(
+		ConfigureUtils.loadProperties(instance, properties, Arrays.asList(
 				"jdbcUrl,url,host", "username,user", "password",
 				"minSize,initialSize,minimumIdle",
 				"maxSize,maxActive,maximumPoolSize",

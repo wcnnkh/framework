@@ -10,6 +10,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
+			<artifactId>scw-messageing</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>scw</groupId>
 			<artifactId>scw-web</artifactId>
 		</dependency>
 

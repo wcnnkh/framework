@@ -3,7 +3,7 @@ package scw.loadbalancer;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import scw.application.ApplicationUtils;
+import scw.boot.ApplicationUtils;
 import scw.core.instance.annotation.SPI;
 import scw.discovery.DiscoveryClient;
 import scw.discovery.ServiceInstance;

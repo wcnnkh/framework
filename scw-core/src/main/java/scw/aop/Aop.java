@@ -8,6 +8,8 @@ import java.util.Collection;
 
 import scw.core.instance.InstanceIterable;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.core.reflect.MethodInvoker;
+import scw.core.reflect.MethodInvokerWrapper;
 import scw.core.utils.ArrayUtils;
 import scw.lang.NotSupportedException;
 import scw.util.MultiIterable;

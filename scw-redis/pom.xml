@@ -16,6 +16,16 @@
 			<artifactId>scw-data</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-locks</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-beans</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 			<version>${jedis.version}</version>

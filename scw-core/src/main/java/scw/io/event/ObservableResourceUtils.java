@@ -3,7 +3,7 @@ package scw.io.event;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.event.Observable;
 import scw.io.Resource;
 import scw.io.ResourceUtils;

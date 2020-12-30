@@ -1,6 +1,6 @@
 package scw.data.file;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.http.HttpUtils;
 
 public class HttpGetBodyCacheConvert implements

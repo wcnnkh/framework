@@ -15,6 +15,12 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-web</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-result</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-security</artifactId>

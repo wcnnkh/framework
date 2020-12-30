@@ -12,8 +12,8 @@ import scw.amqp.MessageListener;
 import scw.amqp.MessageProperties;
 import scw.amqp.MethodMessage;
 import scw.amqp.QueueDeclare;
-import scw.aop.MethodInvoker;
 import scw.beans.Init;
+import scw.core.reflect.MethodInvoker;
 import scw.core.utils.StringUtils;
 import scw.io.support.LocalLogger.Record;
 import scw.io.NoTypeSpecifiedSerializer;
@@ -23,9 +23,9 @@ import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.transaction.DefaultTransactionDefinition;
-import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.DefaultTransactionLifecycle;
 import scw.transaction.Transaction;
-import scw.transaction.TransactionLifeCycle;
+import scw.transaction.TransactionLifecycle;
 import scw.transaction.TransactionManager;
 
 /**
@@ -246,7 +246,7 @@ public abstract class AbstractExchange implements Exchange, Init {
 		messageProperties.setPublishRoutingKey(routingKey);
 		final MessageLog log = new MessageLog(routingKey, messageProperties, body);
 		if (TransactionManager.hasTransaction()) {
-			TransactionLifeCycle transactionLifeCycle;
+			TransactionLifecycle transactionLifeCycle;
 			// 是否开启本地事务
 			Boolean enableLocalRetryPush = messageProperties.isEnableLocalRetryPush();
 			if (enableLocalRetryPush == null) {
@@ -255,7 +255,7 @@ public abstract class AbstractExchange implements Exchange, Init {
 
 			if (enableLocalRetryPush) {
 				final Record<MessageLog> record = systemLocalLogger.create(log);
-				transactionLifeCycle = new DefaultTransactionLifeCycle() {
+				transactionLifeCycle = new DefaultTransactionLifecycle() {
 					@Override
 					public void afterCommit() {
 						if (systemLocalLogger.getLocalLogger().isExist(record.getId())) {
@@ -274,7 +274,7 @@ public abstract class AbstractExchange implements Exchange, Init {
 					}
 				};
 			} else {
-				transactionLifeCycle = new DefaultTransactionLifeCycle() {
+				transactionLifeCycle = new DefaultTransactionLifecycle() {
 					public void afterCommit() {
 						try {
 							basicPublish(log);
@@ -284,7 +284,7 @@ public abstract class AbstractExchange implements Exchange, Init {
 					};
 				};
 			}
-			TransactionManager.transactionLifeCycle(transactionLifeCycle);
+			TransactionManager.addLifecycle(transactionLifeCycle);
 		} else {
 			// 不存在事务，直接发送
 			try {

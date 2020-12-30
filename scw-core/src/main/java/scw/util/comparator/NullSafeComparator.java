@@ -42,9 +42,8 @@ public class NullSafeComparator<T> implements Comparator<T> {
 	 * @see #NULLS_LOW
 	 * @see #NULLS_HIGH
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private NullSafeComparator(boolean nullsLow) {
-		this.nonNullComparator = new ComparableComparator();
+		this.nonNullComparator = new ComparableComparator<T>();
 		this.nullsLow = nullsLow;
 	}
 

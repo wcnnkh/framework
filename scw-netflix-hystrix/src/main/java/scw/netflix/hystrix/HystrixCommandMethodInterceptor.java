@@ -5,8 +5,8 @@ import com.netflix.hystrix.HystrixCommand;
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
 import scw.aop.MethodInterceptorChain;
-import scw.aop.MethodInvoker;
 import scw.core.instance.annotation.SPI;
+import scw.core.reflect.MethodInvoker;
 import scw.netflix.hystrix.annotation.Hystrix;
 
 @SPI(order = Integer.MAX_VALUE)

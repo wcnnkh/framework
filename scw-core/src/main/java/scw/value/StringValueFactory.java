@@ -65,6 +65,16 @@ public class StringValueFactory extends DefaultValueFactory<String> {
 	public String format(String text, String prefix, String suffix) {
 		return StringFormat.format(text, prefix, suffix, this);
 	}
+	
+	public StringFormat getStringFormat(String prefix, String suffix){
+		return new StringFormat(prefix, suffix) {
+			
+			@Override
+			protected String getValue(String key) {
+				return getString(key);
+			}
+		};
+	}
 
 	public Properties format(Properties properties) {
 		if (properties == null || properties.isEmpty()) {

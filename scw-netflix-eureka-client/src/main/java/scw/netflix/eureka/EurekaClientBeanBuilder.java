@@ -2,13 +2,13 @@ package scw.netflix.eureka;
 
 import java.util.Map;
 
-import scw.application.Application;
-import scw.application.ApplicationUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
+import scw.boot.Application;
+import scw.boot.ApplicationUtils;
 import scw.commons.util.IdUtils;
 import scw.commons.util.InetUtils;
 import scw.commons.util.InetUtilsProperties;

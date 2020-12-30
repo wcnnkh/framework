@@ -3,29 +3,24 @@ package scw.event.support;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import scw.beans.Destroy;
-import scw.core.utils.StringUtils;
 import scw.event.Event;
 
 public class DefaultAsyncBasicEventDispatcher<T extends Event> extends DefaultBasicEventDispatcher<T>
-		implements Runnable, Destroy {
+		implements Runnable {
 	private BlockingQueue<T> blockingQueue;
 	private Thread thread;
 	private volatile boolean started = true;
 	private volatile boolean destroy = false;// 是否销毁结束
-
-	public DefaultAsyncBasicEventDispatcher(boolean concurrent, String threadName, Boolean daemon) {
-		this(concurrent, new LinkedBlockingQueue<T>(), threadName, daemon);
+	
+	public DefaultAsyncBasicEventDispatcher(boolean concurrent, String name) {
+		this(concurrent, new LinkedBlockingQueue<T>(), name);
 	}
 
-	public DefaultAsyncBasicEventDispatcher(boolean concurrent, BlockingQueue<T> blockingQueue, String threadName,
-			Boolean daemon) {
+	public DefaultAsyncBasicEventDispatcher(boolean concurrent, BlockingQueue<T> blockingQueue, String name) {
 		super(concurrent);
 		this.blockingQueue = blockingQueue;
-		thread = new Thread(this, StringUtils.isEmpty(threadName) ? getClass().getName() : threadName);
-		if (daemon != null) {
-			thread.setDaemon(daemon);
-		}
+		thread = new Thread(this, name);
+		thread.setDaemon(true);
 		thread.start();
 
 		Thread shutdown = new Thread() {

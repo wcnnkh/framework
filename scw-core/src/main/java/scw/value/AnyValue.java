@@ -1,37 +1,44 @@
 package scw.value;
 
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import scw.core.utils.ClassUtils;
+import scw.convert.ConversionService;
+import scw.convert.TypeDescriptor;
+import scw.convert.support.JsonConversionService;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
-import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 
-public class AnyValue extends SupportDefaultValue implements Serializable {
-	private static final long serialVersionUID = 1L;
-	private volatile JSONSupport jsonSupport;
-	private Object value;
+public class AnyValue extends SupportDefaultValue {
+	private volatile ConversionService conversionService;
+	private final Object value;
 
 	public AnyValue(Object value) {
 		this(value, EmptyValue.INSTANCE);
 	}
-
-	public JSONSupport getJsonSupport() {
-		return jsonSupport == null ? JSONUtils.getJsonSupport() : jsonSupport;
+	
+	public AnyValue(Object value, Value defaultValue){
+		this(value, defaultValue, null);
 	}
 
-	public void setJsonSupport(JSONSupport jsonSupport) {
-		this.jsonSupport = jsonSupport;
-	}
-
-	public AnyValue(Object value, Value defaultValue) {
+	public AnyValue(Object value, Value defaultValue, ConversionService conversionService) {
 		super(defaultValue);
 		this.value = value;
+		this.conversionService = conversionService;
+	}
+
+	public ConversionService getConversionService() {
+		if(conversionService == null){
+			synchronized (this) {
+				if(conversionService == null){
+					conversionService = new JsonConversionService(JSONUtils.getJsonSupport());
+				}
+			}
+		}
+		return conversionService;
 	}
 
 	public Object getValue() {
@@ -485,8 +492,8 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 		if (type == Object.class || type == null) {
 			return (T) value;
 		}
-
-		if (type.isInstance(value) || ClassUtils.isAssignableValue(type, value)) {
+		
+		if (type.isInstance(value)) {
 			return type.cast(value);
 		}
 
@@ -513,6 +520,7 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 		return super.getAsObject(type);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
 		if (ValueUtils.isBaseType(value.getClass())) {
@@ -520,7 +528,7 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 					.getAsObject(type);
 		}
 
-		return getJsonSupport().parseObject(getJsonSupport().toJSONString(value), type);
+		return (T) getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
 	}
 
 	@Override
@@ -529,7 +537,7 @@ public class AnyValue extends SupportDefaultValue implements Serializable {
 			return TypeUtils.toClass(type).cast(value);
 		}
 		
-		return getJsonSupport().parseObject(getJsonSupport().toJSONString(value), type);
+		return getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
 	}
 
 	@Override

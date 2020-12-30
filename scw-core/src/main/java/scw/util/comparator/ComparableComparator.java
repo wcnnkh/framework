@@ -2,12 +2,19 @@ package scw.util.comparator;
 
 import java.util.Comparator;
 
-public class ComparableComparator<T extends Comparable<T>> implements Comparator<T> {
+public class ComparableComparator<T> implements Comparator<T> {
 
-	@SuppressWarnings("rawtypes")
-	public static final ComparableComparator INSTANCE = new ComparableComparator();
+	public static final ComparableComparator<Object> INSTANCE = new ComparableComparator<Object>();
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public int compare(T o1, T o2) {
-		return o1.compareTo(o2);
+		if(o1 instanceof Comparable){
+			return ((Comparable) o1).compareTo(o2);
+		}
+		
+		if(o2 instanceof Comparable){
+			return ((Comparable) o2).compareTo(o1);
+		}
+		return -1;
 	}
 }

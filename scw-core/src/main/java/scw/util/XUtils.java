@@ -13,7 +13,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;

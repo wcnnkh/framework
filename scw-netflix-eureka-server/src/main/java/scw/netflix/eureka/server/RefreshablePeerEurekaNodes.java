@@ -1,5 +1,9 @@
 package scw.netflix.eureka.server;
 
+import scw.event.EventListener;
+import scw.value.property.PropertyEvent;
+import scw.value.property.PropertyFactory;
+
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClientConfig;
 import com.netflix.eureka.EurekaServerConfig;
@@ -8,10 +12,6 @@ import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 import com.netflix.eureka.transport.JerseyReplicationClient;
-
-import scw.event.EventListener;
-import scw.value.property.PropertyEvent;
-import scw.value.property.PropertyFactory;
 
 public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements EventListener<PropertyEvent> {
 	private static final String[] KEYS = new String[]{"eureka.client.region*", "eureka.client.service-url.*", "eureka.client.availability-zones."}; 

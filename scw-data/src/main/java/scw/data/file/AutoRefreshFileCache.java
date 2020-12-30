@@ -2,7 +2,7 @@ package scw.data.file;
 
 import java.io.File;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerUtils;
 

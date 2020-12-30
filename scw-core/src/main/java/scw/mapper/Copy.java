@@ -7,14 +7,13 @@ import java.lang.reflect.Modifier;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ArrayUtils;
 
 @SuppressWarnings("unchecked")
 public class Copy {
 	static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 	private NoArgsInstanceFactory instanceFactory = InstanceUtils.INSTANCE_FACTORY;
 	private Mapper mapper = MapperUtils.getMapper();
-	private FieldFilter[] filters;
+	private final EditableFieldFilters filters = new EditableFieldFilters();
 
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
@@ -67,18 +66,8 @@ public class Copy {
 		return this;
 	}
 
-	public final FieldFilter[] getFilters() {
-		return filters == null ? new FieldFilter[0] : filters.clone();
-	}
-
-	public Copy setFilters(FieldFilter... filters) {
-		this.filters = filters;
-		return this;
-	}
-
-	public Copy addFilters(FieldFilter... filters) {
-		this.filters = ArrayUtils.merge(this.filters, filters);
-		return this;
+	public final EditableFieldFilters getFilters() {
+		return filters;
 	}
 
 	/**

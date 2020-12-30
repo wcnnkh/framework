@@ -3,9 +3,11 @@ package scw.mapper;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
+import scw.convert.ConversionService;
+import scw.convert.TypeDescriptor;
 import scw.core.utils.StringUtils;
 import scw.util.cache.LocalCacheType;
-import scw.value.ValueUtils;
+import scw.value.Value;
 
 public class MapperUtils {
 	private static final String BOOLEAN_GETTER_METHOD_PREFIX = "is";
@@ -46,9 +48,15 @@ public class MapperUtils {
 		}
 		return DEFAULT_SETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
 	}
-
-	public static void setStringValue(scw.mapper.Field field, Object instance, String value) {
-		field.getSetter().set(instance, ValueUtils.parse(value, field.getSetter().getGenericType()));
+	
+	public static void setValue(ConversionService conversionService, Object instance, scw.mapper.Field field, Object value){
+		Object valueToUse;
+		if(value != null && value instanceof Value){
+			valueToUse = ((Value)value).getAsObject(field.getSetter().getGenericType());
+		}else{
+			valueToUse = conversionService.convert(value, value == null? null:TypeDescriptor.forObject(value), new TypeDescriptor(field.getSetter()));
+		}
+		field.getSetter().set(instance, valueToUse);
 	}
 
 	/**

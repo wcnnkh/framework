@@ -1,8 +1,8 @@
 package scw.netflix.hystrix;
 
 import scw.aop.MethodInterceptorChain;
-import scw.aop.MethodInvoker;
 import scw.beans.annotation.AutoImpl;
+import scw.core.reflect.MethodInvoker;
 
 import com.netflix.hystrix.HystrixCommand;
 

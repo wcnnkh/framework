@@ -48,9 +48,9 @@ public interface Value {
 	BigDecimal getAsBigDecimal();
 
 	Number getAsNumber();
-	
+
 	boolean isEmpty();
-	
+
 	boolean isNumber();
 
 	Class<?> getAsClass();

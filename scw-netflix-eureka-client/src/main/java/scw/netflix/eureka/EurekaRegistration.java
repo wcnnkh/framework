@@ -23,17 +23,17 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import scw.aop.ProxyInstanceTarget;
+import scw.boot.Application;
+import scw.core.Assert;
+import scw.discovery.DefaultServiceInstance;
+import scw.discovery.ServiceInstance;
+
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.HealthCheckHandler;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
-
-import scw.aop.ProxyInstanceTarget;
-import scw.application.Application;
-import scw.core.Assert;
-import scw.discovery.DefaultServiceInstance;
-import scw.discovery.ServiceInstance;
 
 /**
  * Eureka-specific implementation of service instance {@link Registration}.

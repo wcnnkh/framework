@@ -33,18 +33,13 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.core.StringFormat;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
-import scw.mapper.Field;
-import scw.mapper.Fields;
-import scw.mapper.FilterFeature;
-import scw.mapper.MapperUtils;
 import scw.util.KeyValuePair;
 import scw.util.ToMap;
 import scw.util.XUtils;
@@ -479,62 +474,6 @@ public final class XMLUtils {
 	public static Boolean getBooleanValue(Node node, String name, Boolean defaultValue) {
 		String value = getNodeAttributeValue(node, name);
 		return StringUtils.parseBoolean(value, defaultValue);
-	}
-
-	public static <T> T getBean(NoArgsInstanceFactory instanceFactory, Node node, Class<T> type) {
-		T t = null;
-		Fields fields = MapperUtils.getMapper().getFields(type, FilterFeature.SUPPORT_SETTER,
-				FilterFeature.SETTER_IGNORE_STATIC);
-		NodeList nodeList = node.getChildNodes();
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node n = nodeList.item(i);
-			if (ignoreNode(n)) {
-				continue;
-			}
-
-			Field field = fields.find(n.getNodeName(), null);
-			if (field == null) {
-				continue;
-			}
-
-			String value = n.getTextContent();
-			if (value == null) {
-				continue;
-			}
-
-			if (t == null) {
-				t = instanceFactory.getInstance(type);
-			}
-
-			MapperUtils.setStringValue(field, t, value);
-		}
-		return t;
-	}
-
-	public static <T> List<T> getBeanList(NoArgsInstanceFactory instanceFactory, Node rootNode, Class<T> type) {
-		if (rootNode == null) {
-			return null;
-		}
-
-		NodeList nodeList = rootNode.getChildNodes();
-		if (nodeList == null) {
-			return null;
-		}
-
-		List<T> list = new ArrayList<T>(nodeList.getLength());
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node node = nodeList.item(i);
-			if (ignoreNode(node)) {
-				continue;
-			}
-
-			T t = getBean(instanceFactory, node, type);
-			if (t == null) {
-				continue;
-			}
-			list.add(t);
-		}
-		return list;
 	}
 
 	public static boolean ignoreNode(Node node) {

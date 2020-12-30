@@ -2,8 +2,8 @@ package scw.mvc.action;
 
 import java.lang.reflect.Method;
 
-import scw.aop.MethodInvoker;
 import scw.beans.BeanFactory;
+import scw.core.reflect.MethodInvoker;
 
 public abstract class BeanAction extends AbstractAction {
 	private final BeanFactory beanFactory;

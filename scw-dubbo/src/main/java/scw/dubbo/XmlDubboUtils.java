@@ -22,6 +22,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.configure.support.ConfigureUtils;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
@@ -246,7 +247,7 @@ public final class XmlDubboUtils {
 			if (logger.isDebugEnabled()) {
 				logger.debug("{} set name={}, value={}", instance.getClass(), name, value);
 			}
-			MapperUtils.setStringValue(field, instance, value);
+			ConfigureUtils.setValue(instance, field, value);
 		}
 	}
 

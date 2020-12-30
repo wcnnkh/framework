@@ -9,11 +9,11 @@ import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
+import scw.configure.support.ConfigureUtils;
 import scw.core.Constants;
 import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
-import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
 @SPI(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
@@ -98,8 +98,8 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader {
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null, null);
-			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null, "redis.");
+			ConfigureUtils.loadProperties(jedisPoolConfig, propertyFactory, null, null);
+			ConfigureUtils.loadProperties(jedisPoolConfig, propertyFactory, null, "redis.");
 			return jedisPoolConfig;
 		}
 	}

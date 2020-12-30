@@ -182,6 +182,17 @@ public class ResolvableType implements Serializable {
 		}
 		return (rawType instanceof Class ? (Class<?>) rawType : null);
 	}
+	
+	/**
+	 * Return this type as a resolved {@code Class}, falling back to
+	 * {@link java.lang.Object} if no specific class can be resolved.
+	 * @return the resolved {@link Class} or the {@code Object} fallback
+	 * @see #getRawClass()
+	 * @see #resolve(Class)
+	 */
+	public Class<?> toClass() {
+		return resolve(Object.class);
+	}
 
 	/**
 	 * Return the underlying source of the resolvable type. Will return a {@link Field},
@@ -194,7 +205,7 @@ public class ResolvableType implements Serializable {
 		Object source = (this.typeProvider != null ? this.typeProvider.getSource() : null);
 		return (source != null ? source : this.type);
 	}
-
+	
 	/**
 	 * Determine whether the given object is an instance of this {@code ResolvableType}.
 	 * @param obj the object to check

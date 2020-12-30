@@ -27,14 +27,10 @@ import scw.core.utils.StringUtils;
 import scw.util.StringValueResolver;
 
 /**
- * Simple implementation of the {@link AliasRegistry} interface. Serves as base
- * class for
- * {@link org.springframework.beans.factory.support.BeanDefinitionRegistry}
- * implementations.
+ * Simple implementation of the {@link AliasRegistry} interface. 
  *
  */
 public class SimpleAliasRegistry implements AliasRegistry {
-
 	/** Map from alias to canonical name */
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<String, String>(16);
 

@@ -9,9 +9,9 @@ import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
+import scw.configure.support.ConfigureUtils;
 import scw.core.instance.annotation.SPI;
 import scw.io.ResourceUtils;
-import scw.util.ConfigUtils;
 
 @SPI(order = Integer.MIN_VALUE)
 public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
@@ -38,7 +38,7 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 
 		public Object create() throws Exception {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-			ConfigUtils.loadProperties(connectionFactory,
+			ConfigureUtils.loadProperties(connectionFactory,
 					ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get(), null, null);
 			return connectionFactory;
 		}

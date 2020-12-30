@@ -3,7 +3,7 @@ package scw.netflix.hystrix;
 import com.netflix.hystrix.HystrixCommand;
 
 import scw.aop.MethodInterceptorChain;
-import scw.aop.MethodInvoker;
+import scw.core.reflect.MethodInvoker;
 import scw.lang.NestedRuntimeException;
 
 public class HystrixFilterCommand extends HystrixCommand<Object> {

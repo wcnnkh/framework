@@ -1,6 +1,6 @@
 package scw.discovery.event;
 
-import scw.application.ApplicationEvent;
+import scw.boot.ApplicationEvent;
 
 public class HeartbeatEvent extends ApplicationEvent {
 	private static final long serialVersionUID = 1L;

@@ -20,7 +20,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-import scw.application.ApplicationEvent;
+import scw.boot.ApplicationEvent;
 import scw.core.reflect.ReflectionUtils;
 import scw.discovery.event.HeartbeatEvent;
 import scw.event.BasicEventDispatcher;

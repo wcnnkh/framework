@@ -1,6 +1,6 @@
 package scw.event;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 
 public abstract class ConvertibleObservable<O, T> extends AbstractObservable<T>
 		implements Converter<O, T> {

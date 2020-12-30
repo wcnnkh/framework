@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
+import scw.configure.support.ConfigureUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.utils.XTime;
 import scw.json.JSONUtils;
@@ -47,7 +48,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 			this.aLiDaYu = new DefaultAliDaYu(host, appKey, version, format, signMethod, appSecret, resultFactory);
 		}
 
-		this.modelList = XMLUtils.getBeanList(InstanceUtils.NO_ARGS_INSTANCE_FACTORY, root, MessageModel.class);
+		this.modelList = ConfigureUtils.getBeanList(InstanceUtils.NO_ARGS_INSTANCE_FACTORY, root, MessageModel.class);
 		this.codeParameterKey = XMLUtils.getNodeAttributeValue(String.class, root, "code-key", "code");
 		this.codeLength = XMLUtils.getNodeAttributeValue(Integer.class, root, "code-length", 6);
 		this.debug = XMLUtils.getNodeAttributeValue(boolean.class, root, "debug", false);

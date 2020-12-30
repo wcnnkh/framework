@@ -2,8 +2,8 @@ package scw.netflix.eureka.server;
 
 import java.util.List;
 
-import scw.application.ApplicationAware;
-import scw.application.ApplicationEvent;
+import scw.boot.ApplicationAware;
+import scw.boot.ApplicationEvent;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.netflix.eureka.server.event.EurekaInstanceCanceledEvent;
@@ -22,7 +22,7 @@ import com.netflix.eureka.resources.ServerCodecs;
 
 public class InstanceRegistry extends PeerAwareInstanceRegistryImpl implements ApplicationAware {
 	private static Logger logger = LoggerFactory.getLogger(InstanceRegistry.class);
-	private scw.application.Application application;
+	private scw.boot.Application application;
 	private int defaultOpenForTrafficCount;
 
 	public InstanceRegistry(EurekaServerConfig serverConfig, EurekaClientConfig clientConfig, ServerCodecs serverCodecs,
@@ -123,7 +123,7 @@ public class InstanceRegistry extends PeerAwareInstanceRegistryImpl implements A
 	}
 
 	@Override
-	public void setApplication(scw.application.Application application) {
+	public void setApplication(scw.boot.Application application) {
 		this.application = application;
 	}
 

@@ -1,0 +1,15 @@
+scw.aop.*
+scw.core.*
+scw.convert.*
+scw.event.*
+scw.http.client.*
+scw.io.*
+scw.json.*
+scw.lang.*
+scw.logger.*
+scw.mapper.*
+scw.math.*
+scw.net.*
+scw.script.*
+scw.util.*
+scw.xml.*

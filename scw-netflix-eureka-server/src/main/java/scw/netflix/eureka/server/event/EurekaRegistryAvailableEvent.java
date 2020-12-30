@@ -1,8 +1,8 @@
 package scw.netflix.eureka.server.event;
 
-import com.netflix.eureka.EurekaServerConfig;
+import scw.boot.ApplicationEvent;
 
-import scw.application.ApplicationEvent;
+import com.netflix.eureka.EurekaServerConfig;
 
 public class EurekaRegistryAvailableEvent extends ApplicationEvent {
 	private static final long serialVersionUID = 1L;

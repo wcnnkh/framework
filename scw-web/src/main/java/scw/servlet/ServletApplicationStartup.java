@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import scw.application.Application;
+import scw.boot.Application;
 
 public interface ServletApplicationStartup {
 	StartUp start(ServletContext servletContext) throws ServletException;
