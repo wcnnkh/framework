@@ -1,5 +1,6 @@
 package scw.beans;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -22,6 +23,8 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.Field;
+import scw.mapper.FieldFilter;
 import scw.value.property.BasePropertyFactory;
 import scw.value.property.PropertyFactory;
 
@@ -91,6 +94,18 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 			prefix = configurationProperties.value();
 		}
 		configure.setPrefix(prefix);
+		configure.getFieldFilters().add(new FieldFilter() {
+			
+			public boolean accept(Field field) {
+				//如果字段上存在beans下的注解应该忽略此字段
+				for(Annotation annotation: field.getAnnotatedElement().getAnnotations()){
+					if(annotation.annotationType().getName().startsWith("scw.beans.")){
+						return false;
+					}
+				}
+				return true;
+			}
+		});
 		configure.configuration(propertyFactory, BasePropertyFactory.class,
 				instance, beanFactory.getAop()
 						.getUserClass(instance.getClass()));

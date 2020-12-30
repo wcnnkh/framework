@@ -20,6 +20,10 @@ public class AnyValue extends SupportDefaultValue {
 		this(value, EmptyValue.INSTANCE);
 	}
 	
+	public AnyValue(Object value, ConversionService conversionService) {
+		this(value, EmptyValue.INSTANCE, conversionService);
+	}
+	
 	public AnyValue(Object value, Value defaultValue){
 		this(value, defaultValue, null);
 	}
@@ -43,7 +47,7 @@ public class AnyValue extends SupportDefaultValue {
 
 	public Object getValue() {
 		if (value instanceof AnyValue) {
-			return ((AnyValue) value).value;
+			return ((AnyValue) value).getValue();
 		}
 		return value;
 	}

@@ -32,7 +32,7 @@ public class ConversionServiceFactory implements ConversionService,
 		
 		conversionServices.add(new MapToMapConversionService(this));
 		
-		conversionServices.add(new ValueConversionService());
+		conversionServices.add(new ValueConversionService(this));
 		conversionServices.add(new JsonConversionService(JSONUtils.getJsonSupport()));
 		
 		conversionServices.add(new ConverterConversionService(String.class, Charset.class, new StringToCharsetConverter()));
