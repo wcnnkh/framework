@@ -3,9 +3,7 @@ package scw.configure.support;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,21 +21,13 @@ import scw.convert.ConversionService;
 import scw.core.Constants;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
-import scw.core.utils.ClassUtils;
-import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
 import scw.mapper.Field;
-import scw.mapper.FieldFilter;
 import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
-import scw.value.Value;
-import scw.value.property.PropertyFactory;
 import scw.xml.XMLUtils;
 
 public final class ConfigureUtils {
@@ -60,8 +50,6 @@ public final class ConfigureUtils {
 
 	private ConfigureUtils() {
 	};
-
-	private static Logger logger = LoggerUtils.getLogger(ConfigureUtils.class);
 
 	public static ConfigureFactory getConfigureFactory() {
 		return CONFIGURE_FACTORY;
@@ -213,86 +201,6 @@ public final class ConfigureUtils {
 		}
 
 		return map;
-	}
-
-	public static void loadProperties(Object instance,
-			PropertyFactory propertyFactory, Collection<String> asNameList,
-			String propertyPrefix) {
-		loadProperties(instance, propertyFactory, asNameList, propertyPrefix,
-				new FieldFilter() {
-
-					public boolean accept(Field field) {
-						return isCommonConfigType(field.getSetter().getType());
-					}
-				});
-	}
-
-	public static boolean isCommonConfigType(Class<?> type) {
-		if (String.class == type || ClassUtils.isPrimitiveOrWrapper(type)
-				|| type == Class.class) {
-			return true;
-		}
-
-		if (type.isArray()) {
-			return isCommonConfigType(type.getComponentType());
-		}
-		return false;
-	}
-
-	public static void loadProperties(Object instance,
-			PropertyFactory propertyFactory, Collection<String> asNameList,
-			String propertyPrefix, FieldFilter fieldFilter) {
-		List<String> nameList = null;
-		if (!CollectionUtils.isEmpty(asNameList)) {
-			nameList = new ArrayList<String>(asNameList);
-		}
-
-		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(),
-				FilterFeature.SETTER.getFilter(), fieldFilter);
-		for (Field field : fields) {
-			String name = field.getSetter().getName();
-			Value value = propertyFactory.getValue(StringUtils
-					.isEmpty(propertyPrefix) ? name : (propertyPrefix + name));
-			if (value == null && nameList != null) {
-				Iterator<String> iterator = nameList.iterator();
-				while (iterator.hasNext()) {
-					String asNames = iterator.next();
-					if (StringUtils.isEmpty(asNames)) {
-						iterator.remove();
-						continue;
-					}
-
-					String[] names = StringUtils.commonSplit(asNames);
-					for (String asName : names) {
-						if (asName.equals(name)) {
-							for (String n : names) {
-								value = propertyFactory.getValue(StringUtils
-										.isEmpty(propertyPrefix) ? n
-										: (propertyPrefix + n));
-								if (value != null) {
-									break;
-								}
-							}
-							break;
-						}
-					}
-
-					if (value != null) {
-						iterator.remove();
-						break;
-					}
-				}
-			}
-
-			if (value == null) {
-				continue;
-			}
-
-			logger.info("Property {} on target {} set value {}", name, instance
-					.getClass().getName(), value);
-			field.getSetter().set(instance,
-					value.getAsObject(field.getSetter().getGenericType()));
-		}
 	}
 
 	public static <T> T getBean(NoArgsInstanceFactory instanceFactory, Node node, Class<T> type) {

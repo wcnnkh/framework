@@ -7,7 +7,9 @@ import scw.convert.TypeDescriptor;
 import scw.io.Resource;
 import scw.yaml.YamlProperties;
 
-
+/*
+ * 需要引入scw-yaml模块
+ */
 public class YamlResourceResolver extends AbstractResourceResolver{
 	static{
 		//classloader判断此类是否可用
