@@ -11,6 +11,7 @@ import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.complete.CompleteService;
 import scw.configure.support.ConfigureUtils;
+import scw.configure.support.MapConfigure;
 import scw.core.instance.annotation.SPI;
 import scw.io.ResourceUtils;
 import scw.io.SerializerUtils;
@@ -112,7 +113,9 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		public Object create() throws Exception {
 			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
-			ConfigureUtils.loadProperties(exchangeDeclare, properties, null, "exchange.");
+			MapConfigure configure = new MapConfigure(ConfigureUtils.getConfigureFactory());
+			configure.setPrefix("exchange");
+			configure.configuration(properties, Properties.class, exchangeDeclare, ExchangeDeclare.class);
 			return exchangeDeclare;
 		}
 	}

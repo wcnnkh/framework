@@ -87,9 +87,17 @@ public class ConfigureFactory extends ConversionServiceFactory implements
 		configuration(source, TypeDescriptor.forObject(source), target,
 				targetType);
 	}
+	
+	public final void configuration(Object source, Object target) {
+		if(source == null || target == null){
+			return ;
+		}
+		
+		configuration(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
+	}
 
 	public void configuration(Object source, Class<?> sourceType,
 			Object target, Class<?> targetType) {
-		configuration(source, TypeDescriptor.valueOf(sourceType), target, TypeDescriptor.valueOf(targetType));;
+		configuration(source, TypeDescriptor.valueOf(sourceType), target, TypeDescriptor.valueOf(targetType));
 	}
 }

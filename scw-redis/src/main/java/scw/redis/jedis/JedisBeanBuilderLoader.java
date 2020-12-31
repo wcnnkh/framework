@@ -10,6 +10,8 @@ import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
 import scw.configure.support.ConfigureUtils;
+import scw.configure.support.EntityConfigure;
+import scw.configure.support.PropertyFactoryConfigure;
 import scw.core.Constants;
 import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
@@ -98,8 +100,11 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader {
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			ConfigureUtils.loadProperties(jedisPoolConfig, propertyFactory, null, null);
-			ConfigureUtils.loadProperties(jedisPoolConfig, propertyFactory, null, "redis.");
+			EntityConfigure entityConfigure = new PropertyFactoryConfigure(ConfigureUtils.getConfigureFactory());
+			entityConfigure.configuration(propertyFactory, PropertyFactory.class, jedisPoolConfig, JedisPoolConfig.class);
+			entityConfigure.setPrefix("redis");
+			entityConfigure.setStrict(true);
+			entityConfigure.configuration(propertyFactory, PropertyFactory.class, jedisPoolConfig, JedisPoolConfig.class);
 			return jedisPoolConfig;
 		}
 	}

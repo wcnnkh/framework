@@ -13,6 +13,7 @@ public class PropertyFactoryConfigure extends EntityConfigure{
 	
 	public PropertyFactoryConfigure(ConversionService conversionService) {
 		super(conversionService);
+		setStrict(false);//默认非严格模式
 	}
 
 	@Override

@@ -30,7 +30,7 @@ import scw.util.StringValueResolver;
  * Simple implementation of the {@link AliasRegistry} interface. 
  *
  */
-public class SimpleAliasRegistry implements AliasRegistry {
+public class SimpleAliasRegistry implements AliasRegistry, Cloneable {
 	/** Map from alias to canonical name */
 	private final Map<String, String> aliasMap = new ConcurrentHashMap<String, String>(16);
 
@@ -209,4 +209,10 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		return canonicalName;
 	}
 
+	@Override
+	public SimpleAliasRegistry clone() {
+		SimpleAliasRegistry aliasRegistry = new SimpleAliasRegistry();
+		aliasRegistry.aliasMap.putAll(this.aliasMap);
+		return aliasRegistry;
+	}
 }

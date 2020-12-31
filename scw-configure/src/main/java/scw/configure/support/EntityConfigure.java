@@ -10,6 +10,8 @@ import scw.convert.TypeDescriptor;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.mapper.EditableFieldFilters;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
@@ -19,6 +21,7 @@ import scw.mapper.MapperUtils;
 import scw.util.alias.AliasRegistry;
 
 public abstract class EntityConfigure extends ConditionalConfigure implements Configure{
+	private static Logger logger = LoggerFactory.getLogger(EntityConfigure.class);
 	private static final String CONNECTOR = ".";
 	private AliasRegistry aliasRegistry;
 	private boolean ignoreStaticField = true;
@@ -26,6 +29,7 @@ public abstract class EntityConfigure extends ConditionalConfigure implements Co
 	private String prefix;
 	private String connector;
 	private final ConversionService conversionService;
+	private boolean strict = true;//默认是严格模式
 
 	public EntityConfigure(ConversionService conversionService) {
 		this.conversionService = conversionService;
@@ -37,6 +41,14 @@ public abstract class EntityConfigure extends ConditionalConfigure implements Co
 
 	public void setAliasRegistry(AliasRegistry aliasRegistry) {
 		this.aliasRegistry = aliasRegistry;
+	}
+
+	public boolean isStrict() {
+		return strict;
+	}
+
+	public void setStrict(boolean strict) {
+		this.strict = strict;
 	}
 
 	public boolean isIgnoreStaticField() {
@@ -94,7 +106,7 @@ public abstract class EntityConfigure extends ConditionalConfigure implements Co
 		return map;
 	}
 
-	private Object getProperty(Object source, String name, String prefix, AliasRegistry aliasRegistry) {
+	private Object getProperty(Object source, String name, String prefix) {
 		Object value = getProperty(source, prefix + name);
 		if (value == null && aliasRegistry != null) {
 			String[] names = aliasRegistry.getAliases(name);
@@ -110,13 +122,13 @@ public abstract class EntityConfigure extends ConditionalConfigure implements Co
 		return value;
 	}
 
-	private Object getProperty(Object source, Field field, String prefix, AliasRegistry aliasRegistry) {
+	private Object getProperty(Object source, Field field, String prefix) {
 		String name = field.getSetter().getName();
-		Object value = getProperty(source, name, prefix, aliasRegistry);
+		Object value = getProperty(source, name, prefix);
 		if (value == null) {
 			name = StringUtils.humpNamingReplacement(field.getSetter()
 					.getName(), "-");
-			value = getProperty(source, name, prefix, aliasRegistry);
+			value = getProperty(source, name, prefix);
 		}
 		return value;
 	}
@@ -162,8 +174,14 @@ public abstract class EntityConfigure extends ConditionalConfigure implements Co
 		String connector = getConnector();
 		String prefix = getPrefix();
 		prefix = StringUtils.isEmpty(prefix) ? "" : (prefix + connector);
-		for (Field field : getFields(targetType.getType())) {
-			Object value = getProperty(source, field, prefix, getAliasRegistry());
+		Fields fields = getFields(targetType.getType());
+		if(isStrict()){
+			strictConfiguration(fields, source, sourceType, target, targetType, prefix);
+			return ;
+		}
+		
+		for (Field field : fields) {
+			Object value = getProperty(source, field, prefix);
 			if (value == null) {
 				if (field.getSetter().getType() == Map.class) {
 					Map<String, Object> valueMap = getMapProperty(source,
@@ -175,9 +193,46 @@ public abstract class EntityConfigure extends ConditionalConfigure implements Co
 			}
 			
 			if(value != null){
-				value = conversionService.convert(value, sourceType.narrow(value),
-						new TypeDescriptor(field.getSetter()));
-				field.getSetter().set(target, value);
+				setValue(field, value, sourceType, target, targetType);
+			}
+		}
+	}
+	
+	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target, TypeDescriptor targetType){
+		Object valueToUse = conversionService.convert(value, sourceType.narrow(value),
+				new TypeDescriptor(field.getSetter()));
+		if(logger.isDebugEnabled()){
+			logger.debug("Property {} on target {} set value {}", field.getSetter().getName(), targetType.getType(), valueToUse);
+		}
+		field.getSetter().set(target, valueToUse);
+	}
+	
+	protected void strictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType, String prefix){
+		Enumeration<String> keys = keys(source);
+		while(keys.hasMoreElements()){
+			String originKey = keys.nextElement();
+			String name = originKey;
+			if(StringUtils.isNotEmpty(prefix) && name.startsWith(prefix)){
+				name = name.substring(prefix.length());
+			}
+			
+			Field field = fields.find(name, null);
+			if(field == null && aliasRegistry != null){
+				for(String alias : aliasRegistry.getAliases(name)){
+					field = fields.find(alias, null);
+					if(field != null){
+						break;
+					}
+				}
+			}
+			
+			if(field == null){
+				continue;
+			}
+			
+			Object value = getProperty(source, originKey);
+			if(value != null){
+				setValue(field, value, sourceType, target, targetType);
 			}
 		}
 	}

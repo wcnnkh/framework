@@ -5,6 +5,8 @@ import scw.convert.TypeDescriptor;
 public interface Configure{
 	boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType);
 	
+	void configuration(Object source, Object target);
+	
 	void configuration(Object source, Class<?> sourceType, Object target,
 			Class<?> targetType);
 	

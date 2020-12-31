@@ -62,7 +62,6 @@ public final class ConfigureUtils {
 	};
 
 	private static Logger logger = LoggerUtils.getLogger(ConfigureUtils.class);
-	private static final String LOG_MESSAGE = "Property {} on target {} set value {}";
 
 	public static ConfigureFactory getConfigureFactory() {
 		return CONFIGURE_FACTORY;
@@ -293,85 +292,6 @@ public final class ConfigureUtils {
 					.getClass().getName(), value);
 			field.getSetter().set(instance,
 					value.getAsObject(field.getSetter().getGenericType()));
-		}
-	}
-
-	public static void loadProperties(Object instance, Map<?, ?> properties,
-			Collection<String> asNameList, String propertyPrefix) {
-		loadProperties(instance, properties, asNameList, propertyPrefix,
-				new FieldFilter() {
-
-					public boolean accept(Field field) {
-						return isCommonConfigType(field.getSetter().getType());
-					}
-				});
-	}
-
-	public static void loadProperties(Object instance, Map<?, ?> properties,
-			Collection<String> asNameList, String propertyPrefix,
-			FieldFilter fieldFilter) {
-		if (properties == null) {
-			return;
-		}
-
-		List<String> nameList = null;
-		if (!CollectionUtils.isEmpty(asNameList)) {
-			nameList = new ArrayList<String>(asNameList);
-		}
-
-		Map<String, String> map = new LinkedHashMap<String, String>();
-		for (Entry<?, ?> entry : properties.entrySet()) {
-			Object key = entry.getKey();
-			Object value = entry.getValue();
-			if (key == null || value == null) {
-				continue;
-			}
-			map.put(key.toString(), value.toString());
-		}
-
-		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(),
-				FilterFeature.SETTER.getFilter(), fieldFilter);
-		for (Field field : fields) {
-			String name = field.getSetter().getName();
-			String value = null;
-			if (CollectionUtils.isEmpty(nameList)) {
-				value = map.remove(StringUtils.isEmpty(propertyPrefix) ? name
-						: (propertyPrefix + name));
-			} else {
-				Iterator<String> iterator = nameList.iterator();
-				while (iterator.hasNext()) {
-					String asNames = iterator.next();
-					if (StringUtils.isEmpty(asNames)) {
-						iterator.remove();
-						continue;
-					}
-
-					String[] names = StringUtils.commonSplit(asNames);
-					for (String asName : names) {
-						if (asName.equals(name)) {
-							for (String n : names) {
-								String useName = StringUtils
-										.isEmpty(propertyPrefix) ? n
-										: (propertyPrefix + n);
-								value = map.get(useName);
-								if (value != null) {
-									map.remove(useName);
-									iterator.remove();
-									break;
-								}
-							}
-							break;
-						}
-					}
-				}
-			}
-
-			if (value == null) {
-				continue;
-			}
-
-			logger.info(LOG_MESSAGE, name, instance.getClass().getName(), value);
-			ConfigureUtils.setValue(instance, field, value);
 		}
 	}
 

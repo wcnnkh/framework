@@ -3,16 +3,18 @@ package scw.db;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Enumeration;
 
 import scw.configure.support.ConfigureUtils;
+import scw.configure.support.EntityConfigure;
+import scw.configure.support.PropertyFactoryConfigure;
 import scw.core.utils.StringUtils;
 import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
 import scw.lang.NotSupportedException;
+import scw.util.alias.SimpleSafeAliasRegistry;
 import scw.value.property.PropertyFactory;
 
 public final class DBUtils {
@@ -20,13 +22,32 @@ public final class DBUtils {
 
 	private DBUtils() {
 	};
-
-	public static void loadProperties(Object instance, PropertyFactory properties) {
-		ConfigureUtils.loadProperties(instance, properties, Arrays.asList(
-				"jdbcUrl,url,host", "username,user", "password",
-				"minSize,initialSize,minimumIdle",
-				"maxSize,maxActive,maximumPoolSize",
-				"driver,driverClass,driverClassName"), null);
+	
+	public static SimpleSafeAliasRegistry getCommonPropertiesAliasRegistry(){
+		SimpleSafeAliasRegistry aliasRegistry = new SimpleSafeAliasRegistry();
+		aliasRegistry.registerAlias("url", "jdbcUrl");
+		aliasRegistry.registerAlias("jdbcUrl", "host");
+		
+		aliasRegistry.registerAlias("username", "user");
+		
+		aliasRegistry.registerAlias("password", "pwd");
+		
+		aliasRegistry.registerAlias("minSize", "initialSize");
+		aliasRegistry.registerAlias("initialSize", "minimumIdle");
+		
+		aliasRegistry.registerAlias("maxSize", "maxActive");
+		aliasRegistry.registerAlias("maxActive", "maximumPoolSize");
+		
+		aliasRegistry.registerAlias("driver", "driverClass");
+		aliasRegistry.registerAlias("driverClass", "driverClassName");
+		return aliasRegistry;
+	}
+	
+	public static void loadProperties(Object instance, PropertyFactory propertyFactory) {
+		EntityConfigure configure = new PropertyFactoryConfigure(ConfigureUtils.getConfigureFactory());
+		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
+		configure.setStrict(true);
+		configure.configuration(propertyFactory, instance);
 	}
 	
 	/**
