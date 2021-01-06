@@ -1,6 +1,8 @@
 package scw.convert.support;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -48,6 +50,16 @@ public class ConversionServiceFactory extends ConvertibleConditionalComparator<O
 		return convert(source,
 				source == null ? null : TypeDescriptor.forObject(source),
 				targetType);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public final <K, V> Map<K, V> convertToMap(Object source, Class<K> keyType, Class<V> valueType){
+		return (Map<K, V>) convert(source, TypeDescriptor.map(Map.class, keyType, valueType));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public final <E> Collection<E> convertToCollection(Object source, Class<E> elementType){
+		return (Collection<E>) convert(source, TypeDescriptor.collection(Collection.class, elementType));
 	}
 
 	public Object convert(Object source, TypeDescriptor sourceType,

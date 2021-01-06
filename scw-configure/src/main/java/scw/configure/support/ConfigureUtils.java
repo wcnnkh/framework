@@ -1,7 +1,6 @@
 package scw.configure.support;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import scw.configure.Configure;
@@ -74,26 +73,26 @@ public final class ConfigureUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <K, V> Map<K, V> resolveToMap(Resource resource, Class<?> mapType, TypeDescriptor keyType, TypeDescriptor valueType, PrimaryKeyGetter primaryKeyGetter){
+	public static <K, V> Map<K, V> resolveToMap(Resource resource, TypeDescriptor keyType, TypeDescriptor valueType, PrimaryKeyGetter primaryKeyGetter){
 		CollectionToMapConversionService service = new CollectionToMapConversionService(getConversionServiceFactory(), primaryKeyGetter);
-		return (Map<K, V>) service.convert(resource, TypeDescriptor.forObject(resource), TypeDescriptor.map(mapType, keyType, valueType));
+		return (Map<K, V>) service.convert(resource, TypeDescriptor.forObject(resource), TypeDescriptor.map(Map.class, keyType, valueType));
 	}
 	
 	public static <K, V> Map<K, V> resolveToMap(Resource resource, Class<K> keyType, Class<V> valueType){
-		return resolveToMap(resource, Map.class, TypeDescriptor.valueOf(keyType), TypeDescriptor.valueOf(valueType), getPrimaryKeyGetterFactory());
+		return resolveToMap(resource, TypeDescriptor.valueOf(keyType), TypeDescriptor.valueOf(valueType), getPrimaryKeyGetterFactory());
 	}
 	
 	public static <K, V> Map<K, V> resolveToMap(String resource, Class<K> keyType, Class<V> valueType){
-		return resolveToMap(ResourceUtils.getResourceOperations().getResource(resource), Map.class, TypeDescriptor.valueOf(keyType), TypeDescriptor.valueOf(valueType), getPrimaryKeyGetterFactory());
+		return resolveToMap(ResourceUtils.getResourceOperations().getResource(resource), TypeDescriptor.valueOf(keyType), TypeDescriptor.valueOf(valueType), getPrimaryKeyGetterFactory());
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <E> Collection<E> resolveToCollection(Resource resource, Class<?> collectionType, TypeDescriptor elementType){
-		return (Collection<E>) getResourceResolverFactory().resolve(resource, TypeDescriptor.collection(collectionType, elementType));
+	public static <E> Collection<E> resolveToCollection(Resource resource, TypeDescriptor elementType){
+		return (Collection<E>) getResourceResolverFactory().resolve(resource, TypeDescriptor.collection(Collection.class, elementType));
 	}
 	
 	public static <E> Collection<E> resolveToCollection(Resource resource, Class<E> elementType){
-		return resolveToCollection(resource, List.class, TypeDescriptor.valueOf(elementType));
+		return resolveToCollection(resource, TypeDescriptor.valueOf(elementType));
 	}
 	
 	public static <E> Collection<E> resolveToCollection(String resource, Class<E> elementType){

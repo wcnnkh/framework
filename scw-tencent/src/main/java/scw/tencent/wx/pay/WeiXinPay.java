@@ -9,6 +9,7 @@ import javax.net.ssl.SSLSocketFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import scw.configure.support.ConfigureUtils;
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -213,8 +214,9 @@ public class WeiXinPay {
 		}
 
 		logger.debug("请求：{}，返回{}", url, res);
-
-		Map<String, String> map = XMLUtils.xmlToMap(res);
+		
+		Document responseDocument = XMLUtils.parse(res);
+		Map<String, String> map = ConfigureUtils.getConversionServiceFactory().convertToMap(responseDocument, String.class, String.class);
 		JsonObject jsonObject = JSONUtils.parseObject(JSONUtils.toJSONString(map));
 		return new WeiXinPayResponse(jsonObject);
 	}

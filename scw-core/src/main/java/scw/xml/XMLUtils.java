@@ -346,25 +346,6 @@ public final class XMLUtils {
 		return content;
 	}
 
-	public static LinkedHashMap<String, String> xmlToMap(Node node) {
-		NodeList nodeList = node.getChildNodes();
-		LinkedHashMap<String, String> map = new LinkedHashMap<String, String>();
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			Node n = nodeList.item(i);
-			if (ignoreNode(n)) {
-				continue;
-			}
-
-			map.put(n.getNodeName(), n.getTextContent());
-		}
-		return map;
-	}
-
-	public static LinkedHashMap<String, String> xmlToMap(String text) {
-		Document document = parse(text);
-		return xmlToMap(document.getDocumentElement());
-	}
-
 	@SuppressWarnings("rawtypes")
 	private static void appendElement(Document document, Element parent, String name, Object value) {
 		if (value == null) {

@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.configure.support.ConfigureUtils;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
@@ -49,8 +50,8 @@ public class XmlHttpAuthorityManager extends
 			if (node == null) {
 				continue;
 			}
-
-			Map<String, String> map = XMLUtils.xmlToMap(node);
+			
+			Map<String, String> map = ConfigureUtils.getConversionServiceFactory().convertToMap(node, String.class, String.class);
 			if (map.isEmpty()) {
 				continue;
 			}
