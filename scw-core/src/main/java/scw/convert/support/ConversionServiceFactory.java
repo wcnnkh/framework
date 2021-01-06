@@ -1,56 +1,22 @@
 package scw.convert.support;
 
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Currency;
-import java.util.Locale;
 import java.util.SortedSet;
-import java.util.TimeZone;
 import java.util.TreeSet;
 
 import scw.convert.ConversionService;
 import scw.convert.ConverterNotFoundException;
 import scw.convert.TypeDescriptor;
-import scw.json.JSONUtils;
+import scw.util.XUtils;
 
-public class ConversionServiceFactory implements ConversionService,
-		Comparator<Object>, Comparable<Object> {
-	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(
+public class ConversionServiceFactory extends ConvertibleConditionalComparator<Object> implements ConversionService, Comparable<Object> {
+	protected final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(
 			this);
-
-	public ConversionServiceFactory() {
-		conversionServices.add(new ArrayToArrayConversionService(this));
-		conversionServices.add(new ArrayToCollectionConversionService(this));
-		
-		conversionServices.add(new ByteBufferConversionService(this));
-		
-		conversionServices.add(new CollectionToArrayConversionService(this));
-		conversionServices.add(new CollectionToCollectionConversionService(this));
-		conversionServices.add(new CollectionToObjectConversionService(this));
-		
-		conversionServices.add(new MapToMapConversionService(this));
-		
-		conversionServices.add(new ValueConversionService(this));
-		conversionServices.add(new JsonConversionService(JSONUtils.getJsonSupport()));
-		
-		conversionServices.add(new ConverterConversionService(String.class, Charset.class, new StringToCharsetConverter()));
-		conversionServices.add(new ConverterConversionService(String.class, Locale.class, new StringToLocaleConverter()));
-		conversionServices.add(new ConverterConversionService(String.class, TimeZone.class, new StringToTimeZoneConverter()));
-		conversionServices.add(new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
-		
-		conversionServices.add(new EntityToMapConversionService(this));
-		conversionServices.add(new ConverterConversionService(Object.class,
-				String.class, new ObjectToStringConverter()));
-		conversionServices.add(new ObjectToArrayConversionService(this));
-		conversionServices.add(new ObjectToCollectionConversionService(this));
-	}
 
 	public ConversionService getConversionService(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		for (ConversionService service : conversionServices) {
-			if (service.canConvert(sourceType, targetType)) {
+			if (service.isSupported(sourceType, targetType)) {
 				return service;
 			}
 		}
@@ -58,13 +24,13 @@ public class ConversionServiceFactory implements ConversionService,
 	}
 
 	public SortedSet<ConversionService> getConversionServices() {
-		return Collections.synchronizedSortedSet(conversionServices);
+		return XUtils.synchronizedProxy(conversionServices, this);
 	}
 
-	public boolean canConvert(TypeDescriptor sourceType,
+	public boolean isSupported(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		for (ConversionService service : conversionServices) {
-			if (service.canConvert(sourceType, targetType)) {
+			if (service.isSupported(sourceType, targetType)) {
 				return true;
 			}
 		}
@@ -86,8 +52,16 @@ public class ConversionServiceFactory implements ConversionService,
 
 	public Object convert(Object source, TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
+		if(sourceType != null && targetType != null && targetType.isAssignableTo(sourceType)){
+			return source;
+		}
+		
+		if(targetType.getType() == Object.class){
+			return source;
+		}
+		
 		for (ConversionService service : conversionServices) {
-			if (service.canConvert(sourceType, targetType)) {
+			if (service.isSupported(sourceType, targetType)) {
 				return service.convert(source, sourceType, targetType);
 			}
 		}
@@ -101,10 +75,5 @@ public class ConversionServiceFactory implements ConversionService,
 			}
 		}
 		return -1;
-	}
-
-	public int compare(Object o1, Object o2) {
-		return ConvertibleConditionalComparator.INSTANCE.compare(o1, o2) == 1 ? 1
-				: -1;
 	}
 }

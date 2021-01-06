@@ -113,7 +113,7 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 		public Object create() throws Exception {
 			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
-			MapConfigure configure = new MapConfigure(ConfigureUtils.getConfigureFactory());
+			MapConfigure configure = new MapConfigure(ConfigureUtils.getConversionServiceFactory());
 			configure.setPrefix("exchange");
 			configure.configuration(properties, Properties.class, exchangeDeclare, ExchangeDeclare.class);
 			return exchangeDeclare;

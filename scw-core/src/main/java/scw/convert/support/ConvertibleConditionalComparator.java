@@ -20,6 +20,6 @@ public class ConvertibleConditionalComparator<T> implements Comparator<T>{
 				}
 			}
 		}
-		return ComparableComparator.INSTANCE.compare(o1, o2) == 1? 1:0;
+		return ComparableComparator.INSTANCE.compare(o1, o2) == 1? 1:-1;
 	}
 }

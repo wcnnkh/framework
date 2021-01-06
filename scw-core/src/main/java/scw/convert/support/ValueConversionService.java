@@ -21,11 +21,12 @@ public class ValueConversionService extends AbstractConversionService {
 		}
 		return value.getAsObject(targetType.getResolvableType().getType());
 	}
-
-	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
-		return ValueUtils.isBaseType(sourceType)
-				|| Value.class.isAssignableFrom(sourceType)
-				|| ValueUtils.isBaseType(targetType)
-				|| targetType == Value.class || AnyValue.class == targetType;
+	
+	public boolean isSupported(TypeDescriptor sourceType,
+			TypeDescriptor targetType) {
+		return ValueUtils.isBaseType(sourceType.getType())
+				|| Value.class.isAssignableFrom(sourceType.getType())
+				|| ValueUtils.isBaseType(targetType.getType())
+				|| targetType.getType() == Value.class || AnyValue.class == targetType.getType();
 	}
 }

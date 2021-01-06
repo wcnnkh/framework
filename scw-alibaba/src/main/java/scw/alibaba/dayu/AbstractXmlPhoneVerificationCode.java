@@ -8,7 +8,7 @@ import java.util.Map;
 import org.w3c.dom.Node;
 
 import scw.configure.support.ConfigureUtils;
-import scw.core.instance.InstanceUtils;
+import scw.convert.TypeDescriptor;
 import scw.core.utils.XTime;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
@@ -31,6 +31,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 	private final AliDaYu aLiDaYu;
 	private final ResultFactory resultFactory;
 
+	@SuppressWarnings("unchecked")
 	public AbstractXmlPhoneVerificationCode(String xmlPath, ResultFactory resultFactory)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		this.resultFactory = resultFactory;
@@ -47,8 +48,8 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		} else {
 			this.aLiDaYu = new DefaultAliDaYu(host, appKey, version, format, signMethod, appSecret, resultFactory);
 		}
-
-		this.modelList = ConfigureUtils.getBeanList(InstanceUtils.NO_ARGS_INSTANCE_FACTORY, root, MessageModel.class);
+		
+		this.modelList = (List<MessageModel>) ConfigureUtils.getConversionServiceFactory().convert(root, TypeDescriptor.collection(List.class, MessageModel.class));
 		this.codeParameterKey = XMLUtils.getNodeAttributeValue(String.class, root, "code-key", "code");
 		this.codeLength = XMLUtils.getNodeAttributeValue(Integer.class, root, "code-length", 6);
 		this.debug = XMLUtils.getNodeAttributeValue(boolean.class, root, "debug", false);

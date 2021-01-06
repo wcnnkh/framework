@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import scw.configure.support.ConfigureUtils;
 import scw.configure.support.EntityConfigure;
 import scw.configure.support.PropertyFactoryConfigure;
+import scw.convert.TypeDescriptor;
 import scw.core.utils.StringUtils;
 import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
@@ -44,10 +45,10 @@ public final class DBUtils {
 	}
 	
 	public static void loadProperties(Object instance, PropertyFactory propertyFactory) {
-		EntityConfigure configure = new PropertyFactoryConfigure(ConfigureUtils.getConfigureFactory());
+		EntityConfigure configure = new PropertyFactoryConfigure(ConfigureUtils.getConversionServiceFactory());
 		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
 		configure.setStrict(true);
-		configure.configuration(propertyFactory, instance);
+		configure.configuration(propertyFactory, TypeDescriptor.forObject(propertyFactory), instance, TypeDescriptor.forObject(instance));
 	}
 	
 	/**

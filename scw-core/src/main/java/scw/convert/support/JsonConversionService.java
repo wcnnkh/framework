@@ -15,8 +15,9 @@ public class JsonConversionService extends AbstractConversionService{
 		return JsonElement.class.isAssignableFrom(type);
 	}
 	
-	public boolean canConvert(Class<?> sourceType, Class<?> targetType) {
-		return isJsonType(sourceType) || isJsonType(targetType);
+	public boolean isSupported(TypeDescriptor sourceType,
+			TypeDescriptor targetType) {
+		return isJsonType(sourceType.getType()) || isJsonType(targetType.getType());
 	}
 
 	public Object convert(Object source, TypeDescriptor sourceType,

@@ -88,7 +88,7 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 	protected void configurationProperties(
 			ConfigurationProperties configurationProperties, Object instance) {
 		PropertyFactoryConfigure configure = new PropertyFactoryConfigure(
-				ConfigureUtils.getConfigureFactory());
+				ConfigureUtils.getConversionServiceFactory());
 		configure.setStrict(false);
 		String prefix = configurationProperties.prefix();
 		if (StringUtils.isEmpty(prefix)) {

@@ -40,6 +40,7 @@ import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
+import scw.util.Accept;
 import scw.util.KeyValuePair;
 import scw.util.ToMap;
 import scw.util.XUtils;
@@ -216,6 +217,15 @@ public final class XMLUtils {
 		}
 
 		return include ? converIncludeNodeList(node.getChildNodes(), new HashSet<String>()) : node.getChildNodes();
+	}
+	
+	public static List<Object> toRecursionList(Node node){
+		return toList(node, new Converter<Node, Object>() {
+
+			public Object convert(Node o) {
+				return toRecursionMap(o);
+			}
+		});
 	}
 
 	/**
@@ -548,6 +558,46 @@ public final class XMLUtils {
 			throw new NotFoundException("not found attribute " + name);
 		}
 		return value;
+	}
+	
+	public static NodeList toNodeList(final NamedNodeMap namedNodeMap){
+		if(namedNodeMap == null){
+			return null;
+		}
+		
+		return new NodeList() {
+			
+			public Node item(int index) {
+				return namedNodeMap.item(index);
+			}
+			
+			public int getLength() {
+				return namedNodeMap.getLength();
+			}
+		};
+	}
+	
+	public static Node findNode(NodeList nodeList, Accept<Node> accept){
+		if(nodeList == null){
+			return null;
+		}
+		
+		int len = nodeList.getLength();
+		if(len == 0){
+			return null;
+		}
+		
+		for(int i=0; i<len; i++){
+			Node item = nodeList.item(i);
+			if(item == null){
+				continue;
+			}
+			
+			if(accept.accept(item)){
+				return item;
+			}
+		}
+		return null;
 	}
 }
 

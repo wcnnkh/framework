@@ -42,7 +42,7 @@ public interface ConversionService{
 	 * {@code false} if not
 	 * @throws IllegalArgumentException if {@code targetType} is {@code null}
 	 */
-	boolean canConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType);
+	boolean isSupported(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType);
 
 	/**
 	 * Convert the given {@code source} to the specified {@code targetType}.

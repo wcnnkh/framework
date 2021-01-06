@@ -8,7 +8,7 @@ import scw.core.utils.ClassUtils;
 public abstract class ConditionalConfigure extends AbstractConfigure implements
 		ConvertibleConditional {
 
-	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public boolean isSupported(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConvertiblePair pair : getConvertibleTypes()) {
 			if ((sourceType == null || ClassUtils.isAssignable(
 					pair.getSourceType(), sourceType.getType()))

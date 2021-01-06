@@ -1,65 +1,52 @@
 package scw.configure.support;
 
-import java.util.Collections;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import scw.configure.Configure;
 import scw.convert.TypeDescriptor;
-import scw.convert.support.ConversionServiceFactory;
+import scw.convert.support.ConvertibleConditionalComparator;
 import scw.convert.support.ConvertiblePair;
-import scw.core.instance.InstanceUtils;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.lang.NotSupportedException;
 import scw.lang.Nullable;
-import scw.value.property.BasePropertyFactory;
+import scw.util.XUtils;
 
-public class ConfigureFactory extends ConversionServiceFactory implements
-		Configure {
-	private final TreeSet<Configure> configurations = new TreeSet<Configure>(
+public class ConfigureFactory extends ConvertibleConditionalComparator<Object> implements Configure, Comparable<Object> {
+	protected final TreeSet<Configure> configures = new TreeSet<Configure>(
 			this);
-
-	public ConfigureFactory() {
-		this(InstanceUtils.INSTANCE_FACTORY);
-	}
-
-	public ConfigureFactory(NoArgsInstanceFactory instanceFactory) {
-		configurations.add(new MapConfigure(this));
-		configurations.add(new PropertyFactoryConfigure(this));
-		getConversionServices().add(
-				new ConfigureConversionService(this, instanceFactory,
-						Collections.singleton(new ConvertiblePair(Map.class,
-								Object.class))));
-		getConversionServices().add(
-				new ConfigureConversionService(this, instanceFactory,
-						Collections.singleton(new ConvertiblePair(
-								BasePropertyFactory.class, Object.class))));
+	
+	public int compareTo(Object o) {
+		for (Configure configure : configures) {
+			if (ConvertibleConditionalComparator.INSTANCE.compare(configure, o) == 1) {
+				return 1;
+			}
+		}
+		return -1;
 	}
 	
-	public SortedSet<Configure> getConfigurations() {
-		return Collections.synchronizedSortedSet(configurations);
+	public SortedSet<Configure> getConfigures() {
+		return XUtils.synchronizedProxy(configures, this);
 	}
 	
-	public final Configure getConfiguration(Class<?> sourceType,
+	public final Configure getConfigure(Class<?> sourceType,
 			Class<?> targetType) {
-		return getConfiguration(TypeDescriptor.valueOf(sourceType), TypeDescriptor.valueOf(targetType));
+		return getConfigure(TypeDescriptor.valueOf(sourceType), TypeDescriptor.valueOf(targetType));
 	}
 
 	@Nullable
-	public Configure getConfiguration(TypeDescriptor sourceType,
+	public Configure getConfigure(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
-		for (Configure configuration : configurations) {
-			if (configuration.matches(sourceType, targetType)) {
-				return configuration;
+		for (Configure configure : configures) {
+			if (configure.isSupported(sourceType, targetType)) {
+				return configure;
 			}
 		}
 		return null;
 	}
 
-	public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		for (Configure configuration : configurations) {
-			if (configuration.matches(sourceType, targetType)) {
+	public boolean isSupported(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		for (Configure configure : configures) {
+			if (configure.isSupported(sourceType, targetType)) {
 				return true;
 			}
 		}
@@ -68,9 +55,9 @@ public class ConfigureFactory extends ConversionServiceFactory implements
 
 	public void configuration(Object source, TypeDescriptor sourceType,
 			Object target, TypeDescriptor targetType) {
-		for (Configure configuration : configurations) {
-			if (configuration.matches(sourceType, targetType)) {
-				configuration.configuration(source, sourceType, target,
+		for (Configure configure : configures) {
+			if (configure.isSupported(sourceType, targetType)) {
+				configure.configuration(source, sourceType, target,
 						targetType);
 				return;
 			}
