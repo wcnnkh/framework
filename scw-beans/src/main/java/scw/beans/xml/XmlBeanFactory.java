@@ -9,12 +9,12 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanDefinition;
 import scw.beans.DefaultBeanFactory;
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.value.property.PropertyFactory;
-import scw.xml.XMLUtils;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
 	public static final String DEFAULT_CONFIG = "beans.xml";
@@ -30,7 +30,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	}
 
 	public NodeList getNodeList() {
-		return nodeList == null ? XMLUtils.EMPTY_NODE_LIST : nodeList;
+		return nodeList == null ? DomUtils.EMPTY_NODE_LIST : nodeList;
 	}
 	
 	public String getXml() {
@@ -85,8 +85,8 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 
 			if ("mapping".equalsIgnoreCase(node.getNodeName())) {
 				Collection<String> names = Arrays.asList(
-						StringUtils.commonSplit(XMLUtils.getRequireNodeAttributeValue(getPropertyFactory(), node, "name")));
-				String id = XMLUtils.getRequireNodeAttributeValueOrNodeContent(getPropertyFactory(), node, "id");
+						StringUtils.commonSplit(DomUtils.getRequireNodeAttributeValue(getPropertyFactory(), node, "name")));
+				String id = DomUtils.getRequireNodeAttributeValueOrNodeContent(getPropertyFactory(), node, "id");
 				addBeanNameMapping(names, id, false);
 			}
 		}

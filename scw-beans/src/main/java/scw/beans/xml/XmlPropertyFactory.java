@@ -4,9 +4,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.http.HttpUtils;
 import scw.value.property.PropertyFactory;
-import scw.xml.XMLUtils;
 
 public class XmlPropertyFactory extends PropertyFactory {
 
@@ -36,7 +36,7 @@ public class XmlPropertyFactory extends PropertyFactory {
 
 	private void load(PropertyFactory propertyFactory, String prefix,
 			String charsetName, Node node) {
-		String prefixToUse = XMLUtils.getNodeAttributeValue(node, "prefix");
+		String prefixToUse = DomUtils.getNodeAttributeValue(node, "prefix");
 		if (StringUtils.isEmpty(prefixToUse)) {
 			prefixToUse = prefix;
 		} else {
@@ -44,7 +44,7 @@ public class XmlPropertyFactory extends PropertyFactory {
 					: (prefix + prefixToUse);
 		}
 
-		String charsetNameToUse = XMLUtils.getNodeAttributeValue(node,
+		String charsetNameToUse = DomUtils.getNodeAttributeValue(node,
 				"charsetName");
 		if (StringUtils.isEmpty(charsetNameToUse)) {
 			charsetNameToUse = charsetName;
@@ -53,12 +53,12 @@ public class XmlPropertyFactory extends PropertyFactory {
 					: charsetName;
 		}
 
-		String file = XMLUtils.getNodeAttributeValue(node, "file");
+		String file = DomUtils.getNodeAttributeValue(node, "file");
 		if (!StringUtils.isEmpty(file)) {
 			loadProperties(prefixToUse, file, charsetNameToUse).register();
 		}
 
-		String name = XMLUtils.getNodeAttributeValue(node, "name");
+		String name = DomUtils.getNodeAttributeValue(node, "name");
 		if (StringUtils.isNotEmpty(name)) {
 			name = StringUtils.isEmpty(prefixToUse) ? name
 					: (prefixToUse + name);
@@ -70,7 +70,7 @@ public class XmlPropertyFactory extends PropertyFactory {
 				put(name, value);
 			}
 
-			String value = XMLUtils.getNodeAttributeValueOrNodeContent(
+			String value = DomUtils.getNodeAttributeValueOrNodeContent(
 					propertyFactory, node, "value");
 			if (StringUtils.isNotEmpty(value)) {
 				put(name, value, true);
@@ -95,6 +95,6 @@ public class XmlPropertyFactory extends PropertyFactory {
 	}
 
 	private static String getURL(Node node) {
-		return XMLUtils.getNodeAttributeValue(node, "url");
+		return DomUtils.getNodeAttributeValue(node, "url");
 	}
 }

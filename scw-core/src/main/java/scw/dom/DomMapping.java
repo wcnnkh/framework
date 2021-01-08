@@ -1,4 +1,4 @@
-package scw.xml;
+package scw.dom;
 
 import java.util.Map;
 
@@ -10,11 +10,11 @@ import scw.mapper.support.AbstractMapping;
 import scw.value.ValueUtils;
 import scw.value.property.PropertyFactory;
 
-public class XmlMapping extends AbstractMapping {
+public class DomMapping extends AbstractMapping {
 	private final PropertyFactory propertyFactory;
 	private final Map<String, Node> nodeMap;
 
-	public XmlMapping(PropertyFactory propertyFactory, Map<String, Node> nodeMap) {
+	public DomMapping(PropertyFactory propertyFactory, Map<String, Node> nodeMap) {
 		this.propertyFactory = propertyFactory;
 		this.nodeMap = nodeMap;
 	}
@@ -36,7 +36,7 @@ public class XmlMapping extends AbstractMapping {
 			return null;
 		}
 
-		String value = XMLUtils.formatNodeValue(propertyFactory, node, node.getNodeValue());
+		String value = DomUtils.formatNodeValue(propertyFactory, node, node.getNodeValue());
 		if (value == null) {
 			return null;
 		}

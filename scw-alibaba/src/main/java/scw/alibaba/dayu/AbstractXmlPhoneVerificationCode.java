@@ -10,13 +10,13 @@ import org.w3c.dom.Node;
 import scw.configure.support.ConfigureUtils;
 import scw.convert.TypeDescriptor;
 import scw.core.utils.XTime;
+import scw.dom.DomUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.result.Result;
 import scw.result.ResultFactory;
 import scw.util.RandomUtils;
-import scw.xml.XMLUtils;
 
 public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode, scw.beans.Destroy {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -35,14 +35,14 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 	public AbstractXmlPhoneVerificationCode(String xmlPath, ResultFactory resultFactory)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		this.resultFactory = resultFactory;
-		Node root = XMLUtils.getRootElement(xmlPath);
-		String host = XMLUtils.getNodeAttributeValue(root, "host", "http://gw.api.taobao.com/router/rest");
-		String appKey = XMLUtils.getRequireNodeAttributeValue(root, "appKey");
-		String version = XMLUtils.getNodeAttributeValue(root, "version", "2.0");
-		String format = XMLUtils.getNodeAttributeValue(root, "format", "json");
-		String signMethod = XMLUtils.getNodeAttributeValue(root, "sign-method", "md5");
-		String appSecret = XMLUtils.getRequireNodeAttributeValue(root, "appSecret");
-		boolean async = XMLUtils.getBooleanValue(root, "async", false);
+		Node root = DomUtils.getRootElement(xmlPath);
+		String host = DomUtils.getNodeAttributeValue(root, "host", "http://gw.api.taobao.com/router/rest");
+		String appKey = DomUtils.getRequireNodeAttributeValue(root, "appKey");
+		String version = DomUtils.getNodeAttributeValue(root, "version", "2.0");
+		String format = DomUtils.getNodeAttributeValue(root, "format", "json");
+		String signMethod = DomUtils.getNodeAttributeValue(root, "sign-method", "md5");
+		String appSecret = DomUtils.getRequireNodeAttributeValue(root, "appSecret");
+		boolean async = DomUtils.getBooleanValue(root, "async", false);
 		if (async) {
 			this.aLiDaYu = new AsyncAliDaYu(host, appKey, version, format, signMethod, appSecret, resultFactory);
 		} else {
@@ -50,12 +50,12 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 		}
 		
 		this.modelList = (List<MessageModel>) ConfigureUtils.getConversionServiceFactory().convert(root, TypeDescriptor.collection(List.class, MessageModel.class));
-		this.codeParameterKey = XMLUtils.getNodeAttributeValue(String.class, root, "code-key", "code");
-		this.codeLength = XMLUtils.getNodeAttributeValue(Integer.class, root, "code-length", 6);
-		this.debug = XMLUtils.getNodeAttributeValue(boolean.class, root, "debug", false);
-		this.everyDayMaxSize = XMLUtils.getNodeAttributeValue(Integer.class, root, "everyDayMaxSize", 10);
-		this.maxTimeInterval = XMLUtils.getNodeAttributeValue(Integer.class, root, "maxTimeInterval", 30);
-		this.maxActiveTime = XMLUtils.getNodeAttributeValue(Integer.class, root, "maxActiveTime", 300);
+		this.codeParameterKey = DomUtils.getNodeAttributeValue(String.class, root, "code-key", "code");
+		this.codeLength = DomUtils.getNodeAttributeValue(Integer.class, root, "code-length", 6);
+		this.debug = DomUtils.getNodeAttributeValue(boolean.class, root, "debug", false);
+		this.everyDayMaxSize = DomUtils.getNodeAttributeValue(Integer.class, root, "everyDayMaxSize", 10);
+		this.maxTimeInterval = DomUtils.getNodeAttributeValue(Integer.class, root, "maxTimeInterval", 30);
+		this.maxActiveTime = DomUtils.getNodeAttributeValue(Integer.class, root, "maxActiveTime", 300);
 		if (this.maxActiveTime <= 0) {
 			maxActiveTime = 300;
 		}

@@ -16,11 +16,11 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.SPI;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;
 import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
-import scw.xml.XMLUtils;
 
 @SPI(order = Integer.MIN_VALUE)
 public final class XmlSimpleHttpObjectRpcBeanConfiguration extends AbstractBeanConfiguration {
@@ -39,12 +39,12 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends AbstractBeanC
 					continue;
 				}
 
-				String sign = XMLUtils.getNodeAttributeValue(propertyFactory, node, "sign");
+				String sign = DomUtils.getNodeAttributeValue(propertyFactory, node, "sign");
 				String packageName = XmlBeanUtils.getPackageName(propertyFactory, node);
-				String serializer = XMLUtils.getNodeAttributeValue(propertyFactory, node, "serializer");
+				String serializer = DomUtils.getNodeAttributeValue(propertyFactory, node, "serializer");
 				String address = XmlBeanUtils.getAddress(propertyFactory, node);
 				boolean responseThrowable = StringUtils
-						.parseBoolean(XMLUtils.getNodeAttributeValue(propertyFactory, node, "throwable"), true);
+						.parseBoolean(DomUtils.getNodeAttributeValue(propertyFactory, node, "throwable"), true);
 
 				Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 						: (Serializer) beanFactory.getInstance(serializer);
@@ -69,13 +69,13 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends AbstractBeanC
 						continue;
 					}
 
-					String className = XMLUtils.getNodeAttributeValue(propertyFactory, node, "interface");
+					String className = DomUtils.getNodeAttributeValue(propertyFactory, node, "interface");
 					if (StringUtils.isEmpty(className)) {
 						continue;
 					}
 
 					Class<?> clz = ClassUtils.forName(className);
-					String mySign = XMLUtils.getNodeAttributeValue(propertyFactory, node, "sign");
+					String mySign = DomUtils.getNodeAttributeValue(propertyFactory, node, "sign");
 					if (StringUtils.isEmpty(mySign)) {
 						mySign = sign;
 					}

@@ -13,9 +13,11 @@ import scw.http.HttpUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.lang.NotSupportedException;
-import scw.util.FormatUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class MicrosoftUtils {
+	private static Logger logger = LoggerFactory.getLogger(MicrosoftUtils.class);
 	private MicrosoftUtils() {
 	};
 
@@ -24,9 +26,9 @@ public final class MicrosoftUtils {
 
 	static {
 		if (EXCEL_OPERATIONS == null) {
-			FormatUtils.warn(MicrosoftUtils.class, "not found excel support");
+			logger.error("not found excel support");
 		} else {
-			FormatUtils.info(MicrosoftUtils.class, "using excel operations {}", EXCEL_OPERATIONS.getClass());
+			logger.info("using excel operations {}", EXCEL_OPERATIONS.getClass());
 		}
 	}
 

@@ -17,9 +17,9 @@ import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.lang.NotSupportedException;
 import scw.value.property.PropertyFactory;
-import scw.xml.XMLUtils;
 
 public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private List<String> names = new ArrayList<String>();
@@ -62,7 +62,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 
 	@SuppressWarnings("unchecked")
 	protected Collection<String> getFilters(Node node) {
-		String filters = XMLUtils.getNodeAttributeValue(node, "filters");
+		String filters = DomUtils.getNodeAttributeValue(node, "filters");
 		if (StringUtils.isEmpty(filters)) {
 			return Collections.EMPTY_LIST;
 		}
@@ -86,12 +86,12 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	protected String getId(Node node) {
-		String id = XMLUtils.getNodeAttributeValue(node, "id");
+		String id = DomUtils.getNodeAttributeValue(node, "id");
 		return StringUtils.isEmpty(id) ? XmlBeanUtils.getClassName(node, true) : id;
 	}
 
 	protected String[] getNames(Node node) {
-		String name = XMLUtils.getNodeAttributeValue(node, "name");
+		String name = DomUtils.getNodeAttributeValue(node, "name");
 		return StringUtils.isEmpty(name) ? new String[0] : StringUtils.commonSplit(name);
 	}
 

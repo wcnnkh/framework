@@ -45,7 +45,7 @@ public final class ConfigureUtils {
 			RESOURCE_RESOLVER_FACTORY.getResourceResolvers().add((ResourceResolver)InstanceUtils.INSTANCE_FACTORY.getInstance(yamlResolverName, CONVERSION_SERVICE_FACTORY));
 		}
 		
-		CONVERSION_SERVICE_FACTORY.getConversionServices().addAll(
+		CONVERSION_SERVICE_FACTORY.getServices().addAll(
 				InstanceUtils.loadAllService(ConversionService.class));
 		CONFIGURE_FACTORY.getConfigures().addAll(
 				InstanceUtils.loadAllService(Configure.class));

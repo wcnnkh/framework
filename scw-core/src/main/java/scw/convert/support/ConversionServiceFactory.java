@@ -12,12 +12,12 @@ import scw.convert.TypeDescriptor;
 import scw.util.XUtils;
 
 public class ConversionServiceFactory extends ConvertibleConditionalComparator<Object> implements ConversionService, Comparable<Object> {
-	protected final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(
+	protected final TreeSet<ConversionService> services = new TreeSet<ConversionService>(
 			this);
 
 	public ConversionService getConversionService(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
-		for (ConversionService service : conversionServices) {
+		for (ConversionService service : services) {
 			if (service.isSupported(sourceType, targetType)) {
 				return service;
 			}
@@ -25,13 +25,13 @@ public class ConversionServiceFactory extends ConvertibleConditionalComparator<O
 		return null;
 	}
 
-	public SortedSet<ConversionService> getConversionServices() {
-		return XUtils.synchronizedProxy(conversionServices, this);
+	public SortedSet<ConversionService> getServices() {
+		return XUtils.synchronizedProxy(services, this);
 	}
 
 	public boolean isSupported(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
-		for (ConversionService service : conversionServices) {
+		for (ConversionService service : services) {
 			if (service.isSupported(sourceType, targetType)) {
 				return true;
 			}
@@ -72,7 +72,7 @@ public class ConversionServiceFactory extends ConvertibleConditionalComparator<O
 			return source;
 		}
 		
-		for (ConversionService service : conversionServices) {
+		for (ConversionService service : services) {
 			if (service.isSupported(sourceType, targetType)) {
 				return service.convert(source, sourceType, targetType);
 			}
@@ -81,7 +81,7 @@ public class ConversionServiceFactory extends ConvertibleConditionalComparator<O
 	}
 
 	public int compareTo(Object o) {
-		for (ConversionService service : conversionServices) {
+		for (ConversionService service : services) {
 			if (ConvertibleConditionalComparator.INSTANCE.compare(service, o) == 1) {
 				return 1;
 			}

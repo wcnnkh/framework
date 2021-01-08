@@ -11,9 +11,9 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.convert.support.ConditionalConversionService;
 import scw.convert.support.ConvertiblePair;
+import scw.dom.DomUtils;
 import scw.value.StringValue;
 import scw.value.ValueUtils;
-import scw.xml.XMLUtils;
 
 public class NodeToObjectConversionService extends ConditionalConversionService{
 	private final ConversionService conversionService;
@@ -45,7 +45,7 @@ public class NodeToObjectConversionService extends ConditionalConversionService{
 		NodeList nodeList = node.getChildNodes();
 		int len = nodeList.getLength();
 		if(len == 0){
-			nodeList = XMLUtils.toNodeList(node.getAttributes());
+			nodeList = DomUtils.toNodeList(node.getAttributes());
 		}
 		return conversionService.convert(nodeList, TypeDescriptor.valueOf(NodeList.class), targetType);
 	}

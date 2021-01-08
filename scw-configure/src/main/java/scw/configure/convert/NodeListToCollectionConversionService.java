@@ -7,17 +7,15 @@ import java.util.Set;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.configure.Configure;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.convert.support.ConditionalConversionService;
 import scw.convert.support.ConvertiblePair;
+import scw.dom.DomUtils;
 import scw.util.CollectionFactory;
-import scw.xml.XMLUtils;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class NodeListToCollectionConversionService extends ConditionalConversionService
-		implements Configure {
+public class NodeListToCollectionConversionService extends ConditionalConversionService {
 	private final ConversionService conversionService;
 
 	public NodeListToCollectionConversionService(ConversionService conversionService) {
@@ -40,29 +38,17 @@ public class NodeListToCollectionConversionService extends ConditionalConversion
 		Collection collection = CollectionFactory.createCollection(targetType
 				.getType(), targetType.getElementTypeDescriptor().getType(),
 				len);
-		configuration(source, sourceType, collection, targetType);
-		return collection;
-	}
-
-	public void configuration(Object source, TypeDescriptor sourceType,
-			Object target, TypeDescriptor targetType) {
-		if (source == null) {
-			return;
-		}
-
-		Collection targetItems = (Collection) target;
-		NodeList nodeList = (NodeList) source;
-		int len = nodeList.getLength();
 		for (int i = 0; i < len; i++) {
 			Node node = nodeList.item(i);
-			if(XMLUtils.ignoreNode(node)){
+			if(DomUtils.ignoreNode(node)){
 				continue;
 			}
 			
 			Object value = conversionService.convert(node,
 					TypeDescriptor.valueOf(Node.class),
 					targetType.getElementTypeDescriptor());
-			targetItems.add(value);
+			collection.add(value);
 		}
+		return collection;
 	}
 }

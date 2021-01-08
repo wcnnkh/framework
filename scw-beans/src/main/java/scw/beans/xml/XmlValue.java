@@ -3,10 +3,10 @@ package scw.beans.xml;
 import org.w3c.dom.Node;
 
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.http.HttpUtils;
 import scw.io.ResourceUtils;
 import scw.value.property.PropertyFactory;
-import scw.xml.XMLUtils;
 
 public class XmlValue {
 	private final String value;
@@ -17,7 +17,7 @@ public class XmlValue {
 		String charset = XmlBeanUtils.getCharsetName(node, parentCharsetName);
 
 		String value;
-		String url = XMLUtils.getNodeAttributeValue(node, "url");
+		String url = DomUtils.getNodeAttributeValue(node, "url");
 
 		if (StringUtils.isNotEmpty(url)) {
 			if (url.startsWith("http://") || url.startsWith("https://")) {
@@ -26,7 +26,7 @@ public class XmlValue {
 				value = ResourceUtils.getContent(ResourceUtils.getResourceOperations().getResource(url), charset);
 			}
 		} else {
-			value = XMLUtils.getNodeAttributeValueOrNodeContent(node, "value");
+			value = DomUtils.getNodeAttributeValueOrNodeContent(node, "value");
 		}
 		this.value = value;
 	}
@@ -37,7 +37,7 @@ public class XmlValue {
 	}
 
 	public boolean isRequire() {
-		return XMLUtils.getBooleanValue(node, "require", false);
+		return DomUtils.getBooleanValue(node, "require", false);
 	}
 
 	public String getValue() {
@@ -49,10 +49,10 @@ public class XmlValue {
 	}
 
 	public String getNodeAttributeValue(String name) {
-		return XMLUtils.getNodeAttributeValue(node, name);
+		return DomUtils.getNodeAttributeValue(node, name);
 	}
 
 	public String formatValue(final PropertyFactory propertyFactory) {
-		return XMLUtils.formatNodeValue(propertyFactory, node, value);
+		return DomUtils.formatNodeValue(propertyFactory, node, value);
 	}
 }

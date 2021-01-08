@@ -1,8 +1,8 @@
 package scw.configure.resolver;
 
 import scw.convert.ConversionService;
+import scw.dom.DomUtils;
 import scw.io.Resource;
-import scw.xml.XMLUtils;
 
 public class XmlResourceResolver extends AbstractResourceResolver{
 	
@@ -12,7 +12,7 @@ public class XmlResourceResolver extends AbstractResourceResolver{
 
 	@Override
 	protected Object resolve(Resource resource) {
-		return XMLUtils.getDocument(resource);
+		return DomUtils.getDomBuilder().parse(resource);
 	}
 
 }

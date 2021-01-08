@@ -10,8 +10,8 @@ import org.w3c.dom.NodeList;
 import scw.convert.ConversionService;
 import scw.convert.support.ConvertiblePair;
 import scw.core.instance.NoArgsInstanceFactory;
+import scw.dom.DomUtils;
 import scw.util.Accept;
-import scw.xml.XMLUtils;
 
 public class NodeListToEntityConversionService extends EntityConversionService {
 
@@ -32,7 +32,7 @@ public class NodeListToEntityConversionService extends EntityConversionService {
 
 	@Override
 	protected Object getProperty(Object source, final String key) {
-		return XMLUtils.findNode((NodeList) source, new Accept<Node>() {
+		return DomUtils.findNode((NodeList) source, new Accept<Node>() {
 
 			public boolean accept(Node e) {
 				return e.getNodeName().equals(key);

@@ -10,13 +10,14 @@ public class ConfigureConversionServiceFactory extends
 	
 	public ConfigureConversionServiceFactory(Configure configure, ResourceResolver resourceResolver, NoArgsInstanceFactory instanceFactory){
 		super();
-		conversionServices.add(new NodeListToCollectionConversionService(this));
-		conversionServices.add(new NodeListToEntityConversionService(this, instanceFactory));
-		conversionServices.add(new NodeListToMapConversionService(this));
-		conversionServices.add(new NodeToObjectConversionService(this));
-		conversionServices.add(new ConfigureConversionService(configure, instanceFactory));
-		conversionServices.add(new ResourceConversionService(resourceResolver));
-		conversionServices.add(new CollectionToMapConversionService(this, PrimaryKeyGetter.ANNOTATION));
-		conversionServices.add(new ArrayToMapConversionService(this, PrimaryKeyGetter.ANNOTATION));
+		services.add(new DocumentParseConversionService());
+		services.add(new NodeListToCollectionConversionService(this));
+		services.add(new NodeListToMapConversionService(this));
+		services.add(new NodeToObjectConversionService(this));
+		services.add(new NodeListToEntityConversionService(this, instanceFactory));
+		services.add(new ConfigureConversionService(configure, instanceFactory));
+		services.add(new ResourceConversionService(resourceResolver));
+		services.add(new CollectionToMapConversionService(this, PrimaryKeyGetter.ANNOTATION));
+		services.add(new ArrayToMapConversionService(this, PrimaryKeyGetter.ANNOTATION));
 	}
 }

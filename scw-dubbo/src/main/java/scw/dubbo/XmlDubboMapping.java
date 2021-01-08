@@ -4,11 +4,11 @@ import org.w3c.dom.Node;
 
 import scw.beans.BeanFactory;
 import scw.core.instance.InstanceUtils;
+import scw.dom.DomAttributeMapping;
 import scw.mapper.Field;
 import scw.value.property.PropertyFactory;
-import scw.xml.XmlAttributeMapping;
 
-public class XmlDubboMapping extends XmlAttributeMapping {
+public class XmlDubboMapping extends DomAttributeMapping {
 	private BeanFactory beanFactory;
 
 	public XmlDubboMapping(BeanFactory beanFactory, PropertyFactory propertyFactory, Node node) {

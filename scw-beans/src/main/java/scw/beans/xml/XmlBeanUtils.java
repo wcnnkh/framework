@@ -14,9 +14,9 @@ import scw.beans.ioc.IocProcessor;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.io.Resource;
 import scw.value.property.PropertyFactory;
-import scw.xml.XMLUtils;
 
 public final class XmlBeanUtils {
 	private XmlBeanUtils() {
@@ -24,11 +24,11 @@ public final class XmlBeanUtils {
 
 	public static XmlBeanParameter parseBeanParameter(Node node)
 			throws ClassNotFoundException {
-		String name = XMLUtils.getNodeAttributeValue(node, "name");
-		String ref = XMLUtils.getNodeAttributeValue(node, "ref");
-		String value = XMLUtils.getNodeAttributeValue(node, "value");
-		String type = XMLUtils.getNodeAttributeValue(node, "type");
-		String property = XMLUtils.getNodeAttributeValue(node, "property");
+		String name = DomUtils.getNodeAttributeValue(node, "name");
+		String ref = DomUtils.getNodeAttributeValue(node, "ref");
+		String value = DomUtils.getNodeAttributeValue(node, "value");
+		String type = DomUtils.getNodeAttributeValue(node, "type");
+		String property = DomUtils.getNodeAttributeValue(node, "property");
 
 		Class<?> typeClass = StringUtils.isEmpty(type) ? null : ClassUtils
 				.forName(type);
@@ -48,12 +48,12 @@ public final class XmlBeanUtils {
 	}
 
 	public static Boolean isSingleton(Node node) {
-		return XMLUtils.getBooleanValue(node, "singleton", null);
+		return DomUtils.getBooleanValue(node, "singleton", null);
 	}
 
 	public static boolean getBooleanValue(PropertyFactory propertyFactory,
 			Node node, String name, boolean defaultValue) {
-		String value = XMLUtils.getNodeAttributeValue(propertyFactory, node,
+		String value = DomUtils.getNodeAttributeValue(propertyFactory, node,
 				name);
 		return StringUtils.isEmpty(value) ? defaultValue : Boolean
 				.parseBoolean(value);
@@ -61,7 +61,7 @@ public final class XmlBeanUtils {
 
 	public static int getIntegerValue(PropertyFactory propertyFactory,
 			Node node, String name, int defaultValue) {
-		String value = XMLUtils.getNodeAttributeValue(propertyFactory, node,
+		String value = DomUtils.getNodeAttributeValue(propertyFactory, node,
 				name);
 		return StringUtils.isEmpty(value) ? defaultValue : Integer
 				.parseInt(value);
@@ -85,43 +85,43 @@ public final class XmlBeanUtils {
 	}
 
 	public static NodeList getRootNodeList(Resource resource) {
-		Document document = XMLUtils.getDocument(resource);
+		Document document = DomUtils.getDomBuilder().parse(resource);
 		Node node = document.getDocumentElement();
 		if (!"beans".equals(node.getNodeName())) {
 			throw new BeansException("root tag name error ["
 					+ node.getNodeName() + "]");
 		}
-		return XMLUtils.getChildNodes(node, true);
+		return DomUtils.getChildNodes(node, true);
 	}
 
 	public static String getPackageName(PropertyFactory propertyFactory,
 			Node node) {
-		return XMLUtils.getNodeAttributeValue(propertyFactory, node, "package");
+		return DomUtils.getNodeAttributeValue(propertyFactory, node, "package");
 	}
 
 	public static String getVersion(PropertyFactory propertyFactory, Node node) {
-		return XMLUtils.getNodeAttributeValue(propertyFactory, node, "version");
+		return DomUtils.getNodeAttributeValue(propertyFactory, node, "version");
 	}
 
 	public static String getAddress(PropertyFactory propertyFactory, Node node) {
-		return XMLUtils.getRequireNodeAttributeValue(propertyFactory, node,
+		return DomUtils.getRequireNodeAttributeValue(propertyFactory, node,
 				"address");
 	}
 
 	public static String getRef(PropertyFactory propertyFactory, Node node) {
-		return XMLUtils.getRequireNodeAttributeValue(propertyFactory, node,
+		return DomUtils.getRequireNodeAttributeValue(propertyFactory, node,
 				"ref");
 	}
 
 	public static String getCharsetName(PropertyFactory propertyFactory,
 			Node node, String defaultValue) {
-		String charsetName = XMLUtils.getNodeAttributeValue(propertyFactory,
+		String charsetName = DomUtils.getNodeAttributeValue(propertyFactory,
 				node, "charsetName");
 		return StringUtils.isEmpty(charsetName) ? defaultValue : charsetName;
 	}
 
 	public static String getCharsetName(Node node, String defaultValue) {
-		String charsetName = XMLUtils
+		String charsetName = DomUtils
 				.getNodeAttributeValue(node, "charsetName");
 		return StringUtils.isEmpty(charsetName) ? defaultValue : charsetName;
 	}
@@ -190,7 +190,7 @@ public final class XmlBeanUtils {
 	}
 
 	public static TimeUnit getTimeUnit(Node node) {
-		String format = XMLUtils.getNodeAttributeValue(node, "unit");
+		String format = DomUtils.getNodeAttributeValue(node, "unit");
 		TimeUnit timeUnit = TimeUnit.MINUTES;
 		if (StringUtils.isNotEmpty(format)) {
 			timeUnit = TimeUnit.valueOf(format.toUpperCase());
@@ -199,8 +199,8 @@ public final class XmlBeanUtils {
 	}
 
 	public static String getClassName(Node node, boolean require) {
-		return require ? XMLUtils.getRequireNodeAttributeValue(node, "class")
-				: XMLUtils.getNodeAttributeValue(node, "class");
+		return require ? DomUtils.getRequireNodeAttributeValue(node, "class")
+				: DomUtils.getNodeAttributeValue(node, "class");
 	}
 
 	public static Class<?> getClass(Node node, boolean require)

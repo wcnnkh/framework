@@ -27,6 +27,7 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.InstanceUtils;
 import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Copy;
@@ -36,7 +37,6 @@ import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.util.ClassScanner;
 import scw.value.property.PropertyFactory;
-import scw.xml.XMLUtils;
 
 public final class XmlDubboUtils {
 	private static final String TAG_NAME_PREFIX = "dubbo:";
@@ -104,7 +104,7 @@ public final class XmlDubboUtils {
 					@SuppressWarnings("unchecked")
 					@Override
 					public boolean doFilter(List<ServiceConfig> list, Node node, ServiceConfig config) {
-						String ref = XMLUtils.getNodeAttributeValue(propertyFactory, node, "ref");
+						String ref = DomUtils.getNodeAttributeValue(propertyFactory, node, "ref");
 						if (StringUtils.isNotEmpty(ref) && refInstanceFactory.isInstance(ref)) {
 							config.setRef(refInstanceFactory.getInstance(ref));
 						}
@@ -178,7 +178,7 @@ public final class XmlDubboUtils {
 	}
 
 	private static String getPackageName(PropertyFactory propertyFactory, Node node) {
-		return XMLUtils.getNodeAttributeValue(propertyFactory, node, DUBBO_SCAN_PACKAGE);
+		return DomUtils.getNodeAttributeValue(propertyFactory, node, DUBBO_SCAN_PACKAGE);
 	}
 
 	@SuppressWarnings("rawtypes")

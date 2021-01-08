@@ -1,53 +1,32 @@
-package scw.xml;
+package scw.dom;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import scw.convert.Converter;
 import scw.core.StringFormat;
 import scw.core.utils.StringUtils;
-import scw.io.IOUtils;
-import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.lang.NotFoundException;
 import scw.util.Accept;
 import scw.util.KeyValuePair;
-import scw.util.ToMap;
-import scw.util.XUtils;
 import scw.value.ValueUtils;
 import scw.value.property.PropertyFactory;
 
-public final class XMLUtils {
+public final class DomUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
 	private static final TransformerFactory TRANSFORMER_FACTORY = TransformerFactory.newInstance();
 	public static final NodeList EMPTY_NODE_LIST = new NodeList() {
@@ -60,100 +39,25 @@ public final class XMLUtils {
 			return 0;
 		}
 	};
-
+	
 	static {
 		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(true);
 		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(true);
 		DOCUMENT_BUILDER_FACTORY.setCoalescing(true);
 		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(false);
 	}
+	
+	private static final DomBuilder DOM_BUILDER = new DomBuilder(DOCUMENT_BUILDER_FACTORY, TRANSFORMER_FACTORY);
 
-	private XMLUtils() {
+	private DomUtils() {
 	}
 
-	public static DocumentBuilder newDocumentBuilder() {
-		try {
-			return DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
-		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static Transformer newTransformer() {
-		try {
-			return TRANSFORMER_FACTORY.newTransformer();
-		} catch (TransformerConfigurationException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static Document parse(InputStream is) throws IOException {
-		DocumentBuilder documentBuilder = newDocumentBuilder();
-		try {
-			return documentBuilder.parse(is);
-		} catch (SAXException e) {
-			throw new XmlException(e);
-		}
-	}
-
-	public static Document parse(InputSource is) {
-		DocumentBuilder documentBuilder = newDocumentBuilder();
-		try {
-			return documentBuilder.parse(is);
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static Document parseForURI(String uri) {
-		DocumentBuilder documentBuilder = newDocumentBuilder();
-		try {
-			return documentBuilder.parse(uri);
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static Document parse(InputStream is, String systemId) {
-		DocumentBuilder documentBuilder = newDocumentBuilder();
-		try {
-			return documentBuilder.parse(is, systemId);
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	public static Document parse(String text) {
-		return parse(new InputSource(new StringReader(text)));
+	public static DomBuilder getDomBuilder() {
+		return DOM_BUILDER;
 	}
 
 	public static Document getDocument(String path) throws NotFoundException {
-		return getDocument(ResourceUtils.getResourceOperations().getResource(path));
-	}
-
-	public static Document getDocument(Resource resource) {
-		if (!resource.exists()) {
-			throw new NotFoundException(resource.getDescription());
-		}
-
-		InputStream inputStream = null;
-		try {
-			inputStream = resource.getInputStream();
-			return parse(inputStream);
-		} catch (IOException e) {
-			throw new RuntimeException(resource.getDescription(), e);
-		} finally {
-			IOUtils.close(inputStream);
-		}
+		return getDomBuilder().parse(ResourceUtils.getResourceOperations().getResource(path));
 	}
 
 	public static Element getRootElement(String xmlPath) {
@@ -172,7 +76,7 @@ public final class XMLUtils {
 		}
 
 		includeHashSet.add(file);
-		Document document = XMLUtils.getDocument(file);
+		Document document = DomUtils.getDocument(file);
 		Node root = document.getDocumentElement();
 		if (root == null) {
 			return new MyNodeList();
@@ -321,81 +225,7 @@ public final class XMLUtils {
 
 		return map.isEmpty() ? null : map;
 	}
-
-	public static String toString(Node node) {
-		Transformer transformer;
-		try {
-			transformer = TRANSFORMER_FACTORY.newTransformer();
-		} catch (TransformerConfigurationException e1) {
-			e1.printStackTrace();
-			return null;
-		}
-
-		StringWriter sw = new StringWriter();
-		StreamResult result = new StreamResult(sw);
-		DOMSource domSource = new DOMSource(node);
-		String content = null;
-		try {
-			transformer.transform(domSource, result);
-			content = sw.toString();
-		} catch (TransformerException e) {
-			e.printStackTrace();
-		} finally {
-			IOUtils.close(sw);
-		}
-		return content;
-	}
-
-	@SuppressWarnings("rawtypes")
-	private static void appendElement(Document document, Element parent, String name, Object value) {
-		if (value == null) {
-			return;
-		}
-
-		if (value instanceof Map) {
-			appendElement(document, parent, (Map) value);
-		} else if (value instanceof Collection) {
-			for (Object item : (Collection) value) {
-				appendElement(document, parent, name, item);
-			}
-		} else if (value instanceof ToMap) {
-			appendElement(document, parent, XUtils.toMap(value, false));
-		} else if (value.getClass().isArray()) {
-			for (int i = 0, len = Array.getLength(value); i < len; i++) {
-				appendElement(document, parent, name, Array.get(value, i));
-			}
-		} else {
-			Element element = document.createElement(name);
-			element.setTextContent(value.toString());
-			parent.appendChild(element);
-		}
-	}
-
-	public static void appendElement(Document document, Element parent, Map<?, ?> map) {
-		for (Entry<?, ?> entry : map.entrySet()) {
-			if (entry.getKey() == null) {
-				continue;
-			}
-
-			Object value = entry.getValue();
-			if (value == null) {
-				continue;
-			}
-
-			appendElement(document, parent, entry.getKey().toString(), value);
-		}
-	}
-
-	public static Element createElement(Document document, String name, Map<?, ?> map) {
-		Element parent = document.createElement(name);
-		appendElement(document, parent, map);
-		return parent;
-	}
-
-	public static String toXml(String name, Map<?, ?> map) {
-		return toString(createElement(newDocumentBuilder().newDocument(), name, map));
-	}
-
+	
 	public static String getNodeAttributeValue(Node node, String name) {
 		return getNodeAttributeValue(node, name, null);
 	}
@@ -443,15 +273,15 @@ public final class XMLUtils {
 	public static String getRequireNodeAttributeValue(Node node, String name) {
 		String value = getNodeAttributeValue(node, name);
 		if (StringUtils.isEmpty(value)) {
-			throw new NotFoundException("not found attribute [" + name + "], " + toString(node));
+			throw new NotFoundException("not found attribute [" + name + "], " + getDomBuilder().toString(node));
 		}
 		return value;
 	}
 
 	public static void requireAttribute(Node node, String... name) {
 		for (String n : name) {
-			if (StringUtils.isEmpty(XMLUtils.getNodeAttributeValue(node, n))) {
-				throw new NotFoundException("not found attribute [" + n + "], " + toString(node));
+			if (StringUtils.isEmpty(DomUtils.getNodeAttributeValue(node, n))) {
+				throw new NotFoundException("not found attribute [" + n + "], " + getDomBuilder().toString(node));
 			}
 		}
 	}
@@ -482,7 +312,7 @@ public final class XMLUtils {
 		}
 
 		int size = map.getLength();
-		Map<String, Node> properties = new HashMap<String, Node>(size, 1);
+		Map<String, Node> properties = new LinkedHashMap<String, Node>(size, 1);
 		for (int i = 0; i < size; i++) {
 			Node n = map.item(i);
 			properties.put(n.getNodeName(), n);
