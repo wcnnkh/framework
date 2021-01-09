@@ -2,8 +2,8 @@ package scw.aop.support;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorChain;
-import scw.aop.MethodInvoker;
 import scw.aop.ProxyUtils;
+import scw.core.reflect.MethodInvoker;
 import scw.mapper.Copy;
 import scw.mapper.Field;
 import scw.mapper.FilterFeature;

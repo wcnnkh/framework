@@ -6,16 +6,17 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import scw.configure.support.ConfigureUtils;
 import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.http.HttpMethod;
 import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.xml.XMLUtils;
 
 public class XmlHttpAuthorityManager extends
 		DefaultHttpAuthorityManager<HttpAuthority> {
@@ -37,9 +38,9 @@ public class XmlHttpAuthorityManager extends
 			return;
 		}
 
-		Element element = XMLUtils.getRootElement(xml);
-		String prefix = XMLUtils.getNodeAttributeValue(element, "prefix");
-		NodeList nodeList = XMLUtils.getChildNodes(element, true);
+		Element element = DomUtils.getRootElement(xml);
+		String prefix = DomUtils.getNodeAttributeValue(element, "prefix");
+		NodeList nodeList = DomUtils.getChildNodes(element, true);
 		if (nodeList == null) {
 			return;
 		}
@@ -49,8 +50,8 @@ public class XmlHttpAuthorityManager extends
 			if (node == null) {
 				continue;
 			}
-
-			Map<String, String> map = XMLUtils.xmlToMap(node);
+			
+			Map<String, String> map = ConfigureUtils.getConversionServiceFactory().convertToMap(node, String.class, String.class);
 			if (map.isEmpty()) {
 				continue;
 			}

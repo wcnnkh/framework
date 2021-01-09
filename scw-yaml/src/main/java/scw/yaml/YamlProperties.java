@@ -1,5 +1,6 @@
 package scw.yaml;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
@@ -16,6 +17,18 @@ public class YamlProperties extends
 	
 	public YamlProperties(String resource) {
 		this(ResourceUtils.getResourceOperations().getResources(resource));
+	}
+	
+	public YamlProperties(YamlProcessor processor, String resource) {
+		this(processor, ResourceUtils.getResourceOperations().getResources(resource));
+	}
+	
+	public YamlProperties(Resource ...resources) {
+		this(Arrays.asList(resources));
+	}
+	
+	public YamlProperties(YamlProcessor processor, Resource ...resources) {
+		this(processor, Arrays.asList(resources));
 	}
 	
 	public YamlProperties(Collection<Resource> resources) {

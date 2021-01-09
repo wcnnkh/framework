@@ -2,9 +2,9 @@ package scw.netflix.eureka.server.event;
 
 import java.util.Objects;
 
-import com.netflix.appinfo.InstanceInfo;
+import scw.boot.ApplicationEvent;
 
-import scw.application.ApplicationEvent;
+import com.netflix.appinfo.InstanceInfo;
 
 public class EurekaInstanceRenewedEvent extends ApplicationEvent {
 	private static final long serialVersionUID = 1L;

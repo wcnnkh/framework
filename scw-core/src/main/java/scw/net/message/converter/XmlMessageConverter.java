@@ -8,29 +8,19 @@ import java.util.Map;
 import org.w3c.dom.Document;
 
 import scw.core.utils.TypeUtils;
+import scw.dom.DomUtils;
 import scw.http.MediaType;
 import scw.net.MimeType;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.xml.XMLUtils;
 
 public class XmlMessageConverter extends AbstractMessageConverter<Object> {
-	private static final String DEFAULT_ROOT_TAG_NAME = "xml";
-	private String rootTag = DEFAULT_ROOT_TAG_NAME;
 
 	public XmlMessageConverter() {
 		supportMimeTypes.add(MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML,
 				MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_RSS_XML);
-	}
-
-	public String getRootTag() {
-		return rootTag;
-	}
-
-	public void setRootTag(String rootTag) {
-		this.rootTag = rootTag;
 	}
 
 	@Override
@@ -52,11 +42,11 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 			return value.getAsObject(type);
 		}
 
-		Document document = XMLUtils.parse(text);
+		Document document = DomUtils.getDomBuilder().parse(text);
 		Map<String, Object> map;
 		String jsonText;
 		try {
-			map = XMLUtils.toRecursionMap(document);
+			map = DomUtils.toRecursionMap(document);
 			jsonText = getJsonSupport().toJSONString(map);
 			return getJsonSupport().parseObject(jsonText, type);
 		} catch (Exception e) {
@@ -75,11 +65,11 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 				|| Value.class.isAssignableFrom(body.getClass())) {
 			writeBody = body.toString();
 		} else if (body instanceof Map) {
-			writeBody = XMLUtils.toXml(getRootTag(), (Map) body);
+			writeBody = DomUtils.getDomBuilder().toString((Map)body);
 		} else {
 			Map map = getJsonSupport().parseObject(
 					getJsonSupport().toJSONString(body), Map.class);
-			writeBody = XMLUtils.toXml(getRootTag(), map);
+			writeBody = DomUtils.getDomBuilder().toString(map);
 		}
 		writeTextBody(writeBody, contentType, outputMessage);
 	}

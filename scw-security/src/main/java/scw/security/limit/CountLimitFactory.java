@@ -1,7 +1,7 @@
 package scw.security.limit;
 
-import scw.aop.MethodInvoker;
 import scw.beans.annotation.AutoImpl;
+import scw.core.reflect.MethodInvoker;
 import scw.security.limit.annotation.CountLimitSecurity;
 
 @AutoImpl({ DefaultCountLimitFactory.class })

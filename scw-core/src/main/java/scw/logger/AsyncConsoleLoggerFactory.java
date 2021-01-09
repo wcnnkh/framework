@@ -8,7 +8,7 @@ import scw.logger.AsyncConsoleLoggerFactory.MessageEvent;
 
 public class AsyncConsoleLoggerFactory extends AbstractConsoleLoggerFactory implements EventListener<MessageEvent> {
 	private final DefaultAsyncBasicEventDispatcher<MessageEvent> asyncBasicEventDispatcher = new DefaultAsyncBasicEventDispatcher<MessageEvent>(
-			false, getClass().getSimpleName(), true);
+			false, getClass().getSimpleName());
 	private final UnsafeStringBuffer unsafeStringBuffer;
 
 	public AsyncConsoleLoggerFactory() {

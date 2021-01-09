@@ -2,6 +2,8 @@ package scw.aop;
 
 import java.util.Iterator;
 
+import scw.core.reflect.MethodInvoker;
+
 public final class MethodInterceptorChain {
 	private final Iterator<? extends MethodInterceptor> iterator;
 	private final MethodInterceptorChain next;

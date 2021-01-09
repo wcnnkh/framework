@@ -17,6 +17,16 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-core</artifactId>
 		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-tcc</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-boot</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>scw</groupId>
@@ -56,6 +66,11 @@
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-freemarker</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-locks</artifactId>
 		</dependency>
 
 		<dependency>

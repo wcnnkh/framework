@@ -8,11 +8,9 @@ import java.util.Arrays;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.Factory;
 import net.sf.cglib.proxy.MethodProxy;
-import scw.core.instance.annotation.SPI;
 import scw.core.utils.ClassUtils;
 import scw.lang.NestedExceptionUtils;
 
-@SPI(order = Integer.MIN_VALUE)
 public class CglibProxyFactory implements ProxyFactory {
 	public boolean isSupport(Class<?> clazz) {
 		return !Modifier.isFinal(clazz.getModifiers());

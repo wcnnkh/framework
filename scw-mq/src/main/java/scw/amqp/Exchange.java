@@ -1,6 +1,7 @@
 package scw.amqp;
 
-import scw.aop.MethodInvoker;
+import scw.core.reflect.MethodInvoker;
+
 
 public interface Exchange {
 	void bind(String routingKey, QueueDeclare queueDeclare, MessageListener messageListener);

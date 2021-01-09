@@ -2,7 +2,7 @@ package scw.event;
 
 import java.util.List;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 
 public abstract class ConvertibleObservables<O, T> extends
 		AbstractObservable<T> implements Converter<O, T> {

@@ -1,12 +1,14 @@
 package scw.fastjson;
 
-import com.alibaba.fastjson.serializer.ValueFilter;
-
 import scw.aop.ProxyUtils;
 import scw.aop.support.FieldSetterListen;
 import scw.aop.support.FieldSetterListenImpl;
 import scw.json.JSONAware;
 import scw.mapper.Copy;
+import scw.value.AnyValue;
+import scw.value.Value;
+
+import com.alibaba.fastjson.serializer.ValueFilter;
 
 public class ExtendFastJsonValueFilter implements ValueFilter {
 	public static final ValueFilter INSTANCE = new ExtendFastJsonValueFilter();
@@ -21,6 +23,14 @@ public class ExtendFastJsonValueFilter implements ValueFilter {
 		
 		if(value instanceof JSONAware){
 			return ((JSONAware) value).toJSONString();
+		}
+		
+		if(value instanceof AnyValue){
+			return ((AnyValue) value).getValue();
+		}
+		
+		if(value instanceof Value){
+			return ((Value) value).getAsString();
 		}
 
 		//这是应该还想办法屏蔽Gson的Factory对象

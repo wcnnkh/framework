@@ -14,3 +14,7 @@
 2.示例:
 -----------------
 [示例](https://github.com/wcnnkh/scw-app/blob/master/scw-app-example/src/main/java/scw/app/example/ExampleApplication.java)
+
+3.未开始模块
+-----------------
+RMI,JMX,Spring,Solr,Elasticsearch

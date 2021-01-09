@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.utils.CollectionUtils;
-import scw.transaction.DefaultTransactionLifeCycle;
+import scw.transaction.DefaultTransactionLifecycle;
 import scw.transaction.TransactionManager;
 
 public abstract class AbstractWrapperCache<C extends Cache> implements Cache {
@@ -72,7 +72,7 @@ public abstract class AbstractWrapperCache<C extends Cache> implements Cache {
 
 	protected void transactionDelete(final String key) {
 		if (isTransaction()) {
-			TransactionManager.transactionLifeCycle(new DefaultTransactionLifeCycle() {
+			TransactionManager.addLifecycle(new DefaultTransactionLifecycle() {
 				@Override
 				public void afterRollback() {
 					getCache().delete(formatKey(key));

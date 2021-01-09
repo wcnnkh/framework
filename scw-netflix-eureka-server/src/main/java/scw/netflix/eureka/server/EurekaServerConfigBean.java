@@ -23,13 +23,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.netflix.eureka.EurekaServerConfig;
-import com.netflix.eureka.aws.AwsBindingStrategy;
-
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.ConfigurationProperties;
 import scw.mapper.MapperUtils;
 import scw.value.property.PropertyFactory;
+
+import com.netflix.eureka.EurekaServerConfig;
+import com.netflix.eureka.aws.AwsBindingStrategy;
 
 /**
  * @author Dave Syer

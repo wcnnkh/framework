@@ -3,7 +3,6 @@ package scw.value.property;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +16,13 @@ import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.KeyValuePairEvent;
-import scw.event.NamedEventDispatcher;
+import scw.event.MultiEventRegistration;
 import scw.event.Observable;
 import scw.event.support.ObservableMap;
 import scw.event.support.StringNamedEventDispatcher;
 import scw.io.ResourceUtils;
 import scw.util.CollectionFactory;
 import scw.util.MultiIterator;
-import scw.util.StringMatcher;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.StringValueFactory;
@@ -32,9 +30,7 @@ import scw.value.Value;
 import scw.value.ValueWrapper;
 import scw.value.property.PropertiesPropertyFactory.ValueCreator;
 
-public class PropertyFactory extends StringValueFactory implements
-		BasePropertyFactory, EventListener<PropertyEvent> {
-	private final NamedEventDispatcher<String, PropertyEvent> dispatcher;
+public class PropertyFactory extends StringValueFactory implements EditablePropertyFactory {
 	private final ObservableMap<String, Value> propertyMap;
 	private final List<BasePropertyFactory> basePropertyFactories;
 	private final boolean priorityOfUseSelf;
@@ -45,37 +41,21 @@ public class PropertyFactory extends StringValueFactory implements
 	 *            是否优先使用自身的值
 	 */
 	public PropertyFactory(boolean concurrent, boolean priorityOfUseSelf) {
-		this.dispatcher = new StringNamedEventDispatcher<PropertyEvent>(concurrent);
 		this.propertyMap = new ObservableMap<String, Value>(concurrent, new StringNamedEventDispatcher<KeyValuePairEvent<String, Value>>(concurrent));
 		this.basePropertyFactories = CollectionFactory.createArrayList(concurrent, 8);
 		this.priorityOfUseSelf = priorityOfUseSelf;
-		this.propertyMap.getEventDispatcher().registerListener("*",  new EventListener<KeyValuePairEvent<String,Value>>() {
-
-			public void onEvent(KeyValuePairEvent<String, Value> event) {
-				PropertyFactory.this.onEvent(new PropertyEvent(PropertyFactory.this, event));
-			}
-		});
 	}
 	
-	public void onEvent(PropertyEvent event) {
-		dispatcher.publishEvent(event.getSource().getKey(), event);
-	}
-
 	public boolean isPriorityOfUseSelf() {
 		return priorityOfUseSelf;
 	}
 	
-	protected void register(BasePropertyFactory propertyFactory){
-		propertyFactory.registerListener("*", this);
-	}
-
 	public void addFirstBasePropertyFactory(
 			BasePropertyFactory basePropertyFactory) {
 		if (basePropertyFactory == null) {
 			return;
 		}
 
-		register(basePropertyFactory);
 		basePropertyFactories.add(0, basePropertyFactory);
 	}
 
@@ -85,7 +65,6 @@ public class PropertyFactory extends StringValueFactory implements
 			return;
 		}
 
-		register(basePropertyFactory);
 		basePropertyFactories.add(basePropertyFactory);
 	}
 
@@ -102,64 +81,6 @@ public class PropertyFactory extends StringValueFactory implements
 
 	public List<BasePropertyFactory> getBasePropertyFactories() {
 		return Collections.unmodifiableList(basePropertyFactories);
-	}
-
-	private void appendByMatcher(Map<String, Value> map, String pattern,
-			StringMatcher stringMatcher) {
-		for (Entry<String, Value> entry : propertyMap.entrySet()) {
-			if (map.containsKey(entry.getKey()) || entry.getValue() == null) {
-				continue;
-			}
-
-			if (stringMatcher.match(pattern, entry.getKey())) {
-				map.put(entry.getKey(), entry.getValue());
-			}
-		}
-	}
-
-	/**
-	 * 根据匹配规则获取结果
-	 * 
-	 * @param pattern
-	 * @param stringMatcher
-	 * @return
-	 */
-	public Map<String, Value> getByMatcher(String pattern,
-			StringMatcher stringMatcher) {
-		if (!stringMatcher.isPattern(pattern)) {
-			Value value = getValue(pattern);
-			if (value == null) {
-				return Collections.emptyMap();
-			}
-
-			return Collections.singletonMap(pattern, value);
-		}
-
-		Map<String, Value> map = new LinkedHashMap<String, Value>();
-		if (priorityOfUseSelf) {
-			appendByMatcher(map, pattern, stringMatcher);
-		}
-
-		for (BasePropertyFactory basePropertyFactory : basePropertyFactories) {
-			for (String key : basePropertyFactory) {
-				if (map.containsKey(key)) {
-					continue;
-				}
-
-				if (stringMatcher.match(pattern, key)) {
-					Value value = basePropertyFactory.getValue(key);
-					if (value == null) {
-						continue;
-					}
-					map.put(key, value);
-				}
-			}
-		}
-
-		if (!priorityOfUseSelf) {
-			appendByMatcher(map, pattern, stringMatcher);
-		}
-		return map;
 	}
 
 	@Override
@@ -216,17 +137,32 @@ public class PropertyFactory extends StringValueFactory implements
 	}
 
 	public EventRegistration registerListener(String key,
-			EventListener<PropertyEvent> eventListener) {
-		return dispatcher.registerListener(key, eventListener);
-	}
+			final EventListener<PropertyEvent> eventListener) {
+		EventRegistration registration1 = this.propertyMap.getEventDispatcher().registerListener(key,  new EventListener<KeyValuePairEvent<String,Value>>() {
 
-	public Value remove(String key) {
+			public void onEvent(KeyValuePairEvent<String, Value> event) {
+				eventListener.onEvent(new PropertyEvent(PropertyFactory.this, event));
+			}
+		});
+		
+		EventRegistration registration2 = MultiEventRegistration.registerListener(key, eventListener, getBasePropertyFactories());
+		return new MultiEventRegistration(registration1, registration2);
+	}
+	
+	public boolean put(String key, String value) {
+		// TODO Auto-generated method stub
+		return false;
+	} 
+
+	public boolean remove(String key) {
 		Assert.requiredArgument(key != null, "key");
-		return propertyMap.remove(key);
+		Value value = propertyMap.remove(key);
+		return value != null;
 	}
 
-	public Value put(String key, Object value) {
-		return put(key, value, false);
+	public boolean put(String key, Object value) {
+		Value v = put(key, value, false);
+		return v != null;
 	}
 
 	public Value put(String key, Object value, boolean format) {
@@ -378,7 +314,6 @@ public class PropertyFactory extends StringValueFactory implements
 	}
 
 	private class AnyFormatValue extends AnyValue {
-		private static final long serialVersionUID = 1L;
 
 		public AnyFormatValue(Object value) {
 			super(value);

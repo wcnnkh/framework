@@ -17,11 +17,11 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 
-import scw.application.Application;
-import scw.application.ApplicationUtils;
-import scw.application.Main;
-import scw.application.MainApplication;
 import scw.beans.Destroy;
+import scw.boot.Application;
+import scw.boot.ApplicationUtils;
+import scw.boot.Main;
+import scw.boot.MainApplication;
 import scw.core.Constants;
 import scw.core.GlobalPropertyFactory;
 import scw.core.instance.InstanceUtils;

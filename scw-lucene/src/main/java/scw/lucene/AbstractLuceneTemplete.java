@@ -18,6 +18,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 
+import scw.configure.support.ConfigureUtils;
 import scw.core.instance.InstanceUtils;
 import scw.json.JSONUtils;
 import scw.mapper.FieldDescriptor;
@@ -143,7 +144,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 				continue;
 			}
 
-			MapperUtils.setStringValue(field, instance, value);
+			ConfigureUtils.setValue(instance, field, value);
 		}
 		return instance;
 	}
@@ -325,7 +326,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 					continue;
 				}
 
-				MapperUtils.setStringValue(field, instance, value);
+				ConfigureUtils.setValue(instance, field, value);
 			}
 			return instance;
 		}

@@ -13,6 +13,8 @@ import java.util.Map;
 import scw.json.JSONAware;
 import scw.json.JSONStreamAware;
 import scw.mapper.MapperUtils;
+import scw.value.AnyValue;
+import scw.value.Value;
 import scw.value.ValueUtils;
 
 
@@ -173,6 +175,14 @@ public class JSONValue {
 		
 		if(value instanceof List)
 			return SimpleJSONArray.toJSONString((List)value);
+		
+		if(value instanceof Value){
+			if(value instanceof AnyValue){
+				return toJSONString(((AnyValue) value).getValue());
+			}
+			
+			return ((Value) value).getAsString();
+		}
 		
 		if(ValueUtils.isBaseType(value.getClass())){
 			return String.valueOf(value);

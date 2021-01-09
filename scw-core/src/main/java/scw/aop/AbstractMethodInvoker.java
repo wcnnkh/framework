@@ -3,6 +3,7 @@ package scw.aop;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import scw.core.reflect.MethodInvoker;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NestedExceptionUtils;
 

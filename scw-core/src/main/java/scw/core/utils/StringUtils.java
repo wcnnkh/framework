@@ -26,6 +26,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import scw.core.Assert;
+import scw.lang.Nullable;
 import scw.lang.ParameterException;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
@@ -758,61 +759,6 @@ public final class StringUtils {
 	 */
 	public static boolean pathEquals(String path1, String path2) {
 		return cleanPath(path1).equals(cleanPath(path2));
-	}
-
-	/**
-	 * Parse the given {@code localeString} value into a {@link Locale}.
-	 * <p>
-	 * This is the inverse operation of {@link Locale#toString Locale's
-	 * toString}.
-	 * 
-	 * @param localeString
-	 *            the locale string, following {@code Locale's}
-	 *            {@code toString()} format ("en", "en_UK", etc); also accepts
-	 *            spaces as separators, as an alternative to underscores
-	 * @return a corresponding {@code Locale} instance
-	 */
-	public static Locale parseLocaleString(String localeString) {
-		String[] parts = tokenizeToStringArray(localeString, "_ ", false, false);
-		String language = (parts.length > 0 ? parts[0] : "");
-		String country = (parts.length > 1 ? parts[1] : "");
-		validateLocalePart(language);
-		validateLocalePart(country);
-		String variant = "";
-		if (parts.length >= 2) {
-			// There is definitely a variant, and it is everything after the
-			// country
-			// code sans the separator between the country code and the variant.
-			int endIndexOfCountryCode = localeString.lastIndexOf(country) + country.length();
-			// Strip off any leading '_' and whitespace, what's left is the
-			// variant.
-			variant = trimLeadingWhitespace(localeString.substring(endIndexOfCountryCode));
-			if (variant.startsWith("_")) {
-				variant = trimLeadingCharacter(variant, '_');
-			}
-		}
-		return (language.length() > 0 ? new Locale(language, country, variant) : null);
-	}
-
-	private static void validateLocalePart(String localePart) {
-		for (int i = 0; i < localePart.length(); i++) {
-			char ch = localePart.charAt(i);
-			if (ch != '_' && ch != ' ' && !Character.isLetterOrDigit(ch)) {
-				throw new IllegalArgumentException("Locale part \"" + localePart + "\" contains invalid characters");
-			}
-		}
-	}
-
-	/**
-	 * Determine the RFC 3066 compliant language tag, as used for the HTTP
-	 * "Accept-Language" header.
-	 * 
-	 * @param locale
-	 *            the Locale to transform to a language tag
-	 * @return the RFC 3066 compliant language tag as String
-	 */
-	public static String toLanguageTag(Locale locale) {
-		return locale.getLanguage() + (hasText(locale.getCountry()) ? "-" + locale.getCountry() : "");
 	}
 
 	// ---------------------------------------------------------------------
@@ -1755,6 +1701,50 @@ public final class StringUtils {
 		}
 		return newArray;
 	}
+	
+	/**
+	 * Capitalize a {@code String}, changing the first letter to
+	 * upper case as per {@link Character#toUpperCase(char)}.
+	 * No other letters are changed.
+	 * @param str the {@code String} to capitalize
+	 * @return the capitalized {@code String}
+	 */
+	public static String capitalize(String str) {
+		return changeFirstCharacterCase(str, true);
+	}
+
+	/**
+	 * Uncapitalize a {@code String}, changing the first letter to
+	 * lower case as per {@link Character#toLowerCase(char)}.
+	 * No other letters are changed.
+	 * @param str the {@code String} to uncapitalize
+	 * @return the uncapitalized {@code String}
+	 */
+	public static String uncapitalize(String str) {
+		return changeFirstCharacterCase(str, false);
+	}
+
+	private static String changeFirstCharacterCase(String str, boolean capitalize) {
+		if (!hasLength(str)) {
+			return str;
+		}
+
+		char baseChar = str.charAt(0);
+		char updatedChar;
+		if (capitalize) {
+			updatedChar = Character.toUpperCase(baseChar);
+		}
+		else {
+			updatedChar = Character.toLowerCase(baseChar);
+		}
+		if (baseChar == updatedChar) {
+			return str;
+		}
+
+		char[] chars = str.toCharArray();
+		chars[0] = updatedChar;
+		return new String(chars, 0, chars.length);
+	}
 
 	/**
 	 * 把钱保留两位小数
@@ -2379,6 +2369,103 @@ public final class StringUtils {
 			}
 		}
 		return sb.toString();
+	}
+	
+	/**
+	 * Parse the given {@code String} value into a {@link Locale}, accepting
+	 * the {@link Locale#toString} format as well as BCP 47 language tags.
+	 * @param localeValue the locale value: following either {@code Locale's}
+	 * {@code toString()} format ("en", "en_UK", etc), also accepting spaces as
+	 * separators (as an alternative to underscores), or BCP 47 (e.g. "en-UK")
+	 * as specified by {@link Locale#forLanguageTag} on Java 7+
+	 * @return a corresponding {@code Locale} instance, or {@code null} if none
+	 * @throws IllegalArgumentException in case of an invalid locale specification
+	 * @since 5.0.4
+	 * @see #parseLocaleString
+	 * @see Locale#forLanguageTag
+	 */
+	@Nullable
+	public static Locale parseLocale(String localeValue) {
+		String[] tokens = tokenizeLocaleSource(localeValue);
+		if (tokens.length == 1) {
+			validateLocalePart(localeValue);
+			Locale resolved = Locale.forLanguageTag(localeValue);
+			if (resolved.getLanguage().length() > 0) {
+				return resolved;
+			}
+		}
+		return parseLocaleTokens(localeValue, tokens);
+	}
+
+	/**
+	 * Parse the given {@code String} representation into a {@link Locale}.
+	 * <p>For many parsing scenarios, this is an inverse operation of
+	 * {@link Locale#toString Locale's toString}, in a lenient sense.
+	 * This method does not aim for strict {@code Locale} design compliance;
+	 * it is rather specifically tailored for typical Spring parsing needs.
+	 * <p><b>Note: This delegate does not accept the BCP 47 language tag format.
+	 * Please use {@link #parseLocale} for lenient parsing of both formats.</b>
+	 * @param localeString the locale {@code String}: following {@code Locale's}
+	 * {@code toString()} format ("en", "en_UK", etc), also accepting spaces as
+	 * separators (as an alternative to underscores)
+	 * @return a corresponding {@code Locale} instance, or {@code null} if none
+	 * @throws IllegalArgumentException in case of an invalid locale specification
+	 */
+	@Nullable
+	public static Locale parseLocaleString(String localeString) {
+		return parseLocaleTokens(localeString, tokenizeLocaleSource(localeString));
+	}
+
+	private static String[] tokenizeLocaleSource(String localeSource) {
+		return tokenizeToStringArray(localeSource, "_ ", false, false);
+	}
+
+	@Nullable
+	private static Locale parseLocaleTokens(String localeString, String[] tokens) {
+		String language = (tokens.length > 0 ? tokens[0] : "");
+		String country = (tokens.length > 1 ? tokens[1] : "");
+		validateLocalePart(language);
+		validateLocalePart(country);
+
+		String variant = "";
+		if (tokens.length > 2) {
+			// There is definitely a variant, and it is everything after the country
+			// code sans the separator between the country code and the variant.
+			int endIndexOfCountryCode = localeString.indexOf(country, language.length()) + country.length();
+			// Strip off any leading '_' and whitespace, what's left is the variant.
+			variant = trimLeadingWhitespace(localeString.substring(endIndexOfCountryCode));
+			if (variant.startsWith("_")) {
+				variant = trimLeadingCharacter(variant, '_');
+			}
+		}
+
+		if (variant.isEmpty() && country.startsWith("#")) {
+			variant = country;
+			country = "";
+		}
+
+		return (language.length() > 0 ? new Locale(language, country, variant) : null);
+	}
+
+	private static void validateLocalePart(String localePart) {
+		for (int i = 0; i < localePart.length(); i++) {
+			char ch = localePart.charAt(i);
+			if (ch != ' ' && ch != '_' && ch != '-' && ch != '#' && !Character.isLetterOrDigit(ch)) {
+				throw new IllegalArgumentException(
+						"Locale part \"" + localePart + "\" contains invalid characters");
+			}
+		}
+	}
+
+	/**
+	 * Determine the RFC 3066 compliant language tag,
+	 * as used for the HTTP "Accept-Language" header.
+	 * @param locale the Locale to transform to a language tag
+	 * @return the RFC 3066 compliant language tag as {@code String}
+	 * @see Locale#toLanguageTag()
+	 */
+	public static String toLanguageTag(Locale locale) {
+		return locale.getLanguage() + (hasText(locale.getCountry()) ? "-" + locale.getCountry() : "");
 	}
 
 	/**

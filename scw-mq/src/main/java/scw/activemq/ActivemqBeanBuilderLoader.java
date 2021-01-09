@@ -1,5 +1,7 @@
 package scw.activemq;
 
+import java.util.Properties;
+
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -9,9 +11,10 @@ import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
+import scw.configure.support.ConfigureUtils;
+import scw.convert.TypeDescriptor;
 import scw.core.instance.annotation.SPI;
 import scw.io.ResourceUtils;
-import scw.util.ConfigUtils;
 
 @SPI(order = Integer.MIN_VALUE)
 public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
@@ -37,9 +40,9 @@ public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
 		}
 
 		public Object create() throws Exception {
+			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get();
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-			ConfigUtils.loadProperties(connectionFactory,
-					ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get(), null, null);
+			ConfigureUtils.getConfigureFactory().configuration(properties, connectionFactory, TypeDescriptor.forObject(connectionFactory));
 			return connectionFactory;
 		}
 	}

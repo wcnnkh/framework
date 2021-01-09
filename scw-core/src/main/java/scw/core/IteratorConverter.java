@@ -2,6 +2,7 @@ package scw.core;
 
 import java.util.Iterator;
 
+import scw.convert.Converter;
 import scw.util.AbstractIterator;
 
 public class IteratorConverter<T, V> extends AbstractIterator<V> {

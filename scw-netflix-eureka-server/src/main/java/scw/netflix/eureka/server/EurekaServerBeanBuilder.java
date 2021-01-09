@@ -2,6 +2,14 @@ package scw.netflix.eureka.server;
 
 import java.util.Collections;
 
+import scw.beans.BeanDefinition;
+import scw.beans.BeanFactory;
+import scw.beans.DefaultBeanDefinition;
+import scw.beans.builder.BeanBuilderLoader;
+import scw.beans.builder.BeanBuilderLoaderChain;
+import scw.beans.builder.LoaderContext;
+import scw.core.instance.annotation.SPI;
+
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
@@ -11,14 +19,6 @@ import com.netflix.eureka.EurekaServerContext;
 import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
-
-import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.SPI;
 
 @SPI(order = Integer.MIN_VALUE)
 public class EurekaServerBeanBuilder implements BeanBuilderLoader {

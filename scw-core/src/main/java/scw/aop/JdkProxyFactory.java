@@ -5,12 +5,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import scw.core.instance.annotation.SPI;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.lang.NotSupportedException;
 
-@SPI(order = Integer.MIN_VALUE + 100)
 public class JdkProxyFactory implements ProxyFactory {
 
 	public boolean isSupport(Class<?> clazz) {

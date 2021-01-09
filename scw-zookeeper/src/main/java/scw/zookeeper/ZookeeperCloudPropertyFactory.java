@@ -11,19 +11,20 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
-import scw.config.CloudPropertyFactory;
-import scw.core.Constants;
 import scw.core.instance.annotation.SPI;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.event.EventType;
 import scw.event.KeyValuePairEvent;
+import scw.io.JavaSerializer;
+import scw.io.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.value.AnyValue;
 import scw.value.EmptyValue;
-import scw.value.StringValue;
 import scw.value.Value;
 import scw.value.property.AbstractBasePropertyFactory;
+import scw.value.property.EditablePropertyFactory;
 import scw.value.property.PropertyEvent;
 
 /**
@@ -32,10 +33,11 @@ import scw.value.property.PropertyEvent;
  *
  */
 @SPI(order=Integer.MIN_VALUE)
-public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory implements CloudPropertyFactory, Watcher{
+public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory implements EditablePropertyFactory, Watcher{
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
+	private NoTypeSpecifiedSerializer serializer;
 	
 	public ZookeeperCloudPropertyFactory(ZooKeeper zooKeeper, String parentPath){
 		super(true);
@@ -44,6 +46,14 @@ public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory i
 		zooKeeper.register(this);
 	}
 	
+	public NoTypeSpecifiedSerializer getSerializer() {
+		return serializer == null? JavaSerializer.INSTANCE:serializer;
+	}
+
+	public void setSerializer(NoTypeSpecifiedSerializer serializer) {
+		this.serializer = serializer;
+	}
+
 	private String getKey(String path){
 		String key = path.substring(parentPath.length());
 		if(key.startsWith("/")){
@@ -84,8 +94,13 @@ public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory i
 		if(data == null){
 			return EmptyValue.INSTANCE;
 		}
-		String text = StringUtils.getStringOperations().createString(data, Constants.UTF_8);
-		return new StringValue(text);
+		
+		try {
+			Object value = getSerializer().deserialize(data);
+			return new AnyValue(value);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public boolean remove(String key) {
@@ -124,14 +139,15 @@ public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory i
 		getEventDispatcher().publishEvent(key, new PropertyEvent(this, keyValuePairEvent));
 	}
 
-	public boolean put(String key, String value) {
+	public boolean put(String key, Object value) {
 		if(StringUtils.isEmpty(key)){
 			return false;
 		}
 		
 		String path = ZooKeeperUtils.cleanPath(parentPath, key);
 		ZooKeeperUtils.createNotExist(zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-		return ZooKeeperUtils.setData(zooKeeper, path, StringUtils.getStringOperations().getBytes(value, Constants.UTF_8));
+		byte[] data = getSerializer().serialize(value);
+		return ZooKeeperUtils.setData(zooKeeper, path, data);
 	}
 
 }

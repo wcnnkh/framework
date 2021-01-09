@@ -2,7 +2,7 @@ package scw.util;
 
 import java.util.Enumeration;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 
 public class EnumerationConvert<T, E> implements Enumeration<E> {
 	private Enumeration<? extends T> enumeration;
@@ -30,7 +30,7 @@ public class EnumerationConvert<T, E> implements Enumeration<E> {
 		return new EnumerationConvert<Object, String>(enumeration, new Converter<Object, String>() {
 
 			public String convert(Object k) {
-				return k == null ? null : k.toString();
+				return String.valueOf(k);
 			}
 		});
 	}

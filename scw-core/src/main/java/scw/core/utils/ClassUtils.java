@@ -789,6 +789,7 @@ public final class ClassUtils {
 			forName(className, true, classLoader);
 			return true;
 		} catch (Throwable ex) {
+			//ex.printStackTrace();
 			// Class or one of its dependencies is not present...
 			return false;
 		}

@@ -7,10 +7,10 @@ import java.util.Map.Entry;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.CollectionUtils;
+import scw.dom.DomUtils;
 import scw.io.IOUtils;
 import scw.json.JSONSupport;
 import scw.logger.Logger;
@@ -18,7 +18,6 @@ import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
 import scw.util.MultiValueMap;
 import scw.value.StringValue;
-import scw.xml.XMLUtils;
 
 public class DefaultRequestBodyParse implements RequestBodyParse {
 	private static Logger logger = LoggerFactory.getLogger(DefaultRequestBodyParse.class);
@@ -29,9 +28,9 @@ public class DefaultRequestBodyParse implements RequestBodyParse {
 		if (httpChannel.getRequest().getHeaders().isJsonContentType()) {
 			body = IOUtils.read(httpChannel.getRequest().getReader());
 		} else if (httpChannel.getRequest().getHeaders().isXmlContentType()) {
-			Document document = XMLUtils.parse(new InputSource(httpChannel.getRequest().getReader()));
+			Document document = DomUtils.getDomBuilder().parse(httpChannel.getRequest().getReader());
 			Element element = document.getDocumentElement();
-			body = jsonParseSupport.toJSONString(XMLUtils.toRecursionMap(element));
+			body = jsonParseSupport.toJSONString(DomUtils.toRecursionMap(element));
 		} else {
 			MultiValueMap<String, String> parameterMap = httpChannel.getRequest().getParameterMap();
 			if (parameterMap != null) {

@@ -21,18 +21,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.netflix.appinfo.DataCenterInfo;
-import com.netflix.appinfo.InstanceInfo.InstanceStatus;
-import com.netflix.appinfo.MyDataCenterInfo;
-
-import scw.application.ApplicationUtils;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.ConfigurationProperties;
+import scw.boot.ApplicationUtils;
 import scw.commons.util.InetUtils;
 import scw.commons.util.InetUtils.HostInfo;
 import scw.core.utils.StringUtils;
 import scw.mapper.MapperUtils;
 import scw.value.property.PropertyFactory;
+
+import com.netflix.appinfo.DataCenterInfo;
+import com.netflix.appinfo.InstanceInfo.InstanceStatus;
+import com.netflix.appinfo.MyDataCenterInfo;
 
 /**
  * @author Dave Syer

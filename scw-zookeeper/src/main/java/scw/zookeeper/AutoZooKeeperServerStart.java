@@ -1,7 +1,7 @@
 package scw.zookeeper;
 
-import scw.application.Application;
-import scw.application.ApplicationInitialization;
+import scw.boot.Application;
+import scw.boot.ApplicationInitialization;
 import scw.core.instance.annotation.SPI;
 import scw.io.ResourceUtils;
 

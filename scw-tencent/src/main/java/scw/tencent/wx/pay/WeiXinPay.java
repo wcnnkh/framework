@@ -9,9 +9,11 @@ import javax.net.ssl.SSLSocketFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import scw.configure.support.ConfigureUtils;
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.http.HttpMethod;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
@@ -28,7 +30,6 @@ import scw.security.SignatureUtils;
 import scw.tencent.wx.WeiXinException;
 import scw.tencent.wx.WeiXinUtils;
 import scw.util.RandomUtils;
-import scw.xml.XMLUtils;
 
 public class WeiXinPay {
 	private static Logger logger = LoggerFactory.getLogger(WeiXinPay.class);
@@ -173,7 +174,7 @@ public class WeiXinPay {
 		String[] keys = params.keySet().toArray(new String[0]);
 		Arrays.sort(keys);
 		StringBuilder sb = new StringBuilder();
-		Document document = XMLUtils.newDocumentBuilder().newDocument();
+		Document document = DomUtils.getDomBuilder().getDocumentBuilder().newDocument();
 		Element element = document.createElement("xml");
 		for (int i = 0; i < keys.length; i++) {
 			String k = keys[i];
@@ -202,7 +203,7 @@ public class WeiXinPay {
 		Element c = document.createElement("sign");
 		c.setTextContent(sign);
 		element.appendChild(c);
-		final String content = XMLUtils.toString(element);
+		String content = DomUtils.getDomBuilder().toString(element);
 
 		logger.debug("微信支付请求xml内容:{}", content);
 		
@@ -213,8 +214,9 @@ public class WeiXinPay {
 		}
 
 		logger.debug("请求：{}，返回{}", url, res);
-
-		Map<String, String> map = XMLUtils.xmlToMap(res);
+		
+		Document responseDocument = DomUtils.getDomBuilder().parse(res);
+		Map<String, String> map = ConfigureUtils.getConversionServiceFactory().convertToMap(responseDocument, String.class, String.class);
 		JsonObject jsonObject = JSONUtils.parseObject(JSONUtils.toJSONString(map));
 		return new WeiXinPayResponse(jsonObject);
 	}

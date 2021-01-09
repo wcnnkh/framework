@@ -1,8 +1,8 @@
 package scw.security.limit;
 
-import scw.aop.MethodInvoker;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
+import scw.core.reflect.MethodInvoker;
 import scw.security.limit.annotation.CountLimitParameter;
 import scw.security.limit.annotation.CountLimitSecurity;
 

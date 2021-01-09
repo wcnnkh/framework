@@ -27,7 +27,6 @@ public class ConfigurableServiceLoader<S> implements ServiceLoader<S> {
 		this.instanceFactory = instanceFactory;
 		this.defaultNames = defaultNames;
 		this.parentServiceLoader = serviceLoader;
-
 		this.configNames = propertyFactory.getObject(clazz.getName(), String[].class);
 	}
 

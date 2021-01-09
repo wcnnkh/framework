@@ -39,7 +39,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		implements DB, EventListener<AsyncExecuteEvent>, BeanFactoryAware, Destroy, ConnectionFactory {
 	private static Logger logger = LoggerFactory.getLogger(AbstractDB.class);
 	private final DefaultAsyncBasicEventDispatcher<AsyncExecuteEvent> asyncBasicEventDispatcher = new DefaultAsyncBasicEventDispatcher<AsyncExecuteEvent>(
-			false, getClass().getName(), true);
+			false, getClass().getName());
 	private volatile CacheManager cacheManager;
 	private volatile GeneratorService generatorService;
 	private BeanFactory beanFactory;

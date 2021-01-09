@@ -22,7 +22,7 @@ import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.InetUtils;
-import scw.net.message.converter.MultiMessageConverter;
+import scw.net.message.converter.MessageConverterFactory;
 import scw.net.uri.UriTemplateHandler;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {
@@ -51,20 +51,20 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			.getLogger(DefaultHttpClient.class);
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
-	protected final MultiMessageConverter messageConverter = new MultiMessageConverter();
+	protected final MessageConverterFactory messageConverter = new MessageConverterFactory();
 	private final LinkedList<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
 	private ClientHttpRequestFactory clientHttpRequestFactory;
 	private UriTemplateHandler uriTemplateHandler;
 
 	public DefaultHttpClient() {
-		messageConverter.add(InetUtils.getMessageConverter());
+		messageConverter.getMessageConverters().add(InetUtils.getMessageConverter());
 	}
 
 	public LinkedList<ClientHttpRequestInterceptor> getInterceptors() {
 		return interceptors;
 	}
 
-	public MultiMessageConverter getMessageConverter() {
+	public MessageConverterFactory getMessageConverter() {
 		return messageConverter;
 	}
 

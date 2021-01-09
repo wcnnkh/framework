@@ -9,11 +9,14 @@ import scw.beans.DefaultBeanDefinition;
 import scw.beans.builder.BeanBuilderLoader;
 import scw.beans.builder.BeanBuilderLoaderChain;
 import scw.beans.builder.LoaderContext;
+import scw.configure.support.ConfigureUtils;
+import scw.configure.support.EntityConfigure;
+import scw.configure.support.PropertyFactoryConfigure;
+import scw.convert.TypeDescriptor;
 import scw.core.Constants;
 import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 import scw.io.ResourceUtils;
-import scw.util.ConfigUtils;
 import scw.value.property.PropertyFactory;
 
 @SPI(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
@@ -98,8 +101,11 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader {
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null, null);
-			ConfigUtils.loadProperties(jedisPoolConfig, propertyFactory, null, "redis.");
+			EntityConfigure entityConfigure = new PropertyFactoryConfigure(ConfigureUtils.getConversionServiceFactory());
+			entityConfigure.configuration(propertyFactory, TypeDescriptor.forObject(propertyFactory), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
+			entityConfigure.setPrefix("redis");
+			entityConfigure.setStrict(true);
+			entityConfigure.configuration(propertyFactory, TypeDescriptor.forObject(propertyFactory), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
 			return jedisPoolConfig;
 		}
 	}

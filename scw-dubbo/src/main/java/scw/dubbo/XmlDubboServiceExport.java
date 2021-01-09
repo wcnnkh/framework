@@ -7,10 +7,10 @@ import org.apache.dubbo.config.ProtocolConfig;
 import org.apache.dubbo.config.ServiceConfig;
 import org.w3c.dom.NodeList;
 
-import scw.application.Application;
-import scw.application.ApplicationInitialization;
 import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanFactory;
+import scw.boot.Application;
+import scw.boot.ApplicationInitialization;
 import scw.core.instance.annotation.SPI;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;

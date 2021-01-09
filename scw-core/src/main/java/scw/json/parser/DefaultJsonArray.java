@@ -3,7 +3,7 @@ package scw.json.parser;
 import java.io.Serializable;
 import java.util.Iterator;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.core.IteratorConverter;
 import scw.json.AbstractJson;
 import scw.json.JSONException;

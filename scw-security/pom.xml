@@ -14,6 +14,10 @@
 		</dependency>
 		<dependency>
 			<groupId>scw</groupId>
+			<artifactId>scw-beans</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>scw</groupId>
 			<artifactId>scw-data</artifactId>
 		</dependency>
 	</dependencies>

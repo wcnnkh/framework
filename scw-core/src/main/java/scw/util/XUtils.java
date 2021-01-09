@@ -1,6 +1,8 @@
 package scw.util;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +15,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
@@ -223,5 +225,11 @@ public final class XUtils {
 		}
 
 		return defaultName;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T synchronizedProxy(T source, Object mutex){
+		InvocationHandler handler = new SynchronizedInvocationHandler(source, mutex);
+		return (T) Proxy.newProxyInstance(source.getClass().getClassLoader(), source.getClass().getInterfaces(), handler);
 	}
 }

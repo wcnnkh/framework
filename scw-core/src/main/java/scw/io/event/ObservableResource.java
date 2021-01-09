@@ -1,6 +1,6 @@
 package scw.io.event;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.io.Resource;
 
 public class ObservableResource<T> extends AbstractObservableResource<T> {

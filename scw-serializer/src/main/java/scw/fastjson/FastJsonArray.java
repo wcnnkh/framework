@@ -8,7 +8,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONAware;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.core.IteratorConverter;
 import scw.json.AbstractJson;
 import scw.json.EmptyJsonElement;

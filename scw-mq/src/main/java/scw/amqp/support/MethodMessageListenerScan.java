@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 
 import scw.amqp.Exchange;
 import scw.amqp.QueueDeclare;
-import scw.application.Application;
-import scw.application.ApplicationInitialization;
 import scw.beans.BeanUtils;
+import scw.boot.Application;
+import scw.boot.ApplicationInitialization;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.instance.annotation.SPI;
 import scw.util.ClassScanner;

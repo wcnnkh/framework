@@ -2,9 +2,9 @@ package scw.netflix.eureka.server;
 
 import javax.servlet.ServletContext;
 
-import scw.application.Application;
 import scw.beans.Destroy;
 import scw.beans.annotation.Autowired;
+import scw.boot.Application;
 import scw.core.instance.annotation.SPI;
 import scw.servlet.ServletContextInitialization;
 

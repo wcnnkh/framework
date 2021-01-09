@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import com.google.gson.Gson;
 
-import scw.core.Converter;
+import scw.convert.Converter;
 import scw.core.IteratorConverter;
 import scw.json.AbstractJson;
 import scw.json.EmptyJsonElement;

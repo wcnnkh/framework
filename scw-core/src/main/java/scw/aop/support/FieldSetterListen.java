@@ -2,8 +2,8 @@ package scw.aop.support;
 
 import java.util.Map;
 
-import scw.aop.MethodInvoker;
 import scw.aop.WriteReplaceInterface;
+import scw.core.reflect.MethodInvoker;
 import scw.mapper.Field;
 
 public interface FieldSetterListen extends WriteReplaceInterface{

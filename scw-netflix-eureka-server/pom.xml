@@ -16,6 +16,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
+			<artifactId>scw-web</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
 			<artifactId>scw-netflix-eureka-client</artifactId>
 			<exclusions>
 				<exclusion>

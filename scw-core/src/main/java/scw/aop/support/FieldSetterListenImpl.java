@@ -5,7 +5,7 @@ import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.aop.MethodInvoker;
+import scw.core.reflect.MethodInvoker;
 import scw.mapper.Field;
 
 public class FieldSetterListenImpl implements FieldSetterListen, Serializable {

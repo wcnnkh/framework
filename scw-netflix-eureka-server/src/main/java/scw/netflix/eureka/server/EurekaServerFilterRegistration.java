@@ -11,13 +11,13 @@ import javax.servlet.Filter;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
-
 import scw.core.instance.annotation.SPI;
 import scw.netflix.eureka.EurekaConstants;
 import scw.servlet.FilterRegistration;
 import scw.util.ClassScanner;
+
+import com.sun.jersey.api.core.DefaultResourceConfig;
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 @SPI(order = Integer.MIN_VALUE)
 public class EurekaServerFilterRegistration implements FilterRegistration {
