@@ -65,11 +65,11 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 				|| Value.class.isAssignableFrom(body.getClass())) {
 			writeBody = body.toString();
 		} else if (body instanceof Map) {
-			writeBody = DomUtils.getDomBuilder().toXmlString((Map)body);
+			writeBody = DomUtils.getDomBuilder().toString((Map)body);
 		} else {
 			Map map = getJsonSupport().parseObject(
 					getJsonSupport().toJSONString(body), Map.class);
-			writeBody = DomUtils.getDomBuilder().toXmlString(map);
+			writeBody = DomUtils.getDomBuilder().toString(map);
 		}
 		writeTextBody(writeBody, contentType, outputMessage);
 	}

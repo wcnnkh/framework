@@ -8,10 +8,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Collections;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,7 +23,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -193,39 +189,34 @@ public class DomBuilder{
 		return parse(getDocumentBuilder(), source);
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings("rawtypes")
 	public Document parse(DocumentBuilder documentBuilder, Map source){
+		return parse(documentBuilder, "xml", source);
+	}
+	
+	public Document parse(String rootNodeName, Object source){
+		return parse(getDocumentBuilder(), rootNodeName, source);
+	}
+	
+	public Document parse(DocumentBuilder documentBuilder, String rootNodeName, Object source){
 		Document document = documentBuilder.newDocument();
-		for(Entry entry : (Set<Entry>)source.entrySet()){
-			Object name = entry.getKey();
-			if(name == null){
-				continue;
-			}
-			
-			Element element = createElement(document, String.valueOf(name), entry.getValue());
-			document.appendChild(element);
-		}
+		getAppendChildService().append(document, document, rootNodeName, source, TypeDescriptor.forObject(source));
 		return document;
 	}
 	
-	public Document parse(DocumentBuilder documentBuilder, String tagName, Object element){
-		Document document = documentBuilder.newDocument();
-		Element root = createElement(document, tagName, element);
-		document.appendChild(root);
-		return document;
+	public AppendChildService getAppendChildService() {
+		return appendChildService;
 	}
-	
-	public Element createElement(Document document, String tagName, Object source){
-		Element root = document.createElement(tagName);
-		appendChildService.append(document, root, tagName, source, TypeDescriptor.forObject(source));
-		return root;
-	}
-	
+
 	/*****transform*****/
 	
 	@SuppressWarnings("rawtypes")
 	public String toString(Map source){
 		return toString(parse(source));
+	}
+	
+	public String toString(String rootNodeName, Object source){
+		return toString(parse(rootNodeName, source));
 	}
 
 	public String toString(Node node) {
@@ -296,17 +287,5 @@ public class DomBuilder{
 		} catch (TransformerException e) {
 			throw new RuntimeException(e);
 		}
-	}
-	
-	/*****xml*****/
-	
-	@SuppressWarnings("rawtypes")
-	public Document parseToXml(Map source){
-		return parse(Collections.singletonMap("xml", source));
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public String toXmlString(Map source){
-		return toString(Collections.singletonMap("xml", source));
 	}
 }
