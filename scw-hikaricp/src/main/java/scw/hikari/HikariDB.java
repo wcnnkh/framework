@@ -3,11 +3,11 @@ package scw.hikari;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-
 import scw.db.ConfigurableDB;
 import scw.db.DBUtils;
+
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 public class HikariDB extends ConfigurableDB {
 	private HikariDataSource dataSource;
@@ -31,9 +31,9 @@ public class HikariDB extends ConfigurableDB {
 
 	@Override
 	protected void initConfig() {
-		if (getPropertyFactory() != null && dataSource == null) {
+		if (getPropertyManager() != null && dataSource == null) {
 			HikariConfig config = new HikariConfig();
-			DBUtils.loadProperties(config, getPropertyFactory());
+			DBUtils.loadProperties(config, getPropertyManager());
 			this.dataSource = new HikariDataSource(config);
 		}
 

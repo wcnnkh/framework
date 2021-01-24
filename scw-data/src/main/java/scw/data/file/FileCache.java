@@ -9,12 +9,12 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import scw.beans.Destroy;
-import scw.beans.Init;
-import scw.core.GlobalPropertyFactory;
+import scw.context.Destroy;
+import scw.context.Init;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.data.ExpiredCache;
+import scw.env.SystemEnvironment;
 import scw.io.FileUtils;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerUtils;
@@ -22,7 +22,6 @@ import scw.lang.NestedRuntimeException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.uri.UriUtils;
-import scw.value.property.SystemPropertyFactory;
 
 @SuppressWarnings("unchecked")
 public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy {
@@ -38,8 +37,8 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 	 */
 	protected FileCache(int exp) {
 		this(exp, SerializerUtils.DEFAULT_SERIALIZER,
-				SystemPropertyFactory.getInstance().getTempDirectoryPath()
-						+ GlobalPropertyFactory.getInstance().getSystemLocalId() + File.separator + "file_cache_"
+				SystemEnvironment.getInstance().getTempDirectoryPath()
+						+ SystemEnvironment.getInstance().getPrivateId() + File.separator + "file_cache_"
 						+ exp);
 	}
 
@@ -287,7 +286,7 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 
 	public static ExpiredCache create(String cacheDirectorySuffix, int exp) {
 		return new FileCache(exp,
-				SystemPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
+				SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
 	}
 
 	public void delete(Collection<String> keys) {

@@ -5,7 +5,6 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Autowired;
 import scw.lang.NotSupportedException;
 import scw.mapper.Field;
-import scw.value.property.PropertyFactory;
 
 public class AutowiredIocProcessor extends AbstractFieldIocProcessor {
 
@@ -14,8 +13,7 @@ public class AutowiredIocProcessor extends AbstractFieldIocProcessor {
 	}
 
 	@Override
-	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
+	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws Exception {
 		Autowired s = getField().getSetter()
 				.getAnnotatedElement().getAnnotation(Autowired.class);
 		if (s != null) {
@@ -27,7 +25,7 @@ public class AutowiredIocProcessor extends AbstractFieldIocProcessor {
 
 			if(s.required()){//是否是强制依赖
 				if(!beanFactory.isInstance(name)){
-					throw new NotSupportedException(name);
+					throw new NotSupportedException(getField().getSetter().toString());
 				}
 				
 

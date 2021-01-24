@@ -1,20 +1,20 @@
 package scw.feign;
 
 import scw.beans.BeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.SPI;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.context.annotation.Provider;
 import scw.feign.annotation.FeignClient;
 
-@SPI(order=Integer.MIN_VALUE)
-public class FeignBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order=Integer.MIN_VALUE)
+public class FeignBeanBuilderLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		FeignClient feignClient = context.getTargetClass().getAnnotation(FeignClient.class);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		FeignClient feignClient = sourceClass.getAnnotation(FeignClient.class);
 		if (feignClient != null) {
-			return new FeignBeanDefinition(context, feignClient);
+			return new FeignBeanDefinition(beanFactory, sourceClass, feignClient);
 		}
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 }

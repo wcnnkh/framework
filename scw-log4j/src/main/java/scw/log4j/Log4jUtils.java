@@ -7,11 +7,12 @@ import java.util.Properties;
 import org.w3c.dom.Element;
 
 import scw.core.reflect.ReflectionUtils;
-import scw.io.ResourceUtils;
+import scw.env.SystemEnvironment;
 import scw.logger.Level;
 import scw.logger.LoggerLevelManager;
 import scw.logger.LoggerPropertyFactory;
 import scw.util.FormatUtils;
+import scw.util.DefaultPlaceholderResolver;
 
 public final class Log4jUtils {
 	private Log4jUtils() {
@@ -29,7 +30,8 @@ public final class Log4jUtils {
 		}
 
 		try {
-			method.invoke(null, LoggerPropertyFactory.getInstance().format(properties));
+			Properties propertiesToUse = FormatUtils.format(properties, new DefaultPlaceholderResolver(LoggerPropertyFactory.getInstance()));
+			method.invoke(null, propertiesToUse);
 		} catch (Exception e) {
 		}
 	}
@@ -51,13 +53,12 @@ public final class Log4jUtils {
 	}
 
 	public static void defaultInit() {
-		if (ResourceUtils.getResourceOperations().isExist("log4j.properties")) {
+		if (SystemEnvironment.getInstance().exists("log4j.properties")) {
 			FormatUtils.info(Log4jUtils.class, "Already exist log4j.properties");
 			return;
 		}
 
-		Properties properties = ResourceUtils.getResourceOperations()
-				.getProperties("classpath:/scw/log4j/default-log4j.properties").get();
+		Properties properties = SystemEnvironment.getInstance().getProperties("classpath:/scw/log4j/default-log4j.properties").get();
 		for (Entry<String, Level> entry : LoggerLevelManager.getInstance().get().entrySet()) {
 			properties.put("log4j.logger." + entry.getKey(), entry.getValue().getName());
 		}

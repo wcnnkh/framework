@@ -21,6 +21,7 @@ import java.util.Set;
 
 import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
+import scw.util.ClassLoaderProvider;
 
 public final class ClassUtils {
 	/** Suffix for array class names: "[]" */
@@ -621,12 +622,9 @@ public final class ClassUtils {
 		Class<?> clazz = null;
 		try {
 			clazz = forName(name, initialize, classLoader);
-		} catch (ClassNotFoundException e) {
-			// ignore
-		} catch (NoClassDefFoundError e) {
-			// ignore
-		} catch (UnsupportedClassVersionError e) {
-			// ignore jdk版本不对
+		} catch (Throwable e) {
+			//ex.printStackTrace();
+			// Class or one of its dependencies is not present...
 		}
 		return clazz;
 	}
@@ -1553,5 +1551,15 @@ public final class ClassUtils {
 		} catch (Exception e) {
 			throw new RuntimeException(className, e);
 		}
+	}
+	
+	/**
+	 * @see #getDefaultClassLoader()
+	 * @param classLoaderProvider
+	 * @return
+	 */
+	public static ClassLoader getClassLoader(ClassLoaderProvider classLoaderProvider){
+		ClassLoader classLoader = classLoaderProvider == null? null:classLoaderProvider.getClassLoader();
+		return classLoader == null? ClassUtils.getDefaultClassLoader():classLoader;
 	}
 }

@@ -5,7 +5,6 @@ import java.lang.reflect.Modifier;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.value.property.PropertyFactory;
 
 public class NoArgumentMethodIocProcessor extends AbstractIocProcessor {
 	private final Method method;
@@ -15,8 +14,7 @@ public class NoArgumentMethodIocProcessor extends AbstractIocProcessor {
 		checkMethod(method);
 	}
 
-	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws Exception {
 		if(acceptModifiers(beanDefinition, bean, method.getModifiers())){
 			noArgumentInvoke(bean);
 		}

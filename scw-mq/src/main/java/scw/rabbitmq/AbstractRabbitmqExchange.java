@@ -6,8 +6,8 @@ import scw.amqp.ExchangeDeclare;
 import scw.amqp.MessageListener;
 import scw.amqp.QueueDeclare;
 import scw.amqp.support.AbstractExchange;
-import scw.core.Constants;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.json.JSONUtils;
 
@@ -98,7 +98,7 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange {
 		if (logger.isDebugEnabled()) {
 			logger.debug("push exchange={}, routingKey={}, properties={}, body={}", exchangeDeclare.getName(),
 					message.getRoutingKey(), JSONUtils.toJSONString(message.getMessageProperties()),
-					StringUtils.getStringOperations().createString(message.getBody(), Constants.DEFAULT_CHARSET));
+					StringUtils.getStringOperations().createString(message.getBody(), SystemEnvironment.getInstance().getCharsetName()));
 		}
 
 		if (message.getMessageProperties().getDeliveryMode() == null) {

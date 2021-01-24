@@ -6,10 +6,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import scw.core.instance.InstanceIterable;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
+import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.support.InstanceIterable;
 import scw.util.MultiIterable;
 
 public class MethodInterceptors implements Serializable, Iterable<MethodInterceptor> {

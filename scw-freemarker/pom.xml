@@ -13,19 +13,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-core</artifactId>
+			<artifactId>scw-mvc</artifactId>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
 			<version>${freemarker.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-mvc</artifactId>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -5,8 +5,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import scw.core.GlobalPropertyFactory;
 import scw.core.utils.XTime;
+import scw.env.SystemEnvironment;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventType;
@@ -20,7 +20,7 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)
 	 */
 	static final long LISTENER_PERIOD = Math.max(1,
-			GlobalPropertyFactory.getInstance().getValue("resource.listener.period", int.class, 5)) * 1000L;
+			SystemEnvironment.getInstance().getValue("resource.listener.period", int.class, 5)) * 1000L;
 	static final Timer TIMER = new Timer(DefaultResourceEventDispatcher.class.getSimpleName(), true);// 守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
 	private final Resource resource;

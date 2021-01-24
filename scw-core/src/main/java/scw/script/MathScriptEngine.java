@@ -1,13 +1,14 @@
 package scw.script;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
+import scw.instance.InstanceUtils;
 import scw.mapper.Field;
 import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
@@ -30,7 +31,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			{ new AdditionOperator(), new SubtractionOperator() } };
 
 	static {
-		List<Function> functions = InstanceUtils.loadAllService(Function.class);
+		List<Function> functions = new ArrayList<Function>(InstanceUtils.loadAllService(Function.class));
 		functions.add(new MaxFunction());
 		functions.add(new MinFunction());
 		functions.add(new MeaninglessFunction("{", "}"));

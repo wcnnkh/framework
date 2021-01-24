@@ -1,10 +1,12 @@
 package scw.io;
 
-public interface ResourceLoader {
+import scw.util.ClassLoaderProvider;
+
+
+public interface ResourceLoader extends ClassLoaderProvider{
 
 	/** Pseudo URL prefix for loading from the class path: "classpath:" */
 	String CLASSPATH_URL_PREFIX = ResourceUtils.CLASSPATH_URL_PREFIX;
-
 
 	/**
 	 * Return a Resource handle for the specified resource location.

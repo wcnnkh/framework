@@ -1,6 +1,7 @@
 package scw.beans;
 
 
+
 public class BeanFactoryAccessor implements BeanFactoryAware {
 	private transient BeanFactory beanFactory;
 

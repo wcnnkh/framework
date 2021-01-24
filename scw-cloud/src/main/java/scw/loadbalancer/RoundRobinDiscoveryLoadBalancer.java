@@ -3,20 +3,20 @@ package scw.loadbalancer;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import scw.boot.ApplicationUtils;
-import scw.core.instance.annotation.SPI;
+import scw.boot.support.ApplicationUtils;
+import scw.context.annotation.Provider;
 import scw.discovery.DiscoveryClient;
 import scw.discovery.ServiceInstance;
-import scw.value.property.PropertyFactory;
+import scw.env.Environment;
 
-@SPI(order=Integer.MIN_VALUE, value=DiscoveryLoadBalancer.class, assignableValue=false)
+@Provider(order=Integer.MIN_VALUE, value=DiscoveryLoadBalancer.class, assignableValue=false)
 public class RoundRobinDiscoveryLoadBalancer implements DiscoveryLoadBalancer{
 	private DiscoveryClient discoveryClient;
 	private String name;
 	private ConcurrentHashMap<String, LoadBalancer<ServiceInstance>> loadBalancerMap = new ConcurrentHashMap<String, LoadBalancer<ServiceInstance>>();
 	
-	public RoundRobinDiscoveryLoadBalancer(DiscoveryClient discoveryClient, PropertyFactory propertyFactory) {
-		this(discoveryClient, ApplicationUtils.getApplicatoinName(propertyFactory));
+	public RoundRobinDiscoveryLoadBalancer(DiscoveryClient discoveryClient, Environment environment) {
+		this(discoveryClient, ApplicationUtils.getApplicatoinName(environment));
 	}
 	
 	public RoundRobinDiscoveryLoadBalancer(DiscoveryClient discoveryClient, String name) {

@@ -5,32 +5,24 @@ import java.util.Calendar;
 import java.util.Date;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
-import scw.boot.Application;
-import scw.boot.ApplicationInitialization;
+import scw.boot.ApplicationPostProcessor;
+import scw.boot.ConfigurableApplication;
+import scw.context.annotation.Provider;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.SPI;
 import scw.core.reflect.Invoker;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.timer.annotation.Crontab;
 import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
-import scw.util.ClassScanner;
-import scw.value.ValueFactory;
 
-@SPI(order = Integer.MIN_VALUE)
-public final class TimerAnnotationScan implements ApplicationInitialization {
-
-	public void init(Application application) throws Throwable {
+@Provider(order = Integer.MIN_VALUE)
+public final class TimerAnnotationScan implements ApplicationPostProcessor {
+	
+	public void postProcessApplication(ConfigurableApplication application)
+			throws Throwable {
 		Timer timer = application.getBeanFactory().getInstance(Timer.class);
-		for (Class<?> clz : ClassScanner.getInstance()
-				.getClasses(getScanAnnotationPackageName(application.getPropertyFactory()))) {
-			if (!ReflectionUtils.isPresent(clz)) {
-				continue;
-			}
-
+		for (Class<?> clz : application.getContextClassesLoader()) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Schedule.class)) {
 				Schedule schedule = method.getAnnotation(Schedule.class);
 				schedule(application.getBeanFactory(), clz, method, timer, schedule);
@@ -42,12 +34,7 @@ public final class TimerAnnotationScan implements ApplicationInitialization {
 			}
 		}
 	}
-
-	public String getScanAnnotationPackageName(ValueFactory<String> propertyFactory) {
-		return propertyFactory.getValue("scw.scan.crontab.package", String.class,
-				BeanUtils.getScanAnnotationPackageName(propertyFactory));
-	}
-
+	
 	private Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
 		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null : method.getParameterTypes()[0];
 		return new CrontabRunnable(beanFactory.getAop().getProxyMethod(beanFactory, clz, method), parameterType);

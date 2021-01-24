@@ -104,7 +104,7 @@ public class PerConnectionWebSocketHandler extends BeanFactoryAccessor implement
 		try {
 			if (!getBeanFactory().isSingleton(handlerType)) {
 				if (handler != null) {
-					getBeanFactory().getDefinition(handlerType).destroy(handler);
+					getBeanFactory().getBeanDefinition(handlerType).destroy(handler);
 				}
 			}
 		} catch (Throwable ex) {

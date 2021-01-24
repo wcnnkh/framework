@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -17,18 +14,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Properties;
 
 import scw.core.Assert;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.io.support.ResourceOperations;
 import scw.lang.NestedRuntimeException;
 import scw.lang.Nullable;
 import scw.net.InetUtils;
-import scw.util.FormatUtils;
-import scw.value.property.SystemPropertyFactory;
 
 /**
  * 资源工具
@@ -98,15 +90,7 @@ public final class ResourceUtils {
 	 * @see #getClassLoaderResourceAsStream(String)
 	 */
 	private static final String RESOURCE_PREFIX = "resources/";
-
-	private static final ResourceOperations RESOURCE_OPERATIONS = new ResourceOperations(
-			SystemPropertyFactory.getInstance().getValue(
-					"resource.cache.enable", boolean.class, true));
-
-	public static final ResourceOperations getResourceOperations() {
-		return RESOURCE_OPERATIONS;
-	}
-
+	
 	/**
 	 * Return whether the given resource location is a URL: either a special
 	 * "classpath" pseudo URL or a standard URL.
@@ -530,7 +514,6 @@ public final class ResourceUtils {
 	/**
 	 * @param classLoader
 	 * @param name
-	 * @return 不会为空
 	 * @see Enumeration#hasMoreElements()
 	 * @throws IOException
 	 */
@@ -551,12 +534,12 @@ public final class ResourceUtils {
 		return urls;
 	}
 	
-	public static URL getClassLoaderResource(String name){
+	public static URL getSystemResource(@Nullable ClassLoader classLoader, String name){
 		if(name == null){
 			return null;
 		}
 		
-		URL url = getResource(ClassUtils.getDefaultClassLoader(), name);
+		URL url = getResource(classLoader, name);
 		if(url == null){
 			String nameToUse = cleanClassLoaderResourceName(name);
 			url = ClassLoader.getSystemResource(nameToUse);
@@ -568,17 +551,17 @@ public final class ResourceUtils {
 	}
 	
 	/**
+	 * @param classLoader
 	 * @param name
-	 * @return 不会为空
 	 * @see Enumeration#hasMoreElements()
 	 * @throws IOException
 	 */
-	public static Enumeration<URL> getClassLoaderResources(String name) throws IOException{
+	public static Enumeration<URL> getSystemResources(@Nullable ClassLoader classLoader, String name) throws IOException{
 		if(name == null){
-			return null;
+			return Collections.emptyEnumeration();
 		}
 		
-		Enumeration<URL> urls = getResources(ClassUtils.getDefaultClassLoader(), name);
+		Enumeration<URL> urls = getResources(classLoader, name);
 		if(urls == null || !urls.hasMoreElements()){
 			String nameToUse = cleanClassLoaderResourceName(name);
 			urls = ClassLoader.getSystemResources(nameToUse);
@@ -586,15 +569,20 @@ public final class ResourceUtils {
 				urls = ClassLoader.getSystemResources(RESOURCE_PREFIX + nameToUse);
 			}
 		}
-		return urls.hasMoreElements()? urls : null;
+		
+		if(urls == null){
+			return Collections.emptyEnumeration();
+		}
+		
+		return urls;
 	}
 	
-	public static InputStream getClassLoaderResourceAsStream(String name){
+	public static InputStream getSystemResourceAsStream(@Nullable ClassLoader classLoader, String name){
 		if(name == null){
 			return null;
 		}
 		
-		InputStream is = getResourceAsStream(ClassUtils.getDefaultClassLoader(), name);
+		InputStream is = getResourceAsStream(classLoader, name);
 		if(is == null){
 			String nameToUse = cleanClassLoaderResourceName(name);
 			is = ClassLoader.getSystemResourceAsStream(nameToUse);
@@ -603,6 +591,17 @@ public final class ResourceUtils {
 			}
 		}
 		return is;
+	}
+	
+	public static Resource getSystemResource(String name){
+		URL url = getSystemResource(ClassUtils.getDefaultClassLoader(), name);
+		return url == null? null:new UrlResource(url);
+	}
+	
+	public static Resource[] getSystemResources(String name) throws IOException{
+		Enumeration<URL> urls = getSystemResources(ClassUtils.getDefaultClassLoader(), name);
+		List<Resource> resources = toUrlResources(urls);
+		return resources.toArray(new Resource[0]);
 	}
 	
 	public static List<Resource> toUrlResources(Enumeration<URL> urls){
@@ -692,69 +691,9 @@ public final class ResourceUtils {
 
 		return new UnsafeByteArrayInputStream(data);
 	}
-
-	public static void loadProperties(Properties properties, Resource resource,
-			String charsetName) {
-		if (!resource.exists()) {
-			return;
-		}
-
-		InputStream is = null;
-		try {
-			is = resource.getInputStream();
-			if (resource.getFilename().endsWith(".xml")) {
-				properties.loadFromXML(is);
-			} else {
-				if (StringUtils.isEmpty(charsetName)) {
-					properties.load(is);
-				} else {
-					Method method = ReflectionUtils.getMethod(Properties.class,
-							"load", Reader.class);
-					if (method == null) {
-						FormatUtils.warn(
-								ResourceUtils.class,
-								"jdk1.6及以上的版本才支持指定字符集: {}"
-										+ resource.getDescription());
-						properties.load(is);
-					} else {
-						InputStreamReader isr = null;
-						try {
-							isr = new InputStreamReader(is, charsetName);
-							method.invoke(properties, isr);
-						} finally {
-							if (!resource.isOpen()) {
-								IOUtils.close(isr);
-							}
-						}
-					}
-				}
-			}
-		} catch (Exception e) {
-			throw new NestedRuntimeException(resource.getDescription(), e);
-		} finally {
-			if (!resource.isOpen()) {
-				IOUtils.close(is);
-			}
-		}
-	}
-
-	public static String getContent(String location, Charset charset) {
-		Resource resource = getResourceOperations().getResource(location);
-		return getContent(resource, charset);
-	}
-
-	public static String getContent(String location, String charsetName) {
-		Resource resource = getResourceOperations().getResource(location);
-		return getContent(resource, charsetName);
-	}
-
-	public static List<String> getLines(String location, Charset charset) {
-		Resource resource = getResourceOperations().getResource(location);
-		return getLines(resource, charset);
-	}
-
-	public static List<String> getLines(String location, String charsetName) {
-		Resource resource = getResourceOperations().getResource(location);
-		return getLines(resource, charsetName);
+	
+	public static boolean exists(ResourceLoader resourceLoader, String location){
+		Resource resource = resourceLoader.getResource(location);
+		return resource != null && resource.exists();
 	}
 }

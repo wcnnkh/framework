@@ -16,10 +16,9 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.convert.support.ConversionServiceFactory;
 import scw.core.Constants;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
+import scw.instance.InstanceUtils;
 import scw.io.Resource;
-import scw.io.ResourceUtils;
 import scw.mapper.MapperUtils;
 
 public final class ConfigureUtils {
@@ -37,7 +36,7 @@ public final class ConfigureUtils {
 		CONFIGURE_FACTORY.getConfigures().add(new PropertyFactoryConfigure(CONVERSION_SERVICE_FACTORY));
 		CONFIGURE_FACTORY.getConfigures().add(new ResourceConfigure(RESOURCE_RESOLVER_FACTORY, CONFIGURE_FACTORY));
 
-		RESOURCE_RESOLVER_FACTORY.getResourceResolvers().add(new PropertiesResourceResolver(CONVERSION_SERVICE_FACTORY, Constants.UTF_8_NAME));
+		RESOURCE_RESOLVER_FACTORY.getResourceResolvers().add(new PropertiesResourceResolver(CONVERSION_SERVICE_FACTORY, Constants.UTF_8));
 		RESOURCE_RESOLVER_FACTORY.getResourceResolvers().add(new XmlResourceResolver(CONVERSION_SERVICE_FACTORY));
 		
 		String yamlResolverName = "scw.configure.resolver.YamlResourceResolver";
@@ -82,10 +81,6 @@ public final class ConfigureUtils {
 		return resolveToMap(resource, TypeDescriptor.valueOf(keyType), TypeDescriptor.valueOf(valueType), getPrimaryKeyGetterFactory());
 	}
 	
-	public static <K, V> Map<K, V> resolveToMap(String resource, Class<K> keyType, Class<V> valueType){
-		return resolveToMap(ResourceUtils.getResourceOperations().getResource(resource), TypeDescriptor.valueOf(keyType), TypeDescriptor.valueOf(valueType), getPrimaryKeyGetterFactory());
-	}
-	
 	@SuppressWarnings("unchecked")
 	public static <E> Collection<E> resolveToCollection(Resource resource, TypeDescriptor elementType){
 		return (Collection<E>) getResourceResolverFactory().resolve(resource, TypeDescriptor.collection(Collection.class, elementType));
@@ -93,10 +88,6 @@ public final class ConfigureUtils {
 	
 	public static <E> Collection<E> resolveToCollection(Resource resource, Class<E> elementType){
 		return resolveToCollection(resource, TypeDescriptor.valueOf(elementType));
-	}
-	
-	public static <E> Collection<E> resolveToCollection(String resource, Class<E> elementType){
-		return resolveToCollection(ResourceUtils.getResourceOperations().getResource(resource), elementType);
 	}
 
 	public static void setValue(Object instance, scw.mapper.Field field, Object value){

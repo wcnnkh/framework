@@ -41,10 +41,12 @@ import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
 import scw.io.DefaultResourceLoader;
 import scw.io.FileSystemResource;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
+import scw.io.ResourcePatternResolver;
 import scw.io.ResourceUtils;
 import scw.io.UrlResource;
 import scw.io.VfsResource;
@@ -52,7 +54,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.AntPathMatcher;
 import scw.util.PathMatcher;
-import scw.value.property.SystemPropertyFactory;
 
 /**
  * A {@link ResourcePatternResolver} implementation that is able to resolve a
@@ -232,7 +233,7 @@ public class PathMatchingResourcePatternResolver implements
 	 * <p>
 	 * ClassLoader access will happen via the thread context class loader.
 	 * 
-	 * @see org.springframework.core.io.DefaultResourceLoader
+	 * @see scw.io.springframework.core.io.DefaultResourceLoader
 	 */
 	public PathMatchingResourcePatternResolver() {
 		this.resourceLoader = new DefaultResourceLoader();
@@ -260,7 +261,7 @@ public class PathMatchingResourcePatternResolver implements
 	 *            the ClassLoader to load classpath resources with, or
 	 *            {@code null} for using the thread context class loader at the
 	 *            time of actual resource access
-	 * @see org.springframework.core.io.DefaultResourceLoader
+	 * @see scw.io.springframework.core.io.DefaultResourceLoader
 	 */
 	public PathMatchingResourcePatternResolver(ClassLoader classLoader) {
 		this.resourceLoader = new DefaultResourceLoader(classLoader);
@@ -370,8 +371,7 @@ public class PathMatchingResourcePatternResolver implements
 			throws IOException {
 		Set<Resource> result = new LinkedHashSet<Resource>(16);
 		ClassLoader cl = getClassLoader();
-		Enumeration<URL> resourceUrls = (cl != null ? cl.getResources(path)
-				: ClassLoader.getSystemResources(path));
+		Enumeration<URL> resourceUrls = ResourceUtils.getSystemResources(cl, path);
 		while (resourceUrls.hasMoreElements()) {
 			URL url = resourceUrls.nextElement();
 			if (url.getProtocol().equals(ResourceUtils.URL_PROTOCOL_RSRC)) {
@@ -393,7 +393,7 @@ public class PathMatchingResourcePatternResolver implements
 
 	protected void addAllRsrcResources(String path,
 			Collection<Resource> resources) throws IOException {
-		for (String classPath : SystemPropertyFactory.getInstance()
+		for (String classPath : SystemEnvironment.getInstance()
 				.getJavaClassPathArray()) {
 			FileSystemResource fileSystemResource = new FileSystemResource(
 					classPath);

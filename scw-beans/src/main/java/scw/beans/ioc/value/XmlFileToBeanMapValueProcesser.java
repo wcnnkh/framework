@@ -1,5 +1,6 @@
 package scw.beans.ioc.value;
 
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import scw.beans.BeanDefinition;
@@ -12,13 +13,12 @@ import scw.convert.TypeDescriptor;
 import scw.io.Resource;
 import scw.lang.NotSupportedException;
 import scw.mapper.Field;
-import scw.value.property.PropertyFactory;
 
 public final class XmlFileToBeanMapValueProcesser extends AbstractObservableResourceValueProcesser {
 
 	@Override
-	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Object bean, Field field, Value value, String name, String charsetName, Resource resource) {
+	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory,
+			Object bean, Field field, Value value, String name, Charset charset, Resource resource) {
 		if (!Map.class.isAssignableFrom(field.getSetter().getType())) {
 			throw new NotSupportedException(field.getSetter().toString());
 		}

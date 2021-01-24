@@ -4,14 +4,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.context.result.DataResult;
+import scw.context.result.ResultFactory;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.result.DataResult;
-import scw.result.ResultFactory;
 import scw.security.SignatureUtils;
 
 public final class DefaultAliDaYu implements AliDaYu {

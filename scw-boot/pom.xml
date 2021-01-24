@@ -13,6 +13,11 @@
 			<artifactId>scw-beans</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-yaml</artifactId>
 			<scope>provided</scope>

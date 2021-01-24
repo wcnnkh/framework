@@ -139,7 +139,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 		}
 		
 		if(url == null){
-			url = ResourceUtils.getClassLoaderResource(this.path);
+			url = ResourceUtils.getSystemResource(ClassUtils.getDefaultClassLoader(), this.path);
 		}
 		return url;
 	}
@@ -199,7 +199,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 		}
 		
 		if(is == null){
-			is = ResourceUtils.getClassLoaderResourceAsStream(this.path);
+			is = ResourceUtils.getSystemResourceAsStream(ClassUtils.getDefaultClassLoader(), this.path);
 		}
 		if (is == null) {
 			throw new FileNotFoundException(getDescription()

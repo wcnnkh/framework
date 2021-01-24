@@ -3,14 +3,11 @@ package scw.freemarker;
 import java.io.IOException;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
-import scw.core.Constants;
+import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
 import scw.freemarker.annotation.SharedVariable;
-import scw.logger.LoggerUtils;
-import scw.util.ClassScanner;
-import scw.value.ValueFactory;
-import scw.value.property.PropertyFactory;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
@@ -18,26 +15,24 @@ import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
-@scw.core.instance.annotation.SPI(order = Integer.MIN_VALUE, value = Configuration.class)
+@Provider(order = Integer.MIN_VALUE, value = Configuration.class)
 public class DefaultConfiguration extends Configuration {
-	private static scw.logger.Logger logger = LoggerUtils.getLogger(DefaultConfiguration.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultConfiguration.class);
 
-	public DefaultConfiguration(BeanFactory beanFactory, PropertyFactory propertyFactory) throws IOException {
+	public DefaultConfiguration(BeanFactory beanFactory) throws IOException {
 		super(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
-		setDefaultEncoding(Constants.DEFAULT_CHARSET_NAME);
+		setDefaultEncoding(beanFactory.getEnvironment().getCharsetName());
 		if (beanFactory.isInstance(TemplateLoader.class)) {
 			setTemplateLoader(beanFactory.getInstance(TemplateLoader.class));
 		} else {
-			setTemplateLoader(new DefaultTemplateLoader());
+			setTemplateLoader(new DefaultTemplateLoader(beanFactory.getEnvironment()));
 		}
 		if (beanFactory.isInstance(TemplateExceptionHandler.class)) {
 			setTemplateExceptionHandler(beanFactory.getInstance(TemplateExceptionHandler.class));
 		}
 
 		setObjectWrapper(new DefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
-
-		for (Class<?> clz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
-				getScanAnnotationPackageName(propertyFactory))) {
+		for (Class<?> clz : beanFactory.getContextClassesLoader()) {
 			SharedVariable sharedVariable = clz.getAnnotation(SharedVariable.class);
 			if (sharedVariable == null) {
 				continue;
@@ -49,27 +44,22 @@ public class DefaultConfiguration extends Configuration {
 				name = clz.getSimpleName();
 			}
 
-			if (getSharedVariable(name) != null) {
-				logger.warn("already exist name={}, class={}", name, clz);
+			TemplateModel registred = getSharedVariable(name);
+			if (registred != null) {
+				logger.warn("already exist name={}, registred={}", name, registred);
 				continue;
 			}
 
-			Object instance = beanFactory.getInstance(clz);
-			if (instance instanceof TemplateModel) {
-				setSharedVariable(name, (TemplateModel) instance);
+			Object veriable = beanFactory.getInstance(clz);
+			if (veriable instanceof TemplateModel) {
+				setSharedVariable(name, (TemplateModel) veriable);
 			} else {
 				try {
-					setSharedVariable(name, instance);
+					setSharedVariable(name, veriable);
 				} catch (TemplateModelException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		}
 	}
-
-	public String getScanAnnotationPackageName(ValueFactory<String> propertyFactory) {
-		return propertyFactory.getValue("scw.scan.freemarker.shared.variable.package", String.class,
-				BeanUtils.getScanAnnotationPackageName(propertyFactory));
-	}
-
 }

@@ -11,10 +11,10 @@ import java.util.Map;
 
 import scw.aop.ProxyUtils;
 import scw.aop.support.FieldSetterListenUtils;
-import scw.core.GlobalPropertyFactory;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
+import scw.instance.InstanceUtils;
 import scw.lang.Ignore;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
@@ -35,7 +35,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 * 默认对象主键的连接符
 	 */
 	public static final char PRIMARY_KEY_CONNECTOR_CHARACTER = StringUtils
-			.parseChar(GlobalPropertyFactory.getInstance().getString("orm.primary.key.connector.character"), ':');
+			.parseChar(SystemEnvironment.getInstance().getString("orm.primary.key.connector.character"), ':');
 
 	public Mapper getMapper() {
 		return MapperUtils.getMapper();

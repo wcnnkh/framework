@@ -28,7 +28,7 @@ public class DefaultEntityOperations extends AbstractEntityOperations {
 		this.generatorService = generatorService;
 		this.connectionFactory = connectionFactory;
 	}
-
+	
 	@Override
 	public SqlDialect getSqlDialect() {
 		return sqlDialect;

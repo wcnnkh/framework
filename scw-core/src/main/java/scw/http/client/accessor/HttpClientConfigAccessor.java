@@ -1,14 +1,14 @@
 package scw.http.client.accessor;
 
-import scw.core.GlobalPropertyFactory;
+import scw.env.SystemEnvironment;
 import scw.event.Observable;
 
 public class HttpClientConfigAccessor {
-	private static final Observable<Integer> DEFAULT_CONNECT_TIMEOUT = GlobalPropertyFactory.getInstance()
+	private static final Observable<Integer> DEFAULT_CONNECT_TIMEOUT = SystemEnvironment.getInstance()
 			.getObservableValue("scw.http.client.connect.timeout", Integer.class, 10000);
-	private static final Observable<Integer> DEFAULT_READ_TIMEOUT = GlobalPropertyFactory.getInstance()
+	private static final Observable<Integer> DEFAULT_READ_TIMEOUT = SystemEnvironment.getInstance()
 			.getObservableValue("scw.http.client.read.timeout", Integer.class, 10000);
-	private static final Observable<String> DEFAULT_UA = GlobalPropertyFactory.getInstance().getObservableValue(
+	private static final Observable<String> DEFAULT_UA = SystemEnvironment.getInstance().getObservableValue(
 			"scw.http.client.headers.ua", String.class,
 			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
 

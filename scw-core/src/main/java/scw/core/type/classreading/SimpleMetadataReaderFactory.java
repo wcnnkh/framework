@@ -7,21 +7,30 @@ import scw.core.utils.ClassUtils;
 import scw.io.DefaultResourceLoader;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
+import scw.util.ClassLoaderProvider;
+import scw.util.DefaultClassLoaderProvider;
 
 /**
  * Simple implementation of the {@link MetadataReaderFactory} interface,
  * creating a new ASM {@link scw.asm.ClassReader} for every request.
  */
 public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
-
 	private final ResourceLoader resourceLoader;
-
+	private final ClassLoaderProvider classLoaderProvider;
 
 	/**
 	 * Create a new SimpleMetadataReaderFactory for the default class loader.
 	 */
-	public SimpleMetadataReaderFactory() {
-		this.resourceLoader = new DefaultResourceLoader();
+	public SimpleMetadataReaderFactory(){
+		this(new DefaultResourceLoader());
+	}
+	
+	public SimpleMetadataReaderFactory(ClassLoaderProvider classLoaderProvider) {
+		this(new DefaultResourceLoader(classLoaderProvider), classLoaderProvider);
+	}
+	
+	public SimpleMetadataReaderFactory(ResourceLoader resourceLoader) {
+		this(resourceLoader, resourceLoader);
 	}
 
 	/**
@@ -29,8 +38,9 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 	 * @param resourceLoader the Spring ResourceLoader to use
 	 * (also determines the ClassLoader to use)
 	 */
-	public SimpleMetadataReaderFactory(ResourceLoader resourceLoader) {
+	public SimpleMetadataReaderFactory(ResourceLoader resourceLoader, ClassLoaderProvider classLoaderProvider) {
 		this.resourceLoader = (resourceLoader != null ? resourceLoader : new DefaultResourceLoader());
+		this.classLoaderProvider = classLoaderProvider;
 	}
 
 	/**
@@ -38,8 +48,7 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 	 * @param classLoader the ClassLoader to use
 	 */
 	public SimpleMetadataReaderFactory(ClassLoader classLoader) {
-		this.resourceLoader =
-				(classLoader != null ? new DefaultResourceLoader(classLoader) : new DefaultResourceLoader());
+		this(new DefaultClassLoaderProvider(classLoader));
 	}
 
 
@@ -51,12 +60,16 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 		return this.resourceLoader;
 	}
 
+	public ClassLoaderProvider getClassLoaderProvider() {
+		return classLoaderProvider;
+	}
 
 	public MetadataReader getMetadataReader(String className) throws IOException {
+		ResourceLoader resourceLoader = getResourceLoader();
 		try {
 			String resourcePath = ResourceLoader.CLASSPATH_URL_PREFIX +
 					ClassUtils.convertClassNameToResourcePath(className) + ClassUtils.CLASS_FILE_SUFFIX;
-			Resource resource = this.resourceLoader.getResource(resourcePath);
+			Resource resource = resourceLoader.getResource(resourcePath);
 			return getMetadataReader(resource);
 		}
 		catch (FileNotFoundException ex) {
@@ -68,7 +81,7 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 						className.substring(0, lastDotIndex) + '$' + className.substring(lastDotIndex + 1);
 				String innerClassResourcePath = ResourceLoader.CLASSPATH_URL_PREFIX +
 						ClassUtils.convertClassNameToResourcePath(innerClassName) + ClassUtils.CLASS_FILE_SUFFIX;
-				Resource innerClassResource = this.resourceLoader.getResource(innerClassResourcePath);
+				Resource innerClassResource = resourceLoader.getResource(innerClassResourcePath);
 				if (innerClassResource.exists()) {
 					return getMetadataReader(innerClassResource);
 				}
@@ -78,7 +91,7 @@ public class SimpleMetadataReaderFactory implements MetadataReaderFactory {
 	}
 
 	public MetadataReader getMetadataReader(Resource resource) throws IOException {
-		return new SimpleMetadataReader(resource, this.resourceLoader.getClassLoader());
+		return new SimpleMetadataReader(resource, ClassUtils.getClassLoader(getClassLoaderProvider()));
 	}
 
 }

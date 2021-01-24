@@ -25,6 +25,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import scw.core.utils.ArrayUtils;
+import scw.lang.Nullable;
 
 public final class IOUtils {
 	// NOTE: This class is focussed on InputStream, OutputStream, Reader and
@@ -837,7 +838,7 @@ public final class IOUtils {
 	 * @throws IOException
 	 *             if an I/O error occurs
 	 */
-	public static List<String> readLines(InputStream input, String encoding) throws IOException {
+	public static List<String> readLines(InputStream input, @Nullable String encoding) throws IOException {
 		if (encoding == null) {
 			return readLines(input);
 		} else {

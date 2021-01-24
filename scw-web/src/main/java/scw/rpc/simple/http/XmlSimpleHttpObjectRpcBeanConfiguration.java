@@ -6,27 +6,27 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.aop.MethodInterceptor;
-import scw.beans.AbstractBeanConfiguration;
 import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
-import scw.beans.builder.ProxyBeanDefinition;
+import scw.beans.BeanFactoryPostProcessor;
+import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
+import scw.beans.support.ProxyBeanDefinition;
 import scw.beans.xml.XmlBeanFactory;
 import scw.beans.xml.XmlBeanUtils;
+import scw.context.annotation.Provider;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.SPI;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;
-import scw.util.ClassScanner;
-import scw.value.property.PropertyFactory;
 
-@SPI(order = Integer.MIN_VALUE)
-public final class XmlSimpleHttpObjectRpcBeanConfiguration extends AbstractBeanConfiguration {
+@Provider(order = Integer.MIN_VALUE)
+public final class XmlSimpleHttpObjectRpcBeanConfiguration implements BeanFactoryPostProcessor {
 	private static final String TAG_NAME = "http:reference";
-
-	public void init(BeanFactory beanFactory, PropertyFactory propertyFactory) throws Exception {
+	
+	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
+			throws BeansException {
 		if (beanFactory instanceof XmlBeanFactory) {
 			NodeList rootNodeList = ((XmlBeanFactory) beanFactory).getNodeList();
 			for (int i = 0; i < rootNodeList.getLength(); i++) {
@@ -39,26 +39,26 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends AbstractBeanC
 					continue;
 				}
 
-				String sign = DomUtils.getNodeAttributeValue(propertyFactory, node, "sign");
-				String packageName = XmlBeanUtils.getPackageName(propertyFactory, node);
-				String serializer = DomUtils.getNodeAttributeValue(propertyFactory, node, "serializer");
-				String address = XmlBeanUtils.getAddress(propertyFactory, node);
+				String sign = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "sign");
+				String packageName = XmlBeanUtils.getPackageName(beanFactory.getEnvironment(), node);
+				String serializer = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "serializer");
+				String address = XmlBeanUtils.getAddress(beanFactory.getEnvironment(), node);
 				boolean responseThrowable = StringUtils
-						.parseBoolean(DomUtils.getNodeAttributeValue(propertyFactory, node, "throwable"), true);
+						.parseBoolean(DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "throwable"), true);
 
 				Serializer ser = StringUtils.isEmpty(serializer) ? SerializerUtils.DEFAULT_SERIALIZER
 						: (Serializer) beanFactory.getInstance(serializer);
 				if (!StringUtils.isEmpty(packageName)) {
-					for (Class<?> clz : ClassScanner.getInstance().getClasses(packageName)) {
+					for (Class<?> clz : beanFactory.getClassesLoader(packageName)) {
 						if (!clz.isInterface() || AnnotationUtils.isIgnore(clz)) {
 							continue;
 						}
 
 						MethodInterceptor filter = new SimpleHttpObjectRpcMethodInterceptor(ser, sign,
 								responseThrowable, address);
-						BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz,
+						BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, clz,
 								Arrays.asList(filter));
-						beanDefinitions.add(beanBuilder);
+						beanFactory.registerBeanDefinition(beanBuilder.getId(), beanBuilder);
 					}
 				}
 
@@ -69,27 +69,27 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration extends AbstractBeanC
 						continue;
 					}
 
-					String className = DomUtils.getNodeAttributeValue(propertyFactory, node, "interface");
+					String className = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "interface");
 					if (StringUtils.isEmpty(className)) {
 						continue;
 					}
 
-					Class<?> clz = ClassUtils.forName(className);
-					String mySign = DomUtils.getNodeAttributeValue(propertyFactory, node, "sign");
+					Class<?> clz = ClassUtils.forNameNullable(className, beanFactory.getClassLoader());
+					String mySign = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "sign");
 					if (StringUtils.isEmpty(mySign)) {
 						mySign = sign;
 					}
 
-					String myAddress = XmlBeanUtils.getAddress(propertyFactory, node);
+					String myAddress = XmlBeanUtils.getAddress(beanFactory.getEnvironment(), node);
 					if (StringUtils.isEmpty(myAddress)) {
 						myAddress = address;
 					}
 
 					MethodInterceptor filter = new SimpleHttpObjectRpcMethodInterceptor(ser, mySign, responseThrowable,
 							myAddress);
-					BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, propertyFactory, clz,
+					BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, clz,
 							Arrays.asList(filter));
-					beanDefinitions.add(beanBuilder);
+					beanFactory.registerBeanDefinition(beanBuilder.getId(), beanBuilder);
 				}
 			}
 		}

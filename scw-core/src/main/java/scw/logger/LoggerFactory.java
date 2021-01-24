@@ -1,6 +1,6 @@
 package scw.logger;
 
-import scw.core.instance.InstanceUtils;
+import scw.instance.InstanceUtils;
 import scw.util.FormatUtils;
 
 public final class LoggerFactory {

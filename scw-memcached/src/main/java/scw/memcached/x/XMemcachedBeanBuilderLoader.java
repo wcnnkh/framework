@@ -5,32 +5,32 @@ import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
-import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.SPI;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.context.annotation.Provider;
 import scw.io.SerializerUtils;
 import scw.net.InetUtils;
 
-@SPI(order = Integer.MIN_VALUE)
-public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class XMemcachedBeanBuilderLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == MemcachedClientBuilder.class
-				|| context.getTargetClass() == XMemcachedClientBuilder.class) {
-			return new MemcachedClientBuilderBeanDefinition(context);
-		} else if (context.getTargetClass() == MemcachedClient.class) {
-			return new MemcachedClientBeanDefinition(context);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		if (sourceClass == MemcachedClientBuilder.class
+				|| sourceClass == XMemcachedClientBuilder.class) {
+			return new MemcachedClientBuilderBeanDefinition(beanFactory, sourceClass);
+		} else if (sourceClass == MemcachedClient.class) {
+			return new MemcachedClientBeanDefinition(beanFactory, sourceClass);
 		}
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 
 	private static final class MemcachedClientBeanDefinition extends DefaultBeanDefinition {
 
-		public MemcachedClientBeanDefinition(LoaderContext context) {
-			super(context);
+		public MemcachedClientBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
@@ -52,8 +52,8 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 
 	private static final class MemcachedClientBuilderBeanDefinition extends DefaultBeanDefinition {
 
-		public MemcachedClientBuilderBeanDefinition(LoaderContext context) {
-			super(context);
+		public MemcachedClientBuilderBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
@@ -61,8 +61,8 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 		}
 
 		private String getHosts() {
-			String name = propertyFactory.getValue("memcached.hosts.config.name", String.class, "memcached.hosts");
-			return propertyFactory.getString(name);
+			String name = beanFactory.getEnvironment().getValue("memcached.hosts.config.name", String.class, "memcached.hosts");
+			return beanFactory.getEnvironment().getString(name);
 		}
 
 		public Object create() throws Exception {
@@ -84,7 +84,7 @@ public class XMemcachedBeanBuilderLoader implements BeanBuilderLoader {
 				builder.setTranscoder(new MyTranscoder(SerializerUtils.DEFAULT_SERIALIZER));
 			}
 
-			Integer poolSize = propertyFactory.getInteger("memcached.poolsize");
+			Integer poolSize = beanFactory.getEnvironment().getInteger("memcached.poolsize");
 			if (poolSize != null) {
 				builder.setConnectionPoolSize(poolSize);
 			}

@@ -18,17 +18,11 @@
 		
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-result</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>scw</groupId>
 			<artifactId>scw-security</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->

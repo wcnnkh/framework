@@ -212,24 +212,4 @@ public class PropertyPlaceholderHelper {
 		}
 		return -1;
 	}
-
-	/**
-	 * Strategy interface used to resolve replacement values for placeholders
-	 * contained in Strings.
-	 * 
-	 * @see PropertyPlaceholderHelper
-	 */
-	public static interface PlaceholderResolver {
-
-		/**
-		 * Resolves the supplied placeholder name into the replacement value.
-		 * 
-		 * @param placeholderName
-		 *            the name of the placeholder to resolve
-		 * @return the replacement value or {@code null} if no replacement is to
-		 *         be made
-		 */
-		String resolvePlaceholder(String placeholderName);
-	}
-
 }

@@ -24,8 +24,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import scw.core.Assert;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
+import scw.instance.InstanceUtils;
 import scw.lang.Nullable;
 
 public final class CollectionFactory {

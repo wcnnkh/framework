@@ -19,7 +19,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 
 import scw.configure.support.ConfigureUtils;
-import scw.core.instance.InstanceUtils;
+import scw.instance.InstanceUtils;
 import scw.json.JSONUtils;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.FieldFilter;

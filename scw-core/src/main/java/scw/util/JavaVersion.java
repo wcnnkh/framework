@@ -1,5 +1,9 @@
 package scw.util;
 
+import java.util.Map;
+
+import scw.core.type.AnnotationMetadata;
+import scw.core.utils.CollectionUtils;
 import scw.lang.RequiredJavaVersion;
 import scw.value.AnyValue;
 import scw.value.Value;
@@ -54,6 +58,17 @@ public class JavaVersion extends Version {
 
 	public boolean isSupported(int version) {
 		return version >= getMasterVersion();
+	}
+	
+	public static boolean isSupported(AnnotationMetadata annotationMetadata){
+		Map<String, Object> map = annotationMetadata.getAnnotationAttributes(RequiredJavaVersion.class.getName());
+		if(!CollectionUtils.isEmpty(map)){
+			int version = (Integer) map.get("value");
+			if(!INSTANCE.isSupported(version)){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public static boolean isSupported(Class<?> clazz) {

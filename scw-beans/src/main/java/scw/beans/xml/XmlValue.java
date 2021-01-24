@@ -4,15 +4,16 @@ import org.w3c.dom.Node;
 
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
+import scw.env.Environment;
 import scw.http.HttpUtils;
+import scw.io.ResourceLoader;
 import scw.io.ResourceUtils;
-import scw.value.property.PropertyFactory;
 
 public class XmlValue {
 	private final String value;
 	private final Node node;
 
-	public XmlValue(Node node, String parentCharsetName) {
+	public XmlValue(ResourceLoader resourceLoader, Node node, String parentCharsetName) {
 		this.node = node;
 		String charset = XmlBeanUtils.getCharsetName(node, parentCharsetName);
 
@@ -23,7 +24,7 @@ public class XmlValue {
 			if (url.startsWith("http://") || url.startsWith("https://")) {
 				value = HttpUtils.getHttpClient().get(String.class, url).getBody();
 			} else {
-				value = ResourceUtils.getContent(ResourceUtils.getResourceOperations().getResource(url), charset);
+				value = ResourceUtils.getContent(resourceLoader.getResource(url), charset);
 			}
 		} else {
 			value = DomUtils.getNodeAttributeValueOrNodeContent(node, "value");
@@ -52,7 +53,7 @@ public class XmlValue {
 		return DomUtils.getNodeAttributeValue(node, name);
 	}
 
-	public String formatValue(final PropertyFactory propertyFactory) {
-		return DomUtils.formatNodeValue(propertyFactory, node, value);
+	public String formatValue(final Environment environment) {
+		return DomUtils.formatNodeValue(environment, node, value);
 	}
 }

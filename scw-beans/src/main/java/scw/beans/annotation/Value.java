@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.beans.ioc.value.DefaultValueProcess;
+import scw.beans.ioc.value.EnvironmentValueProcess;
 import scw.beans.ioc.value.ValueProcesser;
 
 @Target({ ElementType.FIELD, ElementType.METHOD })
@@ -15,7 +15,7 @@ import scw.beans.ioc.value.ValueProcesser;
 public @interface Value {
 	String value();
 
-	Class<? extends ValueProcesser> processer() default DefaultValueProcess.class;
+	Class<? extends ValueProcesser> processer() default EnvironmentValueProcess.class;
 
 	String charsetName() default "";
 	

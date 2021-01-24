@@ -1,27 +1,27 @@
 package scw.feign;
 
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.core.utils.StringUtils;
+import scw.net.InetUtils;
 import feign.Feign;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.LoaderContext;
-import scw.core.utils.StringUtils;
-import scw.net.InetUtils;
 
 public class FeignBeanDefinition extends DefaultBeanDefinition {
 	private scw.feign.annotation.FeignClient feignClient;
 
-	public FeignBeanDefinition(LoaderContext context, scw.feign.annotation.FeignClient feignClient) {
-		super(context);
+	public FeignBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass, scw.feign.annotation.FeignClient feignClient) {
+		super(beanFactory, sourceClass);
 		this.feignClient = feignClient;
 	}
 
 	private String getHost(){
 		String host = feignClient.host();
 		if(StringUtils.isEmpty(host)){
-			host = propertyFactory.getString("feign.host");
+			host = beanFactory.getEnvironment().getString("feign.host");
 		}else{
-			host = propertyFactory.format(host);
+			host = beanFactory.getEnvironment().resolvePlaceholders(host);
 		}
 		return host;
 	}

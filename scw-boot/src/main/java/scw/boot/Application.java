@@ -1,38 +1,24 @@
 package scw.boot;
 
 import scw.beans.BeanFactory;
-import scw.beans.Destroy;
-import scw.beans.Init;
+import scw.context.ContextClassesLoaderFactory;
+import scw.context.Destroy;
+import scw.context.Init;
+import scw.env.Environment;
 import scw.event.BasicEventDispatcher;
 import scw.logger.Logger;
-import scw.util.concurrent.CountLatch;
-import scw.value.property.PropertyFactory;
 
-public interface Application extends Init, Destroy, BasicEventDispatcher<ApplicationEvent> {
-	void init();
-	
-	void destroy();
-	
+public interface Application extends ContextClassesLoaderFactory, Init, Destroy, BasicEventDispatcher<ApplicationEvent> {
 	BeanFactory getBeanFactory();
 
-	PropertyFactory getPropertyFactory();
-
+	Environment getEnvironment();
+	
 	/**
 	 * 是否已经初始化了
 	 * 
 	 * @return
 	 */
 	boolean isInitialized();
-	
-	/**
-	 * 初始化时的计数锁，仅在未初始化完时有效
-	 * @see #init()
-	 * @see #isInitialized()
-	 * @return
-	 */
-	CountLatch getInitializationLatch();
 
 	Logger getLogger();
-
-	ClassLoader getClassLoader();
 }

@@ -1,35 +1,34 @@
 package scw.beans.ioc.value;
 
+import java.nio.charset.Charset;
 import java.util.Properties;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
 import scw.configure.support.ConfigureUtils;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.TypeUtils;
 import scw.event.Observable;
-import scw.io.ResourceUtils;
+import scw.instance.InstanceUtils;
 import scw.mapper.Field;
 import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.value.ValueUtils;
-import scw.value.property.PropertyFactory;
 
 public final class PropertiesFileValueProcesser extends AbstractObservableValueProcesser<Properties> {
 
 	@Override
 	protected Observable<Properties> getObservableResource(BeanDefinition beanDefinition,
-			BeanFactory beanFactory, PropertyFactory propertyFactory, Object bean, Field field, Value value,
-			String name, String charsetName) {
-		return ResourceUtils.getResourceOperations().getProperties(name, charsetName);
+			BeanFactory beanFactory, Object bean, Field field, Value value,
+			String name, Charset charset) {
+		return beanFactory.getEnvironment().getProperties(name, charset);
 	}
 
 	@Override
-	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Object bean, Field field, Value value, String name, String charsetName, Properties properties) {
+	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory,
+			Object bean, Field field, Value value, String name, Charset charset, Properties properties) {
 		if (ClassUtils.isPrimitiveOrWrapper(field.getSetter().getType())
 				|| TypeUtils.isString(field.getSetter().getType())) {
 			return ValueUtils.parse(properties.getProperty(field.getSetter().getName()),

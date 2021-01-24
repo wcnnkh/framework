@@ -9,7 +9,7 @@
   <dependencies>
   	<dependency>
   		<groupId>scw</groupId>
-  		<artifactId>scw-core</artifactId>
+  		<artifactId>scw-boot</artifactId>
   	</dependency>
   </dependencies>
 </project>

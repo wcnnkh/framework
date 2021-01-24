@@ -3,15 +3,14 @@ package scw.dubbo;
 import org.apache.dubbo.config.ReferenceConfig;
 
 import scw.beans.BeanFactory;
-import scw.beans.DefaultBeanDefinition;
-import scw.value.property.PropertyFactory;
+import scw.beans.support.DefaultBeanDefinition;
 
 public class DubboBeanDefinition extends DefaultBeanDefinition {
 	private final ReferenceConfig<?> referenceConfig;
 
-	public DubboBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
+	public DubboBeanDefinition(BeanFactory beanFactory, Class<?> targetClass,
 			ReferenceConfig<?> referenceConfig) {
-		super(beanFactory, propertyFactory, targetClass);
+		super(beanFactory, targetClass);
 		this.referenceConfig = referenceConfig;
 	}
 

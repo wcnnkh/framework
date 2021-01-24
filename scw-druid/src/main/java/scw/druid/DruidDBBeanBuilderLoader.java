@@ -1,36 +1,35 @@
 package scw.druid;
 
 import scw.beans.BeanDefinition;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.SPI;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.context.annotation.Provider;
 import scw.db.DB;
 import scw.db.DBUtils;
 import scw.io.ResourceUtils;
 
-@SPI(order = Integer.MIN_VALUE + 1)
-public class DruidDBBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE + 1)
+public class DruidDBBeanBuilderLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == DruidDB.class) {
-			return new DruidDBBeanDefinition(context);
-		} else if (DB.class == context.getTargetClass()) {
-			return context.getBeanFactory().getDefinition(DruidDB.class);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		if (sourceClass == DruidDB.class) {
+			return new DruidDBBeanDefinition(beanFactory, sourceClass);
+		} else if (DB.class == sourceClass) {
+			return beanFactory.getBeanDefinition(DruidDB.class);
 		}
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 
 	private static class DruidDBBeanDefinition extends DefaultBeanDefinition {
-		private final boolean isInstance = ResourceUtils.getResourceOperations().isExist(DBUtils.DEFAULT_CONFIGURATION);
 
-		public DruidDBBeanDefinition(LoaderContext loaderContext) {
-			super(loaderContext);
+		public DruidDBBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
-			return isInstance;
+			return ResourceUtils.exists(beanFactory.getEnvironment(), DBUtils.DEFAULT_CONFIGURATION);
 		}
 
 		public Object create() throws Exception {

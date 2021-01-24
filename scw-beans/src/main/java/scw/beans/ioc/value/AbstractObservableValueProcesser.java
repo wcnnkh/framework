@@ -1,5 +1,7 @@
 package scw.beans.ioc.value;
 
+import java.nio.charset.Charset;
+
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
@@ -7,17 +9,15 @@ import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.Observable;
 import scw.mapper.Field;
-import scw.value.property.PropertyFactory;
 
 public abstract class AbstractObservableValueProcesser<R> extends AbstractValueProcesser {
 
 	@Override
-	protected void processInteranl(final BeanDefinition beanDefinition, final BeanFactory beanFactory,
-			final PropertyFactory propertyFactory, final Object bean, final Field field, final Value value,
-			final String name, final String charsetName) throws Exception {
-		Observable<R> res = getObservableResource(beanDefinition, beanFactory, propertyFactory, bean, field,
-				value, name, charsetName);
-		set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res.get(),
+	protected void processInteranl(final BeanDefinition beanDefinition, final BeanFactory beanFactory, final Object bean, final Field field, final Value value,
+			final String name, final Charset charset) throws Exception {
+		Observable<R> res = getObservableResource(beanDefinition, beanFactory, bean, field,
+				value, name, charset);
+		set(beanDefinition, beanFactory, bean, field, value, name, charset, res.get(),
 				false);
 
 		if (isRegisterListener(beanDefinition, field, value)) {
@@ -25,7 +25,7 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 
 				public void onEvent(ChangeEvent<R> event) {
 					try {
-						set(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName,
+						set(beanDefinition, beanFactory, bean, field, value, name, charset,
 								event.getSource(), true);
 					} catch (Exception e) {
 						logger.error(e, field);
@@ -48,14 +48,14 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 	 * @param insertNull
 	 *            是否可以插入空值
 	 */
-	protected synchronized void set(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Object bean, Field field, Value value, String name, String charsetName, R res, boolean insertNull)
+	protected synchronized void set(BeanDefinition beanDefinition, BeanFactory beanFactory,
+			Object bean, Field field, Value value, String name, Charset charset, R res, boolean insertNull)
 			throws Exception {
 		Object v = null;
 		if (res == null) {
 			logger.warn("nonexistent resources name [{}] field [{}]", name, field.getSetter());
 		} else {
-			v = parse(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName, res);
+			v = parse(beanDefinition, beanFactory, bean, field, value, name, charset, res);
 			if (v == null) {
 				logger.warn("value is a null name [{}] field [{}]", name, field.getSetter());
 			}
@@ -73,10 +73,9 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 	}
 
 	protected abstract Observable<R> getObservableResource(BeanDefinition beanDefinition,
-			BeanFactory beanFactory, PropertyFactory propertyFactory, Object bean, Field field, Value value,
-			String name, String charsetName);
+			BeanFactory beanFactory, Object bean, Field field, Value value,
+			String name, Charset charset);
 
-	protected abstract Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Object bean, Field field, Value value, String name, String charsetName,
+	protected abstract Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, Object bean, Field field, Value value, String name, Charset charset,
 			R resource) throws Exception;
 }

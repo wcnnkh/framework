@@ -2,12 +2,12 @@ package scw.tencent.wx;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.core.parameter.annotation.ParameterName;
 import scw.oauth2.AccessToken;
 import scw.security.Token;
 
-@SPI(order=Integer.MIN_VALUE)
+@Provider(order=Integer.MIN_VALUE)
 public class DefaultTokenFactory implements TokenFactory{
 	private final String appId;
 	private final String appSecret;

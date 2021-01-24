@@ -4,10 +4,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import scw.result.Result;
-import scw.result.ResultFactory;
+import scw.context.result.Result;
+import scw.context.result.ResultFactory;
 
-public final class AsyncAliDaYu implements AliDaYu, scw.beans.Destroy{
+public final class AsyncAliDaYu implements AliDaYu, scw.context.Destroy{
 	private final AliDaYu aliDaYu;
 	private final ResultFactory resultFactory;
 	

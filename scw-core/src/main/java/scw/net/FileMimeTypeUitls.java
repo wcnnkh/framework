@@ -1,15 +1,12 @@
 package scw.net;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.io.IOUtils;
+import scw.env.SystemEnvironment;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.lang.Nullable;
@@ -20,36 +17,21 @@ public class FileMimeTypeUitls {
 	private static final MultiValueMap<String, MimeType> fileExtensionToMediaTypes = parseMimeTypes();
 
 	private static MultiValueMap<String, MimeType> parseMimeTypes() {
+		MultiValueMap<String, MimeType> result = new LinkedMultiValueMap<String, MimeType>();
 		String mimeTypesFileName = "/scw/net/mime/mime.types";
-		Resource resource = ResourceUtils.getResourceOperations().getResource("classpath:/scw/net/mime/mime.types");
-		if (resource == null || !resource.exists()) {
-			return new LinkedMultiValueMap<String, MimeType>();
-		}
-
-		BufferedReader reader = null;
-		InputStream is = null;
-		try {
-			is = resource.getInputStream();
-			reader = new BufferedReader(new InputStreamReader(is, MimeTypeUtils.US_ASCII));
-			MultiValueMap<String, MimeType> result = new LinkedMultiValueMap<String, MimeType>();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				if (line.isEmpty() || line.charAt(0) == '#') {
-					continue;
-				}
-				String[] tokens = StringUtils.tokenizeToStringArray(line, " \t\n\r\f");
-				MimeType mimeType = MimeTypeUtils.parseMimeType(tokens[0]);
-				for (int i = 1; i < tokens.length; i++) {
-					String fileExtension = tokens[i].toLowerCase(Locale.ENGLISH);
-					result.add(fileExtension, mimeType);
-				}
+		Resource resource = SystemEnvironment.getInstance().getResource(mimeTypesFileName);
+		for(String line : ResourceUtils.getLines(resource, MimeTypeUtils.US_ASCII)){
+			if (line.isEmpty() || line.charAt(0) == '#') {
+				continue;
 			}
-			return result;
-		} catch (Exception e) {
-			throw new IllegalStateException("Could not load '" + mimeTypesFileName + "'", e);
-		} finally {
-			IOUtils.close(reader, is);
+			String[] tokens = StringUtils.tokenizeToStringArray(line, " \t\n\r\f");
+			MimeType mimeType = MimeTypeUtils.parseMimeType(tokens[0]);
+			for (int i = 1; i < tokens.length; i++) {
+				String fileExtension = tokens[i].toLowerCase(Locale.ENGLISH);
+				result.add(fileExtension, mimeType);
+			}
 		}
+		return result;
 	}
 
 	public static MimeType getMimeType(@Nullable Resource resource) {

@@ -10,8 +10,8 @@ import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
+import scw.instance.InstanceUtils;
 import scw.lang.RequiredJavaVersion;
 import scw.microsoft.DefaultExcelExport;
 import scw.microsoft.Excel;

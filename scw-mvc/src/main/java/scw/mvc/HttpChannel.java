@@ -1,10 +1,10 @@
 package scw.mvc;
 
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.instance.factory.NoArgsInstanceFactory;
 import scw.lang.Nullable;
 import scw.mvc.security.UserSessionFactoryAdapter;
 import scw.mvc.security.UserSessionResolver;

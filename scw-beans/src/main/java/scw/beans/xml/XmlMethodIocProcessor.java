@@ -12,7 +12,6 @@ import scw.beans.ioc.AbstractIocProcessor;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.reflect.ReflectionUtils;
 import scw.json.JSONUtils;
-import scw.value.property.PropertyFactory;
 
 public class XmlMethodIocProcessor extends AbstractIocProcessor {
 	private Class<?> type;
@@ -35,9 +34,8 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 		this.xmlBeanParameters = xmlBeanParameters.toArray(new XmlBeanParameter[xmlBeanParameters.size()]);
 	}
 
-	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
-		XmlParameterFactory xmlParameterFactory = new XmlParameterFactory(beanFactory, propertyFactory,
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws Exception {
+		XmlParameterFactory xmlParameterFactory = new XmlParameterFactory(beanFactory,
 				xmlBeanParameters);
 		Class<?> tempClz = type;
 		while (tempClz != null) {

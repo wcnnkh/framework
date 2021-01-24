@@ -3,7 +3,7 @@ package scw.beans;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Collection;
 
-import scw.core.instance.InstanceBuilder;
+import scw.instance.InstanceBuilder;
 
 public interface BeanDefinition extends InstanceBuilder<Object>{
 	String getId();

@@ -1,28 +1,30 @@
 package scw.logger;
 
-import scw.core.GlobalPropertyFactory;
-import scw.value.property.ExtendPropertyFactory;
+import scw.env.SystemEnvironment;
+import scw.value.StringValue;
+import scw.value.Value;
+import scw.value.factory.ValueFactory;
 
-public class LoggerPropertyFactory extends ExtendPropertyFactory {
+public class LoggerPropertyFactory implements ValueFactory<String> {
 	private static LoggerPropertyFactory instance = new LoggerPropertyFactory();
 
 	public static LoggerPropertyFactory getInstance() {
 		return instance;
 	}
-
-	private LoggerPropertyFactory() {
-		super(true, true);
-		addFirstBasePropertyFactory(GlobalPropertyFactory.getInstance());
-	}
-
-	@Override
-	protected Object getExtendValue(String key) {
-		String value = null;
-		if (key.equalsIgnoreCase("default.logger.level")) {
-			value = LoggerLevelManager.getInstance().getDefaultLevel().getName();
-		} else if (key.equalsIgnoreCase("logger.rootPath")) {
-			value = GlobalPropertyFactory.getInstance().getWorkPath();
+	
+	public Value getValue(String key) {
+		Value value = SystemEnvironment.getInstance().getValue(key);
+		if(value != null){
+			return value;
 		}
-		return value;
+		
+		String v = null;
+		if (key.equalsIgnoreCase("default.logger.level")) {
+			v = LoggerLevelManager.getInstance().getDefaultLevel().getName();
+		} else if (key.equalsIgnoreCase("logger.rootPath")) {
+			v = SystemEnvironment.getInstance().getWorkPath();
+		}
+		
+		return v == null? null:new StringValue(v);
 	}
 }

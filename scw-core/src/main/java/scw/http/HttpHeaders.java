@@ -23,10 +23,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import scw.core.Assert;
-import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
+import scw.event.Observable;
 import scw.io.event.ConvertibleObservablesProperties;
 import scw.lang.Nullable;
 import scw.logger.Logger;
@@ -539,9 +540,11 @@ public class HttpHeaders extends Headers {
 	};
 	
 	static {
-		AJAX_HEADERS.loadProperties("/scw/net/headers/ajax.headers.properties");
-		AJAX_HEADERS.loadProperties(GlobalPropertyFactory.getInstance().getValue("scw.net.ajax.headers", String.class,
-				"/ajax-headers.properties")).register();
+		AJAX_HEADERS.addObservable(SystemEnvironment.getInstance().getProperties("/scw/net/headers/ajax.headers.properties"));
+		Observable<Properties> resource = SystemEnvironment.getInstance().getProperties(SystemEnvironment.getInstance().getValue("scw.net.ajax.headers", String.class,
+				"/ajax-headers.properties"));
+		resource.register(true);
+		AJAX_HEADERS.addObservable(resource);
 	}
 
 	public HttpHeaders() {

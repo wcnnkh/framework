@@ -1,8 +1,8 @@
 package scw.json;
 
-import scw.value.ValueFactoryWrapper;
+import scw.value.factory.support.ConvertibleValueFactoryWrapper;
 
-public class JsonWrapper<K> extends ValueFactoryWrapper<K> implements Json<K> {
+public class JsonWrapper<K> extends ConvertibleValueFactoryWrapper<K> implements Json<K> {
 	private final Json<K> target;
 
 	public JsonWrapper(Json<K> target) {

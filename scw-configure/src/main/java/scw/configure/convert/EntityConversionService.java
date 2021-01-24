@@ -3,7 +3,7 @@ package scw.configure.convert;
 import scw.configure.support.EntityConfigure;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
-import scw.core.instance.NoArgsInstanceFactory;
+import scw.instance.factory.NoArgsInstanceFactory;
 
 public abstract class EntityConversionService extends EntityConfigure implements ConversionService{
 	private final NoArgsInstanceFactory instanceFactory;

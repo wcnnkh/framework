@@ -11,9 +11,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import scw.beans.BeanFactory;
-import scw.core.Constants;
-import scw.core.annotation.Order;
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
 import scw.event.BasicEventDispatcher;
 import scw.event.EventListener;
@@ -30,12 +28,10 @@ import scw.mvc.MVCUtils;
 import scw.mvc.annotation.Controller;
 import scw.net.Restful;
 import scw.net.Restful.RestfulMatchingResult;
-import scw.util.ClassScanner;
 import scw.value.Value;
-import scw.value.property.PropertyFactory;
 import scw.web.WebUtils;
 
-@SPI(order = Integer.MIN_VALUE)
+@Provider(order = Integer.MIN_VALUE)
 public class DefaultActionManager implements ActionManager {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	private Map<Method, Action> actionMap = new LinkedHashMap<Method, Action>();
@@ -47,24 +43,8 @@ public class DefaultActionManager implements ActionManager {
 	private final Map<String, EnumMap<HttpMethod, Map<String, Action>>> pathParameterActionMap = new HashMap<String, EnumMap<HttpMethod, Map<String, Action>>>();
 	private String actionParameterName = "action";
 
-	public DefaultActionManager() {
-	}
-
-	/**
-	 * 优先使用此构造方法
-	 * 
-	 * @param beanFactory
-	 * @param propertyFactory
-	 */
-	@Order
-	public DefaultActionManager(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		this(beanFactory, propertyFactory, MVCUtils.getScanAnnotationPackageName(propertyFactory));
-	}
-
-	public DefaultActionManager(BeanFactory beanFactory, PropertyFactory propertyFactory,
-			String scanAnnotationPackageName) {
-		for (Class<?> clz : ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
-				scanAnnotationPackageName)) {
+	public DefaultActionManager(BeanFactory beanFactory) {
+		for (Class<?> clz : beanFactory.getContextClassesLoader()) {
 			if (!isSupport(beanFactory, clz)) {
 				continue;
 			}
@@ -73,7 +53,7 @@ public class DefaultActionManager implements ActionManager {
 					continue;
 				}
 
-				Action action = builder(beanFactory, propertyFactory, clz, method);
+				Action action = builder(beanFactory, clz, method);
 				if (action != null) {
 					register(action);
 				}
@@ -81,9 +61,9 @@ public class DefaultActionManager implements ActionManager {
 		}
 	}
 
-	protected Action builder(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> clazz, Method method) {
+	protected Action builder(BeanFactory beanFactory, Class<?> clazz, Method method) {
 		if (isSupport(beanFactory, clazz) && isSupport(method)) {
-			return new DefaultAction(beanFactory, propertyFactory, clazz, method);
+			return new DefaultAction(beanFactory, clazz, method);
 		}
 		return null;
 	}

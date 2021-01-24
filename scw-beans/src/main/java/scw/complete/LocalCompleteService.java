@@ -9,12 +9,12 @@ import java.util.concurrent.TimeUnit;
 import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.Destroy;
-import scw.core.GlobalPropertyFactory;
-import scw.core.instance.annotation.SPI;
+import scw.context.Destroy;
+import scw.context.annotation.Provider;
 import scw.core.utils.ClassUtils;
+import scw.env.SystemEnvironment;
+import scw.env.support.SystemLocalLogger;
 import scw.io.support.LocalLogger.Record;
-import scw.io.support.SystemLocalLogger;
 import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -26,12 +26,12 @@ import scw.logger.LoggerUtils;
  *
  */
 
-@SPI(order = Integer.MIN_VALUE, value = CompleteService.class)
+@Provider(order = Integer.MIN_VALUE, value = CompleteService.class)
 public final class LocalCompleteService implements CompleteService, Destroy {
 	private static Logger logger = LoggerUtils.getLogger(LocalCompleteService.class);
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);
 	private final SystemLocalLogger<CompleteTask> systemLocalLogger = new SystemLocalLogger<CompleteTask>(
-			GlobalPropertyFactory.getInstance().getValue("scw.local.complete.name", String.class, "complete_service"));
+			SystemEnvironment.getInstance().getValue("scw.local.complete.name", String.class, "complete_service"));
 	private final long delayMillis;
 	private final TimeUnit delayTimeUnit;
 	private final BeanFactory beanFactory;
@@ -68,7 +68,7 @@ public final class LocalCompleteService implements CompleteService, Destroy {
 
 	public Object processTask(CompleteTask completeTask) throws Throwable {
 		BeanDefinition beanDefinition = beanFactory == null ? null
-				: beanFactory.getDefinition(ProxyUtils.getProxyFactory().getUserClass(completeTask.getClass()));
+				: beanFactory.getBeanDefinition(ProxyUtils.getProxyFactory().getUserClass(completeTask.getClass()));
 		if (beanDefinition != null) {
 			beanDefinition.dependence(completeTask);
 			beanDefinition.init(completeTask);

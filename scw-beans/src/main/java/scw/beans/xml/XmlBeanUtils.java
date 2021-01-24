@@ -15,8 +15,9 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
+import scw.env.Environment;
 import scw.io.Resource;
-import scw.value.property.PropertyFactory;
+import scw.io.ResourceLoader;
 
 public final class XmlBeanUtils {
 	private XmlBeanUtils() {
@@ -51,17 +52,17 @@ public final class XmlBeanUtils {
 		return DomUtils.getBooleanValue(node, "singleton", null);
 	}
 
-	public static boolean getBooleanValue(PropertyFactory propertyFactory,
+	public static boolean getBooleanValue(Environment environment,
 			Node node, String name, boolean defaultValue) {
-		String value = DomUtils.getNodeAttributeValue(propertyFactory, node,
+		String value = DomUtils.getNodeAttributeValue(environment, node,
 				name);
 		return StringUtils.isEmpty(value) ? defaultValue : Boolean
 				.parseBoolean(value);
 	}
 
-	public static int getIntegerValue(PropertyFactory propertyFactory,
+	public static int getIntegerValue(Environment environment,
 			Node node, String name, int defaultValue) {
-		String value = DomUtils.getNodeAttributeValue(propertyFactory, node,
+		String value = DomUtils.getNodeAttributeValue(environment, node,
 				name);
 		return StringUtils.isEmpty(value) ? defaultValue : Integer
 				.parseInt(value);
@@ -84,38 +85,38 @@ public final class XmlBeanUtils {
 		return xmlBeanParameters;
 	}
 
-	public static NodeList getRootNodeList(Resource resource) {
+	public static NodeList getRootNodeList(Resource resource, ResourceLoader resourceLoader) {
 		Document document = DomUtils.getDomBuilder().parse(resource);
 		Node node = document.getDocumentElement();
 		if (!"beans".equals(node.getNodeName())) {
 			throw new BeansException("root tag name error ["
 					+ node.getNodeName() + "]");
 		}
-		return DomUtils.getChildNodes(node, true);
+		return DomUtils.getChildNodes(node, resourceLoader);
 	}
 
-	public static String getPackageName(PropertyFactory propertyFactory,
+	public static String getPackageName(Environment environment,
 			Node node) {
-		return DomUtils.getNodeAttributeValue(propertyFactory, node, "package");
+		return DomUtils.getNodeAttributeValue(environment, node, "package");
 	}
 
-	public static String getVersion(PropertyFactory propertyFactory, Node node) {
-		return DomUtils.getNodeAttributeValue(propertyFactory, node, "version");
+	public static String getVersion(Environment environment, Node node) {
+		return DomUtils.getNodeAttributeValue(environment, node, "version");
 	}
 
-	public static String getAddress(PropertyFactory propertyFactory, Node node) {
-		return DomUtils.getRequireNodeAttributeValue(propertyFactory, node,
+	public static String getAddress(Environment environment, Node node) {
+		return DomUtils.getRequireNodeAttributeValue(environment, node,
 				"address");
 	}
 
-	public static String getRef(PropertyFactory propertyFactory, Node node) {
-		return DomUtils.getRequireNodeAttributeValue(propertyFactory, node,
+	public static String getRef(Environment environment, Node node) {
+		return DomUtils.getRequireNodeAttributeValue(environment, node,
 				"ref");
 	}
 
-	public static String getCharsetName(PropertyFactory propertyFactory,
+	public static String getCharsetName(Environment environment,
 			Node node, String defaultValue) {
-		String charsetName = DomUtils.getNodeAttributeValue(propertyFactory,
+		String charsetName = DomUtils.getNodeAttributeValue(environment,
 				node, "charsetName");
 		return StringUtils.isEmpty(charsetName) ? defaultValue : charsetName;
 	}

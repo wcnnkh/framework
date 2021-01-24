@@ -183,7 +183,7 @@ public abstract class EntityConfigure extends ConditionalConfigure implements Co
 		for (Field field : fields) {
 			Object value = getProperty(source, field, prefix);
 			if (value == null) {
-				if (field.getSetter().getType() == Map.class) {
+				if (Map.class.isAssignableFrom(field.getSetter().getType())) {
 					Map<String, Object> valueMap = getMapProperty(source,
 							field, prefix, connector);
 					if (!CollectionUtils.isEmpty(valueMap)) {

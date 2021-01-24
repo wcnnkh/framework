@@ -7,7 +7,7 @@ import java.util.Set;
 import scw.convert.ConversionService;
 import scw.convert.support.ConvertiblePair;
 import scw.core.utils.CollectionUtils;
-import scw.value.property.BasePropertyFactory;
+import scw.value.factory.PropertyFactory;
 
 public class PropertyFactoryConfigure extends EntityConfigure{
 	
@@ -18,15 +18,15 @@ public class PropertyFactoryConfigure extends EntityConfigure{
 
 	@Override
 	protected Enumeration<String> keys(Object source) {
-		return CollectionUtils.toEnumeration(((BasePropertyFactory)source).iterator());
+		return CollectionUtils.toEnumeration(((PropertyFactory)source).iterator());
 	}
 
 	@Override
 	protected Object getProperty(Object source, String key) {
-		return ((BasePropertyFactory)source).getValue(key);
+		return ((PropertyFactory)source).getValue(key);
 	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
-		return Collections.singleton(new ConvertiblePair(BasePropertyFactory.class, Object.class));
+		return Collections.singleton(new ConvertiblePair(PropertyFactory.class, Object.class));
 	}
 }

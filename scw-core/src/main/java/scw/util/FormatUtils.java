@@ -6,9 +6,9 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
-import scw.core.StringFormat;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
@@ -114,39 +114,7 @@ public final class FormatUtils {
 	public static String dateFormat(Date date, String formatter) {
 		return new SimpleDateFormat(formatter).format(date);
 	}
-
-	public static String formatEL(String text, scw.value.ValueFactory<String> propertyFactory) {
-		return StringFormat.format(text, "${", "}", propertyFactory);
-	}
-
-	public static String formatEL(String text, Map<?, ?> map) {
-		return StringFormat.format(text, "${", "}", map);
-	}
-
-	public static String format(String text, scw.value.ValueFactory<String> propertyFactory) {
-		return StringFormat.format(text, "{", "}", propertyFactory);
-	}
-
-	public static String format(String text, Map<?, ?> map) {
-		return StringFormat.format(text, "{", "}", map);
-	}
-
-	public static String format(String text, scw.value.ValueFactory<String> propertyFactory, boolean supportEL) {
-		String newText = text;
-		if (supportEL) {
-			newText = formatEL(newText, propertyFactory);
-		}
-		return format(newText, propertyFactory);
-	}
-
-	public static String format(String text, Map<?, ?> map, boolean supportEL) {
-		String newText = text;
-		if (supportEL) {
-			newText = formatEL(newText, map);
-		}
-		return newText = format(newText, map);
-	}
-
+	
 	public static void loggerAppend(Appendable appendable, String time, String level, String tag,
 			StringAppend stringAppend) throws IOException {
 		boolean b = false;
@@ -219,5 +187,34 @@ public final class FormatUtils {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public static String format(String text, PlaceholderResolver placeholderResolver){
+		return PropertyPlaceholderHelper.nonStrictHelper.replacePlaceholders(StringFormat.format(text, placeholderResolver), placeholderResolver);
+	}
+	
+	public static Properties format(Properties properties, PlaceholderResolver placeholderResolver){
+		return format(properties, new DefaultPropertyResolver(placeholderResolver));
+	}
+	
+	public static Properties format(Properties properties, PropertyResolver propertyResolver) {
+		if (properties == null || properties.isEmpty()) {
+			return properties;
+		}
+
+		Properties props = new Properties();
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			Object value = entry.getValue();
+			if (value == null) {
+				continue;
+			}
+
+			if (value instanceof String) {
+				props.put(entry.getKey(), propertyResolver.resolvePlaceholders((String) value));
+			} else {
+				props.put(entry.getKey(), entry.getValue());
+			}
+		}
+		return props;
 	}
 }

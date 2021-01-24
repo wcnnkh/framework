@@ -4,11 +4,11 @@ import java.util.concurrent.Executor;
 
 import scw.complete.Complete;
 import scw.complete.CompleteService;
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.transaction.DefaultTransactionLifecycle;
 import scw.transaction.TransactionManager;
 
-@SPI(order = Integer.MIN_VALUE)
+@Provider(order = Integer.MIN_VALUE)
 public class DefaultAsyncMethodService implements AsyncMethodService {
 	private Executor executor;
 	private CompleteService completeService;

@@ -15,8 +15,8 @@ import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
 import scw.lang.NotSupportedException;
-import scw.util.alias.SimpleSafeAliasRegistry;
-import scw.value.property.PropertyFactory;
+import scw.util.alias.DefaultAliasRegistry;
+import scw.value.factory.PropertyFactory;
 
 public final class DBUtils {
 	public static final String DEFAULT_CONFIGURATION = "/db/db.properties";
@@ -24,8 +24,8 @@ public final class DBUtils {
 	private DBUtils() {
 	};
 	
-	public static SimpleSafeAliasRegistry getCommonPropertiesAliasRegistry(){
-		SimpleSafeAliasRegistry aliasRegistry = new SimpleSafeAliasRegistry();
+	public static DefaultAliasRegistry getCommonPropertiesAliasRegistry(){
+		DefaultAliasRegistry aliasRegistry = new DefaultAliasRegistry();
 		aliasRegistry.registerAlias("url", "jdbcUrl");
 		aliasRegistry.registerAlias("jdbcUrl", "host");
 		

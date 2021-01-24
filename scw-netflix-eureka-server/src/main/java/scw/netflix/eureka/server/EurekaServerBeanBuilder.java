@@ -3,12 +3,11 @@ package scw.netflix.eureka.server;
 import java.util.Collections;
 
 import scw.beans.BeanDefinition;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.SPI;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.context.annotation.Provider;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClient;
@@ -20,37 +19,37 @@ import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 
-@SPI(order = Integer.MIN_VALUE)
-public class EurekaServerBeanBuilder implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class EurekaServerBeanBuilder implements BeanDefinitionLoader {
 	@Override
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == ServerCodecs.class) {
-			return new ServerCodecsBuilder(context);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		if (sourceClass == ServerCodecs.class) {
+			return new ServerCodecsBuilder(beanFactory, sourceClass);
 		}
 
-		if (context.getTargetClass() == PeerAwareInstanceRegistry.class) {
-			return new PeerAwareInstanceRegistryBuilder(context);
+		if (sourceClass == PeerAwareInstanceRegistry.class) {
+			return new PeerAwareInstanceRegistryBuilder(beanFactory, sourceClass);
 		}
 
-		if (context.getTargetClass() == PeerEurekaNodes.class) {
-			return new PeerEurekaNodesBuilder(context);
+		if (sourceClass == PeerEurekaNodes.class) {
+			return new PeerEurekaNodesBuilder(beanFactory, sourceClass);
 		}
 
-		if (context.getTargetClass() == EurekaServerContext.class) {
-			return new EurekaServerContextBuilder(context);
+		if (sourceClass == EurekaServerContext.class) {
+			return new EurekaServerContextBuilder(beanFactory, sourceClass);
 		}
 
-		if(context.getTargetClass() == EurekaServerConfig.class){
-			return new EurekaServerConfigBuilder(context);
+		if(sourceClass == EurekaServerConfig.class){
+			return new EurekaServerConfigBuilder(beanFactory, sourceClass);
 		}
 		
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 	
 	private static class EurekaServerConfigBuilder extends DefaultBeanDefinition{
 
-		public EurekaServerConfigBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public EurekaServerConfigBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 		
 		@Override
@@ -72,8 +71,8 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 
 	private static class EurekaServerContextBuilder extends DefaultBeanDefinition {
 
-		public EurekaServerContextBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public EurekaServerContextBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override
@@ -105,8 +104,8 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 
 	private static class PeerEurekaNodesBuilder extends DefaultBeanDefinition {
 
-		public PeerEurekaNodesBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public PeerEurekaNodesBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override
@@ -127,14 +126,14 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 			ReplicationClientAdditionalFilters replicationClientAdditionalFilters = getReplicationClientAdditionalFilters(
 					beanFactory);
 			return new RefreshablePeerEurekaNodes(registry, serverConfig, clientConfig, serverCodecs,
-					applicationInfoManager, replicationClientAdditionalFilters, propertyFactory);
+					applicationInfoManager, replicationClientAdditionalFilters, beanFactory.getEnvironment());
 		}
 	}
 
 	private static class PeerAwareInstanceRegistryBuilder extends DefaultBeanDefinition {
 
-		public PeerAwareInstanceRegistryBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public PeerAwareInstanceRegistryBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override
@@ -161,8 +160,8 @@ public class EurekaServerBeanBuilder implements BeanBuilderLoader {
 
 	private static class ServerCodecsBuilder extends DefaultBeanDefinition {
 
-		public ServerCodecsBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public ServerCodecsBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override

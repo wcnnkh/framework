@@ -5,41 +5,42 @@ import java.util.Properties;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import scw.beans.BeanDefinition;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
 import scw.configure.support.ConfigureUtils;
 import scw.configure.support.EntityConfigure;
 import scw.configure.support.PropertyFactoryConfigure;
+import scw.context.annotation.Provider;
 import scw.convert.TypeDescriptor;
-import scw.core.Constants;
-import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
+import scw.env.support.DefaultEnvironment;
 import scw.io.ResourceUtils;
-import scw.value.property.PropertyFactory;
 
-@SPI(order = Integer.MIN_VALUE, value = BeanBuilderLoader.class)
-public class JedisBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE, value = BeanDefinitionLoader.class)
+public class JedisBeanBuilderLoader implements BeanDefinitionLoader {
 	private static final String HOST_CONFIG_KEY = "redis.host";
 	private static final String CONFIG_KEY = "redis.configuration";
 	private static final String DEFAULT_CONFIG = "/redis/redis.properties";
 	
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == JedisPool.class) {
-			return new JedisPoolBeanDefinition(context);
-		} else if (context.getTargetClass() == JedisPoolConfig.class) {
-			return new JedisPoolConfigBeanDefinition(context);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		if (sourceClass == JedisPool.class) {
+			return new JedisPoolBeanDefinition(beanFactory, sourceClass);
+		} else if (sourceClass == JedisPoolConfig.class) {
+			return new JedisPoolConfigBeanDefinition(beanFactory, sourceClass);
 		}
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 
 	private static final class JedisPoolBeanDefinition extends DefaultBeanDefinition {
-		private final String configName = propertyFactory.getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
-		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(configName);
 
-		public JedisPoolBeanDefinition(LoaderContext context) {
-			super(context);
+		public JedisPoolBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
+		}
+		
+		public String getConfigName(){
+			return beanFactory.getEnvironment().getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
 		}
 
 		public boolean isInstance() {
@@ -47,10 +48,10 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader {
 		}
 
 		private String getHost() {
-			String host = propertyFactory.getString(HOST_CONFIG_KEY);
-			if (host == null && isExist) {
-				Properties properties = ResourceUtils.getResourceOperations()
-						.getProperties(configName, Constants.DEFAULT_CHARSET_NAME).get();
+			String host = beanFactory.getEnvironment().getString(HOST_CONFIG_KEY);
+			String configName = getConfigName();
+			if (host == null && ResourceUtils.exists(beanFactory.getEnvironment(), configName)) {
+				Properties properties = beanFactory.getEnvironment().getProperties(configName).get();
 				host = properties.getProperty(HOST_CONFIG_KEY);
 				if (host == null) {
 					host = properties.getProperty("host");// 兼容老版本
@@ -80,20 +81,22 @@ public class JedisBeanBuilderLoader implements BeanBuilderLoader {
 	}
 
 	private static final class JedisPoolConfigBeanDefinition extends DefaultBeanDefinition {
-		private final String configName = propertyFactory.getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
-		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(configName);
 
-		public JedisPoolConfigBeanDefinition(LoaderContext context) {
-			super(context);
+		public JedisPoolConfigBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
+		}
+		public String getConfigName(){
+			return beanFactory.getEnvironment().getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);
 		}
 
 		public boolean isInstance() {
-			return isExist;
+			return ResourceUtils.exists(beanFactory.getEnvironment(), getConfigName());
 		}
 
 		public Object create() throws Exception {
-			PropertyFactory propertyFactory = new PropertyFactory(false, true);
-			propertyFactory.loadProperties(configName, Constants.DEFAULT_CHARSET_NAME);
+			DefaultEnvironment propertyFactory = new DefaultEnvironment(false);
+			scw.event.Observable<Properties> observable = beanFactory.getEnvironment().getProperties(getConfigName());
+			propertyFactory.loadProperties(observable);
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);
 			if (StringUtils.isEmpty(host)) {
 				host = "127.0.0.1";

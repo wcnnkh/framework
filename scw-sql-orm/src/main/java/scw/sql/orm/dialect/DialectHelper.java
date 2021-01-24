@@ -1,6 +1,6 @@
 package scw.sql.orm.dialect;
 
-import scw.core.instance.InstanceUtils;
+import scw.instance.InstanceUtils;
 
 public class DialectHelper {
 	private static final SqlTypeFactory SQL_TYPE_FACTORY = InstanceUtils.loadService(SqlTypeFactory.class, "scw.sql.orm.dialect.DefaultSqlTypeFactory");

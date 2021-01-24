@@ -11,11 +11,15 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.event.ChangeEvent;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
 import scw.event.EventType;
-import scw.event.KeyValuePairEvent;
+import scw.event.NamedEventDispatcher;
+import scw.event.support.StringNamedEventDispatcher;
 import scw.io.JavaSerializer;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.logger.Logger;
@@ -23,24 +27,22 @@ import scw.logger.LoggerFactory;
 import scw.value.AnyValue;
 import scw.value.EmptyValue;
 import scw.value.Value;
-import scw.value.property.AbstractBasePropertyFactory;
-import scw.value.property.EditablePropertyFactory;
-import scw.value.property.PropertyEvent;
+import scw.value.factory.ListenablePropertyFactory;
 
 /**
  * 使用zookeeper实现的配置中心
  * @author asus1
  *
  */
-@SPI(order=Integer.MIN_VALUE)
-public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory implements EditablePropertyFactory, Watcher{
+@Provider(order=Integer.MIN_VALUE)
+public class ZookeeperCloudPropertyFactory implements ListenablePropertyFactory, scw.value.factory.ConfigurablePropertyFactory, Watcher{
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
+	private final NamedEventDispatcher<String, ChangeEvent<String>> eventDispatcher = new StringNamedEventDispatcher<ChangeEvent<String>>(true);
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
 	private NoTypeSpecifiedSerializer serializer;
 	
 	public ZookeeperCloudPropertyFactory(ZooKeeper zooKeeper, String parentPath){
-		super(true);
 		this.zooKeeper = zooKeeper;
 		this.parentPath = ZooKeeperUtils.cleanPath(parentPath);
 		zooKeeper.register(this);
@@ -123,20 +125,20 @@ public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory i
 		}
 		
 		String key = getKey(eventPath);
-		KeyValuePairEvent<String, Value> keyValuePairEvent;
+		ChangeEvent<String> changeEvent;
 		switch (event.getType()) {
 		case NodeDeleted:
-			keyValuePairEvent = new KeyValuePairEvent<String, Value>(EventType.DELETE, key, getValue(key));
+			changeEvent = new ChangeEvent<String>(EventType.DELETE, key);
 			break;
 		case NodeCreated:
-			keyValuePairEvent = new KeyValuePairEvent<String, Value>(EventType.CREATE, key, getValue(key));
+			changeEvent = new ChangeEvent<String>(EventType.CREATE, key);
 			break;
 		default:
-			keyValuePairEvent = new KeyValuePairEvent<String, Value>(EventType.UPDATE, key, getValue(key));
+			changeEvent = new ChangeEvent<String>(EventType.UPDATE, key);
 			break;
 		}
 		
-		getEventDispatcher().publishEvent(key, new PropertyEvent(this, keyValuePairEvent));
+		eventDispatcher.publishEvent(key, changeEvent);
 	}
 
 	public boolean put(String key, Object value) {
@@ -146,6 +148,33 @@ public class ZookeeperCloudPropertyFactory extends AbstractBasePropertyFactory i
 		
 		String path = ZooKeeperUtils.cleanPath(parentPath, key);
 		ZooKeeperUtils.createNotExist(zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+		byte[] data = getSerializer().serialize(value);
+		return ZooKeeperUtils.setData(zooKeeper, path, data);
+	}
+
+	public EventRegistration registerListener(String name,
+			EventListener<ChangeEvent<String>> eventListener) {
+		return eventDispatcher.registerListener(name, eventListener);
+	}
+
+	public boolean put(String key, Value value) {
+		return put(key, value.getAsString());
+	}
+
+	public boolean putIfAbsent(String key, Value value) {
+		return putIfAbsent(key, value.getAsString());
+	}
+
+	public boolean putIfAbsent(String key, Object value) {
+		if(StringUtils.isEmpty(key)){
+			return false;
+		}
+		
+		String path = ZooKeeperUtils.cleanPath(parentPath, key);
+		boolean success = ZooKeeperUtils.createNotExist(zooKeeper, path, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+		if(!success){
+			return false;
+		}
 		byte[] data = getSerializer().serialize(value);
 		return ZooKeeperUtils.setData(zooKeeper, path, data);
 	}

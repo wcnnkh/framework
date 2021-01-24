@@ -1,6 +1,6 @@
 package scw.sql.orm;
 
-import scw.core.instance.InstanceUtils;
+import scw.instance.InstanceUtils;
 import scw.lang.NotSupportedException;
 import scw.sql.Sql;
 import scw.sql.orm.dialect.SqlDialect;

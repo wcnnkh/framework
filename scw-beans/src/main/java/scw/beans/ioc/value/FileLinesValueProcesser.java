@@ -1,6 +1,7 @@
 package scw.beans.ioc.value;
 
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -15,15 +16,14 @@ import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.mapper.Field;
 import scw.value.StringValue;
-import scw.value.property.PropertyFactory;
 
 public final class FileLinesValueProcesser extends AbstractObservableResourceValueProcesser {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
-			Object bean, Field field, Value value, String name, String charsetName, Resource resource) throws Exception {
-		List<String> lines = ResourceUtils.getLines(resource, charsetName);
+	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory,
+			Object bean, Field field, Value value, String name, Charset charset, Resource resource) throws Exception {
+		List<String> lines = ResourceUtils.getLines(resource, charset);
 		if (lines == null) {
 			return null;
 		}

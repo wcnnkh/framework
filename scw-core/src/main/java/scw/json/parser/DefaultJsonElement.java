@@ -11,8 +11,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import scw.core.ResolvableType;
-import scw.core.instance.InstanceUtils;
-import scw.core.instance.NoArgsInstanceFactory;
+import scw.instance.InstanceUtils;
+import scw.instance.factory.NoArgsInstanceFactory;
 import scw.json.AbstractJsonElement;
 import scw.json.EmptyJsonElement;
 import scw.json.JSONException;

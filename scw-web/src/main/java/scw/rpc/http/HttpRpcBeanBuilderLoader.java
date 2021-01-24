@@ -3,27 +3,27 @@ package scw.rpc.http;
 import java.util.Arrays;
 
 import scw.beans.BeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.beans.builder.ProxyBeanDefinition;
-import scw.core.instance.annotation.SPI;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.ProxyBeanDefinition;
+import scw.context.annotation.Provider;
 import scw.rpc.http.annotation.HttpClient;
 
-@SPI(order = Integer.MIN_VALUE)
-public final class HttpRpcBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE)
+public final class HttpRpcBeanBuilderLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition loading(LoaderContext context,
-			BeanBuilderLoaderChain serviceChain) {
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass,
+			BeanDefinitionLoaderChain serviceChain) {
 		// Host注解
-		HttpClient httpClient = context.getTargetClass().getAnnotation(
+		HttpClient httpClient = sourceClass.getAnnotation(
 				HttpClient.class);
 		if (httpClient != null) {
 			String proxyName = HttpRpcProxyMethodInterceptor.class.getName();
-			if (context.getBeanFactory().isInstance(proxyName)) {
-				return new ProxyBeanDefinition(context, Arrays.asList(proxyName));
+			if (beanFactory.isInstance(proxyName)) {
+				return new ProxyBeanDefinition(beanFactory, sourceClass, Arrays.asList(proxyName));
 			}
 		}
-		return serviceChain.loading(context);
+		return serviceChain.load(beanFactory, sourceClass);
 	}
 }

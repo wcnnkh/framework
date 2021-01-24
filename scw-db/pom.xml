@@ -17,11 +17,6 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-beans</artifactId>
 		</dependency>
-		
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-transaction</artifactId>
-		</dependency>
 
 		<dependency>
 			<groupId>scw</groupId>

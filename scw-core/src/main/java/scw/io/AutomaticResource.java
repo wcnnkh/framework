@@ -1,5 +1,6 @@
 package scw.io;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -15,6 +16,10 @@ import scw.io.event.SimpleResourceEventDispatcher;
 public class AutomaticResource extends ResourceWrapper {
 	private Collection<Resource> resources;
 	private volatile Resource currentResource;
+	
+	public AutomaticResource(Resource ...resources) {
+		this(Arrays.asList(resources));
+	}
 
 	/**
 	 * 从多个resource中自动选择一个可用的

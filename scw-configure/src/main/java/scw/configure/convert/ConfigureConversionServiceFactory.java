@@ -3,7 +3,7 @@ package scw.configure.convert;
 import scw.configure.Configure;
 import scw.configure.resolver.ResourceResolver;
 import scw.convert.support.DefaultConversionServiceFactory;
-import scw.core.instance.NoArgsInstanceFactory;
+import scw.instance.factory.NoArgsInstanceFactory;
 
 public class ConfigureConversionServiceFactory extends
 		DefaultConversionServiceFactory {

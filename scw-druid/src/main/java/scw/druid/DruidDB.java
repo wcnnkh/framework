@@ -26,9 +26,9 @@ public class DruidDB extends ConfigurableDB {
 	
 	@Override
 	protected void initConfig() {
-		if(getPropertyFactory() != null && dataSource == null){
+		if(getPropertyManager() != null && dataSource == null){
 			dataSource = new DruidDataSource();
-			DBUtils.loadProperties(dataSource, getPropertyFactory());
+			DBUtils.loadProperties(dataSource, getPropertyManager());
 			if (!dataSource.isPoolPreparedStatements()) {// 如果配置中没有开启psCache
 				dataSource.setMaxPoolPreparedStatementPerConnectionSize(20);
 			}

@@ -13,26 +13,9 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-core</artifactId>
-		</dependency>
-	
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-transaction</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>scw</groupId>
 			<artifactId>scw-boot</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-beans</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
 		<dependency>
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>

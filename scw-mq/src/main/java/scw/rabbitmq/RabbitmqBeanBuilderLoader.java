@@ -5,14 +5,14 @@ import java.util.Properties;
 import scw.amqp.Exchange;
 import scw.amqp.ExchangeDeclare;
 import scw.beans.BeanDefinition;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
 import scw.complete.CompleteService;
 import scw.configure.support.ConfigureUtils;
 import scw.configure.support.MapConfigure;
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.io.ResourceUtils;
 import scw.io.SerializerUtils;
 
@@ -20,27 +20,27 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ConnectionFactoryConfigurator;
 
-@SPI(order = Integer.MIN_VALUE)
-public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class RabbitmqBeanBuilderLoader implements BeanDefinitionLoader {
 	public static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/rabbitmq/rabbitmq.properties";
 
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == ConnectionFactory.class) {
-			return new ConnectionFactoryBeanBuilder(context);
-		} else if (context.getTargetClass() == Connection.class) {
-			return new ConnectionBeanBuilder(context);
-		} else if (Exchange.class == context.getTargetClass() || RabbitmqExchange.class == context.getTargetClass()) {
-			return new ExchangeBeanBuilder(context);
-		} else if (context.getTargetClass() == ExchangeDeclare.class) {
-			return new ExchangeDeclareBeanBuilder(context);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		if (sourceClass == ConnectionFactory.class) {
+			return new ConnectionFactoryBeanBuilder(beanFactory, sourceClass);
+		} else if (sourceClass == Connection.class) {
+			return new ConnectionBeanBuilder(beanFactory, sourceClass);
+		} else if (Exchange.class == sourceClass || RabbitmqExchange.class == sourceClass) {
+			return new ExchangeBeanBuilder(beanFactory, sourceClass);
+		} else if (sourceClass == ExchangeDeclare.class) {
+			return new ExchangeDeclareBeanBuilder(beanFactory, sourceClass);
 		}
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 
 	private static class ConnectionBeanBuilder extends DefaultBeanDefinition {
 
-		public ConnectionBeanBuilder(LoaderContext context) {
-			super(context);
+		public ConnectionBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
@@ -61,19 +61,18 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 	}
 
 	private static class ConnectionFactoryBeanBuilder extends DefaultBeanDefinition {
-		private final boolean exist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
 
-		public ConnectionFactoryBeanBuilder(LoaderContext context) {
-			super(context);
+		public ConnectionFactoryBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
-			return exist;
+			return ResourceUtils.exists(beanFactory.getEnvironment(), DEFAULT_CONFIG);
 		}
 
 		public Object create() throws Exception {
 			ConnectionFactory connectionFactory = new ConnectionFactory();
-			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get();
+			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ConnectionFactoryConfigurator.load(connectionFactory, properties, null);
 			ConnectionFactoryConfigurator.load(connectionFactory, properties);
 			return connectionFactory;
@@ -82,8 +81,8 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 
 	private static class ExchangeBeanBuilder extends DefaultBeanDefinition {
 
-		public ExchangeBeanBuilder(LoaderContext context) {
-			super(context);
+		public ExchangeBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
@@ -98,20 +97,19 @@ public class RabbitmqBeanBuilderLoader implements BeanBuilderLoader {
 	}
 
 	private final class ExchangeDeclareBeanBuilder extends DefaultBeanDefinition {
-		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
 
-		public ExchangeDeclareBeanBuilder(LoaderContext context) {
-			super(context);
+		public ExchangeDeclareBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override
 		public boolean isInstance() {
-			return isExist;
+			return ResourceUtils.exists(beanFactory.getEnvironment(), DEFAULT_CONFIG);
 		}
 
 		@Override
 		public Object create() throws Exception {
-			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get();
+			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
 			MapConfigure configure = new MapConfigure(ConfigureUtils.getConversionServiceFactory());
 			configure.setPrefix("exchange");

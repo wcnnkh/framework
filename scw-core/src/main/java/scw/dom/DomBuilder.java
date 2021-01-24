@@ -29,10 +29,10 @@ import org.xml.sax.SAXException;
 
 import scw.convert.ConversionException;
 import scw.convert.TypeDescriptor;
-import scw.core.instance.InstanceUtils;
 import scw.dom.append.AppendChildService;
 import scw.dom.append.AppendChildServiceFactory;
 import scw.dom.append.DefaultAppendChildServiceFactory;
+import scw.instance.InstanceUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 

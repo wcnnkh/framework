@@ -2,9 +2,9 @@ package scw.redis.jedis;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import scw.util.ResourceFactory;
+import scw.util.ResourcePool;
 
-public class JedisResourceFactory implements ResourceFactory<Jedis> {
+public class JedisResourceFactory implements ResourcePool<Jedis> {
 	private JedisPool jedisPool;
 
 	public JedisResourceFactory(JedisPool jedisPool) {

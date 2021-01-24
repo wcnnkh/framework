@@ -165,7 +165,7 @@ public final class LocalLogger {
 		private final String id;
 		private final T data;
 
-		Record(String id, T data) {
+		public Record(String id, T data) {
 			this.id = id;
 			this.data = data;
 		}

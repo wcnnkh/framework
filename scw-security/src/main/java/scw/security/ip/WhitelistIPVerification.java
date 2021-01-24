@@ -1,7 +1,8 @@
 package scw.security.ip;
 
-import scw.core.instance.annotation.ResourceParameter;
 import scw.core.parameter.annotation.DefaultValue;
+import scw.env.Environment;
+import scw.instance.annotation.ResourceParameter;
 
 /**
  * 白名单
@@ -14,8 +15,8 @@ import scw.core.parameter.annotation.DefaultValue;
 public final class WhitelistIPVerification extends BaseIPVerification {
 	private static final long serialVersionUID = 1L;
 
-	public WhitelistIPVerification(@ResourceParameter@DefaultValue("ip-whitelist") String sourceFile) {
-		appendIPFile(sourceFile);
+	public WhitelistIPVerification(Environment environment, @ResourceParameter@DefaultValue("ip-whitelist") String sourceFile) {
+		appendIPFile(environment, sourceFile);
 	}
 
 }

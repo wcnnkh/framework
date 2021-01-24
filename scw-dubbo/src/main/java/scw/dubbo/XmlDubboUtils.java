@@ -23,11 +23,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.configure.support.ConfigureUtils;
+import scw.context.ClassesLoaderFactory;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.InstanceUtils;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
+import scw.env.Environment;
+import scw.instance.InstanceUtils;
+import scw.instance.factory.NoArgsInstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Copy;
@@ -35,8 +37,6 @@ import scw.mapper.Field;
 import scw.mapper.Fields;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
-import scw.util.ClassScanner;
-import scw.value.property.PropertyFactory;
 
 public final class XmlDubboUtils {
 	private static final String TAG_NAME_PREFIX = "dubbo:";
@@ -52,13 +52,13 @@ public final class XmlDubboUtils {
 	private XmlDubboUtils() {
 	};
 
-	public static List<ApplicationConfig> parseApplicationConfigList(final PropertyFactory propertyFactory,
+	public static List<ApplicationConfig> parseApplicationConfigList(final Environment environment,
 			NodeList nodeList, ApplicationConfig defaultConfig) {
-		return parseConfigList(ApplicationConfig.class, propertyFactory, nodeList, defaultConfig,
+		return parseConfigList(ApplicationConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ApplicationConfig>() {
 					@Override
 					public boolean doFilter(List<ApplicationConfig> list, Node node, ApplicationConfig config) {
-						List<RegistryConfig> registryConfigs = parseRegistryConfigList(propertyFactory,
+						List<RegistryConfig> registryConfigs = parseRegistryConfigList(environment,
 								node.getChildNodes(), null);
 						if (!registryConfigs.isEmpty()) {
 							config.setRegistries(registryConfigs);
@@ -69,12 +69,12 @@ public final class XmlDubboUtils {
 				});
 	}
 
-	private static List<MethodConfig> parseMethodConfigList(final PropertyFactory propertyFactory, NodeList nodeList) {
-		return parseConfigList(MethodConfig.class, propertyFactory, nodeList, null, new ConfigFilter<MethodConfig>() {
+	private static List<MethodConfig> parseMethodConfigList(final Environment environment, NodeList nodeList) {
+		return parseConfigList(MethodConfig.class, environment, nodeList, null, new ConfigFilter<MethodConfig>() {
 			@Override
 			public boolean doFilter(List<MethodConfig> list, Node node, MethodConfig config) {
 				if (config.isValid()) {
-					List<ArgumentConfig> argumentConfigs = parseArgumentConfigList(propertyFactory,
+					List<ArgumentConfig> argumentConfigs = parseArgumentConfigList(environment,
 							node.getChildNodes());
 					if (!argumentConfigs.isEmpty()) {
 						config.setArguments(argumentConfigs);
@@ -86,32 +86,32 @@ public final class XmlDubboUtils {
 		});
 	}
 
-	private static List<ArgumentConfig> parseArgumentConfigList(PropertyFactory propertyFactory, NodeList nodeList) {
-		return parseConfigList(ArgumentConfig.class, propertyFactory, nodeList, null);
+	private static List<ArgumentConfig> parseArgumentConfigList(Environment environment, NodeList nodeList) {
+		return parseConfigList(ArgumentConfig.class, environment, nodeList, null);
 	}
 
-	public static List<MetadataReportConfig> parseMetadataReportConfigList(PropertyFactory propertyFactory,
+	public static List<MetadataReportConfig> parseMetadataReportConfigList(Environment environment,
 			NodeList nodeList, MetadataReportConfig defaultConfig) {
-		return parseConfigList(MetadataReportConfig.class, propertyFactory, nodeList, defaultConfig);
+		return parseConfigList(MetadataReportConfig.class, environment, nodeList, defaultConfig);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static List<ServiceConfig> parseServiceConfigList(final PropertyFactory propertyFactory, NodeList nodeList,
-			ServiceConfig<?> defaultConfig, final NoArgsInstanceFactory refInstanceFactory) {
-		return parseConfigList(ServiceConfig.class, propertyFactory, nodeList, defaultConfig,
+	public static List<ServiceConfig> parseServiceConfigList(final Environment environment, NodeList nodeList,
+			ServiceConfig<?> defaultConfig, final NoArgsInstanceFactory refInstanceFactory, final ClassesLoaderFactory classesLoaderFactory) {
+		return parseConfigList(ServiceConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ServiceConfig>() {
 
 					@SuppressWarnings("unchecked")
 					@Override
 					public boolean doFilter(List<ServiceConfig> list, Node node, ServiceConfig config) {
-						String ref = DomUtils.getNodeAttributeValue(propertyFactory, node, "ref");
+						String ref = DomUtils.getNodeAttributeValue(environment, node, "ref");
 						if (StringUtils.isNotEmpty(ref) && refInstanceFactory.isInstance(ref)) {
 							config.setRef(refInstanceFactory.getInstance(ref));
 						}
 
-						String packageName = getPackageName(propertyFactory, node);
+						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : ClassScanner.getInstance().getClasses(packageName)) {
+							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName)) {
 								if(!clazz.isInterface()){
 									continue;
 								}
@@ -131,13 +131,13 @@ public final class XmlDubboUtils {
 							}
 						}
 
-						List<RegistryConfig> registryConfigs = parseRegistryConfigList(propertyFactory,
+						List<RegistryConfig> registryConfigs = parseRegistryConfigList(environment,
 								node.getChildNodes(), null);
 						if (!registryConfigs.isEmpty()) {
 							config.setRegistries(registryConfigs);
 						}
 
-						List<ProtocolConfig> protocolConfigs = parseProtocolConfigList(propertyFactory,
+						List<ProtocolConfig> protocolConfigs = parseProtocolConfigList(environment,
 								node.getChildNodes(), null);
 						if (!protocolConfigs.isEmpty()) {
 							config.setProtocols(protocolConfigs);
@@ -145,7 +145,7 @@ public final class XmlDubboUtils {
 
 						if (config.isValid() && config.getRef() != null
 								&& StringUtils.isNotEmpty(config.getInterface())) {
-							List<MethodConfig> methodConfigs = parseMethodConfigList(propertyFactory,
+							List<MethodConfig> methodConfigs = parseMethodConfigList(environment,
 									node.getChildNodes());
 							if (!methodConfigs.isEmpty()) {
 								config.setMethods(methodConfigs);
@@ -158,9 +158,9 @@ public final class XmlDubboUtils {
 				});
 	}
 
-	public static List<ProtocolConfig> parseProtocolConfigList(PropertyFactory propertyFactory, NodeList nodeList,
+	public static List<ProtocolConfig> parseProtocolConfigList(Environment environment, NodeList nodeList,
 			ProtocolConfig defaultConfig) {
-		return parseConfigList(ProtocolConfig.class, propertyFactory, nodeList, defaultConfig,
+		return parseConfigList(ProtocolConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ProtocolConfig>() {
 					@Override
 					public boolean doFilter(List<ProtocolConfig> list, Node node, ProtocolConfig config) {
@@ -172,25 +172,25 @@ public final class XmlDubboUtils {
 				});
 	}
 
-	public static List<RegistryConfig> parseRegistryConfigList(PropertyFactory propertyFactory, NodeList nodeList,
+	public static List<RegistryConfig> parseRegistryConfigList(Environment environment, NodeList nodeList,
 			RegistryConfig defaultConfig) {
-		return parseConfigList(RegistryConfig.class, propertyFactory, nodeList, defaultConfig);
+		return parseConfigList(RegistryConfig.class, environment, nodeList, defaultConfig);
 	}
 
-	private static String getPackageName(PropertyFactory propertyFactory, Node node) {
-		return DomUtils.getNodeAttributeValue(propertyFactory, node, DUBBO_SCAN_PACKAGE);
+	private static String getPackageName(Environment environment, Node node) {
+		return DomUtils.getNodeAttributeValue(environment, node, DUBBO_SCAN_PACKAGE);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public static List<ReferenceConfig> parseReferenceConfigList(final PropertyFactory propertyFactory,
-			NodeList nodeList, ReferenceConfig<?> defaultConfig) {
-		return parseConfigList(ReferenceConfig.class, propertyFactory, nodeList, defaultConfig,
+	public static List<ReferenceConfig> parseReferenceConfigList(final Environment environment,
+			NodeList nodeList, ReferenceConfig<?> defaultConfig, final ClassesLoaderFactory classesLoaderFactory) {
+		return parseConfigList(ReferenceConfig.class, environment, nodeList, defaultConfig,
 				new ConfigFilter<ReferenceConfig>() {
 					@Override
 					public boolean doFilter(List<ReferenceConfig> list, Node node, ReferenceConfig config) {
-						String packageName = getPackageName(propertyFactory, node);
+						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
-							for (Class<?> clazz : ClassScanner.getInstance().getClasses(packageName)) {
+							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName)) {
 								if (!clazz.isInterface() || AnnotationUtils.isIgnore(clazz)) {
 									continue;
 								}
@@ -203,14 +203,14 @@ public final class XmlDubboUtils {
 							}
 						}
 
-						List<RegistryConfig> registryConfigs = parseRegistryConfigList(propertyFactory,
+						List<RegistryConfig> registryConfigs = parseRegistryConfigList(environment,
 								node.getChildNodes(), null);
 						if (!registryConfigs.isEmpty()) {
 							config.setRegistries(registryConfigs);
 						}
 
 						if (config.isValid() && config.getInterfaceClass() != null) {
-							List<MethodConfig> methodConfigs = parseMethodConfigList(propertyFactory,
+							List<MethodConfig> methodConfigs = parseMethodConfigList(environment,
 									node.getChildNodes());
 							if (!methodConfigs.isEmpty()) {
 								config.setMethods(methodConfigs);
@@ -222,7 +222,7 @@ public final class XmlDubboUtils {
 				});
 	}
 
-	private static <T> void loader(Object instance, PropertyFactory propertyFactory, Node node) {
+	private static <T> void loader(Object instance, Environment environment, Node node) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
 		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER);
 		for (int i = 0, len = namedNodeMap.getLength(); i < len; i++) {
@@ -237,7 +237,7 @@ public final class XmlDubboUtils {
 				continue;
 			}
 
-			value = propertyFactory.format(value);
+			value = environment.resolvePlaceholders(value);
 			Field field = fields.findSetter(name, null);
 			if (field == null) {
 				logger.warn("{} ignore attribute name={}, value={}", instance.getClass(), name, value);
@@ -251,21 +251,21 @@ public final class XmlDubboUtils {
 		}
 	}
 
-	public static List<ProviderConfig> parseProviderConfigList(PropertyFactory propertyFactory, NodeList nodeList,
+	public static List<ProviderConfig> parseProviderConfigList(Environment environment, NodeList nodeList,
 			ProviderConfig defaultConfig) {
-		return parseConfigList(ProviderConfig.class, propertyFactory, nodeList, defaultConfig);
+		return parseConfigList(ProviderConfig.class, environment, nodeList, defaultConfig);
 	}
 
 	private static interface ConfigFilter<T> {
 		boolean doFilter(List<T> list, Node node, T config);
 	}
 
-	private static <T> List<T> parseConfigList(Class<? extends T> type, PropertyFactory propertyFactory,
+	private static <T> List<T> parseConfigList(Class<? extends T> type, Environment environment,
 			NodeList nodeList, T defaultConfig) {
-		return parseConfigList(type, propertyFactory, nodeList, defaultConfig, null);
+		return parseConfigList(type, environment, nodeList, defaultConfig, null);
 	}
 
-	private static <T> List<T> parseConfigList(Class<? extends T> type, PropertyFactory propertyFactory,
+	private static <T> List<T> parseConfigList(Class<? extends T> type, Environment environment,
 			NodeList nodeList, T defaultConfig, ConfigFilter<T> filter) {
 		List<T> list = new ArrayList<T>(4);
 		if (nodeList != null) {
@@ -278,7 +278,7 @@ public final class XmlDubboUtils {
 
 				T config = defaultConfig == null ? InstanceUtils.INSTANCE_FACTORY.getInstance(type)
 						: Copy.copy(type, defaultConfig);
-				loader(config, propertyFactory, node);
+				loader(config, environment, node);
 
 				if (filter != null && !filter.doFilter(list, node, config)) {
 					continue;
@@ -294,30 +294,30 @@ public final class XmlDubboUtils {
 					list.add(config);
 				}
 
-				list.addAll(parseConfigList(type, propertyFactory, node.getChildNodes(), config, filter));
+				list.addAll(parseConfigList(type, environment, node.getChildNodes(), config, filter));
 			}
 		}
 		return list;
 	}
 
-	public static List<ConsumerConfig> parseConsumerConfigList(PropertyFactory propertyFactory, NodeList nodeList,
+	public static List<ConsumerConfig> parseConsumerConfigList(Environment environment, NodeList nodeList,
 			ConsumerConfig defaultConfig) {
-		return parseConfigList(ConsumerConfig.class, propertyFactory, nodeList, defaultConfig);
+		return parseConfigList(ConsumerConfig.class, environment, nodeList, defaultConfig);
 	}
 
-	public static List<SslConfig> parseSslConfigList(PropertyFactory propertyFactory, NodeList nodeList) {
-		return parseConfigList(SslConfig.class, propertyFactory, nodeList, null);
+	public static List<SslConfig> parseSslConfigList(Environment environment, NodeList nodeList) {
+		return parseConfigList(SslConfig.class, environment, nodeList, null);
 	}
 
-	public static List<MetricsConfig> parseMetricsConfigList(PropertyFactory propertyFactory, NodeList nodeList) {
-		return parseConfigList(MetricsConfig.class, propertyFactory, nodeList, null);
+	public static List<MetricsConfig> parseMetricsConfigList(Environment environment, NodeList nodeList) {
+		return parseConfigList(MetricsConfig.class, environment, nodeList, null);
 	}
 
-	public static List<ModuleConfig> parseModuleConfigList(PropertyFactory propertyFactory, NodeList nodeList) {
-		return parseConfigList(ModuleConfig.class, propertyFactory, nodeList, null);
+	public static List<ModuleConfig> parseModuleConfigList(Environment environment, NodeList nodeList) {
+		return parseConfigList(ModuleConfig.class, environment, nodeList, null);
 	}
 
-	public static List<MonitorConfig> parseMonitorConfigList(PropertyFactory propertyFactory, NodeList nodeList) {
-		return parseConfigList(MonitorConfig.class, propertyFactory, nodeList, null);
+	public static List<MonitorConfig> parseMonitorConfigList(Environment environment, NodeList nodeList) {
+		return parseConfigList(MonitorConfig.class, environment, nodeList, null);
 	}
 }

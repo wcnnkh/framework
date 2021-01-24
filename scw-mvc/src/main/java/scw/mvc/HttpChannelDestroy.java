@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.beans.BeanUtils;
-import scw.beans.Destroy;
-import scw.core.GlobalPropertyFactory;
-import scw.event.Observable;
+import scw.context.Destroy;
+import scw.context.result.BaseResult;
+import scw.context.support.LifecycleAuxiliary;
 import scw.http.HttpStatus;
 import scw.http.server.ServerHttpAsyncEvent;
 import scw.http.server.ServerHttpAsyncListener;
@@ -15,11 +14,8 @@ import scw.io.IOUtils;
 import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.result.BaseResult;
 
 public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
-	private static final Observable<Long> WARN_TIMEOUT = GlobalPropertyFactory.getInstance()
-			.getObservableValue("mvc.warn-execute-time", Long.class, 100L);
 	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);
 
 	private Long executeWarnTime;
@@ -48,10 +44,6 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 		this.error = error;
 	}
 
-	public void setExecuteWarnTime(Long executeWarnTime) {
-		this.executeWarnTime = executeWarnTime;
-	}
-
 	public final Level getEnableLevel() {
 		return enableLevel;
 	}
@@ -60,14 +52,18 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 		this.enableLevel = enableLevel;
 	}
 
-	protected final long getExecuteWarnTime() {
-		return executeWarnTime == null ? WARN_TIMEOUT.get() : executeWarnTime;
+	public Long getExecuteWarnTime() {
+		return executeWarnTime;
+	}
+
+	public void setExecuteWarnTime(Long executeWarnTime) {
+		this.executeWarnTime = executeWarnTime;
 	}
 
 	public void destroy() throws IOException {
 		if (!httpChannel.isCompleted()) {
 			try {
-				BeanUtils.destroy(httpChannel);
+				LifecycleAuxiliary.destroy(httpChannel);
 			} catch (Throwable e) {
 				logger.error(e, "destroy channel error: " + httpChannel.toString());
 			}
@@ -78,7 +74,8 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 
 	protected void log() {
 		long useTime = System.currentTimeMillis() - httpChannel.getCreateTime();
-		Level level = useTime > getExecuteWarnTime() ? Level.WARN : Level.DEBUG;
+		Long executeWarnTime = getExecuteWarnTime();
+		Level level = (executeWarnTime != null && useTime > executeWarnTime) ? Level.WARN : Level.DEBUG;
 		if (error != null) {
 			logger.error(error, "Execution {}ms of {}", useTime, this);
 			return;

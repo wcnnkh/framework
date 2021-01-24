@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Random;
 
 import scw.core.Assert;
+import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.net.MimeType.SpecificityComparator;
@@ -27,7 +28,7 @@ public final class MimeTypeUtils {
 
 	private static final Random RND = new SecureRandom();
 
-	public static Charset US_ASCII = Charset.forName("US-ASCII");
+	public static Charset US_ASCII = Constants.US_ASCII;
 
 	/**
 	 * Comparator used by {@link #sortBySpecificity(List)}.

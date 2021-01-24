@@ -25,8 +25,8 @@ import java.util.Set;
 
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.ConfigurationProperties;
+import scw.env.Environment;
 import scw.mapper.MapperUtils;
-import scw.value.property.PropertyFactory;
 
 import com.netflix.eureka.EurekaServerConfig;
 import com.netflix.eureka.aws.AwsBindingStrategy;
@@ -46,7 +46,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 	private static final int MINUTES = 60 * 1000;
 
 	@Autowired(required = false)
-	PropertyFactory propertyFactory;
+	private Environment environment;
 
 	private String aWSAccessId;
 
@@ -284,8 +284,8 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 
 	@Override
 	public String getExperimental(String name) {
-		if (this.propertyFactory != null) {
-			return propertyFactory.getValue(PREFIX + ".experimental." + name, String.class, null);
+		if (this.environment != null) {
+			return environment.getValue(PREFIX + ".experimental." + name, String.class, null);
 		}
 		return null;
 	}
@@ -304,12 +304,12 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 		return this.minAvailableInstancesForPeerReplication;
 	}
 
-	public PropertyFactory getPropertyFactory() {
-		return propertyFactory;
+	public Environment getEnvironment() {
+		return environment;
 	}
 
-	public void setPropertyFactory(PropertyFactory propertyFactory) {
-		this.propertyFactory = propertyFactory;
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	public String getAWSAccessId() {
@@ -993,7 +993,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 				&& peerNodeTotalConnections == that.peerNodeTotalConnections
 				&& peerNodeTotalConnectionsPerHost == that.peerNodeTotalConnectionsPerHost
 				&& primeAwsReplicaConnections == that.primeAwsReplicaConnections
-				&& Objects.equals(propertyFactory, that.propertyFactory)
+				&& Objects.equals(environment, that.environment)
 				&& rateLimiterBurstSize == that.rateLimiterBurstSize && rateLimiterEnabled == that.rateLimiterEnabled
 				&& rateLimiterFullFetchAverageRate == that.rateLimiterFullFetchAverageRate
 				&& Objects.equals(rateLimiterPrivilegedClients, that.rateLimiterPrivilegedClients)
@@ -1044,7 +1044,7 @@ public class EurekaServerConfigBean implements EurekaServerConfig {
 				minThreadsForPeerReplication, minThreadsForStatusReplication, numberOfReplicationRetries,
 				peerEurekaNodesUpdateIntervalMs, peerEurekaStatusRefreshTimeIntervalMs, peerNodeConnectTimeoutMs,
 				peerNodeConnectionIdleTimeoutSeconds, peerNodeReadTimeoutMs, peerNodeTotalConnections,
-				peerNodeTotalConnectionsPerHost, primeAwsReplicaConnections, propertyFactory, rateLimiterBurstSize,
+				peerNodeTotalConnectionsPerHost, primeAwsReplicaConnections, environment, rateLimiterBurstSize,
 				rateLimiterEnabled, rateLimiterFullFetchAverageRate, rateLimiterPrivilegedClients,
 				rateLimiterRegistryFetchAverageRate, rateLimiterThrottleStandardClients, registrySyncRetries,
 				registrySyncRetryWaitMs, remoteRegionAppWhitelist, remoteRegionConnectTimeoutMs,

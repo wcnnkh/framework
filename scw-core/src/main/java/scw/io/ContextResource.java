@@ -1,5 +1,6 @@
 package scw.io;
 
+
 /**
  * Extended interface for a resource that is loaded from an enclosing
  * 'context', e.g. from a {@link javax.servlet.ServletContext} or a

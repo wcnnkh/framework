@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 
@@ -28,17 +27,17 @@ public abstract class JarUtils {
 		InputStream inputStream = null;
 		try {
 			inputStream = jarFile.getInputStream(jarEntry);
-			return formatManifestFile(inputStream, Constants.DEFAULT_CHARSET_NAME);
+			return formatManifestFile(inputStream);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return Collections.EMPTY_MAP;
 	}
 
-	private static Map<String, String> formatManifestFile(InputStream inputStream, String charsetName)
+	private static Map<String, String> formatManifestFile(InputStream inputStream)
 			throws IOException {
 		Map<String, String> map = new HashMap<String, String>(8);
-		List<String> list = IOUtils.readLines(inputStream, charsetName);
+		List<String> list = IOUtils.readLines(inputStream);
 		for (String content : list) {
 			content = content.trim();
 			if (StringUtils.isEmpty(content)) {

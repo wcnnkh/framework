@@ -11,25 +11,31 @@ import javax.servlet.Filter;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
-import scw.core.instance.annotation.SPI;
+import scw.boot.servlet.FilterRegistration;
+import scw.context.ClassesLoaderFactory;
+import scw.context.annotation.Provider;
+import scw.core.utils.StringUtils;
 import scw.netflix.eureka.EurekaConstants;
-import scw.servlet.FilterRegistration;
-import scw.util.ClassScanner;
 
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
-@SPI(order = Integer.MIN_VALUE)
+@Provider(order = Integer.MIN_VALUE)
 public class EurekaServerFilterRegistration implements FilterRegistration {
 	/**
 	 * List of packages containing Jersey resources required by the Eureka
 	 * server.
 	 */
 	private static final String[] EUREKA_PACKAGES = new String[] { "com.netflix.discovery", "com.netflix.eureka" };
-
-	public static Application getApplication() {
+	private final scw.boot.Application application;
+	
+	public EurekaServerFilterRegistration(scw.boot.Application application){
+		this.application = application;
+	}
+	
+	public static Application getApplication(ClassesLoaderFactory classesLoaderFactory) {
 		Set<Class<?>> classes = new HashSet<>();
-		for (Class<?> clazz : ClassScanner.getInstance().getClasses(EUREKA_PACKAGES)) {
+		for (Class<?> clazz : classesLoaderFactory.getClassesLoader(StringUtils.arrayToCommaDelimitedString(EUREKA_PACKAGES))) {
 			if (clazz.getAnnotation(Path.class) != null
 					|| clazz.getAnnotation(javax.ws.rs.ext.Provider.class) != null) {
 				classes.add(clazz);
@@ -49,7 +55,7 @@ public class EurekaServerFilterRegistration implements FilterRegistration {
 
 	@Override
 	public Filter getFilter() {
-		return new ServletContainer(getApplication());
+		return new ServletContainer(getApplication(application.getBeanFactory()));
 	}
 
 	@Override

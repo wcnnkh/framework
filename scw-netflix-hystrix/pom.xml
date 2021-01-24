@@ -10,12 +10,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-core</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-beans</artifactId>
+			<artifactId>scw-boot</artifactId>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.netflix.hystrix/hystrix-core -->

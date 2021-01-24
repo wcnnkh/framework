@@ -3,8 +3,6 @@ package scw.beans;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -13,22 +11,13 @@ import java.util.Map.Entry;
 import scw.beans.annotation.AopEnable;
 import scw.beans.annotation.Service;
 import scw.beans.annotation.Singleton;
-import scw.core.Constants;
-import scw.core.OrderComparator;
-import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.InstanceUtils;
-import scw.core.utils.CollectionUtils;
+import scw.instance.InstanceUtils;
 import scw.logger.Logger;
-import scw.util.MultiServiceLoader;
-import scw.util.ServiceLoader;
-import scw.value.ValueFactory;
-import scw.value.property.PropertyFactory;
 
 public final class BeanUtils {
 	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = InstanceUtils
 			.loadAllService(AopEnableSpi.class);
-
 	private BeanUtils() {
 	};
 
@@ -48,12 +37,6 @@ public final class BeanUtils {
 		return true;
 	}
 
-	public static String getScanAnnotationPackageName(
-			ValueFactory<String> propertyFactory) {
-		return propertyFactory.getValue("scw.scan.beans.package", String.class,
-				InstanceUtils.getScanAnnotationPackageName(propertyFactory));
-	}
-
 	public static Class<?> getServiceInterface(Class<?> clazz) {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
@@ -70,26 +53,6 @@ public final class BeanUtils {
 		return null;
 	}
 
-	public static void init(Object init) throws Throwable {
-		if (init == null) {
-			return;
-		}
-
-		if (init instanceof Init) {
-			((Init) init).init();
-		}
-	}
-
-	public static void destroy(Object destroy) throws Throwable {
-		if (destroy == null) {
-			return;
-		}
-
-		if (destroy instanceof Destroy) {
-			((Destroy) destroy).destroy();
-		}
-	}
-
 	public static void aware(Object instance, BeanFactory beanFactory,
 			BeanDefinition beanDefinition) {
 		if (instance instanceof BeanFactoryAware) {
@@ -99,37 +62,6 @@ public final class BeanUtils {
 		if (instance instanceof BeanDefinitionAware) {
 			((BeanDefinitionAware) instance).setBeanDefinition(beanDefinition);
 		}
-	}
-
-	/**
-	 * 此结果已排序
-	 * @see Ordered
-	 * @param clazz
-	 * @param beanFactory
-	 * @param propertyFactory
-	 * @return
-	 */
-	public static <T> List<T> loadAllService(Class<? extends T> clazz,
-			BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		List<T> services = Collections.list(CollectionUtils.toEnumeration(getServiceLoader(
-				clazz, beanFactory, propertyFactory).iterator()));
-		if(CollectionUtils.isEmpty(services)){
-			return services;
-		}
-		
-		Collections.sort(services, OrderComparator.INSTANCE);
-		return services;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> ServiceLoader<T> getServiceLoader(
-			Class<? extends T> clazz, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) {
-		return new MultiServiceLoader<T>(InstanceUtils.getServiceLoader(clazz,
-				beanFactory, propertyFactory),
-				InstanceUtils.getConfigurationServiceLoader(clazz, beanFactory,
-						null, Arrays.asList(Constants.SYSTEM_PACKAGE_NAME,
-								getScanAnnotationPackageName(propertyFactory))));
 	}
 
 	public static RuntimeBean getRuntimeBean(Object instance) {
@@ -154,8 +86,7 @@ public final class BeanUtils {
 		ListIterator<String> keyIterator = beanKeyList.listIterator(beanKeyList
 				.size());
 		while (keyIterator.hasPrevious()) {
-			BeanDefinition beanDefinition = beanFactory
-					.getDefinition(keyIterator.previous());
+			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(keyIterator.previous());
 			if (beanDefinition == null) {
 				continue;
 			}

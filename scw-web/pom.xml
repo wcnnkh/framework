@@ -10,7 +10,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-core</artifactId>
+			<artifactId>scw-boot</artifactId>
 		</dependency>
 		
 		<dependency>
@@ -23,22 +23,10 @@
 			<artifactId>commons-fileupload</artifactId>
 		</dependency>
 		
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-beans</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-boot</artifactId>
-			<scope>provided</scope>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

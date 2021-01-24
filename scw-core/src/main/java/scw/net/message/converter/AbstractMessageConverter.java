@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
-import scw.core.Constants;
 import scw.core.ResolvableType;
+import scw.env.SystemEnvironment;
 import scw.http.HttpHeaders;
 import scw.io.IOUtils;
 import scw.json.JSONSupport;
@@ -20,7 +20,7 @@ import scw.net.message.OutputMessage;
 
 public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
-	private Charset defaultCharset = Constants.DEFAULT_CHARSET;
+	private Charset charset;
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	protected final MimeTypes supportMimeTypes = new MimeTypes();
 	private boolean supportBytes = false;
@@ -44,13 +44,13 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	public void setJsonSupport(JSONSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
 	}
-
-	public Charset getDefaultCharset() {
-		return defaultCharset;
+	
+	public Charset getCharset() {
+		return charset == null? SystemEnvironment.getInstance().getCharset():charset;
 	}
 
-	public void setDefaultCharset(Charset defaultCharset) {
-		this.defaultCharset = defaultCharset;
+	public void setCharset(Charset charset) {
+		this.charset = charset;
 	}
 
 	public boolean canRead(MimeType contentType) {
@@ -160,7 +160,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			if (contentTypeToUse != null && !contentTypeToUse.isWildcardType()
 					&& !contentTypeToUse.isWildcardSubtype()) {
 				if (contentTypeToUse.getCharset() == null) {
-					Charset defaultCharset = getDefaultCharset();
+					Charset defaultCharset = getCharset();
 					if (defaultCharset != null) {
 						contentTypeToUse = new MimeType(contentTypeToUse,
 								defaultCharset);
@@ -200,12 +200,12 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	protected Charset getCharset(Message message) {
 		MimeType mimeType = message.getContentType();
 		if (mimeType == null) {
-			return getDefaultCharset();
+			return getCharset();
 		}
 
 		Charset charset = mimeType.getCharset();
 		if (charset == null) {
-			return getDefaultCharset();
+			return getCharset();
 		}
 		return charset;
 	}

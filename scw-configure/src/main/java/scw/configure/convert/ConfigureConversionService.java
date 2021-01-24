@@ -3,7 +3,7 @@ package scw.configure.convert;
 import scw.configure.Configure;
 import scw.convert.TypeDescriptor;
 import scw.convert.support.AbstractConversionService;
-import scw.core.instance.NoArgsInstanceFactory;
+import scw.instance.factory.NoArgsInstanceFactory;
 
 public class ConfigureConversionService extends AbstractConversionService {
 	private final Configure configuration;

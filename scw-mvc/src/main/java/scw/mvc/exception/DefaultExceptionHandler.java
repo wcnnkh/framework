@@ -2,13 +2,13 @@ package scw.mvc.exception;
 
 import java.io.IOException;
 
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
+import scw.context.result.ErrorCode;
+import scw.context.result.ResultFactory;
 import scw.lang.NestedExceptionUtils;
 import scw.lang.ParameterException;
 import scw.mvc.HttpChannel;
 import scw.mvc.action.Action;
-import scw.result.ErrorCode;
-import scw.result.ResultFactory;
 import scw.security.authority.AuthorizationFailureException;
 
 /**
@@ -17,7 +17,7 @@ import scw.security.authority.AuthorizationFailureException;
  * @author shuchaowen
  *
  */
-@SPI(order = Integer.MIN_VALUE)
+@Provider(order = Integer.MIN_VALUE)
 public final class DefaultExceptionHandler implements ExceptionHandler {
 	private ResultFactory resultFactory;
 

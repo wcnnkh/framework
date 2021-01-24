@@ -4,16 +4,14 @@ import java.rmi.Naming;
 import java.rmi.Remote;
 
 import scw.beans.BeanFactory;
-import scw.beans.DefaultBeanDefinition;
-import scw.value.property.PropertyFactory;
+import scw.beans.support.DefaultBeanDefinition;
 
 
 public class RmiBeanDefinition extends DefaultBeanDefinition{
 	private String host;
 	
-	public RmiBeanDefinition(BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Class<?> targetClass, String host) {
-		super(beanFactory, propertyFactory, targetClass);
+	public RmiBeanDefinition(BeanFactory beanFactory, Class<?> targetClass, String host) {
+		super(beanFactory, targetClass);
 		this.host = host;
 	}
 

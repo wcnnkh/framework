@@ -9,37 +9,37 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockFactory;
 
-import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.SPI;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
 
-@SPI
-public class LuceneBeanBuilderLoader implements BeanBuilderLoader {
+@Provider
+public class LuceneBeanBuilderLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == Directory.class) {
-			return new DirectorBeanBuilder(context);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		if (sourceClass == Directory.class) {
+			return new DirectorBeanBuilder(beanFactory, sourceClass);
 		}
 
-		if (context.getTargetClass() == Analyzer.class) {
-			return new AnalyzerBeanBuilder(context);
+		if (sourceClass == Analyzer.class) {
+			return new AnalyzerBeanBuilder(beanFactory, sourceClass);
 		}
 
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 
 	private static class DirectorBeanBuilder extends DefaultBeanDefinition {
 
-		public DirectorBeanBuilder(LoaderContext context) {
-			super(context);
+		public DirectorBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public String getDirectory() {
-			return propertyFactory.getString("lucene.directory");
+			return beanFactory.getEnvironment().getString("lucene.directory");
 		}
 
 		public boolean isInstance() {
@@ -58,8 +58,8 @@ public class LuceneBeanBuilderLoader implements BeanBuilderLoader {
 
 	private static class AnalyzerBeanBuilder extends DefaultBeanDefinition {
 
-		public AnalyzerBeanBuilder(LoaderContext context) {
-			super(context);
+		public AnalyzerBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {

@@ -17,47 +17,41 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.util.ServerInfo;
 import org.apache.tomcat.util.descriptor.web.ErrorPage;
 
-import scw.beans.Destroy;
 import scw.boot.Application;
-import scw.boot.ApplicationUtils;
+import scw.boot.ConfigurableApplication;
 import scw.boot.Main;
-import scw.boot.MainApplication;
-import scw.core.Constants;
-import scw.core.GlobalPropertyFactory;
-import scw.core.instance.InstanceUtils;
-import scw.core.instance.annotation.SPI;
+import scw.boot.MainArgs;
+import scw.boot.servlet.support.ServletContextUtils;
+import scw.boot.support.ApplicationUtils;
+import scw.context.Destroy;
+import scw.context.annotation.Provider;
+import scw.context.servlet.ServletContextPropertyFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.env.Environment;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
+import scw.instance.InstanceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionManager;
 import scw.servlet.ApplicationServletContainerInitializer;
-import scw.servlet.ServletUtils;
-import scw.util.ClassScanner;
-import scw.value.property.PropertyFactory;
 
-@SPI(order = -1)
+@Provider(order = -1)
 public class TomcatStart implements Main, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(TomcatStart.class);
 	private Tomcat tomcat;
 
-	protected String getDocBase(PropertyFactory propertyFactory) {
-		return GlobalPropertyFactory.getInstance().getWorkPath();
-	}
-
-	protected String getContextPath(PropertyFactory propertyFactory) {
-		String contextPath = TomcatUtils.getContextPath(propertyFactory);
+	protected String getContextPath(Environment environment) {
+		String contextPath = TomcatUtils.getContextPath(environment);
 		return StringUtils.isEmpty(contextPath) ? "" : contextPath;
 	}
 
-	protected Context createContext(MainApplication application) {
-		Context context = tomcat.addContext(getContextPath(application.getPropertyFactory()),
-				getDocBase(application.getPropertyFactory()));
+	protected Context createContext(Application application) {
+		Context context = tomcat.addContext(getContextPath(application.getEnvironment()), application.getEnvironment().getWorkPath());
 		context.setParentClassLoader(application.getClassLoader());
 		return context;
 	}
@@ -100,20 +94,20 @@ public class TomcatStart implements Main, Destroy {
 		return StringUtils.startsWithIgnoreCase(ServerInfo.getServerNumber(), version);
 	}
 
-	protected void configureConnector(Tomcat tomcat, int port, MainApplication application) {
+	protected void configureConnector(Tomcat tomcat, int port, Application application) {
 		Connector connector = null;
-		String connectorName = TomcatUtils.getTomcatConnectorName(application.getPropertyFactory());
+		String connectorName = TomcatUtils.getTomcatConnectorName(application.getEnvironment());
 		if (!StringUtils.isEmpty(connectorName)) {
 			connector = application.getBeanFactory().getInstance(connectorName);
 		} else {
-			connector = new Connector(TomcatUtils.getTomcatProtocol(application.getPropertyFactory()));
+			connector = new Connector(TomcatUtils.getTomcatProtocol(application.getEnvironment()));
 		}
 
 		connector.setPort(port);
 		tomcat.setConnector(connector);
 	}
 
-	protected void configureJSP(Context context, MainApplication application) throws Exception {
+	protected void configureJSP(Context context, Application application) throws Exception {
 		if (application.getBeanFactory().isInstance(JspConfigDescriptor.class)) {
 			context.setJspConfigDescriptor(application.getBeanFactory().getInstance(JspConfigDescriptor.class));
 		}
@@ -140,24 +134,24 @@ public class TomcatStart implements Main, Destroy {
 		method.invoke(context, pattern, servletName);
 	}
 
-	protected void configureServlet(Context context, MainApplication application) throws Exception {
-		String servletName = application.getMainClass().getSimpleName();
+	protected void configureServlet(Context context, Application application, Class<?> mainClass) throws Exception {
+		String servletName = mainClass.getSimpleName();
 		Servlet servlet = application.getBeanFactory().getInstance(Servlet.class);
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
-		Properties properties = TomcatUtils.getServletInitParametersConfig(servletName, true);
+		Properties properties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(), servletName, true);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			wrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 		}
 
 		addServletMapping(context, "/", servletName);
-		String sourceMapping = TomcatUtils.getDefaultServletMapping(application.getPropertyFactory());
+		String sourceMapping = TomcatUtils.getDefaultServletMapping(application.getEnvironment());
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
 				String tempServletName = "default";
 				Wrapper tempWrapper = Tomcat.addServlet(context, tempServletName,
 						"org.apache.catalina.servlets.DefaultServlet");
-				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(tempServletName, false);
+				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(), tempServletName, false);
 				for (Entry<Object, Object> entry : tempProperties.entrySet()) {
 					tempWrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 				}
@@ -177,9 +171,10 @@ public class TomcatStart implements Main, Destroy {
 			method.invoke(null);
 		}
 	}
-
-	public void main(final MainApplication application) throws Throwable {
-		if(application.getPropertyFactory().getValue("tomcat.log.enable", boolean.class, true)){
+	
+	public void main(ConfigurableApplication application, Class<?> mainClass,
+			MainArgs args) throws Throwable {
+		if(application.getEnvironment().getValue("tomcat.log.enable", boolean.class, true)){
 			java.util.logging.Logger.getLogger("org.apache").setLevel(Level.WARNING);
 		}
 		
@@ -193,7 +188,7 @@ public class TomcatStart implements Main, Destroy {
 		tomcat.setPort(port);
 		logger.info("The boot port is {}", port);
 
-		String basedir = TomcatUtils.getBaseDir(application.getPropertyFactory());
+		String basedir = TomcatUtils.getBaseDir(application.getEnvironment());
 		if (StringUtils.isNotEmpty(basedir)) {
 			tomcat.setBaseDir(basedir);
 		}
@@ -205,19 +200,19 @@ public class TomcatStart implements Main, Destroy {
 		if (AprLifecycleListener.isAprAvailable()) {
 			context.addLifecycleListener(new AprLifecycleListener());
 		}
+		
+		application.getEnvironment().addPropertyFactory(new ServletContextPropertyFactory(context.getServletContext()));
 
 		configureJSP(context, application);
-		configureServlet(context, application);
+		configureServlet(context, application, mainClass);
 
-		for (TomcatContextConfiguration configuration : ApplicationUtils
-				.loadAllService(TomcatContextConfiguration.class, application)) {
+		for (TomcatContextConfiguration configuration : application.getBeanFactory().getServiceLoader(TomcatContextConfiguration.class)) {
 			configuration.configuration(application, context);
 		}
 
-		ServletUtils.setApplication(context.getServletContext(), application);
-		context.addServletContainerInitializer(new ApplicationServletContainerInitializer(),
-				ClassScanner.getInstance().getClasses(Constants.SYSTEM_PACKAGE_NAME,
-						InstanceUtils.getScanAnnotationPackageName(application.getPropertyFactory())));
+		ServletContextUtils.setApplication(context.getServletContext(), application);
+		ApplicationUtils.setWebRoot(application.getEnvironment(), ServletContextUtils.getWebRoot(context.getServletContext()));
+		context.addServletContainerInitializer(new ApplicationServletContainerInitializer(), ApplicationUtils.getContextClasses(application));
 		tomcat.start();
 		addErrorPage(context, application);
 	}

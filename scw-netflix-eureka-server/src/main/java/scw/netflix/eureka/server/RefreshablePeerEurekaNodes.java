@@ -1,8 +1,8 @@
 package scw.netflix.eureka.server;
 
+import scw.env.Environment;
+import scw.event.ChangeEvent;
 import scw.event.EventListener;
-import scw.value.property.PropertyEvent;
-import scw.value.property.PropertyFactory;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClientConfig;
@@ -13,7 +13,7 @@ import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 import com.netflix.eureka.transport.JerseyReplicationClient;
 
-public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements EventListener<PropertyEvent> {
+public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements EventListener<ChangeEvent<String>> {
 	private static final String[] KEYS = new String[]{"eureka.client.region*", "eureka.client.service-url.*", "eureka.client.availability-zones."}; 
 	
 	private ReplicationClientAdditionalFilters replicationClientAdditionalFilters;
@@ -21,11 +21,11 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements Event
 	RefreshablePeerEurekaNodes(final PeerAwareInstanceRegistry registry, final EurekaServerConfig serverConfig,
 			final EurekaClientConfig clientConfig, final ServerCodecs serverCodecs,
 			final ApplicationInfoManager applicationInfoManager,
-			final ReplicationClientAdditionalFilters replicationClientAdditionalFilters, PropertyFactory propertyFactory) {
+			final ReplicationClientAdditionalFilters replicationClientAdditionalFilters, Environment environment) {
 		super(registry, serverConfig, clientConfig, serverCodecs, applicationInfoManager);
 		this.replicationClientAdditionalFilters = replicationClientAdditionalFilters;
 		for(String key : KEYS){
-			propertyFactory.registerListener(key, this);
+			environment.registerListener(key, this);
 		}
 	}
 
@@ -44,7 +44,7 @@ public class RefreshablePeerEurekaNodes extends PeerEurekaNodes implements Event
 	}
 
 	@Override
-	public void onEvent(PropertyEvent event) {
+	public void onEvent(ChangeEvent<String> event) {
 		if(clientConfig.shouldUseDnsForFetchingServiceUrls()){
 			return ;
 		}

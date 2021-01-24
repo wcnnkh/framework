@@ -3,9 +3,9 @@ package scw.mapper.support;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import scw.core.instance.InstanceUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
+import scw.instance.InstanceUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.Fields;

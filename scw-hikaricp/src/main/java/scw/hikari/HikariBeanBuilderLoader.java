@@ -1,36 +1,35 @@
 package scw.hikari;
 
 import scw.beans.BeanDefinition;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.SPI;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.context.annotation.Provider;
 import scw.db.DB;
 import scw.db.DBUtils;
 import scw.io.ResourceUtils;
 
-@SPI(order = Integer.MIN_VALUE)
-public class HikariBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class HikariBeanBuilderLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == HikariDB.class) {
-			return new HikariCPDBBeanDefinitaion(context);
-		} else if (DB.class == context.getTargetClass()) {
-			return context.getBeanFactory().getDefinition(HikariDB.class);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		if (sourceClass == HikariDB.class) {
+			return new HikariCPDBBeanDefinitaion(beanFactory, sourceClass);
+		} else if (DB.class == sourceClass) {
+			return beanFactory.getBeanDefinition(HikariDB.class);
 		}
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 
 	private static class HikariCPDBBeanDefinitaion extends DefaultBeanDefinition {
-		private final boolean isInstance = ResourceUtils.getResourceOperations().isExist(DBUtils.DEFAULT_CONFIGURATION);
 
-		public HikariCPDBBeanDefinitaion(LoaderContext loaderContext) {
-			super(loaderContext);
+		public HikariCPDBBeanDefinitaion(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
-			return isInstance;
+			return ResourceUtils.exists(beanFactory.getEnvironment(), DBUtils.DEFAULT_CONFIGURATION);
 		}
 
 		public Object create() throws Exception {

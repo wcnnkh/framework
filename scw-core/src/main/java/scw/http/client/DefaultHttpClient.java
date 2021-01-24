@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.core.Assert;
-import scw.core.instance.InstanceUtils;
 import scw.http.HttpMethod;
 import scw.http.HttpRequestEntity;
 import scw.http.HttpResponseEntity;
@@ -18,6 +17,7 @@ import scw.http.client.HttpConnection.RedirectManager;
 import scw.http.client.HttpConnectionFactory.AbstractHttpConnectionFactory;
 import scw.http.client.exception.HttpClientException;
 import scw.http.client.exception.HttpClientResourceAccessException;
+import scw.instance.InstanceUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;

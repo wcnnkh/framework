@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.context.result.DataResult;
+import scw.context.result.ResultFactory;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -15,8 +17,6 @@ import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.result.DataResult;
-import scw.result.ResultFactory;
 import scw.security.SignatureUtils;
 
 public class Sender {

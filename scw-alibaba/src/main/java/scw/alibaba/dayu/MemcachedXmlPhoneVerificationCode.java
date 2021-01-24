@@ -2,9 +2,9 @@ package scw.alibaba.dayu;
 
 import java.lang.reflect.InvocationTargetException;
 
+import scw.context.result.ResultFactory;
 import scw.core.utils.XTime;
 import scw.memcached.Memcached;
-import scw.result.ResultFactory;
 
 public final class MemcachedXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Memcached memcached;

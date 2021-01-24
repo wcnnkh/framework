@@ -3,29 +3,29 @@ package scw.jms;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 
-import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.SPI;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.context.annotation.Provider;
 
-@SPI(order = Integer.MIN_VALUE)
-public class JmsBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class JmsBeanBuilderLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition loading(LoaderContext context,
-			BeanBuilderLoaderChain loaderChain) {
-		if (Connection.class == context.getTargetClass()) {
-			return new ConnectionBeanBuilder(context);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass,
+			BeanDefinitionLoaderChain loaderChain) {
+		if (Connection.class == sourceClass) {
+			return new ConnectionBeanBuilder(beanFactory, sourceClass);
 		}
 		
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 
 	private static class ConnectionBeanBuilder extends DefaultBeanDefinition {
 
-		public ConnectionBeanBuilder(LoaderContext context) {
-			super(context);
+		public ConnectionBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {

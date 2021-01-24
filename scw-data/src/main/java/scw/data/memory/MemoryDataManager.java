@@ -6,15 +6,15 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import scw.beans.Destroy;
-import scw.core.GlobalPropertyFactory;
+import scw.context.Destroy;
 import scw.data.cas.CAS;
+import scw.env.SystemEnvironment;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public final class MemoryDataManager implements Destroy {
 	// 单位：秒
-	private static final int DEFAULT_CLEAR_PERIOD = GlobalPropertyFactory.getInstance()
+	private static final int DEFAULT_CLEAR_PERIOD = SystemEnvironment.getInstance()
 			.getValue("memory.temporary.cache.clear.period", int.class, 60);
 	private static final Timer TIMER = new Timer(MemoryDataManager.class.getSimpleName(), true);
 

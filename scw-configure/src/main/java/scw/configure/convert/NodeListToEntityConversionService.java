@@ -9,8 +9,8 @@ import org.w3c.dom.NodeList;
 
 import scw.convert.ConversionService;
 import scw.convert.support.ConvertiblePair;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.dom.DomUtils;
+import scw.instance.factory.NoArgsInstanceFactory;
 import scw.util.Accept;
 
 public class NodeListToEntityConversionService extends EntityConversionService {

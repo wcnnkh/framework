@@ -7,40 +7,39 @@ import javax.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 
 import scw.beans.BeanDefinition;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
 import scw.configure.support.ConfigureUtils;
+import scw.context.annotation.Provider;
 import scw.convert.TypeDescriptor;
-import scw.core.instance.annotation.SPI;
 import scw.io.ResourceUtils;
 
-@SPI(order = Integer.MIN_VALUE)
-public class ActivemqBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class ActivemqBeanBuilderLoader implements BeanDefinitionLoader {
 	private static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/activemq/activemq.properties";
 
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == ConnectionFactory.class) {
-			return new ConnectionFactoryBeanDefinition(context);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		if (sourceClass == ConnectionFactory.class) {
+			return new ConnectionFactoryBeanDefinition(beanFactory, sourceClass);
 		}
 
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 
 	private static class ConnectionFactoryBeanDefinition extends DefaultBeanDefinition {
-		private final boolean isExist = ResourceUtils.getResourceOperations().isExist(DEFAULT_CONFIG);
 
-		public ConnectionFactoryBeanDefinition(LoaderContext context) {
-			super(context);
+		public ConnectionFactoryBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
-			return isExist;
+			return beanFactory.getEnvironment().exists(DEFAULT_CONFIG);
 		}
 
 		public Object create() throws Exception {
-			Properties properties = ResourceUtils.getResourceOperations().getProperties(DEFAULT_CONFIG).get();
+			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
 			ConfigureUtils.getConfigureFactory().configuration(properties, connectionFactory, TypeDescriptor.forObject(connectionFactory));
 			return connectionFactory;

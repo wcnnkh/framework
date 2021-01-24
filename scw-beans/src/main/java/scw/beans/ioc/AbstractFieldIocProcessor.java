@@ -3,7 +3,6 @@ package scw.beans.ioc;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.mapper.Field;
-import scw.value.property.PropertyFactory;
 
 public abstract class AbstractFieldIocProcessor extends AbstractIocProcessor {
 	private final Field field;
@@ -16,8 +15,7 @@ public abstract class AbstractFieldIocProcessor extends AbstractIocProcessor {
 		return field;
 	}
 	
-	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws Exception {
 		if(field == null){
 			return ;
 		}
@@ -27,9 +25,8 @@ public abstract class AbstractFieldIocProcessor extends AbstractIocProcessor {
 		}
 		
 		checkField(bean, getField());
-		processInternal(beanDefinition, bean, beanFactory, propertyFactory);
+		processInternal(beanDefinition, bean, beanFactory);
 	}
 	
-	protected abstract void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception;
+	protected abstract void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws Exception;
 }

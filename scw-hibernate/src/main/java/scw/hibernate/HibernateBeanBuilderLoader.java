@@ -4,31 +4,30 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
 
-import scw.beans.DefaultBeanDefinition;
 import scw.beans.BeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
-import scw.core.instance.annotation.SPI;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.context.annotation.Provider;
 import scw.io.Resource;
-import scw.io.ResourceUtils;
 
-@SPI(order = Integer.MIN_VALUE)
-public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class HibernateBeanBuilderLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain serviceChain) {
-		if (context.getTargetClass() == org.hibernate.cfg.Configuration.class) {
-			return new ConfigurationBeanBuilder(context);
-		} else if (context.getTargetClass() == SessionFactory.class) {
-			return new SessionFactoryBeanBuilder(context);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain serviceChain) {
+		if (sourceClass == org.hibernate.cfg.Configuration.class) {
+			return new ConfigurationBeanBuilder(beanFactory, sourceClass);
+		} else if (sourceClass == SessionFactory.class) {
+			return new SessionFactoryBeanBuilder(beanFactory, sourceClass);
 		}
-		return serviceChain.loading(context);
+		return serviceChain.load(beanFactory, sourceClass);
 	}
 
 	private static final class SessionFactoryBeanBuilder extends DefaultBeanDefinition {
 
-		public SessionFactoryBeanBuilder(LoaderContext context) {
-			super(context);
+		public SessionFactoryBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
@@ -55,19 +54,17 @@ public class HibernateBeanBuilderLoader implements BeanBuilderLoader {
 	}
 
 	private static final class ConfigurationBeanBuilder extends DefaultBeanDefinition {
-		private final boolean isExist = ResourceUtils.getResourceOperations()
-				.isExist(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
 		
-		public ConfigurationBeanBuilder(LoaderContext context) {
-			super(context);
+		public ConfigurationBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		public boolean isInstance() {
-			return isExist;
+			return beanFactory.getEnvironment().exists(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
 		}
 
 		public Object create() throws Exception {
-			Resource resource = ResourceUtils.getResourceOperations()
+			Resource resource = beanFactory.getEnvironment()
 					.getResource(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
 			return new org.hibernate.cfg.Configuration().configure(resource.getURL());
 		}

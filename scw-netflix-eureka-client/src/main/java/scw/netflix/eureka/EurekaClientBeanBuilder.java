@@ -3,16 +3,16 @@ package scw.netflix.eureka;
 import java.util.Map;
 
 import scw.beans.BeanDefinition;
-import scw.beans.DefaultBeanDefinition;
-import scw.beans.builder.BeanBuilderLoader;
-import scw.beans.builder.BeanBuilderLoaderChain;
-import scw.beans.builder.LoaderContext;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
 import scw.boot.Application;
-import scw.boot.ApplicationUtils;
+import scw.boot.support.ApplicationUtils;
 import scw.commons.util.IdUtils;
 import scw.commons.util.InetUtils;
 import scw.commons.util.InetUtilsProperties;
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
 import scw.netflix.eureka.metadata.DefaultManagementMetadataProvider;
 import scw.netflix.eureka.metadata.ManagementMetadata;
@@ -24,40 +24,40 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 
-@SPI(order = Integer.MIN_VALUE)
-public class EurekaClientBeanBuilder implements BeanBuilderLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class EurekaClientBeanBuilder implements BeanDefinitionLoader {
 
 	@Override
-	public BeanDefinition loading(LoaderContext context, BeanBuilderLoaderChain loaderChain) {
-		if (context.getTargetClass() == EurekaClientConfig.class
-				|| context.getTargetClass() == CloudEurekaInstanceConfig.class) {
-			return new EurekaClientConfigBuilder(context);
+	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+		if (sourceClass == EurekaClientConfig.class
+				|| sourceClass == CloudEurekaInstanceConfig.class) {
+			return new EurekaClientConfigBuilder(beanFactory, sourceClass);
 		}
 
-		if (context.getTargetClass() == EurekaInstanceConfig.class
-				|| context.getTargetClass() == CloudEurekaInstanceConfig.class) {
-			return new EurekaInstanceConfigBuilder(context);
+		if (sourceClass == EurekaInstanceConfig.class
+				|| sourceClass == CloudEurekaInstanceConfig.class) {
+			return new EurekaInstanceConfigBuilder(beanFactory, sourceClass);
 		}
 
-		if (context.getTargetClass() == ApplicationInfoManager.class) {
-			return new ApplicationInfoManagerBuilder(context);
+		if (sourceClass == ApplicationInfoManager.class) {
+			return new ApplicationInfoManagerBuilder(beanFactory, sourceClass);
 		}
 
-		if (context.getTargetClass() == InetUtils.class) {
-			return new InetUtilsBuilder(context);
+		if (sourceClass == InetUtils.class) {
+			return new InetUtilsBuilder(beanFactory, sourceClass);
 		}
 		
-		if (context.getTargetClass() == EurekaClient.class) {
-			return new EurekaClientBuilder(context);
+		if (sourceClass == EurekaClient.class) {
+			return new EurekaClientBuilder(beanFactory, sourceClass);
 		}
 
-		return loaderChain.loading(context);
+		return loaderChain.load(beanFactory, sourceClass);
 	}
 
 	private static class ApplicationInfoManagerBuilder extends DefaultBeanDefinition {
 
-		public ApplicationInfoManagerBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public ApplicationInfoManagerBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override
@@ -74,8 +74,8 @@ public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 	}
 
 	private static class InetUtilsBuilder extends DefaultBeanDefinition {
-		public InetUtilsBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public InetUtilsBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override
@@ -92,8 +92,8 @@ public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 
 	private static class EurekaInstanceConfigBuilder extends DefaultBeanDefinition {
 
-		public EurekaInstanceConfigBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public EurekaInstanceConfigBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override
@@ -107,22 +107,22 @@ public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 			ManagementMetadataProvider managementMetadataProvider = beanFactory.isInstance(
 					ManagementMetadataProvider.class) ? beanFactory.getInstance(ManagementMetadataProvider.class)
 							: new DefaultManagementMetadataProvider();
-			String hostname = propertyFactory.getString("eureka.instance.hostname");
-			boolean preferIpAddress = propertyFactory.getBooleanValue("eureka.instance.prefer-ip-address");
-			String ipAddress = propertyFactory.getString("eureka.instance.ip-address");
-			boolean isSecurePortEnabled = propertyFactory.getBooleanValue("eureka.instance.secure-port-enabled");
+			String hostname = beanFactory.getEnvironment().getString("eureka.instance.hostname");
+			boolean preferIpAddress = beanFactory.getEnvironment().getBooleanValue("eureka.instance.prefer-ip-address");
+			String ipAddress = beanFactory.getEnvironment().getString("eureka.instance.ip-address");
+			boolean isSecurePortEnabled = beanFactory.getEnvironment().getBooleanValue("eureka.instance.secure-port-enabled");
 
-			String serverContextPath = propertyFactory.getValue("server.servlet.context-path", String.class, "/");
+			String serverContextPath = beanFactory.getEnvironment().getValue("server.servlet.context-path", String.class, "/");
 			Application application = beanFactory.getInstance(Application.class);
 			int serverPort = ApplicationUtils.getApplicationPort(application);
 
-			Integer managementPort = propertyFactory.getValue("management.server.port", Integer.class, null);
-			String managementContextPath = propertyFactory.getString("management.server.servlet.context-path");
-			Integer jmxPort = propertyFactory.getValue("com.sun.management.jmxremote.port", Integer.class, null);
+			Integer managementPort = beanFactory.getEnvironment().getValue("management.server.port", Integer.class, null);
+			String managementContextPath = beanFactory.getEnvironment().getString("management.server.servlet.context-path");
+			Integer jmxPort = beanFactory.getEnvironment().getValue("com.sun.management.jmxremote.port", Integer.class, null);
 			EurekaInstanceConfigBean instance = new EurekaInstanceConfigBean(inetUtils);
 
 			instance.setNonSecurePort(serverPort);
-			instance.setInstanceId(IdUtils.getDefaultInstanceId(propertyFactory));
+			instance.setInstanceId(IdUtils.getDefaultInstanceId(beanFactory.getEnvironment()));
 			instance.setPreferIpAddress(preferIpAddress);
 			instance.setSecurePortEnabled(isSecurePortEnabled);
 			if (StringUtils.hasText(ipAddress)) {
@@ -136,8 +136,8 @@ public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 			if (StringUtils.hasText(hostname)) {
 				instance.setHostname(hostname);
 			}
-			String statusPageUrlPath = propertyFactory.getString("eureka.instance.status-page-url-path");
-			String healthCheckUrlPath = propertyFactory.getString("eureka.instance.health-check-url-path");
+			String statusPageUrlPath = beanFactory.getEnvironment().getString("eureka.instance.status-page-url-path");
+			String healthCheckUrlPath = beanFactory.getEnvironment().getString("eureka.instance.health-check-url-path");
 
 			if (StringUtils.hasText(statusPageUrlPath)) {
 				instance.setStatusPageUrlPath(statusPageUrlPath);
@@ -183,8 +183,8 @@ public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 	
 	private static class EurekaClientBuilder extends DefaultBeanDefinition {
 
-		public EurekaClientBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public EurekaClientBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override
@@ -204,8 +204,8 @@ public class EurekaClientBeanBuilder implements BeanBuilderLoader {
 
 	private static class EurekaClientConfigBuilder extends DefaultBeanDefinition {
 
-		public EurekaClientConfigBuilder(LoaderContext loaderContext) {
-			super(loaderContext);
+		public EurekaClientConfigBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+			super(beanFactory, sourceClass);
 		}
 
 		@Override

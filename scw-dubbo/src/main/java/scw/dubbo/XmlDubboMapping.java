@@ -3,16 +3,15 @@ package scw.dubbo;
 import org.w3c.dom.Node;
 
 import scw.beans.BeanFactory;
-import scw.core.instance.InstanceUtils;
 import scw.dom.DomAttributeMapping;
+import scw.instance.InstanceUtils;
 import scw.mapper.Field;
-import scw.value.property.PropertyFactory;
 
 public class XmlDubboMapping extends DomAttributeMapping {
 	private BeanFactory beanFactory;
 
-	public XmlDubboMapping(BeanFactory beanFactory, PropertyFactory propertyFactory, Node node) {
-		super(propertyFactory, node);
+	public XmlDubboMapping(BeanFactory beanFactory, Node node) {
+		super(beanFactory.getEnvironment(), node);
 		this.beanFactory = beanFactory;
 	}
 	
