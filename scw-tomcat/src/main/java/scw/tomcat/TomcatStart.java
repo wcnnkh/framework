@@ -211,7 +211,6 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		ServletContextUtils.setApplication(context.getServletContext(), application);
-		ApplicationUtils.setWebRoot(application.getEnvironment(), ServletContextUtils.getWebRoot(context.getServletContext()));
 		context.addServletContainerInitializer(new ApplicationServletContainerInitializer(), ApplicationUtils.getContextClasses(application));
 		tomcat.start();
 		addErrorPage(context, application);

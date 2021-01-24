@@ -10,10 +10,8 @@ import scw.env.Environment;
 import scw.instance.InstanceUtils;
 import scw.io.resolver.PropertiesResolver;
 import scw.value.Value;
-import scw.value.factory.ConfigurablePropertyFactory;
 
 public final class ApplicationUtils {
-	private static final String WEB_ROOT = "web.root";
 	private static final String APPLICATION_PREFIX = "application";
 	private static final PropertiesResolver YAML_PROPERTIES_RESOLVER = InstanceUtils.INSTANCE_FACTORY.getInstance("scw.yaml.YamlPropertiesResolver");
 	
@@ -24,14 +22,6 @@ public final class ApplicationUtils {
 			environment.addPropertiesResolver(YAML_PROPERTIES_RESOLVER);
 			environment.loadProperties(APPLICATION_PREFIX + ".yaml").register();
 		}
-	}
-
-	public static void setWebRoot(ConfigurablePropertyFactory propertyFactory,
-			String webRoot) {
-		if(webRoot == null){
-			return ;
-		}
-		propertyFactory.put(WEB_ROOT, webRoot);
 	}
 
 	public static String getBasePackage(Class<?> mainClass) {

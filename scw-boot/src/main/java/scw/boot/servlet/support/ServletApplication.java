@@ -3,7 +3,6 @@ package scw.boot.servlet.support;
 import javax.servlet.ServletContext;
 
 import scw.beans.xml.XmlBeanFactory;
-import scw.boot.support.ApplicationUtils;
 import scw.boot.support.CommonApplication;
 import scw.context.servlet.ServletContextPropertyFactory;
 import scw.context.servlet.ServletContextResourceLoader;
@@ -18,7 +17,6 @@ public class ServletApplication extends CommonApplication {
 		String webRoot = ServletContextUtils.getWebRoot(servletContext);
 		if(webRoot != null){
 			getEnvironment().setWorkPath(webRoot);
-			ApplicationUtils.setWebRoot(getEnvironment(), webRoot);
 			getContextClassesLoader().add(new DirectoryClassesLoader(webRoot));
 		}
 		

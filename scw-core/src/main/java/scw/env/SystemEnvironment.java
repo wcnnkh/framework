@@ -59,15 +59,29 @@ public final class SystemEnvironment extends DefaultEnvironment {
 			return value;
 		}
 		
-		String v = System.getProperty(key);
-		if (v == null) {
-			v = System.getenv(key);
+		String v = getSystemProperty(key);
+		return v == null? null:new StringValue(v);
+	}
+	
+	public String getSystemProperty(String key){
+		String value = System.getProperty(key);
+		if (value == null) {
+			value = System.getenv(key);
 		}
 		
-		if(v == null && WEB_ROOT_PROPERTY.equals(key)){
-			v = getWorkPath();
+		if(value == null && WEB_ROOT_PROPERTY.equals(key)){
+			value = getWorkPath();
 		}
-		return v == null? null:new StringValue(v);
+		return value;
+	}
+	
+	@Override
+	public boolean containsKey(String key) {
+		if(super.containsKey(key)){
+			return true;
+		}
+		
+		return getSystemProperty(key) != null;
 	}
 
 	/**
