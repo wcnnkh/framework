@@ -1,12 +1,10 @@
 package scw.boot.support;
 
-import java.util.Map.Entry;
-
 import scw.boot.Application;
 import scw.boot.ApplicationBootstrap;
 import scw.boot.Main;
-import scw.boot.MainArgs;
 import scw.context.ClassesLoader;
+import scw.env.support.MainArgs;
 import scw.logger.LoggerUtils;
 import scw.util.concurrent.ListenableFuture;
 
@@ -20,10 +18,7 @@ public class MainApplication extends CommonApplication implements Application {
 		this.mainArgs = new MainArgs(args);
 		setClassLoader(mainClass.getClassLoader());
 		getContextClassesLoader().add((ClassesLoader)getClassesLoader(ApplicationUtils.getBasePackage(mainClass)));
-		for (Entry<String, String> entry : this.mainArgs.getParameterMap().entrySet()) {
-			getEnvironment().put(entry.getKey(), entry.getValue());
-		}
-
+		getEnvironment().addPropertyFactory(mainArgs);
 		setLogger(LoggerUtils.getLogger(mainClass));
 		if (args != null) {
 			getLogger().debug("args: {}", this.mainArgs);

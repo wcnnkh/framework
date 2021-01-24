@@ -55,7 +55,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 
 	public HttpControllerHandler(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-		executeWarnTime = beanFactory.getEnvironment().getObservableValue("mvc.warn-execute-time", Long.class, 250L);
+		executeWarnTime = beanFactory.getEnvironment().getObservableValue("mvc.warn-execute-time", Long.class, 200L);
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
 		} else {

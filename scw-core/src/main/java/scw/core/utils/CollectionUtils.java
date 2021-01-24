@@ -24,10 +24,12 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 
 import scw.core.Assert;
+import scw.util.AbstractIterator;
 import scw.util.MultiValueMap;
 import scw.util.MultiValueMapWrapper;
 
@@ -514,6 +516,34 @@ public abstract class CollectionUtils {
 				return iterator.next();
 			}
 			return null;
+		}
+	}
+	
+	private static final class PreviousIterator<E> extends AbstractIterator<E>{
+		private final ListIterator<E> listIterator;
+		
+		public PreviousIterator(ListIterator<E> listIterator){
+			this.listIterator = listIterator;
+		}
+		
+		public boolean hasNext() {
+			return listIterator.hasPrevious();
+		}
+
+		public E next() {
+			return listIterator.previous();
+		}
+	}
+	
+	public static <E> Iterator<E> getIterator(List<E> list, boolean previous){
+		if(isEmpty(list)){
+			return Collections.emptyIterator();
+		}
+		
+		if(previous){
+			return new PreviousIterator<E>(list.listIterator(list.size()));
+		}else{
+			return list.iterator();
 		}
 	}
 }

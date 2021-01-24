@@ -24,8 +24,7 @@ public class DefaultContextClassesLoaderFactory extends
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public DefaultContextClassesLoaderFactory(boolean cache) {
 		super(cache);
-		contextClassesLoader
-				.add((ClassesLoader) getClassesLoader(Constants.SYSTEM_PACKAGE_NAME));
+		contextClassesLoader.add((ClassesLoader) getClassesLoader(Constants.SYSTEM_PACKAGE_NAME));
 	}
 
 	@Override

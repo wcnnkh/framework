@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import scw.core.Assert;
+import scw.core.utils.CollectionUtils;
 import scw.env.PropertyManager;
 import scw.env.support.ObservablePropertiesPropertyFactory.ValueCreator;
 import scw.event.ChangeEvent;
@@ -55,7 +56,11 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 
 		propertyFactories.add(propertyFactory);
 	}
-
+	
+	protected Iterator<PropertyFactory> getPropertyFactoriesIterator(){
+		return CollectionUtils.getIterator(propertyFactories, true);
+	}
+	
 	public List<PropertyFactory> getPropertyFactories() {
 		return Collections.unmodifiableList(propertyFactories);
 	}
@@ -66,8 +71,9 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 			return value;
 		}
 
-		for (PropertyFactory propertyFactory : propertyFactories) {
-			value = propertyFactory.getValue(key);
+		Iterator<PropertyFactory> iterator = getPropertyFactoriesIterator();
+		while(iterator.hasNext()){
+			value = iterator.next().getValue(key);
 			if (value != null) {
 				return value;
 			}
@@ -78,8 +84,9 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 	public Iterator<String> iterator() {
 		List<Iterator<String>> iterators = new LinkedList<Iterator<String>>();
 		iterators.add(propertyMap.keySet().iterator());
-		for (PropertyFactory propertyFactory : propertyFactories) {
-			iterators.add(propertyFactory.iterator());
+		Iterator<PropertyFactory> iterator = getPropertyFactoriesIterator();
+		while(iterator.hasNext()){
+			iterators.add(iterator.next().iterator());
 		}
 		return new MultiIterator<String>(iterators);
 	}
@@ -89,8 +96,9 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 			return true;
 		}
 
-		for (PropertyFactory basePropertyFactory : propertyFactories) {
-			if (basePropertyFactory.containsKey(key)) {
+		Iterator<PropertyFactory> iterator = getPropertyFactoriesIterator();
+		while(iterator.hasNext()){
+			if(iterator.next().containsKey(key)){
 				return true;
 			}
 		}
@@ -117,7 +125,9 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 		List<EventRegistration> registrations = new ArrayList<EventRegistration>(
 				propertyFactories.size());
 		registrations.add(registration1);
-		for (PropertyFactory propertyFactory : propertyFactories) {
+		Iterator<PropertyFactory> iterator = getPropertyFactoriesIterator();
+		while(iterator.hasNext()){
+			PropertyFactory propertyFactory = iterator.next();
 			if (propertyFactory instanceof ListenablePropertyFactory) {
 				EventRegistration registration = ((ListenablePropertyFactory) propertyFactory)
 						.registerListener(key, eventListener);

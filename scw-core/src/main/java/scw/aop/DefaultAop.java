@@ -2,6 +2,8 @@ package scw.aop;
 
 import java.util.Arrays;
 
+import scw.instance.factory.ServiceLoaderFactory;
+
 public class DefaultAop extends Aop {
 	private final Iterable<MethodInterceptor> filters;
 
@@ -11,6 +13,10 @@ public class DefaultAop extends Aop {
 
 	public DefaultAop(Iterable<MethodInterceptor> filters) {
 		this.filters = filters;
+	}
+	
+	public DefaultAop(ServiceLoaderFactory serviceLoaderFactory){
+		this(serviceLoaderFactory.getServiceLoader(MethodInterceptor.class));
 	}
 
 	@Override

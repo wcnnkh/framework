@@ -8,7 +8,6 @@ import java.util.LinkedHashMap;
 
 import scw.aop.Aop;
 import scw.aop.DefaultAop;
-import scw.aop.MethodInterceptor;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionRegistry;
 import scw.beans.BeanFactory;
@@ -20,8 +19,8 @@ import scw.beans.ConfigurableBeanFactory;
 import scw.beans.ioc.Ioc;
 import scw.context.ClassesLoader;
 import scw.context.ConfigurableClassesLoader;
-import scw.context.support.LifecycleAuxiliary;
 import scw.context.support.DefaultContextLoader;
+import scw.context.support.LifecycleAuxiliary;
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ClassUtils;
@@ -331,7 +330,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 		return getInstance(type.getName(), parameterTypes, params);
 	}
 
-	private final Aop aop = new DefaultAop(getServiceLoader(MethodInterceptor.class)) {
+	private final Aop aop = new DefaultAop(this) {
 		public boolean isProxy(Object instance) {
 			if (instance == null) {
 				return false;

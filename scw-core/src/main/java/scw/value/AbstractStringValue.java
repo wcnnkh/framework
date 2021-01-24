@@ -236,7 +236,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 	public boolean isNumber() {
 		String value = getAsString();
 		value = formatNumberText(value);
-		if (StringUtils.isNotEmpty(value)) {
+		if (StringUtils.isEmpty(value)) {
 			return false;
 		}
 

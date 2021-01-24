@@ -51,7 +51,7 @@ public final class ApplicationUtils {
 			int defaultPort) {
 		if (application instanceof MainApplication) {
 			Value value = ((MainApplication) application).getMainArgs()
-					.getInstruction("-p");
+					.getNextValue("-p");
 			if (value != null && value.isNumber()) {
 				return value.getAsIntValue();
 			}
