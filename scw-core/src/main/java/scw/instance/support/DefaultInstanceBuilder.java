@@ -96,15 +96,23 @@ public class DefaultInstanceBuilder<T> extends InstanceParameterFactory implemen
 			if (!supportAbstract && Modifier.isAbstract(getTargetClass().getModifiers())) {
 				return false;
 			}
-
-			for (ParameterDescriptors parameterDescriptors : this) {
-				if (isAccept(parameterDescriptors)) {
-					this.parameterDescriptors = parameterDescriptors;
-					return true;
-				}
+			
+			ParameterDescriptors parameterDescriptors = checkParameterDescriptors();
+			if(parameterDescriptors != null){
+				this.parameterDescriptors = parameterDescriptors;
+				return true;
 			}
 		}
 		return false;
+	}
+	
+	protected ParameterDescriptors checkParameterDescriptors(){
+		for (ParameterDescriptors parameterDescriptors : this) {
+			if (isAccept(parameterDescriptors)) {
+				return parameterDescriptors;
+			}
+		}
+		return null;
 	}
 
 	public T create() throws Exception {

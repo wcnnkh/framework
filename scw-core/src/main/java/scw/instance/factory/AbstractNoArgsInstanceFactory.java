@@ -17,11 +17,11 @@ public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFac
 
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
-		return getInstance((Class<T>) ClassUtils.forNameNullable(name, getClassLoader()));
+		return getInstance((Class<T>) ClassUtils.getClass(name, getClassLoader()));
 	}
 
 	public boolean isInstance(String name) {
-		return isInstance(ClassUtils.forNameNullable(name, getClassLoader()));
+		return isInstance(ClassUtils.getClass(name, getClassLoader()));
 	}
 
 	public boolean isSingleton(String name) {

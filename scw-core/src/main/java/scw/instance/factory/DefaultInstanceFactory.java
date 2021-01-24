@@ -20,7 +20,7 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 	protected <T> InstanceBuilder<T> getInstanceBuilder(String name) {
 		InstanceBuilder<T> instanceBuilder = (InstanceBuilder<T>) builderMap.get(name);
 		if (instanceBuilder == null) {
-			Class<T> clazz = (Class<T>) ClassUtils.forNameNullable(name, getClassLoader());
+			Class<T> clazz = (Class<T>) ClassUtils.getClass(name, getClassLoader());
 			if (clazz == null) {
 				return null;
 			}

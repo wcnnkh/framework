@@ -26,8 +26,13 @@ public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 		this.serviceClass = serviceClass;
 	}
 
-	@SuppressWarnings("unchecked")
 	public void reload() {
+		classesLoader.reload();
+		this.providers = getProivders();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public Set<Class<S>> getProivders(){
 		Set<Class<S>> list = new LinkedHashSet<Class<S>>();
 		for (Class<?> clazz : classesLoader) {
 			if (clazz.getName().equals(serviceClass.getName())) {// 防止死循环
@@ -68,10 +73,14 @@ public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 				list.remove(e);
 			}
 		}
+		
+		if(list.isEmpty()){
+			return Collections.emptySet();
+		}
 
 		List<Class<S>> classes = new ArrayList<Class<S>>(list);
 		Collections.sort(classes, this);
-		this.providers = new LinkedHashSet<Class<S>>(classes);
+		return new LinkedHashSet<Class<S>>(classes);
 	}
 
 	public int compare(Class<S> o1, Class<S> o2) {
@@ -84,7 +93,7 @@ public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 		if(providers == null){
 			synchronized (this) {
 				if(providers == null){
-					reload();
+					this.providers = getProivders();
 				}
 			}
 		}

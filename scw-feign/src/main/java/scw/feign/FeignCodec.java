@@ -16,6 +16,7 @@ import feign.codec.DecodeException;
 import feign.codec.Decoder;
 import feign.codec.EncodeException;
 import feign.codec.Encoder;
+import scw.core.ResolvableType;
 import scw.io.FastByteArrayOutputStream;
 import scw.net.MimeType;
 import scw.net.message.converter.MessageConverter;
@@ -29,8 +30,9 @@ public class FeignCodec implements Encoder, Decoder {
 
 	public Object decode(Response response, Type type) throws IOException, DecodeException, FeignException {
 		FeignInputMessage inputMessage = new FeignInputMessage(response);
-		if (messageConverter.canRead(type, inputMessage.getContentType())) {
-			return messageConverter.read(type, inputMessage);
+		ResolvableType resolvableType = ResolvableType.forType(type);
+		if (messageConverter.canRead(resolvableType, inputMessage.getContentType())) {
+			return messageConverter.read(resolvableType, inputMessage);
 		}
 		throw new DecodeException(response.status(), "not support decode type:" + type, response.request());
 	}

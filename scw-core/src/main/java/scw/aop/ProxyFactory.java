@@ -43,5 +43,5 @@ public interface ProxyFactory {
 
 	boolean isProxy(String className, ClassLoader classLoader);
 
-	Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader) throws ClassNotFoundException;
+	Class<?> getUserClass(String className, ClassLoader classLoader) throws ClassNotFoundException;
 }

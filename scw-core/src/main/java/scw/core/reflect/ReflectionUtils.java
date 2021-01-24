@@ -24,6 +24,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.TypeUtils;
 import scw.lang.Ignore;
+import scw.lang.Nullable;
 import scw.util.Accept;
 import scw.util.FormatUtils;
 import scw.util.comparator.CompareUtils;
@@ -826,9 +827,9 @@ public abstract class ReflectionUtils {
 		return constructor;
 	}
 
-	public static Constructor<?> getConstructor(String className, boolean isPublic, Class<?>... parameterTypes)
+	public static Constructor<?> getConstructor(String className, ClassLoader classLoader, boolean isPublic, Class<?>... parameterTypes)
 			throws ClassNotFoundException {
-		return getConstructor(ClassUtils.forName(className), isPublic, parameterTypes);
+		return getConstructor(ClassUtils.forName(className, classLoader), isPublic, parameterTypes);
 	}
 
 	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic, String... parameterTypeNames)
@@ -837,9 +838,9 @@ public abstract class ReflectionUtils {
 				ClassUtils.forNames(ClassUtils.getDefaultClassLoader(), parameterTypeNames));
 	}
 
-	public static Constructor<?> getConstructor(String className, boolean isPublic, String... parameterTypes)
+	public static Constructor<?> getConstructor(String className, ClassLoader classLoader, boolean isPublic, String... parameterTypes)
 			throws ClassNotFoundException, NoSuchMethodException {
-		return getConstructor(ClassUtils.forName(className), isPublic,
+		return getConstructor(ClassUtils.forName(className, classLoader), isPublic,
 				ClassUtils.forName(className, ClassUtils.getDefaultClassLoader()));
 	}
 
@@ -868,8 +869,8 @@ public abstract class ReflectionUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructor(String className, boolean isPublic, Class<?>... parameterTypes) {
-		Class<?> clazz = ClassUtils.forNameNullable(className);
+	public static <T> Constructor<T> findConstructor(String className, @Nullable ClassLoader classLoader, boolean isPublic, Class<?>... parameterTypes) {
+		Class<?> clazz = ClassUtils.getClass(className, classLoader);
 		if (clazz == null) {
 			return null;
 		}
@@ -969,8 +970,8 @@ public abstract class ReflectionUtils {
 		throw new NoSuchMethodException(type.getName() + ", method=" + name);
 	}
 
-	public static Method getMethod(String className, String methodName, Class<?>... parameterTypes) {
-		Class<?> clz = ClassUtils.forNameNullable(className);
+	public static Method getMethod(String className, @Nullable ClassLoader classLoader, String methodName, Class<?>... parameterTypes) {
+		Class<?> clz = ClassUtils.getClass(className, classLoader);
 		if (clz == null) {
 			return null;
 		}
@@ -1263,10 +1264,10 @@ public abstract class ReflectionUtils {
 		return method.invoke(null, params);
 	}
 
-	public static Object invokeStaticMethod(String className, String name, Class<?>[] parameterTypes, Object... params)
+	public static Object invokeStaticMethod(String className, ClassLoader classLoader, String name, Class<?>[] parameterTypes, Object... params)
 			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, ClassNotFoundException {
-		return invokeStaticMethod(ClassUtils.forName(className), name, parameterTypes, params);
+		return invokeStaticMethod(ClassUtils.forName(className, classLoader), name, parameterTypes, params);
 	}
 
 	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = new Comparator<Constructor<?>>() {

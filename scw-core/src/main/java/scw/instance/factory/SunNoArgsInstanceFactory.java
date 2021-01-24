@@ -16,7 +16,7 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	static {
 		try {
 			CONSTRUCTOR = Object.class.getConstructor();
-			Class<?> clz = ClassUtils.forName("sun.reflect.ReflectionFactory");
+			Class<?> clz = ClassUtils.forName("sun.reflect.ReflectionFactory", null);
 			Method method = clz.getMethod("getReflectionFactory");
 			INVOKE_INSTANCE = method.invoke(null);
 			METHOD = clz.getMethod("newConstructorForSerialization",

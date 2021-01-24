@@ -22,7 +22,7 @@ public abstract class AbstractResourceClassesLoader<S> extends
 		Collection<Resource> resources;
 		try {
 			resources = getResources(resourceLoader, classLoader);
-			return resolve(resources, false, classLoader, resourceLoader, null);
+			return resolve(resources, classLoader, resourceLoader, null);
 		} catch (IOException e1) {
 			return Collections.emptySet();
 		}

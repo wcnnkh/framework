@@ -64,9 +64,9 @@ public abstract class Aop implements ProxyFactory {
 		return getProxyFactory().getUserClass(clazz);
 	}
 
-	public final Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
+	public final Class<?> getUserClass(String className, ClassLoader classLoader)
 			throws ClassNotFoundException {
-		return getProxyFactory().getUserClass(className, initialize, classLoader);
+		return getProxyFactory().getUserClass(className, classLoader);
 	}
 
 	public final boolean isProxy(String className, ClassLoader classLoader) {

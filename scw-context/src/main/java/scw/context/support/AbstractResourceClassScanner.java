@@ -29,7 +29,7 @@ public abstract class AbstractResourceClassScanner extends ClassResolver
 			return Collections.emptySet();
 		}
 
-		Set classes = resolve(resources, false, classLoader, resourceLoader,
+		Set classes = resolve(resources, classLoader, resourceLoader,
 				typeFilter);
 		return classes;
 	}

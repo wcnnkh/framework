@@ -1,8 +1,8 @@
 package scw.net.message.converter;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 
+import scw.core.ResolvableType;
 import scw.json.JSONSupport;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -24,16 +24,16 @@ public final class JsonMessageConverter extends AbstractMessageConverter<Object>
 	}
 
 	@Override
-	protected Object readInternal(Type type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Object readInternal(ResolvableType type, InputMessage inputMessage) throws IOException, MessageConvertException {
 		String text = readTextBody(inputMessage);
 		if (text == null) {
 			return null;
 		}
-		return getJsonSupport().parseObject(text, type);
+		return getJsonSupport().parseObject(text, type.getType());
 	}
 
 	@Override
-	protected void writeInternal(Type type, Object body, MimeType contentType, OutputMessage outputMessage)
+	protected void writeInternal(ResolvableType type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		String text = toJsonString(body, getJsonSupport());
 		if (text == null) {

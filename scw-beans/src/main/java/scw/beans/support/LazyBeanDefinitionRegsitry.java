@@ -54,7 +54,7 @@ public class LazyBeanDefinitionRegsitry extends
 		// 未注解service时接口默认实现
 		if (sourceClass.isInterface()) {
 			String name = sourceClass.getName() + "Impl";
-			Class<?> targetClass = ClassUtils.forNameNullable(name, beanFactory.getClassLoader());
+			Class<?> targetClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
 			if(targetClass != null && sourceClass.isAssignableFrom(targetClass) && beanFactory.isInstance(targetClass)){
 				return beanFactory.getBeanDefinition(targetClass);
 			}
@@ -63,7 +63,7 @@ public class LazyBeanDefinitionRegsitry extends
 			name = index == -1 ? (sourceClass.getName() + "Impl")
 					: (sourceClass.getName().substring(0, index) + ".impl."
 							+ sourceClass.getSimpleName() + "Impl");
-			targetClass = ClassUtils.forNameNullable(name, beanFactory.getClassLoader());
+			targetClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
 			if(targetClass != null && sourceClass.isAssignableFrom(targetClass) && beanFactory.isInstance(targetClass)){
 				return beanFactory.getBeanDefinition(targetClass);
 			}
@@ -121,16 +121,12 @@ public class LazyBeanDefinitionRegsitry extends
 	}
 
 	public BeanDefinition load(String name) {
-		Class<?> clazz = ClassUtils.forNameNullable(name,
+		Class<?> clazz = ClassUtils.getClass(name,
 				beanFactory.getClassLoader());
 		if (clazz == null) {
 			return null;
 		}
 
-		if (!accept(clazz)) {
-			return null;
-		}
-		
 		if (!accept(clazz)) {
 			return null;
 		}
@@ -189,7 +185,7 @@ public class LazyBeanDefinitionRegsitry extends
 			}
 
 			name = beanFactory.getEnvironment().resolvePlaceholders(name);
-			Class<?> clz = ClassUtils.forNameNullable(name,
+			Class<?> clz = ClassUtils.getClass(name,
 					beanFactory.getClassLoader());
 			if (clz == null) {
 				continue;

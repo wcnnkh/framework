@@ -1,12 +1,12 @@
 package scw.net.message.converter;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import scw.core.ResolvableType;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.MimeType;
@@ -40,7 +40,7 @@ public class MessageConverterFactory implements
 		}
 	}
 
-	public Object read(Type type, InputMessage inputMessage)
+	public Object read(ResolvableType type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		for (MessageConverter converter : messageConverters) {
 			if (converter.canRead(type, inputMessage.getContentType())) {
@@ -59,7 +59,7 @@ public class MessageConverterFactory implements
 		return null;
 	}
 
-	public void write(Type type, Object body, MimeType contentType,
+	public void write(ResolvableType type, Object body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		for (MessageConverter converter : messageConverters) {
@@ -79,7 +79,7 @@ public class MessageConverterFactory implements
 		}
 	}
 
-	public boolean canRead(Type type, MimeType mimeType) {
+	public boolean canRead(ResolvableType type, MimeType mimeType) {
 		for (MessageConverter converter : messageConverters) {
 			if (converter.canRead(type, mimeType)) {
 				return true;
@@ -88,7 +88,7 @@ public class MessageConverterFactory implements
 		return false;
 	}
 
-	public boolean canWrite(Type type, Object body, MimeType contentType) {
+	public boolean canWrite(ResolvableType type, Object body, MimeType contentType) {
 		for (MessageConverter converter : messageConverters) {
 			if (converter.canWrite(type, body, contentType)) {
 				return true;

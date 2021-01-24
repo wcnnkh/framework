@@ -5,6 +5,8 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import scw.core.ResolvableType;
+
 public class EmptyValue extends AbstractValue implements
 		Serializable {
 	private static final long serialVersionUID = 1L;
@@ -114,6 +116,10 @@ public class EmptyValue extends AbstractValue implements
 
 	public boolean isEmpty() {
 		return true;
+	}
+
+	public Object getAsObject(ResolvableType resolvableType) {
+		return null;
 	}
 
 }

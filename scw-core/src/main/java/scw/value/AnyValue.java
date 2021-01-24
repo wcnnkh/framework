@@ -7,9 +7,9 @@ import java.math.BigInteger;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.convert.support.JsonConversionService;
+import scw.core.ResolvableType;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
 import scw.json.JSONUtils;
 
 public class AnyValue extends SupportDefaultValue {
@@ -524,7 +524,6 @@ public class AnyValue extends SupportDefaultValue {
 		return super.getAsObject(type);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
 		if (ValueUtils.isBaseType(value.getClass())) {
@@ -532,16 +531,17 @@ public class AnyValue extends SupportDefaultValue {
 					.getAsObject(type);
 		}
 
-		return (T) getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
+		return getAsObjectNotSupport(type);
 	}
 
 	@Override
 	protected Object getAsObjectNotSupport(Type type) {
-		if(TypeUtils.toClass(type).isInstance(value)){
-			return TypeUtils.toClass(type).cast(value);
-		}
-		
-		return getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
+		return getAsObject(ResolvableType.forType(type));
+	}
+	
+	@Override
+	public Object getAsObject(ResolvableType resolvableType) {
+		return getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(resolvableType));
 	}
 
 	@Override

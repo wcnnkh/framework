@@ -54,42 +54,38 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 		return true;
 	}
 
-	public final <T> Set<Class<T>> resolve(Resource[] resources,
-			boolean initialize, ClassLoader classLoader,
+	public final <T> Set<Class<T>> resolve(Resource[] resources, ClassLoader classLoader,
 			MetadataReaderFactory metadataReaderFactory, TypeFilter typeFilter) {
 		if (ArrayUtils.isEmpty(resources)) {
 			return Collections.emptySet();
 		}
 
-		return resolve(Arrays.asList(resources), initialize, classLoader,
+		return resolve(Arrays.asList(resources), classLoader,
 				metadataReaderFactory, typeFilter);
 	}
 
-	public final <T> Set<Class<T>> resolve(Resource[] resources,
-			boolean initialize, ClassLoader classLoader,
+	public final <T> Set<Class<T>> resolve(Resource[] resources, ClassLoader classLoader,
 			ResourceLoader resourceLoader, TypeFilter typeFilter) {
 		if (ArrayUtils.isEmpty(resources)) {
 			return Collections.emptySet();
 		}
 		
-		return resolve(resources, initialize, classLoader,
+		return resolve(resources, classLoader,
 				getMetadataReaderFactory(resourceLoader, classLoader), typeFilter);
 	}
 
-	public final <T> Set<Class<T>> resolve(Collection<Resource> resources,
-			boolean initialize, ClassLoader classLoader,
+	public final <T> Set<Class<T>> resolve(Collection<Resource> resources, ClassLoader classLoader,
 			ResourceLoader resourceLoader, TypeFilter typeFilter) throws IOException {
 		if (CollectionUtils.isEmpty(resources)) {
 			return Collections.emptySet();
 		}
 		
-		return resolve(resources, initialize, classLoader,
+		return resolve(resources, classLoader,
 				getMetadataReaderFactory(resourceLoader, classLoader), typeFilter);
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> Set<Class<T>> resolve(Collection<Resource> resources,
-			boolean initialize, ClassLoader classLoader,
+	public final <T> Set<Class<T>> resolve(Collection<Resource> resources, ClassLoader classLoader,
 			MetadataReaderFactory metadataReaderFactory, TypeFilter typeFilter) {
 		if (CollectionUtils.isEmpty(resources)) {
 			return Collections.emptySet();
@@ -98,7 +94,7 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 		Set<Class<T>> classes = new LinkedHashSet<Class<T>>();
 		for (Resource resource : resources) {
 			try {
-				Class<?> clazz = resolve(resource, initialize, classLoader,
+				Class<?> clazz = resolve(resource, classLoader,
 						metadataReaderFactory, typeFilter);
 				if (clazz != null) {
 					classes.add((Class<T>) clazz);
@@ -109,7 +105,7 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 		return classes;
 	}
 
-	public Class<?> resolve(Resource resource, boolean initialize,
+	public Class<?> resolve(Resource resource,
 			ClassLoader classLoader, MetadataReaderFactory metadataReaderFactory, TypeFilter typeFilter)
 			throws IOException {
 		MetadataReader reader = null;
@@ -131,8 +127,7 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 		}
 
 		String name = reader.getClassMetadata().getClassName();
-		Class<?> clazz = ClassUtils.forNameNullable(name, initialize,
-				classLoader);
+		Class<?> clazz = ClassUtils.getClass(name, classLoader);
 		if (clazz == null) {
 			return null;
 		}

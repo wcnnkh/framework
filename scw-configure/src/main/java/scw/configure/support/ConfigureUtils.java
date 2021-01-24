@@ -40,7 +40,7 @@ public final class ConfigureUtils {
 		RESOURCE_RESOLVER_FACTORY.getResourceResolvers().add(new XmlResourceResolver(CONVERSION_SERVICE_FACTORY));
 		
 		String yamlResolverName = "scw.configure.resolver.YamlResourceResolver";
-		if(ClassUtils.isPresent(yamlResolverName)){
+		if(ClassUtils.isPresent(yamlResolverName, null)){
 			RESOURCE_RESOLVER_FACTORY.getResourceResolvers().add((ResourceResolver)InstanceUtils.INSTANCE_FACTORY.getInstance(yamlResolverName, CONVERSION_SERVICE_FACTORY));
 		}
 		

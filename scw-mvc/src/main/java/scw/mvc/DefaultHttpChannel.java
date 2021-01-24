@@ -432,8 +432,9 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			if (!value.isEmpty()) {
 				return value.getAsObject(type);
 			}
-
-			return getAsObjectNotSupport(TypeUtils.toClass(type));
+			
+			ResolvableType resolvableType = ResolvableType.forType(type);
+			return getAsObjectNotSupport(resolvableType.getType());
 		}
 	}
 

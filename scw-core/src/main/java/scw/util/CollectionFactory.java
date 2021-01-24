@@ -36,7 +36,7 @@ public final class CollectionFactory {
 
 	private static final GenericMapFactory GENERIC_MAP_FACTORY = (GenericMapFactory) (JavaVersion.INSTANCE
 			.getMasterVersion() >= 8 ? ClassUtils
-			.createInstance("scw.util.Java8GenericMapFactory")
+			.newInstance("scw.util.Java8GenericMapFactory", null)
 			: new Java5GenericMapFactory());
 
 	static {

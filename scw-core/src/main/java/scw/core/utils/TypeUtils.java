@@ -63,19 +63,6 @@ public abstract class TypeUtils {
 		return type instanceof Class;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static <T> Class<T> toClass(Type type){
-		if(type instanceof Class){
-			return (Class<T>) type;
-		}
-		
-		try {
-			return (Class<T>) ClassUtils.forName(type.toString());
-		} catch (ClassNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	/**
 	 * 是否是数字类型，不包含char,boolean
 	 * 

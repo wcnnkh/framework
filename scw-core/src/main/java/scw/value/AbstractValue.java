@@ -4,6 +4,8 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import scw.core.ResolvableType;
+
 public abstract class AbstractValue implements Value {
 	@SuppressWarnings("unchecked")
 	public <T> T getAsObject(Class<? extends T> type) {
@@ -61,7 +63,7 @@ public abstract class AbstractValue implements Value {
 	}
 
 	protected abstract <T> T getAsObjectNotSupport(Class<? extends T> type);
-
+	
 	protected abstract Object getAsObjectNotSupport(Type type);
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -71,6 +73,10 @@ public abstract class AbstractValue implements Value {
 		}
 
 		return getAsObjectNotSupport(type);
+	}
+	
+	public Object getAsObject(ResolvableType resolvableType) {
+		return getAsObject(resolvableType.getType());
 	}
 	
 	@Override

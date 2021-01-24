@@ -10,12 +10,13 @@ import scw.core.type.filter.TypeFilter;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.util.Accept;
+import scw.util.ClassLoaderProvider;
 import scw.util.ConcurrentReferenceHashMap;
 
 public class DefaultClassesLoaderFactory extends DefaultClassScanner implements
 		ClassesLoaderFactory, TypeFilter {
 	private ConcurrentReferenceHashMap<String, ClassesLoader<?>> cacheMap;
-	private ClassLoader classLoader;
+	private ClassLoaderProvider classLoaderProvider;
 	
 	public DefaultClassesLoaderFactory(boolean cache) {
 		if(cache){
@@ -73,12 +74,11 @@ public class DefaultClassesLoaderFactory extends DefaultClassScanner implements
 		return true;
 	}
 
-	public void setClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
+	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
 	}
 
 	public ClassLoader getClassLoader() {
-		return classLoader == null ? ClassUtils.getDefaultClassLoader()
-				: classLoader;
+		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 }

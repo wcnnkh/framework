@@ -7,7 +7,7 @@ import scw.core.utils.ClassUtils;
 
 public interface StringOperations {
 	static final StringOperations INSTANCE = (StringOperations) (JavaVersion.INSTANCE
-			.getMasterVersion() >= 6 ? ClassUtils.createInstance("scw.util.Jdk6StringOperations")
+			.getMasterVersion() >= 6 ? ClassUtils.newInstance("scw.util.Jdk6StringOperations", null)
 			: new Jdk5StringOperations());
 	
 	String createString(byte[] bytes, String charsetName) throws UnsupportedEncodingException;

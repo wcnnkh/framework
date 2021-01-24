@@ -23,7 +23,7 @@ public final class XmlBeanUtils {
 	private XmlBeanUtils() {
 	};
 
-	public static XmlBeanParameter parseBeanParameter(Node node)
+	public static XmlBeanParameter parseBeanParameter(Node node, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		String name = DomUtils.getNodeAttributeValue(node, "name");
 		String ref = DomUtils.getNodeAttributeValue(node, "ref");
@@ -32,7 +32,7 @@ public final class XmlBeanUtils {
 		String property = DomUtils.getNodeAttributeValue(node, "property");
 
 		Class<?> typeClass = StringUtils.isEmpty(type) ? null : ClassUtils
-				.forName(type);
+				.forName(type, classLoader);
 		if (!StringUtils.isEmpty(ref)) {
 			return new XmlBeanParameter(XmlParameterType.ref, typeClass, name,
 					ref, node);
@@ -68,7 +68,7 @@ public final class XmlBeanUtils {
 				.parseInt(value);
 	}
 
-	public static List<XmlBeanParameter> parseBeanParameterList(Node node)
+	public static List<XmlBeanParameter> parseBeanParameterList(Node node, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		List<XmlBeanParameter> xmlBeanParameters = new ArrayList<XmlBeanParameter>();
 		NodeList nodeList = node.getChildNodes();
@@ -79,7 +79,7 @@ public final class XmlBeanUtils {
 					continue;
 				}
 
-				xmlBeanParameters.add(parseBeanParameter(nRoot));
+				xmlBeanParameters.add(parseBeanParameter(nRoot, classLoader));
 			}
 		}
 		return xmlBeanParameters;
@@ -128,13 +128,13 @@ public final class XmlBeanUtils {
 	}
 
 	public static List<XmlMethodIocProcessor> getMethodIocProcessos(Class<?> clz,
-			NodeList nodeList, String tagName) throws Exception {
+			NodeList nodeList, String tagName, ClassLoader classLoader) throws Exception {
 		List<XmlMethodIocProcessor> list = new ArrayList<XmlMethodIocProcessor>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (tagName.equalsIgnoreCase(n.getNodeName())) {
 				XmlMethodIocProcessor xmlBeanMethod = new XmlMethodIocProcessor(
-						clz, n);
+						clz, n, classLoader);
 				list.add(xmlBeanMethod);
 			}
 		}
@@ -142,22 +142,22 @@ public final class XmlBeanUtils {
 	}
 
 	public static List<XmlMethodIocProcessor> getInitMethodIocProcessors(
-			Class<?> clz, NodeList nodeList) throws Exception {
-		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "init");
+			Class<?> clz, NodeList nodeList, ClassLoader classLoader) throws Exception {
+		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "init", classLoader);
 	}
 
 	public static List<XmlMethodIocProcessor> getDestroyMethodIocProcessors(
-			Class<?> clz, NodeList nodeList) throws Exception {
-		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "destroy");
+			Class<?> clz, NodeList nodeList, ClassLoader classLoader) throws Exception {
+		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "destroy", classLoader);
 	}
 
-	public static XmlBeanParameter[] getConstructorParameters(NodeList nodeList)
+	public static XmlBeanParameter[] getConstructorParameters(NodeList nodeList, ClassLoader classLoader)
 			throws Exception {
 		List<XmlBeanParameter> constructorParameterList = new ArrayList<XmlBeanParameter>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("constructor".equalsIgnoreCase(n.getNodeName())) {// Constructor
-				List<XmlBeanParameter> list = parseBeanParameterList(n);
+				List<XmlBeanParameter> list = parseBeanParameterList(n, classLoader);
 				if (list != null) {
 					constructorParameterList.addAll(list);
 				}
@@ -171,14 +171,14 @@ public final class XmlBeanUtils {
 	}
 
 	public static Collection<IocProcessor> getBeanPropertiesIocProcessors(
-			Class<?> targetClass, NodeList nodeList)
+			Class<?> targetClass, NodeList nodeList, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		List<IocProcessor> iocProcessors = new ArrayList<IocProcessor>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("properties".equalsIgnoreCase(n.getNodeName())) {// Properties
 				List<XmlBeanParameter> list = XmlBeanUtils
-						.parseBeanParameterList(n);
+						.parseBeanParameterList(n, classLoader);
 				if (list != null) {
 					for (XmlBeanParameter xmlBeanParameter : list) {
 						iocProcessors.add(new XmlPropertiesIocProcessor(
@@ -204,13 +204,13 @@ public final class XmlBeanUtils {
 				: DomUtils.getNodeAttributeValue(node, "class");
 	}
 
-	public static Class<?> getClass(Node node, boolean require)
+	public static Class<?> getClass(Node node, boolean require, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		String className = getClassName(node, require);
 		if (StringUtils.isEmpty(className)) {
 			return null;
 		}
 
-		return ClassUtils.forName(className);
+		return ClassUtils.forName(className, classLoader);
 	}
 }

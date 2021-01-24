@@ -225,7 +225,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 		if (singletonMap.containsKey(name)) {
 			return true;
 		}
-
+		
 		BeanDefinition definition = beanDefinitionRegistry.getBeanDefinition(name);
 		if (definition == null) {
 			return false;

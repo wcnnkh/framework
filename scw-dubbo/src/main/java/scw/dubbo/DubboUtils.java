@@ -14,13 +14,13 @@ public final class DubboUtils {
 	};
 
 	public static boolean isSupport() {
-		return ClassUtils.isPresent("org.apache.dubbo.config.annotation.Service");
+		return ClassUtils.isPresent("org.apache.dubbo.config.annotation.Service", null);
 	}
 
-	public static void registerDubboShutdownHook() {
+	public static void registerDubboShutdownHook(ClassLoader classLoader) {
 		Class<?> dubboShutdownHook = null;
 		try {
-			dubboShutdownHook = ClassUtils.forName("org.apache.dubbo.config.DubboShutdownHook");
+			dubboShutdownHook = ClassUtils.forName("org.apache.dubbo.config.DubboShutdownHook", classLoader);
 		} catch (ClassNotFoundException e1) {
 		}
 

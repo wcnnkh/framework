@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorChain;
 import scw.beans.BeanFactory;
+import scw.core.ResolvableType;
 import scw.core.reflect.MethodInvoker;
 import scw.http.client.ClientHttpRequest;
 import scw.http.client.ClientHttpResponse;
@@ -43,13 +44,14 @@ public class HttpRpcProxyMethodInterceptor implements MethodInterceptor {
 				ClientHttpResponse response = null;
 				try {
 					response = request.execute();
-					if (!messageConverter.canRead(invoker.getMethod().getGenericReturnType(),
+					ResolvableType responseType = ResolvableType.forMethodReturnType(invoker.getMethod());
+					if (!messageConverter.canRead(responseType,
 							response.getContentType())) {
-						throw new NotSupportedException("type=" + invoker.getMethod().getGenericReturnType().toString()
+						throw new NotSupportedException("type=" + responseType
 								+ ", contentType=" + response.getContentType());
 					}
 
-					return messageConverter.read(invoker.getMethod().getGenericReturnType(), response);
+					return messageConverter.read(responseType, response);
 				} finally {
 					if (response != null) {
 						response.close();

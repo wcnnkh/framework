@@ -19,8 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import net.sf.cglib.proxy.UndeclaredThrowableException;
 import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.Nullable;
 import scw.util.ClassLoaderProvider;
 
 public final class ClassUtils {
@@ -594,10 +596,6 @@ public final class ClassUtils {
 		}
 	}
 
-	public static Class<?>[] forNames(String... classNames) throws ClassNotFoundException {
-		return forNames(getDefaultClassLoader(), classNames);
-	}
-
 	public static Class<?>[] forNames(ClassLoader classLoader, String... className) throws ClassNotFoundException {
 		if (ArrayUtils.isEmpty(className)) {
 			return new Class<?>[0];
@@ -610,35 +608,21 @@ public final class ClassUtils {
 		return types;
 	}
 
-	public static Class<?> forNameNullable(String name) {
-		return forNameNullable(name, null);
-	}
-
-	public static Class<?> forNameNullable(String name, ClassLoader classLoader) {
-		return forNameNullable(name, false, classLoader);
-	}
-
-	public static Class<?> forNameNullable(String name, boolean initialize, ClassLoader classLoader) {
-		Class<?> clazz = null;
-		try {
-			clazz = forName(name, initialize, classLoader);
-		} catch (Throwable e) {
-			//ex.printStackTrace();
-			// Class or one of its dependencies is not present...
-		}
-		return clazz;
-	}
-
-	public static Class<?> forName(String name) throws ClassNotFoundException {
-		return forName(name, getDefaultClassLoader());
-	}
-
-	public static Class<?> forName(String name, ClassLoader classLoader) throws ClassNotFoundException {
-		return forName(name, false, classLoader);
-	}
-
-	public static Class<?> forName(String name, boolean initialize, ClassLoader classLoader)
-			throws ClassNotFoundException {
+	/**
+	 * Replacement for {@code Class.forName()} that also returns Class instances
+	 * for primitives (e.g. "int") and array class names (e.g. "String[]").
+	 * Furthermore, it is also capable of resolving inner class names in Java source
+	 * style (e.g. "java.lang.Thread.State" instead of "java.lang.Thread$State").
+	 * @param name the name of the Class
+	 * @param classLoader the class loader to use
+	 * (may be {@code null}, which indicates the default class loader)
+	 * @return a class instance for the supplied name
+	 * @throws ClassNotFoundException if the class was not found
+	 * @throws LinkageError if the class file could not be loaded
+	 * @see Class#forName(String, boolean, ClassLoader)
+	 */
+	public static Class<?> forName(String name, @Nullable ClassLoader classLoader)
+			throws ClassNotFoundException, LinkageError {
 		Assert.notNull(name, "Name must not be null");
 
 		Class<?> clazz = resolvePrimitiveClassName(name);
@@ -652,21 +636,21 @@ public final class ClassUtils {
 		// "java.lang.String[]" style arrays
 		if (name.endsWith(ARRAY_SUFFIX)) {
 			String elementClassName = name.substring(0, name.length() - ARRAY_SUFFIX.length());
-			Class<?> elementClass = forName(elementClassName, initialize, classLoader);
+			Class<?> elementClass = forName(elementClassName, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		// "[Ljava.lang.String;" style arrays
 		if (name.startsWith(NON_PRIMITIVE_ARRAY_PREFIX) && name.endsWith(";")) {
 			String elementName = name.substring(NON_PRIMITIVE_ARRAY_PREFIX.length(), name.length() - 1);
-			Class<?> elementClass = forName(elementName, initialize, classLoader);
+			Class<?> elementClass = forName(elementName, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
 		// "[[I" or "[[Ljava.lang.String;" style arrays
 		if (name.startsWith(INTERNAL_ARRAY_PREFIX)) {
 			String elementName = name.substring(INTERNAL_ARRAY_PREFIX.length());
-			Class<?> elementClass = forName(elementName, initialize, classLoader);
+			Class<?> elementClass = forName(elementName, classLoader);
 			return Array.newInstance(elementClass, 0).getClass();
 		}
 
@@ -674,7 +658,7 @@ public final class ClassUtils {
 		if (end != -1) {
 			// 对于泛型字符串处理
 			int begin = name.lastIndexOf(" ", end);
-			return forName(name.substring(begin == -1 ? 0 : begin + 1, end), initialize, classLoader);
+			return forName(name.substring(begin == -1 ? 0 : begin + 1, end), classLoader);
 		}
 
 		ClassLoader classLoaderToUse = classLoader;
@@ -682,13 +666,13 @@ public final class ClassUtils {
 			classLoaderToUse = getDefaultClassLoader();
 		}
 		try {
-			return forName0(name, initialize, classLoaderToUse);
+			return forName0(name, classLoaderToUse);
 		} catch (ClassNotFoundException ex) {
 			int lastDotIndex = name.lastIndexOf('.');
 			if (lastDotIndex != -1) {
 				String innerClassName = name.substring(0, lastDotIndex) + '$' + name.substring(lastDotIndex + 1);
 				// try {
-				return forName0(innerClassName, initialize, classLoaderToUse);
+				return forName0(innerClassName, classLoaderToUse);
 				// } catch (ClassNotFoundException ex2) {
 				// swallow - let original exception get through
 				// }
@@ -697,43 +681,95 @@ public final class ClassUtils {
 		}
 	}
 
-	private static Class<?> forName0(String name, boolean initialize, ClassLoader classLoader)
+	private static Class<?> forName0(String name, ClassLoader classLoader)
 			throws ClassNotFoundException {
-		if (initialize) {
-			return Class.forName(name, true, classLoader);
-		} else {
-			return classLoader.loadClass(name);
-		}
+		return Class.forName(name, false, classLoader);
 	}
-
+	
 	/**
-	 * Resolve the given class name into a Class instance. Supports primitives
-	 * (like "int") and array class names (like "String[]").
-	 * <p>
-	 * This is effectively equivalent to the {@code forName} method with the
-	 * same arguments, with the only difference being the exceptions thrown in
-	 * case of class loading failure.
-	 * 
-	 * @param className
-	 *            the name of the Class
-	 * @param classLoader
-	 *            the class loader to use (may be {@code null}, which indicates
-	 *            the default class loader)
-	 * @return Class instance for the supplied name
-	 * @throws IllegalArgumentException
-	 *             if the class name was not resolvable (that is, the class
-	 *             could not be found or the class file could not be loaded)
+	 * Resolve the given class name into a Class instance. Supports
+	 * primitives (like "int") and array class names (like "String[]").
+	 * <p>This is effectively equivalent to the {@code forName}
+	 * method with the same arguments, with the only difference being
+	 * the exceptions thrown in case of class loading failure.
+	 * @param className the name of the Class
+	 * @param classLoader the class loader to use
+	 * (may be {@code null}, which indicates the default class loader)
+	 * @return a class instance for the supplied name
+	 * @throws IllegalArgumentException if the class name was not resolvable
+	 * (that is, the class could not be found or the class file could not be loaded)
+	 * @throws IllegalStateException if the corresponding class is resolvable but
+	 * there was a readability mismatch in the inheritance hierarchy of the class
+	 * (typically a missing dependency declaration in a Jigsaw module definition
+	 * for a superclass or interface implemented by the class to be loaded here)
 	 * @see #forName(String, ClassLoader)
 	 */
-	public static Class<?> resolveClassName(String className, ClassLoader classLoader) throws IllegalArgumentException {
+	public static Class<?> resolveClassName(String className, @Nullable ClassLoader classLoader)
+			throws IllegalArgumentException {
+
 		try {
 			return forName(className, classLoader);
-		} catch (ClassNotFoundException ex) {
-			throw new IllegalArgumentException("Cannot find class [" + className + "]", ex);
-		} catch (LinkageError ex) {
-			throw new IllegalArgumentException(
-					"Error loading class [" + className + "]: problem with class file or dependent class.", ex);
 		}
+		catch (IllegalAccessError err) {
+			throw new IllegalStateException("Readability mismatch in inheritance hierarchy of class [" +
+					className + "]: " + err.getMessage(), err);
+		}
+		catch (LinkageError err) {
+			throw new IllegalArgumentException("Unresolvable class definition for class [" + className + "]", err);
+		}
+		catch (ClassNotFoundException ex) {
+			throw new IllegalArgumentException("Could not find class [" + className + "]", ex);
+		}
+	}
+	
+	/**
+	 * Determine whether the {@link Class} identified by the supplied name is present
+	 * and can be loaded. Will return {@code false} if either the class or
+	 * one of its dependencies is not present or cannot be loaded.
+	 * @param className the name of the class to check
+	 * @param classLoader the class loader to use
+	 * (may be {@code null} which indicates the default class loader)
+	 * @return whether the specified class is present (including all of its
+	 * superclasses and interfaces)
+	 * @throws IllegalStateException if the corresponding class is resolvable but
+	 * there was a readability mismatch in the inheritance hierarchy of the class
+	 * (typically a missing dependency declaration in a Jigsaw module definition
+	 * for a superclass or interface implemented by the class to be checked here)
+	 */
+	public static boolean isPresent(String className, @Nullable ClassLoader classLoader) {
+		try {
+			forName(className, classLoader);
+			return true;
+		}
+		catch (IllegalAccessError err) {
+			throw new IllegalStateException("Readability mismatch in inheritance hierarchy of class [" +
+					className + "]: " + err.getMessage(), err);
+		}
+		catch (Throwable ex) {
+			// Typically ClassNotFoundException or NoClassDefFoundError...
+			return false;
+		}
+	}
+	
+	/**
+	 * 如果类不存在将返回空
+	 * @param name
+	 * @param classLoader
+	 * @return
+	 */
+	@Nullable
+	public static Class<?> getClass(String className, @Nullable ClassLoader classLoader) {
+		Class<?> clazz = null;
+		try {
+			clazz = forName(className, classLoader);
+		} catch (IllegalAccessError err) {
+			throw new IllegalStateException("Readability mismatch in inheritance hierarchy of class [" +
+					className + "]: " + err.getMessage(), err);
+		}
+		catch (Throwable ex) {
+			// Typically ClassNotFoundException or NoClassDefFoundError...
+		}
+		return clazz;
 	}
 
 	/**
@@ -758,39 +794,6 @@ public final class ClassUtils {
 			result = primitiveTypeNameMap.get(name);
 		}
 		return result;
-	}
-
-	/**
-	 * 使用当前线程的加载器来判断是否存在此类
-	 * 
-	 * @param className
-	 * @return
-	 */
-	public static boolean isPresent(String className) {
-		return isPresent(className, getDefaultClassLoader());
-	}
-
-	/**
-	 * Determine whether the {@link Class} identified by the supplied name is
-	 * present and can be loaded. Will return {@code false} if either the class
-	 * or one of its dependencies is not present or cannot be loaded.
-	 * 
-	 * @param className
-	 *            the name of the class to check
-	 * @param classLoader
-	 *            the class loader to use (may be {@code null}, which indicates
-	 *            the default class loader)
-	 * @return whether the specified class is present
-	 */
-	public static boolean isPresent(String className, ClassLoader classLoader) {
-		try {
-			forName(className, true, classLoader);
-			return true;
-		} catch (Throwable ex) {
-			//ex.printStackTrace();
-			// Class or one of its dependencies is not present...
-			return false;
-		}
 	}
 
 	/**
@@ -1529,27 +1532,20 @@ public final class ClassUtils {
 		}
 		return array;
 	}
-
+	
 	@SuppressWarnings("unchecked")
-	public static <T> T newInstance(String className)
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		Class<?> clazz = forName(className);
+	public static <T> T newInstance(String className, ClassLoader classLoader) {
+		Class<?> clazz = resolveClassName(className, classLoader);
 		if (clazz == null) {
 			return null;
 		}
 
-		return (T) clazz.newInstance();
-	}
-
-	/**
-	 * @param className
-	 * @return 如果无法实例化就返回空
-	 */
-	public static <T> T createInstance(String className) {
 		try {
-			return newInstance(className);
-		} catch (Exception e) {
-			throw new RuntimeException(className, e);
+			return (T) clazz.newInstance();
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException("Could not access method: " + e.getMessage());
+		} catch (InstantiationException e) {
+			throw new UndeclaredThrowableException(e);
 		}
 	}
 	

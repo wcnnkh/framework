@@ -191,7 +191,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 		}
 
 		try {
-			return ClassUtils.forName(v);
+			return ClassUtils.forName(v, null);
 		} catch (ClassNotFoundException e) {
 			return null;
 		}

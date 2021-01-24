@@ -18,7 +18,7 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 	private XmlBeanParameter[] xmlBeanParameters;
 	private String name;
 
-	public XmlMethodIocProcessor(Class<?> type, Node node) throws Exception {
+	public XmlMethodIocProcessor(Class<?> type, Node node, ClassLoader classLoader) throws Exception {
 		if (node.getAttributes() == null) {
 			throw new BeansException("not found method name");
 		}
@@ -30,7 +30,7 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 
 		this.name = nameNode.getNodeValue();
 		this.type = type;
-		List<XmlBeanParameter> xmlBeanParameters = XmlBeanUtils.parseBeanParameterList(node);
+		List<XmlBeanParameter> xmlBeanParameters = XmlBeanUtils.parseBeanParameterList(node, classLoader);
 		this.xmlBeanParameters = xmlBeanParameters.toArray(new XmlBeanParameter[xmlBeanParameters.size()]);
 	}
 

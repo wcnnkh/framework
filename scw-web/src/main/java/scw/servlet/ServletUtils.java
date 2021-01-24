@@ -17,7 +17,7 @@ import scw.http.server.ServerHttpResponse;
 import scw.util.XUtils;
 
 public final class ServletUtils {
-	private static final boolean asyncSupport = ClassUtils.isPresent("javax.servlet.AsyncContext");// 是否支持异步处理
+	private static final boolean asyncSupport = ClassUtils.isPresent("javax.servlet.AsyncContext", null);// 是否支持异步处理
 	public static final String ATTRIBUTE_FORWARD_REQUEST_URI = "javax.servlet.forward.request_uri";
 
 	private ServletUtils() {

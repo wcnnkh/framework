@@ -74,7 +74,7 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration implements BeanFactor
 						continue;
 					}
 
-					Class<?> clz = ClassUtils.forNameNullable(className, beanFactory.getClassLoader());
+					Class<?> clz = ClassUtils.getClass(className, beanFactory.getClassLoader());
 					String mySign = DomUtils.getNodeAttributeValue(beanFactory.getEnvironment(), node, "sign");
 					if (StringUtils.isEmpty(mySign)) {
 						mySign = sign;

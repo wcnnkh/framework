@@ -28,7 +28,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private Iterable<? extends MethodInterceptor> filters;
 
 	public XmlBeanDefinition(BeanFactory beanFactory, Node beanNode) throws Exception {
-		this(beanFactory, XmlBeanUtils.getClass(beanNode, true), beanNode);
+		this(beanFactory, XmlBeanUtils.getClass(beanNode, true, beanFactory.getClassLoader()), beanNode);
 	}
 
 	public XmlBeanDefinition(BeanFactory beanFactory, Class<?> targetClass,
@@ -40,13 +40,13 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 		}
 
 		NodeList nodeList = beanNode.getChildNodes();
-		ioc.getInit().getIocProcessors().addAll(XmlBeanUtils.getInitMethodIocProcessors(getTargetClass(), nodeList));
+		ioc.getInit().getIocProcessors().addAll(XmlBeanUtils.getInitMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
 		ioc.getDestroy().getIocProcessors()
-				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(getTargetClass(), nodeList));
+				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
 		ioc.getDependence().getIocProcessors()
-				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(targetClass, nodeList));
+				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(targetClass, nodeList, beanFactory.getClassLoader()));
 		this.xmlParameterFactory = new XmlParameterFactory(beanFactory,
-				XmlBeanUtils.getConstructorParameters(nodeList));
+				XmlBeanUtils.getConstructorParameters(nodeList, beanFactory.getClassLoader()));
 		this.id = getId(beanNode);
 		this.names.addAll(super.getNames());
 		this.names.addAll(Arrays.asList(getNames(beanNode)));

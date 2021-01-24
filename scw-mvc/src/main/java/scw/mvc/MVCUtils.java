@@ -15,7 +15,7 @@ import scw.mvc.annotation.LoggerEnable;
 import scw.util.MultiValueMap;
 
 public final class MVCUtils {
-	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet");
+	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet", null);
 
 	private MVCUtils() {
 	};

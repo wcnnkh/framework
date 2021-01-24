@@ -23,7 +23,7 @@ public final class Log4jUtils {
 			return;
 		}
 
-		Method method = ReflectionUtils.getMethod("org.apache.log4j.PropertyConfigurator", "configure",
+		Method method = ReflectionUtils.getMethod("org.apache.log4j.PropertyConfigurator", null, "configure",
 				Properties.class);
 		if (method == null) {
 			return;
@@ -41,7 +41,7 @@ public final class Log4jUtils {
 			return;
 		}
 
-		Method method = ReflectionUtils.getMethod("org.apache.log4j.xml.DOMConfigurator", "configure", Element.class);
+		Method method = ReflectionUtils.getMethod("org.apache.log4j.xml.DOMConfigurator", null, "configure", Element.class);
 		if (method == null) {
 			return;
 		}

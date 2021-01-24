@@ -112,7 +112,7 @@ public class TomcatStart implements Main, Destroy {
 			context.setJspConfigDescriptor(application.getBeanFactory().getInstance(JspConfigDescriptor.class));
 		}
 
-		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet")) {
+		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet", application.getClassLoader())) {
 			ServletContainerInitializer containerInitializer = InstanceUtils.INSTANCE_FACTORY
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
@@ -164,7 +164,7 @@ public class TomcatStart implements Main, Destroy {
 	}
 
 	private void tomcat8(ClassLoader classLoader) throws Throwable {
-		Class<?> clz = ClassUtils.forNameNullable("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
+		Class<?> clz = ClassUtils.getClass("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
 				classLoader);
 		if (clz != null) {
 			Method method = clz.getDeclaredMethod("disable");
