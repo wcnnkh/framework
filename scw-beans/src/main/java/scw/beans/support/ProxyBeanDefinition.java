@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import scw.aop.MethodInterceptor;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.instance.support.InstanceIterable;
 
 public class ProxyBeanDefinition extends DefaultBeanDefinition {
@@ -38,7 +39,7 @@ public class ProxyBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	@Override
-	public Object create() throws Exception {
+	public Object create() throws BeansException {
 		if (getTargetClass().isInterface()) {
 			return createProxyInstance(getTargetClass(), null, null);
 		}

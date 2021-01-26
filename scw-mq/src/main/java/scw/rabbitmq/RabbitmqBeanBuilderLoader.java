@@ -1,6 +1,8 @@
 package scw.rabbitmq;
 
+import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.TimeoutException;
 
 import scw.amqp.Exchange;
 import scw.amqp.ExchangeDeclare;
@@ -8,11 +10,11 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.complete.CompleteService;
-import scw.configure.support.ConfigureUtils;
-import scw.configure.support.MapConfigure;
 import scw.context.annotation.Provider;
+import scw.convert.support.MapToEntityConversionService;
 import scw.io.ResourceUtils;
 import scw.io.SerializerUtils;
 
@@ -47,15 +49,25 @@ public class RabbitmqBeanBuilderLoader implements BeanDefinitionLoader {
 			return beanFactory.isInstance(ConnectionFactory.class);
 		}
 
-		public Object create() throws Exception {
-			return beanFactory.getInstance(ConnectionFactory.class).newConnection();
+		public Object create() throws BeansException {
+			try {
+				return beanFactory.getInstance(ConnectionFactory.class).newConnection();
+			} catch (IOException e) {
+				throw new BeansException(e);
+			} catch (TimeoutException e) {
+				throw new BeansException(e);
+			}
 		}
 
 		@Override
-		public void destroy(Object instance) throws Throwable {
+		public void destroy(Object instance) throws BeansException {
 			super.destroy(instance);
 			if (instance instanceof Connection) {
-				((Connection) instance).close();
+				try {
+					((Connection) instance).close();
+				} catch (IOException e) {
+					throw new BeansException(e);
+				}
 			}
 		}
 	}
@@ -70,7 +82,7 @@ public class RabbitmqBeanBuilderLoader implements BeanDefinitionLoader {
 			return ResourceUtils.exists(beanFactory.getEnvironment(), DEFAULT_CONFIG);
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			ConnectionFactory connectionFactory = new ConnectionFactory();
 			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ConnectionFactoryConfigurator.load(connectionFactory, properties, null);
@@ -90,7 +102,7 @@ public class RabbitmqBeanBuilderLoader implements BeanDefinitionLoader {
 					&& beanFactory.isInstance(CompleteService.class);
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			return new RabbitmqExchange(SerializerUtils.DEFAULT_SERIALIZER, beanFactory.getInstance(Connection.class),
 					beanFactory.getInstance(ExchangeDeclare.class), true);
 		}
@@ -108,12 +120,12 @@ public class RabbitmqBeanBuilderLoader implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
-			MapConfigure configure = new MapConfigure(ConfigureUtils.getConversionServiceFactory());
+			MapToEntityConversionService configure = new MapToEntityConversionService(beanFactory.getEnvironment());
 			configure.setPrefix("exchange");
-			configure.configuration(properties, Properties.class, exchangeDeclare, ExchangeDeclare.class);
+			configure.configurationProperties(properties, exchangeDeclare);
 			return exchangeDeclare;
 		}
 	}

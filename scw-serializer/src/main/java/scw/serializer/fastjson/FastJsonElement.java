@@ -1,17 +1,17 @@
 package scw.serializer.fastjson;
 
 import java.io.Serializable;
-import java.lang.reflect.Type;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONAware;
-import com.alibaba.fastjson.parser.Feature;
-
+import scw.core.ResolvableType;
 import scw.core.utils.StringUtils;
 import scw.json.AbstractJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONAware;
+import com.alibaba.fastjson.parser.Feature;
 
 public final class FastJsonElement extends AbstractJsonElement implements JSONAware, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -23,13 +23,9 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	}
 
 	@Override
-	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		return JSON.parseObject(text, type, Feature.SupportNonPublicField);
-	}
-
-	@Override
-	protected Object getAsObjectNotSupport(Type type) {
-		return JSON.parseObject(text, type, Feature.SupportNonPublicField);
+	protected Object getAsObjectNotSupport(ResolvableType type,
+			Class<?> rawClass) {
+		return JSON.parseObject(text, type.getType(), Feature.SupportNonPublicField);
 	}
 
 	public JsonArray getAsJsonArray() {

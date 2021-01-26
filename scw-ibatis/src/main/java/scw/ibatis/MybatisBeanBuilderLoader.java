@@ -7,6 +7,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.io.Resource;
@@ -32,7 +33,7 @@ public class MybatisBeanBuilderLoader implements BeanDefinitionLoader {
 			return true;
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			Resource resource = beanFactory.getEnvironment().getResource("mybatis-config.xml");
 			if (resource != null && resource.exists()) {
 				return new SqlSessionFactoryBuilder().build(ResourceUtils.getInputStream(resource));

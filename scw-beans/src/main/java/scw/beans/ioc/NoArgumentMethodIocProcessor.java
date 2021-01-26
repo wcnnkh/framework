@@ -5,6 +5,8 @@ import java.lang.reflect.Modifier;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
+import scw.core.reflect.ReflectionUtils;
 
 public class NoArgumentMethodIocProcessor extends AbstractIocProcessor {
 	private final Method method;
@@ -14,7 +16,7 @@ public class NoArgumentMethodIocProcessor extends AbstractIocProcessor {
 		checkMethod(method);
 	}
 
-	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws Exception {
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
 		if(acceptModifiers(beanDefinition, bean, method.getModifiers())){
 			noArgumentInvoke(bean);
 		}
@@ -24,8 +26,8 @@ public class NoArgumentMethodIocProcessor extends AbstractIocProcessor {
 		return method;
 	}
 
-	public Object noArgumentInvoke(Object bean) throws Exception {
-		return method.invoke(Modifier.isStatic(method.getModifiers()) ? null
+	public Object noArgumentInvoke(Object bean) throws BeansException {
+		return ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null
 				: bean);
 	}
 }

@@ -17,7 +17,7 @@ public class DefaultContextClassesLoaderFactory extends
 			"scw.convert.", "scw.aop.", "scw.event.", "scw.lang.",
 			"scw.mapper.", "scw.logger.", "scw.serializer.", "scw.beans.",
 			"scw.boot.", "scw.dom.", "scw.script.", "scw.math.", "scw.net.",
-			"scw.http.server." };
+			"scw.http.server.", "scw.configure", "scw.apple.", "scw.data.", "scw.db." };
 	@SuppressWarnings("rawtypes")
 	private final DefaultClassesLoader<?> contextClassesLoader = new DefaultClassesLoader();
 

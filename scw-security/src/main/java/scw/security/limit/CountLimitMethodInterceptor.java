@@ -7,7 +7,7 @@ import scw.context.annotation.Provider;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.MethodInvoker;
 import scw.data.TemporaryCounter;
-import scw.instance.factory.InstanceFactory;
+import scw.instance.InstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.security.limit.annotation.CountLimitSecurity;

@@ -13,7 +13,12 @@ import scw.lang.NotSupportedException;
 import scw.util.XUtils;
 
 public class PropertiesResolvers implements ConfigurablePropertiesResolver, Comparator<PropertiesResolver>{
+	
 	protected final TreeSet<PropertiesResolver> resolvers = new TreeSet<PropertiesResolver>(this);
+	
+	public PropertiesResolvers(){
+		resolvers.add(DefaultPropertiesResolver.INSTANCE);
+	}
 	
 	public SortedSet<PropertiesResolver> getResolvers(){
 		return XUtils.synchronizedProxy(resolvers, this);
@@ -29,14 +34,14 @@ public class PropertiesResolvers implements ConfigurablePropertiesResolver, Comp
 	
 	public PropertiesResolver getPropertiesResolver(Resource resource){
 		for(PropertiesResolver resolver : resolvers){
-			if(resolver.isSupportResolveProperties(resource)){
+			if(resolver.canResolveProperties(resource)){
 				return resolver;
 			}
 		}
 		return null;
 	}
 
-	public boolean isSupportResolveProperties(Resource resource) {
+	public boolean canResolveProperties(Resource resource) {
 		return getPropertiesResolver(resource) != null;
 	}
 

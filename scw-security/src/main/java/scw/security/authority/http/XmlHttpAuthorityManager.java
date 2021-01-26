@@ -6,11 +6,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.configure.support.ConfigureUtils;
+import scw.convert.TypeDescriptor;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
+import scw.env.SystemEnvironment;
 import scw.http.HttpMethod;
 import scw.instance.annotation.ResourceParameter;
 import scw.io.ResourceLoader;
@@ -34,6 +35,7 @@ public class XmlHttpAuthorityManager extends
 		addByXml(xml, StringUtils.isEmpty(parentId) ? "" : parentId);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addByXml(String xml, String defParentId) {
 		if (!ResourceUtils.exists(resourceLoader, xml)) {
 			logger.warn("not found:{}", xml);
@@ -53,7 +55,7 @@ public class XmlHttpAuthorityManager extends
 				continue;
 			}
 			
-			Map<String, String> map = ConfigureUtils.getConversionServiceFactory().convertToMap(node, String.class, String.class);
+			Map<String, String> map = (Map<String, String>) SystemEnvironment.getInstance().convert(node, TypeDescriptor.forObject(node), TypeDescriptor.map(Map.class, String.class, String.class));
 			if (map.isEmpty()) {
 				continue;
 			}

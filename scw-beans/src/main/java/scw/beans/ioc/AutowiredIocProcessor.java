@@ -2,6 +2,7 @@ package scw.beans.ioc;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.annotation.Autowired;
 import scw.lang.NotSupportedException;
 import scw.mapper.Field;
@@ -13,7 +14,7 @@ public class AutowiredIocProcessor extends AbstractFieldIocProcessor {
 	}
 
 	@Override
-	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws Exception {
+	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
 		Autowired s = getField().getSetter()
 				.getAnnotatedElement().getAnnotation(Autowired.class);
 		if (s != null) {

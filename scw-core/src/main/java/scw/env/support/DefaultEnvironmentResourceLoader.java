@@ -176,8 +176,8 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 		return ResourceUtils.exists(this, location);
 	}
 	
-	public boolean isSupportResolveProperties(Resource resource) {
-		return propertiesResolvers.isSupportResolveProperties(resource);
+	public boolean canResolveProperties(Resource resource) {
+		return propertiesResolvers.canResolveProperties(resource);
 	}
 
 	public void resolveProperties(Properties properties, Resource resource,

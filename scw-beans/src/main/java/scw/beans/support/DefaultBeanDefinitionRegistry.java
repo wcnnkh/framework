@@ -15,7 +15,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		super(true);
 	}
 	
-	public BeanDefinition getBeanDefinition(String name) {
+	public BeanDefinition getDefinition(String name) {
 		BeanDefinition beanDefinition = beanDefinitionMap.get(name);
 		if(beanDefinition == null){
 			String[] aliases = getAliases(name);
@@ -31,12 +31,12 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		return beanDefinition;
 	}
 
-	public final BeanDefinition getBeanDefinition(Class<?> clazz) {
-		return getBeanDefinition(clazz.getName());
+	public final BeanDefinition getDefinition(Class<?> clazz) {
+		return getDefinition(clazz.getName());
 	}
 	
 
-	public BeanDefinition registerBeanDefinition(String name,
+	public BeanDefinition registerDefinition(String name,
 			BeanDefinition beanDefinition) {
 		if (!beanDefinition.getId().equals(name) && !beanDefinition.getNames().contains(name)) {
 			registerAlias(beanDefinition.getId(), name);
@@ -70,11 +70,11 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		}
 	}
 	
-	public String[] getBeanDefinitionNames() {
+	public String[] getDefinitionIds() {
 		return StringUtils.toStringArray(this.beanDefinitionMap.keySet());
 	}
 
-	public boolean containsBeanDefinition(String beanName) {
+	public boolean containsDefinition(String beanName) {
 		if(beanDefinitionMap.containsKey(beanName)){
 			return true;
 		}

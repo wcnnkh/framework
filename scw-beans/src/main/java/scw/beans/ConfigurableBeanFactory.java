@@ -8,6 +8,6 @@ public interface ConfigurableBeanFactory extends BeanFactory,
 	ConfigurableClassesLoader<?> getContextClassesLoader();
 
 	ConfigurableEnvironment getEnvironment();
-
+	
 	void registerSingletion(String name, Object instance);
 }

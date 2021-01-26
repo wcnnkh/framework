@@ -86,17 +86,12 @@ public final class BeanUtils {
 		ListIterator<String> keyIterator = beanKeyList.listIterator(beanKeyList
 				.size());
 		while (keyIterator.hasPrevious()) {
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(keyIterator.previous());
+			BeanDefinition beanDefinition = beanFactory.getDefinition(keyIterator.previous());
 			if (beanDefinition == null) {
 				continue;
 			}
-
-			Object obj = instanceMap.get(beanDefinition.getId());
-			try {
-				beanDefinition.destroy(obj);
-			} catch (Throwable e) {
-				logger.error(e, "destroy error: {}", beanDefinition.getId());
-			}
+			
+			beanDefinition.destroy(beanDefinition);
 		}
 	}
 

@@ -9,7 +9,7 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.util.CollectionFactory;
 
-public class ArrayToCollectionConversionService extends ConditionalConversionService{
+class ArrayToCollectionConversionService extends ConditionalConversionService{
 	private final ConversionService conversionService;
 
 

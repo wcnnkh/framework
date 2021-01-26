@@ -19,7 +19,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver{
 	
 	public static final DefaultPropertiesResolver INSTANCE = new DefaultPropertiesResolver();
 	
-	public boolean isSupportResolveProperties(Resource resource) {
+	public boolean canResolveProperties(Resource resource) {
 		String name = resource.getFilename();
 		return name.endsWith(".xml") || name.endsWith(".properties");
 	}

@@ -3,7 +3,6 @@ package scw.value;
 import java.lang.reflect.Type;
 
 import scw.core.utils.ClassUtils;
-import scw.core.utils.TypeUtils;
 import scw.value.factory.ConvertibleValueFactory;
 
 public final class ValueUtils {
@@ -14,7 +13,7 @@ public final class ValueUtils {
 
 	public static <K> Object getValue(ConvertibleValueFactory<K> valueFactory, K key, Type type, Object defaultValue) {
 		Object v;
-		if (TypeUtils.isPrimitive(type)) {
+		if (ClassUtils.isPrimitive(type)) {
 			v = valueFactory.getObject(key, ClassUtils.resolvePrimitiveIfNecessary((Class<?>) type));
 		} else {
 			v = valueFactory.getObject(key, type);
@@ -35,25 +34,6 @@ public final class ValueUtils {
 
 	public static Object parse(String text, Type type) {
 		return new StringValue(text).getAsObject(type);
-	}
-
-	/**
-	 * 这并不是基本数据类型，这是指Value可以直接转换的类型
-	 * 
-	 * @param type
-	 * @return
-	 */
-	public static boolean isBaseType(Type type) {
-		if (TypeUtils.isClass(type)) {
-			return isBaseType((Class<?>) type);
-		}
-
-		try {
-			return isBaseType(ClassUtils.forName(type.toString(), ClassUtils.getDefaultClassLoader()));
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		return false;
 	}
 
 	/**

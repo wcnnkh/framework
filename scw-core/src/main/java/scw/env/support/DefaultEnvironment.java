@@ -5,42 +5,105 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import scw.convert.ConfigurableConversionService;
+import scw.convert.ConversionService;
+import scw.convert.TypeDescriptor;
+import scw.convert.resolve.ConfigurableResourceResolver;
+import scw.convert.resolve.ResourceResolver;
+import scw.convert.resolve.support.DefaultResourceResolver;
+import scw.convert.support.DefaultConversionService;
 import scw.core.Constants;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.env.ConfigurableEnvironment;
+import scw.env.EnvironmentAware;
 import scw.event.EmptyObservable;
 import scw.event.Observable;
-import scw.instance.factory.ServiceLoaderFactory;
+import scw.instance.ServiceLoaderFactory;
 import scw.io.ProtocolResolver;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
 import scw.io.ResourceUtils;
 import scw.io.event.ObservableProperties;
 import scw.io.resolver.PropertiesResolver;
-import scw.io.resolver.support.DefaultPropertiesResolver;
 import scw.lang.Nullable;
 import scw.value.Value;
 import scw.value.factory.PropertyFactory;
 
 public class DefaultEnvironment extends DefaultPropertyManager implements ConfigurableEnvironment {
 	private final DefaultEnvironmentResourceLoader resourceLoader = new DefaultEnvironmentResourceLoader(this, this);
+	private final ConfigurableConversionService configurableConversionService = new DefaultConversionService(this, getObservableCharset());
+	
+	private final ConfigurableResourceResolver configurableResourceResolver = new DefaultResourceResolver(this, this, getObservableCharset());
 	
 	public DefaultEnvironment(boolean concurrent){
 		super(concurrent);
-		resourceLoader.addPropertiesResolver(DefaultPropertiesResolver.INSTANCE);
+		setConversionService(this);
 	}
 	
-	public boolean isSupportResolveProperties(Resource resource) {
-		return resourceLoader.isSupportResolveProperties(resource);
+	protected void aware(Object instance){
+		if(instance instanceof EnvironmentAware){
+			((EnvironmentAware) instance).setEnvironment(this);
+		}
+	}
+	
+	@Override
+	public void addPropertyFactory(PropertyFactory propertyFactory) {
+		aware(propertyFactory);
+		super.addPropertyFactory(propertyFactory);
+	}
+	
+	public void addResourceResolver(ResourceResolver resourceResolver) {
+		aware(resourceResolver);
+		configurableResourceResolver.addResourceResolver(resourceResolver);
+	}
+	
+	public boolean canResolveResource(Resource resource,
+			TypeDescriptor targetType) {
+		return configurableResourceResolver.canResolveResource(resource, targetType);
+	}
+	
+	public Object resolveResource(Resource resource, TypeDescriptor targetType) {
+		return configurableResourceResolver.resolveResource(resource, targetType);
+	}
+	
+	public Object resolveResource(String location, TypeDescriptor targetType) {
+		Resource resource = getResource(location);
+		if(resource == null || !resource.exists()){
+			return null;
+		}
+		
+		return resolveResource(resource, targetType);
+	}
+	
+	public boolean canConvert(TypeDescriptor sourceType,
+			TypeDescriptor targetType) {
+		return configurableConversionService.canConvert(sourceType, targetType);
+	}
+	
+	public Object convert(Object source, TypeDescriptor sourceType,
+			TypeDescriptor targetType) {
+		return configurableConversionService.convert(source, sourceType, targetType);
+	}
+	
+	public void addConversionService(ConversionService conversionService) {
+		aware(conversionService);
+		configurableConversionService.addConversionService(conversionService);
+	}
+	
+	public boolean canResolveProperties(Resource resource) {
+		return resourceLoader.canResolveProperties(resource);
 	};
 	
-	public void addProtocolResolver(scw.io.ProtocolResolver resolver) {
-		resourceLoader.addProtocolResolver(resolver);
+	public void addProtocolResolver(ProtocolResolver protocolResolver) {
+		aware(protocolResolver);
+		resourceLoader.addProtocolResolver(protocolResolver);
 	};
 	
 	public void addResourceLoader(ResourceLoader resourceLoader) {
+		aware(resourceLoader);
 		this.resourceLoader.addResourceLoader(resourceLoader);
 	}
 	
@@ -50,6 +113,7 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 	}
 	
 	public void addPropertiesResolver(PropertiesResolver propertiesResolver) {
+		aware(propertiesResolver);
 		resourceLoader.addPropertiesResolver(propertiesResolver);
 	}
 	
@@ -103,60 +167,35 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 	}
 	
 	public final Observable<Map<String, Value>> loadProperties(String resource) {
-		return loadProperties(resource, (String) null);
+		return loadProperties((String) resource, (String) null);
 	}
 
-	public final Observable<Map<String, Value>> loadProperties(String resource,
-			String charsetName) {
+	public final Observable<Map<String, Value>> loadProperties(String resource, String charsetName) {
 		return loadProperties(null, resource, charsetName);
 	}
 
-	public final Observable<Map<String, Value>> loadProperties(
-			final String keyPrefix, String resource, String charsetName) {
-		return loadProperties(keyPrefix, resource, charsetName, true);
-	}
-
-	public final Observable<Map<String, Value>> loadProperties(String resource,
-			boolean format) {
-		return loadProperties((String) resource, (String) null, format);
-	}
-
-	public final Observable<Map<String, Value>> loadProperties(String resource,
-			String charsetName, boolean format) {
-		return loadProperties(null, resource, charsetName, format);
-	}
-
-	public final Observable<Map<String, Value>> loadProperties(
-			final String keyPrefix, String location, String charsetName,
-			final boolean format) {
+	public final Observable<Map<String, Value>> loadProperties(String keyPrefix, String location, String charsetName) {
 		Observable<Properties> observable = getProperties(location, charsetName);
-		return loadProperties(keyPrefix, observable, format);
+		return loadProperties(keyPrefix, observable);
 	}
 
 	public final Observable<Map<String, Value>> loadProperties(
-			String keyPrefix, boolean format, Charset charset,
+			String keyPrefix, Charset charset,
 			Resource... resources) {
-		return loadProperties(keyPrefix, new ObservableProperties(this,
-				resources, charset), format);
+		return loadProperties(keyPrefix, new ObservableProperties(this, resources, charset));
 	}
 
 	public final Observable<Map<String, Value>> loadProperties(
-			String keyPrefix, boolean format, Charset charset,
+			String keyPrefix, Charset charset,
 			Collection<Resource> resources) {
-		return loadProperties(keyPrefix, new ObservableProperties(this,
-				resources, charset), format);
+		return loadProperties(keyPrefix, new ObservableProperties(this, resources, charset));
 	}
 
 	public final void loadProperties(Properties properties) {
-		loadProperties(null, properties, false);
+		loadProperties(null, properties);
 	}
 
 	public final void loadProperties(String keyPrefix, Properties properties) {
-		loadProperties(keyPrefix, properties, false);
-	}
-
-	public final void loadProperties(String keyPrefix, Properties properties,
-			boolean format) {
 		if (properties != null) {
 			for (Entry<Object, Object> entry : properties.entrySet()) {
 				Object key = entry.getKey();
@@ -169,13 +208,17 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 					continue;
 				}
 				put(keyPrefix == null ? key.toString()
-						: (keyPrefix + key.toString()), value, format);
+						: (keyPrefix + key.toString()), value);
 			}
 		}
 	}
 
 	public String getWorkPath() {
 		return getString(WORK_PATH_PROPERTY);
+	}
+	
+	public Observable<String> getObservableWorkPath() {
+		return getObservableValue(WORK_PATH_PROPERTY, String.class, null);
 	}
 
 	public void setWorkPath(String path) {
@@ -186,25 +229,56 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 		return getValue(CHARSET_PROPERTY, String.class, Constants.UTF_8_NAME);
 	}
 	
+	public Observable<String> getObservableCharsetName() {
+		return getObservableValue(CHARSET_PROPERTY, String.class, Constants.UTF_8_NAME);
+	}
+	
 	public Charset getCharset() {
 		return getValue(CHARSET_PROPERTY, Charset.class, Constants.UTF_8);
 	}
 	
-	public void config(ServiceLoaderFactory serviceLoaderFactory){
-		for(PropertiesResolver propertiesResolver : serviceLoaderFactory.getServiceLoader(PropertiesResolver.class)){
-			addPropertiesResolver(propertiesResolver);
+	public Observable<Charset> getObservableCharset() {
+		return getObservableValue(CHARSET_PROPERTY, Charset.class, Constants.UTF_8);
+	}
+	
+	private final AtomicBoolean loaded = new AtomicBoolean();
+	
+	/**
+	 * 使用ServiceLoaderFactory加载依赖服务
+	 * @param serviceLoaderFactory
+	 * @return 返回是否加载成功
+	 */
+	public boolean loaderServices(ServiceLoaderFactory serviceLoaderFactory){
+		if(loaded.get()){
+			return false;
 		}
 		
-		for(ResourceLoader resourceLoader : serviceLoaderFactory.getServiceLoader(ResourceLoader.class)){
-			addResourceLoader(resourceLoader);
+		if(loaded.compareAndSet(false, true)){
+			for(PropertiesResolver propertiesResolver : serviceLoaderFactory.getServiceLoader(PropertiesResolver.class)){
+				addPropertiesResolver(propertiesResolver);
+			}
+			
+			for(ResourceResolver resourceResolver : serviceLoaderFactory.getServiceLoader(ResourceResolver.class)){
+				addResourceResolver(resourceResolver);
+			}
+			
+			for(ResourceLoader resourceLoader : serviceLoaderFactory.getServiceLoader(ResourceLoader.class)){
+				addResourceLoader(resourceLoader);
+			}
+			
+			for(ProtocolResolver protocolResolver : serviceLoaderFactory.getServiceLoader(ProtocolResolver.class)){
+				addProtocolResolver(protocolResolver);
+			}
+			
+			for(ConversionService conversionService : serviceLoaderFactory.getServiceLoader(ConversionService.class)){
+				addConversionService(conversionService);
+			}
+			
+			for(PropertyFactory propertyFactory : serviceLoaderFactory.getServiceLoader(PropertyFactory.class)){
+				addPropertyFactory(propertyFactory);
+			}
+			return true;
 		}
-		
-		for(ProtocolResolver protocolResolver : serviceLoaderFactory.getServiceLoader(ProtocolResolver.class)){
-			addProtocolResolver(protocolResolver);
-		}
-		
-		for(PropertyFactory propertyFactory : serviceLoaderFactory.getServiceLoader(PropertyFactory.class)){
-			addPropertyFactory(propertyFactory);
-		}
+		return false;
 	}
 }

@@ -6,7 +6,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.context.Destroy;
@@ -68,7 +67,7 @@ public final class LocalCompleteService implements CompleteService, Destroy {
 
 	public Object processTask(CompleteTask completeTask) throws Throwable {
 		BeanDefinition beanDefinition = beanFactory == null ? null
-				: beanFactory.getBeanDefinition(ProxyUtils.getProxyFactory().getUserClass(completeTask.getClass()));
+				: beanFactory.getDefinition(beanFactory.getAop().getUserClass(completeTask.getClass()).getName());
 		if (beanDefinition != null) {
 			beanDefinition.dependence(completeTask);
 			beanDefinition.init(completeTask);

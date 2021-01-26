@@ -9,7 +9,7 @@ import scw.convert.TypeDescriptor;
 import scw.lang.Nullable;
 import scw.util.CollectionFactory;
 
-public class ObjectToCollectionConversionService extends ConditionalConversionService {
+class ObjectToCollectionConversionService extends ConditionalConversionService {
 
 	private final ConversionService conversionService;
 

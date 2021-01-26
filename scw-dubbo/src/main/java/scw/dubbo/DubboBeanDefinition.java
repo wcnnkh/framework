@@ -18,7 +18,7 @@ public class DubboBeanDefinition extends DefaultBeanDefinition {
 		return true;
 	}
 
-	public Object create() throws Exception {
+	public Object create() {
 		return createInstanceProxy(referenceConfig.get(), getTargetClass(),
 				new Class<?>[] { referenceConfig.getInterfaceClass() }).create();
 	}

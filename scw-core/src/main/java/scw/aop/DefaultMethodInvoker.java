@@ -7,7 +7,7 @@ import java.lang.reflect.Modifier;
 import scw.core.reflect.MethodHolder;
 import scw.core.reflect.SerializableMethod;
 import scw.core.reflect.SimpleMethodHolder;
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 
 public class DefaultMethodInvoker extends AbstractMethodInvoker implements Serializable {
 	private static final long serialVersionUID = 1L;

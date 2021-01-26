@@ -1,5 +1,8 @@
 package scw.hibernate;
 
+import java.io.IOException;
+
+import org.hibernate.HibernateException;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.service.ServiceRegistry;
@@ -8,6 +11,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.io.Resource;
@@ -34,7 +38,7 @@ public class HibernateBeanBuilderLoader implements BeanDefinitionLoader {
 			return beanFactory.isInstance(org.hibernate.cfg.Configuration.class);
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			org.hibernate.cfg.Configuration configuration = beanFactory
 					.getInstance(org.hibernate.cfg.Configuration.class);
 			if (beanFactory.isInstance(ServiceRegistry.class)) {
@@ -45,7 +49,7 @@ public class HibernateBeanBuilderLoader implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public void destroy(Object instance) throws Throwable {
+		public void destroy(Object instance) throws BeansException {
 			if (instance instanceof SessionFactory) {
 				((SessionFactory) instance).close();
 			}
@@ -63,10 +67,16 @@ public class HibernateBeanBuilderLoader implements BeanDefinitionLoader {
 			return beanFactory.getEnvironment().exists(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			Resource resource = beanFactory.getEnvironment()
 					.getResource(StandardServiceRegistryBuilder.DEFAULT_CFG_RESOURCE_NAME);
-			return new org.hibernate.cfg.Configuration().configure(resource.getURL());
+			try {
+				return new org.hibernate.cfg.Configuration().configure(resource.getURL());
+			} catch (HibernateException e) {
+				throw new BeansException(e);
+			} catch (IOException e) {
+				throw new BeansException(resource.getDescription(), e);
+			}
 		}
 	}
 

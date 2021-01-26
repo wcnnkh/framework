@@ -172,14 +172,10 @@ public abstract class AbstractDB extends AbstractEntityOperations
 
 		if (beanFactory != null) {
 			Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(asyncExecute.getClass());
-			BeanDefinition definition = beanFactory.getBeanDefinition(clazz);
+			BeanDefinition definition = (BeanDefinition) beanFactory.getDefinition(clazz);
 			if (definition != null) {
-				try {
 					definition.dependence(asyncExecute);
 					definition.init(asyncExecute);
-				} catch (Throwable e) {
-					logger.error(e, "dependence {} error", clazz);
-				}
 			}
 		}
 

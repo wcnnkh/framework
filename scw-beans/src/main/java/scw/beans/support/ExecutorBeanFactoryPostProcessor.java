@@ -18,12 +18,12 @@ public class ExecutorBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
 			throws BeansException {
-		if(!beanFactory.containsBeanDefinition(ExecutorService.class.getName())){
-			beanFactory.registerBeanDefinition(ExecutorService.class.getName(), new ThreadPoolExecutorBeanDefinition(beanFactory));
+		if(!beanFactory.containsDefinition(ExecutorService.class.getName())){
+			beanFactory.registerDefinition(ExecutorService.class.getName(), new ThreadPoolExecutorBeanDefinition(beanFactory));
 		}
 		
-		if(!beanFactory.containsBeanDefinition(ScheduledExecutorService.class.getName())){
-			beanFactory.registerBeanDefinition(ScheduledExecutorService.class.getName(), new ScheduledExecutorServiceBeanDefinition(beanFactory));
+		if(!beanFactory.containsDefinition(ScheduledExecutorService.class.getName())){
+			beanFactory.registerDefinition(ScheduledExecutorService.class.getName(), new ScheduledExecutorServiceBeanDefinition(beanFactory));
 		}
 	}
 	
@@ -53,12 +53,12 @@ public class ExecutorBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 			return true;
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			return Executors.newScheduledThreadPool(getCorePoolSize(beanFactory.getEnvironment()));
 		}
 
 		@Override
-		public void destroy(Object instance) throws Throwable {
+		public void destroy(Object instance) throws BeansException {
 			super.destroy(instance);
 			if (instance instanceof ScheduledExecutorService) {
 				((ScheduledExecutorService) instance).shutdownNow();
@@ -77,13 +77,13 @@ public class ExecutorBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 		}
 		
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			return new ThreadPoolExecutor(getCorePoolSize(beanFactory.getEnvironment()), getMaxmumPoolSize(beanFactory.getEnvironment()), getKeepAliveTime(beanFactory.getEnvironment()),
 					getTimeUnit(beanFactory.getEnvironment()), new LinkedBlockingQueue<Runnable>());
 		}
 
 		@Override
-		public void destroy(Object instance) throws Throwable {
+		public void destroy(Object instance) throws BeansException {
 			if (instance instanceof ThreadPoolExecutor) {
 				((ThreadPoolExecutor) instance).shutdownNow();
 			}

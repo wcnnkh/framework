@@ -6,7 +6,7 @@ import scw.context.annotation.Provider;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
-import scw.instance.factory.InstanceFactory;
+import scw.instance.InstanceFactory;
 import scw.io.Bytes;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;

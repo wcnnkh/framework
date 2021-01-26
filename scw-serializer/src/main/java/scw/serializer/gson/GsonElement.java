@@ -1,14 +1,13 @@
 package scw.serializer.gson;
 
-import java.lang.reflect.Type;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
+import scw.core.ResolvableType;
 import scw.json.AbstractJsonElement;
 import scw.json.EmptyJsonElement;
 import scw.json.JsonArray;
 import scw.json.JsonObject;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 public final class GsonElement extends AbstractJsonElement {
 	private JsonElement gsonJsonElement;
@@ -27,15 +26,11 @@ public final class GsonElement extends AbstractJsonElement {
 	public String getAsString() {
 		return gsonJsonElement.getAsString();
 	}
-
+	
 	@Override
-	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		return gson.fromJson(gsonJsonElement, type);
-	}
-
-	@Override
-	protected Object getAsObjectNotSupport(Type type) {
-		return gson.fromJson(gsonJsonElement, type);
+	protected Object getAsObjectNotSupport(ResolvableType type,
+			Class<?> rawClass) {
+		return gson.fromJson(gsonJsonElement, type.getType());
 	}
 
 	public JsonArray getAsJsonArray() {

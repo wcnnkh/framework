@@ -12,7 +12,7 @@ import java.util.Set;
 
 import scw.core.ResolvableType;
 import scw.instance.InstanceUtils;
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 import scw.json.AbstractJsonElement;
 import scw.json.EmptyJsonElement;
 import scw.json.JSONException;
@@ -78,13 +78,9 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 	}
 
 	@Override
-	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		return (T) parse(text, type);
-	}
-
-	@Override
-	protected Object getAsObjectNotSupport(Type type) {
-		return parse(text, type);
+	protected Object getAsObjectNotSupport(ResolvableType type,
+			Class<?> rawClass) {
+		return parse(text, type.getType());
 	}
 
 	public static Object parse(String text, Type type) {

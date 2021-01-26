@@ -9,7 +9,7 @@ import java.util.Collection;
 import scw.core.reflect.MethodInvoker;
 import scw.core.reflect.MethodInvokerWrapper;
 import scw.core.utils.ArrayUtils;
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 import scw.instance.support.InstanceIterable;
 import scw.lang.NotSupportedException;
 import scw.util.MultiIterable;

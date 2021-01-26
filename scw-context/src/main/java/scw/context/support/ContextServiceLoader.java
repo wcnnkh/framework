@@ -6,8 +6,8 @@ import scw.context.ClassesLoader;
 import scw.context.annotation.ProviderServiceLoader;
 import scw.env.Environment;
 import scw.instance.InstanceUtils;
+import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
-import scw.instance.factory.NoArgsInstanceFactory;
 import scw.util.MultiIterator;
 
 public class ContextServiceLoader<S> implements ServiceLoader<S>{

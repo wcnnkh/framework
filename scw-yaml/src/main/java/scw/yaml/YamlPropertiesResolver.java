@@ -19,7 +19,7 @@ public class YamlPropertiesResolver implements PropertiesResolver{
 		this.processor = processor;
 	}
 	
-	public boolean isSupportResolveProperties(Resource resource) {
+	public boolean canResolveProperties(Resource resource) {
 		return resource.exists() && resource.getFilename().endsWith(".yaml");
 	}
 

@@ -3,6 +3,7 @@ package scw.log4j;
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
@@ -11,10 +12,11 @@ import scw.env.SystemEnvironment;
 import scw.logger.Level;
 import scw.logger.LoggerLevelManager;
 import scw.logger.LoggerPropertyFactory;
-import scw.util.FormatUtils;
 import scw.util.DefaultPlaceholderResolver;
+import scw.util.FormatUtils;
 
 public final class Log4jUtils {
+	private static Logger logger = Logger.getLogger(Log4jUtils.class.getName());
 	private Log4jUtils() {
 	}
 
@@ -54,7 +56,7 @@ public final class Log4jUtils {
 
 	public static void defaultInit() {
 		if (SystemEnvironment.getInstance().exists("log4j.properties")) {
-			FormatUtils.info(Log4jUtils.class, "Already exist log4j.properties");
+			logger.info("Already exist log4j.properties");
 			return;
 		}
 

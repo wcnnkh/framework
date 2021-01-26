@@ -10,7 +10,7 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.lang.Nullable;
 
-public class ByteBufferConversionService extends ConditionalConversionService{
+class ByteBufferConversionService extends ConditionalConversionService{
 
 	private static final TypeDescriptor BYTE_BUFFER_TYPE = TypeDescriptor.valueOf(ByteBuffer.class);
 

@@ -19,11 +19,12 @@ import java.util.Objects;
 import java.util.ServiceConfigurationError;
 
 import scw.core.utils.ClassUtils;
+import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
-import scw.instance.factory.NoArgsInstanceFactory;
 import scw.io.ResourceUtils;
+import scw.util.ClassLoaderProvider;
 
-public final class SpiServiceLoader <S> implements ServiceLoader<S> {
+public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoaderProvider {
 
 	private static final String PREFIX = "META-INF/services/";
 
@@ -31,7 +32,7 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S> {
 	private final Class<S> service;
 
 	// The class loader used to locate, load, and instantiate providers
-	private final ClassLoader loader;
+	private ClassLoader loader;
 
 	// The access control context taken when the ServiceLoader is created
 	private final AccessControlContext acc;
@@ -45,17 +46,13 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S> {
 	private NoArgsInstanceFactory instanceFactory;
 
 	public SpiServiceLoader(Class<S> svc, ClassLoader cl) {
-		this(svc, cl, null);
+		this(svc, (NoArgsInstanceFactory)null);
+		this.loader = cl;
 	}
 	
 	public SpiServiceLoader(Class<S> svc, NoArgsInstanceFactory instanceFactory) {
-		this(svc, instanceFactory == null? null:instanceFactory.getClassLoader(), instanceFactory);
-	}
-	
-	public SpiServiceLoader(Class<S> svc, ClassLoader cl, NoArgsInstanceFactory instanceFactory) {
 		service = Objects.requireNonNull(svc, "Service interface cannot be null");
 		this.instanceFactory = instanceFactory;
-		loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
 		acc = (System.getSecurityManager() != null) ? AccessController.getContext() : null;
 		reload();
 	}
@@ -151,8 +148,8 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S> {
 	//
 	private class LazyIterator implements Iterator<S> {
 
-		Class<S> service;
-		ClassLoader loader;
+		private final Class<S> service;
+		private final ClassLoader loader;
 		Enumeration<URL> configs = null;
 		Iterator<String> pending = null;
 		String nextName = null;
@@ -194,7 +191,7 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S> {
 			nextName = null;
 			Class<?> c = null;
 			try {
-				c = Class.forName(cn, false, loader);
+				c = ClassUtils.forName(cn, loader);
 			} catch (ClassNotFoundException x) {
 				fail(service, "Provider " + cn + " not found");
 			}
@@ -334,6 +331,10 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S> {
 		return getClass().getName() + "[" + service.getName() + "]";
 	}
 	
+	public ClassLoader getClassLoader() {
+		return instanceFactory == null? loader:instanceFactory.getClassLoader();
+	}
+	
 	public NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory;
 	}
@@ -358,6 +359,6 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S> {
 	 */
 	public void reload() {
 		providers.clear();
-		lookupIterator = new LazyIterator(service, loader);
+		lookupIterator = new LazyIterator(service, getClassLoader());
 	}
 }

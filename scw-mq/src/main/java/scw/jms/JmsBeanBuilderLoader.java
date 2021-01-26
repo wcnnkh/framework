@@ -2,11 +2,13 @@ package scw.jms;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 
@@ -32,15 +34,23 @@ public class JmsBeanBuilderLoader implements BeanDefinitionLoader {
 			return beanFactory.isInstance(ConnectionFactory.class);
 		}
 
-		public Object create() throws Exception {
-			return beanFactory.getInstance(ConnectionFactory.class)
-					.createConnection();
+		public Object create() throws BeansException {
+			try {
+				return beanFactory.getInstance(ConnectionFactory.class)
+						.createConnection();
+			} catch (JMSException e) {
+				throw new BeansException(e);
+			}
 		}
 
 		@Override
-		public void destroy(Object instance) throws Throwable {
+		public void destroy(Object instance) throws BeansException {
 			if (instance instanceof Connection) {
-				((Connection) instance).close();
+				try {
+					((Connection) instance).close();
+				} catch (JMSException e) {
+					throw new BeansException(e);
+				}
 			}
 			super.destroy(instance);
 		}

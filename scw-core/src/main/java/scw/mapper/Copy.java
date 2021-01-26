@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 
 import scw.core.reflect.ReflectionUtils;
 import scw.instance.InstanceUtils;
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 
 @SuppressWarnings("unchecked")
 public class Copy {

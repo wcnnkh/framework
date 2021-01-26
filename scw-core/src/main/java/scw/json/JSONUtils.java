@@ -19,7 +19,6 @@ public final class JSONUtils {
 
 	static {
 		JSONSupport jsonSupport = InstanceUtils.loadService(JSONSupport.class);
-		//TODO
 		JSON_SUPPORT = jsonSupport == null ? new DefaultJSONSupport() : jsonSupport;
 	}
 

@@ -6,7 +6,7 @@ import scw.aop.MethodInterceptorChain;
 import scw.complete.Complete;
 import scw.context.annotation.Provider;
 import scw.core.reflect.MethodInvoker;
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 import scw.lang.NotSupportedException;
 import scw.tcc.annotation.Tcc;
 import scw.transaction.DefaultTransactionLifecycle;

@@ -11,6 +11,7 @@ import org.w3c.dom.Node;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
@@ -69,7 +70,7 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 	public boolean isAccept(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory){
 		switch (parameterType) {
 		case ref:
-			BeanDefinition definition = beanFactory.getBeanDefinition(xmlValue.formatValue(beanFactory.getEnvironment()));
+			BeanDefinition definition = beanFactory.getDefinition(xmlValue.formatValue(beanFactory.getEnvironment()));
 			if(definition == null){
 				return false;
 			}
@@ -83,8 +84,7 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 		return true;
 	}
 
-	public Object parseValue(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory)
-			throws Exception {
+	public Object parseValue(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory) {
 		Object value = null;
 		switch (parameterType) {
 		case value:
@@ -112,7 +112,7 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 		return value;
 	}
 
-	private Object formatStringValue(Value value, ParameterDescriptor parameterDescriptor) throws ClassNotFoundException, ParseException {
+	private Object formatStringValue(Value value, ParameterDescriptor parameterDescriptor) {
 		if (value == null) {
 			return null;
 		}
@@ -127,7 +127,11 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 				}
 
 				SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-				return sdf.parse(value.getAsString());
+				try {
+					return sdf.parse(value.getAsString());
+				} catch (ParseException e) {
+					throw new BeansException(value.getAsString(), e);
+				}
 			}
 		}
 		

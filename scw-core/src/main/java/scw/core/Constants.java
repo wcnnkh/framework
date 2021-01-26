@@ -4,9 +4,6 @@ import java.nio.charset.Charset;
 
 import org.objectweb.asm.Opcodes;
 
-import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
-
 public class Constants {
 	public static final String ISO_8859_1_NAME = "ISO-8859-1";
 	
@@ -21,16 +18,12 @@ public class Constants {
 	public static final Charset US_ASCII = Charset.forName(US_ASCII_NAME);
 
 	/**
-	 * 系统包名
-	 */
-	public static final String SYSTEM_PACKAGE_NAME = StringUtils.split(Constants.class.getPackage().getName(), '.')[0];
-
-	/**
 	 * The ASM version used internally throughout the framework.<br/>
 	 * 默认的asm版本
 	 * 
 	 * @see Opcodes#ASM4
 	 */
-	public static final int ASM_VERSION = StringUtils
-			.parseInt(SystemEnvironment.getInstance().getString("constants.asm.version"), Opcodes.ASM7);
+	public static final int ASM_VERSION = Opcodes.ASM7;
+	
+	public static final String SYSTEM_PACKAGE_NAME = "scw.";
 }

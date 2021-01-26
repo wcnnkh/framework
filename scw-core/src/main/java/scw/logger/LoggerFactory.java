@@ -1,15 +1,15 @@
 package scw.logger;
 
 import scw.instance.InstanceUtils;
-import scw.util.FormatUtils;
 
 public final class LoggerFactory {
+	private static java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoggerFactory.class.getName());
 	private static final ILoggerFactory LOGGER_FACTORY;
 	
 	static{
 		ILoggerFactory loggerFactory = InstanceUtils.loadService(ILoggerFactory.class);
 		LOGGER_FACTORY = loggerFactory == null? new AsyncConsoleLoggerFactory() : loggerFactory;
-		FormatUtils.info(LoggerFactory.class, "using logger factory [{}]", LOGGER_FACTORY);
+		logger.info("Use logger factory ["+loggerFactory+"]");
 	}
 	
 	private LoggerFactory() {

@@ -4,6 +4,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.db.DB;
@@ -17,7 +18,7 @@ public class DruidDBBeanBuilderLoader implements BeanDefinitionLoader {
 		if (sourceClass == DruidDB.class) {
 			return new DruidDBBeanDefinition(beanFactory, sourceClass);
 		} else if (DB.class == sourceClass) {
-			return beanFactory.getBeanDefinition(DruidDB.class);
+			return beanFactory.getDefinition(DruidDB.class);
 		}
 		return loaderChain.load(beanFactory, sourceClass);
 	}
@@ -32,7 +33,7 @@ public class DruidDBBeanBuilderLoader implements BeanDefinitionLoader {
 			return ResourceUtils.exists(beanFactory.getEnvironment(), DBUtils.DEFAULT_CONFIGURATION);
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			return new DruidDB(DBUtils.DEFAULT_CONFIGURATION);
 		}
 	}

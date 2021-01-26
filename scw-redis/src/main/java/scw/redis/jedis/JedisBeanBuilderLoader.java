@@ -8,12 +8,12 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
-import scw.configure.support.ConfigureUtils;
-import scw.configure.support.EntityConfigure;
-import scw.configure.support.PropertyFactoryConfigure;
 import scw.context.annotation.Provider;
 import scw.convert.TypeDescriptor;
+import scw.convert.support.EntityConversionService;
+import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
 import scw.io.ResourceUtils;
@@ -60,7 +60,7 @@ public class JedisBeanBuilderLoader implements BeanDefinitionLoader {
 			return host;
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			String host = getHost();
 			if (beanFactory.isInstance(JedisPoolConfig.class)) {
 				return new JedisPool(beanFactory.getInstance(JedisPoolConfig.class), host);
@@ -70,7 +70,7 @@ public class JedisBeanBuilderLoader implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public void destroy(Object instance) throws Throwable {
+		public void destroy(Object instance) throws BeansException {
 			super.destroy(instance);
 			if (instance instanceof JedisPool) {
 				if (!((JedisPool) instance).isClosed()) {
@@ -93,7 +93,7 @@ public class JedisBeanBuilderLoader implements BeanDefinitionLoader {
 			return ResourceUtils.exists(beanFactory.getEnvironment(), getConfigName());
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			DefaultEnvironment propertyFactory = new DefaultEnvironment(false);
 			scw.event.Observable<Properties> observable = beanFactory.getEnvironment().getProperties(getConfigName());
 			propertyFactory.loadProperties(observable);
@@ -104,11 +104,11 @@ public class JedisBeanBuilderLoader implements BeanDefinitionLoader {
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			EntityConfigure entityConfigure = new PropertyFactoryConfigure(ConfigureUtils.getConversionServiceFactory());
-			entityConfigure.configuration(propertyFactory, TypeDescriptor.forObject(propertyFactory), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
+			EntityConversionService entityConfigure = new PropertyFactoryToEntityConversionService(beanFactory.getEnvironment());
+			entityConfigure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
 			entityConfigure.setPrefix("redis");
 			entityConfigure.setStrict(true);
-			entityConfigure.configuration(propertyFactory, TypeDescriptor.forObject(propertyFactory), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
+			entityConfigure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
 			return jedisPoolConfig;
 		}
 	}

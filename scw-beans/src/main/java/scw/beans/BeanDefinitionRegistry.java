@@ -4,7 +4,7 @@ import scw.util.alias.AliasRegistry;
 
 public interface BeanDefinitionRegistry extends BeanDefinitionFactory,
 		AliasRegistry {
-
-	BeanDefinition registerBeanDefinition(String name, BeanDefinition beanDefinition);
+	
+	BeanDefinition registerDefinition(String name, BeanDefinition beanDefinition);
 
 }

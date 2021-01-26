@@ -1,8 +1,8 @@
 package scw.event;
 
-public interface Observable<T> extends BasicEventRegistry<ChangeEvent<T>>{
-	T get();
-	
+import scw.util.Supplier;
+
+public interface Observable<T> extends Supplier<T>, BasicEventRegistry<ChangeEvent<T>>{
 	T forceGet();
 	
 	boolean unregister();

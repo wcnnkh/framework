@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import scw.convert.ConversionService;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.env.PropertyManager;
@@ -25,7 +26,6 @@ import scw.util.MultiIterator;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.ValueWrapper;
 import scw.value.factory.ListenablePropertyFactory;
 import scw.value.factory.PropertyFactory;
 import scw.value.factory.support.AbstractObservablePropertyFactory;
@@ -33,6 +33,11 @@ import scw.value.factory.support.AbstractObservablePropertyFactory;
 public class DefaultPropertyManager extends AbstractObservablePropertyFactory implements PropertyManager{
 	private final ObservableMap<String, Value> propertyMap;
 	private final List<PropertyFactory> propertyFactories;
+	private ConversionService conversionService;
+	
+	protected void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
+	}
 	
 	/**
 	 * @param concurrent
@@ -158,44 +163,27 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 	}
 
 	public boolean put(String key, Object value) {
-		return put(key, value, true);
-	}
-
-	public boolean put(String key, Object value, boolean format) {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
-		return put(key, toValue(value, format));
+		return put(key, toProperty(value));
 	}
 
-	private Value toValue(Object value, boolean resolvePlaceholders) {
+	public Value toProperty(Object value) {
 		Value v;
 		if (value instanceof Value) {
-			if (value instanceof StringFormatValue
-					|| value instanceof AnyFormatValue
-					|| value instanceof FormatValue) {
-				v = (Value) value;
-			} else {
-				v = resolvePlaceholders ? new FormatValue((Value) value)
-						: (Value) value;
-			}
+			return (Value) value;
 		} else if (value instanceof String) {
-			v = resolvePlaceholders ? new StringFormatValue((String) value)
-					: new StringValue((String) value);
+			v = new StringFormatValue((String) value);
 		} else {
-			v = resolvePlaceholders ? new AnyFormatValue(value) : new AnyValue(
-					value);
+			v = new AnyFormatValue(value);
 		}
 		return v;
 	}
 
 	public boolean putIfAbsent(String key, Object value) {
-		return putIfAbsent(key, value, false) == null;
-	}
-
-	public Value putIfAbsent(String key, Object value, boolean format) {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
-		return propertyMap.putIfAbsent(key, toValue(value, format));
+		return propertyMap.putIfAbsent(key, toProperty(value)) == null;
 	}
 
 	public void clear() {
@@ -207,18 +195,12 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 		return loadProperties(null, properties);
 	}
 
-	public final Observable<Map<String, Value>> loadProperties(String prefix,
-			Observable<Properties> properties) {
-		return loadProperties(prefix, properties, true);
-	}
-
 	public final Observable<Map<String, Value>> loadProperties(String keyPrefix,
-			Observable<Properties> properties,
-			final boolean format) {
+			Observable<Properties> properties) {
 		ValueCreator valueCreator = new ValueCreator() {
 
 			public Value create(String key, Object value) {
-				return toValue(value, format);
+				return toProperty(value);
 			}
 		};
 
@@ -244,23 +226,11 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 	private class AnyFormatValue extends AnyValue {
 
 		public AnyFormatValue(Object value) {
-			super(value);
+			super(value, conversionService);
 		}
 
 		public String getAsString() {
 			return resolvePlaceholders(super.getAsString());
 		};
-	}
-
-	private class FormatValue extends ValueWrapper {
-
-		public FormatValue(Value value) {
-			super(value);
-		}
-
-		@Override
-		public String getAsString() {
-			return resolvePlaceholders(super.getAsString());
-		}
 	}
 }

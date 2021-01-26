@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import scw.configure.support.ConfigureUtils;
 import scw.context.result.Result;
 import scw.context.result.ResultFactory;
 import scw.convert.TypeDescriptor;
@@ -50,7 +49,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 			this.aLiDaYu = new DefaultAliDaYu(host, appKey, version, format, signMethod, appSecret, resultFactory);
 		}
 		
-		this.modelList = (List<MessageModel>) ConfigureUtils.getConversionServiceFactory().convert(root, TypeDescriptor.collection(List.class, MessageModel.class));
+		this.modelList = (List<MessageModel>) SystemEnvironment.getInstance().convert(root, TypeDescriptor.forObject(root), TypeDescriptor.collection(List.class, MessageModel.class));
 		this.codeParameterKey = DomUtils.getNodeAttributeValue(String.class, root, "code-key", "code");
 		this.codeLength = DomUtils.getNodeAttributeValue(Integer.class, root, "code-length", 6);
 		this.debug = DomUtils.getNodeAttributeValue(boolean.class, root, "debug", false);

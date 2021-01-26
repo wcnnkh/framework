@@ -161,34 +161,6 @@ public final class FormatUtils {
 		loggerAppend(appendable, time, level, tag, loggerAppend);
 	}
 
-	public static void info(Class<?> clazz, Object msg, Object... args) {
-		info(clazz.getName(), msg, args);
-	}
-
-	public static void info(String name, Object msg, Object... args) {
-		StringBuilder sb = new StringBuilder(256);
-		try {
-			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", name, null, msg, args);
-			System.out.println(sb.toString());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public static void warn(Class<?> clazz, Object msg, Object... args) {
-		warn(clazz.getName(), msg, args);
-	}
-
-	public static void warn(String name, Object msg, Object... args) {
-		StringBuilder sb = new StringBuilder(256);
-		try {
-			loggerAppend(sb, System.currentTimeMillis(), "CONSOLE", name, null, msg, args);
-			System.err.println(sb.toString());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 	public static String format(String text, PlaceholderResolver placeholderResolver){
 		return PropertyPlaceholderHelper.nonStrictHelper.replacePlaceholders(StringFormat.format(text, placeholderResolver), placeholderResolver);
 	}

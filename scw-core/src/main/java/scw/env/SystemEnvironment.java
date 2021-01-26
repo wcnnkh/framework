@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.logging.Logger;
 
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
+import scw.instance.support.DefaultInstanceFactory;
+import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.io.FileUtils;
 import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
@@ -16,6 +19,7 @@ import scw.value.StringValue;
 import scw.value.Value;
 
 public final class SystemEnvironment extends DefaultEnvironment {
+	private static Logger logger = Logger.getLogger(SystemEnvironment.class.getName());
 	public static final String PROPERTY_MAVEN_HOME = "maven.home";
 	public static final String PROPERTY_PATH_SEPARATOR = "path.separator";
 	public static final String PROPERTY_JAVA_CLASS_PATH = "java.class.path";
@@ -34,6 +38,7 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	static{
 		instance.loadProperties("system.properties").register();
 		instance.loadProperties(instance.getValue("system.properties.location", String.class, "/private.properties")).register();
+		instance.loaderServices(new DefaultServiceLoaderFactory(instance, new DefaultInstanceFactory(instance, false)));
 	}
 
 	public static SystemEnvironment getInstance() {
@@ -42,7 +47,8 @@ public final class SystemEnvironment extends DefaultEnvironment {
 
 	private SystemEnvironment() {
 		super(true);
-		getWorkPath();
+		String workPath = getWorkPath();
+		logger.info("default " + WORK_PATH_PROPERTY + " in " + workPath);
 	};
 
 	@SuppressWarnings("unchecked")

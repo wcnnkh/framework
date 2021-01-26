@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.parameter.MethodParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
@@ -35,7 +36,7 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		return isAccept(methodParameterDescriptors);
 	}
 
-	public Object create() throws Exception {
+	public Object create() throws BeansException {
 		if (!isInstance()) {
 			throw new NotSupportedException("不支持的构造方式");
 		}
@@ -50,10 +51,9 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		return getTargetClass().isInterface() && super.isAopEnable();
 	}
 	
-	private Object invoke(Method method, Object[] args) throws Exception {
+	private Object invoke(Method method, Object[] args) throws BeansException {
 		ReflectionUtils.makeAccessible(method);
-		Object bean = method.invoke(
-				Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), args);
+		Object bean = ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), args);
 		if(beanFactory.getAop().isProxy(bean)){
 			//已经被代理过的
 			return bean;
@@ -66,11 +66,12 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		return bean;
 	}
 
-	public Class<? extends Object> getTargetClass() {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Class getTargetClass() {
 		return method.getReturnType();
 	}
 
-	public Object create(Object... params) throws Exception {
+	public Object create(Object... params) throws BeansException {
 		for (ParameterDescriptors parameterDescriptors : this) {
 			if (ParameterUtils.isAssignableValue(parameterDescriptors, params, true)) {
 				return create(parameterDescriptors.getTypes(), params);
@@ -79,8 +80,15 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		throw new NotSupportedException(method.toString());
 	}
 
-	public Object create(Class<?>[] parameterTypes, Object... params) throws Exception {
-		Method method = methodTargetClass.getDeclaredMethod(this.method.getName(), parameterTypes);
+	public Object create(Class<?>[] parameterTypes, Object... params) throws BeansException {
+		Method method;
+		try {
+			method = methodTargetClass.getDeclaredMethod(this.method.getName(), parameterTypes);
+		} catch (NoSuchMethodException e) {
+			throw new BeansException(e);
+		} catch (SecurityException e) {
+			throw new BeansException(e);
+		}
 		return invoke(method, params);
 	}
 

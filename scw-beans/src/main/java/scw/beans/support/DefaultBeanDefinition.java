@@ -16,17 +16,18 @@ import scw.beans.BeanFactory;
 import scw.beans.BeanLifeCycleEvent;
 import scw.beans.BeanLifeCycleEvent.Step;
 import scw.beans.BeanUtils;
+import scw.beans.BeansException;
 import scw.beans.RuntimeBean;
 import scw.beans.annotation.Bean;
 import scw.beans.annotation.ConfigurationProperties;
 import scw.beans.ioc.Ioc;
-import scw.configure.support.ConfigureUtils;
-import scw.configure.support.PropertyFactoryConfigure;
 import scw.context.support.LifecycleAuxiliary;
+import scw.convert.TypeDescriptor;
+import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.instance.support.DefaultInstanceBuilder;
+import scw.instance.support.DefaultInstanceDefinition;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
@@ -34,20 +35,19 @@ import scw.mapper.FieldFilter;
 import scw.mapper.MapperUtils;
 import scw.value.factory.PropertyFactory;
 
-public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
+public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		implements BeanDefinition, Cloneable, AopEnableSpi {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected Ioc ioc = new Ioc();
 	private boolean isNew = true;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public DefaultBeanDefinition(BeanFactory beanFactory, Class sourceClass) {
+	public DefaultBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
 		super(beanFactory, beanFactory.getEnvironment(), sourceClass);
 		this.beanFactory = beanFactory;
 	}
 
-	public void dependence(Object instance) throws Throwable {
+	public void dependence(Object instance) throws BeansException {
 		scw.beans.RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(instance);
 		if (runtimeBean != null && !runtimeBean._dependence()) {
 			return;
@@ -81,15 +81,14 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 
 	protected void configurationProperties(
 			ConfigurationProperties configurationProperties, Object instance) {
-		PropertyFactoryConfigure configure = new PropertyFactoryConfigure(
-				ConfigureUtils.getConversionServiceFactory());
-		configure.setStrict(false);
+		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService(beanFactory.getEnvironment());
+		entityConversionService.setStrict(false);
 		String prefix = configurationProperties.prefix();
 		if (StringUtils.isEmpty(prefix)) {
 			prefix = configurationProperties.value();
 		}
-		configure.setPrefix(prefix);
-		configure.getFieldFilters().add(new FieldFilter() {
+		entityConversionService.setPrefix(prefix);
+		entityConversionService.getFieldFilters().add(new FieldFilter() {
 			
 			public boolean accept(Field field) {
 				//如果字段上存在beans下的注解应该忽略此字段
@@ -101,12 +100,12 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 				return true;
 			}
 		});
-		configure.configuration(beanFactory.getEnvironment(), PropertyFactory.class,
-				instance, beanFactory.getAop()
-						.getUserClass(instance.getClass()));
+		entityConversionService.configurationProperties(beanFactory.getEnvironment(), TypeDescriptor.valueOf(PropertyFactory.class),
+				instance, TypeDescriptor.valueOf(beanFactory.getAop()
+						.getUserClass(instance.getClass())));
 	}
 
-	public void init(Object instance) throws Throwable {
+	public void init(Object instance) throws BeansException {
 		scw.beans.RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(instance);
 		if (runtimeBean != null && !runtimeBean._init()) {
 			return;
@@ -118,13 +117,17 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 				ioc.getInit().process(this, instance, beanFactory);
 			}
 			ioc.getInit().process(this, instance, beanFactory);
-			LifecycleAuxiliary.init(instance);
+			try {
+				LifecycleAuxiliary.init(instance);
+			} catch (Throwable e) {
+				throw new BeansException(e);
+			}
 		}
 		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_INIT));
 	}
 
-	public void destroy(Object instance) throws Throwable {
+	public void destroy(Object instance) throws BeansException {
 		scw.beans.RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(instance);
 		if (runtimeBean != null && !runtimeBean._destroy()) {
 			return;
@@ -133,7 +136,11 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
-			LifecycleAuxiliary.destroy(instance);
+			try {
+				LifecycleAuxiliary.destroy(instance);
+			} catch (Throwable e) {
+				throw new BeansException(e);
+			}
 			ioc.getDestroy().process(this, instance, beanFactory);
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
 				ioc.getDestroy().process(this, instance, beanFactory);
@@ -189,16 +196,15 @@ public class DefaultBeanDefinition extends DefaultInstanceBuilder<Object>
 	}
 	
 	@Override
-	protected Object createInternal(Class<?> targetClass,
-			Constructor<? extends Object> constructor, Object[] params)
-			throws Exception {
+	protected Object createInternal(Class<?> targetClass, Constructor<?> constructor,
+			Object[] params) throws BeansException {
 		if (isAopEnable(targetClass, getAnnotatedElement())) {
 			return createProxyInstance(targetClass,
 					constructor.getParameterTypes(), params);
 		}
 		return super.createInternal(targetClass, constructor, params);
 	}
-
+	
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
 		Class<?>[] interfacesToUse = interfaces;
 		if (ArrayUtils.isEmpty(interfacesToUse)) {

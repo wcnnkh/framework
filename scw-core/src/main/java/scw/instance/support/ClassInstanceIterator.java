@@ -3,7 +3,7 @@ package scw.instance.support;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 import scw.util.AbstractIterator;
 
 public class ClassInstanceIterator<E> extends AbstractIterator<E>{

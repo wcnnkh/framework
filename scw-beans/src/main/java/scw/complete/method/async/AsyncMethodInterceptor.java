@@ -7,7 +7,7 @@ import scw.beans.BeanUtils;
 import scw.beans.RuntimeBean;
 import scw.context.annotation.Provider;
 import scw.core.reflect.MethodInvoker;
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 import scw.lang.NotSupportedException;
 
 @Provider(order = Integer.MAX_VALUE)

@@ -6,10 +6,8 @@ import java.util.Map;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
-import scw.configure.convert.CollectionToMapConversionService;
-import scw.configure.convert.PrimaryKeyGetter;
-import scw.configure.support.ConfigureUtils;
 import scw.convert.TypeDescriptor;
+import scw.convert.support.CollectionToMapConversionService;
 import scw.io.Resource;
 import scw.lang.NotSupportedException;
 import scw.mapper.Field;
@@ -23,7 +21,7 @@ public final class XmlFileToBeanMapValueProcesser extends AbstractObservableReso
 			throw new NotSupportedException(field.getSetter().toString());
 		}
 		
-		CollectionToMapConversionService service = new CollectionToMapConversionService(ConfigureUtils.getConversionServiceFactory(), PrimaryKeyGetter.FIRST_FIELD);
+		CollectionToMapConversionService service = new CollectionToMapConversionService(beanFactory.getEnvironment(), CollectionToMapConversionService.FIRST_FIELD);
 		return service.convert(resource, TypeDescriptor.valueOf(Resource.class), new TypeDescriptor(field.getSetter()));
 	}
 }

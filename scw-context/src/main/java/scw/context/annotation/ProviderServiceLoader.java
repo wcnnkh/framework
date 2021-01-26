@@ -3,8 +3,8 @@ package scw.context.annotation;
 import java.util.Iterator;
 
 import scw.context.ClassesLoader;
+import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
-import scw.instance.factory.NoArgsInstanceFactory;
 import scw.instance.support.ClassInstanceIterator;
 
 public class ProviderServiceLoader<S> implements ServiceLoader<S>{

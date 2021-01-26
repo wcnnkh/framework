@@ -58,7 +58,7 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration implements BeanFactor
 								responseThrowable, address);
 						BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, clz,
 								Arrays.asList(filter));
-						beanFactory.registerBeanDefinition(beanBuilder.getId(), beanBuilder);
+						beanFactory.registerDefinition(beanBuilder.getId(), beanBuilder);
 					}
 				}
 
@@ -89,7 +89,7 @@ public final class XmlSimpleHttpObjectRpcBeanConfiguration implements BeanFactor
 							myAddress);
 					BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, clz,
 							Arrays.asList(filter));
-					beanFactory.registerBeanDefinition(beanBuilder.getId(), beanBuilder);
+					beanFactory.registerDefinition(beanBuilder.getId(), beanBuilder);
 				}
 			}
 		}

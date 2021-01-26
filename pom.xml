@@ -28,12 +28,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-configure</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-transaction</artifactId>
 				<version>1.0.0</version>
 			</dependency>
@@ -475,7 +469,6 @@
 		<module>scw-tcc</module>
 		<module>scw-messageing</module>
 		<module>scw-locks</module>
-		<module>scw-configure</module>
 		<module>scw-context</module>
 	</modules>
 </project>

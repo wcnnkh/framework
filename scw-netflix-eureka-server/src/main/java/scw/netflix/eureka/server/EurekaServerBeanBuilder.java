@@ -6,6 +6,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 
@@ -58,7 +59,7 @@ public class EurekaServerBeanBuilder implements BeanDefinitionLoader {
 		}
 		
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			EurekaClientConfig clientConfig = beanFactory.getInstance(EurekaClientConfig.class);
 			EurekaServerConfigBean server = new EurekaServerConfigBean();
 			if (clientConfig.shouldRegisterWithEureka()) {
@@ -84,7 +85,7 @@ public class EurekaServerBeanBuilder implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			EurekaServerConfig eurekaServerConfig = beanFactory.getInstance(EurekaServerConfig.class);
 			ServerCodecs serverCodecs = beanFactory.getInstance(ServerCodecs.class);
 			PeerAwareInstanceRegistry registry = beanFactory.getInstance(PeerAwareInstanceRegistry.class);
@@ -117,7 +118,7 @@ public class EurekaServerBeanBuilder implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			PeerAwareInstanceRegistry registry = beanFactory.getInstance(PeerAwareInstanceRegistry.class);
 			EurekaServerConfig serverConfig = beanFactory.getInstance(EurekaServerConfig.class);
 			EurekaClientConfig clientConfig = beanFactory.getInstance(EurekaClientConfig.class);
@@ -144,7 +145,7 @@ public class EurekaServerBeanBuilder implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			ServerCodecs serverCodecs = beanFactory.getInstance(ServerCodecs.class);
 			EurekaServerConfig serverConfig = beanFactory.getInstance(EurekaServerConfig.class);
 			EurekaClientConfig clientConfig = beanFactory.getInstance(EurekaClientConfig.class);
@@ -170,7 +171,7 @@ public class EurekaServerBeanBuilder implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			return new CloudServerCodecs(beanFactory.getInstance(EurekaServerConfig.class));
 		}
 	}

@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.context.annotation.Provider;
-import scw.core.Constants;
-import scw.env.Environment;
 import scw.event.Observable;
 import scw.http.server.DefaultHttpService;
 import scw.servlet.ServletService;
@@ -21,7 +19,7 @@ public class DefaultHttpServletService extends DefaultHttpService implements Ser
 	
 	public DefaultHttpServletService(BeanFactory beanFactory) {
 		super(beanFactory);
-		charsetName = beanFactory.getEnvironment().getObservableValue(Environment.CHARSET_PROPERTY, String.class, Constants.UTF_8_NAME);
+		charsetName = beanFactory.getEnvironment().getObservableCharsetName();
 	}
 
 	public String getCharsetName() {

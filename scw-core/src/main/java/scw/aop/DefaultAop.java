@@ -2,7 +2,7 @@ package scw.aop;
 
 import java.util.Arrays;
 
-import scw.instance.factory.ServiceLoaderFactory;
+import scw.instance.ServiceLoaderFactory;
 
 public class DefaultAop extends Aop {
 	private final Iterable<MethodInterceptor> filters;

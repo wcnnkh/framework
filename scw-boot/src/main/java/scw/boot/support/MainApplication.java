@@ -7,11 +7,12 @@ import scw.env.support.MainArgs;
 import scw.logger.LoggerUtils;
 import scw.util.concurrent.ListenableFuture;
 
+@SuppressWarnings("unchecked")
 public class MainApplication extends CommonApplication implements Application {
 	private final Class<?> mainClass;
 	private final MainArgs mainArgs;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"rawtypes" })
 	public MainApplication(Class<?> mainClass, String[] args) {
 		this.mainClass = mainClass;
 		this.mainArgs = new MainArgs(args);

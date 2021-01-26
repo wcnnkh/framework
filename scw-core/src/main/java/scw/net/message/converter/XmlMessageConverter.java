@@ -7,7 +7,7 @@ import java.util.Map;
 import org.w3c.dom.Document;
 
 import scw.core.ResolvableType;
-import scw.core.utils.TypeUtils;
+import scw.core.utils.ClassUtils;
 import scw.dom.DomUtils;
 import scw.http.MediaType;
 import scw.net.MimeType;
@@ -35,7 +35,7 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 	protected Object readInternal(ResolvableType type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		String text = readTextBody(inputMessage);
-		if (TypeUtils.isPrimitiveOrWrapper(type.getRawClass()) || String.class == type.getRawClass()
+		if (ClassUtils.isPrimitiveOrWrapper(type.getRawClass()) || String.class == type.getRawClass()
 				|| Value.class == type.getRawClass()) {
 			StringValue value = new StringValue(text);
 			value.setJsonSupport(getJsonSupport());
@@ -60,9 +60,9 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		String writeBody;
-		if (TypeUtils.isPrimitiveOrWrapper(body.getClass())
-				|| String.class == body.getClass()
-				|| Value.class.isAssignableFrom(body.getClass())) {
+		if (ClassUtils.isPrimitiveOrWrapper(type.getRawClass())
+				|| String.class == type.getRawClass()
+				|| Value.class.isAssignableFrom(type.getRawClass())) {
 			writeBody = body.toString();
 		} else if (body instanceof Map) {
 			writeBody = DomUtils.getDomBuilder().toString((Map)body);

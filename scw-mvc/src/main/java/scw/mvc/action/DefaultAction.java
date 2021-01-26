@@ -85,7 +85,7 @@ public class DefaultAction extends BeanAction {
 				ActionInterceptors.class);
 		if (actionInterceptors != null) {
 			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
-				BeanDefinition definition = getBeanFactory().getBeanDefinition(f);
+				BeanDefinition definition = getBeanFactory().getDefinition(f);
 				if(definition == null){
 					logger.warn("not support interceptor: {}", f);
 					continue;
@@ -100,7 +100,7 @@ public class DefaultAction extends BeanAction {
 				Controller.class);
 		if (controller != null) {
 			for (Class<? extends ActionInterceptor> f : controller.interceptors()) {
-				BeanDefinition definition = getBeanFactory().getBeanDefinition(f);
+				BeanDefinition definition = getBeanFactory().getDefinition(f);
 				if(definition == null){
 					logger.warn("not support interceptor: {}", f);
 					continue;
@@ -115,7 +115,7 @@ public class DefaultAction extends BeanAction {
 		if (actionInterceptors != null) {
 			sets.clear();
 			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
-				BeanDefinition definition = getBeanFactory().getBeanDefinition(f);
+				BeanDefinition definition = getBeanFactory().getDefinition(f);
 				if(definition == null){
 					logger.warn("not support interceptor: {}", f);
 					continue;
@@ -130,7 +130,7 @@ public class DefaultAction extends BeanAction {
 				.getAnnotation(Controller.class);
 		if (controller != null) {
 			for (Class<? extends ActionInterceptor> f : controller.interceptors()) {
-				BeanDefinition definition = getBeanFactory().getBeanDefinition(f);
+				BeanDefinition definition = getBeanFactory().getDefinition(f);
 				if(definition == null){
 					logger.warn("not support interceptor: {}", f);
 					continue;

@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1000,9 +1001,9 @@ public final class ClassUtils {
 	 *            the class to check
 	 * @return whether the given class is a primitive wrapper class
 	 */
-	public static boolean isPrimitiveWrapper(Class<?> clazz) {
-		Assert.notNull(clazz, "Class must not be null");
-		return primitiveWrapperTypeMap.containsKey(clazz);
+	public static boolean isPrimitiveWrapper(Type type) {
+		Assert.notNull(type, "Class must not be null");
+		return primitiveWrapperTypeMap.containsKey(type);
 	}
 
 	/**
@@ -1014,9 +1015,13 @@ public final class ClassUtils {
 	 *            the class to check
 	 * @return whether the given class is a primitive or primitive wrapper class
 	 */
-	public static boolean isPrimitiveOrWrapper(Class<?> clazz) {
-		Assert.notNull(clazz, "Class must not be null");
-		return (clazz.isPrimitive() || isPrimitiveWrapper(clazz));
+	public static boolean isPrimitiveOrWrapper(Type type) {
+		Assert.notNull(type, "Class must not be null");
+		return isPrimitive(type) || isPrimitiveWrapper(type);
+	}
+	
+	public static boolean isPrimitive(Type type){
+		return type instanceof Class && ((Class<?>)type).isPrimitive();
 	}
 
 	/**
@@ -1536,12 +1541,12 @@ public final class ClassUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T newInstance(String className, ClassLoader classLoader) {
 		Class<?> clazz = resolveClassName(className, classLoader);
-		if (clazz == null) {
-			return null;
-		}
-
+		return newInstance((Class<T>)clazz);
+	}
+	
+	public static <T> T newInstance(Class<T> clazz){
 		try {
-			return (T) clazz.newInstance();
+			return clazz.newInstance();
 		} catch (IllegalAccessException e) {
 			throw new IllegalStateException("Could not access method: " + e.getMessage());
 		} catch (InstantiationException e) {
@@ -1557,5 +1562,41 @@ public final class ClassUtils {
 	public static ClassLoader getClassLoader(ClassLoaderProvider classLoaderProvider){
 		ClassLoader classLoader = classLoaderProvider == null? null:classLoaderProvider.getClassLoader();
 		return classLoader == null? ClassUtils.getDefaultClassLoader():classLoader;
+	}
+	
+	public static boolean isString(Type type) {
+		return type == String.class;
+	}
+
+	public static boolean isBoolean(Type type) {
+		return type == boolean.class || type == Boolean.class;
+	}
+
+	public static boolean isShort(Type type) {
+		return type == short.class || type == Short.class;
+	}
+
+	public static boolean isInt(Type type) {
+		return type == int.class || type == Integer.class;
+	}
+
+	public static boolean isLong(Type type) {
+		return type == long.class || type == Long.class;
+	}
+
+	public static boolean isChar(Type type) {
+		return type == char.class || type == Character.class;
+	}
+
+	public static boolean isFloat(Type type) {
+		return type == float.class || type == Float.class;
+	}
+
+	public static boolean isDouble(Type type) {
+		return type == double.class || type == Double.class;
+	}
+
+	public static boolean isByte(Type type) {
+		return type == byte.class || type == Byte.class;
 	}
 }

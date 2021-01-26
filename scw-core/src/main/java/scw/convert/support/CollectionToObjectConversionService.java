@@ -7,7 +7,7 @@ import java.util.Set;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 
-public class CollectionToObjectConversionService extends
+class CollectionToObjectConversionService extends
 		ConditionalConversionService {
 	private final ConversionService conversionService;
 

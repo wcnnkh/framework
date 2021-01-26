@@ -8,7 +8,7 @@ import java.util.LinkedList;
 
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 import scw.instance.support.InstanceIterable;
 import scw.util.MultiIterable;
 

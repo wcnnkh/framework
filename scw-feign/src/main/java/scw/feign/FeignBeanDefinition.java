@@ -1,6 +1,7 @@
 package scw.feign;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.core.utils.StringUtils;
 import scw.net.InetUtils;
@@ -31,7 +32,7 @@ public class FeignBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	@Override
-	public Object create() throws Exception {
+	public Object create() throws BeansException {
 		FeignCodec codec = new FeignCodec(InetUtils.getMessageConverter());
 		Encoder encoder = beanFactory.isInstance(Encoder.class) ? beanFactory.getInstance(Encoder.class) : codec;
 		Decoder decoder = beanFactory.isInstance(Decoder.class) ? beanFactory.getInstance(Decoder.class) : codec;

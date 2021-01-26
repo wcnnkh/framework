@@ -1,5 +1,7 @@
 package scw.memcached.x;
 
+import java.io.IOException;
+
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
 import net.rubyeye.xmemcached.XMemcachedClientBuilder;
@@ -9,6 +11,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.io.SerializerUtils;
@@ -37,15 +40,23 @@ public class XMemcachedBeanBuilderLoader implements BeanDefinitionLoader {
 			return beanFactory.isInstance(MemcachedClientBuilder.class);
 		}
 
-		public Object create() throws Exception {
-			return beanFactory.getInstance(MemcachedClientBuilder.class).build();
+		public Object create() throws BeansException {
+			try {
+				return beanFactory.getInstance(MemcachedClientBuilder.class).build();
+			} catch (IOException e) {
+				throw new BeansException(e);
+			}
 		}
 
 		@Override
-		public void destroy(Object instance) throws Throwable {
+		public void destroy(Object instance) throws BeansException {
 			super.destroy(instance);
 			if (instance instanceof MemcachedClient) {
-				((MemcachedClient) instance).shutdown();
+				try {
+					((MemcachedClient) instance).shutdown();
+				} catch (IOException e) {
+					throw new BeansException(e);
+				}
 			}
 		}
 	}
@@ -65,7 +76,7 @@ public class XMemcachedBeanBuilderLoader implements BeanDefinitionLoader {
 			return beanFactory.getEnvironment().getString(name);
 		}
 
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			XMemcachedClientBuilder builder = new XMemcachedClientBuilder(
 					InetUtils.parseInetSocketAddressList(getHosts()));
 			builderDefault(builder);

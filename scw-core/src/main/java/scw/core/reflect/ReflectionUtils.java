@@ -21,12 +21,9 @@ import scw.core.annotation.Order;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
 import scw.lang.Ignore;
 import scw.lang.Nullable;
 import scw.util.Accept;
-import scw.util.FormatUtils;
 import scw.util.comparator.CompareUtils;
 
 public abstract class ReflectionUtils {
@@ -1144,80 +1141,6 @@ public abstract class ReflectionUtils {
 			}
 		}
 		return null;
-	}
-
-	public static Method getGetterMethod(Class<?> clazz, Field field) {
-		Method getter = null;
-		Class<?> clz = clazz;
-		if (TypeUtils.isBoolean(field.getType())) {
-			String methodNameSuffix = field.getName();
-			if (methodNameSuffix.startsWith("is")) {
-				FormatUtils.warn(ReflectionUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
-						methodNameSuffix);
-				methodNameSuffix = methodNameSuffix.substring(2);
-			}
-			try {
-				getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(methodNameSuffix, 0, 1));
-			} catch (NoSuchMethodException e1) {
-				try {
-					getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(field.getName(), 0, 1));
-				} catch (NoSuchMethodException e) {
-				}
-			}
-		} else {
-			try {
-				getter = clz.getDeclaredMethod("get" + StringUtils.toUpperCase(field.getName(), 0, 1));
-			} catch (NoSuchMethodException e) {
-			}
-		}
-
-		if (getter != null) {
-			if (Modifier.isPrivate(getter.getModifiers())) {
-				return null;
-			}
-
-			makeAccessible(getter);
-		}
-
-		return getter;
-	}
-
-	public static Method getSetterMethod(Class<?> clazz, Field field) {
-		Method setter = null;
-		Class<?> clz = clazz;
-		if (TypeUtils.isBoolean(field.getType())) {
-			String methodNameSuffix = field.getName();
-			if (methodNameSuffix.startsWith("is")) {
-				FormatUtils.warn(ReflectionUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
-						methodNameSuffix);
-				methodNameSuffix = methodNameSuffix.substring(2);
-			}
-
-			try {
-				setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(methodNameSuffix, 0, 1),
-						field.getType());
-			} catch (NoSuchMethodException e1) {
-				try {
-					setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(field.getName(), 0, 1),
-							field.getType());
-				} catch (NoSuchMethodException e) {
-				}
-			}
-		} else {
-			try {
-				setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(field.getName(), 0, 1), field.getType());
-			} catch (NoSuchMethodException e) {
-			}
-		}
-
-		if (setter != null) {
-			if (Modifier.isPrivate(setter.getModifiers())) {
-				return null;
-			}
-
-			makeAccessible(setter);
-		}
-		return setter;
 	}
 
 	/**

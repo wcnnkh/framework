@@ -12,7 +12,7 @@ import scw.lang.Nullable;
 import scw.util.CollectionFactory;
 import scw.util.KeyValuePair;
 
-public class MapToMapConversionService extends ConditionalConversionService{
+class MapToMapConversionService extends ConditionalConversionService{
 	private final ConversionService conversionService;
 	
 	public MapToMapConversionService(ConversionService conversionService){

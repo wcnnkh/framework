@@ -7,7 +7,7 @@ import java.math.BigInteger;
 import scw.core.ResolvableType;
 
 public interface Value {
-	<T> T getAsObject(Class<? extends T> type);
+	<T> T getAsObject(Class<T> type);
 
 	Object getAsObject(Type type);
 	

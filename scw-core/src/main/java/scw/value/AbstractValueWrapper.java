@@ -13,7 +13,7 @@ public abstract class AbstractValueWrapper implements Value{
 		return getValue().getAsObject(resolvableType);
 	}
 
-	public <T> T getAsObject(Class<? extends T> type) {
+	public <T> T getAsObject(Class<T> type) {
 		return getValue().getAsObject(type);
 	}
 

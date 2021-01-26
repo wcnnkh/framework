@@ -10,7 +10,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-context</artifactId>
+			<artifactId>scw-beans</artifactId>
 		</dependency>
 
 		<dependency>

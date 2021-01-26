@@ -2,7 +2,7 @@ package scw.instance.support;
 
 import java.util.Iterator;
 
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 
 public final class InstanceIterable<E> implements Iterable<E> {
 	private NoArgsInstanceFactory instanceFactory;

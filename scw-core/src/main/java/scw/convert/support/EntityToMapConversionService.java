@@ -9,7 +9,7 @@ import scw.convert.TypeDescriptor;
 import scw.core.ResolvableType;
 import scw.mapper.MapperUtils;
 
-public class EntityToMapConversionService extends ConditionalConversionService {
+class EntityToMapConversionService extends ConditionalConversionService {
 	private ConversionService conversionService;
 
 	public EntityToMapConversionService(ConversionService conversionService) {

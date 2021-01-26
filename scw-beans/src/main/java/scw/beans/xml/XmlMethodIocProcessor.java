@@ -34,7 +34,7 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 		this.xmlBeanParameters = xmlBeanParameters.toArray(new XmlBeanParameter[xmlBeanParameters.size()]);
 	}
 
-	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws Exception {
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
 		XmlParameterFactory xmlParameterFactory = new XmlParameterFactory(beanFactory,
 				xmlBeanParameters);
 		Class<?> tempClz = type;
@@ -56,7 +56,7 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 				if (xmlParameterFactory.isAccept(methodParameterDescriptors)) {
 					Object[] args = xmlParameterFactory.getParameters(methodParameterDescriptors);
 					ReflectionUtils.makeAccessible(method);
-					method.invoke(bean, args);
+					ReflectionUtils.invokeMethod(method, bean, args);
 					return;
 				}
 			}

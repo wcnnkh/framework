@@ -9,7 +9,7 @@ import scw.convert.TypeDescriptor;
 import scw.core.Assert;
 import scw.lang.Nullable;
 
-public class ObjectToArrayConversionService extends ConditionalConversionService{
+class ObjectToArrayConversionService extends ConditionalConversionService{
 	private final ConversionService conversionService;
 
 

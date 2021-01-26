@@ -9,7 +9,7 @@ import scw.beans.BeansException;
 import scw.context.Destroy;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.parameter.ParameterFactory;
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 
@@ -24,7 +24,7 @@ public class ExtendBeanFactory implements NoArgsInstanceFactory, Destroy {
 		this.beanFactory = beanFactory;
 	}
 
-	public <T> T getInstance(Class<? extends T> clazz) {
+	public <T> T getInstance(Class<T> clazz) {
 		return getInstance(clazz.getName());
 	}
 
@@ -39,7 +39,7 @@ public class ExtendBeanFactory implements NoArgsInstanceFactory, Destroy {
 			return (T) instance;
 		}
 		
-		BeanDefinition beanDefinition = beanFactory.getBeanDefinition(name);
+		BeanDefinition beanDefinition = beanFactory.getDefinition(name);
 		if (beanDefinition == null) {
 			return null;
 		}
@@ -115,7 +115,7 @@ public class ExtendBeanFactory implements NoArgsInstanceFactory, Destroy {
 			return true;
 		}
 
-		BeanDefinition beanDefinition = beanFactory.getBeanDefinition(name);
+		BeanDefinition beanDefinition = beanFactory.getDefinition(name);
 		if (beanDefinition == null) {
 			return false;
 		}

@@ -11,6 +11,7 @@ import org.w3c.dom.NodeList;
 
 import scw.aop.MethodInterceptor;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ArrayUtils;
@@ -109,7 +110,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	@Override
-	public Object create() throws Exception {
+	public Object create() throws BeansException {
 		if (ArrayUtils.isEmpty(xmlParameterFactory.getXmlBeanParameters())) {
 			return super.create();
 		}

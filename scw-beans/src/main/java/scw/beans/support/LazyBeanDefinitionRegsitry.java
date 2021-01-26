@@ -14,16 +14,15 @@ import scw.beans.ConfigurableBeanFactory;
 import scw.beans.annotation.AutoImpl;
 import scw.beans.annotation.Proxy;
 import scw.context.annotation.ProviderClassesLoader;
-import scw.core.annotation.AnnotationUtils;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.instance.InstanceUtils;
 import scw.instance.ServiceLoader;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.util.JavaVersion;
 
+@SuppressWarnings("unchecked")
 public class LazyBeanDefinitionRegsitry extends
 		DefaultBeanDefinitionRegistry {
 	private static Logger logger = LoggerFactory
@@ -43,20 +42,13 @@ public class LazyBeanDefinitionRegsitry extends
 		return new IteratorBeanDefinitionLoaderChain(serviceLoader.iterator()).load(beanFactory, clazz);
 	}
 
-	private boolean accept(Class<?> clazz) {
-		return !ClassUtils.isPrimitiveOrWrapper(clazz)
-				&& !AnnotationUtils.isIgnore(clazz)
-				&& JavaVersion.isSupported(clazz)
-				&& ReflectionUtils.isPresent(clazz);
-	}
-
 	private BeanDefinition reference(Class<?> sourceClass) {
 		// 未注解service时接口默认实现
 		if (sourceClass.isInterface()) {
 			String name = sourceClass.getName() + "Impl";
 			Class<?> targetClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
 			if(targetClass != null && sourceClass.isAssignableFrom(targetClass) && beanFactory.isInstance(targetClass)){
-				return beanFactory.getBeanDefinition(targetClass);
+				return beanFactory.getDefinition(targetClass.getName());
 			}
 			
 			int index = sourceClass.getName().lastIndexOf(".");
@@ -65,7 +57,7 @@ public class LazyBeanDefinitionRegsitry extends
 							+ sourceClass.getSimpleName() + "Impl");
 			targetClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
 			if(targetClass != null && sourceClass.isAssignableFrom(targetClass) && beanFactory.isInstance(targetClass)){
-				return beanFactory.getBeanDefinition(targetClass);
+				return beanFactory.getDefinition(targetClass.getName());
 			}
 		}
 		return null;
@@ -77,7 +69,7 @@ public class LazyBeanDefinitionRegsitry extends
 				: getAutoImplClass(autoImpl, sourceClass);
 		if (!CollectionUtils.isEmpty(autoImpls)) {
 			for (Class<?> impl : autoImpls) {
-				BeanDefinition definition = super.getBeanDefinition(impl);
+				BeanDefinition definition = super.getDefinition(impl);
 				if (definition == null) {
 					definition = new DefaultBeanDefinition(beanFactory,
 							impl);
@@ -92,10 +84,10 @@ public class LazyBeanDefinitionRegsitry extends
 	}
 	
 	private BeanDefinition provider(Class<?> sourceClass){
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings({ "rawtypes"})
 		ProviderClassesLoader<?> classesLoader = new ProviderClassesLoader(beanFactory.getContextClassesLoader(), sourceClass);
 		for (Class<?> impl : classesLoader) {
-			BeanDefinition definition = super.getBeanDefinition(impl);
+			BeanDefinition definition = super.getDefinition(impl);
 			if (definition == null) {
 				definition = new DefaultBeanDefinition(beanFactory, impl);
 			}
@@ -127,7 +119,7 @@ public class LazyBeanDefinitionRegsitry extends
 			return null;
 		}
 
-		if (!accept(clazz)) {
+		if (!InstanceUtils.isSupport(clazz)) {
 			return null;
 		}
 		
@@ -151,8 +143,8 @@ public class LazyBeanDefinitionRegsitry extends
 	}
 
 	@Override
-	public BeanDefinition getBeanDefinition(String name) {
-		BeanDefinition definition = super.getBeanDefinition(name);
+	public BeanDefinition getDefinition(String name) {
+		BeanDefinition definition = super.getDefinition(name);
 		if (definition == null) {
 			BeanDefinition first = load(name);
 			definition = first;
@@ -171,7 +163,7 @@ public class LazyBeanDefinitionRegsitry extends
 			}
 
 			if (definition != null) {
-				definition = registerBeanDefinition(name, definition);
+				definition = registerDefinition(name, definition);
 			}
 		}
 		return definition;
@@ -191,7 +183,7 @@ public class LazyBeanDefinitionRegsitry extends
 				continue;
 			}
 
-			if (!accept(clz)) {
+			if (!InstanceUtils.isSupport(clz)) {
 				logger.debug("{} not present", clz);
 				continue;
 			}

@@ -80,7 +80,7 @@ public class XmlDubboInitializer implements ApplicationPostProcessor {
 							nodeList, null, beanFactory)) {
 				DubboBeanDefinition xmlDubboBean = new DubboBeanDefinition(
 						beanFactory, config.getInterfaceClass(), config);
-				beanFactory.registerBeanDefinition(
+				beanFactory.registerDefinition(
 						xmlDubboBean.getId(), xmlDubboBean);
 			}
 

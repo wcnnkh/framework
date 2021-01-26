@@ -18,25 +18,33 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import scw.core.utils.TypeUtils;
+import scw.convert.ConversionService;
+import scw.core.utils.ClassUtils;
 import scw.mapper.FieldDescriptor;
 import scw.value.Value;
 
 public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	private final Directory directory;
 	private final Analyzer analyzer;
+	private final ConversionService conversionService;
 
-	public DefaultLuceneTemplete(String directory) throws IOException {
-		this(directory, new StandardAnalyzer());
+	public DefaultLuceneTemplete(String directory, ConversionService conversionService) throws IOException {
+		this(directory, new StandardAnalyzer(), conversionService);
 	}
 	
-	public DefaultLuceneTemplete(String directory, Analyzer analyzer) throws IOException {
-		this(FSDirectory.open(Paths.get(directory)), new StandardAnalyzer());
+	public DefaultLuceneTemplete(String directory, Analyzer analyzer, ConversionService conversionService) throws IOException {
+		this(FSDirectory.open(Paths.get(directory)), new StandardAnalyzer(), conversionService);
 	}
 	
-	public DefaultLuceneTemplete(Directory directory, Analyzer analyzer) {
+	public DefaultLuceneTemplete(Directory directory, Analyzer analyzer, ConversionService conversionService) {
 		this.directory = directory;
 		this.analyzer = analyzer;
+		this.conversionService = conversionService;
+	}
+	
+	@Override
+	protected ConversionService getConversionService() {
+		return conversionService;
 	}
 
 	public final Directory getDirectory() {
@@ -55,8 +63,8 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 
 	@Override
 	protected Field toField(FieldDescriptor fieldDescriptor, Value value) {
-		if (TypeUtils.isLong(fieldDescriptor.getType()) || TypeUtils.isInt(fieldDescriptor.getType())
-				|| TypeUtils.isShort(fieldDescriptor.getType())) {
+		if (ClassUtils.isLong(fieldDescriptor.getType()) || ClassUtils.isInt(fieldDescriptor.getType())
+				|| ClassUtils.isShort(fieldDescriptor.getType())) {
 			return new NumericDocValuesField(fieldDescriptor.getName(), value.getAsLong());
 		}
 

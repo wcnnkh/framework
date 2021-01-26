@@ -6,6 +6,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.boot.Application;
 import scw.boot.support.ApplicationUtils;
@@ -66,7 +67,7 @@ public class EurekaClientBeanBuilder implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			EurekaInstanceConfig eurekaInstanceConfig = beanFactory.getInstance(EurekaInstanceConfig.class);
 			InstanceInfo instanceInfo = beanFactory.getInstance(InstanceInfoFactory.class).create(eurekaInstanceConfig);
 			return new ApplicationInfoManager(eurekaInstanceConfig, instanceInfo);
@@ -84,7 +85,7 @@ public class EurekaClientBeanBuilder implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			InetUtilsProperties inetUtilsProperties = beanFactory.getInstance(InetUtilsProperties.class);
 			return new InetUtils(inetUtilsProperties);
 		}
@@ -102,7 +103,7 @@ public class EurekaClientBeanBuilder implements BeanDefinitionLoader {
 		}
 
 		@Override	
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			InetUtils inetUtils = beanFactory.getInstance(InetUtils.class);
 			ManagementMetadataProvider managementMetadataProvider = beanFactory.isInstance(
 					ManagementMetadataProvider.class) ? beanFactory.getInstance(ManagementMetadataProvider.class)
@@ -194,7 +195,7 @@ public class EurekaClientBeanBuilder implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			ApplicationInfoManager applicationInfoManager = beanFactory.getInstance(ApplicationInfoManager.class);
 			EurekaClientConfig eurekaClientConfig = beanFactory.getInstance(EurekaClientConfig.class);
 			Application application = beanFactory.getInstance(Application.class);
@@ -214,7 +215,7 @@ public class EurekaClientBeanBuilder implements BeanDefinitionLoader {
 		}
 
 		@Override
-		public Object create() throws Exception {
+		public Object create() throws BeansException {
 			return new EurekaClientConfigBean();
 		}
 	}

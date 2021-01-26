@@ -9,7 +9,7 @@ import com.netflix.hystrix.HystrixThreadPoolProperties;
 
 import scw.aop.MethodInterceptorChain;
 import scw.core.reflect.MethodInvoker;
-import scw.instance.factory.NoArgsInstanceFactory;
+import scw.instance.NoArgsInstanceFactory;
 import scw.netflix.hystrix.annotation.Hystrix;
 
 public class DefaultHystrixCommandFactory implements HystrixCommandFactory {

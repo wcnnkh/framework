@@ -7,7 +7,7 @@ import scw.io.Resource;
 import scw.lang.Nullable;
 
 public interface PropertiesResolver {
-	boolean isSupportResolveProperties(Resource resource);
+	boolean canResolveProperties(Resource resource);
 	
 	void resolveProperties(Properties properties, Resource resource, @Nullable Charset charset);
 }
