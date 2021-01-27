@@ -82,7 +82,7 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	public Session getSession(boolean create) {
 		HttpSession httpSession = httpServletRequest.getSession(create);
-		return new ServletHttpSession(httpSession);
+		return httpSession == null? null:new ServletHttpSession(httpSession);
 	}
 
 	public Principal getPrincipal() {
