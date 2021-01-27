@@ -11,14 +11,13 @@ import org.w3c.dom.Node;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.core.annotation.AnnotatedElementUtils;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.property.PropertyFactory;
 
 public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -68,38 +67,37 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT;
 	}
 
-	public boolean isAccept(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory, PropertyFactory propertyFactory){
+	public boolean isAccept(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory){
 		switch (parameterType) {
 		case ref:
-			BeanDefinition definition = beanFactory.getDefinition(xmlValue.formatValue(propertyFactory));
+			BeanDefinition definition = beanFactory.getDefinition(xmlValue.formatValue(beanFactory.getEnvironment()));
 			if(definition == null){
 				return false;
 			}
 			
 			return parameterDescriptor.getType().isAssignableFrom(definition.getTargetClass()) && definition.isInstance();
 		case property:
-			return propertyFactory.containsKey(xmlValue.getValue());
+			return beanFactory.getEnvironment().containsKey(xmlValue.getValue());
 		default:
 			break;
 		}
 		return true;
 	}
 
-	public Object parseValue(ParameterDescriptor parameterDescriptor, NoArgsInstanceFactory instanceFactory, PropertyFactory propertyFactory)
-			throws Exception {
+	public Object parseValue(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory) {
 		Object value = null;
 		switch (parameterType) {
 		case value:
-			String text = xmlValue.formatValue(propertyFactory);
+			String text = xmlValue.formatValue(beanFactory.getEnvironment());
 			if (text != null) {
 				value = formatStringValue(new StringValue(text), parameterDescriptor);
 			}
 			break;
 		case ref:
-			value = instanceFactory.getInstance(xmlValue.formatValue(propertyFactory));
+			value = beanFactory.getInstance(xmlValue.formatValue(beanFactory.getEnvironment()));
 			break;
 		case property:
-			Value v = propertyFactory.getValue(xmlValue.getValue());
+			Value v = beanFactory.getEnvironment().getValue(xmlValue.getValue());
 			if (v != null) {
 				value = formatStringValue(v, parameterDescriptor);
 			}
@@ -114,7 +112,7 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 		return value;
 	}
 
-	private Object formatStringValue(Value value, ParameterDescriptor parameterDescriptor) throws ClassNotFoundException, ParseException {
+	private Object formatStringValue(Value value, ParameterDescriptor parameterDescriptor) {
 		if (value == null) {
 			return null;
 		}
@@ -129,7 +127,11 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 				}
 
 				SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
-				return sdf.parse(value.getAsString());
+				try {
+					return sdf.parse(value.getAsString());
+				} catch (ParseException e) {
+					throw new BeansException(value.getAsString(), e);
+				}
 			}
 		}
 		

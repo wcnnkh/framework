@@ -26,16 +26,11 @@ public final class XUtils {
 	private XUtils() {
 	};
 	
-	private static final ServiceLoaderFactory SERVICE_LOADER_FACTORY =  new DefaultServiceLoaderFactory();
-	public static ServiceLoaderFactory getServiceLoaderFactory() {
-		return SERVICE_LOADER_FACTORY;
-	}
-	
 	public static String getUUID() {
 		return StringUtils.removeChar(UUID.randomUUID().toString(), '-');
 	}
 
-	public static <T, R> T useResource(ResourceFactory<R> resourceFactory, Converter<R, T> converter) {
+	public static <T, R> T useResource(ResourcePool<R> resourceFactory, Converter<R, T> converter) {
 		R resource = null;
 		try {
 			resource = resourceFactory.getResource();
@@ -47,7 +42,7 @@ public final class XUtils {
 		}
 	}
 
-	public static <T, R> T execute(ResourceFactory<R> resourceFactory, Converter<R, T> resourceConverter) {
+	public static <T, R> T execute(ResourcePool<R> resourceFactory, Converter<R, T> resourceConverter) {
 		R r = null;
 		try {
 			r = resourceFactory.getResource();

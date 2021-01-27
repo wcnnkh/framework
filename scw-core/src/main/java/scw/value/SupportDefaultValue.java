@@ -12,9 +12,9 @@ public abstract class SupportDefaultValue extends AbstractValue {
 	public Value getDefaultValue() {
 		return defaultValue;
 	}
-
+	
 	@Override
-	public <T> T getAsObject(Class<? extends T> type) {
+	public <T> T getAsObject(Class<T> type) {
 		T v = super.getAsObject(type);
 		return v == null ? getDefaultValue().getAsObject(type) : v;
 	}

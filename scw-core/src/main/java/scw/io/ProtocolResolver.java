@@ -1,5 +1,6 @@
 package scw.io;
 
+
 /**
  * A resolution strategy for protocol-specific resource handles.
  *

@@ -21,17 +21,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import scw.core.Assert;
-import scw.core.Callable;
+import scw.util.AbstractIterator;
 import scw.util.MultiValueMap;
 import scw.util.MultiValueMapWrapper;
 
@@ -66,8 +64,9 @@ public abstract class CollectionUtils {
 		if (iterable instanceof Collection) {
 			return ((Collection) iterable).isEmpty();
 		}
-
-		return !iterable.iterator().hasNext();
+		
+		Iterator iterator = iterable.iterator();
+		return iterator != null && iterator.hasNext();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -503,59 +502,48 @@ public abstract class CollectionUtils {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static <T> Set<T> asSet(T... values) {
-		if (ArrayUtils.isEmpty(values)) {
-			return Collections.EMPTY_SET;
-		}
-
-		return asSet(Arrays.asList(values));
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <E> Set<E> asSet(Collection<E> collection) {
-		if (CollectionUtils.isEmpty(collection)) {
-			return Collections.EMPTY_SET;
-		}
-
-		return Collections.unmodifiableSet(new LinkedHashSet<E>(collection));
-	}
-
-	public static <K, V, M extends Map<K, V>> void put(M map, K key, V value, Callable<? extends M> callback) {
-		if (map == null) {
-			map = callback.call();
-		}
-
-		map.put(key, value);
-	}
-
-	public static <K, V> Callable<HashMap<K, V>> hashMapCallable(final int initialCapacity) {
-		return new Callable<HashMap<K, V>>() {
-
-			public HashMap<K, V> call() {
-				return new HashMap<K, V>(initialCapacity);
-			}
-		};
-	};
-
-	public static <E> Callable<ArrayList<E>> arrayListCallable(final int initialCapacity) {
-		return new Callable<ArrayList<E>>() {
-
-			public ArrayList<E> call() {
-				return new ArrayList<E>(initialCapacity);
-			}
-		};
-	}
-
-	public static <T> T first(Collection<T> values) {
-		if (isEmpty(values)) {
+	public static <T> T first(Iterable<T> values) {
+		if (values == null) {
 			return null;
 		}
+		
 		if (values instanceof List) {
 			List<T> list = (List<T>) values;
-			return list.get(0);
+			return list.isEmpty()? null:list.get(0);
 		} else {
-			return values.iterator().next();
+			Iterator<T> iterator = values.iterator();
+			if(iterator != null && iterator.hasNext()){
+				return iterator.next();
+			}
+			return null;
+		}
+	}
+	
+	private static final class PreviousIterator<E> extends AbstractIterator<E>{
+		private final ListIterator<E> listIterator;
+		
+		public PreviousIterator(ListIterator<E> listIterator){
+			this.listIterator = listIterator;
+		}
+		
+		public boolean hasNext() {
+			return listIterator.hasPrevious();
+		}
+
+		public E next() {
+			return listIterator.previous();
+		}
+	}
+	
+	public static <E> Iterator<E> getIterator(List<E> list, boolean previous){
+		if(isEmpty(list)){
+			return Collections.emptyIterator();
+		}
+		
+		if(previous){
+			return new PreviousIterator<E>(list.listIterator(list.size()));
+		}else{
+			return list.iterator();
 		}
 	}
 }

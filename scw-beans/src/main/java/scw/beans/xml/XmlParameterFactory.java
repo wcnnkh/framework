@@ -4,17 +4,14 @@ import scw.beans.BeanFactory;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
-import scw.value.property.PropertyFactory;
 
 public class XmlParameterFactory extends AbstractParameterFactory {
 	private final XmlBeanParameter[] xmlBeanParameters;
 	private final BeanFactory beanFactory;
-	private final PropertyFactory propertyFactory;
 
-	public XmlParameterFactory(BeanFactory beanFactory, PropertyFactory propertyFactory,
+	public XmlParameterFactory(BeanFactory beanFactory,
 			XmlBeanParameter[] xmlBeanParameters) {
 		this.beanFactory = beanFactory;
-		this.propertyFactory = propertyFactory;
 		this.xmlBeanParameters = xmlBeanParameters;
 	}
 
@@ -44,14 +41,14 @@ public class XmlParameterFactory extends AbstractParameterFactory {
 	protected boolean isAccept(ParameterDescriptors parameterDescriptors, ParameterDescriptor parameterDescriptor,
 			int index) {
 		XmlBeanParameter xmlBeanParameter = getXmlBeanParameter(parameterDescriptor, index);
-		return xmlBeanParameter.isAccept(parameterDescriptor, beanFactory, propertyFactory);
+		return xmlBeanParameter.isAccept(parameterDescriptor, beanFactory);
 	}
 
 	@Override
 	protected Object getParameter(ParameterDescriptors parameterDescriptors, ParameterDescriptor parameterDescriptor,
 			int index) throws Exception {
 		XmlBeanParameter xmlBeanParameter = xmlBeanParameters[index];
-		return xmlBeanParameter.parseValue(parameterDescriptor, beanFactory, propertyFactory);
+		return xmlBeanParameter.parseValue(parameterDescriptor, beanFactory);
 	}
 
 }

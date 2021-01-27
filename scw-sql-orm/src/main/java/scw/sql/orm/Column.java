@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Date;
 
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
 import scw.json.JSONUtils;
 import scw.mapper.Field;
 import scw.sql.SqlUtils;
@@ -72,43 +72,43 @@ public class Column implements Serializable {
 			return value;
 		} else if (type == Value.class) {
 			return new AnyValue(value);
-		} else if (TypeUtils.isBoolean(type)) {
+		} else if (ClassUtils.isBoolean(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).intValue() == 1;
 			} else {
 				return StringUtils.parseBoolean(value.toString());
 			}
-		} else if (TypeUtils.isInt(type)) {
+		} else if (ClassUtils.isInt(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).intValue();
 			} else {
 				return StringUtils.parseInt(value.toString());
 			}
-		} else if (TypeUtils.isLong(type)) {
+		} else if (ClassUtils.isLong(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).longValue();
 			} else {
 				return StringUtils.parseLong(value.toString());
 			}
-		} else if (TypeUtils.isByte(type)) {
+		} else if (ClassUtils.isByte(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).byteValue();
 			} else {
 				return StringUtils.parseByte(value.toString());
 			}
-		} else if (TypeUtils.isFloat(type)) {
+		} else if (ClassUtils.isFloat(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).floatValue();
 			} else {
 				return StringUtils.parseFloat(value.toString());
 			}
-		} else if (TypeUtils.isDouble(type)) {
+		} else if (ClassUtils.isDouble(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).doubleValue();
 			} else {
 				return StringUtils.parseDouble(value.toString());
 			}
-		} else if (TypeUtils.isShort(type)) {
+		} else if (ClassUtils.isShort(type)) {
 			if (value instanceof Number) {
 				return ((Number) value).shortValue();
 			} else {

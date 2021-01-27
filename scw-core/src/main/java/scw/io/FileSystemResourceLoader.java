@@ -16,6 +16,7 @@
 
 package scw.io;
 
+
 /**
  * {@link ResourceLoader} implementation that resolves plain paths as
  * file system resources rather than as class path resources
@@ -39,14 +40,22 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 	 * @param path the path to the resource
 	 * @return the corresponding Resource handle
 	 * @see FileSystemResource
-	 * @see org.springframework.web.context.support.ServletContextResourceLoader#getResourceByPath
 	 */
 	@Override
 	protected Resource getResourceByPath(String path) {
 		if (path != null && path.startsWith("/")) {
 			path = path.substring(1);
 		}
-		return new FileSystemContextResource(path);
+		FileSystemResource fileSystemResource = new FileSystemContextResource(path);
+		if(ignoreClassPathResource(fileSystemResource)){
+			return fileSystemResource;
+		}
+		Resource resource = super.getResourceByPath(path);
+		return new AutomaticResource(fileSystemResource, resource);
+	}
+	
+	protected boolean ignoreClassPathResource(FileSystemResource resource){
+		return resource.exists();
 	}
 
 

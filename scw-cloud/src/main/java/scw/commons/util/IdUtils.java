@@ -17,7 +17,7 @@
 package scw.commons.util;
 
 import scw.core.utils.StringUtils;
-import scw.value.property.PropertyFactory;
+import scw.env.Environment;
 
 /**
  * @author Spencer Gibb
@@ -35,25 +35,25 @@ public final class IdUtils {
 		throw new IllegalStateException("Can't instantiate a utility class");
 	}
 
-	public static String getDefaultInstanceId(PropertyFactory propertyFactory) {
-		return getDefaultInstanceId(propertyFactory, true);
+	public static String getDefaultInstanceId(Environment environment) {
+		return getDefaultInstanceId(environment, true);
 	}
 
-	public static String getDefaultInstanceId(PropertyFactory propertyFactory, boolean includeHostname) {
-		String vcapInstanceId = propertyFactory.getString("vcap.application.instance_id");
+	public static String getDefaultInstanceId(Environment environment, boolean includeHostname) {
+		String vcapInstanceId = environment.getString("vcap.application.instance_id");
 		if (StringUtils.hasText(vcapInstanceId)) {
 			return vcapInstanceId;
 		}
 
 		String hostname = null;
 		if (includeHostname) {
-			hostname = propertyFactory.getString("spring.cloud.client.hostname");
+			hostname = environment.getString("spring.cloud.client.hostname");
 		}
-		String appName = propertyFactory.getString("spring.application.name");
+		String appName = environment.getString("spring.application.name");
 
 		String namePart = combineParts(hostname, SEPARATOR, appName);
 
-		String indexPart = propertyFactory.getValue("spring.application.instance_id", String.class, propertyFactory.getString("server.port"));
+		String indexPart = environment.getValue("spring.application.instance_id", String.class, environment.getString("server.port"));
 
 		return combineParts(namePart, SEPARATOR, indexPart);
 	}
@@ -63,8 +63,8 @@ public final class IdUtils {
 	 * @param resolver A property resolved
 	 * @return A unique id that can be used to uniquely identify a service
 	 */
-	public static String getResolvedServiceId(PropertyFactory propertyFactory) {
-		return propertyFactory.resolvePlaceholders(getUnresolvedServiceId());
+	public static String getResolvedServiceId(Environment environment) {
+		return environment.resolvePlaceholders(getUnresolvedServiceId());
 	}
 
 	/**

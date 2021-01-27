@@ -7,7 +7,6 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
 import scw.http.ContentDisposition;
 import scw.http.HttpHeaders;
@@ -17,6 +16,7 @@ import scw.http.HttpResponseEntity;
 import scw.http.HttpStatus;
 import scw.http.MediaType;
 import scw.http.client.exception.HttpClientException;
+import scw.instance.InstanceUtils;
 import scw.io.FileUtils;
 import scw.io.support.TemporaryFile;
 import scw.lang.Nullable;

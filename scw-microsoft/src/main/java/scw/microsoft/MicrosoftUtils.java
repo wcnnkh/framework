@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.ArrayUtils;
 import scw.http.HttpOutputMessage;
 import scw.http.HttpUtils;
+import scw.instance.InstanceUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.lang.NotSupportedException;

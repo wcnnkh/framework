@@ -2,11 +2,11 @@ package scw.dom;
 
 import org.w3c.dom.Node;
 
-import scw.value.property.PropertyFactory;
+import scw.util.PropertyResolver;
 
 public class DomAttributeMapping extends DomMapping {
 
-	public DomAttributeMapping(PropertyFactory propertyFactory, Node node) {
-		super(propertyFactory, DomUtils.attributeAsMap(node));
+	public DomAttributeMapping(PropertyResolver propertyResolver, Node node) {
+		super(propertyResolver, DomUtils.attributeAsMap(node));
 	}
 }

@@ -15,14 +15,15 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
+import scw.env.Environment;
 import scw.io.Resource;
-import scw.value.property.PropertyFactory;
+import scw.io.ResourceLoader;
 
 public final class XmlBeanUtils {
 	private XmlBeanUtils() {
 	};
 
-	public static XmlBeanParameter parseBeanParameter(Node node)
+	public static XmlBeanParameter parseBeanParameter(Node node, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		String name = DomUtils.getNodeAttributeValue(node, "name");
 		String ref = DomUtils.getNodeAttributeValue(node, "ref");
@@ -31,7 +32,7 @@ public final class XmlBeanUtils {
 		String property = DomUtils.getNodeAttributeValue(node, "property");
 
 		Class<?> typeClass = StringUtils.isEmpty(type) ? null : ClassUtils
-				.forName(type);
+				.forName(type, classLoader);
 		if (!StringUtils.isEmpty(ref)) {
 			return new XmlBeanParameter(XmlParameterType.ref, typeClass, name,
 					ref, node);
@@ -51,23 +52,23 @@ public final class XmlBeanUtils {
 		return DomUtils.getBooleanValue(node, "singleton", null);
 	}
 
-	public static boolean getBooleanValue(PropertyFactory propertyFactory,
+	public static boolean getBooleanValue(Environment environment,
 			Node node, String name, boolean defaultValue) {
-		String value = DomUtils.getNodeAttributeValue(propertyFactory, node,
+		String value = DomUtils.getNodeAttributeValue(environment, node,
 				name);
 		return StringUtils.isEmpty(value) ? defaultValue : Boolean
 				.parseBoolean(value);
 	}
 
-	public static int getIntegerValue(PropertyFactory propertyFactory,
+	public static int getIntegerValue(Environment environment,
 			Node node, String name, int defaultValue) {
-		String value = DomUtils.getNodeAttributeValue(propertyFactory, node,
+		String value = DomUtils.getNodeAttributeValue(environment, node,
 				name);
 		return StringUtils.isEmpty(value) ? defaultValue : Integer
 				.parseInt(value);
 	}
 
-	public static List<XmlBeanParameter> parseBeanParameterList(Node node)
+	public static List<XmlBeanParameter> parseBeanParameterList(Node node, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		List<XmlBeanParameter> xmlBeanParameters = new ArrayList<XmlBeanParameter>();
 		NodeList nodeList = node.getChildNodes();
@@ -78,44 +79,44 @@ public final class XmlBeanUtils {
 					continue;
 				}
 
-				xmlBeanParameters.add(parseBeanParameter(nRoot));
+				xmlBeanParameters.add(parseBeanParameter(nRoot, classLoader));
 			}
 		}
 		return xmlBeanParameters;
 	}
 
-	public static NodeList getRootNodeList(Resource resource) {
+	public static NodeList getRootNodeList(Resource resource, ResourceLoader resourceLoader) {
 		Document document = DomUtils.getDomBuilder().parse(resource);
 		Node node = document.getDocumentElement();
 		if (!"beans".equals(node.getNodeName())) {
 			throw new BeansException("root tag name error ["
 					+ node.getNodeName() + "]");
 		}
-		return DomUtils.getChildNodes(node, true);
+		return DomUtils.getChildNodes(node, resourceLoader);
 	}
 
-	public static String getPackageName(PropertyFactory propertyFactory,
+	public static String getPackageName(Environment environment,
 			Node node) {
-		return DomUtils.getNodeAttributeValue(propertyFactory, node, "package");
+		return DomUtils.getNodeAttributeValue(environment, node, "package");
 	}
 
-	public static String getVersion(PropertyFactory propertyFactory, Node node) {
-		return DomUtils.getNodeAttributeValue(propertyFactory, node, "version");
+	public static String getVersion(Environment environment, Node node) {
+		return DomUtils.getNodeAttributeValue(environment, node, "version");
 	}
 
-	public static String getAddress(PropertyFactory propertyFactory, Node node) {
-		return DomUtils.getRequireNodeAttributeValue(propertyFactory, node,
+	public static String getAddress(Environment environment, Node node) {
+		return DomUtils.getRequireNodeAttributeValue(environment, node,
 				"address");
 	}
 
-	public static String getRef(PropertyFactory propertyFactory, Node node) {
-		return DomUtils.getRequireNodeAttributeValue(propertyFactory, node,
+	public static String getRef(Environment environment, Node node) {
+		return DomUtils.getRequireNodeAttributeValue(environment, node,
 				"ref");
 	}
 
-	public static String getCharsetName(PropertyFactory propertyFactory,
+	public static String getCharsetName(Environment environment,
 			Node node, String defaultValue) {
-		String charsetName = DomUtils.getNodeAttributeValue(propertyFactory,
+		String charsetName = DomUtils.getNodeAttributeValue(environment,
 				node, "charsetName");
 		return StringUtils.isEmpty(charsetName) ? defaultValue : charsetName;
 	}
@@ -127,13 +128,13 @@ public final class XmlBeanUtils {
 	}
 
 	public static List<XmlMethodIocProcessor> getMethodIocProcessos(Class<?> clz,
-			NodeList nodeList, String tagName) throws Exception {
+			NodeList nodeList, String tagName, ClassLoader classLoader) throws Exception {
 		List<XmlMethodIocProcessor> list = new ArrayList<XmlMethodIocProcessor>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if (tagName.equalsIgnoreCase(n.getNodeName())) {
 				XmlMethodIocProcessor xmlBeanMethod = new XmlMethodIocProcessor(
-						clz, n);
+						clz, n, classLoader);
 				list.add(xmlBeanMethod);
 			}
 		}
@@ -141,22 +142,22 @@ public final class XmlBeanUtils {
 	}
 
 	public static List<XmlMethodIocProcessor> getInitMethodIocProcessors(
-			Class<?> clz, NodeList nodeList) throws Exception {
-		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "init");
+			Class<?> clz, NodeList nodeList, ClassLoader classLoader) throws Exception {
+		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "init", classLoader);
 	}
 
 	public static List<XmlMethodIocProcessor> getDestroyMethodIocProcessors(
-			Class<?> clz, NodeList nodeList) throws Exception {
-		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "destroy");
+			Class<?> clz, NodeList nodeList, ClassLoader classLoader) throws Exception {
+		return XmlBeanUtils.getMethodIocProcessos(clz, nodeList, "destroy", classLoader);
 	}
 
-	public static XmlBeanParameter[] getConstructorParameters(NodeList nodeList)
+	public static XmlBeanParameter[] getConstructorParameters(NodeList nodeList, ClassLoader classLoader)
 			throws Exception {
 		List<XmlBeanParameter> constructorParameterList = new ArrayList<XmlBeanParameter>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("constructor".equalsIgnoreCase(n.getNodeName())) {// Constructor
-				List<XmlBeanParameter> list = parseBeanParameterList(n);
+				List<XmlBeanParameter> list = parseBeanParameterList(n, classLoader);
 				if (list != null) {
 					constructorParameterList.addAll(list);
 				}
@@ -170,14 +171,14 @@ public final class XmlBeanUtils {
 	}
 
 	public static Collection<IocProcessor> getBeanPropertiesIocProcessors(
-			Class<?> targetClass, NodeList nodeList)
+			Class<?> targetClass, NodeList nodeList, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		List<IocProcessor> iocProcessors = new ArrayList<IocProcessor>();
 		for (int a = 0; a < nodeList.getLength(); a++) {
 			Node n = nodeList.item(a);
 			if ("properties".equalsIgnoreCase(n.getNodeName())) {// Properties
 				List<XmlBeanParameter> list = XmlBeanUtils
-						.parseBeanParameterList(n);
+						.parseBeanParameterList(n, classLoader);
 				if (list != null) {
 					for (XmlBeanParameter xmlBeanParameter : list) {
 						iocProcessors.add(new XmlPropertiesIocProcessor(
@@ -203,13 +204,13 @@ public final class XmlBeanUtils {
 				: DomUtils.getNodeAttributeValue(node, "class");
 	}
 
-	public static Class<?> getClass(Node node, boolean require)
+	public static Class<?> getClass(Node node, boolean require, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		String className = getClassName(node, require);
 		if (StringUtils.isEmpty(className)) {
 			return null;
 		}
 
-		return ClassUtils.forName(className);
+		return ClassUtils.forName(className, classLoader);
 	}
 }

@@ -1,6 +1,6 @@
 package scw.math;
 
-import scw.core.instance.InstanceUtils;
+import scw.instance.InstanceUtils;
 import scw.math.gcd.DivisionAlgorithm;
 import scw.math.gcd.GreatestCommonDivisor;
 

@@ -7,12 +7,12 @@ import scw.beans.BeanUtils;
 import scw.beans.RuntimeBean;
 import scw.complete.Complete;
 import scw.complete.CompleteService;
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.core.reflect.MethodInvoker;
 import scw.core.utils.StringUtils;
 import scw.tcc.annotation.Tcc;
 
-@SPI(order = Integer.MIN_VALUE, value = TccService.class)
+@Provider(order = Integer.MIN_VALUE, value = TccService.class)
 public class DefaultTccService implements TccService {
 	private BeanFactory beanFactory;
 	private CompleteService completeService;

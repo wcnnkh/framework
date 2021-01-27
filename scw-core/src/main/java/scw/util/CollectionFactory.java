@@ -24,8 +24,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import scw.core.Assert;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
+import scw.instance.InstanceUtils;
 import scw.lang.Nullable;
 
 public final class CollectionFactory {
@@ -36,7 +36,7 @@ public final class CollectionFactory {
 
 	private static final GenericMapFactory GENERIC_MAP_FACTORY = (GenericMapFactory) (JavaVersion.INSTANCE
 			.getMasterVersion() >= 8 ? ClassUtils
-			.createInstance("scw.util.Java8GenericMapFactory")
+			.newInstance("scw.util.Java8GenericMapFactory", null)
 			: new Java5GenericMapFactory());
 
 	static {

@@ -163,4 +163,9 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 		}
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return super.toString() + " [" + cache + "]";
+	}
 }

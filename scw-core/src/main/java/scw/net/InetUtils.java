@@ -20,8 +20,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.StringUtils;
+import scw.instance.InstanceUtils;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;

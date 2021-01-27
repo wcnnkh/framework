@@ -73,14 +73,14 @@ public class MultiProxyFactory implements ProxyFactory, Iterable<ProxyFactory> {
 		return false;
 	}
 
-	public Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
+	public Class<?> getUserClass(String className, ClassLoader classLoader)
 			throws ClassNotFoundException {
 		ClassLoader classLoaderToUse = classLoader == null ? ClassUtils.getDefaultClassLoader() : classLoader;
 		for (ProxyFactory proxyFactory : this) {
 			if (proxyFactory.isProxy(className, classLoaderToUse)) {
-				return proxyFactory.getUserClass(className, initialize, classLoaderToUse);
+				return proxyFactory.getUserClass(className, classLoaderToUse);
 			}
 		}
-		return ClassUtils.forName(className, initialize, classLoaderToUse);
+		return ClassUtils.forName(className, classLoaderToUse);
 	}
 }

@@ -3,78 +3,78 @@ package scw.tomcat;
 import java.util.Properties;
 
 import scw.core.utils.StringUtils;
+import scw.env.Environment;
 import scw.io.ResourceUtils;
-import scw.value.property.PropertyFactory;
 
 public final class TomcatUtils {
 	private TomcatUtils() {
 	};
 
-	private static String getProperty(PropertyFactory propertyFactory, String name) {
-		return propertyFactory.getString("tomcat." + name);
+	private static String getProperty(Environment environment, String name) {
+		return environment.getString("tomcat." + name);
 	}
 
-	public static String getBaseDir(PropertyFactory propertyFactory) {
-		return getProperty(propertyFactory, "basedir");
+	public static String getBaseDir(Environment environment) {
+		return getProperty(environment, "basedir");
 	}
 
-	public static String getContextPath(PropertyFactory propertyFactory) {
-		return getProperty(propertyFactory, "contextPath");
+	public static String getContextPath(Environment environment) {
+		return getProperty(environment, "contextPath");
 	}
 
-	public static String getDefaultServletMapping(PropertyFactory propertyFactory) {
-		return getProperty(propertyFactory, "source");
+	public static String getDefaultServletMapping(Environment environment) {
+		return getProperty(environment, "source");
 	}
 
-	public static String getTomcatProtocol(PropertyFactory propertyFactory) {
-		return getProperty(propertyFactory, "protocol");
+	public static String getTomcatProtocol(Environment environment) {
+		return getProperty(environment, "protocol");
 	}
 
-	public static String getTomcatConnectorName(PropertyFactory propertyFactory) {
-		return getProperty(propertyFactory, "connector");
+	public static String getTomcatConnectorName(Environment environment) {
+		return getProperty(environment, "connector");
 	}
 
-	public static String getTomcatContextManager(PropertyFactory propertyFactory) {
-		return getProperty(propertyFactory, "context.manager");
+	public static String getTomcatContextManager(Environment environment) {
+		return getProperty(environment, "context.manager");
 	}
 
-	private static String getShutdownProperty(PropertyFactory propertyFactory, String name) {
-		return getProperty(propertyFactory, "shutdown." + name);
+	private static String getShutdownProperty(Environment environment, String name) {
+		return getProperty(environment, "shutdown." + name);
 	}
 
-	public static String getShutdownPath(PropertyFactory propertyFactory) {
-		return getShutdownProperty(propertyFactory, "path");
+	public static String getShutdownPath(Environment environment) {
+		return getShutdownProperty(environment, "path");
 	}
 
-	public static String getShutdownName(PropertyFactory propertyFactory) {
-		return getShutdownProperty(propertyFactory, "name");
+	public static String getShutdownName(Environment environment) {
+		return getShutdownProperty(environment, "name");
 	}
 
-	public static String getShutdownIp(PropertyFactory propertyFactory) {
-		return getShutdownProperty(propertyFactory, "ip");
+	public static String getShutdownIp(Environment environment) {
+		return getShutdownProperty(environment, "ip");
 	}
 
-	public static String getShutdownUserName(PropertyFactory propertyFactory) {
-		return getShutdownProperty(propertyFactory, "username");
+	public static String getShutdownUserName(Environment environment) {
+		return getShutdownProperty(environment, "username");
 	}
 
-	public static String getShutdownPassword(PropertyFactory propertyFactory) {
-		return getShutdownProperty(propertyFactory, "password");
+	public static String getShutdownPassword(Environment environment) {
+		return getShutdownProperty(environment, "password");
 	}
 
-	public static boolean tomcatScanTld(PropertyFactory propertyFactory) {
-		return StringUtils.parseBoolean(getProperty(propertyFactory, "scan.tld"), true);
+	public static boolean tomcatScanTld(Environment environment) {
+		return StringUtils.parseBoolean(getProperty(environment, "scan.tld"), true);
 	}
 
-	public static Properties getServletInitParametersConfig(String servletName, boolean loadOnStartup) {
+	public static Properties getServletInitParametersConfig(Environment environment, String servletName, boolean loadOnStartup) {
 		String path = servletName + "-servlet-init-params.properties";
 		Properties properties = new Properties();
 		if (loadOnStartup) {
 			properties.put("load-on-startup", 1);
 		}
 
-		if (ResourceUtils.getResourceOperations().isExist(path)) {
-			properties.putAll(ResourceUtils.getResourceOperations().getProperties(path).get());
+		if (ResourceUtils.exists(environment, path)) {
+			properties.putAll(environment.getProperties(path).get());
 		}
 		return properties;
 	}

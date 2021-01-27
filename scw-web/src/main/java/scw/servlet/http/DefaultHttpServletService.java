@@ -2,29 +2,41 @@ package scw.servlet.http;
 
 import java.io.IOException;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
-import scw.core.Constants;
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
+import scw.event.Observable;
 import scw.http.server.DefaultHttpService;
-import scw.value.property.PropertyFactory;
+import scw.servlet.ServletService;
 
-@SPI(order = Integer.MIN_VALUE, value = HttpServletService.class)
-public class DefaultHttpServletService extends DefaultHttpService implements HttpServletService {
-
-	public DefaultHttpServletService(BeanFactory beanFactory, PropertyFactory propertyFactory) {
-		super(beanFactory, propertyFactory);
+@Provider(order = Integer.MIN_VALUE, value = ServletService.class)
+public class DefaultHttpServletService extends DefaultHttpService implements ServletService {
+	private final Observable<String> charsetName;
+	
+	public DefaultHttpServletService(BeanFactory beanFactory) {
+		super(beanFactory);
+		charsetName = beanFactory.getEnvironment().getObservableCharsetName();
 	}
 
 	public String getCharsetName() {
-		return Constants.DEFAULT_CHARSET_NAME;
+		return charsetName.get();
+	}
+	
+	public void service(ServletRequest request, ServletResponse response)
+			throws IOException {
+		if(request instanceof HttpServletRequest && response instanceof HttpServletResponse){
+			service((HttpServletRequest)request, (HttpServletResponse)response);
+		}
 	}
 
 	public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		request.setCharacterEncoding(getCharsetName());
-		response.setCharacterEncoding(getCharsetName());
+		String charsetName = getCharsetName();
+		request.setCharacterEncoding(charsetName);
+		response.setCharacterEncoding(charsetName);
 		ServletServerHttpRequest serverHttpRequest = new ServletServerHttpRequest(request);
 		ServletServerHttpResponse serverHttpResponse = new ServletServerHttpResponse(response);
 		service(serverHttpRequest, serverHttpResponse);

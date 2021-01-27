@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.core.Assert;
-import scw.core.instance.InstanceUtils;
+import scw.core.ResolvableType;
 import scw.http.HttpMethod;
 import scw.http.HttpRequestEntity;
 import scw.http.HttpResponseEntity;
@@ -18,6 +18,7 @@ import scw.http.client.HttpConnection.RedirectManager;
 import scw.http.client.HttpConnectionFactory.AbstractHttpConnectionFactory;
 import scw.http.client.exception.HttpClientException;
 import scw.http.client.exception.HttpClientResourceAccessException;
+import scw.instance.InstanceUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -174,14 +175,14 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	public final <T> HttpResponseEntity<T> execute(ClientHttpRequest request,
 			Class<T> responseType) throws HttpClientException, IOException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(
-				request.getMethod(), responseType);
+				request.getMethod(), ResolvableType.forClass(responseType));
 		return execute(request, responseExtractor);
 	}
 
 	public final <T> HttpResponseEntity<T> execute(ClientHttpRequest request,
 			Type responseType) throws HttpClientException, IOException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(
-				request.getMethod(), responseType);
+				request.getMethod(), ResolvableType.forType(responseType));
 		return execute(request, responseExtractor);
 	}
 
@@ -229,7 +230,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			ClientHttpRequestFactory requestFactory, Type responseType)
 			throws HttpClientException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(
-				requestEntity.getMethod(), responseType);
+				requestEntity.getMethod(), ResolvableType.forType(responseType));
 		return execute(requestEntity.getUrl(), requestEntity.getMethod(),
 				createRequestBodyCallback(requestEntity), responseExtractor);
 	}
@@ -239,7 +240,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			ClientHttpRequestFactory requestFactory, Class<T> responseType)
 			throws HttpClientException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(
-				requestEntity.getMethod(), responseType);
+				requestEntity.getMethod(), ResolvableType.forClass(responseType));
 		return execute(requestEntity.getUrl(), requestEntity.getMethod(),
 				createRequestBodyCallback(requestEntity), responseExtractor);
 	}
@@ -256,7 +257,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			HttpRequestEntity<?> requestEntity, Class<T> responseType)
 			throws HttpClientException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(
-				requestEntity.getMethod(), responseType);
+				requestEntity.getMethod(), ResolvableType.forClass(responseType));
 		return execute(requestEntity, getClientHttpRequestFactory(),
 				responseExtractor);
 	}
@@ -265,7 +266,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			HttpRequestEntity<?> requestEntity, Type responseType)
 			throws HttpClientException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(
-				requestEntity.getMethod(), responseType);
+				requestEntity.getMethod(), ResolvableType.forType(responseType));
 		return execute(requestEntity, getClientHttpRequestFactory(),
 				responseExtractor);
 	}
@@ -302,7 +303,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 
 				if (needWriteBody) {
 					getMessageConverter().write(
-							requestEntity.getType(),
+							ResolvableType.forType(requestEntity.getType()),
 							requestEntity.getBody(),
 							requestEntity == null ? null : requestEntity
 									.getContentType(), clientRequest);
@@ -312,7 +313,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	}
 
 	protected <T> ClientHttpResponseExtractor<T> getClientHttpResponseExtractor(
-			HttpMethod httpMethod, final Type responseType) {
+			HttpMethod httpMethod, final ResolvableType responseType) {
 		if (httpMethod == HttpMethod.HEAD) {
 			return null;
 		}
@@ -408,14 +409,14 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		public <T> HttpResponseEntity<T> execute(Class<T> responseType)
 				throws HttpClientException {
 			ClientHttpResponseExtractor<T> clientHttpResponseExtractor = getClientHttpResponseExtractor(
-					getMethod(), responseType);
+					getMethod(), ResolvableType.forClass(responseType));
 			return execute(clientHttpResponseExtractor);
 		}
 
 		public <T> HttpResponseEntity<T> execute(Type responseType)
 				throws HttpClientException {
 			ClientHttpResponseExtractor<T> clientHttpResponseExtractor = getClientHttpResponseExtractor(
-					getMethod(), responseType);
+					getMethod(), ResolvableType.forType(responseType));
 			return execute(clientHttpResponseExtractor);
 		}
 

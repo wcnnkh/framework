@@ -6,11 +6,11 @@ import java.util.Collection;
 
 import scw.core.Assert;
 import scw.core.Constants;
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.http.client.HttpClient;
+import scw.instance.InstanceUtils;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 import scw.net.uri.UriComponentsBuilder;

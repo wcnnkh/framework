@@ -5,12 +5,12 @@ import scw.aop.MethodInterceptorAccept;
 import scw.aop.MethodInterceptorChain;
 import scw.beans.BeanUtils;
 import scw.beans.RuntimeBean;
-import scw.core.instance.NoArgsInstanceFactory;
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.core.reflect.MethodInvoker;
+import scw.instance.NoArgsInstanceFactory;
 import scw.lang.NotSupportedException;
 
-@SPI(order = Integer.MAX_VALUE)
+@Provider(order = Integer.MAX_VALUE)
 public final class AsyncMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private static ThreadLocal<Boolean> TAG_THREAD_LOCAL = new ThreadLocal<Boolean>();
 	private final NoArgsInstanceFactory instanceFactory;

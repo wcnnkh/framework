@@ -6,7 +6,7 @@ import java.util.List;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.value.property.PropertyFactory;
+import scw.beans.BeansException;
 
 public class IocMetadata {
 	private List<IocProcessor> iocProcessors = new ArrayList<IocProcessor>();
@@ -15,10 +15,9 @@ public class IocMetadata {
 		return iocProcessors;
 	}
 
-	public void process(BeanDefinition beanDefinition, Object instance, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
+	public void process(BeanDefinition beanDefinition, Object instance, BeanFactory beanFactory) throws BeansException {
 		for (IocProcessor iocProcessor : iocProcessors) {
-			iocProcessor.process(beanDefinition, instance, beanFactory, propertyFactory);
+			iocProcessor.process(beanDefinition, instance, beanFactory);
 		}
 	}
 

@@ -16,7 +16,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -28,7 +27,6 @@ import java.util.zip.GZIPOutputStream;
 import scw.core.Assert;
 import scw.lang.Nullable;
 import scw.lang.ParameterException;
-import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
 import scw.util.StringOperations;
 
@@ -2221,14 +2219,6 @@ public final class StringUtils {
 		char[] chars = text.toCharArray();
 		replace(chars, replace, newChar);
 		return new String(chars);
-	}
-
-	public static String format(String text, final Map<String, ?> valueMap) {
-		return FormatUtils.format(text, valueMap);
-	}
-
-	public static String format(String text, Object... args) {
-		return FormatUtils.formatPlaceholder(text, null, args);
 	}
 
 	public static boolean startsWith(String text, String prefix, boolean ignoreCase) {

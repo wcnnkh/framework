@@ -1,6 +1,6 @@
 package scw.timer.db;
 
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.db.DB;
 import scw.locks.Lock;
 import scw.sql.SimpleSql;
@@ -8,7 +8,7 @@ import scw.sql.Sql;
 import scw.timer.TaskConfig;
 import scw.timer.TaskLockFactory;
 
-@SPI(order=Integer.MIN_VALUE + 1)
+@Provider(order=Integer.MIN_VALUE + 1)
 public class DBTaskLockFactory implements TaskLockFactory {
 	private DB db;
 

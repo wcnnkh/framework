@@ -4,21 +4,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
-import freemarker.cache.TemplateLoader;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
 import scw.io.ResourceUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import freemarker.cache.TemplateLoader;
 
 public class DefaultTemplateLoader implements TemplateLoader {
 	private static Logger logger = LoggerUtils.getLogger(DefaultTemplateLoader.class);
 	private final ResourceLoader resourceLoader;
-	
-	public DefaultTemplateLoader(){
-		this(ResourceUtils.getResourceOperations());
-	}
 	
 	public DefaultTemplateLoader(ResourceLoader resourceLoader){
 		this.resourceLoader = resourceLoader;

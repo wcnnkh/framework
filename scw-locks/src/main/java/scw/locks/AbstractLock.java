@@ -6,10 +6,10 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import scw.core.GlobalPropertyFactory;
+import scw.env.SystemEnvironment;
 
 public abstract class AbstractLock implements Lock {
-	private static final long DEFAULT_SLEEP_TIME = GlobalPropertyFactory
+	private static final long DEFAULT_SLEEP_TIME = SystemEnvironment
 			.getInstance().getValue("lock.sleep.time", Long.class, 1L);
 	private static final ScheduledExecutorService SCHEDULED_EXECUTOR_SERVICE = Executors.newScheduledThreadPool(1);
 	

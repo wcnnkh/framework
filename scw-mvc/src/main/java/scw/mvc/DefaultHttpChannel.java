@@ -2,7 +2,6 @@ package scw.mvc;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -12,11 +11,10 @@ import java.util.Date;
 import java.util.List;
 
 import scw.beans.BeanFactory;
-import scw.beans.Destroy;
-import scw.beans.ExtendBeanFactory;
+import scw.beans.support.ExtendBeanFactory;
+import scw.context.Destroy;
 import scw.core.Constants;
 import scw.core.ResolvableType;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
@@ -24,13 +22,14 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.parameter.RenameParameterDescriptor;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
 import scw.http.HttpMethod;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.instance.NoArgsInstanceFactory;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
 import scw.logger.Logger;
@@ -137,7 +136,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E> E[] getArray(String name, Class<? extends E> type) {
+	public <E> E[] getArray(String name, Class<E> type) {
 		Value[] values = WebUtils.getParameterValues(getRequest(), name);
 		Object array = Array.newInstance(type, values.length);
 		for (int i = 0, len = values.length; i < len; i++) {
@@ -245,7 +244,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 
 	private Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterDescriptor, Value defaultValue) {
 		String value = getValue(parameterDescriptor.getName(), defaultValue).getAsString();
-		if (TypeUtils.isString(parameterDescriptor.getType())) {
+		if (ClassUtils.isString(parameterDescriptor.getType())) {
 			return StringUtils.isEmpty(value) ? value
 					: new SimpleDateFormat(dateFormat.value()).format(StringUtils.parseLong(value));
 		}
@@ -262,9 +261,9 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 
 		if (Date.class.isAssignableFrom(parameterDescriptor.getType())) {
 			return new Date(time);
-		} else if (TypeUtils.isLong(parameterDescriptor.getType())) {
+		} else if (ClassUtils.isLong(parameterDescriptor.getType())) {
 			return time;
-		} else if (TypeUtils.isInt(parameterDescriptor.getType())) {
+		} else if (ClassUtils.isInt(parameterDescriptor.getType())) {
 			return time / 1000;
 		} else if (Calendar.class == parameterDescriptor.getType()) {
 			Calendar calendar = Calendar.getInstance();
@@ -394,46 +393,36 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		public String getAsString() {
 			return DefaultHttpChannel.this.getStringValue(name);
 		}
-
-		@SuppressWarnings("unchecked")
+		
 		@Override
-		protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-			if (type.isArray()) {
-				return (T) getArray(name, type.getComponentType());
-			}
-
-			// 不可以被实例化且不存在无参的构造方法
-			if (!ReflectionUtils.isInstance(type, true)) {
-				return getInstanceFactory().getInstance(type);
-			}
-
+		protected Object getAsObjectNotSupport(ResolvableType type,
+				Class<?> rawClass) {
 			Value value = WebUtils.getParameter(getRequest(), name);
 			if (!value.isEmpty()) {
 				return value.getAsObject(type);
+			}
+			
+			if (type.isArray()) {
+				return getArray(name, type.getComponentType().getRawClass());
+			}
+
+			// 不可以被实例化且不存在无参的构造方法
+			if (!ReflectionUtils.isInstance(type.getRawClass())) {
+				return getInstanceFactory().getInstance(type.getRawClass());
 			}
 
 			Mapping mapping = new AbstractParameterMapping(true, name) {
 
 				@Override
 				protected Object getValue(ParameterDescriptor parameterDescriptor) {
-					return getParameter(parameterDescriptor);
+					return getParameter(parameterDescriptor	);
 				}
 			};
 			try {
-				return MapperUtils.getMapper().mapping(type, null, mapping);
+				return MapperUtils.getMapper().mapping(type.getRawClass(), null, mapping);
 			} catch (Exception e) {
 				throw new ParameterException("name=" + name + ", type=" + type, e);
 			}
-		}
-
-		@Override
-		protected Object getAsObjectNotSupport(Type type) {
-			Value value = WebUtils.getParameter(getRequest(), name);
-			if (!value.isEmpty()) {
-				return value.getAsObject(type);
-			}
-
-			return getAsObjectNotSupport(TypeUtils.toClass(type));
 		}
 	}
 

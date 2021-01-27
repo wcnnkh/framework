@@ -1,12 +1,13 @@
 package scw.convert.support;
 
+import scw.convert.ConversionFailedException;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.value.AnyValue;
 import scw.value.Value;
 import scw.value.ValueUtils;
 
-public class ValueConversionService extends AbstractConversionService {
+class ValueConversionService implements ConversionService {
 	private final ConversionService conversionService;
 
 	public ValueConversionService(ConversionService conversionService) {
@@ -19,10 +20,15 @@ public class ValueConversionService extends AbstractConversionService {
 		if(targetType.getType() == Value.class || targetType.getType() == AnyValue.class){
 			return value;
 		}
-		return value.getAsObject(targetType.getResolvableType().getType());
+		
+		try {
+			return value.getAsObject(targetType.getResolvableType());
+		} catch (Exception e) {
+			throw new ConversionFailedException(sourceType, targetType, value, e);
+		}
 	}
 	
-	public boolean isSupported(TypeDescriptor sourceType,
+	public boolean canConvert(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
 		return ValueUtils.isBaseType(sourceType.getType())
 				|| Value.class.isAssignableFrom(sourceType.getType())

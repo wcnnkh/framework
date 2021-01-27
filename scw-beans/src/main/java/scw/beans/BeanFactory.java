@@ -1,14 +1,14 @@
 package scw.beans;
 
 import scw.aop.Aop;
-import scw.core.instance.InstanceFactory;
+import scw.context.ContextLoader;
+import scw.env.Environment;
 import scw.event.BasicEventDispatcher;
+import scw.instance.InstanceFactory;
 
-public interface BeanFactory extends InstanceFactory {
-	BeanDefinition getDefinition(String name);
-
-	BeanDefinition getDefinition(Class<?> clazz);
-
+public interface BeanFactory extends InstanceFactory, ContextLoader, BeanDefinitionFactory {
+	Environment getEnvironment();
+	
 	Aop getAop();
 
 	/**
@@ -17,4 +17,8 @@ public interface BeanFactory extends InstanceFactory {
 	 * @return
 	 */
 	BasicEventDispatcher<BeanLifeCycleEvent> getBeanLifeCycleEventDispatcher();
+	
+	boolean isSingleton(String name);
+
+	boolean isSingleton(Class<?> clazz);
 }

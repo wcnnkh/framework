@@ -3,7 +3,6 @@ package scw.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,7 +10,8 @@ import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryAware;
-import scw.beans.Destroy;
+import scw.context.ClassesLoaderFactory;
+import scw.context.Destroy;
 import scw.core.utils.CollectionUtils;
 import scw.db.AbstractDB.AsyncExecuteEvent;
 import scw.event.BasicEvent;
@@ -33,7 +33,6 @@ import scw.sql.orm.support.AbstractEntityOperations;
 import scw.sql.orm.support.generation.DefaultGeneratorService;
 import scw.sql.orm.support.generation.GeneratorService;
 import scw.sql.transaction.SqlTransactionUtils;
-import scw.util.ClassScanner;
 
 public abstract class AbstractDB extends AbstractEntityOperations
 		implements DB, EventListener<AsyncExecuteEvent>, BeanFactoryAware, Destroy, ConnectionFactory {
@@ -57,6 +56,14 @@ public abstract class AbstractDB extends AbstractEntityOperations
 			}
 		}
 		return null;
+	}
+	
+	public ClassesLoaderFactory getClassesLoaderFactory() {
+		if(beanFactory != null){
+			return beanFactory;
+		}
+		
+		return super.getClassesLoaderFactory();
 	}
 
 	public CacheManager getCacheManager() {
@@ -165,14 +172,10 @@ public abstract class AbstractDB extends AbstractEntityOperations
 
 		if (beanFactory != null) {
 			Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(asyncExecute.getClass());
-			BeanDefinition definition = beanFactory.getDefinition(clazz);
+			BeanDefinition definition = (BeanDefinition) beanFactory.getDefinition(clazz);
 			if (definition != null) {
-				try {
 					definition.dependence(asyncExecute);
 					definition.init(asyncExecute);
-				} catch (Throwable e) {
-					logger.error(e, "dependence {} error", clazz);
-				}
 			}
 		}
 
@@ -215,8 +218,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	}
 
 	public void createTable(String packageName, boolean registerManager) {
-		Collection<Class<?>> list = ClassScanner.getInstance().getClasses(packageName);
-		for (Class<?> tableClass : list) {
+		for (Class<?> tableClass : getClassesLoaderFactory().getClassesLoader(packageName)) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {
 				continue;

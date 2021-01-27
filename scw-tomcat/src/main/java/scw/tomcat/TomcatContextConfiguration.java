@@ -2,8 +2,8 @@ package scw.tomcat;
 
 import org.apache.catalina.Context;
 
-import scw.boot.MainApplication;
+import scw.boot.ConfigurableApplication;
 
 public interface TomcatContextConfiguration {
-	void configuration(MainApplication application, Context context);
+	void configuration(ConfigurableApplication application, Context context);
 }

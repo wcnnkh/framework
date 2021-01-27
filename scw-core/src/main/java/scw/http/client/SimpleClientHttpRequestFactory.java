@@ -14,6 +14,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
 import scw.http.HttpMethod;
 import scw.http.client.accessor.HttpClientConfigAccessor;
 import scw.io.Resource;
@@ -84,7 +85,7 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor
 			return false;
 		}
 
-		Resource resource = ResourceUtils.getResourceOperations().getResource(
+		Resource resource = SystemEnvironment.getInstance().getResource(
 				certTrustFile);
 		if (!resource.exists()) {
 			logger.warn("not found certTrustFile: {}", certTrustFile);

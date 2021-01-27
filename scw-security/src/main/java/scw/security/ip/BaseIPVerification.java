@@ -3,10 +3,10 @@ package scw.security.ip;
 import java.util.HashSet;
 import java.util.List;
 
-import scw.core.Constants;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.env.Environment;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
@@ -27,10 +27,10 @@ public class BaseIPVerification extends HashSet<String> implements IPVerificatio
 		this.matcher = matcher;
 	}
 
-	protected void appendIPFile(String path) {
-		Resource resource = ResourceUtils.getResourceOperations().getResource(path);
-		if (resource.exists()) {
-			List<String> contentList = ResourceUtils.getLines(resource, Constants.DEFAULT_CHARSET);
+	protected void appendIPFile(Environment environment, String path) {
+		Resource resource = environment.getResource(path);
+		if (resource != null && resource.exists()) {
+			List<String> contentList = ResourceUtils.getLines(resource, environment.getCharsetName());
 			if (!CollectionUtils.isEmpty(contentList)) {
 				for (String content : contentList) {
 					if (StringUtils.isEmpty(content)) {

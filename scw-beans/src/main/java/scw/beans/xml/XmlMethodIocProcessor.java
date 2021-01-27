@@ -12,14 +12,13 @@ import scw.beans.ioc.AbstractIocProcessor;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.reflect.ReflectionUtils;
 import scw.json.JSONUtils;
-import scw.value.property.PropertyFactory;
 
 public class XmlMethodIocProcessor extends AbstractIocProcessor {
 	private Class<?> type;
 	private XmlBeanParameter[] xmlBeanParameters;
 	private String name;
 
-	public XmlMethodIocProcessor(Class<?> type, Node node) throws Exception {
+	public XmlMethodIocProcessor(Class<?> type, Node node, ClassLoader classLoader) throws Exception {
 		if (node.getAttributes() == null) {
 			throw new BeansException("not found method name");
 		}
@@ -31,13 +30,12 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 
 		this.name = nameNode.getNodeValue();
 		this.type = type;
-		List<XmlBeanParameter> xmlBeanParameters = XmlBeanUtils.parseBeanParameterList(node);
+		List<XmlBeanParameter> xmlBeanParameters = XmlBeanUtils.parseBeanParameterList(node, classLoader);
 		this.xmlBeanParameters = xmlBeanParameters.toArray(new XmlBeanParameter[xmlBeanParameters.size()]);
 	}
 
-	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
-		XmlParameterFactory xmlParameterFactory = new XmlParameterFactory(beanFactory, propertyFactory,
+	public void process(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
+		XmlParameterFactory xmlParameterFactory = new XmlParameterFactory(beanFactory,
 				xmlBeanParameters);
 		Class<?> tempClz = type;
 		while (tempClz != null) {
@@ -58,7 +56,7 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 				if (xmlParameterFactory.isAccept(methodParameterDescriptors)) {
 					Object[] args = xmlParameterFactory.getParameters(methodParameterDescriptors);
 					ReflectionUtils.makeAccessible(method);
-					method.invoke(bean, args);
+					ReflectionUtils.invokeMethod(method, bean, args);
 					return;
 				}
 			}

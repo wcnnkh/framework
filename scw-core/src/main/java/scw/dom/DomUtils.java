@@ -17,14 +17,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.convert.Converter;
-import scw.core.StringFormat;
 import scw.core.utils.StringUtils;
-import scw.io.ResourceUtils;
+import scw.io.ResourceLoader;
 import scw.lang.NotFoundException;
+import scw.lang.Nullable;
 import scw.util.Accept;
 import scw.util.KeyValuePair;
+import scw.util.PropertyResolver;
 import scw.value.ValueUtils;
-import scw.value.property.PropertyFactory;
 
 public final class DomUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
@@ -56,16 +56,16 @@ public final class DomUtils {
 		return DOM_BUILDER;
 	}
 
-	public static Document getDocument(String path) throws NotFoundException {
-		return getDomBuilder().parse(ResourceUtils.getResourceOperations().getResource(path));
+	public static Document getDocument(ResourceLoader resourceLoader, String path) throws NotFoundException {
+		return getDomBuilder().parse(resourceLoader.getResource(path));
 	}
 
-	public static Element getRootElement(String xmlPath) {
-		Document document = getDocument(xmlPath);
+	public static Element getRootElement(ResourceLoader resourceLoader, String xmlPath) {
+		Document document = getDocument(resourceLoader, xmlPath);
 		return document.getDocumentElement();
 	}
 
-	private static MyNodeList getIncludeNodeList(HashSet<String> includeHashSet, Node includeNode) {
+	private static MyNodeList getIncludeNodeList(ResourceLoader resourceLoader, HashSet<String> includeHashSet, Node includeNode) {
 		String file = getNodeAttributeValueOrNodeContent(includeNode, "file");
 		if (StringUtils.isEmpty(file)) {
 			return new MyNodeList();
@@ -76,7 +76,7 @@ public final class DomUtils {
 		}
 
 		includeHashSet.add(file);
-		Document document = DomUtils.getDocument(file);
+		Document document = DomUtils.getDocument(resourceLoader, file);
 		Node root = document.getDocumentElement();
 		if (root == null) {
 			return new MyNodeList();
@@ -95,7 +95,7 @@ public final class DomUtils {
 		return list;
 	}
 
-	private static MyNodeList converIncludeNodeList(NodeList nodeList, HashSet<String> includeHashSet) {
+	private static MyNodeList converIncludeNodeList(ResourceLoader resourceLoader, NodeList nodeList, HashSet<String> includeHashSet) {
 		MyNodeList list = new MyNodeList();
 		if (nodeList != null) {
 			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
@@ -105,8 +105,8 @@ public final class DomUtils {
 				}
 
 				if (n.getNodeName().equalsIgnoreCase("include")) {
-					MyNodeList n2 = getIncludeNodeList(includeHashSet, n);
-					list.addAll(converIncludeNodeList(n2, includeHashSet));
+					MyNodeList n2 = getIncludeNodeList(resourceLoader, includeHashSet, n);
+					list.addAll(converIncludeNodeList(resourceLoader, n2, includeHashSet));
 				} else {
 					list.add(n);
 				}
@@ -115,12 +115,12 @@ public final class DomUtils {
 		return list;
 	}
 
-	public static NodeList getChildNodes(Node node, boolean include) {
+	public static NodeList getChildNodes(Node node, @Nullable ResourceLoader resourceLoader) {
 		if (node == null) {
 			return null;
 		}
 
-		return include ? converIncludeNodeList(node.getChildNodes(), new HashSet<String>()) : node.getChildNodes();
+		return resourceLoader != null ? converIncludeNodeList(resourceLoader, node.getChildNodes(), new HashSet<String>()) : node.getChildNodes();
 	}
 	
 	public static List<Object> toRecursionList(Node node){
@@ -320,7 +320,7 @@ public final class DomUtils {
 		return properties;
 	}
 
-	public static String formatNodeValue(final PropertyFactory propertyFactory, Node node, String value) {
+	public static String formatNodeValue(PropertyResolver propertyResolver, Node node, String value) {
 		if (StringUtils.isEmpty(value)) {
 			return value;
 		}
@@ -328,43 +328,39 @@ public final class DomUtils {
 		if (!getBooleanValue(node, "replace", true)) {
 			return value;
 		}
-
-		String replacePrefix = getNodeAttributeValue(node, "replace-prefix");
-		String replaceSuffix = getNodeAttributeValue(node, "replace-suffix");
-		replacePrefix = StringUtils.isEmpty(replacePrefix) ? "{" : replacePrefix;
-		replaceSuffix = StringUtils.isEmpty(replaceSuffix) ? "}" : replaceSuffix;
-		return StringFormat.format(value, replacePrefix, replaceSuffix, propertyFactory);
+		
+		return propertyResolver.resolvePlaceholders(value);
 	}
 
-	public static String getNodeAttributeValue(PropertyFactory propertyFactory, Node node, String name) {
+	public static String getNodeAttributeValue(PropertyResolver propertyResolver, Node node, String name) {
 		String value = getNodeAttributeValue(node, name);
 		if (value == null || value.length() == 0) {
 			return value;
 		}
 
-		return formatNodeValue(propertyFactory, node, value);
+		return formatNodeValue(propertyResolver, node, value);
 	}
 
-	public static String getNodeAttributeValueOrNodeContent(PropertyFactory propertyFactory, Node node, String name) {
+	public static String getNodeAttributeValueOrNodeContent(PropertyResolver propertyResolver, Node node, String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
 			return null;
 		}
 
-		return formatNodeValue(propertyFactory, node, value);
+		return formatNodeValue(propertyResolver, node, value);
 	}
 
-	public static String getRequireNodeAttributeValueOrNodeContent(PropertyFactory propertyFactory, Node node,
+	public static String getRequireNodeAttributeValueOrNodeContent(PropertyResolver propertyResolver, Node node,
 			String name) {
 		String value = getNodeAttributeValueOrNodeContent(node, name);
 		if (StringUtils.isEmpty(value)) {
 			throw new NotFoundException("not found attribute " + name);
 		}
-		return formatNodeValue(propertyFactory, node, value);
+		return formatNodeValue(propertyResolver, node, value);
 	}
 
-	public static String getRequireNodeAttributeValue(PropertyFactory propertyFactory, Node node, String name) {
-		String value = getNodeAttributeValue(propertyFactory, node, name);
+	public static String getRequireNodeAttributeValue(PropertyResolver propertyResolver, Node node, String name) {
+		String value = getNodeAttributeValue(propertyResolver, node, name);
 		if (StringUtils.isEmpty(value)) {
 			throw new NotFoundException("not found attribute " + name);
 		}

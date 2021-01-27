@@ -3,9 +3,9 @@ package scw.ibatis;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 
-@SPI(order = Integer.MIN_VALUE, value = Mybatis.class)
+@Provider(order = Integer.MIN_VALUE, value = Mybatis.class)
 public class DefaultMybatis implements Mybatis {
 	private final SqlSessionFactory sqlSessionFactory;
 

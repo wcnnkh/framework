@@ -2,7 +2,9 @@ package scw.yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -139,11 +141,12 @@ public class YamlProcessor {
 	 * 
 	 * @param callback
 	 *            a callback to delegate to once matching documents are found
+	 * @param charset
 	 * @param resources
 	 *            locations of YAML {@link Resource resources} to be loaded
 	 * @see #createYaml()
 	 */
-	public void process(MatchCallback callback, Iterable<? extends Resource> resources) {
+	public void process(MatchCallback callback, Charset charset, Iterable<? extends Resource> resources) {
 		if (CollectionUtils.isEmpty(resources)) {
 			return;
 		}
@@ -154,19 +157,19 @@ public class YamlProcessor {
 				continue;
 			}
 			
-			boolean found = process(callback, yaml, resource);
+			boolean found = process(callback, yaml, charset, resource);
 			if (this.resolutionMethod == ResolutionMethod.FIRST_FOUND && found) {
 				return;
 			}
 		}
 	}
 	
-	public void process(MatchCallback callback, Resource... resources) {
+	public void process(MatchCallback callback, @Nullable Charset charset, Resource... resources) {
 		if (ArrayUtils.isEmpty(resources)) {
 			return;
 		}
 
-		process(callback, Arrays.asList(resources));
+		process(callback, charset, Arrays.asList(resources));
 	}
 
 	/**
@@ -193,7 +196,7 @@ public class YamlProcessor {
 		return new Yaml(loaderOptions);
 	}
 
-	private boolean process(MatchCallback callback, Yaml yaml, Resource resource) {
+	private boolean process(MatchCallback callback, Yaml yaml, Charset charset, Resource resource) {
 		int count = 0;
 		if (logger.isDebugEnabled()) {
 			logger.debug("Loading from YAML: " + resource);
@@ -202,7 +205,7 @@ public class YamlProcessor {
 		InputStream is = null;
 		try {
 			is = resource.getInputStream();
-			reader = new UnicodeReader(is);
+			reader = charset == null? new UnicodeReader(is):new InputStreamReader(is, charset);
 			for (Object object : yaml.loadAll(reader)) {
 				if (object != null && process(asMap(object), callback)) {
 					count++;

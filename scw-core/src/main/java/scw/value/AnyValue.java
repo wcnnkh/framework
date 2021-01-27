@@ -1,16 +1,14 @@
 package scw.value;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.convert.support.JsonConversionService;
+import scw.core.ResolvableType;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
-import scw.json.JSONUtils;
 
 public class AnyValue extends SupportDefaultValue {
 	private volatile ConversionService conversionService;
@@ -38,7 +36,7 @@ public class AnyValue extends SupportDefaultValue {
 		if(conversionService == null){
 			synchronized (this) {
 				if(conversionService == null){
-					conversionService = new JsonConversionService(JSONUtils.getJsonSupport());
+					conversionService = new JsonConversionService();
 				}
 			}
 		}
@@ -486,33 +484,19 @@ public class AnyValue extends SupportDefaultValue {
 				.getAsEnum(enumType);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T getAsObject(Class<? extends T> type) {
-		if (value == null) {
-			return getDefaultValue().getAsObject(type);
-		}
-
-		if (type == Object.class || type == null) {
-			return (T) value;
-		}
-		
-		if (type.isInstance(value)) {
-			return type.cast(value);
-		}
-
-		if (value instanceof Value) {
-			return ((Value) value).getAsObject(type);
-		}
-		return super.getAsObject(type);
+	protected Object getAsObjectNotSupport(ResolvableType type,
+			Class<?> rawClass) {
+		return getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
 	}
-
+	
 	@Override
-	public Object getAsObject(Type type) {
+	public Object getAsObject(ResolvableType resolvableType) {
 		if (value == null) {
-			return getDefaultValue().getAsObject(type);
+			return getDefaultValue().getAsObject(resolvableType);
 		}
 
+		Class<?> type = resolvableType.getRawClass();
 		if (type == Object.class || type == null) {
 			return value;
 		}
@@ -520,30 +504,9 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-
-		return super.getAsObject(type);
+		return super.getAsObject(resolvableType);
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		if (ValueUtils.isBaseType(value.getClass())) {
-			return new StringValue(getAsString(), getDefaultValue())
-					.getAsObject(type);
-		}
-
-		return (T) getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
-	}
-
-	@Override
-	protected Object getAsObjectNotSupport(Type type) {
-		if(TypeUtils.toClass(type).isInstance(value)){
-			return TypeUtils.toClass(type).cast(value);
-		}
-		
-		return getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
-	}
-
+	
 	@Override
 	public int hashCode() {
 		return value == null ? super.hashCode() : value.hashCode();

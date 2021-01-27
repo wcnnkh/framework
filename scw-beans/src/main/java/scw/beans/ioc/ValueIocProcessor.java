@@ -2,9 +2,9 @@ package scw.beans.ioc;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.annotation.Value;
 import scw.mapper.Field;
-import scw.value.property.PropertyFactory;
 
 public class ValueIocProcessor extends AbstractFieldIocProcessor {
 
@@ -13,11 +13,10 @@ public class ValueIocProcessor extends AbstractFieldIocProcessor {
 	}
 
 	@Override
-	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
+	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
 		Value value = getField().getSetter().getAnnotatedElement().getAnnotation(Value.class);
 		if (value != null) {
-			beanFactory.getInstance(value.processer()).process(beanDefinition, beanFactory, propertyFactory, bean,
+			beanFactory.getInstance(value.processer()).process(beanDefinition, beanFactory, bean,
 					getField(), value);
 		}
 	}

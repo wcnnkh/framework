@@ -21,11 +21,9 @@ import scw.core.annotation.Order;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
-import scw.core.utils.TypeUtils;
 import scw.lang.Ignore;
+import scw.lang.Nullable;
 import scw.util.Accept;
-import scw.util.FormatUtils;
 import scw.util.comparator.CompareUtils;
 
 public abstract class ReflectionUtils {
@@ -34,21 +32,16 @@ public abstract class ReflectionUtils {
 	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class, new Accept<Method>() {
 		public boolean accept(Method method) {
 			return !Modifier.isStatic(method.getModifiers()) && !Modifier.isNative(method.getModifiers())
-					&& method.getName().startsWith("get") && method.getParameterTypes().length == 0;
+					&& Modifier.isPublic(method.getModifiers()) && method.getName().startsWith("get") && method.getParameterTypes().length == 0;
 		}
 	}).toArray(new Method[0]);
 
 	/**
-	 * 这是以反射的方式来判断此类是否完全可用,如果要判断一个类是否存在应该使用ClassUtils的方法
-	 * 
+	 * 判断此类是否可以调用反射的一些方法
 	 * @param clazz
 	 * @return
 	 */
-	public static boolean isPresent(Class<?> clazz) {
-		if (!ClassUtils.isPresent(clazz.getName(), clazz.getClassLoader())) {
-			return false;
-		}
-
+	public static boolean isSupported(Class<?> clazz) {
 		try {
 			for (Method method : CLASS_PRESENT_METHODS) {
 				method.invoke(clazz);
@@ -57,6 +50,48 @@ public abstract class ReflectionUtils {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * 使用反射判断是否存在无参的构造方法(包含未公开的构造方法)
+	 * @param clazz
+	 * @return
+	 */
+	public static boolean isInstance(Class<?> clazz){
+		if (Modifier.isAbstract(clazz.getModifiers()) || Modifier.isInterface(clazz.getModifiers())) {
+			return false;
+		}
+		
+		try {
+			return clazz.getDeclaredConstructor() != null;
+		} catch (NoSuchMethodException e) {
+			return false;
+		}
+	}
+	
+	/**
+	 * 使用反射查找无参的构造方法(包含未公开的构造方法)
+	 * @param clazz
+	 * @return
+	 */
+	public static <T> T newInstance(Class<T> clazz){
+		Constructor<T> constructor;
+		try {
+			constructor = clazz.getDeclaredConstructor();
+			makeAccessible(constructor);
+			return constructor.newInstance();
+		} catch (NoSuchMethodException e) {
+			handleReflectionException(e);
+		} catch (InstantiationException e) {
+			handleReflectionException(e);
+		} catch (IllegalAccessException e) {
+			handleReflectionException(e);
+		} catch (IllegalArgumentException e) {
+			handleReflectionException(e);
+		} catch (InvocationTargetException e) {
+			handleInvocationTargetException(e);
+		}
+		throw new IllegalStateException("Should never get here");
 	}
 
 	/**
@@ -784,65 +819,6 @@ public abstract class ReflectionUtils {
 		}
 	};
 
-	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic) {
-		Constructor<T> constructor = null;
-		if (isPublic) {
-			try {
-				constructor = type.getConstructor();
-			} catch (NoSuchMethodException e) {
-			}
-		} else {
-			try {
-				constructor = type.getDeclaredConstructor();
-			} catch (NoSuchMethodException e) {
-			}
-
-			if (constructor != null && !Modifier.isPublic(constructor.getModifiers())) {
-				constructor.setAccessible(true);
-			}
-		}
-		return constructor;
-	}
-
-	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic, Class<?>... parameterTypes) {
-		Constructor<T> constructor;
-		if (isPublic) {
-			try {
-				constructor = type.getConstructor(parameterTypes);
-			} catch (NoSuchMethodException e) {
-				return null;
-			}
-		} else {
-			try {
-				constructor = type.getDeclaredConstructor(parameterTypes);
-			} catch (NoSuchMethodException e) {
-				return null;
-			}
-
-			if (!Modifier.isPublic(constructor.getModifiers())) {
-				constructor.setAccessible(true);
-			}
-		}
-		return constructor;
-	}
-
-	public static Constructor<?> getConstructor(String className, boolean isPublic, Class<?>... parameterTypes)
-			throws ClassNotFoundException {
-		return getConstructor(ClassUtils.forName(className), isPublic, parameterTypes);
-	}
-
-	public static <T> Constructor<T> getConstructor(Class<T> type, boolean isPublic, String... parameterTypeNames)
-			throws ClassNotFoundException {
-		return getConstructor(type, isPublic,
-				ClassUtils.forNames(ClassUtils.getDefaultClassLoader(), parameterTypeNames));
-	}
-
-	public static Constructor<?> getConstructor(String className, boolean isPublic, String... parameterTypes)
-			throws ClassNotFoundException, NoSuchMethodException {
-		return getConstructor(ClassUtils.forName(className), isPublic,
-				ClassUtils.forName(className, ClassUtils.getDefaultClassLoader()));
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <T> Constructor<T> findConstructor(Class<T> type, boolean isPublic, Class<?>... parameterTypes) {
 		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
@@ -868,8 +844,8 @@ public abstract class ReflectionUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructor(String className, boolean isPublic, Class<?>... parameterTypes) {
-		Class<?> clazz = ClassUtils.forNameNullable(className);
+	public static <T> Constructor<T> findConstructor(String className, @Nullable ClassLoader classLoader, boolean isPublic, Class<?>... parameterTypes) {
+		Class<?> clazz = ClassUtils.getClass(className, classLoader);
 		if (clazz == null) {
 			return null;
 		}
@@ -969,8 +945,8 @@ public abstract class ReflectionUtils {
 		throw new NoSuchMethodException(type.getName() + ", method=" + name);
 	}
 
-	public static Method getMethod(String className, String methodName, Class<?>... parameterTypes) {
-		Class<?> clz = ClassUtils.forNameNullable(className);
+	public static Method getMethod(String className, @Nullable ClassLoader classLoader, String methodName, Class<?>... parameterTypes) {
+		Class<?> clz = ClassUtils.getClass(className, classLoader);
 		if (clz == null) {
 			return null;
 		}
@@ -1145,109 +1121,6 @@ public abstract class ReflectionUtils {
 		return null;
 	}
 
-	public static Method getGetterMethod(Class<?> clazz, Field field) {
-		Method getter = null;
-		Class<?> clz = clazz;
-		if (TypeUtils.isBoolean(field.getType())) {
-			String methodNameSuffix = field.getName();
-			if (methodNameSuffix.startsWith("is")) {
-				FormatUtils.warn(ReflectionUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
-						methodNameSuffix);
-				methodNameSuffix = methodNameSuffix.substring(2);
-			}
-			try {
-				getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(methodNameSuffix, 0, 1));
-			} catch (NoSuchMethodException e1) {
-				try {
-					getter = clz.getDeclaredMethod("is" + StringUtils.toUpperCase(field.getName(), 0, 1));
-				} catch (NoSuchMethodException e) {
-				}
-			}
-		} else {
-			try {
-				getter = clz.getDeclaredMethod("get" + StringUtils.toUpperCase(field.getName(), 0, 1));
-			} catch (NoSuchMethodException e) {
-			}
-		}
-
-		if (getter != null) {
-			if (Modifier.isPrivate(getter.getModifiers())) {
-				return null;
-			}
-
-			makeAccessible(getter);
-		}
-
-		return getter;
-	}
-
-	public static Method getSetterMethod(Class<?> clazz, Field field) {
-		Method setter = null;
-		Class<?> clz = clazz;
-		if (TypeUtils.isBoolean(field.getType())) {
-			String methodNameSuffix = field.getName();
-			if (methodNameSuffix.startsWith("is")) {
-				FormatUtils.warn(ReflectionUtils.class, "Boolean类型的字段不应该以is开头,class:{},field:{}", clz.getName(),
-						methodNameSuffix);
-				methodNameSuffix = methodNameSuffix.substring(2);
-			}
-
-			try {
-				setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(methodNameSuffix, 0, 1),
-						field.getType());
-			} catch (NoSuchMethodException e1) {
-				try {
-					setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(field.getName(), 0, 1),
-							field.getType());
-				} catch (NoSuchMethodException e) {
-				}
-			}
-		} else {
-			try {
-				setter = clz.getDeclaredMethod("set" + StringUtils.toUpperCase(field.getName(), 0, 1), field.getType());
-			} catch (NoSuchMethodException e) {
-			}
-		}
-
-		if (setter != null) {
-			if (Modifier.isPrivate(setter.getModifiers())) {
-				return null;
-			}
-
-			makeAccessible(setter);
-		}
-		return setter;
-	}
-
-	/**
-	 * 是否可以实例化
-	 * 
-	 * @param clz
-	 * @param checkConstructor
-	 *            是否检查存在无参的构造方法
-	 * @return
-	 */
-	public static boolean isInstance(Class<?> clz, boolean checkConstructor) {
-		if (clz == null) {
-			return false;
-		}
-
-		if (Modifier.isAbstract(clz.getModifiers()) || Modifier.isInterface(clz.getModifiers()) || clz.isEnum()
-				|| clz.isArray()) {
-			return false;
-		}
-
-		if (checkConstructor) {
-			try {
-				clz.getDeclaredConstructor();
-			} catch (NoSuchMethodException e) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	public static Method[] getMethods(Class<?> clazz, boolean declared) {
 		Method[] methods = declared ? clazz.getDeclaredMethods() : clazz.getMethods();
 		if (methods == null) {
@@ -1263,10 +1136,10 @@ public abstract class ReflectionUtils {
 		return method.invoke(null, params);
 	}
 
-	public static Object invokeStaticMethod(String className, String name, Class<?>[] parameterTypes, Object... params)
+	public static Object invokeStaticMethod(String className, ClassLoader classLoader, String name, Class<?>[] parameterTypes, Object... params)
 			throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, ClassNotFoundException {
-		return invokeStaticMethod(ClassUtils.forName(className), name, parameterTypes, params);
+		return invokeStaticMethod(ClassUtils.forName(className, classLoader), name, parameterTypes, params);
 	}
 
 	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = new Comparator<Constructor<?>>() {

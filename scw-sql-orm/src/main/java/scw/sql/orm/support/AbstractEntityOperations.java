@@ -13,6 +13,8 @@ import java.util.Map.Entry;
 
 import scw.aop.ProxyUtils;
 import scw.aop.support.FieldSetterListen;
+import scw.context.ClassesLoaderFactory;
+import scw.context.support.DefaultClassesLoaderFactory;
 import scw.core.IteratorCallback;
 import scw.core.IteratorCallback.Row;
 import scw.core.utils.ClassUtils;
@@ -43,17 +45,29 @@ import scw.sql.orm.dialect.TableStructureMapping;
 import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.support.generation.GeneratorContext;
 import scw.sql.orm.support.generation.GeneratorService;
-import scw.util.ClassScanner;
 import scw.util.Pagination;
 
 public abstract class AbstractEntityOperations extends AbstractSqlOperations implements EntityOperations {
 	private static Logger logger = LoggerFactory.getLogger(AbstractEntityOperations.class);
+	private ClassesLoaderFactory classesLoaderFactory;
 	
 	public abstract SqlDialect getSqlDialect();
 
 	public abstract CacheManager getCacheManager();
 
 	public abstract GeneratorService getGeneratorService();
+	
+	public ClassesLoaderFactory getClassesLoaderFactory(){
+		if(classesLoaderFactory == null){
+			return new DefaultClassesLoaderFactory(false);
+		}else{
+			return classesLoaderFactory;
+		}
+	}
+	
+	public void setClassesLoaderFactory(ClassesLoaderFactory classesLoaderFactory) {
+		this.classesLoaderFactory = classesLoaderFactory;
+	}
 
 	public final String getTableName(Class<?> clazz, Object obj, String tableName) {
 		String tName = tableName;
@@ -354,8 +368,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	}
 
 	public void createTable(String packageName) {
-		Collection<Class<?>> list = ClassScanner.getInstance().getClasses(packageName);
-		for (Class<?> tableClass : list) {
+		for (Class<?> tableClass : getClassesLoaderFactory().getClassesLoader(packageName)) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {
 				continue;

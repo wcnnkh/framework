@@ -2,10 +2,10 @@ package scw.beans.xml;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.BeansException;
 import scw.beans.ioc.AbstractFieldIocProcessor;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
-import scw.value.property.PropertyFactory;
 
 public class XmlPropertiesIocProcessor extends AbstractFieldIocProcessor {
 	private XmlBeanParameter xmlBeanParameter;
@@ -17,9 +17,8 @@ public class XmlPropertiesIocProcessor extends AbstractFieldIocProcessor {
 	}
 
 	@Override
-	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory,
-			PropertyFactory propertyFactory) throws Exception {
+	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
 		getField().getSetter().set(bean,
-				xmlBeanParameter.parseValue(getField().getSetter(), beanFactory, propertyFactory));
+				xmlBeanParameter.parseValue(getField().getSetter(), beanFactory));
 	}
 }

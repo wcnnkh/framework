@@ -1,13 +1,13 @@
 package scw.net.message.converter;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
 import org.w3c.dom.Document;
 
-import scw.core.utils.TypeUtils;
+import scw.core.ResolvableType;
+import scw.core.utils.ClassUtils;
 import scw.dom.DomUtils;
 import scw.http.MediaType;
 import scw.net.MimeType;
@@ -32,11 +32,11 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected Object readInternal(Type type, InputMessage inputMessage)
+	protected Object readInternal(ResolvableType type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		String text = readTextBody(inputMessage);
-		if (TypeUtils.isPrimitiveOrWrapper(type) || String.class == type
-				|| Value.class == type) {
+		if (ClassUtils.isPrimitiveOrWrapper(type.getRawClass()) || String.class == type.getRawClass()
+				|| Value.class == type.getRawClass()) {
 			StringValue value = new StringValue(text);
 			value.setJsonSupport(getJsonSupport());
 			return value.getAsObject(type);
@@ -48,7 +48,7 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 		try {
 			map = DomUtils.toRecursionMap(document);
 			jsonText = getJsonSupport().toJSONString(map);
-			return getJsonSupport().parseObject(jsonText, type);
+			return getJsonSupport().parseObject(jsonText, type.getType());
 		} catch (Exception e) {
 			throw new MessageConvertException(e);
 		}
@@ -56,13 +56,13 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected void writeInternal(Type type, Object body, MimeType contentType,
+	protected void writeInternal(ResolvableType type, Object body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		String writeBody;
-		if (TypeUtils.isPrimitiveOrWrapper(body.getClass())
-				|| String.class == body.getClass()
-				|| Value.class.isAssignableFrom(body.getClass())) {
+		if (ClassUtils.isPrimitiveOrWrapper(type.getRawClass())
+				|| String.class == type.getRawClass()
+				|| Value.class.isAssignableFrom(type.getRawClass())) {
 			writeBody = body.toString();
 		} else if (body instanceof Map) {
 			writeBody = DomUtils.getDomBuilder().toString((Map)body);

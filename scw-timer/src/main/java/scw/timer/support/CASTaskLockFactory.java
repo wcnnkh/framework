@@ -1,6 +1,6 @@
 package scw.timer.support;
 
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.data.cas.CASOperations;
 import scw.locks.Lock;
 import scw.memcached.Memcached;
@@ -8,7 +8,7 @@ import scw.redis.Redis;
 import scw.timer.TaskConfig;
 import scw.timer.TaskLockFactory;
 
-@SPI(order=Integer.MIN_VALUE + 3)
+@Provider(order=Integer.MIN_VALUE + 3)
 public class CASTaskLockFactory implements TaskLockFactory {
 	private CASOperations casOperations;
 

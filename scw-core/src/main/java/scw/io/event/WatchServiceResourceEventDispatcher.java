@@ -89,7 +89,7 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 			File file;
 			try {
 				file = getResource().getFile();
-				if (file.isDirectory()) {
+				if (file.isDirectory() || file.getParentFile() == null) {
 					return false;
 				}
 

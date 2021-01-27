@@ -19,7 +19,7 @@ public class UnsafeUtils {
 
 	private static Object getInvokeInstance() {
 		try {
-			Class<?> clz = ClassUtils.forName(CLASS_NAME);
+			Class<?> clz = ClassUtils.forName(CLASS_NAME, null);
 			Field f = clz.getDeclaredField("theUnsafe");
 			f.setAccessible(true);
 			return f.get(null);
@@ -42,7 +42,7 @@ public class UnsafeUtils {
 	public static Method getMethod(String methodName,
 			Class<?>... parameterTypes) {
 		return ReflectionUtils
-				.getMethod(CLASS_NAME, methodName, parameterTypes);
+				.getMethod(CLASS_NAME, null, methodName, parameterTypes);
 	}
 
 	public static Object invoke(Method method, Object... args) {

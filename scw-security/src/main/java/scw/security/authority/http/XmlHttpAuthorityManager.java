@@ -6,13 +6,15 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.configure.support.ConfigureUtils;
-import scw.core.instance.annotation.ResourceParameter;
+import scw.convert.TypeDescriptor;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
+import scw.env.SystemEnvironment;
 import scw.http.HttpMethod;
+import scw.instance.annotation.ResourceParameter;
+import scw.io.ResourceLoader;
 import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
@@ -22,25 +24,27 @@ public class XmlHttpAuthorityManager extends
 		DefaultHttpAuthorityManager<HttpAuthority> {
 	private static Logger logger = LoggerFactory
 			.getLogger(XmlHttpAuthorityManager.class);
+	private final ResourceLoader resourceLoader;
 
-	public XmlHttpAuthorityManager(
-			@ParameterName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
-		this(xml, null);
+	public XmlHttpAuthorityManager(ResourceLoader resourceLoader, @ParameterName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
+		this(resourceLoader, xml, null);
 	}
 
-	public XmlHttpAuthorityManager(String xml, String parentId) {
+	public XmlHttpAuthorityManager(ResourceLoader resourceLoader, String xml, String parentId) {
+		this.resourceLoader = resourceLoader;
 		addByXml(xml, StringUtils.isEmpty(parentId) ? "" : parentId);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addByXml(String xml, String defParentId) {
-		if (!ResourceUtils.getResourceOperations().isExist(xml)) {
+		if (!ResourceUtils.exists(resourceLoader, xml)) {
 			logger.warn("not found:{}", xml);
 			return;
 		}
 
-		Element element = DomUtils.getRootElement(xml);
+		Element element = DomUtils.getRootElement(resourceLoader, xml);
 		String prefix = DomUtils.getNodeAttributeValue(element, "prefix");
-		NodeList nodeList = DomUtils.getChildNodes(element, true);
+		NodeList nodeList = DomUtils.getChildNodes(element, resourceLoader);
 		if (nodeList == null) {
 			return;
 		}
@@ -51,7 +55,7 @@ public class XmlHttpAuthorityManager extends
 				continue;
 			}
 			
-			Map<String, String> map = ConfigureUtils.getConversionServiceFactory().convertToMap(node, String.class, String.class);
+			Map<String, String> map = (Map<String, String>) SystemEnvironment.getInstance().convert(node, TypeDescriptor.forObject(node), TypeDescriptor.map(Map.class, String.class, String.class));
 			if (map.isEmpty()) {
 				continue;
 			}

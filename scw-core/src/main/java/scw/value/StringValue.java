@@ -2,8 +2,8 @@ package scw.value;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 
+import scw.core.ResolvableType;
 import scw.core.utils.StringUtils;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
@@ -47,13 +47,13 @@ public class StringValue extends AbstractStringValue implements Serializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <E> E[] getAsArray(Class<? extends E> componentType) {
+	public <E> E[] getAsArray(ResolvableType componentType) {
 		String[] values = split(getAsString());
 		if (values == null) {
 			return null;
 		}
 
-		Object array = Array.newInstance(componentType, values.length);
+		Object array = Array.newInstance(componentType.getRawClass(), values.length);
 		for (int i = 0; i < values.length; i++) {
 			Value value = parseValue(values[i]);
 			if (value != null) {
@@ -62,26 +62,25 @@ public class StringValue extends AbstractStringValue implements Serializable {
 		}
 		return (E[]) array;
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <T> T getAsObject(Class<? extends T> type) {
-		if (isSupportArray() && type.isArray()) {
-			return (T) getAsArray(type.getComponentType());
-		}
-		return super.getAsObject(type);
-	}
-
-	@Override
-	protected <T> T getAsObjectNotSupport(Class<? extends T> type) {
-		return getJsonSupport().parseObject(getAsString(), type);
-	}
-
-	@Override
-	protected Object getAsObjectNotSupport(Type type) {
-		return getJsonSupport().parseObject(getAsString(), type);
+	
+	public <E> E[] getAsArray(Class<E> componentType) {
+		return getAsArray(ResolvableType.forClass(componentType));
 	}
 	
+	@Override
+	public Object getAsObject(ResolvableType resolvableType) {
+		if(isSupportArray() && resolvableType.isArray()){
+			return getAsArray(resolvableType.getComponentType());
+		}
+		return super.getAsObject(resolvableType);
+	}
+	
+	@Override
+	protected Object getAsObjectNotSupport(ResolvableType type,
+			Class<?> rawClass) {
+		return getJsonSupport().parseObject(getAsString(), type.getType());
+	}
+
 	public boolean isEmpty() {
 		return StringUtils.isEmpty(value);
 	}

@@ -1,21 +1,22 @@
 package scw.zookeeper;
 
-import scw.boot.Application;
-import scw.boot.ApplicationInitialization;
-import scw.core.instance.annotation.SPI;
+import scw.boot.ApplicationPostProcessor;
+import scw.boot.ConfigurableApplication;
+import scw.context.annotation.Provider;
 import scw.io.ResourceUtils;
 
-@SPI(order = Integer.MAX_VALUE)
-public final class AutoZooKeeperServerStart implements ApplicationInitialization {
+@Provider(order = Integer.MAX_VALUE)
+public final class AutoZooKeeperServerStart implements ApplicationPostProcessor {
 	private static final String DEFAULT_ZOOKEEPER_CONFIG = "zookeeper.properties";
 
-	public void init(Application application) throws Throwable {
+	public void postProcessApplication(ConfigurableApplication application)
+			throws Throwable {
 		ZooKeeperServerStart start = null;
-		if (ResourceUtils.getResourceOperations().isExist(DEFAULT_ZOOKEEPER_CONFIG)) {
+		if (ResourceUtils.exists(application.getEnvironment(), DEFAULT_ZOOKEEPER_CONFIG)) {
 			start = new ZooKeeperServerStart(
-					ResourceUtils.getResourceOperations().getProperties(DEFAULT_ZOOKEEPER_CONFIG).get());
+					application.getEnvironment().getProperties(DEFAULT_ZOOKEEPER_CONFIG).get());
 		} else {
-			Integer port = application.getPropertyFactory().getInteger("zookeeper.port");
+			Integer port = application.getEnvironment().getInteger("zookeeper.port");
 			if (port != null) {
 				start = new ZooKeeperServerStart(port);
 			}
@@ -25,5 +26,4 @@ public final class AutoZooKeeperServerStart implements ApplicationInitialization
 			start.start();
 		}
 	}
-
 }

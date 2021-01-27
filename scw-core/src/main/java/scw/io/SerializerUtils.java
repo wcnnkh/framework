@@ -5,9 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
-import scw.logger.LoggerUtils;
+import scw.instance.InstanceUtils;
 
 public final class SerializerUtils {
 	/**
@@ -18,7 +17,6 @@ public final class SerializerUtils {
 	static {
 		Serializer serializer = InstanceUtils.loadService(Serializer.class);
 		DEFAULT_SERIALIZER = serializer == null? JavaSerializer.INSTANCE:serializer;
-		LoggerUtils.getLogger(SerializerUtils.class).info("The serializer used is " + DEFAULT_SERIALIZER);
 	}
 
 	private SerializerUtils() {

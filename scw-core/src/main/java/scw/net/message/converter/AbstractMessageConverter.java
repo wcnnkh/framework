@@ -1,11 +1,10 @@
 package scw.net.message.converter;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 
-import scw.core.Constants;
 import scw.core.ResolvableType;
+import scw.env.SystemEnvironment;
 import scw.http.HttpHeaders;
 import scw.io.IOUtils;
 import scw.json.JSONSupport;
@@ -20,7 +19,7 @@ import scw.net.message.OutputMessage;
 
 public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
-	private Charset defaultCharset = Constants.DEFAULT_CHARSET;
+	private Charset charset;
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
 	protected final MimeTypes supportMimeTypes = new MimeTypes();
 	private boolean supportBytes = false;
@@ -44,13 +43,13 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	public void setJsonSupport(JSONSupport jsonSupport) {
 		this.jsonSupport = jsonSupport;
 	}
-
-	public Charset getDefaultCharset() {
-		return defaultCharset;
+	
+	public Charset getCharset() {
+		return charset == null? SystemEnvironment.getInstance().getCharset():charset;
 	}
 
-	public void setDefaultCharset(Charset defaultCharset) {
-		this.defaultCharset = defaultCharset;
+	public void setCharset(Charset charset) {
+		this.charset = charset;
 	}
 
 	public boolean canRead(MimeType contentType) {
@@ -82,33 +81,23 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 
 	public abstract boolean support(Class<?> clazz);
 	
-	public boolean canWrite(Type type){
-		if(type instanceof Class){
-			return support((Class<?>)type);
-		}
-		
-		ResolvableType resolvableType = ResolvableType.forType(type);
-		return support(resolvableType.getRawClass());
+	public boolean canWrite(ResolvableType type){
+		return support(type.getRawClass());
 	}
 	
-	public boolean canRead(Type type){
-		if(type instanceof Class){
-			return support((Class<?>)type);
-		}
-		
-		ResolvableType resolvableType = ResolvableType.forType(type);
-		return support(resolvableType.getRawClass());
+	public boolean canRead(ResolvableType type){
+		return support(type.getRawClass());
 	}
 
-	public boolean canRead(Type type, MimeType contentType) {
-		if(type == byte[].class && !isSupportBytes()){
+	public boolean canRead(ResolvableType type, MimeType contentType) {
+		if((type.isArray() && type.getComponentType().getRawClass() == byte.class) && !isSupportBytes()){
 			return false;
 		}
 		
 		return canRead(type) && canRead(contentType);
 	}
 
-	public boolean canWrite(Type type, Object body, MimeType contentType) {
+	public boolean canWrite(ResolvableType type, Object body, MimeType contentType) {
 		if (body == null) {
 			return false;
 		}
@@ -117,7 +106,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			return false;
 		}
 
-		return canWrite(body.getClass()) && canWrite(contentType);
+		return canWrite(type) && canWrite(contentType);
 	}
 	
 	public boolean canWrite(Object body, MimeType contentType) {
@@ -125,10 +114,10 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			return false;
 		}
 		
-		return canWrite(body.getClass(), body, contentType);
+		return canWrite(ResolvableType.forClass(body.getClass()), body, contentType);
 	}
 
-	public Object read(Type type, InputMessage inputMessage)
+	public Object read(ResolvableType type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		return readInternal(type, inputMessage);
 	}
@@ -140,11 +129,11 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			return ;
 		}
 		
-		write(body.getClass(), body, contentType, outputMessage);
+		write(ResolvableType.forClass(body.getClass()), body, contentType, outputMessage);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void write(Type type, Object body, MimeType contentType,
+	public void write(ResolvableType type, Object body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		T t = (T) body;
@@ -160,7 +149,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			if (contentTypeToUse != null && !contentTypeToUse.isWildcardType()
 					&& !contentTypeToUse.isWildcardSubtype()) {
 				if (contentTypeToUse.getCharset() == null) {
-					Charset defaultCharset = getDefaultCharset();
+					Charset defaultCharset = getCharset();
 					if (defaultCharset != null) {
 						contentTypeToUse = new MimeType(contentTypeToUse,
 								defaultCharset);
@@ -184,7 +173,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 		writeInternal(type, t, contentTypeToUse, outputMessage);
 	}
 
-	protected MimeType getDefaultContentType(Type type, T body) throws IOException {
+	protected MimeType getDefaultContentType(ResolvableType type, T body) throws IOException {
 		MimeType mimeType = getSupportMimeTypes().getMimeTypes().first();
 		if(mimeType.isWildcardType() || mimeType.isWildcardSubtype()){
 			return null;
@@ -200,12 +189,12 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	protected Charset getCharset(Message message) {
 		MimeType mimeType = message.getContentType();
 		if (mimeType == null) {
-			return getDefaultCharset();
+			return getCharset();
 		}
 
 		Charset charset = mimeType.getCharset();
 		if (charset == null) {
-			return getDefaultCharset();
+			return getCharset();
 		}
 		return charset;
 	}
@@ -225,10 +214,10 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 				.name());
 	}
 
-	protected abstract T readInternal(Type type, InputMessage inputMessage)
+	protected abstract T readInternal(ResolvableType type, InputMessage inputMessage)
 			throws IOException, MessageConvertException;
 
-	protected abstract void writeInternal(Type type, T body, MimeType contentType,
+	protected abstract void writeInternal(ResolvableType type, T body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException;
 }

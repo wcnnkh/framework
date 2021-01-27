@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.beans.BeanUtils;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -14,10 +13,9 @@ import scw.logger.Levels;
 import scw.mvc.action.Action;
 import scw.mvc.annotation.LoggerEnable;
 import scw.util.MultiValueMap;
-import scw.value.ValueFactory;
 
 public final class MVCUtils {
-	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet");
+	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet", null);
 
 	private MVCUtils() {
 	};
@@ -77,11 +75,6 @@ public final class MVCUtils {
 		return SUPPORT_SERVLET;
 	}
 
-	public static String getScanAnnotationPackageName(ValueFactory<String> propertyFactory) {
-		return propertyFactory.getValue("scw.scan.mvc.package", String.class,
-				BeanUtils.getScanAnnotationPackageName(propertyFactory));
-	}
-	
 	/**
 	 * 通过注解获取action可用的debug级别
 	 * @param action

@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import scw.core.instance.InstanceUtils;
 import scw.core.reflect.MethodInvoker;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
+import scw.instance.InstanceUtils;
 
 public final class ProxyUtils {
 	private static final ProxyFactory PROXY_FACTORY;

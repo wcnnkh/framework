@@ -5,18 +5,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Enumeration;
 
-import scw.configure.support.ConfigureUtils;
-import scw.configure.support.EntityConfigure;
-import scw.configure.support.PropertyFactoryConfigure;
 import scw.convert.TypeDescriptor;
+import scw.convert.support.EntityConversionService;
+import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.StringUtils;
 import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
+import scw.env.SystemEnvironment;
 import scw.lang.NotSupportedException;
-import scw.util.alias.SimpleSafeAliasRegistry;
-import scw.value.property.PropertyFactory;
+import scw.util.alias.DefaultAliasRegistry;
+import scw.value.factory.PropertyFactory;
 
 public final class DBUtils {
 	public static final String DEFAULT_CONFIGURATION = "/db/db.properties";
@@ -24,8 +24,8 @@ public final class DBUtils {
 	private DBUtils() {
 	};
 	
-	public static SimpleSafeAliasRegistry getCommonPropertiesAliasRegistry(){
-		SimpleSafeAliasRegistry aliasRegistry = new SimpleSafeAliasRegistry();
+	public static DefaultAliasRegistry getCommonPropertiesAliasRegistry(){
+		DefaultAliasRegistry aliasRegistry = new DefaultAliasRegistry();
 		aliasRegistry.registerAlias("url", "jdbcUrl");
 		aliasRegistry.registerAlias("jdbcUrl", "host");
 		
@@ -45,10 +45,10 @@ public final class DBUtils {
 	}
 	
 	public static void loadProperties(Object instance, PropertyFactory propertyFactory) {
-		EntityConfigure configure = new PropertyFactoryConfigure(ConfigureUtils.getConversionServiceFactory());
+		EntityConversionService configure = new PropertyFactoryToEntityConversionService(SystemEnvironment.getInstance());
 		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
 		configure.setStrict(true);
-		configure.configuration(propertyFactory, TypeDescriptor.forObject(propertyFactory), instance, TypeDescriptor.forObject(instance));
+		configure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), instance, TypeDescriptor.forObject(instance));
 	}
 	
 	/**

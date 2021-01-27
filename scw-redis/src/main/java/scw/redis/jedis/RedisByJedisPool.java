@@ -1,12 +1,12 @@
 package scw.redis.jedis;
 
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;
 import scw.redis.RedisImpl;
 import scw.util.StringCodec;
 
-@SPI(order = Integer.MIN_VALUE + 200)
+@Provider(order = Integer.MIN_VALUE + 200)
 public final class RedisByJedisPool extends RedisImpl {
 
 	public RedisByJedisPool(JedisResourceFactory jedisResourceFactory) {

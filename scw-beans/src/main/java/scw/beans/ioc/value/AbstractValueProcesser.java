@@ -1,27 +1,26 @@
 package scw.beans.ioc.value;
 
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
-import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
-import scw.value.property.PropertyFactory;
 
 public abstract class AbstractValueProcesser implements ValueProcesser {
 	final Logger logger = LoggerUtils.getLogger(AbstractValueProcesser.class);
 
-	public void process(BeanDefinition beanDefinition, BeanFactory beanFactory, PropertyFactory propertyFactory,
+	public void process(BeanDefinition beanDefinition, BeanFactory beanFactory,
 			Object bean, Field field, Value value) {
 		String name = StringUtils.isEmpty(value.value()) ? field.getSetter().getName() : value.value();
-		String charsetName = StringUtils.isEmpty(value.charsetName()) ? Constants.DEFAULT_CHARSET_NAME
+		String charsetName = StringUtils.isEmpty(value.charsetName()) ? beanFactory.getEnvironment().getCharsetName()
 				: value.charsetName();
 		try {
-			processInteranl(beanDefinition, beanFactory, propertyFactory, bean, field, value, name, charsetName);
+			processInteranl(beanDefinition, beanFactory, bean, field, value, name, Charset.forName(charsetName));
 		} catch (Exception e) {
 			throw new ValueException(field.toString(), e);
 		}
@@ -32,6 +31,5 @@ public abstract class AbstractValueProcesser implements ValueProcesser {
 				|| (beanDefinition != null && beanDefinition.isSingleton())) && value.listener();
 	}
 
-	protected abstract void processInteranl(BeanDefinition beanDefinition, BeanFactory beanFactory,
-			PropertyFactory propertyFactory, Object bean, Field field, Value value, String name, String charsetName) throws Exception;
+	protected abstract void processInteranl(BeanDefinition beanDefinition, BeanFactory beanFactory, Object bean, Field field, Value value, String name, Charset charset) throws Exception;
 }

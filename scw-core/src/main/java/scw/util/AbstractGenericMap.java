@@ -7,6 +7,9 @@ import java.util.concurrent.ConcurrentMap;
 
 public abstract class AbstractGenericMap<K, V> implements GenericMap<K, V> {
 	protected abstract Map<K, V> getTargetMap();
+	
+	@Override
+	public abstract GenericMap<K, V> clone();
 
 	public int size() {
 		return getTargetMap().size();

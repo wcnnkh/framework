@@ -1,5 +1,7 @@
 package scw.boot;
 
+import scw.env.support.MainArgs;
+
 public interface Main {
-	void main(MainApplication application) throws Throwable;
+	void main(ConfigurableApplication application, Class<?> mainClass, MainArgs args) throws Throwable;
 }

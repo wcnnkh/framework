@@ -131,9 +131,9 @@ public class CglibProxyFactory implements ProxyFactory {
 		return (className != null && className.contains(CGLIB_CLASS_SEPARATOR));
 	}
 
-	public Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
+	public Class<?> getUserClass(String className, ClassLoader classLoader)
 			throws ClassNotFoundException {
-		return ClassUtils.forName(className.substring(0, className.indexOf(CGLIB_CLASS_SEPARATOR)), initialize,
+		return ClassUtils.forName(className.substring(0, className.indexOf(CGLIB_CLASS_SEPARATOR)),
 				classLoader);
 	}
 }

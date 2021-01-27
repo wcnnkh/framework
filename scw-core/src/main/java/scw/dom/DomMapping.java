@@ -7,20 +7,16 @@ import org.w3c.dom.Node;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.support.AbstractMapping;
+import scw.util.PropertyResolver;
 import scw.value.ValueUtils;
-import scw.value.property.PropertyFactory;
 
 public class DomMapping extends AbstractMapping {
-	private final PropertyFactory propertyFactory;
+	private final PropertyResolver propertyResolver;
 	private final Map<String, Node> nodeMap;
 
-	public DomMapping(PropertyFactory propertyFactory, Map<String, Node> nodeMap) {
-		this.propertyFactory = propertyFactory;
+	public DomMapping(PropertyResolver propertyResolver, Map<String, Node> nodeMap) {
+		this.propertyResolver = propertyResolver;
 		this.nodeMap = nodeMap;
-	}
-
-	public PropertyFactory getPropertyFactory() {
-		return propertyFactory;
 	}
 	
 	@Override
@@ -36,7 +32,7 @@ public class DomMapping extends AbstractMapping {
 			return null;
 		}
 
-		String value = DomUtils.formatNodeValue(propertyFactory, node, node.getNodeValue());
+		String value = DomUtils.formatNodeValue(propertyResolver, node, node.getNodeValue());
 		if (value == null) {
 			return null;
 		}

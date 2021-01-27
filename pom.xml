@@ -19,67 +19,61 @@
 				<artifactId>scw-core</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-configure</artifactId>
+				<artifactId>scw-context</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-transaction</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-result</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-beans</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-tcc</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-messageing</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-boot</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-locks</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-sql</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-log4j</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-log4j2</artifactId>
@@ -97,7 +91,7 @@
 				<artifactId>scw-search</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-lucene</artifactId>
@@ -121,19 +115,19 @@
 				<artifactId>scw-sql-orm</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-yaml</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-mysql</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-sqlite</artifactId>
@@ -223,6 +217,24 @@
 				<artifactId>scw-db</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-amqp</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-jms</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-activemq</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -253,7 +265,7 @@
 				<artifactId>scw-freemarker</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-mail</artifactId>
@@ -262,7 +274,7 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-mq</artifactId>
+				<artifactId>scw-rabbitmq</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -313,29 +325,37 @@
 				<artifactId>scw-tomcat</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-quartz</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-rmi</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-elasticsearch</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-jmx</artifactId>
 				<version>1.0.0</version>
+			</dependency>
+
+			<!-- 通用的依赖版本定义 -->
+			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+			<dependency>
+				<groupId>javax.servlet</groupId>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>3.0.1</version>
 			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
@@ -343,6 +363,12 @@
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
 				<version>${commons-fileupload.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.8.5</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -425,7 +451,6 @@
 		<module>scw-search</module>
 		<module>scw-microsoft</module>
 		<module>scw-dubbo</module>
-		<module>scw-mq</module>
 		<module>scw-zookeeper</module>
 		<module>scw-netflix-eureka-client</module>
 		<module>scw-netflix-eureka-server</module>
@@ -458,10 +483,13 @@
 		<module>scw-transaction</module>
 		<module>scw-boot</module>
 		<module>scw-sql</module>
-		<module>scw-result</module>
 		<module>scw-tcc</module>
 		<module>scw-messageing</module>
 		<module>scw-locks</module>
-		<module>scw-configure</module>
+		<module>scw-context</module>
+		<module>scw-jms</module>
+		<module>scw-activemq</module>
+		<module>scw-amqp</module>
+		<module>scw-rabbitmq</module>
 	</modules>
 </project>

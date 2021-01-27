@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import scw.aop.support.FieldSetterListen;
-import scw.core.utils.TypeUtils;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -76,7 +75,7 @@ public final class UpdateSQLByBeanListen extends DialectSql {
 			Object oldValue = changeMap.get(column.getField().getSetter().getName());
 			Object value = column.getField().getGetter().get(beanFieldListen);
 			CounterInfo counterInfo = column.getCounterInfo();
-			if (counterInfo != null && TypeUtils.isNumber(column.getField().getSetter().getType())) {
+			if (counterInfo != null && column.getField().getSetter().getType().isAssignableFrom(Number.class)) {
 				if (oldValue != null && value != null) {
 					// incr or decr
 					double oldV = new AnyValue(oldValue).getAsDoubleValue();

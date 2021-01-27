@@ -15,7 +15,6 @@
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-transaction</artifactId>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

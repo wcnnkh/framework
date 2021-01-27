@@ -4,10 +4,16 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import scw.core.ResolvableType;
+
 public abstract class AbstractValueWrapper implements Value{
 	public abstract Value getValue();
+	
+	public Object getAsObject(ResolvableType resolvableType) {
+		return getValue().getAsObject(resolvableType);
+	}
 
-	public <T> T getAsObject(Class<? extends T> type) {
+	public <T> T getAsObject(Class<T> type) {
 		return getValue().getAsObject(type);
 	}
 

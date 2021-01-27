@@ -4,15 +4,15 @@ import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
 import scw.aop.MethodInterceptorChain;
 import scw.complete.Complete;
-import scw.core.instance.NoArgsInstanceFactory;
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.core.reflect.MethodInvoker;
+import scw.instance.NoArgsInstanceFactory;
 import scw.lang.NotSupportedException;
 import scw.tcc.annotation.Tcc;
 import scw.transaction.DefaultTransactionLifecycle;
 import scw.transaction.TransactionManager;
 
-@SPI(order = Integer.MAX_VALUE)
+@Provider(order = Integer.MAX_VALUE)
 public class TccMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept{
 	private NoArgsInstanceFactory instanceFactory;
 

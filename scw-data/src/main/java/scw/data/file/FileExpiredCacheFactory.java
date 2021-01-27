@@ -4,9 +4,9 @@ import java.io.File;
 
 import scw.data.AbstractExpireCacheFactory;
 import scw.data.ExpiredCache;
+import scw.env.SystemEnvironment;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerUtils;
-import scw.value.property.SystemPropertyFactory;
 
 public class FileExpiredCacheFactory extends AbstractExpireCacheFactory{
 	protected final NoTypeSpecifiedSerializer serializer;
@@ -14,7 +14,7 @@ public class FileExpiredCacheFactory extends AbstractExpireCacheFactory{
 
 	protected FileExpiredCacheFactory() {
 		this.serializer = SerializerUtils.DEFAULT_SERIALIZER;
-		this.cacheDirectory = SystemPropertyFactory.getInstance().getTempDirectoryPath() + File.separator + getClass().getName();
+		this.cacheDirectory = SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + getClass().getName();
 	}
 
 	public FileExpiredCacheFactory(String cacheDirectory) {

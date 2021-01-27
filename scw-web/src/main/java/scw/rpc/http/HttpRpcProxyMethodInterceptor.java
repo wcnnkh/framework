@@ -5,8 +5,7 @@ import java.lang.reflect.Modifier;
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorChain;
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
-import scw.core.Constants;
+import scw.core.ResolvableType;
 import scw.core.reflect.MethodInvoker;
 import scw.http.client.ClientHttpRequest;
 import scw.http.client.ClientHttpResponse;
@@ -14,19 +13,20 @@ import scw.lang.NotSupportedException;
 import scw.net.InetUtils;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MessageConverterFactory;
-import scw.value.property.PropertyFactory;
 
 public class HttpRpcProxyMethodInterceptor implements MethodInterceptor {
 	private final HttpRpcProxyRequestFactory httpRpcProxyRequestFactory;
 	private final MessageConverter messageConverter;
 
-	public HttpRpcProxyMethodInterceptor(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	public HttpRpcProxyMethodInterceptor(BeanFactory beanFactory) {
 		this.httpRpcProxyRequestFactory = beanFactory.isInstance(HttpRpcProxyRequestFactory.class)
 				? beanFactory.getInstance(HttpRpcProxyRequestFactory.class)
-				: new RestfulHttpRpcProxyRequestFactory(propertyFactory, Constants.DEFAULT_CHARSET_NAME);
+				: new RestfulHttpRpcProxyRequestFactory(beanFactory.getEnvironment(), beanFactory.getEnvironment().getCharsetName());
 		MessageConverterFactory messageConverter = new MessageConverterFactory();
 		messageConverter.getMessageConverters().add(InetUtils.getMessageConverter());
-		messageConverter.getMessageConverters().addAll(BeanUtils.loadAllService(MessageConverter.class, beanFactory, propertyFactory));
+		for(MessageConverter converter : beanFactory.getServiceLoader(MessageConverter.class)){
+			messageConverter.getMessageConverters().add(converter);
+		}
 		this.messageConverter = messageConverter;
 	}
 
@@ -44,13 +44,14 @@ public class HttpRpcProxyMethodInterceptor implements MethodInterceptor {
 				ClientHttpResponse response = null;
 				try {
 					response = request.execute();
-					if (!messageConverter.canRead(invoker.getMethod().getGenericReturnType(),
+					ResolvableType responseType = ResolvableType.forMethodReturnType(invoker.getMethod());
+					if (!messageConverter.canRead(responseType,
 							response.getContentType())) {
-						throw new NotSupportedException("type=" + invoker.getMethod().getGenericReturnType().toString()
+						throw new NotSupportedException("type=" + responseType
 								+ ", contentType=" + response.getContentType());
 					}
 
-					return messageConverter.read(invoker.getMethod().getGenericReturnType(), response);
+					return messageConverter.read(responseType, response);
 				} finally {
 					if (response != null) {
 						response.close();

@@ -10,8 +10,8 @@ import org.apache.poi.poifs.filesystem.FileMagic;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
-import scw.core.instance.InstanceUtils;
 import scw.core.utils.ClassUtils;
+import scw.instance.InstanceUtils;
 import scw.lang.RequiredJavaVersion;
 import scw.microsoft.DefaultExcelExport;
 import scw.microsoft.Excel;
@@ -30,10 +30,10 @@ public class PoiExcelOperations implements ExcelOperations {
 	private static final ExcelReader OOXML_READER = InstanceUtils.INSTANCE_FACTORY
 			.getInstance("scw.microsoft.poi.XSSFExcelReader");
 	private static final boolean XSSF_SUPPORT = ClassUtils
-			.isPresent("org.apache.poi.xssf.usermodel.XSSFWorkbookFactory");
+			.isPresent("org.apache.poi.xssf.usermodel.XSSFWorkbookFactory", null);
 	@SuppressWarnings("unchecked")
 	private static final Class<? extends Workbook> SXSS_WORKBOOK_CLASS = (Class<? extends Workbook>) ClassUtils
-			.forNameNullable("org.apache.poi.xssf.streaming.SXSSFWorkbook");
+			.getClass("org.apache.poi.xssf.streaming.SXSSFWorkbook", null);
 
 	public Excel create(InputStream inputStream) throws IOException, ExcelException {
 		Workbook workbook = WorkbookFactory.create(inputStream);

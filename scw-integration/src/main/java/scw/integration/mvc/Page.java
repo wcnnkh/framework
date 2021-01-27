@@ -7,13 +7,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.Version;
-import scw.core.GlobalPropertyFactory;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
 import scw.freemarker.mvc.FreemarkerPage;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
@@ -22,6 +17,11 @@ import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.mvc.page.PageFactory;
 import scw.mvc.servlet.Jsp;
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
 
 /**
  * 不再推荐使用
@@ -58,20 +58,23 @@ public class Page extends AbstractPage {
 	private boolean freemarkerAppendAttrs = false;
 	private boolean appendParams = false;
 
+	private static String getWorkPath(){
+		String workPath = SystemEnvironment.getInstance().getWorkPath();
+		if (workPath == null) {
+			throw new NotFoundException("找不到WEB-INF目录");
+		}
+		return workPath;
+	}
+	
 	public static synchronized void initFreemarker(Version version, String default_encoding, String rootPath) {
 		if (freemarkerConfiguration == null) {
 			freemarkerConfiguration = new Configuration(version);
 		}
 
 		freemarkerConfiguration.setDefaultEncoding(default_encoding);
-		String workPath = GlobalPropertyFactory.getInstance().getWorkPath();
-		if (workPath == null) {
-			throw new NotFoundException("找不到WEB-INF目录");
-		}
-
 		try {
-			freemarkerConfiguration.setDirectoryForTemplateLoading(new File(StringUtils.isEmpty(rootPath) ? workPath
-					: GlobalPropertyFactory.getInstance().format(rootPath)));
+			freemarkerConfiguration.setDirectoryForTemplateLoading(new File(StringUtils.isEmpty(rootPath) ? getWorkPath()
+					: SystemEnvironment.getInstance().resolvePlaceholders(rootPath)));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -80,13 +83,8 @@ public class Page extends AbstractPage {
 	}
 
 	public static void initFreemarker(final String rootPath) {
-		String workPath = GlobalPropertyFactory.getInstance().getWorkPath();
-		if (workPath == null) {
-			throw new NotFoundException("找不到WEB-INF目录");
-		}
-
 		initFreemarker(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS, freemarker_default_encoding,
-				StringUtils.isEmpty(rootPath) ? workPath : GlobalPropertyFactory.getInstance().format(rootPath));
+				StringUtils.isEmpty(rootPath) ? getWorkPath() : SystemEnvironment.getInstance().resolvePlaceholders(rootPath));
 	}
 
 	public static Configuration getFreemarkerConfiguration() {
@@ -101,13 +99,8 @@ public class Page extends AbstractPage {
 			freemarkerConfiguration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
 			freemarkerConfiguration.setDefaultEncoding(freemarker_default_encoding);
 
-			String workPath = GlobalPropertyFactory.getInstance().getWorkPath();
-			if (workPath == null) {
-				throw new NotFoundException("找不到WEB-INF目录");
-			}
-
 			try {
-				freemarkerConfiguration.setDirectoryForTemplateLoading(new File(workPath));
+				freemarkerConfiguration.setDirectoryForTemplateLoading(new File(getWorkPath()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

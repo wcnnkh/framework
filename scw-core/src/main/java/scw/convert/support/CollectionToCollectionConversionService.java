@@ -8,7 +8,7 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.util.CollectionFactory;
 
-public class CollectionToCollectionConversionService extends ConditionalConversionService{
+class CollectionToCollectionConversionService extends ConditionalConversionService{
 	private final ConversionService conversionService;
 
 	public CollectionToCollectionConversionService(ConversionService conversionService) {

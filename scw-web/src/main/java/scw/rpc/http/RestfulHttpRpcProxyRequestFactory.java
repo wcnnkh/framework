@@ -3,11 +3,11 @@ package scw.rpc.http;
 import java.net.URI;
 import java.util.Map;
 
-import scw.core.StringFormat;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.MethodInvoker;
 import scw.core.utils.StringUtils;
+import scw.env.Environment;
 import scw.http.client.ClientHttpRequest;
 import scw.http.client.accessor.HttpAccessor;
 import scw.net.MimeType;
@@ -17,15 +17,15 @@ import scw.rpc.http.annotation.HttpClient;
 import scw.rpc.http.annotation.HttpClient.ContentType;
 import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
-import scw.value.property.PropertyFactory;
+import scw.util.PlaceholderResolver;
 
 public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements HttpRpcProxyRequestFactory {
 	private String charsetName;
-	private PropertyFactory propertyFactory;
+	private Environment environment;
 
-	public RestfulHttpRpcProxyRequestFactory(PropertyFactory propertyFactory, String charsetName) {
+	public RestfulHttpRpcProxyRequestFactory(Environment environment, String charsetName) {
 		this.charsetName = charsetName;
-		this.propertyFactory = propertyFactory;
+		this.environment = environment;
 	}
 
 	public final String getCharsetName() {
@@ -63,15 +63,14 @@ public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements H
 
 		final Map<String, Object> parameterMap = ParameterUtils.getParameterMap(invoker.getMethod(),
 				args);
-		StringFormat stringFormat = new StringFormat("{", "}") {
-			public String getValue(String key) {
-				Object value = parameterMap.remove(key);
+		host = FormatUtils.format(host, new PlaceholderResolver() {
+			
+			public String resolvePlaceholder(String placeholderName) {
+				Object value = parameterMap.remove(placeholderName);
 				return value == null ? null : value.toString();
-			};
-		};
-
-		host = stringFormat.format(host);
-		host = FormatUtils.format(host, propertyFactory);
+			}
+		});
+		host = environment.resolvePlaceholders(host);
 
 		host = httpMethod == scw.http.HttpMethod.GET ? UriUtils.appendQueryParams(host, parameterMap, charsetName)
 				: host;

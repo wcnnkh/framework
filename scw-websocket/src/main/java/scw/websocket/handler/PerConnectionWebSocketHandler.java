@@ -19,6 +19,7 @@ package scw.websocket.handler;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryAccessor;
 import scw.logger.Logger;
@@ -104,7 +105,10 @@ public class PerConnectionWebSocketHandler extends BeanFactoryAccessor implement
 		try {
 			if (!getBeanFactory().isSingleton(handlerType)) {
 				if (handler != null) {
-					getBeanFactory().getDefinition(handlerType).destroy(handler);
+					BeanDefinition definition = getBeanFactory().getDefinition(handlerType);
+					if(definition != null && !definition.isSingleton()){
+						definition.destroy(handler);
+					}
 				}
 			}
 		} catch (Throwable ex) {

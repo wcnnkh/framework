@@ -39,7 +39,7 @@ public abstract class AbstractObservable<T> implements Observable<T>,
 	}
 
 	public T get() {
-		if (value == null && !firstGet.get()
+		if (!firstGet.get()
 				&& firstGet.compareAndSet(false, true)) {
 			set(forceGet());
 		}

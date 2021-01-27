@@ -124,8 +124,8 @@ public class JdkProxyFactory implements ProxyFactory {
 		return className.startsWith(PROXY_NAME_PREFIX);
 	}
 
-	public Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
+	public Class<?> getUserClass(String className, ClassLoader classLoader)
 			throws ClassNotFoundException {
-		return getUserClass(ClassUtils.forName(className, initialize, classLoader));
+		return getUserClass(ClassUtils.forName(className, classLoader));
 	}
 }

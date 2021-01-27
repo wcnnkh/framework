@@ -9,11 +9,12 @@ import javax.net.ssl.SSLSocketFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import scw.configure.support.ConfigureUtils;
+import scw.convert.TypeDescriptor;
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
+import scw.env.SystemEnvironment;
 import scw.http.HttpMethod;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
@@ -216,7 +217,9 @@ public class WeiXinPay {
 		logger.debug("请求：{}，返回{}", url, res);
 		
 		Document responseDocument = DomUtils.getDomBuilder().parse(res);
-		Map<String, String> map = ConfigureUtils.getConversionServiceFactory().convertToMap(responseDocument, String.class, String.class);
+		
+		@SuppressWarnings("unchecked")
+		Map<String, String> map = (Map<String, String>) SystemEnvironment.getInstance().convert(responseDocument, TypeDescriptor.forObject(responseDocument), TypeDescriptor.map(Map.class, String.class, String.class));
 		JsonObject jsonObject = JSONUtils.parseObject(JSONUtils.toJSONString(map));
 		return new WeiXinPayResponse(jsonObject);
 	}

@@ -23,12 +23,12 @@ import java.util.Objects;
 
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.ConfigurationProperties;
-import scw.boot.ApplicationUtils;
+import scw.boot.support.ApplicationUtils;
 import scw.commons.util.InetUtils;
 import scw.commons.util.InetUtils.HostInfo;
 import scw.core.utils.StringUtils;
+import scw.env.Environment;
 import scw.mapper.MapperUtils;
-import scw.value.property.PropertyFactory;
 
 import com.netflix.appinfo.DataCenterInfo;
 import com.netflix.appinfo.InstanceInfo.InstanceStatus;
@@ -290,7 +290,7 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
 	private String[] defaultAddressResolutionOrder = new String[0];
 
 	@Autowired
-	private PropertyFactory propertyFactory;
+	private Environment environment;
 
 	public String getHostname() {
 		return getHostName(false);
@@ -339,16 +339,16 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
 		return this.preferIpAddress ? this.ipAddress : this.hostname;
 	}
 
-	public PropertyFactory getPropertyFactory() {
-		return propertyFactory;
+	public Environment getEnvironment() {
+		return environment;
 	}
 
-	public void setPropertyFactory(PropertyFactory propertyFactory) {
-		this.propertyFactory = propertyFactory;
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 		// set some defaults from the environment, but allow the defaults to use
 		// relaxed
 		// binding
-		String appName = ApplicationUtils.getApplicatoinName(propertyFactory);
+		String appName = ApplicationUtils.getApplicatoinName(environment);
 		if (StringUtils.hasText(appName)) {
 			setAppname(appName);
 			setVirtualHostName(appName);
@@ -594,7 +594,7 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
 				&& Objects.equals(namespace, that.namespace) && Objects.equals(hostname, that.hostname)
 				&& preferIpAddress == that.preferIpAddress && Objects.equals(initialStatus, that.initialStatus)
 				&& Arrays.equals(defaultAddressResolutionOrder, that.defaultAddressResolutionOrder)
-				&& Objects.equals(propertyFactory, that.propertyFactory);
+				&& Objects.equals(environment, that.environment);
 	}
 
 	@Override
@@ -604,7 +604,7 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
 				leaseExpirationDurationInSeconds, virtualHostName, instanceId, secureVirtualHostName, aSGName,
 				metadataMap, dataCenterInfo, ipAddress, statusPageUrlPath, statusPageUrl, homePageUrlPath, homePageUrl,
 				healthCheckUrlPath, healthCheckUrl, secureHealthCheckUrl, namespace, hostname, preferIpAddress,
-				initialStatus, defaultAddressResolutionOrder, propertyFactory);
+				initialStatus, defaultAddressResolutionOrder, environment);
 	}
 
 	@Override

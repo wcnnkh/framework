@@ -42,22 +42,22 @@ public abstract class NumberUtils {
 	public static Object converPrimitive(Number number, Class<?> targetClass) {
 		Assert.notNull(number, "Number must not be null");
 		Assert.notNull(targetClass, "Target class must not be null");
-
-		if (TypeUtils.isByte(targetClass)) {
+		
+		if (ClassUtils.isByte(targetClass)) {
 			return number.byteValue();
-		} else if (TypeUtils.isShort(targetClass)) {
+		} else if (ClassUtils.isShort(targetClass)) {
 			return number.shortValue();
-		} else if (TypeUtils.isInt(targetClass)) {
+		} else if (ClassUtils.isInt(targetClass)) {
 			return number.intValue();
-		} else if (TypeUtils.isLong(targetClass)) {
+		} else if (ClassUtils.isLong(targetClass)) {
 			return number.longValue();
-		} else if (TypeUtils.isFloat(targetClass)) {
+		} else if (ClassUtils.isFloat(targetClass)) {
 			return number.floatValue();
-		} else if (TypeUtils.isDouble(targetClass)) {
+		} else if (ClassUtils.isDouble(targetClass)) {
 			return number.doubleValue();
-		} else if (TypeUtils.isBoolean(targetClass)) {
+		} else if (ClassUtils.isBoolean(targetClass)) {
 			return number.intValue() == 1;
-		} else if (TypeUtils.isChar(targetClass)) {
+		} else if (ClassUtils.isChar(targetClass)) {
 			return (char) number.intValue();
 		} else {
 			throw new ParameterException(targetClass.getName() + "不是一个基本数据类型");

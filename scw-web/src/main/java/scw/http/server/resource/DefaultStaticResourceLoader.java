@@ -2,28 +2,29 @@ package scw.http.server.resource;
 
 import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
+import scw.env.Environment;
+import scw.env.SystemEnvironment;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
-import scw.io.ResourceUtils;
-import scw.value.property.PropertyFactory;
 
 public class DefaultStaticResourceLoader extends AbstractStaticResourceLoader {
-	private ResourceLoader resourceLoader = ResourceUtils.getResourceOperations();
-
+	private ResourceLoader resourceLoader;
+	
 	public DefaultStaticResourceLoader() {
 	}
 
-	public DefaultStaticResourceLoader(PropertyFactory propertyFactory) {
-		String[] paths = propertyFactory.getObject("http.static.resource.path", String[].class);
+	public DefaultStaticResourceLoader(Environment environment) {
+		this.resourceLoader = environment;
+		String[] paths = environment.getObject("http.static.resource.path", String[].class);
 		if (!ArrayUtils.isEmpty(paths)) {
-			String resourceRoot = propertyFactory.getString("http.static.resource.root");
+			String resourceRoot = environment.getString("http.static.resource.root");
 			resourceRoot = resourceRoot == null ? "" : resourceRoot;
 			addMapping(resourceRoot, paths);
 		}
 	}
 
 	public ResourceLoader getResourceLoader() {
-		return resourceLoader;
+		return resourceLoader == null? SystemEnvironment.getInstance():resourceLoader;
 	}
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {
@@ -33,6 +34,6 @@ public class DefaultStaticResourceLoader extends AbstractStaticResourceLoader {
 
 	@Override
 	protected Resource getResourceInternal(String location) {
-		return resourceLoader.getResource(location);
+		return getResourceLoader().getResource(location);
 	}
 }

@@ -7,18 +7,18 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
-import scw.configure.support.ConfigureUtils;
+import scw.context.result.Result;
+import scw.context.result.ResultFactory;
 import scw.convert.TypeDescriptor;
 import scw.core.utils.XTime;
 import scw.dom.DomUtils;
+import scw.env.SystemEnvironment;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.result.Result;
-import scw.result.ResultFactory;
 import scw.util.RandomUtils;
 
-public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode, scw.beans.Destroy {
+public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerificationCode, scw.context.Destroy {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final String codeParameterKey;
@@ -35,7 +35,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 	public AbstractXmlPhoneVerificationCode(String xmlPath, ResultFactory resultFactory)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		this.resultFactory = resultFactory;
-		Node root = DomUtils.getRootElement(xmlPath);
+		Node root = DomUtils.getRootElement(SystemEnvironment.getInstance(), xmlPath);
 		String host = DomUtils.getNodeAttributeValue(root, "host", "http://gw.api.taobao.com/router/rest");
 		String appKey = DomUtils.getRequireNodeAttributeValue(root, "appKey");
 		String version = DomUtils.getNodeAttributeValue(root, "version", "2.0");
@@ -49,7 +49,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 			this.aLiDaYu = new DefaultAliDaYu(host, appKey, version, format, signMethod, appSecret, resultFactory);
 		}
 		
-		this.modelList = (List<MessageModel>) ConfigureUtils.getConversionServiceFactory().convert(root, TypeDescriptor.collection(List.class, MessageModel.class));
+		this.modelList = (List<MessageModel>) SystemEnvironment.getInstance().convert(root, TypeDescriptor.forObject(root), TypeDescriptor.collection(List.class, MessageModel.class));
 		this.codeParameterKey = DomUtils.getNodeAttributeValue(String.class, root, "code-key", "code");
 		this.codeLength = DomUtils.getNodeAttributeValue(Integer.class, root, "code-length", 6);
 		this.debug = DomUtils.getNodeAttributeValue(boolean.class, root, "debug", false);

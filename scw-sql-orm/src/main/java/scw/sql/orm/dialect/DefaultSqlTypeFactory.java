@@ -8,26 +8,26 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.Year;
 
-import scw.core.utils.TypeUtils;
+import scw.core.utils.ClassUtils;
 
 public class DefaultSqlTypeFactory implements SqlTypeFactory {
 	
 	public SqlType getSqlType(Class<?> type) {
-		if (TypeUtils.isString(type) || type.isEnum()) {
+		if (ClassUtils.isString(type) || type.isEnum()) {
 			return VARCHAR;
-		} else if (TypeUtils.isBoolean(type)) {
+		} else if (ClassUtils.isBoolean(type)) {
 			return BIT;
-		} else if (TypeUtils.isByte(type)) {
+		} else if (ClassUtils.isByte(type)) {
 			return TINYINT;
-		} else if (TypeUtils.isShort(type)) {
+		} else if (ClassUtils.isShort(type)) {
 			return SMALLINT;
-		} else if (TypeUtils.isInt(type)) {
+		} else if (ClassUtils.isInt(type)) {
 			return INTEGER;
-		} else if (TypeUtils.isLong(type)) {
+		} else if (ClassUtils.isLong(type)) {
 			return BIGINT;
-		} else if (TypeUtils.isFloat(type)) {
+		} else if (ClassUtils.isFloat(type)) {
 			return FLOAT;
-		} else if (TypeUtils.isDouble(type)) {
+		} else if (ClassUtils.isDouble(type)) {
 			return DOUBLE;
 		} else if (Date.class.isAssignableFrom(type)) {
 			return DATE;

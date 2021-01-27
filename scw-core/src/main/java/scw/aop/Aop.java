@@ -6,11 +6,11 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 
-import scw.core.instance.InstanceIterable;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.MethodInvoker;
 import scw.core.reflect.MethodInvokerWrapper;
 import scw.core.utils.ArrayUtils;
+import scw.instance.NoArgsInstanceFactory;
+import scw.instance.support.InstanceIterable;
 import scw.lang.NotSupportedException;
 import scw.util.MultiIterable;
 
@@ -64,9 +64,9 @@ public abstract class Aop implements ProxyFactory {
 		return getProxyFactory().getUserClass(clazz);
 	}
 
-	public final Class<?> getUserClass(String className, boolean initialize, ClassLoader classLoader)
+	public final Class<?> getUserClass(String className, ClassLoader classLoader)
 			throws ClassNotFoundException {
-		return getProxyFactory().getUserClass(className, initialize, classLoader);
+		return getProxyFactory().getUserClass(className, classLoader);
 	}
 
 	public final boolean isProxy(String className, ClassLoader classLoader) {
@@ -142,10 +142,6 @@ public abstract class Aop implements ProxyFactory {
 
 		if (!instanceFactory.isInstance(instanceName)) {
 			throw new NotSupportedException("instanceName:" + instanceName + ", method:" + method.toString());
-		}
-
-		if (instanceFactory.isSingleton(instanceName)) {
-			return getProxyMethod(targetClass, instanceFactory.getInstance(instanceName), method, filters);
 		}
 
 		MethodInvoker methodInvoker = new DefaultMethodInvoker(instanceFactory, instanceName, targetClass, method,

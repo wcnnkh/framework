@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
+import scw.context.annotation.Provider;
+import scw.context.result.Result;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.instance.annotation.SPI;
 import scw.core.utils.ClassUtils;
+import scw.event.Observable;
 import scw.http.MediaType;
 import scw.http.server.HttpServiceHandler;
 import scw.http.server.HttpServiceHandlerAccept;
@@ -38,12 +39,10 @@ import scw.net.message.InputMessage;
 import scw.net.message.Text;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MessageConverterFactory;
-import scw.result.Result;
 import scw.util.MultiIterable;
-import scw.value.property.PropertyFactory;
 import scw.web.WebUtils;
 
-@SPI(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
+@Provider(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
@@ -52,9 +51,11 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 	private final HttpChannelFactory httpChannelFactory;
 	protected final BeanFactory beanFactory;
 	private ActionManager actionManager;
+	private final Observable<Long> executeWarnTime;
 
-	public HttpControllerHandler(BeanFactory beanFactory, PropertyFactory propertyFactory) {
+	public HttpControllerHandler(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
+		executeWarnTime = beanFactory.getEnvironment().getObservableValue("mvc.warn-execute-time", Long.class, 200L);
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
 		} else {
@@ -65,8 +66,13 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)
 				? beanFactory.getInstance(ExceptionHandler.class) : null;
 
-		this.actionInterceptor.addAll(BeanUtils.loadAllService(ActionInterceptor.class, beanFactory, propertyFactory));
-		messageConverterFactory.getMessageConverters().addAll(BeanUtils.loadAllService(MessageConverter.class, beanFactory, propertyFactory));
+		for(ActionInterceptor actionInterceptor : beanFactory.getServiceLoader(ActionInterceptor.class)){
+			this.actionInterceptor.add(actionInterceptor);
+		}
+		
+		for(MessageConverter messageConverter : beanFactory.getServiceLoader(MessageConverter.class)){
+			messageConverterFactory.getMessageConverters().add(messageConverter);
+		}
 	}
 
 	public MessageConverterFactory getMessageConverterFactory() {
@@ -116,6 +122,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
+		httpChannelDestroy.setExecuteWarnTime(executeWarnTime.get());
 		Levels level = MVCUtils.getActionLoggerLevel(action);
 		if (level != null) {
 			httpChannelDestroy.setEnableLevel(level.getValue());

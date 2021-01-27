@@ -62,4 +62,9 @@ public class GenericMapWrapper<K, V> implements GenericMap<K, V> {
 	public V putIfAbsent(K key, V value) {
 		return targetMap.putIfAbsent(key, value);
 	}
+	
+	@Override
+	public GenericMap<K, V> clone() {
+		return targetMap.clone();
+	}
 }

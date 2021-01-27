@@ -12,7 +12,7 @@ import scw.redis.enums.NXXX;
 import scw.value.AnyValue;
 
 public final class RedisLock extends AbstractLock {
-	private static final String UNLOCK_SCRIPT = ResourceUtils.getContent("classpath:/scw/data/redis/lock.script",
+	private static final String UNLOCK_SCRIPT = ResourceUtils.getContent(ResourceUtils.getSystemResource("/scw/data/redis/lock.script"),
 			Constants.UTF_8);
 	private final Redis redis;
 	private final String key;

@@ -60,7 +60,7 @@
 		
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-mq</artifactId>
+			<artifactId>scw-rabbitmq</artifactId>
 		</dependency>
 
 		<dependency>

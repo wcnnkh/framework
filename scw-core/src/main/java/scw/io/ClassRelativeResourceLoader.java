@@ -2,6 +2,7 @@ package scw.io;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
+import scw.util.DefaultClassLoaderProvider;
 
 /**
  * {@link ResourceLoader} implementation that interprets plain resource paths
@@ -20,7 +21,7 @@ public class ClassRelativeResourceLoader extends DefaultResourceLoader {
 	public ClassRelativeResourceLoader(Class<?> clazz) {
 		Assert.notNull(clazz, "Class must not be null");
 		this.clazz = clazz;
-		setClassLoader(clazz.getClassLoader());
+		setClassLoaderProvider(new DefaultClassLoaderProvider(clazz));
 	}
 
 	@Override

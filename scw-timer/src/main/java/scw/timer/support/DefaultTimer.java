@@ -8,7 +8,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
-import scw.beans.Destroy;
+import scw.context.Destroy;
 import scw.core.IteratorCallback;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;

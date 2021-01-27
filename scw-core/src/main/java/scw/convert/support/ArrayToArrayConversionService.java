@@ -7,7 +7,7 @@ import java.util.Set;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 
-public class ArrayToArrayConversionService extends ConditionalConversionService {
+class ArrayToArrayConversionService extends ConditionalConversionService {
 	private final ConversionService conversionService;
 
 	public ArrayToArrayConversionService(ConversionService conversionService) {

@@ -21,5 +21,10 @@ public class Java8GenericMapFactory implements GenericMapFactory {
 		public V putIfAbsent(K key, V value) {
 			return getTargetMap().putIfAbsent(key, value);
 		}
+		
+		@Override
+		public Java8CompatibleMap<K, V> clone() {
+			return new Java8CompatibleMap<K, V>(super.clone());
+		}
 	}
 }

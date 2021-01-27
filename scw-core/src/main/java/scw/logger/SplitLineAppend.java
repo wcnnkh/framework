@@ -3,7 +3,7 @@ package scw.logger;
 import java.io.IOException;
 import java.io.Serializable;
 
-import scw.core.GlobalPropertyFactory;
+import scw.env.SystemEnvironment;
 import scw.util.StringAppend;
 
 public final class SplitLineAppend implements Serializable, StringAppend {
@@ -11,7 +11,7 @@ public final class SplitLineAppend implements Serializable, StringAppend {
 	private static final String DIVIDING_LINE;
 	
 	static{
-		int len = GlobalPropertyFactory.getInstance().getValue("scw.split.line.length", int.class, 20);
+		int len = SystemEnvironment.getInstance().getValue("scw.split.line.length", int.class, 20);
 		StringBuilder sb = new StringBuilder();
 		for(int i=0; i<len; i++){
 			sb.append("-");

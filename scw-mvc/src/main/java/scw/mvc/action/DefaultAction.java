@@ -11,17 +11,16 @@ import java.util.Set;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.core.instance.InstanceIterable;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
+import scw.instance.support.InstanceIterable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.annotation.ActionInterceptors;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Methods;
-import scw.value.property.PropertyFactory;
 
 public class DefaultAction extends BeanAction {
 	private static Logger logger = LoggerFactory.getLogger(DefaultAction.class);
@@ -33,7 +32,7 @@ public class DefaultAction extends BeanAction {
 			8);
 	private Iterable<ActionInterceptor> actionInterceptors;
 	
-	public DefaultAction(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
+	public DefaultAction(BeanFactory beanFactory, Class<?> targetClass,
 			Method method) {
 		super(beanFactory, targetClass, method);
 		Controller classController = getSourceClass()
@@ -42,7 +41,7 @@ public class DefaultAction extends BeanAction {
 				.getAnnotation(Controller.class);
 		
 		String controller = classController.value();
-		controller = propertyFactory.resolvePlaceholders(controller);
+		controller = beanFactory.getEnvironment().resolvePlaceholders(controller);
 		
 		httpHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
 				StringUtils.mergePath("/", controller,
@@ -54,7 +53,7 @@ public class DefaultAction extends BeanAction {
 				methodController.value(),
 				Arrays.asList(methodController.methods())));
 		String[] names = getActionInterceptorNames();
-		this.actionInterceptors = new InstanceIterable<ActionInterceptor>(beanFactory, Arrays.asList(names), true);
+		this.actionInterceptors = new InstanceIterable<ActionInterceptor>(beanFactory, Arrays.asList(names));
 	}
 	
 	public Iterable<? extends ActionInterceptor> getActionInterceptors() {

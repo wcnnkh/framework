@@ -191,7 +191,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 		}
 
 		try {
-			return ClassUtils.forName(v);
+			return ClassUtils.forName(v, null);
 		} catch (ClassNotFoundException e) {
 			return null;
 		}
@@ -236,7 +236,7 @@ public abstract class AbstractStringValue extends SupportDefaultValue {
 	public boolean isNumber() {
 		String value = getAsString();
 		value = formatNumberText(value);
-		if (StringUtils.isNotEmpty(value)) {
+		if (StringUtils.isEmpty(value)) {
 			return false;
 		}
 

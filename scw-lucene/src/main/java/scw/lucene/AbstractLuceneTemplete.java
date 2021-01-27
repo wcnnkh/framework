@@ -18,8 +18,8 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 
-import scw.configure.support.ConfigureUtils;
-import scw.core.instance.InstanceUtils;
+import scw.convert.ConversionService;
+import scw.instance.InstanceUtils;
 import scw.json.JSONUtils;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.FieldFilter;
@@ -36,6 +36,8 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	protected abstract IndexWriter getIndexWrite() throws IOException;
 
 	protected abstract IndexReader getIndexReader() throws IOException;
+	
+	protected abstract ConversionService getConversionService();
 
 	public <T> T indexWriter(IndexWriterExecutor<T> indexWriterExecutor) throws IOException {
 		IndexWriter indexWriter = null;
@@ -144,7 +146,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 				continue;
 			}
 
-			ConfigureUtils.setValue(instance, field, value);
+			MapperUtils.setValue(getConversionService(), instance, field, value);
 		}
 		return instance;
 	}
@@ -326,7 +328,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 					continue;
 				}
 
-				ConfigureUtils.setValue(instance, field, value);
+				MapperUtils.setValue(getConversionService(), instance, field, value);
 			}
 			return instance;
 		}

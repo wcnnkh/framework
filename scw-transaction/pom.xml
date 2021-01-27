@@ -10,7 +10,6 @@
   	<dependency>
   		<groupId>scw</groupId>
   		<artifactId>scw-core</artifactId>
-  		<scope>provided</scope>
   	</dependency>
   </dependencies>
 </project>

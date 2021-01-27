@@ -1,11 +1,9 @@
 package scw.beans;
 
-public class BeansException extends RuntimeException{
+import scw.instance.InstanceException;
+
+public class BeansException extends InstanceException{
 	private static final long serialVersionUID = 1L;
-	
-	public BeansException(){
-		super();
-	}
 	
 	public BeansException(String message){
 		super(message);

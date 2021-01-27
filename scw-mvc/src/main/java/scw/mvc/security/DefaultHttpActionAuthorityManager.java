@@ -4,10 +4,10 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.context.annotation.Provider;
 import scw.core.Constants;
 import scw.core.annotation.KeyValuePair;
 import scw.core.annotation.MultiAnnotatedElement;
-import scw.core.instance.annotation.SPI;
 import scw.core.utils.StringUtils;
 import scw.event.EventListener;
 import scw.event.ObjectEvent;
@@ -23,7 +23,7 @@ import scw.security.authority.http.DefaultHttpAuthorityManager;
 import scw.security.authority.http.HttpAuthority;
 import scw.util.Base64;
 
-@SPI(order = Integer.MIN_VALUE, value = HttpActionAuthorityManager.class)
+@Provider(order = Integer.MIN_VALUE, value = HttpActionAuthorityManager.class)
 public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority>
 		implements HttpActionAuthorityManager {
 

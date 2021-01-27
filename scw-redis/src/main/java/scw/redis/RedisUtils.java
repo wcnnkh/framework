@@ -8,9 +8,9 @@ import scw.io.ResourceUtils;
 import scw.value.AnyValue;
 
 public final class RedisUtils {
-	private static final String INCR_AND_INIT_SCRIPT = ResourceUtils.getContent("classpath:/scw/data/redis/incr.script",
+	private static final String INCR_AND_INIT_SCRIPT = ResourceUtils.getContent(ResourceUtils.getSystemResource("/scw/data/redis/incr.script"),
 			Constants.UTF_8);
-	private static final String DECR_AND_INIT_SCRIPT = ResourceUtils.getContent("classpath:/scw/data/redis/decr.script",
+	private static final String DECR_AND_INIT_SCRIPT = ResourceUtils.getContent(ResourceUtils.getSystemResource("/scw/data/redis/decr.script"),
 			Constants.UTF_8);
 
 	public static String notNullScript(String name) {

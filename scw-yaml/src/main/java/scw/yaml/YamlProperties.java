@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import scw.io.Resource;
-import scw.io.ResourceUtils;
 import scw.io.event.AbstractObservableResources;
 import scw.yaml.YamlProcessor.MatchCallback;
 
@@ -14,14 +13,6 @@ public class YamlProperties extends
 		AbstractObservableResources<Properties> {
 	private YamlProcessor processor;
 	private Collection<Resource> resources;
-	
-	public YamlProperties(String resource) {
-		this(ResourceUtils.getResourceOperations().getResources(resource));
-	}
-	
-	public YamlProperties(YamlProcessor processor, String resource) {
-		this(processor, ResourceUtils.getResourceOperations().getResources(resource));
-	}
 	
 	public YamlProperties(Resource ...resources) {
 		this(Arrays.asList(resources));
@@ -53,7 +44,7 @@ public class YamlProperties extends
 			public void process(Properties properties, Map<String, Object> map) {
 				allProperties.putAll(properties);
 			}
-		}, resources);
+		}, null, resources);
 		return allProperties;
 	}
 }

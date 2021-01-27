@@ -4,10 +4,21 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import scw.core.ResolvableType;
+
 public abstract class AbstractValue implements Value {
 	@SuppressWarnings("unchecked")
-	public <T> T getAsObject(Class<? extends T> type) {
+	public <T> T getAsObject(Class<T> type) {
+		return (T) getAsObject(ResolvableType.forClass(type));
+	}
+	
+	public Object getAsObject(Type type) {
+		return getAsObject(ResolvableType.forType(type));
+	}
+	
+	public Object getAsObject(ResolvableType resolvableType) {
 		Object v = null;
+		Class<?> type = resolvableType.getRawClass();
 		if (String.class == type) {
 			v = getAsString();
 		} else if (int.class == type) {
@@ -55,23 +66,12 @@ public abstract class AbstractValue implements Value {
 		} else if (type == Value.class) {
 			v = this;
 		} else {
-			v = getAsObjectNotSupport(type);
+			v = getAsObjectNotSupport(resolvableType, type);
 		}
-		return (T) v;
+		return v;
 	}
-
-	protected abstract <T> T getAsObjectNotSupport(Class<? extends T> type);
-
-	protected abstract Object getAsObjectNotSupport(Type type);
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Object getAsObject(Type type) {
-		if (type instanceof Class) {
-			return getAsObject((Class) type);
-		}
-
-		return getAsObjectNotSupport(type);
-	}
+	
+	protected abstract Object getAsObjectNotSupport(ResolvableType type, Class<?> rawClass);
 	
 	@Override
 	public String toString() {

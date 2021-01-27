@@ -11,15 +11,15 @@ import org.w3c.dom.NodeList;
 
 import scw.aop.MethodInterceptor;
 import scw.beans.BeanFactory;
-import scw.beans.DefaultBeanDefinition;
-import scw.core.instance.InstanceIterable;
+import scw.beans.BeansException;
+import scw.beans.support.DefaultBeanDefinition;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
+import scw.instance.support.InstanceIterable;
 import scw.lang.NotSupportedException;
-import scw.value.property.PropertyFactory;
 
 public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private List<String> names = new ArrayList<String>();
@@ -28,26 +28,26 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private final XmlParameterFactory xmlParameterFactory;
 	private Iterable<? extends MethodInterceptor> filters;
 
-	public XmlBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Node beanNode) throws Exception {
-		this(beanFactory, propertyFactory, XmlBeanUtils.getClass(beanNode, true), beanNode);
+	public XmlBeanDefinition(BeanFactory beanFactory, Node beanNode) throws Exception {
+		this(beanFactory, XmlBeanUtils.getClass(beanNode, true, beanFactory.getClassLoader()), beanNode);
 	}
 
-	public XmlBeanDefinition(BeanFactory beanFactory, PropertyFactory propertyFactory, Class<?> targetClass,
+	public XmlBeanDefinition(BeanFactory beanFactory, Class<?> targetClass,
 			Node beanNode) throws Exception {
-		super(beanFactory, propertyFactory, targetClass);
+		super(beanFactory, targetClass);
 		Collection<String> filterNames = getFilters(beanNode);
 		if (!CollectionUtils.isEmpty(filterNames)) {
 			this.filters = new InstanceIterable<MethodInterceptor>(beanFactory, getFilters(beanNode));
 		}
 
 		NodeList nodeList = beanNode.getChildNodes();
-		ioc.getInit().getIocProcessors().addAll(XmlBeanUtils.getInitMethodIocProcessors(getTargetClass(), nodeList));
+		ioc.getInit().getIocProcessors().addAll(XmlBeanUtils.getInitMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
 		ioc.getDestroy().getIocProcessors()
-				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(getTargetClass(), nodeList));
+				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
 		ioc.getDependence().getIocProcessors()
-				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(targetClass, nodeList));
-		this.xmlParameterFactory = new XmlParameterFactory(beanFactory, propertyFactory,
-				XmlBeanUtils.getConstructorParameters(nodeList));
+				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(targetClass, nodeList, beanFactory.getClassLoader()));
+		this.xmlParameterFactory = new XmlParameterFactory(beanFactory,
+				XmlBeanUtils.getConstructorParameters(nodeList, beanFactory.getClassLoader()));
 		this.id = getId(beanNode);
 		this.names.addAll(super.getNames());
 		this.names.addAll(Arrays.asList(getNames(beanNode)));
@@ -110,7 +110,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	@Override
-	public Object create() throws Exception {
+	public Object create() throws BeansException {
 		if (ArrayUtils.isEmpty(xmlParameterFactory.getXmlBeanParameters())) {
 			return super.create();
 		}

@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.MethodHolder;
 import scw.core.reflect.SerializableMethod;
 import scw.core.reflect.SimpleMethodHolder;
+import scw.instance.NoArgsInstanceFactory;
 
 public class DefaultMethodInvoker extends AbstractMethodInvoker implements Serializable {
 	private static final long serialVersionUID = 1L;

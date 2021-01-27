@@ -4,9 +4,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import scw.core.instance.InstanceUtils;
-import scw.core.instance.NoArgsInstanceFactory;
 import scw.core.reflect.ReflectionUtils;
+import scw.instance.InstanceUtils;
+import scw.instance.NoArgsInstanceFactory;
 
 @SuppressWarnings("unchecked")
 public class Copy {
@@ -241,10 +241,6 @@ public class Copy {
 			return null;
 		}
 
-		if (getInstanceFactory().isSingleton(targetClass)) {
-			return getInstanceFactory().getInstance(targetClass);
-		}
-
 		if (targetClass.isArray() && sourceClass.isArray()) {
 			return cloneArray(targetClass, source, parentField);
 		}
@@ -258,10 +254,6 @@ public class Copy {
 		}
 
 		T target = getInstanceFactory().getInstance(targetClass);
-		if (getInstanceFactory().isSingleton(targetClass)) {
-			return target;
-		}
-
 		copy(targetClass, target, sourceClass, source, parentField);
 		return target;
 	}
@@ -272,7 +264,7 @@ public class Copy {
 		}
 
 		Class<?> sourceClass = source.getClass();
-		if (sourceClass.isPrimitive() || sourceClass.isEnum() || getInstanceFactory().isSingleton(sourceClass)
+		if (sourceClass.isPrimitive() || sourceClass.isEnum()
 				|| !getInstanceFactory().isInstance(sourceClass)) {
 			return source;
 		}

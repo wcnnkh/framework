@@ -20,5 +20,5 @@ public @interface AutoImpl {
 	 * 默认的实现
 	 * @return
 	 */
-	public String[] className() default {};
+	public String[] names() default {};
 }

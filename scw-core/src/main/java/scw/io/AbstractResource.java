@@ -30,7 +30,7 @@ import scw.util.JavaVersion;
  */
 public abstract class AbstractResource implements Resource {
 	private static final Constructor<ResourceEventDispatcher> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
-			.findConstructor("scw.io.event.WatchServiceResourceEventDispatcher", true, Resource.class);
+			.findConstructor("scw.io.event.WatchServiceResourceEventDispatcher", null, true, Resource.class);
 
 	private volatile ResourceEventDispatcher eventDispatcher;
 

@@ -2,41 +2,38 @@ package scw.io;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import scw.core.Assert;
-import scw.core.GlobalPropertyFactory;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.util.ClassLoaderProvider;
+import scw.util.DefaultClassLoaderProvider;
 
-public class DefaultResourceLoader implements ResourceLoader {
-	private ClassLoader classLoader;
+public class DefaultResourceLoader implements ConfigurableResourceLoader {
+	private ClassLoaderProvider classLoaderProvider;
 	private final Set<ProtocolResolver> protocolResolvers = new LinkedHashSet<ProtocolResolver>(4);
 	private final Set<ResourceLoader> resourceLoaders = new LinkedHashSet<ResourceLoader>(4);
-
+	
 	public DefaultResourceLoader() {
-		this.classLoader = ClassUtils.getDefaultClassLoader();
 	}
 
 	public DefaultResourceLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
+		this(new DefaultClassLoaderProvider(classLoader));
+	}
+	
+	public DefaultResourceLoader(ClassLoaderProvider classLoaderProvider){
+		this.classLoaderProvider = classLoaderProvider;
 	}
 
-	public boolean isFindWorkPath() {
-		return GlobalPropertyFactory.getInstance().getValue("resource.find.workpath.enable", boolean.class, true);
-	}
-
-	public void setClassLoader(ClassLoader classLoader) {
-		this.classLoader = classLoader;
+	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
 	}
 
 	public ClassLoader getClassLoader() {
-		return (this.classLoader != null ? this.classLoader : ClassUtils.getDefaultClassLoader());
+		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 
 	public void addProtocolResolver(ProtocolResolver resolver) {
@@ -91,20 +88,7 @@ public class DefaultResourceLoader implements ResourceLoader {
 	}
 
 	protected Resource getResourceByPath(String path) {
-		List<Resource> list = new ArrayList<Resource>();
-		list.add(new ClassPathContextResource(path, classLoader));
-		String root = GlobalPropertyFactory.getInstance().getWorkPath();
-		if (isFindWorkPath() && StringUtils.isNotEmpty(root)) {
-			root = StringUtils.cleanPath(root);
-			String pathTouse = StringUtils.cleanPath(path);
-			if (!pathTouse.startsWith(root)) {
-				pathTouse = root + "/" + pathTouse;
-			}
-
-			list.add(new FileSystemResource(pathTouse));
-		}
-		//颠倒一下，优先使用FileSystemResource
-		return new AutomaticResource(CollectionUtils.reversal(list));
+		return new ClassPathContextResource(path, getClassLoader());
 	}
 
 	protected static class ClassPathContextResource extends ClassPathResource implements ContextResource {

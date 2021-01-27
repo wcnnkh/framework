@@ -7,8 +7,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import scw.core.Constants;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
 
 /**
  * 此类非线程安全的
@@ -69,7 +69,7 @@ public class ByteArray implements Serializable {
 	}
 
 	public ByteArray(String body) {
-		this(body, Constants.DEFAULT_CHARSET);
+		this(body, SystemEnvironment.getInstance().getCharset());
 	}
 
 	/**
@@ -210,6 +210,6 @@ public class ByteArray implements Serializable {
 	}
 
 	public String toString() {
-		return toString(Constants.DEFAULT_CHARSET_NAME);
+		return toString(SystemEnvironment.getInstance().getCharsetName());
 	}
 }

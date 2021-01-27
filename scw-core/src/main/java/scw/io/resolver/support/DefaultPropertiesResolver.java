@@ -1,0 +1,69 @@
+package scw.io.resolver.support;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.util.Properties;
+import java.util.logging.Logger;
+
+import scw.core.reflect.ReflectionUtils;
+import scw.io.IOUtils;
+import scw.io.Resource;
+import scw.io.resolver.PropertiesResolver;
+import scw.lang.NestedRuntimeException;
+
+public class DefaultPropertiesResolver implements PropertiesResolver{
+	private static Logger logger = Logger.getLogger(DefaultPropertiesResolver.class.getName());
+	
+	public static final DefaultPropertiesResolver INSTANCE = new DefaultPropertiesResolver();
+	
+	public boolean canResolveProperties(Resource resource) {
+		String name = resource.getFilename();
+		return name.endsWith(".xml") || name.endsWith(".properties");
+	}
+	
+	public void resolveProperties(Properties properties, Resource resource,
+			Charset charset) {
+		if (!resource.exists()) {
+			return;
+		}
+
+		InputStream is = null;
+		try {
+			is = resource.getInputStream();
+			if (resource.getFilename().endsWith(".xml")) {
+				properties.loadFromXML(is);
+			} else {
+				if (charset == null) {
+					properties.load(is);
+				} else {
+					Method method = ReflectionUtils.getMethod(Properties.class,
+							"load", Reader.class);
+					if (method == null) {
+						logger.warning("jdk1.6及以上的版本才支持指定字符集: "
+								+ resource.getDescription());
+						properties.load(is);
+					} else {
+						InputStreamReader isr = null;
+						try {
+							isr = new InputStreamReader(is, charset);
+							method.invoke(properties, isr);
+						} finally {
+							if (!resource.isOpen()) {
+								IOUtils.close(isr);
+							}
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			throw new NestedRuntimeException(resource.getDescription(), e);
+		} finally {
+			if (!resource.isOpen()) {
+				IOUtils.close(is);
+			}
+		}
+	}
+}

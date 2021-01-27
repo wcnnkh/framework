@@ -24,14 +24,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.netflix.appinfo.EurekaAccept;
-import com.netflix.discovery.EurekaClientConfig;
-import com.netflix.discovery.shared.transport.EurekaTransportConfig;
-
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.ConfigurationProperties;
 import scw.core.utils.StringUtils;
-import scw.value.property.PropertyFactory;
+import scw.env.Environment;
+
+import com.netflix.appinfo.EurekaAccept;
+import com.netflix.discovery.EurekaClientConfig;
+import com.netflix.discovery.shared.transport.EurekaTransportConfig;
 
 /**
  * Eureka client configuration bean.
@@ -60,7 +60,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 	private static final int MINUTES = 60;
 
 	@Autowired(required = false)
-	private PropertyFactory propertyFactory;
+	private Environment environment;
 
 	/**
 	 * Flag to indicate that the Eureka client is enabled.
@@ -523,8 +523,8 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
 	@Override
 	public String getExperimental(String name) {
-		if (this.propertyFactory != null) {
-			return this.propertyFactory.getValue(PREFIX + ".experimental." + name, String.class, null);
+		if (this.environment != null) {
+			return this.environment.getValue(PREFIX + ".experimental." + name, String.class, null);
 		}
 		return null;
 	}
@@ -534,12 +534,12 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 		return getTransport();
 	}
 
-	public PropertyFactory getPropertyFactory() {
-		return propertyFactory;
+	public Environment getEnvironment() {
+		return environment;
 	}
 
-	public void setPropertyFactory(PropertyFactory propertyFactory) {
-		this.propertyFactory = propertyFactory;
+	public void setEnvironment(Environment environment) {
+		this.environment = environment;
 	}
 
 	public boolean isEnabled() {
@@ -939,7 +939,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 			return false;
 		}
 		EurekaClientConfigBean that = (EurekaClientConfigBean) o;
-		return Objects.equals(propertyFactory, that.propertyFactory) && enabled == that.enabled
+		return Objects.equals(environment, that.environment) && enabled == that.enabled
 				&& Objects.equals(transport, that.transport)
 				&& registryFetchIntervalSeconds == that.registryFetchIntervalSeconds
 				&& instanceInfoReplicationIntervalSeconds == that.instanceInfoReplicationIntervalSeconds
@@ -981,7 +981,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(propertyFactory, enabled, transport, registryFetchIntervalSeconds,
+		return Objects.hash(environment, enabled, transport, registryFetchIntervalSeconds,
 				instanceInfoReplicationIntervalSeconds, initialInstanceInfoReplicationIntervalSeconds,
 				eurekaServiceUrlPollIntervalSeconds, proxyPort, proxyHost, proxyUserName, proxyPassword,
 				eurekaServerReadTimeoutSeconds, eurekaServerConnectTimeoutSeconds, backupRegistryImpl,
@@ -998,7 +998,7 @@ public class EurekaClientConfigBean implements EurekaClientConfig {
 
 	@Override
 	public String toString() {
-		return new StringBuilder("EurekaClientConfigBean{").append("propertyResolver=").append(propertyFactory)
+		return new StringBuilder("EurekaClientConfigBean{").append("propertyResolver=").append(environment)
 				.append(", ").append("enabled=").append(enabled).append(", ").append("transport=").append(transport)
 				.append(", ").append("registryFetchIntervalSeconds=").append(registryFetchIntervalSeconds).append(", ")
 				.append("instanceInfoReplicationIntervalSeconds=").append(instanceInfoReplicationIntervalSeconds)

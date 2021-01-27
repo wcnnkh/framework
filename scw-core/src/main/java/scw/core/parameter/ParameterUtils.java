@@ -24,7 +24,7 @@ public final class ParameterUtils {
 		if (JavaVersion.INSTANCE.getMasterVersion() >= 8) {
 			try {
 				parameterNameDiscoverer = (ParameterNameDiscoverer) ClassUtils
-						.forName("scw.core.parameter.Jdk8ParameterNameDiscoverer").newInstance();
+						.forName("scw.core.parameter.Jdk8ParameterNameDiscoverer", null).newInstance();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

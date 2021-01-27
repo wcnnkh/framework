@@ -2,9 +2,9 @@ package scw.alibaba.dayu;
 
 import java.lang.reflect.InvocationTargetException;
 
+import scw.context.result.ResultFactory;
 import scw.core.utils.XTime;
 import scw.redis.Redis;
-import scw.result.ResultFactory;
 
 public final class RedisXmlPhoneVerificationCode extends AbstractXmlPhoneVerificationCode {
 	private final Redis redis;

@@ -6,12 +6,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
-import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.core.ResolvableType;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
@@ -43,18 +43,18 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	public boolean canRead(Type type) {
+	public boolean canRead(ResolvableType type) {
 		return false;
 	}
 
 	@Override
-	protected Object readInternal(Type type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Object readInternal(ResolvableType type, InputMessage inputMessage) throws IOException, MessageConvertException {
 		return null;
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	protected void writeInternal(Type type, Object body, MimeType contentType, OutputMessage outputMessage)
+	protected void writeInternal(ResolvableType type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		String boundary;
 		MimeType mimeType = contentType;

@@ -1,19 +1,18 @@
 package scw.logger;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import scw.core.GlobalPropertyFactory;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
+import scw.event.Observable;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.io.event.ConvertibleObservablesProperties;
@@ -34,17 +33,16 @@ public class LoggerLevelManager extends
 	private static LoggerLevelManager loggerLevelManager;
 
 	static {
-		String defaultLevel = GlobalPropertyFactory.getInstance().getString(
+		String defaultLevel = SystemEnvironment.getInstance().getString(
 				Level.class.getName());
 		Level defLevel = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level
 				.getLevel(defaultLevel.toUpperCase());
 		
 		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);	
 		try {
-			Enumeration<URL> urls = ResourceUtils.getClassLoaderResources("scw/logger-level.properties");
-			for(Resource resource : ResourceUtils.toUrlResources(urls)){
+			for(Resource resource : ResourceUtils.getSystemResources("scw/logger-level.properties")){
 				Properties properties = new Properties();
-				ResourceUtils.loadProperties(properties, resource, null);
+				SystemEnvironment.getInstance().resolveProperties(properties, resource, null);
 				load(levelMap, properties, defLevel, true);
 			}
 		} catch (IOException e) {
@@ -56,10 +54,11 @@ public class LoggerLevelManager extends
 		}
 		
 		loggerLevelManager = new LoggerLevelManager(defLevel);
-		loggerLevelManager.loadProperties(
-				GlobalPropertyFactory.getInstance().getValue(
+		Observable<Properties> observable = SystemEnvironment.getInstance().getProperties(SystemEnvironment.getInstance().getValue(
 						"scw.logger.level.config", String.class,
-						"/logger-level.properties")).register();
+						"/logger-level.properties"));
+		observable.register();
+		loggerLevelManager.addObservable(observable);
 	}
 	
 	

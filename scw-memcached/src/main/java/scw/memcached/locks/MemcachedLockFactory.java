@@ -2,14 +2,14 @@ package scw.memcached.locks;
 
 import java.util.concurrent.TimeUnit;
 
-import scw.core.instance.annotation.SPI;
+import scw.context.annotation.Provider;
 import scw.locks.AbstractLockFactory;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
 import scw.memcached.Memcached;
 import scw.util.XUtils;
 
-@SPI(order = Integer.MIN_VALUE + 1, value = LockFactory.class)
+@Provider(order = Integer.MIN_VALUE + 1, value = LockFactory.class)
 public final class MemcachedLockFactory extends AbstractLockFactory {
 	private final Memcached memcached;
 
