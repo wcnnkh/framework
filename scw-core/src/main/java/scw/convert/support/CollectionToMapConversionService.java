@@ -14,6 +14,7 @@ import java.util.TreeSet;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
+import scw.core.Constants;
 import scw.lang.NotSupportedException;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
@@ -106,6 +107,9 @@ public class CollectionToMapConversionService implements ConversionService{
 		}
 		
 		public boolean matches(TypeDescriptor sourceType) {
+			if(sourceType.getType().getName().startsWith("java") || sourceType.getType().getName().startsWith(Constants.SYSTEM_PACKAGE_NAME)){
+				return false;
+			}
 			return getGetter(sourceType) != null;
 		};
 		

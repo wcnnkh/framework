@@ -9,6 +9,7 @@ import scw.core.Constants;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class DefaultContextClassesLoaderFactory extends
 		DefaultClassesLoaderFactory implements ContextClassesLoaderFactory {
 	private static final String[] IGNORE_PREFIXS = new String[] { "java", "scw.cglib.",
@@ -18,15 +19,13 @@ public class DefaultContextClassesLoaderFactory extends
 			"scw.mapper.", "scw.logger.", "scw.serializer.", "scw.beans.",
 			"scw.boot.", "scw.dom.", "scw.script.", "scw.math.", "scw.net.",
 			"scw.http.server.", "scw.configure", "scw.apple.", "scw.data.", "scw.db." };
-	@SuppressWarnings("rawtypes")
 	private final DefaultClassesLoader<?> contextClassesLoader = new DefaultClassesLoader();
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public DefaultContextClassesLoaderFactory(boolean cache) {
 		super(cache);
 		contextClassesLoader.add((ClassesLoader) getClassesLoader(Constants.SYSTEM_PACKAGE_NAME));
 	}
-
+	
 	@Override
 	public boolean match(MetadataReader metadataReader,
 			MetadataReaderFactory metadataReaderFactory) throws IOException {

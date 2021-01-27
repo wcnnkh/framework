@@ -12,6 +12,7 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.convert.resolve.ConfigurableResourceResolver;
 import scw.convert.resolve.ResourceResolver;
+import scw.convert.resolve.ResourceResolverConversionService;
 import scw.convert.resolve.support.DefaultResourceResolver;
 import scw.convert.support.DefaultConversionService;
 import scw.core.Constants;
@@ -41,6 +42,7 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 	public DefaultEnvironment(boolean concurrent){
 		super(concurrent);
 		setConversionService(this);
+		addConversionService(new ResourceResolverConversionService(this));
 	}
 	
 	protected void aware(Object instance){

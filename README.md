@@ -17,4 +17,4 @@
 
 3.未开始模块
 -----------------
-RMI,JMX,Spring,Solr,Elasticsearch
+RMI,JMX,JMS,Spring,Solr,Elasticsearch

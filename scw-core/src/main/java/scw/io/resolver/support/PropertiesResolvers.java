@@ -12,13 +12,8 @@ import scw.io.resolver.PropertiesResolver;
 import scw.lang.NotSupportedException;
 import scw.util.XUtils;
 
-public class PropertiesResolvers implements ConfigurablePropertiesResolver, Comparator<PropertiesResolver>{
-	
+public class PropertiesResolvers extends DefaultPropertiesResolver implements ConfigurablePropertiesResolver, Comparator<PropertiesResolver>{
 	protected final TreeSet<PropertiesResolver> resolvers = new TreeSet<PropertiesResolver>(this);
-	
-	public PropertiesResolvers(){
-		resolvers.add(DefaultPropertiesResolver.INSTANCE);
-	}
 	
 	public SortedSet<PropertiesResolver> getResolvers(){
 		return XUtils.synchronizedProxy(resolvers, this);
@@ -32,25 +27,28 @@ public class PropertiesResolvers implements ConfigurablePropertiesResolver, Comp
 		getResolvers().add(propertiesResolver);
 	}
 	
-	public PropertiesResolver getPropertiesResolver(Resource resource){
+	public boolean canResolveProperties(Resource resource) {
 		for(PropertiesResolver resolver : resolvers){
 			if(resolver.canResolveProperties(resource)){
-				return resolver;
+				return true;
 			}
 		}
-		return null;
-	}
-
-	public boolean canResolveProperties(Resource resource) {
-		return getPropertiesResolver(resource) != null;
+		return super.canResolveProperties(resource);
 	}
 
 	public void resolveProperties(Properties properties, Resource resource,
 			Charset charset) {
-		PropertiesResolver resolver = getPropertiesResolver(resource);
-		if(resolver == null){
-			throw new NotSupportedException(resource.getDescription());
+		for(PropertiesResolver resolver : resolvers){
+			if(resolver.canResolveProperties(resource)){
+				resolver.resolveProperties(properties, resource, charset);
+				return ;
+			}
 		}
-		resolver.resolveProperties(properties, resource, charset);
+		
+		if(super.canResolveProperties(resource)){
+			super.resolveProperties(properties, resource, charset);
+			return ;
+		}
+		throw new NotSupportedException(resource.getDescription());
 	}
 }

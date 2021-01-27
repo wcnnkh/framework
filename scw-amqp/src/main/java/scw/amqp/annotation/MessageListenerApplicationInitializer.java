@@ -1,4 +1,4 @@
-package scw.amqp.support;
+package scw.amqp.annotation;
 
 import java.lang.reflect.Method;
 
@@ -10,7 +10,7 @@ import scw.context.annotation.Provider;
 import scw.core.annotation.AnnotationUtils;
 
 @Provider(order = Integer.MIN_VALUE)
-public final class MethodMessageListenerInitializer implements ApplicationPostProcessor {
+public final class MessageListenerApplicationInitializer implements ApplicationPostProcessor {
 
 	@SuppressWarnings("unchecked")
 	public void postProcessApplication(ConfigurableApplication application)

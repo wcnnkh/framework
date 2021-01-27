@@ -1,6 +1,7 @@
 package scw.context.support;
 
 import java.io.IOException;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,8 +21,8 @@ import scw.io.Resource;
 import scw.io.ResourceLoader;
 import scw.lang.Ignore;
 import scw.util.Accept;
-import scw.util.JavaVersion;
 import scw.util.DefaultClassLoaderProvider;
+import scw.util.JavaVersion;
 
 public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 	private MetadataReaderFactory metadataReaderFactory;
@@ -40,11 +41,19 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 	}
 
 	public boolean accept(Class<?> clazz) {
-		return JavaVersion.isSupported(clazz) && ReflectionUtils.isPresent(clazz);
+		if(Modifier.isPrivate(clazz.getModifiers())){
+			return false;
+		}
+		
+		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
 	}
 
 	public boolean match(MetadataReader metadataReader,
 			MetadataReaderFactory metadataReaderFactory) throws IOException {
+		if(metadataReader.getClassMetadata().isAnnotation()){
+			return false;
+		}
+		
 		AnnotationMetadata annotationMetadata = metadataReader
 				.getAnnotationMetadata();
 		if (annotationMetadata.hasAnnotation(Deprecated.class.getName())

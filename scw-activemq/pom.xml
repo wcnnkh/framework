@@ -6,34 +6,17 @@
 		<artifactId>scw</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>scw-mq</artifactId>
-	<properties>
-		<amqp-client.version>5.7.3</amqp-client.version>
-	</properties>
+	<artifactId>scw-activemq</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-boot</artifactId>
 		</dependency>
-		
-		<dependency>
-			<groupId>com.rabbitmq</groupId>
-			<artifactId>amqp-client</artifactId>
-			<version>${amqp-client.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.apache.activemq/activemq-client -->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-client</artifactId>
 			<version>5.15.12</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

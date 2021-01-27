@@ -2,6 +2,7 @@ package scw.beans.ioc;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -86,6 +87,10 @@ public final class Ioc {
 	private static ConcurrentReferenceHashMap<Class<?>, Ioc> iocCache = new ConcurrentReferenceHashMap<Class<?>, Ioc>();
 
 	public static Iterable<Ioc> forClass(Class<?> clazz) {
+		if(clazz.getName().startsWith("java")){
+			return Collections.emptyList();
+		}
+		
 		return new IocIterable(clazz);
 	}
 

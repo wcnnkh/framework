@@ -1,11 +1,9 @@
 package scw.instance.support;
 
-import scw.core.annotation.AnnotationUtils;
-import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
+import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
 import scw.util.ClassLoaderProvider;
-import scw.util.JavaVersion;
 
 public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFactory{
 	private ClassLoaderProvider classLoaderProvider;
@@ -15,11 +13,7 @@ public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFac
 			return false;
 		}
 		
-		if(ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz)){
-			return false;
-		}
-		
-		return ReflectionUtils.isPresent(clazz) && JavaVersion.isSupported(clazz);
+		return InstanceUtils.isSupported(clazz);
 	}
 	
 	@SuppressWarnings("unchecked")

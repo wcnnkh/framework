@@ -87,11 +87,11 @@ public final class InstanceUtils {
 		return asList(serviceLoader);
 	}
 
-	public static boolean isSupport(Class<?> clazz) {
+	public static boolean isSupported(Class<?> clazz) {
 		if(ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz)){
 			return false;
 		}
 		
-		return ReflectionUtils.isPresent(clazz) && JavaVersion.isSupported(clazz);
+		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
 	}
 }

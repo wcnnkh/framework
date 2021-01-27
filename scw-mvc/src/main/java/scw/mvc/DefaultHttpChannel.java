@@ -407,7 +407,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			}
 
 			// 不可以被实例化且不存在无参的构造方法
-			if (!ReflectionUtils.isInstance(type.getRawClass(), true)) {
+			if (!ReflectionUtils.isInstance(type.getRawClass())) {
 				return getInstanceFactory().getInstance(type.getRawClass());
 			}
 

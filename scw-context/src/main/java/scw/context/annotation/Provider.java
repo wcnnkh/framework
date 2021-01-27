@@ -10,7 +10,7 @@ import scw.context.support.DefaultContextClassesLoaderFactory;
 /**
  * 使用类扫描实现Service Provider Interface
  * 
- * 应该注意在一些包使用此类，因为默认状态下不会扫描那些包，具体见{@link DefaultContextClassesLoaderFactory}
+ * 应该注意在一些包下使用此注解，因为默认状态下不会扫描那些包，具体见{@link DefaultContextClassesLoaderFactory}
  * @author shuchaowen
  *
  */

@@ -217,6 +217,24 @@
 				<artifactId>scw-db</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-amqp</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-jms</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-activemq</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -256,7 +274,7 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-mq</artifactId>
+				<artifactId>scw-rabbitmq</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -433,7 +451,6 @@
 		<module>scw-search</module>
 		<module>scw-microsoft</module>
 		<module>scw-dubbo</module>
-		<module>scw-mq</module>
 		<module>scw-zookeeper</module>
 		<module>scw-netflix-eureka-client</module>
 		<module>scw-netflix-eureka-server</module>
@@ -470,5 +487,9 @@
 		<module>scw-messageing</module>
 		<module>scw-locks</module>
 		<module>scw-context</module>
+		<module>scw-jms</module>
+		<module>scw-activemq</module>
+		<module>scw-amqp</module>
+		<module>scw-rabbitmq</module>
 	</modules>
 </project>

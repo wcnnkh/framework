@@ -1548,10 +1548,11 @@ public final class ClassUtils {
 		try {
 			return clazz.newInstance();
 		} catch (IllegalAccessException e) {
-			throw new IllegalStateException("Could not access method: " + e.getMessage());
+			ReflectionUtils.handleReflectionException(e);
 		} catch (InstantiationException e) {
 			throw new UndeclaredThrowableException(e);
 		}
+		throw new IllegalStateException("Should never get here");
 	}
 	
 	/**

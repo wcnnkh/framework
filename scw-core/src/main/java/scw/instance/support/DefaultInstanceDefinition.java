@@ -58,11 +58,11 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 	}
 	
 	public boolean isInstance(Class<?>[] parameterTypes) {
-		return ReflectionUtils.getConstructor(getTargetClass(), false, parameterTypes) != null;
+		return ReflectionUtils.findConstructor(getTargetClass(), false, parameterTypes) != null;
 	}
 
 	public Object create(Class<?>[] parameterTypes, Object... params) throws InstanceException {
-		Constructor<?> constructor = ReflectionUtils.getConstructor(getTargetClass(), false, parameterTypes);
+		Constructor<?> constructor = ReflectionUtils.findConstructor(getTargetClass(), false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getTargetClass() + "找不到指定的构造方法");
 		}
@@ -95,6 +95,9 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 		}
 
 		if (init.compareAndSet(false, true)) {
+			if(targetClass.getName().contains("com.simingtang.product.service.ProductSkuStockService")){
+				System.out.println(targetClass);
+			}
 			if (serviceLoader == null) {
 				serviceLoader = getServiceLoader(targetClass);
 			}

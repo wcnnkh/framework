@@ -20,7 +20,6 @@ import scw.logger.LoggerFactory;
 import scw.logger.LoggerUtils;
 import scw.logger.SplitLineAppend;
 
-@SuppressWarnings("unchecked")
 public class CommonApplication extends XmlBeanFactory implements
 		ConfigurableApplication, EventListener<BeanLifeCycleEvent> {
 	private volatile BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer;

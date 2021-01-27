@@ -272,8 +272,15 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		}
 	}
 	
-	@Override
-	public String toString() {
+	protected String getStringDescribe(){
 		return MapperUtils.getMapper().getFieldValueMap(this).toString();
+	}
+	
+	/**
+	 * 如果要重写请重写 {@link #getStringDescribe()}
+	 */
+	@Override
+	public final String toString() {
+		return getClass().getName() + "[" + getStringDescribe() + "]";
 	}
 }

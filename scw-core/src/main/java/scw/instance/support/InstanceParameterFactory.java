@@ -44,7 +44,7 @@ public abstract class InstanceParameterFactory extends AbstractParameterFactory 
 				return true;
 			}
 
-			if (!ReflectionUtils.isInstance(type, true)) {
+			if (!ReflectionUtils.isInstance(type)) {
 				return false;
 			}
 

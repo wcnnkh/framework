@@ -8,7 +8,6 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.instance.NoArgsInstanceFactory;
@@ -261,14 +260,14 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	
 	protected boolean isInstance(TypeDescriptor targetType){
 		if(instanceFactory == null){
-			return ReflectionUtils.isInstance(targetType.getType(), true);
+			return ReflectionUtils.isInstance(targetType.getType());
 		}
 		return instanceFactory.isInstance(targetType.getType());
 	}
 	
 	protected Object newInstance(TypeDescriptor targetType){
 		if(instanceFactory == null){
-			return ClassUtils.newInstance(targetType.getType());
+			return ReflectionUtils.newInstance(targetType.getType());
 		}
 		return instanceFactory.getInstance(targetType.getType());
 	}

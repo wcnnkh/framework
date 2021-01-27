@@ -16,7 +16,6 @@ import scw.event.Observable;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.io.event.ConvertibleObservablesProperties;
-import scw.io.resolver.support.DefaultPropertiesResolver;
 
 public class LoggerLevelManager extends
 		ConvertibleObservablesProperties<SortedMap<String, Level>> {
@@ -43,7 +42,7 @@ public class LoggerLevelManager extends
 		try {
 			for(Resource resource : ResourceUtils.getSystemResources("scw/logger-level.properties")){
 				Properties properties = new Properties();
-				DefaultPropertiesResolver.INSTANCE.resolveProperties(properties, resource, null);
+				SystemEnvironment.getInstance().resolveProperties(properties, resource, null);
 				load(levelMap, properties, defLevel, true);
 			}
 		} catch (IOException e) {

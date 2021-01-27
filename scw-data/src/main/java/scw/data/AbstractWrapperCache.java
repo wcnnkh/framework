@@ -17,6 +17,11 @@ public abstract class AbstractWrapperCache<C extends Cache> implements Cache {
 
 	public abstract String formatKey(String key);
 
+	@Override
+	public String toString() {
+		return getCache().toString();
+	}
+	
 	public <T> T get(String key) {
 		return getCache().get(formatKey(key));
 	}

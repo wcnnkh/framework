@@ -119,7 +119,7 @@ public class LazyBeanDefinitionRegsitry extends
 			return null;
 		}
 
-		if (!InstanceUtils.isSupport(clazz)) {
+		if (!InstanceUtils.isSupported(clazz)) {
 			return null;
 		}
 		
@@ -146,24 +146,29 @@ public class LazyBeanDefinitionRegsitry extends
 	public BeanDefinition getDefinition(String name) {
 		BeanDefinition definition = super.getDefinition(name);
 		if (definition == null) {
-			BeanDefinition first = load(name);
-			definition = first;
-			if (definition == null || !definition.isInstance()) {
-				String[] aliases = getAliases(name);
-				for (String alias : aliases) {
-					definition = load(alias);
-					if (definition != null && definition.isInstance()) {
-						break;
+			synchronized (getRegisterDefinitionMutex()) {
+				definition = super.getDefinition(name);
+				if(definition == null){
+					BeanDefinition first = load(name);
+					definition = first;
+					if (definition == null || !definition.isInstance()) {
+						String[] aliases = getAliases(name);
+						for (String alias : aliases) {
+							definition = load(alias);
+							if (definition != null && definition.isInstance()) {
+								break;
+							}
+						}
+					}
+
+					if (definition == null) {
+						definition = first;
+					}
+
+					if (definition != null) {
+						definition = registerDefinition(name, definition);
 					}
 				}
-			}
-
-			if (definition == null) {
-				definition = first;
-			}
-
-			if (definition != null) {
-				definition = registerDefinition(name, definition);
 			}
 		}
 		return definition;
@@ -183,7 +188,7 @@ public class LazyBeanDefinitionRegsitry extends
 				continue;
 			}
 
-			if (!InstanceUtils.isSupport(clz)) {
+			if (!InstanceUtils.isSupported(clz)) {
 				logger.debug("{} not present", clz);
 				continue;
 			}

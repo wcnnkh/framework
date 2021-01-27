@@ -125,6 +125,10 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	public final void registerAlias(String name, String alias) {
 		beanDefinitionRegistry.registerAlias(name, alias);
 	}
+	
+	public Object getRegisterDefinitionMutex() {
+		return beanDefinitionRegistry.getRegisterDefinitionMutex();
+	}
 
 	public final BeanDefinition registerDefinition(String name,
 			BeanDefinition beanDefinition) {
@@ -187,7 +191,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	}
 
 	public boolean isInstance(String name, Object... params) {
-		BeanDefinition definition = beanDefinitionRegistry.getDefinition(name);
+		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return false;
 		}
@@ -200,7 +204,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	}
 
 	public boolean isInstance(String name, Class<?>[] parameterTypes) {
-		BeanDefinition definition = beanDefinitionRegistry.getDefinition(name);
+		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return false;
 		}
@@ -213,7 +217,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 			return true;
 		}
 
-		BeanDefinition definition = beanDefinitionRegistry.getDefinition(name);
+		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return false;
 		}
@@ -237,7 +241,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 			return (T) object;
 		}
 
-		BeanDefinition definition = beanDefinitionRegistry.getDefinition(name);
+		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return null;
 		}
@@ -272,7 +276,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 			return true;
 		}
 
-		BeanDefinition definition = beanDefinitionRegistry.getDefinition(name);
+		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return false;
 		}
@@ -282,7 +286,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	}
 
 	public <T> T getInstance(String name, Object... params) {
-		BeanDefinition definition = beanDefinitionRegistry.getDefinition(name);
+		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return null;
 		}
@@ -294,7 +298,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 
 	public <T> T getInstance(String name, Class<?>[] parameterTypes,
 			Object... params) {
-		BeanDefinition definition = beanDefinitionRegistry.getDefinition(name);
+		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return null;
 		}
@@ -315,6 +319,14 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
 
 		environment.loaderServices(this);
+		
+		for(BeanDefinition definition : getServiceLoader(BeanDefinition.class)){
+			if(containsDefinition(definition.getId())){
+				logger.debug("ignore definition {}", definition);
+				continue;
+			}
+			registerDefinition(definition.getId(), definition);
+		}
 
 		for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {
 			postProcessBeanFactory(processor);
