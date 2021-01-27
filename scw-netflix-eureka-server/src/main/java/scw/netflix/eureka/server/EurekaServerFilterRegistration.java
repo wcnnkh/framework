@@ -12,7 +12,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
 import scw.boot.servlet.FilterRegistration;
-import scw.context.ClassesLoaderFactory;
 import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
 import scw.netflix.eureka.EurekaConstants;
@@ -33,9 +32,9 @@ public class EurekaServerFilterRegistration implements FilterRegistration {
 		this.application = application;
 	}
 	
-	public static Application getApplication(ClassesLoaderFactory classesLoaderFactory) {
+	public static Application getApplication(scw.boot.Application application) {
 		Set<Class<?>> classes = new HashSet<>();
-		for (Class<?> clazz : classesLoaderFactory.getClassesLoader(StringUtils.arrayToCommaDelimitedString(EUREKA_PACKAGES))) {
+		for (Class<?> clazz : application.getClassesLoader(StringUtils.arrayToCommaDelimitedString(EUREKA_PACKAGES))) {
 			if (clazz.getAnnotation(Path.class) != null
 					|| clazz.getAnnotation(javax.ws.rs.ext.Provider.class) != null) {
 				classes.add(clazz);
@@ -55,7 +54,7 @@ public class EurekaServerFilterRegistration implements FilterRegistration {
 
 	@Override
 	public Filter getFilter() {
-		return new ServletContainer(getApplication(application.getBeanFactory()));
+		return new ServletContainer(getApplication(application));
 	}
 
 	@Override

@@ -19,7 +19,7 @@ import scw.env.support.DefaultEnvironment;
 import scw.io.ResourceUtils;
 
 @Provider(order = Integer.MIN_VALUE, value = BeanDefinitionLoader.class)
-public class JedisBeanBuilderLoader implements BeanDefinitionLoader {
+public class JedisBeanDefinitionLoader implements BeanDefinitionLoader {
 	private static final String HOST_CONFIG_KEY = "redis.host";
 	private static final String CONFIG_KEY = "redis.configuration";
 	private static final String DEFAULT_CONFIG = "/redis/redis.properties";

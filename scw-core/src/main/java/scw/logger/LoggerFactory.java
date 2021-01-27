@@ -9,7 +9,7 @@ public final class LoggerFactory {
 	static{
 		ILoggerFactory loggerFactory = InstanceUtils.loadService(ILoggerFactory.class);
 		LOGGER_FACTORY = loggerFactory == null? new AsyncConsoleLoggerFactory() : loggerFactory;
-		logger.info("Use logger factory ["+loggerFactory+"]");
+		logger.info("Use logger factory ["+LOGGER_FACTORY+"]");
 	}
 	
 	private LoggerFactory() {

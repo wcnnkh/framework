@@ -17,7 +17,7 @@ import scw.context.annotation.Provider;
 import scw.io.Resource;
 
 @Provider(order = Integer.MIN_VALUE)
-public class HibernateBeanBuilderLoader implements BeanDefinitionLoader {
+public class HibernateBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain serviceChain) {
 		if (sourceClass == org.hibernate.cfg.Configuration.class) {

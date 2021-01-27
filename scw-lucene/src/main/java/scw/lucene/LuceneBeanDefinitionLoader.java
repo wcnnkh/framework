@@ -20,7 +20,7 @@ import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
 
 @Provider
-public class LuceneBeanBuilderLoader implements BeanDefinitionLoader {
+public class LuceneBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
 		if (sourceClass == Directory.class) {

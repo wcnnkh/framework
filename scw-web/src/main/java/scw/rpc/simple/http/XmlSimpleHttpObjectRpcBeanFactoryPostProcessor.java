@@ -22,7 +22,7 @@ import scw.io.Serializer;
 import scw.io.SerializerUtils;
 
 @Provider(order = Integer.MIN_VALUE)
-public final class XmlSimpleHttpObjectRpcBeanConfiguration implements BeanFactoryPostProcessor {
+public final class XmlSimpleHttpObjectRpcBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	private static final String TAG_NAME = "http:reference";
 	
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)

@@ -18,7 +18,7 @@ import scw.io.SerializerUtils;
 import scw.net.InetUtils;
 
 @Provider(order = Integer.MIN_VALUE)
-public class XMemcachedBeanBuilderLoader implements BeanDefinitionLoader {
+public class XMemcachedBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
 		if (sourceClass == MemcachedClientBuilder.class

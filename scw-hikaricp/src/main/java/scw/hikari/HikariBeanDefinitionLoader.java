@@ -1,4 +1,4 @@
-package scw.druid;
+package scw.hikari;
 
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
@@ -11,21 +11,21 @@ import scw.db.DB;
 import scw.db.DBUtils;
 import scw.io.ResourceUtils;
 
-@Provider(order = Integer.MIN_VALUE + 1)
-public class DruidDBBeanBuilderLoader implements BeanDefinitionLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class HikariBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
-		if (sourceClass == DruidDB.class) {
-			return new DruidDBBeanDefinition(beanFactory, sourceClass);
+		if (sourceClass == HikariDB.class) {
+			return new HikariCPDBBeanDefinitaion(beanFactory, sourceClass);
 		} else if (DB.class == sourceClass) {
-			return beanFactory.getDefinition(DruidDB.class);
+			return beanFactory.getDefinition(HikariDB.class);
 		}
 		return loaderChain.load(beanFactory, sourceClass);
 	}
 
-	private static class DruidDBBeanDefinition extends DefaultBeanDefinition {
+	private static class HikariCPDBBeanDefinitaion extends DefaultBeanDefinition {
 
-		public DruidDBBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
+		public HikariCPDBBeanDefinitaion(BeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -34,7 +34,7 @@ public class DruidDBBeanBuilderLoader implements BeanDefinitionLoader {
 		}
 
 		public Object create() throws BeansException {
-			return new DruidDB(DBUtils.DEFAULT_CONFIGURATION);
+			return new HikariDB(DBUtils.DEFAULT_CONFIGURATION);
 		}
 	}
 }

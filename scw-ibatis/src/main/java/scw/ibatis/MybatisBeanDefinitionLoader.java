@@ -14,7 +14,7 @@ import scw.io.Resource;
 import scw.io.ResourceUtils;
 
 @Provider(order = Integer.MIN_VALUE, value = BeanDefinitionLoader.class)
-public class MybatisBeanBuilderLoader implements BeanDefinitionLoader {
+public class MybatisBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
 		if (sourceClass == SqlSessionFactory.class) {

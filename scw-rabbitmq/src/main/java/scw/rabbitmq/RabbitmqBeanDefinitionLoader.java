@@ -23,7 +23,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.ConnectionFactoryConfigurator;
 
 @Provider(order = Integer.MIN_VALUE)
-public class RabbitmqBeanBuilderLoader implements BeanDefinitionLoader {
+public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 	public static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/rabbitmq/rabbitmq.properties";
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {

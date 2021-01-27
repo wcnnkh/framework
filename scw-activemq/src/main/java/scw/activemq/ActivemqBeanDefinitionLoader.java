@@ -17,7 +17,7 @@ import scw.convert.support.MapToEntityConversionService;
 import scw.io.ResourceUtils;
 
 @Provider(order = Integer.MIN_VALUE)
-public class ActivemqBeanBuilderLoader implements BeanDefinitionLoader {
+public class ActivemqBeanDefinitionLoader implements BeanDefinitionLoader {
 	private static final String DEFAULT_CONFIG = ResourceUtils.CLASSPATH_URL_PREFIX + "/activemq/activemq.properties";
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {

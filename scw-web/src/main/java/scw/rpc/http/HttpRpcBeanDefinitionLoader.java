@@ -11,7 +11,7 @@ import scw.context.annotation.Provider;
 import scw.rpc.http.annotation.HttpClient;
 
 @Provider(order = Integer.MIN_VALUE)
-public final class HttpRpcBeanBuilderLoader implements BeanDefinitionLoader {
+public final class HttpRpcBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass,
 			BeanDefinitionLoaderChain serviceChain) {
