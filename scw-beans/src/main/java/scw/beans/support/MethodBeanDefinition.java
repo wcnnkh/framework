@@ -80,7 +80,7 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		throw new NotSupportedException(method.toString());
 	}
 
-	public Object create(Class<?>[] parameterTypes, Object... params) throws BeansException {
+	public Object create(Class<?>[] parameterTypes, Object[] params) throws BeansException {
 		Method method;
 		try {
 			method = methodTargetClass.getDeclaredMethod(this.method.getName(), parameterTypes);

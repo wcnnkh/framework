@@ -9,7 +9,6 @@ import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.db.DB;
 import scw.db.DBUtils;
-import scw.io.ResourceUtils;
 
 @Provider(order = Integer.MIN_VALUE)
 public class HikariBeanDefinitionLoader implements BeanDefinitionLoader {
@@ -30,7 +29,7 @@ public class HikariBeanDefinitionLoader implements BeanDefinitionLoader {
 		}
 
 		public boolean isInstance() {
-			return ResourceUtils.exists(beanFactory.getEnvironment(), DBUtils.DEFAULT_CONFIGURATION);
+			return beanFactory.getEnvironment().exists(DBUtils.DEFAULT_CONFIGURATION);
 		}
 
 		public Object create() throws BeansException {

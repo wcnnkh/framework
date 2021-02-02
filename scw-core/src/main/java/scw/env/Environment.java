@@ -2,13 +2,14 @@ package scw.env;
 
 import java.nio.charset.Charset;
 
+import scw.aop.ProxyFactory;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.convert.resolve.ResourceResolver;
 import scw.event.Observable;
 
 public interface Environment extends BasicEnvironment,
-		EnvironmentResourceLoader, ConversionService, ResourceResolver {
+		EnvironmentResourceLoader, ConversionService, ResourceResolver, ProxyFactory {
 	public static final String CHARSET_PROPERTY = "charset.name";
 	
 	String getCharsetName();

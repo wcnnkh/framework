@@ -2,7 +2,6 @@ package scw.security.limit;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
-import scw.aop.MethodInterceptorChain;
 import scw.context.annotation.Provider;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.MethodInvoker;
@@ -41,10 +40,10 @@ public final class CountLimitMethodInterceptor implements MethodInterceptor, Met
 		return countLimitSecurity.enable() ? countLimitSecurity : null;
 	}
 
-	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		CountLimitSecurity countLimitSecurity = getCountLimitSecurity(invoker);
 		if (countLimitSecurity == null) {
-			return filterChain.intercept(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		TemporaryCounter temporaryCounter = instanceFactory.getInstance(countLimitSecurity.counter());
@@ -61,7 +60,7 @@ public final class CountLimitMethodInterceptor implements MethodInterceptor, Met
 			logger.warn("Too frequent operation max={}, count={}, method={}", key, count, invoker.getMethod());
 			throw new CountLimitException("操作过于频繁");
 		}
-		return filterChain.intercept(invoker, args);
+		return invoker.invoke(args);
 	}
 
 }

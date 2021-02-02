@@ -3,7 +3,7 @@ package scw.rpc.simple;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-import scw.aop.DefaultMethodInvoker;
+import scw.core.reflect.DefaultMethodInvoker;
 import scw.core.reflect.SerializableMethod;
 import scw.util.attribute.SimpleAttributes;
 

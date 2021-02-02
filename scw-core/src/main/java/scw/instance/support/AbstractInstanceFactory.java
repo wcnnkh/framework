@@ -86,7 +86,7 @@ public abstract class AbstractInstanceFactory extends AbstractNoArgsInstanceFact
 		return instanceBuilder.isInstance(parameterTypes);
 	}
 	
-	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object[] params) {
 		InstanceDefinition instanceBuilder = getDefinition(name);
 		if (instanceBuilder == null) {
 			return null;
@@ -103,7 +103,7 @@ public abstract class AbstractInstanceFactory extends AbstractNoArgsInstanceFact
 		return instanceBuilder.isInstance(parameterTypes);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object... params) {
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object[] params) {
 		InstanceDefinition instanceBuilder = getDefinition(type);
 		if (instanceBuilder == null) {
 			return null;

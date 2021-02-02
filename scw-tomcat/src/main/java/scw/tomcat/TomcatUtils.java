@@ -4,7 +4,6 @@ import java.util.Properties;
 
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
-import scw.io.ResourceUtils;
 
 public final class TomcatUtils {
 	private TomcatUtils() {
@@ -73,7 +72,7 @@ public final class TomcatUtils {
 			properties.put("load-on-startup", 1);
 		}
 
-		if (ResourceUtils.exists(environment, path)) {
+		if (environment.exists(path)) {
 			properties.putAll(environment.getProperties(path).get());
 		}
 		return properties;

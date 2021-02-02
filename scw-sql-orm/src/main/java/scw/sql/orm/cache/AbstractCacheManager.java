@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.data.Cache;
+import scw.env.SystemEnvironment;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.OrmUtils;
 
@@ -15,8 +16,13 @@ public abstract class AbstractCacheManager<C extends Cache> implements CacheMana
 	public ObjectRelationalMapping getObjectRelationalMapping() {
 		return OrmUtils.getObjectRelationalMapping();
 	}
+	
+	@SuppressWarnings("unchecked")
+	protected <T> Class<T> getUserClass(Class<T> clazz){
+		return (Class<T>) SystemEnvironment.getInstance().getUserClass(clazz);
+	}
 
-	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
 		if (params.length != getObjectRelationalMapping().getColumns(type).getPrimaryKeys().size() - 1) {
 			return null;
 		}

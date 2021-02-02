@@ -32,7 +32,7 @@ public abstract class AbstractResultMapping implements ResultMapping {
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <T> T get(Class<? extends T> clazz, TableNameMapping tableNameMapping) {
+	public final <T> T get(Class<T> clazz, TableNameMapping tableNameMapping) {
 		if (isEmpty()) {
 			return null;
 		}
@@ -58,11 +58,11 @@ public abstract class AbstractResultMapping implements ResultMapping {
 
 	protected abstract <T> T mapping(Class<T> clazz, TableNameMapping tableNameMapping, ObjectRelationalMapping objectRelationalMapping, Field parentField);
 
-	public final <T> T get(Class<? extends T> clazz, String tableName) {
+	public final <T> T get(Class<T> clazz, String tableName) {
 		return get(clazz, new SingleTableNameMapping(clazz, tableName));
 	}
 
-	public final <T> T get(Class<? extends T> clazz) {
+	public final <T> T get(Class<T> clazz) {
 		return get(clazz, (String) null);
 	}
 

@@ -3,12 +3,13 @@ package scw.rpc.simple.http;
 import java.lang.reflect.Modifier;
 
 import scw.aop.MethodInterceptor;
-import scw.aop.MethodInterceptorChain;
 import scw.core.reflect.MethodInvoker;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
+import scw.http.client.exception.HttpClientException;
 import scw.io.Bytes;
 import scw.io.Serializer;
+import scw.rpc.RpcException;
 import scw.rpc.simple.SimpleObjectRequestMessage;
 import scw.rpc.simple.SimpleResponseMessage;
 import scw.security.SignatureUtils;
@@ -27,20 +28,24 @@ public class SimpleHttpObjectRpcMethodInterceptor implements MethodInterceptor {
 		this.host = host;
 	}
 
-	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		if (!Modifier.isAbstract(invoker.getMethod().getModifiers())) {
-			return filterChain.intercept(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		long cts = System.currentTimeMillis();
 		final SimpleObjectRequestMessage requestMessage = new SimpleObjectRequestMessage(invoker.getSourceClass(),
 				invoker.getMethod(), args);
 		requestMessage.setAttribute("t", cts);
-		requestMessage.setAttribute("sign",
-				(SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + sign)))));
+		requestMessage.setAttribute("sign", SignatureUtils.byte2hex(SignatureUtils.md5(Bytes.string2bytes(cts + sign))));
 		requestMessage.setAttribute("responseThrowable", responseThrowable);
 		byte[] body = serializer.serialize(requestMessage);
-		byte[] response = HttpUtils.getHttpClient().post(byte[].class, host, body, MediaType.APPLICATION_OCTET_STREAM).getBody();
+		byte[] response;
+		try {
+			response = HttpUtils.getHttpClient().post(byte[].class, host, body, MediaType.APPLICATION_OCTET_STREAM).getBody();
+		} catch (HttpClientException e) {
+			throw new RpcException(invoker.toString(), e);
+		}
 		Object obj = serializer.deserialize(response);
 		if (obj instanceof SimpleResponseMessage) {
 			if (((SimpleResponseMessage) obj).getError() != null) {

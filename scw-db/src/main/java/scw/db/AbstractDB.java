@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.aop.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryAware;
@@ -171,7 +170,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		}
 
 		if (beanFactory != null) {
-			Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(asyncExecute.getClass());
+			Class<?> clazz = beanFactory.getEnvironment().getUserClass(asyncExecute.getClass());
 			BeanDefinition definition = (BeanDefinition) beanFactory.getDefinition(clazz);
 			if (definition != null) {
 					definition.dependence(asyncExecute);
@@ -310,6 +309,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	}
 
 	public static class AsyncExecuteEvent extends BasicEvent {
+		private static final long serialVersionUID = 1L;
 		private final AsyncExecute asyncExecute;
 
 		public AsyncExecuteEvent(AsyncExecute asyncExecute) {

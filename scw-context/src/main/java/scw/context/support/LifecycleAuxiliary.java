@@ -74,42 +74,42 @@ public class LifecycleAuxiliary implements Init, Destroy{
 	 * 初始化之前执行
 	 * @throws Throwable
 	 */
-	public void beforeInit() throws Throwable {
+	protected void beforeInit() throws Throwable {
 	}
 
 	/**
 	 * 初始化之后执行
 	 * @throws Throwable
 	 */
-	public void afterInit() throws Throwable {
+	protected void afterInit() throws Throwable {
 	}
 
 	/**
 	 * 初始化完成后
 	 * @throws Throwable
 	 */
-	public void initComplete() throws Throwable {
+	protected void initComplete() throws Throwable {
 	}
 
 	/**
 	 * 销毁之前执行
 	 * @throws Throwable
 	 */
-	public void beforeDestroy() throws Throwable {
+	protected void beforeDestroy() throws Throwable {
 	}
 
 	/**
 	 * 销毁之后执行
 	 * @throws Throwable
 	 */
-	public void afterDestroy() throws Throwable {
+	protected void afterDestroy() throws Throwable {
 	}
 
 	/**
 	 * 销毁完成后执行
 	 * @throws Throwable
 	 */
-	public void destroyComplete() throws Throwable {
+	protected void destroyComplete() throws Throwable {
 	}
 	
 	public static void init(Object init) throws Throwable {

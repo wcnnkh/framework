@@ -1,5 +1,7 @@
 package scw.aop;
 
+import scw.lang.Nullable;
+
 /**
  * 代理桥接器
  * 
@@ -13,18 +15,8 @@ public interface ProxyFactory {
 	 * @param clazz
 	 * @return
 	 */
-	boolean isSupport(Class<?> clazz);
-
-	Proxy getProxy(Class<?> clazz, Class<?>[] interfaces, Iterable<? extends MethodInterceptor> filters);
+	boolean canProxy(Class<?> clazz);
 	
-	/**
-	 * 获取代理类
-	 * 
-	 * @param interfaceClass
-	 * @return
-	 */
-	Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces);
-
 	/**
 	 * 是否是代理类
 	 * 
@@ -40,8 +32,19 @@ public interface ProxyFactory {
 	 * @return
 	 */
 	Class<?> getUserClass(Class<?> clazz);
+	
+	/**
+	 * 获取代理类
+	 * 
+	 * @param interfaceClass
+	 * @return
+	 */
+	Class<?> getProxyClass(Class<?> clazz, @Nullable Class<?>[] interfaces);
 
-	boolean isProxy(String className, ClassLoader classLoader);
-
-	Class<?> getUserClass(String className, ClassLoader classLoader) throws ClassNotFoundException;
+	Proxy getProxy(Class<?> clazz, @Nullable Class<?>[] interfaces, @Nullable MethodInterceptor methodInterceptor);
+	
+	boolean isProxy(String className, @Nullable ClassLoader classLoader) throws ClassNotFoundException;
+	
+	Class<?> getUserClass(String className, @Nullable ClassLoader classLoader)
+			throws ClassNotFoundException;
 }

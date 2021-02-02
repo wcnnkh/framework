@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.aop.ProxyUtils;
 import scw.aop.support.FieldSetterListen;
 import scw.context.ClassesLoaderFactory;
 import scw.context.support.DefaultClassesLoaderFactory;
@@ -20,6 +19,7 @@ import scw.core.IteratorCallback.Row;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.MapperUtils;
@@ -84,15 +84,15 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 				? OrmUtils.getObjectRelationalMapping().getTableName(clazz) : tableName;
 	}
 
-	public final <T> T getById(Class<? extends T> type, Object... params) {
+	public final <T> T getById(Class<T> type, Object... params) {
 		return getById(null, type, params);
 	}
 
-	public final <T> List<T> getByIdList(Class<? extends T> type, Object... params) {
+	public final <T> List<T> getByIdList(Class<T> type, Object... params) {
 		return getByIdList(null, type, params);
 	}
 
-	public <T> T getById(String tableName, Class<? extends T> type, Object... params) {
+	public <T> T getById(String tableName, Class<T> type, Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
@@ -111,7 +111,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		return t;
 	}
 
-	public <T> List<T> getByIdList(String tableName, Class<? extends T> type, Object... params) {
+	public <T> List<T> getByIdList(String tableName, Class<T> type, Object... params) {
 		if (type == null) {
 			throw new NullPointerException("type is null");
 		}
@@ -175,9 +175,14 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 			close(connection);
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	protected <T> Class<T> getUserClass(Class<T> clazz){
+		return (Class<T>) SystemEnvironment.getInstance().getUserClass(clazz);
+	}
 
 	public boolean save(Object bean, String tableName) {
-		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
+		Class<?> userClass = getUserClass(bean.getClass());
 		if (orm(OperationType.SAVE, userClass, bean, getTableName(userClass, bean, tableName))) {
 			getCacheManager().save(bean);
 			return true;
@@ -193,7 +198,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 			}
 		}
 
-		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
+		Class<?> userClass = getUserClass(bean.getClass());
 		if (orm(OperationType.UPDATE, userClass, bean, getTableName(userClass, bean, tableName))) {
 			getCacheManager().update(bean);
 			return true;
@@ -202,7 +207,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	}
 
 	public boolean delete(Object bean, String tableName) {
-		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
+		Class<?> userClass = getUserClass(bean.getClass());
 		if (orm(OperationType.DELETE, userClass, bean, tableName)) {
 			getCacheManager().delete(bean);
 			return true;
@@ -211,7 +216,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	}
 
 	public boolean saveOrUpdate(Object bean, String tableName) {
-		Class<?> userClass = ProxyUtils.getProxyFactory().getUserClass(bean.getClass());
+		Class<?> userClass = getUserClass(bean.getClass());
 		if (orm(OperationType.SAVE_OR_UPDATE, userClass, bean, getTableName(userClass, bean, tableName))) {
 			getCacheManager().saveOrUpdate(bean);
 			return true;
@@ -268,8 +273,8 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	}
 
 	@SuppressWarnings("unchecked")
-	public final <K, V> Map<K, V> getInIdList(Class<? extends V> type, String tableName,
-			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
+	public final <K, V> Map<K, V> getInIdList(Class<V> type, String tableName,
+			Collection<K> inPrimaryKeys, Object... primaryKeys) {
 		if (CollectionUtils.isEmpty(inPrimaryKeys)) {
 			return Collections.EMPTY_MAP;
 		}
@@ -325,7 +330,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		return map;
 	}
 
-	public final <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIdList,
+	public final <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIdList,
 			Object... params) {
 		return getInIdList(type, null, inIdList, params);
 	}
@@ -339,16 +344,16 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		});
 	}
 
-	public <T> List<T> select(Class<? extends T> type, Sql sql) {
+	public <T> List<T> select(Class<T> type, Sql sql) {
 		return select(sql).getList(type);
 	}
 
-	public <T> T selectOne(Class<? extends T> type, Sql sql) {
+	public <T> T selectOne(Class<T> type, Sql sql) {
 		return select(sql).getFirst().get(type);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T selectOne(Class<? extends T> type, Sql sql, T defaultValue) {
+	public <T> T selectOne(Class<T> type, Sql sql, T defaultValue) {
 		if (type.isPrimitive()) {
 			// 如果是基本数据类型
 			Object v = selectOne(ClassUtils.resolvePrimitiveIfNecessary(type), sql);
@@ -380,11 +385,11 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		}
 	}
 
-	public <T> Pagination<T> select(Class<? extends T> type, int page, int limit, Sql sql) {
+	public <T> Pagination<T> select(Class<T> type, int page, int limit, Sql sql) {
 		return select(type, (long) page, limit, sql);
 	}
 
-	public <T> Pagination<T> select(Class<? extends T> type, long page, int limit, Sql sql) {
+	public <T> Pagination<T> select(Class<T> type, long page, int limit, Sql sql) {
 		PaginationSql paginationSql = getSqlDialect().toPaginationSql(sql, page == 0 ? 1 : page, limit);
 		Long count = select(paginationSql.getCountSql()).getFirst().get(Long.class, 0);
 		Pagination<T> pagination = new Pagination<T>(limit);
@@ -427,7 +432,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	 * @param tableClass
 	 * @param iterator
 	 */
-	public <T> void iterator(final Class<? extends T> tableClass, final IteratorCallback<T> iterator) {
+	public <T> void iterator(final Class<T> tableClass, final IteratorCallback<T> iterator) {
 		Sql sql = getSqlDialect().toSelectByIdSql(tableClass,
 				OrmUtils.getObjectRelationalMapping().getTableName(tableClass), null);
 		iterator(sql, new IteratorCallback<ResultMapping>() {
@@ -443,7 +448,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		});
 	}
 
-	public <T> void iterator(Sql sql, final Class<? extends T> type, final IteratorCallback<T> iterator) {
+	public <T> void iterator(Sql sql, final Class<T> type, final IteratorCallback<T> iterator) {
 		iterator(sql, new IteratorCallback<ResultMapping>() {
 
 			public boolean iteratorCallback(ResultMapping data) {
@@ -466,7 +471,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		});
 	}
 
-	public <T> void query(final Class<? extends T> tableClass, final IteratorCallback<Row<T>> iterator) {
+	public <T> void query(final Class<T> tableClass, final IteratorCallback<Row<T>> iterator) {
 		Sql sql = getSqlDialect().toSelectByIdSql(tableClass,
 				OrmUtils.getObjectRelationalMapping().getTableName(tableClass), null);
 		query(sql, new IteratorCallback<Row<ResultMapping>>() {
@@ -482,7 +487,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		});
 	}
 
-	public <T> void query(Sql sql, final Class<? extends T> type, final IteratorCallback<Row<T>> iterator) {
+	public <T> void query(Sql sql, final Class<T> type, final IteratorCallback<Row<T>> iterator) {
 		query(sql, new IteratorCallback<Row<ResultMapping>>() {
 
 			public boolean iteratorCallback(Row<ResultMapping> row) {
@@ -505,12 +510,12 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		});
 	}
 
-	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, String idField) {
+	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName, String idField) {
 		Sql sql = getSqlDialect().toMaxIdSql(tableClass, getTableName(tableClass, tableName), idField);
 		return select(sql).getFirst().get(type, 0);
 	}
 
-	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String idField) {
+	public <T> T getMaxValue(Class<T> type, Class<?> tableClass, String idField) {
 		return getMaxValue(type, tableClass, null, idField);
 	}
 

@@ -12,13 +12,13 @@ import scw.boot.servlet.ServletContextInitialization;
 import scw.event.EventListener;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.Result;
 
 public class DefaultServletApplicationStartup implements ServletApplicationStartup{
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected StartUp getStartup(ServletContext servletContext) throws ServletException{
+	protected Result<Application> getStartup(ServletContext servletContext) throws ServletException{
 		Application application = ServletContextUtils.getApplication(servletContext);
-		StartUp startUp;
 		if(application == null){
 			ServletContextUtils.startLogger(logger, servletContext, null, false);
 			application = new ServletApplication(servletContext);
@@ -28,16 +28,15 @@ public class DefaultServletApplicationStartup implements ServletApplicationStart
 				ServletContextUtils.startLogger(logger, servletContext, e, false);
 			}
 			ServletContextUtils.setApplication(servletContext, application);
-			startUp = new StartUp(application, true);
+			return new Result<Application>(true, application);
 		}else{
-			startUp = new StartUp(application, false);
+			return new Result<Application>(false, application);
 		}
-		return startUp;
 	}
 	
-	public StartUp start(ServletContext servletContext) throws ServletException {
-		StartUp startUp = getStartup(servletContext);
-		start(servletContext, startUp.getApplication());
+	public Result<Application> start(ServletContext servletContext) throws ServletException {
+		Result<Application> startUp = getStartup(servletContext);
+		start(servletContext, startUp.getResult());
 		return startUp;
 	}
 
@@ -50,7 +49,7 @@ public class DefaultServletApplicationStartup implements ServletApplicationStart
 
 		servletContext.setAttribute(nameToUse, true);
 		
-		application.getBeanFactory().getBeanLifeCycleEventDispatcher().registerListener(new EventListener<BeanLifeCycleEvent>() {
+		application.getBeanFactory().registerListener(new EventListener<BeanLifeCycleEvent>() {
 
 			public void onEvent(BeanLifeCycleEvent event) {
 				if (event.getStep() == Step.BEFORE_INIT) {

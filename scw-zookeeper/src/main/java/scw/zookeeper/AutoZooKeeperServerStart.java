@@ -3,7 +3,6 @@ package scw.zookeeper;
 import scw.boot.ApplicationPostProcessor;
 import scw.boot.ConfigurableApplication;
 import scw.context.annotation.Provider;
-import scw.io.ResourceUtils;
 
 @Provider(order = Integer.MAX_VALUE)
 public final class AutoZooKeeperServerStart implements ApplicationPostProcessor {
@@ -12,7 +11,7 @@ public final class AutoZooKeeperServerStart implements ApplicationPostProcessor 
 	public void postProcessApplication(ConfigurableApplication application)
 			throws Throwable {
 		ZooKeeperServerStart start = null;
-		if (ResourceUtils.exists(application.getEnvironment(), DEFAULT_ZOOKEEPER_CONFIG)) {
+		if(application.getEnvironment().exists(DEFAULT_ZOOKEEPER_CONFIG)) {
 			start = new ZooKeeperServerStart(
 					application.getEnvironment().getProperties(DEFAULT_ZOOKEEPER_CONFIG).get());
 		} else {

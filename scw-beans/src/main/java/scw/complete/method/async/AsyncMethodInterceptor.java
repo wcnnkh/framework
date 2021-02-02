@@ -2,7 +2,6 @@ package scw.complete.method.async;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
-import scw.aop.MethodInterceptorChain;
 import scw.beans.BeanUtils;
 import scw.beans.RuntimeBean;
 import scw.context.annotation.Provider;
@@ -45,14 +44,14 @@ public final class AsyncMethodInterceptor implements MethodInterceptor, MethodIn
 		return true;
 	}
 
-	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		Async async = invoker.getMethod().getAnnotation(Async.class);
 		if (async == null) {
-			return filterChain.intercept(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		if (isStartAsync()) {
-			return filterChain.intercept(invoker, args);
+			return invoker.invoke(args);
 		}
 		
 		RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(invoker.getInstance());

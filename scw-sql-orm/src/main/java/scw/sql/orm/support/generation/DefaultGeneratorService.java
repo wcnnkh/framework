@@ -1,10 +1,10 @@
 package scw.sql.orm.support.generation;
 
-import scw.aop.ProxyUtils;
 import scw.data.Counter;
 import scw.data.generator.SequenceId;
 import scw.data.generator.SequenceIdGenerator;
 import scw.data.memory.MemoryDataTemplete;
+import scw.env.SystemEnvironment;
 import scw.locks.JdkLockFactory;
 import scw.locks.Lock;
 import scw.locks.LockFactory;
@@ -42,10 +42,13 @@ public class DefaultGeneratorService extends AbstractGeneratorService {
 		}
 		return sequeueIdGenerator.next(createTime);
 	}
+	
+	protected Class<?> getUserClass(Class<?> clazz){
+		return SystemEnvironment.getInstance().getUserClass(clazz);
+	}
 
 	protected long getMaxId(GeneratorContext generatorContext) {
-		Long value = generatorContext.getEntityOperations().getMaxValue(Long.class,
-				ProxyUtils.getProxyFactory().getUserClass(generatorContext.getBean().getClass()),
+		Long value = generatorContext.getEntityOperations().getMaxValue(Long.class, getUserClass(generatorContext.getBean().getClass()),
 				generatorContext.getColumn().getName());
 		return value == null ? 0 : value;
 	};

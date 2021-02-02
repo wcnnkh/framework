@@ -37,6 +37,6 @@ public class FeignBeanDefinition extends DefaultBeanDefinition {
 		Encoder encoder = beanFactory.isInstance(Encoder.class) ? beanFactory.getInstance(Encoder.class) : codec;
 		Decoder decoder = beanFactory.isInstance(Decoder.class) ? beanFactory.getInstance(Decoder.class) : codec;
 		Object proxy = Feign.builder().encoder(encoder).decoder(decoder).target(getTargetClass(), getHost());
-		return beanFactory.getAop().getProxyInstance(getTargetClass(), proxy, null).create();
+		return beanFactory.getAop().getProxy(getTargetClass(), proxy).create();
 	}
 }

@@ -2,7 +2,6 @@ package scw.tcc;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
-import scw.aop.MethodInterceptorChain;
 import scw.complete.Complete;
 import scw.context.annotation.Provider;
 import scw.core.reflect.MethodInvoker;
@@ -24,7 +23,7 @@ public class TccMethodInterceptor implements MethodInterceptor, MethodIntercepto
 		return invoker.getMethod().getAnnotation(Tcc.class) != null;
 	}
 	
-	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		final Tcc tcc = invoker.getMethod().getAnnotation(Tcc.class);
 		if (tcc == null) {
 			return invoker.invoke(args);

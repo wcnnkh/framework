@@ -1,6 +1,6 @@
 package scw.http;
 
-import scw.util.InvalidMimeTypeException;
+import scw.net.InvalidMimeTypeException;
 
 public class InvalidMediaTypeException extends IllegalArgumentException {
 	private static final long serialVersionUID = 1L;

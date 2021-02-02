@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import scw.event.Observable;
-import scw.util.PropertyResolver;
+import scw.util.placeholder.PropertyResolver;
 import scw.value.Value;
 import scw.value.factory.ConfigurablePropertyFactory;
 import scw.value.factory.ConvertibleObservableValueFactory;

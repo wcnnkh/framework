@@ -79,7 +79,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 		}
 
 		public boolean isInstance() {
-			return ResourceUtils.exists(beanFactory.getEnvironment(), DEFAULT_CONFIG);
+			return beanFactory.getEnvironment().exists(DEFAULT_CONFIG);
 		}
 
 		public Object create() throws BeansException {
@@ -116,7 +116,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 
 		@Override
 		public boolean isInstance() {
-			return ResourceUtils.exists(beanFactory.getEnvironment(), DEFAULT_CONFIG);
+			return beanFactory.getEnvironment().exists(DEFAULT_CONFIG);
 		}
 
 		@Override

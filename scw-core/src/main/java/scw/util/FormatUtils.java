@@ -13,6 +13,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.lang.FormatterException;
+import scw.util.placeholder.PropertyResolver;
 
 public final class FormatUtils {
 	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
@@ -161,14 +162,6 @@ public final class FormatUtils {
 		loggerAppend(appendable, time, level, tag, loggerAppend);
 	}
 
-	public static String format(String text, PlaceholderResolver placeholderResolver){
-		return PropertyPlaceholderHelper.nonStrictHelper.replacePlaceholders(StringFormat.format(text, placeholderResolver), placeholderResolver);
-	}
-	
-	public static Properties format(Properties properties, PlaceholderResolver placeholderResolver){
-		return format(properties, new DefaultPropertyResolver(placeholderResolver));
-	}
-	
 	public static Properties format(Properties properties, PropertyResolver propertyResolver) {
 		if (properties == null || properties.isEmpty()) {
 			return properties;

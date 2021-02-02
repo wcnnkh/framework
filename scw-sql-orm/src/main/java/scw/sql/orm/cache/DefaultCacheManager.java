@@ -2,7 +2,6 @@ package scw.sql.orm.cache;
 
 import java.util.Arrays;
 
-import scw.aop.ProxyUtils;
 import scw.core.utils.ArrayUtils;
 import scw.data.Cache;
 import scw.data.TransactionContextCache;
@@ -10,6 +9,7 @@ import scw.data.WrapperCache;
 
 public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	private final Cache cache;
+	
 
 	/**
 	 * 过期时间由cache实现
@@ -28,18 +28,18 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	}
 
 	public void save(Object bean) {
-		cache.add(getObjectRelationalMapping().getObjectKey(ProxyUtils.getProxyFactory().getUserClass(bean.getClass()), bean), bean);
+		cache.add(getObjectRelationalMapping().getObjectKey(getUserClass(bean.getClass()), bean), bean);
 	}
 
 	public void update(Object bean) {
-		cache.set(getObjectRelationalMapping().getObjectKey(ProxyUtils.getProxyFactory().getUserClass(bean.getClass()), bean), bean);
+		cache.set(getObjectRelationalMapping().getObjectKey(getUserClass(bean.getClass()), bean), bean);
 	}
 
 	public void saveOrUpdate(Object bean) {
 		update(bean);
 	}
 
-	public <T> T getById(Class<? extends T> type, Object... params) {
+	public <T> T getById(Class<T> type, Object... params) {
 		if (ArrayUtils.isEmpty(params)) {
 			return null;
 		}
@@ -62,6 +62,6 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 
 	public void delete(Object bean) {
 		getCache()
-				.delete(getObjectRelationalMapping().getObjectKey(ProxyUtils.getProxyFactory().getUserClass(bean.getClass()), bean));
+				.delete(getObjectRelationalMapping().getObjectKey(getUserClass(bean.getClass()), bean));
 	}
 }

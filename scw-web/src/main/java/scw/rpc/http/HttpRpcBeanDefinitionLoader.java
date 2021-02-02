@@ -1,12 +1,11 @@
 package scw.rpc.http;
 
-import java.util.Arrays;
-
+import scw.aop.MethodInterceptor;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
-import scw.beans.support.ProxyBeanDefinition;
+import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.rpc.http.annotation.HttpClient;
 
@@ -21,7 +20,8 @@ public final class HttpRpcBeanDefinitionLoader implements BeanDefinitionLoader {
 		if (httpClient != null) {
 			String proxyName = HttpRpcProxyMethodInterceptor.class.getName();
 			if (beanFactory.isInstance(proxyName)) {
-				return new ProxyBeanDefinition(beanFactory, sourceClass, Arrays.asList(proxyName));
+				DefaultBeanDefinition definition = new DefaultBeanDefinition(beanFactory, sourceClass);
+				definition.getMethodInterceptors().addMethodInterceptor((MethodInterceptor)beanFactory.getInstance(proxyName));
 			}
 		}
 		return serviceChain.load(beanFactory, sourceClass);

@@ -7,6 +7,10 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import scw.aop.MethodInterceptor;
+import scw.aop.Proxy;
+import scw.aop.ProxyFactory;
+import scw.aop.support.DefaultConfigurableProxyFactory;
 import scw.convert.ConfigurableConversionService;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
@@ -26,7 +30,6 @@ import scw.instance.ServiceLoaderFactory;
 import scw.io.ProtocolResolver;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
-import scw.io.ResourceUtils;
 import scw.io.event.ObservableProperties;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
@@ -36,13 +39,48 @@ import scw.value.factory.PropertyFactory;
 public class DefaultEnvironment extends DefaultPropertyManager implements ConfigurableEnvironment {
 	private final DefaultEnvironmentResourceLoader resourceLoader = new DefaultEnvironmentResourceLoader(this, this);
 	private final ConfigurableConversionService configurableConversionService = new DefaultConversionService(this, getObservableCharset());
-	
 	private final ConfigurableResourceResolver configurableResourceResolver = new DefaultResourceResolver(this, this, getObservableCharset());
+	private final DefaultConfigurableProxyFactory proxyFactory = new DefaultConfigurableProxyFactory();
 	
 	public DefaultEnvironment(boolean concurrent){
 		super(concurrent);
 		setConversionService(this);
 		addConversionService(new ResourceResolverConversionService(this));
+	}
+	
+	public boolean isProxy(Class<?> clazz) {
+		return this.proxyFactory.isProxy(clazz);
+	}
+	
+	public void addProxyFactory(ProxyFactory proxyFactory) {
+		this.proxyFactory.addProxyFactory(proxyFactory);
+	}
+	
+	public boolean canProxy(Class<?> clazz) {
+		return this.proxyFactory.canProxy(clazz);
+	}
+	
+	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces,
+			MethodInterceptor methodInterceptor) {
+		return this.proxyFactory.getProxy(clazz, interfaces, methodInterceptor);
+	}
+	
+	public Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
+		return this.proxyFactory.getProxyClass(clazz, interfaces);
+	}
+	
+	public Class<?> getUserClass(Class<?> clazz) {
+		return this.proxyFactory.getUserClass(clazz);
+	}
+	
+	public boolean isProxy(String className, ClassLoader classLoader)
+			throws ClassNotFoundException {
+		return this.proxyFactory.isProxy(className, classLoader);
+	}
+	
+	public Class<?> getUserClass(String className, ClassLoader classLoader)
+			throws ClassNotFoundException {
+		return this.proxyFactory.getUserClass(className, classLoader);
 	}
 	
 	protected void aware(Object instance){
@@ -153,7 +191,7 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 	}
 	
 	public boolean exists(String location){
-		return ResourceUtils.exists(this, location);
+		return resourceLoader.exists(location);
 	}
 	
 	public ClassLoader getClassLoader() {
@@ -250,12 +288,10 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 	 * @param serviceLoaderFactory
 	 * @return 返回是否加载成功
 	 */
-	public boolean loaderServices(ServiceLoaderFactory serviceLoaderFactory){
-		if(loaded.get()){
-			return false;
-		}
-		
+	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory){
 		if(loaded.compareAndSet(false, true)){
+			proxyFactory.loadServices(serviceLoaderFactory);
+			
 			for(PropertiesResolver propertiesResolver : serviceLoaderFactory.getServiceLoader(PropertiesResolver.class)){
 				addPropertiesResolver(propertiesResolver);
 			}

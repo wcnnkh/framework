@@ -12,8 +12,11 @@ import scw.env.SystemEnvironment;
 import scw.logger.Level;
 import scw.logger.LoggerLevelManager;
 import scw.logger.LoggerPropertyFactory;
-import scw.util.DefaultPlaceholderResolver;
 import scw.util.FormatUtils;
+import scw.util.placeholder.PlaceholderResolver;
+import scw.util.placeholder.PropertyResolver;
+import scw.util.placeholder.support.DefaultPlaceholderResolver;
+import scw.util.placeholder.support.TempPropertyResolver;
 
 public final class Log4jUtils {
 	private static Logger logger = Logger.getLogger(Log4jUtils.class.getName());
@@ -31,8 +34,10 @@ public final class Log4jUtils {
 			return;
 		}
 
+		PlaceholderResolver placeholderResolver = new DefaultPlaceholderResolver(LoggerPropertyFactory.getInstance());
+		PropertyResolver propertyResolver = new TempPropertyResolver(SystemEnvironment.getInstance(), placeholderResolver);
 		try {
-			Properties propertiesToUse = FormatUtils.format(properties, new DefaultPlaceholderResolver(LoggerPropertyFactory.getInstance()));
+			Properties propertiesToUse = FormatUtils.format(properties, propertyResolver);
 			method.invoke(null, propertiesToUse);
 		} catch (Exception e) {
 		}

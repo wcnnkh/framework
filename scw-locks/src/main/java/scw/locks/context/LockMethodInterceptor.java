@@ -2,7 +2,6 @@ package scw.locks.context;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
-import scw.aop.MethodInterceptorChain;
 import scw.context.annotation.Provider;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterDescriptor;
@@ -42,10 +41,10 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 		return AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass()) != null;
 	}
 
-	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass());
 		if (lockConfig == null) {
-			return filterChain.intercept(invoker, args);
+			return invoker.invoke(args);
 		}
 
 		StringBuilder sb = new StringBuilder(128);
@@ -75,8 +74,7 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 			} else if (!lock.tryLock()) {
 				throw new HasBeenLockedException(lockKey);
 			}
-
-			return filterChain.intercept(invoker, args);
+			return invoker.invoke(args);
 		} finally {
 			lock.unlock();
 		}

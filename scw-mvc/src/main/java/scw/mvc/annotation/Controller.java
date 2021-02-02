@@ -7,9 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import scw.http.HttpMethod;
+import scw.mvc.action.AbstractAction;
 import scw.mvc.action.ActionInterceptor;
-import scw.mvc.action.DefaultAction;
-import scw.util.PropertyPlaceholderHelper;
+import scw.mvc.action.DefaultActionManager;
+import scw.util.placeholder.PropertyResolver;
 
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
@@ -18,8 +19,9 @@ public @interface Controller {
 	/**
 	 * 行为的值，作用视请求分发器决定
 	 * 在类上的注解支持使用${name:value}
-	 * @see DefaultAction
-	 * @see PropertyPlaceholderHelper
+	 * @see AbstractAction
+	 * @see PropertyResolver
+	 * @see DefaultActionManager
 	 * @return
 	 */
 	public String value() default "";

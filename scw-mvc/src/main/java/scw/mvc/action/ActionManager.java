@@ -1,7 +1,6 @@
 package scw.mvc.action;
 
 import java.lang.reflect.Method;
-import java.util.Collection;
 
 import scw.event.BasicEventRegistry;
 import scw.event.EventListener;
@@ -9,10 +8,8 @@ import scw.event.EventRegistration;
 import scw.event.ObjectEvent;
 import scw.http.server.ServerHttpRequest;
 
-public interface ActionManager extends BasicEventRegistry<ObjectEvent<Action>> {
+public interface ActionManager extends BasicEventRegistry<ObjectEvent<Action>>, Iterable<Action> {
 	Action getAction(Method method);
-
-	Collection<Action> getActions();
 
 	Action getAction(ServerHttpRequest request);
 

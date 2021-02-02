@@ -105,14 +105,6 @@ public class DefaultConversionService extends
 		}
 		throw new ConverterNotFoundException(sourceType, targetType);
 	}
-	
-	public Object convert(Object source, TypeDescriptor targetType) {
-		if(source == null){
-			return null;
-		}
-		
-		return convert(source, TypeDescriptor.forObject(source), targetType);
-	}
 
 	public int compareTo(Object o) {
 		for (ConversionService service : conversionServices) {

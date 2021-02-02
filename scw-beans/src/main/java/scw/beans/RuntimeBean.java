@@ -2,9 +2,9 @@ package scw.beans;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.aop.MethodInterceptor;
-import scw.aop.MethodInterceptorChain;
 import scw.core.reflect.MethodInvoker;
 import scw.core.utils.ArrayUtils;
 
@@ -18,18 +18,18 @@ public interface RuntimeBean {
 	boolean _init();
 
 	boolean _destroy();
-
+	
 	static class RuntimeBeanMethodInterceptor implements MethodInterceptor {
-		private boolean _dependence;
-		private boolean _init;
-		private boolean _destroy;
+		private final AtomicBoolean _dependence = new AtomicBoolean();
+		private final AtomicBoolean _init = new AtomicBoolean();
+		private final AtomicBoolean _destroy = new AtomicBoolean();
 		private final BeanDefinition beanDefinition;
 
 		public RuntimeBeanMethodInterceptor(BeanDefinition beanDefinition) {
 			this.beanDefinition = beanDefinition;
 		}
 
-		public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain chain) throws Throwable {
+		public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 			if (ArrayUtils.isEmpty(args)) {
 				Method method = invoker.getMethod();
 				if ((Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers()))) {
@@ -38,34 +38,31 @@ public interface RuntimeBean {
 					}
 
 					if (method.getName().equals("_dependence")) {
-						if (_dependence) {
+						if (_dependence.get()) {
 							return false;
 						}
 
-						_dependence = true;
-						return true;
+						return _dependence.compareAndSet(false, true);
 					}
 
 					if (method.getName().equals("_init")) {
-						if (_init) {
+						if (_init.get()) {
 							return false;
 						}
 
-						_init = true;
-						return true;
+						return _init.compareAndSet(false, true);
 					}
 
 					if (method.getName().equals("_destroy")) {
-						if (_destroy) {
+						if (_destroy.get()) {
 							return false;
 						}
 
-						_destroy = true;
-						return true;
+						return _destroy.compareAndSet(false, true);
 					}
 				}
 			}
-			return chain.intercept(invoker, args);
+			return invoker.invoke(args);
 		}
 	}
 }

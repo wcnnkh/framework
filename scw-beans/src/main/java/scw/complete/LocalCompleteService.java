@@ -67,7 +67,7 @@ public final class LocalCompleteService implements CompleteService, Destroy {
 
 	public Object processTask(CompleteTask completeTask) throws Throwable {
 		BeanDefinition beanDefinition = beanFactory == null ? null
-				: beanFactory.getDefinition(beanFactory.getAop().getUserClass(completeTask.getClass()).getName());
+				: beanFactory.getDefinition(beanFactory.getEnvironment().getUserClass(completeTask.getClass()).getName());
 		if (beanDefinition != null) {
 			beanDefinition.dependence(completeTask);
 			beanDefinition.init(completeTask);

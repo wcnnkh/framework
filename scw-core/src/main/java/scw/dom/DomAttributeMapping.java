@@ -2,7 +2,7 @@ package scw.dom;
 
 import org.w3c.dom.Node;
 
-import scw.util.PropertyResolver;
+import scw.util.placeholder.PropertyResolver;
 
 public class DomAttributeMapping extends DomMapping {
 

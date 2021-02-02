@@ -4,18 +4,26 @@ import scw.core.utils.ClassUtils;
 import scw.lang.Nullable;
 
 public final class DefaultClassLoaderProvider implements ClassLoaderProvider {
-	private final ClassLoader classLoader;
-
-	public DefaultClassLoaderProvider(@Nullable ClassLoader classLoader) {
+	private final Supplier<ClassLoader> classLoader;
+	
+	public DefaultClassLoaderProvider(@Nullable Supplier<ClassLoader> classLoader) {
 		this.classLoader = classLoader;
 	}
+
+	public DefaultClassLoaderProvider(@Nullable ClassLoader classLoader) {
+		this(new StaticSupplier<ClassLoader>(classLoader));
+	}
 	
-	public DefaultClassLoaderProvider(Class<?> clazz) {
-		this(clazz.getClassLoader());
+	public DefaultClassLoaderProvider(final Class<?> clazz) {
+		this(new Supplier<ClassLoader>() {
+			public ClassLoader get() {
+				return clazz.getClassLoader();
+			}
+		});
 	}
 
 	public ClassLoader getClassLoader() {
 		return classLoader == null ? ClassUtils.getDefaultClassLoader()
-				: classLoader;
+				: classLoader.get();
 	}
 }

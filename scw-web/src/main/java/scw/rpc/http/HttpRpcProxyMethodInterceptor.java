@@ -3,7 +3,6 @@ package scw.rpc.http;
 import java.lang.reflect.Modifier;
 
 import scw.aop.MethodInterceptor;
-import scw.aop.MethodInterceptorChain;
 import scw.beans.BeanFactory;
 import scw.core.ResolvableType;
 import scw.core.reflect.MethodInvoker;
@@ -36,7 +35,7 @@ public class HttpRpcProxyMethodInterceptor implements MethodInterceptor {
 		this.messageConverter = messageConverter;
 	}
 
-	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		if (Modifier.isAbstract(invoker.getMethod().getModifiers())
 				|| Modifier.isInterface(invoker.getMethod().getModifiers())) {
 			ClientHttpRequest request = httpRpcProxyRequestFactory.getClientHttpRequest(invoker, args);
@@ -59,7 +58,7 @@ public class HttpRpcProxyMethodInterceptor implements MethodInterceptor {
 				}
 			}
 		}
-		return filterChain.intercept(invoker, args);
+		return invoker.invoke(args);
 	}
 
 }

@@ -18,7 +18,6 @@ import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.net.MimeType.SpecificityComparator;
-import scw.util.InvalidMimeTypeException;
 
 public final class MimeTypeUtils {
 	private static final byte[] BOUNDARY_CHARS = new byte[] { '-', '_', '1', '2', '3', '4', '5', '6', '7', '8', '9',

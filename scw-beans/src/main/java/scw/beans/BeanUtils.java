@@ -2,18 +2,13 @@ package scw.beans;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import scw.beans.annotation.AopEnable;
 import scw.beans.annotation.Service;
 import scw.beans.annotation.Singleton;
 import scw.core.annotation.AnnotationUtils;
 import scw.instance.InstanceUtils;
-import scw.logger.Logger;
 
 public final class BeanUtils {
 	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = InstanceUtils
@@ -74,25 +69,6 @@ public final class BeanUtils {
 		}
 
 		return null;
-	}
-
-	public static void destroy(BeanFactory beanFactory,
-			Map<String, Object> instanceMap, Logger logger) {
-		List<String> beanKeyList = new ArrayList<String>();
-		for (Entry<String, Object> entry : instanceMap.entrySet()) {
-			beanKeyList.add(entry.getKey());
-		}
-
-		ListIterator<String> keyIterator = beanKeyList.listIterator(beanKeyList
-				.size());
-		while (keyIterator.hasPrevious()) {
-			BeanDefinition beanDefinition = beanFactory.getDefinition(keyIterator.previous());
-			if (beanDefinition == null) {
-				continue;
-			}
-			
-			beanDefinition.destroy(beanDefinition);
-		}
 	}
 
 	/**
