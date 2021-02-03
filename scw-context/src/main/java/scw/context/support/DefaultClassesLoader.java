@@ -11,6 +11,7 @@ import scw.context.ClassesLoader;
 import scw.context.ConfigurableClassesLoader;
 import scw.lang.Nullable;
 import scw.util.Accept;
+import scw.util.DuplicateRemovalIterator;
 import scw.util.MultiIterator;
 
 public class DefaultClassesLoader<S> implements ConfigurableClassesLoader<S>{
@@ -57,7 +58,8 @@ public class DefaultClassesLoader<S> implements ConfigurableClassesLoader<S>{
 		for(ClassesLoader<S> classesLoader : loaders){
 			iterators.add(classesLoader.iterator());
 		}
-		return new MultiIterator<Class<S>>(iterators);
+		Iterator<Class<S>> iterator = new MultiIterator<Class<S>>(iterators);
+		return new DuplicateRemovalIterator<Class<S>>(iterator);
 	}
 
 }
