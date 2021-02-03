@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 import scw.aop.MethodInterceptor;
+import scw.aop.support.UnmodifiableMethodInterceptors;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.ConfigurableBeanFactory;
@@ -19,6 +20,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.instance.InstanceUtils;
 import scw.instance.ServiceLoader;
+import scw.instance.support.InstanceIterable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
@@ -105,8 +107,10 @@ public class LazyBeanDefinitionRegsitry extends
 				|| Modifier.isAbstract(sourceClass.getModifiers())) {
 			Proxy proxy = sourceClass.getAnnotation(Proxy.class);
 			if (proxy != null) {
-				return new ProxyBeanDefinition(beanFactory,
-						sourceClass, getProxyNames(proxy));
+				DefaultBeanDefinition definition = new DefaultBeanDefinition(beanFactory, sourceClass);
+				MethodInterceptor methodInterceptor = new UnmodifiableMethodInterceptors(new InstanceIterable<MethodInterceptor>(beanFactory, getProxyNames(proxy)));
+				definition.getMethodInterceptors().addFirstMethodInterceptor(methodInterceptor);
+				return definition;
 			}
 		}
 		return null;
@@ -146,7 +150,7 @@ public class LazyBeanDefinitionRegsitry extends
 	public BeanDefinition getDefinition(String name) {
 		BeanDefinition definition = super.getDefinition(name);
 		if (definition == null) {
-			synchronized (getRegisterDefinitionMutex()) {
+			synchronized (getDefinitionMutex()) {
 				definition = super.getDefinition(name);
 				if(definition == null){
 					BeanDefinition first = load(name);

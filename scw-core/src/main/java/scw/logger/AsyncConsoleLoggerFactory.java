@@ -31,6 +31,7 @@ public class AsyncConsoleLoggerFactory extends AbstractConsoleLoggerFactory impl
 	}
 
 	public static class MessageEvent extends BasicEvent {
+		private static final long serialVersionUID = 1L;
 		private final Message message;
 
 		public MessageEvent(Message message) {

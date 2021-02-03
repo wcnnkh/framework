@@ -38,6 +38,10 @@ public class PropertiesResolvers extends DefaultPropertiesResolver implements Co
 
 	public void resolveProperties(Properties properties, Resource resource,
 			Charset charset) {
+		if (resource == null || !resource.exists()) {
+			return;
+		}
+		
 		for(PropertiesResolver resolver : resolvers){
 			if(resolver.canResolveProperties(resource)){
 				resolver.resolveProperties(properties, resource, charset);

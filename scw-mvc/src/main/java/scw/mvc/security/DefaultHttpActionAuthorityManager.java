@@ -28,7 +28,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		implements HttpActionAuthorityManager {
 
 	public DefaultHttpActionAuthorityManager(ActionManager actionManager) {
-		for (Action action : actionManager.getActions()) {
+		for (Action action : actionManager) {
 			register(action);
 		}
 		

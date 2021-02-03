@@ -1,9 +1,8 @@
 package scw.aop.support;
 
-import java.util.Arrays;
-
+import scw.aop.MethodInterceptor;
 import scw.aop.Proxy;
-import scw.aop.ProxyUtils;
+import scw.aop.ProxyFactory;
 
 public final class FieldSetterListenUtils {
 	private FieldSetterListenUtils() {
@@ -11,9 +10,10 @@ public final class FieldSetterListenUtils {
 
 	private static final Class<?>[] FIELD_SETTER_LISTEN_INTERFACES = new Class<?>[] { FieldSetterListen.class };
 
-	public static Proxy getFieldSetterListenProxy(Class<?> clazz) {
-		return ProxyUtils.getProxyFactory().getProxy(clazz,
-				FIELD_SETTER_LISTEN_INTERFACES, Arrays.asList(new FieldSetterListenMethodInterceptor()));
+	public static Proxy getFieldSetterListenProxy(ProxyFactory proxyFactory, Class<?> clazz) {
+		MethodInterceptor methodInterceptor = new FieldSetterListenMethodInterceptor();
+		return proxyFactory.getProxy(clazz,
+				FIELD_SETTER_LISTEN_INTERFACES, methodInterceptor);
 	}
 
 	public static void clearFieldSetterListen(Object instance) {

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 public class Events<E extends Event> extends BasicEvent {
+	private static final long serialVersionUID = 1L;
 	private final Collection<E> events;
 
 	public Events(E... events) {

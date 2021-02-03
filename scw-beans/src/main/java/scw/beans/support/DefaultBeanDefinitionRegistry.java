@@ -16,7 +16,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		super(true);
 	}
 	
-	public Object getRegisterDefinitionMutex(){
+	public Object getDefinitionMutex(){
 		return beanDefinitionMap;
 	}
 	
@@ -62,7 +62,7 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 			throw new AlreadyExistsException(definitionToUse.toString());
 		}
 		
-		synchronized (getRegisterDefinitionMutex()) {
+		synchronized (beanDefinitionMap) {
 			exist = beanDefinitionMap.containsKey(definitionToUse.getId());
 			if(isNew && exist){
 				throw new AlreadyExistsException(definitionToUse.toString());

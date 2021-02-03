@@ -8,8 +8,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 import scw.aop.MethodInterceptor;
-import scw.aop.MethodInterceptors;
 import scw.aop.Proxy;
+import scw.aop.support.ConfigurableMethodInterceptor;
 import scw.beans.AopEnableSpi;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
@@ -25,8 +25,8 @@ import scw.context.support.LifecycleAuxiliary;
 import scw.convert.TypeDescriptor;
 import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.instance.InstanceException;
 import scw.instance.support.DefaultInstanceDefinition;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
@@ -41,6 +41,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	protected final BeanFactory beanFactory;
 	protected Ioc ioc = new Ioc();
 	private boolean isNew = true;
+	private final ConfigurableMethodInterceptor methodInterceptors = new ConfigurableMethodInterceptor();
 
 	public DefaultBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
 		super(beanFactory, beanFactory.getEnvironment(), sourceClass);
@@ -52,7 +53,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		if (runtimeBean != null && !runtimeBean._dependence()) {
 			return;
 		}
-		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
+		beanFactory.publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
@@ -75,7 +76,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 
 			BeanUtils.aware(instance, beanFactory, this);
 		}
-		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
+		beanFactory.publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_DEPENDENCE));
 	}
 
@@ -101,7 +102,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			}
 		});
 		entityConversionService.configurationProperties(beanFactory.getEnvironment(), TypeDescriptor.valueOf(PropertyFactory.class),
-				instance, TypeDescriptor.valueOf(beanFactory.getAop()
+				instance, TypeDescriptor.valueOf(getEnvironment()
 						.getUserClass(instance.getClass())));
 	}
 
@@ -110,7 +111,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		if (runtimeBean != null && !runtimeBean._init()) {
 			return;
 		}
-		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
+		beanFactory.publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_INIT));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
@@ -123,7 +124,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 				throw new BeansException(e);
 			}
 		}
-		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
+		beanFactory.publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_INIT));
 	}
 
@@ -133,7 +134,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			return;
 		}
 
-		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
+		beanFactory.publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
 			try {
@@ -146,7 +147,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 				ioc.getDestroy().process(this, instance, beanFactory);
 			}
 		}
-		beanFactory.getBeanLifeCycleEventDispatcher().publishEvent(
+		beanFactory.publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_DESTROY));
 	}
 
@@ -174,7 +175,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	}
 
 	public boolean isAopEnable(Class<?> clazz, AnnotatedElement annotatedElement) {
-		return BeanUtils.isAopEnable(clazz, annotatedElement);
+		return !methodInterceptors.isEmpty() || BeanUtils.isAopEnable(clazz, annotatedElement);
 	}
 
 	public boolean isSingleton() {
@@ -185,14 +186,25 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		return getTargetClass();
 	}
 
-	public Iterable<? extends MethodInterceptor> getFilters() {
-		return null;
+	public ConfigurableMethodInterceptor getMethodInterceptors() {
+		return methodInterceptors;
 	}
 
 	@Override
 	public boolean isInstance() {
-		return super.isInstance(isAopEnable()
-				&& !CollectionUtils.isEmpty(getFilters()));
+		return canCreateInterfaceInsance() || isInstance(isAopEnable());
+	}
+	
+	private boolean canCreateInterfaceInsance(){
+		return getTargetClass().isInterface() && isAopEnable();
+	}
+	
+	@Override
+	public Object create() throws InstanceException {
+		if(canCreateInterfaceInsance()){
+			return createProxy(getTargetClass(), null).create();
+		}
+		return super.create();
 	}
 	
 	@Override
@@ -214,12 +226,17 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 					scw.beans.RuntimeBean.PROXY_INTERFACES);
 		}
 
-		MethodInterceptors methodInterceptors = new MethodInterceptors();
-		methodInterceptors
-				.addLast(new RuntimeBean.RuntimeBeanMethodInterceptor(this));
-		methodInterceptors.addLast(getFilters());
+		MethodInterceptor interceptor = new RuntimeBean.RuntimeBeanMethodInterceptor(this);
+		if(methodInterceptors.isEmpty()){
+			return beanFactory.getAop().getProxy(targetClass, interfacesToUse,
+					interceptor);
+		}
+		
+		ConfigurableMethodInterceptor interceptors = new ConfigurableMethodInterceptor();
+		interceptors.addMethodInterceptor(interceptor);
+		interceptors.addMethodInterceptor(getMethodInterceptors());
 		return beanFactory.getAop().getProxy(targetClass, interfacesToUse,
-				methodInterceptors);
+				interceptors);
 	}
 
 	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass,
@@ -232,18 +249,17 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 					RuntimeBean.PROXY_INTERFACES);
 		}
 
-		MethodInterceptors methodInterceptors = new MethodInterceptors();
-		methodInterceptors
-				.addLast(new RuntimeBean.RuntimeBeanMethodInterceptor(this));
-		methodInterceptors.addLast(getFilters());
-		return beanFactory.getAop().getProxyInstance(targetClass, instance,
-				interfaces, methodInterceptors);
+		ConfigurableMethodInterceptor interceptors = new ConfigurableMethodInterceptor();
+		interceptors.addMethodInterceptor(new RuntimeBean.RuntimeBeanMethodInterceptor(this));
+		interceptors.addMethodInterceptor(methodInterceptors);
+		return beanFactory.getAop().getProxy(targetClass, instance,
+				interfaces, interceptors);
 	}
 
 	protected Object createProxyInstance(Class<?> targetClass,
 			Class<?>[] parameterTypes, Object[] args) {
 		if (getTargetClass().isInterface()
-				&& CollectionUtils.isEmpty(getFilters())) {
+				&& methodInterceptors.isEmpty()) {
 			logger.warn("empty filter: {}", getTargetClass().getName());
 		}
 

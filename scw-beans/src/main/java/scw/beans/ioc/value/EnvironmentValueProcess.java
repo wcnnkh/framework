@@ -5,13 +5,14 @@ import java.nio.charset.Charset;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
+import scw.convert.ConversionService;
 import scw.core.ResolvableType;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.Observable;
 import scw.mapper.Field;
-import scw.util.PropertyPlaceholderHelper;
-import scw.value.StringValue;
+import scw.mapper.MapperUtils;
+import scw.util.placeholder.PlaceholderReplacer;
 
 public class EnvironmentValueProcess extends AbstractValueProcesser {
 
@@ -27,20 +28,20 @@ public class EnvironmentValueProcess extends AbstractValueProcesser {
 			return ;
 		}
 		
-		if(name.startsWith(PropertyPlaceholderHelper.PLACEHOLDER_PREFIX) && name.endsWith(PropertyPlaceholderHelper.PLACEHOLDER_SUFFIX)){
+		if(name.startsWith(PlaceholderReplacer.PLACEHOLDER_PREFIX) && name.endsWith(PlaceholderReplacer.PLACEHOLDER_SUFFIX)){
 			String v = beanFactory.getEnvironment().resolvePlaceholders(name);
-			set(bean, field, name, new StringValue(v));
+			set(beanFactory.getEnvironment(), bean, field, name, v);
 			return ;
 		}
 		
 		scw.value.Value v = beanFactory.getEnvironment().getValue(name);
-		set(bean, field, name, v);
+		set(beanFactory.getEnvironment(), bean, field, name, v);
 		if (isRegisterListener(beanDefinition, field, value)) {
 			beanFactory.getEnvironment().registerListener(name, new EventListener<ChangeEvent<String>>() {
 
 				public void onEvent(ChangeEvent<String> event) {
 					try {
-						set(bean, field, name, beanFactory.getEnvironment().getValue(name));
+						set(beanFactory.getEnvironment(), bean, field, name, beanFactory.getEnvironment().getValue(name));
 					} catch (Exception e) {
 						logger.error(e, field);
 					}
@@ -49,11 +50,11 @@ public class EnvironmentValueProcess extends AbstractValueProcesser {
 		}
 	}
 
-	protected synchronized void set(final Object bean, final Field field, final String name, scw.value.Value value)
+	protected synchronized void set(ConversionService conversionService, final Object bean, final Field field, final String name, Object value)
 			throws Exception {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Changes in progress name [{}] field [{}] value [{}]", name, field.getSetter(), value);
 		}
-		field.getSetter().set(bean, value == null ? null : value.getAsObject(field.getSetter().getGenericType()));
+		MapperUtils.setValue(conversionService, bean, field, value);
 	}
 }

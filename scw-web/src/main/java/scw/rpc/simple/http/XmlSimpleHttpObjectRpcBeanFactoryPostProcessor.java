@@ -1,16 +1,13 @@
 package scw.rpc.simple.http;
 
-import java.util.Arrays;
-
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.aop.MethodInterceptor;
-import scw.beans.BeanDefinition;
 import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
-import scw.beans.support.ProxyBeanDefinition;
+import scw.beans.support.DefaultBeanDefinition;
 import scw.beans.xml.XmlBeanFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.context.annotation.Provider;
@@ -56,9 +53,9 @@ public final class XmlSimpleHttpObjectRpcBeanFactoryPostProcessor implements Bea
 
 						MethodInterceptor filter = new SimpleHttpObjectRpcMethodInterceptor(ser, sign,
 								responseThrowable, address);
-						BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, clz,
-								Arrays.asList(filter));
-						beanFactory.registerDefinition(beanBuilder.getId(), beanBuilder);
+						DefaultBeanDefinition definition = new DefaultBeanDefinition(beanFactory, clz);
+						definition.getMethodInterceptors().addMethodInterceptor(filter);
+						beanFactory.registerDefinition(definition.getId(), definition);
 					}
 				}
 
@@ -87,9 +84,9 @@ public final class XmlSimpleHttpObjectRpcBeanFactoryPostProcessor implements Bea
 
 					MethodInterceptor filter = new SimpleHttpObjectRpcMethodInterceptor(ser, mySign, responseThrowable,
 							myAddress);
-					BeanDefinition beanBuilder = new ProxyBeanDefinition(beanFactory, clz,
-							Arrays.asList(filter));
-					beanFactory.registerDefinition(beanBuilder.getId(), beanBuilder);
+					DefaultBeanDefinition definition = new DefaultBeanDefinition(beanFactory, clz);
+					definition.getMethodInterceptors().addMethodInterceptor(filter);
+					beanFactory.registerDefinition(definition.getId(), definition);
 				}
 			}
 		}

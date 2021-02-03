@@ -23,7 +23,7 @@ import scw.lang.NotFoundException;
 import scw.lang.Nullable;
 import scw.util.Accept;
 import scw.util.KeyValuePair;
-import scw.util.PropertyResolver;
+import scw.util.placeholder.PropertyResolver;
 import scw.value.ValueUtils;
 
 public final class DomUtils {

@@ -36,7 +36,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	}
 
 	@Override
-	public void beforeInit() throws Throwable {
+	protected void beforeInit() throws Throwable {
 		Resource resource = null;
 		if(StringUtils.isNotEmpty(xml)){
 			resource = getEnvironment().getResource(xml);

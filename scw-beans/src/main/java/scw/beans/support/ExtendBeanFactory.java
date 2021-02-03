@@ -1,130 +1,96 @@
 package scw.beans.support;
 
-import java.util.LinkedHashMap;
-
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
-import scw.beans.BeanUtils;
-import scw.beans.BeansException;
+import scw.beans.SingletonBeanRegistry;
 import scw.context.Destroy;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.parameter.ParameterFactory;
+import scw.instance.InstanceException;
 import scw.instance.NoArgsInstanceFactory;
-import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.util.Creator;
+import scw.util.Result;
 
 public class ExtendBeanFactory implements NoArgsInstanceFactory, Destroy {
-	private static Logger logger = LoggerUtils.getLogger(ExtendBeanFactory.class);
 	private final ParameterFactory parameterFactory;
 	private final BeanFactory beanFactory;
-	private volatile LinkedHashMap<String, Object> instanceMap;
+	private final SingletonBeanRegistry singletonBeanRegistry;
 
 	public ExtendBeanFactory(ParameterFactory parameterFactory, BeanFactory beanFactory) {
 		this.parameterFactory = parameterFactory;
 		this.beanFactory = beanFactory;
+		this.singletonBeanRegistry = new DefaultSingletonBeanRegistry(beanFactory);
 	}
 
 	public <T> T getInstance(Class<T> clazz) {
 		return getInstance(clazz.getName());
 	}
 
-	private Object getInstanceByCache(String id) {
-		return instanceMap == null ? null : instanceMap.get(id);
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T> T getInstance(String name) {
-		Object instance = getInstanceByCache(name);
+		Object instance = singletonBeanRegistry.getSingleton(name);
 		if (instance != null) {
 			return (T) instance;
 		}
 		
-		BeanDefinition beanDefinition = beanFactory.getDefinition(name);
+		final BeanDefinition beanDefinition = beanFactory.getDefinition(name);
 		if (beanDefinition == null) {
 			return null;
+		}
+		
+		instance = singletonBeanRegistry.getSingleton(beanDefinition.getId());
+		if(instance != null){
+			return (T) instance;
 		}
 		
 		if(beanDefinition.isSingleton() && beanDefinition.isInstance()){
 			return beanFactory.getInstance(name);
 		}
 
-		instance = getInstanceByCache(beanDefinition.getId());
-		if (instance != null) {
-			return (T) instance;
-		}
-
-		for (ParameterDescriptors parameterDescriptors : beanDefinition) {
+		Result<Object> result = null;
+		for (final ParameterDescriptors parameterDescriptors : beanDefinition) {
 			if (parameterFactory.isAccept(parameterDescriptors)) {
 				if (beanDefinition.isSingleton()) {
-					if (instanceMap == null) {
-						synchronized (this) {
-							if (instanceMap == null) {
-								instanceMap = new LinkedHashMap<String, Object>(8);
-							} else {
-								instance = getInstanceByCache(beanDefinition.getId());
-								if (instance != null) {
-									return (T) instance;
-								}
-							}
+					result = singletonBeanRegistry.getSingleton(beanDefinition.getId(), new Creator<Object>() {
 
-							try {
-								return (T) createInstance(beanDefinition, parameterDescriptors);
-							} catch (Throwable e) {
-								throw new BeansException(beanDefinition.getId(), e);
-							}
+						public Object create() throws InstanceException {
+							return beanDefinition.create(parameterDescriptors.getTypes(),
+									parameterFactory.getParameters(parameterDescriptors));
 						}
-					} else {
-						instance = getInstanceByCache(beanDefinition.getId());
-						if (instance != null) {
-							return (T) instance;
-						}
-
-						try {
-							return (T) createInstance(beanDefinition, parameterDescriptors);
-						} catch (Throwable e) {
-							throw new BeansException(beanDefinition.getId(), e);
-						}
-					}
-				} else {
-					try {
-						return (T) createInstance(beanDefinition, parameterDescriptors);
-					} catch (Throwable e) {
-						throw new BeansException(beanDefinition.getId(), e);
-					}
+					});
+				}else{
+					result = new Result<Object>(true, beanDefinition.create(parameterDescriptors.getTypes(),
+									parameterFactory.getParameters(parameterDescriptors)));
 				}
 			}
+		}
+		
+		if(result != null){
+			Object obj = result.getResult();
+			if(result.isActive()){
+				beanDefinition.dependence(obj);
+				beanDefinition.init(obj);
+			}
+			return (T) obj;
 		}
 		return beanFactory.getInstance(name);
 	}
 
-	private Object createInstance(BeanDefinition beanDefinition, ParameterDescriptors parameterDescriptors)
-			throws Throwable {
-		Object instance = beanDefinition.create(parameterDescriptors.getTypes(),
-				parameterFactory.getParameters(parameterDescriptors));
-		if (beanDefinition.isSingleton()) {
-			instanceMap.put(beanDefinition.getId(), instance);
-		}
-
-		beanDefinition.dependence(instance);
-		beanDefinition.init(instance);
-		return instance;
-	}
-
 	public boolean isInstance(String name) {
-		if (instanceMap != null && instanceMap.containsKey(name)) {
+		if(singletonBeanRegistry.containsSingleton(name)){
 			return true;
 		}
-
+		
 		BeanDefinition beanDefinition = beanFactory.getDefinition(name);
 		if (beanDefinition == null) {
 			return false;
 		}
 		
-		if(beanDefinition.isSingleton() && beanDefinition.isInstance()){
+		if(singletonBeanRegistry.containsSingleton(beanDefinition.getId())){
 			return true;
 		}
-
-		if (instanceMap != null && instanceMap.containsKey(beanDefinition.getId())) {
+		
+		if(beanDefinition.isSingleton() && beanDefinition.isInstance()){
 			return true;
 		}
 
@@ -133,8 +99,7 @@ public class ExtendBeanFactory implements NoArgsInstanceFactory, Destroy {
 				return true;
 			}
 		}
-		
-		return beanDefinition.isInstance();
+		return false;
 	}
 
 	public boolean isInstance(Class<?> clazz) {
@@ -154,16 +119,6 @@ public class ExtendBeanFactory implements NoArgsInstanceFactory, Destroy {
 	}
 
 	public void destroy() {
-		synchronized (this) {
-			if (instanceMap == null) {
-				return;
-			}
-
-			synchronized (instanceMap) {
-				BeanUtils.destroy(beanFactory, instanceMap, logger);
-			}
-			instanceMap = null;
-		}
+		singletonBeanRegistry.destroyAll();
 	}
-
 }

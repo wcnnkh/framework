@@ -1,9 +1,12 @@
 package scw.event;
 
+import java.io.Serializable;
+
 import scw.core.utils.XTime;
 import scw.mapper.MapperUtils;
 
-public class BasicEvent implements Event {
+public class BasicEvent implements Event, Serializable{
+	private static final long serialVersionUID = 1L;
 	private final long createTime;
 	
 	public BasicEvent(){

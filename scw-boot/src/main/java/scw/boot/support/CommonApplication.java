@@ -8,32 +8,51 @@ import scw.boot.ApplicationAware;
 import scw.boot.ApplicationEvent;
 import scw.boot.ApplicationPostProcessor;
 import scw.boot.ConfigurableApplication;
+import scw.context.ClassesLoader;
+import scw.context.ConfigurableClassesLoader;
+import scw.context.support.LifecycleAuxiliary;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.env.ConfigurableEnvironment;
 import scw.env.SystemEnvironment;
 import scw.event.BasicEventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.support.DefaultBasicEventDispatcher;
-import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.logger.LoggerUtils;
 import scw.logger.SplitLineAppend;
+import scw.util.ClassLoaderProvider;
+import scw.util.DefaultClassLoaderProvider;
 
-public class CommonApplication extends XmlBeanFactory implements
+public class CommonApplication extends LifecycleAuxiliary implements
 		ConfigurableApplication, EventListener<BeanLifeCycleEvent> {
-	private volatile BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer;
+	private final XmlBeanFactory beanFactory;
+	private final BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer = new DefaultBasicEventDispatcher<ApplicationEvent>(
+			true);
 	private volatile Logger logger;
+	private ClassLoaderProvider classLoaderProvider;
 
 	public CommonApplication() {
-		this(DEFAULT_CONFIG);
+		this(XmlBeanFactory.DEFAULT_CONFIG);
 	}
 
 	public CommonApplication(String xml) {
-		super(StringUtils.isEmpty(xml) ? DEFAULT_CONFIG : xml);
-		getBeanFactory().registerSingletion(Application.class.getName(), this);
+		beanFactory = new XmlBeanFactory(
+				StringUtils.isEmpty(xml) ? XmlBeanFactory.DEFAULT_CONFIG : xml);
+		beanFactory.setClassLoaderProvider(this);
+		getBeanFactory().registerSingleton(Application.class.getName(), this);
 		getEnvironment().addPropertyFactory(SystemEnvironment.getInstance());
-		getBeanLifeCycleEventDispatcher().registerListener(this);
+		beanFactory.registerListener(this);
+	}
+	
+	public void setClassLoader(ClassLoader classLoader){
+		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
+	}
+
+	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
 	}
 
 	public Logger getLogger() {
@@ -64,46 +83,14 @@ public class CommonApplication extends XmlBeanFactory implements
 		}
 	}
 
-	protected void initDefaultApplicationEventDispathcer() {
-		if (applicationEventDispathcer == null) {
-			synchronized (this) {
-				if (applicationEventDispathcer == null) {
-					applicationEventDispathcer = new DefaultBasicEventDispatcher<ApplicationEvent>(
-							true);
-				}
-			}
-		}
-	}
-
-	public final BasicEventDispatcher<ApplicationEvent> getApplicationEventDispathcer() {
-		return applicationEventDispathcer;
-	}
-
-	public void setApplicationEventDispathcer(
-			BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer) {
-		if (applicationEventDispathcer != null) {
-			throw new AlreadyExistsException("ApplicationEventDispathcer");
-		}
-		this.applicationEventDispathcer = applicationEventDispathcer;
+	@Override
+	protected void beforeInit() throws Throwable {
+		ApplicationUtils.config(getEnvironment());
+		beanFactory.init();
 	}
 
 	@Override
-	public void init() throws Throwable {
-		super.init();
-		getLogger().info(new SplitLineAppend("Start up complete"));
-	}
-
-	@Override
-	public void destroy() throws Throwable {
-		try {
-			super.destroy();
-		} finally {
-			LoggerFactory.getILoggerFactory().destroy();
-		}
-	}
-
-	@Override
-	public void afterInit() throws Throwable {
+	protected void afterInit() throws Throwable {
 		for (ApplicationPostProcessor initializer : getBeanFactory()
 				.getServiceLoader(ApplicationPostProcessor.class)) {
 			initializer.postProcessApplication(this);
@@ -112,24 +99,51 @@ public class CommonApplication extends XmlBeanFactory implements
 	}
 
 	@Override
-	public void beforeDestroy() throws Throwable {
+	protected void initComplete() throws Throwable {
+		getLogger().info(new SplitLineAppend("Start up complete"));
+		super.initComplete();
+	}
+
+	protected void beforeDestroy() throws Throwable {
 		getLogger().info(new SplitLineAppend("destroy"));
-		ApplicationUtils.config(getEnvironment());
-		super.beforeDestroy();
+	};
+
+	@Override
+	protected void afterDestroy() throws Throwable {
+		try {
+			beanFactory.destroy();
+		} finally {
+			LoggerFactory.getILoggerFactory().destroy();
+		}
+		super.afterDestroy();
 	}
 
 	public void publishEvent(ApplicationEvent event) {
-		initDefaultApplicationEventDispathcer();
 		applicationEventDispathcer.publishEvent(event);
 	}
 
 	public EventRegistration registerListener(
 			EventListener<ApplicationEvent> eventListener) {
-		initDefaultApplicationEventDispathcer();
 		return applicationEventDispathcer.registerListener(eventListener);
 	}
 
 	public XmlBeanFactory getBeanFactory() {
-		return this;
+		return beanFactory;
+	}
+
+	public ClassesLoader<?> getClassesLoader(String packageName) {
+		return beanFactory.getClassesLoader(packageName);
+	}
+
+	public ClassLoader getClassLoader() {
+		return ClassUtils.getClassLoader(classLoaderProvider);
+	}
+
+	public ConfigurableEnvironment getEnvironment() {
+		return beanFactory.getEnvironment();
+	}
+
+	public ConfigurableClassesLoader<?> getContextClassesLoader() {
+		return beanFactory.getContextClassesLoader();
 	}
 }

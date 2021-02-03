@@ -58,7 +58,7 @@ public class TomcatStart implements Main, Destroy {
 
 	protected void addErrorPage(Context context, Application application) {
 		if (application.getBeanFactory().isInstance(ActionManager.class)) {
-			for (Action action : application.getBeanFactory().getInstance(ActionManager.class).getActions()) {
+			for (Action action : application.getBeanFactory().getInstance(ActionManager.class)) {
 				ErrorPageController errorCodeController = action.getAnnotatedElement()
 						.getAnnotation(ErrorPageController.class);
 				if (errorCodeController == null) {

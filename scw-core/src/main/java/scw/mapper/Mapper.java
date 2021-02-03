@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import scw.aop.ProxyUtils;
 import scw.core.Assert;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
+import scw.env.SystemEnvironment;
 import scw.lang.NotFoundException;
 import scw.util.cache.CacheLoader;
 import scw.util.cache.CacheOperations;
@@ -310,7 +310,7 @@ public abstract class Mapper {
 
 	public Class<?> getUserClass(Object instance) {
 		Assert.requiredArgument(instance != null, "instance");
-		return ProxyUtils.getProxyFactory().getUserClass(instance.getClass());
+		return SystemEnvironment.getInstance().getUserClass(instance.getClass());
 	}
 
 	public final String toString(Object instance) {

@@ -120,7 +120,7 @@ public class EurekaRegistration implements ServiceInstance {
 	@SuppressWarnings({ "unchecked" })
 	protected <T> T getTargetObject(Object proxy, Class<T> targetClass) throws Exception {
 		if(proxy instanceof ProxyInstanceTarget){
-			return (T) ((ProxyInstanceTarget) proxy).getProxyTarget();
+			return (T) ((ProxyInstanceTarget) proxy).getTargetProxyInstance();
 		} else {
 			return (T) proxy; // expected to be cglib proxy then, which is simply a
 			// specialized class

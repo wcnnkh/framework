@@ -10,7 +10,9 @@ import scw.boot.ConfigurableApplication;
 import scw.context.annotation.Provider;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.Invoker;
+import scw.core.reflect.MethodInvoker;
 import scw.core.utils.ArrayUtils;
+import scw.instance.supplier.NameInstanceSupplier;
 import scw.timer.annotation.Crontab;
 import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
@@ -37,7 +39,8 @@ public final class TimerAnnotationScan implements ApplicationPostProcessor {
 	
 	private Task getTask(BeanFactory beanFactory, Class<?> clz, Method method) {
 		Class<?> parameterType = ArrayUtils.isEmpty(method.getParameterTypes()) ? null : method.getParameterTypes()[0];
-		return new CrontabRunnable(beanFactory.getAop().getProxyMethod(beanFactory, clz, method), parameterType);
+		MethodInvoker invoker = beanFactory.getAop().getProxyMethod(clz, new NameInstanceSupplier<Object>(beanFactory, clz.getName()), method);
+		return new CrontabRunnable(invoker, parameterType);
 	}
 
 	private void schedule(BeanFactory beanFactory, Class<?> clz, Method method, Timer timer, Schedule schedule) {

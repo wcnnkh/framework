@@ -1,6 +1,9 @@
 package scw.util;
 
-public final class StaticSupplier<T> implements Supplier<T>{
+import java.io.Serializable;
+
+public final class StaticSupplier<T> implements Supplier<T>, Serializable{
+	private static final long serialVersionUID = 1L;
 	private final T source;
 	
 	public StaticSupplier(T source){

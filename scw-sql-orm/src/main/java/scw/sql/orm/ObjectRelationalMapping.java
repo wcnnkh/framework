@@ -9,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import scw.aop.ProxyUtils;
 import scw.aop.support.FieldSetterListenUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -185,9 +184,9 @@ public class ObjectRelationalMapping implements FieldFilter {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T newEntity(Class<? extends T> entityClass) {
-		if (isTable(entityClass) && ProxyUtils.getProxyFactory().isSupport(entityClass)) {
-			return (T) FieldSetterListenUtils.getFieldSetterListenProxy(entityClass).create();
+	public <T> T newEntity(Class<T> entityClass) {
+		if (isTable(entityClass) && SystemEnvironment.getInstance().canProxy(entityClass)) {
+			return (T) FieldSetterListenUtils.getFieldSetterListenProxy(SystemEnvironment.getInstance(), entityClass).create();
 		} else {
 			return InstanceUtils.INSTANCE_FACTORY.getInstance(entityClass);
 		}

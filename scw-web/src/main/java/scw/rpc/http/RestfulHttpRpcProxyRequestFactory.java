@@ -15,9 +15,8 @@ import scw.net.MimeTypeUtils;
 import scw.net.uri.UriUtils;
 import scw.rpc.http.annotation.HttpClient;
 import scw.rpc.http.annotation.HttpClient.ContentType;
-import scw.util.FormatUtils;
 import scw.util.KeyValuePair;
-import scw.util.PlaceholderResolver;
+import scw.util.placeholder.PlaceholderResolver;
 
 public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements HttpRpcProxyRequestFactory {
 	private String charsetName;
@@ -63,7 +62,7 @@ public class RestfulHttpRpcProxyRequestFactory extends HttpAccessor implements H
 
 		final Map<String, Object> parameterMap = ParameterUtils.getParameterMap(invoker.getMethod(),
 				args);
-		host = FormatUtils.format(host, new PlaceholderResolver() {
+		host = environment.replacePlaceholders(host, new PlaceholderResolver() {
 			
 			public String resolvePlaceholder(String placeholderName) {
 				Object value = parameterMap.remove(placeholderName);

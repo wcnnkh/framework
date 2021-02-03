@@ -82,7 +82,7 @@ public class DefaultResultMapping extends AbstractResultMapping {
 		return entity;
 	}
 
-	public final <T> T get(Class<? extends T> type, int index) {
+	public final <T> T get(Class<T> type, int index) {
 		if (values == null) {
 			return null;
 		}

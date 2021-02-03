@@ -8,6 +8,9 @@ import scw.boot.ApplicationPostProcessor;
 import scw.boot.ConfigurableApplication;
 import scw.context.annotation.Provider;
 import scw.core.annotation.AnnotationUtils;
+import scw.core.reflect.MethodInvoker;
+import scw.instance.supplier.NameInstanceSupplier;
+import scw.util.Supplier;
 
 @Provider(order = Integer.MIN_VALUE)
 public final class MessageListenerApplicationInitializer implements ApplicationPostProcessor {
@@ -29,8 +32,9 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 			for (Method method : AnnotationUtils.getAnnoationMethods(clazz, true, true, MessageListener.class)) {
 				MessageListener messageListener = method.getAnnotation(MessageListener.class);
 				Exchange exchange = application.getBeanFactory().getInstance(messageListener.exchange());
-				exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener), application
-						.getBeanFactory().getAop().getProxyMethod(application.getBeanFactory(), clazz, method));
+				Supplier<Object> supplier = new NameInstanceSupplier<Object>(application.getBeanFactory(), clazz.getName());
+				MethodInvoker invoker = application.getBeanFactory().getAop().getProxyMethod(clazz, supplier, method);
+				exchange.bind(messageListener.routingKey(), createQueueDeclare(messageListener), invoker);
 			}
 		}
 	}

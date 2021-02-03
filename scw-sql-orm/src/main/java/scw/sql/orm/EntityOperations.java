@@ -16,7 +16,7 @@ public interface EntityOperations {
 	 * @param params
 	 * @return
 	 */
-	<T> T getById(Class<? extends T> type, Object... params);
+	<T> T getById(Class<T> type, Object... params);
 
 	/**
 	 * 根据主键获取一条数据
@@ -25,7 +25,7 @@ public interface EntityOperations {
 	 * @param params
 	 * @return
 	 */
-	<T> T getById(String tableName, Class<? extends T> type, Object... params);
+	<T> T getById(String tableName, Class<T> type, Object... params);
 
 	/**
 	 * 根据主键获取多条数据
@@ -33,7 +33,7 @@ public interface EntityOperations {
 	 * @param params
 	 * @return
 	 */
-	<T> List<T> getByIdList(Class<? extends T> type, Object... params);
+	<T> List<T> getByIdList(Class<T> type, Object... params);
 
 	/**
 	 * 根据主键获取多条数据
@@ -42,7 +42,7 @@ public interface EntityOperations {
 	 * @param params
 	 * @return
 	 */
-	<T> List<T> getByIdList(String tableName, Class<? extends T> type, Object... params);
+	<T> List<T> getByIdList(String tableName, Class<T> type, Object... params);
 
 	/**
 	 * @param type
@@ -51,7 +51,7 @@ public interface EntityOperations {
 	 * @param primaryKeys
 	 * @return 不会为空
 	 */
-	<K, V> Map<K, V> getInIdList(Class<? extends V> type, String tableName, Collection<? extends K> inPrimaryKeys, Object... primaryKeys);
+	<K, V> Map<K, V> getInIdList(Class<V> type, String tableName, Collection<K> inPrimaryKeys, Object... primaryKeys);
 
 	/**
 	 * @param type
@@ -59,7 +59,7 @@ public interface EntityOperations {
 	 * @param primaryKeys
 	 * @return 不会为空
 	 */
-	<K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inPrimaryKeys, Object... primaryKeys);
+	<K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inPrimaryKeys, Object... primaryKeys);
 
 	/**
 	 * 执行Select语句
@@ -74,7 +74,7 @@ public interface EntityOperations {
 	 * @param sql
 	 * @return
 	 */
-	<T> List<T> select(Class<? extends T> type, Sql sql);
+	<T> List<T> select(Class<T> type, Sql sql);
 
 	/**
 	 * 执行select语句并返回指定类型的数据
@@ -82,7 +82,7 @@ public interface EntityOperations {
 	 * @param sql
 	 * @return
 	 */
-	<T> T selectOne(Class<? extends T> type, Sql sql);
+	<T> T selectOne(Class<T> type, Sql sql);
 
 	/**
 	 * 执行select语句并返回指定类型的数据
@@ -91,7 +91,7 @@ public interface EntityOperations {
 	 * @param defaultValue
 	 * @return
 	 */
-	<T> T selectOne(Class<? extends T> type, Sql sql, T defaultValue);
+	<T> T selectOne(Class<T> type, Sql sql, T defaultValue);
 
 	/**
 	 * 保存一个对象
@@ -153,7 +153,7 @@ public interface EntityOperations {
 	 * @param idField
 	 * @return
 	 */
-	<T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, String idField);
+	<T> T getMaxValue(Class<T> type, Class<?> tableClass, String tableName, String idField);
 
 	/**
 	 * 获取对象指定字段的最大值
@@ -162,7 +162,7 @@ public interface EntityOperations {
 	 * @param idField
 	 * @return
 	 */
-	<T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String idField);
+	<T> T getMaxValue(Class<T> type, Class<?> tableClass, String idField);
 
 	/**
 	 * 创建表
@@ -193,7 +193,7 @@ public interface EntityOperations {
 	 * @param sql
 	 * @return
 	 */
-	<T> Pagination<T> select(Class<? extends T> type, long page, int limit, Sql sql);
+	<T> Pagination<T> select(Class<T> type, long page, int limit, Sql sql);
 
 	/**
 	 * 分页查询
@@ -212,7 +212,7 @@ public interface EntityOperations {
 	 * @param sql
 	 * @return
 	 */
-	<T> Pagination<T> select(Class<? extends T> type, int page, int limit, Sql sql);
+	<T> Pagination<T> select(Class<T> type, int page, int limit, Sql sql);
 
 	/**
 	 * 分页查询
@@ -228,7 +228,7 @@ public interface EntityOperations {
 	 * @param tableClass
 	 * @param iterator
 	 */
-	<T> void iterator(Class<? extends T> tableClass, IteratorCallback<T> iterator);
+	<T> void iterator(Class<T> tableClass, IteratorCallback<T> iterator);
 
 	/**
 	 * 根据sql语句迭代数据
@@ -243,13 +243,13 @@ public interface EntityOperations {
 	 * @param type
 	 * @param iterator
 	 */
-	<T> void iterator(Sql sql, Class<? extends T> type, IteratorCallback<T> iterator);
+	<T> void iterator(Sql sql, Class<T> type, IteratorCallback<T> iterator);
 	
-	<T> void query(Class<? extends T> tableClass, IteratorCallback<Row<T>> iterator);
+	<T> void query(Class<T> tableClass, IteratorCallback<Row<T>> iterator);
 
 	void query(Sql sql, IteratorCallback<Row<ResultMapping>> iterator);
 
-	<T> void query(Sql sql, Class<? extends T> type, IteratorCallback<Row<T>> iterator);
+	<T> void query(Sql sql, Class<T> type, IteratorCallback<Row<T>> iterator);
 
 	/**
 	 * 获取表的变更

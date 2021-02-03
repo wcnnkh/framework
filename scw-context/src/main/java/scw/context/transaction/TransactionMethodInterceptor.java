@@ -1,8 +1,6 @@
 package scw.context.transaction;
 
 import scw.aop.MethodInterceptor;
-import scw.aop.MethodInterceptorChain;
-import scw.context.annotation.Provider;
 import scw.context.annotation.Transactional;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.MethodInvoker;
@@ -18,7 +16,6 @@ import scw.transaction.TransactionManager;
  * @author shuchaowen
  *
  */
-@Provider(order = Integer.MAX_VALUE)
 public final class TransactionMethodInterceptor implements MethodInterceptor{
 	private static Logger logger = LoggerUtils.getLogger(TransactionMethodInterceptor.class);
 	private final TransactionDefinition transactionDefinition;
@@ -43,11 +40,11 @@ public final class TransactionMethodInterceptor implements MethodInterceptor{
 		}
 	}
 	
-	public Object intercept(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
 		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getSourceClass(),
 				invoker.getMethod());
 		if (tx == null && TransactionManager.hasTransaction()) {
-			Object rtn = filterChain.intercept(invoker, args);
+			Object rtn = invoker.invoke(args);
 			invokerAfter(rtn, invoker);
 			return rtn;
 		}
@@ -57,7 +54,7 @@ public final class TransactionMethodInterceptor implements MethodInterceptor{
 		Transaction transaction = TransactionManager.getTransaction(transactionDefinition);
 		Object v;
 		try {
-			v = filterChain.intercept(invoker, args);
+			v = invoker.invoke(args);
 			invokerAfter(v, invoker);
 			TransactionManager.commit(transaction);
 			return v;

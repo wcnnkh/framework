@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import scw.aop.ProxyUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.XTime;
 import scw.data.TemporaryCache;
@@ -46,7 +45,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	}
 
 	public void save(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(
+		Class<?> clazz = getUserClass(
 				bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
@@ -62,7 +61,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	}
 
 	public void update(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(
+		Class<?> clazz = getUserClass(
 				bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
@@ -74,7 +73,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	}
 
 	public void delete(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(
+		Class<?> clazz = getUserClass(
 				bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
@@ -104,7 +103,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	}
 
 	public void saveOrUpdate(Object bean) {
-		Class<?> clazz = ProxyUtils.getProxyFactory().getUserClass(
+		Class<?> clazz = getUserClass(
 				bean.getClass());
 		TemporaryCacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
@@ -119,7 +118,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 		}
 	}
 
-	public <T> T getById(Class<? extends T> type, Object... params) {
+	public <T> T getById(Class<T> type, Object... params) {
 		TemporaryCacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return null;
@@ -130,8 +129,8 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 						Arrays.asList(params)), config.getExp());
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<? extends V> type,
-			Collection<? extends K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<V> type,
+			Collection<K> inIds, Object... params) {
 		TemporaryCacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return null;

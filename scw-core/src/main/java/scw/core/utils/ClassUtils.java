@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import net.sf.cglib.proxy.UndeclaredThrowableException;
 import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.Nullable;

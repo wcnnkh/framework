@@ -9,6 +9,7 @@ import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.MethodInvoker;
 import scw.core.reflect.ReflectionUtils;
+import scw.instance.supplier.NameInstanceSupplier;
 import scw.tcc.annotation.TryResult;
 
 public class Stage extends RelyOnBeanFactoryCompleteTask {
@@ -75,9 +76,8 @@ public class Stage extends RelyOnBeanFactoryCompleteTask {
 	public Object process() throws Throwable {
 		Method method = getMethod();
 		ReflectionUtils.makeAccessible(method);
-		MethodInvoker methodInvoker = getBeanFactory().getAop().getProxyMethod(getBeanFactory(), beanName,
-				tryInfo.getTargetClass(), method);
-		return methodInvoker.invoke(getArgs(method));
+		MethodInvoker invoker = getBeanFactory().getAop().getProxyMethod(tryInfo.getTargetClass(), new NameInstanceSupplier<Object>(getBeanFactory(), beanName), method);
+		return invoker.invoke(getArgs(method));
 	}
 
 	@Override

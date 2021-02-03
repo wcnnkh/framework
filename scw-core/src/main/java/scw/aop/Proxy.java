@@ -1,9 +1,7 @@
 package scw.aop;
 
-public interface Proxy {
+import scw.instance.InstanceCreator;
+
+public interface Proxy extends InstanceCreator<Object>{
 	Class<?> getTargetClass();
-
-	Object create();
-
-	Object create(Class<?>[] parameterTypes, Object[] params);
 }

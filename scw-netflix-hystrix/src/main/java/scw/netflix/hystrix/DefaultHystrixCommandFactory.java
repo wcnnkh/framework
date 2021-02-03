@@ -1,16 +1,15 @@
 package scw.netflix.hystrix;
 
+import scw.core.reflect.MethodInvoker;
+import scw.instance.NoArgsInstanceFactory;
+import scw.netflix.hystrix.annotation.Hystrix;
+
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommand.Setter;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixCommandKey;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.netflix.hystrix.HystrixThreadPoolProperties;
-
-import scw.aop.MethodInterceptorChain;
-import scw.core.reflect.MethodInvoker;
-import scw.instance.NoArgsInstanceFactory;
-import scw.netflix.hystrix.annotation.Hystrix;
 
 public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 	private NoArgsInstanceFactory instanceFactory;
@@ -19,7 +18,7 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 		this.instanceFactory = instanceFactory;
 	}
 
-	public HystrixCommand<?> getHystrixCommandFactory(MethodInvoker invoker, Object[] args, MethodInterceptorChain filterChain)
+	public HystrixCommand<?> getHystrixCommandFactory(MethodInvoker invoker, Object[] args)
 			throws Exception {
 		Hystrix hystrix = invoker.getSourceClass().getAnnotation(Hystrix.class);
 		if (hystrix == null) {
@@ -31,7 +30,7 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 		afterSetter(setter);
 		Object fallback = invoker.getSourceClass().isAssignableFrom(hystrix.fallback())
 				? instanceFactory.getInstance(hystrix.fallback()) : null;
-		return new HystrixFilterCommand(setter, fallback, invoker, args, filterChain);
+		return new HystrixFilterCommand(setter, fallback, invoker, args);
 	}
 
 	protected void afterSetter(Setter setter) {

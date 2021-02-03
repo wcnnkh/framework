@@ -13,7 +13,7 @@
     </repositories>
 2.示例:
 -----------------
-[示例](https://github.com/wcnnkh/scw-app/blob/master/scw-app-example/src/main/java/scw/app/example/ExampleApplication.java)
+[示例](https://github.com/wcnnkh/scw-example/blob/master/src/main/java/scw/example/ExampleApplication.java)
 
 3.未开始模块
 -----------------

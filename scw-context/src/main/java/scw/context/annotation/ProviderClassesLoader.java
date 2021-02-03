@@ -12,10 +12,13 @@ import java.util.Set;
 
 import scw.context.ClassesLoader;
 import scw.core.utils.ClassUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.util.comparator.CompareUtils;
 
 public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 		Comparator<Class<S>> {
+	private static Logger logger = LoggerFactory.getLogger(ProviderServiceLoader.class);
 	private final ClassesLoader<?> classesLoader;
 	private volatile Set<Class<S>> providers;
 	private final Class<S> serviceClass;
@@ -80,6 +83,9 @@ public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 
 		List<Class<S>> classes = new ArrayList<Class<S>>(list);
 		Collections.sort(classes, this);
+		if(logger.isDebugEnabled()){
+			logger.debug("[{}] providers is {}", serviceClass, classes);
+		}
 		return new LinkedHashSet<Class<S>>(classes);
 	}
 

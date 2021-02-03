@@ -38,7 +38,7 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	static{
 		instance.loadProperties("system.properties").register();
 		instance.loadProperties(instance.getValue("system.properties.location", String.class, "/private.properties")).register();
-		instance.loaderServices(new DefaultServiceLoaderFactory(instance, new DefaultInstanceFactory(instance, false)));
+		instance.loadServices(new DefaultServiceLoaderFactory(instance, new DefaultInstanceFactory(instance, false)));
 	}
 
 	public static SystemEnvironment getInstance() {

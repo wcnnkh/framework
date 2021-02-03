@@ -16,7 +16,6 @@ import scw.convert.support.EntityConversionService;
 import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
-import scw.io.ResourceUtils;
 
 @Provider(order = Integer.MIN_VALUE, value = BeanDefinitionLoader.class)
 public class JedisBeanDefinitionLoader implements BeanDefinitionLoader {
@@ -50,7 +49,7 @@ public class JedisBeanDefinitionLoader implements BeanDefinitionLoader {
 		private String getHost() {
 			String host = beanFactory.getEnvironment().getString(HOST_CONFIG_KEY);
 			String configName = getConfigName();
-			if (host == null && ResourceUtils.exists(beanFactory.getEnvironment(), configName)) {
+			if (host == null && beanFactory.getEnvironment().exists(configName)) {
 				Properties properties = beanFactory.getEnvironment().getProperties(configName).get();
 				host = properties.getProperty(HOST_CONFIG_KEY);
 				if (host == null) {
@@ -90,7 +89,7 @@ public class JedisBeanDefinitionLoader implements BeanDefinitionLoader {
 		}
 
 		public boolean isInstance() {
-			return ResourceUtils.exists(beanFactory.getEnvironment(), getConfigName());
+			return beanFactory.getEnvironment().exists(getConfigName());
 		}
 
 		public Object create() throws BeansException {

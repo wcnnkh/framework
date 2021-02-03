@@ -61,7 +61,7 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 		return ReflectionUtils.findConstructor(getTargetClass(), false, parameterTypes) != null;
 	}
 
-	public Object create(Class<?>[] parameterTypes, Object... params) throws InstanceException {
+	public Object create(Class<?>[] parameterTypes, Object[] params) throws InstanceException {
 		Constructor<?> constructor = ReflectionUtils.findConstructor(getTargetClass(), false, parameterTypes);
 		if (constructor == null) {
 			throw new NotFoundException(getTargetClass() + "找不到指定的构造方法");

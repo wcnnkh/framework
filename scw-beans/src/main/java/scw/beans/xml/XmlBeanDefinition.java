@@ -10,6 +10,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.aop.MethodInterceptor;
+import scw.aop.support.UnmodifiableMethodInterceptors;
 import scw.beans.BeanFactory;
 import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
@@ -26,7 +27,6 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private final String id;
 	private final Boolean singleton;
 	private final XmlParameterFactory xmlParameterFactory;
-	private Iterable<? extends MethodInterceptor> filters;
 
 	public XmlBeanDefinition(BeanFactory beanFactory, Node beanNode) throws Exception {
 		this(beanFactory, XmlBeanUtils.getClass(beanNode, true, beanFactory.getClassLoader()), beanNode);
@@ -35,11 +35,11 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	public XmlBeanDefinition(BeanFactory beanFactory, Class<?> targetClass,
 			Node beanNode) throws Exception {
 		super(beanFactory, targetClass);
-		Collection<String> filterNames = getFilters(beanNode);
-		if (!CollectionUtils.isEmpty(filterNames)) {
-			this.filters = new InstanceIterable<MethodInterceptor>(beanFactory, getFilters(beanNode));
+		Collection<String> names = getFilters(beanNode);
+		if(!CollectionUtils.isEmpty(names)){
+			getMethodInterceptors().addMethodInterceptor(new UnmodifiableMethodInterceptors(new InstanceIterable<MethodInterceptor>(beanFactory, names)));
 		}
-
+		
 		NodeList nodeList = beanNode.getChildNodes();
 		ioc.getInit().getIocProcessors().addAll(XmlBeanUtils.getInitMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
 		ioc.getDestroy().getIocProcessors()
@@ -55,11 +55,6 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 		this.singleton = XmlBeanUtils.isSingleton(beanNode);
 	}
 	
-	@Override
-	public Iterable<? extends MethodInterceptor> getFilters() {
-		return filters;
-	}
-
 	@SuppressWarnings("unchecked")
 	protected Collection<String> getFilters(Node node) {
 		String filters = DomUtils.getNodeAttributeValue(node, "filters");
@@ -114,7 +109,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 		if (ArrayUtils.isEmpty(xmlParameterFactory.getXmlBeanParameters())) {
 			return super.create();
 		}
-
+		
 		for (ParameterDescriptors parameterDescriptors : this) {
 			if (xmlParameterFactory.isAccept(parameterDescriptors)) {
 				return create(parameterDescriptors.getTypes(), xmlParameterFactory.getParameters(parameterDescriptors));

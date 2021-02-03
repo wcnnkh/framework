@@ -11,11 +11,10 @@ import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
+import scw.env.Environment;
 import scw.env.SystemEnvironment;
 import scw.http.HttpMethod;
 import scw.instance.annotation.ResourceParameter;
-import scw.io.ResourceLoader;
-import scw.io.ResourceUtils;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -24,27 +23,27 @@ public class XmlHttpAuthorityManager extends
 		DefaultHttpAuthorityManager<HttpAuthority> {
 	private static Logger logger = LoggerFactory
 			.getLogger(XmlHttpAuthorityManager.class);
-	private final ResourceLoader resourceLoader;
+	private final Environment environment;
 
-	public XmlHttpAuthorityManager(ResourceLoader resourceLoader, @ParameterName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
-		this(resourceLoader, xml, null);
+	public XmlHttpAuthorityManager(Environment environment, @ParameterName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
+		this(environment, xml, null);
 	}
 
-	public XmlHttpAuthorityManager(ResourceLoader resourceLoader, String xml, String parentId) {
-		this.resourceLoader = resourceLoader;
+	public XmlHttpAuthorityManager(Environment environment, String xml, String parentId) {
+		this.environment = environment;
 		addByXml(xml, StringUtils.isEmpty(parentId) ? "" : parentId);
 	}
 
 	@SuppressWarnings("unchecked")
 	private void addByXml(String xml, String defParentId) {
-		if (!ResourceUtils.exists(resourceLoader, xml)) {
+		if (!environment.exists(xml)) {
 			logger.warn("not found:{}", xml);
 			return;
 		}
 
-		Element element = DomUtils.getRootElement(resourceLoader, xml);
+		Element element = DomUtils.getRootElement(environment, xml);
 		String prefix = DomUtils.getNodeAttributeValue(element, "prefix");
-		NodeList nodeList = DomUtils.getChildNodes(element, resourceLoader);
+		NodeList nodeList = DomUtils.getChildNodes(element, environment);
 		if (nodeList == null) {
 			return;
 		}
