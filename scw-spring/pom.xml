@@ -12,14 +12,7 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-boot</artifactId>
 		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.springframework/spring-beans -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-beans</artifactId>
-			<version>5.2.9.RELEASE</version>
-		</dependency>
-
+		
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
 		<dependency>
 			<groupId>org.springframework</groupId>

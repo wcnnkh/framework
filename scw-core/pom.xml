@@ -8,11 +8,13 @@
 	</parent>
 	<artifactId>scw-core</artifactId>
 	<dependencies>
+		<!-- 以下两个依赖在此模块中应该是强制依赖的，因为使用jarjar将其打包进来 且其他模块并不需要，所以optional为true -->
 		<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
 			<version>7.1</version>
+			<optional>true</optional>
 		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/cglib/cglib -->
@@ -20,8 +22,9 @@
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
 			<version>3.3.0</version>
+			<optional>true</optional>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
