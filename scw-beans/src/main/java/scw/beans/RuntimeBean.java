@@ -5,6 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.aop.MethodInterceptor;
+import scw.aop.MethodInterceptorAccept;
 import scw.core.reflect.MethodInvoker;
 import scw.core.utils.ArrayUtils;
 
@@ -19,7 +20,7 @@ public interface RuntimeBean {
 
 	boolean _destroy();
 	
-	static class RuntimeBeanMethodInterceptor implements MethodInterceptor {
+	static class RuntimeBeanMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 		private final AtomicBoolean _dependence = new AtomicBoolean();
 		private final AtomicBoolean _init = new AtomicBoolean();
 		private final AtomicBoolean _destroy = new AtomicBoolean();
@@ -27,6 +28,30 @@ public interface RuntimeBean {
 
 		public RuntimeBeanMethodInterceptor(BeanDefinition beanDefinition) {
 			this.beanDefinition = beanDefinition;
+		}
+		
+		public boolean isAccept(MethodInvoker invoker, Object[] args) {
+			if (ArrayUtils.isEmpty(args)) {
+				Method method = invoker.getMethod();
+				if ((Modifier.isAbstract(method.getModifiers()) || Modifier.isInterface(method.getModifiers()))) {
+					if (method.getName().equals("getBeanDefinition")) {
+						return true;
+					}
+
+					if (method.getName().equals("_dependence")) {
+						return true;
+					}
+
+					if (method.getName().equals("_init")) {
+						return true;
+					}
+
+					if (method.getName().equals("_destroy")) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
