@@ -10,10 +10,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import scw.beans.BeanFactory;
 import scw.core.utils.ClassUtils;
 import scw.http.HttpCookie;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.servlet.http.DefaultHttpServletService;
 import scw.util.XUtils;
 
 public final class ServletUtils {
@@ -53,5 +55,12 @@ public final class ServletUtils {
 
 	public static HttpServletResponse getHttpServletResponse(ServerHttpResponse response) {
 		return XUtils.getTarget(response, HttpServletResponse.class);
+	}
+	
+	public static ServletService createServletService(BeanFactory beanFactory){
+		if(beanFactory.isInstance(ServletService.class)){
+			return beanFactory.getInstance(ServletService.class);
+		}
+		return new DefaultHttpServletService(beanFactory);
 	}
 }

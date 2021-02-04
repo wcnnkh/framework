@@ -14,6 +14,7 @@ import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.servlet.ServletService;
+import scw.servlet.ServletUtils;
 import scw.util.Result;
 
 public class DispatcherServlet extends HttpServlet implements ApplicationAware {
@@ -27,9 +28,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	public void setApplication(Application application) {
 		reference = true;
 		this.application = application;
-		if(application.getBeanFactory().isInstance(ServletService.class)){
-			setServletService(application.getBeanFactory().getInstance(ServletService.class));
-		}
+		setServletService(ServletUtils.createServletService(application.getBeanFactory()));
 	}
 
 	public Application getApplication() {
@@ -75,8 +74,8 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 					}
 				}
 
-				if (servletService == null && application != null && application.getBeanFactory().isInstance(ServletService.class)) {
-					this.servletService = application.getBeanFactory().getInstance(ServletService.class);
+				if (servletService == null && application != null) {
+					this.servletService = ServletUtils.createServletService(application.getBeanFactory());
 				}
 			} catch (Throwable e) {
 				ServletContextUtils.startLogger(logger, servletConfig.getServletContext(), e, false);
