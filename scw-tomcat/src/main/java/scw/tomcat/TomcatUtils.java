@@ -1,7 +1,13 @@
 package scw.tomcat;
 
 import java.util.Properties;
+import java.util.Set;
 
+import javax.servlet.ServletContainerInitializer;
+
+import org.apache.catalina.Context;
+
+import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
 
@@ -37,7 +43,8 @@ public final class TomcatUtils {
 		return getProperty(environment, "context.manager");
 	}
 
-	private static String getShutdownProperty(Environment environment, String name) {
+	private static String getShutdownProperty(Environment environment,
+			String name) {
 		return getProperty(environment, "shutdown." + name);
 	}
 
@@ -62,10 +69,12 @@ public final class TomcatUtils {
 	}
 
 	public static boolean tomcatScanTld(Environment environment) {
-		return StringUtils.parseBoolean(getProperty(environment, "scan.tld"), true);
+		return StringUtils.parseBoolean(getProperty(environment, "scan.tld"),
+				true);
 	}
 
-	public static Properties getServletInitParametersConfig(Environment environment, String servletName, boolean loadOnStartup) {
+	public static Properties getServletInitParametersConfig(
+			Environment environment, String servletName, boolean loadOnStartup) {
 		String path = servletName + "-servlet-init-params.properties";
 		Properties properties = new Properties();
 		if (loadOnStartup) {
@@ -76,5 +85,16 @@ public final class TomcatUtils {
 			properties.putAll(environment.getProperties(path).get());
 		}
 		return properties;
+	}
+
+	public static void addWsSci(Context context, Set<Class<?>> classes,
+			ClassLoader classLoader) {
+		// init websocket
+		if (ClassUtils.isPresent("scw.tomcat.WsServletContainerInitializer",
+				classLoader)) {
+			ServletContainerInitializer initializer = ClassUtils.newInstance(
+					"scw.tomcat.WsServletContainerInitializer", classLoader);
+			context.addServletContainerInitializer(initializer, classes);
+		}
 	}
 }
