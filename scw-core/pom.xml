@@ -16,7 +16,7 @@
 			<version>7.1</version>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/cglib/cglib -->
 		<dependency>
 			<groupId>cglib</groupId>
@@ -24,7 +24,7 @@
 			<version>3.3.0</version>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
@@ -33,6 +33,7 @@
 	</dependencies>
 	<build>
 		<plugins>
+			<!-- 使用方式参考https://github.com/cglib/cglib/blob/master/cglib-nodep/pom.xml -->
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>jarjar-maven-plugin</artifactId>
@@ -46,8 +47,8 @@
 				<configuration>
 					<overwrite>true</overwrite>
 					<includes>
-						<include>*:asm*</include>
-						<include>*:cglib*</include>
+						<include>*:asm</include>
+						<include>*:cglib</include>
 					</includes>
 					<rules>
 						<rule>
@@ -66,6 +67,9 @@
 							<pattern>net.sf.cglib.**.*</pattern>
 							<result>scw.cglib.@1.$@2</result>
 						</rule>
+						<keep>
+							<pattern>scw.**.*</pattern>
+						</keep>
 					</rules>
 				</configuration>
 			</plugin>
