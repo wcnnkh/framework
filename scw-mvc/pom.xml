@@ -13,13 +13,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
+			<artifactId>scw-boot</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>scw</groupId>
 			<artifactId>scw-web</artifactId>
 		</dependency>
 		
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-security</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>

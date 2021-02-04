@@ -1,4 +1,4 @@
-package scw.servlet;
+package scw.boot.servlet.support;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -6,7 +6,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
 import scw.boot.Application;
-import scw.boot.servlet.support.ServletContextUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 

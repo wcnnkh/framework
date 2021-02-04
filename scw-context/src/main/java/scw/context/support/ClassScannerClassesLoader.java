@@ -1,9 +1,12 @@
 package scw.context.support;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
 import scw.context.ClassScanner;
+import scw.core.type.classreading.MetadataReader;
+import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.filter.TypeFilter;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
@@ -12,8 +15,8 @@ import scw.util.ClassLoaderProvider;
 import scw.util.StaticSupplier;
 import scw.util.Supplier;
 
-public final class ClassScannerClassesLoader<S> extends
-		AbstractClassesLoader<S> {
+public class ClassScannerClassesLoader<S> extends
+		AbstractClassesLoader<S> implements TypeFilter{
 	private static Logger logger = LoggerFactory.getLogger(ClassScannerClassesLoader.class);
 	private final ClassScanner classScanner;
 	private final Supplier<String> packageName;
@@ -33,6 +36,12 @@ public final class ClassScannerClassesLoader<S> extends
 		this.typeFilter = typeFilter;
 		setClassLoaderProvider(classLoaderProvider);
 	}
+	
+	@Override
+	public boolean match(MetadataReader metadataReader,
+			MetadataReaderFactory metadataReaderFactory) throws IOException {
+		return super.match(metadataReader, metadataReaderFactory) && (typeFilter == null || typeFilter.match(metadataReader, metadataReaderFactory));
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
@@ -43,8 +52,7 @@ public final class ClassScannerClassesLoader<S> extends
 		}
 
 		long t = System.currentTimeMillis();
-		Set classes = classScanner.getClasses(packageName, classLoader,
-				typeFilter);
+		Set classes = classScanner.getClasses(packageName, classLoader, this);
 		if(logger.isDebugEnabled()){
 			logger.debug("scanner package " + packageName + " use time " + (System.currentTimeMillis() - t) + "ms");
 		}

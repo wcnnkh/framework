@@ -1,12 +1,16 @@
 package scw.boot.servlet.support;
 
+import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
+import scw.beans.BeanFactory;
 import scw.boot.Application;
 import scw.boot.servlet.ServletApplicationStartup;
 import scw.instance.InstanceUtils;
 import scw.lang.Nullable;
 import scw.logger.Logger;
+import scw.servlet.ServletService;
+import scw.servlet.http.DefaultHttpServletService;
 
 public abstract class ServletContextUtils {
 	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = InstanceUtils.loadService(ServletApplicationStartup.class,
@@ -44,5 +48,19 @@ public abstract class ServletContextUtils {
 	
 	public static String getWebRoot(ServletContext servletContext){
 		return servletContext.getRealPath("/");
+	}
+	
+	public static Servlet createServlet(BeanFactory beanFactory){
+		if(beanFactory.isInstance(Servlet.class)){
+			return beanFactory.getInstance(Servlet.class);
+		}
+		return new DispatcherServlet();
+	}
+	
+	public static ServletService createServletService(BeanFactory beanFactory){
+		if(beanFactory.isInstance(ServletService.class)){
+			return beanFactory.getInstance(ServletService.class);
+		}
+		return new DefaultHttpServletService(beanFactory);
 	}
 }

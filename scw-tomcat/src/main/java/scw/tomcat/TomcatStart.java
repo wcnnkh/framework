@@ -3,6 +3,7 @@ package scw.tomcat;
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.servlet.Servlet;
@@ -20,6 +21,7 @@ import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import scw.boot.Application;
 import scw.boot.ConfigurableApplication;
 import scw.boot.Main;
+import scw.boot.servlet.support.ApplicationServletContainerInitializer;
 import scw.boot.servlet.support.ServletContextUtils;
 import scw.boot.support.ApplicationUtils;
 import scw.context.Destroy;
@@ -38,7 +40,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionManager;
-import scw.servlet.ApplicationServletContainerInitializer;
 
 @Provider(order = -1)
 public class TomcatStart implements Main, Destroy {
@@ -136,7 +137,7 @@ public class TomcatStart implements Main, Destroy {
 
 	protected void configureServlet(Context context, Application application, Class<?> mainClass) throws Exception {
 		String servletName = mainClass.getSimpleName();
-		Servlet servlet = application.getBeanFactory().getInstance(Servlet.class);
+		Servlet servlet = ServletContextUtils.createServlet(application.getBeanFactory());
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
 		Properties properties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(), servletName, true);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
@@ -211,7 +212,12 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		ServletContextUtils.setApplication(context.getServletContext(), application);
-		context.addServletContainerInitializer(new ApplicationServletContainerInitializer(), ApplicationUtils.getContextClasses(application));
+		Set<Class<?>> classes = ApplicationUtils.getContextClasses(application);
+		context.addServletContainerInitializer(new ApplicationServletContainerInitializer(), classes);
+		
+		//init websocket
+		TomcatUtils.addWsSci(context, classes, application.getClassLoader());
+		
 		tomcat.start();
 		addErrorPage(context, application);
 	}

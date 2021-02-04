@@ -1,4 +1,4 @@
-package scw.servlet;
+package scw.boot.servlet.support;
 
 import java.util.Set;
 
@@ -7,7 +7,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import scw.boot.Application;
-import scw.boot.servlet.support.ServletContextUtils;
 import scw.util.Result;
 
 /**

@@ -1,4 +1,4 @@
-package scw.servlet;
+package scw.boot.servlet.support;
 
 import java.io.IOException;
 
@@ -10,14 +10,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.boot.Application;
 import scw.boot.ApplicationAware;
-import scw.boot.servlet.support.ServletContextUtils;
-import scw.context.annotation.Provider;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.servlet.ServletService;
 import scw.util.Result;
 
-@Provider(order = Integer.MIN_VALUE)
 public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerUtils.getLogger(DispatcherServlet.class);
