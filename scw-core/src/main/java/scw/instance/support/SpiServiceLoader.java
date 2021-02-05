@@ -26,7 +26,7 @@ import scw.util.ClassLoaderProvider;
 
 public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoaderProvider {
 
-	private static final String PREFIX = "META-INF/services/";
+	private static final String PREFIX = ResourceUtils.META_INF_PREFIX + "services/";
 
 	// The class or interface representing the service being loaded
 	private final Class<S> service;

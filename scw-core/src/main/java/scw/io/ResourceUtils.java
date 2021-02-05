@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import scw.core.Assert;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.NestedRuntimeException;
@@ -77,6 +78,8 @@ public final class ResourceUtils {
 
 	/** Special separator between WAR URL and jar part on Tomcat. */
 	public static final String WAR_URL_SEPARATOR = "*/";
+	
+	public static final String META_INF_PREFIX = "META-INF/";
 
 	/**
 	 * 因为eclipse默认打包为可执行jar会将资源打包在resources目录下，所以会尝试在此目录下查找资源
@@ -89,7 +92,32 @@ public final class ResourceUtils {
 	 * @see #getClassLoaderResource(String)
 	 * @see #getClassLoaderResourceAsStream(String)
 	 */
-	private static final String RESOURCE_PREFIX = "resources/";
+	private static final String[] RESOURCE_PREFIXS;
+	
+	static{
+		String prefixs = System.getProperty("scw.resource.prefixs");
+		String[] resourcePrefixs = new String[]{"resources/"};
+		if(StringUtils.isEmpty(prefixs)){
+			String[] array = StringUtils.commonSplit(prefixs);
+			if(array != null){
+				resourcePrefixs = ArrayUtils.merge(array, resourcePrefixs);
+			}
+		}
+		
+		for(int i=0; i<resourcePrefixs.length; i++){
+			String prefix = resourcePrefixs[i];
+			while(prefix.endsWith("/")){
+				prefix = prefix.substring(0, prefix.length() - 2);
+			}
+
+			if(prefix.length() > 0){
+				prefix = prefix + "/";
+			}
+			
+			resourcePrefixs[i] = prefix;
+		}
+		RESOURCE_PREFIXS = resourcePrefixs;
+	}
 	
 	/**
 	 * Return whether the given resource location is a URL: either a special
@@ -450,7 +478,16 @@ public final class ResourceUtils {
 		String nameToUse = cleanClassLoaderResourceName(name);
 		URL url = classLoader.getResource(nameToUse);
 		if (url == null) {
-			url = classLoader.getResource(RESOURCE_PREFIX + nameToUse);
+			for(String prefix : RESOURCE_PREFIXS){
+				if(nameToUse.startsWith(prefix)){
+					continue;
+				}
+				
+				url = classLoader.getResource(prefix + nameToUse);
+				if(url != null){
+					break;
+				}
+			}
 		}
 		return url;
 	}
@@ -463,15 +500,20 @@ public final class ResourceUtils {
 		String nameToUse = cleanClassLoaderResourceName(name);
 		URL url = clazz.getResource(nameToUse);
 		if(url == null){
-			url = clazz.getClassLoader().getResource(nameToUse);
+			for(String prefix : RESOURCE_PREFIXS){
+				if(nameToUse.startsWith(prefix)){
+					continue;
+				}
+				
+				url = clazz.getResource(prefix + nameToUse);
+				if(url != null){
+					break;
+				}
+			}
 		}
 		
 		if(url == null){
-			url = clazz.getResource(RESOURCE_PREFIX + nameToUse);
-		}
-		
-		if(url == null){
-			url = clazz.getClassLoader().getResource(RESOURCE_PREFIX + nameToUse);
+			url = getResource(clazz.getClassLoader(), nameToUse);
 		}
 		return url;
 	}
@@ -485,7 +527,16 @@ public final class ResourceUtils {
 		String nameToUse = cleanClassLoaderResourceName(name);
 		InputStream is = classLoader.getResourceAsStream(nameToUse);
 		if (is == null) {
-			is = classLoader.getResourceAsStream(RESOURCE_PREFIX + nameToUse);
+			for(String prefix : RESOURCE_PREFIXS){
+				if(nameToUse.startsWith(prefix)){
+					continue;
+				}
+				
+				is = classLoader.getResourceAsStream(prefix + nameToUse);
+				if(is != null){
+					break;
+				}
+			}
 		}
 		return is;
 	}
@@ -498,15 +549,20 @@ public final class ResourceUtils {
 		String nameToUse = cleanClassLoaderResourceName(name);
 		InputStream is = clazz.getResourceAsStream(nameToUse);
 		if(is == null){
-			is = clazz.getClassLoader().getResourceAsStream(nameToUse);
+			for(String prefix : RESOURCE_PREFIXS){
+				if(nameToUse.startsWith(prefix)){
+					continue;
+				}
+
+				is = clazz.getResourceAsStream(prefix + nameToUse);
+				if(is != null){
+					break;
+				}
+			}
 		}
 		
 		if(is == null){
-			is = clazz.getResourceAsStream(RESOURCE_PREFIX + nameToUse);
-		}
-		
-		if(is == null){
-			is = clazz.getClassLoader().getResourceAsStream(RESOURCE_PREFIX + nameToUse);
+			is = getResourceAsStream(clazz.getClassLoader(), nameToUse);
 		}
 		return is;
 	}
@@ -525,7 +581,16 @@ public final class ResourceUtils {
 		String nameToUse = cleanClassLoaderResourceName(name);
 		Enumeration<URL> urls = classLoader.getResources(nameToUse);
 		if(urls == null || !urls.hasMoreElements()){
-			urls = classLoader.getResources(RESOURCE_PREFIX + nameToUse);
+			for(String prefix : RESOURCE_PREFIXS){
+				if(nameToUse.startsWith(prefix)){
+					continue;
+				}
+				
+				urls = classLoader.getResources(prefix + nameToUse);
+				if(urls != null && urls.hasMoreElements()){
+					break;
+				}
+			}
 		}
 		
 		if(urls == null){
@@ -544,7 +609,16 @@ public final class ResourceUtils {
 			String nameToUse = cleanClassLoaderResourceName(name);
 			url = ClassLoader.getSystemResource(nameToUse);
 			if(url == null){
-				url = ClassLoader.getSystemResource(RESOURCE_PREFIX + nameToUse);
+				for(String prefix : RESOURCE_PREFIXS){
+					if(nameToUse.startsWith(prefix)){
+						continue;
+					}
+					
+					url = ClassLoader.getSystemResource(prefix + nameToUse);
+					if(url != null){
+						break;
+					}
+				}
 			}
 		}
 		return url;
@@ -566,7 +640,16 @@ public final class ResourceUtils {
 			String nameToUse = cleanClassLoaderResourceName(name);
 			urls = ClassLoader.getSystemResources(nameToUse);
 			if(urls == null || !urls.hasMoreElements()){
-				urls = ClassLoader.getSystemResources(RESOURCE_PREFIX + nameToUse);
+				for(String prefix : RESOURCE_PREFIXS){
+					if(nameToUse.startsWith(prefix)){
+						continue;
+					}
+					
+					urls = ClassLoader.getSystemResources(prefix + nameToUse);
+					if(urls != null && urls.hasMoreElements()){
+						break;
+					}
+				}
 			}
 		}
 		
@@ -587,7 +670,16 @@ public final class ResourceUtils {
 			String nameToUse = cleanClassLoaderResourceName(name);
 			is = ClassLoader.getSystemResourceAsStream(nameToUse);
 			if(is == null){
-				is = ClassLoader.getSystemResourceAsStream(RESOURCE_PREFIX + nameToUse);
+				for(String prefix : RESOURCE_PREFIXS){
+					if(nameToUse.startsWith(prefix)){
+						continue;
+					}
+					
+					is = ClassLoader.getSystemResourceAsStream(prefix + nameToUse);
+					if(is != null){
+						break;
+					}
+				}
 			}
 		}
 		return is;

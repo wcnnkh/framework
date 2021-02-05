@@ -26,7 +26,7 @@ import scw.logger.SplitLineAppend;
 import scw.util.ClassLoaderProvider;
 import scw.util.DefaultClassLoaderProvider;
 
-public class CommonApplication extends LifecycleAuxiliary implements
+public class DefaultApplication extends LifecycleAuxiliary implements
 		ConfigurableApplication, EventListener<BeanLifeCycleEvent> {
 	private final XmlBeanFactory beanFactory;
 	private final BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer = new DefaultBasicEventDispatcher<ApplicationEvent>(
@@ -34,11 +34,11 @@ public class CommonApplication extends LifecycleAuxiliary implements
 	private volatile Logger logger;
 	private ClassLoaderProvider classLoaderProvider;
 
-	public CommonApplication() {
+	public DefaultApplication() {
 		this(XmlBeanFactory.DEFAULT_CONFIG);
 	}
 
-	public CommonApplication(String xml) {
+	public DefaultApplication(String xml) {
 		beanFactory = new XmlBeanFactory(
 				StringUtils.isEmpty(xml) ? XmlBeanFactory.DEFAULT_CONFIG : xml);
 		beanFactory.setClassLoaderProvider(this);
@@ -88,12 +88,16 @@ public class CommonApplication extends LifecycleAuxiliary implements
 		ApplicationUtils.config(getEnvironment());
 		beanFactory.init();
 	}
+	
+	protected void postProcessApplication(ApplicationPostProcessor processor) throws Throwable{
+		processor.postProcessApplication(this);
+	}
 
 	@Override
 	protected void afterInit() throws Throwable {
 		for (ApplicationPostProcessor initializer : getBeanFactory()
 				.getServiceLoader(ApplicationPostProcessor.class)) {
-			initializer.postProcessApplication(this);
+			postProcessApplication(initializer);
 		}
 		super.afterInit();
 	}

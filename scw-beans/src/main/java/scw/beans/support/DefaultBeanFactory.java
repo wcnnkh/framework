@@ -52,12 +52,13 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 			return DefaultBeanFactory.this.getClassLoader();
 		};
 	};
-	
+
 	private final ContextAop aop = new ContextAop(environment);
 
 	private final DefaultContextLoader contextLoader = new DefaultContextLoader(
 			environment, this);
-	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(this);
+	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(
+			this);
 	private final SingletonBeanRegistry singletonBeanRegistry = new DefaultSingletonBeanRegistry(
 			this);
 	private ClassLoaderProvider classLoaderProvider;
@@ -81,7 +82,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 
 		registerSingleton(Environment.class.getName(), getEnvironment());
 	}
-	
+
 	public ConfigurableAop getAop() {
 		return aop;
 	}
@@ -324,10 +325,10 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	protected void beforeInit() throws Throwable {
 		postProcessBeanFactory(new MethodBeanFactoryPostProcessor());
 		postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
-		
+
 		environment.loadServices(this);
 		aop.loadServices(this);
-		
+
 		for (BeanDefinition definition : getServiceLoader(BeanDefinition.class)) {
 			if (containsDefinition(definition.getId())) {
 				logger.debug("ignore definition {}", definition);
@@ -339,9 +340,12 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {
 			postProcessBeanFactory(processor);
 		}
-		
-		postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
+		super.beforeInit();
+	}
 
+	@Override
+	protected void afterInit() throws Throwable {
+		postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
 		// 处理静态依赖
 		for (Class<?> clazz : getContextClassesLoader()) {
 			for (Ioc ioc : Ioc.forClass(clazz)) {
@@ -349,7 +353,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 				ioc.getInit().process(null, null, this);
 			}
 		}
-		super.beforeInit();
+		super.afterInit();
 	}
 
 	@Override

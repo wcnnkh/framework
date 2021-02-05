@@ -8,7 +8,7 @@ import scw.logger.LoggerUtils;
 import scw.util.concurrent.ListenableFuture;
 
 @SuppressWarnings("unchecked")
-public class MainApplication extends CommonApplication implements Application {
+public class MainApplication extends DefaultApplication implements Application {
 	private final Class<?> mainClass;
 	private final MainArgs mainArgs;
 
