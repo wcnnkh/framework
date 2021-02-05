@@ -3,20 +3,21 @@ package scw.mvc.action;
 import java.lang.reflect.Method;
 
 import scw.beans.BeanFactory;
+import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeanLifeCycleEvent;
 import scw.beans.BeanLifeCycleEvent.Step;
-import scw.boot.ApplicationPostProcessor;
-import scw.boot.ConfigurableApplication;
+import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.context.annotation.Provider;
 import scw.event.EventListener;
 import scw.mvc.annotation.Controller;
 
 @Provider(order=Integer.MAX_VALUE)
-public class ActionManagerPostProcesser implements ApplicationPostProcessor, EventListener<BeanLifeCycleEvent>{
+public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanLifeCycleEvent>{
 	
-	public void postProcessApplication(ConfigurableApplication application)
-			throws Throwable {
-		application.getBeanFactory().registerListener(this);
+	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
+			throws BeansException {
+		beanFactory.registerListener(this);
 	}
 
 	public void onEvent(BeanLifeCycleEvent event) {
