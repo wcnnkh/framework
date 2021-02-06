@@ -23,7 +23,7 @@ public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 			throws BeansException {
 		ConnectionFactoryBeanDefinition definition = new ConnectionFactoryBeanDefinition(beanFactory);
 		if(!beanFactory.containsDefinition(definition.getId())){
-			beanFactory.registerDefinition(definition.getId(), definition);
+			beanFactory.registerDefinition(definition);
 			if(!beanFactory.isAlias(ConnectionFactory.class.getName())){
 				beanFactory.registerAlias(definition.getId(), ConnectionFactory.class.getName());
 			}

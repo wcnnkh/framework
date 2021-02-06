@@ -56,4 +56,9 @@ public class XmlValue {
 	public String formatValue(final Environment environment) {
 		return DomUtils.formatNodeValue(environment, node, value);
 	}
+	
+	@Override
+	public String toString() {
+		return DomUtils.getDomBuilder().toString(node);
+	}
 }

@@ -4,9 +4,12 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionFactory;
 import scw.beans.SingletonBeanRegistry;
 import scw.instance.support.DefaultSingletonRegistry;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.util.Result;
 
 public class DefaultSingletonBeanRegistry extends DefaultSingletonRegistry implements SingletonBeanRegistry{
+	private static Logger logger = LoggerFactory.getLogger(DefaultSingletonBeanRegistry.class);
 	private final BeanDefinitionFactory beanDefinitionFactory;
 	
 	public DefaultSingletonBeanRegistry(BeanDefinitionFactory beanDefinitionFactory){
@@ -54,10 +57,13 @@ public class DefaultSingletonBeanRegistry extends DefaultSingletonRegistry imple
 				Object instance = getSingleton(definition.getId());
 				if(instance != null){
 					definition.destroy(instance);
+					if(logger.isTraceEnabled()){
+						logger.trace("destroy {}", definition);
+					}
 				}
 			}
+			super.removeSingleton(name);
 		}
-		super.removeSingleton(name);
 	}
 	
 	public void destroyAll() {

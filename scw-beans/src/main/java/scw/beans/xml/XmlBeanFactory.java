@@ -63,7 +63,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 				Node nRoot = nodeList.item(i);
 				if (TAG_NAME.equalsIgnoreCase(nRoot.getNodeName())) {
 					BeanDefinition beanDefinition = new XmlBeanDefinition(this, nRoot);
-					registerDefinition(beanDefinition.getId(), beanDefinition);
+					registerDefinition(beanDefinition);
 				}
 			}
 		}

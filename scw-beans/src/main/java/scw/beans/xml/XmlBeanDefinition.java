@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -90,6 +91,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 		return StringUtils.isEmpty(name) ? new String[0] : StringUtils.commonSplit(name);
 	}
 
+	private final AtomicBoolean error = new AtomicBoolean();
 	@Override
 	public boolean isInstance() {
 		if (ArrayUtils.isEmpty(xmlParameterFactory.getXmlBeanParameters())) {
@@ -100,6 +102,10 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 			if (xmlParameterFactory.isAccept(parameterDescriptors)) {
 				return true;
 			}
+		}
+		
+		if(!error.get() && error.compareAndSet(false, true)){
+			logger.error("not found {} accept parameters {}", this, Arrays.toString(xmlParameterFactory.getXmlBeanParameters()));
 		}
 		return false;
 	}

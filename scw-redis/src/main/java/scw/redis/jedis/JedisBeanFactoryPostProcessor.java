@@ -5,10 +5,10 @@ import java.util.Properties;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import scw.beans.BeanDefinition;
-import scw.beans.BeanDefinitionLoader;
-import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.convert.TypeDescriptor;
@@ -17,25 +17,29 @@ import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
 
-@Provider(order = Integer.MIN_VALUE, value = BeanDefinitionLoader.class)
-public class JedisBeanDefinitionLoader implements BeanDefinitionLoader {
+@Provider(order = Integer.MIN_VALUE)
+public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	private static final String HOST_CONFIG_KEY = "redis.host";
 	private static final String CONFIG_KEY = "redis.configuration";
 	private static final String DEFAULT_CONFIG = "/redis/redis.properties";
 	
-	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
-		if (sourceClass == JedisPool.class) {
-			return new JedisPoolBeanDefinition(beanFactory, sourceClass);
-		} else if (sourceClass == JedisPoolConfig.class) {
-			return new JedisPoolConfigBeanDefinition(beanFactory, sourceClass);
+	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
+			throws BeansException {
+		JedisPoolConfigBeanDefinition configBeanDefinition = new JedisPoolConfigBeanDefinition(beanFactory);
+		if(!beanFactory.containsDefinition(configBeanDefinition.getId())){
+			beanFactory.registerDefinition(configBeanDefinition);
 		}
-		return loaderChain.load(beanFactory, sourceClass);
+		
+		BeanDefinition poolDefinition = new JedisPoolBeanDefinition(beanFactory);
+		if(!beanFactory.containsDefinition(poolDefinition.getId())){
+			beanFactory.registerDefinition(poolDefinition);
+		}
 	}
-
+	
 	private static final class JedisPoolBeanDefinition extends DefaultBeanDefinition {
 
-		public JedisPoolBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
-			super(beanFactory, sourceClass);
+		public JedisPoolBeanDefinition(BeanFactory beanFactory) {
+			super(beanFactory, JedisPool.class);
 		}
 		
 		public String getConfigName(){
@@ -81,8 +85,8 @@ public class JedisBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static final class JedisPoolConfigBeanDefinition extends DefaultBeanDefinition {
 
-		public JedisPoolConfigBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
-			super(beanFactory, sourceClass);
+		public JedisPoolConfigBeanDefinition(BeanFactory beanFactory) {
+			super(beanFactory, JedisPoolConfig.class);
 		}
 		public String getConfigName(){
 			return beanFactory.getEnvironment().getValue(CONFIG_KEY, String.class, DEFAULT_CONFIG);

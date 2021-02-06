@@ -8,32 +8,39 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
 import scw.beans.BeanDefinition;
-import scw.beans.BeanDefinitionLoader;
-import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
+import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.io.SerializerUtils;
 import scw.net.InetUtils;
 
 @Provider(order = Integer.MIN_VALUE)
-public class XMemcachedBeanDefinitionLoader implements BeanDefinitionLoader {
+public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
-	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
-		if (sourceClass == MemcachedClientBuilder.class
-				|| sourceClass == XMemcachedClientBuilder.class) {
-			return new MemcachedClientBuilderBeanDefinition(beanFactory, sourceClass);
-		} else if (sourceClass == MemcachedClient.class) {
-			return new MemcachedClientBeanDefinition(beanFactory, sourceClass);
+	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
+			throws BeansException {
+		BeanDefinition clientDefinition = new MemcachedClientBeanDefinition(beanFactory);
+		if(!beanFactory.containsDefinition(clientDefinition.getId())){
+			beanFactory.registerDefinition(clientDefinition);
 		}
-		return loaderChain.load(beanFactory, sourceClass);
+		
+		BeanDefinition builderDefinition = new XMemcachedClientBuilderBeanDefinition(beanFactory);
+		if(!beanFactory.containsDefinition(builderDefinition.getId())){
+			beanFactory.registerDefinition(builderDefinition);
+			
+			if(!beanFactory.containsDefinition(MemcachedClientBuilder.class.getName())){
+				beanFactory.registerAlias(builderDefinition.getId(), MemcachedClientBuilder.class.getName());
+			}
+		}
 	}
 
 	private static final class MemcachedClientBeanDefinition extends DefaultBeanDefinition {
 
-		public MemcachedClientBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
-			super(beanFactory, sourceClass);
+		public MemcachedClientBeanDefinition(BeanFactory beanFactory) {
+			super(beanFactory, MemcachedClient.class);
 		}
 
 		public boolean isInstance() {
@@ -61,10 +68,10 @@ public class XMemcachedBeanDefinitionLoader implements BeanDefinitionLoader {
 		}
 	}
 
-	private static final class MemcachedClientBuilderBeanDefinition extends DefaultBeanDefinition {
+	private static final class XMemcachedClientBuilderBeanDefinition extends DefaultBeanDefinition {
 
-		public MemcachedClientBuilderBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
-			super(beanFactory, sourceClass);
+		public XMemcachedClientBuilderBeanDefinition(BeanFactory beanFactory) {
+			super(beanFactory, XMemcachedClientBuilder.class);
 		}
 
 		public boolean isInstance() {

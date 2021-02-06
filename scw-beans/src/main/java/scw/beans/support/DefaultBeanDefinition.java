@@ -32,6 +32,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldFilter;
+import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.value.factory.PropertyFactory;
 
@@ -289,7 +290,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	}
 	
 	protected String getStringDescribe(){
-		return MapperUtils.getMapper().getFieldValueMap(this).toString();
+		return MapperUtils.getMapper().getFieldValueMap(this, FilterFeature.EXISTING_GETTER_FIELD.getFilter()).toString();
 	}
 	
 	/**

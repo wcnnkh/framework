@@ -111,6 +111,10 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	public final boolean isAlias(String name) {
 		return beanDefinitionRegistry.isAlias(name);
 	}
+	
+	public boolean hasAlias(String name, String alias) {
+		return beanDefinitionRegistry.hasAlias(name, alias);
+	}
 
 	public final String[] getAliases(String name) {
 		return beanDefinitionRegistry.getAliases(name);
@@ -139,6 +143,10 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	public final BeanDefinition registerDefinition(String name,
 			BeanDefinition beanDefinition) {
 		return beanDefinitionRegistry.registerDefinition(name, beanDefinition);
+	}
+	
+	public BeanDefinition registerDefinition(BeanDefinition beanDefinition) {
+		return beanDefinitionRegistry.registerDefinition(beanDefinition);
 	}
 
 	public final void removeAlias(String alias) {

@@ -8,6 +8,16 @@ public interface AliasFactory {
 	 * @return whether the given name is an alias
 	 */
 	boolean isAlias(String name);
+	
+	/**
+	 * Determine whether the given name has the given alias registered.
+	 * 
+	 * @param name
+	 *            the name to check
+	 * @param alias
+	 *            the alias to look for
+	 */
+	boolean hasAlias(String name, String alias);
 
 	/**
 	 * Return the aliases for the given name, if defined.

@@ -16,7 +16,7 @@ public class ServiceBeanFactoryPostProcessor implements BeanFactoryPostProcessor
 			}
 
 			ServiceBeanDefinition bean = new ServiceBeanDefinition(beanFactory, clz);
-			beanFactory.registerDefinition(bean.getId(), bean);
+			beanFactory.registerDefinition(bean);
 		}
 	}
 }

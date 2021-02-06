@@ -170,6 +170,10 @@ public class LazyBeanDefinitionRegsitry extends
 					}
 
 					if (definition != null) {
+						if(logger.isTraceEnabled()){
+							logger.trace("lazy load beanName name [{}] definition {}", name, definition);
+						}
+						
 						definition = registerDefinition(name, definition);
 					}
 				}
