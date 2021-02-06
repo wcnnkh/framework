@@ -1,5 +1,6 @@
 package scw.beans;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -7,8 +8,13 @@ import java.util.List;
 import scw.beans.annotation.AopEnable;
 import scw.beans.annotation.Service;
 import scw.beans.annotation.Singleton;
+import scw.convert.support.EntityConversionService;
+import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.annotation.AnnotationUtils;
+import scw.env.Environment;
 import scw.instance.InstanceUtils;
+import scw.mapper.Field;
+import scw.mapper.FieldFilter;
 
 public final class BeanUtils {
 	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = InstanceUtils
@@ -122,5 +128,23 @@ public final class BeanUtils {
 			classToUse = classToUse.getSuperclass();
 		}
 		return false;
+	}
+	
+	public static EntityConversionService createEntityConversionService(Environment environment){
+		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService(environment);
+		entityConversionService.setStrict(false);
+		entityConversionService.getFieldFilters().add(new FieldFilter() {
+			
+			public boolean accept(Field field) {
+				//如果字段上存在beans下的注解应该忽略此字段
+				for(Annotation annotation: field.getAnnotatedElement().getAnnotations()){
+					if(annotation.annotationType().getName().startsWith("scw.beans.")){
+						return false;
+					}
+				}
+				return true;
+			}
+		});
+		return entityConversionService;
 	}
 }

@@ -32,6 +32,11 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 		this.name = name;
 		this.xmlValue = new XmlValue(value, node);
 	}
+	
+	@Override
+	public String toString() {
+		return "[parameterType=" + parameterType + ", type=" + type + ", name=" + name + ", xmlValue=" + xmlValue + "]";
+	}
 
 	@Override
 	public XmlBeanParameter clone() {

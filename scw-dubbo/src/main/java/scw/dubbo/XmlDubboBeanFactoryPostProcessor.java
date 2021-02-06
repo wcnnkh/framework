@@ -65,8 +65,7 @@ public class XmlDubboBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 							nodeList, null, beanFactory)) {
 				DubboBeanDefinition xmlDubboBean = new DubboBeanDefinition(
 						beanFactory, config.getInterfaceClass(), config);
-				beanFactory.registerDefinition(
-						xmlDubboBean.getId(), xmlDubboBean);
+				beanFactory.registerDefinition(xmlDubboBean);
 			}
 		}
 	}

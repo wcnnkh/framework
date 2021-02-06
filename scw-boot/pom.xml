@@ -12,9 +12,12 @@
 			<groupId>scw</groupId>
 			<artifactId>scw-beans</artifactId>
 		</dependency>
+		
+		<!-- 额外支持的  -->
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-web</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

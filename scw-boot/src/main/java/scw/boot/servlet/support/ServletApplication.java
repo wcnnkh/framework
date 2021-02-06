@@ -3,12 +3,12 @@ package scw.boot.servlet.support;
 import javax.servlet.ServletContext;
 
 import scw.beans.xml.XmlBeanFactory;
-import scw.boot.support.CommonApplication;
+import scw.boot.support.DefaultApplication;
 import scw.context.servlet.ServletContextPropertyFactory;
 import scw.context.servlet.ServletContextResourceLoader;
 import scw.context.support.DirectoryClassesLoader;
 
-public class ServletApplication extends CommonApplication {
+public class ServletApplication extends DefaultApplication {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ServletApplication(ServletContext servletContext) {

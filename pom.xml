@@ -112,12 +112,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-serializer</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-sql-orm</artifactId>
 				<version>1.0.0</version>
 			</dependency>
@@ -244,12 +238,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-integration</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-alibaba</artifactId>
 				<version>1.0.0</version>
 			</dependency>
@@ -355,6 +343,36 @@
 				<artifactId>scw-jmx</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-protobuf</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-kryo</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-fastjson</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-hessian</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-gson</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<!-- 通用的依赖版本定义 -->
 			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
@@ -440,7 +458,6 @@
 	</build>
 	<modules>
 		<module>scw-core</module>
-		<module>scw-integration</module>
 		<module>scw-alibaba</module>
 		<module>scw-kdniao</module>
 		<module>scw-upload</module>
@@ -467,7 +484,6 @@
 		<module>scw-web</module>
 		<module>scw-memcached</module>
 		<module>scw-redis</module>
-		<module>scw-serializer</module>
 		<module>scw-hibernate</module>
 		<module>scw-ibatis</module>
 		<module>scw-druid</module>
@@ -498,5 +514,10 @@
 		<module>scw-amqp</module>
 		<module>scw-rabbitmq</module>
 		<module>scw-retry</module>
+		<module>scw-protobuf</module>
+		<module>scw-kryo</module>
+		<module>scw-fastjson</module>
+		<module>scw-hessian</module>
+		<module>scw-gson</module>
 	</modules>
 </project>

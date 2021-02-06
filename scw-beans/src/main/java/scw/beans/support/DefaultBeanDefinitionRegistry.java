@@ -7,9 +7,12 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionRegistry;
 import scw.core.utils.StringUtils;
 import scw.lang.AlreadyExistsException;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.util.alias.DefaultAliasRegistry;
 
 public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implements BeanDefinitionRegistry{
+	private static Logger logger = LoggerFactory.getLogger(DefaultBeanDefinitionRegistry.class);
 	private volatile Map<String, BeanDefinition> beanDefinitionMap = new HashMap<String, BeanDefinition>();
 	
 	public DefaultBeanDefinitionRegistry(){
@@ -40,40 +43,55 @@ public class DefaultBeanDefinitionRegistry extends DefaultAliasRegistry implemen
 		return getDefinition(clazz.getName());
 	}
 	
+	public BeanDefinition registerDefinition(BeanDefinition beanDefinition) {
+		return registerDefinition(beanDefinition.getId(), beanDefinition);
+	}
+	
+	@Override
+	public void registerAlias(String name, String alias) {
+		super.registerAlias(name, alias);
+		if(logger.isDebugEnabled()){
+			logger.debug("register alias {} name {}", alias, name);
+		}
+	}
 
 	public BeanDefinition registerDefinition(String name,
 			BeanDefinition beanDefinition) {
-		if (!beanDefinition.getId().equals(name) && !beanDefinition.getNames().contains(name)) {
-			registerAlias(beanDefinition.getId(), name);
-		}
-		
-		BeanDefinition definitionToUse = beanDefinition;
-		boolean isNew = false;
-		if (beanDefinition instanceof DefaultBeanDefinition) {
-			DefaultBeanDefinition definition = (DefaultBeanDefinition) beanDefinition;
-			if (definition.isNew()) {
-				isNew = true;
-				definitionToUse = definition.clone();
-			}
-		}
-		
-		boolean exist = beanDefinitionMap.containsKey(definitionToUse.getId());
-		if(isNew && exist){
-			throw new AlreadyExistsException(definitionToUse.toString());
-		}
-		
 		synchronized (beanDefinitionMap) {
-			exist = beanDefinitionMap.containsKey(definitionToUse.getId());
+			if (!beanDefinition.getId().equals(name) && !beanDefinition.getNames().contains(name) && !hasAlias(beanDefinition.getId(), name)) {
+				registerAlias(beanDefinition.getId(), name);
+			}
+			
+			BeanDefinition definitionToUse = beanDefinition;
+			boolean isNew = false;
+			if (beanDefinition instanceof DefaultBeanDefinition) {
+				DefaultBeanDefinition definition = (DefaultBeanDefinition) beanDefinition;
+				if (definition.isNew()) {
+					isNew = true;
+					definitionToUse = definition.clone();
+				}
+			}
+			
+			boolean exist = beanDefinitionMap.containsKey(definitionToUse.getId());
 			if(isNew && exist){
 				throw new AlreadyExistsException(definitionToUse.toString());
 			}
 			
 			beanDefinitionMap.put(definitionToUse.getId(), definitionToUse);
+			if(logger.isDebugEnabled()){
+				logger.debug("register [{}] -> definition: {}", name, definitionToUse);
+			}
+			
 			for(String alias : definitionToUse.getNames()){
 				if(alias.equals(name)){
 					continue;
 				}
-				registerAlias(definitionToUse.getId(), alias);
+				
+				try {
+					registerAlias(definitionToUse.getId(), alias);
+				} catch (IllegalStateException e) {
+					logger.error(e, "register [{}] definition {}", name, definitionToUse);
+				}
 			}
 			return definitionToUse;
 		}

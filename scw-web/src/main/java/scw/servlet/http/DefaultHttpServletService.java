@@ -8,12 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
-import scw.context.annotation.Provider;
 import scw.event.Observable;
 import scw.http.server.DefaultHttpService;
 import scw.servlet.ServletService;
 
-@Provider(order = Integer.MIN_VALUE, value = ServletService.class)
 public class DefaultHttpServletService extends DefaultHttpService implements ServletService {
 	private final Observable<String> charsetName;
 	

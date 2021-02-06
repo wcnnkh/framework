@@ -2,6 +2,7 @@ package scw.core.parameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import scw.util.AbstractIterator;
@@ -70,5 +71,10 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 			}
 		}
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		return declaringClass + Arrays.toString(genericTypes);
 	}
 }

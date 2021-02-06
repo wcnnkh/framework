@@ -21,8 +21,7 @@ public class MethodBeanFactoryPostProcessor implements BeanFactoryPostProcessor 
 
 				BeanDefinition beanDefinition = new MethodBeanDefinition(
 						beanFactory, clz, method);
-				beanFactory.registerDefinition(
-						beanDefinition.getId(), beanDefinition);
+				beanFactory.registerDefinition(beanDefinition);
 			}
 		}
 	}

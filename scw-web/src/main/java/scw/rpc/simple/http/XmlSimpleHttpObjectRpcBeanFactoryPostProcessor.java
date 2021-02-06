@@ -55,7 +55,7 @@ public final class XmlSimpleHttpObjectRpcBeanFactoryPostProcessor implements Bea
 								responseThrowable, address);
 						DefaultBeanDefinition definition = new DefaultBeanDefinition(beanFactory, clz);
 						definition.getMethodInterceptors().addMethodInterceptor(filter);
-						beanFactory.registerDefinition(definition.getId(), definition);
+						beanFactory.registerDefinition(definition);
 					}
 				}
 

@@ -13,7 +13,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-boot</artifactId>
+			<artifactId>scw-beans</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>scw</groupId>

@@ -4,6 +4,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeansException;
@@ -32,8 +33,15 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		return method;
 	}
 
+	private final AtomicBoolean error = new AtomicBoolean();
 	public boolean isInstance() {
-		return isAccept(methodParameterDescriptors);
+		boolean accept = isAccept(methodParameterDescriptors);
+		if(!accept){
+			if(!error.get() && error.compareAndSet(false, true)){
+				logger.error("not found {} accept method {}", this, method);
+			}
+		}
+		return accept;
 	}
 
 	public Object create() throws BeansException {

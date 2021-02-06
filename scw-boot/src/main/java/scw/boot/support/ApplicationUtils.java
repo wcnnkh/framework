@@ -5,6 +5,7 @@ import java.util.Set;
 
 import scw.boot.Application;
 import scw.boot.annotation.BasePackage;
+import scw.core.utils.StringUtils;
 import scw.env.ConfigurableEnvironment;
 import scw.env.Environment;
 import scw.instance.InstanceUtils;
@@ -74,9 +75,8 @@ public final class ApplicationUtils {
 				.getContextClassesLoader()));
 	}
 
-	public static <T extends Application> ListenableFuture<T> run(
-			final T application, String threadName,
-			@Nullable ClassLoader classLoader) {
+	public static <T extends Application> ListenableFuture<T> run(final T application, @Nullable String threadName) {
+		String threadNameToUse = StringUtils.hasText(threadName)? threadName:application.getClass().getSimpleName();
 		Thread shutdown = new Thread(new Runnable() {
 
 			public void run() {
@@ -88,16 +88,14 @@ public final class ApplicationUtils {
 					}
 				}
 			}
-		}, threadName + "-shutdown");
+		}, threadNameToUse + "-shutdown");
 		Runtime.getRuntime().addShutdownHook(shutdown);
 
 		ApplicationRunnable<T> runnable = new ApplicationRunnable<T>(
 				application);
 		Thread run = new Thread(runnable);
-		if (classLoader != null) {
-			run.setContextClassLoader(classLoader);
-		}
-		run.setName(threadName);
+		run.setContextClassLoader(application.getClassLoader());
+		run.setName(threadNameToUse);
 		run.setDaemon(false);
 		run.start();
 		return runnable;

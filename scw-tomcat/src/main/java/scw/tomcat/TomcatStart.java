@@ -25,7 +25,6 @@ import scw.boot.servlet.support.ApplicationServletContainerInitializer;
 import scw.boot.servlet.support.ServletContextUtils;
 import scw.boot.support.ApplicationUtils;
 import scw.context.Destroy;
-import scw.context.annotation.Provider;
 import scw.context.servlet.ServletContextPropertyFactory;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
@@ -41,7 +40,6 @@ import scw.logger.LoggerFactory;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionManager;
 
-@Provider(order = -1)
 public class TomcatStart implements Main, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(TomcatStart.class);
 	private Tomcat tomcat;

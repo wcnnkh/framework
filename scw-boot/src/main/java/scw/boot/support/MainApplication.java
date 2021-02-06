@@ -8,7 +8,7 @@ import scw.logger.LoggerUtils;
 import scw.util.concurrent.ListenableFuture;
 
 @SuppressWarnings("unchecked")
-public class MainApplication extends CommonApplication implements Application {
+public class MainApplication extends DefaultApplication implements Application {
 	private final Class<?> mainClass;
 	private final MainArgs mainArgs;
 
@@ -46,8 +46,7 @@ public class MainApplication extends CommonApplication implements Application {
 
 	public static ListenableFuture<MainApplication> run(Class<?> mainClass,
 			String[] args) {
-		return ApplicationUtils.run(new MainApplication(mainClass, args),
-				mainClass.getSimpleName(), mainClass.getClassLoader());
+		return ApplicationUtils.run(new MainApplication(mainClass, args), mainClass.getSimpleName());
 	}
 
 	public static final ListenableFuture<MainApplication> run(Class<?> mainClass) {

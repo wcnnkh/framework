@@ -95,9 +95,6 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 		}
 
 		if (init.compareAndSet(false, true)) {
-			if(targetClass.getName().contains("com.simingtang.product.service.ProductSkuStockService")){
-				System.out.println(targetClass);
-			}
 			if (serviceLoader == null) {
 				serviceLoader = getServiceLoader(targetClass);
 			}

@@ -62,6 +62,15 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 	public boolean isAlias(String name) {
 		return aliasMap.containsKey(name);
 	}
+	
+	public boolean hasAlias(String name, String alias){
+		Set<String> aliases = aliasMap.get(name);
+		if(aliases == null){
+			return false;
+		}
+		
+		return aliases.contains(alias);
+	}
 
 	public String[] getAliases(String name) {
 		Set<String> names = aliasMap.get(name);

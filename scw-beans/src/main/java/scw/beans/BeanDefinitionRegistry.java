@@ -9,4 +9,5 @@ public interface BeanDefinitionRegistry extends BeanDefinitionFactory,
 	
 	BeanDefinition registerDefinition(String name, BeanDefinition beanDefinition);
 
+	BeanDefinition registerDefinition(BeanDefinition beanDefinition);
 }
