@@ -14,4 +14,6 @@ public @interface ConfigurationProperties {
 	public String value() default "";
 	@AliasFor("value")
 	public String prefix() default "";
+	
+	public boolean debug() default false;
 }

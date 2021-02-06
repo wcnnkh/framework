@@ -15,6 +15,7 @@ import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
 import scw.env.SystemEnvironment;
 import scw.lang.NotSupportedException;
+import scw.logger.Level;
 import scw.util.alias.DefaultAliasRegistry;
 import scw.value.factory.PropertyFactory;
 
@@ -48,6 +49,7 @@ public final class DBUtils {
 		EntityConversionService configure = new PropertyFactoryToEntityConversionService(SystemEnvironment.getInstance());
 		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
 		configure.setStrict(true);
+		configure.setLoggerLevel(Level.INFO);
 		configure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), instance, TypeDescriptor.forObject(instance));
 	}
 	

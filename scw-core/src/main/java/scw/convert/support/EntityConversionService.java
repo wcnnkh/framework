@@ -11,6 +11,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.instance.NoArgsInstanceFactory;
+import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.EditableFieldFilters;
@@ -32,6 +33,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private boolean strict = true;//默认是严格模式
 	private ConversionService conversionService;
 	private NoArgsInstanceFactory instanceFactory;
+	private Level loggerLevel = Level.DEBUG;
 	
 	public NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory;
@@ -39,6 +41,14 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	public void setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
+	}
+	
+	public Level getLoggerLevel() {
+		return loggerLevel;
+	}
+
+	public void setLoggerLevel(Level loggerLevel) {
+		this.loggerLevel = loggerLevel;
 	}
 
 	public EntityConversionService(ConversionService conversionService){
@@ -174,8 +184,8 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target, TypeDescriptor targetType){
 		Object valueToUse = conversionService.convert(value, sourceType.narrow(value),
 				new TypeDescriptor(field.getSetter()));
-		if(logger.isDebugEnabled()){
-			logger.debug("Property {} on target {} set value {}", field.getSetter().getName(), targetType.getType(), valueToUse);
+		if(logger.isLogEnable(loggerLevel)){
+			logger.log(loggerLevel, "Property {} on target {} set value {}", field.getSetter().getName(), targetType.getType(), valueToUse);
 		}
 		field.getSetter().set(target, valueToUse);
 	}

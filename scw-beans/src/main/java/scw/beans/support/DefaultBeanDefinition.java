@@ -1,6 +1,5 @@
 package scw.beans.support;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -23,15 +22,14 @@ import scw.beans.annotation.ConfigurationProperties;
 import scw.beans.ioc.Ioc;
 import scw.context.support.LifecycleAuxiliary;
 import scw.convert.TypeDescriptor;
-import scw.convert.support.PropertyFactoryToEntityConversionService;
+import scw.convert.support.EntityConversionService;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.instance.InstanceException;
 import scw.instance.support.DefaultInstanceDefinition;
+import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mapper.Field;
-import scw.mapper.FieldFilter;
 import scw.mapper.FilterFeature;
 import scw.mapper.MapperUtils;
 import scw.value.factory.PropertyFactory;
@@ -83,25 +81,15 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 
 	protected void configurationProperties(
 			ConfigurationProperties configurationProperties, Object instance) {
-		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService(beanFactory.getEnvironment());
-		entityConversionService.setStrict(false);
+		EntityConversionService entityConversionService = BeanUtils.createEntityConversionService(beanFactory.getEnvironment());
+		if(configurationProperties.debug()){
+			entityConversionService.setLoggerLevel(Level.INFO);
+		}
 		String prefix = configurationProperties.prefix();
 		if (StringUtils.isEmpty(prefix)) {
 			prefix = configurationProperties.value();
 		}
 		entityConversionService.setPrefix(prefix);
-		entityConversionService.getFieldFilters().add(new FieldFilter() {
-			
-			public boolean accept(Field field) {
-				//如果字段上存在beans下的注解应该忽略此字段
-				for(Annotation annotation: field.getAnnotatedElement().getAnnotations()){
-					if(annotation.annotationType().getName().startsWith("scw.beans.")){
-						return false;
-					}
-				}
-				return true;
-			}
-		});
 		entityConversionService.configurationProperties(beanFactory.getEnvironment(), TypeDescriptor.valueOf(PropertyFactory.class),
 				instance, TypeDescriptor.valueOf(getEnvironment()
 						.getUserClass(instance.getClass())));
