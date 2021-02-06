@@ -46,8 +46,7 @@ public class MainApplication extends DefaultApplication implements Application {
 
 	public static ListenableFuture<MainApplication> run(Class<?> mainClass,
 			String[] args) {
-		return ApplicationUtils.run(new MainApplication(mainClass, args),
-				mainClass.getSimpleName(), mainClass.getClassLoader());
+		return ApplicationUtils.run(new MainApplication(mainClass, args), mainClass.getSimpleName());
 	}
 
 	public static final ListenableFuture<MainApplication> run(Class<?> mainClass) {
