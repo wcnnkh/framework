@@ -7,13 +7,15 @@ import java.lang.reflect.Modifier;
 import scw.core.reflect.ReflectionUtils;
 import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
+import scw.util.Accept;
+import scw.util.ConfigurableAccept;
 
 @SuppressWarnings("unchecked")
 public class Copy {
 	static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 	private NoArgsInstanceFactory instanceFactory = InstanceUtils.INSTANCE_FACTORY;
 	private Mapper mapper = MapperUtils.getMapper();
-	private final EditableFieldFilters filters = new EditableFieldFilters();
+	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
 
 	/**
 	 * 如果对象实现了java.lang.Cloneable 接口，是否反射调用clone方法
@@ -66,8 +68,8 @@ public class Copy {
 		return this;
 	}
 
-	public final EditableFieldFilters getFilters() {
-		return filters;
+	public ConfigurableAccept<Field> getFieldAccept() {
+		return fieldAccept;
 	}
 
 	/**
@@ -155,7 +157,7 @@ public class Copy {
 	 * @return
 	 */
 	protected Field getSourceField(Class<?> sourceClass, Fields sourceFields, final Field targetField) {
-		return sourceFields.find(new FieldFilter() {
+		return sourceFields.accept(new Accept<Field>() {
 
 			public boolean accept(Field field) {
 				if (!field.isSupportGetter()) {
@@ -180,7 +182,7 @@ public class Copy {
 				return !(Modifier.isStatic(targetField.getSetter().getModifiers())
 						^ Modifier.isStatic(field.getGetter().getModifiers()));
 			}
-		});
+		}).first();
 	}
 
 	public <T, S> void copy(Class<? extends T> targetClass, T target, Class<? extends S> sourceClass, S source,
@@ -189,8 +191,8 @@ public class Copy {
 			return;
 		}
 
-		Fields sourceFields = mapper.getFields(sourceClass, parentField, filters);
-		for (Field field : mapper.getFields(targetClass, parentField, filters)) {
+		Fields sourceFields = mapper.getFields(sourceClass, parentField).accept(fieldAccept);
+		for (Field field : mapper.getFields(targetClass, parentField).accept(fieldAccept)) {
 			if (!field.isSupportSetter()) {
 				continue;
 			}
@@ -279,7 +281,7 @@ public class Copy {
 
 		Object target = getInstanceFactory().getInstance(sourceClass);
 		while (sourceClass != null && sourceClass != Object.class) {
-			Fields fields = mapper.getFields(sourceClass, false, parentField, filters);
+			Fields fields = mapper.getFields(sourceClass, false, parentField).accept(fieldAccept);
 			for (Field field : fields) {
 				if (!(field.isSupportGetter() && field.isSupportSetter() && field.getGetter().getField() != null
 						&& field.getSetter().getField() != null)) {

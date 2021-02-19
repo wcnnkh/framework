@@ -360,7 +360,7 @@ public class WeiXinPay {
 	 * @return
 	 */
 	public SendredpackResponse sendredpack(SendredpackRequest request) {
-		Map<String, Object> parameter = MapperUtils.getMapper().getFieldValueMap(request);
+		Map<String, Object> parameter = MapperUtils.getMapper().getFields(SendredpackRequest.class).getValueMap(request);
 		WeiXinPayResponse response = invoke(SENDREDPACK, parameter, true);
 		return new SendredpackResponse(response);
 	}
@@ -373,13 +373,13 @@ public class WeiXinPay {
 	 * @return
 	 */
 	public SendredpackResponse sendgroupredpack(SendgroupredpackRequest request) {
-		Map<String, Object> parameter = MapperUtils.getMapper().getFieldValueMap(request);
+		Map<String, Object> parameter = MapperUtils.getMapper().getFields(SendgroupredpackRequest.class).getValueMap(request);
 		WeiXinPayResponse response = invoke(SENDGROUPREDPACK, parameter, true);
 		return new SendredpackResponse(response);
 	}
 
 	public GethbinfoResponse gethbinfo(GethbinfoRequest request) {
-		Map<String, Object> parameter = MapperUtils.getMapper().getFieldValueMap(request);
+		Map<String, Object> parameter = MapperUtils.getMapper().getFields(GethbinfoRequest.class).getValueMap(request);
 		WeiXinPayResponse response = invoke(GETHBINFO, parameter, true);
 		return new GethbinfoResponse(response);
 	}

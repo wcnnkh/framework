@@ -1,4 +1,4 @@
-package scw.mapper.support;
+package scw.mapper;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -6,12 +6,6 @@ import java.util.ListIterator;
 import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.instance.InstanceUtils;
-import scw.mapper.Field;
-import scw.mapper.FieldDescriptor;
-import scw.mapper.Fields;
-import scw.mapper.FilterFeature;
-import scw.mapper.Mapper;
-import scw.mapper.Mapping;
 
 public abstract class AbstractMapping implements Mapping {
 
@@ -19,7 +13,7 @@ public abstract class AbstractMapping implements Mapping {
 		return InstanceUtils.INSTANCE_FACTORY.getInstance(type);
 	}
 	
-	public <T> T mapping(Class<? extends T> entityClass, Fields fields, Mapper mapper) throws Exception {
+	public <T> T mapping(Class<T> entityClass, Fields fields, Mapper mapper) {
 		T entity = newInstance(entityClass);
 		for(Field field : fields){
 			Object value;
@@ -37,7 +31,7 @@ public abstract class AbstractMapping implements Mapping {
 	}
 	
 	public boolean accept(Field field) {
-		return FilterFeature.GETTER_IGNORE_STATIC.getFilter().accept(field);
+		return FieldFeature.GETTER_IGNORE_STATIC.getAccept().accept(field);
 	}
 
 	protected boolean isNesting(FieldDescriptor fieldDescriptor) {

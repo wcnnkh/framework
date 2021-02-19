@@ -46,6 +46,6 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().toString(this);
+		return MapperUtils.getMapper().getFields(getClass()).getValueMap(this).toString();
 	}
 }

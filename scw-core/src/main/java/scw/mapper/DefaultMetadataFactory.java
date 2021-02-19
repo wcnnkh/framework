@@ -4,54 +4,60 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.util.cache.CacheLoader;
 
-public class DefaultFieldLoader implements CacheLoader<Class<?>, FieldMetadata[]> {
-	private final Collection<String> getterMethodPrefix;
-	private final Collection<String> setterMethodPrefix;
+public class DefaultMetadataFactory implements FieldMetadataFactory {
+	private final String[] getterMethodPrefixs;
+	private final String[] setterMethodPrefixs;
 
-	public DefaultFieldLoader(Collection<String> getterMethodPrefix, Collection<String> setterMethodPrefix) {
-		Assert.notEmpty(getterMethodPrefix);
-		Assert.notEmpty(setterMethodPrefix);
-		this.getterMethodPrefix = getterMethodPrefix;
-		this.setterMethodPrefix = setterMethodPrefix;
+	public DefaultMetadataFactory(String[] getterMethodPrefixs,
+			String[] setterMethodPrefixs) {
+		this.getterMethodPrefixs = getterMethodPrefixs == null ? new String[0]
+				: getterMethodPrefixs.clone();
+		this.setterMethodPrefixs = setterMethodPrefixs == null ? new String[0]
+				: setterMethodPrefixs.clone();
 	}
 
-	protected Collection<Getter> getGetters(Class<?> currentClass, Field[] fields, Method[] methods) {
+	protected Collection<Getter> getGetters(Class<?> currentClass,
+			Field[] fields, Method[] methods) {
 		LinkedHashSet<Getter> getters = new LinkedHashSet<Getter>();
 		for (Field field : fields) {
-			if(ReflectionUtils.isSerialVersionUIDField(field)){
+			if (ReflectionUtils.isSerialVersionUIDField(field)) {
 				continue;
 			}
-			
+
 			Method getterMethod = ReflectionUtils.getMethod(currentClass,
 					MapperUtils.getGetterMethodName(field));
-			if (getterMethod != null && Modifier.isStatic(getterMethod.getModifiers())
+			if (getterMethod != null
+					&& Modifier.isStatic(getterMethod.getModifiers())
 					&& !Modifier.isStatic(field.getModifiers())) {
 				// 如果是静态方法但字段是非静态字段， 那么是不成立的
 				getterMethod = null;
 			}
 
-			Getter getter = new DefaultGetter(currentClass, field.getName(), field, getterMethod);
+			Getter getter = new DefaultGetter(currentClass, field.getName(),
+					field, getterMethod);
 			getters.add(getter);
 		}
 
 		for (Method method : methods) {
 			if (ArrayUtils.isEmpty(method.getParameterTypes())) {
-				for (String methodPrefix : getterMethodPrefix) {
+				for (String methodPrefix : getterMethodPrefixs) {
 					if (method.getName().startsWith(methodPrefix)
-							&& method.getName().length() > methodPrefix.length()) {
-						String name = method.getName().substring(methodPrefix.length());
-						Getter getter = new DefaultGetter(currentClass, StringUtils.toLowerCase(name, 0, 1), null,
+							&& method.getName().length() > methodPrefix
+									.length()) {
+						String name = method.getName().substring(
+								methodPrefix.length());
+						Getter getter = new DefaultGetter(currentClass,
+								StringUtils.toLowerCase(name, 0, 1), null,
 								method);
 						if (getters.contains(getter)) {
 							continue;
@@ -64,32 +70,38 @@ public class DefaultFieldLoader implements CacheLoader<Class<?>, FieldMetadata[]
 		return getters;
 	}
 
-	protected Collection<Setter> getSetters(Class<?> currentClass, Field[] fields, Method[] methods) {
+	protected Collection<Setter> getSetters(Class<?> currentClass,
+			Field[] fields, Method[] methods) {
 		LinkedHashSet<Setter> setters = new LinkedHashSet<Setter>();
 		for (Field field : fields) {
-			if(ReflectionUtils.isSerialVersionUIDField(field)){
+			if (ReflectionUtils.isSerialVersionUIDField(field)) {
 				continue;
 			}
-			
+
 			Method setterMethod = ReflectionUtils.getMethod(currentClass,
 					MapperUtils.getSetterMethodName(field), field.getType());
-			if (setterMethod != null && Modifier.isStatic(setterMethod.getModifiers())
+			if (setterMethod != null
+					&& Modifier.isStatic(setterMethod.getModifiers())
 					&& !Modifier.isStatic(field.getModifiers())) {
 				// 如果是静态方法但字段是非静态字段， 那么是不成立的
 				setterMethod = null;
 			}
 
-			Setter setter = new DefaultSetter(currentClass, field.getName(), field, setterMethod);
+			Setter setter = new DefaultSetter(currentClass, field.getName(),
+					field, setterMethod);
 			setters.add(setter);
 		}
 
 		for (Method method : methods) {
 			if (method.getParameterTypes().length == 1) {
-				for (String methodPrefix : setterMethodPrefix) {
+				for (String methodPrefix : setterMethodPrefixs) {
 					if (method.getName().startsWith(methodPrefix)
-							&& method.getName().length() > methodPrefix.length()) {
-						String name = method.getName().substring(methodPrefix.length());
-						Setter setter = new DefaultSetter(currentClass, StringUtils.toLowerCase(name, 0, 1), null,
+							&& method.getName().length() > methodPrefix
+									.length()) {
+						String name = method.getName().substring(
+								methodPrefix.length());
+						Setter setter = new DefaultSetter(currentClass,
+								StringUtils.toLowerCase(name, 0, 1), null,
 								method);
 						if (setters.contains(setter)) {
 							continue;
@@ -102,12 +114,13 @@ public class DefaultFieldLoader implements CacheLoader<Class<?>, FieldMetadata[]
 		return setters;
 	}
 
-	protected <T extends FieldDescriptor> T metadataFindAndRemove(FieldDescriptor fieldMetadata,
-			Collection<T> metadatas) {
+	protected <T extends FieldDescriptor> T metadataFindAndRemove(
+			FieldDescriptor fieldMetadata, Collection<T> metadatas) {
 		Iterator<T> iterator = metadatas.iterator();
 		while (iterator.hasNext()) {
 			T t = iterator.next();
-			if (t.getName().equals(fieldMetadata.getName()) && t.getType().equals(fieldMetadata.getType())) {
+			if (t.getName().equals(fieldMetadata.getName())
+					&& t.getType().equals(fieldMetadata.getType())) {
 				iterator.remove();
 				return t;
 			}
@@ -124,7 +137,8 @@ public class DefaultFieldLoader implements CacheLoader<Class<?>, FieldMetadata[]
 		return null;
 	}
 
-	protected Collection<FieldMetadata> toFieldMetadatas(Collection<Getter> getters, Collection<Setter> setters) {
+	protected Collection<FieldMetadata> toFieldMetadatas(Collection<Getter> getters,
+			Collection<Setter> setters) {
 		List<FieldMetadata> fields = new LinkedList<FieldMetadata>();
 		Iterator<Getter> getterIterator = getters.iterator();
 		Iterator<Setter> setterIterator;
@@ -145,11 +159,12 @@ public class DefaultFieldLoader implements CacheLoader<Class<?>, FieldMetadata[]
 		return fields;
 	}
 
-	public FieldMetadata[] loader(Class<?> clazz) throws Exception {
+	public Collection<FieldMetadata> getFieldMetadatas(Class<?> clazz) {
 		Field[] fields = clazz.getDeclaredFields();
 		Method[] methods = clazz.getDeclaredMethods();
 		Collection<Getter> getters = getGetters(clazz, fields, methods);
 		Collection<Setter> setters = getSetters(clazz, fields, methods);
-		return toFieldMetadatas(getters, setters).toArray(new FieldMetadata[0]);
+		Collection<FieldMetadata> metadatas = toFieldMetadatas(getters, setters);
+		return Collections.unmodifiableCollection(metadatas);
 	}
 }

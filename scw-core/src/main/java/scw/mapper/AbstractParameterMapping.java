@@ -1,11 +1,8 @@
-package scw.mapper.support;
+package scw.mapper;
 
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.RenameParameterDescriptor;
 import scw.core.utils.StringUtils;
-import scw.mapper.Field;
-import scw.mapper.FieldDescriptor;
-import scw.mapper.Setter;
 
 public abstract class AbstractParameterMapping extends AbstractMapping {
 	private String basePrefix;

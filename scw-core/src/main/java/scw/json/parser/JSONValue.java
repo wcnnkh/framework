@@ -10,8 +10,11 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
+import scw.env.SystemEnvironment;
 import scw.json.JSONAware;
 import scw.json.JSONStreamAware;
+import scw.mapper.FieldFeature;
+import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.value.AnyValue;
 import scw.value.Value;
@@ -188,7 +191,9 @@ public class JSONValue {
 			return String.valueOf(value);
 		}
 		
-		return SimpleJSONObject.toJSONString(MapperUtils.getMapper().getFieldValueMap(value));
+		Class<?> userClass = SystemEnvironment.getInstance().getUserClass(value.getClass());
+		Fields fields = MapperUtils.getMapper().getFields(userClass).accept(FieldFeature.IGNORE_STATIC);
+		return SimpleJSONObject.toJSONString(fields.getValueMap(value));
 	}
 
 	/**

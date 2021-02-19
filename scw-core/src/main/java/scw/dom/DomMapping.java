@@ -4,9 +4,9 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
+import scw.mapper.AbstractMapping;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.support.AbstractMapping;
 import scw.util.placeholder.PropertyResolver;
 import scw.value.ValueUtils;
 

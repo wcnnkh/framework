@@ -4,14 +4,20 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-public class DefaultSetter extends AbstractGetterSetter implements Setter{
+public class DefaultSetter extends AbstractFieldDescriptor implements Setter{
 	private static final long serialVersionUID = 1L;
+	private final String name;
 
 	public DefaultSetter(Class<?> declaringClass, String name, Field field,
 			Method method) {
-		super(declaringClass, name, field, method);
+		super(declaringClass, field, method);
+		this.name = name;
 	}
 	
+	public String getName() {
+		return name;
+	}
+
 	public Class<?> getType() {
 		Method method = getMethod();
 		if (method != null) {

@@ -30,7 +30,7 @@ import scw.instance.support.DefaultInstanceDefinition;
 import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mapper.FilterFeature;
+import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 import scw.value.factory.PropertyFactory;
 
@@ -278,7 +278,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	}
 	
 	protected String getStringDescribe(){
-		return MapperUtils.getMapper().getFieldValueMap(this, FilterFeature.EXISTING_GETTER_FIELD.getFilter()).toString();
+		return MapperUtils.getMapper().getFields(getClass()).accept(FieldFeature.EXISTING_GETTER_FIELD).getValueMap(this).toString();
 	}
 	
 	/**

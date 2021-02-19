@@ -14,12 +14,11 @@ import scw.instance.NoArgsInstanceFactory;
 import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mapper.EditableFieldFilters;
 import scw.mapper.Field;
-import scw.mapper.FieldFilter;
 import scw.mapper.Fields;
-import scw.mapper.FilterFeature;
+import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
+import scw.util.ConfigurableAccept;
 import scw.util.alias.AliasRegistry;
 
 public abstract class EntityConversionService extends ConditionalConversionService{
@@ -27,7 +26,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private static final String CONNECTOR = ".";
 	private AliasRegistry aliasRegistry;
 	private boolean ignoreStaticField = true;
-	private final EditableFieldFilters fieldFilters = new EditableFieldFilters();
+	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
 	private String prefix;
 	private String connector;
 	private boolean strict = true;//默认是严格模式
@@ -87,8 +86,8 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		this.prefix = prefix;
 	}
 
-	public EditableFieldFilters getFieldFilters() {
-		return fieldFilters;
+	public ConfigurableAccept<Field> getFieldAccept() {
+		return fieldAccept;
 	}
 
 	public String getConnector() {
@@ -169,14 +168,9 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	protected Fields getFields(Class<?> type){
 		Fields fields;
 		if (isIgnoreStaticField()) {
-			fields = MapperUtils.getMapper().getFields(type,
-					FilterFeature.EXISTING_SETTER_FIELD.getFilter(),
-					FilterFeature.IGNORE_STATIC.getFilter(),
-					(FieldFilter) getFieldFilters());
+			fields = MapperUtils.getMapper().getFields(type).accept(FieldFeature.EXISTING_SETTER_FIELD, FieldFeature.IGNORE_STATIC).accept(fieldAccept);
 		} else {
-			fields = MapperUtils.getMapper().getFields(type,
-					FilterFeature.EXISTING_SETTER_FIELD.getFilter(),
-					(FieldFilter) getFieldFilters());
+			fields = MapperUtils.getMapper().getFields(type).accept(FieldFeature.EXISTING_SETTER_FIELD).accept(fieldAccept);
 		}
 		return fields;
 	}

@@ -3,7 +3,6 @@ package scw.lucene;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -22,10 +21,11 @@ import scw.convert.ConversionService;
 import scw.instance.InstanceUtils;
 import scw.json.JSONUtils;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.FieldFilter;
-import scw.mapper.FilterFeature;
+import scw.mapper.Fields;
+import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 import scw.transaction.TransactionManager;
+import scw.util.Accept;
 import scw.util.Pagination;
 import scw.value.AnyValue;
 import scw.value.StringValue;
@@ -62,8 +62,8 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 
 	protected abstract Field toField(FieldDescriptor fieldDescriptor, Value value);
 
-	private Collection<scw.mapper.Field> getFields(Class<?> clazz) {
-		return MapperUtils.getMapper().getFields(clazz, FilterFeature.GETTER).toSet(new FieldFilter() {
+	private Fields getFields(Class<?> clazz) {
+		return MapperUtils.getMapper().getFields(clazz).accept(FieldFeature.GETTER).accept(new Accept<scw.mapper.Field>() {
 
 			public boolean accept(scw.mapper.Field field) {
 				return field.getGetter().getField() != null;

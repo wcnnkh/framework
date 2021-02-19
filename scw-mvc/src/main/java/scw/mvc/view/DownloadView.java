@@ -1,24 +1,25 @@
 package scw.mvc.view;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
 
 import scw.http.MediaType;
 import scw.http.server.ServerHttpResponse;
 import scw.io.IOUtils;
+import scw.io.Resource;
 import scw.mapper.MapperUtils;
 import scw.mvc.HttpChannel;
+import scw.net.FileMimeTypeUitls;
+import scw.net.MimeType;
 
-public final class DownFileView implements View {
+public final class DownloadView implements View {
 	private String encoding;
-	private File file;
+	private Resource resource;
 
-	public DownFileView(File file) {
-		this.file = file;
+	public DownloadView(Resource resource) {
+		this.resource = resource;
 	}
 
 	public void setEncoding(String encoding) {
@@ -26,21 +27,21 @@ public final class DownFileView implements View {
 	}
 
 	public void render(HttpChannel httpChannel) throws IOException {
-		MediaType mediaType = MediaType.parseMediaType(Files.probeContentType(file.toPath()));
-		if(mediaType.getCharset() == null && encoding != null){
-			mediaType = new MediaType(mediaType, encoding);
+		MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
+		if(mimeType.getCharset() == null && encoding != null){
+			mimeType = new MediaType(mimeType, encoding);
 		}
-		httpChannel.getResponse().setContentType(mediaType);
-		setResponseFileDisposition(file.getName(), httpChannel.getResponse());
+		httpChannel.getResponse().setContentType(mimeType);
+		setResponseFileDisposition(resource.getFilename(), httpChannel.getResponse());
 
-		FileInputStream fis = null;
+		InputStream is = null;
 		OutputStream os = null;
 		try {
 			os = httpChannel.getResponse().getBody();
-			fis = new FileInputStream(file);
-			IOUtils.write(fis, os, 1024);
+			is = resource.getInputStream();
+			IOUtils.write(is, os, 1024);
 		} finally {
-			IOUtils.close(fis, os);
+			IOUtils.close(is, os);
 		}
 	}
 	
@@ -51,6 +52,6 @@ public final class DownFileView implements View {
 	
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().toString(this);
+		return MapperUtils.getMapper().getFields(DownloadView.class).getValueMap(this).toString();
 	}
 }

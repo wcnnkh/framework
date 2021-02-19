@@ -14,7 +14,7 @@ import scw.core.annotation.AnnotationUtils;
 import scw.env.Environment;
 import scw.instance.InstanceUtils;
 import scw.mapper.Field;
-import scw.mapper.FieldFilter;
+import scw.util.Accept;
 
 public final class BeanUtils {
 	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = InstanceUtils
@@ -133,7 +133,7 @@ public final class BeanUtils {
 	public static EntityConversionService createEntityConversionService(Environment environment){
 		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService(environment);
 		entityConversionService.setStrict(false);
-		entityConversionService.getFieldFilters().add(new FieldFilter() {
+		entityConversionService.getFieldAccept().add(new Accept<Field>() {
 			
 			public boolean accept(Field field) {
 				//如果字段上存在beans下的注解应该忽略此字段

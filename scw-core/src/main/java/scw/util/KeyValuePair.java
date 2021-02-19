@@ -70,6 +70,6 @@ public class KeyValuePair<K, V> implements Serializable {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().toString(this);
+		return MapperUtils.getMapper().getFields(KeyValuePair.class).getValueMap(this).toString();
 	}
 }

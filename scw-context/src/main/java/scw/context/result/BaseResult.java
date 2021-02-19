@@ -37,6 +37,6 @@ public class BaseResult implements Serializable {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().toString(this);
+		return MapperUtils.getMapper().getFields(getClass()).getValueMap(this).toString();
 	}
 }

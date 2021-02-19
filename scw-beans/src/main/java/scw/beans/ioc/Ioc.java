@@ -15,7 +15,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
-import scw.mapper.FilterFeature;
+import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 import scw.util.AbstractIterator;
 import scw.util.ConcurrentReferenceHashMap;
@@ -40,7 +40,7 @@ public final class Ioc {
 			destroy.getIocProcessors().add(new NoArgumentMethodIocProcessor(method));
 		}
 
-		for (Field field : MapperUtils.getMapper().getFields(targetClass, false, FilterFeature.SUPPORT_SETTER)) {
+		for (Field field : MapperUtils.getMapper().getFields(targetClass, false).accept(FieldFeature.SUPPORT_SETTER)) {
 			AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
 			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
 			if (autowired != null) {

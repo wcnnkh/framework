@@ -2,7 +2,9 @@ package scw.mapper;
 
 import java.lang.reflect.Modifier;
 
-public enum FilterFeature {
+import scw.util.Accept;
+
+public enum FieldFeature {
 	SUPPORT_GETTER(new SupportGetterFieldFilter()), 
 	SUPPORT_SETTER(new SupportSetterFieldFilter()), 
 	GETTER_PUBLIC(new GetterPublicFieldFilter()),
@@ -29,17 +31,17 @@ public enum FilterFeature {
 
 	EXISTING_SETTER_FIELD(new ExistingFieldFilter(false));
 
-	private final FieldFilter filter;
+	private final Accept<Field> accept;
 
-	private FilterFeature(FieldFilter filter) {
-		this.filter = filter;
+	private FieldFeature(Accept<Field> accept) {
+		this.accept = accept;
 	}
 
-	public FieldFilter getFilter() {
-		return filter;
+	public Accept<Field> getAccept() {
+		return accept;
 	}
 
-	private static final class ExistingFieldFilter implements FieldFilter {
+	private static final class ExistingFieldFilter implements Accept<Field> {
 		private final boolean getter;
 
 		public ExistingFieldFilter(boolean getter) {
@@ -55,14 +57,14 @@ public enum FilterFeature {
 		}
 	}
 
-	private static final class GetterFieldFilter implements FieldFilter {
+	private static final class GetterFieldFilter implements Accept<Field> {
 		public boolean accept(Field field) {
 			return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers())
 					&& Modifier.isPublic(field.getGetter().getModifiers());
 		}
 	}
 
-	private static final class SetterFieldFilter implements FieldFilter {
+	private static final class SetterFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			return field.isSupportSetter() && field.getSetter().getField() != null
@@ -71,7 +73,7 @@ public enum FilterFeature {
 		}
 	}
 
-	private static final class IgnoreStaticFieldFilter implements FieldFilter {
+	private static final class IgnoreStaticFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			if (field.isSupportGetter() && Modifier.isStatic(field.getGetter().getModifiers())) {
@@ -86,56 +88,56 @@ public enum FilterFeature {
 
 	}
 
-	private static final class IgnoreGetterTransientFieldFilter implements FieldFilter {
+	private static final class IgnoreGetterTransientFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			return field.isSupportGetter() && !Modifier.isTransient(field.getGetter().getModifiers());
 		}
 	}
 
-	private static final class IgnoreSetterTransientFieldFilter implements FieldFilter {
+	private static final class IgnoreSetterTransientFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			return field.isSupportSetter() && !Modifier.isTransient(field.getSetter().getModifiers());
 		}
 	}
 
-	private static final class IgnoreGetterStaticFieldFilter implements FieldFilter {
+	private static final class IgnoreGetterStaticFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			return field.isSupportGetter() && !Modifier.isStatic(field.getGetter().getModifiers());
 		}
 	}
 
-	private static final class IgnoreSetterStaticFieldFilter implements FieldFilter {
+	private static final class IgnoreSetterStaticFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			return field.isSupportSetter() && !Modifier.isStatic(field.getSetter().getModifiers());
 		}
 	}
 
-	private static final class SupportGetterFieldFilter implements FieldFilter {
+	private static final class SupportGetterFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			return field.isSupportGetter();
 		}
 	}
 
-	private static final class SupportSetterFieldFilter implements FieldFilter {
+	private static final class SupportSetterFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			return field.isSupportSetter();
 		}
 	}
 
-	private static final class SetterPublicFieldFilter implements FieldFilter {
+	private static final class SetterPublicFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			return field.isSupportSetter() && Modifier.isPublic(field.getSetter().getModifiers());
 		}
 	}
 
-	private static final class GetterPublicFieldFilter implements FieldFilter {
+	private static final class GetterPublicFieldFilter implements Accept<Field> {
 
 		public boolean accept(Field field) {
 			return field.isSupportGetter() && Modifier.isPublic(field.getGetter().getModifiers());

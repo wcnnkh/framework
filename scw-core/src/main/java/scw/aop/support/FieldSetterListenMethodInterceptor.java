@@ -4,15 +4,15 @@ import scw.aop.MethodInterceptor;
 import scw.core.reflect.MethodInvoker;
 import scw.mapper.Copy;
 import scw.mapper.Field;
-import scw.mapper.FilterFeature;
+import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 
 public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl implements MethodInterceptor {
 	private static final long serialVersionUID = 1L;
 
 	private Field getField(Class<?> clazz, String name, Class<?> type) {
-		return MapperUtils.getMapper().getFields(clazz, FilterFeature.SUPPORT_GETTER, FilterFeature.IGNORE_STATIC)
-				.find(name, type);
+		return MapperUtils.getMapper().getFields(clazz)
+				.accept(FieldFeature.SUPPORT_GETTER, FieldFeature.IGNORE_STATIC).find(name, type);
 	}
 
 	private final Object change(MethodInvoker invoker, Object[] args, Field field)

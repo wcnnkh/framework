@@ -609,7 +609,7 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().toString(this);
+		return MapperUtils.getMapper().getFields(EurekaInstanceConfigBean.class).getValueMap(this).toString();
 	}
 
 }
