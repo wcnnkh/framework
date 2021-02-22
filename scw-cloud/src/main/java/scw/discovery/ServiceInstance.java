@@ -15,7 +15,7 @@ public interface ServiceInstance {
 	String getId();
 	
 	/**
-	 * @return The service ID as registered.
+	 * @return The service name as registered.
 	 */
 	String getName();
 	

@@ -21,4 +21,6 @@ public interface Application extends ContextClassesLoaderFactory, Init, Destroy,
 	boolean isInitialized();
 
 	Logger getLogger();
+	
+	long getCreateTime();
 }

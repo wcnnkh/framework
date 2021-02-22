@@ -33,18 +33,24 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 			true);
 	private volatile Logger logger;
 	private ClassLoaderProvider classLoaderProvider;
+	private final long createTime;
 
 	public DefaultApplication() {
 		this(XmlBeanFactory.DEFAULT_CONFIG);
 	}
 
 	public DefaultApplication(String xml) {
+		this.createTime = System.currentTimeMillis();
 		beanFactory = new XmlBeanFactory(
 				StringUtils.isEmpty(xml) ? XmlBeanFactory.DEFAULT_CONFIG : xml);
 		beanFactory.setClassLoaderProvider(this);
 		getBeanFactory().registerSingleton(Application.class.getName(), this);
 		getEnvironment().addPropertyFactory(SystemEnvironment.getInstance());
 		beanFactory.registerListener(this);
+	}
+	
+	public long getCreateTime() {
+		return createTime;
 	}
 	
 	public void setClassLoader(ClassLoader classLoader){
@@ -104,8 +110,8 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 
 	@Override
 	protected void initComplete() throws Throwable {
-		getLogger().info(new SplitLineAppend("Start up complete"));
 		super.initComplete();
+		getLogger().info(new SplitLineAppend("Start up complete in " + (System.currentTimeMillis() - createTime) + "ms"));
 	}
 
 	protected void beforeDestroy() throws Throwable {
