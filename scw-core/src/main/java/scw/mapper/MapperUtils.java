@@ -48,7 +48,7 @@ public class MapperUtils {
 	}
 	
 	public static void setValue(ConversionService conversionService, Object instance, scw.mapper.Field field, Object value){
-		if(field.isSupportSetter()){
+		if(!field.isSupportSetter()){
 			throw new NotSupportedException(field.toString());
 		}
 		
