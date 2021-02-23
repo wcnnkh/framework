@@ -23,7 +23,7 @@ import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.net.InetUtils;
-import scw.net.message.converter.MessageConverterFactory;
+import scw.net.message.converter.MessageConverters;
 import scw.net.uri.UriTemplateHandler;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {
@@ -52,7 +52,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			.getLogger(DefaultHttpClient.class);
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
-	protected final MessageConverterFactory messageConverter = new MessageConverterFactory();
+	protected final MessageConverters messageConverter = new MessageConverters();
 	private final LinkedList<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
 	private ClientHttpRequestFactory clientHttpRequestFactory;
 	private UriTemplateHandler uriTemplateHandler;
@@ -65,7 +65,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		return interceptors;
 	}
 
-	public MessageConverterFactory getMessageConverter() {
+	public MessageConverters getMessageConverter() {
 		return messageConverter;
 	}
 

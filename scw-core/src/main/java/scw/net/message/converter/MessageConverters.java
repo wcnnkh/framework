@@ -14,10 +14,10 @@ import scw.net.MimeTypes;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 
-public class MessageConverterFactory implements
+public class MessageConverters implements
 		MessageConverter {
 	private static Logger logger = LoggerUtils
-			.getLogger(MessageConverterFactory.class);
+			.getLogger(MessageConverters.class);
 	private final TreeSet<MessageConverter> messageConverters = new TreeSet<MessageConverter>(new ComparatorMessageConverter());
 
 	public SortedSet<MessageConverter> getMessageConverters() {

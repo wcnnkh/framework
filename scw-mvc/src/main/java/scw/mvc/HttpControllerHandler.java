@@ -38,7 +38,7 @@ import scw.net.message.Entity;
 import scw.net.message.InputMessage;
 import scw.net.message.Text;
 import scw.net.message.converter.MessageConverter;
-import scw.net.message.converter.MessageConverterFactory;
+import scw.net.message.converter.MessageConverters;
 import scw.util.MultiIterable;
 import scw.web.WebUtils;
 
@@ -46,7 +46,7 @@ import scw.web.WebUtils;
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
-	private final MessageConverterFactory messageConverterFactory = new MessageConverterFactory();
+	private final MessageConverters messageConverterFactory = new MessageConverters();
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
 	protected final BeanFactory beanFactory;
@@ -75,7 +75,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 	}
 
-	public MessageConverterFactory getMessageConverterFactory() {
+	public MessageConverters getMessageConverterFactory() {
 		return messageConverterFactory;
 	}
 

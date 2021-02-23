@@ -11,7 +11,7 @@ import scw.http.client.ClientHttpResponse;
 import scw.lang.NotSupportedException;
 import scw.net.InetUtils;
 import scw.net.message.converter.MessageConverter;
-import scw.net.message.converter.MessageConverterFactory;
+import scw.net.message.converter.MessageConverters;
 
 public class HttpRpcProxyMethodInterceptor implements MethodInterceptor {
 	private final HttpRpcProxyRequestFactory httpRpcProxyRequestFactory;
@@ -21,7 +21,7 @@ public class HttpRpcProxyMethodInterceptor implements MethodInterceptor {
 		this.httpRpcProxyRequestFactory = beanFactory.isInstance(HttpRpcProxyRequestFactory.class)
 				? beanFactory.getInstance(HttpRpcProxyRequestFactory.class)
 				: new RestfulHttpRpcProxyRequestFactory(beanFactory.getEnvironment(), beanFactory.getEnvironment().getCharsetName());
-		MessageConverterFactory messageConverter = new MessageConverterFactory();
+		MessageConverters messageConverter = new MessageConverters();
 		messageConverter.getMessageConverters().add(InetUtils.getMessageConverter());
 		for(MessageConverter converter : beanFactory.getServiceLoader(MessageConverter.class)){
 			messageConverter.getMessageConverters().add(converter);

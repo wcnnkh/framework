@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.w3c.dom.Document;
 
+import scw.convert.ConversionService;
+import scw.convert.TypeDescriptor;
 import scw.core.ResolvableType;
 import scw.core.utils.ClassUtils;
 import scw.dom.DomUtils;
@@ -17,8 +19,10 @@ import scw.value.StringValue;
 import scw.value.Value;
 
 public class XmlMessageConverter extends AbstractMessageConverter<Object> {
-
-	public XmlMessageConverter() {
+	private final ConversionService conversionService;
+	
+	public XmlMessageConverter(ConversionService conversionService) {
+		this.conversionService = conversionService;
 		supportMimeTypes.add(MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML,
 				MediaType.APPLICATION_XHTML_XML, MediaType.APPLICATION_RSS_XML);
 	}
@@ -43,15 +47,7 @@ public class XmlMessageConverter extends AbstractMessageConverter<Object> {
 		}
 
 		Document document = DomUtils.getDomBuilder().parse(text);
-		Map<String, Object> map;
-		String jsonText;
-		try {
-			map = DomUtils.toRecursionMap(document);
-			jsonText = getJsonSupport().toJSONString(map);
-			return getJsonSupport().parseObject(jsonText, type.getType());
-		} catch (Exception e) {
-			throw new MessageConvertException(e);
-		}
+		return conversionService.convert(document, TypeDescriptor.valueOf(Document.class), TypeDescriptor.valueOf(type));
 	}
 
 	@SuppressWarnings("rawtypes")

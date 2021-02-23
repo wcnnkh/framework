@@ -21,21 +21,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
 import scw.instance.InstanceUtils;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
-import scw.net.message.converter.ByteArrayMessageConverter;
-import scw.net.message.converter.HttpFormMessageConveter;
-import scw.net.message.converter.JsonMessageConverter;
+import scw.net.message.converter.DefaultMessageConverters;
 import scw.net.message.converter.MessageConverter;
-import scw.net.message.converter.MessageConverterFactory;
-import scw.net.message.converter.ResourceMessageConverter;
-import scw.net.message.converter.StringMessageConverter;
-import scw.net.message.converter.XmlMessageConverter;
+import scw.net.message.converter.MessageConverters;
 import scw.net.message.multipart.FileItemParser;
-import scw.net.message.multipart.MultipartMessageWriter;
-import scw.net.message.multipart.apache.MultipartMessageConverter;
 import scw.util.Accept;
 
 public final class InetUtils {
@@ -55,24 +49,11 @@ public final class InetUtils {
 			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
 			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
 
-	private static final MessageConverterFactory MESSAGE_CONVERTER = new MessageConverterFactory();
-	
 	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
 			"scw.net.message.multipart.apache.ApacheFileItemParser");
-
+	private static final MessageConverters MESSAGE_CONVERTER = new DefaultMessageConverters(SystemEnvironment.getInstance(), FILE_ITEM_PARSER);
+	
 	static {
-		MESSAGE_CONVERTER.getMessageConverters().add(new JsonMessageConverter());
-		MESSAGE_CONVERTER.getMessageConverters().add(new StringMessageConverter());
-		MESSAGE_CONVERTER.getMessageConverters().add(new ByteArrayMessageConverter());
-		MESSAGE_CONVERTER.getMessageConverters().add(new XmlMessageConverter());
-		MESSAGE_CONVERTER.getMessageConverters().add(new HttpFormMessageConveter());
-		MESSAGE_CONVERTER.getMessageConverters().add(new MultipartMessageWriter());
-		
-		if (FILE_ITEM_PARSER != null) {
-			MESSAGE_CONVERTER.getMessageConverters().add(new MultipartMessageConverter(FILE_ITEM_PARSER));
-		}
-
-		MESSAGE_CONVERTER.getMessageConverters().add(new ResourceMessageConverter());
 		MESSAGE_CONVERTER.getMessageConverters().addAll(InstanceUtils.loadAllService(MessageConverter.class));
 	}
 	
