@@ -13,7 +13,7 @@ import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
 import scw.memcached.Memcached;
 
-@Provider(order=Integer.MIN_VALUE + 100)
+@Provider
 public final class XMemcached implements Memcached {
 	private final MemcachedClient memcachedClient;
 	private final CASOperations casOperations;

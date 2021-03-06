@@ -21,7 +21,7 @@ import scw.locks.context.annotation.LockParameter;
  * @author shuchaowen
  *
  */
-@Provider(order=Integer.MAX_VALUE)
+@Provider
 public final class LockMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private LockFactory lockFactory;
 	

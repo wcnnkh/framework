@@ -35,7 +35,7 @@ import com.netflix.discovery.shared.Applications;
  * @author Spencer Gibb
  * @author Tim Ysewyn
  */
-@Provider(order=Integer.MIN_VALUE)
+@Provider
 public class EurekaDiscoveryClient implements DiscoveryClient {
 
 	private final EurekaClient eurekaClient;

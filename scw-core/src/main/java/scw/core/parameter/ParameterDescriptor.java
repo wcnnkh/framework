@@ -13,4 +13,10 @@ public interface ParameterDescriptor{
 	Class<?> getType();
 
 	Type getGenericType();
+	
+	/**
+	 * 是否可以为空
+	 * @return
+	 */
+	boolean isNullable();
 }

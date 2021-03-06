@@ -81,7 +81,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 
 			Value v;
 			if (ValueUtils.isBaseType(field.getGetter().getType())) {
-				v = new AnyValue(value);
+				v = new AnyValue(value, getConversionService());
 			} else {
 				v = new StringValue(JSONUtils.toJSONString(value));
 			}

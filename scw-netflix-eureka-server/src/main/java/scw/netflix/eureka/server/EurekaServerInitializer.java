@@ -14,7 +14,7 @@ import scw.context.annotation.Provider;
  * @author shuchaowen
  *
  */
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class EurekaServerInitializer implements ServletContextInitialization, Destroy {
 	@Autowired
 	private EurekaServerBootstrap eurekaServerBootstrap;

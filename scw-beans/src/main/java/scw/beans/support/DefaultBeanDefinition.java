@@ -1,7 +1,6 @@
 package scw.beans.support;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -23,6 +22,7 @@ import scw.beans.ioc.Ioc;
 import scw.context.support.LifecycleAuxiliary;
 import scw.convert.TypeDescriptor;
 import scw.convert.support.EntityConversionService;
+import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.instance.InstanceException;
@@ -197,13 +197,13 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	}
 	
 	@Override
-	protected Object createInternal(Class<?> targetClass, Constructor<?> constructor,
-			Object[] params) throws BeansException {
+	protected Object createInternal(Class<?> targetClass,
+			ParameterDescriptors parameterDescriptors, Object[] params) {
 		if (isAopEnable(targetClass, getAnnotatedElement())) {
 			return createProxyInstance(targetClass,
-					constructor.getParameterTypes(), params);
+					parameterDescriptors.getTypes(), params);
 		}
-		return super.createInternal(targetClass, constructor, params);
+		return super.createInternal(targetClass, parameterDescriptors, params);
 	}
 	
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {

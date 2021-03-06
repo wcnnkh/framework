@@ -3,16 +3,16 @@ package scw.util;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import scw.core.Assert;
 
-public class SynchronizedInvocationHandler implements InvocationHandler,
-		Serializable {
+public class Synchronized implements InvocationHandler, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final Object mutex; // Object on which to synchronize
 	private final Object source;
 
-	public SynchronizedInvocationHandler(Object source, Object mutex) {
+	private Synchronized(Object source, Object mutex) {
 		Assert.requiredArgument(source != null, "source");
 		Assert.requiredArgument(mutex != null, "mutex");
 		this.mutex = mutex;
@@ -25,4 +25,17 @@ public class SynchronizedInvocationHandler implements InvocationHandler,
 			return method.invoke(source, args);
 		}
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T proxy(T source, Object mutex) {
+		return (T) proxy(source.getClass(), mutex);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T proxy(Class<T> interfaceClass, T source, Object mutex) {
+		InvocationHandler handler = new Synchronized(source, mutex);
+		return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(),
+				new Class<?>[] { interfaceClass }, handler);
+	}
+	
 }

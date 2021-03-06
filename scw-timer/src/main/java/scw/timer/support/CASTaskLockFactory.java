@@ -8,7 +8,7 @@ import scw.redis.Redis;
 import scw.timer.TaskConfig;
 import scw.timer.TaskLockFactory;
 
-@Provider(order=Integer.MIN_VALUE + 3)
+@Provider
 public class CASTaskLockFactory implements TaskLockFactory {
 	private CASOperations casOperations;
 

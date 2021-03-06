@@ -2,6 +2,7 @@ package scw.mvc.security;
 
 import scw.beans.BeanFactory;
 import scw.context.annotation.Provider;
+import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -15,7 +16,7 @@ import scw.mvc.annotation.IPSecurity;
 import scw.security.ip.IPValidationFailedException;
 import scw.security.ip.IPVerification;
 
-@Provider(order = Integer.MAX_VALUE)
+@Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public final class IPSecurityActionInterceptor implements ActionInterceptor, ActionInterceptorAccept {
 	private static Logger logger = LoggerFactory.getLogger(IPSecurityActionInterceptor.class);
 	private BeanFactory beanFactory;

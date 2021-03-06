@@ -4,6 +4,7 @@ import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
 import scw.complete.Complete;
 import scw.context.annotation.Provider;
+import scw.core.Ordered;
 import scw.core.reflect.MethodInvoker;
 import scw.instance.NoArgsInstanceFactory;
 import scw.lang.NotSupportedException;
@@ -11,7 +12,7 @@ import scw.tcc.annotation.Tcc;
 import scw.transaction.DefaultTransactionLifecycle;
 import scw.transaction.TransactionManager;
 
-@Provider(order = Integer.MAX_VALUE)
+@Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public class TccMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept{
 	private NoArgsInstanceFactory instanceFactory;
 

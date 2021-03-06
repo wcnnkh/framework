@@ -22,7 +22,7 @@ import scw.mapper.Getter;
 import scw.mapper.MapperUtils;
 import scw.util.Accept;
 import scw.util.CollectionFactory;
-import scw.util.XUtils;
+import scw.util.Synchronized;
 
 public class CollectionToMapConversionService implements ConversionService{
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
@@ -186,7 +186,7 @@ public class CollectionToMapConversionService implements ConversionService{
 		protected final TreeSet<PrimaryKeyGetter> primaryKeyGetters = new TreeSet<PrimaryKeyGetter>(this);
 		
 		public SortedSet<PrimaryKeyGetter> getPrimaryKeyGetters(){
-			return XUtils.synchronizedProxy(primaryKeyGetters, this);
+			return Synchronized.proxy(primaryKeyGetters, this);
 		}
 		
 		public PrimaryKeyGetter getPrimaryKeyGetter(TypeDescriptor sourceType){

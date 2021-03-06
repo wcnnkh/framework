@@ -9,7 +9,7 @@ import scw.data.memory.MemoryDataTemplete;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T> {
 	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionFactory.class);
 	private final TemporaryCache temporaryCache;

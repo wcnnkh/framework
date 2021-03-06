@@ -9,7 +9,7 @@ import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.rpc.http.annotation.HttpClient;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public final class HttpRpcBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass,

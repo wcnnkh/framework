@@ -5,7 +5,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 
 import scw.context.annotation.Provider;
 
-@Provider(order = Integer.MIN_VALUE, value = Mybatis.class)
+@Provider
 public class DefaultMybatis implements Mybatis {
 	private final SqlSessionFactory sqlSessionFactory;
 

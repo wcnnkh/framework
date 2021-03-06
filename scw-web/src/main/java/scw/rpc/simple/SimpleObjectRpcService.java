@@ -20,7 +20,7 @@ import scw.rpc.RpcService;
 import scw.rpc.RpcServiceException;
 import scw.security.SignatureUtils;
 
-@Provider(order = Integer.MIN_VALUE, value = RpcService.class)
+@Provider(value = RpcService.class)
 public final class SimpleObjectRpcService implements RpcService, RpcConstants {
 	private static Logger logger = LoggerUtils.getLogger(SimpleObjectRpcService.class);
 	private final String sign;

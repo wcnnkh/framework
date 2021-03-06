@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Set;
 
 import scw.context.ClassesLoader;
+import scw.core.OrderComparator;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.util.comparator.CompareUtils;
 
 public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 		Comparator<Class<S>> {
@@ -92,7 +92,7 @@ public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 	public int compare(Class<S> o1, Class<S> o2) {
 		Provider c1 = o1.getAnnotation(Provider.class);
 		Provider c2 = o2.getAnnotation(Provider.class);
-		return CompareUtils.compare(c1.order(), c2.order(), true);
+		return OrderComparator.INSTANCE.compare(c1.order(), c2.order());
 	}
 
 	public Iterator<Class<S>> iterator() {

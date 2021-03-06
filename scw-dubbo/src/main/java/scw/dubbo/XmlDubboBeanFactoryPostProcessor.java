@@ -18,7 +18,7 @@ import scw.beans.ConfigurableBeanFactory;
 import scw.beans.xml.XmlBeanFactory;
 import scw.context.annotation.Provider;
 
-@Provider(order=Integer.MIN_VALUE)
+@Provider
 public class XmlDubboBeanFactoryPostProcessor implements BeanFactoryPostProcessor{
 
 	@Override

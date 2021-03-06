@@ -109,6 +109,12 @@
 				<artifactId>scw-web</artifactId>
 				<version>1.0.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-rpc</artifactId>
+				<version>1.0.0</version>
+			</dependency>
 
 			<dependency>
 				<groupId>scw</groupId>
@@ -519,5 +525,6 @@
 		<module>scw-fastjson</module>
 		<module>scw-hessian</module>
 		<module>scw-gson</module>
+		<module>scw-rpc</module>
 	</modules>
 </project>

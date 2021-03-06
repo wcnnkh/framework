@@ -6,7 +6,7 @@ import scw.redis.Redis;
 import scw.redis.RedisDataTemplete;
 import scw.redis.locks.RedisLockFactory;
 
-@Provider(order=Integer.MIN_VALUE)
+@Provider
 public class RedisGeneratorService extends DefaultGeneratorService {
 
 	public RedisGeneratorService(Redis redis) {

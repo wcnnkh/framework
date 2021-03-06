@@ -25,7 +25,7 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class EurekaClientBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	@Override

@@ -13,7 +13,7 @@ import scw.context.annotation.Provider;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 
-@Provider(order = Integer.MIN_VALUE, value = BeanDefinitionLoader.class)
+@Provider
 public class MybatisBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {

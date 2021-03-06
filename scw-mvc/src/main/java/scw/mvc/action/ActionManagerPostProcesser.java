@@ -9,10 +9,11 @@ import scw.beans.BeanLifeCycleEvent.Step;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.context.annotation.Provider;
+import scw.core.Ordered;
 import scw.event.EventListener;
 import scw.mvc.annotation.Controller;
 
-@Provider(order=Integer.MAX_VALUE)
+@Provider(order=Ordered.HIGHEST_PRECEDENCE)
 public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanLifeCycleEvent>{
 	
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)

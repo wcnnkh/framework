@@ -13,6 +13,7 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpHeaders;
 import scw.http.HttpRequest;
+import scw.lang.Nullable;
 import scw.net.uri.HierarchicalUriComponents.PathComponent;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
@@ -572,7 +573,7 @@ public class UriComponentsBuilder implements Cloneable {
 	 * @param params the params
 	 * @return this UriComponentsBuilder
 	 */
-	public UriComponentsBuilder queryParams(MultiValueMap<String, String> params) {
+	public UriComponentsBuilder queryParams(@Nullable MultiValueMap<String, String> params) {
 		if (params != null) {
 			this.queryParams.putAll(params);
 		}

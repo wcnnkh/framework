@@ -9,7 +9,7 @@ import scw.locks.LockFactory;
 import scw.redis.Redis;
 import scw.util.XUtils;
 
-@Provider(order = Integer.MIN_VALUE + 1, value = LockFactory.class)
+@Provider(value = LockFactory.class)
 public final class RedisLockFactory extends AbstractLockFactory {
 	private final Redis redis;
 

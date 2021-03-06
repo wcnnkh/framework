@@ -8,7 +8,7 @@ import scw.sql.Sql;
 import scw.timer.TaskConfig;
 import scw.timer.TaskLockFactory;
 
-@Provider(order=Integer.MIN_VALUE + 1)
+@Provider
 public class DBTaskLockFactory implements TaskLockFactory {
 	private DB db;
 

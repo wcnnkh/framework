@@ -5,7 +5,7 @@ import org.hibernate.SessionFactory;
 
 import scw.context.annotation.Provider;
 
-@Provider(order = Integer.MIN_VALUE, value = Hibernate.class)
+@Provider
 public class DefaultHibernate implements Hibernate {
 	private final SessionFactory sessionFactory;
 

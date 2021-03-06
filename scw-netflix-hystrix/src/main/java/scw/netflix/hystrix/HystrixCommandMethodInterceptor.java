@@ -8,7 +8,7 @@ import scw.netflix.hystrix.annotation.Hystrix;
 
 import com.netflix.hystrix.HystrixCommand;
 
-@Provider(order = Integer.MAX_VALUE)
+@Provider
 public class HystrixCommandMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private HystrixCommandFactory hystrixCommandFactory;
 

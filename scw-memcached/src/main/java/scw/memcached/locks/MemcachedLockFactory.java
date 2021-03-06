@@ -9,7 +9,7 @@ import scw.locks.LockFactory;
 import scw.memcached.Memcached;
 import scw.util.XUtils;
 
-@Provider(order = Integer.MIN_VALUE + 1, value = LockFactory.class)
+@Provider(value = LockFactory.class)
 public final class MemcachedLockFactory extends AbstractLockFactory {
 	private final Memcached memcached;
 

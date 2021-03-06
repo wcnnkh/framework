@@ -7,7 +7,7 @@ import scw.beans.BeanFactory;
 import scw.context.annotation.Provider;
 import scw.feign.annotation.FeignClient;
 
-@Provider(order=Integer.MIN_VALUE)
+@Provider
 public class FeignBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {

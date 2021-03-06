@@ -9,7 +9,7 @@ import scw.discovery.DiscoveryClient;
 import scw.discovery.ServiceInstance;
 import scw.env.Environment;
 
-@Provider(order=Integer.MIN_VALUE, value=DiscoveryLoadBalancer.class, assignableValue=false)
+@Provider(value=DiscoveryLoadBalancer.class, assignableValue=false)
 public class RoundRobinDiscoveryLoadBalancer implements DiscoveryLoadBalancer{
 	private DiscoveryClient discoveryClient;
 	private String name;

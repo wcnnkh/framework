@@ -14,7 +14,7 @@ import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.rpc.RpcService;
 
-@Provider(order=Integer.MAX_VALUE)
+@Provider
 public final class HttpServerRpcHandler implements HttpServiceHandler, HttpServiceHandlerControllerDesriptor, HttpServiceHandlerAccept {
 	private final HttpControllerDescriptor controllerDescriptor;
 	private final RpcService rpcService;

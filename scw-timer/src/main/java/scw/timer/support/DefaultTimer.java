@@ -39,6 +39,10 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 	private final ExecutorService executorService;
 	private final TaskFactory taskFactory;
 	private StringMatcher matcher = DefaultStringMatcher.getInstance();
+	
+	public DefaultTimer(ExecutorService executorService, TaskFactory taskFactory){
+		this(new EmptyTaskLockFactory(), executorService, taskFactory);
+	}
 
 	public DefaultTimer(TaskLockFactory taskLockFactory, ExecutorService executorService, TaskFactory taskFactory) {
 		this.taskLockFactory = taskLockFactory;

@@ -854,42 +854,6 @@ public abstract class ReflectionUtils {
 	}
 
 	/**
-	 * 此方法可能返回空
-	 * 
-	 * @param type
-	 * @param params
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructorByParameters(Class<T> type, boolean isPublic, Object... params) {
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
-			Class<?>[] types = constructor.getParameterTypes();
-			if (types.length == params.length) {
-				boolean find = true;
-				for (int i = 0; i < types.length; i++) {
-					Object v = params[i];
-					if (v == null) {
-						continue;
-					}
-
-					if (!ClassUtils.isAssignableValue(types[i], v)) {
-						find = false;
-						break;
-					}
-				}
-
-				if (find) {
-					if (!isPublic && !Modifier.isPublic(constructor.getModifiers())) {
-						constructor.setAccessible(true);
-					}
-					return (Constructor<T>) constructor;
-				}
-			}
-		}
-		return null;
-	}
-
-	/**
 	 * 根据参数名来调用方法
 	 * 
 	 * @param type

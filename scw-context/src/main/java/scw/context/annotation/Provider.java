@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import scw.context.support.DefaultContextClassesLoaderFactory;
+import scw.core.Ordered;
 
 /**
  * 使用类扫描实现Service Provider Interface
@@ -24,5 +25,9 @@ public @interface Provider {
 	// 要排除的
 	public Class<?>[] excludes() default {};
 
-	public int order() default 0;
+	/**
+	 * @see Ordered#DEFAULT_PRECEDENCE
+	 * @return
+	 */
+	public int order() default Ordered.DEFAULT_PRECEDENCE;
 }

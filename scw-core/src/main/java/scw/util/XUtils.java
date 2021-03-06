@@ -1,8 +1,6 @@
 package scw.util;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -198,11 +196,5 @@ public final class XUtils {
 		}
 
 		return defaultName;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> T synchronizedProxy(T source, Object mutex){
-		InvocationHandler handler = new SynchronizedInvocationHandler(source, mutex);
-		return (T) Proxy.newProxyInstance(source.getClass().getClassLoader(), source.getClass().getInterfaces(), handler);
 	}
 }

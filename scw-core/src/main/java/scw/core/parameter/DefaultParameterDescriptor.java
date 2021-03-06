@@ -5,6 +5,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
 import scw.core.annotation.AnnotatedElementUtils;
+import scw.core.annotation.AnnotationUtils;
 import scw.mapper.MapperUtils;
 
 public class DefaultParameterDescriptor implements ParameterDescriptor {
@@ -42,6 +43,10 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 
 	public Type getGenericType() {
 		return genericType;
+	}
+	
+	public boolean isNullable() {
+		return AnnotationUtils.isNullable(annotatedElement, !type.isPrimitive());
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import scw.beans.BeanFactory;
 import scw.context.annotation.Provider;
 import scw.context.result.Result;
+import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.event.Observable;
@@ -42,7 +43,7 @@ import scw.net.message.converter.MessageConverters;
 import scw.util.MultiIterable;
 import scw.web.WebUtils;
 
-@Provider(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
+@Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpServiceHandler.class)
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();

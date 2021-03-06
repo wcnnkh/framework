@@ -5,7 +5,7 @@ import scw.data.generator.SequenceIdGenerator;
 import scw.memcached.Memcached;
 import scw.memcached.locks.MemcachedLockFactory;
 
-@Provider(order=Integer.MIN_VALUE)
+@Provider
 public class MemcachedGeneratorService extends DefaultGeneratorService {
 
 	public MemcachedGeneratorService(Memcached memcached) {

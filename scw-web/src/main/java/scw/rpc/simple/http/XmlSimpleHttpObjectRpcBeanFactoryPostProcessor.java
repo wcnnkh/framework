@@ -18,7 +18,7 @@ import scw.dom.DomUtils;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public final class XmlSimpleHttpObjectRpcBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	private static final String TAG_NAME = "http:reference";
 	

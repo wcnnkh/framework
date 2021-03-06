@@ -39,7 +39,7 @@ public abstract class AbstractFieldDescriptor implements FieldDescriptor {
 	public Method getMethod() {
 		return method == null ? null : method.getMethod();
 	}
-
+	
 	public int getModifiers() {
 		Method method = getMethod();
 		Field field = getField();

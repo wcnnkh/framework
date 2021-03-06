@@ -31,6 +31,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.KeyValuePair;
+import scw.util.Supplier;
 
 /**
  * General utility methods for working with annotations, handling
@@ -2730,16 +2731,19 @@ public abstract class AnnotationUtils {
 		return ignore.value();
 	}
 	
-	/**
-	 * 是否可以为空
-	 * 
-	 * @param annotationFactory
-	 * @param defaultValue
-	 * @return
-	 */
 	public static boolean isNullable(AnnotatedElement annotatedElement, boolean defaultValue) {
 		Nullable nullable = annotatedElement.getAnnotation(Nullable.class);
 		return nullable == null ? defaultValue : nullable.value();
+	}
+	
+	public static Supplier<Boolean> isNullable(final AnnotatedElement annotatedElement, final Supplier<Boolean> defaultValue){
+		return new Supplier<Boolean>() {
+
+			public Boolean get() {
+				Nullable nullable = annotatedElement.getAnnotation(Nullable.class);
+				return nullable == null ? defaultValue.get() : nullable.value();
+			}
+		};
 	}
 
 	/**

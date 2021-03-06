@@ -26,6 +26,10 @@ public class ParameterDescriptorWrapper implements ParameterDescriptor {
 		return parameterDescriptor.getGenericType();
 	}
 	
+	public boolean isNullable() {
+		return parameterDescriptor.isNullable();
+	}
+	
 	@Override
 	public String toString() {
 		return parameterDescriptor.toString();

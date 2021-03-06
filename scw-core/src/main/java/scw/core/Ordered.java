@@ -28,6 +28,8 @@ public interface Ordered {
 	 * @see java.lang.Integer#MIN_VALUE
 	 */
 	int HIGHEST_PRECEDENCE = Integer.MIN_VALUE;
+	
+	int DEFAULT_PRECEDENCE = 0;
 
 	/**
 	 * Useful constant for the lowest precedence value.

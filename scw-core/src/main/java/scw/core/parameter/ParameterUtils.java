@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
 
-import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
@@ -90,14 +89,6 @@ public final class ParameterUtils {
 		return getParameterNameDiscoverer().getParameterNames(constructor);
 	}
 
-	public static boolean isNullAble(ParameterDescriptor parameterConfig) {
-		if (parameterConfig.getType().isPrimitive()) {
-			return false;
-		}
-
-		return AnnotationUtils.isNullable(parameterConfig.getAnnotatedElement(), true);
-	}
-
 	public static LinkedHashMap<String, Object> getParameterMap(ParameterDescriptor[] parameterDescriptors,
 			Object[] args) {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(parameterDescriptors.length);
@@ -132,8 +123,7 @@ public final class ParameterUtils {
 		return parameterDescriptor.getName();
 	}
 
-	public static boolean isAssignableValue(ParameterDescriptors parameterDescriptors, Object[] params,
-			boolean ignoreNull) {
+	public static boolean isAssignableValue(ParameterDescriptors parameterDescriptors, Object[] params) {
 		// 异或运算，如果两个不同则结果为1
 		if (parameterDescriptors.size() == 0 ^ ArrayUtils.isEmpty(params)) {
 			return false;
@@ -146,7 +136,7 @@ public final class ParameterUtils {
 		int index = 0;
 		for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
 			Object value = params[index++];
-			if (value == null && !ignoreNull) {
+			if (value == null && !parameterDescriptor.isNullable()) {
 				return false;
 			}
 

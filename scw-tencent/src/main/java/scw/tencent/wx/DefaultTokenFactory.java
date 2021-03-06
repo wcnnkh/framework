@@ -7,7 +7,7 @@ import scw.core.parameter.annotation.ParameterName;
 import scw.oauth2.AccessToken;
 import scw.security.Token;
 
-@Provider(order=Integer.MIN_VALUE)
+@Provider
 public class DefaultTokenFactory implements TokenFactory{
 	private final String appId;
 	private final String appSecret;

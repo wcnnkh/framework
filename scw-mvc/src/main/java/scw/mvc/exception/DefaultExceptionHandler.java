@@ -17,7 +17,7 @@ import scw.security.authority.AuthorizationFailureException;
  * @author shuchaowen
  *
  */
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public final class DefaultExceptionHandler implements ExceptionHandler {
 	private ResultFactory resultFactory;
 

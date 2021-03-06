@@ -17,7 +17,7 @@ import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	private static final String HOST_CONFIG_KEY = "redis.host";
 	private static final String CONFIG_KEY = "redis.configuration";

@@ -19,7 +19,7 @@ import scw.netflix.eureka.EurekaConstants;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class EurekaServerFilterRegistration implements FilterRegistration {
 	/**
 	 * List of packages containing Jersey resources required by the Eureka

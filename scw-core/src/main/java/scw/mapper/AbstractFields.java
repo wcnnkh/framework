@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.util.Accept;
@@ -156,8 +155,8 @@ public abstract class AbstractFields implements Fields {
 			if (!field.isSupportGetter() || field.getGetter().getField() == null) {
 				continue;
 			}
-
-			if (AnnotationUtils.isNullable(field.getGetter().getAnnotatedElement(), false)) {
+			
+			if(field.getSetter().isNullable()){
 				continue;
 			}
 

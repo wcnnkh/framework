@@ -23,7 +23,7 @@ import scw.security.authority.http.DefaultHttpAuthorityManager;
 import scw.security.authority.http.HttpAuthority;
 import scw.util.Base64;
 
-@Provider(order = Integer.MIN_VALUE, value = HttpActionAuthorityManager.class)
+@Provider(value = HttpActionAuthorityManager.class)
 public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority>
 		implements HttpActionAuthorityManager {
 

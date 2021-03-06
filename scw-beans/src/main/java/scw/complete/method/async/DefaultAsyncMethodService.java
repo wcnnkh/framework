@@ -8,7 +8,7 @@ import scw.context.annotation.Provider;
 import scw.transaction.DefaultTransactionLifecycle;
 import scw.transaction.TransactionManager;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class DefaultAsyncMethodService implements AsyncMethodService {
 	private Executor executor;
 	private CompleteService completeService;
