@@ -10,6 +10,7 @@ import scw.codec.EncodeException;
  *
  */
 public class ByteHexCodec extends AbstractCodec<byte[], String> {
+	public static final ByteHexCodec DEFAULT = new ByteHexCodec();
 
 	public String encode(byte[] source) throws EncodeException {
 		StringBuilder sign = new StringBuilder();

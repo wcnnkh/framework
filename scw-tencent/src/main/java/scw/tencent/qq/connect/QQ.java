@@ -3,6 +3,7 @@ package scw.tencent.qq.connect;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.codec.support.URLCodec;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpResponseEntity;
@@ -59,7 +60,7 @@ public class QQ {
 			sb.append("&oauth_consumer_key=").append(appId);
 			sb.append("&openid=").append(request.getOpenid());
 		}
-		return response(HttpUtils.getHttpClient().get(String.class, UriUtils.appendQueryParams(sb.toString(), params)));
+		return response(HttpUtils.getHttpClient().get(String.class, UriUtils.appendQueryParams(sb.toString(), params, URLCodec.UTF_8)));
 	}
 
 	public JsonObject doPost(String url, QQRequest request, Map<String, ?> params, MediaType mediaType) {

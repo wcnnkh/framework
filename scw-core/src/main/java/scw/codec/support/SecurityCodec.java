@@ -9,10 +9,9 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import scw.codec.AbstractCodec;
 import scw.codec.CodecException;
 
-public abstract class SecurityCodec extends AbstractCodec<byte[], byte[]> {
+public abstract class SecurityCodec extends AbstractByteCodec {
 	
 	public static KeyFactory getKeyFactory(String algorithm) {
 		try {

@@ -9,6 +9,9 @@ import javax.net.ssl.SSLSocketFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import scw.codec.support.CharsetCodec;
+import scw.codec.support.MD5;
+import scw.codec.support.URLCodec;
 import scw.convert.TypeDescriptor;
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
@@ -27,7 +30,7 @@ import scw.lang.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.MapperUtils;
-import scw.security.SignatureUtils;
+import scw.net.uri.UriUtils;
 import scw.tencent.wx.WeiXinException;
 import scw.tencent.wx.WeiXinUtils;
 import scw.util.RandomUtils;
@@ -109,7 +112,7 @@ public class WeiXinPay {
 		}
 
 		cloneParams.remove("sign");
-		StringBuilder checkStr = SignatureUtils.formatSortParams(cloneParams);
+		StringBuilder checkStr = new StringBuilder(UriUtils.toQueryString(cloneParams, URLCodec.UTF_8));
 		checkStr.append("&key=").append(apiKey);
 
 		String mySign = toSign(getSignType(cloneParams), checkStr.toString());
@@ -226,7 +229,7 @@ public class WeiXinPay {
 
 	protected String toSign(SignType signType, String str) {
 		if (signType == null || signType == SignType.MD5) {
-			return SignatureUtils.md5(str, charsetName).toUpperCase();
+			return new CharsetCodec(charsetName).to(MD5.DEFAULT).encode(str).toUpperCase();
 		}
 		throw new NotSupportedException("不支持的签名方式:" + signType);
 	}

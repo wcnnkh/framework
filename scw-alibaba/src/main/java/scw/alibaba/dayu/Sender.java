@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.codec.support.CharsetCodec;
+import scw.codec.support.HmacMD5;
+import scw.codec.support.MD5;
 import scw.context.result.DataResult;
 import scw.context.result.ResultFactory;
 import scw.core.Assert;
@@ -17,7 +20,6 @@ import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.security.SignatureUtils;
 
 public class Sender {
 	private static Logger logger = LoggerFactory.getLogger(Sender.class);
@@ -120,9 +122,9 @@ public class Sender {
 		String bytes = null;
 		if (isMd5) {
 			sb.append(appSecret);
-			bytes = SignatureUtils.md5(sb.toString(), "UTF-8");
+			bytes = MD5.DEFAULT.fromEncoder(CharsetCodec.UTF_8).encode(sb.toString());
 		} else {
-			bytes = SignatureUtils.hmacMD5(sb.toString(), appSecret, "UTF-8");
+			bytes = new HmacMD5(CharsetCodec.UTF_8.encode(appSecret)).toHex().fromEncoder(CharsetCodec.UTF_8).encode(sb.toString());
 		}
 
 		return bytes.toUpperCase();

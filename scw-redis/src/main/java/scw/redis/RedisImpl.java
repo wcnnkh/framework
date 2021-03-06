@@ -1,10 +1,10 @@
 package scw.redis;
 
+import scw.codec.Codec;
 import scw.data.AbstractDataTempleteWrapper;
 import scw.data.DataTemplete;
 import scw.data.cas.CASOperations;
 import scw.io.Serializer;
-import scw.util.StringCodec;
 
 public class RedisImpl extends AbstractDataTempleteWrapper implements Redis {
 	private final RedisOperations<byte[], byte[]> binaryOperations;
@@ -14,11 +14,11 @@ public class RedisImpl extends AbstractDataTempleteWrapper implements Redis {
 	private final DataTemplete dataTemplete;
 
 	public RedisImpl(RedisOperations<byte[], byte[]> binaryOperations, RedisOperations<String, String> stringOperations,
-			StringCodec stringCodec, Serializer serializer) {
+			Codec<String, byte[]> codec, Serializer serializer) {
 		this.binaryOperations = binaryOperations;
 		this.stringOperations = stringOperations;
-		this.objectOperations = new ObjectOperations(binaryOperations, serializer, stringCodec);
-		this.casOperations = new RedisCASOperations(objectOperations, serializer, stringCodec);
+		this.objectOperations = new ObjectOperations(binaryOperations, serializer, codec);
+		this.casOperations = new RedisCASOperations(objectOperations, serializer, codec);
 		this.dataTemplete = new RedisDataTemplete(this);
 	}
 

@@ -4,11 +4,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-import scw.codec.AbstractSigner;
 import scw.codec.CodecException;
 import scw.codec.EncodeException;
 
-public class MessageDigestSigner extends AbstractSigner<byte[], byte[]>{
+public class MessageDigestSigner extends AbstractByteSigner{
 	protected final String algorithm;
 	
 	public MessageDigestSigner(String algorithm){
