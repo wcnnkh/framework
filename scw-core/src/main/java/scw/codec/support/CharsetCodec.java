@@ -4,8 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import scw.codec.AbstractCodec;
+import scw.codec.Codec;
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
+import scw.codec.Signer;
 import scw.core.Constants;
 import scw.util.StringOperations;
 
@@ -73,4 +75,23 @@ public class CharsetCodec extends AbstractCodec<String, byte[]> {
 		}
 	}
 
+	public Signer<String, String> toMD5(){
+		return to(MD5.DEFAULT);
+	}
+	
+	public Signer<String, String> toSHA1(){
+		return to(SHA1.DEFAULT);
+	}
+	
+	public Codec<String, String> toBase64(){
+		return to(Base64.DEFAULT);
+	}
+	
+	public Codec<String, String> toHex(){
+		return to(ByteHexCodec.DEFAULT);
+	}
+	
+	public Codec<String, String> toDES(String secretKey){
+		return to(new DES(encode(secretKey)).toHex());
+	}
 }

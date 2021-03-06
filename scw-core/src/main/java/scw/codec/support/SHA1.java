@@ -10,7 +10,7 @@ import scw.codec.Signer;
 public class SHA1 extends MessageDigestSigner{
 	public static final String ALGORITHM = "SHA-1";
 	
-	public static final Signer<byte[], String> DEFAULT = new SHA1().to(ByteHexCodec.DEFAULT);
+	public static final Signer<byte[], String> DEFAULT = new SHA1().toHex();
 	
 	public SHA1() {
 		super(ALGORITHM);
