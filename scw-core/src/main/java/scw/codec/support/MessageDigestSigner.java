@@ -7,8 +7,9 @@ import java.util.Arrays;
 import scw.codec.CodecException;
 import scw.codec.EncodeException;
 
-public class MessageDigestSigner extends AbstractByteSigner{
+public class MessageDigestSigner extends AbstractToByteSigner<byte[]>{
 	protected final String algorithm;
+	private byte[] secretKey;
 	
 	public MessageDigestSigner(String algorithm){
 		this.algorithm = algorithm;
@@ -18,10 +19,23 @@ public class MessageDigestSigner extends AbstractByteSigner{
 		return getMessageDigest(algorithm);
 	}
 	
+	public MessageDigestSigner wrapperSecretKey(byte[] secretKey){
+		MessageDigestSigner signer = new MessageDigestSigner(algorithm);
+		signer.secretKey = secretKey;
+		return signer;
+	}
+	
 	public byte[] encode(byte[] source) throws EncodeException {
 		MessageDigest messageDigest = getMessageDigest();
 		messageDigest.reset();
-		messageDigest.update(source);
+		
+		if(secretKey == null){
+			messageDigest.update(source);
+		}else{
+			byte[] secretSource = Arrays.copyOf(source, source.length + secretKey.length);
+			System.arraycopy(secretKey, 0, secretSource, source.length, secretKey.length);
+			messageDigest.update(secretSource);
+		}
 		return messageDigest.digest();
 	}
 

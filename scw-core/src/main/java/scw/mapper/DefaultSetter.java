@@ -28,12 +28,12 @@ public class DefaultSetter extends AbstractFieldDescriptor implements Setter{
 		}
 		
 		if(setterParameterAnnotatedElement == null){
-			this.nullable = AnnotationUtils.isNullable(getAnnotatedElement(), !getType().isPrimitive());
+			this.nullable = AnnotationUtils.isNullable(getAnnotatedElement(), false);
 		}else{
 			this.nullable = AnnotationUtils.isNullable(setterParameterAnnotatedElement, new Supplier<Boolean>() {
 				
 				public Boolean get() {
-					return AnnotationUtils.isNullable(getAnnotatedElement(), !getType().isPrimitive());
+					return AnnotationUtils.isNullable(getAnnotatedElement(), false);
 				}
 			}).get();
 		}

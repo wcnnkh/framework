@@ -14,6 +14,16 @@ public class RemoteCallableBeanDefinition extends DefaultBeanDefinition{
 		super(beanFactory, sourceClass);
 		this.callableFactory = callableFactory;
 	}
+	
+	@Override
+	public boolean isInstance() {
+		return true;
+	}
+	
+	@Override
+	public boolean isAopEnable() {
+		return true;
+	}
 
 	@Override
 	public Object create() throws InstanceException {

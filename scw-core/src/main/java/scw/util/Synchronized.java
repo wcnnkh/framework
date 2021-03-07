@@ -25,17 +25,12 @@ public class Synchronized implements InvocationHandler, Serializable {
 			return method.invoke(source, args);
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> T proxy(T source, Object mutex) {
-		return (T) proxy(source.getClass(), mutex);
-	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T proxy(Class<T> interfaceClass, T source, Object mutex) {
-		InvocationHandler handler = new Synchronized(source, mutex);
-		return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(),
-				new Class<?>[] { interfaceClass }, handler);
+	public static <T> T proxy(T source, Object mutex) {
+		return (T) Proxy.newProxyInstance(source.getClass().getClassLoader(),
+				source.getClass().getInterfaces(), new Synchronized(source,
+						mutex));
 	}
-	
+
 }

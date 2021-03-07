@@ -11,7 +11,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import scw.codec.CodecException;
 
-public abstract class SecurityCodec extends AbstractByteCodec {
+public abstract class SecurityCodec extends AbstractToByteCodec<byte[]> {
 	
 	public static KeyFactory getKeyFactory(String algorithm) {
 		try {

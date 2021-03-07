@@ -12,6 +12,8 @@ import scw.util.Validator;
  */
 public interface Signer<D, E> extends Encoder<D, E>, Validator<D, E> {
 	
+	boolean verify(D source, E encode) throws CodecException;
+	
 	<F> Signer<F, E> fromEncoder(Encoder<F, D> encoder);
 	
 	<T> Signer<D, T> to(final Codec<E, T> codec);

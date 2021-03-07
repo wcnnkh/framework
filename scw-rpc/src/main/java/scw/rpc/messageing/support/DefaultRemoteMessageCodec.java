@@ -21,6 +21,11 @@ import scw.rpc.messageing.RemoteMessageCodecException;
 import scw.rpc.messageing.RemoteRequestMessage;
 import scw.rpc.messageing.RemoteResponseMessage;
 
+/**
+ * 加解密码的方式编解码数据
+ * @author shuchaowen
+ *
+ */
 public class DefaultRemoteMessageCodec implements RemoteMessageCodec {
 	private final Serializer serializer;
 	private final Codec<byte[], String> codec;

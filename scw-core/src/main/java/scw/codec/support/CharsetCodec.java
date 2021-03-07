@@ -3,7 +3,6 @@ package scw.codec.support;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import scw.codec.AbstractCodec;
 import scw.codec.Codec;
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
@@ -17,7 +16,7 @@ import scw.util.StringOperations;
  * @author shuchaowen
  *
  */
-public class CharsetCodec extends AbstractCodec<String, byte[]> {
+public class CharsetCodec extends AbstractToByteCodec<String> {
 	public static final CharsetCodec UTF_8 = new CharsetCodec(Constants.UTF_8);
 
 	private final Object charset;
@@ -47,6 +46,10 @@ public class CharsetCodec extends AbstractCodec<String, byte[]> {
 	}
 
 	public byte[] encode(String source) throws EncodeException {
+		if(source == null){
+			return null;
+		}
+		
 		if (charset instanceof String) {
 			try {
 				return StringOperations.INSTANCE.getBytes(source,
@@ -62,6 +65,10 @@ public class CharsetCodec extends AbstractCodec<String, byte[]> {
 	}
 
 	public String decode(byte[] source) throws DecodeException {
+		if(source == null){
+			return null;
+		}
+		
 		if (charset instanceof String) {
 			try {
 				return StringOperations.INSTANCE.createString(source,
@@ -74,7 +81,11 @@ public class CharsetCodec extends AbstractCodec<String, byte[]> {
 					(Charset) charset);
 		}
 	}
-
+	
+	public Codec<String, String> toDES(String secretKey){
+		return to(new DES(encode(secretKey)).toHex());
+	}
+	
 	public Signer<String, String> toMD5(){
 		return to(MD5.DEFAULT);
 	}
@@ -83,15 +94,11 @@ public class CharsetCodec extends AbstractCodec<String, byte[]> {
 		return to(SHA1.DEFAULT);
 	}
 	
-	public Codec<String, String> toBase64(){
-		return to(Base64.DEFAULT);
+	public Signer<String, String> toHmacMD5(String secretKey){
+		return to(new HmacMD5(encode(secretKey)).toHex());
 	}
 	
-	public Codec<String, String> toHex(){
-		return to(ByteHexCodec.DEFAULT);
-	}
-	
-	public Codec<String, String> toDES(String secretKey){
-		return to(new DES(encode(secretKey)).toHex());
+	public Signer<String, String> toHmacSHA1(String secretKey){
+		return to(new HmacSHA1(encode(secretKey)).toHex());
 	}
 }

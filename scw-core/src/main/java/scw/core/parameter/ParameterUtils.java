@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 import scw.core.parameter.annotation.DefaultValue;
@@ -145,5 +146,14 @@ public final class ParameterUtils {
 			}
 		}
 		return true;
+	}
+	
+	public static boolean isisAssignable(ParameterDescriptors parameterDescriptors, Class<?>[] types){
+		// 异或运算，如果两个不同则结果为1
+		if (parameterDescriptors.size() == 0 ^ ArrayUtils.isEmpty(types)) {
+			return false;
+		}
+
+		return ClassUtils.isAssignable(Arrays.asList(parameterDescriptors.getTypes()), Arrays.asList(types));
 	}
 }

@@ -4,8 +4,9 @@ import java.lang.reflect.Method;
 
 import scw.core.reflect.ReflectionUtils;
 import scw.rpc.messageing.BasicRemoteRequestMessage;
+import scw.rpc.messageing.RemoteMethodRequestMessage;
 
-public class DefaultRemoteMethodRequestMessage extends BasicRemoteRequestMessage {
+public class DefaultRemoteMethodRequestMessage extends BasicRemoteRequestMessage implements RemoteMethodRequestMessage{
 	private static final long serialVersionUID = 1L;
 	private final Class<?> targetClass;
 	private final String methodName;

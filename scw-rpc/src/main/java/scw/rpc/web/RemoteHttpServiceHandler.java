@@ -6,6 +6,7 @@ import java.util.concurrent.Callable;
 import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.http.HttpMethod;
+import scw.http.MediaType;
 import scw.http.server.HttpControllerDescriptor;
 import scw.http.server.HttpServiceHandler;
 import scw.http.server.HttpServiceHandlerControllerDesriptor;
@@ -76,6 +77,7 @@ public class RemoteHttpServiceHandler implements HttpServiceHandler,
 			responseMessage.setThrowable(e);
 			logger.error(e, requestMessage.toString());
 		}
+		response.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		messageCodec.encode(response.getBody(), responseMessage);
 	}
 }

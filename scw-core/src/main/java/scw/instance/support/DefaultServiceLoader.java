@@ -2,7 +2,6 @@ package scw.instance.support;
 
 import java.util.Iterator;
 
-import scw.core.Constants;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
 import scw.util.MultiIterator;
@@ -18,13 +17,9 @@ public class DefaultServiceLoader<S> implements ServiceLoader<S> {
 			ValueFactory<String> configFactory, String... defaultNames) {
 		this.configServiceLoader = new ConfigServiceLoader<S>(clazz,
 				configFactory, instanceFactory);
-		this.spiServiceLoader = useSpi(clazz)? new SpiServiceLoader<S>(clazz, instanceFactory):new EmptyServiceLoader<S>();
+		this.spiServiceLoader = new SpiServiceLoader<S>(clazz, instanceFactory);
 		this.staticServiceLoader = new StaticServiceLoader<S>(instanceFactory,
 				defaultNames);
-	}
-	
-	protected boolean useSpi(Class<?> serviceClass){
-		return serviceClass.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME);
 	}
 
 	public void reload() {

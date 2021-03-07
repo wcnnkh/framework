@@ -9,14 +9,11 @@ import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.client.HttpConnection;
 import scw.http.client.HttpConnectionFactory;
-import scw.io.Serializer;
 import scw.lang.NamedThreadLocal;
-import scw.lang.Nullable;
 import scw.net.uri.UriComponentsBuilder;
 import scw.rpc.CallableFactory;
 import scw.rpc.messageing.RemoteMessageCodec;
 import scw.rpc.messageing.RemoteRequestMessage;
-import scw.rpc.messageing.support.DefaultRemoteMessageCodec;
 import scw.rpc.messageing.support.DefaultRemoteMethodRequestMessage;
 import scw.util.MultiValueMap;
 
@@ -43,12 +40,6 @@ public class HttpCallableFactory implements CallableFactory {
 	private final HttpConnectionFactory httpConnectionFactory;
 	private final RemoteMessageCodec messageCodec;
 	private final String url;
-
-	public HttpCallableFactory(HttpConnectionFactory connectionFactory,
-			Serializer serializer, @Nullable String secretKey, String url) {
-		this(connectionFactory, new DefaultRemoteMessageCodec(serializer,
-				secretKey), url);
-	}
 
 	public HttpCallableFactory(HttpConnectionFactory httpConnectionFactory,
 			RemoteMessageCodec messageCodec, String url) {

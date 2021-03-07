@@ -6,11 +6,9 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
-import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ClassUtils;
 import scw.env.Environment;
 import scw.instance.InstanceDefinition;
 import scw.instance.InstanceException;
@@ -38,7 +36,7 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params){
 		Constructor<?> constructor = ReflectionUtils.findConstructor(targetClass, false, parameterDescriptors.getTypes());
 		try {
-			return constructor.newInstance(params);
+			return constructor.newInstance(params == null? new Object[0]:params);
 		} catch (Exception e) {
 			ReflectionUtils.handleReflectionException(e);
 		}
@@ -68,16 +66,7 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 	
 	protected ParameterDescriptors getParameterDescriptors(Class<?>[] parameterTypes){
 		for (ParameterDescriptors parameterDescriptors : this) {
-			boolean find = true;
-			for(int i=0; i<parameterDescriptors.size(); i++){
-				ParameterDescriptor descriptor = parameterDescriptors.getParameterDescriptor(i);
-				if(ClassUtils.isAssignableValue(descriptor.getType(), parameterTypes[i])){
-					continue;
-				}
-				find = false;
-			}
-			
-			if(find){
+			if(ParameterUtils.isisAssignable(parameterDescriptors, parameterTypes)){
 				return parameterDescriptors;
 			}
 		}

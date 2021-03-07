@@ -46,7 +46,7 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 	}
 	
 	public boolean isNullable() {
-		return AnnotationUtils.isNullable(annotatedElement, !type.isPrimitive());
+		return AnnotationUtils.isNullable(annotatedElement, false);
 	}
 
 	@Override
