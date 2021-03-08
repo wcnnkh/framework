@@ -51,7 +51,7 @@ public class DefaultRemoteMessageCodec implements RemoteMessageCodec {
 
 	public DefaultRemoteMessageCodec(@Nullable Serializer serializer,
 			@Nullable byte[] secretKey) {
-		this(serializer, new DES(secretKey).to(new Base64()));
+		this(serializer, new DES(secretKey, secretKey).to(new Base64()));
 	}
 
 	public DefaultRemoteMessageCodec(@Nullable Serializer serializer,

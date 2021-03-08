@@ -1,12 +1,5 @@
 package scw.codec.support;
 
-import java.security.InvalidKeyException;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.DESKeySpec;
-import javax.crypto.spec.IvParameterSpec;
-
-import scw.codec.CodecException;
 
 /**
  * DES
@@ -15,21 +8,13 @@ import scw.codec.CodecException;
  *
  */
 public class DES extends SymmetricCodec {
-	public static final String ALGORITHM = "DES/CBC/PKCS5Padding";
-	public static final String KEY_ALGORITHM = "DES";
+	public static final String ALGORITHM = "DES";
 
-	public DES(byte[] secretKey) {
-		super(ALGORITHM, getSecretKey(secretKey),
-				new IvParameterSpec(secretKey));
+	public DES(byte[] secretKey, byte[] ivKey) {
+		this("PKCS5Padding", secretKey, ivKey);
 	}
-
-	public static SecretKey getSecretKey(byte[] secretKey) {
-		DESKeySpec desKeySpec;
-		try {
-			desKeySpec = new DESKeySpec(secretKey);
-		} catch (InvalidKeyException e) {
-			throw new CodecException(e);
-		}
-		return getSecretKey(KEY_ALGORITHM, desKeySpec);
+	
+	public DES(String padding, byte[] secretKey, byte[] ivKey){
+		super(ALGORITHM, padding, secretKey, ivKey);
 	}
 }

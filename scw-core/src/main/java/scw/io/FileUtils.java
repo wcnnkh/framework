@@ -21,7 +21,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -37,7 +36,6 @@ import org.apache.commons.io.FileExistsException;
 
 import scw.env.SystemEnvironment;
 import scw.lang.AlreadyExistsException;
-import scw.util.Base64;
 
 public final class FileUtils {
 
@@ -2662,33 +2660,6 @@ public final class FileUtils {
 			}
 		}
 		return null;
-	}
-
-	public static String toBase64(String filePath, StringBuilder data) {
-		FileInputStream fis = null;
-		byte[] b = new byte[1024];
-		int len = 0;
-		if (data == null) {
-			data = new StringBuilder();
-		}
-
-		try {
-			fis = new FileInputStream(filePath);
-			while ((len = fis.read(b)) != -1) {
-				data.append(Base64.encode(Arrays.copyOf(b, len)));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (fis != null) {
-				try {
-					fis.close();
-				} catch (Exception e2) {
-					e2.printStackTrace();
-				}
-			}
-		}
-		return data.toString();
 	}
 
 	public static String getFileSuffix(String filePath) {

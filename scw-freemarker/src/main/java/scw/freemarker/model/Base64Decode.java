@@ -5,8 +5,8 @@ import java.util.List;
 
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
+import scw.codec.support.Base64;
 import scw.freemarker.annotation.SharedVariable;
-import scw.util.Base64;
 
 @SharedVariable
 public class Base64Decode implements TemplateMethodModelEx{
@@ -21,7 +21,7 @@ public class Base64Decode implements TemplateMethodModelEx{
 			return null;
 		}
 		
-		byte[] b = Base64.decode(str);
+		byte[] b = Base64.DEFAULT.decode(str);
 		if(b == null){
 			return null;
 		}

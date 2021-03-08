@@ -1,6 +1,5 @@
 package scw.mvc;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -12,8 +11,8 @@ import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.beans.support.ExtendBeanFactory;
+import scw.codec.support.CharsetCodec;
 import scw.context.Destroy;
-import scw.core.Constants;
 import scw.core.ResolvableType;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
@@ -306,13 +305,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			return value;
 		}
 
-		try {
-			return new String(StringUtils.getStringOperations().getBytes(value, Constants.ISO_8859_1),
-					request.getCharacterEncoding());
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return value;
-		}
+		return new CharsetCodec(request.getCharacterEncoding()).decode(CharsetCodec.ISO_8859_1.encode(value));
 	}
 
 	protected String getStringValue(String name) {

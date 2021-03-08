@@ -1,12 +1,11 @@
 package scw.env;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import scw.core.Constants;
+import scw.codec.support.CharsetCodec;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
@@ -182,15 +181,9 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	public String getPrivateId(){
 		String systemOnlyId = getString(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
-			try {
-				systemOnlyId = scw.util.Base64
-						.encode((getClassDirectory() + "&" + getWorkPath())
-								.getBytes(Constants.UTF_8_NAME));
-				if (systemOnlyId.endsWith("==")) {
-					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
-				}
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
+			systemOnlyId = CharsetCodec.UTF_8.toBase64().encode(getClassDirectory() + "&" + getWorkPath());
+			if (systemOnlyId.endsWith("==")) {
+				systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
 			}
 			put(SYSTEM_ID_PROPERTY, systemOnlyId);
 		}

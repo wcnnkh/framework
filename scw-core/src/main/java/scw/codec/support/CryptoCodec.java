@@ -8,6 +8,7 @@ import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.SecretKeySpec;
 
 import scw.codec.CodecException;
 
@@ -38,5 +39,9 @@ public abstract class CryptoCodec extends SecurityCodec {
 		} catch (InvalidKeySpecException e) {
 			throw new CodecException(e);
 		}
+	}
+	
+	public static SecretKey getSecretKey(String algorithm, byte[] secretKey){
+		return new SecretKeySpec(secretKey, algorithm);
 	}
 }

@@ -72,6 +72,29 @@ public class Base64 extends AbstractCodec<byte[], String>{
 	}
 
 	/**
+	 * remove WhiteSpace from MIME containing encoded Base64 data.
+	 * 
+	 * @param data
+	 *            the byte array of base64 data (with WS)
+	 * @return the new length
+	 */
+	private static int removeWhiteSpace(char[] data) {
+		if (data == null) {
+			return 0;
+		}
+
+		// count characters that's not whitespace
+		int newSize = 0;
+		int len = data.length;
+		for (int i = 0; i < len; i++) {
+			if (!isWhiteSpace(data[i])) {
+				data[newSize++] = data[i];
+			}
+		}
+		return newSize;
+	}
+	
+	/**
 	 * Encodes hex octects into Base64
 	 * 
 	 * @param binaryData
@@ -251,28 +274,5 @@ public class Base64 extends AbstractCodec<byte[], String>{
 		}
 
 		return decodedData;
-	}
-
-	/**
-	 * remove WhiteSpace from MIME containing encoded Base64 data.
-	 * 
-	 * @param data
-	 *            the byte array of base64 data (with WS)
-	 * @return the new length
-	 */
-	private static int removeWhiteSpace(char[] data) {
-		if (data == null) {
-			return 0;
-		}
-
-		// count characters that's not whitespace
-		int newSize = 0;
-		int len = data.length;
-		for (int i = 0; i < len; i++) {
-			if (!isWhiteSpace(data[i])) {
-				data[newSize++] = data[i];
-			}
-		}
-		return newSize;
 	}
 }

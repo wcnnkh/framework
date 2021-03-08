@@ -3,7 +3,6 @@ package scw.codec.support;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
-import scw.codec.Codec;
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
 import scw.codec.Signer;
@@ -18,6 +17,10 @@ import scw.util.StringOperations;
  */
 public class CharsetCodec extends AbstractToByteCodec<String> {
 	public static final CharsetCodec UTF_8 = new CharsetCodec(Constants.UTF_8);
+	
+	public static final CharsetCodec ISO_8859_1 = new CharsetCodec(Constants.ISO_8859_1);
+	
+	public static final CharsetCodec US_ASCII = new CharsetCodec(Constants.US_ASCII);
 
 	private final Object charset;
 
@@ -80,10 +83,6 @@ public class CharsetCodec extends AbstractToByteCodec<String> {
 			return StringOperations.INSTANCE.createString(source,
 					(Charset) charset);
 		}
-	}
-	
-	public Codec<String, String> toDES(String secretKey){
-		return to(new DES(encode(secretKey)).toHex());
 	}
 	
 	public Signer<String, String> toMD5(){

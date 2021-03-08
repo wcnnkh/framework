@@ -8,16 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-
-import scw.core.Constants;
-import scw.core.utils.StringUtils;
+import scw.codec.support.AES;
+import scw.codec.support.Base64;
+import scw.codec.support.CharsetCodec;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.tencent.wx.WeiXinUtils;
-import scw.util.Base64;
 
 public final class WeiXinMiniprogramUtils {
 	private WeiXinMiniprogramUtils() {
@@ -155,17 +151,9 @@ public final class WeiXinMiniprogramUtils {
 	}
 
 	public static PhoneNumber decrypt(String encryptedData, String key, String iv) {
-		byte[] dataBytes = Base64.decode(encryptedData);
-		byte[] keyBytes = Base64.decode(key);
-		byte[] ivKeys = Base64.decode(iv);
-		try {
-			Cipher cipher = Cipher.getInstance("AES/CBC/NoPadding");
-			cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(keyBytes, "AES"), new IvParameterSpec(ivKeys));
-			byte[] data = cipher.doFinal(dataBytes);
-			String content = StringUtils.getStringOperations().createString(data, Constants.UTF_8_NAME).trim();
-			return JSONUtils.getJsonSupport().parseObject(content, PhoneNumber.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		byte[] keyBytes = Base64.DEFAULT.decode(key);
+		byte[] ivKeys = Base64.DEFAULT.decode(iv);
+		String content= Base64.DEFAULT.toDecoder(AES.createNoPaddingCodec(keyBytes, ivKeys)).toDecoder(CharsetCodec.UTF_8).decode(encryptedData);
+		return JSONUtils.getJsonSupport().parseObject(content, PhoneNumber.class);
 	}
 }

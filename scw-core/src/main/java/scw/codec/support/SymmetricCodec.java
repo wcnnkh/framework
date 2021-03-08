@@ -8,6 +8,7 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 import scw.codec.CodecException;
 import scw.codec.DecodeException;
@@ -20,9 +21,15 @@ import scw.codec.EncodeException;
  *
  */
 public class SymmetricCodec extends CryptoCodec {
+	public static final String ALGORITHM_PREFIX = "AES/CBC/PKCS7Padding";
+	
 	protected final String algorithm;
 	private final SecretKey secretKey;
 	private final AlgorithmParameterSpec algorithmParameterSpec;
+	
+	public SymmetricCodec(String algorithm, String algorithmPadding, byte[] secretKey, byte[] ivKey){
+		this(algorithm + "/CBC/" + algorithmPadding, getSecretKey(algorithm, secretKey), new IvParameterSpec(ivKey));
+	}
 
 	public SymmetricCodec(String algorithm, SecretKey secretKey,
 			AlgorithmParameterSpec algorithmParameterSpec) {
