@@ -1,9 +1,9 @@
 package scw.http.client;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URI;
 
+import scw.convert.TypeDescriptor;
 import scw.http.HttpMethod;
 import scw.http.HttpRequestEntity;
 import scw.http.HttpResponseEntity;
@@ -25,7 +25,7 @@ public interface HttpClient extends HttpConnectionFactory {
 			Class<T> responseType) throws HttpClientException, IOException;
 
 	<T> HttpResponseEntity<T> execute(ClientHttpRequest request,
-			Type responseType) throws HttpClientException, IOException;
+			TypeDescriptor responseType) throws HttpClientException, IOException;
 
 	<T> HttpResponseEntity<T> execute(URI url, HttpMethod method,
 			ClientHttpRequestFactory requestFactory,
@@ -48,7 +48,7 @@ public interface HttpClient extends HttpConnectionFactory {
 			throws HttpClientException;
 
 	<T> HttpResponseEntity<T> execute(HttpRequestEntity<?> requestEntity,
-			ClientHttpRequestFactory requestFactory, Type responseType)
+			ClientHttpRequestFactory requestFactory, TypeDescriptor responseType)
 			throws HttpClientException;
 
 	<T> HttpResponseEntity<T> execute(HttpRequestEntity<?> requestEntity,
@@ -59,17 +59,17 @@ public interface HttpClient extends HttpConnectionFactory {
 			Class<T> responseType) throws HttpClientException;
 
 	<T> HttpResponseEntity<T> execute(HttpRequestEntity<?> requestEntity,
-			Type responseType) throws HttpClientException;
+			TypeDescriptor responseType) throws HttpClientException;
 
 	<T> HttpResponseEntity<T> get(Class<T> responseType, String url)
 			throws HttpClientException;
 
-	HttpResponseEntity<Object> get(Type responseType, String url)
+	HttpResponseEntity<Object> get(TypeDescriptor responseType, String url)
 			throws HttpClientException;
 
 	<T> HttpResponseEntity<T> post(Class<T> responseType, String url,
 			Object body, MediaType contentType) throws HttpClientException;
 
-	HttpResponseEntity<Object> post(Type responseType, String url, Object body,
+	HttpResponseEntity<Object> post(TypeDescriptor responseType, String url, Object body,
 			MediaType contentType) throws HttpClientException;
 }

@@ -8,12 +8,12 @@ import org.w3c.dom.NodeList;
 
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.annotation.DefaultValue;
-import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
 import scw.env.Environment;
 import scw.env.SystemEnvironment;
 import scw.http.HttpMethod;
+import scw.instance.annotation.PropertyName;
 import scw.instance.annotation.ResourceParameter;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
@@ -25,7 +25,7 @@ public class XmlHttpAuthorityManager extends
 			.getLogger(XmlHttpAuthorityManager.class);
 	private final Environment environment;
 
-	public XmlHttpAuthorityManager(Environment environment, @ParameterName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
+	public XmlHttpAuthorityManager(Environment environment, @PropertyName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
 		this(environment, xml, null);
 	}
 

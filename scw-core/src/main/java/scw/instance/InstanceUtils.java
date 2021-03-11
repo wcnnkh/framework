@@ -5,14 +5,19 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.core.OrderComparator;
-import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
+import scw.instance.annotation.PropertyName;
+import scw.instance.support.ConfigServiceLoader;
 import scw.instance.support.DefaultInstanceFactory;
-import scw.instance.support.DefaultServiceLoader;
+import scw.instance.support.ServiceLoaders;
+import scw.instance.support.SpiServiceLoader;
+import scw.instance.support.StaticServiceLoader;
 import scw.lang.NotSupportedException;
 import scw.util.JavaVersion;
 import scw.value.factory.ValueFactory;
@@ -25,7 +30,7 @@ public final class InstanceUtils {
 	/**
 	 * 默认的实例工厂
 	 */
-	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
+	public static final DefaultInstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
 			SystemEnvironment.getInstance(), true);
 	
 	/**
@@ -41,22 +46,20 @@ public final class InstanceUtils {
 			throw new NotSupportedException(NoArgsInstanceFactory.class.getName());
 		}
 	}
-
-	public static <T> T loadService(Class<? extends T> clazz, String... defaultNames) {
-		return loadService(clazz, INSTANCE_FACTORY, SystemEnvironment.getInstance(), defaultNames);
+	
+	public static <S> S loadService(Class<S> serviceClass, String ...defaultNames){
+		return CollectionUtils.first(getServiceLoader(serviceClass, defaultNames));
 	}
-
-	/**
-	 * 该结果是经过排序的
-	 * @see Ordered
-	 * @param clazz
-	 * @param defaultNames
-	 * @return
-	 */
-	public static <T> List<T> loadAllService(Class<T> clazz, String... defaultNames) {
-		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, INSTANCE_FACTORY, SystemEnvironment.getInstance(),
-				defaultNames);
-		return asList(serviceLoader);
+	
+	public static <S> List<S> loadAllService(Class<S> serviceClass, String... defaultNames) {
+		return asList(getServiceLoader(serviceClass, defaultNames));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String ...defaultNames){
+		ServiceLoader<S> staticServiceLoader = new StaticServiceLoader<S>(INSTANCE_FACTORY, defaultNames);
+		ServiceLoader<S> serviceLoader = INSTANCE_FACTORY.getServiceLoader(serviceClass);
+		return new ServiceLoaders<S>(staticServiceLoader, serviceLoader);
 	}
 	
 	public static <S> List<S> asList(ServiceLoader<S> serviceLoader){
@@ -70,21 +73,12 @@ public final class InstanceUtils {
 		return services;
 	}
 
-	public static <T> T loadService(Class<T> clazz, NoArgsInstanceFactory instanceFactory,
-			ValueFactory<String> configFactory, String... defaultNames) {
-		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, instanceFactory, configFactory, defaultNames);
-		return CollectionUtils.first(serviceLoader);
-	}
-
-	public static <S> ServiceLoader<S> getServiceLoader(Class<S> clazz, NoArgsInstanceFactory instanceFactory,
-			ValueFactory<String> configFactory, String... defaultNames) {
-		return new DefaultServiceLoader<S>(clazz, instanceFactory, configFactory, defaultNames);
-	}
-
-	public static <T> List<T> loadAllService(Class<T> clazz, NoArgsInstanceFactory instanceFactory,
-			ValueFactory<String> configFactory, String... defaultNames) {
-		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, instanceFactory, configFactory, defaultNames);
-		return asList(serviceLoader);
+	@SuppressWarnings("unchecked")
+	public static <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, NoArgsInstanceFactory instanceFactory, ValueFactory<String> configFactory, String... defaultNames) {
+		ServiceLoader<S> staticServiceLoader = new StaticServiceLoader<S>(instanceFactory, defaultNames);
+		ServiceLoader<S> configServiceLoader = new ConfigServiceLoader<S>(serviceClass, configFactory, instanceFactory);
+		ServiceLoader<S> spiServiceLoader = new SpiServiceLoader<S>(serviceClass, instanceFactory);
+		return new ServiceLoaders<S>(staticServiceLoader, configServiceLoader, spiServiceLoader);
 	}
 
 	public static boolean isSupported(Class<?> clazz) {
@@ -93,5 +87,13 @@ public final class InstanceUtils {
 		}
 		
 		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
+	}
+	
+	public static String getPropertyName(ParameterDescriptor parameterDescriptor) {
+		PropertyName parameterName = parameterDescriptor.getAnnotatedElement().getAnnotation(PropertyName.class);
+		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
+			return parameterName.value();
+		}
+		return parameterDescriptor.getName();
 	}
 }

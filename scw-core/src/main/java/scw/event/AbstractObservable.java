@@ -4,15 +4,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.core.Ordered;
 import scw.event.support.DefaultBasicEventDispatcher;
+import scw.util.CacheableSupplier;
+import scw.util.Supplier;
 
 public abstract class AbstractObservable<T> implements Observable<T>,
 		EventListener<ChangeEvent<T>>, Ordered{
 	private BasicEventDispatcher<ChangeEvent<T>> dispatcher = new DefaultBasicEventDispatcher<ChangeEvent<T>>(
 			true);
-	private volatile T value;
+	private CacheableSupplier<T> valueSupplier = new CacheableSupplier<T>(new Supplier<T>() {
+		public T get() {
+			return forceGet();
+		};
+	});
 	private volatile EventRegistration eventRegistration;
 	private volatile AtomicBoolean registered = new AtomicBoolean(false);
-	private volatile AtomicBoolean firstGet = new AtomicBoolean(false);
 	private boolean registerOnlyExists = true;
 	private int order;
 	
@@ -39,15 +44,11 @@ public abstract class AbstractObservable<T> implements Observable<T>,
 	}
 
 	public T get() {
-		if (!firstGet.get()
-				&& firstGet.compareAndSet(false, true)) {
-			set(forceGet());
-		}
-		return value;
+		return valueSupplier.get();
 	}
 
 	protected void set(T value) {
-		this.value = value;
+		this.valueSupplier.setCache(value);
 	}
 
 	public boolean isRegistered() {

@@ -2,7 +2,7 @@ package scw.net.message.converter;
 
 import java.io.IOException;
 
-import scw.core.ResolvableType;
+import scw.convert.TypeDescriptor;
 import scw.json.JSONSupport;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -24,7 +24,7 @@ public final class JsonMessageConverter extends AbstractMessageConverter<Object>
 	}
 
 	@Override
-	protected Object readInternal(ResolvableType type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
 		String text = readTextBody(inputMessage);
 		if (text == null) {
 			return null;
@@ -33,7 +33,7 @@ public final class JsonMessageConverter extends AbstractMessageConverter<Object>
 	}
 
 	@Override
-	protected void writeInternal(ResolvableType type, Object body, MimeType contentType, OutputMessage outputMessage)
+	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		String text = toJsonString(body, getJsonSupport());
 		if (text == null) {

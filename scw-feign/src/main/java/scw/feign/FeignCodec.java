@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.convert.TypeDescriptor;
+import scw.io.FastByteArrayOutputStream;
+import scw.net.MimeType;
+import scw.net.message.converter.MessageConverter;
 import feign.FeignException;
 import feign.RequestTemplate;
 import feign.Response;
@@ -16,10 +20,6 @@ import feign.codec.DecodeException;
 import feign.codec.Decoder;
 import feign.codec.EncodeException;
 import feign.codec.Encoder;
-import scw.core.ResolvableType;
-import scw.io.FastByteArrayOutputStream;
-import scw.net.MimeType;
-import scw.net.message.converter.MessageConverter;
 
 public class FeignCodec implements Encoder, Decoder {
 	private MessageConverter messageConverter;
@@ -30,11 +30,7 @@ public class FeignCodec implements Encoder, Decoder {
 
 	public Object decode(Response response, Type type) throws IOException, DecodeException, FeignException {
 		FeignInputMessage inputMessage = new FeignInputMessage(response);
-		ResolvableType resolvableType = ResolvableType.forType(type);
-		if (messageConverter.canRead(resolvableType, inputMessage.getContentType())) {
-			return messageConverter.read(resolvableType, inputMessage);
-		}
-		throw new DecodeException(response.status(), "not support decode type:" + type, response.request());
+		return messageConverter.read(TypeDescriptor.valueOf(type), inputMessage);
 	}
 
 	public void encode(Object body, Type bodyType, RequestTemplate template) throws EncodeException {

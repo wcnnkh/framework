@@ -26,7 +26,7 @@ public class DomMapping extends AbstractMapping {
 
 	@Override
 	protected Object getValue(Field field) {
-		String name = this.getDisplayName(field.getSetter());
+		String name = field.getSetter().getName();
 		Node node = nodeMap.get(name);
 		if (node == null) {
 			return null;

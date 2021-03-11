@@ -7,8 +7,6 @@ import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +49,7 @@ public final class InetUtils {
 
 	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
 			"scw.net.message.multipart.apache.ApacheFileItemParser");
-	private static final MessageConverters MESSAGE_CONVERTER = new DefaultMessageConverters(SystemEnvironment.getInstance(), FILE_ITEM_PARSER);
+	private static final MessageConverters MESSAGE_CONVERTER = new DefaultMessageConverters(SystemEnvironment.getInstance());
 	
 	static {
 		MESSAGE_CONVERTER.getMessageConverters().addAll(InstanceUtils.loadAllService(MessageConverter.class));
@@ -83,14 +81,6 @@ public final class InetUtils {
 			addresses.add(new InetSocketAddress(h, port));
 		}
 		return addresses;
-	}
-
-	public static URI toURI(String uri) {
-		try {
-			return new URI(uri);
-		} catch (URISyntaxException e) {
-			throw new IllegalStateException("Failed to URI", e);
-		}
 	}
 
 	public static void writeHeader(Message inputMessage, OutputMessage outputMessage) throws IOException {

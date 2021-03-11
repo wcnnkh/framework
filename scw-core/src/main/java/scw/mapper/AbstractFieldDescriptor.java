@@ -5,7 +5,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.MultiAnnotatedElement;
+import scw.core.parameter.annotation.DefaultValue;
 import scw.core.reflect.FieldHolder;
 import scw.core.reflect.MethodHolder;
 import scw.core.reflect.ReflectionUtils;
@@ -13,6 +15,8 @@ import scw.core.reflect.SerializableField;
 import scw.core.reflect.SerializableMethod;
 import scw.lang.NestedExceptionUtils;
 import scw.lang.NotSupportedException;
+import scw.value.StringValue;
+import scw.value.Value;
 
 public abstract class AbstractFieldDescriptor implements FieldDescriptor {
 	private static final long serialVersionUID = 1L;
@@ -38,6 +42,11 @@ public abstract class AbstractFieldDescriptor implements FieldDescriptor {
 
 	public Method getMethod() {
 		return method == null ? null : method.getMethod();
+	}
+	
+	public Value getDefaultValue() {
+		DefaultValue defaultValue = AnnotationUtils.getAnnotation(DefaultValue.class, annotatedElement);
+		return defaultValue == null? null:new StringValue(defaultValue.value());
 	}
 	
 	public int getModifiers() {

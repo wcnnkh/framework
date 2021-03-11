@@ -3,9 +3,9 @@ package scw.sql.orm.support.generation;
 import scw.sql.orm.Column;
 import scw.sql.orm.EntityOperations;
 import scw.sql.orm.enums.OperationType;
-import scw.util.attribute.DefaultAttributes;
+import scw.util.attribute.support.SimpleAttributes;
 
-public final class GeneratorContext extends DefaultAttributes<Object, Object> {
+public final class GeneratorContext extends SimpleAttributes<Object, Object> {
 	private Column column;
 	private final EntityOperations entityOperations;
 	private final OperationType operationType;

@@ -17,9 +17,6 @@ import scw.core.ResolvableType;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
-import scw.core.parameter.ParameterUtils;
-import scw.core.parameter.RenameParameterDescriptor;
-import scw.core.parameter.annotation.ParameterName;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -157,7 +154,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 	}
 
 	protected Object getParameterInternal(ParameterDescriptor parameterDescriptor) {
-		Value defaultValue = ParameterUtils.getDefaultValue(parameterDescriptor);
+		Value defaultValue = parameterDescriptor.getDefaultValue();
 		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor.getAnnotatedElement()
 				.getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
@@ -235,10 +232,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 					: getInstanceFactory().getInstance(requestBean.value());
 		}
 
-		ParameterName parameterName = parameterDescriptor.getAnnotatedElement().getAnnotation(ParameterName.class);
-		return getParameterInternal(
-				(parameterName == null || StringUtils.isEmpty(parameterName.value())) ? parameterDescriptor
-						: new RenameParameterDescriptor(parameterDescriptor, parameterDescriptor.getName()));
+		return getParameterInternal(parameterDescriptor);
 	}
 
 	private Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterDescriptor, Value defaultValue) {

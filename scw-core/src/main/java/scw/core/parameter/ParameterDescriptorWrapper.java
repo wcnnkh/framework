@@ -3,6 +3,8 @@ package scw.core.parameter;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
+import scw.value.Value;
+
 public class ParameterDescriptorWrapper implements ParameterDescriptor {
 	protected final ParameterDescriptor parameterDescriptor;
 
@@ -33,5 +35,9 @@ public class ParameterDescriptorWrapper implements ParameterDescriptor {
 	@Override
 	public String toString() {
 		return parameterDescriptor.toString();
+	}
+	
+	public Value getDefaultValue() {
+		return parameterDescriptor.getDefaultValue();
 	}
 }

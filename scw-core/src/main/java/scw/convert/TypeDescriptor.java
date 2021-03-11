@@ -97,7 +97,7 @@ public class TypeDescriptor implements Serializable {
 	public TypeDescriptor(FieldDescriptor fieldDescriptor){
 		this.resolvableType = ResolvableType.forType(fieldDescriptor.getGenericType());
 		this.type = this.resolvableType.resolve(fieldDescriptor.getType());
-		this.annotatedElement = fieldDescriptor.getAnnotatedElement();
+		this.annotatedElement = new AnnotatedElementAdapter(fieldDescriptor.getAnnotatedElement().getAnnotations());
 	}
 
 	/**

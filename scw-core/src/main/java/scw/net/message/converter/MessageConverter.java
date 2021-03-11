@@ -2,7 +2,7 @@ package scw.net.message.converter;
 
 import java.io.IOException;
 
-import scw.core.ResolvableType;
+import scw.convert.TypeDescriptor;
 import scw.net.MimeType;
 import scw.net.MimeTypes;
 import scw.net.message.InputMessage;
@@ -15,16 +15,16 @@ public interface MessageConverter{
 	 */
 	MimeTypes getSupportMimeTypes();
 	
-	boolean canRead(ResolvableType type, MimeType mimeType);
+	boolean canRead(TypeDescriptor typeDescriptor, MimeType mimeType);
 	
-	boolean canWrite(ResolvableType type, Object body, MimeType contentType);
+	boolean canWrite(TypeDescriptor typeDescriptor, Object body, MimeType contentType);
 	
 	boolean canWrite(Object body, MimeType contentType);
 	
-	Object read(ResolvableType type, InputMessage inputMessage) throws IOException,
+	Object read(TypeDescriptor typeDescriptor, InputMessage inputMessage) throws IOException,
 			MessageConvertException;
 	
-	void write(ResolvableType type, Object body, MimeType contentType, OutputMessage outputMessage)
+	void write(TypeDescriptor typeDescriptor, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException;
 	
 	void write(Object body, MimeType contentType, OutputMessage outputMessage)

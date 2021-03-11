@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
-import scw.core.ResolvableType;
 import scw.io.IOUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -26,17 +25,17 @@ public class StringMessageConverter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected Object readInternal(ResolvableType type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
 		String text = readTextBody(inputMessage);
-		if (type.getRawClass() == byte[].class) {
+		if (type.getResolvableType().getRawClass() == byte[].class) {
 			return text.getBytes(getCharset(inputMessage));
 		}
 
-		return conversionService.convert(text, TypeDescriptor.valueOf(String.class), TypeDescriptor.valueOf(type));
+		return conversionService.convert(text, TypeDescriptor.valueOf(String.class), type);
 	}
 
 	@Override
-	protected void writeInternal(ResolvableType type, Object body, MimeType contentType, OutputMessage outputMessage)
+	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		if (body instanceof byte[]) {
 			IOUtils.write((byte[]) body, outputMessage.getBody());

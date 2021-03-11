@@ -1,56 +1,74 @@
 package scw.mapper;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.AnnotationUtils;
+import scw.core.parameter.DefaultParameterDescriptor;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.ArrayUtils;
 import scw.util.Supplier;
+import scw.value.Value;
 
-public class DefaultSetter extends AbstractFieldDescriptor implements Setter{
+public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
 	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final boolean nullable;
+	private ParameterDescriptor setterParameterDescriptor;
 
 	public DefaultSetter(Class<?> declaringClass, String name, Field field,
 			Method method) {
 		super(declaringClass, field, method);
 		this.name = name;
-		
-		AnnotatedElement setterParameterAnnotatedElement = null;
-		if(method != null){
+
+		if (method != null) {
 			Annotation[][] annotations = method.getParameterAnnotations();
-			setterParameterAnnotatedElement = ArrayUtils.isEmpty(annotations)? null:AnnotatedElementUtils.forAnnotations(annotations[0]);
+			if (!ArrayUtils.isEmpty(annotations)) {
+				setterParameterDescriptor = new DefaultParameterDescriptor(
+						name, annotations[0], method.getParameterTypes()[0],
+						method.getGenericParameterTypes()[0]);
+			}
 		}
-		
-		if(setterParameterAnnotatedElement == null){
-			this.nullable = AnnotationUtils.isNullable(getAnnotatedElement(), false);
-		}else{
-			this.nullable = AnnotationUtils.isNullable(setterParameterAnnotatedElement, new Supplier<Boolean>() {
-				
-				public Boolean get() {
-					return AnnotationUtils.isNullable(getAnnotatedElement(), false);
-				}
-			}).get();
+
+		if (setterParameterDescriptor == null) {
+			this.nullable = AnnotationUtils.isNullable(getAnnotatedElement(),
+					false);
+		} else {
+			this.nullable = AnnotationUtils.isNullable(
+					setterParameterDescriptor.getAnnotatedElement(),
+					new Supplier<Boolean>() {
+
+						public Boolean get() {
+							return AnnotationUtils.isNullable(
+									getAnnotatedElement(), false);
+						}
+					}).get();
 		}
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public boolean isNullable() {
 		return nullable;
 	}
 
+	@Override
+	public Value getDefaultValue() {
+		if (setterParameterDescriptor == null) {
+			return super.getDefaultValue();
+		}
+
+		Value value = setterParameterDescriptor.getDefaultValue();
+		return value == null ? super.getDefaultValue() : value;
+	}
+
 	public Class<?> getType() {
-		Method method = getMethod();
-		if (method != null) {
-			return method.getParameterTypes()[0];
+		if (setterParameterDescriptor != null) {
+			return setterParameterDescriptor.getType();
 		}
 
 		Field field = getField();
@@ -61,9 +79,8 @@ public class DefaultSetter extends AbstractFieldDescriptor implements Setter{
 	}
 
 	public Type getGenericType() {
-		Method method = getMethod();
-		if (method != null) {
-			return method.getGenericParameterTypes()[0];
+		if (setterParameterDescriptor != null) {
+			return setterParameterDescriptor.getGenericType();
 		}
 
 		Field field = getField();

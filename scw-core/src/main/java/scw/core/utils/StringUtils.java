@@ -2097,6 +2097,7 @@ public final class StringUtils {
 		return Double.parseDouble(v);
 	}
 
+	@Nullable
 	public static KeyValuePair<String, String> parseKV(String text, String separator) {
 		int index = text.indexOf(separator);
 		if (index == -1) {

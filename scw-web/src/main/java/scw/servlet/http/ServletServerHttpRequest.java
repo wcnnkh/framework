@@ -29,8 +29,8 @@ import scw.http.MediaType;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.net.InetUtils;
 import scw.net.RestfulParameterMapAware;
+import scw.net.uri.UriUtils;
 import scw.security.session.Session;
 import scw.servlet.ServletUtils;
 import scw.util.LinkedCaseInsensitiveMap;
@@ -163,7 +163,7 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 	}
 
 	public URI getURI() {
-		return InetUtils.toURI(httpServletRequest.getRequestURI());
+		return UriUtils.toUri(httpServletRequest.getRequestURI());
 	}
 
 	public BufferedReader getReader() throws IOException {

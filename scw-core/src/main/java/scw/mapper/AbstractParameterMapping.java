@@ -1,7 +1,7 @@
 package scw.mapper;
 
 import scw.core.parameter.ParameterDescriptor;
-import scw.core.parameter.RenameParameterDescriptor;
+import scw.core.parameter.OverrideParameterDescriptor;
 import scw.core.utils.StringUtils;
 
 public abstract class AbstractParameterMapping extends AbstractMapping {
@@ -16,12 +16,12 @@ public abstract class AbstractParameterMapping extends AbstractMapping {
 	@Override
 	protected Object getValue(Field field) {
 		Setter setter = field.getSetter();
-		String name = nestingName ? getNestingDisplayName(field) : getDisplayName(setter);
+		String name = nestingName ? getNestingDisplayName(field) : setter.getName();
 		if (!StringUtils.isEmpty(basePrefix)) {
 			name = basePrefix + "." + name;
 		}
 
-		return getValue(new RenameParameterDescriptor(setter, name));
+		return getValue(new OverrideParameterDescriptor(setter, name));
 	}
 
 	protected abstract Object getValue(ParameterDescriptor parameterDescriptor);

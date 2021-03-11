@@ -9,6 +9,12 @@ package scw.codec;
  * @param <E>
  */
 public interface Encoder<D, E> {
+	/**
+	 * 编码
+	 * @param source
+	 * @return
+	 * @throws EncodeException
+	 */
 	E encode(D source) throws EncodeException;
 	
 	/**

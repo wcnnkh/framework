@@ -7,14 +7,9 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import scw.core.parameter.annotation.DefaultValue;
-import scw.core.parameter.annotation.ParameterName;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.StringUtils;
 import scw.util.JavaVersion;
-import scw.value.StringValue;
-import scw.value.Value;
 
 public final class ParameterUtils {
 	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER;
@@ -106,22 +101,6 @@ public final class ParameterUtils {
 
 	public static LinkedHashMap<String, Object> getParameterMap(Constructor<?> constructor, Object[] args) {
 		return getParameterMap(getParameterDescriptors(constructor), args);
-	}
-
-	public static Value getDefaultValue(ParameterDescriptor parameterDescriptor) {
-		DefaultValue defaultValue = parameterDescriptor.getAnnotatedElement().getAnnotation(DefaultValue.class);
-		if (defaultValue == null) {
-			return null;
-		}
-		return new StringValue(defaultValue.value());
-	}
-
-	public static String getDisplayName(ParameterDescriptor parameterDescriptor) {
-		ParameterName parameterName = parameterDescriptor.getAnnotatedElement().getAnnotation(ParameterName.class);
-		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
-			return parameterName.value();
-		}
-		return parameterDescriptor.getName();
 	}
 
 	public static boolean isAssignableValue(ParameterDescriptors parameterDescriptors, Object[] params) {

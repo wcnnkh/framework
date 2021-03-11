@@ -10,7 +10,6 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
 import scw.instance.support.DefaultInstanceFactory;
-import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.io.FileUtils;
 import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
@@ -37,7 +36,7 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	static{
 		instance.loadProperties("system.properties").register();
 		instance.loadProperties(instance.getValue("system.properties.location", String.class, "/private.properties")).register();
-		instance.loadServices(new DefaultServiceLoaderFactory(instance, new DefaultInstanceFactory(instance, false)));
+		instance.loadServices(new DefaultInstanceFactory(instance, false));
 	}
 
 	public static SystemEnvironment getInstance() {

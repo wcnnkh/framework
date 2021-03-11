@@ -3,6 +3,7 @@ package scw.instance.support;
 import scw.core.utils.ClassUtils;
 import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
+import scw.instance.ServiceLoader;
 import scw.util.ClassLoaderProvider;
 
 public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFactory{
@@ -40,5 +41,9 @@ public abstract class AbstractNoArgsInstanceFactory implements NoArgsInstanceFac
 	
 	public ClassLoader getClassLoader() {
 		return ClassUtils.getClassLoader(classLoaderProvider);
+	}
+	
+	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
+		return new SpiServiceLoader<S>(serviceClass, this);
 	}
 }

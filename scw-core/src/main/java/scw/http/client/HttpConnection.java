@@ -2,11 +2,11 @@ package scw.http.client;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
+import scw.convert.TypeDescriptor;
 import scw.core.utils.StringUtils;
 import scw.http.ContentDisposition;
 import scw.http.HttpHeaders;
@@ -139,15 +139,16 @@ public interface HttpConnection extends HttpConnectionFactory {
 	 *            the type of the body, useful for generic type resolution
 	 * @return the built request entity
 	 */
-	HttpConnection body(Object body, Type type);
+	HttpConnection body(Object body, @Nullable TypeDescriptor typeDescriptor);
 
-	Type getType();
+	@Nullable
+	TypeDescriptor getTypeDescriptor();
 
 	Object getBody();
 
 	HttpMethod getMethod();
 
-	URI getUrl();
+	URI getURI();
 
 	boolean isRedirectEnable();
 
@@ -168,7 +169,7 @@ public interface HttpConnection extends HttpConnectionFactory {
 	<T> HttpResponseEntity<T> execute(Class<T> responseType)
 			throws HttpClientException;
 
-	<T> HttpResponseEntity<T> execute(Type responseType)
+	<T> HttpResponseEntity<T> execute(TypeDescriptor responseType)
 			throws HttpClientException;
 
 	HttpResponseEntity<File> download();
@@ -251,12 +252,12 @@ public interface HttpConnection extends HttpConnectionFactory {
 	static abstract class AbstractHttpConnection extends AbstractHttpConnectionFactory implements HttpConnection,
 			Cloneable {
 		private HttpMethod method;
-		private URI url;
+		private URI uri;
 		private final HttpHeaders headers;
 		@Nullable
 		private Object body;
 		@Nullable
-		private Type type;
+		private TypeDescriptor typeDescriptor;
 		private boolean redirectEnable = false;
 		private ClientHttpRequestFactory requestFactory;
 		private RedirectManager redirectManager;
@@ -265,17 +266,17 @@ public interface HttpConnection extends HttpConnectionFactory {
 			this.headers = new HttpHeaders();
 		}
 		
-		public AbstractHttpConnection(HttpMethod method, URI url) {
+		public AbstractHttpConnection(HttpMethod method, URI uri) {
 			this.headers = new HttpHeaders();
 			this.method = method;
-			this.url = url;
+			this.uri = uri;
 		}
 
 		public AbstractHttpConnection(AbstractHttpConnection httpConnection) {
 			this.method = httpConnection.method;
-			this.url = httpConnection.url;
+			this.uri = httpConnection.uri;
 			this.body = httpConnection.body;
-			this.type = httpConnection.type;
+			this.typeDescriptor = httpConnection.typeDescriptor;
 			this.headers = new HttpHeaders(httpConnection.headers);
 			this.redirectEnable = httpConnection.redirectEnable;
 			this.requestFactory = httpConnection.requestFactory;
@@ -314,8 +315,8 @@ public interface HttpConnection extends HttpConnectionFactory {
 			return headers;
 		}
 
-		public URI getUrl() {
-			return url;
+		public URI getURI() {
+			return uri;
 		}
 
 		public HttpMethod getMethod() {
@@ -323,23 +324,23 @@ public interface HttpConnection extends HttpConnectionFactory {
 		}
 
 		public HttpConnection createConnection() {
-			if(url == null && method == null){
+			if(uri == null && method == null){
 				return this;
 			}
 			
 			return clone();
 		}
 
-		public HttpConnection createConnection(HttpMethod method, URI url) {
-			if (this.method != null || this.url != null) {
+		public HttpConnection createConnection(HttpMethod method, URI uri) {
+			if (this.method != null || this.uri != null) {
 				// 创建一个新的
 				AbstractHttpConnection connection = clone();
 				connection.method = method;
-				connection.url = url;
+				connection.uri = uri;
 				return connection;
 			}
 			this.method = method;
-			this.url = url;
+			this.uri = uri;
 			return this;
 		}
 
@@ -401,9 +402,9 @@ public interface HttpConnection extends HttpConnectionFactory {
 			return this;
 		}
 
-		public HttpConnection body(Object body, Type type) {
+		public HttpConnection body(Object body, TypeDescriptor typeDescriptor) {
 			this.body = body;
-			this.type = type;
+			this.typeDescriptor = typeDescriptor;
 			return this;
 		}
 
@@ -411,18 +412,18 @@ public interface HttpConnection extends HttpConnectionFactory {
 			return body;
 		}
 
-		public Type getType() {
-			if (type == null && body != null) {
-				return body.getClass();
+		public TypeDescriptor getTypeDescriptor() {
+			if (typeDescriptor == null && body != null) {
+				return TypeDescriptor.forObject(body);
 			}
-			return type;
+			return typeDescriptor;
 		}
 
 		@SuppressWarnings("unchecked")
 		public <T> HttpRequestEntity<T> buildRequestEntity() {
 			return (HttpRequestEntity<T>) HttpRequestEntity
-					.method(getMethod(), getUrl()).headers(getHeaders())
-					.body(getBody(), getType());
+					.method(getMethod(), getURI()).headers(getHeaders())
+					.body(getBody(), getTypeDescriptor());
 		}
 
 		@Override
@@ -436,7 +437,7 @@ public interface HttpConnection extends HttpConnectionFactory {
 
 		public final HttpResponseEntity<File> download() {
 			DownLoadResponseExtractor responseExtractor = new DownLoadResponseExtractor(
-					getUrl());
+					getURI());
 			return execute(responseExtractor);
 		}
 	}

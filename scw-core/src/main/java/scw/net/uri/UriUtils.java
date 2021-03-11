@@ -417,4 +417,12 @@ public class UriUtils {
 			return false;
 		}
 	}
+	
+	public static URI toUri(String uri) {
+		try {
+			return new URI(uri);
+		} catch (URISyntaxException e) {
+			throw new IllegalStateException("Failed to URI [" + uri + "]", e);
+		}
+	}
 }

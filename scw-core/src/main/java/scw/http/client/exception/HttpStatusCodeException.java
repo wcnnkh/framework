@@ -17,7 +17,7 @@ public class HttpStatusCodeException extends HttpClientResponseException {
 	 * Construct a new instance with an {@link HttpStatus}.
 	 * @param statusCode the status code
 	 */
-	protected HttpStatusCodeException(HttpStatus statusCode) {
+	public HttpStatusCodeException(HttpStatus statusCode) {
 		this(statusCode, statusCode.name(), null, null, null);
 	}
 
@@ -26,7 +26,7 @@ public class HttpStatusCodeException extends HttpClientResponseException {
 	 * @param statusCode the status code
 	 * @param statusText the status text
 	 */
-	protected HttpStatusCodeException(HttpStatus statusCode, String statusText) {
+	public HttpStatusCodeException(HttpStatus statusCode, String statusText) {
 		this(statusCode, statusText, null, null, null);
 	}
 
@@ -37,7 +37,7 @@ public class HttpStatusCodeException extends HttpClientResponseException {
 	 * @param responseBody the response body content, may be {@code null}
 	 * @param responseCharset the response body charset, may be {@code null}
 	 */
-	protected HttpStatusCodeException(HttpStatus statusCode, String statusText,
+	public HttpStatusCodeException(HttpStatus statusCode, String statusText,
 			byte[] responseBody, Charset responseCharset) {
 
 		this(statusCode, statusText, null, responseBody, responseCharset);
@@ -52,7 +52,7 @@ public class HttpStatusCodeException extends HttpClientResponseException {
 	 * @param responseBody the response body content, may be {@code null}
 	 * @param responseCharset the response body charset, may be {@code null}
 	 */
-	protected HttpStatusCodeException(HttpStatus statusCode, String statusText,
+	public HttpStatusCodeException(HttpStatus statusCode, String statusText,
 			HttpHeaders responseHeaders, byte[] responseBody, Charset responseCharset) {
 
 		super(statusCode.value() + " " + statusText, statusCode.value(), statusText,

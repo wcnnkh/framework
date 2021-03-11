@@ -3,7 +3,7 @@ package scw.tencent.wx;
 import java.util.concurrent.ConcurrentHashMap;
 
 import scw.context.annotation.Provider;
-import scw.core.parameter.annotation.ParameterName;
+import scw.instance.annotation.PropertyName;
 import scw.oauth2.AccessToken;
 import scw.security.Token;
 
@@ -15,7 +15,7 @@ public class DefaultTokenFactory implements TokenFactory{
 	private final ConcurrentHashMap<String, Token> ticketMap = new ConcurrentHashMap<String, Token>(8);
 	private int tokenExpireAheadTime = 60;//token提前过期时间
 	
-	public DefaultTokenFactory(@ParameterName(WX_APPID_KEY) String appId, @ParameterName(WX_APPSECRET_KEY)String appSecret) {
+	public DefaultTokenFactory(@PropertyName(WX_APPID_KEY) String appId, @PropertyName(WX_APPSECRET_KEY)String appSecret) {
 		this.appId = appId;
 		this.appSecret = appSecret;
 	}

@@ -146,4 +146,8 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 	public boolean isNullable() {
 		return type == null? true:!type.isPrimitive();
 	}
+
+	public Value getDefaultValue() {
+		return null;
+	}
 }

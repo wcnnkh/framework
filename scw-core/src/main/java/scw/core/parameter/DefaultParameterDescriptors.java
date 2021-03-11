@@ -2,7 +2,6 @@ package scw.core.parameter;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Iterator;
 
 import scw.util.AbstractIterator;
@@ -10,19 +9,22 @@ import scw.util.AbstractIterator;
 public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	private final T source;
 	private final Class<?> declaringClass;
-	private final String[] names;
-	private final Annotation[][] annotations;
-	private final Type[] genericTypes;
-	private final Class<?> types[];
+	private final ParameterDescriptor[] parameterDescriptors;
+	
+	public DefaultParameterDescriptors(T source, Class<?> declaringClass, ParameterDescriptor[] parameterDescriptors){
+		this.source = source;
+		this.declaringClass = declaringClass;
+		this.parameterDescriptors = parameterDescriptors;
+	}
 
 	public DefaultParameterDescriptors(Class<?> declaringClass, T source, String[] names, Annotation[][] annotations,
 			Type[] genericTypes, Class<?>[] types) {
 		this.source = source;
 		this.declaringClass = declaringClass;
-		this.names = names;
-		this.annotations = annotations;
-		this.genericTypes = genericTypes;
-		this.types = types;
+		parameterDescriptors = new ParameterDescriptor[names.length];
+		for(int index=0; index<names.length; index++){
+			parameterDescriptors[index] = new DefaultParameterDescriptor(names[index], annotations[index], types[index], genericTypes[index]);
+		}
 	}
 
 	public T getSource() {
@@ -38,14 +40,14 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	}
 
 	public int size() {
-		return names == null ? 0 : names.length;
+		return parameterDescriptors == null? 0:parameterDescriptors.length;
 	}
 
 	private class InternalIterator extends AbstractIterator<ParameterDescriptor> {
 		private int index = 0;
 
 		public boolean hasNext() {
-			return names != null && index < names.length;
+			return parameterDescriptors != null && index < parameterDescriptors.length;
 		}
 
 		public ParameterDescriptor next() {
@@ -54,6 +56,10 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	}
 
 	public Class<?>[] getTypes() {
+		Class<?>[] types = new Class<?>[size()];
+		for(int i=0; i<types.length; i++){
+			types[i] = parameterDescriptors[i].getType();
+		}
 		return types;
 	}
 
@@ -61,7 +67,7 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 		if (index >= size()) {
 			throw new IndexOutOfBoundsException(index + "");
 		}
-		return new DefaultParameterDescriptor(names[index], annotations[index], types[index], genericTypes[index]);
+		return parameterDescriptors[index];
 	}
 
 	public ParameterDescriptor getParameterDescriptor(String name) {
@@ -75,6 +81,6 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	
 	@Override
 	public String toString() {
-		return declaringClass + Arrays.toString(genericTypes);
+		return String.valueOf(source);
 	}
 }

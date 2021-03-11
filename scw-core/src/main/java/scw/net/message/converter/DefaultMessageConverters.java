@@ -1,14 +1,15 @@
 package scw.net.message.converter;
 
 import scw.convert.ConversionService;
-import scw.lang.Nullable;
+import scw.instance.InstanceUtils;
+import scw.instance.ServiceLoaderFactory;
 import scw.net.message.multipart.FileItemParser;
-import scw.net.message.multipart.MultipartMessageWriter;
-import scw.net.message.multipart.apache.MultipartMessageConverter;
 
 public class DefaultMessageConverters extends MessageConverters {
+	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
+			"scw.net.message.multipart.apache.ApacheFileItemParser");
 	
-	public DefaultMessageConverters(ConversionService conversionService, @Nullable FileItemParser fileItemParser) {
+	public DefaultMessageConverters(ConversionService conversionService) {
 		getMessageConverters().add(new JsonMessageConverter());
 		getMessageConverters().add(
 				new StringMessageConverter(conversionService));
@@ -17,8 +18,13 @@ public class DefaultMessageConverters extends MessageConverters {
 		getMessageConverters().add(new HttpFormMessageConveter());
 		getMessageConverters().add(new MultipartMessageWriter());
 		getMessageConverters().add(new ResourceMessageConverter());
-		if(fileItemParser != null){
-			getMessageConverters().add(new MultipartMessageConverter(fileItemParser));
+		if(FILE_ITEM_PARSER != null){
+			getMessageConverters().add(new MultipartMessageConverter(FILE_ITEM_PARSER));
 		}
+	}
+	
+	public DefaultMessageConverters(ConversionService conversionService, ServiceLoaderFactory serviceLoaderFactory){
+		this(conversionService);
+		getMessageConverters().addAll(InstanceUtils.asList(serviceLoaderFactory.getServiceLoader(MessageConverter.class)));
 	}
 }

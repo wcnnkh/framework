@@ -3,7 +3,6 @@ package scw.mapper;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.instance.InstanceUtils;
 
@@ -41,13 +40,9 @@ public abstract class AbstractMapping implements Mapping {
 
 	protected abstract Object getValue(Field field);
 
-	protected String getDisplayName(FieldDescriptor fieldMetadata) {
-		return ParameterUtils.getDisplayName(fieldMetadata);
-	}
-
 	protected final String getNestingDisplayName(Field field) {
 		if (field.getParentField() == null) {
-			return getDisplayName(field.getSetter());
+			return field.getSetter().getName();
 		}
 
 		LinkedList<FieldDescriptor> fieldMetadatas = new LinkedList<FieldDescriptor>();
@@ -62,7 +57,7 @@ public abstract class AbstractMapping implements Mapping {
 				.listIterator(fieldMetadatas.size());
 		while (iterator.hasPrevious()) {
 			FieldDescriptor fieldMetadata = iterator.next();
-			sb.append(getDisplayName(fieldMetadata));
+			sb.append(fieldMetadata.getName());
 			if (iterator.hasPrevious()) {
 				sb.append(".");
 			}

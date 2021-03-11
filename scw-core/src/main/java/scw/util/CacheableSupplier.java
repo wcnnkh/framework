@@ -19,7 +19,7 @@ public class CacheableSupplier<T> implements Supplier<T>{
 		return cache.get();
 	}
 
-	private void setCache(T cache){
+	public void setCache(T cache){
 		this.cache = new StaticSupplier<T>(cache);
 	}
 
