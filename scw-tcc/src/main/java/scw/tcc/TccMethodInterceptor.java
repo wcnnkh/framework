@@ -10,6 +10,7 @@ import scw.instance.NoArgsInstanceFactory;
 import scw.lang.NotSupportedException;
 import scw.tcc.annotation.Tcc;
 import scw.transaction.DefaultTransactionLifecycle;
+import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
 
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
@@ -34,7 +35,8 @@ public class TccMethodInterceptor implements MethodInterceptor, MethodIntercepto
 			throw new NotSupportedException("not support tcc: " + invoker.getMethod().toString());
 		}
 
-		if (!TransactionManager.hasTransaction()) {
+		Transaction transaction = TransactionManager.GLOBAL.getTransaction();
+		if (transaction == null) {
 			throw new NotSupportedException("not exist transaction");
 		}
 
@@ -53,7 +55,7 @@ public class TccMethodInterceptor implements MethodInterceptor, MethodIntercepto
 		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚,但是如果存在confirm的情况下还会执行confirm，所以应该在业务中判断如果已经cancel了那么confirm无效
 		final Complete cancelComplete = cancel == null ? null : tccService.registerComplete(cancel);
 		final Complete confirmComplete = confirm == null ? null : tccService.registerComplete(confirm);
-		TransactionManager.addLifecycle(new DefaultTransactionLifecycle(){
+		transaction.addLifecycle(new DefaultTransactionLifecycle(){
 			@Override
 			public void afterRollback() {
 				if(confirmComplete != null){
