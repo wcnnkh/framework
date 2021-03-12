@@ -38,19 +38,25 @@ public final class HibernateUtils {
 
 		session.close();
 	}
+	
+	public static Session getTransactionSession(SessionFactory sessionFactory){
+		return getTransactionSession(TransactionManager.GLOBAL, sessionFactory);
+	}
 
-	public static Session getTransactionSession(SessionFactory sessionFactory) {
-		Transaction transaction = TransactionManager.getCurrentTransaction();
+	public static Session getTransactionSession(TransactionManager transactionManager, SessionFactory sessionFactory) {
+		Transaction transaction = transactionManager.getTransaction();
 		if (transaction == null) {
 			return sessionFactory.openSession();
 		}
 
-		HibernateTransactionResource resource = (HibernateTransactionResource) transaction
-				.getResource(sessionFactory);
+		HibernateTransactionResource resource = transaction.getResource(sessionFactory);
 		if (resource == null) {
-			resource = new HibernateTransactionResource(sessionFactory,
+			HibernateTransactionResource hibernateTransactionResource = new HibernateTransactionResource(sessionFactory,
 					transaction.isActive());
-			transaction.bindResource(sessionFactory, resource);
+			resource = transaction.bindResource(sessionFactory, hibernateTransactionResource);
+			if(resource == null){
+				resource = hibernateTransactionResource;
+			}
 		}
 		return resource.getSession();
 	}

@@ -77,7 +77,7 @@ public abstract class AbstractWrapperCache<C extends Cache> implements Cache {
 
 	protected void transactionDelete(final String key) {
 		if (isTransaction()) {
-			TransactionManager.addLifecycle(new DefaultTransactionLifecycle() {
+			TransactionManager.GLOBAL.getTransaction().addLifecycle(new DefaultTransactionLifecycle() {
 				@Override
 				public void afterRollback() {
 					getCache().delete(formatKey(key));

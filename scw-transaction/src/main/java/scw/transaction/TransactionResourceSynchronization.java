@@ -1,5 +1,6 @@
 package scw.transaction;
 
+
 class TransactionResourceSynchronization implements TransactionSynchronization {
 	private final TransactionResource transactionResource;
 

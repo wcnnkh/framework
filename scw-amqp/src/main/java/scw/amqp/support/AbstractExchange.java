@@ -16,8 +16,8 @@ import scw.context.Init;
 import scw.core.reflect.MethodInvoker;
 import scw.core.utils.StringUtils;
 import scw.env.support.SystemLocalLogger;
-import scw.io.support.LocalLogger.Record;
 import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.support.LocalLogger.Record;
 import scw.json.JSONUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
@@ -202,12 +202,12 @@ public abstract class AbstractExchange implements Exchange, Init {
 						JSONUtils.toJSONString(message));
 			}
 
-			Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
+			Transaction transaction = TransactionManager.GLOBAL.getTransaction(new DefaultTransactionDefinition());
 			try {
 				messageListener.onMessage(exchange, routingKeyToUse, message);
-				TransactionManager.commit(transaction);
+				TransactionManager.GLOBAL.commit(transaction);
 			} catch (Throwable e) {
-				TransactionManager.rollback(transaction);
+				TransactionManager.GLOBAL.rollback(transaction);
 				message.incrRetryCount();
 				long retryDelay = message.getRetryDelay();
 				if (retryDelay == 0) {
@@ -245,7 +245,7 @@ public abstract class AbstractExchange implements Exchange, Init {
 	public final void push(String routingKey, MessageProperties messageProperties, byte[] body) {
 		messageProperties.setPublishRoutingKey(routingKey);
 		final MessageLog log = new MessageLog(routingKey, messageProperties, body);
-		if (TransactionManager.hasTransaction()) {
+		if (TransactionManager.GLOBAL.hasTransaction()) {
 			TransactionLifecycle transactionLifeCycle;
 			// 是否开启本地事务
 			Boolean enableLocalRetryPush = messageProperties.isEnableLocalRetryPush();
@@ -284,7 +284,7 @@ public abstract class AbstractExchange implements Exchange, Init {
 					};
 				};
 			}
-			TransactionManager.addLifecycle(transactionLifeCycle);
+			TransactionManager.GLOBAL.getTransaction().addLifecycle(transactionLifeCycle);
 		} else {
 			// 不存在事务，直接发送
 			try {

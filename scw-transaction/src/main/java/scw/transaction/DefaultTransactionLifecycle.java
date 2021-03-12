@@ -1,5 +1,6 @@
 package scw.transaction;
 
+
 public class DefaultTransactionLifecycle implements TransactionLifecycle {
 
 	public void beforeCommit() throws Throwable {

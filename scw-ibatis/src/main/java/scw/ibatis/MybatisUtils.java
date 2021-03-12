@@ -11,20 +11,27 @@ import scw.transaction.TransactionManager;
 public final class MybatisUtils {
 	private MybatisUtils() {
 	};
+	
+	public static SqlSession getTransactionSqlSession(SqlSessionFactory sqlSessionFactory){
+		return getTransactionSqlSession(TransactionManager.GLOBAL, sqlSessionFactory);
+	}
 
-	public static SqlSession getTransactionSqlSession(
+	public static SqlSession getTransactionSqlSession(TransactionManager transactionManager,
 			SqlSessionFactory sqlSessionFactory) {
-		Transaction transaction = TransactionManager.getCurrentTransaction();
+		Transaction transaction = transactionManager.getTransaction();
 		if (transaction == null) {
 			return sqlSessionFactory.openSession(true);
 		}
 
-		MybatisTransactionResource resource = (MybatisTransactionResource) transaction
+		MybatisTransactionResource resource = transaction
 				.getResource(sqlSessionFactory);
 		if (resource == null) {
-			resource = new MybatisTransactionResource(sqlSessionFactory,
+			MybatisTransactionResource mybatisTransactionResource = new MybatisTransactionResource(sqlSessionFactory,
 					transaction.isActive());
-			transaction.bindResource(sqlSessionFactory, resource);
+			resource = transaction.bindResource(sqlSessionFactory, mybatisTransactionResource);
+			if(resource == null){
+				resource = mybatisTransactionResource;
+			}
 		}
 		return resource.getSqlSession();
 	}

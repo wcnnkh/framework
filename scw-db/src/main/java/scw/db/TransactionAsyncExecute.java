@@ -10,14 +10,14 @@ public final class TransactionAsyncExecute extends ArrayList<AsyncExecute> imple
 	private static final long serialVersionUID = 1L;
 
 	public void execute(DB db) {
-		Transaction transaction = TransactionManager.getTransaction(new DefaultTransactionDefinition());
+		Transaction transaction = TransactionManager.GLOBAL.getTransaction(new DefaultTransactionDefinition());
 		try {
 			for (AsyncExecute execute : this) {
 				execute.execute(db);
 			}
-			TransactionManager.commit(transaction);
+			TransactionManager.GLOBAL.commit(transaction);
 		} catch (Throwable e) {
-			TransactionManager.rollback(transaction);
+			TransactionManager.GLOBAL.rollback(transaction);
 			e.printStackTrace();
 		}
 	}

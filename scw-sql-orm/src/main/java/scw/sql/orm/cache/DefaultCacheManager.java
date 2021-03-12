@@ -4,8 +4,9 @@ import java.util.Arrays;
 
 import scw.core.utils.ArrayUtils;
 import scw.data.Cache;
-import scw.data.TransactionContextCache;
+import scw.data.TransactionCache;
 import scw.data.WrapperCache;
+import scw.transaction.TransactionManager;
 
 public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	private final Cache cache;
@@ -24,7 +25,7 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	}
 
 	public DefaultCacheManager() {
-		this.cache = new TransactionContextCache(this);
+		this.cache = new TransactionCache(TransactionManager.GLOBAL, this);
 	}
 
 	public void save(Object bean) {

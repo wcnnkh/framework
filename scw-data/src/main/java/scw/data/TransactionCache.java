@@ -1,0 +1,55 @@
+package scw.data;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import scw.transaction.Transaction;
+import scw.transaction.TransactionManager;
+
+/**
+ * 事务缓存
+ * 
+ * @author shuchaowen
+ *
+ */
+@SuppressWarnings("unchecked")
+public final class TransactionCache extends AbstractMapCache implements Cache {
+	private final Object name;
+	private final TransactionManager transactionManager;
+	
+	public TransactionCache(TransactionManager transactionManager, Object name){
+		this.transactionManager = transactionManager;
+		this.name = name;
+	};
+	
+	public void clear(){
+		Map<String, Object> map = getMap();
+		if(map != null){
+			map.clear();
+		}
+	}
+	
+	public Map<String, Object> getMap() {
+		Transaction transaction = TransactionManager.GLOBAL.getTransaction();
+		if (transaction == null) {
+			return null;
+		}
+
+		return (Map<String, Object>) transaction.getResource(name);
+	}
+
+	@Override
+	protected Map<String, Object> createMap() {
+		Transaction transaction = transactionManager.getTransaction();
+		if (transaction == null) {
+			return null;
+		}
+
+		Map<String, Object> map = new HashMap<String, Object>(8);
+		Map<String, Object> cache = transaction.bindResource(name, map);
+		if(cache == null){
+			cache = map;
+		}
+		return cache;
+	}
+}

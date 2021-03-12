@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import scw.sql.ConnectionFactory;
+import scw.transaction.DefaultTransaction;
 import scw.transaction.Isolation;
-import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
 
 public final class ConnectionTransactionResource extends AbstractConnectionTransactionResource {
@@ -18,8 +18,8 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 		this.connectionFactory = connectionFactory;
 	}
 
-	public ConnectionTransactionResource(ConnectionFactory connectionFactory, Transaction transaction) {
-		super(transaction.getTransactionDefinition(), transaction.isActive());
+	public ConnectionTransactionResource(ConnectionFactory connectionFactory, DefaultTransaction transaction) {
+		super(transaction.getDefinition(), transaction.isActive());
 		this.connectionFactory = connectionFactory;
 	}
 

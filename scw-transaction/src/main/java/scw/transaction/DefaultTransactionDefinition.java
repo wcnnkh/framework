@@ -1,6 +1,7 @@
 package scw.transaction;
 
 
+
 public class DefaultTransactionDefinition implements TransactionDefinition {
 
 	public Propagation getPropagation() {

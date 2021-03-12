@@ -20,8 +20,8 @@ public class DefaultAsyncMethodService implements AsyncMethodService {
 
 	public void service(AsyncMethodCompleteTask asyncComplete) throws Exception {
 		final Complete complete = completeService.register(asyncComplete);
-		if (TransactionManager.hasTransaction()) {
-			TransactionManager.addLifecycle(new DefaultTransactionLifecycle() {
+		if (TransactionManager.GLOBAL.hasTransaction()) {
+			TransactionManager.GLOBAL.getTransaction().addLifecycle(new DefaultTransactionLifecycle() {
 				@Override
 				public void afterRollback() {
 					complete.cancel();

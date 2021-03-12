@@ -21,9 +21,10 @@ import scw.convert.ConversionService;
 import scw.instance.InstanceUtils;
 import scw.json.JSONUtils;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.Fields;
 import scw.mapper.FieldFeature;
+import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
+import scw.transaction.Transaction;
 import scw.transaction.TransactionManager;
 import scw.util.Accept;
 import scw.util.Pagination;
@@ -44,17 +45,17 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 		try {
 			indexWriter = getTransactionIndexWrite();
 			T v = indexWriterExecutor.execute(indexWriter);
-			if (!TransactionManager.hasTransaction()) {
+			if (!TransactionManager.GLOBAL.hasTransaction()) {
 				indexWriter.commit();
 			}
 			return v;
 		} catch (IOException e) {
-			if (indexWriter != null && !TransactionManager.hasTransaction()) {
+			if (indexWriter != null && !TransactionManager.GLOBAL.hasTransaction()) {
 				indexWriter.rollback();
 			}
 			throw e;
 		} finally {
-			if (indexWriter != null && !TransactionManager.hasTransaction()) {
+			if (indexWriter != null && !TransactionManager.GLOBAL.hasTransaction()) {
 				indexWriter.close();
 			}
 		}
@@ -97,11 +98,15 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	}
 
 	private final IndexWriter getTransactionIndexWrite() throws IOException {
-		if (TransactionManager.hasTransaction()) {
-			IndexWriterResource resource = TransactionManager.getCurrentTransaction().getResource(IndexWriter.class);
+		if (TransactionManager.GLOBAL.hasTransaction()) {
+			Transaction transaction = TransactionManager.GLOBAL.getTransaction();
+			IndexWriterResource resource = transaction.getResource(IndexWriter.class);
 			if (resource == null) {
-				resource = new IndexWriterResource(getIndexWrite());
-				TransactionManager.getCurrentTransaction().bindResource(IndexWriter.class, resource);
+				IndexWriterResource indexWriterResource = new IndexWriterResource(getIndexWrite());
+				resource = transaction.bindResource(IndexWriter.class, indexWriterResource);
+				if(resource == null){
+					resource = indexWriterResource;
+				}
 			}
 			return resource.getIndexWriter();
 		}

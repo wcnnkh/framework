@@ -3,15 +3,19 @@ package scw.core.reflect;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
-public final class SerializableMethod implements MethodHolder, Serializable {
+public class SerializableMethod implements MethodHolder, Serializable {
 	private static final long serialVersionUID = 1L;
 	private volatile transient Method method;
 	private final Class<?> declaringClass;
 	private final String name;
 	private final Class<?>[] parameterTypes;
+	
+	public SerializableMethod(Method method){
+		this(method.getDeclaringClass(), method);
+	}
 
-	public SerializableMethod(Method method) {
-		this.declaringClass = method == null ? null : method.getDeclaringClass();
+	public SerializableMethod(Class<?> declaringClass, Method method) {
+		this.declaringClass = declaringClass;
 		this.method = method;
 		this.name = method == null ? null : method.getName();
 		this.parameterTypes = method == null ? null : method.getParameterTypes();
