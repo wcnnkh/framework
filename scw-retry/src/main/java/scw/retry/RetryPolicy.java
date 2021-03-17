@@ -1,6 +1,6 @@
 package scw.retry;
 
-import java.io.Serializable;
+import scw.lang.Nullable;
 
 /**
  * A {@link RetryPolicy} is responsible for allocating and managing resources needed by
@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @author shuchaowen
  *
  */
-public interface RetryPolicy extends Serializable{
+public interface RetryPolicy{
 	/**
 	 * @param context the current retry status
 	 * @return true if the operation can proceed
@@ -26,7 +26,7 @@ public interface RetryPolicy extends Serializable{
 	 * @return a {@link RetryContext} object specific to this policy.
 	 *
 	 */
-	RetryContext open(RetryContext parent);
+	RetryContext open(@Nullable RetryContext parent);
 
 	/**
 	 * @param context a retry status created by the {@link #open(RetryContext)} method of

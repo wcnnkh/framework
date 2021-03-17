@@ -1,10 +1,14 @@
 package scw.retry;
 
-public interface RetryContext {
+import scw.lang.Nullable;
+import scw.util.attribute.Attributes;
+
+public interface RetryContext extends Attributes<String, Object>{
 	/**
 	 * Accessor for the parent context if retry blocks are nested.
 	 * @return the parent or null if there is none.
 	 */
+	@Nullable
 	RetryContext getParent();
 	
 	/**
@@ -20,6 +24,7 @@ public interface RetryContext {
 	 * if this is the first attempt, but also if the enclosing policy decides not to
 	 * provide it (e.g. because of concerns about memory usage).
 	 */
+	@Nullable
 	Throwable getLastThrowable();
 	
 	/**
