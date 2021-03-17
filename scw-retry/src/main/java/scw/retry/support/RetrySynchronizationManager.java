@@ -1,5 +1,6 @@
 package scw.retry.support;
 
+import scw.lang.NamedThreadLocal;
 import scw.retry.RetryContext;
 import scw.retry.RetryOperations;
 
@@ -8,7 +9,7 @@ public final class RetrySynchronizationManager {
 
 	private RetrySynchronizationManager() {}
 
-	private static final ThreadLocal<RetryContext> context = new ThreadLocal<RetryContext>();
+	private static final ThreadLocal<RetryContext> context = new NamedThreadLocal<RetryContext>(RetrySynchronizationManager.class.getSimpleName());
 
 	/**
 	 * Public accessor for the locally enclosing {@link RetryContext}.

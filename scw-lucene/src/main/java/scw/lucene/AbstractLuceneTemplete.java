@@ -25,7 +25,7 @@ import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.transaction.Transaction;
-import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 import scw.util.Accept;
 import scw.util.Pagination;
 import scw.value.AnyValue;
@@ -41,21 +41,22 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	protected abstract ConversionService getConversionService();
 
 	public <T> T indexWriter(IndexWriterExecutor<T> indexWriterExecutor) throws IOException {
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		IndexWriter indexWriter = null;
 		try {
 			indexWriter = getTransactionIndexWrite();
 			T v = indexWriterExecutor.execute(indexWriter);
-			if (!TransactionManager.GLOBAL.hasTransaction()) {
+			if (transaction == null) {
 				indexWriter.commit();
 			}
 			return v;
 		} catch (IOException e) {
-			if (indexWriter != null && !TransactionManager.GLOBAL.hasTransaction()) {
+			if (indexWriter != null && transaction == null) {
 				indexWriter.rollback();
 			}
 			throw e;
 		} finally {
-			if (indexWriter != null && !TransactionManager.GLOBAL.hasTransaction()) {
+			if (indexWriter != null && transaction == null) {
 				indexWriter.close();
 			}
 		}
@@ -98,8 +99,8 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	}
 
 	private final IndexWriter getTransactionIndexWrite() throws IOException {
-		if (TransactionManager.GLOBAL.hasTransaction()) {
-			Transaction transaction = TransactionManager.GLOBAL.getTransaction();
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
+		if (transaction != null) {
 			IndexWriterResource resource = transaction.getResource(IndexWriter.class);
 			if (resource == null) {
 				IndexWriterResource indexWriterResource = new IndexWriterResource(getIndexWrite());

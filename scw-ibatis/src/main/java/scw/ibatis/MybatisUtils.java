@@ -6,19 +6,14 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import scw.transaction.Transaction;
-import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 public final class MybatisUtils {
 	private MybatisUtils() {
 	};
 	
-	public static SqlSession getTransactionSqlSession(SqlSessionFactory sqlSessionFactory){
-		return getTransactionSqlSession(TransactionManager.GLOBAL, sqlSessionFactory);
-	}
-
-	public static SqlSession getTransactionSqlSession(TransactionManager transactionManager,
-			SqlSessionFactory sqlSessionFactory) {
-		Transaction transaction = transactionManager.getTransaction();
+	public static SqlSession getTransactionSqlSession(SqlSessionFactory sqlSessionFactory) {
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			return sqlSessionFactory.openSession(true);
 		}

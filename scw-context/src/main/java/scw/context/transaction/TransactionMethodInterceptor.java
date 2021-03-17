@@ -9,6 +9,7 @@ import scw.logger.LoggerUtils;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 /**
  * 以aop的方式管理事务
@@ -17,15 +18,13 @@ import scw.transaction.TransactionManager;
  */
 public final class TransactionMethodInterceptor implements MethodInterceptor{
 	private static Logger logger = LoggerUtils.getLogger(TransactionMethodInterceptor.class);
-	private final TransactionManager transactionManager;
-	private final TransactionDefinition transactionDefinition;
+	private TransactionDefinition transactionDefinition;
 
-	public TransactionMethodInterceptor() {
-		this(TransactionManager.GLOBAL, TransactionDefinition.DEFAULT);
+	public TransactionDefinition getTransactionDefinition() {
+		return transactionDefinition == null? TransactionDefinition.DEFAULT:transactionDefinition;
 	}
 
-	public TransactionMethodInterceptor(TransactionManager transactionManager, TransactionDefinition transactionDefinition) {
-		this.transactionManager = transactionManager;
+	public void setTransactionDefinition(TransactionDefinition transactionDefinition) {
 		this.transactionDefinition = transactionDefinition;
 	}
 
@@ -42,6 +41,7 @@ public final class TransactionMethodInterceptor implements MethodInterceptor{
 	}
 	
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
+		TransactionManager transactionManager = TransactionUtils.getManager();
 		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getDeclaringClass(),
 				invoker.getMethod());
 		if (tx == null && transactionManager.hasTransaction()) {
@@ -50,7 +50,7 @@ public final class TransactionMethodInterceptor implements MethodInterceptor{
 			return rtn;
 		}
 
-		TransactionDefinition transactionDefinition = tx == null ? this.transactionDefinition
+		TransactionDefinition transactionDefinition = tx == null ? getTransactionDefinition()
 				: new AnnotationTransactionDefinition(tx);
 		Transaction transaction = transactionManager.getTransaction(transactionDefinition);
 		Object v;

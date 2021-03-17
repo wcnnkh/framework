@@ -8,11 +8,11 @@ package scw.retry;
  *
  * @param <T>
  */
-public interface RecoveryCallback<T> {
+public interface RecoveryCallback<T, E extends Throwable> {
 	/**
 	 * @param context the current retry context
 	 * @return an Object that can be used to replace the callback result that failed
 	 * @throws Exception when something goes wrong
 	 */
-	T recover(RetryContext context) throws Exception;
+	T recover(RetryContext context) throws E;
 }

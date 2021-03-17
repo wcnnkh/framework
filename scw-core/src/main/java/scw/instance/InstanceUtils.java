@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import scw.core.Constants;
 import scw.core.OrderComparator;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterDescriptor;
@@ -19,6 +20,7 @@ import scw.instance.support.ServiceLoaders;
 import scw.instance.support.SpiServiceLoader;
 import scw.instance.support.StaticServiceLoader;
 import scw.lang.NotSupportedException;
+import scw.util.Accept;
 import scw.util.JavaVersion;
 import scw.value.factory.ValueFactory;
 
@@ -57,9 +59,9 @@ public final class InstanceUtils {
 	
 	@SuppressWarnings("unchecked")
 	public static <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String ...defaultNames){
-		ServiceLoader<S> staticServiceLoader = new StaticServiceLoader<S>(INSTANCE_FACTORY, defaultNames);
 		ServiceLoader<S> serviceLoader = INSTANCE_FACTORY.getServiceLoader(serviceClass);
-		return new ServiceLoaders<S>(staticServiceLoader, serviceLoader);
+		ServiceLoader<S> staticServiceLoader = new StaticServiceLoader<S>(INSTANCE_FACTORY, defaultNames);
+		return new ServiceLoaders<S>(serviceLoader, staticServiceLoader);
 	}
 	
 	public static <S> List<S> asList(ServiceLoader<S> serviceLoader){
@@ -73,12 +75,32 @@ public final class InstanceUtils {
 		return services;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 注意：默认仅对{@link Constants#SYSTEM_PACKAGE_NAME}}包下的类使用spi
+	 * @param serviceClass
+	 * @param instanceFactory
+	 * @param configFactory
+	 * @param defaultNames
+	 * @return
+	 */
 	public static <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, NoArgsInstanceFactory instanceFactory, ValueFactory<String> configFactory, String... defaultNames) {
-		ServiceLoader<S> staticServiceLoader = new StaticServiceLoader<S>(instanceFactory, defaultNames);
+		return getServiceLoader(serviceClass, new Accept<Class<S>>() {
+
+			public boolean accept(Class<S> e) {
+				return e.getName().startsWith(Constants.SYSTEM_PACKAGE_NAME);
+			}
+		}, instanceFactory, configFactory, defaultNames);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, Accept<Class<S>> spiAccept, NoArgsInstanceFactory instanceFactory, ValueFactory<String> configFactory, String... defaultNames) {
 		ServiceLoader<S> configServiceLoader = new ConfigServiceLoader<S>(serviceClass, configFactory, instanceFactory);
-		ServiceLoader<S> spiServiceLoader = new SpiServiceLoader<S>(serviceClass, instanceFactory);
-		return new ServiceLoaders<S>(staticServiceLoader, configServiceLoader, spiServiceLoader);
+		ServiceLoader<S> spiServiceLoader = null;
+		if(spiAccept.accept(serviceClass)){
+			spiServiceLoader = new SpiServiceLoader<S>(serviceClass, instanceFactory);
+		}
+		ServiceLoader<S> staticServiceLoader = new StaticServiceLoader<S>(instanceFactory, defaultNames);
+		return new ServiceLoaders<S>(configServiceLoader, spiServiceLoader, staticServiceLoader);
 	}
 
 	public static boolean isSupported(Class<?> clazz) {

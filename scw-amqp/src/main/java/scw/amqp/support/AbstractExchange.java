@@ -27,6 +27,7 @@ import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionLifecycle;
 import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 /**
  * 此实现通过重试来保证消息的可靠消费
@@ -202,12 +203,13 @@ public abstract class AbstractExchange implements Exchange, Init {
 						JSONUtils.toJSONString(message));
 			}
 
-			Transaction transaction = TransactionManager.GLOBAL.getTransaction(TransactionDefinition.DEFAULT);
+			TransactionManager transactionManager = TransactionUtils.getManager();
+			Transaction transaction = transactionManager.getTransaction(TransactionDefinition.DEFAULT);
 			try {
 				messageListener.onMessage(exchange, routingKeyToUse, message);
-				TransactionManager.GLOBAL.commit(transaction);
+				transactionManager.commit(transaction);
 			} catch (Throwable e) {
-				TransactionManager.GLOBAL.rollback(transaction);
+				transactionManager.rollback(transaction);
 				message.incrRetryCount();
 				long retryDelay = message.getRetryDelay();
 				if (retryDelay == 0) {
@@ -245,7 +247,8 @@ public abstract class AbstractExchange implements Exchange, Init {
 	public final void push(String routingKey, MessageProperties messageProperties, byte[] body) {
 		messageProperties.setPublishRoutingKey(routingKey);
 		final MessageLog log = new MessageLog(routingKey, messageProperties, body);
-		if (TransactionManager.GLOBAL.hasTransaction()) {
+		TransactionManager transactionManager = TransactionUtils.getManager();
+		if (transactionManager.hasTransaction()) {
 			TransactionLifecycle transactionLifeCycle;
 			// 是否开启本地事务
 			Boolean enableLocalRetryPush = messageProperties.isEnableLocalRetryPush();
@@ -284,7 +287,7 @@ public abstract class AbstractExchange implements Exchange, Init {
 					};
 				};
 			}
-			TransactionManager.GLOBAL.getTransaction().addLifecycle(transactionLifeCycle);
+			transactionManager.getTransaction().addLifecycle(transactionLifeCycle);
 		} else {
 			// 不存在事务，直接发送
 			try {

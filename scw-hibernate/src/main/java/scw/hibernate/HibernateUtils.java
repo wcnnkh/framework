@@ -6,7 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import scw.transaction.Transaction;
-import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 public final class HibernateUtils {
 	private HibernateUtils(){};
@@ -39,12 +39,8 @@ public final class HibernateUtils {
 		session.close();
 	}
 	
-	public static Session getTransactionSession(SessionFactory sessionFactory){
-		return getTransactionSession(TransactionManager.GLOBAL, sessionFactory);
-	}
-
-	public static Session getTransactionSession(TransactionManager transactionManager, SessionFactory sessionFactory) {
-		Transaction transaction = transactionManager.getTransaction();
+	public static Session getTransactionSession(SessionFactory sessionFactory) {
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			return sessionFactory.openSession();
 		}

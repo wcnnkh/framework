@@ -11,7 +11,7 @@ import scw.lang.NotSupportedException;
 import scw.tcc.annotation.Tcc;
 import scw.transaction.DefaultTransactionLifecycle;
 import scw.transaction.Transaction;
-import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public class TccMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept{
@@ -35,7 +35,7 @@ public class TccMethodInterceptor implements MethodInterceptor, MethodIntercepto
 			throw new NotSupportedException("not support tcc: " + invoker.getMethod().toString());
 		}
 
-		Transaction transaction = TransactionManager.GLOBAL.getTransaction();
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			throw new NotSupportedException("not exist transaction");
 		}

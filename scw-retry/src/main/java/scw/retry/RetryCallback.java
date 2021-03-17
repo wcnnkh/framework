@@ -1,6 +1,6 @@
 package scw.retry;
 
-public interface RetryCallback<T> {
+public interface RetryCallback<T, E extends Throwable> {
 	/**
 	 * Execute an operation with retry semantics. Operations should generally be
 	 * idempotent, but implementations may choose to implement compensation semantics when
@@ -9,5 +9,5 @@ public interface RetryCallback<T> {
 	 * @return the result of the successful operation.
 	 * @throws Throwable if processing fails
 	 */
-	T doWithRetry(RetryContext context) throws Throwable;
+	T doWithRetry(RetryContext context) throws E;
 }

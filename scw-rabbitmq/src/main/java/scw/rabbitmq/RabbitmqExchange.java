@@ -10,13 +10,14 @@ import scw.amqp.QueueDeclare;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.io.NoTypeSpecifiedSerializer;
+import scw.lang.NamedThreadLocal;
 
 public class RabbitmqExchange extends AbstractRabbitmqExchange {
 	private static final String DIX_PREFIX = "scw.dix.";
 	private static final String DELAY_PREFIX = "scw.delay.";
 	private static final String DELAY_EXCHANGE_TYPE = "fanout";
 
-	private final ThreadLocal<Channel> channelThreadLocal = new ThreadLocal<Channel>();
+	private final ThreadLocal<Channel> channelThreadLocal = new NamedThreadLocal<Channel>(RabbitmqExchange.class.getSimpleName() + "-channel");
 	private final ExchangeDeclare delayExchangeDeclare;
 	private final QueueDeclare delayQueueDeclare;
 	private final Connection connection;

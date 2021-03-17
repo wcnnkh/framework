@@ -46,12 +46,12 @@ public class RetryTemplate implements RetryOperations {
 		this.listeners = listeners == null? new RetryListener[0]:listeners;
 	}
 
-	public final <T> T execute(RetryCallback<T> retryCallback) throws Throwable {
+	public final <T, E extends Throwable> T execute(RetryCallback<T, E> retryCallback) throws E, RetryException {
 		return execute(retryCallback, null);
 	}
 
-	public <T> T execute(RetryCallback<T> retryCallback,
-			@Nullable RecoveryCallback<T> recoveryCallback) throws Throwable {
+	public <T, E extends Throwable> T execute(RetryCallback<T, E> retryCallback,
+			@Nullable RecoveryCallback<T, E> recoveryCallback) throws E, RetryException {
 		RetryPolicy retryPolicy = this.retryPolicy;
 		RetryContext context = open(retryPolicy);
 		if (logger.isTraceEnabled()) {
@@ -112,7 +112,6 @@ public class RetryTemplate implements RetryOperations {
 						logger.debug("Rethrow in retry for policy: count="
 								+ context.getRetryCount());
 					}
-					throw wrapIfNecessary(e);
 				}
 
 				/*
@@ -134,7 +133,8 @@ public class RetryTemplate implements RetryOperations {
 
 			return handleRetryExhausted(recoveryCallback, context);
 		} catch (Throwable e) {
-			throw wrapIfNecessary(e);
+			E ex = wrapIfNecessary(e);
+			throw ex;
 		} finally {
 			close(retryPolicy, context, lastException == null);
 			doCloseInterceptors(retryCallback, context, lastException);
@@ -178,7 +178,7 @@ public class RetryTemplate implements RetryOperations {
 	}
 
 	private <T, E extends Throwable> boolean doOpenInterceptors(
-			RetryCallback<T> callback, RetryContext context) {
+			RetryCallback<T, E> callback, RetryContext context) {
 		boolean result = true;
 		for (RetryListener listener : listeners) {
 			result = result && listener.open(context, callback);
@@ -202,7 +202,7 @@ public class RetryTemplate implements RetryOperations {
 	 * @throws ExhaustedRetryException
 	 *             if the state is not null and there is no recovery callback
 	 */
-	protected <T> T handleRetryExhausted(RecoveryCallback<T> recoveryCallback,
+	protected <T, E extends Throwable> T handleRetryExhausted(RecoveryCallback<T, E> recoveryCallback,
 			RetryContext context) throws Throwable {
 		if (recoveryCallback != null) {
 			return recoveryCallback.recover(context);
@@ -244,7 +244,7 @@ public class RetryTemplate implements RetryOperations {
 	}
 
 	private <T, E extends Throwable> void doCloseInterceptors(
-			RetryCallback<T> callback, RetryContext context,
+			RetryCallback<T, E> callback, RetryContext context,
 			Throwable lastException) {
 		for (int i = listeners.length; i-- > 0;) {
 			listeners[i].close(context, callback, lastException);
@@ -252,7 +252,7 @@ public class RetryTemplate implements RetryOperations {
 	}
 
 	private <T, E extends Throwable> void doOnErrorInterceptors(
-			RetryCallback<T> callback, RetryContext context, Throwable throwable) {
+			RetryCallback<T, E> callback, RetryContext context, Throwable throwable) {
 		for (int i = listeners.length; i-- > 0;) {
 			listeners[i].onError(context, callback, throwable);
 		}

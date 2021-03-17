@@ -6,7 +6,6 @@ import scw.core.utils.ArrayUtils;
 import scw.data.Cache;
 import scw.data.TransactionCache;
 import scw.data.WrapperCache;
-import scw.transaction.TransactionManager;
 
 public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	private final Cache cache;
@@ -25,7 +24,7 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	}
 
 	public DefaultCacheManager() {
-		this.cache = new TransactionCache(TransactionManager.GLOBAL, this);
+		this.cache = new TransactionCache(this);
 	}
 
 	public void save(Object bean) {

@@ -8,11 +8,12 @@ import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.core.reflect.MethodInvoker;
 import scw.instance.NoArgsInstanceFactory;
+import scw.lang.NamedThreadLocal;
 import scw.lang.NotSupportedException;
 
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public final class AsyncMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
-	private static ThreadLocal<Boolean> TAG_THREAD_LOCAL = new ThreadLocal<Boolean>();
+	private static ThreadLocal<Boolean> TAG_THREAD_LOCAL = new NamedThreadLocal<Boolean>(AsyncMethodInterceptor.class.getName());
 	private final NoArgsInstanceFactory instanceFactory;
 
 	public AsyncMethodInterceptor(NoArgsInstanceFactory instanceFactory) {

@@ -1,6 +1,5 @@
 package scw.transaction;
 
-import scw.instance.InstanceUtils;
 import scw.lang.Nullable;
 
 
@@ -11,11 +10,6 @@ import scw.lang.Nullable;
  *
  */
 public interface TransactionManager {
-	/**
-	 * 全局的事务管理器
-	 */
-	public static final TransactionManager GLOBAL = InstanceUtils.loadService(TransactionManager.class, "scw.transaction.support.ThreadLocalTransactionManager");
-	
 	/**
 	 * 获取当前事务
 	 * @return

@@ -7,6 +7,7 @@ import scw.complete.CompleteService;
 import scw.context.annotation.Provider;
 import scw.transaction.DefaultTransactionLifecycle;
 import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 @Provider
 public class DefaultAsyncMethodService implements AsyncMethodService {
@@ -20,8 +21,9 @@ public class DefaultAsyncMethodService implements AsyncMethodService {
 
 	public void service(AsyncMethodCompleteTask asyncComplete) throws Exception {
 		final Complete complete = completeService.register(asyncComplete);
-		if (TransactionManager.GLOBAL.hasTransaction()) {
-			TransactionManager.GLOBAL.getTransaction().addLifecycle(new DefaultTransactionLifecycle() {
+		TransactionManager manager = TransactionUtils.getManager();
+		if (manager.hasTransaction()) {
+			manager.getTransaction().addLifecycle(new DefaultTransactionLifecycle() {
 				@Override
 				public void afterRollback() {
 					complete.cancel();

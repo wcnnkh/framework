@@ -21,8 +21,8 @@ public interface RetryOperations {
 	 * @return the value returned by the {@link RetryCallback} upon successful
 	 *         invocation.
 	 */
-	<T> T execute(RetryCallback<T> retryCallback)
-			throws Throwable;
+	<T, E extends Throwable> T execute(RetryCallback<T, E> retryCallback)
+			throws E, ExhaustedRetryException;
 
 	/**
 	 * Execute the supplied {@link RetryCallback} with a fallback on exhausted
@@ -41,6 +41,6 @@ public interface RetryOperations {
 	 * @throws Throwable
 	 *             any {@link Exception} raised by the unsuccessful retry.
 	 */
-	<T> T execute(RetryCallback<T> retryCallback,
-			RecoveryCallback<T> recoveryCallback) throws Throwable;
+	<T, E extends Throwable> T execute(RetryCallback<T, E> retryCallback,
+			RecoveryCallback<T, E> recoveryCallback) throws E;
 }

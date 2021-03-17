@@ -24,8 +24,8 @@ public interface RetryListener {
 	 *            the current {@link RetryCallback}.
 	 * @return true if the retry should proceed.
 	 */
-	<T> boolean open(RetryContext context,
-			RetryCallback<T> callback);
+	<T, E extends Throwable> boolean open(RetryContext context,
+			RetryCallback<T, E> callback);
 
 	/**
 	 * Called after the final attempt (successful or not). Allow the interceptor
@@ -41,8 +41,8 @@ public interface RetryListener {
 	 * @param <T>
 	 *            the return value
 	 */
-	<T> void close(RetryContext context,
-			RetryCallback<T> callback, Throwable throwable);
+	<T, E extends Throwable> void close(RetryContext context,
+			RetryCallback<T, E> callback, Throwable throwable);
 
 	/**
 	 * Called after every unsuccessful attempt at a retry.
@@ -56,6 +56,6 @@ public interface RetryListener {
 	 * @param <E>
 	 *            the exception to throw
 	 */
-	<T> void onError(RetryContext context,
-			RetryCallback<T> callback, Throwable throwable);
+	<T, E extends Throwable> void onError(RetryContext context,
+			RetryCallback<T, E> callback, Throwable throwable);
 }

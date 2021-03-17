@@ -1,8 +1,10 @@
 package scw.transaction;
 
+import scw.lang.NamedThreadLocal;
+
 
 public class ThreadLocalTransactionManager implements TransactionManager{
-	private final ThreadLocal<DefaultTransaction> local = new ThreadLocal<DefaultTransaction>();
+	private final ThreadLocal<DefaultTransaction> local = new NamedThreadLocal<DefaultTransaction>(ThreadLocalTransactionManager.class.getSimpleName());
 
 	/**
 	 * 获取事务，会根据事务定义生成指定规则的事务

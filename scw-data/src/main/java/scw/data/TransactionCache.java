@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.transaction.Transaction;
-import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 /**
  * 事务缓存
@@ -15,10 +15,8 @@ import scw.transaction.TransactionManager;
 @SuppressWarnings("unchecked")
 public final class TransactionCache extends AbstractMapCache implements Cache {
 	private final Object name;
-	private final TransactionManager transactionManager;
 	
-	public TransactionCache(TransactionManager transactionManager, Object name){
-		this.transactionManager = transactionManager;
+	public TransactionCache(Object name){
 		this.name = name;
 	};
 	
@@ -30,7 +28,7 @@ public final class TransactionCache extends AbstractMapCache implements Cache {
 	}
 	
 	public Map<String, Object> getMap() {
-		Transaction transaction = TransactionManager.GLOBAL.getTransaction();
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			return null;
 		}
@@ -40,7 +38,7 @@ public final class TransactionCache extends AbstractMapCache implements Cache {
 
 	@Override
 	protected Map<String, Object> createMap() {
-		Transaction transaction = transactionManager.getTransaction();
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			return null;
 		}
