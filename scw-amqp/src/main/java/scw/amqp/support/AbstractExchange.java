@@ -22,9 +22,9 @@ import scw.json.JSONUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.DefaultTransactionLifecycle;
 import scw.transaction.Transaction;
+import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionLifecycle;
 import scw.transaction.TransactionManager;
 
@@ -202,7 +202,7 @@ public abstract class AbstractExchange implements Exchange, Init {
 						JSONUtils.toJSONString(message));
 			}
 
-			Transaction transaction = TransactionManager.GLOBAL.getTransaction(new DefaultTransactionDefinition());
+			Transaction transaction = TransactionManager.GLOBAL.getTransaction(TransactionDefinition.DEFAULT);
 			try {
 				messageListener.onMessage(exchange, routingKeyToUse, message);
 				TransactionManager.GLOBAL.commit(transaction);

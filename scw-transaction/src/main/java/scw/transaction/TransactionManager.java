@@ -30,7 +30,8 @@ public interface TransactionManager {
 	boolean hasTransaction();
 	
 	/**
-	 * 根据规则获取事务
+	 * 根据规则获取事务<br/>
+	 * 默认{@link TransactionDefinition#DEFAULT}}
 	 * @param transactionDefinition
 	 * @return
 	 * @throws TransactionException

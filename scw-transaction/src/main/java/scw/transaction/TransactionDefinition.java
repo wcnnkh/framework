@@ -7,6 +7,7 @@ package scw.transaction;
  *
  */
 public interface TransactionDefinition {
+	public static final TransactionDefinition DEFAULT = new DefaultTransactionDefinition();
 	
 	Propagation getPropagation();
 

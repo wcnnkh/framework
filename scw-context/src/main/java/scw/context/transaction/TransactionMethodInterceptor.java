@@ -6,7 +6,6 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.MethodInvoker;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.transaction.DefaultTransactionDefinition;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionManager;
@@ -22,7 +21,7 @@ public final class TransactionMethodInterceptor implements MethodInterceptor{
 	private final TransactionDefinition transactionDefinition;
 
 	public TransactionMethodInterceptor() {
-		this(TransactionManager.GLOBAL, new DefaultTransactionDefinition());
+		this(TransactionManager.GLOBAL, TransactionDefinition.DEFAULT);
 	}
 
 	public TransactionMethodInterceptor(TransactionManager transactionManager, TransactionDefinition transactionDefinition) {
