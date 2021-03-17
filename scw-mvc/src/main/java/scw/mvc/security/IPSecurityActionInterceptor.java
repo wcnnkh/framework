@@ -30,7 +30,7 @@ public final class IPSecurityActionInterceptor implements ActionInterceptor, Act
 	}
 
 	private IPSecurity getIPSecurity(Action action) {
-		return AnnotationUtils.getAnnotation(IPSecurity.class, action.getSourceClass(),
+		return AnnotationUtils.getAnnotation(IPSecurity.class, action.getDeclaringClass(),
 				action.getAnnotatedElement());
 	}
 

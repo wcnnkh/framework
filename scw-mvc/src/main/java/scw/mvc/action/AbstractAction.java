@@ -39,7 +39,7 @@ public abstract class AbstractAction implements Action {
 		this.annotatedElement = AnnotatedElementUtils.forAnnotations(method.getAnnotations());
 		this.parameterDescriptors = new MethodParameterDescriptors(sourceClass, method);
 		
-		Controller classController = getSourceClass()
+		Controller classController = getDeclaringClass()
 				.getAnnotation(Controller.class);
 		Controller methodController = getAnnotatedElement()
 				.getAnnotation(Controller.class);
@@ -65,7 +65,7 @@ public abstract class AbstractAction implements Action {
 		this.methodHttpControllerDescriptors = Arrays.asList(methodHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
 	}
 
-	public Class<?> getSourceClass() {
+	public Class<?> getDeclaringClass() {
 		return sourceClass;
 	}
 
@@ -127,7 +127,7 @@ public abstract class AbstractAction implements Action {
 	}
 
 	private Collection<HttpMethod> getControllerHttpMethods() {
-		Controller classController = getSourceClass()
+		Controller classController = getDeclaringClass()
 				.getAnnotation(Controller.class);
 		Controller methodController = getAnnotatedElement()
 				.getAnnotation(Controller.class);

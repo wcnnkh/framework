@@ -19,8 +19,8 @@ import scw.beans.SingletonBeanRegistry;
 import scw.beans.ioc.Ioc;
 import scw.context.ClassesLoader;
 import scw.context.ConfigurableClassesLoader;
-import scw.context.support.ContextAop;
-import scw.context.support.DefaultContextLoader;
+import scw.context.support.DefaultAop;
+import scw.context.support.DefaultProviderLoaderFactory;
 import scw.context.support.LifecycleAuxiliary;
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
@@ -53,9 +53,9 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		};
 	};
 
-	private final ContextAop aop = new ContextAop(environment);
+	private final DefaultAop aop = new DefaultAop(environment);
 
-	private final DefaultContextLoader contextLoader = new DefaultContextLoader(
+	private final DefaultProviderLoaderFactory contextLoader = new DefaultProviderLoaderFactory(
 			environment, this);
 	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(
 			this);
@@ -87,7 +87,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		return aop;
 	}
 
-	public DefaultContextLoader getContextLoader() {
+	public DefaultProviderLoaderFactory getContextLoader() {
 		return contextLoader;
 	}
 

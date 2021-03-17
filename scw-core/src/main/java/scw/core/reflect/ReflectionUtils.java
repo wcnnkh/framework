@@ -22,6 +22,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.lang.Ignore;
+import scw.lang.NestedExceptionUtils;
 import scw.lang.Nullable;
 import scw.util.Accept;
 import scw.util.comparator.CompareUtils;
@@ -399,6 +400,19 @@ public abstract class ReflectionUtils {
 			throw (RuntimeException) ex;
 		}
 		throw new UndeclaredThrowableException(ex);
+	}
+	
+	public static void handleThrowable(Throwable ex) {
+		if(ex instanceof RuntimeException){
+			throw (RuntimeException)ex;
+		} else if(ex instanceof Exception){
+			handleReflectionException((Exception)ex);
+			throw NestedExceptionUtils.shouldNeverGetHere();
+		}else{
+			throw new UndeclaredThrowableException(ex);
+		}
+		
+		
 	}
 
 	/**

@@ -3,14 +3,20 @@ package scw.core.reflect;
 import java.lang.reflect.Method;
 
 public final class SimpleMethodHolder implements MethodHolder {
-	private Method method;
+	private final Method method;
+	private final Class<?> declaringClass;
 
-	public SimpleMethodHolder(Method method) {
+	public SimpleMethodHolder(Class<?> declaringClass, Method method) {
 		this.method = method;
+		this.declaringClass = declaringClass;
 	}
 
 	public Method getMethod() {
 		return method;
+	}
+	
+	public Class<?> getDeclaringClass() {
+		return declaringClass;
 	}
 
 	@Override

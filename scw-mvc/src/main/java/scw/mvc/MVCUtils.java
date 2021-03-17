@@ -81,7 +81,7 @@ public final class MVCUtils {
 	 * @return 如果不存在注解则返回空
 	 */
 	public static Levels getActionLoggerLevel(Action action){
-		LoggerEnable loggerEnable = AnnotationUtils.getAnnotation(LoggerEnable.class, action.getSourceClass(),
+		LoggerEnable loggerEnable = AnnotationUtils.getAnnotation(LoggerEnable.class, action.getDeclaringClass(),
 				action.getAnnotatedElement());
 		return loggerEnable == null ? null : loggerEnable.value();
 	}

@@ -31,6 +31,10 @@ public class SerializableMethod implements MethodHolder, Serializable {
 		}
 		return method;
 	}
+	
+	public Class<?> getSourceClass() {
+		return declaringClass;
+	}
 
 	public Class<?> getDeclaringClass() {
 		return declaringClass;

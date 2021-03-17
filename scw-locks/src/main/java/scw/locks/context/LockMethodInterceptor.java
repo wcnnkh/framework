@@ -38,11 +38,11 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 	}
 	
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
-		return AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass()) != null;
+		return AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getDeclaringClass()) != null;
 	}
 
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
-		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getSourceClass());
+		LockConfig lockConfig = AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getDeclaringClass());
 		if (lockConfig == null) {
 			return invoker.invoke(args);
 		}

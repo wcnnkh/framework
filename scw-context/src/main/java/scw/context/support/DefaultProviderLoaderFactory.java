@@ -1,7 +1,7 @@
 package scw.context.support;
 
 import scw.context.ClassesLoader;
-import scw.context.ContextLoader;
+import scw.context.ProviderLoaderFactory;
 import scw.context.annotation.ProviderClassAccept;
 import scw.context.annotation.ProviderServiceLoader;
 import scw.env.Environment;
@@ -13,8 +13,8 @@ import scw.util.CollectionFactory;
 import scw.util.GenericMap;
 import scw.util.Supplier;
 
-public class DefaultContextLoader extends
-		DefaultContextClassesLoaderFactory implements ContextLoader {
+public class DefaultProviderLoaderFactory extends
+		DefaultProviderClassesLoaderFactory implements ProviderLoaderFactory {
 	private final GenericMap<Class<?>, ServiceLoader<?>> serviceLoaderCacheMap = CollectionFactory
 			.createHashMap(true);
 	private final NoArgsInstanceFactory instanceFactory;
@@ -22,7 +22,7 @@ public class DefaultContextLoader extends
 	private final Environment environment;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public DefaultContextLoader(Environment environment,
+	public DefaultProviderLoaderFactory(Environment environment,
 			NoArgsInstanceFactory instanceFactory) {
 		super(true);
 		this.environment = environment;

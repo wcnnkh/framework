@@ -16,7 +16,7 @@ public class TryInfo implements Serializable {
 	private final LinkedHashMap<String, Object> parameterMap;
 
 	public TryInfo(MethodInvoker invoker, Object[] args, Object tryResult) {
-		this(invoker.getSourceClass(), tryResult,
+		this(invoker.getDeclaringClass(), tryResult,
 				ParameterUtils.getParameterMap(invoker.getMethod(), args));
 	}
 

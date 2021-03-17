@@ -3,9 +3,11 @@ package scw.core.reflect;
 import java.lang.reflect.Field;
 
 public final class SimpleFieldHolder implements FieldHolder {
+	private final Class<?> declaringClass;
 	private final Field field;
 
-	public SimpleFieldHolder(Field field) {
+	public SimpleFieldHolder(Class<?> declaringClass, Field field) {
+		this.declaringClass = declaringClass;
 		this.field = field;
 	}
 
@@ -16,5 +18,9 @@ public final class SimpleFieldHolder implements FieldHolder {
 	@Override
 	public String toString() {
 		return field.toString();
+	}
+
+	public Class<?> getDeclaringClass() {
+		return declaringClass;
 	}
 }

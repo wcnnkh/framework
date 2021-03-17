@@ -116,7 +116,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		ServerHttpResponse responseToUse = response;
 
 		// jsonp支持
-		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getSourceClass(), action.getAnnotatedElement());
+		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getDeclaringClass(), action.getAnnotatedElement());
 		if (jsonp != null && jsonp.value()) {
 			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse, null);
 		}
@@ -175,7 +175,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			return;
 		}
 
-		FactoryResult factoryResult = AnnotationUtils.getAnnotation(FactoryResult.class, action.getSourceClass(),
+		FactoryResult factoryResult = AnnotationUtils.getAnnotation(FactoryResult.class, action.getDeclaringClass(),
 				action.getAnnotatedElement());
 		if (!(message instanceof Result) && factoryResult != null && factoryResult.enable()) {
 			Result result = beanFactory.getInstance(factoryResult.value()).success(message);

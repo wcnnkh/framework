@@ -526,5 +526,6 @@
 		<module>scw-hessian</module>
 		<module>scw-gson</module>
 		<module>scw-rpc</module>
+		<module>scw-seata</module>
 	</modules>
 </project>

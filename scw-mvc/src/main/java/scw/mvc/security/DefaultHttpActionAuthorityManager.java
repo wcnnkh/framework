@@ -50,13 +50,13 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 	}
 
 	public void register(Action action) {
-		ActionAuthority classAuthority = action.getSourceClass().getAnnotation(ActionAuthority.class);
+		ActionAuthority classAuthority = action.getDeclaringClass().getAnnotation(ActionAuthority.class);
 		if (classAuthority != null) {// 如果在类上存在此注解说明这是一个菜单
-			String id = action.getSourceClass().getName();
+			String id = action.getDeclaringClass().getName();
 			id = ID_ENCODER.encode(id);
 			HttpAuthority authority = getAuthority(id);
 			if (authority == null) {
-				String parentId = getParentId(action.getSourceClass(), null);
+				String parentId = getParentId(action.getDeclaringClass(), null);
 				boolean isMenu = classAuthority.menu();
 				if (isMenu) {
 					checkIsMenu(parentId, action);
@@ -78,8 +78,8 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			return;
 		}
 
-		String parentId = getParentId(new MultiAnnotatedElement(action.getSourceClass(), action.getAnnotatedElement()),
-				action.getSourceClass().getName());
+		String parentId = getParentId(new MultiAnnotatedElement(action.getDeclaringClass(), action.getAnnotatedElement()),
+				action.getDeclaringClass().getName());
 		boolean isMenu = methodAuthority.menu();
 		if (isMenu) {
 			checkIsMenu(parentId, action);

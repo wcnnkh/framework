@@ -26,7 +26,7 @@ public class RemoteMethodInterceptor implements MethodInterceptor{
 			return invoker.invoke(args);
 		}
 		
-		Callable<Object> callable = callableFactory.getCallable(invoker.getSourceClass(), method, args);
+		Callable<Object> callable = callableFactory.getCallable(invoker.getDeclaringClass(), method, args);
 		if(callable == null){
 			logger.debug("ignore");
 			return invoker.invoke(args);

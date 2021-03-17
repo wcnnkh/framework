@@ -42,7 +42,7 @@ public final class TransactionMethodInterceptor implements MethodInterceptor{
 	}
 	
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
-		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getSourceClass(),
+		Transactional tx = AnnotationUtils.getAnnotation(Transactional.class, invoker.getDeclaringClass(),
 				invoker.getMethod());
 		if (tx == null && transactionManager.hasTransaction()) {
 			Object rtn = invoker.invoke(args);

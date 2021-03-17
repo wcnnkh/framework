@@ -9,8 +9,6 @@ import scw.core.reflect.FieldHolder;
 import scw.core.reflect.MethodHolder;
 
 public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, FieldHolder, Serializable{
-	Class<?> getDeclaringClass();
-	
 	int getModifiers();
 	
 	/**
