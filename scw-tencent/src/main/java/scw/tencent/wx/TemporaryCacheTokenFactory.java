@@ -1,13 +1,13 @@
 package scw.tencent.wx;
 
-import scw.data.TemporaryCache;
+import scw.data.TemporaryStorage;
 import scw.oauth2.AccessToken;
 import scw.security.Token;
 
 public class TemporaryCacheTokenFactory extends DefaultTokenFactory{
-	private final TemporaryCache temporaryCache;
+	private final TemporaryStorage temporaryCache;
 	
-	public TemporaryCacheTokenFactory(String appId, String appSecret, TemporaryCache temporaryCache) {
+	public TemporaryCacheTokenFactory(String appId, String appSecret, TemporaryStorage temporaryCache) {
 		super(appId, appSecret);
 		this.temporaryCache = temporaryCache;
 	}

@@ -32,7 +32,7 @@ public class UpdateSQL extends DialectSql {
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
 			dialectHelper.keywordProcessing(sb, column.getName());
-			if (column.getCasType() == CasType.AUTO_INCREMENT) {
+			if (column.getCasType() == CasType.VERSION) {
 				sb.append("=");
 				dialectHelper.keywordProcessing(sb, column.getName());
 				sb.append("+1");

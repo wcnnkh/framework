@@ -3,12 +3,15 @@ package scw.sql.transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.sql.ConnectionFactory;
 import scw.transaction.DefaultTransaction;
 import scw.transaction.Isolation;
 import scw.transaction.TransactionDefinition;
 
 public final class ConnectionTransactionResource extends AbstractConnectionTransactionResource {
+	private static Logger logger = LoggerFactory.getLogger(ConnectionTransactionResource.class);
 	private final ConnectionFactory connectionFactory;
 	private Connection connection;
 
@@ -63,7 +66,7 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 			try {
 				SqlTransactionUtils.closeProxyConnection(connection);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e, "completion - " + connection);
 			}
 		}
 	}
@@ -73,7 +76,7 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 			try {
 				connection.rollback();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e, "rollback - " + connection);
 			}
 		}
 	}

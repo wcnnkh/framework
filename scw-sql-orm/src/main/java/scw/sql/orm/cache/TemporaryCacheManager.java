@@ -7,28 +7,27 @@ import java.util.Map;
 
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.XTime;
-import scw.data.TemporaryCache;
-import scw.data.WrapperTemporaryCache;
-import scw.sql.orm.cache.annotation.TemporaryCacheEnable;
+import scw.data.TemporaryStorage;
+import scw.data.TemporaryStorageWrapper;
 
-public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> {
+public class TemporaryCacheManager extends AbstractCacheManager<TemporaryStorage> {
 	private static final String KEY = "key:";
-	private static final TemporaryCacheConfig DEFAULT_CONFIG = new TemporaryCacheConfig(
+	private static final CacheConfig DEFAULT_CONFIG = new CacheConfig(
 			(int) (XTime.ONE_DAY * 2 / 1000), false, true);
-	private static volatile Map<Class<?>, TemporaryCacheConfig> configMap = new HashMap<Class<?>, TemporaryCacheConfig>();
+	private static volatile Map<Class<?>, CacheConfig> configMap = new HashMap<Class<?>, CacheConfig>();
 
-	private static final TemporaryCacheConfig getCacheConfig(Class<?> tableClass) {
-		TemporaryCacheConfig config = configMap.get(tableClass);
+	private static final CacheConfig getCacheConfig(Class<?> tableClass) {
+		CacheConfig config = configMap.get(tableClass);
 		if (config == null) {
 			synchronized (configMap) {
 				config = configMap.get(tableClass);
 				if (config == null) {
-					TemporaryCacheEnable temporaryCacheEnable = tableClass
-							.getAnnotation(TemporaryCacheEnable.class);
+					CacheEnable temporaryCacheEnable = tableClass
+							.getAnnotation(CacheEnable.class);
 					if (temporaryCacheEnable == null) {
 						config = DEFAULT_CONFIG;
 					} else {
-						config = new TemporaryCacheConfig(temporaryCacheEnable);
+						config = new CacheConfig(temporaryCacheEnable);
 					}
 					configMap.put(tableClass, config);
 				}
@@ -37,17 +36,17 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 		return config;
 	}
 
-	private final TemporaryCache cache;
+	private final TemporaryStorage cache;
 
-	public TemporaryCacheManager(TemporaryCache cache, boolean transaction,
+	public TemporaryCacheManager(TemporaryStorage cache, boolean transaction,
 			String keyPrefix) {
-		this.cache = new WrapperTemporaryCache(cache, transaction, keyPrefix);
+		this.cache = new TemporaryStorageWrapper(cache, transaction, keyPrefix);
 	}
 
 	public void save(Object bean) {
 		Class<?> clazz = getUserClass(
 				bean.getClass());
-		TemporaryCacheConfig config = getCacheConfig(clazz);
+		CacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
@@ -63,7 +62,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	public void update(Object bean) {
 		Class<?> clazz = getUserClass(
 				bean.getClass());
-		TemporaryCacheConfig config = getCacheConfig(clazz);
+		CacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
@@ -75,7 +74,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	public void delete(Object bean) {
 		Class<?> clazz = getUserClass(
 				bean.getClass());
-		TemporaryCacheConfig config = getCacheConfig(clazz);
+		CacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
@@ -89,7 +88,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	}
 
 	public void deleteById(Class<?> type, Object... params) {
-		TemporaryCacheConfig config = getCacheConfig(type);
+		CacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return;
 		}
@@ -105,7 +104,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	public void saveOrUpdate(Object bean) {
 		Class<?> clazz = getUserClass(
 				bean.getClass());
-		TemporaryCacheConfig config = getCacheConfig(clazz);
+		CacheConfig config = getCacheConfig(clazz);
 		if (!config.isEnable()) {
 			return;
 		}
@@ -119,7 +118,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	}
 
 	public <T> T getById(Class<T> type, Object... params) {
-		TemporaryCacheConfig config = getCacheConfig(type);
+		CacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return null;
 		}
@@ -131,7 +130,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 
 	public <K, V> Map<K, V> getInIdList(Class<V> type,
 			Collection<K> inIds, Object... params) {
-		TemporaryCacheConfig config = getCacheConfig(type);
+		CacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return null;
 		}
@@ -140,7 +139,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 	}
 
 	@Override
-	public TemporaryCache getCache() {
+	public TemporaryStorage getCache() {
 		return cache;
 	}
 
@@ -150,7 +149,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryCache> 
 			return false;
 		}
 
-		TemporaryCacheConfig config = getCacheConfig(type);
+		CacheConfig config = getCacheConfig(type);
 		if (config.isEnable() && config.isKeys()) {
 			if (getObjectRelationalMapping().getColumns(type).getPrimaryKeys().size() != params.length) {
 				return true;

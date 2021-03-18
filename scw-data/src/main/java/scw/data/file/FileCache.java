@@ -13,7 +13,7 @@ import scw.context.Destroy;
 import scw.context.Init;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.data.ExpiredCache;
+import scw.data.ExpiredStorage;
 import scw.env.SystemEnvironment;
 import scw.io.FileUtils;
 import scw.io.NoTypeSpecifiedSerializer;
@@ -24,7 +24,7 @@ import scw.logger.LoggerFactory;
 import scw.net.uri.UriUtils;
 
 @SuppressWarnings("unchecked")
-public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy {
+public class FileCache extends TimerTask implements ExpiredStorage, Init, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(FileCache.class);
 	private Timer timer;
 	private final int exp;// 0表示不过期
@@ -284,7 +284,7 @@ public class FileCache extends TimerTask implements ExpiredCache, Init, Destroy 
 		}
 	}
 
-	public static ExpiredCache create(String cacheDirectorySuffix, int exp) {
+	public static ExpiredStorage create(String cacheDirectorySuffix, int exp) {
 		return new FileCache(exp,
 				SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
 	}

@@ -1,6 +1,6 @@
 package scw.timer;
 
-import scw.locks.Lock;
+import java.util.concurrent.locks.Lock;
 
 public interface TaskLockFactory {
 	Lock getLock(TaskConfig taskConfig, long executionTime);

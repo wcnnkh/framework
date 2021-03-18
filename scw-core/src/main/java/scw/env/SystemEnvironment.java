@@ -11,6 +11,7 @@ import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
 import scw.instance.support.DefaultInstanceFactory;
 import scw.io.FileUtils;
+import scw.util.Accept;
 import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
 import scw.value.StringValue;
@@ -156,8 +157,23 @@ public final class SystemEnvironment extends DefaultEnvironment {
 			return file.getParent() == null ? path : file.getParent();
 		}
 
-		if (file.getParent() != null) {
-			File wi = FileUtils.searchDirectory(file.getParentFile(), "WEB-INF");
+		file = file.getParentFile();
+		if (file != null) {
+			final File binDirectory = new File(file, "bin");
+			// 路径/xxxx/src/main/webapp/WEB-INF 4层深度
+			File wi = FileUtils.search(file, new Accept<File>() {
+				
+				public boolean accept(File e) {
+					if(e.isDirectory() && "WEB-INF".equals(e.getName())){
+						//eclipse会出现一个bin目录，忽略此目录
+						if(binDirectory.exists() && binDirectory.isDirectory() && e.getPath().startsWith(binDirectory.getPath())){
+							return false;
+						}
+						return true;
+					}
+					return false;
+				}
+			}, 4);
 			if (wi != null) {
 				return wi.getParent();
 			}

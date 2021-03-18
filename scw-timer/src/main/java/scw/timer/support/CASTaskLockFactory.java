@@ -1,8 +1,9 @@
 package scw.timer.support;
 
+import java.util.concurrent.locks.Lock;
+
 import scw.context.annotation.Provider;
 import scw.data.cas.CASOperations;
-import scw.locks.Lock;
 import scw.memcached.Memcached;
 import scw.redis.Redis;
 import scw.timer.TaskConfig;

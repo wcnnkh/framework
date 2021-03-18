@@ -1,6 +1,7 @@
 package scw.timer.support;
 
-import scw.locks.Lock;
+import java.util.concurrent.locks.Lock;
+
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.timer.TaskConfig;

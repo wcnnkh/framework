@@ -12,8 +12,23 @@
 		<commons-fileupload.version>1.3.3</commons-fileupload.version>
 	</properties>
 
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-core</artifactId>
@@ -29,12 +44,6 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-transaction</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-retry</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -59,12 +68,6 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-boot</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-locks</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -109,7 +112,7 @@
 				<artifactId>scw-web</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-rpc</artifactId>
@@ -349,31 +352,31 @@
 				<artifactId>scw-jmx</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-protobuf</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-kryo</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-fastjson</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-hessian</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-gson</artifactId>
@@ -513,13 +516,11 @@
 		<module>scw-sql</module>
 		<module>scw-tcc</module>
 		<module>scw-messageing</module>
-		<module>scw-locks</module>
 		<module>scw-context</module>
 		<module>scw-jms</module>
 		<module>scw-activemq</module>
 		<module>scw-amqp</module>
 		<module>scw-rabbitmq</module>
-		<module>scw-retry</module>
 		<module>scw-protobuf</module>
 		<module>scw-kryo</module>
 		<module>scw-fastjson</module>

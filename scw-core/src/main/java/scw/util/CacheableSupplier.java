@@ -12,11 +12,15 @@ public class CacheableSupplier<T> implements Supplier<T>{
 		if(cache == null){
 			synchronized (this) {
 				if(cache == null){
-					setCache(supplier.get());
+					setCache(forceGet());
 				}
 			}
 		}
 		return cache.get();
+	}
+	
+	public T forceGet(){
+		return supplier.get();
 	}
 
 	public void setCache(T cache){
@@ -28,7 +32,7 @@ public class CacheableSupplier<T> implements Supplier<T>{
 	 */
 	public void refresh(){
 		synchronized (this) {
-			setCache(supplier.get());
+			setCache(forceGet());
 		}
 	}
 }

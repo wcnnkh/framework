@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.beans.BeanFactory;
 import scw.core.utils.StringUtils;
-import scw.data.TemporaryCache;
+import scw.data.TemporaryStorage;
 import scw.db.database.DataBase;
 import scw.env.PropertyManager;
 import scw.env.SystemEnvironment;
@@ -23,7 +23,7 @@ public abstract class ConfigurableDB extends AbstractDB {
 	private final AtomicBoolean init = new AtomicBoolean(false);
 	private volatile PropertyManager propertyManager;
 	private DataBase dataBase;
-	private TemporaryCache temporaryCache;
+	private TemporaryStorage temporaryCache;
 
 	public ConfigurableDB() {
 	}
@@ -32,7 +32,7 @@ public abstract class ConfigurableDB extends AbstractDB {
 		loadProperties(configLocation);
 	}
 
-	public void setTemporaryCache(TemporaryCache temporaryCache) {
+	public void setTemporaryCache(TemporaryStorage temporaryCache) {
 		this.temporaryCache = temporaryCache;
 	}
 
@@ -75,15 +75,15 @@ public abstract class ConfigurableDB extends AbstractDB {
 		return super.getSqlDialect();
 	}
 
-	private TemporaryCache getTemporaryCache() {
+	private TemporaryStorage getTemporaryCache() {
 		if (temporaryCache != null) {
 			return temporaryCache;
 		}
 
 		BeanFactory beanFactory = getBeanFactory();
 		if (beanFactory != null) {
-			if (beanFactory.isInstance(TemporaryCache.class)) {
-				return beanFactory.getInstance(TemporaryCache.class);
+			if (beanFactory.isInstance(TemporaryStorage.class)) {
+				return beanFactory.getInstance(TemporaryStorage.class);
 			}
 		}
 		return null;
@@ -91,7 +91,7 @@ public abstract class ConfigurableDB extends AbstractDB {
 
 	@Override
 	protected CacheManager createDefaultCacheManager() {
-		TemporaryCache temporaryCache = getTemporaryCache();
+		TemporaryStorage temporaryCache = getTemporaryCache();
 		if (temporaryCache != null) {
 			String keyPrefix = getCachePrefix();
 			logger.info("Use temporary cache [{}], key prefix [{}]",

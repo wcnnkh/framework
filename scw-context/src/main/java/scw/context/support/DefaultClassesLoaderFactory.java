@@ -7,6 +7,7 @@ import scw.context.ClassesLoaderFactory;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.filter.TypeFilter;
+import scw.core.type.scanner.DefaultClassScanner;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.util.Accept;

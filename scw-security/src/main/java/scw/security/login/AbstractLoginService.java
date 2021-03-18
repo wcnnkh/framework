@@ -3,19 +3,19 @@ package scw.security.login;
 import scw.core.Assert;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.data.TemporaryCache;
+import scw.data.TemporaryStorage;
 import scw.util.XUtils;
 
 public abstract class AbstractLoginService<T> implements LoginService<T> {
-	private final TemporaryCache temporaryCache;
+	private final TemporaryStorage temporaryCache;
 	private final int exp;
 
-	public AbstractLoginService(TemporaryCache temporaryCache, int exp) {
+	public AbstractLoginService(TemporaryStorage temporaryCache, int exp) {
 		this.temporaryCache = temporaryCache;
 		this.exp = exp;
 	}
 
-	public TemporaryCache getTemporaryCache() {
+	public TemporaryStorage getTemporaryCache() {
 		return temporaryCache;
 	}
 

@@ -1,7 +1,8 @@
 package scw.context.transaction;
 
 import scw.aop.MethodInterceptor;
-import scw.context.annotation.Transactional;
+import scw.context.annotation.Provider;
+import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.MethodInvoker;
 import scw.logger.Logger;
@@ -16,6 +17,7 @@ import scw.transaction.TransactionUtils;
  * @author shuchaowen
  *
  */
+@Provider(order=Ordered.HIGHEST_PRECEDENCE)
 public final class TransactionMethodInterceptor implements MethodInterceptor{
 	private static Logger logger = LoggerUtils.getLogger(TransactionMethodInterceptor.class);
 	private TransactionDefinition transactionDefinition;

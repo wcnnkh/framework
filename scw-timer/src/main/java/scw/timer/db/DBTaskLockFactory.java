@@ -1,8 +1,9 @@
 package scw.timer.db;
 
+import java.util.concurrent.locks.Lock;
+
 import scw.context.annotation.Provider;
 import scw.db.DB;
-import scw.locks.Lock;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.timer.TaskConfig;

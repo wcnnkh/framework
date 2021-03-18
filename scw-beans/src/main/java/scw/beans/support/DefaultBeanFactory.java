@@ -7,6 +7,7 @@ import java.util.Iterator;
 
 import scw.aop.AopPolicy;
 import scw.aop.ConfigurableAop;
+import scw.aop.support.DefaultConfigurableAop;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionRegistry;
 import scw.beans.BeanFactory;
@@ -19,7 +20,6 @@ import scw.beans.SingletonBeanRegistry;
 import scw.beans.ioc.Ioc;
 import scw.context.ClassesLoader;
 import scw.context.ConfigurableClassesLoader;
-import scw.context.support.DefaultAop;
 import scw.context.support.DefaultProviderLoaderFactory;
 import scw.context.support.LifecycleAuxiliary;
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
@@ -53,7 +53,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		};
 	};
 
-	private final DefaultAop aop = new DefaultAop(environment);
+	private final DefaultConfigurableAop aop = new DefaultConfigurableAop(environment);
 
 	private final DefaultProviderLoaderFactory contextLoader = new DefaultProviderLoaderFactory(
 			environment, this);

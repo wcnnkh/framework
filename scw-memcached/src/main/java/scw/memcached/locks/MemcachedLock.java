@@ -3,44 +3,35 @@ package scw.memcached.locks;
 import java.util.concurrent.TimeUnit;
 
 import scw.data.cas.CAS;
-import scw.locks.AbstractLock;
+import scw.locks.RenewableLock;
 import scw.memcached.Memcached;
 
-public final class MemcachedLock extends AbstractLock {
+public final class MemcachedLock extends RenewableLock {
 	private final Memcached memcached;
 	private final String key;
 	private final String id;
-	private final int timeout;
 
-	public MemcachedLock(Memcached memcached, String key, String id, int timeout) {
+	public MemcachedLock(Memcached memcached, String key, String id, TimeUnit timeUnit, long timeout) {
+		super(timeUnit, timeout);
 		this.memcached = memcached;
 		this.key = key;
 		this.id = id;
-		this.timeout = timeout;
 	}
 
 	public boolean tryLock() {
-		boolean b = memcached.add(key, timeout, id);
+		boolean b = memcached.add(key, (int)getTimeout(TimeUnit.SECONDS), id);
 		if(b){
-			autoRenewal(timeout/2, TimeUnit.SECONDS);
+			autoRenewal();
 		}
 		return b;
 	}
 
-	public boolean unlock() {
+	public void unlock() {
+		cancelAutoRenewal();
 		CAS<String> cas = memcached.getCASOperations().get(key);
 		if (id.equals(cas.getValue())) {
-			boolean b = memcached.getCASOperations().delete(key, cas.getCas());
-			if(b){
-				cancelAutoRenewal();
-			}
-			return b;
+			memcached.getCASOperations().delete(key, cas.getCas());
 		}
-		return false;
-	}
-
-	public boolean renewal() {
-		return renewal(timeout, TimeUnit.SECONDS);
 	}
 
 	public boolean renewal(long time, TimeUnit unit) {

@@ -4,6 +4,8 @@ import scw.context.ClassesLoader;
 import scw.context.ProviderLoaderFactory;
 import scw.context.annotation.ProviderClassAccept;
 import scw.context.annotation.ProviderServiceLoader;
+import scw.context.locks.LockMethodInterceptor;
+import scw.context.transaction.TransactionMethodInterceptor;
 import scw.env.Environment;
 import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
@@ -31,6 +33,10 @@ public class DefaultProviderLoaderFactory extends
 		Supplier<String> packageName = environment.getObservableValue("context.package.name", String.class, null);
 		ClassesLoader contextClassesLoader = new ClassScannerClassesLoader(this, this, packageName, this);
 		getContextClassesLoader().add(contextClassesLoader);
+		
+		//添加默认的类
+		getContextClassesLoader().add((Class)TransactionMethodInterceptor.class);
+		getContextClassesLoader().add((Class)LockMethodInterceptor.class);
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })

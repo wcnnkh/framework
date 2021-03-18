@@ -1,6 +1,5 @@
 package scw.context.transaction;
 
-import scw.context.annotation.Transactional;
 import scw.transaction.Isolation;
 import scw.transaction.Propagation;
 import scw.transaction.TransactionDefinition;

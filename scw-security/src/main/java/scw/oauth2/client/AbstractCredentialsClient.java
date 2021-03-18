@@ -1,13 +1,13 @@
 package scw.oauth2.client;
 
-import scw.data.TemporaryCache;
+import scw.data.TemporaryStorage;
 import scw.oauth2.AccessToken;
 
 public abstract class AbstractCredentialsClient implements CredentialsClient {
-	protected final TemporaryCache temporaryCache;
+	protected final TemporaryStorage temporaryCache;
 	private int tokenExpireAheadTime = 60;//token提前过期时间
 
-	public AbstractCredentialsClient(TemporaryCache temporaryCache) {
+	public AbstractCredentialsClient(TemporaryStorage temporaryCache) {
 		this.temporaryCache = temporaryCache;
 	}
 	

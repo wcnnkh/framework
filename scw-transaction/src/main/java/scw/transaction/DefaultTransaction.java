@@ -102,7 +102,7 @@ public final class DefaultTransaction implements Transaction{
 			resourceToUse = resourceMap.get(name);
 		}
 		
-		if(resource == null){
+		if(resourceToUse == null){
 			resourceMap.put(name, resource);
 			resourceToUse = resource;
 		}
