@@ -9,11 +9,10 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import scw.context.Destroy;
-import scw.context.Init;
+import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.data.ExpiredStorage;
+import scw.data.Storage;
 import scw.env.SystemEnvironment;
 import scw.io.FileUtils;
 import scw.io.NoTypeSpecifiedSerializer;
@@ -24,18 +23,19 @@ import scw.logger.LoggerFactory;
 import scw.net.uri.UriUtils;
 
 @SuppressWarnings("unchecked")
-public class FileCache extends TimerTask implements ExpiredStorage, Init, Destroy {
-	private static Logger logger = LoggerFactory.getLogger(FileCache.class);
-	private Timer timer;
+public class DirectoryStorage extends TimerTask implements Storage {
+	private static Logger logger = LoggerFactory.getLogger(DirectoryStorage.class);
+	//守望线程，自动退出
+	private static final Timer TIMER = new Timer(DirectoryStorage.class.getSimpleName(), true);
 	private final int exp;// 0表示不过期
 	private final NoTypeSpecifiedSerializer serializer;
-	private final String cacheDirectory;
+	private final File directory;
 
 	/**
 	 * @param exp
 	 *            单位:秒
 	 */
-	protected FileCache(int exp) {
+	protected DirectoryStorage(int exp) {
 		this(exp, SerializerUtils.DEFAULT_SERIALIZER,
 				SystemEnvironment.getInstance().getTempDirectoryPath()
 						+ SystemEnvironment.getInstance().getPrivateId() + File.separator + "file_cache_"
@@ -47,8 +47,12 @@ public class FileCache extends TimerTask implements ExpiredStorage, Init, Destro
 	 *            单位:秒
 	 * @param cacheDirectory
 	 */
-	public FileCache(int exp, String cacheDirectory) {
+	public DirectoryStorage(int exp, String cacheDirectory) {
 		this(exp, SerializerUtils.DEFAULT_SERIALIZER, cacheDirectory);
+	}
+	
+	public DirectoryStorage(int exp, NoTypeSpecifiedSerializer serializer, String directory) {
+		this(exp, SerializerUtils.DEFAULT_SERIALIZER, new File(StringUtils.cleanPath(directory)));
 	}
 
 	/**
@@ -56,32 +60,26 @@ public class FileCache extends TimerTask implements ExpiredStorage, Init, Destro
 	 *            单位:秒
 	 * @param serializer
 	 * @param charsetName
-	 * @param cacheDirectory
+	 * @param directory
 	 */
-	public FileCache(int exp, NoTypeSpecifiedSerializer serializer, String cacheDirectory) {
+	public DirectoryStorage(int exp, NoTypeSpecifiedSerializer serializer, File directory) {
+		Assert.requiredArgument(serializer != null, "serializer");
+		Assert.requiredArgument(directory != null && directory.isDirectory(), "directory");
 		this.exp = exp;
 		this.serializer = serializer;
-		this.cacheDirectory = StringUtils.cleanPath(cacheDirectory);
-		logger.info("{} exp is {} use cache directory: {}", getClass().getName(), exp, this.cacheDirectory);
-	}
-
-	public void init() {
+		this.directory = directory;
+		logger.info("{} exp is {} use cache directory: {}", getClass().getName(), exp, this.directory);
 		if (exp > 0) {
-			timer = new Timer(getClass().getName());
-			timer.schedule(this, exp * 1000L, exp * 1000L);
+			TIMER.schedule(this, exp * 1000L, exp * 1000L);
 		}
-	}
-
-	public final int getExp() {
-		return exp;
 	}
 
 	public final NoTypeSpecifiedSerializer getSerializer() {
 		return serializer;
 	}
 
-	public final String getCacheDirectory() {
-		return cacheDirectory;
+	public File getDirectory() {
+		return directory;
 	}
 
 	protected final String getKey(File file) {
@@ -90,7 +88,7 @@ public class FileCache extends TimerTask implements ExpiredStorage, Init, Destro
 
 	protected final File getFile(String key) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(cacheDirectory);
+		sb.append(directory);
 		sb.append(File.separator);
 		sb.append(hashPath(key));
 		sb.append(File.separator);
@@ -249,19 +247,18 @@ public class FileCache extends TimerTask implements ExpiredStorage, Init, Destro
 		}
 	}
 
-	private void sannerExpireFile(String rootPath, long currentTimeMillis) {
-		File rootFile = new File(rootPath);
-		if (!rootFile.exists()) {
+	private void sannerExpireFile(File directory, long currentTimeMillis) {
+		if (!directory.exists()) {
 			return;
 		}
 
-		for (File file : rootFile.listFiles()) {
+		for (File file : directory.listFiles()) {
 			if (file == null) {
 				continue;
 			}
 
 			if (file.isDirectory()) {
-				sannerExpireFile(file.getPath(), currentTimeMillis);
+				sannerExpireFile(file, currentTimeMillis);
 			} else {
 				scanner(file, currentTimeMillis);
 			}
@@ -271,22 +268,10 @@ public class FileCache extends TimerTask implements ExpiredStorage, Init, Destro
 	@Override
 	public void run() {
 		try {
-			sannerExpireFile(cacheDirectory, scheduledExecutionTime());
+			sannerExpireFile(directory, scheduledExecutionTime());
 		} catch (Exception e) {
 			logger.error(e, "执行过期缓存扫描异常");
 		}
-	}
-
-	public void destroy() {
-		cancel();
-		if (timer != null) {
-			timer.cancel();
-		}
-	}
-
-	public static ExpiredStorage create(String cacheDirectorySuffix, int exp) {
-		return new FileCache(exp,
-				SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
 	}
 
 	public void delete(Collection<String> keys) {
@@ -301,5 +286,10 @@ public class FileCache extends TimerTask implements ExpiredStorage, Init, Destro
 
 	public int getMaxExpirationDate() {
 		return exp;
+	}
+	
+	public static DirectoryStorage create(String cacheDirectorySuffix, int exp) {
+		return new DirectoryStorage(exp,
+				SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
 	}
 }
