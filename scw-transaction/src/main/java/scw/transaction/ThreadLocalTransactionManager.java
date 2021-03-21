@@ -61,8 +61,8 @@ public class ThreadLocalTransactionManager implements TransactionManager{
 				transaction = new DefaultTransaction(transaction, transactionDefinition, true);
 			} else {
 				if (transaction.isActive()) {
-					transaction = new DefaultTransaction(transaction, transactionDefinition);
-					transaction.createTempSavepoint();
+					Savepoint savepoint = transaction.createSavepoint();
+					transaction = new DefaultTransaction(transaction, transactionDefinition, savepoint);
 				} else {
 					transaction = new DefaultTransaction(transaction, transactionDefinition);
 				}
@@ -87,7 +87,7 @@ public class ThreadLocalTransactionManager implements TransactionManager{
 	 * @throws Throwable
 	 */
 	public void commit(Transaction transaction) throws Throwable {
-		if (transaction.isComplete()) {
+		if (transaction.isCompleted()) {
 			return;
 		}
 
@@ -102,7 +102,7 @@ public class ThreadLocalTransactionManager implements TransactionManager{
 			//这里不使用try-finally,所以外部使用出现异常时一定要调用rollback
 			localTransaction.commit();
 			try {
-				localTransaction.completion();
+				localTransaction.isCompleted();
 			} finally {
 				changeLocal(localTransaction);
 			}
@@ -114,7 +114,7 @@ public class ThreadLocalTransactionManager implements TransactionManager{
 	 * @param transaction
 	 */
 	public void rollback(Transaction transaction) {
-		if (transaction.isComplete()) {
+		if (transaction.isCompleted()) {
 			return;
 		}
 
@@ -127,7 +127,7 @@ public class ThreadLocalTransactionManager implements TransactionManager{
 			localTransaction.rollback();
 		} finally {
 			try {
-				localTransaction.completion();
+				localTransaction.complete();
 			} finally {
 				changeLocal(localTransaction);
 			}

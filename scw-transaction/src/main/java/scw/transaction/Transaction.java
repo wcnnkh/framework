@@ -52,7 +52,7 @@ public interface Transaction {
 	boolean setRollbackOnly(boolean rollbackOnly) throws TransactionException;
 	
 	/**
-	 * 是否是一个新创建的事务
+	 * 是否是一个新的事务
 	 * @return
 	 */
 	boolean isNew();
@@ -67,11 +67,11 @@ public interface Transaction {
 	 * 事务是否已完成(结束)
 	 * @return
 	 */
-	boolean isComplete();
+	boolean isCompleted();
 	
 	/**
-	 * 事务是否已提交
+	 * 是否存在保存点，即嵌套事务
 	 * @return
 	 */
-	boolean isCommit();
+	boolean hasSavepoint();
 }

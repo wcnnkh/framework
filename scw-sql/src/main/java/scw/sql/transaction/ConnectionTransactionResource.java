@@ -53,7 +53,7 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 		return connectionFactory;
 	}
 
-	public void completion() {
+	public void complete() {
 		if (hasConnection()) {
 			if (isActive()) {
 				try {

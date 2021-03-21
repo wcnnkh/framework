@@ -33,5 +33,5 @@ public interface TransactionLifecycle {
 	/**
 	 * 事务结束后调用
 	 */
-	void completion();
+	void complete();
 }

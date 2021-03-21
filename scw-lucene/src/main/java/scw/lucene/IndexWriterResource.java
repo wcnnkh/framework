@@ -31,7 +31,7 @@ public class IndexWriterResource implements TransactionResource {
 		}
 	}
 
-	public void completion() {
+	public void complete() {
 		try {
 			indexWriter.close();
 		} catch (IOException e) {
