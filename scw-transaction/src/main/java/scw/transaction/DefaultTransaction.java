@@ -15,6 +15,12 @@ import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
+/**
+ * 默认的事务实现<br/>
+ * //TODO 是否应该重试？目前仅定义为事务载体，重试机制由使用方实现 
+ * @author shuchaowen
+ *
+ */
 public final class DefaultTransaction implements Transaction, TransactionResource{
 	private static Logger logger = LoggerFactory.getLogger(DefaultTransaction.class);
 	private final DefaultTransaction parent;

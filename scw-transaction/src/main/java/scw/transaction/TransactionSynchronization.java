@@ -1,9 +1,21 @@
 package scw.transaction;
 
+/**
+ * 事务同步
+ * @author shuchaowen
+ *
+ */
 public interface TransactionSynchronization {
 
+	/**
+	 * 提交
+	 * @throws Throwable
+	 */
 	void commit() throws Throwable;
 
+	/**
+	 * 回滚
+	 */
 	void rollback();
 
 	/**
