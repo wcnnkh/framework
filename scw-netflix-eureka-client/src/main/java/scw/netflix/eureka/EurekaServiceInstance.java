@@ -22,8 +22,8 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
+import scw.cloud.ServiceInstance;
 import scw.core.Assert;
-import scw.discovery.ServiceInstance;
 import scw.mapper.MapperUtils;
 
 import com.netflix.appinfo.InstanceInfo;

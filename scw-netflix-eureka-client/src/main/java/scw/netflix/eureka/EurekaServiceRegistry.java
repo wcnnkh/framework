@@ -22,7 +22,7 @@ import java.util.HashMap;
 
 import com.netflix.appinfo.InstanceInfo;
 
-import scw.discovery.ServiceRegistry;
+import scw.cloud.ServiceRegistry;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 

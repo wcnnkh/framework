@@ -1,4 +1,4 @@
-package scw.discovery;
+package scw.cloud;
 
 import java.util.List;
 
@@ -9,10 +9,10 @@ public interface DiscoveryClient {
 	 * @param serviceId The serviceId to query.
 	 * @return A List of ServiceInstance.
 	 */
-	List<ServiceInstance> getInstances(String name);
+	List<ServiceInstance> getInstances(String name) throws DiscoveryClientException;
 
 	/**
 	 * @return All known service names.
 	 */
-	List<String> getServices();
+	List<String> getServices() throws DiscoveryClientException;
 }

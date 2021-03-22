@@ -6,17 +6,18 @@
 		<artifactId>scw</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>scw-seata</artifactId>
+	<artifactId>scw-nacos-client</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-context</artifactId>
+			<artifactId>scw-cloud</artifactId>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/io.seata/seata-core -->
+		
+		<!-- https://mvnrepository.com/artifact/com.alibaba.nacos/nacos-client -->
 		<dependency>
-			<groupId>io.seata</groupId>
-			<artifactId>seata-all</artifactId>
-			<version>1.4.1</version>
+			<groupId>com.alibaba.nacos</groupId>
+			<artifactId>nacos-client</artifactId>
+			<version>2.0.0</version>
 		</dependency>
 	</dependencies>
 </project>

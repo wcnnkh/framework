@@ -561,5 +561,6 @@
 		<module>scw-rpc</module>
 		<module>scw-seata</module>
 		<module>scw-compensation</module>
+		<module>scw-nacos-client</module>
 	</modules>
 </project>

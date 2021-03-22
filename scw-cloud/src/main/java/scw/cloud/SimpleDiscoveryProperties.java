@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.discovery;
+package scw.cloud;
 
 import java.util.HashMap;
 import java.util.List;

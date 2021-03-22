@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.discovery;
+package scw.cloud;
 
 /**
  * Contract to register and deregister instances with a Service Registry.
@@ -25,20 +25,16 @@ package scw.discovery;
 public interface ServiceRegistry<T extends ServiceInstance> {
 
 	/**
-	 * Registers the registration. A registration typically has information
+	 * Registers the instance. A registration typically has information
 	 * about an instance, such as its hostname and port.
 	 * 
-	 * @param registration
-	 *            instance meta data
 	 */
-	void register(T instance);
+	void register(T instance) throws ServiceRegistryException;
 
 	/**
-	 * Deregisters the registration.
+	 * Deregisters the instance.
 	 * 
-	 * @param registration
-	 *            instance meta data
 	 */
-	void deregister(T instance);
+	void deregister(T instance) throws ServiceRegistryException;
 
 }

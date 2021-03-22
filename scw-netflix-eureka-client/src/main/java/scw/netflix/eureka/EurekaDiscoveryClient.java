@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import scw.cloud.DiscoveryClient;
+import scw.cloud.ServiceInstance;
 import scw.context.annotation.Provider;
-import scw.discovery.DiscoveryClient;
-import scw.discovery.ServiceInstance;
 
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;

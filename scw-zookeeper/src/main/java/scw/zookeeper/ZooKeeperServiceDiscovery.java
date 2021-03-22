@@ -6,9 +6,9 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 
+import scw.cloud.ServiceInstance;
+import scw.cloud.SimpleDiscoveryClient;
 import scw.context.annotation.Provider;
-import scw.discovery.ServiceInstance;
-import scw.discovery.SimpleDiscoveryClient;
 import scw.io.JavaSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;

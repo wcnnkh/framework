@@ -25,9 +25,9 @@ import org.apache.commons.logging.LogFactory;
 
 import scw.aop.ProxyInstanceTarget;
 import scw.boot.Application;
+import scw.cloud.DefaultServiceInstance;
+import scw.cloud.ServiceInstance;
 import scw.core.Assert;
-import scw.discovery.DefaultServiceInstance;
-import scw.discovery.ServiceInstance;
 
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.HealthCheckHandler;
