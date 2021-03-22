@@ -27,7 +27,7 @@ public abstract class SecurityCodec extends AbstractToByteCodec<byte[]> {
 		try {
 			return keyFactory.generatePrivate(keySpec);
 		} catch (InvalidKeySpecException e) {
-			throw new CodecException(keySpec.getFormat(), e);
+			throw new CodecException(algorithm, e);
 		}
 	}
 
@@ -37,7 +37,7 @@ public abstract class SecurityCodec extends AbstractToByteCodec<byte[]> {
 		try {
 			return keyFactory.generatePublic(keySpec);
 		} catch (InvalidKeySpecException e) {
-			throw new CodecException(keySpec.getFormat(), e);
+			throw new CodecException(algorithm, e);
 		}
 	}
 }

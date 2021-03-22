@@ -1,5 +1,7 @@
 package scw.codec.support;
 
+import java.security.spec.AlgorithmParameterSpec;
+
 
 /**
  * DES
@@ -9,12 +11,22 @@ package scw.codec.support;
  */
 public class DES extends SymmetricCodec {
 	public static final String ALGORITHM = "DES";
-
-	public DES(byte[] secretKey, byte[] ivKey) {
-		this("PKCS5Padding", secretKey, ivKey);
+	public static final String FILL_STYLE = "PKCS5Padding";
+	
+	public DES(byte[] secreKey, byte[] ivKey){
+		this(FILL_STYLE, secreKey, ivKey);
 	}
 	
-	public DES(String padding, byte[] secretKey, byte[] ivKey){
-		super(ALGORITHM, padding, secretKey, ivKey);
+	public DES(String fillStyle, byte[] secreKey, byte[] ivKey) {
+		super(ALGORITHM, fillStyle, secreKey, ivKey);
+	}
+	
+	public DES(String fillStyle, byte[] secreKey, AlgorithmParameterSpec algorithmParameterSpec) {
+		super(ALGORITHM, fillStyle, secreKey, algorithmParameterSpec);
+	}
+	
+	public DES(String workMode, String fillStyle, byte[] secretKey,
+			AlgorithmParameterSpec algorithmParameterSpec){
+		super(ALGORITHM, workMode, fillStyle, secretKey, algorithmParameterSpec);
 	}
 }

@@ -153,7 +153,7 @@ public final class WeiXinMiniprogramUtils {
 	public static PhoneNumber decrypt(String encryptedData, String key, String iv) {
 		byte[] keyBytes = Base64.DEFAULT.decode(key);
 		byte[] ivKeys = Base64.DEFAULT.decode(iv);
-		String content= Base64.DEFAULT.toDecoder(AES.createNoPaddingCodec(keyBytes, ivKeys)).toDecoder(CharsetCodec.UTF_8).decode(encryptedData);
+		String content= Base64.DEFAULT.toDecoder(new AES(AES.NO_PADDING, keyBytes, ivKeys)).toDecoder(CharsetCodec.UTF_8).decode(encryptedData);
 		return JSONUtils.getJsonSupport().parseObject(content, PhoneNumber.class);
 	}
 }

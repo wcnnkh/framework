@@ -18,7 +18,8 @@ public class KeyCodec extends CryptoCodec {
 	protected final Key key;
 
 	/**
-	 * @param algorithm 算法
+	 * @param algorithm
+	 *            算法
 	 * @param key
 	 */
 	public KeyCodec(String algorithm, Key key) {
@@ -27,7 +28,7 @@ public class KeyCodec extends CryptoCodec {
 		this.algorithm = algorithm;
 		this.key = key;
 	}
-	
+
 	public final String getAlgorithm() {
 		return algorithm;
 	}
@@ -35,13 +36,19 @@ public class KeyCodec extends CryptoCodec {
 	public final Key getKey() {
 		return key;
 	}
-	
-	public Cipher getCipher(){
+
+	public Cipher getCipher() {
 		return getCipher(algorithm);
 	}
-	
+
 	public byte[] encode(byte[] source) throws EncodeException {
 		Cipher cipher = getCipher();
+		/**
+		 * 一次能加密的明文长度与密钥长度成正比：<br/>
+		 * len_in_byte(raw_data) = len_in_bit(key)/8 -11，如 1024bit
+		 * 的密钥，一次能加密的内容长度为 1024/8 -11 = 117 byte。<br/>
+		 * 所以非对称加密一般都用于加密对称加密算法的密钥，而不是直接加密内容。<br/>
+		 */
 		int maxBlock = key.getEncoded().length / 8 - 11; // 最大块
 		@SuppressWarnings("resource")
 		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
@@ -67,7 +74,7 @@ public class KeyCodec extends CryptoCodec {
 		}
 		return out.toByteArray();
 	}
-	
+
 	public byte[] decode(byte[] source) throws DecodeException {
 		int maxBlock = key.getEncoded().length / 8; // 最大块
 		@SuppressWarnings("resource")
@@ -95,20 +102,28 @@ public class KeyCodec extends CryptoCodec {
 		}
 		return out.toByteArray();
 	}
-	
-	public PrivateKey getPrivateKey(byte[] privateKey) throws InvalidKeySpecException, NoSuchAlgorithmException{
+
+	public PrivateKey getPrivateKey(byte[] privateKey)
+			throws InvalidKeySpecException, NoSuchAlgorithmException {
 		return getPrivateKey(algorithm, privateKey);
 	}
-	
-	public PublicKey getPublicKey(byte[] publicKey) throws InvalidKeySpecException, NoSuchAlgorithmException{
+
+	public PublicKey getPublicKey(byte[] publicKey)
+			throws InvalidKeySpecException, NoSuchAlgorithmException {
 		return getPublicKey(algorithm, publicKey);
 	}
-	
-	public static KeyCodec getPrivateKeyCodec(String algorithm, byte[] privateKey){
+
+	@Override
+	public String toString() {
+		return algorithm;
+	}
+
+	public static KeyCodec getPrivateKeyCodec(String algorithm,
+			byte[] privateKey) {
 		return new KeyCodec(algorithm, getPrivateKey(algorithm, privateKey));
 	}
-	
-	public static KeyCodec getPublicKeyCodec(String algorithm, byte[] publicKey){
+
+	public static KeyCodec getPublicKeyCodec(String algorithm, byte[] publicKey) {
 		return new KeyCodec(algorithm, getPrivateKey(algorithm, publicKey));
 	}
 }

@@ -51,4 +51,9 @@ public class MessageDigestSigner extends AbstractToByteSigner<byte[]>{
 			throw new CodecException(algorithm, e);
 		}
 	}
+	
+	@Override
+	public String toString() {
+		return algorithm;
+	}
 }

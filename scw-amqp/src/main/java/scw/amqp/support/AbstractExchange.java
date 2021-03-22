@@ -113,7 +113,7 @@ public abstract class AbstractExchange implements Exchange {
 				routingKey, messageProperties, body);
 		long transactionMessageConfirmDelay = messageProperties.getTransactionMessageConfirmDelay();
 		if(transaction != null && transactionMessageConfirmDelay > 0){
-			long delay = Math.abs(messageProperties.getDelay()) + transactionMessageConfirmDelay;
+			long delay = Math.max(0, messageProperties.getDelay()) + transactionMessageConfirmDelay;
 			MessageProperties confirmMessage = messageProperties.clone();
 			confirmMessage.setDelay(delay, TimeUnit.MILLISECONDS);
 			//发送延迟的确认消息
