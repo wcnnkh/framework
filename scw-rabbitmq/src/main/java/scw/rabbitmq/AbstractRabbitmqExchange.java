@@ -3,24 +3,24 @@ package scw.rabbitmq;
 import java.io.IOException;
 
 import scw.amqp.ExchangeDeclare;
+import scw.amqp.ExchangeException;
 import scw.amqp.MessageListener;
+import scw.amqp.MessageProperties;
 import scw.amqp.QueueDeclare;
 import scw.amqp.support.AbstractExchange;
-import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
+import scw.context.Init;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.json.JSONUtils;
 
 import com.rabbitmq.client.Channel;
 
-public abstract class AbstractRabbitmqExchange extends AbstractExchange {
+public abstract class AbstractRabbitmqExchange extends AbstractExchange implements Init {
 	static final String DIX_ROUTING_KEY = "scw.dix.routingKey";
 	static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
 	static final String DELAY_ROUTING_KEY = "scw.delay.routingKey";
 
-	public AbstractRabbitmqExchange(NoTypeSpecifiedSerializer serializer, ExchangeDeclare exchangeDeclare,
-			boolean enableLocalTransaction) {
-		super(serializer, exchangeDeclare, enableLocalTransaction);
+	public AbstractRabbitmqExchange(NoTypeSpecifiedSerializer serializer, ExchangeDeclare exchangeDeclare) {
+		super(serializer, exchangeDeclare);
 		checkName(exchangeDeclare.getName());
 	}
 
@@ -34,7 +34,6 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange {
 
 	public abstract QueueDeclare getDelayQueueDeclare();
 
-	@Override
 	public void init() throws Exception {
 		// 声明路由
 		declare(getExchangeDeclare(), null);
@@ -52,7 +51,6 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange {
 		// 声明延迟消息路由和队列
 		declare(getDelayExchangeDeclare(), delayQueueDeclare);
 		queueBind(getDelayExchangeDeclare(), delayQueueDeclare, DELAY_ROUTING_KEY, null);
-		super.init();
 	}
 
 	protected abstract Channel getChannel() throws IOException;
@@ -90,24 +88,30 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange {
 		declare(null, queueDeclare);
 		queueBind(getExchangeDeclare(), queueDeclare, routingKey, messageListener);
 	}
-
+	
 	@Override
-	public void basicPublish(MessageLog message) throws IOException {
-		ExchangeDeclare exchangeDeclare = message.getMessageProperties().getDelay() > 0 ? getDelayExchangeDeclare()
+	public void basicPublish(String routingKey,
+			MessageProperties messageProperties, byte[] body)
+			throws ExchangeException {
+		ExchangeDeclare exchangeDeclare = messageProperties.getDelay() > 0 ? getDelayExchangeDeclare()
 				: getExchangeDeclare();
 		if (logger.isDebugEnabled()) {
 			logger.debug("push exchange={}, routingKey={}, properties={}, body={}", exchangeDeclare.getName(),
-					message.getRoutingKey(), JSONUtils.toJSONString(message.getMessageProperties()),
-					StringUtils.getStringOperations().createString(message.getBody(), SystemEnvironment.getInstance().getCharsetName()));
+					routingKey, JSONUtils.toJSONString(messageProperties), String.valueOf(body));
 		}
 
-		if (message.getMessageProperties().getDeliveryMode() == null) {
-			message.getMessageProperties().setDeliveryMode(2);// 消息持久化
+		if (messageProperties.getDeliveryMode() == null) {
+			messageProperties.setDeliveryMode(2);// 消息持久化
 		}
 
-		Channel channel = getChannel();
-		channel.basicPublish(exchangeDeclare.getName(), message.getRoutingKey(),
-				RabbitmqUitls.toBasicProperties(message.getMessageProperties()), message.getBody());
+		Channel channel;
+		try {
+			channel = getChannel();
+			channel.basicPublish(exchangeDeclare.getName(), routingKey,
+					RabbitmqUitls.toBasicProperties(messageProperties), body);
+		} catch (IOException e) {
+			throw new ExchangeException(e);
+		}
 	}
 
 	protected boolean isMultiple() {

@@ -25,8 +25,8 @@ public class RabbitmqExchange extends AbstractRabbitmqExchange {
 	private final QueueDeclare dixQueueDeclare;
 
 	public RabbitmqExchange(NoTypeSpecifiedSerializer serializer, Connection connection,
-			ExchangeDeclare exchangeDeclare, boolean enableLocalTransaction) {
-		super(serializer, exchangeDeclare, enableLocalTransaction);
+			ExchangeDeclare exchangeDeclare) {
+		super(serializer, exchangeDeclare);
 		this.connection = connection;
 		checkName(exchangeDeclare.getName());
 

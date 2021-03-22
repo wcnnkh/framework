@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.core.Assert;
+import scw.core.OrderComparator;
 import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -224,8 +225,18 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 			}
 		}
 		
+		if(synchronizations.isEmpty()){
+			synchronizations = Collections.emptyList();
+		}else{
+			synchronizations.sort(OrderComparator.INSTANCE);
+			synchronizations = Collections.unmodifiableList(synchronizations);
+		}
+		
 		if(transactionLifecycles == null){
 			transactionLifecycles = Collections.emptyList();
+		}else{
+			transactionLifecycles.sort(OrderComparator.INSTANCE);
+			transactionLifecycles = Collections.unmodifiableList(transactionLifecycles);
 		}
 		
 		if(resourceMap == null){
@@ -284,7 +295,11 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		}
 		
 		for (TransactionLifecycle lifeCycle : transactionLifecycles) {
-			lifeCycle.afterCommit();
+			try {
+				lifeCycle.afterCommit();
+			} catch (Throwable e) {
+				logger.error(e, "AfterCommit transaction [{}] lifecycle[{}]", this, lifeCycle);
+			}
 		}
 	}
 
@@ -301,27 +316,40 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		init();
 		
 		for (TransactionLifecycle lifeCycle : transactionLifecycles) {
-			lifeCycle.beforeRollback();
+			try {
+				lifeCycle.beforeRollback();
+			} catch (Throwable e) {
+				logger.error(e, "BeforeRollback transaction [{}] lifecycle[{}]", this, lifeCycle);
+			}
 		}
 		
 		if(savepoint != null){
-			savepoint.rollback();
+			try {
+				savepoint.rollback();
+			} catch (Throwable e) {
+				logger.error(e, "Rollback savepoint transaction [{}] savepoint[{}]", this, savepoint);
+			}
 		}
 		
 		ListIterator<TransactionSynchronization> iterator = synchronizations.listIterator(synchronizations.size());
 		while (iterator.hasPrevious()) {
-			TransactionSynchronization transaction = iterator.previous();
-			if (transaction != null) {
+			TransactionSynchronization synchronization = iterator.previous();
+			if (synchronization != null) {
 				try {
-					transaction.rollback();
+					synchronization.rollback();
 				} catch (Throwable e) {
-					logger.error(e, transaction);
+					logger.error(e, "Rollback transaction [{}] synchronization[{}]", this, synchronization);
 				}
 			}
 		}
 		
 		for (TransactionLifecycle lifeCycle : transactionLifecycles) {
-			lifeCycle.afterRollback();
+			try {
+				lifeCycle.afterRollback();
+			} catch (Throwable e) {
+				logger.error(e, "AfterRollback transaction [{}] lifecycle[{}]", this, lifeCycle);
+			}
+			
 		}
 	}
 
@@ -338,23 +366,31 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		init();
 		
 		if(savepoint != null){
-			savepoint.release();
+			try {
+				savepoint.release();
+			} catch (Throwable e) {
+				logger.error(e, "Complete savepoint transaction [{}] savepoint[{}]", this, savepoint);
+			}
 		}
 		
 		ListIterator<TransactionSynchronization> iterator = synchronizations.listIterator(synchronizations.size());
 		while (iterator.hasPrevious()) {
-			TransactionSynchronization transaction = iterator.previous();
-			if (transaction != null) {
+			TransactionSynchronization synchronization = iterator.previous();
+			if (synchronization != null) {
 				try {
-					transaction.complete();
+					synchronization.complete();
 				} catch (Throwable e) {
-					logger.error(e, transaction);
+					logger.error(e, "Complete transaction [{}] synchronization[{}]", this, synchronization);
 				}
 			}
 		}
 		
 		for (TransactionLifecycle lifeCycle : transactionLifecycles) {
-			lifeCycle.complete();
+			try {
+				lifeCycle.complete();
+			} catch (Throwable e) {
+				logger.error(e, "Complete transaction [{}] lifeCycle[{}]", this, lifeCycle);
+			}
 		}
 	}
 }

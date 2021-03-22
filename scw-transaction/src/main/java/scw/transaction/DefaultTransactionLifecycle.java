@@ -1,7 +1,10 @@
 package scw.transaction;
 
+import scw.core.Ordered;
 
-public class DefaultTransactionLifecycle implements TransactionLifecycle {
+
+public class DefaultTransactionLifecycle implements TransactionLifecycle, Ordered {
+	
 
 	public void beforeCommit() throws Throwable {
 		// TODO Auto-generated method stub
@@ -21,6 +24,10 @@ public class DefaultTransactionLifecycle implements TransactionLifecycle {
 
 	public void complete() {
 		// TODO Auto-generated method stub
+	}
+
+	public int getOrder() {
+		return Ordered.DEFAULT_PRECEDENCE;
 	}
 
 }

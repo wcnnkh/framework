@@ -3,16 +3,18 @@ package scw.amqp;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import scw.core.utils.StringUtils;
+import scw.core.utils.XTime;
 import scw.math.NumberHolder;
 import scw.script.MathScriptEngine;
 import scw.value.AnyValue;
 import scw.value.Value;
 
-public class MessageProperties implements Serializable {
+public class MessageProperties implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private static final String DELAY_MESSAGE = "scw.delay";
 	private static final String RETRY_COUNT = "scw.retry.count";
@@ -21,7 +23,7 @@ public class MessageProperties implements Serializable {
 	private static final String RETRY_DELAY_SCRIPT = "scw.retry.delay";
 	private static final String RETRY_DELAY_MULTIPLE = "scw.retry.delay.multiple";
 	private static final String PUBLISH_ROUTING_KEY = "scw.publish.routingKey";
-	private static final String ENABLE_LOCAL_RETRY_PUSH = "scw.enable.local.retry.push";
+	private static final String TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY = "scw.transaction.message.confirm.delay";
 
 	private String contentType;
 	private String contentEncoding;
@@ -37,6 +39,28 @@ public class MessageProperties implements Serializable {
 	private String userId;
 	private String appId;
 	private String clusterId;
+
+	@Override
+	public MessageProperties clone() {
+		MessageProperties properties = new MessageProperties();
+		properties.contentType = this.contentType;
+		properties.contentEncoding = this.contentEncoding;
+		if(headers != null){
+			properties.headers = new LinkedHashMap<String, Object>(headers);
+		}
+		properties.deliveryMode = this.deliveryMode;
+		properties.priority = this.priority;
+		properties.correlationId = this.correlationId;
+		properties.replyTo = this.replyTo;
+		properties.expiration = this.expiration;
+		properties.messageId = this.messageId;
+		properties.timestamp = this.timestamp;
+		properties.type = this.type;
+		properties.userId = this.userId;
+		properties.appId = this.appId;
+		properties.clusterId = this.clusterId;
+		return properties;
+	}
 
 	public String getContentType() {
 		return contentType;
@@ -179,11 +203,21 @@ public class MessageProperties implements Serializable {
 
 	/**====================以下为框架支持的方法，并非AMQP协议内容==========================**/
 	
+	/**
+	 * 获取消息延迟发送时间(毫秒)
+	 * @return
+	 */
 	public long getDelay() {
 		Object delay = getHeader(DELAY_MESSAGE);
 		return delay == null ? 0 : StringUtils.parseLong(delay.toString());
 	}
 
+	/**
+	 * 设置消息延迟时间
+	 * @param delay
+	 * @param timeUnit
+	 * @return
+	 */
 	public MessageProperties setDelay(long delay, TimeUnit timeUnit) {
 		if (delay <= 0) {
 			removeHeader(DELAY_MESSAGE);
@@ -293,12 +327,22 @@ public class MessageProperties implements Serializable {
 		setHeader(PUBLISH_ROUTING_KEY, routingKey);
 	}
 	
-	public Boolean isEnableLocalRetryPush(){
-		Value value = getHeaderValue(ENABLE_LOCAL_RETRY_PUSH);
-		return value == null? null:value.getAsBoolean();
+	/**
+	 * 获取事务消息确认延迟, 默认10分钟<br/>
+	 * 使用在消息发送前先发送延迟消息来保证消息一定会发送成功
+	 * @return
+	 */
+	public long getTransactionMessageConfirmDelay(){
+		Value value = getHeaderValue(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY);
+		return (value == null || value.isEmpty())? (XTime.ONE_MINUTE * 10):value.getAsLongValue();
 	}
 	
-	public void setEnableLocalRetryPush(Boolean enableLocalRetryPush){
-		setHeader(ENABLE_LOCAL_RETRY_PUSH, enableLocalRetryPush);
+	/**
+	 * 设置事务消息的确认延迟
+	 * @param delay
+	 * @param timeUnit
+	 */
+	public void setTransactionMessageConfirmDelay(long delay, TimeUnit timeUnit){
+		setHeader(TRANSACTION_MESSAGE_CONFIRM_DELAY_KEY, timeUnit.toMillis(delay));
 	}
 }
