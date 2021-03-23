@@ -1,6 +1,7 @@
 package scw.codec.support;
 
 import scw.codec.AbstractCodec;
+import scw.codec.DecodeException;
 
 public class Base64 extends AbstractCodec<byte[], String>{
 	static private final int BASELENGTH = 128;
@@ -193,7 +194,7 @@ public class Base64 extends AbstractCodec<byte[], String>{
 		int len = removeWhiteSpace(base64Data);
 
 		if (len % FOURBYTE != 0) {
-			return null;// should be divisible by four
+			throw new DecodeException("should be divisible by four(应该可以被四整除)");
 		}
 
 		int numberQuadruple = (len / FOURBYTE);

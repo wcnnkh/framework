@@ -1,48 +1,38 @@
 package scw.codec.support;
 
-import java.security.Key;
-
-import scw.codec.Signer;
-import scw.core.Assert;
-import scw.lang.Nullable;
-
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
  * RSA
+ * 
  * @author shuchaowen
  *
  */
 public class RSA extends AsymmetricCodec {
 	/**
-	 * ALGORITHM ['ælgərɪð(ə)m] 算法的意思
-	 */
-	public static final String ALGORITHM = "RSA";
-	public static final String SIGN_ALGORITHMS = "SHA1WithRSA";
-	
-	private final Signer<byte[], byte[]> signer;
-	
-	/**
-	 * 公钥和私钥应该至少存在一个
-	 * @param privateKey
 	 * @param publicKey
+	 * @param privateKey
+	 * @param maxBlock keySize/8
 	 */
-	public RSA(@Nullable byte[] privateKey, @Nullable byte[] publicKey) {
-		super(ALGORITHM, SIGN_ALGORITHMS, getKey(ALGORITHM, privateKey, publicKey));
-		this.signer = getSigner(ALGORITHM, SIGN_ALGORITHMS, privateKey, publicKey);
-	}
-	
-	private static Key getKey(String algorithm, byte[] privateKey, byte[] publicKey){
-		Assert.requiredArgument(privateKey == null && publicKey == null, "privateKey or publicKey");
-		if(privateKey != null){
-			return getPrivateKey(algorithm, privateKey);
-		}else if(publicKey != null){
-			return getPublicKey(algorithm, publicKey);
-		}
-		return null;
+	public RSA(PublicKey publicKey, PrivateKey privateKey, int maxBlock){
+		super(RSA, publicKey, privateKey, maxBlock);
 	}
 
-	@Override
-	public Signer<byte[], byte[]> getSigner() {
-		return signer;
+	/**
+	 * @param privateKey
+	 * @param publicKey
+	 * @param maxBlock keySize/8
+	 */
+	public RSA(PrivateKey privateKey, PublicKey publicKey, int maxBlock) {
+		super(RSA, privateKey, publicKey, maxBlock);
+	}
+	
+	public static PrivateKey getPrivateKey(byte[] key){
+		return getPrivateKey(RSA, key);
+	}
+	
+	public static PublicKey getPublicKey(byte[] key){
+		return getPublicKey(RSA, key);
 	}
 }
