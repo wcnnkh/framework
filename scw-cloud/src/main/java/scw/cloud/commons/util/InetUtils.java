@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package scw.commons.util;
+package scw.cloud.commons.util;
 
 import java.io.Closeable;
 import java.io.IOException;
