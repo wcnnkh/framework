@@ -76,6 +76,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 	 * @param savepoint
 	 */
 	public DefaultTransaction(DefaultTransaction parent, TransactionDefinition definition, boolean active, boolean isNew, @Nullable Savepoint savepoint){
+		Assert.isTrue(!(!isNew && parent == null), "An old transaction must have a parent(一个旧的事务一定存在父级)");
 		this.parent = parent;
 		this.active = active;
 		this.isNew = isNew;
@@ -85,7 +86,7 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		/**
 		 * 如果当前是一个嵌套事务，或者父级是一个嵌套事务，那么应该受父级管理
 		 */
-		if(savepoint != null || parent.hasSavepoint()){
+		if(parent != null && (savepoint != null || parent.hasSavepoint())){
 			parent.addSynchronization(this);
 		}
 	}
@@ -210,18 +211,18 @@ public final class DefaultTransaction implements Transaction, TransactionResourc
 		}
 		
 		init = true;
-		if (resourceMap == null) {
+		if(resourceMap == null){
 			this.synchronizations = Collections.emptyList();
-		}
-		
-		if(synchronizations == null){
-			synchronizations = new ArrayList<TransactionSynchronization>(resourceMap.size());
-		}
-		
-		for (Entry<Object, Object> entry : resourceMap.entrySet()) {
-			Object resource = entry.getValue();
-			if (resource instanceof TransactionSynchronization) {
-				synchronizations.add((TransactionSynchronization) resource);
+		} else {
+			if(synchronizations == null){
+				synchronizations = new ArrayList<TransactionSynchronization>(resourceMap.size());
+			}
+			
+			for (Entry<Object, Object> entry : resourceMap.entrySet()) {
+				Object resource = entry.getValue();
+				if (resource instanceof TransactionSynchronization) {
+					synchronizations.add((TransactionSynchronization) resource);
+				}
 			}
 		}
 		
