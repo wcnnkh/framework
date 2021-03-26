@@ -27,6 +27,7 @@ import scw.logger.LoggerFactory;
 import scw.value.AnyValue;
 import scw.value.EmptyValue;
 import scw.value.Value;
+import scw.value.factory.ConfigurablePropertyFactory;
 import scw.value.factory.ListenablePropertyFactory;
 
 /**
@@ -35,7 +36,7 @@ import scw.value.factory.ListenablePropertyFactory;
  *
  */
 @Provider(order=Integer.MIN_VALUE)
-public class ZookeeperCloudPropertyFactory implements ListenablePropertyFactory, scw.value.factory.ConfigurablePropertyFactory, Watcher{
+public class ZookeeperCloudPropertyFactory implements ListenablePropertyFactory, ConfigurablePropertyFactory, Watcher{
 	private static Logger logger = LoggerFactory.getLogger(ZookeeperCloudPropertyFactory.class);
 	private final NamedEventDispatcher<String, ChangeEvent<String>> eventDispatcher = new StringNamedEventDispatcher<ChangeEvent<String>>(true);
 	private final ZooKeeper zooKeeper;

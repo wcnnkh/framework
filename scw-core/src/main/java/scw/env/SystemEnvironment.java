@@ -1,18 +1,15 @@
 package scw.env;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import scw.core.Constants;
+import scw.codec.support.CharsetCodec;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
-import scw.instance.support.DefaultInstanceFactory;
 import scw.instance.support.DefaultServiceLoaderFactory;
-import scw.io.FileUtils;
 import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
 import scw.value.StringValue;
@@ -38,7 +35,7 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	static{
 		instance.loadProperties("system.properties").register();
 		instance.loadProperties(instance.getValue("system.properties.location", String.class, "/private.properties")).register();
-		instance.loadServices(new DefaultServiceLoaderFactory(instance, new DefaultInstanceFactory(instance, false)));
+		instance.loadServices(new DefaultServiceLoaderFactory(instance));
 	}
 
 	public static SystemEnvironment getInstance() {
@@ -47,6 +44,7 @@ public final class SystemEnvironment extends DefaultEnvironment {
 
 	private SystemEnvironment() {
 		super(true);
+		logger.info(getClassDirectory());
 		String workPath = getWorkPath();
 		logger.info("default " + WORK_PATH_PROPERTY + " in " + workPath);
 	};
@@ -139,6 +137,7 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	}
 	
 	private String getDefaultWorkPath(){
+		// /xxxxx/{project}/target/classes
 		String path = getClassDirectory();
 		File file = new File(path);
 		if(file.isFile()){
@@ -146,23 +145,45 @@ public final class SystemEnvironment extends DefaultEnvironment {
 		}
 		
 		if (!file.getName().equals("classes")) {
-			return file.getPath();
+			return path;
 		}
-
-		if (file.getParent() == null) {
-			return file.getPath();
+		
+		for(int i=0; i<2;i++){
+			file = file.getParentFile();
+			if(file == null){
+				return path;
+			}
+			
+			if(file.getName().equals("WEB-INF") && file.getParent() != null){
+				return file.getParent();
+			}
 		}
-
-		file = file.getParentFile();
-		if (file.getName().equals("WEB-INF")) {
-			return file.getParent() == null ? path : file.getParent();
-		}
-
-		if (file.getParent() != null) {
-			File wi = FileUtils.searchDirectory(file.getParentFile(), "WEB-INF");
+		
+		if (file != null) {
+			File webapp = new File(file, "/src/main/webapp");
+			if(webapp.exists()){
+				return webapp.getPath();
+			}
+			/*
+			//可能会出现一个bin目录，忽略此目录
+			final File binDirectory = new File(file, "bin");
+			// 路径/xxxx/src/main/webapp/WEB-INF 4层深度
+			File wi = FileUtils.search(file, new Accept<File>() {
+				
+				public boolean accept(File e) {
+					if(e.isDirectory() && "WEB-INF".equals(e.getName())){
+						//可能会出现一个bin目录，忽略此目录
+						if(binDirectory.exists() && binDirectory.isDirectory() && e.getPath().startsWith(binDirectory.getPath())){
+							return false;
+						}
+						return true;
+					}
+					return false;
+				}
+			}, 4);
 			if (wi != null) {
 				return wi.getParent();
-			}
+			}*/
 		}
 		return path;
 	}
@@ -182,15 +203,9 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	public String getPrivateId(){
 		String systemOnlyId = getString(SYSTEM_ID_PROPERTY);
 		if (StringUtils.isEmpty(systemOnlyId)) {
-			try {
-				systemOnlyId = scw.util.Base64
-						.encode((getClassDirectory() + "&" + getWorkPath())
-								.getBytes(Constants.UTF_8_NAME));
-				if (systemOnlyId.endsWith("==")) {
-					systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
-				}
-			} catch (UnsupportedEncodingException e) {
-				throw new RuntimeException(e);
+			systemOnlyId = CharsetCodec.UTF_8.toBase64().encode(getClassDirectory() + "&" + getWorkPath());
+			if (systemOnlyId.endsWith("==")) {
+				systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
 			}
 			put(SYSTEM_ID_PROPERTY, systemOnlyId);
 		}

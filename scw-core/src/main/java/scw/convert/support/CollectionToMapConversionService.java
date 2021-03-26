@@ -17,12 +17,12 @@ import scw.convert.TypeDescriptor;
 import scw.core.Constants;
 import scw.lang.NotSupportedException;
 import scw.mapper.Field;
-import scw.mapper.FieldFilter;
 import scw.mapper.Fields;
 import scw.mapper.Getter;
 import scw.mapper.MapperUtils;
+import scw.util.Accept;
 import scw.util.CollectionFactory;
-import scw.util.XUtils;
+import scw.util.Synchronized;
 
 public class CollectionToMapConversionService implements ConversionService{
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
@@ -96,13 +96,13 @@ public class CollectionToMapConversionService implements ConversionService{
 		private Getter getGetter(TypeDescriptor sourceType){
 			Fields fields = MapperUtils.getMapper().getFields(
 					sourceType.getType());
-			Field field = fields.find(new FieldFilter() {
+			Field field = fields.accept(new Accept<Field>() {
 
 				public boolean accept(Field field) {
 					return field.getGetter().getAnnotatedElement()
 							.getAnnotation(CollectionToMapPrimaryKey.class) != null;
 				}
-			});
+			}).first();
 			return field == null? null:field.getGetter();
 		}
 		
@@ -186,7 +186,7 @@ public class CollectionToMapConversionService implements ConversionService{
 		protected final TreeSet<PrimaryKeyGetter> primaryKeyGetters = new TreeSet<PrimaryKeyGetter>(this);
 		
 		public SortedSet<PrimaryKeyGetter> getPrimaryKeyGetters(){
-			return XUtils.synchronizedProxy(primaryKeyGetters, this);
+			return Synchronized.proxy(primaryKeyGetters, this);
 		}
 		
 		public PrimaryKeyGetter getPrimaryKeyGetter(TypeDescriptor sourceType){

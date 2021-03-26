@@ -2,11 +2,11 @@ package scw.context.support;
 
 import java.io.IOException;
 
-import scw.context.ClassScanner;
 import scw.core.Constants;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.filter.TypeFilter;
+import scw.core.type.scanner.ClassScanner;
 import scw.util.ClassLoaderProvider;
 
 public final class SystemContextClassesLoader<S> extends ClassScannerClassesLoader<S> implements TypeFilter{

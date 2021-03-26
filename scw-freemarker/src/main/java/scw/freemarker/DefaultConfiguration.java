@@ -15,7 +15,7 @@ import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 
-@Provider(order = Integer.MIN_VALUE, value = Configuration.class)
+@Provider(value = Configuration.class)
 public class DefaultConfiguration extends Configuration {
 	private static Logger logger = LoggerFactory.getLogger(DefaultConfiguration.class);
 

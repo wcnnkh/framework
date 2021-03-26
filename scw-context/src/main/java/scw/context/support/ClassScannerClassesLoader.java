@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
-import scw.context.ClassScanner;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.filter.TypeFilter;
+import scw.core.type.scanner.ClassScanner;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;

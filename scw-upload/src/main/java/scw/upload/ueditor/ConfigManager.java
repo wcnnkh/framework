@@ -162,7 +162,7 @@ public final class ConfigManager {
 		String configContent = this.readFile( this.getConfigPath() );
 		
 		try{
-			JsonObject jsonConfig = JSONUtils.parseObject(configContent);
+			JsonObject jsonConfig = JSONUtils.getJsonSupport().parseObject(configContent);
 			this.jsonConfig = jsonConfig;
 		} catch ( Exception e ) {
 			this.jsonConfig = null;

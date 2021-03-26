@@ -28,6 +28,8 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor
 		implements ClientHttpRequestFactory {
 	private static Logger logger = LoggerUtils
 			.getLogger(SimpleClientHttpRequestFactory.class);
+	
+	public static final ClientHttpRequestFactory INSTANCE = new SimpleClientHttpRequestFactory();
 	/**
 	 * 一个信任所有的ssl socket factory <br/>
 	 * 注意:在初始化失败后可能为空

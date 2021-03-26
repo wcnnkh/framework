@@ -1,11 +1,12 @@
 package scw.freemarker.mvc;
 
+import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
 import scw.http.MediaType;
 import scw.net.MimeType;
 import freemarker.template.Configuration;
 
-@scw.context.annotation.Provider(order = Integer.MIN_VALUE)
+@Provider
 public class FreemarkerPageFactory extends AbstractFreemarkerPageFactory {
 	private final Configuration configuration;
 	private final MimeType mimeType;

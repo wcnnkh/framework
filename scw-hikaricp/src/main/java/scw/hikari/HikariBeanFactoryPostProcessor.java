@@ -10,7 +10,7 @@ import scw.context.annotation.Provider;
 import scw.db.DB;
 import scw.db.DBUtils;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class HikariBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)

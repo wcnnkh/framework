@@ -1,6 +1,5 @@
 package scw.mvc;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -12,15 +11,12 @@ import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.beans.support.ExtendBeanFactory;
+import scw.codec.support.CharsetCodec;
 import scw.context.Destroy;
-import scw.core.Constants;
 import scw.core.ResolvableType;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
-import scw.core.parameter.ParameterUtils;
-import scw.core.parameter.RenameParameterDescriptor;
-import scw.core.parameter.annotation.ParameterName;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
@@ -34,9 +30,9 @@ import scw.json.JSONSupport;
 import scw.lang.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
+import scw.mapper.AbstractParameterMapping;
 import scw.mapper.MapperUtils;
 import scw.mapper.Mapping;
-import scw.mapper.support.AbstractParameterMapping;
 import scw.mvc.annotation.Attribute;
 import scw.mvc.annotation.BigDecimalMultiply;
 import scw.mvc.annotation.DateFormat;
@@ -158,7 +154,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 	}
 
 	protected Object getParameterInternal(ParameterDescriptor parameterDescriptor) {
-		Value defaultValue = ParameterUtils.getDefaultValue(parameterDescriptor);
+		Value defaultValue = parameterDescriptor.getDefaultValue();
 		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor.getAnnotatedElement()
 				.getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
@@ -236,10 +232,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 					: getInstanceFactory().getInstance(requestBean.value());
 		}
 
-		ParameterName parameterName = parameterDescriptor.getAnnotatedElement().getAnnotation(ParameterName.class);
-		return getParameterInternal(
-				(parameterName == null || StringUtils.isEmpty(parameterName.value())) ? parameterDescriptor
-						: new RenameParameterDescriptor(parameterDescriptor, parameterDescriptor.getName()));
+		return getParameterInternal(parameterDescriptor);
 	}
 
 	private Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterDescriptor, Value defaultValue) {
@@ -306,13 +299,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			return value;
 		}
 
-		try {
-			return new String(StringUtils.getStringOperations().getBytes(value, Constants.ISO_8859_1),
-					request.getCharacterEncoding());
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-			return value;
-		}
+		return new CharsetCodec(request.getCharacterEncoding()).decode(CharsetCodec.ISO_8859_1.encode(value));
 	}
 
 	protected String getStringValue(String name) {

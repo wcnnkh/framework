@@ -20,15 +20,15 @@ public class DefaultHystrixCommandFactory implements HystrixCommandFactory {
 
 	public HystrixCommand<?> getHystrixCommandFactory(MethodInvoker invoker, Object[] args)
 			throws Exception {
-		Hystrix hystrix = invoker.getSourceClass().getAnnotation(Hystrix.class);
+		Hystrix hystrix = invoker.getDeclaringClass().getAnnotation(Hystrix.class);
 		if (hystrix == null) {
 			return null;
 		}
 
-		Setter setter = Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(invoker.getSourceClass().getName()))
+		Setter setter = Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey(invoker.getDeclaringClass().getName()))
 				.andCommandKey(HystrixCommandKey.Factory.asKey(invoker.getMethod().toString()));
 		afterSetter(setter);
-		Object fallback = invoker.getSourceClass().isAssignableFrom(hystrix.fallback())
+		Object fallback = invoker.getDeclaringClass().isAssignableFrom(hystrix.fallback())
 				? instanceFactory.getInstance(hystrix.fallback()) : null;
 		return new HystrixFilterCommand(setter, fallback, invoker, args);
 	}

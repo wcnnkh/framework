@@ -3,7 +3,6 @@ package scw.lucene;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
@@ -22,10 +21,12 @@ import scw.convert.ConversionService;
 import scw.instance.InstanceUtils;
 import scw.json.JSONUtils;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.FieldFilter;
-import scw.mapper.FilterFeature;
+import scw.mapper.FieldFeature;
+import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
-import scw.transaction.TransactionManager;
+import scw.transaction.Transaction;
+import scw.transaction.TransactionUtils;
+import scw.util.Accept;
 import scw.util.Pagination;
 import scw.value.AnyValue;
 import scw.value.StringValue;
@@ -40,21 +41,22 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	protected abstract ConversionService getConversionService();
 
 	public <T> T indexWriter(IndexWriterExecutor<T> indexWriterExecutor) throws IOException {
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		IndexWriter indexWriter = null;
 		try {
 			indexWriter = getTransactionIndexWrite();
 			T v = indexWriterExecutor.execute(indexWriter);
-			if (!TransactionManager.hasTransaction()) {
+			if (transaction == null) {
 				indexWriter.commit();
 			}
 			return v;
 		} catch (IOException e) {
-			if (indexWriter != null && !TransactionManager.hasTransaction()) {
+			if (indexWriter != null && transaction == null) {
 				indexWriter.rollback();
 			}
 			throw e;
 		} finally {
-			if (indexWriter != null && !TransactionManager.hasTransaction()) {
+			if (indexWriter != null && transaction == null) {
 				indexWriter.close();
 			}
 		}
@@ -62,8 +64,8 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 
 	protected abstract Field toField(FieldDescriptor fieldDescriptor, Value value);
 
-	private Collection<scw.mapper.Field> getFields(Class<?> clazz) {
-		return MapperUtils.getMapper().getFields(clazz, FilterFeature.GETTER).toSet(new FieldFilter() {
+	private Fields getFields(Class<?> clazz) {
+		return MapperUtils.getMapper().getFields(clazz).accept(FieldFeature.GETTER).accept(new Accept<scw.mapper.Field>() {
 
 			public boolean accept(scw.mapper.Field field) {
 				return field.getGetter().getField() != null;
@@ -81,9 +83,9 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 
 			Value v;
 			if (ValueUtils.isBaseType(field.getGetter().getType())) {
-				v = new AnyValue(value);
+				v = new AnyValue(value, getConversionService());
 			} else {
-				v = new StringValue(JSONUtils.toJSONString(value));
+				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
 			}
 
 			Field luceneField = toField(field.getGetter(), v);
@@ -97,11 +99,15 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	}
 
 	private final IndexWriter getTransactionIndexWrite() throws IOException {
-		if (TransactionManager.hasTransaction()) {
-			IndexWriterResource resource = TransactionManager.getCurrentTransaction().getResource(IndexWriter.class);
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
+		if (transaction != null) {
+			IndexWriterResource resource = transaction.getResource(IndexWriter.class);
 			if (resource == null) {
-				resource = new IndexWriterResource(getIndexWrite());
-				TransactionManager.getCurrentTransaction().bindResource(IndexWriter.class, resource);
+				IndexWriterResource indexWriterResource = new IndexWriterResource(getIndexWrite());
+				resource = transaction.bindResource(IndexWriter.class, indexWriterResource);
+				if(resource == null){
+					resource = indexWriterResource;
+				}
 			}
 			return resource.getIndexWriter();
 		}

@@ -10,9 +10,9 @@ import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.boot.Application;
 import scw.boot.support.ApplicationUtils;
-import scw.commons.util.IdUtils;
-import scw.commons.util.InetUtils;
-import scw.commons.util.InetUtilsProperties;
+import scw.cloud.commons.util.IdUtils;
+import scw.cloud.commons.util.InetUtils;
+import scw.cloud.commons.util.InetUtilsProperties;
 import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
 import scw.netflix.eureka.metadata.DefaultManagementMetadataProvider;
@@ -25,7 +25,7 @@ import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class EurekaClientBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	@Override

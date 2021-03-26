@@ -60,7 +60,7 @@ public class BeanAction extends AbstractAction {
 	
 	protected String[] getActionInterceptorNames() {
 		LinkedHashSet<String> sets = new LinkedHashSet<String>();
-		ActionInterceptors actionInterceptors = getSourceClass().getAnnotation(
+		ActionInterceptors actionInterceptors = getDeclaringClass().getAnnotation(
 				ActionInterceptors.class);
 		if (actionInterceptors != null) {
 			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
@@ -75,7 +75,7 @@ public class BeanAction extends AbstractAction {
 			}
 		}
 
-		Controller controller = getSourceClass().getAnnotation(
+		Controller controller = getDeclaringClass().getAnnotation(
 				Controller.class);
 		if (controller != null) {
 			for (Class<?> f : controller.interceptors()) {

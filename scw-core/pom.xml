@@ -13,7 +13,6 @@
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
 			<artifactId>asm</artifactId>
-			<version>7.1</version>
 			<optional>true</optional>
 		</dependency>
 
@@ -21,7 +20,6 @@
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
-			<version>3.3.0</version>
 			<optional>true</optional>
 		</dependency>
 

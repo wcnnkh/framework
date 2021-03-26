@@ -1,6 +1,6 @@
 package scw.tencent.wx;
 
-import scw.data.TemporaryCache;
+import scw.data.TemporaryStorage;
 import scw.oauth2.AccessToken;
 import scw.oauth2.client.AbstractCredentialsClient;
 import scw.security.Token;
@@ -8,7 +8,7 @@ import scw.security.Token;
 public class AccessGrantGrant extends AbstractCredentialsClient {
 	private final Configuration configuration;
 
-	public AccessGrantGrant(TemporaryCache temporaryCache, Configuration configuration) {
+	public AccessGrantGrant(TemporaryStorage temporaryCache, Configuration configuration) {
 		super(temporaryCache);
 		this.configuration = configuration;
 	}

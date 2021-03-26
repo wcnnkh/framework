@@ -1,6 +1,11 @@
 package scw.core;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import scw.util.Accept;
 
 /**
  * 迭代器回调
@@ -32,6 +37,54 @@ public interface IteratorCallback<V> {
 
 		public T getValue() {
 			return value;
+		}
+	}
+	
+	public static final class First<V> implements IteratorCallback<V>{
+		private final Accept<V> accept;
+		private V value;
+		
+		public First(Accept<V> accept){
+			this.accept = accept;
+		}
+		
+		public boolean iteratorCallback(V value) {
+			if(accept.accept(value)){
+				this.value = value;
+				return false;
+			}
+			return true;
+		}
+
+		public V getValue() {
+			return value;
+		}
+	}
+	
+	public static final class All<V> implements IteratorCallback<V>{
+		private final Accept<V> accept;
+		private List<V> values;
+		
+		public All(Accept<V> accept){
+			this.accept = accept;
+		}
+		
+		public boolean iteratorCallback(V value) {
+			if(accept.accept(value)){
+				if(values == null){
+					values = new ArrayList<V>();
+				}
+				values.add(value);
+			}
+			return true;
+		}
+
+		public List<V> getValues() {
+			if(values == null){
+				return Collections.emptyList();
+			}
+			
+			return Collections.unmodifiableList(values);
 		}
 	}
 }

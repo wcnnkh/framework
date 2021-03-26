@@ -15,6 +15,27 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
+			<dependency>
+				<groupId>org.ow2.asm</groupId>
+				<artifactId>asm</artifactId>
+				<version>7.1</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/cglib/cglib -->
+			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib</artifactId>
+				<version>3.3.0</version>
+			</dependency>
+
+			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-core</artifactId>
 				<version>1.0.0</version>
@@ -29,12 +50,6 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-transaction</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-retry</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -59,12 +74,6 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-boot</artifactId>
-				<version>1.0.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-locks</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -107,6 +116,12 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-web</artifactId>
+				<version>1.0.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-rpc</artifactId>
 				<version>1.0.0</version>
 			</dependency>
 
@@ -343,31 +358,31 @@
 				<artifactId>scw-jmx</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-protobuf</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-kryo</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-fastjson</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-hessian</artifactId>
 				<version>1.0.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-gson</artifactId>
@@ -397,6 +412,26 @@
 		</dependencies>
 	</dependencyManagement>
 
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -405,7 +440,13 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.8.1</version>
+					<configuration>
+						<source>1.5</source>
+						<target>1.5</target>
+						<encoding>${project.build.sourceEncoding}</encoding>
+					</configuration>
 				</plugin>
+
 				<!-- Source attach plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -507,17 +548,18 @@
 		<module>scw-sql</module>
 		<module>scw-tcc</module>
 		<module>scw-messageing</module>
-		<module>scw-locks</module>
 		<module>scw-context</module>
 		<module>scw-jms</module>
 		<module>scw-activemq</module>
 		<module>scw-amqp</module>
 		<module>scw-rabbitmq</module>
-		<module>scw-retry</module>
 		<module>scw-protobuf</module>
 		<module>scw-kryo</module>
 		<module>scw-fastjson</module>
 		<module>scw-hessian</module>
 		<module>scw-gson</module>
+		<module>scw-rpc</module>
+		<module>scw-seata</module>
+		<module>scw-nacos-client</module>
 	</modules>
 </project>

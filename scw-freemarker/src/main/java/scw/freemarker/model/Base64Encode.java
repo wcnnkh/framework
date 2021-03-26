@@ -1,12 +1,12 @@
 package scw.freemarker.model;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import scw.codec.support.CharsetCodec;
+import scw.core.utils.StringUtils;
+import scw.freemarker.annotation.SharedVariable;
 import freemarker.template.TemplateMethodModelEx;
 import freemarker.template.TemplateModelException;
-import scw.freemarker.annotation.SharedVariable;
-import scw.util.Base64;
 
 @SharedVariable
 public class Base64Encode implements TemplateMethodModelEx{
@@ -22,18 +22,14 @@ public class Base64Encode implements TemplateMethodModelEx{
 			return null;
 		}
 		
-		if(args.size() == 1){
-			return Base64.encode(str.getBytes());
-		}
-		
+		CharsetCodec codec = CharsetCodec.UTF_8;
 		if(args.size() == 2){
 			String charsetName = args.get(1).toString();
-			try {
-				return Base64.encode(str.getBytes(charsetName));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
+			if(StringUtils.isNotEmpty(charsetName)){
+				codec = new CharsetCodec(charsetName);
 			}
 		}
-		return null;
+		
+		return codec.toBase64().encode(str);
 	}
 }

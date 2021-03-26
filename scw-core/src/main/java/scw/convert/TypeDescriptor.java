@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
@@ -96,7 +97,7 @@ public class TypeDescriptor implements Serializable {
 	public TypeDescriptor(FieldDescriptor fieldDescriptor){
 		this.resolvableType = ResolvableType.forType(fieldDescriptor.getGenericType());
 		this.type = this.resolvableType.resolve(fieldDescriptor.getType());
-		this.annotatedElement = fieldDescriptor.getAnnotatedElement();
+		this.annotatedElement = new AnnotatedElementAdapter(fieldDescriptor.getAnnotatedElement().getAnnotations());
 	}
 
 	/**
@@ -514,6 +515,10 @@ public class TypeDescriptor implements Serializable {
 	@Nullable
 	public static TypeDescriptor forObject(@Nullable Object source) {
 		return (source != null ? valueOf(source.getClass()) : null);
+	}
+	
+	public static TypeDescriptor forMethodReturnType(Method method){
+		return new TypeDescriptor(ResolvableType.forMethodReturnType(method), null, method.getAnnotations());
 	}
 
 	/**

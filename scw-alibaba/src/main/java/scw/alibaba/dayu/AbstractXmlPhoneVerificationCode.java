@@ -112,7 +112,7 @@ public abstract class AbstractXmlPhoneVerificationCode implements XmlPhoneVerifi
 			logger.info("向[{}]发送验证码:{}", phone, code);
 		}
 
-		processResult = sendMessage(configIndex, JSONUtils.toJSONString(parameterMap), phone);
+		processResult = sendMessage(configIndex, JSONUtils.getJsonSupport().toJSONString(parameterMap), phone);
 		if (!processResult.isSuccess()) {
 			return processResult;
 		}

@@ -15,7 +15,7 @@ public enum Propagation {
 
 	/**
 	 * 如果存在一个事务，支持当前事务。如果没有事务，则非事务的执行。但是对于事务同步的事务管理器，
-	 * PROPAGATION_SUPPORTS与不使用事务有少许不同
+	 * SUPPORTS与不使用事务有少许不同
 	 */
 	SUPPORTS,
 
@@ -41,7 +41,8 @@ public enum Propagation {
 
 	/**
 	 * 如果一个活动的事务存在，则运行在一个嵌套的事务中. 如果没有活动事务,
-	 * 则按TransactionDefinition.PROPAGATION_REQUIRED 属性执行
+	 * 则按REQUIRED执行
+	 * @see Savepoint
 	 */
 	NESTED
 }

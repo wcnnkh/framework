@@ -12,7 +12,7 @@ import scw.core.reflect.MethodInvoker;
 import scw.instance.supplier.NameInstanceSupplier;
 import scw.util.Supplier;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public final class MessageListenerApplicationInitializer implements ApplicationPostProcessor {
 
 	@SuppressWarnings("unchecked")

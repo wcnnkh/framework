@@ -18,6 +18,7 @@ import scw.io.Resource;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
+import scw.lang.NamedThreadLocal;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.InetUtils;
@@ -33,7 +34,7 @@ import scw.value.ValueUtils;
 
 public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
-	private static ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new ThreadLocal<ServerHttpRequest>();
+	private static ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedThreadLocal<ServerHttpRequest>(WebUtils.class.getSimpleName() + "-ServerHttpRequest");
 	
 	/**
 	 * 缓存是否过期,如果未过期那么返回304，如果已过期则setLastModified

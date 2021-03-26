@@ -6,7 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import scw.transaction.Transaction;
-import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 public final class HibernateUtils {
 	private HibernateUtils(){};
@@ -38,19 +38,21 @@ public final class HibernateUtils {
 
 		session.close();
 	}
-
+	
 	public static Session getTransactionSession(SessionFactory sessionFactory) {
-		Transaction transaction = TransactionManager.getCurrentTransaction();
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			return sessionFactory.openSession();
 		}
 
-		HibernateTransactionResource resource = (HibernateTransactionResource) transaction
-				.getResource(sessionFactory);
+		HibernateTransactionResource resource = transaction.getResource(sessionFactory);
 		if (resource == null) {
-			resource = new HibernateTransactionResource(sessionFactory,
+			HibernateTransactionResource hibernateTransactionResource = new HibernateTransactionResource(sessionFactory,
 					transaction.isActive());
-			transaction.bindResource(sessionFactory, resource);
+			resource = transaction.bindResource(sessionFactory, hibernateTransactionResource);
+			if(resource == null){
+				resource = hibernateTransactionResource;
+			}
 		}
 		return resource.getSession();
 	}

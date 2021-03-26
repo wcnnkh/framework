@@ -10,13 +10,13 @@ import scw.io.Resource;
 import scw.io.resolver.ConfigurablePropertiesResolver;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.NotSupportedException;
-import scw.util.XUtils;
+import scw.util.Synchronized;
 
 public class PropertiesResolvers extends DefaultPropertiesResolver implements ConfigurablePropertiesResolver, Comparator<PropertiesResolver>{
 	protected final TreeSet<PropertiesResolver> resolvers = new TreeSet<PropertiesResolver>(this);
 	
 	public SortedSet<PropertiesResolver> getResolvers(){
-		return XUtils.synchronizedProxy(resolvers, this);
+		return Synchronized.proxy(resolvers, this);
 	}
 	
 	public int compare(PropertiesResolver o1, PropertiesResolver o2) {

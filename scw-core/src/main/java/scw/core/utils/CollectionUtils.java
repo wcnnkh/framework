@@ -35,7 +35,8 @@ import scw.util.MultiValueMapWrapper;
 
 public abstract class CollectionUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(Collections.emptyMap());
+	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(
+			Collections.emptyMap());
 
 	@SuppressWarnings("unchecked")
 	public static <K, V> MultiValueMap<K, V> emptyMultiValueMap() {
@@ -64,7 +65,7 @@ public abstract class CollectionUtils {
 		if (iterable instanceof Collection) {
 			return ((Collection) iterable).isEmpty();
 		}
-		
+
 		Iterator iterator = iterable.iterator();
 		return iterator != null && iterator.hasNext();
 	}
@@ -127,7 +128,8 @@ public abstract class CollectionUtils {
 	 *            the target Collection to merge the array into
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void mergeArrayIntoCollection(Object array, Collection collection) {
+	public static void mergeArrayIntoCollection(Object array,
+			Collection collection) {
 		if (collection == null) {
 			throw new IllegalArgumentException("Collection must not be null");
 		}
@@ -323,7 +325,8 @@ public abstract class CollectionUtils {
 	 * @return a value of one of the given types found if there is a clear
 	 *         match, or {@code null} if none or more than one such value found
 	 */
-	public static Object findValueOfType(Collection<?> collection, Class<?>[] types) {
+	public static Object findValueOfType(Collection<?> collection,
+			Class<?>[] types) {
 		if (isEmpty(collection) || ObjectUtils.isEmpty(types)) {
 			return null;
 		}
@@ -395,7 +398,8 @@ public abstract class CollectionUtils {
 	 * given array. The array returned will be a different instance than the
 	 * array given.
 	 */
-	public static <A, E extends A> A[] toArray(Enumeration<E> enumeration, A[] array) {
+	public static <A, E extends A> A[] toArray(Enumeration<E> enumeration,
+			A[] array) {
 		ArrayList<A> elements = new ArrayList<A>();
 		while (enumeration.hasMoreElements()) {
 			elements.add(enumeration.nextElement());
@@ -410,19 +414,21 @@ public abstract class CollectionUtils {
 	 *            the enumeration
 	 * @return the iterator
 	 */
-	public static <E> Iterator<E> toIterator(Enumeration<? extends E> enumeration) {
-		if(enumeration == null || !enumeration.hasMoreElements()){
+	public static <E> Iterator<E> toIterator(
+			Enumeration<? extends E> enumeration) {
+		if (enumeration == null || !enumeration.hasMoreElements()) {
 			return Collections.emptyIterator();
 		}
-		
+
 		return new EnumerationIterator<E>(enumeration);
 	}
 
-	public static <E> Enumeration<E> toEnumeration(final Iterator<? extends E> iterator) {
-		if(iterator == null || !iterator.hasNext()){
+	public static <E> Enumeration<E> toEnumeration(
+			final Iterator<? extends E> iterator) {
+		if (iterator == null || !iterator.hasNext()) {
 			return Collections.emptyEnumeration();
 		}
-		
+
 		return new Enumeration<E>() {
 
 			public boolean hasMoreElements() {
@@ -454,10 +460,12 @@ public abstract class CollectionUtils {
 	 *            the map for which an unmodifiable view is to be returned.
 	 * @return an unmodifiable view of the specified multi-value map.
 	 */
-	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(MultiValueMap<? extends K, ? extends V> map) {
+	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(
+			MultiValueMap<? extends K, ? extends V> map) {
 		Assert.notNull(map, "'map' must not be null");
 		Map<K, List<V>> result = new LinkedHashMap<K, List<V>>(map.size());
-		for (Map.Entry<? extends K, ? extends List<? extends V>> entry : map.entrySet()) {
+		for (Map.Entry<? extends K, ? extends List<? extends V>> entry : map
+				.entrySet()) {
 			List<V> values = Collections.unmodifiableList(entry.getValue());
 			result.put(entry.getKey(), values);
 		}
@@ -485,7 +493,8 @@ public abstract class CollectionUtils {
 	/**
 	 * Iterator wrapping an Enumeration.
 	 */
-	private static class EnumerationIterator<E> extends scw.util.AbstractIterator<E> {
+	private static class EnumerationIterator<E> extends
+			scw.util.AbstractIterator<E> {
 
 		private Enumeration<? extends E> enumeration;
 
@@ -506,26 +515,26 @@ public abstract class CollectionUtils {
 		if (values == null) {
 			return null;
 		}
-		
+
 		if (values instanceof List) {
 			List<T> list = (List<T>) values;
-			return list.isEmpty()? null:list.get(0);
+			return list.isEmpty() ? null : list.get(0);
 		} else {
 			Iterator<T> iterator = values.iterator();
-			if(iterator != null && iterator.hasNext()){
+			if (iterator != null && iterator.hasNext()) {
 				return iterator.next();
 			}
 			return null;
 		}
 	}
-	
-	private static final class PreviousIterator<E> extends AbstractIterator<E>{
+
+	private static final class PreviousIterator<E> extends AbstractIterator<E> {
 		private final ListIterator<E> listIterator;
-		
-		public PreviousIterator(ListIterator<E> listIterator){
+
+		public PreviousIterator(ListIterator<E> listIterator) {
 			this.listIterator = listIterator;
 		}
-		
+
 		public boolean hasNext() {
 			return listIterator.hasPrevious();
 		}
@@ -534,16 +543,32 @@ public abstract class CollectionUtils {
 			return listIterator.previous();
 		}
 	}
-	
-	public static <E> Iterator<E> getIterator(List<E> list, boolean previous){
-		if(isEmpty(list)){
+
+	public static <E> Iterator<E> getIterator(List<E> list, boolean previous) {
+		if (isEmpty(list)) {
 			return Collections.emptyIterator();
 		}
-		
-		if(previous){
+
+		if (previous) {
 			return new PreviousIterator<E>(list.listIterator(list.size()));
-		}else{
+		} else {
 			return list.iterator();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <K, V> Map<K, V> sort(Map<K, V> source) {
+		if (isEmpty(source)) {
+			return Collections.emptyMap();
+		}
+
+		Object[] keys = source.keySet().toArray();
+		Arrays.sort(keys);
+		LinkedHashMap<K, V> map = new LinkedHashMap<K, V>();
+		for (int i = 0; i < keys.length; i++) {
+			Object key = keys[i];
+			map.put((K) key, source.get(key));
+		}
+		return map;
 	}
 }

@@ -11,7 +11,6 @@ import scw.beans.BeansException;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.parameter.MethodParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
-import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotSupportedException;
 
@@ -48,20 +47,16 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		if (!isInstance()) {
 			throw new NotSupportedException("不支持的构造方式");
 		}
-
-		Object[] args = getParameters(methodParameterDescriptors);
-		return invoke(method, args);
+		
+		return createInternal(methodTargetClass, methodParameterDescriptors, getParameters(methodParameterDescriptors));
 	}
 	
 	@Override
-	public boolean isAopEnable() {
-		//必须要是接口，因为非接口不一定是无法保证一定可以代理实例
-		return getTargetClass().isInterface() && super.isAopEnable();
-	}
-	
-	private Object invoke(Method method, Object[] args) throws BeansException {
+	protected Object createInternal(Class<?> targetClass,
+			ParameterDescriptors parameterDescriptors, Object[] params) {
+		Method method = ReflectionUtils.findMethod(targetClass, this.method.getName(), parameterDescriptors.getTypes());
 		ReflectionUtils.makeAccessible(method);
-		Object bean = ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), args);
+		Object bean = ReflectionUtils.invokeMethod(method, Modifier.isStatic(method.getModifiers()) ? null : beanFactory.getInstance(methodTargetClass), params);
 		if(beanFactory.getAop().isProxy(bean)){
 			//已经被代理过的
 			return bean;
@@ -73,31 +68,16 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 		}
 		return bean;
 	}
+	
+	@Override
+	public boolean isAopEnable() {
+		//必须要是接口，因为非接口不一定是无法保证一定可以代理实例
+		return getTargetClass().isInterface() && super.isAopEnable();
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Class getTargetClass() {
 		return method.getReturnType();
-	}
-
-	public Object create(Object... params) throws BeansException {
-		for (ParameterDescriptors parameterDescriptors : this) {
-			if (ParameterUtils.isAssignableValue(parameterDescriptors, params, true)) {
-				return create(parameterDescriptors.getTypes(), params);
-			}
-		}
-		throw new NotSupportedException(method.toString());
-	}
-
-	public Object create(Class<?>[] parameterTypes, Object[] params) throws BeansException {
-		Method method;
-		try {
-			method = methodTargetClass.getDeclaredMethod(this.method.getName(), parameterTypes);
-		} catch (NoSuchMethodException e) {
-			throw new BeansException(e);
-		} catch (SecurityException e) {
-			throw new BeansException(e);
-		}
-		return invoke(method, params);
 	}
 
 	@Override

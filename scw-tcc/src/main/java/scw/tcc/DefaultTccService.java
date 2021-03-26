@@ -12,7 +12,7 @@ import scw.core.reflect.MethodInvoker;
 import scw.core.utils.StringUtils;
 import scw.tcc.annotation.Tcc;
 
-@Provider(order = Integer.MIN_VALUE, value = TccService.class)
+@Provider(value = TccService.class)
 public class DefaultTccService implements TccService {
 	private BeanFactory beanFactory;
 	private CompleteService completeService;

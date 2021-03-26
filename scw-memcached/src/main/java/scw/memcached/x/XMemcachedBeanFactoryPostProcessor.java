@@ -17,7 +17,7 @@ import scw.context.annotation.Provider;
 import scw.io.SerializerUtils;
 import scw.net.InetUtils;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)

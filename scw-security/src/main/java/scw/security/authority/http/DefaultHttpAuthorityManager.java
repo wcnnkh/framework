@@ -36,7 +36,7 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
 
 			if (map.containsKey(authority.getHttpMethod())) {
 				throw new AlreadyExistsException(
-						JSONUtils.toJSONString(authority));
+						JSONUtils.getJsonSupport().toJSONString(authority));
 			}
 
 			map.put(authority.getHttpMethod(), authority.getId());

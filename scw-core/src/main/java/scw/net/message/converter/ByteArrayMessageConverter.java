@@ -2,7 +2,7 @@ package scw.net.message.converter;
 
 import java.io.IOException;
 
-import scw.core.ResolvableType;
+import scw.convert.TypeDescriptor;
 import scw.http.MediaType;
 import scw.io.IOUtils;
 import scw.net.MimeType;
@@ -22,13 +22,13 @@ public class ByteArrayMessageConverter extends AbstractMessageConverter<byte[]>{
 	}
 
 	@Override
-	protected byte[] readInternal(ResolvableType type, InputMessage inputMessage)
+	protected byte[] readInternal(TypeDescriptor type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		return IOUtils.toByteArray(inputMessage.getBody());
 	}
 
 	@Override
-	protected void writeInternal(ResolvableType type, byte[] body, MimeType contentType,
+	protected void writeInternal(TypeDescriptor type, byte[] body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		outputMessage.getBody().write(body);

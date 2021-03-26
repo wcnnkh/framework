@@ -3,14 +3,15 @@ package scw.timer.db;
 import java.util.concurrent.TimeUnit;
 
 import scw.db.DB;
-import scw.locks.AbstractLock;
+import scw.locks.RenewableLock;
 import scw.sql.Sql;
 
-class TableLock extends AbstractLock {
+class TableLock extends RenewableLock {
 	private DB db;
 	private Sql sql;
 
 	public TableLock(DB db, Sql sql) {
+		super(TimeUnit.MINUTES, 5);
 		this.db = db;
 		this.sql = sql;
 	}
@@ -19,12 +20,7 @@ class TableLock extends AbstractLock {
 		return db.update(sql) != 0;
 	}
 
-	public boolean unlock() {
-		return true;
-	}
-
-	public boolean renewal() {
-		return false;
+	public void unlock() {
 	}
 
 	public boolean renewal(long time, TimeUnit unit) {

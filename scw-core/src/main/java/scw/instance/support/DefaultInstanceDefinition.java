@@ -7,11 +7,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
+import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.env.Environment;
 import scw.instance.InstanceDefinition;
 import scw.instance.InstanceException;
-import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
 import scw.lang.NotFoundException;
@@ -21,53 +21,70 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 	private Class<?> targetClass;
 	@SuppressWarnings("rawtypes")
 	private ServiceLoader serviceLoader;
+	private final DefaultServiceLoaderFactory serviceLoaderFactory;
 
 	public DefaultInstanceDefinition(NoArgsInstanceFactory instanceFactory, Environment environment,
 			Class<?> targetClass) {
 		super(instanceFactory, environment);
 		this.targetClass = targetClass;
+		this.serviceLoaderFactory = new DefaultServiceLoaderFactory(instanceFactory, environment);
 	}
 
 	public Class<?> getTargetClass() {
 		return targetClass;
 	}
-
-	protected Object createInternal(Class<?> targetClass, Constructor<?> constructor, Object[] params)
-			throws InstanceException {
+	
+	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params){
+		Constructor<?> constructor = ReflectionUtils.findConstructor(targetClass, false, parameterDescriptors.getTypes());
 		try {
-			return constructor.newInstance(params);
+			return constructor.newInstance(params == null? new Object[0]:params);
 		} catch (Exception e) {
 			ReflectionUtils.handleReflectionException(e);
 		}
 		throw new IllegalStateException("Should never get here");
 	}
 	
+	protected ParameterDescriptors getParameterDescriptors(Object[] params){
+		for (ParameterDescriptors parameterDescriptors : this) {
+			if(ParameterUtils.isAssignableValue(parameterDescriptors, params)){
+				return parameterDescriptors;
+			}
+		}
+		return null;
+	}
+	
 	public boolean isInstance(Object... params) {
-		return ReflectionUtils.findConstructorByParameters(getTargetClass(), false,
-				params) != null;
+		return getParameterDescriptors(params) != null;
 	}
 
 	public Object create(Object... params) throws InstanceException {
-		Constructor<?> constructor = ReflectionUtils.findConstructorByParameters(getTargetClass(), false,
-				params);
-		if (constructor == null) {
+		ParameterDescriptors parameterDescriptors = getParameterDescriptors(params);
+		if (parameterDescriptors == null) {
 			throw new NotFoundException(getTargetClass() + "找不到指定的构造方法");
 		}
-
-		return createInternal(getTargetClass(), constructor, params);
+		return createInternal(getTargetClass(), parameterDescriptors, params);
+	}
+	
+	protected ParameterDescriptors getParameterDescriptors(Class<?>[] parameterTypes){
+		for (ParameterDescriptors parameterDescriptors : this) {
+			if(ParameterUtils.isisAssignable(parameterDescriptors, parameterTypes)){
+				return parameterDescriptors;
+			}
+		}
+		return null;
 	}
 	
 	public boolean isInstance(Class<?>[] parameterTypes) {
-		return ReflectionUtils.findConstructor(getTargetClass(), false, parameterTypes) != null;
+		return getParameterDescriptors(parameterTypes) != null;
 	}
 
 	public Object create(Class<?>[] parameterTypes, Object[] params) throws InstanceException {
-		Constructor<?> constructor = ReflectionUtils.findConstructor(getTargetClass(), false, parameterTypes);
-		if (constructor == null) {
+		ParameterDescriptors parameterDescriptors = getParameterDescriptors(parameterTypes);
+		if (parameterDescriptors == null) {
 			throw new NotFoundException(getTargetClass() + "找不到指定的构造方法");
 		}
 
-		return createInternal(getTargetClass(), constructor, params);
+		return createInternal(getTargetClass(), parameterDescriptors, params);
 	}
 
 	public Iterator<ParameterDescriptors> iterator() {
@@ -79,7 +96,7 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 	}
 	
 	protected <S> ServiceLoader<S> getServiceLoader(Class<S> clazz){
-		return InstanceUtils.getServiceLoader(clazz, getInstanceFactory(), getEnvironment());
+		return serviceLoaderFactory.getServiceLoader(clazz);
 	}
 
 	private final AtomicBoolean init = new AtomicBoolean(false);
@@ -136,6 +153,6 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 			}
 		}
 
-		return create(parameterDescriptors.getTypes(), getParameters(parameterDescriptors));
+		return createInternal(getTargetClass(), parameterDescriptors, getParameters(parameterDescriptors));
 	}
 }

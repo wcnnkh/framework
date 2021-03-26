@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import scw.boot.ApplicationEvent;
+import scw.cloud.event.HeartbeatEvent;
 import scw.core.reflect.ReflectionUtils;
-import scw.discovery.event.HeartbeatEvent;
 import scw.event.BasicEventDispatcher;
 import scw.http.HttpStatus;
 import scw.logger.Logger;

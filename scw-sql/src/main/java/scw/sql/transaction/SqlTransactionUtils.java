@@ -6,33 +6,34 @@ import java.sql.SQLException;
 
 import scw.sql.ConnectionFactory;
 import scw.transaction.Transaction;
-import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 public final class SqlTransactionUtils {
 	private SqlTransactionUtils() {
 	};
-
+	
 	/**
 	 * 获取一个当前事务的连接，如果不存在事务就返回可用的连接
-	 * 
+	 * @param transactionManager
 	 * @param connectionFactory
 	 * @return
 	 * @throws SQLException
 	 */
 	public static Connection getTransactionConnection(ConnectionFactory connectionFactory) throws SQLException {
-		Transaction transaction = TransactionManager.getCurrentTransaction();
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			return connectionFactory.getConnection();
 		}
 
-		ConnectionTransactionResource resource = (ConnectionTransactionResource) transaction
-				.getResource(connectionFactory);
+		ConnectionTransactionResource resource = transaction.getResource(connectionFactory);
 		if (resource == null) {
-			resource = new ConnectionTransactionResource(connectionFactory, transaction.getTransactionDefinition(),
+			ConnectionTransactionResource connectionTransactionResource = new ConnectionTransactionResource(connectionFactory, transaction.getDefinition(),
 					transaction.isActive());
-			transaction.bindResource(connectionFactory, resource);
+			resource = transaction.bindResource(connectionFactory, connectionTransactionResource);
+			if(resource == null){
+				resource = connectionTransactionResource;
+			}
 		}
-
 		return resource.getConnection();
 	}
 

@@ -735,6 +735,7 @@ public final class ResourceUtils {
 		return getLines(resource, charset.name());
 	}
 
+	@Nullable
 	public static String getContent(Resource resource, String charsetName) {
 		if (resource == null || !resource.exists()) {
 			return null;
@@ -753,10 +754,12 @@ public final class ResourceUtils {
 		}
 	}
 
+	@Nullable
 	public static String getContent(Resource resource, Charset charset) {
 		return getContent(resource, charset.name());
 	}
 
+	@Nullable
 	public static byte[] getBytes(Resource resource) {
 		if (resource == null || !resource.exists()) {
 			return null;
@@ -775,6 +778,7 @@ public final class ResourceUtils {
 		}
 	}
 
+	@Nullable
 	public static UnsafeByteArrayInputStream getInputStream(Resource resource) {
 		byte[] data = getBytes(resource);
 		if (data == null) {

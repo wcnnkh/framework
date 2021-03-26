@@ -8,6 +8,7 @@ import scw.core.parameter.ParameterDescriptors;
 import scw.core.parameter.ParameterFactory;
 import scw.instance.InstanceException;
 import scw.instance.NoArgsInstanceFactory;
+import scw.instance.ServiceLoader;
 import scw.util.Creator;
 import scw.util.Result;
 
@@ -120,5 +121,9 @@ public class ExtendBeanFactory implements NoArgsInstanceFactory, Destroy {
 
 	public void destroy() {
 		singletonBeanRegistry.destroyAll();
+	}
+
+	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
+		return beanFactory.getServiceLoader(serviceClass);
 	}
 }

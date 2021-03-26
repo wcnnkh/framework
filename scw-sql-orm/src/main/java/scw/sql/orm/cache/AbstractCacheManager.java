@@ -5,12 +5,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.data.Cache;
+import scw.data.Storage;
 import scw.env.SystemEnvironment;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.OrmUtils;
 
-public abstract class AbstractCacheManager<C extends Cache> implements CacheManager {
+public abstract class AbstractCacheManager<C extends Storage> implements CacheManager {
 	public abstract C getCache();
 
 	public ObjectRelationalMapping getObjectRelationalMapping() {

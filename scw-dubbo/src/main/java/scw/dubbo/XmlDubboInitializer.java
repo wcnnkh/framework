@@ -14,7 +14,7 @@ import scw.context.annotation.Provider;
  * @author shuchaowen
  *
  */
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class XmlDubboInitializer implements ApplicationPostProcessor {
 	
 	@Override

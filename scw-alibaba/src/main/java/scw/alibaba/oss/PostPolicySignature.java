@@ -60,7 +60,7 @@ public final class PostPolicySignature implements Text, Serializable {
 		map.put("OSSAccessKeyId", accessId);
 		map.put("policy", policy);
 		map.put("Signature", signature);
-		return JSONUtils.toJSONString(map);
+		return JSONUtils.getJsonSupport().toJSONString(map);
 	}
 
 	public MimeType getMimeType() {

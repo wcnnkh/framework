@@ -9,9 +9,10 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
 import scw.io.Serializer;
+import scw.lang.NamedThreadLocal;
 
 public class KryoSerializer extends Serializer {
-	private static final ThreadLocal<Kryo> kryoLocal = new ThreadLocal<Kryo>() {
+	private static final ThreadLocal<Kryo> kryoLocal = new NamedThreadLocal<Kryo>(KryoSerializer.class.getSimpleName() + "-kryo") {
 		protected Kryo initialValue() {
 			Kryo kryo = new Kryo();
 			return kryo;
@@ -22,7 +23,7 @@ public class KryoSerializer extends Serializer {
 		return kryoLocal.get();
 	}
 
-	private static final ThreadLocal<Output> outputLocal = new ThreadLocal<Output>() {
+	private static final ThreadLocal<Output> outputLocal = new NamedThreadLocal<Output>(KryoSerializer.class.getSimpleName() + "-output") {
 		protected Output initialValue() {
 			Output output = new Output();
 			output.setBuffer(new byte[1024], -1);
@@ -30,7 +31,7 @@ public class KryoSerializer extends Serializer {
 		};
 	};
 
-	private static final ThreadLocal<Input> inputLocal = new ThreadLocal<Input>() {
+	private static final ThreadLocal<Input> inputLocal = new NamedThreadLocal<Input>(KryoSerializer.class.getSimpleName() + "-input") {
 		protected Input initialValue() {
 			return new Input();
 		};

@@ -6,7 +6,7 @@ import scw.core.reflect.MethodInvoker;
 import scw.lang.Nullable;
 import scw.util.Supplier;
 
-public interface Aop extends AopPolicy{
+public interface Aop extends AopPolicy, ProxyFactory{
 	MethodInterceptor getMethodInterceptor();
 	
 	Proxy getProxy(Class<?> clazz);

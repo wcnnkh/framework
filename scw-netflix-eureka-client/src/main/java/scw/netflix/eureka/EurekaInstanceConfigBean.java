@@ -24,8 +24,8 @@ import java.util.Objects;
 import scw.beans.annotation.Autowired;
 import scw.beans.annotation.ConfigurationProperties;
 import scw.boot.support.ApplicationUtils;
-import scw.commons.util.InetUtils;
-import scw.commons.util.InetUtils.HostInfo;
+import scw.cloud.commons.util.InetUtils;
+import scw.cloud.commons.util.InetUtils.HostInfo;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.mapper.MapperUtils;
@@ -609,7 +609,7 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().toString(this);
+		return MapperUtils.getMapper().getFields(EurekaInstanceConfigBean.class).getValueMap(this).toString();
 	}
 
 }

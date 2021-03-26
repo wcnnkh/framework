@@ -18,6 +18,32 @@ public abstract class AbstractAop implements Aop{
 	
 	public abstract ProxyFactory getProxyFactory();
 	
+	public final boolean canProxy(Class<?> clazz) {
+		return getProxyFactory().canProxy(clazz);
+	}
+	
+	public final Class<?> getProxyClass(Class<?> clazz, Class<?>[] interfaces) {
+		return getProxyFactory().getProxyClass(clazz, interfaces);
+	}
+	
+	public final Class<?> getUserClass(Class<?> clazz) {
+		return getProxyFactory().getUserClass(clazz);
+	}
+	
+	public final Class<?> getUserClass(String className, ClassLoader classLoader)
+			throws ClassNotFoundException {
+		return getProxyFactory().getUserClass(className, classLoader);
+	}
+	
+	public final boolean isProxy(Class<?> clazz) {
+		return getProxyFactory().isProxy(clazz);
+	}
+	
+	public final boolean isProxy(String className, ClassLoader classLoader)
+			throws ClassNotFoundException {
+		return getProxyFactory().isProxy(className, classLoader);
+	}
+	
 	public boolean isProxy(Object instance) {
 		if(instance == null){
 			return false;

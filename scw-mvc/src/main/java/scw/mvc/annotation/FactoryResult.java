@@ -5,8 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import scw.context.result.ResultFactory;
+
 /**
- * 为了兼容ResultFactory
+ * 为了兼容{@link ResultFactory}
  * @author shuchaowen
  *
  */

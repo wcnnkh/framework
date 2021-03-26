@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import scw.core.utils.ObjectUtils;
+import scw.util.comparator.CompareUtils;
 
 /**
  * {@link Comparator} implementation for {@link Ordered} objects, sorting by
@@ -67,7 +68,11 @@ public class OrderComparator implements Comparator<Object> {
 		// object creation.
 		int i1 = getOrder(o1, sourceProvider);
 		int i2 = getOrder(o2, sourceProvider);
-		return (i1 < i2) ? -1 : (i1 > i2) ? 1 : 0;
+		return compare(i1, i2);
+	}
+	
+	protected int compare(int o1, int o2){
+		return CompareUtils.compare(o1, o2, false);
 	}
 
 	/**
@@ -113,7 +118,7 @@ public class OrderComparator implements Comparator<Object> {
 	 */
 	protected int getOrder(Object obj) {
 		Integer order = findOrder(obj);
-		return (order != null ? order : Ordered.LOWEST_PRECEDENCE);
+		return (order != null ? order : Ordered.DEFAULT_PRECEDENCE);
 	}
 
 	/**

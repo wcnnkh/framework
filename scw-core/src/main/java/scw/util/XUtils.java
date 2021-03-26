@@ -1,8 +1,6 @@
 package scw.util;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,10 +13,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
-import scw.convert.Converter;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
+import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 import scw.value.ValueUtils;
 
@@ -28,28 +26,6 @@ public final class XUtils {
 	
 	public static String getUUID() {
 		return StringUtils.removeChar(UUID.randomUUID().toString(), '-');
-	}
-
-	public static <T, R> T useResource(ResourcePool<R> resourceFactory, Converter<R, T> converter) {
-		R resource = null;
-		try {
-			resource = resourceFactory.getResource();
-			return converter.convert(resource);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			resourceFactory.release(resource);
-		}
-	}
-
-	public static <T, R> T execute(ResourcePool<R> resourceFactory, Converter<R, T> resourceConverter) {
-		R r = null;
-		try {
-			r = resourceFactory.getResource();
-			return resourceConverter.convert(r);
-		} finally {
-			resourceFactory.release(r);
-		}
 	}
 
 	/**
@@ -89,7 +65,7 @@ public final class XUtils {
 			throw new NotSupportedException(instance.getClass().getName());
 		}
 
-		Map<String, Object> valueMap = MapperUtils.getMapper().getFieldValueMap(instance);
+		Map<String, Object> valueMap = MapperUtils.getMapper().getFields(instance.getClass()).accept(FieldFeature.IGNORE_STATIC).getValueMap(instance);
 		return recursion ? parseMap(valueMap) : valueMap;
 	}
 
@@ -142,7 +118,7 @@ public final class XUtils {
 			}
 			return array;
 		} else {
-			Map<String, Object> valueMap = MapperUtils.getMapper().getFieldValueMap(value);
+			Map<String, Object> valueMap = MapperUtils.getMapper().getFields(value.getClass()).accept(FieldFeature.IGNORE_STATIC).getValueMap(value);
 			return parseMap(valueMap);
 		}
 	}
@@ -220,11 +196,5 @@ public final class XUtils {
 		}
 
 		return defaultName;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public static <T> T synchronizedProxy(T source, Object mutex){
-		InvocationHandler handler = new SynchronizedInvocationHandler(source, mutex);
-		return (T) Proxy.newProxyInstance(source.getClass().getClassLoader(), source.getClass().getInterfaces(), handler);
 	}
 }

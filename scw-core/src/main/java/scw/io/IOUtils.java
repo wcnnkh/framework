@@ -362,25 +362,6 @@ public final class IOUtils {
 		writeLines(new FileOutputStream(file, true), lines);
 	}
 
-	/**
-	 * 读取内容
-	 * 
-	 * @param in
-	 * @param buffSize
-	 * @return
-	 * @throws IOException
-	 */
-	public static ByteArray read(InputStream in, int buffSize) throws IOException {
-		ByteArray byteArray = new ByteArray(buffSize);
-		byte[] b = new byte[buffSize];
-		int len;
-
-		while ((len = in.read(b)) != -1) {
-			byteArray.write(b, 0, len);
-		}
-		return byteArray;
-	}
-
 	public static String read(Reader reader, int buffSize) throws IOException {
 		StringBuilder sb = new StringBuilder(buffSize);
 		char[] buff = new char[buffSize];

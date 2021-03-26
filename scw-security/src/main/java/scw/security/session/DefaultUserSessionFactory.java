@@ -4,39 +4,39 @@ import java.util.HashSet;
 
 import scw.context.annotation.Provider;
 import scw.core.annotation.Order;
-import scw.data.TemporaryCache;
-import scw.data.memory.MemoryDataTemplete;
+import scw.data.TemporaryStorage;
+import scw.data.memory.MemoryDataOperations;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public final class DefaultUserSessionFactory<T> implements UserSessionFactory<T> {
 	private static Logger logger = LoggerFactory.getLogger(DefaultUserSessionFactory.class);
-	private final TemporaryCache temporaryCache;
+	private final TemporaryStorage temporaryCache;
 	private final SessionFactory sessionFactory;
 	
 	public DefaultUserSessionFactory(){
-		this(new MemoryDataTemplete());
+		this(new MemoryDataOperations());
 		logger.info("Using memory {}", getTemporaryCache());
 	}
 	
-	public DefaultUserSessionFactory(TemporaryCache temporaryCache) {
+	public DefaultUserSessionFactory(TemporaryStorage temporaryCache) {
 		this(86400 * 7, temporaryCache);
 	}
 
 	@Order
 	public DefaultUserSessionFactory(int maxInactiveInterval,
-			TemporaryCache temporaryCache) {
+			TemporaryStorage temporaryCache) {
 		this(temporaryCache, new DefaultSessionFactory(maxInactiveInterval, temporaryCache));
 	}
 	
 	
-	public DefaultUserSessionFactory(TemporaryCache temporaryCache, SessionFactory sessionFactory){
+	public DefaultUserSessionFactory(TemporaryStorage temporaryCache, SessionFactory sessionFactory){
 		this.sessionFactory = sessionFactory;
 		this.temporaryCache = temporaryCache;
 	}
 	
-	public TemporaryCache getTemporaryCache() {
+	public TemporaryStorage getTemporaryCache() {
 		return temporaryCache;
 	}
 

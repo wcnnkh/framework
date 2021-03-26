@@ -1,21 +1,74 @@
 package scw.mapper;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-public class DefaultSetter extends AbstractGetterSetter implements Setter{
+import scw.core.annotation.AnnotationUtils;
+import scw.core.parameter.DefaultParameterDescriptor;
+import scw.core.parameter.ParameterDescriptor;
+import scw.core.utils.ArrayUtils;
+import scw.util.Supplier;
+import scw.value.Value;
+
+public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
 	private static final long serialVersionUID = 1L;
+	private final String name;
+	private final boolean nullable;
+	private ParameterDescriptor setterParameterDescriptor;
 
 	public DefaultSetter(Class<?> declaringClass, String name, Field field,
 			Method method) {
-		super(declaringClass, name, field, method);
-	}
-	
-	public Class<?> getType() {
-		Method method = getMethod();
+		super(declaringClass, field, method);
+		this.name = name;
+
 		if (method != null) {
-			return method.getParameterTypes()[0];
+			Annotation[][] annotations = method.getParameterAnnotations();
+			if (!ArrayUtils.isEmpty(annotations)) {
+				setterParameterDescriptor = new DefaultParameterDescriptor(
+						name, annotations[0], method.getParameterTypes()[0],
+						method.getGenericParameterTypes()[0]);
+			}
+		}
+
+		if (setterParameterDescriptor == null) {
+			this.nullable = AnnotationUtils.isNullable(getAnnotatedElement(),
+					false);
+		} else {
+			this.nullable = AnnotationUtils.isNullable(
+					setterParameterDescriptor.getAnnotatedElement(),
+					new Supplier<Boolean>() {
+
+						public Boolean get() {
+							return AnnotationUtils.isNullable(
+									getAnnotatedElement(), false);
+						}
+					}).get();
+		}
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public boolean isNullable() {
+		return nullable;
+	}
+
+	@Override
+	public Value getDefaultValue() {
+		if (setterParameterDescriptor == null) {
+			return super.getDefaultValue();
+		}
+
+		Value value = setterParameterDescriptor.getDefaultValue();
+		return value == null ? super.getDefaultValue() : value;
+	}
+
+	public Class<?> getType() {
+		if (setterParameterDescriptor != null) {
+			return setterParameterDescriptor.getType();
 		}
 
 		Field field = getField();
@@ -26,9 +79,8 @@ public class DefaultSetter extends AbstractGetterSetter implements Setter{
 	}
 
 	public Type getGenericType() {
-		Method method = getMethod();
-		if (method != null) {
-			return method.getGenericParameterTypes()[0];
+		if (setterParameterDescriptor != null) {
+			return setterParameterDescriptor.getGenericType();
 		}
 
 		Field field = getField();

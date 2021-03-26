@@ -3,12 +3,15 @@ package scw.sql.transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.sql.ConnectionFactory;
+import scw.transaction.DefaultTransaction;
 import scw.transaction.Isolation;
-import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
 
 public final class ConnectionTransactionResource extends AbstractConnectionTransactionResource {
+	private static Logger logger = LoggerFactory.getLogger(ConnectionTransactionResource.class);
 	private final ConnectionFactory connectionFactory;
 	private Connection connection;
 
@@ -18,8 +21,8 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 		this.connectionFactory = connectionFactory;
 	}
 
-	public ConnectionTransactionResource(ConnectionFactory connectionFactory, Transaction transaction) {
-		super(transaction.getTransactionDefinition(), transaction.isActive());
+	public ConnectionTransactionResource(ConnectionFactory connectionFactory, DefaultTransaction transaction) {
+		super(transaction.getDefinition(), transaction.isActive());
 		this.connectionFactory = connectionFactory;
 	}
 
@@ -50,7 +53,7 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 		return connectionFactory;
 	}
 
-	public void completion() {
+	public void complete() {
 		if (hasConnection()) {
 			if (isActive()) {
 				try {
@@ -63,7 +66,7 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 			try {
 				SqlTransactionUtils.closeProxyConnection(connection);
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e, "completion - " + connection);
 			}
 		}
 	}
@@ -73,7 +76,7 @@ public final class ConnectionTransactionResource extends AbstractConnectionTrans
 			try {
 				connection.rollback();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				logger.error(e, "rollback - " + connection);
 			}
 		}
 	}

@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
+import scw.lang.NamedThreadLocal;
+
 public final class Bytes {
 	private Bytes() {
 	};
@@ -30,7 +32,7 @@ public final class Bytes {
 
 	private static final Map<Integer, byte[]> DECODE_TABLE_MAP = new ConcurrentHashMap<Integer, byte[]>();
 
-	private static ThreadLocal<MessageDigest> MD = new ThreadLocal<MessageDigest>();
+	private static ThreadLocal<MessageDigest> MD = new NamedThreadLocal<MessageDigest>(Bytes.class.getSimpleName());
 
 	/**
 	 * byte array copy.

@@ -1,32 +1,20 @@
 package scw.transaction;
 
-import java.util.Collection;
-import java.util.LinkedList;
+public class MultipleSavepoint implements Savepoint {
+	private final Iterable<Savepoint> savepoints;
 
-public class MultipleSavepoint extends LinkedList<Savepoint> implements Savepoint {
-	private static final long serialVersionUID = 1L;
-
-	public MultipleSavepoint(Collection<? extends TransactionResource> resources) {
-		if (resources != null) {
-			for (TransactionResource tr : resources) {
-				Savepoint savepoint = tr.createSavepoint();
-				if (savepoint == null) {
-					continue;
-				}
-
-				add(savepoint);
-			}
-		}
+	public MultipleSavepoint(Iterable<Savepoint> savepoints) {
+		this.savepoints = savepoints;
 	}
 
 	public void rollback() throws TransactionException {
-		for (Savepoint savepoint : this) {
+		for (Savepoint savepoint : savepoints) {
 			savepoint.rollback();
 		}
 	}
 
 	public void release() throws TransactionException {
-		for (Savepoint savepoint : this) {
+		for (Savepoint savepoint : savepoints) {
 			savepoint.release();
 		}
 	}

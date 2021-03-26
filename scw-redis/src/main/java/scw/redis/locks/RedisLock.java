@@ -5,47 +5,38 @@ import java.util.concurrent.TimeUnit;
 
 import scw.core.Constants;
 import scw.io.ResourceUtils;
-import scw.locks.AbstractLock;
+import scw.locks.RenewableLock;
 import scw.redis.Redis;
 import scw.redis.enums.EXPX;
 import scw.redis.enums.NXXX;
-import scw.value.AnyValue;
 
-public final class RedisLock extends AbstractLock {
+public final class RedisLock extends RenewableLock {
 	private static final String UNLOCK_SCRIPT = ResourceUtils.getContent(ResourceUtils.getSystemResource("/scw/data/redis/lock.script"),
 			Constants.UTF_8);
 	private final Redis redis;
 	private final String key;
-	private final int timeout;
 	private final String id;
 
-	public RedisLock(Redis redis, String key, String id, int timeout) {
+	public RedisLock(Redis redis, String key, String id, TimeUnit timeUnit, long timeout) {
+		super(timeUnit, timeout);
 		this.redis = redis;
 		this.key = key;
-		this.timeout = timeout;
 		this.id = id;
 	}
 
 	public boolean tryLock() {
-		boolean b = redis.getStringOperations().set(key, id, NXXX.NX, EXPX.EX, timeout);
+		boolean b = redis.getStringOperations().set(key, id, NXXX.NX, EXPX.EX, getTimeout(TimeUnit.SECONDS));
 		if(b){
-			autoRenewal(timeout/2, TimeUnit.SECONDS);
+			autoRenewal();
 		}
 		return b;
 	}
 
-	public boolean unlock() {
-		AnyValue[] values = redis.getStringOperations().eval(UNLOCK_SCRIPT, Collections.singletonList(key),
+	public void unlock() {
+		cancelAutoRenewal();
+		redis.getStringOperations().eval(UNLOCK_SCRIPT, Collections.singletonList(key),
 				Collections.singletonList(id));
-		boolean b = values.length == 0 ? false : values[0].getAsBooleanValue();
-		if(b){
-			cancelAutoRenewal();
-		}
-		return b;
-	}
-
-	public boolean renewal() {
-		return renewal(timeout, TimeUnit.SECONDS);
+		//boolean b = values.length == 0 ? false : values[0].getAsBooleanValue();
 	}
 
 	public boolean renewal(long time, TimeUnit unit) {

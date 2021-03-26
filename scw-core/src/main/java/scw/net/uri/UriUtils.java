@@ -11,15 +11,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import scw.codec.Encoder;
 import scw.core.Constants;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.Nullable;
 import scw.util.MultiValueMap;
 import scw.util.XUtils;
 import scw.value.ValueUtils;
 
 public class UriUtils {
+	public static final String QUERY_CONNECTOR = "?";
+	public static final String PARAMETER_CONNECTOR = "&";
+	public static final String NAME_VALUE_CONNECTOR = "=";
+	
 	/**
 	 * Encode the given URI scheme with the given encoding.
 	 * 
@@ -220,8 +226,12 @@ public class UriUtils {
 		}
 		return UriComponentsBuilder.newInstance().query(queryString).build().getQueryParams();
 	}
+	
+	public static String toQueryString(Object body, @Nullable Encoder<String, String> encoder) {
+		return toQueryString(body, encoder, PARAMETER_CONNECTOR, NAME_VALUE_CONNECTOR);
+	}
 
-	public static String toQueryString(Object body, String charsetName) {
+	public static String toQueryString(Object body, @Nullable Encoder<String, String> encoder, @Nullable String parameterConnector, @Nullable String nameValueConnector) {
 		if (body == null) {
 			return null;
 		}
@@ -230,11 +240,11 @@ public class UriUtils {
 			return body.toString();
 		}
 
-		return toQueryString(XUtils.toMap(body), charsetName);
+		return toQueryString(XUtils.toMap(body), encoder, parameterConnector, nameValueConnector);
 	}
 
 	@SuppressWarnings("rawtypes")
-	private static String toQueryString(String key, Collection values, String charsetName) {
+	private static String toQueryString(String key, Collection values, @Nullable Encoder<String, String> encoder, @Nullable String parameterConnector, @Nullable String nameValueConnector) {
 		if (StringUtils.isEmpty(key) || CollectionUtils.isEmpty(values)) {
 			return null;
 		}
@@ -245,34 +255,37 @@ public class UriUtils {
 				continue;
 			}
 
-			if (sb.length() > 0) {
-				sb.append("&");
+			if (sb.length() > 0 && parameterConnector != null) {
+				sb.append(parameterConnector);
 			}
 
 			sb.append(key);
-			sb.append("=");
-			if (StringUtils.isEmpty(charsetName)) {
-				sb.append(encode(value.toString(), charsetName));
+			if(nameValueConnector != null){
+				sb.append(nameValueConnector);
+			}
+			if (encoder != null) {
+				sb.append(encoder.encode(value.toString()));
 			} else {
 				sb.append(value.toString());
 			}
 		}
 		return sb.toString();
 	}
-
+	
 	@SuppressWarnings("rawtypes")
-	public static String toQueryString(Map parameterMap) {
-		return toQueryString(parameterMap, Constants.UTF_8.name());
+	public static String toQueryString(Map parameterMap, @Nullable Encoder<String, String> encoder){
+		return toQueryString(parameterMap, encoder, PARAMETER_CONNECTOR, NAME_VALUE_CONNECTOR);
 	}
-
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static String toQueryString(Map parameterMap, String charsetName) {
+	public static String toQueryString(Map parameterMap, @Nullable Encoder<String, String> encoder, @Nullable String parameterConnector, @Nullable String nameValueConnector) {
 		if (CollectionUtils.isEmpty(parameterMap)) {
 			return null;
 		}
-
+		
+		Map parameters = CollectionUtils.sort(parameterMap);
 		StringBuilder sb = new StringBuilder();
-		Set<Entry> entries = parameterMap.entrySet();
+		Set<Entry> entries = parameters.entrySet();
 		for (Map.Entry entry : entries) {
 			Object value = entry.getValue();
 			if (value == null) {
@@ -282,36 +295,24 @@ public class UriUtils {
 			String key = entry.getKey().toString();
 			String text;
 			if (value instanceof Collection) {
-				text = toQueryString(key, (Collection) value, charsetName);
+				text = toQueryString(key, (Collection) value, encoder, parameterConnector, nameValueConnector);
 			} else if (value.getClass().isArray()) {
-				text = toQueryString(key, ArrayUtils.toList(value), charsetName);
+				text = toQueryString(key, ArrayUtils.toList(value), encoder, parameterConnector, nameValueConnector);
 			} else {
-				text = toQueryString(key, Arrays.asList(value), charsetName);
+				text = toQueryString(key, Arrays.asList(value), encoder, parameterConnector, nameValueConnector);
 			}
 
 			if (text == null) {
 				continue;
 			}
 
-			if (sb.length() != 0) {
-				sb.append("&");
+			if (sb.length() != 0 && parameterConnector != null) {
+				sb.append(parameterConnector);
 			}
 
 			sb.append(text);
 		}
 		return sb.toString();
-	}
-
-	/**
-	 * The World Wide Web Consortium Recommendation states that UTF-8 should be
-	 * used.
-	 * 
-	 * @param url
-	 * @param paramMap
-	 * @return
-	 */
-	public static String appendQueryParams(String url, Map<String, ?> paramMap) {
-		return appendQueryParams(url, paramMap, Constants.UTF_8.name());
 	}
 
 	/**
@@ -322,7 +323,7 @@ public class UriUtils {
 	 * @param charsetName
 	 * @return
 	 */
-	public static String appendQueryParams(String url, Map<String, ?> paramMap, String charsetName) {
+	public static String appendQueryParams(String url, Map<String, ?> paramMap, @Nullable Encoder<String, String> encoder) {
 		if (paramMap == null || paramMap.isEmpty()) {
 			return url;
 		}
@@ -330,14 +331,14 @@ public class UriUtils {
 		StringBuilder sb = new StringBuilder(128);
 		if (!StringUtils.isEmpty(url)) {
 			sb.append(url);
-			if (url.lastIndexOf("?") == -1) {
-				sb.append("?");
+			if (url.lastIndexOf(QUERY_CONNECTOR) == -1) {
+				sb.append(QUERY_CONNECTOR);
 			} else {
-				sb.append("&");
+				sb.append(PARAMETER_CONNECTOR);
 			}
 		}
 
-		String text = toQueryString(paramMap, charsetName);
+		String text = toQueryString(paramMap, encoder, PARAMETER_CONNECTOR, NAME_VALUE_CONNECTOR);
 		if (text != null) {
 			sb.append(text);
 		}
@@ -371,7 +372,7 @@ public class UriUtils {
 	 * @return
 	 */
 	public static String encode(String source) {
-		return encode(source, Constants.UTF_8.name());
+		return encode(source, Constants.UTF_8_NAME);
 	}
 
 	/**
@@ -401,7 +402,7 @@ public class UriUtils {
 	 * @return
 	 */
 	public static String decode(String source) {
-		return decode(source, Constants.UTF_8.name());
+		return decode(source, Constants.UTF_8_NAME);
 	}
 
 	public static boolean isUri(String uri) {
@@ -414,6 +415,14 @@ public class UriUtils {
 			return true;
 		} catch (URISyntaxException e) {
 			return false;
+		}
+	}
+	
+	public static URI toUri(String uri) {
+		try {
+			return new URI(uri);
+		} catch (URISyntaxException e) {
+			throw new IllegalStateException("Failed to URI [" + uri + "]", e);
 		}
 	}
 }

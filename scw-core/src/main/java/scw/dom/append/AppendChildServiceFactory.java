@@ -10,14 +10,14 @@ import org.w3c.dom.Node;
 
 import scw.convert.TypeDescriptor;
 import scw.lang.NotSupportedException;
-import scw.util.XUtils;
+import scw.util.Synchronized;
 
 public class AppendChildServiceFactory implements AppendChildService, Comparator<AppendChildService> {
 	protected final TreeSet<AppendChildService> services = new TreeSet<AppendChildService>(
 			this);
 	
 	public SortedSet<AppendChildService> getServices() {
-		return XUtils.synchronizedProxy(services, this);
+		return Synchronized.proxy(services, this);
 	}
 
 	public int compare(AppendChildService o1, AppendChildService o2) {

@@ -22,10 +22,6 @@
 		</dependency>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-locks</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>scw</groupId>
 			<artifactId>scw-beans</artifactId>
 			<scope>provided</scope>
 		</dependency>

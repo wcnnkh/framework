@@ -1,17 +1,17 @@
 package scw.redis;
 
+import scw.codec.Codec;
 import scw.io.Serializer;
-import scw.util.StringCodec;
 
 public final class ObjectOperations extends AbstractRedisOperationsWrapper<String, byte[], Object, byte[]> {
 	private final RedisOperations<byte[], byte[]> redisOperations;
-	private final StringCodec stringCodec;
+	private final Codec<String, byte[]> codec;
 	private final Serializer serializer;
 
 	public ObjectOperations(RedisOperations<byte[], byte[]> redisOperations, Serializer serializer,
-			StringCodec stringCodec) {
+			Codec<String, byte[]> codec) {
 		this.redisOperations = redisOperations;
-		this.stringCodec = stringCodec;
+		this.codec = codec;
 		this.serializer = serializer;
 	}
 
@@ -26,7 +26,7 @@ public final class ObjectOperations extends AbstractRedisOperationsWrapper<Strin
 			return null;
 		}
 
-		return stringCodec.encode(key);
+		return codec.encode(key);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public final class ObjectOperations extends AbstractRedisOperationsWrapper<Strin
 			return null;
 		}
 
-		return stringCodec.decode(key);
+		return codec.decode(key);
 	}
 
 	@Override

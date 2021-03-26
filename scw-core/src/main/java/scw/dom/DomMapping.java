@@ -4,9 +4,9 @@ import java.util.Map;
 
 import org.w3c.dom.Node;
 
+import scw.mapper.AbstractMapping;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
-import scw.mapper.support.AbstractMapping;
 import scw.util.placeholder.PropertyResolver;
 import scw.value.ValueUtils;
 
@@ -26,7 +26,7 @@ public class DomMapping extends AbstractMapping {
 
 	@Override
 	protected Object getValue(Field field) {
-		String name = this.getDisplayName(field.getSetter());
+		String name = field.getSetter().getName();
 		Node node = nodeMap.get(name);
 		if (node == null) {
 			return null;

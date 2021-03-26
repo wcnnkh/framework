@@ -16,12 +16,12 @@ import scw.env.SystemEnvironment;
 import scw.instance.InstanceUtils;
 import scw.lang.Ignore;
 import scw.mapper.Field;
-import scw.mapper.FieldFilter;
-import scw.mapper.FilterFeature;
+import scw.mapper.FieldFeature;
 import scw.mapper.Mapper;
 import scw.mapper.MapperUtils;
 import scw.sql.orm.annotation.NotColumn;
 import scw.sql.orm.annotation.Table;
+import scw.util.Accept;
 
 /**
  * 默认的orm定义
@@ -29,7 +29,7 @@ import scw.sql.orm.annotation.Table;
  * @author shuchaowen
  *
  */
-public class ObjectRelationalMapping implements FieldFilter {
+public class ObjectRelationalMapping implements Accept<Field> {
 	/**
 	 * 默认对象主键的连接符
 	 */
@@ -55,7 +55,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 * @return
 	 */
 	public Columns getColumns(Class<?> entityClass, Field parentField) {
-		return new IterableColumns(getMapper().getFields(entityClass, true, parentField, this)) {
+		return new IterableColumns(getMapper().getFields(entityClass, true, parentField).accept(this)) {
 
 			@Override
 			protected Column create(Field field) {
@@ -130,7 +130,7 @@ public class ObjectRelationalMapping implements FieldFilter {
 	 */
 	public boolean accept(Field field) {
 		if (!(field.isSupportGetter() && field.isSupportSetter()
-				&& FilterFeature.IGNORE_STATIC.getFilter().accept(field))) {
+				&& FieldFeature.IGNORE_STATIC.getAccept().accept(field))) {
 			return false;
 		}
 

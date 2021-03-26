@@ -18,7 +18,7 @@ import scw.timer.annotation.Schedule;
 import scw.timer.support.SimpleCrontabConfig;
 import scw.timer.support.SimpleTimerTaskConfig;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public final class TimerAnnotationScan implements ApplicationPostProcessor {
 	
 	public void postProcessApplication(ConfigurableApplication application)

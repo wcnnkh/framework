@@ -8,7 +8,7 @@ import scw.netflix.hystrix.annotation.Hystrix;
 
 import com.netflix.hystrix.HystrixCommand;
 
-@Provider(order = Integer.MAX_VALUE)
+@Provider
 public class HystrixCommandMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private HystrixCommandFactory hystrixCommandFactory;
 
@@ -17,7 +17,7 @@ public class HystrixCommandMethodInterceptor implements MethodInterceptor, Metho
 	}
 	
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
-		return invoker.getSourceClass().getAnnotation(Hystrix.class) != null;
+		return invoker.getDeclaringClass().getAnnotation(Hystrix.class) != null;
 	}
 
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {

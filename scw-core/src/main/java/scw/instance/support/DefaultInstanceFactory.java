@@ -20,7 +20,7 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 			cacheMap = new ConcurrentReferenceHashMap<Class<?>, InstanceDefinition>();
 		}
 	}
-
+	
 	public InstanceDefinition getDefinition(String name) {
 		Class<?> type = getClass(name);
 		if(type == null){

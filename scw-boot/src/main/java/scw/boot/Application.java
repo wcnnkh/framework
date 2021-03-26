@@ -1,14 +1,14 @@
 package scw.boot;
 
 import scw.beans.BeanFactory;
-import scw.context.ContextClassesLoaderFactory;
+import scw.context.ProviderClassesLoaderFactory;
 import scw.context.Destroy;
 import scw.context.Init;
 import scw.env.Environment;
 import scw.event.BasicEventDispatcher;
 import scw.logger.Logger;
 
-public interface Application extends ContextClassesLoaderFactory, Init, Destroy, BasicEventDispatcher<ApplicationEvent> {
+public interface Application extends ProviderClassesLoaderFactory, Init, Destroy, BasicEventDispatcher<ApplicationEvent> {
 	BeanFactory getBeanFactory();
 
 	Environment getEnvironment();
@@ -21,4 +21,6 @@ public interface Application extends ContextClassesLoaderFactory, Init, Destroy,
 	boolean isInitialized();
 
 	Logger getLogger();
+	
+	long getCreateTime();
 }

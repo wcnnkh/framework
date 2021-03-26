@@ -48,7 +48,7 @@ public final class UpdateSQLByBeanListen extends DialectSql {
 		// 处理CasType.AUTO_INCREMENT字段
 		while (iterator.hasNext()) {
 			Column column = iterator.next();
-			if (column.getCasType() != CasType.AUTO_INCREMENT) {
+			if (column.getCasType() != CasType.VERSION) {
 				continue;
 			}
 

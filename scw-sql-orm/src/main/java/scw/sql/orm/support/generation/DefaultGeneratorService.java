@@ -1,13 +1,14 @@
 package scw.sql.orm.support.generation;
 
+import java.util.concurrent.locks.Lock;
+
 import scw.data.Counter;
 import scw.data.generator.SequenceId;
 import scw.data.generator.SequenceIdGenerator;
-import scw.data.memory.MemoryDataTemplete;
+import scw.data.memory.MemoryDataOperations;
 import scw.env.SystemEnvironment;
-import scw.locks.JdkLockFactory;
-import scw.locks.Lock;
 import scw.locks.LockFactory;
+import scw.locks.ReentrantLockFactory;
 
 public class DefaultGeneratorService extends AbstractGeneratorService {
 	private final SequenceIdGenerator sequeueIdGenerator;
@@ -15,7 +16,7 @@ public class DefaultGeneratorService extends AbstractGeneratorService {
 	private final LockFactory lockFactory;
 	
 	public DefaultGeneratorService(){
-		this(new SequenceIdGenerator(), new MemoryDataTemplete(), new JdkLockFactory());
+		this(new SequenceIdGenerator(), new MemoryDataOperations(), new ReentrantLockFactory());
 	}
 
 	public DefaultGeneratorService(SequenceIdGenerator sequeueIdGenerator, Counter counter,

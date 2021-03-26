@@ -25,7 +25,7 @@ import scw.logger.LoggerUtils;
  *
  */
 
-@Provider(order = Integer.MIN_VALUE, value = CompleteService.class)
+@Provider(value = CompleteService.class)
 public final class LocalCompleteService implements CompleteService, Destroy {
 	private static Logger logger = LoggerUtils.getLogger(LocalCompleteService.class);
 	private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(4);

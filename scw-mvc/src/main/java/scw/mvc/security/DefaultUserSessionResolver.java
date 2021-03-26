@@ -8,7 +8,7 @@ import scw.value.StringValue;
 import scw.value.Value;
 import scw.web.WebUtils;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class DefaultUserSessionResolver implements UserSessionResolver {
 
 	public <T> T getUid(HttpChannel httpChannel, Class<T> type) {

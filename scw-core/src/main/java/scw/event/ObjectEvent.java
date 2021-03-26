@@ -35,6 +35,6 @@ public class ObjectEvent<T> extends EventObject implements Event {
 	@Override
 	public String toString() {
 		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <"
-				+ MapperUtils.getMapper().toString(this) + ">";
+				+ MapperUtils.getMapper().getFields(getClass()).getValueMap(this).toString() + ">";
 	}
 }

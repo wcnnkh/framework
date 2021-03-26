@@ -30,7 +30,7 @@ import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.util.ConcurrentReferenceHashMap;
-import scw.util.KeyValuePair;
+import scw.util.Supplier;
 
 /**
  * General utility methods for working with annotations, handling
@@ -2679,30 +2679,6 @@ public abstract class AnnotationUtils {
 		return getAnnotation(annotations[index], type);
 	}
 
-	public static KeyValuePair<scw.http.HttpMethod, String> getHttpMethodAnnotation(AnnotatedElement annotatedElement) {
-		GET get = annotatedElement.getAnnotation(GET.class);
-		if (get != null) {
-			return new KeyValuePair<scw.http.HttpMethod, String>(scw.http.HttpMethod.GET, get.value());
-		}
-
-		POST post = annotatedElement.getAnnotation(POST.class);
-		if (post != null) {
-			return new KeyValuePair<scw.http.HttpMethod, String>(scw.http.HttpMethod.POST, post.value());
-		}
-
-		DELETE delete = annotatedElement.getAnnotation(DELETE.class);
-		if (delete != null) {
-			return new KeyValuePair<scw.http.HttpMethod, String>(scw.http.HttpMethod.DELETE, delete.value());
-		}
-
-		PUT put = annotatedElement.getAnnotation(PUT.class);
-		if (put != null) {
-			return new KeyValuePair<scw.http.HttpMethod, String>(scw.http.HttpMethod.PUT, put.value());
-		}
-
-		return null;
-	}
-
 	/**
 	 * 获取一个注解，后面覆盖前面
 	 * 
@@ -2730,16 +2706,19 @@ public abstract class AnnotationUtils {
 		return ignore.value();
 	}
 	
-	/**
-	 * 是否可以为空
-	 * 
-	 * @param annotationFactory
-	 * @param defaultValue
-	 * @return
-	 */
 	public static boolean isNullable(AnnotatedElement annotatedElement, boolean defaultValue) {
 		Nullable nullable = annotatedElement.getAnnotation(Nullable.class);
 		return nullable == null ? defaultValue : nullable.value();
+	}
+	
+	public static Supplier<Boolean> isNullable(final AnnotatedElement annotatedElement, final Supplier<Boolean> defaultValue){
+		return new Supplier<Boolean>() {
+
+			public Boolean get() {
+				Nullable nullable = annotatedElement.getAnnotation(Nullable.class);
+				return nullable == null ? defaultValue.get() : nullable.value();
+			}
+		};
 	}
 
 	/**

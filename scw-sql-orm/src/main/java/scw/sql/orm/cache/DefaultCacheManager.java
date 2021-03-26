@@ -3,12 +3,12 @@ package scw.sql.orm.cache;
 import java.util.Arrays;
 
 import scw.core.utils.ArrayUtils;
-import scw.data.Cache;
-import scw.data.TransactionContextCache;
-import scw.data.WrapperCache;
+import scw.data.Storage;
+import scw.data.TransactionStorage;
+import scw.data.StorageWrapper;
 
-public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
-	private final Cache cache;
+public final class DefaultCacheManager extends AbstractCacheManager<Storage> {
+	private final Storage cache;
 	
 
 	/**
@@ -19,12 +19,12 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	 *            是否开启事务， 如果开启在处理失败后会删除key
 	 * @param keyPrefix
 	 */
-	public DefaultCacheManager(Cache cache, boolean transaction, String keyPrefix) {
-		this.cache = new WrapperCache(cache, transaction, keyPrefix);
+	public DefaultCacheManager(Storage cache, boolean transaction, String keyPrefix) {
+		this.cache = new StorageWrapper(cache, transaction, keyPrefix);
 	}
 
 	public DefaultCacheManager() {
-		this.cache = new TransactionContextCache(this);
+		this.cache = new TransactionStorage(this);
 	}
 
 	public void save(Object bean) {
@@ -48,7 +48,7 @@ public final class DefaultCacheManager extends AbstractCacheManager<Cache> {
 	}
 
 	@Override
-	public Cache getCache() {
+	public Storage getCache() {
 		return cache;
 	}
 

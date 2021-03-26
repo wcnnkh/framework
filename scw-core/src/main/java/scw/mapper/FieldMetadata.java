@@ -2,9 +2,15 @@ package scw.mapper;
 
 import java.io.Serializable;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.MultiAnnotatedElement;
+import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 
 public class FieldMetadata implements Serializable {
@@ -12,6 +18,10 @@ public class FieldMetadata implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private final Getter getter;
 	private final Setter setter;
+	
+	public FieldMetadata(FieldMetadata metadata) {
+		this(metadata.getter, metadata.setter);
+	}
 
 	public FieldMetadata(Getter getter, Setter setter) {
 		this.getter = getter;
@@ -83,5 +93,59 @@ public class FieldMetadata implements Serializable {
 		}
 
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		if (isSupportGetter() && isSupportSetter()) {
+			return "getter {" + getter + "} setter {" + setter + "}";
+		}
+
+		if (isSupportGetter()) {
+			return "getter {" + getter + "}";
+		}
+
+		if (isSupportSetter()) {
+			return "setter {" + setter + "}";
+		}
+		return super.toString();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T getValue(Object instance){
+		if(!isSupportGetter()){
+			return null;
+		}
+		
+		if (instance == null && !Modifier.isStatic(getGetter().getModifiers())) {
+			//非静态字段的调用实例不应该为空
+			return null;
+		}
+		return (T) getGetter().get(instance);
+	}
+	
+	public <T> List<T> getValues(Collection<?> instances, boolean nullable){
+		if(CollectionUtils.isEmpty(instances)){
+			return Collections.emptyList();
+		}
+		
+		if(!isSupportGetter()){
+			return Collections.emptyList();
+		}
+		
+		List<T> list = new ArrayList<T>(instances.size());
+		for (Object entity : instances) {
+			T value = getValue(entity);
+			if (value == null && !nullable) {
+				continue;
+			}
+
+			list.add(value);
+		}
+		return list;
+	}
+	
+	public <T> List<T> getValues(Collection<?> instances){
+		return getValues(instances, false);
 	}
 }

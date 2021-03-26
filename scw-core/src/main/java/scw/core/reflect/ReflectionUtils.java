@@ -22,6 +22,7 @@ import scw.core.parameter.ParameterUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.lang.Ignore;
+import scw.lang.NestedExceptionUtils;
 import scw.lang.Nullable;
 import scw.util.Accept;
 import scw.util.comparator.CompareUtils;
@@ -399,6 +400,19 @@ public abstract class ReflectionUtils {
 			throw (RuntimeException) ex;
 		}
 		throw new UndeclaredThrowableException(ex);
+	}
+	
+	public static void handleThrowable(Throwable ex) {
+		if(ex instanceof RuntimeException){
+			throw (RuntimeException)ex;
+		} else if(ex instanceof Exception){
+			handleReflectionException((Exception)ex);
+			throw NestedExceptionUtils.shouldNeverGetHere();
+		}else{
+			throw new UndeclaredThrowableException(ex);
+		}
+		
+		
 	}
 
 	/**
@@ -851,42 +865,6 @@ public abstract class ReflectionUtils {
 		}
 
 		return (Constructor<T>) findConstructor(clazz, isPublic, parameterTypes);
-	}
-
-	/**
-	 * 此方法可能返回空
-	 * 
-	 * @param type
-	 * @param params
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> Constructor<T> findConstructorByParameters(Class<T> type, boolean isPublic, Object... params) {
-		for (Constructor<?> constructor : isPublic ? type.getConstructors() : type.getDeclaredConstructors()) {
-			Class<?>[] types = constructor.getParameterTypes();
-			if (types.length == params.length) {
-				boolean find = true;
-				for (int i = 0; i < types.length; i++) {
-					Object v = params[i];
-					if (v == null) {
-						continue;
-					}
-
-					if (!ClassUtils.isAssignableValue(types[i], v)) {
-						find = false;
-						break;
-					}
-				}
-
-				if (find) {
-					if (!isPublic && !Modifier.isPublic(constructor.getModifiers())) {
-						constructor.setAccessible(true);
-					}
-					return (Constructor<T>) constructor;
-				}
-			}
-		}
-		return null;
 	}
 
 	/**

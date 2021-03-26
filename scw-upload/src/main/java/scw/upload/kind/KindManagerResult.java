@@ -74,7 +74,7 @@ public class KindManagerResult implements Serializable, Text {
 			}
 		}
 		map.put("file_list", list);
-		return JSONUtils.toJSONString(map);
+		return JSONUtils.getJsonSupport().toJSONString(map);
 	}
 
 	public MimeType getMimeType() {
@@ -83,6 +83,6 @@ public class KindManagerResult implements Serializable, Text {
 	
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().toString(this);
+		return MapperUtils.getMapper().getFields(KindManagerResult.class).getValueMap(this).toString();
 	}
 }

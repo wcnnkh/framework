@@ -9,6 +9,9 @@ import javax.net.ssl.SSLSocketFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import scw.codec.support.CharsetCodec;
+import scw.codec.support.MD5;
+import scw.codec.support.URLCodec;
 import scw.convert.TypeDescriptor;
 import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
@@ -27,7 +30,7 @@ import scw.lang.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.MapperUtils;
-import scw.security.SignatureUtils;
+import scw.net.uri.UriUtils;
 import scw.tencent.wx.WeiXinException;
 import scw.tencent.wx.WeiXinUtils;
 import scw.util.RandomUtils;
@@ -109,13 +112,13 @@ public class WeiXinPay {
 		}
 
 		cloneParams.remove("sign");
-		StringBuilder checkStr = SignatureUtils.formatSortParams(cloneParams);
+		StringBuilder checkStr = new StringBuilder(UriUtils.toQueryString(cloneParams, URLCodec.UTF_8));
 		checkStr.append("&key=").append(apiKey);
 
 		String mySign = toSign(getSignType(cloneParams), checkStr.toString());
 		boolean b = sign.equals(mySign);
 		if (!b) {
-			logger.error("签名检验失败：{}------>{}", JSONUtils.toJSONString(params), mySign);
+			logger.error("签名检验失败：{}------>{}", JSONUtils.getJsonSupport().toJSONString(params), mySign);
 		}
 		return b;
 	}
@@ -220,13 +223,13 @@ public class WeiXinPay {
 		
 		@SuppressWarnings("unchecked")
 		Map<String, String> map = (Map<String, String>) SystemEnvironment.getInstance().convert(responseDocument, TypeDescriptor.forObject(responseDocument), TypeDescriptor.map(Map.class, String.class, String.class));
-		JsonObject jsonObject = JSONUtils.parseObject(JSONUtils.toJSONString(map));
+		JsonObject jsonObject = JSONUtils.getJsonSupport().parseObject(JSONUtils.getJsonSupport().toJSONString(map));
 		return new WeiXinPayResponse(jsonObject);
 	}
 
 	protected String toSign(SignType signType, String str) {
 		if (signType == null || signType == SignType.MD5) {
-			return SignatureUtils.md5(str, charsetName).toUpperCase();
+			return new CharsetCodec(charsetName).to(MD5.DEFAULT).encode(str).toUpperCase();
 		}
 		throw new NotSupportedException("不支持的签名方式:" + signType);
 	}
@@ -360,7 +363,7 @@ public class WeiXinPay {
 	 * @return
 	 */
 	public SendredpackResponse sendredpack(SendredpackRequest request) {
-		Map<String, Object> parameter = MapperUtils.getMapper().getFieldValueMap(request);
+		Map<String, Object> parameter = MapperUtils.getMapper().getFields(SendredpackRequest.class).getValueMap(request);
 		WeiXinPayResponse response = invoke(SENDREDPACK, parameter, true);
 		return new SendredpackResponse(response);
 	}
@@ -373,13 +376,13 @@ public class WeiXinPay {
 	 * @return
 	 */
 	public SendredpackResponse sendgroupredpack(SendgroupredpackRequest request) {
-		Map<String, Object> parameter = MapperUtils.getMapper().getFieldValueMap(request);
+		Map<String, Object> parameter = MapperUtils.getMapper().getFields(SendgroupredpackRequest.class).getValueMap(request);
 		WeiXinPayResponse response = invoke(SENDGROUPREDPACK, parameter, true);
 		return new SendredpackResponse(response);
 	}
 
 	public GethbinfoResponse gethbinfo(GethbinfoRequest request) {
-		Map<String, Object> parameter = MapperUtils.getMapper().getFieldValueMap(request);
+		Map<String, Object> parameter = MapperUtils.getMapper().getFields(GethbinfoRequest.class).getValueMap(request);
 		WeiXinPayResponse response = invoke(GETHBINFO, parameter, true);
 		return new GethbinfoResponse(response);
 	}

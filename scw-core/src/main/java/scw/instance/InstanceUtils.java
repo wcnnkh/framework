@@ -5,17 +5,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.core.OrderComparator;
-import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
+import scw.instance.annotation.PropertyName;
 import scw.instance.support.DefaultInstanceFactory;
-import scw.instance.support.DefaultServiceLoader;
+import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.lang.NotSupportedException;
 import scw.util.JavaVersion;
-import scw.value.factory.ValueFactory;
 
 
 public final class InstanceUtils {
@@ -25,7 +26,7 @@ public final class InstanceUtils {
 	/**
 	 * 默认的实例工厂
 	 */
-	public static final InstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
+	public static final DefaultInstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
 			SystemEnvironment.getInstance(), true);
 	
 	/**
@@ -41,22 +42,18 @@ public final class InstanceUtils {
 			throw new NotSupportedException(NoArgsInstanceFactory.class.getName());
 		}
 	}
-
-	public static <T> T loadService(Class<? extends T> clazz, String... defaultNames) {
-		return loadService(clazz, INSTANCE_FACTORY, SystemEnvironment.getInstance(), defaultNames);
+	
+	public static <S> S loadService(Class<S> serviceClass, String ...defaultNames){
+		return CollectionUtils.first(getServiceLoader(serviceClass, defaultNames));
 	}
-
-	/**
-	 * 该结果是经过排序的
-	 * @see Ordered
-	 * @param clazz
-	 * @param defaultNames
-	 * @return
-	 */
-	public static <T> List<T> loadAllService(Class<T> clazz, String... defaultNames) {
-		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, INSTANCE_FACTORY, SystemEnvironment.getInstance(),
-				defaultNames);
-		return asList(serviceLoader);
+	
+	public static <S> List<S> loadAllService(Class<S> serviceClass, String... defaultNames) {
+		return asList(getServiceLoader(serviceClass, defaultNames));
+	}
+	
+	public static <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String ...defaultNames){
+		DefaultServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(INSTANCE_FACTORY, SystemEnvironment.getInstance());
+		return serviceLoaderFactory.getServiceLoader(serviceClass, defaultNames);
 	}
 	
 	public static <S> List<S> asList(ServiceLoader<S> serviceLoader){
@@ -70,28 +67,19 @@ public final class InstanceUtils {
 		return services;
 	}
 
-	public static <T> T loadService(Class<T> clazz, NoArgsInstanceFactory instanceFactory,
-			ValueFactory<String> configFactory, String... defaultNames) {
-		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, instanceFactory, configFactory, defaultNames);
-		return CollectionUtils.first(serviceLoader);
-	}
-
-	public static <S> ServiceLoader<S> getServiceLoader(Class<S> clazz, NoArgsInstanceFactory instanceFactory,
-			ValueFactory<String> configFactory, String... defaultNames) {
-		return new DefaultServiceLoader<S>(clazz, instanceFactory, configFactory, defaultNames);
-	}
-
-	public static <T> List<T> loadAllService(Class<T> clazz, NoArgsInstanceFactory instanceFactory,
-			ValueFactory<String> configFactory, String... defaultNames) {
-		ServiceLoader<T> serviceLoader = getServiceLoader(clazz, instanceFactory, configFactory, defaultNames);
-		return asList(serviceLoader);
-	}
-
 	public static boolean isSupported(Class<?> clazz) {
 		if(ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz)){
 			return false;
 		}
 		
 		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
+	}
+	
+	public static String getPropertyName(ParameterDescriptor parameterDescriptor) {
+		PropertyName parameterName = parameterDescriptor.getAnnotatedElement().getAnnotation(PropertyName.class);
+		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
+			return parameterName.value();
+		}
+		return parameterDescriptor.getName();
 	}
 }

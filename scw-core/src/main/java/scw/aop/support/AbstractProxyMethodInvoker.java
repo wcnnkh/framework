@@ -19,7 +19,7 @@ public abstract class AbstractProxyMethodInvoker extends DefaultMethodInvoker im
 	
 	public Object intercept(MethodInvoker invoker, Object[] args)
 			throws Throwable {
-		if(ArrayUtils.isEmpty(args) && ProxyInstanceTarget.class.isAssignableFrom(getSourceClass()) && invoker.getMethod().getName().equals(ProxyInstanceTarget.PROXY_TARGET_METHOD_NAME)){
+		if(ArrayUtils.isEmpty(args) && ProxyInstanceTarget.class.isAssignableFrom(getDeclaringClass()) && invoker.getMethod().getName().equals(ProxyInstanceTarget.PROXY_TARGET_METHOD_NAME)){
 			return getInstance();
 		}
 		

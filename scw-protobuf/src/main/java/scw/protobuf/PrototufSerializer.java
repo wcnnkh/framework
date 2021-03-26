@@ -12,9 +12,10 @@ import com.dyuproject.protostuff.runtime.RuntimeSchema;
 import scw.io.Bits;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;
+import scw.lang.NamedThreadLocal;
 
 public class PrototufSerializer extends Serializer {
-	private static final ThreadLocal<LinkedBuffer> bufferLocal = new ThreadLocal<LinkedBuffer>() {
+	private static final ThreadLocal<LinkedBuffer> bufferLocal = new NamedThreadLocal<LinkedBuffer>(PrototufSerializer.class.getName()) {
 		protected LinkedBuffer initialValue() {
 			return LinkedBuffer.allocate(1024);
 		};

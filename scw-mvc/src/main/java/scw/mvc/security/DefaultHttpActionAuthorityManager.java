@@ -4,11 +4,11 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.codec.Encoder;
+import scw.codec.support.CharsetCodec;
 import scw.context.annotation.Provider;
-import scw.core.Constants;
 import scw.core.annotation.KeyValuePair;
 import scw.core.annotation.MultiAnnotatedElement;
-import scw.core.utils.StringUtils;
 import scw.event.EventListener;
 import scw.event.ObjectEvent;
 import scw.http.HttpMethod;
@@ -21,11 +21,11 @@ import scw.mvc.annotation.ActionAuthorityParent;
 import scw.security.authority.http.DefaultHttpAuthority;
 import scw.security.authority.http.DefaultHttpAuthorityManager;
 import scw.security.authority.http.HttpAuthority;
-import scw.util.Base64;
 
-@Provider(order = Integer.MIN_VALUE, value = HttpActionAuthorityManager.class)
+@Provider(value = HttpActionAuthorityManager.class)
 public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority>
 		implements HttpActionAuthorityManager {
+	private static final Encoder<String, String> ID_ENCODER = CharsetCodec.UTF_8.toBase64();
 
 	public DefaultHttpActionAuthorityManager(ActionManager actionManager) {
 		for (Action action : actionManager) {
@@ -44,19 +44,19 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		ActionAuthorityParent actionAuthorityParent = annotatedElement.getAnnotation(ActionAuthorityParent.class);
 		String parentId = actionAuthorityParent == null ? defaultId : actionAuthorityParent.value().getName();
 		if (parentId != null) {
-			parentId = Base64.encode(StringUtils.getStringOperations().getBytes(parentId, Constants.ISO_8859_1));
+			parentId = ID_ENCODER.encode(parentId);
 		}
 		return parentId;
 	}
 
 	public void register(Action action) {
-		ActionAuthority classAuthority = action.getSourceClass().getAnnotation(ActionAuthority.class);
+		ActionAuthority classAuthority = action.getDeclaringClass().getAnnotation(ActionAuthority.class);
 		if (classAuthority != null) {// 如果在类上存在此注解说明这是一个菜单
-			String id = action.getSourceClass().getName();
-			id = Base64.encode(StringUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
+			String id = action.getDeclaringClass().getName();
+			id = ID_ENCODER.encode(id);
 			HttpAuthority authority = getAuthority(id);
 			if (authority == null) {
-				String parentId = getParentId(action.getSourceClass(), null);
+				String parentId = getParentId(action.getDeclaringClass(), null);
 				boolean isMenu = classAuthority.menu();
 				if (isMenu) {
 					checkIsMenu(parentId, action);
@@ -78,16 +78,15 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			return;
 		}
 
-		String parentId = getParentId(new MultiAnnotatedElement(action.getSourceClass(), action.getAnnotatedElement()),
-				action.getSourceClass().getName());
+		String parentId = getParentId(new MultiAnnotatedElement(action.getDeclaringClass(), action.getAnnotatedElement()),
+				action.getDeclaringClass().getName());
 		boolean isMenu = methodAuthority.menu();
 		if (isMenu) {
 			checkIsMenu(parentId, action);
 		}
 
 		String id = descriptor.getMethod() + "&" + descriptor.getPath();
-		id = Base64.encode(StringUtils.getStringOperations().getBytes(id, Constants.ISO_8859_1));
-
+		id = ID_ENCODER.encode(id);
 		register(new DefaultHttpAuthority(id, parentId, methodAuthority.value(),
 				getAttributeMap(classAuthority, methodAuthority), isMenu, descriptor.getPath(),
 				descriptor.getMethod()));

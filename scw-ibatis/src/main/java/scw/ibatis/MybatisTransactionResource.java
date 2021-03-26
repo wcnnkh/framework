@@ -38,7 +38,7 @@ public class MybatisTransactionResource implements TransactionResource {
 		}
 	}
 
-	public void completion() {
+	public void complete() {
 		if(sqlSession != null){
 			MybatisUtils.closeSqlSessionProxy(sqlSession);
 		}

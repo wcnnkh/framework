@@ -7,8 +7,12 @@ import java.util.List;
 
 import scw.instance.InstanceUtils;
 import scw.json.parser.DefaultJSONSupport;
+import scw.lang.NamedThreadLocal;
 
 public final class JSONUtils {
+	private static ThreadLocal<JSONSupport> local = new NamedThreadLocal<JSONSupport>(
+			JSONUtils.class.getSimpleName());
+
 	private JSONUtils() {
 	};
 
@@ -19,31 +23,31 @@ public final class JSONUtils {
 
 	static {
 		JSONSupport jsonSupport = InstanceUtils.loadService(JSONSupport.class);
-		JSON_SUPPORT = jsonSupport == null ? new DefaultJSONSupport() : jsonSupport;
+		JSON_SUPPORT = jsonSupport == null ? new DefaultJSONSupport()
+				: jsonSupport;
 	}
 
-	public static JSONSupport getJsonSupport() {
+	public static JSONSupport getDefaultJsonSupport() {
 		return JSON_SUPPORT;
 	}
 
-	public static String toJSONString(Object obj) {
-		return JSON_SUPPORT.toJSONString(obj);
+	public static JSONSupport getJsonSupport() {
+		JSONSupport jsonSupport = local.get();
+		return jsonSupport == null ? JSON_SUPPORT : jsonSupport;
 	}
-
-	public static JsonObject parseObject(String text) {
-		return JSON_SUPPORT.parseObject(text);
+	
+	public static boolean hasJsonSupport(){
+		return local.get() != null;
 	}
-
-	public static JsonArray parseArray(String text) {
-		return JSON_SUPPORT.parseArray(text);
-	}
-
-	public static <T> T parseObject(String text, Class<T> type) {
-		return JSON_SUPPORT.parseObject(text, type);
-	}
-
-	public static <T> T parseObject(String text, Type type) {
-		return JSON_SUPPORT.parseObject(text, type);
+	
+	public static JSONSupport setJsonSupport(JSONSupport jsonSupport){
+		JSONSupport old = local.get();
+		if(jsonSupport == null){
+			local.remove();
+		}else{
+			local.set(jsonSupport);
+		}
+		return old;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -64,7 +68,8 @@ public final class JSONUtils {
 		return list;
 	}
 
-	public static <T extends JsonObjectWrapper> List<T> wrapper(JsonArray jsonArray, Class<? extends T> type) {
+	public static <T extends JsonObjectWrapper> List<T> wrapper(
+			JsonArray jsonArray, Class<? extends T> type) {
 		if (jsonArray == null) {
 			return null;
 		}
@@ -75,7 +80,8 @@ public final class JSONUtils {
 
 		List<T> list = new ArrayList<T>(jsonArray.size());
 		for (int i = 0, len = jsonArray.size(); i < len; i++) {
-			T value = InstanceUtils.INSTANCE_FACTORY.getInstance(type, jsonArray.getJsonObject(i));
+			T value = InstanceUtils.INSTANCE_FACTORY.getInstance(type,
+					jsonArray.getJsonObject(i));
 			list.add(value);
 		}
 		return list;

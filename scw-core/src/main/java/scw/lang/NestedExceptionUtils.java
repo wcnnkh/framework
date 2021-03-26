@@ -87,15 +87,21 @@ public abstract class NestedExceptionUtils {
 		return cause == null ? original : cause;
 	}
 
-	public static String getNonEmptyMessage(Throwable error, boolean localized){
-		String message = localized? error.getLocalizedMessage():error.getMessage();
-		while(message == null){
+	public static String getNonEmptyMessage(Throwable error, boolean localized) {
+		String message = localized ? error.getLocalizedMessage() : error
+				.getMessage();
+		while (message == null) {
 			Throwable cause = error.getCause();
-			if(cause == null){
+			if (cause == null) {
 				break;
 			}
-			message = localized? cause.getLocalizedMessage():cause.getMessage();
+			message = localized ? cause.getLocalizedMessage() : cause
+					.getMessage();
 		}
 		return message;
+	}
+
+	public static RuntimeException shouldNeverGetHere() {
+		throw new IllegalStateException("Should never get here");
 	}
 }

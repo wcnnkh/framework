@@ -1,13 +1,13 @@
 package scw.http;
 
-import java.lang.reflect.Type;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
+import scw.convert.TypeDescriptor;
 import scw.core.utils.ObjectUtils;
 import scw.lang.Nullable;
-import scw.net.InetUtils;
+import scw.net.uri.UriUtils;
 import scw.util.MultiValueMap;
 
 public class HttpRequestEntity<T> extends HttpEntity<T> {
@@ -19,7 +19,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	private final URI url;
 
 	@Nullable
-	private final Type type;
+	private final TypeDescriptor typeDescriptor;
 
 	/**
 	 * Constructor with method and URL but without body nor headers.
@@ -59,8 +59,9 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	 * @param type
 	 *            the type used for generic type resolution
 	 */
-	public HttpRequestEntity(@Nullable T body, HttpMethod method, URI url, Type type) {
-		this(body, null, method, url, type);
+	public HttpRequestEntity(@Nullable T body, HttpMethod method, URI url, TypeDescriptor typeDescriptor)
+	{
+		this(body, null, method, url, typeDescriptor);
 	}
 
 	/**
@@ -113,12 +114,12 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	 */
 	public HttpRequestEntity(@Nullable T body,
 			@Nullable MultiValueMap<String, String> headers,
-			@Nullable HttpMethod method, URI url, @Nullable Type type) {
+			@Nullable HttpMethod method, URI url, @Nullable TypeDescriptor typeDescriptor) {
 
 		super(body, headers);
 		this.method = method;
 		this.url = url;
-		this.type = type;
+		this.typeDescriptor = typeDescriptor;
 	}
 
 	/**
@@ -146,14 +147,14 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	 * @return the request's body type, or {@code null} if not known
 	 */
 	@Nullable
-	public Type getType() {
-		if (this.type == null) {
+	public TypeDescriptor getTypeDescriptor() {
+		if (this.typeDescriptor== null) {
 			T body = getBody();
 			if (body != null) {
-				return body.getClass();
+				return TypeDescriptor.forObject(body);
 			}
 		}
-		return this.type;
+		return this.typeDescriptor;
 	}
 
 	@Override
@@ -216,7 +217,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	}
 	
 	public static BodyBuilder method(HttpMethod method, String url) {
-		return method(method, InetUtils.toURI(url));
+		return method(method, UriUtils.toUri(url));
 	}
 
 	/**
@@ -231,7 +232,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	}
 	
 	public static HeadersBuilder<?> get(String url){
-		return get(InetUtils.toURI(url));
+		return get(UriUtils.toUri(url));
 	}
 
 	/**
@@ -246,7 +247,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	}
 	
 	public static HeadersBuilder<?> head(String url) {
-		return head(InetUtils.toURI(url));
+		return head(UriUtils.toUri(url));
 	}
 	
 	/**
@@ -261,7 +262,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	}
 	
 	public static BodyBuilder post(String url) {
-		return post(InetUtils.toURI(url));
+		return post(UriUtils.toUri(url));
 	}
 
 	/**
@@ -276,7 +277,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	}
 	
 	public static BodyBuilder put(String url) {
-		return put(InetUtils.toURI(url));
+		return put(UriUtils.toUri(url));
 	}
 
 	/**
@@ -291,7 +292,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	}
 	
 	public static BodyBuilder patch(String url) {
-		return patch(InetUtils.toURI(url));
+		return patch(UriUtils.toUri(url));
 	}
 
 	/**
@@ -306,7 +307,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	}
 
 	public static HeadersBuilder<?> delete(String url) {
-		return delete(InetUtils.toURI(url));
+		return delete(UriUtils.toUri(url));
 	}
 	
 	/**
@@ -321,7 +322,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	}
 	
 	public static HeadersBuilder<?> options(String url) {
-		return options(InetUtils.toURI(url));
+		return options(UriUtils.toUri(url));
 	}
 
 	/**
@@ -450,7 +451,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 		 *            the type of the body, useful for generic type resolution
 		 * @return the built request entity
 		 */
-		<T> HttpRequestEntity<T> body(T body, Type type);
+		<T> HttpRequestEntity<T> body(T body, TypeDescriptor typeDescriptor);
 	}
 	
 	private static class DefaultBodyBuilder implements BodyBuilder {
@@ -518,8 +519,8 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 			return new HttpRequestEntity<T>(body, this.headers, this.method, this.url);
 		}
 
-		public <T> HttpRequestEntity<T> body(T body, Type type) {
-			return new HttpRequestEntity<T>(body, this.headers, this.method, this.url, type);
+		public <T> HttpRequestEntity<T> body(T body, TypeDescriptor typeDescriptor) {
+			return new HttpRequestEntity<T>(body, this.headers, this.method, this.url, typeDescriptor);
 		}
 	}
 }

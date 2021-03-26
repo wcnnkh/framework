@@ -11,7 +11,7 @@ import scw.core.utils.StringUtils;
 import scw.instance.InstanceUtils;
 import scw.mapper.Field;
 import scw.mapper.Fields;
-import scw.mapper.FilterFeature;
+import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 import scw.math.BigDecimalHolder;
 import scw.math.Fraction;
@@ -242,7 +242,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 		public ObjectFieldScriptResolver(Object instance) {
 			this.instance = instance;
-			this.fields = instance == null? null:MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SUPPORT_GETTER);
+			this.fields = instance == null? null:MapperUtils.getMapper().getFields(instance.getClass()).accept(FieldFeature.SUPPORT_GETTER);
 		}
 
 		public boolean isSupport(String script) {

@@ -14,8 +14,11 @@ import java.awt.image.CropImageFilter;
 import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
+
+import scw.codec.support.Base64;
 
 public final class ImageUtils {
 	private ImageUtils(){};
@@ -256,6 +259,14 @@ public final class ImageUtils {
 		sb.append("data:image/");
 		sb.append(FileUtils.getFileSuffix(filePath));
 		sb.append(";base64,");
-		return FileUtils.toBase64(filePath, sb);
+		
+		byte[] data;
+		try {
+			data = FileUtils.readFileToByteArray(new File(filePath));
+		} catch (IOException e) {
+			throw new RuntimeException(filePath, e);
+		}
+		
+		return Base64.DEFAULT.encode(data);
 	}
 }

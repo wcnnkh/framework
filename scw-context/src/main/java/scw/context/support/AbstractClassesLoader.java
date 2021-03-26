@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import scw.context.ClassesLoader;
+import scw.core.type.scanner.ClassResolver;
 import scw.core.utils.ClassUtils;
 import scw.util.ClassLoaderProvider;
 

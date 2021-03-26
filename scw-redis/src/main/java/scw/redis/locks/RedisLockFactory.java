@@ -3,22 +3,22 @@ package scw.redis.locks;
 import java.util.concurrent.TimeUnit;
 
 import scw.context.annotation.Provider;
-import scw.locks.AbstractLockFactory;
-import scw.locks.Lock;
 import scw.locks.LockFactory;
+import scw.locks.RenewableLock;
+import scw.locks.RenewableLockFactory;
 import scw.redis.Redis;
 import scw.util.XUtils;
 
-@Provider(order = Integer.MIN_VALUE + 1, value = LockFactory.class)
-public final class RedisLockFactory extends AbstractLockFactory {
+@Provider(value = LockFactory.class)
+public final class RedisLockFactory extends RenewableLockFactory {
 	private final Redis redis;
 
 	public RedisLockFactory(Redis redis) {
 		this.redis = redis;
 	}
 
-	public Lock getLock(String name, long timeout, TimeUnit timeUnit) {
-		return new RedisLock(redis, name, XUtils.getUUID(), (int) TimeUnit.SECONDS.convert(timeout, timeUnit));
+	@Override
+	public RenewableLock getLock(String name, TimeUnit timeUnit, long timeout) {
+		return new RedisLock(redis, name, XUtils.getUUID(), timeUnit, timeout);
 	}
-
 }

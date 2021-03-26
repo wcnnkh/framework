@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import scw.beans.BeanFactory;
 import scw.context.annotation.Provider;
 import scw.context.result.Result;
+import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.event.Observable;
@@ -38,15 +39,15 @@ import scw.net.message.Entity;
 import scw.net.message.InputMessage;
 import scw.net.message.Text;
 import scw.net.message.converter.MessageConverter;
-import scw.net.message.converter.MessageConverterFactory;
+import scw.net.message.converter.MessageConverters;
 import scw.util.MultiIterable;
 import scw.web.WebUtils;
 
-@Provider(order = Integer.MIN_VALUE, value = HttpServiceHandler.class)
+@Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpServiceHandler.class)
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
-	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
-	private final MessageConverterFactory messageConverterFactory = new MessageConverterFactory();
+	private JSONSupport jsonSupport;
+	private final MessageConverters messageConverterFactory = new MessageConverters();
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
 	protected final BeanFactory beanFactory;
@@ -75,12 +76,12 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 	}
 
-	public MessageConverterFactory getMessageConverterFactory() {
+	public MessageConverters getMessageConverterFactory() {
 		return messageConverterFactory;
 	}
 
 	public JSONSupport getJsonSupport() {
-		return jsonSupport;
+		return jsonSupport == null? JSONUtils.getJsonSupport():jsonSupport;
 	}
 
 	public void setJsonSupport(JSONSupport jsonSupport) {
@@ -115,7 +116,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		ServerHttpResponse responseToUse = response;
 
 		// jsonp支持
-		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getSourceClass(), action.getAnnotatedElement());
+		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getDeclaringClass(), action.getAnnotatedElement());
 		if (jsonp != null && jsonp.value()) {
 			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse, null);
 		}
@@ -174,7 +175,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 			return;
 		}
 
-		FactoryResult factoryResult = AnnotationUtils.getAnnotation(FactoryResult.class, action.getSourceClass(),
+		FactoryResult factoryResult = AnnotationUtils.getAnnotation(FactoryResult.class, action.getDeclaringClass(),
 				action.getAnnotatedElement());
 		if (!(message instanceof Result) && factoryResult != null && factoryResult.enable()) {
 			Result result = beanFactory.getInstance(factoryResult.value()).success(message);

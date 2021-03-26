@@ -21,7 +21,7 @@ import scw.json.JsonElement;
 import scw.json.JsonObject;
 import scw.mapper.Field;
 import scw.mapper.Fields;
-import scw.mapper.FilterFeature;
+import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 import scw.value.AnyValue;
 import scw.value.StringValue;
@@ -169,9 +169,9 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 				return map;
 			}
 
-			Fields fields = MapperUtils.getMapper().getFields(clazz,
-					FilterFeature.SETTER_IGNORE_STATIC,
-					FilterFeature.SETTER_PUBLIC);
+			Fields fields = MapperUtils.getMapper().getFields(clazz).accept(
+					FieldFeature.SETTER_IGNORE_STATIC,
+					FieldFeature.SETTER_PUBLIC);
 			Object instance = instanceFactory.getInstance(clazz);
 			for (Field field : fields) {
 				Object value = jsonObject.get(field.getSetter().getName());

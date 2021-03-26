@@ -1,25 +1,25 @@
 package scw.redis;
 
-import scw.data.AbstractDataTempleteWrapper;
-import scw.data.DataTemplete;
+import scw.codec.Codec;
+import scw.data.AbstractDataOperationsWrapper;
+import scw.data.DataOperations;
 import scw.data.cas.CASOperations;
 import scw.io.Serializer;
-import scw.util.StringCodec;
 
-public class RedisImpl extends AbstractDataTempleteWrapper implements Redis {
+public class RedisImpl extends AbstractDataOperationsWrapper implements Redis {
 	private final RedisOperations<byte[], byte[]> binaryOperations;
 	private final RedisOperations<String, String> stringOperations;
 	private final RedisOperations<String, Object> objectOperations;
 	private final CASOperations casOperations;
-	private final DataTemplete dataTemplete;
+	private final DataOperations dataOperations;
 
 	public RedisImpl(RedisOperations<byte[], byte[]> binaryOperations, RedisOperations<String, String> stringOperations,
-			StringCodec stringCodec, Serializer serializer) {
+			Codec<String, byte[]> codec, Serializer serializer) {
 		this.binaryOperations = binaryOperations;
 		this.stringOperations = stringOperations;
-		this.objectOperations = new ObjectOperations(binaryOperations, serializer, stringCodec);
-		this.casOperations = new RedisCASOperations(objectOperations, serializer, stringCodec);
-		this.dataTemplete = new RedisDataTemplete(this);
+		this.objectOperations = new ObjectOperations(binaryOperations, serializer, codec);
+		this.casOperations = new RedisCASOperations(objectOperations, serializer, codec);
+		this.dataOperations = new RedisDataOperations(this);
 	}
 
 	public RedisOperations<String, String> getStringOperations() {
@@ -39,7 +39,7 @@ public class RedisImpl extends AbstractDataTempleteWrapper implements Redis {
 	}
 
 	@Override
-	public DataTemplete getDataTemplete() {
-		return dataTemplete;
+	public DataOperations getDataOperations() {
+		return dataOperations;
 	}
 }

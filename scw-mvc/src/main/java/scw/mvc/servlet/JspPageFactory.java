@@ -5,7 +5,7 @@ import scw.core.utils.StringUtils;
 import scw.mvc.page.Page;
 import scw.mvc.page.PageFactory;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class JspPageFactory implements PageFactory {
 	public final static JspPageFactory instance = new JspPageFactory();
 

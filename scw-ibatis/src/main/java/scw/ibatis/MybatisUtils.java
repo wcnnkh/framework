@@ -6,25 +6,27 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
 import scw.transaction.Transaction;
-import scw.transaction.TransactionManager;
+import scw.transaction.TransactionUtils;
 
 public final class MybatisUtils {
 	private MybatisUtils() {
 	};
-
-	public static SqlSession getTransactionSqlSession(
-			SqlSessionFactory sqlSessionFactory) {
-		Transaction transaction = TransactionManager.getCurrentTransaction();
+	
+	public static SqlSession getTransactionSqlSession(SqlSessionFactory sqlSessionFactory) {
+		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
 			return sqlSessionFactory.openSession(true);
 		}
 
-		MybatisTransactionResource resource = (MybatisTransactionResource) transaction
+		MybatisTransactionResource resource = transaction
 				.getResource(sqlSessionFactory);
 		if (resource == null) {
-			resource = new MybatisTransactionResource(sqlSessionFactory,
+			MybatisTransactionResource mybatisTransactionResource = new MybatisTransactionResource(sqlSessionFactory,
 					transaction.isActive());
-			transaction.bindResource(sqlSessionFactory, resource);
+			resource = transaction.bindResource(sqlSessionFactory, mybatisTransactionResource);
+			if(resource == null){
+				resource = mybatisTransactionResource;
+			}
 		}
 		return resource.getSqlSession();
 	}

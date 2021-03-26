@@ -3,7 +3,8 @@ package scw.net.message.converter;
 import java.io.IOException;
 import java.util.Collection;
 
-import scw.core.ResolvableType;
+import scw.codec.support.URLCodec;
+import scw.convert.TypeDescriptor;
 import scw.core.utils.StringUtils;
 import scw.http.MediaType;
 import scw.net.MimeType;
@@ -27,7 +28,7 @@ public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected Object readInternal(ResolvableType type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
 		String content = readTextBody(inputMessage);
 		if (StringUtils.isEmpty(content)) {
 			return null;
@@ -39,9 +40,9 @@ public class HttpFormMessageConveter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected void writeInternal(ResolvableType type, Object body, MimeType contentType, OutputMessage outputMessage)
+	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
-		String queryString = UriUtils.toQueryString(body, getCharset(outputMessage).name());
+		String queryString = UriUtils.toQueryString(body, new URLCodec(getCharset(outputMessage)));
 		writeTextBody(queryString, contentType, outputMessage);
 	}
 

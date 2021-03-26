@@ -4,15 +4,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.codec.support.CharsetCodec;
+import scw.codec.support.HmacMD5;
+import scw.codec.support.MD5;
 import scw.context.result.DataResult;
 import scw.context.result.ResultFactory;
+import scw.core.Constants;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.security.SignatureUtils;
 
 public final class DefaultAliDaYu implements AliDaYu {
 	private static Logger logger = LoggerFactory
@@ -97,11 +100,12 @@ public final class DefaultAliDaYu implements AliDaYu {
 		}
 
 		String bytes = null;
+		CharsetCodec charsetCodec = new CharsetCodec(Constants.UTF_8_NAME);
 		if (isMd5) {
 			sb.append(appSecret);
-			bytes = SignatureUtils.md5(sb.toString(), "UTF-8");
+			bytes = MD5.DEFAULT.fromEncoder(charsetCodec).encode(sb.toString());
 		} else {
-			bytes = SignatureUtils.hmacMD5(sb.toString(), appSecret, "UTF-8");
+			bytes = new HmacMD5(charsetCodec.encode(appSecret)).toHex().fromEncoder(charsetCodec).encode(sb.toString());
 		}
 
 		return bytes.toUpperCase();

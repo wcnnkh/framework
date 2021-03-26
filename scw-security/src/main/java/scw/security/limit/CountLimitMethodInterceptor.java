@@ -3,6 +3,7 @@ package scw.security.limit;
 import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
 import scw.context.annotation.Provider;
+import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.MethodInvoker;
 import scw.data.TemporaryCounter;
@@ -17,7 +18,7 @@ import scw.security.limit.annotation.CountLimitSecurity;
  * @author shuchaowen
  *
  */
-@Provider(order = Integer.MAX_VALUE)
+@Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public final class CountLimitMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
 	private static Logger logger = LoggerUtils.getLogger(CountLimitMethodInterceptor.class);
 	private final InstanceFactory instanceFactory;
@@ -32,7 +33,7 @@ public final class CountLimitMethodInterceptor implements MethodInterceptor, Met
 
 	private CountLimitSecurity getCountLimitSecurity(MethodInvoker invoker) {
 		CountLimitSecurity countLimitSecurity = AnnotationUtils.getAnnotation(CountLimitSecurity.class,
-				invoker.getSourceClass(), invoker.getMethod());
+				invoker.getDeclaringClass(), invoker.getMethod());
 		if (countLimitSecurity == null) {
 			return null;
 		}

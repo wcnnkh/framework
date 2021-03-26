@@ -1,21 +1,19 @@
 package scw.mapper;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.utils.StringUtils;
-import scw.util.cache.LocalCacheType;
+import scw.lang.NotSupportedException;
 import scw.value.Value;
 
 public class MapperUtils {
 	private static final String BOOLEAN_GETTER_METHOD_PREFIX = "is";
 	private static final String DEFAULT_GETTER_METHOD_PREFIX = "get";
 	private static final String DEFAULT_SETTER_METHOD_PREFIX = "set";
-	private static final Mapper MAPPER = new DefaultMapper(
-			Arrays.asList(BOOLEAN_GETTER_METHOD_PREFIX, DEFAULT_GETTER_METHOD_PREFIX),
-			Arrays.asList(DEFAULT_SETTER_METHOD_PREFIX), LocalCacheType.CONCURRENT_REFERENCE_HASH_MAP);
+	private static final Mapper MAPPER = new Mapper(new String[]{BOOLEAN_GETTER_METHOD_PREFIX, DEFAULT_GETTER_METHOD_PREFIX},
+			new String[]{DEFAULT_SETTER_METHOD_PREFIX});
 
 	private MapperUtils() {
 	};
@@ -50,6 +48,10 @@ public class MapperUtils {
 	}
 	
 	public static void setValue(ConversionService conversionService, Object instance, scw.mapper.Field field, Object value){
+		if(!field.isSupportSetter()){
+			throw new NotSupportedException(field.toString());
+		}
+		
 		Object valueToUse;
 		if(value != null && value instanceof Value){
 			valueToUse = ((Value)value).getAsObject(field.getSetter().getGenericType());

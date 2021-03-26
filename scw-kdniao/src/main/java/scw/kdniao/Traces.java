@@ -79,7 +79,7 @@ public class Traces implements Serializable {
 			return null;
 		}
 
-		return parseTraces(JSONUtils.parseArray(text), serverJson);
+		return parseTraces(JSONUtils.getJsonSupport().parseArray(text), serverJson);
 	}
 
 	protected void setAcceptTime(String acceptTime) {

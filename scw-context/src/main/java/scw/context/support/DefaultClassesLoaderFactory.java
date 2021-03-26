@@ -7,8 +7,10 @@ import scw.context.ClassesLoaderFactory;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.core.type.filter.TypeFilter;
+import scw.core.type.scanner.DefaultClassScanner;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.Nullable;
 import scw.util.Accept;
 import scw.util.ClassLoaderProvider;
 import scw.util.ConcurrentReferenceHashMap;
@@ -18,10 +20,11 @@ public class DefaultClassesLoaderFactory extends DefaultClassScanner implements
 	private ConcurrentReferenceHashMap<String, ClassesLoader<?>> cacheMap;
 	private ClassLoaderProvider classLoaderProvider;
 	
-	public DefaultClassesLoaderFactory(boolean cache) {
+	public DefaultClassesLoaderFactory(boolean cache, @Nullable ClassLoaderProvider classLoaderProvider) {
 		if(cache){
 			cacheMap = new ConcurrentReferenceHashMap<String, ClassesLoader<?>>();
 		}
+		this.classLoaderProvider = classLoaderProvider;
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -72,10 +75,6 @@ public class DefaultClassesLoaderFactory extends DefaultClassScanner implements
 	public boolean match(MetadataReader metadataReader,
 			MetadataReaderFactory metadataReaderFactory) throws IOException {
 		return true;
-	}
-
-	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
-		this.classLoaderProvider = classLoaderProvider;
 	}
 
 	public ClassLoader getClassLoader() {

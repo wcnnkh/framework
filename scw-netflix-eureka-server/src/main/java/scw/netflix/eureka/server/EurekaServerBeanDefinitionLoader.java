@@ -20,7 +20,7 @@ import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 	@Override
 	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {

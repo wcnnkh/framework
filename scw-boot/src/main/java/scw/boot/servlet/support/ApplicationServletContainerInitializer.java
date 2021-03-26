@@ -14,7 +14,7 @@ import scw.util.Result;
  * @author shuchaowen
  *
  */
-public class ApplicationServletContainerInitializer extends ApplicationServletContextListener implements  ServletContainerInitializer{
+public class ApplicationServletContainerInitializer extends ApplicationServletContextListener implements ServletContainerInitializer{
 	public void onStartup(Set<Class<?>> classes, ServletContext servletContext)
 			throws ServletException {
 		Result<Application> startUp = ServletContextUtils.getServletApplicationStartup().start(servletContext);

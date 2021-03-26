@@ -3,7 +3,7 @@ package scw.net.message.converter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import scw.core.ResolvableType;
+import scw.convert.TypeDescriptor;
 import scw.env.SystemEnvironment;
 import scw.http.HttpHeaders;
 import scw.io.IOUtils;
@@ -20,7 +20,7 @@ import scw.net.message.OutputMessage;
 public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
 	private Charset charset;
-	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
+	private JSONSupport jsonSupport;
 	protected final MimeTypes supportMimeTypes = new MimeTypes();
 	private boolean supportBytes = false;
 
@@ -37,7 +37,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	}
 
 	public JSONSupport getJsonSupport() {
-		return jsonSupport;
+		return jsonSupport == null? JSONUtils.getJsonSupport():jsonSupport;
 	}
 
 	public void setJsonSupport(JSONSupport jsonSupport) {
@@ -81,23 +81,23 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 
 	public abstract boolean support(Class<?> clazz);
 	
-	public boolean canWrite(ResolvableType type){
-		return support(type.getRawClass());
+	public boolean canWrite(TypeDescriptor type){
+		return support(type.getResolvableType().getRawClass());
 	}
 	
-	public boolean canRead(ResolvableType type){
-		return support(type.getRawClass());
+	public boolean canRead(TypeDescriptor type){
+		return support(type.getResolvableType().getRawClass());
 	}
 
-	public boolean canRead(ResolvableType type, MimeType contentType) {
-		if((type.isArray() && type.getComponentType().getRawClass() == byte.class) && !isSupportBytes()){
+	public boolean canRead(TypeDescriptor type, MimeType contentType) {
+		if((type.isArray() && type.getResolvableType().getComponentType().getRawClass() == byte.class) && !isSupportBytes()){
 			return false;
 		}
 		
 		return canRead(type) && canRead(contentType);
 	}
 
-	public boolean canWrite(ResolvableType type, Object body, MimeType contentType) {
+	public boolean canWrite(TypeDescriptor type, Object body, MimeType contentType) {
 		if (body == null) {
 			return false;
 		}
@@ -114,10 +114,10 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			return false;
 		}
 		
-		return canWrite(ResolvableType.forClass(body.getClass()), body, contentType);
+		return canWrite(TypeDescriptor.forObject(body), body, contentType);
 	}
 
-	public Object read(ResolvableType type, InputMessage inputMessage)
+	public Object read(TypeDescriptor type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		return readInternal(type, inputMessage);
 	}
@@ -129,11 +129,11 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			return ;
 		}
 		
-		write(ResolvableType.forClass(body.getClass()), body, contentType, outputMessage);
+		write(TypeDescriptor.forObject(body), body, contentType, outputMessage);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void write(ResolvableType type, Object body, MimeType contentType,
+	public void write(TypeDescriptor type, Object body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		T t = (T) body;
@@ -173,7 +173,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 		writeInternal(type, t, contentTypeToUse, outputMessage);
 	}
 
-	protected MimeType getDefaultContentType(ResolvableType type, T body) throws IOException {
+	protected MimeType getDefaultContentType(TypeDescriptor type, T body) throws IOException {
 		MimeType mimeType = getSupportMimeTypes().getMimeTypes().first();
 		if(mimeType.isWildcardType() || mimeType.isWildcardSubtype()){
 			return null;
@@ -214,10 +214,10 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 				.name());
 	}
 
-	protected abstract T readInternal(ResolvableType type, InputMessage inputMessage)
+	protected abstract T readInternal(TypeDescriptor type, InputMessage inputMessage)
 			throws IOException, MessageConvertException;
 
-	protected abstract void writeInternal(ResolvableType type, T body, MimeType contentType,
+	protected abstract void writeInternal(TypeDescriptor type, T body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException;
 }

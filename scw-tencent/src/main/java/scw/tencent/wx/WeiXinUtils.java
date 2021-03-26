@@ -3,13 +3,15 @@ package scw.tencent.wx;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.codec.support.CharsetCodec;
+import scw.codec.support.MD5;
+import scw.codec.support.URLCodec;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.net.uri.UriUtils;
 import scw.oauth2.AccessToken;
-import scw.security.SignatureUtils;
 import scw.security.Token;
 import scw.tencent.wx.miniprogram.BaseResponse;
 import scw.tencent.wx.miniprogram.WeappTemplateMsg;
@@ -66,9 +68,9 @@ public final class WeiXinUtils {
 	}
 
 	public static String getPaySign(Map<String, String> paramMap, String apiKey) {
-		StringBuilder sb = SignatureUtils.formatSortParams(paramMap);
+		StringBuilder sb = new StringBuilder(UriUtils.toQueryString(paramMap, URLCodec.UTF_8));
 		sb.append("&key=").append(apiKey);
-		return SignatureUtils.md5(sb.toString(), "UTF-8").toUpperCase();
+		return CharsetCodec.UTF_8.to(MD5.DEFAULT).encode(sb.toString()).toUpperCase();
 	}
 
 	/**
@@ -112,17 +114,17 @@ public final class WeiXinUtils {
 
 	public static JsonObject doPost(String url, Map<String, ?> data) {
 		String content = HttpUtils.getHttpClient().post(String.class, url, data, MediaType.APPLICATION_FORM_URLENCODED).getBody();
-		JsonObject json = JSONUtils.parseObject(content);
+		JsonObject json = JSONUtils.getJsonSupport().parseObject(content);
 		if (!checkResponse(json)) {
 			throw new RuntimeException(
-					"url=" + url + ", data=" + JSONUtils.toJSONString(data) + ", response=" + content);
+					"url=" + url + ", data=" + JSONUtils.getJsonSupport().toJSONString(data) + ", response=" + content);
 		}
 		return json;
 	}
 
 	public static JsonObject doGet(String url) {
 		String content = HttpUtils.getHttpClient().get(String.class, url).getBody();
-		JsonObject json = JSONUtils.parseObject(content);
+		JsonObject json = JSONUtils.getJsonSupport().parseObject(content);
 		if (!checkResponse(json)) {
 			throw new RuntimeException("url=" + url + ", response=" + content);
 		}

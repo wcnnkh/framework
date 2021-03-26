@@ -30,7 +30,7 @@ import scw.net.Restful.RestfulMatchingResult;
 import scw.value.Value;
 import scw.web.WebUtils;
 
-@Provider(order = Integer.MIN_VALUE)
+@Provider
 public class DefaultActionManager implements ActionManager {
 	protected final Logger logger = LoggerUtils.getLogger(getClass());
 	private Map<Method, Action> actionMap = new LinkedHashMap<Method, Action>();

@@ -1,11 +1,11 @@
 package scw.security.session;
 
-import scw.data.TemporaryCache;
+import scw.data.TemporaryStorage;
 
 public class DefaultSessionFactory extends AbstractSessionFactory {
-	private TemporaryCache temporaryCache;
+	private TemporaryStorage temporaryCache;
 
-	public DefaultSessionFactory(int defaultMaxInactiveInterval, TemporaryCache temporaryCache) {
+	public DefaultSessionFactory(int defaultMaxInactiveInterval, TemporaryStorage temporaryCache) {
 		super(defaultMaxInactiveInterval);
 		this.temporaryCache = temporaryCache;
 	}

@@ -1,8 +1,8 @@
 package scw.memcached;
 
-import scw.data.DataTemplete;
+import scw.data.DataOperations;
 import scw.data.cas.CASOperations;
 
-public interface Memcached extends DataTemplete {
+public interface Memcached extends DataOperations {
 	CASOperations getCASOperations();
 }

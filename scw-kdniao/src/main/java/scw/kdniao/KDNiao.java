@@ -4,13 +4,14 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import scw.codec.support.Base64;
+import scw.codec.support.CharsetCodec;
+import scw.codec.support.MD5;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.json.JsonObject;
 import scw.net.uri.UriUtils;
-import scw.security.SignType;
-import scw.security.SignatureUtils;
 import scw.util.ToMap;
 import scw.util.XUtils;
 
@@ -21,7 +22,8 @@ import scw.util.XUtils;
  *
  */
 public class KDNiao {
-	private static final String CHARSET_NAME = "UTF-8";
+	private static final CharsetCodec CHARSET_CODEC = CharsetCodec.UTF_8;
+	
 	private HashSet<String> dataSignUrlNotEncodeRequestTypeSet;
 	private final String businessId;
 	private final String apiKey;
@@ -83,19 +85,20 @@ public class KDNiao {
 	 * @return
 	 */
 	public String doRequest(String requestUrl, String requestType, Map<?, ?> businessParameterMap) {
-		String requestData = JSONUtils.toJSONString(businessParameterMap);
+		String requestData = JSONUtils.getJsonSupport().toJSONString(businessParameterMap);
 		Map<String, String> parameterMap = new LinkedHashMap<String, String>(8, 1);
-		parameterMap.put("RequestData", UriUtils.encode(requestData, CHARSET_NAME));
+		parameterMap.put("RequestData", UriUtils.encode(requestData, CHARSET_CODEC.getCharsetName()));
 		parameterMap.put("EBusinessID", businessId);
 		parameterMap.put("RequestType", requestType);
-		String dataSign = SignatureUtils.sign(requestData + apiKey, CHARSET_NAME, SignType.MD5, SignType.BASE64);
+		
+		String dataSign = CHARSET_CODEC.to(MD5.DEFAULT).to(CHARSET_CODEC).to(Base64.DEFAULT).encode(requestData + apiKey);
 		if (dataSignIsUrlEncodeByRequestType(requestType)) {
-			dataSign = UriUtils.encode(dataSign, CHARSET_NAME);
+			dataSign = UriUtils.encode(dataSign, CHARSET_CODEC.getCharsetName());
 		}
 		parameterMap.put("DataSign", dataSign);
 		parameterMap.put("DataType", "2");
 		return HttpUtils.getHttpClient().post(String.class, requestUrl, parameterMap,
-				new MediaType(MediaType.APPLICATION_JSON_VALUE, CHARSET_NAME)).getBody();
+				new MediaType(MediaType.APPLICATION_JSON_VALUE, CHARSET_CODEC.getCharsetName())).getBody();
 	}
 
 	/**
@@ -124,7 +127,7 @@ public class KDNiao {
 			return null;
 		}
 
-		JsonObject json = JSONUtils.parseObject(data);
+		JsonObject json = JSONUtils.getJsonSupport().parseObject(data);
 		if (json == null) {
 			return null;
 		}
@@ -143,7 +146,7 @@ public class KDNiao {
 			return null;
 		}
 
-		JsonObject json = JSONUtils.parseObject(content);
+		JsonObject json = JSONUtils.getJsonSupport().parseObject(content);
 		if (json == null) {
 			return null;
 		}

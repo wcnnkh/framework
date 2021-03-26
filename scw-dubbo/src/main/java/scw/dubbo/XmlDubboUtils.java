@@ -34,7 +34,7 @@ import scw.logger.LoggerUtils;
 import scw.mapper.Copy;
 import scw.mapper.Field;
 import scw.mapper.Fields;
-import scw.mapper.FilterFeature;
+import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 
 public final class XmlDubboUtils {
@@ -223,7 +223,7 @@ public final class XmlDubboUtils {
 
 	private static <T> void loader(Object instance, Environment environment, Node node) {
 		NamedNodeMap namedNodeMap = node.getAttributes();
-		Fields fields = MapperUtils.getMapper().getFields(instance.getClass(), FilterFeature.SETTER);
+		Fields fields = MapperUtils.getMapper().getFields(instance.getClass()).accept(FieldFeature.SETTER);
 		for (int i = 0, len = namedNodeMap.getLength(); i < len; i++) {
 			Node n = namedNodeMap.item(i);
 			String name = n.getNodeName();

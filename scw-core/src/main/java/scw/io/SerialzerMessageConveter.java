@@ -2,7 +2,7 @@ package scw.io;
 
 import java.io.IOException;
 
-import scw.core.ResolvableType;
+import scw.convert.TypeDescriptor;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
@@ -24,7 +24,7 @@ public class SerialzerMessageConveter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected Object readInternal(ResolvableType type, InputMessage inputMessage)
+	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		try {
 			return serializer.deserialize(inputMessage.getBody());
@@ -34,7 +34,7 @@ public class SerialzerMessageConveter extends AbstractMessageConverter<Object> {
 	}
 
 	@Override
-	protected void writeInternal(ResolvableType type, Object body, MimeType contentType,
+	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
 		serializer.serialize(outputMessage.getBody(), body);

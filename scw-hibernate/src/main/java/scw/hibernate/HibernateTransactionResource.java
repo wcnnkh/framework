@@ -47,7 +47,7 @@ public class HibernateTransactionResource implements TransactionResource {
 		}
 	}
 
-	public void completion() {
+	public void complete() {
 		if (session != null) {
 			HibernateUtils.closeProxySession(session);
 		}

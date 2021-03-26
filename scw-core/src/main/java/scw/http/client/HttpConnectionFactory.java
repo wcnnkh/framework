@@ -4,13 +4,19 @@ import java.net.URI;
 import java.util.Map;
 
 import scw.http.HttpMethod;
-import scw.net.InetUtils;
 import scw.net.uri.UriTemplateHandler;
+import scw.net.uri.UriUtils;
 
+/**
+ * @see HttpClient
+ * @see DefaultHttpClient
+ * @author shuchaowen
+ *
+ */
 public interface HttpConnectionFactory {
 	HttpConnection createConnection();
 	
-	HttpConnection createConnection(HttpMethod method, URI url);
+	HttpConnection createConnection(HttpMethod method, URI uri);
 
 	HttpConnection createConnection(HttpMethod method, String url);
 
@@ -25,7 +31,7 @@ public interface HttpConnectionFactory {
 		protected abstract UriTemplateHandler getUriTemplateHandler();
 		
 		public HttpConnection createConnection(HttpMethod method, String url) {
-			return createConnection(method, InetUtils.toURI(url));
+			return createConnection(method, UriUtils.toUri(url));
 		}
 
 		public HttpConnection createConnection(HttpMethod method, String url,

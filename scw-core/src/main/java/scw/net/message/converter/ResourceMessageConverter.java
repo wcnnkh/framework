@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import scw.core.ResolvableType;
+import scw.convert.TypeDescriptor;
 import scw.http.MediaType;
 import scw.io.FileSystemResource;
 import scw.io.IOUtils;
@@ -38,12 +38,12 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 	}
 
 	@Override
-	public boolean canRead(ResolvableType type, MimeType contentType) {
+	public boolean canRead(TypeDescriptor type, MimeType contentType) {
 		return false;
 	}
 
 	@Override
-	protected Resource readInternal(ResolvableType type, InputMessage inputMessage) throws IOException, MessageConvertException {
+	protected Resource readInternal(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
 		throw new NotSupportedException(type.toString());
 	}
 
@@ -63,7 +63,7 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 	}
 
 	@Override
-	public void write(ResolvableType type, Object body, MimeType contentType, OutputMessage outputMessage)
+	public void write(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		Resource resource = getResource(body);
 		MimeType mimeType = contentType == null ? FileMimeTypeUitls.getMimeType(resource) : contentType;
@@ -71,7 +71,7 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 	}
 
 	@Override
-	protected void writeInternal(ResolvableType type, Resource body, MimeType contentType, OutputMessage outputMessage)
+	protected void writeInternal(TypeDescriptor type, Resource body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		Resource resource = (Resource) body;
 		if (!resource.exists()) {

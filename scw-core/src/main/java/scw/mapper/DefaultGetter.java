@@ -4,12 +4,26 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-public class DefaultGetter extends AbstractGetterSetter implements Getter {
+import scw.core.annotation.AnnotationUtils;
+
+public class DefaultGetter extends AbstractFieldDescriptor implements Getter {
 	private static final long serialVersionUID = 1L;
+	private final String name;
+	private final boolean nullable;
 
 	public DefaultGetter(Class<?> declaringClass, String name, Field field,
 			Method method) {
-		super(declaringClass, name, field, method);
+		super(declaringClass, field, method);
+		this.name = name;
+		this.nullable = AnnotationUtils.isNullable(getAnnotatedElement(), false);
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public boolean isNullable() {
+		return nullable;
 	}
 
 	public Class<?> getType() {

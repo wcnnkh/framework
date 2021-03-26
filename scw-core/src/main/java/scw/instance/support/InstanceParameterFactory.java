@@ -3,13 +3,12 @@ package scw.instance.support;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
-import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.env.Environment;
+import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.annotation.PropertyParameter;
 import scw.instance.annotation.ResourceParameter;
@@ -56,7 +55,7 @@ public abstract class InstanceParameterFactory extends AbstractParameterFactory 
 
 	protected String getParameterName(ParameterDescriptors parameterDescriptors,
 			ParameterDescriptor parameterDescriptor) {
-		String displayName = ParameterUtils.getDisplayName(parameterDescriptor);
+		String displayName = InstanceUtils.getPropertyName(parameterDescriptor);
 		if (parameterDescriptor.getName().equals(displayName)) {
 			return parameterDescriptors.getDeclaringClass().getName() + "." + displayName;
 		}
@@ -67,7 +66,7 @@ public abstract class InstanceParameterFactory extends AbstractParameterFactory 
 		String name = getParameterName(parameterDescriptors, parameterDescriptor);
 		Value value = getEnvironment().getValue(name);
 		if (value == null) {
-			value = ParameterUtils.getDefaultValue(parameterDescriptor);
+			value = parameterDescriptor.getDefaultValue();
 		}
 
 		if (value != null) {
@@ -100,8 +99,7 @@ public abstract class InstanceParameterFactory extends AbstractParameterFactory 
 	@Override
 	protected boolean isAccept(ParameterDescriptors parameterDescriptors, ParameterDescriptor parameterDescriptor,
 			int index) {
-		boolean require = !AnnotationUtils.isNullable(parameterDescriptor.getAnnotatedElement(), false);
-		if (!require) {
+		if (parameterDescriptor.isNullable()) {
 			return true;
 		}
 
@@ -128,11 +126,10 @@ public abstract class InstanceParameterFactory extends AbstractParameterFactory 
 	@Override
 	protected Object getParameter(ParameterDescriptors parameterDescriptors, ParameterDescriptor parameterDescriptor,
 			int index) {
-		boolean require = !AnnotationUtils.isNullable(parameterDescriptor.getAnnotatedElement(), false);
 		if (isProerptyType(parameterDescriptor)) {
 			Value value = getProperty(parameterDescriptors, parameterDescriptor);
 			if (value == null) {
-				if (require) {
+				if (!parameterDescriptor.isNullable()) {
 					throw new RuntimeException(
 							parameterDescriptors.getSource() + " require parameter:" + parameterDescriptor.getName());
 				}

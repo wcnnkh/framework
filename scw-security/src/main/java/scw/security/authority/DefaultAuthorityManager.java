@@ -104,15 +104,15 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 		}
 
 		if (authorityMap.containsKey(authority.getId())) {
-			throw new AlreadyExistsException(JSONUtils.toJSONString(authority));
+			throw new AlreadyExistsException(JSONUtils.getJsonSupport().toJSONString(authority));
 		}
 
 		if (authority.getId().equals(authority.getParentId())) {
-			throw new RuntimeException("ID and parentid cannot be the same：" + JSONUtils.toJSONString(authority));
+			throw new RuntimeException("ID and parentid cannot be the same：" + JSONUtils.getJsonSupport().toJSONString(authority));
 		}
 
 		if (logger.isTraceEnabled()) {
-			logger.trace("register authority:{}", JSONUtils.toJSONString(authority));
+			logger.trace("register authority:{}", JSONUtils.getJsonSupport().toJSONString(authority));
 		}
 
 		authorityMap.put(authority.getId(), authority);
