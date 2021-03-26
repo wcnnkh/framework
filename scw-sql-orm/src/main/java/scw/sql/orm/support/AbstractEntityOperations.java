@@ -59,7 +59,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	
 	public ClassesLoaderFactory getClassesLoaderFactory(){
 		if(classesLoaderFactory == null){
-			return new DefaultClassesLoaderFactory(false);
+			return new DefaultClassesLoaderFactory(false, null);
 		}else{
 			return classesLoaderFactory;
 		}

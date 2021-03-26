@@ -102,7 +102,7 @@ public class ThreadLocalTransactionManager implements TransactionManager{
 			//这里不使用try-finally,所以外部使用出现异常时一定要调用rollback
 			localTransaction.commit();
 			try {
-				localTransaction.isCompleted();
+				localTransaction.complete();
 			} finally {
 				changeLocal(localTransaction);
 			}

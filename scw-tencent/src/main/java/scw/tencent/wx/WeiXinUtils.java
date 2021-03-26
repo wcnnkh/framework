@@ -114,17 +114,17 @@ public final class WeiXinUtils {
 
 	public static JsonObject doPost(String url, Map<String, ?> data) {
 		String content = HttpUtils.getHttpClient().post(String.class, url, data, MediaType.APPLICATION_FORM_URLENCODED).getBody();
-		JsonObject json = JSONUtils.parseObject(content);
+		JsonObject json = JSONUtils.getJsonSupport().parseObject(content);
 		if (!checkResponse(json)) {
 			throw new RuntimeException(
-					"url=" + url + ", data=" + JSONUtils.toJSONString(data) + ", response=" + content);
+					"url=" + url + ", data=" + JSONUtils.getJsonSupport().toJSONString(data) + ", response=" + content);
 		}
 		return json;
 	}
 
 	public static JsonObject doGet(String url) {
 		String content = HttpUtils.getHttpClient().get(String.class, url).getBody();
-		JsonObject json = JSONUtils.parseObject(content);
+		JsonObject json = JSONUtils.getJsonSupport().parseObject(content);
 		if (!checkResponse(json)) {
 			throw new RuntimeException("url=" + url + ", response=" + content);
 		}

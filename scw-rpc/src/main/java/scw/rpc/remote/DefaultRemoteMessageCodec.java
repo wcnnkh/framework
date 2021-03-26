@@ -7,9 +7,9 @@ import java.io.OutputStream;
 import scw.codec.Codec;
 import scw.codec.DecodeException;
 import scw.codec.support.Base64;
+import scw.codec.support.CharsetCodec;
 import scw.codec.support.DES;
 import scw.core.Constants;
-import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerUtils;
@@ -31,8 +31,7 @@ public class DefaultRemoteMessageCodec implements RemoteMessageCodec {
 	}
 
 	public DefaultRemoteMessageCodec(@Nullable String secretKey) {
-		this(secretKey == null ? null : StringUtils.getStringOperations()
-				.getBytes(secretKey, Constants.UTF_8));
+		this(secretKey == null ? null : CharsetCodec.UTF_8.encode(secretKey));
 	}
 
 	public DefaultRemoteMessageCodec(@Nullable byte[] secretKey) {
@@ -41,8 +40,7 @@ public class DefaultRemoteMessageCodec implements RemoteMessageCodec {
 
 	public DefaultRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,
 			@Nullable String secretKey) {
-		this(serializer, secretKey == null ? null : StringUtils
-				.getStringOperations().getBytes(secretKey, Constants.UTF_8));
+		this(serializer, secretKey == null ? null : CharsetCodec.UTF_8.encode(secretKey));
 	}
 
 	public DefaultRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,

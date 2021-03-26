@@ -68,7 +68,7 @@ public class XmlHttpAuthorityManager extends
 		String id = map.remove("id");
 		if (id == null) {
 			throw new NullPointerException("id不能为空："
-					+ JSONUtils.toJSONString(map));
+					+ JSONUtils.getJsonSupport().toJSONString(map));
 		}
 
 		if (StringUtils.isNotEmpty(prefix)) {
@@ -78,7 +78,7 @@ public class XmlHttpAuthorityManager extends
 		String name = map.remove("name");
 		if (StringUtils.isEmpty(name)) {
 			throw new NullPointerException("name不能为空或空字符串："
-					+ JSONUtils.toJSONString(map));
+					+ JSONUtils.getJsonSupport().toJSONString(map));
 		}
 
 		String parentId = map.remove("parentId");

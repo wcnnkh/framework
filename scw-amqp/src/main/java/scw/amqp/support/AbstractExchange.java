@@ -221,7 +221,7 @@ public abstract class AbstractExchange implements Exchange {
 					logger.debug(
 							"delay message forward exchange:{}, routingKey:{}, message:{}",
 							exchange, routingKey,
-							JSONUtils.toJSONString(message));
+							JSONUtils.getJsonSupport().toJSONString(message));
 				}
 
 				message.setDelay(0, TimeUnit.SECONDS);
@@ -236,7 +236,7 @@ public abstract class AbstractExchange implements Exchange {
 				logger.error(
 						"retry delay: {}, Unable to consume exchange:{}, routingKey:{}, message:{}",
 						delayTimeUnit.toMillis(delay), exchange,
-						routingKeyToUse, JSONUtils.toJSONString(message));
+						routingKeyToUse, JSONUtils.getJsonSupport().toJSONString(message));
 				message.setDelay(delay, delayTimeUnit);
 				retryPush(routingKeyToUse, message, message.getBody());
 				return;
@@ -246,7 +246,7 @@ public abstract class AbstractExchange implements Exchange {
 				logger.debug(
 						"handleDelivery exchange:{}, routingKey:{}, message:{}",
 						exchange, routingKeyToUse,
-						JSONUtils.toJSONString(message));
+						JSONUtils.getJsonSupport().toJSONString(message));
 			}
 
 			//开始消费消息
@@ -285,13 +285,13 @@ public abstract class AbstractExchange implements Exchange {
 							NestedExceptionUtils.getRootCause(e),
 							"Don't try again: exchange={}, routingKey={}, message={}",
 							exchange, routingKeyToUse,
-							JSONUtils.toJSONString(message));
+							JSONUtils.getJsonSupport().toJSONString(message));
 				} else {
 					logger.error(
 							NestedExceptionUtils.getRootCause(e),
 							"retry delay: {}, exchange={}, routingKey={}, message={}",
 							retryDelay, exchange, routingKeyToUse,
-							JSONUtils.toJSONString(message));
+							JSONUtils.getJsonSupport().toJSONString(message));
 					message.setDelay(retryDelay, TimeUnit.MILLISECONDS);
 					retryPush(routingKeyToUse, message, message.getBody());
 				}

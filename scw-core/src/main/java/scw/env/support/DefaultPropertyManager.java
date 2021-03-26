@@ -35,10 +35,6 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 	private final List<PropertyFactory> propertyFactories;
 	private ConversionService conversionService;
 	
-	protected void setConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
-	}
-	
 	/**
 	 * @param concurrent
 	 * @param priorityOfUseSelf
@@ -52,6 +48,10 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 						concurrent));
 		this.propertyFactories = CollectionFactory.createArrayList(concurrent,
 				8);
+	}
+	
+	protected void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
 	}
 	
 	public void addPropertyFactory(PropertyFactory propertyFactory) {

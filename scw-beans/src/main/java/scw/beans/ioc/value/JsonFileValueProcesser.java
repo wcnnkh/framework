@@ -25,13 +25,13 @@ public final class JsonFileValueProcesser extends AbstractObservableResourceValu
 			Object bean, Field field, Value value, String name, Charset charset, Resource resource) {
 		String content = ResourceUtils.getContent(resource, charset);
 		if (JsonObject.class.isAssignableFrom(field.getSetter().getType())) {
-			return JSONUtils.parseObject(content);
+			return JSONUtils.getJsonSupport().parseObject(content);
 		} else if (JsonArray.class.isAssignableFrom(field.getSetter().getType())) {
-			return JSONUtils.parseArray(content);
+			return JSONUtils.getJsonSupport().parseArray(content);
 		} else if (String.class.isAssignableFrom(field.getSetter().getType())) {
 			return content;
 		} else {
-			return JSONUtils.parseObject(content, field.getSetter().getType());
+			return JSONUtils.getJsonSupport().parseObject(content, field.getSetter().getType());
 		}
 	}
 }

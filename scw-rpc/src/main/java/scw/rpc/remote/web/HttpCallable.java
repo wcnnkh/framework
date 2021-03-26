@@ -47,7 +47,9 @@ public class HttpCallable implements Callable<Object> {
 			
 			responseMessage = messageCodec.decode(response, requestMessage);
 		} finally{
-			response.close();
+			if(response != null){
+				response.close();
+			}
 		}
 		if (responseMessage.getThrowable() == null) {
 			return responseMessage.getBody();

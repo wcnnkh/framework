@@ -33,6 +33,10 @@ public final class TransactionUtils {
 		TransactionManager manager = LOCAL.get();
 		return manager == null ? DEFAULT : manager;
 	}
+	
+	public static boolean hasManager(){
+		return LOCAL.get() != null;
+	}
 
 	/**
 	 * 设置事务管理器

@@ -85,7 +85,7 @@ public class KDNiao {
 	 * @return
 	 */
 	public String doRequest(String requestUrl, String requestType, Map<?, ?> businessParameterMap) {
-		String requestData = JSONUtils.toJSONString(businessParameterMap);
+		String requestData = JSONUtils.getJsonSupport().toJSONString(businessParameterMap);
 		Map<String, String> parameterMap = new LinkedHashMap<String, String>(8, 1);
 		parameterMap.put("RequestData", UriUtils.encode(requestData, CHARSET_CODEC.getCharsetName()));
 		parameterMap.put("EBusinessID", businessId);
@@ -127,7 +127,7 @@ public class KDNiao {
 			return null;
 		}
 
-		JsonObject json = JSONUtils.parseObject(data);
+		JsonObject json = JSONUtils.getJsonSupport().parseObject(data);
 		if (json == null) {
 			return null;
 		}
@@ -146,7 +146,7 @@ public class KDNiao {
 			return null;
 		}
 
-		JsonObject json = JSONUtils.parseObject(content);
+		JsonObject json = JSONUtils.getJsonSupport().parseObject(content);
 		if (json == null) {
 			return null;
 		}

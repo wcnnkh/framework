@@ -28,7 +28,6 @@ import scw.core.Assert;
 import scw.lang.Nullable;
 import scw.lang.ParameterException;
 import scw.util.KeyValuePair;
-import scw.util.StringOperations;
 
 public final class StringUtils {
 	private static final String FOLDER_SEPARATOR = "/";
@@ -57,10 +56,6 @@ public final class StringUtils {
 	
 	private StringUtils() {
 	};
-	
-	public static StringOperations getStringOperations() {
-		return StringOperations.INSTANCE;
-	}
 
 	/**
 	 * spring拷贝过来的

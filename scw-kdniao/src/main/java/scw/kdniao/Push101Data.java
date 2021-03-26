@@ -24,7 +24,7 @@ public class Push101Data implements Serializable {
 			return;
 		}
 
-		JsonObject jsonObject = JSONUtils.parseObject(jsonData);
+		JsonObject jsonObject = JSONUtils.getJsonSupport().parseObject(jsonData);
 		if (jsonObject == null) {
 			return;
 		}

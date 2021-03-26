@@ -12,7 +12,6 @@ import scw.core.reflect.ReflectionUtils;
 import scw.env.Environment;
 import scw.instance.InstanceDefinition;
 import scw.instance.InstanceException;
-import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
 import scw.lang.NotFoundException;
@@ -22,11 +21,13 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 	private Class<?> targetClass;
 	@SuppressWarnings("rawtypes")
 	private ServiceLoader serviceLoader;
+	private final DefaultServiceLoaderFactory serviceLoaderFactory;
 
 	public DefaultInstanceDefinition(NoArgsInstanceFactory instanceFactory, Environment environment,
 			Class<?> targetClass) {
 		super(instanceFactory, environment);
 		this.targetClass = targetClass;
+		this.serviceLoaderFactory = new DefaultServiceLoaderFactory(instanceFactory, environment);
 	}
 
 	public Class<?> getTargetClass() {
@@ -95,7 +96,7 @@ public class DefaultInstanceDefinition extends InstanceParameterFactory implemen
 	}
 	
 	protected <S> ServiceLoader<S> getServiceLoader(Class<S> clazz){
-		return InstanceUtils.getServiceLoader(clazz, getInstanceFactory(), getEnvironment());
+		return serviceLoaderFactory.getServiceLoader(clazz);
 	}
 
 	private final AtomicBoolean init = new AtomicBoolean(false);

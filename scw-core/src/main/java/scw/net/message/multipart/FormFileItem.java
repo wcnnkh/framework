@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import scw.core.utils.StringUtils;
+import scw.codec.support.CharsetCodec;
 import scw.http.ContentDisposition;
 import scw.http.MediaType;
 import scw.io.UnsafeByteArrayInputStream;
@@ -31,7 +31,7 @@ public class FormFileItem extends AbstractFileItem {
 	}
 
 	public byte[] getBytes() {
-		return StringUtils.getStringOperations().getBytes(this.body, charset);
+		return new CharsetCodec(charset).encode(this.body);
 	}
 
 	public InputStream getBody() {

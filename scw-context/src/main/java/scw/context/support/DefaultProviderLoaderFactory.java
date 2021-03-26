@@ -7,9 +7,10 @@ import scw.context.annotation.ProviderServiceLoader;
 import scw.context.locks.LockMethodInterceptor;
 import scw.context.transaction.TransactionMethodInterceptor;
 import scw.env.Environment;
-import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
+import scw.instance.ServiceLoaderFactory;
+import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.instance.support.ServiceLoaders;
 import scw.util.CollectionFactory;
 import scw.util.GenericMap;
@@ -21,14 +22,13 @@ public class DefaultProviderLoaderFactory extends
 			.createHashMap(true);
 	private final NoArgsInstanceFactory instanceFactory;
 	protected volatile ClassesLoader<?> serviceClassesLoader;
-	private final Environment environment;
+	private final ServiceLoaderFactory serviceLoaderFactory;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public DefaultProviderLoaderFactory(Environment environment,
 			NoArgsInstanceFactory instanceFactory) {
-		super(true);
-		this.environment = environment;
-		setClassLoaderProvider(instanceFactory);
+		super(true, instanceFactory);
+		this.serviceLoaderFactory = new DefaultServiceLoaderFactory(instanceFactory, environment);
 		this.instanceFactory = instanceFactory;
 		Supplier<String> packageName = environment.getObservableValue("context.package.name", String.class, null);
 		ClassesLoader contextClassesLoader = new ClassScannerClassesLoader(this, this, packageName, this);
@@ -60,7 +60,7 @@ public class DefaultProviderLoaderFactory extends
 				serviceLoader = serviceLoaderCacheMap.get(serviceClass);
 				if(serviceLoader == null){
 					ServiceLoader<S> parentServiceLoader = new ProviderServiceLoader<S>(getServiceClassesLoader(), instanceFactory, serviceClass);
-					ServiceLoader<S> defaultServiceLoader = InstanceUtils.getServiceLoader(serviceClass, instanceFactory, environment);
+					ServiceLoader<S> defaultServiceLoader = serviceLoaderFactory.getServiceLoader(serviceClass);
 					serviceLoader = new ServiceLoaders<S>(parentServiceLoader, defaultServiceLoader);
 					serviceLoaderCacheMap.put(serviceClass, serviceLoader);
 				}

@@ -46,7 +46,7 @@ import scw.web.WebUtils;
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpServiceHandler.class)
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
-	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
+	private JSONSupport jsonSupport;
 	private final MessageConverters messageConverterFactory = new MessageConverters();
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
@@ -81,7 +81,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 	}
 
 	public JSONSupport getJsonSupport() {
-		return jsonSupport;
+		return jsonSupport == null? JSONUtils.getJsonSupport():jsonSupport;
 	}
 
 	public void setJsonSupport(JSONSupport jsonSupport) {

@@ -20,7 +20,7 @@ import scw.net.message.OutputMessage;
 public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	public static final MimeType TEXT_ALL = new MimeType("text", "*");
 	private Charset charset;
-	private JSONSupport jsonSupport = JSONUtils.getJsonSupport();
+	private JSONSupport jsonSupport;
 	protected final MimeTypes supportMimeTypes = new MimeTypes();
 	private boolean supportBytes = false;
 
@@ -37,7 +37,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	}
 
 	public JSONSupport getJsonSupport() {
-		return jsonSupport;
+		return jsonSupport == null? JSONUtils.getJsonSupport():jsonSupport;
 	}
 
 	public void setJsonSupport(JSONSupport jsonSupport) {

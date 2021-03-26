@@ -7,7 +7,6 @@ import scw.codec.DecodeException;
 import scw.codec.EncodeException;
 import scw.codec.Signer;
 import scw.core.Constants;
-import scw.util.StringOperations;
 
 /**
  * 使用指定字符集进行编解码<br/>
@@ -53,17 +52,11 @@ public class CharsetCodec extends AbstractToByteCodec<String> {
 			return null;
 		}
 		
-		if (charset instanceof String) {
-			try {
-				return StringOperations.INSTANCE.getBytes(source,
-						(String) charset);
-			} catch (UnsupportedEncodingException e) {
-				throw new EncodeException("charset=" + charset + ", source="
-						+ source, e);
-			}
-		} else {
-			return StringOperations.INSTANCE
-					.getBytes(source, (Charset) charset);
+		try {
+			return source.getBytes(getCharsetName());
+		} catch (UnsupportedEncodingException e) {
+			throw new EncodeException("charset=" + charset + ", source="
+					+ source, e);
 		}
 	}
 
@@ -72,16 +65,11 @@ public class CharsetCodec extends AbstractToByteCodec<String> {
 			return null;
 		}
 		
-		if (charset instanceof String) {
-			try {
-				return StringOperations.INSTANCE.createString(source,
-						(String) charset);
-			} catch (UnsupportedEncodingException e) {
-				throw new DecodeException("charset=" + charset, e);
-			}
-		} else {
-			return StringOperations.INSTANCE.createString(source,
-					(Charset) charset);
+		try {
+			return new String(source, getCharsetName());
+		} catch (UnsupportedEncodingException e) {
+			throw new EncodeException("charset=" + charset + ", source="
+					+ source, e);
 		}
 	}
 	

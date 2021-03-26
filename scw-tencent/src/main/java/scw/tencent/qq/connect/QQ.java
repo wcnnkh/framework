@@ -84,7 +84,7 @@ public class QQ {
 			content = content.substring(callbackPrefix.length(), content.length() - 2);
 		}
 
-		return JSONUtils.parseObject(content);
+		return JSONUtils.getJsonSupport().parseObject(content);
 	}
 
 	public AccessToken getAccessToken(String redirect_uri, String code) {
@@ -96,10 +96,10 @@ public class QQ {
 		map.put("code", code);
 		String content = HttpUtils.getHttpClient().post(String.class, TOKEN, map, MediaType.APPLICATION_FORM_URLENCODED)
 				.getBody();
-		JsonObject json = JSONUtils.parseObject(content);
+		JsonObject json = JSONUtils.getJsonSupport().parseObject(content);
 		if (json.getIntValue("code") != 0) {
 			throw new RuntimeException(
-					"url=" + TOKEN + ", data=" + JSONUtils.toJSONString(map) + ", response=" + content);
+					"url=" + TOKEN + ", data=" + JSONUtils.getJsonSupport().toJSONString(map) + ", response=" + content);
 		}
 		return new AccessToken(new Token(json.getString("access_token"), json.getIntValue("expires_in")), null,
 				new Token(json.getString("refresh_token"), 0), null, null);

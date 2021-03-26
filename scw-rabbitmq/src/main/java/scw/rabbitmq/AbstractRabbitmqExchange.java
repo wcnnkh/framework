@@ -97,7 +97,7 @@ public abstract class AbstractRabbitmqExchange extends AbstractExchange implemen
 				: getExchangeDeclare();
 		if (logger.isDebugEnabled()) {
 			logger.debug("push exchange={}, routingKey={}, properties={}, body={}", exchangeDeclare.getName(),
-					routingKey, JSONUtils.toJSONString(messageProperties), String.valueOf(body));
+					routingKey, JSONUtils.getJsonSupport().toJSONString(messageProperties), String.valueOf(body));
 		}
 
 		if (messageProperties.getDeliveryMode() == null) {

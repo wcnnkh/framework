@@ -65,7 +65,7 @@ public class Sender {
 		map.put("timestamp", XTime.format(System.currentTimeMillis(), "yyyy-MM-dd HH:mm:ss"));
 		map.put("sms_free_sign_name", messageModel.getSms_free_sign_name());
 		if (!CollectionUtils.isEmpty(parameterMap)) {
-			map.put("sms_param", JSONUtils.toJSONString(parameterMap));
+			map.put("sms_param", JSONUtils.getJsonSupport().toJSONString(parameterMap));
 		}
 		map.put("sms_template_code", messageModel.getSms_template_code());
 		map.put("method", "alibaba.aliqin.fc.sms.num.send");

@@ -118,7 +118,7 @@ public class WeiXinPay {
 		String mySign = toSign(getSignType(cloneParams), checkStr.toString());
 		boolean b = sign.equals(mySign);
 		if (!b) {
-			logger.error("签名检验失败：{}------>{}", JSONUtils.toJSONString(params), mySign);
+			logger.error("签名检验失败：{}------>{}", JSONUtils.getJsonSupport().toJSONString(params), mySign);
 		}
 		return b;
 	}
@@ -223,7 +223,7 @@ public class WeiXinPay {
 		
 		@SuppressWarnings("unchecked")
 		Map<String, String> map = (Map<String, String>) SystemEnvironment.getInstance().convert(responseDocument, TypeDescriptor.forObject(responseDocument), TypeDescriptor.map(Map.class, String.class, String.class));
-		JsonObject jsonObject = JSONUtils.parseObject(JSONUtils.toJSONString(map));
+		JsonObject jsonObject = JSONUtils.getJsonSupport().parseObject(JSONUtils.getJsonSupport().toJSONString(map));
 		return new WeiXinPayResponse(jsonObject);
 	}
 

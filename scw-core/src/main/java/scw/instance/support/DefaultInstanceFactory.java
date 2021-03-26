@@ -6,13 +6,10 @@ import scw.core.utils.ClassUtils;
 import scw.env.Environment;
 import scw.instance.InstanceDefinition;
 import scw.instance.InstanceException;
-import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
-import scw.instance.ServiceLoader;
-import scw.instance.ServiceLoaderFactory;
 import scw.util.ConcurrentReferenceHashMap;
 
-public class DefaultInstanceFactory extends AbstractInstanceFactory implements ServiceLoaderFactory {
+public class DefaultInstanceFactory extends AbstractInstanceFactory {
 	private ConcurrentMap<Class<?>, InstanceDefinition> cacheMap;
 	private final Environment environment;
 
@@ -24,11 +21,6 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory implements S
 		}
 	}
 	
-	@Override
-	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
-		return InstanceUtils.getServiceLoader(serviceClass, this, environment);
-	}
-
 	public InstanceDefinition getDefinition(String name) {
 		Class<?> type = getClass(name);
 		if(type == null){

@@ -117,7 +117,7 @@ public class Column implements Serializable {
 		} else if (type.isEnum()) {
 			return Enum.valueOf((Class<? extends Enum>) type, value.toString());
 		} else {
-			return JSONUtils.parseObject(value.toString(), field.getSetter().getGenericType());
+			return JSONUtils.getJsonSupport().parseObject(value.toString(), field.getSetter().getGenericType());
 		}
 	}
 
@@ -194,7 +194,7 @@ public class Column implements Serializable {
 				return new java.sql.Date(((Date) value).getTime());
 			}
 
-			return JSONUtils.toJSONString(value);
+			return JSONUtils.getJsonSupport().toJSONString(value);
 		}
 	}
 
