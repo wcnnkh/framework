@@ -34,7 +34,6 @@ public class DefaultServiceLoaderFactory extends SpiServiceLoaderFactory{
 		this.configFactory = configFactory;
 	}
 
-	@SuppressWarnings("unchecked")
 	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
 		ServiceLoader<S> configServiceLoader = new ConfigServiceLoader<S>(serviceClass, configFactory, getInstanceFactory());
 		ServiceLoader<S> spiServiceLoader = null;

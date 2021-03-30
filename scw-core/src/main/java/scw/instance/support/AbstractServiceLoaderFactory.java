@@ -19,7 +19,6 @@ public abstract class AbstractServiceLoaderFactory implements ServiceLoaderFacto
 		return instanceFactory.getClassLoader();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String ...defaultNames) {
 		ServiceLoader<S> staticServiceLoader = new StaticServiceLoader<S>(instanceFactory, defaultNames);
 		return new ServiceLoaders<S>(getServiceLoader(serviceClass), staticServiceLoader);
