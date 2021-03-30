@@ -7,7 +7,8 @@ import scw.core.utils.ArrayUtils;
 public class Accepts<E> implements Accept<E>{
 	private Iterable<Accept<E>> iterable;
 
-	public Accepts(Accept<E>... accepts) {
+	@SafeVarargs
+	public Accepts(Accept<E> ...accepts) {
 		this(ArrayUtils.isEmpty(accepts) ? null : Arrays.asList(accepts));
 	}
 

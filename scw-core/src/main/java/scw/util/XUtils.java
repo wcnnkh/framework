@@ -134,15 +134,6 @@ public final class XUtils {
 		}
 	}
 
-	public static <T> T use(T... objs) {
-		for (T obj : objs) {
-			if (obj != null) {
-				return obj;
-			}
-		}
-		return null;
-	}
-
 	@SuppressWarnings("unchecked")
 	public static <T> T getTarget(Object wrapper, Class<T> targetType) {
 		if (targetType.isInstance(wrapper)) {

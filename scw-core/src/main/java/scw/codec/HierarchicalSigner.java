@@ -1,6 +1,6 @@
 package scw.codec;
 
-public class HierarchicalSigner<P, D, E> extends AbstractSigner<P, E>{
+public class HierarchicalSigner<P, D, E> implements Signer<P, E>{
 	protected final Encoder<P, D> parentEncoder;
 	protected final Signer<D, E> signer;
 	

@@ -11,6 +11,7 @@ import scw.util.MultiIterable;
 public class ServiceLoaders<S> implements ServiceLoader<S>{
 	private List<ServiceLoader<S>> serviceLoaders;
 	
+	@SafeVarargs
 	public ServiceLoaders(ServiceLoader<S> ...serviceLoaders){
 		this(Arrays.asList(serviceLoaders));
 	}

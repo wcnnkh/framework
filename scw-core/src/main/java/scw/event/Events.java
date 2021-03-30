@@ -7,6 +7,7 @@ public class Events<E extends Event> extends BasicEvent {
 	private static final long serialVersionUID = 1L;
 	private final Collection<E> events;
 
+	@SafeVarargs
 	public Events(E... events) {
 		this(Arrays.asList(events));
 	}

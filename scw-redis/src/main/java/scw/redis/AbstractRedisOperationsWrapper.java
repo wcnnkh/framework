@@ -179,6 +179,7 @@ public abstract class AbstractRedisOperationsWrapper<K, WK, V, WV> implements Re
 		return getRedisOperations().hsetnx(encodeKey(key), encodeKey(field), encodeValue(value));
 	}
 
+	@SuppressWarnings("unchecked")
 	public Long hdel(K key, K... fields) {
 		WK[] wk = encodeKey(fields);
 		if (wk == null) {
@@ -216,6 +217,7 @@ public abstract class AbstractRedisOperationsWrapper<K, WK, V, WV> implements Re
 		return decodeValue(getRedisOperations().hget(encodeKey(key), encodeKey(field)));
 	}
 
+	@SuppressWarnings("unchecked")
 	public Collection<V> hmget(K key, K... fields) {
 		WK[] wk = encodeKey(fields);
 		if (wk == null) {
@@ -225,6 +227,7 @@ public abstract class AbstractRedisOperationsWrapper<K, WK, V, WV> implements Re
 		return decodeValue(getRedisOperations().hmget(encodeKey(key), wk));
 	}
 
+	@SuppressWarnings("unchecked")
 	public Long lpush(K key, V... values) {
 		WV[] wv = encodeValue(values);
 		if (wv == null) {
@@ -234,6 +237,7 @@ public abstract class AbstractRedisOperationsWrapper<K, WK, V, WV> implements Re
 		return getRedisOperations().lpush(encodeKey(key), wv);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Long rpush(K key, V... values) {
 		WV[] wv = encodeValue(values);
 		if (wv == null) {
@@ -255,6 +259,7 @@ public abstract class AbstractRedisOperationsWrapper<K, WK, V, WV> implements Re
 		return decodeValue(getRedisOperations().smembers(encodeKey(key)));
 	}
 
+	@SuppressWarnings("unchecked")
 	public Long srem(K key, V... members) {
 		WV[] wv = encodeValue(members);
 		if (wv == null) {
@@ -264,6 +269,7 @@ public abstract class AbstractRedisOperationsWrapper<K, WK, V, WV> implements Re
 		return getRedisOperations().srem(encodeKey(key), wv);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Long sadd(K key, V... members) {
 		WV[] wv = encodeValue(members);
 		if (wv == null) {

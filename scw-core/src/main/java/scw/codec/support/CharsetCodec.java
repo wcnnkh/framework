@@ -14,7 +14,7 @@ import scw.core.Constants;
  * @author shuchaowen
  *
  */
-public class CharsetCodec extends AbstractToByteCodec<String> {
+public class CharsetCodec implements BytesCodec<String> {
 	public static final CharsetCodec UTF_8 = new CharsetCodec(Constants.UTF_8);
 	
 	public static final CharsetCodec ISO_8859_1 = new CharsetCodec(Constants.ISO_8859_1);

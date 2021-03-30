@@ -53,6 +53,7 @@ public class MultiEventRegistration implements EventRegistration {
 		return new MultiEventRegistration(registrations.toArray(new EventRegistration[0]));
 	}
 	
+	@SafeVarargs
 	public static <T extends Event> EventRegistration registerListener(EventListener<T> eventListener, BasicEventRegistry<T> ...registries){
 		return registerListener(eventListener, registries == null? null:Arrays.asList(registries));
 	}
@@ -80,6 +81,7 @@ public class MultiEventRegistration implements EventRegistration {
 		return new MultiEventRegistration(registrations.toArray(new EventRegistration[0]));
 	}
 	
+	@SafeVarargs
 	public static <K, T extends Event> EventRegistration registerListener(K name, EventListener<T> eventListener, NamedEventRegistry<K, T> ...registries){
 		return registerListener(name, eventListener, registries == null? null:Arrays.asList(registries));
 	}

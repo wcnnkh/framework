@@ -1,6 +1,6 @@
 package scw.codec.support;
 
-import scw.codec.AbstractCodec;
+import scw.codec.Codec;
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
 
@@ -9,7 +9,7 @@ import scw.codec.EncodeException;
  * @author asus1
  *
  */
-public class ByteHexCodec extends AbstractCodec<byte[], String> {
+public class ByteHexCodec implements Codec<byte[], String> {
 	public static final ByteHexCodec DEFAULT = new ByteHexCodec();
 
 	public String encode(byte[] source) throws EncodeException {

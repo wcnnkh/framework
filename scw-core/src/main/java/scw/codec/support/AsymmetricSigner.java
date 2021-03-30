@@ -4,7 +4,6 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 
-import scw.codec.AbstractSigner;
 import scw.codec.EncodeException;
 import scw.core.Assert;
 import scw.lang.Nullable;
@@ -17,7 +16,7 @@ import scw.logger.LoggerFactory;
  * @author shuchaowen
  *
  */
-public class AsymmetricSigner extends AbstractSigner<byte[], byte[]> {
+public class AsymmetricSigner implements BytesSigner<byte[]> {
 	private static Logger logger = LoggerFactory
 			.getLogger(AsymmetricSigner.class);
 	private final String algorithm;

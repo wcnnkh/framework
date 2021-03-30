@@ -7,7 +7,7 @@ package scw.codec;
  * @param <E>
  * @param <D>
  */
-public class ReversalCodec<E, D> extends AbstractCodec<E, D>{
+public class ReversalCodec<E, D> implements Codec<E, D>{
 	private final Codec<D, E> codec;
 	
 	public ReversalCodec(Codec<D, E> codec){

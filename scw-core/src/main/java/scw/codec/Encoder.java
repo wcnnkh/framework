@@ -22,14 +22,20 @@ public interface Encoder<D, E> {
 	 * @param encoder
 	 * @return
 	 */
-	<F> Encoder<F, E> fromEncoder(Encoder<F, D> encoder);
+	default <F> Encoder<F, E> fromEncoder(Encoder<F, D> encoder){
+		return new HierarchicalEncoder<F, D, E>(encoder, this);
+	}
 	
 	/**
 	 * encode -> encode -> encode ... <br/>
 	 * @param encoder
 	 * @return
 	 */
-	<T> Encoder<D, T> toEncoder(Encoder<E, T> encoder);
+	default <T> Encoder<D, T> toEncoder(Encoder<E, T> encoder){
+		return new HierarchicalEncoder<D, E, T>(this, encoder);
+	}
 	
-	<T> Signer<D, T> to(Signer<E, T> signer);
+	default <T> Signer<D, T> to(Signer<E, T> signer){
+		return new HierarchicalSigner<D, E, T>(this, signer);
+	}
 }

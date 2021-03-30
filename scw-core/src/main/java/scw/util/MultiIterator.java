@@ -8,6 +8,7 @@ public class MultiIterator<E> extends AbstractIterator<E>{
 	private final Iterator<Iterator<E>> iterators;
 	private Iterator<E> valueIterator;
 	
+	@SafeVarargs
 	public MultiIterator(Iterator<E> ... iterables){
 		this(Arrays.asList(iterables));
 	}

@@ -2,7 +2,7 @@ package scw.codec.support;
 
 import java.util.Locale;
 
-import scw.codec.AbstractCodec;
+import scw.codec.Codec;
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
 import scw.lang.Nullable;
@@ -13,7 +13,7 @@ import scw.lang.Nullable;
  * @author shuchaowen
  *
  */
-public class CaseCodec extends AbstractCodec<String, String> {
+public class CaseCodec implements Codec<String, String> {
 	public static final CaseCodec DEFAULT = new CaseCodec();
 	
 	private final Locale locale;

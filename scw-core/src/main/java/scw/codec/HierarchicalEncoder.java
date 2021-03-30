@@ -1,6 +1,6 @@
 package scw.codec;
 
-public class HierarchicalEncoder<P, D, E> extends AbstractEncoder<P, E>{
+public class HierarchicalEncoder<P, D, E> implements Encoder<P, E>{
 	protected final Encoder<P, D> parentEncoder;
 	protected final Encoder<D, E> encoder;
 	

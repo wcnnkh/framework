@@ -22,7 +22,7 @@ import scw.codec.EncodeException;
  * @author shuchaowen
  *
  */
-public class MAC extends AbstractToByteSigner<byte[]>{
+public class MAC implements BytesSigner<byte[]>{
 	private final SecretKey secretKey;
 	
 	public MAC(SecretKey secretKey){
