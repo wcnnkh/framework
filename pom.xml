@@ -14,6 +14,7 @@
 
 	<dependencyManagement>
 		<dependencies>
+			<!-- 漏洞警告，但因为要兼容jdk1.5所以不升级版本  https://github.com/wcnnkh/scw/security/dependabot/pom.xml/junit:junit/open -->
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
