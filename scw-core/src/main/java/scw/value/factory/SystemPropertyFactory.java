@@ -44,7 +44,6 @@ public class SystemPropertyFactory implements PropertyFactory, Ordered{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public Iterator<String> iterator() {
 		return new MultiIterator<String>(CollectionUtils
 						.toIterator(EnumerationConvert.convertToStringEnumeration(System.getProperties().keys())),

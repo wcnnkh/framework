@@ -1,9 +1,9 @@
 package scw.codec.support;
 
-import scw.codec.AbstractCodec;
+import scw.codec.Codec;
 import scw.codec.DecodeException;
 
-public class Base64 extends AbstractCodec<byte[], String>{
+public class Base64 implements Codec<byte[], String>{
 	static private final int BASELENGTH = 128;
 
 	static private final int LOOKUPLENGTH = 64;

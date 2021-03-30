@@ -22,12 +22,16 @@ public interface Decoder<E, D> {
 	 * @param decoder
 	 * @return
 	 */
-	<F> Decoder<F, D> fromDecoder(Decoder<F, E> decoder);
+	default <F> Decoder<F, D> fromDecoder(Decoder<F, E> decoder){
+		return new HierarchicalDecoder<F, E, D>(decoder, this);
+	}
 	
 	/**
 	 * decode -> decode -> decode ...<br/>
 	 * @param decoder
 	 * @return
 	 */
-	<T> Decoder<E, T> toDecoder(Decoder<D, T> decoder);
+	default <T> Decoder<E, T> toDecoder(Decoder<D, T> decoder){
+		return new HierarchicalDecoder<E, D, T>(this, decoder);
+	}
 }

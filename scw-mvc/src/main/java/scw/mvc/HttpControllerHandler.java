@@ -40,7 +40,6 @@ import scw.net.message.InputMessage;
 import scw.net.message.Text;
 import scw.net.message.converter.MessageConverter;
 import scw.net.message.converter.MessageConverters;
-import scw.util.MultiIterable;
 import scw.web.WebUtils;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpServiceHandler.class)
@@ -130,13 +129,10 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 
 		try {
-			@SuppressWarnings("unchecked")
-			MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptor,
-					action.getActionInterceptors());
 			ActionParameters parameters = new ActionParameters();
 			Object message;
 			try {
-				message = new ActionInterceptorChain(filters.iterator()).intercept(httpChannel, action, parameters);
+				message = new ActionInterceptorChain(action.getActionInterceptors().iterator()).intercept(httpChannel, action, parameters);
 			} catch (Throwable e) {
 				httpChannelDestroy.setError(e);
 				message = doError(httpChannel, action, e, httpChannelDestroy);

@@ -7,7 +7,7 @@ import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerUtils;
 
 
-public class SerializerCodec<T> extends AbstractToByteCodec<T>{
+public class SerializerCodec<T> implements BytesCodec<T>{
 	public static final SerializerCodec<Object> DEFAULT = new SerializerCodec<Object>(SerializerUtils.DEFAULT_SERIALIZER);
 	public static final SerializerCodec<Object> JAVA = new SerializerCodec<Object>(JavaSerializer.INSTANCE);
 	

@@ -22,7 +22,22 @@ public interface Signer<D, E> extends Encoder<D, E>, Validator<D, E> {
 	 */
 	boolean verify(D source, E encode) throws CodecException;
 	
-	<F> Signer<F, E> fromEncoder(Encoder<F, D> encoder);
+	default <F> Signer<F, E> fromEncoder(Encoder<F, D> encoder){
+		return new HierarchicalSigner<F, D, E>(encoder, this);
+	}
 	
-	<T> Signer<D, T> to(Codec<E, T> codec);
+	default <T> Signer<D, T> to(Codec<E, T> codec){
+		return new Signer<D, T>() {
+
+			public T encode(D source) throws EncodeException {
+				E e = Signer.this.encode(source);
+				return codec.encode(e);
+			}
+
+			public boolean verify(D source, T encode) throws CodecException {
+				E e = codec.decode(encode);
+				return Signer.this.verify(source, e);
+			}
+		};
+	}
 }

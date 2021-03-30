@@ -46,7 +46,7 @@ public class BeanAction extends AbstractAction {
 		return beanFactory;
 	}
 	
-	public Iterable<? extends ActionInterceptor> getActionInterceptors() {
+	public Iterable<ActionInterceptor> getActionInterceptors() {
 		return actionInterceptors;
 	}
 

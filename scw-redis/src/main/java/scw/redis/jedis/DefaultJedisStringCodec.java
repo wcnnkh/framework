@@ -1,9 +1,9 @@
 package scw.redis.jedis;
 
 import redis.clients.jedis.util.SafeEncoder;
-import scw.codec.AbstractCodec;
+import scw.codec.Codec;
 
-public final class DefaultJedisStringCodec extends AbstractCodec<String, byte[]> {
+public final class DefaultJedisStringCodec implements Codec<String, byte[]> {
 
 	public byte[] encode(String text) {
 		return SafeEncoder.encode(text);

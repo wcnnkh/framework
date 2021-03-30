@@ -49,7 +49,6 @@ public final class SystemEnvironment extends DefaultEnvironment {
 		logger.info("default " + WORK_PATH_PROPERTY + " in " + workPath);
 	};
 
-	@SuppressWarnings("unchecked")
 	public Iterator<String> iterator() {
 		return new MultiIterator<String>(super.iterator(),
 				CollectionUtils

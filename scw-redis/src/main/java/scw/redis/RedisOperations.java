@@ -56,6 +56,7 @@ public interface RedisOperations<K, V> extends RedisScriptOperations<K, V> {
 
 	Long hsetnx(K key, K field, V value);
 
+	@SuppressWarnings("unchecked")
 	Long hdel(K key, K... fields);
 
 	Long hlen(K key);
@@ -72,10 +73,13 @@ public interface RedisOperations<K, V> extends RedisScriptOperations<K, V> {
 
 	V hget(K key, K field);
 
+	@SuppressWarnings("unchecked")
 	Collection<V> hmget(K key, K... fields);
 
+	@SuppressWarnings("unchecked")
 	Long lpush(K key, V... values);
 
+	@SuppressWarnings("unchecked")
 	Long rpush(K key, V... values);
 
 	V rpop(K key);
@@ -84,8 +88,10 @@ public interface RedisOperations<K, V> extends RedisScriptOperations<K, V> {
 
 	Set<V> smembers(K key);
 
+	@SuppressWarnings("unchecked")
 	Long srem(K key, V... members);
 
+	@SuppressWarnings("unchecked")
 	Long sadd(K key, V... members);
 
 	Long zadd(K key, long score, V member);

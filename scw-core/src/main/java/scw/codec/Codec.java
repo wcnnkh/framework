@@ -2,7 +2,6 @@ package scw.codec;
 
 /**
  * 编解码器<br/>
- * 为了兼容jdk1.5所以不使用default，请继承{@link AbstractCodec}以实现默认方法
  * @author shuchaowen
  * 
  * @param <D>
@@ -15,7 +14,9 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D>{
 	 * @param codec
 	 * @return
 	 */
-	<F> Codec<F, E> from(Codec<F, D> codec);
+	default <F> Codec<F, E> from(Codec<F, D> codec){
+		return new HierarchicalCodec<F, D, E>(codec, this);
+	}
 	
 	/**
 	 * encode -> encode -> encode ... <br/>
@@ -23,12 +24,16 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D>{
 	 * @param codec
 	 * @return
 	 */
-	<T> Codec<D, T> to(Codec<E, T> codec);
+	default <T> Codec<D, T> to(Codec<E, T> codec){
+		return new HierarchicalCodec<D, E, T>(this, codec);
+	}
 	
 	/**
 	 * 将编解码的行为颠倒
 	 * @see ReversalCodec
 	 * @return
 	 */
-	Codec<E, D> reversal();
+	default Codec<E, D> reversal(){
+		return new ReversalCodec<E, D>(this);
+	}
 }

@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 public final class MultiIterable<E> implements Iterable<E> {
 	private final Iterable<Iterable<? extends E>> iterables;
 	
+	@SafeVarargs
 	public MultiIterable(Iterable<? extends E> ... iterables){
 		this(Arrays.asList(iterables));
 	}

@@ -7,7 +7,7 @@ import java.util.Arrays;
 import scw.codec.CodecException;
 import scw.codec.EncodeException;
 
-public class MessageDigestSigner extends AbstractToByteSigner<byte[]>{
+public class MessageDigestSigner implements BytesSigner<byte[]>{
 	protected final String algorithm;
 	private byte[] secretKey;
 	
