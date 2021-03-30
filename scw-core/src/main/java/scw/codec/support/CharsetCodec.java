@@ -53,7 +53,11 @@ public class CharsetCodec implements BytesCodec<String> {
 		}
 		
 		try {
-			return source.getBytes(getCharsetName());
+			if(charset instanceof Charset){
+				return source.getBytes((Charset)charset);
+			}else{
+				return source.getBytes((String)charset);
+			}
 		} catch (UnsupportedEncodingException e) {
 			throw new EncodeException("charset=" + charset + ", source="
 					+ source, e);
@@ -66,7 +70,11 @@ public class CharsetCodec implements BytesCodec<String> {
 		}
 		
 		try {
-			return new String(source, getCharsetName());
+			if(charset instanceof Charset){
+				return new String(source, (Charset)charset);
+			}else{
+				return new String(source, (String)charset);
+			}
 		} catch (UnsupportedEncodingException e) {
 			throw new EncodeException("charset=" + charset + ", source="
 					+ source, e);
