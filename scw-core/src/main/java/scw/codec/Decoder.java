@@ -2,12 +2,12 @@ package scw.codec;
 
 /**
  * 解码器<br/>
- * 为了兼容jdk1.5所以不使用default，请继承{@link AbstractDecoder}以实现默认方法
  * @author shuchaowen
  *
  * @param <E>
  * @param <D>
  */
+@FunctionalInterface
 public interface Decoder<E, D> {
 	/**
 	 * 解码
@@ -23,7 +23,13 @@ public interface Decoder<E, D> {
 	 * @return
 	 */
 	default <F> Decoder<F, D> fromDecoder(Decoder<F, E> decoder){
-		return new HierarchicalDecoder<F, E, D>(decoder, this);
+		return new Decoder<F, D>() {
+
+			@Override
+			public D decode(F source) throws DecodeException {
+				return Decoder.this.decode(decoder.decode(source));
+			}
+		};
 	}
 	
 	/**
@@ -32,6 +38,11 @@ public interface Decoder<E, D> {
 	 * @return
 	 */
 	default <T> Decoder<E, T> toDecoder(Decoder<D, T> decoder){
-		return new HierarchicalDecoder<E, D, T>(this, decoder);
+		return new Decoder<E, T>(){
+			@Override
+			public T decode(E source) throws DecodeException {
+				return decoder.decode(Decoder.this.decode(source));
+			}
+		};
 	}
 }
