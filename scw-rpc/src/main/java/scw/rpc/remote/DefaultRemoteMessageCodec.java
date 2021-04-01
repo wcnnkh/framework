@@ -6,7 +6,6 @@ import java.io.OutputStream;
 
 import scw.codec.Codec;
 import scw.codec.DecodeException;
-import scw.codec.support.Base64;
 import scw.codec.support.CharsetCodec;
 import scw.codec.support.DES;
 import scw.core.Constants;
@@ -45,7 +44,7 @@ public class DefaultRemoteMessageCodec implements RemoteMessageCodec {
 
 	public DefaultRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,
 			@Nullable byte[] secretKey) {
-		this(serializer, new DES(secretKey, secretKey).to(new Base64()));
+		this(serializer, new DES(secretKey, secretKey).toBase64());
 	}
 
 	public DefaultRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,

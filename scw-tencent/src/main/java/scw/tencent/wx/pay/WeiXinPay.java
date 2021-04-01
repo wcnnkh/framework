@@ -10,7 +10,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import scw.codec.support.CharsetCodec;
-import scw.codec.support.MD5;
 import scw.codec.support.URLCodec;
 import scw.convert.TypeDescriptor;
 import scw.core.Constants;
@@ -229,7 +228,7 @@ public class WeiXinPay {
 
 	protected String toSign(SignType signType, String str) {
 		if (signType == null || signType == SignType.MD5) {
-			return new CharsetCodec(charsetName).to(MD5.DEFAULT).encode(str).toUpperCase();
+			return new CharsetCodec(charsetName).toMD5().encode(str).toUpperCase();
 		}
 		throw new NotSupportedException("不支持的签名方式:" + signType);
 	}

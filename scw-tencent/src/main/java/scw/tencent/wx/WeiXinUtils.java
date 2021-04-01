@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.codec.support.CharsetCodec;
-import scw.codec.support.MD5;
 import scw.codec.support.URLCodec;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
@@ -70,7 +69,7 @@ public final class WeiXinUtils {
 	public static String getPaySign(Map<String, String> paramMap, String apiKey) {
 		StringBuilder sb = new StringBuilder(UriUtils.toQueryString(paramMap, URLCodec.UTF_8));
 		sb.append("&key=").append(apiKey);
-		return CharsetCodec.UTF_8.to(MD5.DEFAULT).encode(sb.toString()).toUpperCase();
+		return CharsetCodec.UTF_8.toMD5().encode(sb.toString()).toUpperCase();
 	}
 
 	/**

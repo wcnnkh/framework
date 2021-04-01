@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.codec.encoder.HmacMD5;
+import scw.codec.encoder.MD5;
 import scw.codec.support.CharsetCodec;
-import scw.codec.support.HmacMD5;
-import scw.codec.support.MD5;
 import scw.context.result.DataResult;
 import scw.context.result.ResultFactory;
 import scw.core.Assert;

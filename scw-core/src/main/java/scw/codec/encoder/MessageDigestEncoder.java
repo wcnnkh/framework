@@ -1,4 +1,4 @@
-package scw.codec.support;
+package scw.codec.encoder;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -7,11 +7,11 @@ import java.util.Arrays;
 import scw.codec.CodecException;
 import scw.codec.EncodeException;
 
-public class MessageDigestSigner implements BytesSigner<byte[]>{
+public class MessageDigestEncoder implements BytesEncoder<byte[]>{
 	protected final String algorithm;
 	private byte[] secretKey;
 	
-	public MessageDigestSigner(String algorithm){
+	public MessageDigestEncoder(String algorithm){
 		this.algorithm = algorithm;
 	}
 	
@@ -19,8 +19,8 @@ public class MessageDigestSigner implements BytesSigner<byte[]>{
 		return getMessageDigest(algorithm);
 	}
 	
-	public MessageDigestSigner wrapperSecretKey(byte[] secretKey){
-		MessageDigestSigner signer = new MessageDigestSigner(algorithm);
+	public MessageDigestEncoder wrapperSecretKey(byte[] secretKey){
+		MessageDigestEncoder signer = new MessageDigestEncoder(algorithm);
 		signer.secretKey = secretKey;
 		return signer;
 	}
@@ -37,11 +37,6 @@ public class MessageDigestSigner implements BytesSigner<byte[]>{
 			messageDigest.update(secretSource);
 		}
 		return messageDigest.digest();
-	}
-
-	public boolean verify(byte[] source, byte[] encode) throws CodecException {
-		byte[] sourceEncode = encode(source);
-		return Arrays.equals(sourceEncode, encode);
 	}
 
 	public static MessageDigest getMessageDigest(String algorithm) {

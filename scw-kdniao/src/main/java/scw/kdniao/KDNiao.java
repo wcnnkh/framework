@@ -4,9 +4,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import scw.codec.support.Base64;
 import scw.codec.support.CharsetCodec;
-import scw.codec.support.MD5;
 import scw.http.HttpUtils;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
@@ -91,7 +89,7 @@ public class KDNiao {
 		parameterMap.put("EBusinessID", businessId);
 		parameterMap.put("RequestType", requestType);
 		
-		String dataSign = CHARSET_CODEC.to(MD5.DEFAULT).to(CHARSET_CODEC).to(Base64.DEFAULT).encode(requestData + apiKey);
+		String dataSign = CHARSET_CODEC.toMD5().toEncoder(CHARSET_CODEC.toBase64()).encode(requestData + apiKey);
 		if (dataSignIsUrlEncodeByRequestType(requestType)) {
 			dataSign = UriUtils.encode(dataSign, CHARSET_CODEC.getCharsetName());
 		}

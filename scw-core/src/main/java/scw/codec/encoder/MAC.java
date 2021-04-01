@@ -1,8 +1,7 @@
-package scw.codec.support;
+package scw.codec.encoder;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -17,12 +16,10 @@ import scw.codec.EncodeException;
  * HmacSHA1<br/>
  * HmacSHA256<br/>
  * 
- * @see Mac
- * 
  * @author shuchaowen
  *
  */
-public class MAC implements BytesSigner<byte[]>{
+public class MAC implements BytesEncoder<byte[]>{
 	private final SecretKey secretKey;
 	
 	public MAC(SecretKey secretKey){
@@ -45,11 +42,6 @@ public class MAC implements BytesSigner<byte[]>{
 			throw new CodecException(e);
 		}
 		return mac.doFinal(source);
-	}
-
-	public boolean verify(byte[] source, byte[] encode) throws CodecException {
-		byte[] target = encode(source);
-		return Arrays.equals(target, encode);
 	}
 
 	public static Mac getMac(String algorithm){

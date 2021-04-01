@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import scw.codec.Signer;
+import scw.codec.encoder.MD5;
 import scw.codec.support.CharsetCodec;
-import scw.codec.support.MD5;
 import scw.io.IOUtils;
 import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerUtils;
@@ -32,7 +32,7 @@ public class SignerRemoteMessageCodec implements RemoteMessageCodec {
 	public SignerRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,
 			String secretKey) {
 		this(serializer, new MD5().wrapperSecretKey(
-				CharsetCodec.UTF_8.encode(secretKey)).toHex());
+				CharsetCodec.UTF_8.encode(secretKey)).toHex().toSigner());
 	}
 
 	public SignerRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,

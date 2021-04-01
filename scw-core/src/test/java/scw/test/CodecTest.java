@@ -10,11 +10,13 @@ import java.security.interfaces.RSAPublicKey;
 import org.junit.Test;
 
 import scw.codec.Codec;
+import scw.codec.Signer;
+import scw.codec.signer.SHA1WithRSASigner;
 import scw.codec.support.AES;
 import scw.codec.support.Base64;
-import scw.codec.support.ByteHexCodec;
 import scw.codec.support.CharsetCodec;
 import scw.codec.support.DES;
+import scw.codec.support.HexCodec;
 import scw.codec.support.RSA;
 
 public class CodecTest {
@@ -27,7 +29,8 @@ public class CodecTest {
 		byte[] secreKey = charsetCodec.encode("12345678");
 		byte[] iv = charsetCodec.encode("12345678");
 		Codec<String, String> codec = charsetCodec.to(new DES(secreKey, iv))
-				.to(ByteHexCodec.DEFAULT);
+				.to(HexCodec.DEFAULT);
+		
 		String encode = codec.encode(content);
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
@@ -41,7 +44,7 @@ public class CodecTest {
 		byte[] secreKey = charsetCodec.encode("1234567812346578");
 		byte[] iv = charsetCodec.encode("1234567812345678");
 		Codec<String, String> codec = charsetCodec.to(new AES(secreKey, iv))
-				.to(ByteHexCodec.DEFAULT);
+				.to(HexCodec.DEFAULT);
 		String encode = codec.encode(content);
 		System.out.println("encode:" + encode);
 		String decode = codec.decode(encode);
@@ -67,5 +70,12 @@ public class CodecTest {
 		String decode = codec.decode(encode);
 		System.out.println("decode:" + decode);
 		System.out.println("----------------END RSA------------------");
+		
+		SHA1WithRSASigner rsaSigner = new SHA1WithRSASigner(privateKey, publicKey);
+		Signer<String, String> encoder = charsetCodec.toSigner(rsaSigner).to(Base64.DEFAULT);
+		String sign = encoder.encode(content);
+		System.out.println("sign:" + sign);
+		System.out.println("check:" + encoder.verify(content, sign));
+		
 	}
 }
