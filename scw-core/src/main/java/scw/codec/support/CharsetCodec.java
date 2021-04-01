@@ -5,7 +5,9 @@ import java.nio.charset.Charset;
 
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
-import scw.codec.Signer;
+import scw.codec.Encoder;
+import scw.codec.encoder.HmacMD5;
+import scw.codec.encoder.HmacSHA1;
 import scw.core.Constants;
 
 /**
@@ -81,19 +83,11 @@ public class CharsetCodec implements BytesCodec<String> {
 		}
 	}
 	
-	public Signer<String, String> toMD5(){
-		return to(MD5.DEFAULT);
+	public Encoder<String, String> toHmacMD5(String secretKey){
+		return toEncoder(new HmacMD5(encode(secretKey)).toEncoder(HexCodec.DEFAULT));
 	}
 	
-	public Signer<String, String> toSHA1(){
-		return to(SHA1.DEFAULT);
-	}
-	
-	public Signer<String, String> toHmacMD5(String secretKey){
-		return to(new HmacMD5(encode(secretKey)).toHex());
-	}
-	
-	public Signer<String, String> toHmacSHA1(String secretKey){
-		return to(new HmacSHA1(encode(secretKey)).toHex());
+	public Encoder<String, String> toHmacSHA1(String secretKey){
+		return toEncoder(new HmacSHA1(encode(secretKey)).toEncoder(HexCodec.DEFAULT));
 	}
 }

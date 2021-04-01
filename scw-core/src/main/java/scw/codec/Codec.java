@@ -8,6 +8,7 @@ package scw.codec;
  * @param <E>
  */
 public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D>{
+	
 	/**
 	 * encode <- encode <- encode ...<br/>
 	 * decode -> decode -> decode ...<br/>

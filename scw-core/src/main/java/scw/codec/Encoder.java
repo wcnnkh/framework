@@ -2,6 +2,7 @@ package scw.codec;
 
 import scw.core.utils.ObjectUtils;
 
+
 /**
  * 编码器<br/>
  * @author shuchaowen
@@ -10,7 +11,7 @@ import scw.core.utils.ObjectUtils;
  * @param <E>
  */
 @FunctionalInterface
-public interface Encoder<D, E> {
+public interface Encoder<D, E>{
 	/**
 	 * 编码
 	 * @param source
@@ -49,10 +50,6 @@ public interface Encoder<D, E> {
 		};
 	}
 	
-	/**
-	 * 转换为签名工具<br/>
-	 * @return
-	 */
 	default Signer<D, E> toSigner(){
 		return new Signer<D, E>() {
 
@@ -60,31 +57,25 @@ public interface Encoder<D, E> {
 			public E encode(D source) throws EncodeException {
 				return Encoder.this.encode(source);
 			}
-
+			
 			@Override
-			public boolean verify(D source, E encode) throws CodecException {
+			public boolean verify(D source, E encode) {
 				return ObjectUtils.nullSafeEquals(this.encode(source), encode);
 			}
 		};
 	}
 	
-	/**
-	 * 转换为签名工具<br/>
-	 * encode -> encode -> encode ... <br/>
-	 * @param signer
-	 * @return
-	 */
-	default <T> Signer<D, T> to(Signer<E, T> signer){
+	default <T> Signer<D, T> toSigner(Signer<E, T> signer){
 		return new Signer<D, T>() {
+
+			@Override
+			public boolean verify(D source, T encode) {
+				return signer.verify(Encoder.this.encode(source), encode);
+			}
 
 			@Override
 			public T encode(D source) throws EncodeException {
 				return signer.encode(Encoder.this.encode(source));
-			}
-
-			@Override
-			public boolean verify(D source, T encode) throws CodecException {
-				return signer.verify(Encoder.this.encode(source), encode);
 			}
 		};
 	}

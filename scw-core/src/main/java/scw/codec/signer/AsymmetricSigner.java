@@ -1,4 +1,4 @@
-package scw.codec.support;
+package scw.codec.signer;
 
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -19,6 +19,9 @@ import scw.logger.LoggerFactory;
 public class AsymmetricSigner implements BytesSigner<byte[]> {
 	private static Logger logger = LoggerFactory
 			.getLogger(AsymmetricSigner.class);
+	
+	public static final String SHA1_WITH_RSA = "SHA1WithRSA";
+	
 	private final String algorithm;
 	private final PrivateKey privateKey;
 	private final PublicKey publicKey;

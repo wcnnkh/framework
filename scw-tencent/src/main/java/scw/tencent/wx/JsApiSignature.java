@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import scw.codec.encoder.SHA1;
 import scw.codec.support.CharsetCodec;
-import scw.codec.support.SHA1;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.util.RandomUtils;
@@ -47,7 +47,7 @@ public final class JsApiSignature implements Serializable {
 			}
 		}
 		
-		this.signature = CharsetCodec.UTF_8.to(SHA1.DEFAULT).encode(sb.toString());
+		this.signature = CharsetCodec.UTF_8.toEncoder(SHA1.DEFAULT).encode(sb.toString());
 	}
 
 	public String getNonceStr() {
