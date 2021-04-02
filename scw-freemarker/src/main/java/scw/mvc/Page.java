@@ -7,21 +7,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import freemarker.template.Configuration;
+import freemarker.template.DefaultObjectWrapper;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import freemarker.template.Version;
 import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
 import scw.freemarker.mvc.FreemarkerPage;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
-import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.mvc.page.PageFactory;
 import scw.mvc.servlet.Jsp;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.Version;
 
 /**
  * 不再推荐使用

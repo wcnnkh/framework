@@ -393,6 +393,18 @@
 				<artifactId>scw-gson</artifactId>
 				<version>2.0</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-kafka</artifactId>
+				<version>2.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-netty</artifactId>
+				<version>2.0</version>
+			</dependency>
 
 			<!-- 通用的依赖版本定义 -->
 			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
@@ -579,5 +591,7 @@
 		<module>scw-rpc</module>
 		<module>scw-seata</module>
 		<module>scw-nacos-client</module>
+		<module>scw-kafka</module>
+		<module>scw-netty</module>
 	</modules>
 </project>

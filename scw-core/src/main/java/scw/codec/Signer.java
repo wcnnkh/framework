@@ -2,6 +2,13 @@ package scw.codec;
 
 import scw.util.Validator;
 
+/**
+  *  签名
+ * @author shuchaowen
+ *
+ * @param <D>
+ * @param <E>
+ */
 public interface Signer<D, E> extends Encoder<D, E>, Validator<D, E> {
 	/**
 	 * 生成签名
