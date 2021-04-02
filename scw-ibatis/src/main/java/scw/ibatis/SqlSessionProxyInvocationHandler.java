@@ -17,9 +17,9 @@ public class SqlSessionProxyInvocationHandler implements InvocationHandler{
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
 		if(ArrayUtils.isEmpty(args)){
-			if(method.equals("close")){
+			if(method.getName().equals("close")){
 				return null;
-			}else if(method.equals("getTargetSqlSession")){
+			}else if(method.getName().equals("getTargetSqlSession")){
 				return sqlSession;
 			}
 		}
