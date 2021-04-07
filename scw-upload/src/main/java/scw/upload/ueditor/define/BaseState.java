@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import scw.upload.ueditor.Encoder;
+import scw.codec.encoder.UnicodeEncoder;
 
 public class BaseState implements State {
 
@@ -71,9 +71,7 @@ public class BaseState implements State {
 		}
 		
 		builder.append( "}" );
-
-		return Encoder.toUnicode( builder.toString() );
-
+		return UnicodeEncoder.DEFAULT.encode(builder).toString();
 	}
 
 	public void putInfo(String name, String val) {

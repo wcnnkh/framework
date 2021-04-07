@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import scw.upload.ueditor.Encoder;
+import scw.codec.encoder.UnicodeEncoder;
 
 /**
  * 多状态集合状态 其包含了多个状态的集合, 其本身自己也是一个状态
@@ -98,8 +98,7 @@ public class MultiState implements State {
 		}
 
 		builder.append(" ]}");
-
-		return Encoder.toUnicode(builder.toString());
+		return UnicodeEncoder.DEFAULT.encode(builder).toString();
 
 	}
 
