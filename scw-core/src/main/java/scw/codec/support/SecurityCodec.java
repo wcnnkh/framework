@@ -10,8 +10,9 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import scw.codec.CodecException;
+import scw.codec.multiple.MultipleCodec;
 
-public abstract class SecurityCodec implements BytesCodec<byte[]> {
+public abstract class SecurityCodec implements BytesCodec<byte[]>, MultipleCodec<byte[]> {
 	
 	public static KeyFactory getKeyFactory(String algorithm) {
 		try {

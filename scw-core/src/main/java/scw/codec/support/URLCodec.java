@@ -5,14 +5,13 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
-import scw.codec.Codec;
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
+import scw.codec.multiple.MultipleCodec;
 import scw.core.Constants;
 
-public class URLCodec implements Codec<String, String>{
+public class URLCodec implements MultipleCodec<String>{
 	public static final URLCodec UTF_8 = new URLCodec(Constants.UTF_8_NAME);
-	
 	private final String charsetName;
 	
 	public URLCodec(String charsetName){

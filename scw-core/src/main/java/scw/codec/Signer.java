@@ -54,4 +54,19 @@ public interface Signer<D, E> extends Encoder<D, E>, Validator<D, E> {
 			}
 		};
 	}
+	
+	static <D, E> Signer<D, E> construct(Encoder<D, E> encoder, Validator<D, E> validator){
+		return new Signer<D, E>() {
+			
+			@Override
+			public boolean verify(D source, E encode) throws CodecException {
+				return validator.verify(source, encode);
+			}
+			
+			@Override
+			public E encode(D source) throws EncodeException {
+				return encoder.encode(source);
+			}
+		};
+	}
 }

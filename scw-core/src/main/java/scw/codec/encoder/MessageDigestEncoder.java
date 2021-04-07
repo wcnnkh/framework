@@ -6,8 +6,9 @@ import java.util.Arrays;
 
 import scw.codec.CodecException;
 import scw.codec.EncodeException;
+import scw.codec.multiple.MultipleEncoder;
 
-public class MessageDigestEncoder implements BytesEncoder<byte[]>{
+public class MessageDigestEncoder implements BytesEncoder<byte[]>, MultipleEncoder<byte[]>{
 	protected final String algorithm;
 	private byte[] secretKey;
 	

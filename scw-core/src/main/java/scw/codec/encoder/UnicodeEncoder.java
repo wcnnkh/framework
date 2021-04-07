@@ -1,9 +1,9 @@
 package scw.codec.encoder;
 
 import scw.codec.EncodeException;
-import scw.codec.Encoder;
+import scw.codec.multiple.MultipleEncoder;
 
-public class UnicodeEncoder implements Encoder<CharSequence, CharSequence>{
+public class UnicodeEncoder implements MultipleEncoder<CharSequence>{
 	private static final String EMPTY = "";
 	public static final UnicodeEncoder DEFAULT = new UnicodeEncoder();
 
