@@ -1,5 +1,7 @@
 package scw.codec;
 
+import scw.convert.Converter;
+
 /**
  * 解码器<br/>
  * @author shuchaowen
@@ -42,6 +44,16 @@ public interface Decoder<E, D> {
 			@Override
 			public T decode(E source) throws DecodeException {
 				return decoder.decode(Decoder.this.decode(source));
+			}
+		};
+	}
+	
+	default Converter<E, D> toDecodeConverter(){
+		return new Converter<E, D>() {
+
+			@Override
+			public D convert(E o) {
+				return decode(o);
 			}
 		};
 	}

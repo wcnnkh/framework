@@ -411,7 +411,7 @@
 				<artifactId>scw-slf4j</artifactId>
 				<version>2.0</version>
 			</dependency>
-
+			
 			<!-- 通用的依赖版本定义 -->
 			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 			<dependency>

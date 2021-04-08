@@ -1,5 +1,6 @@
 package scw.codec;
 
+import scw.convert.Converter;
 import scw.core.utils.ObjectUtils;
 
 
@@ -76,6 +77,16 @@ public interface Encoder<D, E>{
 			@Override
 			public T encode(D source) throws EncodeException {
 				return signer.encode(Encoder.this.encode(source));
+			}
+		};
+	}
+	
+	default Converter<D, E> toEncodeConverter(){
+		return new Converter<D, E>() {
+
+			@Override
+			public E convert(D o) {
+				return encode(o);
 			}
 		};
 	}
