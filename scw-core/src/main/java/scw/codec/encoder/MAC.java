@@ -9,6 +9,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import scw.codec.CodecException;
 import scw.codec.EncodeException;
+import scw.codec.multiple.MultipleEncoder;
 
 /**
  * 
@@ -19,7 +20,7 @@ import scw.codec.EncodeException;
  * @author shuchaowen
  *
  */
-public class MAC implements BytesEncoder<byte[]>{
+public class MAC implements BytesEncoder<byte[]>, MultipleEncoder<byte[]>{
 	private final SecretKey secretKey;
 	
 	public MAC(SecretKey secretKey){

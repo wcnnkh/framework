@@ -13,6 +13,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.lang.FormatterException;
+import scw.lang.Nullable;
 import scw.util.placeholder.PropertyResolver;
 
 public final class FormatUtils {
@@ -32,7 +33,7 @@ public final class FormatUtils {
 		return sb.toString();
 	}
 
-	public static void formatPlaceholder(Appendable appendable, Object format, String placeholder, Object... args)
+	public static void formatPlaceholder(Appendable appendable, Object format, @Nullable String placeholder, Object... args)
 			throws IOException {
 		String text = format == null ? null : format.toString();
 		if (StringUtils.isEmpty(text) || ArrayUtils.isEmpty(args)) {

@@ -2,6 +2,13 @@ package scw.codec;
 
 import scw.util.Validator;
 
+/**
+  *  签名
+ * @author shuchaowen
+ *
+ * @param <D>
+ * @param <E>
+ */
 public interface Signer<D, E> extends Encoder<D, E>, Validator<D, E> {
 	/**
 	 * 生成签名
@@ -44,6 +51,21 @@ public interface Signer<D, E> extends Encoder<D, E>, Validator<D, E> {
 
 			public boolean verify(D source, T encode) throws CodecException {
 				return Signer.this.verify(source, codec.decode(encode));
+			}
+		};
+	}
+	
+	static <D, E> Signer<D, E> construct(Encoder<D, E> encoder, Validator<D, E> validator){
+		return new Signer<D, E>() {
+			
+			@Override
+			public boolean verify(D source, E encode) throws CodecException {
+				return validator.verify(source, encode);
+			}
+			
+			@Override
+			public E encode(D source) throws EncodeException {
+				return encoder.encode(source);
 			}
 		};
 	}

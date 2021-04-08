@@ -34,6 +34,10 @@ public final class TransactionUtils {
 		return manager == null ? DEFAULT : manager;
 	}
 	
+	/**
+	  * 当前是否存在事务管理器
+	 * @return
+	 */
 	public static boolean hasManager(){
 		return LOCAL.get() != null;
 	}

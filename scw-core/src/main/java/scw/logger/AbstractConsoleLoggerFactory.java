@@ -2,7 +2,7 @@ package scw.logger;
 
 import java.io.IOException;
 
-public abstract class AbstractConsoleLoggerFactory extends AbstractILoggerFactory {
+public abstract class AbstractConsoleLoggerFactory implements ILoggerFactory{
 
 	public Logger getLogger(String name, String placeholder) {
 		return new ConsoleLogger(LoggerLevelManager.getInstance().getLevel(name), name, this, placeholder);

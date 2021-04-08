@@ -105,7 +105,7 @@ public final class CollectionFactory {
 	 * @see java.util.TreeSet
 	 * @see java.util.LinkedHashSet
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked", "cast" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <E> Collection<E> createApproximateCollection(
 			@Nullable Object collection, int capacity) {
 		if (collection instanceof LinkedList) {
@@ -173,7 +173,7 @@ public final class CollectionFactory {
 	 *             the desired {@code collectionType} is {@link EnumSet} and the
 	 *             supplied {@code elementType} is not a subtype of {@link Enum}
 	 */
-	@SuppressWarnings({ "unchecked", "cast" })
+	@SuppressWarnings({ "unchecked" })
 	public static <E> Collection<E> createCollection(Class<?> collectionType,
 			@Nullable Class<?> elementType, int capacity) {
 		Assert.notNull(collectionType, "Collection type must not be null");

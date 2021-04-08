@@ -2,11 +2,11 @@ package scw.log4j2;
 
 import org.apache.logging.log4j.LogManager;
 
-import scw.logger.AbstractILoggerFactory;
+import scw.logger.ILoggerFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerLevelManager;
 
-public class Log4j2LoggerFactory extends AbstractILoggerFactory {
+public class Log4j2LoggerFactory implements ILoggerFactory {
 
 	static {
 		LogManager.class.getName();

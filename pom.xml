@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>scw</groupId>
@@ -9,6 +10,45 @@
 	<!-- mvn versions:set -DnewVersion=2.0 -DgenerateBackupPoms=false -->
 	<version>2.0</version>
 	<packaging>pom</packaging>
+	<name>scw</name>
+	<description>一些常见的实现</description>
+	<url>https://github.com/wcnnkh/scw</url>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://opensource.org/licenses/MIT</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<email>247044007@qq.com</email>
+			<name>chaowen.shu</name>
+			<url>https://github.com/wcnnkh/scw</url>
+			<id>scw</id>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Github Issue</system>
+		<url>https://github.com/wcnnkh/scw/issues</url>
+	</issueManagement>
+
+	<scm>
+		<connection>scm:git@https://github.com/wcnnkh/scw.git</connection>
+		<developerConnection>scm:git@https://github.com/wcnnkh/scw.git</developerConnection>
+		<url>https://github.com/wcnnkh/scw.git</url>
+	</scm>
+	
+	<distributionManagement>
+		<snapshotRepository>
+			<id>sonatype</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>sonatype</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+		</repository>
+	</distributionManagement>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -394,6 +434,24 @@
 				<version>2.0</version>
 			</dependency>
 
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-kafka</artifactId>
+				<version>2.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-netty</artifactId>
+				<version>2.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-slf4j</artifactId>
+				<version>2.0</version>
+			</dependency>
+
 			<!-- 通用的依赖版本定义 -->
 			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 			<dependency>
@@ -475,6 +533,29 @@
 					<artifactId>maven-war-plugin</artifactId>
 					<version>2.3</version>
 				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.18.1</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.7.1</version>
+				</plugin>
+				<!-- Javadoc -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>3.0.1</version>
+				</plugin>
+				<!-- Gpg Signature -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.6</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -493,11 +574,14 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
+				<configuration>
+					<attach>true</attach>
+				</configuration>
 				<executions>
 					<execution>
-						<id>attach-sources</id>
+						<phase>package</phase>
 						<goals>
-							<goal>jar</goal>
+							<goal>jar-no-fork</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -513,6 +597,49 @@
 					</packagingExcludes>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>true</skipTests>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+			</plugin>
+			
+			<!-- Javadoc -->
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin> -->
+			
+			<!-- Gpg Signature -->
+			<!-- 参考：https://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/ -->
+			<!-- 如果无需使用：mvn install -Dgpg.skip -->
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin> -->
 		</plugins>
 	</build>
 	<modules>
@@ -579,5 +706,8 @@
 		<module>scw-rpc</module>
 		<module>scw-seata</module>
 		<module>scw-nacos-client</module>
+		<module>scw-kafka</module>
+		<module>scw-netty</module>
+		<module>scw-slf4j</module>
 	</modules>
 </project>

@@ -1,5 +1,7 @@
 package scw.test;
 
+import static org.junit.Assert.assertTrue;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -18,6 +20,7 @@ import scw.codec.support.CharsetCodec;
 import scw.codec.support.DES;
 import scw.codec.support.HexCodec;
 import scw.codec.support.RSA;
+import scw.codec.support.URLCodec;
 
 public class CodecTest {
 	public static String content = "这是一段加解密测试内容!";
@@ -75,7 +78,17 @@ public class CodecTest {
 		Signer<String, String> encoder = charsetCodec.toSigner(rsaSigner).to(Base64.DEFAULT);
 		String sign = encoder.encode(content);
 		System.out.println("sign:" + sign);
-		System.out.println("check:" + encoder.verify(content, sign));
-		
+		assertTrue(encoder.verify(content, sign));
+	}
+	
+	@Test
+	public void multiple() {
+		System.out.println("----------------BEGIN multiple------------------");
+		Codec<String, String> codec = URLCodec.UTF_8.multiple(10);
+		String encode = codec.encode(content);
+		System.out.println(encode);
+		String decode = codec.decode(encode);
+		System.out.println(decode);
+		System.out.println("----------------END multiple------------------");
 	}
 }

@@ -61,22 +61,31 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			ioc.getDependence().process(this, instance, beanFactory);
 
 			// @ConfigurationProperties
-			ConfigurationProperties configurationProperties = instance
-					.getClass().getAnnotation(ConfigurationProperties.class);
-			if (configurationProperties != null) {
-				configurationProperties(configurationProperties, instance);
-			}
-
-			configurationProperties = getAnnotatedElement().getAnnotation(
-					ConfigurationProperties.class);
-			if (configurationProperties != null) {
-				configurationProperties(configurationProperties, instance);
-			}
-
+			configurationProperties(instance);
+			
 			BeanUtils.aware(instance, beanFactory, this);
 		}
 		beanFactory.publishEvent(
 				new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_DEPENDENCE));
+	}
+	
+	protected void configurationProperties(Object instance) {
+		ConfigurationProperties configurationProperties = getAnnotatedElement().getAnnotation(
+				ConfigurationProperties.class);
+		if(configurationProperties == null) {
+			//定义上不存在此注解
+			Class<?> configurationPropertiesClass = instance.getClass();
+			while(configurationPropertiesClass != null) {
+				configurationProperties = configurationPropertiesClass.getAnnotation(ConfigurationProperties.class);
+				if(configurationProperties != null) {
+					configurationProperties(configurationProperties, instance);
+					break;
+				}
+				configurationPropertiesClass = configurationPropertiesClass.getSuperclass();
+			}
+		}else {
+			configurationProperties(configurationProperties, instance);
+		}
 	}
 
 	protected void configurationProperties(

@@ -5,6 +5,7 @@ import java.util.SortedMap;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
+import scw.lang.Nullable;
 
 public abstract class AbstractLogger implements Logger {
 	private static final Object[] EMPTY_ARGS = new Object[0];
@@ -12,7 +13,7 @@ public abstract class AbstractLogger implements Logger {
 	private volatile Level level;
 	private EventRegistration eventRegistration;
 
-	public AbstractLogger(Level level, String placeholder) {
+	public AbstractLogger(Level level, @Nullable String placeholder) {
 		this.level = level;
 		this.placeholder = placeholder;
 	}
