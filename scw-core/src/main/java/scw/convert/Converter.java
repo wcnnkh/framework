@@ -7,6 +7,7 @@ import scw.codec.Encoder;
 import scw.lang.Ignore;
 
 @Ignore
+@FunctionalInterface
 public interface Converter<S, T> {
 	T convert(S o);
 	

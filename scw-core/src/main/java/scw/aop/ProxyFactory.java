@@ -12,7 +12,7 @@ public interface ProxyFactory {
 	/**
 	  *  是否可以代理
 	 * 
-	 * @param clazz
+	 * @param clazz origin class
 	 * @return
 	 */
 	boolean canProxy(Class<?> clazz);
@@ -20,7 +20,7 @@ public interface ProxyFactory {
 	/**
 	  *  是否是代理类
 	 * 
-	 * @param clazz
+	 * @param clazz proxy class
 	 * @return
 	 */
 	boolean isProxy(Class<?> clazz);
@@ -28,7 +28,7 @@ public interface ProxyFactory {
 	/**
 	  *  获取未被代理的原始类型
 	 * 
-	 * @param clazz
+	 * @param clazz proxy class
 	 * @return
 	 */
 	Class<?> getUserClass(Class<?> clazz);
@@ -36,24 +36,25 @@ public interface ProxyFactory {
 	/**
 	  *  获取代理类
 	 * 
-	 * @param interfaceClass
+	 * @param clazz source class
+	 * @param interfaceClass interfaces
 	 * @return
 	 */
 	Class<?> getProxyClass(Class<?> clazz, @Nullable Class<?>[] interfaces);
 
 	/**
 	  *  获取代理
-	 * @param clazz
-	 * @param interfaces
-	 * @param methodInterceptor
+	 * @param clazz source class
+	 * @param interfaces interfaces
+	 * @param methodInterceptor interceptors
 	 * @return
 	 */
 	Proxy getProxy(Class<?> clazz, @Nullable Class<?>[] interfaces, @Nullable MethodInterceptor methodInterceptor);
 	
 	/**
 	  *  是否是一个代理类
-	 * @param className
-	 * @param classLoader
+	 * @param className proxy class name
+	 * @param classLoader class load for name
 	 * @return
 	 * @throws ClassNotFoundException
 	 */
@@ -61,8 +62,8 @@ public interface ProxyFactory {
 	
 	/**
 	  *  获取用户类
-	 * @param className
-	 * @param classLoader
+	 * @param className proxy class name
+	 * @param classLoader class load for name
 	 * @return
 	 * @throws ClassNotFoundException
 	 */
