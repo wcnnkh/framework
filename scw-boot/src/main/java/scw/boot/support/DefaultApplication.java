@@ -10,10 +10,10 @@ import scw.boot.ApplicationPostProcessor;
 import scw.boot.ConfigurableApplication;
 import scw.context.ClassesLoader;
 import scw.context.ConfigurableClassesLoader;
+import scw.context.ConfigurableContextEnvironment;
 import scw.context.support.LifecycleAuxiliary;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.env.ConfigurableEnvironment;
 import scw.env.SystemEnvironment;
 import scw.event.BasicEventDispatcher;
 import scw.event.EventListener;
@@ -34,6 +34,7 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 	private volatile Logger logger;
 	private ClassLoaderProvider classLoaderProvider;
 	private final long createTime;
+	private final Thread shutdown;
 
 	public DefaultApplication() {
 		this(XmlBeanFactory.DEFAULT_CONFIG);
@@ -47,6 +48,23 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 		getBeanFactory().registerSingleton(Application.class.getName(), this);
 		getEnvironment().addPropertyFactory(SystemEnvironment.getInstance());
 		beanFactory.registerListener(this);
+		
+		this.shutdown = new Thread(new Runnable() {
+
+			public void run() {
+				if (isInitialized()) {
+					try {
+						destroy();
+					} catch (Throwable e) {
+						getLogger().error(e, "destroy error");
+					}
+				}
+			}
+		}, "shutdown-" + this);
+	}
+	
+	public void addShutdownHook() {
+		Runtime.getRuntime().addShutdownHook(shutdown);
 	}
 	
 	public long getCreateTime() {
@@ -149,7 +167,7 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 
-	public ConfigurableEnvironment getEnvironment() {
+	public ConfigurableContextEnvironment getEnvironment() {
 		return beanFactory.getEnvironment();
 	}
 

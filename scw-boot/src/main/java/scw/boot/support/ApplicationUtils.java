@@ -4,8 +4,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import scw.boot.Application;
-import scw.boot.annotation.BasePackage;
-import scw.core.utils.StringUtils;
 import scw.env.ConfigurableEnvironment;
 import scw.env.Environment;
 import scw.instance.InstanceUtils;
@@ -26,15 +24,6 @@ public final class ApplicationUtils {
 		if (YAML_PROPERTIES_RESOLVER != null) {
 			environment.addPropertiesResolver(YAML_PROPERTIES_RESOLVER);
 			environment.loadProperties(APPLICATION_PREFIX + ".yaml").register();
-		}
-	}
-
-	public static String getBasePackage(Class<?> mainClass) {
-		BasePackage basePackage = mainClass.getAnnotation(BasePackage.class);
-		if (basePackage == null) {
-			return mainClass.getPackage().getName();
-		} else {
-			return basePackage.value();
 		}
 	}
 
@@ -76,26 +65,11 @@ public final class ApplicationUtils {
 	}
 
 	public static <T extends Application> ListenableFuture<T> run(final T application, @Nullable String threadName) {
-		String threadNameToUse = StringUtils.hasText(threadName)? threadName:application.getClass().getSimpleName();
-		Thread shutdown = new Thread(new Runnable() {
-
-			public void run() {
-				if (application.isInitialized()) {
-					try {
-						application.destroy();
-					} catch (Throwable e) {
-						application.getLogger().error(e, "destroy error");
-					}
-				}
-			}
-		}, threadNameToUse + "-shutdown");
-		Runtime.getRuntime().addShutdownHook(shutdown);
-
 		ApplicationRunnable<T> runnable = new ApplicationRunnable<T>(
 				application);
 		Thread run = new Thread(runnable);
 		run.setContextClassLoader(application.getClassLoader());
-		run.setName(threadNameToUse);
+		run.setName(threadName);
 		run.setDaemon(false);
 		run.start();
 		return runnable;

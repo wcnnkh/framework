@@ -1,6 +1,5 @@
 package scw.env;
 
-import java.io.File;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.logging.Logger;
@@ -12,6 +11,7 @@ import scw.env.support.DefaultEnvironment;
 import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
+import scw.util.XUtils;
 import scw.value.StringValue;
 import scw.value.Value;
 
@@ -44,9 +44,6 @@ public final class SystemEnvironment extends DefaultEnvironment {
 
 	private SystemEnvironment() {
 		super(true);
-		logger.info(getClassDirectory());
-		String workPath = getWorkPath();
-		logger.info("default " + WORK_PATH_PROPERTY + " in " + workPath);
 	};
 
 	public Iterator<String> iterator() {
@@ -135,65 +132,15 @@ public final class SystemEnvironment extends DefaultEnvironment {
 				.getPath();
 	}
 	
-	private String getDefaultWorkPath(){
-		// /xxxxx/{project}/target/classes
-		String path = getClassDirectory();
-		File file = new File(path);
-		if(file.isFile()){
-			return null;
-		}
-		
-		if (!file.getName().equals("classes")) {
-			return path;
-		}
-		
-		for(int i=0; i<2;i++){
-			file = file.getParentFile();
-			if(file == null){
-				return path;
-			}
-			
-			if(file.getName().equals("WEB-INF") && file.getParent() != null){
-				return file.getParent();
-			}
-		}
-		
-		if (file != null) {
-			File webapp = new File(file, "/src/main/webapp");
-			if(webapp.exists()){
-				return webapp.getPath();
-			}
-			/*
-			//可能会出现一个bin目录，忽略此目录
-			final File binDirectory = new File(file, "bin");
-			// 路径/xxxx/src/main/webapp/WEB-INF 4层深度
-			File wi = FileUtils.search(file, new Accept<File>() {
-				
-				public boolean accept(File e) {
-					if(e.isDirectory() && "WEB-INF".equals(e.getName())){
-						//可能会出现一个bin目录，忽略此目录
-						if(binDirectory.exists() && binDirectory.isDirectory() && e.getPath().startsWith(binDirectory.getPath())){
-							return false;
-						}
-						return true;
-					}
-					return false;
-				}
-			}, 4);
-			if (wi != null) {
-				return wi.getParent();
-			}*/
-		}
-		return path;
-	}
-	
 	@Override
 	public String getWorkPath() {
 		String path = super.getWorkPath();
 		if(path == null){
-			path = getDefaultWorkPath();
+			path = XUtils.getWebAppDirectory(getClassLoader());
 			if(path != null){
 				setWorkPath(path);
+				logger.info(getClassDirectory());
+				logger.info("default " + WORK_PATH_PROPERTY + " in " + path);
 			}
 		}
 		return path;

@@ -1,9 +1,9 @@
 package scw.boot;
 
 import scw.beans.BeanFactory;
-import scw.context.ProviderClassesLoaderFactory;
 import scw.context.Destroy;
 import scw.context.Init;
+import scw.context.ProviderClassesLoaderFactory;
 import scw.env.Environment;
 import scw.event.BasicEventDispatcher;
 import scw.logger.Logger;
