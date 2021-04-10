@@ -30,6 +30,8 @@ import scw.util.comparator.CompareUtils;
 public abstract class ReflectionUtils {
 	private static final String SERIAL_VERSION_UID_FIELD_NAME = "serialVersionUID";
 	
+	private static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
+	
 	private static final Method[] CLASS_PRESENT_METHODS = getMethods(Class.class, new Accept<Method>() {
 		public boolean accept(Method method) {
 			return !Modifier.isStatic(method.getModifiers()) && !Modifier.isNative(method.getModifiers())
@@ -51,6 +53,11 @@ public abstract class ReflectionUtils {
 			return false;
 		}
 		return true;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T clone(Cloneable source) {
+		return (T) invokeMethod(CLONE_METOHD, source);
 	}
 	
 	/**

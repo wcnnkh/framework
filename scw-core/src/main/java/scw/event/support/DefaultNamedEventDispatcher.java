@@ -5,12 +5,11 @@ import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.NamedEventDispatcher;
-import scw.util.CollectionFactory;
-import scw.util.GenericMap;
+import scw.util.SmartMap;
 
 public class DefaultNamedEventDispatcher<K, T extends Event> implements
 		NamedEventDispatcher<K, T> {
-	private volatile GenericMap<K, BasicEventDispatcher<T>> namedEventListenerMap;
+	private volatile SmartMap<K, BasicEventDispatcher<T>> namedEventListenerMap;
 	private final boolean concurrent;
 	private final int initialCapacity;
 
@@ -27,12 +26,11 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements
 		return concurrent;
 	}
 
-	public GenericMap<K, BasicEventDispatcher<T>> getNamedEventListenerMap() {
+	public SmartMap<K, BasicEventDispatcher<T>> getNamedEventListenerMap() {
 		if (namedEventListenerMap == null) {
 			synchronized (this) {
 				if (namedEventListenerMap == null) {
-					this.namedEventListenerMap = CollectionFactory
-							.createHashMap(concurrent, initialCapacity);
+					this.namedEventListenerMap = new SmartMap<>(concurrent, initialCapacity);
 				}
 			}
 		}

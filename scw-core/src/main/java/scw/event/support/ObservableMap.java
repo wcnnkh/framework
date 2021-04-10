@@ -5,17 +5,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 
 import scw.core.utils.CollectionUtils;
 import scw.event.EventType;
 import scw.event.KeyValuePairEvent;
 import scw.event.NamedEventDispatcher;
-import scw.util.DefaultGenericMap;
+import scw.util.SmartMap;
 
-public class ObservableMap<K, V> extends DefaultGenericMap<K, V> {
+public class ObservableMap<K, V> extends SmartMap<K, V> {
 	private final NamedEventDispatcher<K, KeyValuePairEvent<K, V>> eventDispatcher;
-	private final boolean concurrent;
 
 	public ObservableMap(boolean concurrent) {
 		this(concurrent, new DefaultNamedEventDispatcher<K, KeyValuePairEvent<K, V>>(concurrent));
@@ -23,16 +21,11 @@ public class ObservableMap<K, V> extends DefaultGenericMap<K, V> {
 
 	public ObservableMap(boolean concurrent, NamedEventDispatcher<K, KeyValuePairEvent<K, V>> eventDispatcher) {
 		super(concurrent);
-		this.concurrent = concurrent;
 		this.eventDispatcher = eventDispatcher;
 	}
 
 	public NamedEventDispatcher<K, KeyValuePairEvent<K, V>> getEventDispatcher() {
 		return eventDispatcher;
-	}
-
-	public boolean isSupportedConcurrent() {
-		return getTargetMap() instanceof ConcurrentMap;
 	}
 
 	@Override
@@ -53,7 +46,7 @@ public class ObservableMap<K, V> extends DefaultGenericMap<K, V> {
 	@Override
 	public V put(K key, V value) {
 		V v;
-		if (isSupportedConcurrent()) {
+		if (isConcurrent()) {
 			v = super.put(key, value);
 		} else {
 			synchronized (this) {
@@ -81,7 +74,7 @@ public class ObservableMap<K, V> extends DefaultGenericMap<K, V> {
 	public V remove(Object key) {
 		K keyToUse = (K)key;
 		V v;
-		if (isSupportedConcurrent()) {
+		if (isConcurrent()) {
 			v = super.remove(keyToUse);
 		} else {
 			synchronized (this) {
@@ -98,7 +91,7 @@ public class ObservableMap<K, V> extends DefaultGenericMap<K, V> {
 	@Override
 	public void clear() {
 		Map<K, V> cloneMap;
-		if (isSupportedConcurrent()) {
+		if (isConcurrent()) {
 			cloneMap = new HashMap<K, V>(this);
 			super.clear();
 		} else {
@@ -116,7 +109,7 @@ public class ObservableMap<K, V> extends DefaultGenericMap<K, V> {
 	@Override
 	public V putIfAbsent(K key, V value) {
 		V v;
-		if (isSupportedConcurrent()) {
+		if (isConcurrent()) {
 			v = super.putIfAbsent(key, value);
 		} else {
 			synchronized (this) {
@@ -139,9 +132,5 @@ public class ObservableMap<K, V> extends DefaultGenericMap<K, V> {
 		for (Entry<? extends K, ? extends V> entry : m.entrySet()) {
 			put(entry.getKey(), entry.getValue());
 		}
-	}
-
-	public boolean isConcurrent() {
-		return concurrent;
 	}
 }

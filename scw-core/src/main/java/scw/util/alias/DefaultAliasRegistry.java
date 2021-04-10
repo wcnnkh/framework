@@ -5,21 +5,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 import scw.core.Assert;
-import scw.util.CollectionFactory;
-import scw.util.GenericMap;
+import scw.util.SmartMap;
 
 public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
-	private GenericMap<String, Set<String>> aliasMap;
+	private SmartMap<String, Set<String>> aliasMap;
 	
 	public DefaultAliasRegistry(){
 		this(false);
 	}
 	
 	public DefaultAliasRegistry(boolean concurrent){
-		this.aliasMap = CollectionFactory.createHashMap(concurrent);
+		this.aliasMap = new SmartMap<String, Set<String>>(concurrent);
 	}
 	
-	private DefaultAliasRegistry(GenericMap<String, Set<String>> aliasMap){
+	private DefaultAliasRegistry(SmartMap<String, Set<String>> aliasMap){
 		this.aliasMap = aliasMap;
 	}
 

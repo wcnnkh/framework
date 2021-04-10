@@ -84,11 +84,19 @@ public class CodecTest {
 	@Test
 	public void multiple() {
 		System.out.println("----------------BEGIN multiple------------------");
-		Codec<String, String> codec = URLCodec.UTF_8.multiple(10);
+		Codec<String, String> codec = URLCodec.UTF_8;
 		String encode = codec.encode(content);
 		System.out.println(encode);
 		String decode = codec.decode(encode);
 		System.out.println(decode);
+		assertTrue(decode.equals(content));
+		System.out.println("----------------multiple(10次)------------------");
+		codec = URLCodec.UTF_8.multiple(10);
+		encode = codec.encode(content);
+		System.out.println(encode);
+		decode = codec.decode(encode);
+		System.out.println(decode);
+		assertTrue(decode.equals(content));
 		System.out.println("----------------END multiple------------------");
 	}
 }

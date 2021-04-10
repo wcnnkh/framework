@@ -10,15 +10,17 @@ import scw.boot.ApplicationPostProcessor;
 import scw.boot.ConfigurableApplication;
 import scw.context.ClassesLoader;
 import scw.context.ConfigurableClassesLoader;
+import scw.context.ConfigurableContextEnvironment;
 import scw.context.support.LifecycleAuxiliary;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.env.ConfigurableEnvironment;
 import scw.env.SystemEnvironment;
 import scw.event.BasicEventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.support.DefaultBasicEventDispatcher;
+import scw.instance.InstanceUtils;
+import scw.io.resolver.PropertiesResolver;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.logger.LoggerUtils;
@@ -28,6 +30,10 @@ import scw.util.DefaultClassLoaderProvider;
 
 public class DefaultApplication extends LifecycleAuxiliary implements
 		ConfigurableApplication, EventListener<BeanLifeCycleEvent> {
+	private static final PropertiesResolver YAML_PROPERTIES_RESOLVER = InstanceUtils.INSTANCE_FACTORY
+			.getInstance("scw.yaml.YamlPropertiesResolver");
+	private static final String APPLICATION_PREFIX = "application";
+
 	private final XmlBeanFactory beanFactory;
 	private final BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer = new DefaultBasicEventDispatcher<ApplicationEvent>(
 			true);
@@ -48,12 +54,12 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 		getEnvironment().addPropertyFactory(SystemEnvironment.getInstance());
 		beanFactory.registerListener(this);
 	}
-	
+
 	public long getCreateTime() {
 		return createTime;
 	}
-	
-	public void setClassLoader(ClassLoader classLoader){
+
+	public void setClassLoader(ClassLoader classLoader) {
 		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
 	}
 
@@ -91,11 +97,18 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 
 	@Override
 	protected void beforeInit() throws Throwable {
-		ApplicationUtils.config(getEnvironment());
+		getEnvironment().loadProperties(APPLICATION_PREFIX + ".properties")
+				.register();
+		if (YAML_PROPERTIES_RESOLVER != null) {
+			getEnvironment().addPropertiesResolver(YAML_PROPERTIES_RESOLVER);
+			getEnvironment().loadProperties(APPLICATION_PREFIX + ".yaml")
+					.register();
+		}
 		beanFactory.init();
 	}
-	
-	protected void postProcessApplication(ApplicationPostProcessor processor) throws Throwable{
+
+	protected void postProcessApplication(ApplicationPostProcessor processor)
+			throws Throwable {
 		processor.postProcessApplication(this);
 	}
 
@@ -111,7 +124,9 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 	@Override
 	protected void initComplete() throws Throwable {
 		super.initComplete();
-		getLogger().info(new SplitLineAppend("Start up complete in " + (System.currentTimeMillis() - createTime) + "ms"));
+		getLogger().info(
+				new SplitLineAppend("Start up complete in "
+						+ (System.currentTimeMillis() - createTime) + "ms"));
 	}
 
 	protected void beforeDestroy() throws Throwable {
@@ -149,7 +164,7 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 
-	public ConfigurableEnvironment getEnvironment() {
+	public ConfigurableContextEnvironment getEnvironment() {
 		return beanFactory.getEnvironment();
 	}
 

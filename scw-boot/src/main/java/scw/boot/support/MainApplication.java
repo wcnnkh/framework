@@ -2,24 +2,19 @@ package scw.boot.support;
 
 import scw.boot.Application;
 import scw.boot.Main;
-import scw.context.ClassesLoader;
 import scw.env.support.MainArgs;
 import scw.logger.LoggerUtils;
 import scw.util.concurrent.ListenableFuture;
 
-@SuppressWarnings("unchecked")
 public class MainApplication extends DefaultApplication implements Application {
 	private final Class<?> mainClass;
 	private final MainArgs mainArgs;
 
-	@SuppressWarnings({"rawtypes" })
 	public MainApplication(Class<?> mainClass, String[] args) {
 		this.mainClass = mainClass;
 		this.mainArgs = new MainArgs(args);
 		setClassLoader(mainClass.getClassLoader());
-		getContextClassesLoader().add(
-				(ClassesLoader) getClassesLoader(ApplicationUtils
-						.getBasePackage(mainClass)));
+		getEnvironment().source(mainClass);
 		getEnvironment().addPropertyFactory(mainArgs);
 		setLogger(LoggerUtils.getLogger(mainClass));
 		if (args != null) {
@@ -43,13 +38,22 @@ public class MainApplication extends DefaultApplication implements Application {
 					mainArgs);
 		}
 	}
+	
+	public static ApplicationRunner<MainApplication> main(Class<?> mainClass, String[] args){
+		return new ApplicationRunner<MainApplication>(new MainApplication(mainClass, args), mainClass.getSimpleName());
+	}
 
 	public static ListenableFuture<MainApplication> run(Class<?> mainClass,
 			String[] args) {
-		return ApplicationUtils.run(new MainApplication(mainClass, args), mainClass.getSimpleName());
+		return main(mainClass, args).start();
 	}
 
 	public static final ListenableFuture<MainApplication> run(Class<?> mainClass) {
 		return run(mainClass, null);
+	}
+	
+	@Override
+	public String toString() {
+		return mainClass.toString();
 	}
 }

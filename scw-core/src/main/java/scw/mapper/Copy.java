@@ -1,7 +1,6 @@
 package scw.mapper;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import scw.core.reflect.ReflectionUtils;
@@ -12,7 +11,6 @@ import scw.util.ConfigurableAccept;
 
 @SuppressWarnings("unchecked")
 public class Copy {
-	static final Method CLONE_METOHD = ReflectionUtils.getMethod(Object.class, "clone");
 	private NoArgsInstanceFactory instanceFactory = InstanceUtils.INSTANCE_FACTORY;
 	private Mapper mapper = MapperUtils.getMapper();
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
@@ -276,7 +274,7 @@ public class Copy {
 		}
 
 		if (isInvokeCloneableMethod() && source instanceof Cloneable) {
-			return (T) ReflectionUtils.invokeMethod(CLONE_METOHD, source);
+			return ReflectionUtils.clone((Cloneable)source);
 		}
 
 		Object target = getInstanceFactory().getInstance(sourceClass);

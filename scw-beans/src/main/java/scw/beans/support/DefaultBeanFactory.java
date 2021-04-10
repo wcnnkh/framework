@@ -20,13 +20,13 @@ import scw.beans.SingletonBeanRegistry;
 import scw.beans.ioc.Ioc;
 import scw.context.ClassesLoader;
 import scw.context.ConfigurableClassesLoader;
-import scw.context.support.DefaultProviderLoaderFactory;
+import scw.context.ConfigurableContextEnvironment;
+import scw.context.support.DefaultContextEnvironment;
 import scw.context.support.LifecycleAuxiliary;
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ClassUtils;
 import scw.env.Environment;
-import scw.env.support.DefaultEnvironment;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.support.DefaultBasicEventDispatcher;
@@ -47,16 +47,14 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 			.getLogger(DefaultBeanFactory.class);
 	private final DefaultBasicEventDispatcher<BeanLifeCycleEvent> beanLifeCycleEventDispatcher = new DefaultBasicEventDispatcher<BeanLifeCycleEvent>(
 			true);
-	private final DefaultEnvironment environment = new DefaultEnvironment(true) {
+	private final DefaultContextEnvironment environment = new DefaultContextEnvironment(true, true, this) {
 		public ClassLoader getClassLoader() {
 			return DefaultBeanFactory.this.getClassLoader();
 		};
 	};
 
 	private final DefaultConfigurableAop aop = new DefaultConfigurableAop(environment);
-
-	private final DefaultProviderLoaderFactory contextLoader = new DefaultProviderLoaderFactory(
-			environment, this);
+	
 	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(
 			this);
 	private final SingletonBeanRegistry singletonBeanRegistry = new DefaultSingletonBeanRegistry(
@@ -85,10 +83,6 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 
 	public ConfigurableAop getAop() {
 		return aop;
-	}
-
-	public DefaultProviderLoaderFactory getContextLoader() {
-		return contextLoader;
 	}
 
 	public ClassLoader getClassLoader() {
@@ -154,15 +148,15 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	}
 
 	public final ClassesLoader<?> getClassesLoader(String packageName) {
-		return contextLoader.getClassesLoader(packageName);
+		return environment.getClassesLoader(packageName);
 	}
 
-	public final DefaultEnvironment getEnvironment() {
+	public final ConfigurableContextEnvironment getEnvironment() {
 		return environment;
 	}
 
 	public final ConfigurableClassesLoader<?> getContextClassesLoader() {
-		return contextLoader.getContextClassesLoader();
+		return environment.getContextClassesLoader();
 	}
 
 	public Object getSingletonMutex() {
@@ -381,7 +375,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	}
 
 	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
-		return contextLoader.getServiceLoader(serviceClass);
+		return environment.getServiceLoader(serviceClass);
 	}
 
 	private final class SingletionBeanDefinition implements BeanDefinition {

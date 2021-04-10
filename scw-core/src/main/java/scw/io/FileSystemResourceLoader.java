@@ -54,6 +54,11 @@ public class FileSystemResourceLoader extends DefaultResourceLoader {
 		return new AutomaticResource(fileSystemResource, resource);
 	}
 	
+	/**
+	 * 是否应该继续查找classpath
+	 * @param resource
+	 * @return
+	 */
 	protected boolean ignoreClassPathResource(FileSystemResource resource){
 		return resource.exists();
 	}
