@@ -38,12 +38,14 @@ public class MainApplication extends DefaultApplication implements Application {
 					mainArgs);
 		}
 	}
+	
+	public static ApplicationRunner<MainApplication> main(Class<?> mainClass, String[] args){
+		return new ApplicationRunner<MainApplication>(new MainApplication(mainClass, args), mainClass.getSimpleName());
+	}
 
 	public static ListenableFuture<MainApplication> run(Class<?> mainClass,
 			String[] args) {
-		MainApplication application = new MainApplication(mainClass, args);
-		application.addShutdownHook();
-		return ApplicationUtils.run(application, mainClass.getSimpleName());
+		return main(mainClass, args).start();
 	}
 
 	public static final ListenableFuture<MainApplication> run(Class<?> mainClass) {
