@@ -12,9 +12,30 @@ import java.io.OutputStream;
 public interface NoTypeSpecifiedSerializer {
 	void serialize(OutputStream out, Object data) throws IOException;
 
-	byte[] serialize(Object data);
+	default byte[] serialize(Object data) throws SerializerException{
+		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
+		try {
+			serialize(out, data);
+			return out.toByteArray();
+		} catch (IOException e) {
+			// 不应该存在此错误
+			throw new SerializerException(e);
+		} finally {
+			out.close();
+		}
+	}
 	
 	<T> T deserialize(InputStream input) throws IOException, ClassNotFoundException;
 
-	<T> T deserialize(byte[] data) throws ClassNotFoundException;
+	default <T> T deserialize(byte[] data) throws ClassNotFoundException, SerializerException{
+		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
+		try {
+			return deserialize(input);
+		} catch (IOException e) {
+			// 不应该存在此错误
+			throw new SerializerException(e);
+		} finally {
+			input.close();
+		}
+	}
 }

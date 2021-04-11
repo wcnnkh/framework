@@ -9,6 +9,27 @@ package scw.codec;
  */
 public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D>{
 	
+	static class NestedCodec<D, T, E> implements Codec<D, E>{
+		private final Codec<D, T> parent;
+		private final Codec<T, E> codec;
+		
+		public NestedCodec(Codec<D, T> parent, Codec<T, E> codec) {
+			this.parent = parent;
+			this.codec = codec;
+		}
+
+		@Override
+		public E encode(D source) throws EncodeException {
+			return codec.encode(parent.encode(source));
+		}
+
+		@Override
+		public D decode(E source) throws DecodeException {
+			return parent.decode(codec.decode(source));
+		}
+		
+	}
+	
 	/**
 	 * encode <- encode <- encode ...<br/>
 	 * decode -> decode -> decode ...<br/>
@@ -16,18 +37,7 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D>{
 	 * @return
 	 */
 	default <F> Codec<F, E> from(Codec<F, D> codec){
-		return new Codec<F, E>() {
-
-			@Override
-			public E encode(F source) throws EncodeException {
-				return Codec.this.encode(codec.encode(source));
-			}
-
-			@Override
-			public F decode(E source) throws DecodeException {
-				return codec.decode(Codec.this.decode(source));
-			}
-		};
+		return new NestedCodec<F, D, E>(codec, this);
 	}
 	
 	/**
@@ -37,18 +47,7 @@ public interface Codec<D, E> extends Encoder<D, E>, Decoder<E, D>{
 	 * @return
 	 */
 	default <T> Codec<D, T> to(Codec<E, T> codec){
-		return new Codec<D, T>() {
-
-			@Override
-			public T encode(D source) throws EncodeException {
-				return codec.encode(Codec.this.encode(source));
-			}
-
-			@Override
-			public D decode(T source) throws DecodeException {
-				return Codec.this.decode(codec.decode(source));
-			}
-		};
+		return new NestedCodec<D, E, T>(this, codec);
 	}
 	
 	/**
