@@ -26,7 +26,6 @@ import java.util.concurrent.ExecutionException;
  * {@link ListenableFutureCallback#onSuccess(Object)} call
  * {@link #adapt(Object)} on the adaptee's result.
  *
- * @author Arjen Poutsma
  * @param <T>
  *            the type of this {@code Future}
  * @param <S>

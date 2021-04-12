@@ -28,9 +28,6 @@ import scw.core.Assert;
  * <p>
  * Inspired by {@code com.google.common.util.concurrent.ExecutionList}.
  *
- * @author Arjen Poutsma
- * @author Sebastien Deleuze
- * @author Rossen Stoyanchev
  */
 public class ListenableFutureCallbackRegistry<T> implements Listenable<T>{
 

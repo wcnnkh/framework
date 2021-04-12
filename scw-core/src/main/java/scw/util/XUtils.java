@@ -27,6 +27,10 @@ public final class XUtils {
 	private XUtils() {
 	};
 
+	/**
+	 * 获取UUID，已经移除了‘-’
+	 * @return
+	 */
 	public static String getUUID() {
 		return StringUtils.removeChar(UUID.randomUUID().toString(), '-');
 	}

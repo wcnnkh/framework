@@ -28,7 +28,6 @@ import scw.core.Assert;
  * parameterized over T. All methods are delegated to the adaptee, where {@link #get()}
  * and {@link #get(long, TimeUnit)} call {@link #adapt(Object)} on the adaptee's result.
  *
- * @author Arjen Poutsma
  * @param <T> the type of this {@code Future}
  * @param <S> the type of the adaptee's {@code Future}
  */

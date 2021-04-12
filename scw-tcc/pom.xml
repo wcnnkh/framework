@@ -10,7 +10,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-compensat</artifactId>
+			<artifactId>scw-consistency</artifactId>
 		</dependency>
 	</dependencies>
 </project>

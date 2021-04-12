@@ -1,5 +1,10 @@
 package scw.util.placeholder;
 
+/**
+ * 占位符替换
+ * @author shuchaowen
+ *
+ */
 public interface PlaceholderReplacer {
 	/** Prefix for system property placeholders: "${" */
 	public static final String PLACEHOLDER_PREFIX = "${";

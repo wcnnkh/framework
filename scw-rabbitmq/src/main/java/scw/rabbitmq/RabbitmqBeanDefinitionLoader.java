@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.TimeoutException;
 
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.ConnectionFactoryConfigurator;
+
 import scw.amqp.Exchange;
 import scw.amqp.ExchangeDeclare;
 import scw.beans.BeanDefinition;
@@ -12,15 +16,10 @@ import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
 import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
-import scw.complete.CompleteService;
 import scw.context.annotation.Provider;
 import scw.convert.support.MapToEntityConversionService;
 import scw.io.ResourceUtils;
 import scw.io.SerializerUtils;
-
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ConnectionFactoryConfigurator;
 
 @Provider
 public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
@@ -98,8 +97,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 		}
 
 		public boolean isInstance() {
-			return beanFactory.isInstance(Connection.class) && beanFactory.isInstance(ExchangeDeclare.class)
-					&& beanFactory.isInstance(CompleteService.class);
+			return beanFactory.isInstance(Connection.class) && beanFactory.isInstance(ExchangeDeclare.class);
 		}
 
 		public Object create() throws BeansException {

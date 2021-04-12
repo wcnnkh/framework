@@ -1,5 +1,10 @@
 package scw.util.placeholder;
 
+/**
+ * 点位符解析
+ * @author shuchaowen
+ *
+ */
 public interface PlaceholderResolver {
 
 	/**

@@ -18,8 +18,6 @@ package scw.util.concurrent;
 
 /**
  * Failure callback for a {@link ListenableFuture}.
- *
- * @author Sebastien Deleuze
  */
 public interface FailureCallback {
 

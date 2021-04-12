@@ -22,8 +22,6 @@ import java.util.concurrent.FutureTask;
 
 /**
  * Extension of {@link FutureTask} that implements {@link ListenableFuture}.
- *
- * @author Arjen Poutsma
  */
 public class ListenableFutureTask<T> extends FutureTask<T> implements ListenableFuture<T> {
 

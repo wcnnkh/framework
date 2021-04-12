@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.logging.Logger;
 
-import scw.codec.support.CharsetCodec;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.support.DefaultEnvironment;
@@ -24,7 +23,6 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	public static final String PROPERTY_USER_HOME = "user.home";
 	public static final String PROPERTY_OS_NAME = "os.name";
 	public static final String PROPERTY_USER_DIR = "user.dir";
-	private static final String SYSTEM_ID_PROPERTY = "system.private.id";
 	/**
 	 * 为了兼容老版本
 	 */
@@ -144,17 +142,5 @@ public final class SystemEnvironment extends DefaultEnvironment {
 			}
 		}
 		return path;
-	}
-	
-	public String getPrivateId(){
-		String systemOnlyId = getString(SYSTEM_ID_PROPERTY);
-		if (StringUtils.isEmpty(systemOnlyId)) {
-			systemOnlyId = CharsetCodec.UTF_8.toBase64().encode(getClassDirectory() + "&" + getWorkPath());
-			if (systemOnlyId.endsWith("==")) {
-				systemOnlyId = systemOnlyId.substring(0, systemOnlyId.length() - 2);
-			}
-			put(SYSTEM_ID_PROPERTY, systemOnlyId);
-		}
-		return systemOnlyId;
 	}
 }
