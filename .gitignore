@@ -3,3 +3,14 @@
 .project
 /bin/
 /.settings/
+/logs/
+.*
+
+# models
+*/target/
+*/.classpath
+*/.project
+*/bin/
+*/.settings/
+*/logs/
+*/.*
