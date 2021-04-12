@@ -7,6 +7,7 @@ import scw.aop.MethodInterceptor;
 import scw.aop.MethodInterceptorAccept;
 import scw.beans.BeanUtils;
 import scw.beans.RuntimeBean;
+import scw.beans.annotation.Autowired;
 import scw.consistency.CompensateRegistry;
 import scw.consistency.Compensator;
 import scw.context.annotation.Provider;
@@ -31,7 +32,8 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 	 * @return
 	 */
 	public static String getTransactionId(boolean create) throws TccException {
-		Transaction transaction = TransactionUtils.getManager().getTransaction();
+		Transaction transaction = TransactionUtils.getManager()
+				.getTransaction();
 		if (transaction == null) {
 			throw new TccException("not exist transaction");
 		}
@@ -39,7 +41,8 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 		String transactionId = transaction.getResource(TccService.class);
 		if (transactionId == null && create) {
 			transactionId = XUtils.getUUID();
-			String oldId = transaction.bindResource(TccService.class, transactionId);
+			String oldId = transaction.bindResource(TccService.class,
+					transactionId);
 			if (oldId != null) {
 				transactionId = oldId;
 			}
@@ -53,20 +56,28 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 	 * @param transactionId
 	 * @return
 	 */
-	public static String bindTransactionId(String transactionId) throws TccException {
-		Transaction transaction = TransactionUtils.getManager().getTransaction();
+	public static String bindTransactionId(String transactionId)
+			throws TccException {
+		Transaction transaction = TransactionUtils.getManager()
+				.getTransaction();
 		if (transaction == null) {
 			throw new TccException("not exist transaction");
 		}
 
-		String oldId = transaction.bindResource(TccService.class, transactionId);
+		String oldId = transaction
+				.bindResource(TccService.class, transactionId);
 		return oldId == null ? transactionId : oldId;
 	}
 
-	private final CompensateRegistry compensatRegistry;
+	@Autowired(required = false)
+	private CompensateRegistry compensateRegistry;
 
-	public TccService(CompensateRegistry compensatRegistry) {
-		this.compensatRegistry = compensatRegistry;
+	public CompensateRegistry getCompensateRegistry() {
+		return compensateRegistry;
+	}
+
+	public void setCompensateRegistry(CompensateRegistry compensateRegistry) {
+		this.compensateRegistry = compensateRegistry;
 	}
 
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
@@ -74,44 +85,57 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 		return tcc != null;
 	}
 
-	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
+	public Object intercept(MethodInvoker invoker, Object[] args)
+			throws Throwable {
 		Tcc tcc = invoker.getMethod().getAnnotation(Tcc.class);
 		if (tcc == null) {
 			return invoker.invoke(args);
 		}
 
-		Transaction transaction = TransactionUtils.getManager().getTransaction();
+		Transaction transaction = TransactionUtils.getManager()
+				.getTransaction();
 		if (transaction == null) {
 			throw new NotSupportedException("not exist transaction");
 		}
+		
+		if(compensateRegistry == null){
+			throw new NotSupportedException("not exist compensate registry");
+		}
 
-		RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(invoker.getInstance());
+		RuntimeBean runtimeBean = BeanUtils.getRuntimeBean(invoker
+				.getInstance());
 		if (runtimeBean == null) {
 			throw new NotSupportedException("not exist transaction");
 		}
 
 		Object result = invoker.invoke(args);
 		// 先注册一个取消任务，以防止最坏的情况发生，那样还可以回滚,但是如果存在confirm的情况下还会执行confirm，所以应该在业务中判断如果已经cancel了那么confirm无效
-		Method confirmMethod = getStepMethod(invoker.getDeclaringClass(), tcc.confirm());
-		Method cancelMethod = getStepMethod(invoker.getDeclaringClass(), tcc.cancel());
+		Method confirmMethod = getStepMethod(invoker.getDeclaringClass(),
+				tcc.confirm());
+		Method cancelMethod = getStepMethod(invoker.getDeclaringClass(),
+				tcc.cancel());
 
 		String transactionId = getTransactionId(true);
 		Compensator confirm = null;
 		if (confirmMethod != null) {
-			Object[] stepArgs = getStepArgs(invoker.getMethod(), result, args, confirmMethod);
-			Stage stage = new Stage(invoker.getDeclaringClass(), confirmMethod, runtimeBean.getBeanDefinition().getId(),
-					stepArgs);
+			Object[] stepArgs = getStepArgs(invoker.getMethod(), result, args,
+					confirmMethod);
+			Stage stage = new Stage(invoker.getDeclaringClass(), confirmMethod,
+					runtimeBean.getBeanDefinition().getId(), stepArgs);
 			stage.setInstance(invoker.getInstance());
-			confirm = compensatRegistry.register(transactionId, XUtils.getUUID(), stage);
+			confirm = compensateRegistry.register(transactionId,
+					XUtils.getUUID(), stage);
 		}
 
 		Compensator cancel = null;
 		if (cancelMethod != null) {
-			Object[] stepArgs = getStepArgs(invoker.getMethod(), result, args, cancelMethod);
-			Stage stage = new Stage(invoker.getDeclaringClass(), cancelMethod, runtimeBean.getBeanDefinition().getId(),
-					stepArgs);
+			Object[] stepArgs = getStepArgs(invoker.getMethod(), result, args,
+					cancelMethod);
+			Stage stage = new Stage(invoker.getDeclaringClass(), cancelMethod,
+					runtimeBean.getBeanDefinition().getId(), stepArgs);
 			stage.setInstance(invoker.getInstance());
-			cancel = compensatRegistry.register(transactionId, XUtils.getUUID(), stage);
+			cancel = compensateRegistry.register(transactionId,
+					XUtils.getUUID(), stage);
 		}
 
 		transaction.addLifecycle(new TccCompensator(confirm, cancel));
@@ -129,7 +153,8 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 				continue;
 			}
 
-			String name = StringUtils.isEmpty(tccStage.value()) ? method.getName() : tccStage.value();
+			String name = StringUtils.isEmpty(tccStage.value()) ? method
+					.getName() : tccStage.value();
 			if (stepName.equals(name)) {
 				return method;
 			}
@@ -137,25 +162,30 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 		return null;
 	}
 
-	public Object[] getStepArgs(Method tryMethod, Object tryResult, Object[] tryArgs, Method stepMethod) {
-		ParameterDescriptor[] parameterDescriptors = ParameterUtils.getParameterDescriptors(stepMethod);
+	public Object[] getStepArgs(Method tryMethod, Object tryResult,
+			Object[] tryArgs, Method stepMethod) {
+		ParameterDescriptor[] parameterDescriptors = ParameterUtils
+				.getParameterDescriptors(stepMethod);
 		if (parameterDescriptors.length == 0) {
 			return new Object[0];
 		}
 
-		LinkedHashMap<String, Object> parameterMap = ParameterUtils.getParameterMap(tryMethod, tryArgs);
+		LinkedHashMap<String, Object> parameterMap = ParameterUtils
+				.getParameterMap(tryMethod, tryArgs);
 		Object[] args = new Object[parameterDescriptors.length];
 		for (int i = 0; i < parameterDescriptors.length; i++) {
 			ParameterDescriptor descriptor = parameterDescriptors[i];
-			TryResult tryResultAnnotation = descriptor.getAnnotatedElement().getAnnotation(TryResult.class);
+			TryResult tryResultAnnotation = descriptor.getAnnotatedElement()
+					.getAnnotation(TryResult.class);
 			if (tryResultAnnotation != null) {
 				args[i] = tryResult;
 				continue;
 			}
 
 			if (!parameterMap.containsKey(descriptor.getName())) {
-				throw new TccException(
-						"Undefined parameter [" + descriptor.getName() + "] in method:" + stepMethod.toString());
+				throw new TccException("Undefined parameter ["
+						+ descriptor.getName() + "] in method:"
+						+ stepMethod.toString());
 			}
 
 			args[i] = parameterMap.get(descriptor.getName());

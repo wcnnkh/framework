@@ -16,6 +16,7 @@ import scw.io.SerializerException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.annotation.PrimaryKey;
+import scw.sql.orm.annotation.Table;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DBCompensatePolicy extends StorageCompensatePolicy{
@@ -97,6 +98,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 		return db.update(new SimpleSql("delete from " + TABLE_NAME + " where group=? and id=?", group, id)) > 0;
 	}
 	
+	@Table(name=TABLE_NAME)
 	@SuppressWarnings("unused")
 	private static class CompensatTable{
 		@PrimaryKey
