@@ -1,8 +1,6 @@
 package scw.util;
 
-import java.io.File;
 import java.lang.reflect.Array;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,7 +15,6 @@ import java.util.UUID;
 
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
 import scw.lang.NotSupportedException;
 import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
@@ -195,65 +192,5 @@ public final class XUtils {
 		}
 
 		return defaultName;
-	}
-
-	/**
-	 * 获取运行时所在的目录
-	 * 
-	 * @param classLoader
-	 * @return
-	 */
-	public static String getRuntimeDirectory(ClassLoader classLoader) {
-		URL url = classLoader.getResource("");
-		return url == null ? SystemEnvironment.getInstance().getUserDir() : url.getPath();
-	}
-
-	/**
-	 * 获取webapp目录
-	 * 
-	 * @param classLoader
-	 * @return
-	 */
-	public static String getWebAppDirectory(ClassLoader classLoader) {
-		// /xxxxx/{project}/target/classes
-		String path = getRuntimeDirectory(classLoader);
-		File file = new File(path);
-		if (file.isFile()) {
-			return null;
-		}
-
-		if (!file.getName().equals("classes")) {
-			return path;
-		}
-
-		for (int i = 0; i < 2; i++) {
-			file = file.getParentFile();
-			if (file == null) {
-				return path;
-			}
-
-			if (file.getName().equals("WEB-INF") && file.getParent() != null) {
-				return file.getParent();
-			}
-		}
-
-		if (file != null) {
-			File webapp = new File(file, "/src/main/webapp");
-			if (webapp.exists()) {
-				return webapp.getPath();
-			}
-			/*
-			 * //可能会出现一个bin目录，忽略此目录 final File binDirectory = new File(file, "bin"); //
-			 * 路径/xxxx/src/main/webapp/WEB-INF 4层深度 File wi = FileUtils.search(file, new
-			 * Accept<File>() {
-			 * 
-			 * public boolean accept(File e) { if(e.isDirectory() &&
-			 * "WEB-INF".equals(e.getName())){ //可能会出现一个bin目录，忽略此目录 if(binDirectory.exists()
-			 * && binDirectory.isDirectory() &&
-			 * e.getPath().startsWith(binDirectory.getPath())){ return false; } return true;
-			 * } return false; } }, 4); if (wi != null) { return wi.getParent(); }
-			 */
-		}
-		return path;
 	}
 }
