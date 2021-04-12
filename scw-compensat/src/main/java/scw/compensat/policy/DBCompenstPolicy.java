@@ -9,21 +9,19 @@ import scw.codec.support.Base64;
 import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.XTime;
 import scw.db.DB;
 import scw.db.locks.TableLockFactory;
-import scw.io.JavaSerializer;
-import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.orm.annotation.PrimaryKey;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class DBCompenstPolicy extends AbstractCompenstPolicy {
+public class DBCompenstPolicy extends StorageCompenstPolicy{
 	private static final String TABLE_NAME = "_compensat_table";
 	private final DB db;
 	private final TableLockFactory tableLockFactory;
-	private NoTypeSpecifiedSerializer serializer = JavaSerializer.INSTANCE;
 	
 	public DBCompenstPolicy(DB db) {
 		this.db = db;
@@ -31,22 +29,16 @@ public class DBCompenstPolicy extends AbstractCompenstPolicy {
 		db.createTable(CompensatTable.class, false);
 	}
 	
-	public NoTypeSpecifiedSerializer getSerializer() {
-		return serializer;
-	}
-
-	public void setSerializer(NoTypeSpecifiedSerializer serializer) {
-		this.serializer = serializer;
-	}
-
 	@Override
 	public Lock getLock(String group, String id) {
+		checkParameter(group, id);
+		
 		return tableLockFactory.getLock(group + "-" + id);
 	}
-
+	
 	@Override
 	public Enumeration<String> getUnfinishedGroups() {
-		Sql sql = new SimpleSql("select `group` from " + TABLE_NAME + " group by `group` order by cts desc");
+		Sql sql = new SimpleSql("select `group` from " + TABLE_NAME + " where cts<? group by `group` order by cts desc", (System.currentTimeMillis() - XTime.ONE_MINUTE * getCompenstBeforeMinute()));
 		List<String> groups = db.select(String.class, sql);
 		if(CollectionUtils.isEmpty(groups)){
 			return Collections.emptyEnumeration();
@@ -67,7 +59,7 @@ public class DBCompenstPolicy extends AbstractCompenstPolicy {
 			return false;
 		}
 		
-		byte[] data = serializer.serialize(runnable);
+		byte[] data = getSerializer().serialize(runnable);
 		String content = Base64.DEFAULT.encode(data);
 		CompensatTable compensatTable = new CompensatTable();
 		compensatTable.setGroup(group);
@@ -86,7 +78,7 @@ public class DBCompenstPolicy extends AbstractCompenstPolicy {
 		
 		byte[] data = Base64.DEFAULT.decode(table.getContent());
 		try {
-			return serializer.deserialize(data);
+			return getSerializer().deserialize(data);
 		} catch (ClassNotFoundException e) {
 			logger.error(e, "Get not found class fail group {} id {}", group, id);
 		} catch (SerializerException e) {

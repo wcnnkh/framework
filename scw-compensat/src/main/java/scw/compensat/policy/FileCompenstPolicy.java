@@ -12,54 +12,50 @@ import java.util.LinkedHashSet;
 import java.util.concurrent.locks.Lock;
 
 import scw.codec.support.URLCodec;
+import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XTime;
 import scw.io.FileUtils;
-import scw.io.JavaSerializer;
-import scw.io.NoTypeSpecifiedSerializer;
 import scw.io.SerializerException;
 import scw.locks.FileLockFactory;
 import scw.locks.LockFactory;
 import scw.util.KeyValuePair;
 import scw.util.comparator.CompareUtils;
 
-public class FileCompenstPolicy extends AbstractCompenstPolicy {
+public class FileCompenstPolicy extends StorageCompenstPolicy {
 	private static final String SUFFIX = ".compenstor";
-	private static final String CONNECTOR = "-";
 	private final File directory;
 	private final LockFactory lockFactory;
-	private NoTypeSpecifiedSerializer serializer = JavaSerializer.INSTANCE;
 
 	public FileCompenstPolicy(File directory) {
+		Assert.requiredArgument(directory != null, "directory");
 		this.directory = directory;
 		this.lockFactory = new FileLockFactory(directory);
-	}
-
-	public NoTypeSpecifiedSerializer getSerializer() {
-		return serializer;
-	}
-
-	public void setSerializer(NoTypeSpecifiedSerializer serializer) {
-		this.serializer = serializer;
 	}
 
 	public File getDirectory() {
 		return directory;
 	}
-
+	
 	@Override
 	public Lock getLock(String group, String id) {
+		checkParameter(group, id);
 		return lockFactory.getLock(group + "-" + id);
 	}
 
 	@Override
 	public Enumeration<String> getUnfinishedGroups() {
+		long t = System.currentTimeMillis();
+		/**
+		 * 获取5分钟前的补偿文件列表
+		 */
 		File[] files = directory.listFiles(new FileFilter() {
 
 			@Override
 			public boolean accept(File pathname) {
-				return pathname.isFile() && pathname.getName().endsWith(SUFFIX);
+				return pathname.isFile() && pathname.getName().endsWith(SUFFIX) && pathname.lastModified() < (t - XTime.ONE_MINUTE * getCompenstBeforeMinute());
 			}
 		});
 
@@ -122,6 +118,8 @@ public class FileCompenstPolicy extends AbstractCompenstPolicy {
 
 	@Override
 	public boolean add(String group, String id, Runnable runnable) {
+		checkParameter(group, id);
+		
 		File file = getFile(group, id);
 		if (file.exists()) {
 			return false;
@@ -137,7 +135,7 @@ public class FileCompenstPolicy extends AbstractCompenstPolicy {
 		}
 
 		try {
-			byte[] data = serializer.serialize(runnable);
+			byte[] data = getSerializer().serialize(runnable);
 			FileUtils.writeByteArrayToFile(file, data);
 		} catch (SerializerException e) {
 			logger.error(e, "serializer fail");
@@ -154,11 +152,13 @@ public class FileCompenstPolicy extends AbstractCompenstPolicy {
 
 	@Override
 	protected Runnable getRunnable(String group, String id) {
+		checkParameter(group, id);
+		
 		File file = getFile(group, id);
 		if (file.exists()) {
 			try {
 				byte[] data = FileUtils.readFileToByteArray(file);
-				return serializer.deserialize(data);
+				return getSerializer().deserialize(data);
 			} catch (IOException | ClassNotFoundException e) {
 				return null;
 			}
@@ -168,12 +168,16 @@ public class FileCompenstPolicy extends AbstractCompenstPolicy {
 
 	@Override
 	public boolean exists(String group, String id) {
+		checkParameter(group, id);
+		
 		File file = getFile(group, id);
 		return file.exists();
 	}
 
 	@Override
 	public boolean remove(String group, String id) {
+		checkParameter(group, id);
+		
 		File file = getFile(group, id);
 		return file.delete();
 	}

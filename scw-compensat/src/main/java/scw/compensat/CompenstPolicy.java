@@ -7,7 +7,7 @@ import scw.lang.Nullable;
 
 public interface CompenstPolicy {
 	Lock getLock(String group, String id);
-
+	
 	Enumeration<String> getUnfinishedGroups();
 
 	@Nullable

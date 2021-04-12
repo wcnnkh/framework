@@ -4,16 +4,24 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryAware;
 import scw.compensat.CompenstPolicy;
+import scw.core.Assert;
+import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public abstract class AbstractCompenstPolicy implements CompenstPolicy,
 		BeanFactoryAware {
+	static final String CONNECTOR = "-";
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private BeanFactory beanFactory;
 
 	public void setBeanFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
+	}
+	
+	protected static void checkParameter(String group, String id) {
+		Assert.requiredArgument(StringUtils.isNotEmpty(group) && group.indexOf(CONNECTOR) == -1, "group");
+		Assert.requiredArgument(StringUtils.isNotEmpty(id) && id.indexOf(CONNECTOR) == -1, "id");
 	}
 
 	public abstract boolean exists(String group, String id);
