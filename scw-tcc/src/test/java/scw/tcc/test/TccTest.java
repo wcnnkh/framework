@@ -47,9 +47,7 @@ public class TccTest {
 			TransactionUtils.getManager().rollback(transaction);
 			e.printStackTrace();
 		}
-		//assertTrue("执行完后目录应该为空", ArrayUtils.isEmpty(file.list()));
-		
-		Thread.sleep(Long.MAX_VALUE);
+		assertTrue("执行完后目录应该为空", ArrayUtils.isEmpty(file.list()));
 	}
 
 	@Test
