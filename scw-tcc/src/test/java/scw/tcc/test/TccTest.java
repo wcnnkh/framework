@@ -1,5 +1,7 @@
 package scw.tcc.test;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.File;
 
 import org.junit.Test;
@@ -8,6 +10,7 @@ import scw.beans.annotation.Service;
 import scw.beans.support.DefaultBeanFactory;
 import scw.consistency.CompensatePolicy;
 import scw.consistency.policy.FileCompensatePolicy;
+import scw.core.utils.ArrayUtils;
 import scw.io.FileUtils;
 import scw.tcc.annotation.Tcc;
 import scw.tcc.annotation.TccStage;
@@ -19,8 +22,8 @@ import scw.util.XUtils;
 
 public class TccTest {
 	private static final DefaultBeanFactory beanFactory = new DefaultBeanFactory();
+	private static final File file = new File(FileUtils.getTempDirectory(), "install_test");
 	static {
-		File file = new File(FileUtils.getTempDirectory(), "install_test");
 		file.mkdir();
 		FileCompensatePolicy fileCompensatePolicy = new FileCompensatePolicy(file);
 		fileCompensatePolicy.setBeanFactory(beanFactory);
@@ -44,6 +47,9 @@ public class TccTest {
 			TransactionUtils.getManager().rollback(transaction);
 			e.printStackTrace();
 		}
+		//assertTrue("执行完后目录应该为空", ArrayUtils.isEmpty(file.list()));
+		
+		Thread.sleep(Long.MAX_VALUE);
 	}
 
 	@Test
@@ -57,6 +63,7 @@ public class TccTest {
 			// 直接回滚，测试失败情况
 			TransactionUtils.getManager().rollback(transaction);
 		}
+		assertTrue("执行完后目录应该为空", ArrayUtils.isEmpty(file.list()));
 	}
 
 	public static interface TestService {
