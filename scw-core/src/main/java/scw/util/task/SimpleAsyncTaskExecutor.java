@@ -13,9 +13,9 @@ import scw.util.concurrent.ListenableFuture;
 import scw.util.concurrent.ListenableFutureTask;
 
 
-@SuppressWarnings("serial")
 public class SimpleAsyncTaskExecutor extends CustomizableThreadCreator
 		implements AsyncListenableTaskExecutor, Serializable {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Permit any number of concurrent invocations: that is, don't throttle concurrency.
@@ -200,6 +200,7 @@ public class SimpleAsyncTaskExecutor extends CustomizableThreadCreator
 	 * visible to the surrounding class.
 	 */
 	private static class ConcurrencyThrottleAdapter extends ConcurrencyThrottleSupport {
+		private static final long serialVersionUID = 1L;
 
 		@Override
 		protected void beforeAccess() {

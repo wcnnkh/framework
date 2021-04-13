@@ -25,39 +25,34 @@ import scw.net.uri.UriUtils;
 @SuppressWarnings("unchecked")
 public class DirectoryStorage extends TimerTask implements Storage {
 	private static Logger logger = LoggerFactory.getLogger(DirectoryStorage.class);
-	//守望线程，自动退出
+	// 守望线程，自动退出
 	private static final Timer TIMER = new Timer(DirectoryStorage.class.getSimpleName(), true);
 	private final int exp;// 0表示不过期
 	private final NoTypeSpecifiedSerializer serializer;
 	private final File directory;
 
 	/**
-	 * @param exp
-	 *            单位:秒
+	 * @param exp 单位:秒
 	 */
 	protected DirectoryStorage(int exp) {
 		this(exp, SerializerUtils.DEFAULT_SERIALIZER,
-				SystemEnvironment.getInstance().getTempDirectoryPath()
-						+ SystemEnvironment.getInstance().getPrivateId() + File.separator + "file_cache_"
-						+ exp);
+				SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + "file_cache_" + exp);
 	}
 
 	/**
-	 * @param exp
-	 *            单位:秒
+	 * @param exp            单位:秒
 	 * @param cacheDirectory
 	 */
 	public DirectoryStorage(int exp, String cacheDirectory) {
 		this(exp, SerializerUtils.DEFAULT_SERIALIZER, cacheDirectory);
 	}
-	
+
 	public DirectoryStorage(int exp, NoTypeSpecifiedSerializer serializer, String directory) {
 		this(exp, SerializerUtils.DEFAULT_SERIALIZER, new File(StringUtils.cleanPath(directory)));
 	}
 
 	/**
-	 * @param exp
-	 *            单位:秒
+	 * @param exp         单位:秒
 	 * @param serializer
 	 * @param charsetName
 	 * @param directory
@@ -287,7 +282,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	public int getMaxExpirationDate() {
 		return exp;
 	}
-	
+
 	public static DirectoryStorage create(String cacheDirectorySuffix, int exp) {
 		return new DirectoryStorage(exp,
 				SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);

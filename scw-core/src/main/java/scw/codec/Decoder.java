@@ -19,19 +19,36 @@ public interface Decoder<E, D> {
 	 */
 	D decode(E source) throws DecodeException;
 	
+	static class NestedDecoder<D, T, E> implements Decoder<D, E>{
+		private final Decoder<D, T> parent;
+		private final Decoder<T, E> decoder;
+		
+		public NestedDecoder(Decoder<D, T> parent, Decoder<T, E> decoder) {
+			this.parent = parent;
+			this.decoder = decoder;
+		}
+		
+		public Decoder<D, T> getParent() {
+			return parent;
+		}
+
+		public Decoder<T, E> getDecoder() {
+			return decoder;
+		}
+
+		@Override
+		public E decode(D source) throws DecodeException {
+			return decoder.decode(parent.decode(source));
+		}
+	}
+	
 	/**
 	 * decode <- decode <- decode ... <br/>
 	 * @param decoder
 	 * @return
 	 */
 	default <F> Decoder<F, D> fromDecoder(Decoder<F, E> decoder){
-		return new Decoder<F, D>() {
-
-			@Override
-			public D decode(F source) throws DecodeException {
-				return Decoder.this.decode(decoder.decode(source));
-			}
-		};
+		return new NestedDecoder<F, E, D>(decoder, this);
 	}
 	
 	/**
@@ -40,12 +57,7 @@ public interface Decoder<E, D> {
 	 * @return
 	 */
 	default <T> Decoder<E, T> toDecoder(Decoder<D, T> decoder){
-		return new Decoder<E, T>(){
-			@Override
-			public T decode(E source) throws DecodeException {
-				return decoder.decode(Decoder.this.decode(source));
-			}
-		};
+		return new NestedDecoder<E, D, T>(this, decoder);
 	}
 	
 	default Converter<E, D> toDecodeConverter(){

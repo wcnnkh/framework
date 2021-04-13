@@ -38,11 +38,11 @@ import scw.logger.LoggerUtils;
  * @see #setConcurrencyLimit
  * @see #beforeAccess()
  * @see #afterAccess()
- * @see org.springframework.aop.interceptor.ConcurrencyThrottleInterceptor
+ * @see scw.aop.interceptor.ConcurrencyThrottleInterceptor
  * @see java.io.Serializable
  */
-@SuppressWarnings("serial")
 public abstract class ConcurrencyThrottleSupport implements Serializable {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Permit any number of concurrent invocations: that is, don't throttle concurrency.

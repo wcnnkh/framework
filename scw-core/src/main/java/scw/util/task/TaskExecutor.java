@@ -31,7 +31,6 @@ import java.util.concurrent.Executor;
  * This interface remains separate from the standard Executor interface
  * mainly for backwards compatibility with JDK 1.4 in Spring 2.x.
  *
- * @author Juergen Hoeller
  * @see java.util.concurrent.Executor
  */
 public interface TaskExecutor extends Executor {

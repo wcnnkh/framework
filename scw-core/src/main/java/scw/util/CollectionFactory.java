@@ -30,12 +30,16 @@ import scw.lang.Nullable;
 
 public final class CollectionFactory {
 	private static final Field KEY_TYPE_FIELD = ReflectionUtils.findField(EnumMap.class, "keyType");
+	private static final Field ELEMENT_TYPE_FIELD = ReflectionUtils.findField(EnumSet.class, "elementType");
 
 	private static final Set<Class<?>> approximableCollectionTypes = new HashSet<Class<?>>();
 
 	private static final Set<Class<?>> approximableMapTypes = new HashSet<Class<?>>();
 
 	static {
+		ReflectionUtils.makeAccessible(KEY_TYPE_FIELD);
+		ReflectionUtils.makeAccessible(ELEMENT_TYPE_FIELD);
+
 		// Standard collection interfaces
 		approximableCollectionTypes.add(Collection.class);
 		approximableCollectionTypes.add(List.class);
@@ -402,6 +406,15 @@ public final class CollectionFactory {
 		return concurrent ? new CopyOnWriteArraySet<E>() : new LinkedHashSet<E>(initialCapacity);
 	}
 
+	/**
+	 * 克隆一个map
+	 * 
+	 * @param <M>
+	 * @param <K>
+	 * @param <V>
+	 * @param map
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public static <M extends Map<K, V>, K, V> M clone(M map) {
 		Assert.requiredArgument(map != null, "map");
@@ -416,6 +429,30 @@ public final class CollectionFactory {
 			M cloneMap = (M) createMap(map.getClass(), keyType, map.size());
 			cloneMap.putAll(map);
 			return cloneMap;
+		}
+	}
+
+	/**
+	 * 克隆一个collection
+	 * @param <C>
+	 * @param <E>
+	 * @param collection
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static <C extends Collection<E>, E> C clone(C collection) {
+		Assert.requiredArgument(collection != null, "collection");
+		if (collection instanceof Cloneable) {
+			return ReflectionUtils.clone((Cloneable) collection);
+		} else {
+			Class<?> elementType = null;
+			if (collection instanceof EnumSet) {
+				elementType = (Class<?>) ReflectionUtils.getField(ELEMENT_TYPE_FIELD, collection);
+			}
+
+			C cloneCollection = (C) createCollection(collection.getClass(), elementType, collection.size());
+			cloneCollection.addAll(collection);
+			return cloneCollection;
 		}
 	}
 }

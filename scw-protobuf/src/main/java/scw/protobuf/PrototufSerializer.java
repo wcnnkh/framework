@@ -14,7 +14,7 @@ import scw.io.Serializer;
 import scw.io.SerializerUtils;
 import scw.lang.NamedThreadLocal;
 
-public class PrototufSerializer extends Serializer {
+public class PrototufSerializer implements Serializer {
 	private static final ThreadLocal<LinkedBuffer> bufferLocal = new NamedThreadLocal<LinkedBuffer>(PrototufSerializer.class.getName()) {
 		protected LinkedBuffer initialValue() {
 			return LinkedBuffer.allocate(1024);

@@ -29,8 +29,6 @@ import scw.lang.RequiredJavaVersion;
  * Adapts a {@link CompletableFuture} or {@link CompletionStage} into a Spring
  * {@link ListenableFuture}.
  *
- * @author Sebastien Deleuze
- * @author Juergen Hoeller
  */
 
 @RequiredJavaVersion(8)

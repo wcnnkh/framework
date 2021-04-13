@@ -28,11 +28,11 @@ public class ExecutorBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 	}
 	
 	private static int getCorePoolSize(Environment environment){
-		return environment.getValue("executor.pool.core.size", int.class, 16);
+		return environment.getValue("executor.pool.core.size", int.class, 0);
 	}
 	
 	private static int getMaxmumPoolSize(Environment environment){
-		return environment.getValue("executor.pool.max.size", int.class, 512);
+		return environment.getValue("executor.pool.max.size", int.class, Runtime.getRuntime().availableProcessors());
 	}
 	
 	private static long getKeepAliveTime(Environment environment){

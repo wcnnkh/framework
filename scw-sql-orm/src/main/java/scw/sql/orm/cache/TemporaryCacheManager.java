@@ -1,5 +1,6 @@
 package scw.sql.orm.cache;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,9 +15,14 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryStorage
 	private static final String KEY = "key:";
 	private static final CacheConfig DEFAULT_CONFIG = new CacheConfig(
 			(int) (XTime.ONE_DAY * 2 / 1000), false, true);
+	private static final CacheConfig DISABLE = new CacheConfig(0, false, false);
 	private static volatile Map<Class<?>, CacheConfig> configMap = new HashMap<Class<?>, CacheConfig>();
 
 	private static final CacheConfig getCacheConfig(Class<?> tableClass) {
+		if(!(tableClass instanceof Serializable)){
+			return DISABLE;
+		}
+		
 		CacheConfig config = configMap.get(tableClass);
 		if (config == null) {
 			synchronized (configMap) {

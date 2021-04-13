@@ -11,7 +11,7 @@ import com.esotericsoftware.kryo.io.Output;
 import scw.io.Serializer;
 import scw.lang.NamedThreadLocal;
 
-public class KryoSerializer extends Serializer {
+public class KryoSerializer implements Serializer {
 	private static final ThreadLocal<Kryo> kryoLocal = new NamedThreadLocal<Kryo>(KryoSerializer.class.getSimpleName() + "-kryo") {
 		protected Kryo initialValue() {
 			Kryo kryo = new Kryo();

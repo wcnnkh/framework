@@ -30,9 +30,6 @@ import scw.core.Assert;
  * <p>
  * Inspired by {@code com.google.common.util.concurrent.SettableFuture}.
  *
- * @author Mattias Severson
- * @author Rossen Stoyanchev
- * @author Juergen Hoeller
  */
 public class SettableListenableFuture<T> implements ListenableFuture<T> {
 

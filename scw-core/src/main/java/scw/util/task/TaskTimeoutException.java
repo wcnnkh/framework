@@ -20,12 +20,11 @@ package scw.util.task;
  * Exception thrown when a {@link AsyncTaskExecutor} rejects to accept a given
  * task for execution because of the specified timeout.
  *
- * @author Juergen Hoeller
  * @see AsyncTaskExecutor#execute(Runnable, long)
  * @see TaskRejectedException
  */
-@SuppressWarnings("serial")
 public class TaskTimeoutException extends TaskRejectedException {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create a new {@code TaskTimeoutException} with the specified detail
