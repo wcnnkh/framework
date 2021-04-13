@@ -1,16 +1,17 @@
 package scw.log4j2;
 
+import java.util.logging.Level;
+
 import org.apache.logging.log4j.Logger;
 
 import scw.logger.AbstractLogger;
-import scw.logger.Level;
 import scw.util.PlaceholderFormatAppend;
 
 public class Log4j2Logger extends AbstractLogger {
 	private final Logger logger;
 
-	public Log4j2Logger(Logger logger, Level level, String placeholder) {
-		super(level, placeholder);
+	public Log4j2Logger(Logger logger, String name, String placeholder) {
+		super(name, placeholder);
 		this.logger = logger;
 	}
 
@@ -71,7 +72,7 @@ public class Log4j2Logger extends AbstractLogger {
 	private static org.apache.logging.log4j.Level parse(Level level) {
 		org.apache.logging.log4j.Level lv = org.apache.logging.log4j.Level.getLevel(level.getName());
 		if (lv == null) {
-			lv = org.apache.logging.log4j.Level.forName(level.getName(), level.getValue());
+			lv = org.apache.logging.log4j.Level.forName(level.getName(), level.intValue());
 		}
 		return lv;
 	}

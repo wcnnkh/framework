@@ -22,7 +22,7 @@ import scw.io.Resource;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
-import scw.logger.Levels;
+import scw.logger.Level;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionInterceptor;
 import scw.mvc.action.ActionInterceptorChain;
@@ -124,7 +124,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
 		httpChannelDestroy.setExecuteWarnTime(executeWarnTime.get());
-		Levels level = MVCUtils.getActionLoggerLevel(action);
+		Level level = MVCUtils.getActionLoggerLevel(action);
 		if (level != null) {
 			httpChannelDestroy.setEnableLevel(level.getValue());
 		}

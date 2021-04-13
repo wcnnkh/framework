@@ -1,6 +1,7 @@
 package scw.logger;
 
 import java.util.SortedMap;
+import java.util.logging.Level;
 
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
@@ -11,11 +12,18 @@ public abstract class AbstractLogger implements Logger {
 	private static final Object[] EMPTY_ARGS = new Object[0];
 	protected final String placeholder;
 	private volatile Level level;
+	private final String name;
 	private EventRegistration eventRegistration;
 
-	public AbstractLogger(Level level, @Nullable String placeholder) {
-		this.level = level;
+	public AbstractLogger(String name, @Nullable String placeholder) {
+		this.level = LoggerLevelManager.getInstance().getLevel(name);
+		this.name = name;
 		this.placeholder = placeholder;
+	}
+
+	@Override
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -37,25 +45,32 @@ public abstract class AbstractLogger implements Logger {
 			// 已经注册过吧
 			return false;
 		}
-		
-		eventRegistration = LoggerLevelManager.getInstance().getRegistry().registerListener(new EventListener<ChangeEvent<SortedMap<String,Level>>>() {
 
-			public void onEvent(ChangeEvent<SortedMap<String, Level>> event) {
-				Level level = LoggerLevelManager.getInstance().getLevel(getName());
-				if (!level.equals(getLevel())) {
-					setLevel(level);
-				}
-			}
-		});
+		eventRegistration = LoggerLevelManager
+				.getInstance()
+				.getRegistry()
+				.registerListener(
+						new EventListener<ChangeEvent<SortedMap<String, Level>>>() {
+
+							public void onEvent(
+									ChangeEvent<SortedMap<String, Level>> event) {
+								Level level = LoggerLevelManager.getInstance()
+										.getLevel(getName());
+								if (!level.equals(getLevel())) {
+									setLevel(level);
+								}
+							}
+						});
 		return true;
 	}
 
+	@Nullable
 	public Level getLevel() {
 		return level;
 	}
 
 	public void setLevel(Level level) {
-		//这里使用off是为了任意日志级别都会显示该日志
+		// 这里使用off是为了任意日志级别都会显示该日志
 		log(Level.OFF, "Level [{}] change to [{}]", getLevel(), level);
 		this.level = level;
 	}
@@ -73,7 +88,7 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public void info(Throwable e, Object format, Object... args) {
-		log(Level.INFO, e, format, args);
+		log(CustomLevel.INFO, e, format, args);
 	}
 
 	public boolean isInfoEnabled() {
@@ -89,15 +104,15 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public void trace(Throwable e, Object format, Object... args) {
-		log(Level.TRACE, e, format, args);
+		log(CustomLevel.TRACE, e, format, args);
 	}
 
 	public boolean isTraceEnabled() {
-		return isLogEnable(Level.TRACE);
+		return isLogEnable(CustomLevel.TRACE);
 	}
 
 	public boolean isWarnEnabled() {
-		return isLogEnable(Level.WARN);
+		return isLogEnable(CustomLevel.WARN);
 	}
 
 	public void warn(Object format) {
@@ -109,11 +124,11 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public void warn(Throwable e, Object format, Object... args) {
-		log(Level.WARN, e, format, args);
+		log(CustomLevel.WARN, e, format, args);
 	}
 
 	public boolean isDebugEnabled() {
-		return isLogEnable(Level.DEBUG);
+		return isLogEnable(CustomLevel.DEBUG);
 	}
 
 	public void debug(Object format) {
@@ -125,11 +140,11 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public void debug(Throwable e, Object format, Object... args) {
-		log(Level.DEBUG, e, format, args);
+		log(CustomLevel.DEBUG, e, format, args);
 	}
 
 	public boolean isErrorEnabled() {
-		return isLogEnable(Level.ERROR);
+		return isLogEnable(CustomLevel.ERROR);
 	}
 
 	public void error(Object format) {
@@ -141,7 +156,7 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public void error(Throwable e, Object format, Object... args) {
-		log(Level.ERROR, e, format, args);
+		log(CustomLevel.ERROR, e, format, args);
 	}
 
 	public void log(Level level, Object format) {
@@ -153,6 +168,6 @@ public abstract class AbstractLogger implements Logger {
 	}
 
 	public boolean isLogEnable(Level level) {
-		return level.isGreaterOrEqual(getLevel());
+		return CustomLevel.isGreaterOrEqual(level, getLevel());
 	}
 }

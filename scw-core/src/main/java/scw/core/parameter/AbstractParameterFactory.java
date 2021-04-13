@@ -14,7 +14,7 @@ public abstract class AbstractParameterFactory implements ParameterFactory {
 		for (ParameterDescriptor parameterDescriptor : parameterDescriptors) {
 			try {
 				boolean auto = isAccept(parameterDescriptors, parameterDescriptor, index);
-				logger.log(auto ? Level.TRACE : Level.DEBUG,
+				logger.log(auto ? Level.TRACE.getValue() : Level.DEBUG.getValue(),
 						"{} parameter index {} matching: {}",
 						parameterDescriptors.getSource(), index,
 						auto ? "success" : "fail");

@@ -1,9 +1,11 @@
 package scw.slf4j;
 
+import java.util.logging.Level;
+
 import org.slf4j.Logger;
 
 import scw.logger.AbstractLogger;
-import scw.logger.Level;
+import scw.logger.CustomLevel;
 import scw.util.PlaceholderFormatAppend;
 
 /**
@@ -16,8 +18,8 @@ public class Slf4jLogger extends AbstractLogger{
 	
 	private final Logger logger;
 	
-	public Slf4jLogger(Logger logger, Level level, String placeholder) {
-		super(level, placeholder);
+	public Slf4jLogger(Logger logger, String name, String placeholder) {
+		super(name, placeholder);
 		this.logger = logger;
 	}
 
@@ -35,25 +37,25 @@ public class Slf4jLogger extends AbstractLogger{
 			}else {
 				logger.info(message.toString(), e);
 			}
-		}else if(level.getName().equalsIgnoreCase(Level.DEBUG.getName())){
+		}else if(level.getName().equalsIgnoreCase(CustomLevel.DEBUG.getName())){
 			if(e == null) {
 				logger.debug(FORMAT, message);
 			}else {
 				logger.debug(message.toString(), e);
 			}
-		}else if(level.getName().equalsIgnoreCase(Level.TRACE.getName())) {
+		}else if(level.getName().equalsIgnoreCase(CustomLevel.TRACE.getName())) {
 			if(e == null) {
 				logger.trace(FORMAT, message);
 			}else {
 				logger.trace(message.toString(), e);
 			}
-		}else if(level.getName().equalsIgnoreCase(Level.WARN.getName())) {
+		}else if(level.getName().equalsIgnoreCase(CustomLevel.WARN.getName())) {
 			if(e == null) {
 				logger.warn(FORMAT, message);
 			}else {
 				logger.warn(message.toString(), e);
 			}
-		}else if(level.getName().equalsIgnoreCase(Level.ERROR.getName())) {
+		}else if(level.getName().equalsIgnoreCase(CustomLevel.ERROR.getName())) {
 			if(e == null) {
 				logger.error(FORMAT, message);
 			}else {

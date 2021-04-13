@@ -3,13 +3,13 @@ package scw.log4j;
 import java.lang.reflect.Method;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.w3c.dom.Element;
 
 import scw.core.reflect.ReflectionUtils;
 import scw.env.SystemEnvironment;
-import scw.logger.Level;
 import scw.logger.LoggerLevelManager;
 import scw.logger.LoggerPropertyFactory;
 import scw.util.FormatUtils;

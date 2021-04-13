@@ -1,5 +1,7 @@
 package scw.logger;
 
+import java.util.logging.Level;
+
 public abstract class AbstractLoggerWrapper implements Logger {
 	protected abstract Logger getLogger();
 

@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.logging.Level;
 
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -36,7 +37,7 @@ public class LoggerLevelManager extends
 		String defaultLevel = SystemEnvironment.getInstance().getString(
 				Level.class.getName());
 		Level defLevel = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level
-				.getLevel(defaultLevel.toUpperCase());
+				.parse(defaultLevel.toUpperCase());
 		
 		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);	
 		try {
@@ -113,8 +114,8 @@ public class LoggerLevelManager extends
 				continue;
 			}
 
-			Level level = Level.getLevel(value.toString(),
-					defaultLevel.getValue());
+			Level level = CustomLevel.parse(value.toString(),
+					defaultLevel.intValue());
 			if (level == null) {
 				continue;
 			}
@@ -131,7 +132,7 @@ public class LoggerLevelManager extends
 		if(ignore){
 			Level cacheLevel = levelMap.get(name);
 			//忽略低级的配置。 比如原来是DEBUG(cacheLevel),现在是INFO(level),那么不插入此配置
-			if(cacheLevel != null && level.isGreaterOrEqual(cacheLevel)){
+			if(cacheLevel != null && CustomLevel.isGreaterOrEqual(level, cacheLevel)){
 				return ;
 			}
 		}

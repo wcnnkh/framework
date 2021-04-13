@@ -1,5 +1,7 @@
 package scw.logger;
 
+import java.util.logging.Level;
+
 import scw.util.KeyValuePair;
 
 public final class LevelConfig extends KeyValuePair<String, Level> {

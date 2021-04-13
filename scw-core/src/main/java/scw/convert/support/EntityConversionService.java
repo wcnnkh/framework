@@ -3,6 +3,7 @@ package scw.convert.support;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
@@ -11,7 +12,6 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.instance.NoArgsInstanceFactory;
-import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerUtils;
 import scw.mapper.Field;
@@ -32,7 +32,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private boolean strict = true;//默认是严格模式
 	private ConversionService conversionService;
 	private NoArgsInstanceFactory instanceFactory;
-	private Level loggerLevel = Level.DEBUG;
+	private Level loggerLevel = scw.logger.Level.DEBUG.getValue();
 	
 	public NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory;

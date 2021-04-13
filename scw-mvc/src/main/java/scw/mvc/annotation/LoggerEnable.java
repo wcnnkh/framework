@@ -6,7 +6,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.logger.Levels;
+import scw.logger.Level;
 
 /**
  * 仅显示指定级别的日志
@@ -17,5 +17,5 @@ import scw.logger.Levels;
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 public @interface LoggerEnable {
-	Levels value() default Levels.ALL;
+	Level value() default Level.ALL;
 }

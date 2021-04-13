@@ -1,0 +1,38 @@
+package scw.logger;
+
+import java.util.logging.Level;
+
+public class CustomLevel extends Level {
+	private static final long serialVersionUID = 1L;
+	public static final CustomLevel TRACE = new CustomLevel("TRACE", java.util.logging.Level.FINE.intValue(), java.util.logging.Level.FINE.getResourceBundleName());
+	public static final CustomLevel DEBUG = new CustomLevel("DEBUG", java.util.logging.Level.CONFIG.intValue(), java.util.logging.Level.CONFIG.getResourceBundleName());
+	public static final CustomLevel WARN = new CustomLevel("WARN", java.util.logging.Level.WARNING.intValue(), java.util.logging.Level.WARNING.getResourceBundleName());
+	public static final CustomLevel ERROR = new CustomLevel("ERROR", java.util.logging.Level.SEVERE.intValue(), java.util.logging.Level.SEVERE.getResourceBundleName());
+	
+	public CustomLevel(String name, int value) {
+		super(name, value);
+	}
+
+	public CustomLevel(String name, int value, String resourceBundleName) {
+		super(name, value, resourceBundleName);
+	}
+
+	/**
+	 * 大于或等于 
+	 * 
+	 * @param origin
+	 * @param target
+	 * @return
+	 */
+	public static boolean isGreaterOrEqual(Level origin, Level target) {
+		return origin.intValue() >= target.intValue();
+	}
+	
+	public static Level parse(String name, int value){
+		Level level = parse(name.toUpperCase());
+		if(level == null){
+			level = new CustomLevel(name.toUpperCase(), value);
+		}
+		return level;
+	}
+}

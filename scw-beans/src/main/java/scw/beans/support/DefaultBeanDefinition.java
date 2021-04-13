@@ -92,7 +92,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			ConfigurationProperties configurationProperties, Object instance) {
 		EntityConversionService entityConversionService = BeanUtils.createEntityConversionService(beanFactory.getEnvironment());
 		if(configurationProperties.debug()){
-			entityConversionService.setLoggerLevel(Level.INFO);
+			entityConversionService.setLoggerLevel(Level.INFO.getValue());
 		}
 		String prefix = configurationProperties.prefix();
 		if (StringUtils.isEmpty(prefix)) {

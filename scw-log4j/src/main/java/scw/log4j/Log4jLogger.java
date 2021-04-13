@@ -1,16 +1,17 @@
 package scw.log4j;
 
+import java.util.logging.Level;
+
 import org.apache.log4j.Logger;
 
 import scw.logger.AbstractLogger;
-import scw.logger.Level;
 import scw.util.PlaceholderFormatAppend;
 
 public class Log4jLogger extends AbstractLogger {
 	private final Logger logger;
 
-	public Log4jLogger(Logger logger, Level level, String placeholder) {
-		super(level, placeholder);
+	public Log4jLogger(Logger logger, String name, String placeholder) {
+		super(name, placeholder);
 		this.logger = logger;
 		registerLevelListener();
 	}

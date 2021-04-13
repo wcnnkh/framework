@@ -1,12 +1,14 @@
 package scw.logger;
 
 import java.io.IOException;
+import java.util.logging.Level;
 
 import scw.util.FormatUtils;
 import scw.util.PlaceholderFormatAppend;
 import scw.util.StringAppend;
+import scw.util.Supplier;
 
-public final class Message implements StringAppend {
+public final class Message implements StringAppend, Supplier<String> {
 	private final long cts;
 	private final Level level;
 	private final StringAppend msg;
@@ -47,6 +49,11 @@ public final class Message implements StringAppend {
 
 	public void appendTo(Appendable appendable) throws IOException {
 		FormatUtils.loggerAppend(appendable, cts, level.getName(), name, msg);
+	}
+	
+	@Override
+	public String get() {
+		return toString();
 	}
 
 	@Override
