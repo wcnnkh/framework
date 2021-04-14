@@ -43,7 +43,7 @@ public class EnvironmentValueProcess extends AbstractValueProcesser {
 					try {
 						set(beanFactory.getEnvironment(), bean, field, name, beanFactory.getEnvironment().getValue(name));
 					} catch (Exception e) {
-						logger.error(e, field);
+						logger.error(e, field.toString());
 					}
 				}
 			});

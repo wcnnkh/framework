@@ -16,15 +16,15 @@ import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public class ProviderClassesLoader<S> implements ClassesLoader<S>,
-		Comparator<Class<S>> {
+public class ProviderClassesLoader implements ClassesLoader,
+		Comparator<Class<?>> {
 	private static Logger logger = LoggerFactory.getLogger(ProviderServiceLoader.class);
-	private final ClassesLoader<?> classesLoader;
-	private volatile Set<Class<S>> providers;
-	private final Class<S> serviceClass;
+	private final ClassesLoader classesLoader;
+	private volatile Set<Class<?>> providers;
+	private final Class<?> serviceClass;
 
-	public ProviderClassesLoader(ClassesLoader<?> classesLoader,
-			Class<S> serviceClass) {
+	public ProviderClassesLoader(ClassesLoader classesLoader,
+			Class<?> serviceClass) {
 		this.classesLoader = classesLoader;
 		this.serviceClass = serviceClass;
 	}
@@ -34,9 +34,8 @@ public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 		this.providers = getProivders();
 	}
 	
-	@SuppressWarnings("unchecked")
-	public Set<Class<S>> getProivders(){
-		Set<Class<S>> list = new LinkedHashSet<Class<S>>();
+	public Set<Class<?>> getProivders(){
+		Set<Class<?>> list = new LinkedHashSet<Class<?>>();
 		for (Class<?> clazz : classesLoader) {
 			if (clazz.getName().equals(serviceClass.getName())) {// 防止死循环
 				continue;
@@ -64,10 +63,10 @@ public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 				}
 			}
 
-			list.add((Class<S>) clazz);
+			list.add(clazz);
 		}
 
-		for (Class<S> clazz : list) {
+		for (Class<?> clazz : list) {
 			Provider provider = clazz.getAnnotation(Provider.class);
 			for (Class<?> e : provider.excludes()) {
 				if (e == clazz) {
@@ -81,21 +80,21 @@ public class ProviderClassesLoader<S> implements ClassesLoader<S>,
 			return Collections.emptySet();
 		}
 
-		List<Class<S>> classes = new ArrayList<Class<S>>(list);
+		List<Class<?>> classes = new ArrayList<Class<?>>(list);
 		Collections.sort(classes, this);
 		if(logger.isDebugEnabled()){
 			logger.debug("[{}] providers is {}", serviceClass, classes);
 		}
-		return new LinkedHashSet<Class<S>>(classes);
+		return new LinkedHashSet<Class<?>>(classes);
 	}
 
-	public int compare(Class<S> o1, Class<S> o2) {
+	public int compare(Class<?> o1, Class<?> o2) {
 		Provider c1 = o1.getAnnotation(Provider.class);
 		Provider c2 = o2.getAnnotation(Provider.class);
 		return OrderComparator.INSTANCE.compare(c1.order(), c2.order());
 	}
 
-	public Iterator<Class<S>> iterator() {
+	public Iterator<Class<?>> iterator() {
 		if(providers == null){
 			synchronized (this) {
 				if(providers == null){

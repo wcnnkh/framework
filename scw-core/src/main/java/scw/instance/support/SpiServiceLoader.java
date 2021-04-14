@@ -44,6 +44,10 @@ public final class SpiServiceLoader <S> implements ServiceLoader<S>, ClassLoader
 	private LazyIterator lookupIterator;
 	
 	private NoArgsInstanceFactory instanceFactory;
+	
+	public SpiServiceLoader(Class<S> svc) {
+		this(svc, (NoArgsInstanceFactory)null);
+	}
 
 	public SpiServiceLoader(Class<S> svc, ClassLoader cl) {
 		this(svc, (NoArgsInstanceFactory)null);

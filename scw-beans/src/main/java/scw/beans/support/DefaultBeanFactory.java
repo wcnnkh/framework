@@ -35,16 +35,14 @@ import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.util.ClassLoaderProvider;
 import scw.util.Creator;
 import scw.util.Result;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class DefaultBeanFactory extends LifecycleAuxiliary implements
-		ConfigurableBeanFactory {
-	private static Logger logger = LoggerUtils
-			.getLogger(DefaultBeanFactory.class);
+public class DefaultBeanFactory extends LifecycleAuxiliary implements ConfigurableBeanFactory {
+	private static Logger logger = LoggerFactory.getLogger(DefaultBeanFactory.class);
 	private final DefaultBasicEventDispatcher<BeanLifeCycleEvent> beanLifeCycleEventDispatcher = new DefaultBasicEventDispatcher<BeanLifeCycleEvent>(
 			true);
 	private final DefaultContextEnvironment environment = new DefaultContextEnvironment(true, true, this) {
@@ -54,11 +52,9 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	};
 
 	private final DefaultConfigurableAop aop = new DefaultConfigurableAop(environment);
-	
-	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(
-			this);
-	private final SingletonBeanRegistry singletonBeanRegistry = new DefaultSingletonBeanRegistry(
-			this);
+
+	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(this);
+	private final SingletonBeanRegistry singletonBeanRegistry = new DefaultSingletonBeanRegistry(this);
 	private ClassLoaderProvider classLoaderProvider;
 
 	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
@@ -73,10 +69,8 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 			}
 		});
 		registerSingleton(BeanFactory.class.getName(), this);
-		registerAlias(BeanFactory.class.getName(),
-				InstanceFactory.class.getName());
-		registerAlias(BeanFactory.class.getName(),
-				NoArgsInstanceFactory.class.getName());
+		registerAlias(BeanFactory.class.getName(), InstanceFactory.class.getName());
+		registerAlias(BeanFactory.class.getName(), NoArgsInstanceFactory.class.getName());
 
 		registerSingleton(Environment.class.getName(), getEnvironment());
 	}
@@ -89,8 +83,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 
-	public EventRegistration registerListener(
-			EventListener<BeanLifeCycleEvent> eventListener) {
+	public EventRegistration registerListener(EventListener<BeanLifeCycleEvent> eventListener) {
 		return beanLifeCycleEventDispatcher.registerListener(eventListener);
 	}
 
@@ -105,7 +98,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 	public final boolean isAlias(String name) {
 		return beanDefinitionRegistry.isAlias(name);
 	}
-	
+
 	public boolean hasAlias(String name, String alias) {
 		return beanDefinitionRegistry.hasAlias(name, alias);
 	}
@@ -134,11 +127,10 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		return beanDefinitionRegistry.getDefinitionMutex();
 	}
 
-	public final BeanDefinition registerDefinition(String name,
-			BeanDefinition beanDefinition) {
+	public final BeanDefinition registerDefinition(String name, BeanDefinition beanDefinition) {
 		return beanDefinitionRegistry.registerDefinition(name, beanDefinition);
 	}
-	
+
 	public BeanDefinition registerDefinition(BeanDefinition beanDefinition) {
 		return beanDefinitionRegistry.registerDefinition(beanDefinition);
 	}
@@ -147,7 +139,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		beanDefinitionRegistry.removeAlias(alias);
 	}
 
-	public final ClassesLoader<?> getClassesLoader(String packageName) {
+	public final ClassesLoader getClassesLoader(String packageName) {
 		return environment.getClassesLoader(packageName);
 	}
 
@@ -155,7 +147,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		return environment;
 	}
 
-	public final ConfigurableClassesLoader<?> getContextClassesLoader() {
+	public final ConfigurableClassesLoader getContextClassesLoader() {
 		return environment.getContextClassesLoader();
 	}
 
@@ -169,8 +161,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 
 	public void registerSingleton(String beanName, Object singletonObject) {
 		singletonBeanRegistry.registerSingleton(beanName, singletonObject);
-		SingletionBeanDefinition definition = new SingletionBeanDefinition(
-				beanName, singletonObject);
+		SingletionBeanDefinition definition = new SingletionBeanDefinition(beanName, singletonObject);
 		registerDefinition(beanName, definition);
 		definition.dependence(singletonObject);
 	}
@@ -187,8 +178,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		return getInstance(type.getName(), params);
 	}
 
-	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes,
-			Object[] params) {
+	public <T> T getInstance(Class<T> type, Class<?>[] parameterTypes, Object[] params) {
 		return getInstance(type.getName(), parameterTypes, params);
 	}
 
@@ -228,8 +218,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 			return false;
 		}
 
-		return containsSingleton(definition.getId())
-				|| definition.isSingleton();
+		return containsSingleton(definition.getId()) || definition.isSingleton();
 	}
 
 	public void init(BeanDefinition definition, Object instance) {
@@ -306,8 +295,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		return (T) instance;
 	}
 
-	public <T> T getInstance(String name, Class<?>[] parameterTypes,
-			Object[] params) {
+	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object[] params) {
 		BeanDefinition definition = getDefinition(name);
 		if (definition == null) {
 			return null;
@@ -318,8 +306,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 		return (T) instance;
 	}
 
-	public void postProcessBeanFactory(
-			BeanFactoryPostProcessor beanFactoryPostProcessor) {
+	public void postProcessBeanFactory(BeanFactoryPostProcessor beanFactoryPostProcessor) {
 		beanFactoryPostProcessor.postProcessBeanFactory(this);
 	}
 
@@ -338,7 +325,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 			}
 			registerDefinition(definition.getId(), definition);
 		}
-		
+
 		for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {
 			postProcessBeanFactory(processor);
 		}
@@ -415,16 +402,14 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements
 			throw new NotSupportedException(getId());
 		}
 
-		public Object create(Class[] parameterTypes, Object[] params)
-				throws BeansException {
+		public Object create(Class[] parameterTypes, Object[] params) throws BeansException {
 			throw new NotSupportedException(getId());
 		}
 
 		public void dependence(Object instance) throws BeansException {
 			if (instance != null) {
 				for (Ioc ioc : Ioc.forClass(instance.getClass())) {
-					ioc.getDependence().process(this, instance,
-							DefaultBeanFactory.this);
+					ioc.getDependence().process(this, instance, DefaultBeanFactory.this);
 				}
 			}
 		}

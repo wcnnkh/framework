@@ -10,7 +10,6 @@ import scw.context.support.DirectoryClassesLoader;
 
 public class ServletApplication extends DefaultApplication {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ServletApplication(ServletContext servletContext) {
 		super(getConfigXml(servletContext));
 		setClassLoader(servletContext.getClassLoader());

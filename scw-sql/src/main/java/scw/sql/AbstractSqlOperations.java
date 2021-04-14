@@ -27,7 +27,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 
 	protected boolean execute(Sql sql, Connection connection) throws SQLException {
 		if (logger.isDebugEnabled()) {
-			logger.debug(sql);
+			logger.debug(sql.toString());
 		}
 		
 		PreparedStatement statement = null;
@@ -67,7 +67,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 
 	protected void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
 		if (logger.isDebugEnabled()) {
-			logger.debug(sql);
+			logger.debug(sql.toString());
 		}
 		
 		PreparedStatement statement = null;
@@ -119,7 +119,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 
 	protected <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
 		if (logger.isDebugEnabled()) {
-			logger.debug(sql);
+			logger.debug(sql.toString());
 		}
 		
 		PreparedStatement statement = null;
@@ -169,7 +169,7 @@ public abstract class AbstractSqlOperations implements SqlOperations {
 
 	protected int update(Sql sql, Connection connection) throws SQLException {
 		if (logger.isDebugEnabled()) {
-			logger.debug(sql);
+			logger.debug(sql.toString());
 		}
 		
 		PreparedStatement statement = null;

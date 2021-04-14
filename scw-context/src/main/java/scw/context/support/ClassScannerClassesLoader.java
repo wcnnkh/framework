@@ -15,8 +15,8 @@ import scw.util.ClassLoaderProvider;
 import scw.util.StaticSupplier;
 import scw.util.Supplier;
 
-public class ClassScannerClassesLoader<S> extends
-		AbstractClassesLoader<S> implements TypeFilter{
+public class ClassScannerClassesLoader extends
+		AbstractClassesLoader implements TypeFilter{
 	private static Logger logger = LoggerFactory.getLogger(ClassScannerClassesLoader.class);
 	private final ClassScanner classScanner;
 	private final Supplier<String> packageName;
@@ -43,16 +43,15 @@ public class ClassScannerClassesLoader<S> extends
 		return super.match(metadataReader, metadataReaderFactory) && (typeFilter == null || typeFilter.match(metadataReader, metadataReaderFactory));
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	protected Set<Class<S>> getClasses(ClassLoader classLoader) {
+	protected Set<Class<?>> getClasses(ClassLoader classLoader) {
 		String packageName = this.packageName.get();
 		if(StringUtils.isEmpty(packageName)){
 			return Collections.emptySet();
 		}
 
 		long t = System.currentTimeMillis();
-		Set classes = classScanner.getClasses(packageName, classLoader, this);
+		Set<Class<?>> classes = classScanner.getClasses(packageName, classLoader, this);
 		if(logger.isDebugEnabled()){
 			logger.debug("scanner package " + packageName + " use time " + (System.currentTimeMillis() - t) + "ms");
 		}

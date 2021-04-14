@@ -25,6 +25,6 @@ public class DefaultMessageConverters extends MessageConverters {
 	
 	public DefaultMessageConverters(ConversionService conversionService, ServiceLoaderFactory serviceLoaderFactory){
 		this(conversionService);
-		getMessageConverters().addAll(InstanceUtils.asList(serviceLoaderFactory.getServiceLoader(MessageConverter.class)));
+		getMessageConverters().addAll(serviceLoaderFactory.getServiceLoader(MessageConverter.class).toList());
 	}
 }

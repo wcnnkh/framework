@@ -8,7 +8,7 @@ import java.util.TreeSet;
 
 import scw.convert.TypeDescriptor;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.MimeType;
 import scw.net.MimeTypes;
 import scw.net.message.InputMessage;
@@ -16,7 +16,7 @@ import scw.net.message.OutputMessage;
 
 public class MessageConverters implements
 		MessageConverter {
-	private static Logger logger = LoggerUtils
+	private static Logger logger = LoggerFactory
 			.getLogger(MessageConverters.class);
 	private final TreeSet<MessageConverter> messageConverters = new TreeSet<MessageConverter>(new ComparatorMessageConverter());
 

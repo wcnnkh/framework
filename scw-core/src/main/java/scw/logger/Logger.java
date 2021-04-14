@@ -3,53 +3,123 @@ package scw.logger;
 import java.util.logging.Level;
 
 public interface Logger {
+	Object[] EMPTY_ARGS = new Object[0];
+
 	String getName();
 
-	boolean isInfoEnabled();
+	default boolean isInfoEnabled() {
+		return isLoggable(CustomLevel.INFO);
+	}
 
-	void info(Object format);
+	default void info(String msg) {
+		info(msg, EMPTY_ARGS);
+	}
 
-	void info(Object format, Object... args);
+	default void info(String msg, Object... args) {
+		info(null, msg, args);
+	}
 
-	void info(Throwable e, Object format, Object... args);
+	default void info(Throwable e, String msg) {
+		info(e, msg, EMPTY_ARGS);
+	}
 
-	boolean isTraceEnabled();
+	default void info(Throwable e, String msg, Object... args) {
+		log(CustomLevel.INFO, e, msg, args);
+	}
 
-	void trace(Object format);
+	default boolean isTraceEnabled() {
+		return isLoggable(CustomLevel.TRACE);
+	}
 
-	void trace(Object format, Object... args);
+	default void trace(String msg) {
+		trace(msg, EMPTY_ARGS);
+	}
 
-	void trace(Throwable e, Object format, Object... args);
+	default void trace(String msg, Object... args) {
+		trace(null, msg, args);
+	}
 
-	boolean isWarnEnabled();
+	default void trace(Throwable e, String msg) {
+		trace(e, msg, EMPTY_ARGS);
+	}
 
-	void warn(Object format);
+	default void trace(Throwable e, String msg, Object... args) {
+		log(CustomLevel.TRACE, e, msg, args);
+	}
 
-	void warn(Object format, Object... args);
+	default boolean isWarnEnabled() {
+		return isLoggable(CustomLevel.WARN);
+	}
 
-	void warn(Throwable e, Object format, Object... args);
+	default void warn(String msg) {
+		warn(msg, EMPTY_ARGS);
+	}
 
-	boolean isErrorEnabled();
+	default void warn(String msg, Object... args) {
+		warn(null, msg, args);
+	}
 
-	void error(Object format);
+	default void warn(Throwable e, String msg) {
+		warn(e, msg, EMPTY_ARGS);
+	}
 
-	void error(Object format, Object... args);
+	default void warn(Throwable e, String msg, Object... args) {
+		log(CustomLevel.WARN, e, msg, args);
+	}
 
-	void error(Throwable e, Object format, Object... args);
+	default boolean isErrorEnabled() {
+		return isLoggable(CustomLevel.ERROR);
+	}
 
-	boolean isDebugEnabled();
+	default void error(String msg) {
+		error(msg, EMPTY_ARGS);
+	}
 
-	void debug(Object format);
+	default void error(String msg, Object... args) {
+		error(null, msg, args);
+	}
 
-	void debug(Object format, Object... args);
+	default void error(Throwable e, String msg) {
+		error(e, msg, EMPTY_ARGS);
+	}
 
-	void debug(Throwable e, Object format, Object... args);
+	default void error(Throwable e, String msg, Object... args) {
+		log(CustomLevel.ERROR, e, msg, args);
+	}
 
-	boolean isLogEnable(Level level);
+	default boolean isDebugEnabled() {
+		return isLoggable(CustomLevel.DEBUG);
+	}
 
-	void log(Level level, Object format);
+	default void debug(String msg) {
+		debug(msg, EMPTY_ARGS);
+	}
 
-	void log(Level level, Object format, Object... args);
+	default void debug(String msg, Object... args) {
+		debug(null, msg, args);
+	}
 
-	void log(Level level, Throwable e, Object format, Object... args);
+	default void debug(Throwable e, String msg) {
+		debug(e, msg, EMPTY_ARGS);
+	}
+
+	default void debug(Throwable e, String msg, Object... args) {
+		log(CustomLevel.DEBUG, e, msg, args);
+	}
+
+	boolean isLoggable(Level level);
+
+	default void log(Level level, String msg) {
+		log(level, msg, EMPTY_ARGS);
+	}
+	
+	default void log(Level level, String msg, Object... args) {
+		log(level, null, msg, args);
+	}
+
+	default void log(Level level, Throwable e, String msg) {
+		log(level, e, msg, EMPTY_ARGS);
+	}
+	
+	void log(Level level, Throwable e, String msg, Object... args);
 }

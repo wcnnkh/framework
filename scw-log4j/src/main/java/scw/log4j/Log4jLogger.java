@@ -32,7 +32,7 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void trace(Throwable e, Object msg, Object... args) {
+	public void trace(Throwable e, String msg, Object... args) {
 		logger.trace(new PlaceholderFormatAppend(msg, placeholder, args), e);
 	}
 
@@ -42,7 +42,7 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void debug(Throwable e, Object msg, Object... args) {
+	public void debug(Throwable e, String msg, Object... args) {
 		logger.debug(new PlaceholderFormatAppend(msg, placeholder, args), e);
 	}
 
@@ -52,7 +52,7 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void info(Throwable e, Object msg, Object... args) {
+	public void info(Throwable e, String msg, Object... args) {
 		logger.info(new PlaceholderFormatAppend(msg, placeholder, args), e);
 	}
 
@@ -62,7 +62,7 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void warn(Throwable e, Object msg, Object... args) {
+	public void warn(Throwable e, String msg, Object... args) {
 		logger.warn(new PlaceholderFormatAppend(msg, placeholder, args), e);
 	}
 
@@ -72,7 +72,7 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void error(Throwable e, Object msg, Object... args) {
+	public void error(Throwable e, String msg, Object... args) {
 		logger.error(new PlaceholderFormatAppend(msg, placeholder, args), e);
 	}
 
@@ -80,13 +80,13 @@ public class Log4jLogger extends AbstractLogger {
 		return org.apache.log4j.Level.toLevel(level.getName(), new CustomLog4jLevel(level));
 	}
 
-	public boolean isLogEnable(Level level) {
-		return super.isLogEnable(level) || logger.isEnabledFor(parse(level));
+	public boolean isLoggable(Level level) {
+		return super.isLoggable(level) || logger.isEnabledFor(parse(level));
 	}
 
-	public void log(Level level, Throwable e, Object format, Object... args) {
+	public void log(Level level, Throwable e, String format, Object... args) {
 		org.apache.log4j.Level lv = parse(level);
-		if (super.isLogEnable(level) || logger.isEnabledFor(lv)) {
+		if (super.isLoggable(level) || logger.isEnabledFor(lv)) {
 			logger.log(lv, new PlaceholderFormatAppend(format, placeholder, args), e);
 		}
 	}

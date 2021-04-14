@@ -11,7 +11,7 @@ import freemarker.template.TemplateException;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.net.MimeType;
@@ -19,7 +19,7 @@ import scw.net.MimeTypeUtils;
 
 public class FreemarkerPage extends AbstractPage {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerUtils.getLogger(FreemarkerPage.class);
+	private static Logger logger = LoggerFactory.getLogger(FreemarkerPage.class);
 
 	private transient Configuration configuration;
 	private MimeType mimeType;

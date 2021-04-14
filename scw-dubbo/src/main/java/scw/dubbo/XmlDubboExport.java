@@ -10,7 +10,7 @@ import org.w3c.dom.NodeList;
 import scw.beans.BeanFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.logger.SplitLineAppend;
+import scw.util.SplitLine;
 
 public class XmlDubboExport implements Runnable{
 	private static Logger logger = LoggerFactory.getLogger(XmlDubboExport.class);
@@ -57,10 +57,10 @@ public class XmlDubboExport implements Runnable{
 	}
 
 	private void startLog() {
-		logger.info(new SplitLineAppend("Start to register Dubbo service"));
+		logger.info(new SplitLine("Start to register Dubbo service").toString());
 	}
 
 	private void endLog() {
-		logger.info(new SplitLineAppend("Dubbo service registration completed"));
+		logger.info(new SplitLine("Dubbo service registration completed").toString());
 	}
 }

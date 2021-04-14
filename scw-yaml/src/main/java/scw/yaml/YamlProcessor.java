@@ -25,7 +25,6 @@ import org.yaml.snakeyaml.representer.Representer;
 
 import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
@@ -147,7 +146,7 @@ public class YamlProcessor {
 	 * @see #createYaml()
 	 */
 	public void process(MatchCallback callback, Charset charset, Iterable<? extends Resource> resources) {
-		if (CollectionUtils.isEmpty(resources)) {
+		if (resources == null) {
 			return;
 		}
 

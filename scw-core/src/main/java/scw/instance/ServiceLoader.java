@@ -1,7 +1,13 @@
 package scw.instance;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.ServiceConfigurationError;
+import java.util.Set;
+
+import scw.core.OrderComparator;
+import scw.core.utils.CollectionUtils;
+import scw.lang.Nullable;
 
 /**
  * A simple service-provider loading facility.
@@ -248,4 +254,19 @@ public interface ServiceLoader<S> extends Iterable<S> {
 	 * @return An iterator that lazily loads providers for this loader's service
 	 */
 	Iterator<S> iterator();
+	
+	@Nullable
+	default S getFirst() {
+		return CollectionUtils.first(this);
+	}
+	
+	default List<S> toList(){
+		List<S> list = CollectionUtils.toList(this);
+		OrderComparator.sort(list);
+		return list;
+	}
+	
+	default Set<S> toSet(){
+		return CollectionUtils.toSet(toList());
+	}
 }

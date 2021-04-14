@@ -1,11 +1,7 @@
 package scw.boot.support;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import scw.boot.Application;
 import scw.env.Environment;
-import scw.instance.InstanceUtils;
 import scw.value.Value;
 
 public final class ApplicationUtils {
@@ -39,10 +35,5 @@ public final class ApplicationUtils {
 		port = application.getEnvironment().getValue("port", int.class, port);
 		return application.getEnvironment().getValue("server.port", int.class,
 				port);
-	}
-
-	public static Set<Class<?>> getContextClasses(Application application) {
-		return new LinkedHashSet<Class<?>>(InstanceUtils.asList(application
-				.getContextClassesLoader()));
 	}
 }

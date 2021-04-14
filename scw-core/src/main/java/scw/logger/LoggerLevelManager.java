@@ -32,6 +32,7 @@ public class LoggerLevelManager extends
 	};
 
 	private static LoggerLevelManager loggerLevelManager;
+	private final Level defaultLevel;
 
 	static {
 		String defaultLevel = SystemEnvironment.getInstance().getString(
@@ -44,7 +45,7 @@ public class LoggerLevelManager extends
 			for(Resource resource : ResourceUtils.getSystemResources("scw/logger-level.properties")){
 				Properties properties = new Properties();
 				SystemEnvironment.getInstance().resolveProperties(properties, resource, null);
-				load(levelMap, properties, defLevel, true);
+				load(levelMap, properties, true);
 			}
 		} catch (IOException e) {
 		}
@@ -61,14 +62,10 @@ public class LoggerLevelManager extends
 		observable.register();
 		loggerLevelManager.addObservable(observable);
 	}
-	
-	
 
 	public static LoggerLevelManager getInstance() {
 		return loggerLevelManager;
 	}
-
-	private final Level defaultLevel;
 
 	private LoggerLevelManager(Level defaultLevel) {
 		super(true);
@@ -84,25 +81,23 @@ public class LoggerLevelManager extends
 	}
 
 	public SortedMap<String, Level> convert(Properties properties) {
-		return parse(properties, defaultLevel, false);
+		return parse(properties, false);
 	}
 	
-	private static SortedMap<String, Level> parse(Properties properties,
-			Level defaultLevel, boolean ignore){
+	private static SortedMap<String, Level> parse(Properties properties, boolean ignore){
 		if (CollectionUtils.isEmpty(properties)) {
 			return Collections.emptySortedMap();
 		}
 		
 		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);
-		load(levelMap, properties, defaultLevel, ignore);
+		load(levelMap, properties, ignore);
 		if (levelMap.isEmpty()) {
 			return Collections.emptySortedMap();
 		}
 		return Collections.unmodifiableSortedMap(levelMap);
 	}
 
-	private static void load(Map<String, Level> levelMap, Properties properties,
-			Level defaultLevel, boolean ignore) {
+	private static void load(Map<String, Level> levelMap, Properties properties, boolean ignore) {
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			Object key = entry.getKey();
 			if (key == null) {
@@ -114,8 +109,7 @@ public class LoggerLevelManager extends
 				continue;
 			}
 
-			Level level = CustomLevel.parse(value.toString(),
-					defaultLevel.intValue());
+			Level level = CustomLevel.parse(value.toString());
 			if (level == null) {
 				continue;
 			}
@@ -124,10 +118,6 @@ public class LoggerLevelManager extends
 		}
 	}
 
-	public Level getDefaultLevel() {
-		return defaultLevel;
-	}
-	
 	private static void putLevel(Map<String, Level> levelMap, String name, Level level, boolean ignore){
 		if(ignore){
 			Level cacheLevel = levelMap.get(name);
@@ -151,6 +141,10 @@ public class LoggerLevelManager extends
 			}
 		}
 		return null;
+	}
+
+	public Level getDefaultLevel() {
+		return defaultLevel;
 	}
 
 	public Level getLevel(String name) {

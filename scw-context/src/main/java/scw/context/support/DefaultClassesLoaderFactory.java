@@ -17,22 +17,21 @@ import scw.util.ConcurrentReferenceHashMap;
 
 public class DefaultClassesLoaderFactory extends DefaultClassScanner implements
 		ClassesLoaderFactory, TypeFilter {
-	private ConcurrentReferenceHashMap<String, ClassesLoader<?>> cacheMap;
+	private ConcurrentReferenceHashMap<String, ClassesLoader> cacheMap;
 	private ClassLoaderProvider classLoaderProvider;
 	
 	public DefaultClassesLoaderFactory(boolean cache, @Nullable ClassLoaderProvider classLoaderProvider) {
 		if(cache){
-			cacheMap = new ConcurrentReferenceHashMap<String, ClassesLoader<?>>();
+			cacheMap = new ConcurrentReferenceHashMap<String, ClassesLoader>();
 		}
 		this.classLoaderProvider = classLoaderProvider;
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private ClassesLoader<?> getClassesLoaderInternal(final String packageName){
+	private ClassesLoader getClassesLoaderInternal(final String packageName){
 		if(cacheMap == null){
 			return new ClassScannerClassesLoader(this, this, packageName, this);
 		}else{
-			ClassesLoader<?> classesLoader = cacheMap.get(packageName);
+			ClassesLoader classesLoader = cacheMap.get(packageName);
 			if(classesLoader != null){
 				return classesLoader;
 			}
@@ -40,7 +39,7 @@ public class DefaultClassesLoaderFactory extends DefaultClassScanner implements
 			String[] parentPackageNames = ClassUtils.getParentPackageNames(packageName);
 			if (parentPackageNames.length != 0) {
 				for (int len = parentPackageNames.length, i = len - 1; i >= 0; i--) {
-					ClassesLoader<?> classes = cacheMap.get(parentPackageNames[i]);
+					ClassesLoader classes = cacheMap.get(parentPackageNames[i]);
 					if(classes == null){
 						continue;
 					}
@@ -54,7 +53,7 @@ public class DefaultClassesLoaderFactory extends DefaultClassScanner implements
 			}
 			
 			classesLoader = new ClassScannerClassesLoader(this, this, packageName, this);
-			ClassesLoader<?> cache = cacheMap.putIfAbsent(packageName, classesLoader);
+			ClassesLoader cache = cacheMap.putIfAbsent(packageName, classesLoader);
 			if(cache != null){
 				classesLoader = cache;
 			}
@@ -62,10 +61,9 @@ public class DefaultClassesLoaderFactory extends DefaultClassScanner implements
 		}
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ClassesLoader<?> getClassesLoader(final String packageName) {
+	public ClassesLoader getClassesLoader(final String packageName) {
 		String[] packageNames = StringUtils.commonSplit(packageName);
-		DefaultClassesLoader<?> editableClassesLoader = new DefaultClassesLoader();
+		DefaultClassesLoader editableClassesLoader = new DefaultClassesLoader();
 		for(String name : packageNames){
 			editableClassesLoader.add((ClassesLoader)getClassesLoaderInternal(name));
 		}

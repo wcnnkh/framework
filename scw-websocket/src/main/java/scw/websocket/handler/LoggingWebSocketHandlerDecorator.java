@@ -1,7 +1,7 @@
 package scw.websocket.handler;
 
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.messageing.Message;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketHandler;
@@ -9,7 +9,7 @@ import scw.websocket.WebSocketSession;
 
 public class LoggingWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
 
-	private static final Logger logger = LoggerUtils.getLogger(LoggingWebSocketHandlerDecorator.class);
+	private static final Logger logger = LoggerFactory.getLogger(LoggingWebSocketHandlerDecorator.class);
 
 
 	public LoggingWebSocketHandlerDecorator(WebSocketHandler delegate) {

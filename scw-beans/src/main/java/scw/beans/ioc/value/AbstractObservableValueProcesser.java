@@ -28,7 +28,7 @@ public abstract class AbstractObservableValueProcesser<R> extends AbstractValueP
 						set(beanDefinition, beanFactory, bean, field, value, name, charset,
 								event.getSource(), true);
 					} catch (Exception e) {
-						logger.error(e, field);
+						logger.error(e, field.toString());
 					}
 				}
 			});

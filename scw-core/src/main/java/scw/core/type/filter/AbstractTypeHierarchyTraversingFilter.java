@@ -6,7 +6,7 @@ import scw.core.type.ClassMetadata;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 /**
  * Type filter that is aware of traversing over hierarchy.
@@ -18,7 +18,7 @@ import scw.logger.LoggerUtils;
  */
 public abstract class AbstractTypeHierarchyTraversingFilter implements TypeFilter {
 
-	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final boolean considerInherited;
 

@@ -29,7 +29,7 @@ public class Slf4jLogger extends AbstractLogger{
 	}
 
 	@Override
-	public void log(Level level, Throwable e, Object format, Object... args) {
+	public void log(Level level, Throwable e, String format, Object... args) {
 		PlaceholderFormatAppend message = new PlaceholderFormatAppend(format, placeholder, args);
 		if(level.getName().equalsIgnoreCase(Level.INFO.getName())) {
 			if(e == null) {

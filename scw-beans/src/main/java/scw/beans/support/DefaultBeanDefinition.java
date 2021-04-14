@@ -29,14 +29,14 @@ import scw.instance.InstanceException;
 import scw.instance.support.DefaultInstanceDefinition;
 import scw.logger.Level;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 import scw.value.factory.PropertyFactory;
 
 public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		implements BeanDefinition, Cloneable, AopEnableSpi {
-	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	protected final BeanFactory beanFactory;
 	protected Ioc ioc = new Ioc();
 	private boolean isNew = true;

@@ -26,7 +26,7 @@ import scw.core.Assert;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.ExceptionWebSocketHandlerDecorator;
 import scw.websocket.handler.LoggingWebSocketHandlerDecorator;
@@ -46,7 +46,7 @@ import scw.websocket.server.HandshakeInterceptor;
  */
 public class WebSocketHttpRequestHandler {
 
-	private final Logger logger = LoggerUtils.getLogger(WebSocketHttpRequestHandler.class);
+	private final Logger logger = LoggerFactory.getLogger(WebSocketHttpRequestHandler.class);
 
 	private final WebSocketHandler wsHandler;
 

@@ -3,11 +3,10 @@ package scw.core.parameter;
 import scw.lang.ParameterException;
 import scw.logger.Level;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public abstract class AbstractParameterFactory implements ParameterFactory {
-	private static Logger logger = LoggerUtils
-			.getLogger(AbstractParameterFactory.class);
+	private static Logger logger = LoggerFactory.getLogger(AbstractParameterFactory.class);
 
 	public boolean isAccept(ParameterDescriptors parameterDescriptors) {
 		int index = 0;

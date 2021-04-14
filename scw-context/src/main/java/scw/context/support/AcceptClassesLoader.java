@@ -7,21 +7,21 @@ import java.util.Set;
 import scw.context.ClassesLoader;
 import scw.util.Accept;
 
-public class AcceptClassesLoader<S> implements ClassesLoader<S>{
-	private final ClassesLoader<S> classesLoader;
-	private final Accept<Class<S>> accept;
+public class AcceptClassesLoader implements ClassesLoader{
+	private final ClassesLoader classesLoader;
+	private final Accept<Class<?>> accept;
 	private final boolean cache;
-	private volatile Set<Class<S>> cacheClasses;
+	private volatile Set<Class<?>> cacheClasses;
 	
-	public AcceptClassesLoader(ClassesLoader<S> classesLoader, Accept<Class<S>> accept, boolean cache){
+	public AcceptClassesLoader(ClassesLoader classesLoader, Accept<Class<?>> accept, boolean cache){
 		this.classesLoader = classesLoader;
 		this.accept = accept;
 		this.cache = cache;
 	}
 	
-	private Set<Class<S>> filter(){
-		Set<Class<S>> classes = new LinkedHashSet<Class<S>>();
-		for(Class<S> clazz : classesLoader){
+	private Set<Class<?>> filter(){
+		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
+		for(Class<?> clazz : classesLoader){
 			if(accept == null || accept.accept(clazz)){
 				classes.add(clazz);
 			}
@@ -36,7 +36,7 @@ public class AcceptClassesLoader<S> implements ClassesLoader<S>{
 		}
 	}
 	
-	public Iterator<Class<S>> iterator() {
+	public Iterator<Class<?>> iterator() {
 		if(cache){
 			if(cacheClasses == null){
 				synchronized (this) {

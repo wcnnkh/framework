@@ -17,10 +17,9 @@ import scw.util.SmartMap;
 public class DefaultProviderLoaderFactory extends DefaultProviderClassesLoaderFactory implements ProviderLoaderFactory {
 	private final SmartMap<Class<?>, ServiceLoader<?>> cacheMap;
 	private final NoArgsInstanceFactory instanceFactory;
-	protected volatile ClassesLoader<?> serviceClassesLoader;
+	protected volatile ClassesLoader serviceClassesLoader;
 	private final ServiceLoaderFactory serviceLoaderFactory;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public DefaultProviderLoaderFactory(boolean concurrent, boolean cache, Environment environment,
 			NoArgsInstanceFactory instanceFactory) {
 		super(cache, instanceFactory);
@@ -29,12 +28,11 @@ public class DefaultProviderLoaderFactory extends DefaultProviderClassesLoaderFa
 		this.instanceFactory = instanceFactory;
 
 		// 添加默认的类
-		getContextClassesLoader().add((Class) TransactionMethodInterceptor.class);
-		getContextClassesLoader().add((Class) LockMethodInterceptor.class);
+		getContextClassesLoader().add(TransactionMethodInterceptor.class);
+		getContextClassesLoader().add(LockMethodInterceptor.class);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public ClassesLoader<?> getServiceClassesLoader() {
+	public ClassesLoader getServiceClassesLoader() {
 		if (serviceClassesLoader == null) {
 			synchronized (this) {
 				if (serviceClassesLoader == null) {

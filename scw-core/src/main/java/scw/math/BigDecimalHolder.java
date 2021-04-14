@@ -4,14 +4,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public class BigDecimalHolder extends AbstractNumberHolder {
 	private static final long serialVersionUID = 1L;
 
 	public static final BigDecimalHolder ZERO = new BigDecimalHolder(BigDecimal.ZERO);
 	
-	private static Logger logger = LoggerUtils.getLogger(BigDecimalHolder.class);
+	private static Logger logger = LoggerFactory.getLogger(BigDecimalHolder.class);
 	private static final int DEFAULT_SCALE = 64;
 	private static final RoundingMode ROUNDING_MODE = RoundingMode.HALF_EVEN;
 

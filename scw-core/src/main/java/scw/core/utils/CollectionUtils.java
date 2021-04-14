@@ -23,10 +23,12 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import scw.core.Assert;
 import scw.util.AbstractIterator;
@@ -35,8 +37,7 @@ import scw.util.MultiValueMapWrapper;
 
 public abstract class CollectionUtils {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(
-			Collections.emptyMap());
+	private static final MultiValueMap EMPTY_MULTI_VALUE_MAP = new MultiValueMapWrapper(Collections.emptyMap());
 
 	@SuppressWarnings("unchecked")
 	public static <K, V> MultiValueMap<K, V> emptyMultiValueMap() {
@@ -47,27 +48,12 @@ public abstract class CollectionUtils {
 	 * Return {@code true} if the supplied Collection is {@code null} or empty.
 	 * Otherwise, return {@code false}.
 	 * 
-	 * @param collection
-	 *            the Collection to check
+	 * @param collection the Collection to check
 	 * @return whether the given Collection is empty
 	 */
 	@SuppressWarnings("rawtypes")
 	public static boolean isEmpty(Collection collection) {
 		return (collection == null || collection.isEmpty());
-	}
-
-	@SuppressWarnings("rawtypes")
-	public static boolean isEmpty(Iterable iterable) {
-		if (iterable == null) {
-			return true;
-		}
-
-		if (iterable instanceof Collection) {
-			return ((Collection) iterable).isEmpty();
-		}
-
-		Iterator iterator = iterable.iterator();
-		return iterator != null && iterator.hasNext();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -81,11 +67,10 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * Return {@code true} if the supplied Map is {@code null} or empty.
-	 * Otherwise, return {@code false}.
+	 * Return {@code true} if the supplied Map is {@code null} or empty. Otherwise,
+	 * return {@code false}.
 	 * 
-	 * @param map
-	 *            the Map to check
+	 * @param map the Map to check
 	 * @return whether the given Map is empty
 	 */
 	@SuppressWarnings("rawtypes")
@@ -104,13 +89,12 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * Convert the supplied array into a List. A primitive array gets converted
-	 * into a List of the appropriate wrapper type.
+	 * Convert the supplied array into a List. A primitive array gets converted into
+	 * a List of the appropriate wrapper type.
 	 * <p>
 	 * A {@code null} source value will be converted to an empty List.
 	 * 
-	 * @param source
-	 *            the (potentially primitive) array
+	 * @param source the (potentially primitive) array
 	 * @return the converted List result
 	 * @see ObjectUtils#toObjectArray(Object)
 	 */
@@ -122,14 +106,11 @@ public abstract class CollectionUtils {
 	/**
 	 * Merge the given array into the given Collection.
 	 * 
-	 * @param array
-	 *            the array to merge (may be {@code null})
-	 * @param collection
-	 *            the target Collection to merge the array into
+	 * @param array      the array to merge (may be {@code null})
+	 * @param collection the target Collection to merge the array into
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static void mergeArrayIntoCollection(Object array,
-			Collection collection) {
+	public static void mergeArrayIntoCollection(Object array, Collection collection) {
 		if (collection == null) {
 			throw new IllegalArgumentException("Collection must not be null");
 		}
@@ -146,10 +127,8 @@ public abstract class CollectionUtils {
 	 * Uses {@code Properties.propertyNames()} to even catch default properties
 	 * linked into the original Properties instance.
 	 * 
-	 * @param props
-	 *            the Properties instance to merge (may be {@code null})
-	 * @param map
-	 *            the target Map to merge the properties into
+	 * @param props the Properties instance to merge (may be {@code null})
+	 * @param map   the target Map to merge the properties into
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void mergePropertiesIntoMap(Properties props, Map map) {
@@ -172,10 +151,8 @@ public abstract class CollectionUtils {
 	/**
 	 * Check whether the given Iterator contains the given element.
 	 * 
-	 * @param iterator
-	 *            the Iterator to check
-	 * @param element
-	 *            the element to look for
+	 * @param iterator the Iterator to check
+	 * @param element  the element to look for
 	 * @return {@code true} if found, {@code false} else
 	 */
 	@SuppressWarnings("rawtypes")
@@ -194,10 +171,8 @@ public abstract class CollectionUtils {
 	/**
 	 * Check whether the given Enumeration contains the given element.
 	 * 
-	 * @param enumeration
-	 *            the Enumeration to check
-	 * @param element
-	 *            the element to look for
+	 * @param enumeration the Enumeration to check
+	 * @param element     the element to look for
 	 * @return {@code true} if found, {@code false} else
 	 */
 	@SuppressWarnings("rawtypes")
@@ -216,13 +191,11 @@ public abstract class CollectionUtils {
 	/**
 	 * Check whether the given Collection contains the given element instance.
 	 * <p>
-	 * Enforces the given instance to be present, rather than returning
-	 * {@code true} for an equal element as well.
+	 * Enforces the given instance to be present, rather than returning {@code true}
+	 * for an equal element as well.
 	 * 
-	 * @param collection
-	 *            the Collection to check
-	 * @param element
-	 *            the element to look for
+	 * @param collection the Collection to check
+	 * @param element    the element to look for
 	 * @return {@code true} if found, {@code false} else
 	 */
 	@SuppressWarnings("rawtypes")
@@ -238,13 +211,11 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * Return {@code true} if any element in '{@code candidates}' is contained
-	 * in '{@code source}'; otherwise returns {@code false}.
+	 * Return {@code true} if any element in '{@code candidates}' is contained in
+	 * '{@code source}'; otherwise returns {@code false}.
 	 * 
-	 * @param source
-	 *            the source Collection
-	 * @param candidates
-	 *            the candidates to search for
+	 * @param source     the source Collection
+	 * @param candidates the candidates to search for
 	 * @return whether any of the candidates has been found
 	 */
 	@SuppressWarnings("rawtypes")
@@ -263,13 +234,11 @@ public abstract class CollectionUtils {
 	/**
 	 * Return the first element in '{@code candidates}' that is contained in '
 	 * {@code source}'. If no element in '{@code candidates}' is present in '
-	 * {@code source}' returns {@code null}. Iteration order is
-	 * {@link Collection} implementation specific.
+	 * {@code source}' returns {@code null}. Iteration order is {@link Collection}
+	 * implementation specific.
 	 * 
-	 * @param source
-	 *            the source Collection
-	 * @param candidates
-	 *            the candidates to search for
+	 * @param source     the source Collection
+	 * @param candidates the candidates to search for
 	 * @return the first present object, or {@code null} if not found
 	 */
 	@SuppressWarnings("rawtypes")
@@ -288,10 +257,8 @@ public abstract class CollectionUtils {
 	/**
 	 * Find a single value of the given type in the given Collection.
 	 * 
-	 * @param collection
-	 *            the Collection to search
-	 * @param type
-	 *            the type to look for
+	 * @param collection the Collection to search
+	 * @param type       the type to look for
 	 * @return a value of the given type found if there is a clear match, or
 	 *         {@code null} if none or more than one such value found
 	 */
@@ -315,18 +282,15 @@ public abstract class CollectionUtils {
 
 	/**
 	 * Find a single value of one of the given types in the given Collection:
-	 * searching the Collection for a value of the first type, then searching
-	 * for a value of the second type, etc.
+	 * searching the Collection for a value of the first type, then searching for a
+	 * value of the second type, etc.
 	 * 
-	 * @param collection
-	 *            the collection to search
-	 * @param types
-	 *            the types to look for, in prioritized order
-	 * @return a value of one of the given types found if there is a clear
-	 *         match, or {@code null} if none or more than one such value found
+	 * @param collection the collection to search
+	 * @param types      the types to look for, in prioritized order
+	 * @return a value of one of the given types found if there is a clear match, or
+	 *         {@code null} if none or more than one such value found
 	 */
-	public static Object findValueOfType(Collection<?> collection,
-			Class<?>[] types) {
+	public static Object findValueOfType(Collection<?> collection, Class<?>[] types) {
 		if (isEmpty(collection) || ObjectUtils.isEmpty(types)) {
 			return null;
 		}
@@ -340,11 +304,9 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * Determine whether the given Collection only contains a single unique
-	 * object.
+	 * Determine whether the given Collection only contains a single unique object.
 	 * 
-	 * @param collection
-	 *            the Collection to check
+	 * @param collection the Collection to check
 	 * @return {@code true} if the collection contains a single reference or
 	 *         multiple references to the same instance, {@code false} else
 	 */
@@ -369,10 +331,9 @@ public abstract class CollectionUtils {
 	/**
 	 * Find the common element type of the given Collection, if any.
 	 * 
-	 * @param collection
-	 *            the Collection to check
-	 * @return the common element type, or {@code null} if no clear common type
-	 *         has been found (or the collection was empty)
+	 * @param collection the Collection to check
+	 * @return the common element type, or {@code null} if no clear common type has
+	 *         been found (or the collection was empty)
 	 */
 	@SuppressWarnings("rawtypes")
 	public static Class<?> findCommonElementType(Collection collection) {
@@ -393,13 +354,11 @@ public abstract class CollectionUtils {
 	}
 
 	/**
-	 * Marshal the elements from the given enumeration into an array of the
-	 * given type. Enumeration elements must be assignable to the type of the
-	 * given array. The array returned will be a different instance than the
-	 * array given.
+	 * Marshal the elements from the given enumeration into an array of the given
+	 * type. Enumeration elements must be assignable to the type of the given array.
+	 * The array returned will be a different instance than the array given.
 	 */
-	public static <A, E extends A> A[] toArray(Enumeration<E> enumeration,
-			A[] array) {
+	public static <A, E extends A> A[] toArray(Enumeration<E> enumeration, A[] array) {
 		ArrayList<A> elements = new ArrayList<A>();
 		while (enumeration.hasMoreElements()) {
 			elements.add(enumeration.nextElement());
@@ -410,12 +369,10 @@ public abstract class CollectionUtils {
 	/**
 	 * Adapt an enumeration to an iterator.
 	 * 
-	 * @param enumeration
-	 *            the enumeration
+	 * @param enumeration the enumeration
 	 * @return the iterator
 	 */
-	public static <E> Iterator<E> toIterator(
-			Enumeration<? extends E> enumeration) {
+	public static <E> Iterator<E> toIterator(Enumeration<? extends E> enumeration) {
 		if (enumeration == null || !enumeration.hasMoreElements()) {
 			return Collections.emptyIterator();
 		}
@@ -423,8 +380,7 @@ public abstract class CollectionUtils {
 		return new EnumerationIterator<E>(enumeration);
 	}
 
-	public static <E> Enumeration<E> toEnumeration(
-			final Iterator<? extends E> iterator) {
+	public static <E> Enumeration<E> toEnumeration(final Iterator<? extends E> iterator) {
 		if (iterator == null || !iterator.hasNext()) {
 			return Collections.emptyEnumeration();
 		}
@@ -444,8 +400,7 @@ public abstract class CollectionUtils {
 	/**
 	 * Adapts a {@code Map<K, List<V>>} to an {@code MultiValueMap<K,V>}.
 	 *
-	 * @param map
-	 *            the map
+	 * @param map the map
 	 * @return the multi-value map
 	 */
 	public static <K, V> MultiValueMap<K, V> toMultiValueMap(Map<K, List<V>> map) {
@@ -456,16 +411,13 @@ public abstract class CollectionUtils {
 	/**
 	 * Returns an unmodifiable view of the specified multi-value map.
 	 *
-	 * @param map
-	 *            the map for which an unmodifiable view is to be returned.
+	 * @param map the map for which an unmodifiable view is to be returned.
 	 * @return an unmodifiable view of the specified multi-value map.
 	 */
-	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(
-			MultiValueMap<? extends K, ? extends V> map) {
+	public static <K, V> MultiValueMap<K, V> unmodifiableMultiValueMap(MultiValueMap<? extends K, ? extends V> map) {
 		Assert.notNull(map, "'map' must not be null");
 		Map<K, List<V>> result = new LinkedHashMap<K, List<V>>(map.size());
-		for (Map.Entry<? extends K, ? extends List<? extends V>> entry : map
-				.entrySet()) {
+		for (Map.Entry<? extends K, ? extends List<? extends V>> entry : map.entrySet()) {
 			List<V> values = Collections.unmodifiableList(entry.getValue());
 			result.put(entry.getKey(), values);
 		}
@@ -493,8 +445,7 @@ public abstract class CollectionUtils {
 	/**
 	 * Iterator wrapping an Enumeration.
 	 */
-	private static class EnumerationIterator<E> extends
-			scw.util.AbstractIterator<E> {
+	private static class EnumerationIterator<E> extends scw.util.AbstractIterator<E> {
 
 		private Enumeration<? extends E> enumeration;
 
@@ -526,6 +477,27 @@ public abstract class CollectionUtils {
 			}
 			return null;
 		}
+	}
+
+	public static <E> List<E> toList(Iterable<E> iterable) {
+		Iterator<E> iterator = iterable.iterator();
+		if (!iterator.hasNext()) {
+			return Collections.emptyList();
+		}
+		return Collections.list(CollectionUtils.toEnumeration(iterator));
+	}
+
+	public static <E> Set<E> toSet(Iterable<E> iterable) {
+		Iterator<E> iterator = iterable.iterator();
+		if (!iterator.hasNext()) {
+			return Collections.emptySet();
+		}
+
+		Set<E> sets = new LinkedHashSet<E>();
+		while (iterator.hasNext()) {
+			sets.add(iterator.next());
+		}
+		return sets;
 	}
 
 	private static final class PreviousIterator<E> extends AbstractIterator<E> {
@@ -564,7 +536,7 @@ public abstract class CollectionUtils {
 
 		Object[] keys = source.keySet().toArray();
 		Arrays.sort(keys);
-		LinkedHashMap<K, V> map = new LinkedHashMap<K, V>();
+		LinkedHashMap<K, V> map = new LinkedHashMap<K, V>(source.size());
 		for (int i = 0; i < keys.length; i++) {
 			Object key = keys[i];
 			map.put((K) key, source.get(key));

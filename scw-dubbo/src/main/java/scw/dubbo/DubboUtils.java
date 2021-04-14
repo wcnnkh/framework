@@ -5,10 +5,10 @@ import java.lang.reflect.Method;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public final class DubboUtils {
-	private static Logger logger = LoggerUtils.getLogger(DubboUtils.class);
+	private static Logger logger = LoggerFactory.getLogger(DubboUtils.class);
 
 	private DubboUtils() {
 	};

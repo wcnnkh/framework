@@ -24,7 +24,6 @@ import scw.instance.support.InstanceIterable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-@SuppressWarnings("unchecked")
 public class LazyBeanDefinitionRegsitry extends
 		DefaultBeanDefinitionRegistry {
 	private static Logger logger = LoggerFactory
@@ -86,8 +85,7 @@ public class LazyBeanDefinitionRegsitry extends
 	}
 	
 	private BeanDefinition provider(Class<?> sourceClass){
-		@SuppressWarnings({ "rawtypes"})
-		ProviderClassesLoader<?> classesLoader = new ProviderClassesLoader(beanFactory.getContextClassesLoader(), sourceClass);
+		ProviderClassesLoader classesLoader = new ProviderClassesLoader(beanFactory.getContextClassesLoader(), sourceClass);
 		for (Class<?> impl : classesLoader) {
 			BeanDefinition definition = super.getDefinition(impl);
 			if (definition == null) {

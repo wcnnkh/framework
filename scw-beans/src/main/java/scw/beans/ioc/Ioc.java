@@ -13,7 +13,7 @@ import scw.beans.annotation.Value;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.Field;
 import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
@@ -21,7 +21,7 @@ import scw.util.AbstractIterator;
 import scw.util.ConcurrentReferenceHashMap;
 
 public final class Ioc {
-	private static Logger logger = LoggerUtils.getLogger(Ioc.class);
+	private static Logger logger = LoggerFactory.getLogger(Ioc.class);
 	private final IocMetadata init = new IocMetadata();
 	private final IocMetadata destroy = new IocMetadata();
 	private final IocMetadata dependence = new IocMetadata();

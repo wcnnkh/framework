@@ -23,7 +23,7 @@ import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoaderFactory;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.InetUtils;
 import scw.net.message.converter.DefaultMessageConverters;
 import scw.net.message.converter.MessageConverter;
@@ -52,7 +52,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 				.loadService(HttpClientCookieManager.class);
 	}
 
-	private static Logger logger = LoggerUtils
+	private static Logger logger = LoggerFactory
 			.getLogger(DefaultHttpClient.class);
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;
 	private ClientHttpResponseErrorHandler clientHttpResponseErrorHandler = CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
@@ -68,7 +68,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	
 	public DefaultHttpClient(ConversionService conversionService, NoArgsInstanceFactory instanceFactory, ServiceLoaderFactory serviceLoaderFactory){
 		messageConverter = new DefaultMessageConverters(conversionService, serviceLoaderFactory);
-		messageConverter.getMessageConverters().addAll(InstanceUtils.asList(serviceLoaderFactory.getServiceLoader(MessageConverter.class)));
+		messageConverter.getMessageConverters().addAll(serviceLoaderFactory.getServiceLoader(MessageConverter.class).toList());
 		if(instanceFactory.isInstance(UriTemplateHandler.class)){
 			this.uriTemplateHandler = instanceFactory.getInstance(UriTemplateHandler.class);
 		}
@@ -81,7 +81,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			this.cookieManager = instanceFactory.getInstance(HttpClientCookieManager.class);
 		}
 		
-		interceptors.addAll(InstanceUtils.asList(serviceLoaderFactory.getServiceLoader(ClientHttpRequestInterceptor.class)));
+		interceptors.addAll(serviceLoaderFactory.getServiceLoader(ClientHttpRequestInterceptor.class).toList());
 
 		if(instanceFactory.isInstance(ClientHttpRequestFactory.class)){
 			this.clientHttpRequestFactory = instanceFactory.getInstance(ClientHttpRequestFactory.class);

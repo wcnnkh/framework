@@ -5,13 +5,13 @@ import java.io.IOException;
 import org.apache.lucene.index.IndexWriter;
 
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.transaction.Savepoint;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionResource;
 
 public class IndexWriterResource implements TransactionResource {
-	private static Logger logger = LoggerUtils.getLogger(IndexWriterResource.class);
+	private static Logger logger = LoggerFactory.getLogger(IndexWriterResource.class);
 
 	private final IndexWriter indexWriter;
 

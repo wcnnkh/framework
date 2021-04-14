@@ -9,7 +9,7 @@ import scw.core.type.filter.TypeFilter;
 import scw.core.type.scanner.ClassScanner;
 import scw.util.ClassLoaderProvider;
 
-public final class SystemContextClassesLoader<S> extends ClassScannerClassesLoader<S> implements TypeFilter{
+public final class SystemContextClassesLoader extends ClassScannerClassesLoader implements TypeFilter{
 	private static final String[] IGNORE_PREFIXS = new String[] { "java", "scw.cglib.",
 		"scw.asm.", "scw.context.", "scw.util.", "scw.core.", "scw.value.",
 		"scw.json.", "scw.io.", "scw.env.", "scw.instance.",

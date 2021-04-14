@@ -117,7 +117,7 @@ public class ZookeeperCloudPropertyFactory implements ListenablePropertyFactory,
 
 	public void process(WatchedEvent event) {
 		if (logger.isTraceEnabled()) {
-			logger.trace(event);
+			logger.trace(event.toString());
 		}
 
 		String eventPath = event.getPath();

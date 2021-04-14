@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import scw.aop.support.FieldSetterListen;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.Field;
 import scw.sql.orm.Column;
 import scw.sql.orm.ObjectRelationalMapping;
@@ -16,7 +16,7 @@ import scw.value.Value;
 
 public class DefaultResultMapping extends AbstractResultMapping {
 	private static final long serialVersionUID = 1L;
-	protected static Logger logger = LoggerUtils.getLogger(DefaultResultMapping.class);
+	protected static Logger logger = LoggerFactory.getLogger(DefaultResultMapping.class);
 
 	public DefaultResultMapping(ResultSetResolver resultSetResolver, Object[] values) {
 		super(resultSetResolver, values);

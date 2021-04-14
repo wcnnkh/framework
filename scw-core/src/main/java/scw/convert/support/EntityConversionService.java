@@ -13,16 +13,16 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.instance.NoArgsInstanceFactory;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.Field;
-import scw.mapper.Fields;
 import scw.mapper.FieldFeature;
+import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.util.ConfigurableAccept;
 import scw.util.alias.AliasRegistry;
 
 public abstract class EntityConversionService extends ConditionalConversionService{
-	private static Logger logger = LoggerUtils.getLogger(EntityConversionService.class);
+	private static Logger logger = LoggerFactory.getLogger(EntityConversionService.class);
 	private static final String CONNECTOR = ".";
 	private AliasRegistry aliasRegistry;
 	private boolean ignoreStaticField = true;
@@ -178,7 +178,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target, TypeDescriptor targetType){
 		Object valueToUse = conversionService.convert(value, sourceType.narrow(value),
 				new TypeDescriptor(field.getSetter()));
-		if(logger.isLogEnable(loggerLevel)){
+		if(logger.isLoggable(loggerLevel)){
 			logger.log(loggerLevel, "Property {} on target {} set value {}", field.getSetter().getName(), targetType.getType(), valueToUse);
 		}
 		field.getSetter().set(target, valueToUse);

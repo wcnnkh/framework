@@ -94,7 +94,7 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 		}
 
 		// 禁用指定级别级别以下的日志
-		if (CustomLevel.isGreaterOrEqual(level.getValue(), getEnableLevel()) && logger.isLogEnable(level.getValue())) {
+		if (CustomLevel.isGreaterOrEqual(level.getValue(), getEnableLevel()) && logger.isLoggable(level.getValue())) {
 			Object messag = (logger.isDebugEnabled() || !level.equals(Level.WARN)) ? this : httpChannel.getRequest();
 			logger.log(level.getValue(), "Execution {}ms of {}", useTime, messag);
 		}

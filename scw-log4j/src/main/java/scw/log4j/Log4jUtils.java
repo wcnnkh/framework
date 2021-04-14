@@ -11,7 +11,6 @@ import org.w3c.dom.Element;
 import scw.core.reflect.ReflectionUtils;
 import scw.env.SystemEnvironment;
 import scw.logger.LoggerLevelManager;
-import scw.logger.LoggerPropertyFactory;
 import scw.util.FormatUtils;
 import scw.util.placeholder.PlaceholderResolver;
 import scw.util.placeholder.PropertyResolver;

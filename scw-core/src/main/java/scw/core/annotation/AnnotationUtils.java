@@ -28,7 +28,7 @@ import scw.lang.Description;
 import scw.lang.Ignore;
 import scw.lang.Nullable;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.Supplier;
 
@@ -2122,7 +2122,7 @@ public abstract class AnnotationUtils {
 
 		Logger loggerToUse = logger;
 		if (loggerToUse == null) {
-			loggerToUse = LoggerUtils.getLogger(AnnotationUtils.class);
+			loggerToUse = LoggerFactory.getLogger(AnnotationUtils.class);
 			logger = loggerToUse;
 		}
 		if (element instanceof Class && Annotation.class.isAssignableFrom((Class<?>) element)) {

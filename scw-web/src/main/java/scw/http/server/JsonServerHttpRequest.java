@@ -13,7 +13,7 @@ import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 /**
  * 一个json请求
@@ -22,7 +22,7 @@ import scw.logger.LoggerUtils;
  *
  */
 public class JsonServerHttpRequest extends CachingServerHttpRequest {
-	private static Logger logger = LoggerUtils.getLogger(JsonServerHttpRequest.class);
+	private static Logger logger = LoggerFactory.getLogger(JsonServerHttpRequest.class);
 	private JSONSupport jsonSupport;
 
 	public JsonServerHttpRequest(ServerHttpRequest targetRequest) {

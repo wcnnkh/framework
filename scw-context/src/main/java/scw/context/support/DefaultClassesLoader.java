@@ -14,52 +14,52 @@ import scw.util.Accept;
 import scw.util.DuplicateRemovalIterator;
 import scw.util.MultiIterator;
 
-public class DefaultClassesLoader<S> implements ConfigurableClassesLoader<S>{
-	private final List<ClassesLoader<S>> loaders = new LinkedList<ClassesLoader<S>>();
-	private final Set<Class<S>> defaultClasses = new LinkedHashSet<Class<S>>();
-	private final Accept<Class<S>> accept;
+public class DefaultClassesLoader implements ConfigurableClassesLoader{
+	private final List<ClassesLoader> loaders = new LinkedList<ClassesLoader>();
+	private final Set<Class<?>> defaultClasses = new LinkedHashSet<Class<?>>();
+	private final Accept<Class<?>> accept;
 	
 	public DefaultClassesLoader(){
 		this(null);
 	}
 	
-	public DefaultClassesLoader(@Nullable Accept<Class<S>> accept){
+	public DefaultClassesLoader(@Nullable Accept<Class<?>> accept){
 		this.accept = accept;
 	}
 	
-	public List<ClassesLoader<S>> getLoaders() {
+	public List<ClassesLoader> getLoaders() {
 		return loaders;
 	}
 	
-	public void add(Class<S> clazz) {
+	public void add(Class<?> clazz) {
 		if(accept != null && !accept.accept(clazz)){
 			return ;
 		}
 		defaultClasses.add(clazz);
 	}
 	
-	public void add(ClassesLoader<S> classesLoader) {
-		loaders.add(accept == null? classesLoader:new AcceptClassesLoader<S>(classesLoader, accept, false));
+	public void add(ClassesLoader classesLoader) {
+		loaders.add(accept == null? classesLoader:new AcceptClassesLoader(classesLoader, accept, false));
 	}
 
-	public Set<Class<S>> getDefaultClasses() {
+	public Set<Class<?>> getDefaultClasses() {
 		return defaultClasses;
 	}
 
 	public void reload() {
-		for(ClassesLoader<S> classesLoader : loaders){
+		for(ClassesLoader classesLoader : loaders){
 			classesLoader.reload();
 		}
 	}
 
-	public Iterator<Class<S>> iterator() {
-		List<Iterator<Class<S>>> iterators = new ArrayList<Iterator<Class<S>>>(loaders.size() + 1);
+	public Iterator<Class<?>> iterator() {
+		List<Iterator<Class<?>>> iterators = new ArrayList<Iterator<Class<?>>>(loaders.size() + 1);
 		iterators.add(defaultClasses.iterator());
-		for(ClassesLoader<S> classesLoader : loaders){
+		for(ClassesLoader classesLoader : loaders){
 			iterators.add(classesLoader.iterator());
 		}
-		Iterator<Class<S>> iterator = new MultiIterator<Class<S>>(iterators);
-		return new DuplicateRemovalIterator<Class<S>>(iterator);
+		Iterator<Class<?>> iterator = new MultiIterator<Class<?>>(iterators);
+		return new DuplicateRemovalIterator<Class<?>>(iterator);
 	}
 
 }

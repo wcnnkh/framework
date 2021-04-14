@@ -1,13 +1,16 @@
 package scw.logger;
 
-import scw.instance.InstanceUtils;
+import java.util.ServiceLoader;
+
+import scw.core.utils.CollectionUtils;
 
 public final class LoggerFactory {
 	private static java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoggerFactory.class.getName());
 	private static final ILoggerFactory LOGGER_FACTORY;
 	
 	static{
-		ILoggerFactory loggerFactory = InstanceUtils.loadService(ILoggerFactory.class);
+		ServiceLoader<ILoggerFactory> serviceLoader = ServiceLoader.load(ILoggerFactory.class);
+		ILoggerFactory loggerFactory = CollectionUtils.first(serviceLoader);
 		LOGGER_FACTORY = loggerFactory == null? new JdkLoggerFactory() : loggerFactory;
 		logger.info("Use logger factory ["+LOGGER_FACTORY+"]");
 	}

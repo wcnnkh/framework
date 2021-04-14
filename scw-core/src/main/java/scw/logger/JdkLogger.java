@@ -27,8 +27,8 @@ public class JdkLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void log(Level level, Throwable e, Object format, Object... args) {
-		logger.log(level, e, new Supplier<String>() {
+	public void log(Level level, Throwable e, String format, Object... args) {
+		logger.logp(level, null, null, e, new Supplier<String>() {
 
 			@Override
 			public String get() {

@@ -3,7 +3,7 @@ package scw.boot.support;
 import scw.boot.Application;
 import scw.boot.Main;
 import scw.env.support.MainArgs;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.util.concurrent.ListenableFuture;
 
 public class MainApplication extends DefaultApplication implements Application {
@@ -16,7 +16,7 @@ public class MainApplication extends DefaultApplication implements Application {
 		setClassLoader(mainClass.getClassLoader());
 		getEnvironment().source(mainClass);
 		getEnvironment().addPropertyFactory(mainArgs);
-		setLogger(LoggerUtils.getLogger(mainClass));
+		setLogger(LoggerFactory.getLogger(mainClass));
 		if (args != null) {
 			getLogger().debug("args: {}", this.mainArgs);
 		}

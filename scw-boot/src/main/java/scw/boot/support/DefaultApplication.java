@@ -23,13 +23,12 @@ import scw.instance.InstanceUtils;
 import scw.io.resolver.PropertiesResolver;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.logger.LoggerUtils;
-import scw.logger.SplitLineAppend;
 import scw.util.ClassLoaderProvider;
 import scw.util.DefaultClassLoaderProvider;
+import scw.util.SplitLine;
 
-public class DefaultApplication extends LifecycleAuxiliary implements
-		ConfigurableApplication, EventListener<BeanLifeCycleEvent> {
+public class DefaultApplication extends LifecycleAuxiliary
+		implements ConfigurableApplication, EventListener<BeanLifeCycleEvent> {
 	private static final PropertiesResolver YAML_PROPERTIES_RESOLVER = InstanceUtils.INSTANCE_FACTORY
 			.getInstance("scw.yaml.YamlPropertiesResolver");
 	private static final String APPLICATION_PREFIX = "application";
@@ -47,8 +46,7 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 
 	public DefaultApplication(String xml) {
 		this.createTime = System.currentTimeMillis();
-		beanFactory = new XmlBeanFactory(
-				StringUtils.isEmpty(xml) ? XmlBeanFactory.DEFAULT_CONFIG : xml);
+		beanFactory = new XmlBeanFactory(StringUtils.isEmpty(xml) ? XmlBeanFactory.DEFAULT_CONFIG : xml);
 		beanFactory.setClassLoaderProvider(this);
 		getBeanFactory().registerSingleton(Application.class.getName(), this);
 		getEnvironment().addPropertyFactory(SystemEnvironment.getInstance());
@@ -71,7 +69,7 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 		if (logger == null) {
 			synchronized (this) {
 				if (logger == null) {
-					logger = LoggerUtils.getLogger(getClass());
+					logger = LoggerFactory.getLogger(getClass());
 				}
 			}
 		}
@@ -97,25 +95,22 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 
 	@Override
 	protected void beforeInit() throws Throwable {
-		getEnvironment().loadProperties(APPLICATION_PREFIX + ".properties")
-				.register();
+		getEnvironment().loadProperties(APPLICATION_PREFIX + ".properties").register();
 		if (YAML_PROPERTIES_RESOLVER != null) {
 			getEnvironment().addPropertiesResolver(YAML_PROPERTIES_RESOLVER);
-			getEnvironment().loadProperties(APPLICATION_PREFIX + ".yaml")
-					.register();
+			getEnvironment().loadProperties(APPLICATION_PREFIX + ".yml").register();
+			getEnvironment().loadProperties(APPLICATION_PREFIX + ".yaml").register();
 		}
 		beanFactory.init();
 	}
 
-	protected void postProcessApplication(ApplicationPostProcessor processor)
-			throws Throwable {
+	protected void postProcessApplication(ApplicationPostProcessor processor) throws Throwable {
 		processor.postProcessApplication(this);
 	}
 
 	@Override
 	protected void afterInit() throws Throwable {
-		for (ApplicationPostProcessor initializer : getBeanFactory()
-				.getServiceLoader(ApplicationPostProcessor.class)) {
+		for (ApplicationPostProcessor initializer : getBeanFactory().getServiceLoader(ApplicationPostProcessor.class)) {
 			postProcessApplication(initializer);
 		}
 		super.afterInit();
@@ -124,13 +119,12 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 	@Override
 	protected void initComplete() throws Throwable {
 		super.initComplete();
-		getLogger().info(
-				new SplitLineAppend("Start up complete in "
-						+ (System.currentTimeMillis() - createTime) + "ms"));
+		getLogger()
+				.info(new SplitLine("Start up complete in " + (System.currentTimeMillis() - createTime) + "ms").toString());
 	}
 
 	protected void beforeDestroy() throws Throwable {
-		getLogger().info(new SplitLineAppend("destroy"));
+		getLogger().info(new SplitLine("destroy").toString());
 	};
 
 	@Override
@@ -147,8 +141,7 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 		applicationEventDispathcer.publishEvent(event);
 	}
 
-	public EventRegistration registerListener(
-			EventListener<ApplicationEvent> eventListener) {
+	public EventRegistration registerListener(EventListener<ApplicationEvent> eventListener) {
 		return applicationEventDispathcer.registerListener(eventListener);
 	}
 
@@ -156,7 +149,7 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 		return beanFactory;
 	}
 
-	public ClassesLoader<?> getClassesLoader(String packageName) {
+	public ClassesLoader getClassesLoader(String packageName) {
 		return beanFactory.getClassesLoader(packageName);
 	}
 
@@ -168,7 +161,7 @@ public class DefaultApplication extends LifecycleAuxiliary implements
 		return beanFactory.getEnvironment();
 	}
 
-	public ConfigurableClassesLoader<?> getContextClassesLoader() {
+	public ConfigurableClassesLoader getContextClassesLoader() {
 		return beanFactory.getContextClassesLoader();
 	}
 }

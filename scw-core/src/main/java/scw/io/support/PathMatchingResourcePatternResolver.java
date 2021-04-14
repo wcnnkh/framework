@@ -51,7 +51,7 @@ import scw.io.ResourceUtils;
 import scw.io.UrlResource;
 import scw.io.VfsResource;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.util.AntPathMatcher;
 import scw.util.PathMatcher;
 
@@ -204,7 +204,7 @@ import scw.util.PathMatcher;
 public class PathMatchingResourcePatternResolver implements
 		ResourcePatternResolver {
 
-	private static final Logger logger = LoggerUtils
+	private static final Logger logger = LoggerFactory
 			.getLogger(PathMatchingResourcePatternResolver.class);
 
 	private static Method equinoxResolveMethod;

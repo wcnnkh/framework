@@ -2,7 +2,7 @@ package scw.sql.orm.support.generation;
 
 import scw.data.generator.SequenceId;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.MapperUtils;
 import scw.sql.orm.Column;
 import scw.sql.orm.ORMException;
@@ -14,7 +14,7 @@ import scw.util.Accept;
 import scw.util.XUtils;
 
 public abstract class AbstractGeneratorService implements GeneratorService {
-	protected Logger logger = LoggerUtils.getLogger(getClass());
+	protected Logger logger = LoggerFactory.getLogger(getClass());
 	private final TemporaryVariable temporaryVariable = new TemporaryVariable();
 
 	public TemporaryVariable getTemporaryVariable() {

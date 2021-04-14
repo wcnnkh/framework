@@ -1,15 +1,11 @@
 package scw.instance;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
-import scw.core.OrderComparator;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
 import scw.instance.annotation.PropertyName;
@@ -44,11 +40,11 @@ public final class InstanceUtils {
 	}
 	
 	public static <S> S loadService(Class<S> serviceClass, String ...defaultNames){
-		return CollectionUtils.first(getServiceLoader(serviceClass, defaultNames));
+		return getServiceLoader(serviceClass, defaultNames).getFirst();
 	}
 	
 	public static <S> List<S> loadAllService(Class<S> serviceClass, String... defaultNames) {
-		return asList(getServiceLoader(serviceClass, defaultNames));
+		return getServiceLoader(serviceClass, defaultNames).toList();
 	}
 	
 	public static <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String ...defaultNames){
@@ -56,17 +52,6 @@ public final class InstanceUtils {
 		return serviceLoaderFactory.getServiceLoader(serviceClass, defaultNames);
 	}
 	
-	public static <S> List<S> asList(ServiceLoader<S> serviceLoader){
-		Iterator<S> iterator = serviceLoader.iterator();
-		if(!iterator.hasNext()){
-			return Collections.emptyList();
-		}
-		
-		List<S> services = Collections.list(CollectionUtils.toEnumeration(iterator));
-		Collections.sort(services, OrderComparator.INSTANCE);
-		return services;
-	}
-
 	public static boolean isSupported(Class<?> clazz) {
 		if(ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz)){
 			return false;

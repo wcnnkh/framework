@@ -10,12 +10,13 @@ import scw.env.SystemEnvironment;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventType;
-import scw.io.Resource;
+import scw.event.support.DefaultBasicEventDispatcher;
+import scw.io.AbstractResource;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
-public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatcher {
-	private static Logger logger = LoggerUtils.getLogger(DefaultResourceEventDispatcher.class);
+public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<ResourceEvent> {
+	private static Logger logger = LoggerFactory.getLogger(DefaultResourceEventDispatcher.class);
 	/**
 	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)
 	 */
@@ -23,10 +24,10 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 			SystemEnvironment.getInstance().getValue("resource.listener.period", int.class, 5)) * 1000L;
 	static final Timer TIMER = new Timer(DefaultResourceEventDispatcher.class.getSimpleName(), true);// 守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
-	private final Resource resource;
+	private final AbstractResource resource;
 	private final long period;
 
-	public DefaultResourceEventDispatcher(Resource resource) {
+	public DefaultResourceEventDispatcher(AbstractResource resource) {
 		this(resource, LISTENER_PERIOD);
 	}
 
@@ -34,7 +35,7 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 	 * @param resource
 	 * @param period 不能小于1000ms
 	 */
-	public DefaultResourceEventDispatcher(Resource resource, long period) {
+	public DefaultResourceEventDispatcher(AbstractResource resource, long period) {
 		super(true);
 		this.resource = resource;
 		this.period = period < XTime.ONE_SECOND ? LISTENER_PERIOD : period;
@@ -57,7 +58,7 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 		}
 	}
 	
-	public Resource getResource() {
+	public AbstractResource getResource() {
 		return resource;
 	}
 	
@@ -109,7 +110,7 @@ public class DefaultResourceEventDispatcher extends SimpleResourceEventDispatche
 					onChange(new ResourceEvent(EventType.UPDATE, resource));
 				}
 			} catch (Exception e) {
-				logger.error(e, resource);
+				logger.error(e, resource.toString());
 			}
 		}
 	}

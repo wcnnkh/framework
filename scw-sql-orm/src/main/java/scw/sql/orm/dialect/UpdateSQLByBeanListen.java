@@ -9,7 +9,7 @@ import java.util.Map;
 import scw.aop.support.FieldSetterListen;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.Field;
 import scw.sql.orm.Column;
 import scw.sql.orm.CounterInfo;
@@ -18,7 +18,7 @@ import scw.sql.orm.enums.CasType;
 import scw.value.AnyValue;
 
 public final class UpdateSQLByBeanListen extends DialectSql {
-	private static Logger logger = LoggerUtils.getLogger(UpdateSQLByBeanListen.class);
+	private static Logger logger = LoggerFactory.getLogger(UpdateSQLByBeanListen.class);
 	private static final long serialVersionUID = 1L;
 	private String sql;
 	private Object[] params;

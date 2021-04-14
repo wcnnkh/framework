@@ -54,7 +54,7 @@ public class ApplePay {
 
 		JsonObject json = HttpUtils.getHttpClient().post(JsonObject.class, host, map, MediaType.APPLICATION_JSON)
 				.getBody();
-		logger.debug(json);
+		logger.debug(json.toString());
 		VerifyReceiptResponse response = new VerifyReceiptResponse(json);
 		if (response.isUseRetryable() && response.isRetryable()) {
 			return verifyReceipt(host, request);

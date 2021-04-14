@@ -21,7 +21,7 @@ import scw.io.FileUtils;
 import scw.io.support.TemporaryFile;
 import scw.lang.Nullable;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.InetUtils;
 import scw.util.XUtils;
 
@@ -207,7 +207,7 @@ public interface HttpConnection extends HttpConnectionFactory {
 
 	static final class DownLoadResponseExtractor implements
 			ClientHttpResponseExtractor<File> {
-		private static Logger logger = LoggerUtils
+		private static Logger logger = LoggerFactory
 				.getLogger(DownLoadResponseExtractor.class);
 		private final URI url;
 

@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mvc.HttpChannel;
 import scw.mvc.page.AbstractPage;
 import scw.servlet.ServletUtils;
@@ -18,7 +18,7 @@ import scw.util.XUtils;
 
 public class Jsp extends AbstractPage {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerUtils.getLogger(Jsp.class);
+	private static Logger logger = LoggerFactory.getLogger(Jsp.class);
 
 	protected Jsp() {
 		super(null);

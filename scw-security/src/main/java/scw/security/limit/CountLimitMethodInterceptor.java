@@ -9,7 +9,7 @@ import scw.core.reflect.MethodInvoker;
 import scw.data.TemporaryCounter;
 import scw.instance.InstanceFactory;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.security.limit.annotation.CountLimitSecurity;
 
 /**
@@ -20,7 +20,7 @@ import scw.security.limit.annotation.CountLimitSecurity;
  */
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
 public final class CountLimitMethodInterceptor implements MethodInterceptor, MethodInterceptorAccept {
-	private static Logger logger = LoggerUtils.getLogger(CountLimitMethodInterceptor.class);
+	private static Logger logger = LoggerFactory.getLogger(CountLimitMethodInterceptor.class);
 	private final InstanceFactory instanceFactory;
 
 	public CountLimitMethodInterceptor(InstanceFactory instanceFactory) {

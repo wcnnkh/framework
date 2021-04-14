@@ -15,7 +15,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.event.EventType;
-import scw.io.Resource;
+import scw.io.AbstractResource;
 import scw.lang.RequiredJavaVersion;
 
 /**
@@ -71,11 +71,11 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 		}
 	}
 
-	public WatchServiceResourceEventDispatcher(Resource resource) {
+	public WatchServiceResourceEventDispatcher(AbstractResource resource) {
 		super(resource);
 	}
 
-	public WatchServiceResourceEventDispatcher(Resource resource, long listenerPeriod) {
+	public WatchServiceResourceEventDispatcher(AbstractResource resource, long listenerPeriod) {
 		super(resource, listenerPeriod);
 	}
 
@@ -140,9 +140,9 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 	
 	private static final class ResourceItem{
 		private final String name;
-		private final Resource resource;
+		private final AbstractResource resource;
 		
-		public ResourceItem(String name, Resource resource) {
+		public ResourceItem(String name, AbstractResource resource) {
 			this.name = name;
 			this.resource = resource;
 		}
@@ -151,7 +151,7 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 			return name;
 		}
 
-		public Resource getResource() {
+		public AbstractResource getResource() {
 			return resource;
 		}
 
@@ -178,7 +178,7 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 		private WatchKey watchKey;
 		private final Set<ResourceItem> resources = new CopyOnWriteArraySet<ResourceItem>();
 
-		public void register(File file, Resource resource) {
+		public void register(File file, AbstractResource resource) {
 			resources.add(new ResourceItem(file.getName(), resource));
 		}
 
@@ -214,7 +214,7 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 				File file = path.toFile();
 				for(ResourceItem item : resources){
 					if (file.getName().equals(item.getName())) {
-						item.getResource().getEventDispatcher().publishEvent(new ResourceEvent(eventType, item.getResource()));
+						item.getResource().publishEvent(new ResourceEvent(eventType, item.getResource()));
 					}
 				};
 			}
