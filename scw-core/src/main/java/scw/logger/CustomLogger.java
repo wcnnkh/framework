@@ -3,14 +3,15 @@ package scw.logger;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.SortedMap;
+import java.util.function.Supplier;
 import java.util.logging.Handler;
 import java.util.logging.Level;
-import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 import scw.core.utils.CollectionUtils;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
+import scw.util.FormatUtils;
 
 //TODO 这是因为可变参数方法重写导致的，暂不处理此警告
 public class CustomLogger extends java.util.logging.Logger
@@ -24,7 +25,7 @@ public class CustomLogger extends java.util.logging.Logger
 		//使用spi机制加载handlers
 		List<Handler> handlers = CollectionUtils.toList(ServiceLoader.load(Handler.class));
 		if (!CollectionUtils.isEmpty(handlers)) {
-			//如果存在handlers那么就不使用父级的handler
+			//存在自定义handler的情况不使用父级的handler
 			ROOT_LOGGER.setUseParentHandlers(false);
 			for (Handler handler : handlers) {
 				ROOT_LOGGER.addHandler(handler);
@@ -89,9 +90,12 @@ public class CustomLogger extends java.util.logging.Logger
 			return ;
 		}
 		
-		LogRecord record = new LogRecord(level, msg);
-		record.setThrown(e);
-		record.setParameters(args);
-		log(record);
+		logp(level, null, null, e, new Supplier<String>() {
+			
+			@Override
+			public String get() {
+				return FormatUtils.formatPlaceholder(msg, null, args);
+			}
+		});
 	}
 }

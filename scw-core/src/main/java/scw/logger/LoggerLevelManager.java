@@ -35,8 +35,7 @@ public class LoggerLevelManager extends
 	private final Level defaultLevel;
 
 	static {
-		String defaultLevel = SystemEnvironment.getInstance().getString(
-				Level.class.getName());
+		String defaultLevel = System.getProperty(Level.class.getName());
 		Level defLevel = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level
 				.parse(defaultLevel.toUpperCase());
 		

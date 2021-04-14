@@ -10,9 +10,9 @@ public class LoggerTest {
 	@Test
 	public void test() {
 		CustomLogger logger = CustomLogger.getLogger(LoggerTest.class);
-		logger.setLevel(Level.ALL);
-		logger.info("message: {}", "abc");
-		logger.debug("message: {}", "abc");
-		logger.warn("error message: {}");
+		logger.info("message: {}", "a");
+		logger.debug("debug message: {}", "b");
+		logger.warn("error message: {}", "c");
+		logger.log(Level.INFO, "abc", "b");
 	}
 }

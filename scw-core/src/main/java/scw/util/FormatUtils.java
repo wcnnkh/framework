@@ -11,13 +11,11 @@ import java.util.Properties;
 
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.core.utils.XTime;
 import scw.lang.FormatterException;
 import scw.lang.Nullable;
 import scw.util.placeholder.PropertyResolver;
 
 public final class FormatUtils {
-	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
 	private static final String DEFAULT_PLACEHOLDER = "{}";
 
 	private FormatUtils() {
@@ -117,52 +115,6 @@ public final class FormatUtils {
 		return new SimpleDateFormat(formatter).format(date);
 	}
 	
-	public static void loggerAppend(Appendable appendable, String time, String level, String tag,
-			StringAppend stringAppend) throws IOException {
-		boolean b = false;
-		if (!StringUtils.isEmpty(time)) {
-			appendable.append(time);
-			b = true;
-		}
-
-		if (!StringUtils.isEmpty(level)) {
-			if (b) {
-				appendable.append(" ");
-			}
-			b = true;
-			appendable.append(level);
-		}
-
-		if (!StringUtils.isEmpty(tag)) {
-			if (b) {
-				appendable.append(" ");
-			}
-			b = true;
-			appendable.append("[");
-			appendable.append(tag);
-			appendable.append("]");
-		}
-
-		if (stringAppend != null) {
-			if (b) {
-				appendable.append(" - ");
-			}
-			b = true;
-			stringAppend.appendTo(appendable);
-		}
-	}
-
-	public static void loggerAppend(Appendable appendable, long time, String level, String tag,
-			StringAppend stringAppend) throws IOException {
-		loggerAppend(appendable, XTime.format(time, TIME_FORMAT), level, tag, stringAppend);
-	}
-
-	public static void loggerAppend(Appendable appendable, long time, String level, String tag, String placeholder,
-			Object msg, Object... args) throws IOException {
-		StringAppend loggerAppend = new PlaceholderFormatAppend(msg, placeholder, args);
-		loggerAppend(appendable, time, level, tag, loggerAppend);
-	}
-
 	public static Properties format(Properties properties, PropertyResolver propertyResolver) {
 		if (properties == null || properties.isEmpty()) {
 			return properties;

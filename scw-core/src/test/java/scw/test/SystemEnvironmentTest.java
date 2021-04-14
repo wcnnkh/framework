@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import scw.env.SystemEnvironment;
 
-public class TestSystemEnvironment {
+public class SystemEnvironmentTest {
 	@Test
 	public void init(){
 		SystemEnvironment.getInstance();
