@@ -1,15 +1,17 @@
 package scw.util;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import scw.lang.Nullable;
 
-public final class PlaceholderFormatAppend implements StringAppend {
+public final class PlaceholderFormat implements StringAppend, Serializable{
+	private static final long serialVersionUID = 1L;
 	private final Object msg;
 	private final Object[] args;
 	private final String placeholder;
 
-	public PlaceholderFormatAppend(Object msg, @Nullable String placeholder, Object[] args) {
+	public PlaceholderFormat(Object msg, @Nullable String placeholder, Object[] args) {
 		this.msg = msg;
 		this.placeholder = placeholder;
 		this.args = args;

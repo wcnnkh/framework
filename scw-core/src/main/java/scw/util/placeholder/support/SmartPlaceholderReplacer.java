@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.util.placeholder.PlaceholderReplacer;
 import scw.util.placeholder.PlaceholderResolver;
 
 public class SmartPlaceholderReplacer implements PlaceholderReplacer{
-	private static final Logger logger = Logger.getLogger(SmartPlaceholderReplacer.class.getName());
+	private static final Logger logger = LoggerFactory.getLogger(SmartPlaceholderReplacer.class);
 	/** Value separator for system property placeholders: ":" */
 	private static final String VALUE_SEPARATOR = ":";
 	
@@ -132,8 +132,8 @@ public class SmartPlaceholderReplacer implements PlaceholderReplacer{
 					// previously resolved placeholder value.
 					propVal = parseStringValue(propVal, placeholderResolver, visitedPlaceholders);
 					buf.replace(startIndex, endIndex + this.placeholderSuffix.length(), propVal);
-					if (logger.isLoggable(Level.FINER)) {
-						logger.finer("Resolved placeholder '" + placeholder + "'");
+					if (logger.isTraceEnabled()) {
+						logger.trace("Resolved placeholder '" + placeholder + "'");
 					}
 					startIndex = buf.indexOf(this.placeholderPrefix, startIndex + propVal.length());
 				} else if (this.ignoreUnresolvablePlaceholders) {

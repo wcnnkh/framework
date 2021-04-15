@@ -129,11 +129,7 @@ public class DefaultApplication extends LifecycleAuxiliary
 
 	@Override
 	protected void afterDestroy() throws Throwable {
-		try {
-			beanFactory.destroy();
-		} finally {
-			LoggerFactory.getILoggerFactory().destroy();
-		}
+		beanFactory.destroy();
 		super.afterDestroy();
 	}
 

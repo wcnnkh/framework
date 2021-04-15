@@ -5,16 +5,11 @@ import org.slf4j.LoggerFactory;
 import scw.logger.ILoggerFactory;
 import scw.logger.Logger;
 
-public class Slf4jLoggerFactory implements ILoggerFactory{
+public class Slf4jLoggerFactory implements ILoggerFactory {
 
 	@Override
-	public Logger getLogger(String name, String placeholder) {
+	public Logger getLogger(String name) {
 		org.slf4j.Logger logger = LoggerFactory.getLogger(name);
-		return new Slf4jLogger(logger, name, placeholder);
+		return new Slf4jLogger(logger, null);
 	}
-
-	@Override
-	public void destroy() {
-	}
-
 }

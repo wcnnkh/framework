@@ -2,11 +2,11 @@ package scw.logger;
 
 import java.util.logging.Level;
 
-public interface Logger {
+public interface Logger{
 	Object[] EMPTY_ARGS = new Object[0];
-
+	
 	String getName();
-
+	
 	default boolean isInfoEnabled() {
 		return isLoggable(CustomLevel.INFO);
 	}

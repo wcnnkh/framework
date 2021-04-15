@@ -10,12 +10,8 @@ public class Log4jLoggerFactory implements ILoggerFactory {
 		Log4jUtils.defaultInit();
 	}
 
-	public void destroy() {
-		//LogManager.shutdown();
-	}
-
-	public Logger getLogger(String name, String placeholder) {
+	public Logger getLogger(String name) {
 		org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(name);
-		return new Log4jLogger(logger, name, placeholder);
+		return new Log4jLogger(logger, null);
 	}
 }
