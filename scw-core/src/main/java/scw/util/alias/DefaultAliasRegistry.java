@@ -33,15 +33,17 @@ public class DefaultAliasRegistry implements AliasRegistry, Cloneable {
 		Set<String> names = aliasMap.get(name);
 		if (names == null) {
 			names = new HashSet<String>();
-			names.add(alias);
-			aliasMap.put(name, Collections.synchronizedSet(names));
+			Set<String> sets = aliasMap.putIfAbsent(name, Collections.synchronizedSet(names));
+			if(sets != null) {
+				names = sets;
+			}
 		} else {
 			if (names.contains(alias)) {
 					throw new IllegalStateException("Cannot register alias '"
 							+ alias + "' for name '" + name + "'");
 			}
-			names.add(alias);
 		}
+		names.add(alias);
 	}
 
 	public void removeAlias(String alias) {

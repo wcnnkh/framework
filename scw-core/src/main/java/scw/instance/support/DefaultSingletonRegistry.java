@@ -19,7 +19,7 @@ public class DefaultSingletonRegistry implements SingletonRegistry{
 						"] under bean name '" + beanName + "': there is already object [" + oldObject + "] bound");
 			}
 			
-			addSingleton(beanName, singletonObject);
+			singletionMap.put(beanName, singletonObject);
 		}
 	}
 
@@ -60,20 +60,11 @@ public class DefaultSingletonRegistry implements SingletonRegistry{
 				object = (T) singletionMap.get(beanName);
 				if(object == null){
 					object = creater.create();
-					addSingleton(beanName, object);
+					registerSingleton(beanName, object);
 					return new Result<T>(true, object);
 				}
 			}
 		}
 		return new Result<T>(false, object);
-	}
-	
-	protected void addSingleton(String beanName, Object singleton){
-		synchronized (singletionMap) {
-			if(singletionMap.containsKey(beanName)){
-				throw new IllegalStateException("Singleton '" + beanName + "' isn't currently in creation");
-			}
-			singletionMap.put(beanName, singleton);
-		}
 	}
 }

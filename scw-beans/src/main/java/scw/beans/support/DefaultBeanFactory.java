@@ -335,6 +335,14 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 	@Override
 	protected void afterInit() throws Throwable {
 		postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
+		
+		//初始化所有单例(原来是想全部懒加载，但是后来出现问题了)
+		for(String id : beanDefinitionRegistry.getDefinitionIds()) {
+			if(isSingleton(id) && isInstance(id)) {
+				getInstance(id);
+			}
+		}
+		
 		// 处理静态依赖
 		for (Class<?> clazz : getContextClassesLoader()) {
 			for (Ioc ioc : Ioc.forClass(clazz)) {

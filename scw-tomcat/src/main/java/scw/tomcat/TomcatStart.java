@@ -69,6 +69,7 @@ public class TomcatStart implements Main, Destroy {
 					if (httpControllerDescriptor.getMethod() == HttpMethod.GET
 							&& !httpControllerDescriptor.getRestful().isRestful()) {
 						controllerDescriptorToUse = httpControllerDescriptor;
+						break;
 					}
 				}
 

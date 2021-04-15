@@ -7,7 +7,6 @@ import scw.beans.annotation.Autowired;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotSupportedException;
 import scw.mapper.Field;
-import scw.mapper.Getter;
 
 public class AutowiredIocProcessor extends AbstractFieldIocProcessor {
 
@@ -34,19 +33,31 @@ public class AutowiredIocProcessor extends AbstractFieldIocProcessor {
 
 				getField().getSetter().set(bean, beanFactory.getInstance(name));
 			}else{
-				Getter getter = getField().getGetter();
-				if(getter != null && getter.getField() != null){
-					java.lang.reflect.Field field = getter.getField();
-					ReflectionUtils.makeAccessible(field);
-					Object defaultValue = ReflectionUtils.getField(field, bean);
-					if(defaultValue == null){
-						//仅当字段不存在值时才注入
-						if(beanFactory.isInstance(name)){
-							getField().getSetter().set(bean, beanFactory.getInstance(name));
-						}
+				if(!exists(bean, getField())) {
+					//仅当字段不存在值时才注入
+					if(beanFactory.isInstance(name)){
+						getField().getSetter().set(bean, beanFactory.getInstance(name));
 					}
+				}else {
+					logger.debug("field already default value, field [{}]", getField().toString());
 				}
 			}
 		}
+	}
+	
+	private static boolean exists(Object instance, Field field) {
+		java.lang.reflect.Field refField = null;
+		if(field.isSupportGetter() && field.getGetter().getField() != null) {
+			refField = field.getGetter().getField();
+		}else if(field.isSupportSetter() && field.getSetter().getField() != null) {
+			refField = field.getSetter().getField();
+		}
+		
+		if(refField == null) {
+			return false;
+		}
+		
+		ReflectionUtils.makeAccessible(refField);
+		return ReflectionUtils.getField(refField, instance) != null;
 	}
 }

@@ -34,8 +34,6 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 		if(source instanceof ActionManager){
 			BeanFactory beanFactory = event.getBeanFactory();
 			ActionManager actionManager = (ActionManager) source;
-			//是否延迟加载实例
-			boolean lazy = beanFactory.getEnvironment().getBooleanValue("action.bean.lazy.loading");
 			for (Class<?> clz : beanFactory.getContextClassesLoader()) {
 				if (!isSupport(beanFactory, clz)) {
 					continue;
@@ -46,7 +44,7 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 						continue;
 					}
 
-					Action action = new BeanAction(beanFactory, clz, method, lazy);
+					Action action = new BeanAction(beanFactory, clz, method);
 					actionManager.register(action);
 				}
 			}
