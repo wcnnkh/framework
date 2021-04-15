@@ -36,6 +36,6 @@ public class CustomLevel extends Level {
 
 	public static Level parse(String levelName) {
 		Assert.requiredArgument(levelName != null, levelName);
-		return parse(levelName.toUpperCase());
+		return Level.parse(levelName.toUpperCase());
 	}
 }
