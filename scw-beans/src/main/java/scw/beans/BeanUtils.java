@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import scw.beans.annotation.AopEnable;
+import scw.beans.annotation.IgnoreConfigurationProperty;
 import scw.beans.annotation.Service;
 import scw.beans.annotation.Singleton;
 import scw.convert.support.EntityConversionService;
@@ -17,13 +18,12 @@ import scw.mapper.Field;
 import scw.util.Accept;
 
 public final class BeanUtils {
-	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = InstanceUtils
-			.loadAllService(AopEnableSpi.class);
+	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = InstanceUtils.loadAllService(AopEnableSpi.class);
+
 	private BeanUtils() {
 	};
 
-	public static boolean isSingleton(Class<?> type,
-			AnnotatedElement annotatedElement) {
+	public static boolean isSingleton(Class<?> type, AnnotatedElement annotatedElement) {
 		Singleton singleton = annotatedElement.getAnnotation(Singleton.class);
 		if (singleton != null) {
 			return singleton.value();
@@ -42,8 +42,7 @@ public final class BeanUtils {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
 			for (Class<?> i : classToUse.getInterfaces()) {
-				if (AnnotationUtils.isIgnore(classToUse)
-						|| i.getMethods().length == 0) {
+				if (AnnotationUtils.isIgnore(classToUse) || i.getMethods().length == 0) {
 					continue;
 				}
 
@@ -54,8 +53,7 @@ public final class BeanUtils {
 		return null;
 	}
 
-	public static void aware(Object instance, BeanFactory beanFactory,
-			BeanDefinition beanDefinition) {
+	public static void aware(Object instance, BeanFactory beanFactory, BeanDefinition beanDefinition) {
 		if (instance instanceof BeanFactoryAware) {
 			((BeanFactoryAware) instance).setBeanFactory(beanFactory);
 		}
@@ -79,6 +77,7 @@ public final class BeanUtils {
 
 	/**
 	 * 默认是不使用代理的，除非使用以下方式(see)：
+	 * 
 	 * @see AopEnable
 	 * @see Service
 	 * @see AopEnableSpi
@@ -86,12 +85,11 @@ public final class BeanUtils {
 	 * @param annotatedElement
 	 * @return
 	 */
-	public static boolean isAopEnable(Class<?> clazz,
-			AnnotatedElement annotatedElement) {
+	public static boolean isAopEnable(Class<?> clazz, AnnotatedElement annotatedElement) {
 		if (Modifier.isFinal(clazz.getModifiers())) {// final修饰的类无法代理
 			return false;
 		}
-		
+
 		AopEnable aopEnable = annotatedElement.getAnnotation(AopEnable.class);
 		if (aopEnable != null) {
 			return aopEnable.value();
@@ -129,16 +127,23 @@ public final class BeanUtils {
 		}
 		return false;
 	}
-	
-	public static EntityConversionService createEntityConversionService(Environment environment){
-		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService(environment);
+
+	public static EntityConversionService createEntityConversionService(Environment environment) {
+		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService(
+				environment);
 		entityConversionService.setStrict(false);
 		entityConversionService.getFieldAccept().add(new Accept<Field>() {
-			
+
 			public boolean accept(Field field) {
-				//如果字段上存在beans下的注解应该忽略此字段
-				for(Annotation annotation: field.getAnnotatedElement().getAnnotations()){
-					if(annotation.annotationType().getName().startsWith("scw.beans.")){
+				IgnoreConfigurationProperty ignore = field.getAnnotatedElement()
+						.getAnnotation(IgnoreConfigurationProperty.class);
+				if (ignore != null) {
+					return false;
+				}
+
+				// 如果字段上存在beans下的注解应该忽略此字段
+				for (Annotation annotation : field.getAnnotatedElement().getAnnotations()) {
+					if (annotation.annotationType().getName().startsWith("scw.beans.")) {
 						return false;
 					}
 				}

@@ -21,7 +21,7 @@ public interface Accept<E> extends Predicate<E> {
 	 * 
 	 * @return
 	 */
-	default Accept<E> negation() {
+	default Accept<E> negate() {
 		return new Accept<E>() {
 			@Override
 			public boolean accept(E e) {
