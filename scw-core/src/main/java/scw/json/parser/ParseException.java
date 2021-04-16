@@ -4,8 +4,6 @@ import scw.json.JSONException;
 
 /**
  * ParseException explains why and where the error occurs in source JSON text.
- * 
- * @author FangYidong<fangyidong@yahoo.com.cn>
  *
  */
 public class ParseException extends JSONException {

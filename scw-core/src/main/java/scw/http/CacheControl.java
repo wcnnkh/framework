@@ -39,8 +39,6 @@ import scw.core.utils.StringUtils;
  * <p>Note that to be efficient, Cache-Control headers should be written along HTTP validators
  * such as "Last-Modified" or "ETag" headers.
  *
- * @author Brian Clozel
- * @author Juergen Hoeller
  * @see <a href="https://tools.ietf.org/html/rfc7234#section-5.2.2">rfc7234 section 5.2.2</a>
  * @see <a href="https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching">
  * HTTP caching - Google developers reference</a>

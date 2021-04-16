@@ -32,7 +32,7 @@ import scw.value.factory.ListenablePropertyFactory;
 
 /**
  * 使用zookeeper实现的配置中心
- * @author asus1
+ * @author shuchaowen
  *
  */
 @Provider(order=Integer.MIN_VALUE)

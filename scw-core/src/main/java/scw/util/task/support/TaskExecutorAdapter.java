@@ -37,7 +37,6 @@ import scw.util.task.TaskRejectedException;
  * the {@link org.springframework.core.task.AsyncTaskExecutor} interface
  * accordingly.
  *
- * @author Juergen Hoeller
  * @see java.util.concurrent.Executor
  * @see java.util.concurrent.ExecutorService
  * @see java.util.concurrent.Executors

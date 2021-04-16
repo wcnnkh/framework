@@ -27,7 +27,6 @@ import scw.io.StreamUtils;
  * Simple implementation of {@link ClientHttpRequest} that wraps another
  * request.
  *
- * @author Arjen Poutsma
  */
 final class BufferingClientHttpRequestWrapper extends AbstractBufferingClientHttpRequest {
  

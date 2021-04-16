@@ -185,7 +185,6 @@ import scw.lang.Nullable;
  * @param <S>
  *            The type of the service to be loaded by this loader
  *
- * @author Mark Reinhold
  */
 
 public interface ServiceLoader<S> extends Iterable<S> {
