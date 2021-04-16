@@ -27,7 +27,6 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.instance.InstanceException;
 import scw.instance.support.DefaultInstanceDefinition;
-import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.FieldFeature;
@@ -52,8 +51,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		if (runtimeBean != null && !runtimeBean._dependence()) {
 			return;
 		}
-		beanFactory.publishEvent(
-				new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DEPENDENCE));
+		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
 				ioc.getDependence().process(this, instance, beanFactory);
@@ -62,46 +60,55 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 
 			// @ConfigurationProperties
 			configurationProperties(instance);
-			
+
 			BeanUtils.aware(instance, beanFactory, this);
 		}
-		beanFactory.publishEvent(
-				new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_DEPENDENCE));
+		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_DEPENDENCE));
 	}
-	
+
 	protected void configurationProperties(Object instance) {
-		ConfigurationProperties configurationProperties = getAnnotatedElement().getAnnotation(
-				ConfigurationProperties.class);
-		if(configurationProperties == null) {
-			//定义上不存在此注解
+		ConfigurationProperties configurationProperties = getAnnotatedElement()
+				.getAnnotation(ConfigurationProperties.class);
+		if (configurationProperties == null) {
+			// 定义上不存在此注解
 			Class<?> configurationPropertiesClass = instance.getClass();
-			while(configurationPropertiesClass != null) {
+			while (configurationPropertiesClass != null) {
 				configurationProperties = configurationPropertiesClass.getAnnotation(ConfigurationProperties.class);
-				if(configurationProperties != null) {
+				if (configurationProperties != null) {
 					configurationProperties(configurationProperties, instance);
 					break;
 				}
 				configurationPropertiesClass = configurationPropertiesClass.getSuperclass();
 			}
-		}else {
+		} else {
 			configurationProperties(configurationProperties, instance);
 		}
 	}
 
-	protected void configurationProperties(
-			ConfigurationProperties configurationProperties, Object instance) {
-		EntityConversionService entityConversionService = BeanUtils.createEntityConversionService(beanFactory.getEnvironment());
-		if(configurationProperties.debug()){
-			entityConversionService.setLoggerLevel(Level.INFO.getValue());
-		}
+	private String getPrefix(ConfigurationProperties configurationProperties) {
 		String prefix = configurationProperties.prefix();
 		if (StringUtils.isEmpty(prefix)) {
 			prefix = configurationProperties.value();
 		}
-		entityConversionService.setPrefix(prefix);
-		entityConversionService.configurationProperties(beanFactory.getEnvironment(), TypeDescriptor.valueOf(PropertyFactory.class),
-				instance, TypeDescriptor.valueOf(getEnvironment()
-						.getUserClass(instance.getClass())));
+		return prefix;
+	}
+
+	protected void configurationProperties(ConfigurationProperties configurationProperties, Object instance) {
+		EntityConversionService entityConversionService = BeanUtils
+				.createEntityConversionService(beanFactory.getEnvironment());
+		entityConversionService.setPrefix(getPrefix(configurationProperties));
+		entityConversionService.setLoggerLevel(configurationProperties.loggerLevel().getValue());
+		entityConversionService.setUseSuperClass(false);
+		Class<?> clazz = getEnvironment().getUserClass(instance.getClass());
+		while (clazz != null) {
+			ConfigurationProperties configuration = clazz.getAnnotation(ConfigurationProperties.class);
+			if (configuration != null) {
+				entityConversionService.setPrefix(getPrefix(configuration));
+				entityConversionService.setLoggerLevel(configuration.loggerLevel().getValue());
+			}
+			entityConversionService.configurationProperties(beanFactory.getEnvironment(),
+					TypeDescriptor.valueOf(PropertyFactory.class), instance, TypeDescriptor.valueOf(clazz));
+		}
 	}
 
 	public void init(Object instance) throws BeansException {
@@ -109,8 +116,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		if (runtimeBean != null && !runtimeBean._init()) {
 			return;
 		}
-		beanFactory.publishEvent(
-				new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_INIT));
+		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_INIT));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
 				ioc.getInit().process(this, instance, beanFactory);
@@ -122,8 +128,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 				throw new BeansException(e);
 			}
 		}
-		beanFactory.publishEvent(
-				new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_INIT));
+		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_INIT));
 	}
 
 	public void destroy(Object instance) throws BeansException {
@@ -132,8 +137,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			return;
 		}
 
-		beanFactory.publishEvent(
-				new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DESTROY));
+		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
 			try {
 				LifecycleAuxiliary.destroy(instance);
@@ -145,8 +149,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 				ioc.getDestroy().process(this, instance, beanFactory);
 			}
 		}
-		beanFactory.publishEvent(
-				new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_DESTROY));
+		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_DESTROY));
 	}
 
 	public String getId() {
@@ -155,8 +158,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			return getTargetClass().getName();
 		}
 
-		return StringUtils.isEmpty(bean.value()) ? getTargetClass().getName()
-				: bean.value();
+		return StringUtils.isEmpty(bean.value()) ? getTargetClass().getName() : bean.value();
 	}
 
 	public Collection<String> getNames() {
@@ -192,72 +194,62 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	public boolean isInstance() {
 		return canCreateInterfaceInsance() || isInstance(isAopEnable());
 	}
-	
-	private boolean canCreateInterfaceInsance(){
+
+	private boolean canCreateInterfaceInsance() {
 		return getTargetClass().isInterface() && isAopEnable();
 	}
-	
+
 	@Override
 	public Object create() throws InstanceException {
-		if(canCreateInterfaceInsance()){
+		if (canCreateInterfaceInsance()) {
 			return createProxy(getTargetClass(), null).create();
 		}
 		return super.create();
 	}
-	
+
 	@Override
-	protected Object createInternal(Class<?> targetClass,
-			ParameterDescriptors parameterDescriptors, Object[] params) {
+	protected Object createInternal(Class<?> targetClass, ParameterDescriptors parameterDescriptors, Object[] params) {
 		if (isAopEnable(targetClass, getAnnotatedElement())) {
-			return createProxyInstance(targetClass,
-					parameterDescriptors.getTypes(), params);
+			return createProxyInstance(targetClass, parameterDescriptors.getTypes(), params);
 		}
 		return super.createInternal(targetClass, parameterDescriptors, params);
 	}
-	
+
 	protected Proxy createProxy(Class<?> targetClass, Class<?>[] interfaces) {
 		Class<?>[] interfacesToUse = interfaces;
 		if (ArrayUtils.isEmpty(interfacesToUse)) {
 			interfacesToUse = scw.beans.RuntimeBean.PROXY_INTERFACES;
 		} else {
-			interfacesToUse = ArrayUtils.merge(interfacesToUse,
-					scw.beans.RuntimeBean.PROXY_INTERFACES);
+			interfacesToUse = ArrayUtils.merge(interfacesToUse, scw.beans.RuntimeBean.PROXY_INTERFACES);
 		}
 
 		MethodInterceptor interceptor = new RuntimeBean.RuntimeBeanMethodInterceptor(this);
-		if(methodInterceptors.isEmpty()){
-			return beanFactory.getAop().getProxy(targetClass, interfacesToUse,
-					interceptor);
+		if (methodInterceptors.isEmpty()) {
+			return beanFactory.getAop().getProxy(targetClass, interfacesToUse, interceptor);
 		}
-		
+
 		ConfigurableMethodInterceptor interceptors = new ConfigurableMethodInterceptor();
 		interceptors.addMethodInterceptor(interceptor);
 		interceptors.addMethodInterceptor(getMethodInterceptors());
-		return beanFactory.getAop().getProxy(targetClass, interfacesToUse,
-				interceptors);
+		return beanFactory.getAop().getProxy(targetClass, interfacesToUse, interceptors);
 	}
 
-	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass,
-			Class<?>[] interfaces) {
+	protected Proxy createInstanceProxy(Object instance, Class<?> targetClass, Class<?>[] interfaces) {
 		Class<?>[] interfacesToUse = interfaces;
 		if (ArrayUtils.isEmpty(interfacesToUse)) {
 			interfacesToUse = RuntimeBean.PROXY_INTERFACES;
 		} else {
-			interfacesToUse = ArrayUtils.merge(interfacesToUse,
-					RuntimeBean.PROXY_INTERFACES);
+			interfacesToUse = ArrayUtils.merge(interfacesToUse, RuntimeBean.PROXY_INTERFACES);
 		}
 
 		ConfigurableMethodInterceptor interceptors = new ConfigurableMethodInterceptor();
 		interceptors.addMethodInterceptor(new RuntimeBean.RuntimeBeanMethodInterceptor(this));
 		interceptors.addMethodInterceptor(methodInterceptors);
-		return beanFactory.getAop().getProxy(targetClass, instance,
-				interfaces, interceptors);
+		return beanFactory.getAop().getProxy(targetClass, instance, interfaces, interceptors);
 	}
 
-	protected Object createProxyInstance(Class<?> targetClass,
-			Class<?>[] parameterTypes, Object[] args) {
-		if (getTargetClass().isInterface()
-				&& methodInterceptors.isEmpty()) {
+	protected Object createProxyInstance(Class<?> targetClass, Class<?>[] parameterTypes, Object[] args) {
+		if (getTargetClass().isInterface() && methodInterceptors.isEmpty()) {
 			logger.warn("empty filter: {}", getTargetClass().getName());
 		}
 
@@ -276,8 +268,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	@Override
 	public BeanDefinition clone() {
 		try {
-			DefaultBeanDefinition beanDefinition = (DefaultBeanDefinition) super
-					.clone();
+			DefaultBeanDefinition beanDefinition = (DefaultBeanDefinition) super.clone();
 			beanDefinition.setNew(false);
 			beanDefinition.ioc.readyOnly();
 			return beanDefinition;
@@ -285,11 +276,12 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			throw new RuntimeException(e);
 		}
 	}
-	
-	protected String getStringDescribe(){
-		return MapperUtils.getMapper().getFields(getClass()).accept(FieldFeature.EXISTING_GETTER_FIELD).getValueMap(this).toString();
+
+	protected String getStringDescribe() {
+		return MapperUtils.getMapper().getFields(getClass()).accept(FieldFeature.EXISTING_GETTER_FIELD)
+				.getValueMap(this).toString();
 	}
-	
+
 	/**
 	 * 如果要重写请重写 {@link #getStringDescribe()}
 	 */

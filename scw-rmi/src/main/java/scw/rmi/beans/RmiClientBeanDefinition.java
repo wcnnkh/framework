@@ -1,4 +1,4 @@
-package scw.rmi;
+package scw.rmi.beans;
 
 import java.net.MalformedURLException;
 import java.rmi.Naming;
@@ -11,10 +11,10 @@ import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 
 
-public class RmiBeanDefinition extends DefaultBeanDefinition{
+public class RmiClientBeanDefinition extends DefaultBeanDefinition{
 	private String host;
 	
-	public RmiBeanDefinition(BeanFactory beanFactory, Class<?> targetClass, String host) {
+	public RmiClientBeanDefinition(BeanFactory beanFactory, Class<?> targetClass, String host) {
 		super(beanFactory, targetClass);
 		this.host = host;
 	}

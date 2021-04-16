@@ -20,6 +20,12 @@ public class JdkLogger extends CustomLogger {
 	}
 	
 	@Override
+	public void setLevel(Level level) {
+		logger.setLevel(level);
+		super.setLevel(level);
+	}
+	
+	@Override
 	public String getName() {
 		return logger.getName();
 	}

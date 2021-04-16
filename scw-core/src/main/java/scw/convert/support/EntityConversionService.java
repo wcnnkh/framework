@@ -33,6 +33,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private ConversionService conversionService;
 	private NoArgsInstanceFactory instanceFactory;
 	private Level loggerLevel = scw.logger.Level.DEBUG.getValue();
+	private boolean useSuperClass = true;//默认也使用父类
 	
 	public NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory;
@@ -64,6 +65,14 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	public boolean isStrict() {
 		return strict;
+	}
+	
+	public boolean isUseSuperClass() {
+		return useSuperClass;
+	}
+
+	public void setUseSuperClass(boolean useSuperClass) {
+		this.useSuperClass = useSuperClass;
 	}
 
 	public void setStrict(boolean strict) {
@@ -168,9 +177,9 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	protected Fields getFields(Class<?> type){
 		Fields fields;
 		if (isIgnoreStaticField()) {
-			fields = MapperUtils.getMapper().getFields(type).accept(FieldFeature.EXISTING_SETTER_FIELD, FieldFeature.IGNORE_STATIC).accept(fieldAccept);
+			fields = MapperUtils.getMapper().getFields(type, isUseSuperClass()).accept(FieldFeature.EXISTING_SETTER_FIELD, FieldFeature.IGNORE_STATIC).accept(fieldAccept);
 		} else {
-			fields = MapperUtils.getMapper().getFields(type).accept(FieldFeature.EXISTING_SETTER_FIELD).accept(fieldAccept);
+			fields = MapperUtils.getMapper().getFields(type, isUseSuperClass()).accept(FieldFeature.EXISTING_SETTER_FIELD).accept(fieldAccept);
 		}
 		return fields;
 	}

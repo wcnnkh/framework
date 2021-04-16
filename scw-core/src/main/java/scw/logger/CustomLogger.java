@@ -38,7 +38,7 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 		return CustomLevel.isGreaterOrEqual(level, acceptLevel);
 	}
 
-	public void setLevel(Level level) {
+	public void setLevel(@Nullable Level level) {
 		if (ObjectUtils.nullSafeEquals(getLevel(), level)) {
 			// 这里使用off是为了任意日志级别都会显示该日志
 			log(Level.OFF, "Level [{}] change to [{}]", getLevel(), level);
