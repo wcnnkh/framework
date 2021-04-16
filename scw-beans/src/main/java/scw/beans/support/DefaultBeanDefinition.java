@@ -4,7 +4,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.Proxy;
@@ -18,11 +17,8 @@ import scw.beans.BeanUtils;
 import scw.beans.BeansException;
 import scw.beans.RuntimeBean;
 import scw.beans.annotation.Bean;
-import scw.beans.annotation.ConfigurationProperties;
 import scw.beans.ioc.Ioc;
 import scw.context.support.LifecycleAuxiliary;
-import scw.convert.TypeDescriptor;
-import scw.convert.support.EntityConversionService;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
@@ -32,8 +28,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
-import scw.value.Value;
-import scw.value.factory.PropertyFactory;
 
 public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		implements BeanDefinition, Cloneable, AopEnableSpi {
@@ -69,75 +63,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	}
 
 	protected void configurationProperties(Object instance) {
-		ConfigurationProperties configurationProperties = getAnnotatedElement()
-				.getAnnotation(ConfigurationProperties.class);
-		Class<?> configurationPropertiesClass = getEnvironment().getUserClass(instance.getClass());
-		if (configurationProperties == null) {
-			// 定义上不存在此注解
-			while (configurationPropertiesClass != null && configurationPropertiesClass != Object.class) {
-				configurationProperties = configurationPropertiesClass.getAnnotation(ConfigurationProperties.class);
-				if (configurationProperties != null) {
-					configurationMap(getPrefix(configurationProperties), instance);
-					configurationProperties(configurationProperties, instance, configurationPropertiesClass);
-					break;
-				}
-				configurationPropertiesClass = configurationPropertiesClass.getSuperclass();
-			}
-		} else {
-			configurationMap(getPrefix(configurationProperties), instance);
-			configurationProperties(configurationProperties, instance, configurationPropertiesClass);
-		}
-	}
-
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void configurationMap(String prefix, Object instance) {
-		if (!(instance instanceof Map)) {
-			return;
-		}
-
-		Map properties = (Map) instance;
-		TypeDescriptor descriptor = TypeDescriptor.forObject(instance);
-		for (String key : getEnvironment()) {
-			boolean b = StringUtils.isEmpty(prefix);
-			if (!b) {
-				b = !key.equals(prefix + ".") && key.startsWith(prefix);
-			}
-
-			if (b) {
-				// +1是因为还有连接符
-				String keySuffix = StringUtils.isEmpty(prefix) ? key : key.substring(prefix.length() + 1);
-				Object keyValue = getEnvironment().convert(keySuffix, TypeDescriptor.valueOf(String.class),
-						descriptor.getMapKeyTypeDescriptor());
-				Value property = getEnvironment().getValue(key);
-				Object value = getEnvironment().convert(property, TypeDescriptor.forObject(property),
-						descriptor.getMapValueTypeDescriptor());
-				properties.put(keyValue, value);
-			}
-		}
-	}
-
-	private String getPrefix(ConfigurationProperties configurationProperties) {
-		return StringUtils.EMPTY.negate().first(configurationProperties.prefix(), configurationProperties.value());
-	}
-
-	protected void configurationProperties(ConfigurationProperties configurationProperties, Object instance,
-			Class<?> configClass) {
-		EntityConversionService entityConversionService = BeanUtils
-				.createEntityConversionService(beanFactory.getEnvironment());
-		entityConversionService.setPrefix(getPrefix(configurationProperties));
-		entityConversionService.setLoggerLevel(configurationProperties.loggerLevel().getValue());
-		entityConversionService.setUseSuperClass(false);
-		Class<?> clazz = configClass;
-		while (clazz != null && clazz != Object.class) {
-			ConfigurationProperties configuration = clazz.getAnnotation(ConfigurationProperties.class);
-			if (configuration != null) {
-				entityConversionService.setPrefix(getPrefix(configuration));
-				entityConversionService.setLoggerLevel(configuration.loggerLevel().getValue());
-			}
-			entityConversionService.configurationProperties(beanFactory.getEnvironment(),
-					TypeDescriptor.valueOf(PropertyFactory.class), instance, TypeDescriptor.valueOf(clazz));
-			clazz = clazz.getSuperclass();
-		}
+		BeanUtils.configurationProperties(instance, getAnnotatedElement(), getEnvironment());
 	}
 
 	public void init(Object instance) throws BeansException {

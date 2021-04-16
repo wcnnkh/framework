@@ -3,6 +3,7 @@ package scw.convert.support;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import scw.convert.ConversionService;
@@ -23,12 +24,11 @@ import scw.util.alias.AliasRegistry;
 
 public abstract class EntityConversionService extends ConditionalConversionService {
 	private static Logger logger = LoggerFactory.getLogger(EntityConversionService.class);
-	private static final String CONNECTOR = ".";
 	private AliasRegistry aliasRegistry;
 	private boolean ignoreStaticField = true;
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
 	private String prefix;
-	private String connector;
+	private String connector = ".";
 	private boolean strict = true;// 默认是严格模式
 	private ConversionService conversionService;
 	private NoArgsInstanceFactory instanceFactory;
@@ -96,7 +96,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		this.ignoreStaticField = ignoreStaticField;
 	}
 
-	public String getPrefix() {
+	public final String getPrefix() {
 		return prefix;
 	}
 
@@ -108,8 +108,8 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		return fieldAccept;
 	}
 
-	public String getConnector() {
-		return StringUtils.isEmpty(connector) ? CONNECTOR : connector;
+	public final String getConnector() {
+		return connector;
 	}
 
 	public void setConnector(String connector) {
@@ -121,7 +121,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		Enumeration<String> keys = keys(source);
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement();
-			if (key.equals(prefix) || map.containsKey(key)) {
+			if (StringUtils.isNotEmpty(prefix) && (key.equals(prefix) || map.containsKey(key))) {
 				continue;
 			}
 
@@ -131,7 +131,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 					continue;
 				}
 
-				map.put(key.substring(prefix.length() + connector.length()), value);
+				map.put(StringUtils.isEmpty(prefix)? key:key.substring(prefix.length() + connector.length()), value);
 			}
 		}
 		return map;
@@ -169,6 +169,23 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		valueMap.putAll(getMapByPrefix(source,
 				prefix + StringUtils.humpNamingReplacement(field.getSetter().getName(), "-"), connector));
 		return valueMap;
+	}
+	
+	/**
+	 * 将source转化为map并插入到targetMap
+	 * @param source
+	 * @param targetMap
+	 * @param keyType
+	 * @param valueType
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void putAll(Object source, Map targetMap, TypeDescriptor keyType, TypeDescriptor valueType){
+		Map<String, Object> sourceMap = getMapByPrefix(source, prefix, connector);
+		for(Entry<String, Object> entry : sourceMap.entrySet()){
+			Object key = conversionService.convert(entry.getKey(), TypeDescriptor.valueOf(String.class), keyType);
+			Object value = conversionService.convert(entry.getValue(), TypeDescriptor.forObject(entry.getValue()), valueType);
+			targetMap.put(key, value);
+		}
 	}
 
 	protected abstract Enumeration<String> keys(Object source);
