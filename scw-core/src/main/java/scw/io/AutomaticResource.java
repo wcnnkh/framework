@@ -6,12 +6,10 @@ import java.util.Iterator;
 
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.ObjectUtils;
 import scw.event.EventListener;
-import scw.event.EventType;
+import scw.event.EventRegistration;
+import scw.event.MultiEventRegistration;
 import scw.io.event.ResourceEvent;
-import scw.io.event.ResourceEventDispatcher;
-import scw.io.event.SimpleResourceEventDispatcher;
 
 public class AutomaticResource extends ResourceWrapper {
 	private Collection<Resource> resources;
@@ -46,41 +44,15 @@ public class AutomaticResource extends ResourceWrapper {
 	public Resource getResource() {
 		return currentResource;
 	}
-
-	private volatile ResourceEventDispatcher eventDispatcher;
-
+	
 	@Override
-	public ResourceEventDispatcher getEventDispatcher() {
-		if (eventDispatcher == null) {
-			synchronized (this) {
-				if (eventDispatcher == null) {
-					eventDispatcher = new SimpleResourceEventDispatcher();
-					for (Resource resource : resources) {
-						if (resource == null) {
-							continue;
-						}
+	public EventRegistration registerListener(EventListener<ResourceEvent> eventListener) {
+		return MultiEventRegistration.registerListener(new EventListener<ResourceEvent>() {
 
-						if (resource.isSupportEventDispatcher()) {
-							resource.getEventDispatcher().registerListener(new EventListener<ResourceEvent>() {
-								public void onEvent(ResourceEvent event) {
-									currentResource = getCurrentResource();
-									if (ObjectUtils.nullSafeEquals(event.getSource(), currentResource)) {
-										eventDispatcher.publishEvent(event);
-									}else{
-										eventDispatcher.publishEvent(new ResourceEvent(EventType.UPDATE, currentResource));
-									}
-								}
-							});
-						}
-					}
-				}
+			@Override
+			public void onEvent(ResourceEvent event) {
+				eventListener.onEvent(new ResourceEvent(event.getEventType(), AutomaticResource.this));
 			}
-		}
-		return eventDispatcher;
-	}
-
-	@Override
-	public boolean isSupportEventDispatcher() {
-		return true;
+		}, resources);
 	}
 }

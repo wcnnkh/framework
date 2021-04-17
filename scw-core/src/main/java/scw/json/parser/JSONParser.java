@@ -15,7 +15,6 @@ import java.util.Map;
 /**
  * Parser for JSON text. Please note that JSONParser is NOT thread-safe.
  * 
- * @author FangYidong<fangyidong@yahoo.com.cn>
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class JSONParser {

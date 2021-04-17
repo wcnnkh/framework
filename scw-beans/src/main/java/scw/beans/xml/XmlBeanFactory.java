@@ -13,12 +13,12 @@ import scw.dom.DomUtils;
 import scw.http.HttpUtils;
 import scw.io.Resource;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public class XmlBeanFactory extends DefaultBeanFactory {
 	public static final String DEFAULT_CONFIG = "beans.xml";
 	public static final String CONFIG_NAME = "contextConfigLocation";
-	private static Logger logger = LoggerUtils.getLogger(XmlBeanFactory.class);
+	private static Logger logger = LoggerFactory.getLogger(XmlBeanFactory.class);
 	private static final String TAG_NAME = "bean";
 	private NodeList nodeList;
 	private String xml;

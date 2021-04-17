@@ -14,7 +14,7 @@ import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.timer.CrontabTaskConfig;
 import scw.timer.ScheduleTaskConfig;
 import scw.timer.Task;
@@ -32,7 +32,7 @@ import scw.util.StringMatcher;
  *
  */
 public final class DefaultTimer implements scw.timer.Timer, Destroy {
-	private static Logger logger = LoggerUtils.getLogger(DefaultTimer.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultTimer.class);
 	private final ConcurrentHashMap<String, TaskContext> contextMap = new ConcurrentHashMap<String, TaskContext>();
 	private final TaskLockFactory taskLockFactory;
 	private final java.util.Timer timer;

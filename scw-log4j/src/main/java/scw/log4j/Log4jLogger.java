@@ -1,18 +1,21 @@
 package scw.log4j;
 
+import java.util.logging.Level;
+
 import org.apache.log4j.Logger;
 
-import scw.logger.AbstractLogger;
-import scw.logger.Level;
-import scw.util.PlaceholderFormatAppend;
+import scw.lang.Nullable;
+import scw.logger.CustomLogger;
+import scw.util.PlaceholderFormat;
 
-public class Log4jLogger extends AbstractLogger {
+public class Log4jLogger extends CustomLogger {
 	private final Logger logger;
+	private final String placeholder;
 
-	public Log4jLogger(Logger logger, Level level, String placeholder) {
-		super(level, placeholder);
+	public Log4jLogger(Logger logger, @Nullable String placeholder) {
+		this.placeholder = placeholder;
 		this.logger = logger;
-		registerLevelListener();
+		registerListener();
 	}
 
 	public String getName() {
@@ -31,8 +34,8 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void trace(Throwable e, Object msg, Object... args) {
-		logger.trace(new PlaceholderFormatAppend(msg, placeholder, args), e);
+	public void trace(Throwable e, String msg, Object... args) {
+		logger.trace(new PlaceholderFormat(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -41,8 +44,8 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void debug(Throwable e, Object msg, Object... args) {
-		logger.debug(new PlaceholderFormatAppend(msg, placeholder, args), e);
+	public void debug(Throwable e, String msg, Object... args) {
+		logger.debug(new PlaceholderFormat(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -51,8 +54,8 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void info(Throwable e, Object msg, Object... args) {
-		logger.info(new PlaceholderFormatAppend(msg, placeholder, args), e);
+	public void info(Throwable e, String msg, Object... args) {
+		logger.info(new PlaceholderFormat(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -61,8 +64,8 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void warn(Throwable e, Object msg, Object... args) {
-		logger.warn(new PlaceholderFormatAppend(msg, placeholder, args), e);
+	public void warn(Throwable e, String msg, Object... args) {
+		logger.warn(new PlaceholderFormat(msg, placeholder, args), e);
 	}
 
 	@Override
@@ -71,22 +74,22 @@ public class Log4jLogger extends AbstractLogger {
 	}
 
 	@Override
-	public void error(Throwable e, Object msg, Object... args) {
-		logger.error(new PlaceholderFormatAppend(msg, placeholder, args), e);
+	public void error(Throwable e, String msg, Object... args) {
+		logger.error(new PlaceholderFormat(msg, placeholder, args), e);
 	}
 
 	private static org.apache.log4j.Level parse(Level level) {
 		return org.apache.log4j.Level.toLevel(level.getName(), new CustomLog4jLevel(level));
 	}
 
-	public boolean isLogEnable(Level level) {
-		return super.isLogEnable(level) || logger.isEnabledFor(parse(level));
+	public boolean isLoggable(Level level) {
+		return logger.isEnabledFor(parse(level));
 	}
 
-	public void log(Level level, Throwable e, Object format, Object... args) {
+	public void log(Level level, Throwable e, String format, Object... args) {
 		org.apache.log4j.Level lv = parse(level);
-		if (super.isLogEnable(level) || logger.isEnabledFor(lv)) {
-			logger.log(lv, new PlaceholderFormatAppend(format, placeholder, args), e);
+		if (logger.isEnabledFor(lv)) {
+			logger.log(lv, new PlaceholderFormat(format, placeholder, args), e);
 		}
 	}
 }

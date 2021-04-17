@@ -20,15 +20,13 @@ import scw.http.client.accessor.HttpClientConfigAccessor;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.ssl.SSLContexts;
 import scw.net.ssl.TrustAllManager;
 
-public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor
-		implements ClientHttpRequestFactory {
-	private static Logger logger = LoggerUtils
-			.getLogger(SimpleClientHttpRequestFactory.class);
-	
+public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor implements ClientHttpRequestFactory {
+	private static Logger logger = LoggerFactory.getLogger(SimpleClientHttpRequestFactory.class);
+
 	public static final ClientHttpRequestFactory INSTANCE = new SimpleClientHttpRequestFactory();
 	/**
 	 * 一个信任所有的ssl socket factory <br/>
@@ -50,8 +48,7 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor
 		} catch (KeyManagementException e) {
 			e.printStackTrace();
 		}
-		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc
-				.getSocketFactory();
+		TRUSE_ALL_SSL_SOCKET_FACTORY = sc == null ? null : sc.getSocketFactory();
 	}
 
 	private static final int DEFAULT_CHUNK_SIZE = 4096;
@@ -81,14 +78,12 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor
 		this.sslSocketFactory = sslSocketFactory;
 	}
 
-	public boolean setSSLSocketFactory(String certTrustFile,
-			String storePassword, String keyPassword) {
+	public boolean setSSLSocketFactory(String certTrustFile, String storePassword, String keyPassword) {
 		if (StringUtils.isEmpty(certTrustFile)) {
 			return false;
 		}
 
-		Resource resource = SystemEnvironment.getInstance().getResource(
-				certTrustFile);
+		Resource resource = SystemEnvironment.getInstance().getResource(certTrustFile);
 		if (!resource.exists()) {
 			logger.warn("not found certTrustFile: {}", certTrustFile);
 			return false;
@@ -96,15 +91,12 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor
 
 		InputStream is = ResourceUtils.getInputStream(resource);
 		try {
-			this.sslSocketFactory = SSLContexts
-					.custom()
-					.loadKeyMaterial(is, storePassword.toCharArray(),
-							keyPassword.toCharArray()).build()
+			this.sslSocketFactory = SSLContexts.custom()
+					.loadKeyMaterial(is, storePassword.toCharArray(), keyPassword.toCharArray()).build()
 					.getSocketFactory();
 		} catch (Exception e) {
-			logger.error(e,
-					"certTrustFile [{}], storePassword [{}], keyPassword [{}]",
-					certTrustFile, storePassword, keyPassword);
+			logger.error(e, "certTrustFile [{}], storePassword [{}], keyPassword [{}]", certTrustFile, storePassword,
+					keyPassword);
 			return false;
 		}
 		return true;
@@ -114,11 +106,10 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor
 	 * Indicate whether this request factory should buffer the
 	 * {@linkplain ClientHttpRequest#getBody() request body} internally.
 	 * <p>
-	 * Default is {@code true}. When sending large amounts of data via POST or
-	 * PUT, it is recommended to change this property to {@code false}, so as
-	 * not to run out of memory. This will result in a {@link ClientHttpRequest}
-	 * that either streams directly to the underlying {@link HttpURLConnection}
-	 * (if the
+	 * Default is {@code true}. When sending large amounts of data via POST or PUT,
+	 * it is recommended to change this property to {@code false}, so as not to run
+	 * out of memory. This will result in a {@link ClientHttpRequest} that either
+	 * streams directly to the underlying {@link HttpURLConnection} (if the
 	 * {@link scw.net.http.springframework.http.HttpHeaders#getContentLength()
 	 * Content-Length} is known in advance), or that will use "Chunked transfer
 	 * encoding" (if the {@code Content-Length} is not known in advance).
@@ -147,49 +138,41 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor
 	}
 
 	/**
-	 * Set if the underlying URLConnection can be set to 'output streaming'
-	 * mode. Default is {@code true}.
+	 * Set if the underlying URLConnection can be set to 'output streaming' mode.
+	 * Default is {@code true}.
 	 * <p>
-	 * When output streaming is enabled, authentication and redirection cannot
-	 * be handled automatically. If output streaming is disabled, the
+	 * When output streaming is enabled, authentication and redirection cannot be
+	 * handled automatically. If output streaming is disabled, the
 	 * {@link HttpURLConnection#setFixedLengthStreamingMode} and
-	 * {@link HttpURLConnection#setChunkedStreamingMode} methods of the
-	 * underlying connection will never be called.
+	 * {@link HttpURLConnection#setChunkedStreamingMode} methods of the underlying
+	 * connection will never be called.
 	 * 
-	 * @param outputStreaming
-	 *            if output streaming is enabled
+	 * @param outputStreaming if output streaming is enabled
 	 */
 	public void setOutputStreaming(boolean outputStreaming) {
 		this.outputStreaming = outputStreaming;
 	}
 
-	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod)
-			throws IOException {
+	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
 		HttpURLConnection connection = openConnection(uri.toURL(), this.proxy);
 		prepareConnection(connection, httpMethod.name());
 
 		if (this.bufferRequestBody) {
-			return new SimpleBufferingClientHttpRequest(connection,
-					this.outputStreaming);
+			return new SimpleBufferingClientHttpRequest(connection, this.outputStreaming);
 		} else {
-			return new SimpleStreamingClientHttpRequest(connection,
-					this.chunkSize, this.outputStreaming);
+			return new SimpleStreamingClientHttpRequest(connection, this.chunkSize, this.outputStreaming);
 		}
 	}
 
-	protected HttpURLConnection openConnection(URL url, Proxy proxy)
-			throws IOException {
-		URLConnection urlConnection = (proxy != null ? url
-				.openConnection(proxy) : url.openConnection());
+	protected HttpURLConnection openConnection(URL url, Proxy proxy) throws IOException {
+		URLConnection urlConnection = (proxy != null ? url.openConnection(proxy) : url.openConnection());
 		if (!HttpURLConnection.class.isInstance(urlConnection)) {
-			throw new IllegalStateException("HttpURLConnection required for ["
-					+ url + "] but got: " + urlConnection);
+			throw new IllegalStateException("HttpURLConnection required for [" + url + "] but got: " + urlConnection);
 		}
 		return (HttpURLConnection) urlConnection;
 	}
 
-	protected void prepareConnection(HttpURLConnection connection,
-			String httpMethod) throws IOException {
+	protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
 		Integer connectTimeout = getConnectTimeout();
 		if (connectTimeout != null && connectTimeout >= 0) {
 			connection.setConnectTimeout(connectTimeout);
@@ -208,8 +191,8 @@ public class SimpleClientHttpRequestFactory extends HttpClientConfigAccessor
 			connection.setInstanceFollowRedirects(false);
 		}
 
-		if ("POST".equals(httpMethod) || "PUT".equals(httpMethod)
-				|| "PATCH".equals(httpMethod) || "DELETE".equals(httpMethod)) {
+		if ("POST".equals(httpMethod) || "PUT".equals(httpMethod) || "PATCH".equals(httpMethod)
+				|| "DELETE".equals(httpMethod)) {
 			connection.setDoOutput(true);
 		} else {
 			connection.setDoOutput(false);

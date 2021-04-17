@@ -8,17 +8,26 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.logging.Level;
 
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
+import scw.event.ChangeEvent;
+import scw.event.EventListener;
 import scw.event.Observable;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.io.event.ConvertibleObservablesProperties;
 
-public class LoggerLevelManager extends
-		ConvertibleObservablesProperties<SortedMap<String, Level>> {
+/**
+ * 动态管理日志等级管理<br/>
+ * 初始化行为发生在{@link SystemEnvironment}
+ * @see SystemEnvironment
+ * @author shuchaowen
+ *
+ */
+public final class LoggerLevelManager extends ConvertibleObservablesProperties<SortedMap<String, Level>> implements LevelFactory{
 	private static final SortedMap<String, Level> DEFAULT_LEVEL_MAP;
 	private static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
 		public int compare(String o1, String o2) {
@@ -31,49 +40,51 @@ public class LoggerLevelManager extends
 	};
 
 	private static LoggerLevelManager loggerLevelManager;
+	private final Level defaultLevel;
 
 	static {
-		String defaultLevel = SystemEnvironment.getInstance().getString(
-				Level.class.getName());
-		Level defLevel = StringUtils.isEmpty(defaultLevel) ? Level.INFO : Level
-				.getLevel(defaultLevel.toUpperCase());
-		
-		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);	
+		String defaultLevel = SystemEnvironment.getInstance().getString(Level.class.getName());
+		Level defLevel = StringUtils.isEmpty(defaultLevel) ? Level.INFO : CustomLevel.parse(defaultLevel);
+
+		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);
 		try {
-			for(Resource resource : ResourceUtils.getSystemResources("scw/logger-level.properties")){
+			for (Resource resource : ResourceUtils.getSystemResources("scw/logger-level.properties")) {
 				Properties properties = new Properties();
 				SystemEnvironment.getInstance().resolveProperties(properties, resource, null);
-				load(levelMap, properties, defLevel, true);
+				load(levelMap, properties, true);
 			}
 		} catch (IOException e) {
 		}
-		if(levelMap.isEmpty()){
+		if (levelMap.isEmpty()) {
 			DEFAULT_LEVEL_MAP = Collections.emptySortedMap();
-		}else{
+		} else {
 			DEFAULT_LEVEL_MAP = Collections.unmodifiableSortedMap(levelMap);
 		}
-		
+
 		loggerLevelManager = new LoggerLevelManager(defLevel);
-		Observable<Properties> observable = SystemEnvironment.getInstance().getProperties(SystemEnvironment.getInstance().getValue(
-						"scw.logger.level.config", String.class,
-						"/logger-level.properties"));
+		Observable<Properties> observable = SystemEnvironment.getInstance().getProperties(SystemEnvironment
+				.getInstance().getValue("scw.logger.level.config", String.class, "/logger-level.properties"));
 		observable.register();
 		loggerLevelManager.addObservable(observable);
+		
+		loggerLevelManager.registerListener(new EventListener<ChangeEvent<SortedMap<String, Level>>>() {
+			
+			@Override
+			public void onEvent(ChangeEvent<SortedMap<String, Level>> event) {
+				LoggerLevelEventDispatcher.getInstance().publish(loggerLevelManager);
+			}
+		});
 	}
-	
-	
 
 	public static LoggerLevelManager getInstance() {
 		return loggerLevelManager;
 	}
 
-	private final Level defaultLevel;
-
 	private LoggerLevelManager(Level defaultLevel) {
 		super(true);
 		this.defaultLevel = defaultLevel;
 	}
-	
+
 	@Override
 	public SortedMap<String, Level> forceGet() {
 		TreeMap<String, Level> map = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);
@@ -83,25 +94,23 @@ public class LoggerLevelManager extends
 	}
 
 	public SortedMap<String, Level> convert(Properties properties) {
-		return parse(properties, defaultLevel, false);
+		return parse(properties, false);
 	}
-	
-	private static SortedMap<String, Level> parse(Properties properties,
-			Level defaultLevel, boolean ignore){
+
+	private static SortedMap<String, Level> parse(Properties properties, boolean ignore) {
 		if (CollectionUtils.isEmpty(properties)) {
 			return Collections.emptySortedMap();
 		}
-		
+
 		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);
-		load(levelMap, properties, defaultLevel, ignore);
+		load(levelMap, properties, ignore);
 		if (levelMap.isEmpty()) {
 			return Collections.emptySortedMap();
 		}
 		return Collections.unmodifiableSortedMap(levelMap);
 	}
 
-	private static void load(Map<String, Level> levelMap, Properties properties,
-			Level defaultLevel, boolean ignore) {
+	private static void load(Map<String, Level> levelMap, Properties properties, boolean ignore) {
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			Object key = entry.getKey();
 			if (key == null) {
@@ -113,26 +122,21 @@ public class LoggerLevelManager extends
 				continue;
 			}
 
-			Level level = Level.getLevel(value.toString(),
-					defaultLevel.getValue());
+			Level level = CustomLevel.parse(value.toString());
 			if (level == null) {
 				continue;
 			}
-			
+
 			putLevel(levelMap, String.valueOf(key), level, ignore);
 		}
 	}
 
-	public Level getDefaultLevel() {
-		return defaultLevel;
-	}
-	
-	private static void putLevel(Map<String, Level> levelMap, String name, Level level, boolean ignore){
-		if(ignore){
+	private static void putLevel(Map<String, Level> levelMap, String name, Level level, boolean ignore) {
+		if (ignore) {
 			Level cacheLevel = levelMap.get(name);
-			//忽略低级的配置。 比如原来是DEBUG(cacheLevel),现在是INFO(level),那么不插入此配置
-			if(cacheLevel != null && level.isGreaterOrEqual(cacheLevel)){
-				return ;
+			// 忽略低级的配置。 比如原来是DEBUG(cacheLevel),现在是INFO(level),那么不插入此配置
+			if (cacheLevel != null && CustomLevel.isGreaterOrEqual(level, cacheLevel)) {
+				return;
 			}
 		}
 		levelMap.put(name, level);
@@ -150,6 +154,10 @@ public class LoggerLevelManager extends
 			}
 		}
 		return null;
+	}
+
+	public Level getDefaultLevel() {
+		return defaultLevel;
 	}
 
 	public Level getLevel(String name) {

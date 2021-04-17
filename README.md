@@ -17,4 +17,4 @@
 
 3.未开始模块
 -----------------
-RMI,JMX,JMS,Solr,Elasticsearch,Kafka,Netty
+JMX,JMS,Solr,Elasticsearch,Kafka,Netty

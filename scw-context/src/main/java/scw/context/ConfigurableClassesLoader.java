@@ -1,7 +1,7 @@
 package scw.context;
 
-public interface ConfigurableClassesLoader<S> extends ClassesLoader<S>{
-	void add(ClassesLoader<S> classesLoader);
-	
-	void add(Class<S> clazz);
+public interface ConfigurableClassesLoader extends ClassesLoader {
+	void add(ClassesLoader classesLoader);
+
+	void add(Class<?> clazz);
 }

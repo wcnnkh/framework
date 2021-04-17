@@ -6,16 +6,17 @@ import java.io.Reader;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import scw.core.reflect.ReflectionUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.NestedRuntimeException;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public class DefaultPropertiesResolver implements PropertiesResolver{
-	private static Logger logger = Logger.getLogger(DefaultPropertiesResolver.class.getName());
+	private static Logger logger = LoggerFactory.getLogger(DefaultPropertiesResolver.class.getName());
 	
 	public static final DefaultPropertiesResolver INSTANCE = new DefaultPropertiesResolver();
 	
@@ -42,7 +43,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver{
 					Method method = ReflectionUtils.getMethod(Properties.class,
 							"load", Reader.class);
 					if (method == null) {
-						logger.warning("jdk1.6及以上的版本才支持指定字符集: "
+						logger.warn("jdk1.6及以上的版本才支持指定字符集: "
 								+ resource.getDescription());
 						properties.load(is);
 					} else {

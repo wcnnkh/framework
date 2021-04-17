@@ -49,7 +49,7 @@ public final class DBUtils {
 		EntityConversionService configure = new PropertyFactoryToEntityConversionService(SystemEnvironment.getInstance());
 		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
 		configure.setStrict(true);
-		configure.setLoggerLevel(Level.INFO);
+		configure.setLoggerLevel(Level.INFO.getValue());
 		configure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), instance, TypeDescriptor.forObject(instance));
 	}
 	

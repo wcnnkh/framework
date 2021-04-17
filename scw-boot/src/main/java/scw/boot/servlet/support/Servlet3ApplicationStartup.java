@@ -13,7 +13,6 @@ import javax.servlet.ServletRegistration;
 
 import scw.boot.Application;
 import scw.boot.servlet.FilterRegistration;
-import scw.boot.support.ApplicationUtils;
 import scw.core.utils.CollectionUtils;
 import scw.util.XUtils;
 
@@ -54,7 +53,7 @@ public class Servlet3ApplicationStartup extends DefaultServletApplicationStartup
 		}
 		
 		for (ServletContainerInitializer initializer : application.getBeanFactory().getServiceLoader(ServletContainerInitializer.class)) {
-			initializer.onStartup(ApplicationUtils.getContextClasses(application), servletContext);
+			initializer.onStartup(application.getContextClassesLoader().toSet(), servletContext);
 		}
 		super.afterStarted(servletContext, application);
 	}

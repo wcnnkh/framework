@@ -53,7 +53,6 @@ import scw.microsoft.RowCallback;
  * A XLS -> CSV processor, that uses the MissingRecordAware EventModel code to
  * ensure it outputs all columns and rows.
  * 
- * @author Nick Burch
  */
 @RequiredJavaVersion(8)
 public class XLS2CSVmra implements HSSFListener {

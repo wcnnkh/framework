@@ -12,14 +12,14 @@ import scw.boot.Application;
 import scw.boot.ApplicationAware;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.servlet.ServletService;
 import scw.servlet.ServletUtils;
 import scw.util.Result;
 
 public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerUtils.getLogger(DispatcherServlet.class);
+	private static Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
 	private Application application;
 	private ServletService servletService;
 	private boolean reference = true;

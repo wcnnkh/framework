@@ -11,6 +11,7 @@ import scw.http.HttpStatus;
 import scw.http.server.ServerHttpAsyncEvent;
 import scw.http.server.ServerHttpAsyncListener;
 import scw.io.IOUtils;
+import scw.logger.CustomLevel;
 import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -19,7 +20,7 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);
 
 	private Long executeWarnTime;
-	private Level enableLevel = Level.ALL;
+	private java.util.logging.Level enableLevel = Level.ALL.getValue();
 	private final HttpChannel httpChannel;
 	private Object responseBody;
 	private Throwable error;
@@ -44,11 +45,11 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 		this.error = error;
 	}
 
-	public final Level getEnableLevel() {
+	public java.util.logging.Level getEnableLevel() {
 		return enableLevel;
 	}
 
-	public void setEnableLevel(Level enableLevel) {
+	public void setEnableLevel(java.util.logging.Level enableLevel) {
 		this.enableLevel = enableLevel;
 	}
 
@@ -93,9 +94,9 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 		}
 
 		// 禁用指定级别级别以下的日志
-		if (level.isGreaterOrEqual(getEnableLevel()) && logger.isLogEnable(level)) {
+		if (CustomLevel.isGreaterOrEqual(level.getValue(), getEnableLevel()) && logger.isLoggable(level.getValue())) {
 			Object messag = (logger.isDebugEnabled() || !level.equals(Level.WARN)) ? this : httpChannel.getRequest();
-			logger.log(level, "Execution {}ms of {}", useTime, messag);
+			logger.log(level.getValue(), "Execution {}ms of {}", useTime, messag);
 		}
 	}
 

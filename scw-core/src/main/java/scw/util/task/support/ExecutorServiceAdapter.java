@@ -41,7 +41,6 @@ import scw.util.task.TaskExecutor;
  * in a Java EE 7 environment. The lifecycle is always up to the backend pool,
  * with this adapter acting as an access-only proxy for that target pool.
  *
- * @author Juergen Hoeller
  * @see java.util.concurrent.ExecutorService
  */
 public class ExecutorServiceAdapter extends AbstractExecutorService {

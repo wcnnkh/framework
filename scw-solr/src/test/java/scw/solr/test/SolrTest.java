@@ -23,7 +23,7 @@ import org.apache.solr.common.util.NamedList;
 
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.logger.SplitLineAppend;
+import scw.util.SplitLine;
 
 /**
  * solr安装教程 {@link https://solr.apache.org/guide/8_8/solr-tutorial.html}<br/>
@@ -43,7 +43,7 @@ public class SolrTest {
 	private static String collections = "gettingstarted";
 
 	public void query() throws SolrServerException, IOException {
-		logger.info(new SplitLineAppend("query"));
+		logger.info(new SplitLine("query").toString());
 		Map<String, String> queryParamMap = new HashMap<String, String>();
 		queryParamMap.put("q", "*");
 		queryParamMap.put("fl", "id, name");
@@ -63,15 +63,15 @@ public class SolrTest {
 	}
 	
 	public void addBean() throws SolrServerException, IOException{
-		logger.info(new SplitLineAppend("addBean"));
+		logger.info(new SplitLine("addBean").toString());
 		TechProduct kindle = new TechProduct("kindle-id-4", "Amazon Kindle Paperwhite");
 		UpdateResponse response = client.addBean(collections, kindle);
 		client.commit(collections);
-		logger.info(response);
+		logger.info(response.toString());
 	}
 	
 	public void queryBeans() throws SolrServerException, IOException{
-		logger.info(new SplitLineAppend("queryBeans"));
+		logger.info(new SplitLine("queryBeans").toString());
 		final SolrQuery query = new SolrQuery("*:*");
 		query.addField("id");
 		query.addField("name");
@@ -100,7 +100,7 @@ public class SolrTest {
 	}
 
 	public void other() throws SolrServerException, IOException{
-		logger.info(new SplitLineAppend("other"));
+		logger.info(new SplitLine("other").toString());
 		@SuppressWarnings({"rawtypes"})
 		final SolrRequest request = new CollectionAdminRequest.ClusterStatus();
 

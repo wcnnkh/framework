@@ -24,7 +24,6 @@ import scw.util.concurrent.ListenableFuture;
  * Extension of the {@link AsyncTaskExecutor} interface, adding the capability to submit
  * tasks for {@link ListenableFuture}s.
  *
- * @author Arjen Poutsma
  * @see ListenableFuture
  */
 public interface AsyncListenableTaskExecutor extends AsyncTaskExecutor {

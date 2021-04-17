@@ -22,6 +22,10 @@ public final class HttpUtils {
 	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class,
 			"scw.http.client.DefaultHttpClient");
 
+	/**
+	 * 获取默认的HttpClient(获取spi机制加载)
+	 * @return
+	 */
 	public static HttpClient getHttpClient() {
 		return HTTP_CLIENT;
 	}

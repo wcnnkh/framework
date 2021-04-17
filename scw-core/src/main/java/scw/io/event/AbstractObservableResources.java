@@ -30,8 +30,7 @@ public abstract class AbstractObservableResources<T> extends
 				continue;
 			}
 			
-			eventRegistrations[i++] = resource.getEventDispatcher()
-					.registerListener(new EventListener<ResourceEvent>() {
+			eventRegistrations[i++] = resource.registerListener(new EventListener<ResourceEvent>() {
 						public void onEvent(ResourceEvent event) {
 							eventListener.onEvent(new ChangeEvent<T>(event, forceGet()));
 						}

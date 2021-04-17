@@ -7,11 +7,12 @@ import java.net.URI;
 import java.net.URL;
 
 import scw.env.SystemEnvironment;
-import scw.io.event.EmptyResourceEventDispatcher;
-import scw.io.event.ResourceEventDispatcher;
+import scw.event.BasicEventRegistry;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
+import scw.io.event.ResourceEvent;
 
-public interface Resource extends InputStreamSource, OutputStreamSource {
-	public static final EmptyResourceEventDispatcher EMPTY_EVENT_DISPATCHER = new EmptyResourceEventDispatcher();
+public interface Resource extends InputStreamSource, OutputStreamSource, BasicEventRegistry<ResourceEvent> {
 	public static final Resource NONEXISTENT_RESOURCE = new NonexistentResource();
 	/**
 	 * 是否开启支资源的监听，默认开启
@@ -67,7 +68,5 @@ public interface Resource extends InputStreamSource, OutputStreamSource {
 
 	String getDescription();
 	
-	boolean isSupportEventDispatcher();
-	
-	ResourceEventDispatcher getEventDispatcher();
+	EventRegistration registerListener(EventListener<ResourceEvent> eventListener);
 }

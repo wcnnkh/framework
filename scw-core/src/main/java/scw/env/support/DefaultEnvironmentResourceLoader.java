@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Properties;
 
 import scw.core.utils.ArrayUtils;
+import scw.core.utils.StringUtils;
 import scw.env.BasicEnvironment;
 import scw.env.EnvironmentResourceLoader;
 import scw.event.EmptyObservable;
@@ -19,13 +20,15 @@ import scw.io.event.ObservableProperties;
 import scw.io.resolver.PropertiesResolver;
 import scw.io.resolver.support.PropertiesResolvers;
 import scw.lang.Nullable;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.util.ClassLoaderProvider;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.value.Value;
 
 public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader implements EnvironmentResourceLoader{
-	static final String CONFIG_SUFFIX = "SHUCHAOWEN_CONFIG_SUFFIX";
-	static final String RESOURCE_SUFFIX = "scw_res_suffix";
+	private static final String[] SUFFIXS = new String[] {"scw_res_suffix", "SHUCHAOWEN_CONFIG_SUFFIX", "resource.suffix"};
+	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
 	private final ConcurrentReferenceHashMap<String, Resource> cacheMap = new ConcurrentReferenceHashMap<String, Resource>();
 	private final PropertiesResolvers propertiesResolvers = new PropertiesResolvers();
 	private final BasicEnvironment environment;
@@ -46,8 +49,11 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 			Resource cache = cacheMap.putIfAbsent(location, resource);
 			if (cache != null) {
 				resource = cache;
+			}else {
+				if(logger.isDebugEnabled()) {
+					logger.debug("Find resource {} result {}", location, resource);
+				}
 			}
-
 			if (resource == null) {
 				cacheMap.putIfAbsent(location, Resource.NONEXISTENT_RESOURCE);
 			}
@@ -61,16 +67,14 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 	 * @return
 	 */
 	protected String[] getResourceEnvironmentalNames() {
-		Value value = environment.getValue(CONFIG_SUFFIX);
-		if(value == null || value.isEmpty()){
-			value = environment.getValue(RESOURCE_SUFFIX);
+		Value value = null;
+		for(String suffix : SUFFIXS) {
+			value = environment.getValue(suffix);
+			if(value != null && !value.isEmpty()) {
+				return value.getAsObject(String[].class);
+			}
 		}
-		
-		if(value == null || value.isEmpty()){
-			return new String[0];
-		}
-		
-		return value.getAsObject(String[].class);
+		return StringUtils.MEPTY_ARRAY;
 	}
 
 	/**
@@ -114,16 +118,18 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 			return null;
 		}
 		
-		if(resources.length == 1){
-			return resources[0];
-		}
-		
+		Resource resourceToUse = resources[resources.length - 1];
 		for(Resource resource : resources){
 			if(resource.exists()){
-				return resource;
+				resourceToUse = resource;
+				break;
 			}
 		}
-		return resources[resources.length - 1];
+		
+		if(logger.isDebugEnabled()) {
+			logger.debug("Get resource [{}] result {}", resourceToUse);
+		}
+		return resourceToUse;
 	}
 
 	public Resource[] getResources(String locationPattern) {
@@ -135,6 +141,10 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 				continue;
 			}
 			resources.add(res);
+		}
+		
+		if(logger.isDebugEnabled()) {
+			logger.debug("Get resources [{}] results {}", resources);
 		}
 		return resources.toArray(new Resource[0]);
 	}

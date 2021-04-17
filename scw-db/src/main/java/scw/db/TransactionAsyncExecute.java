@@ -23,7 +23,7 @@ public final class TransactionAsyncExecute extends ArrayList<AsyncExecute> imple
 			manager.commit(transaction);
 		} catch (Throwable e) {
 			manager.rollback(transaction);
-			logger.error(e, this);
+			logger.error(e, this.toString());
 		}
 	}
 }

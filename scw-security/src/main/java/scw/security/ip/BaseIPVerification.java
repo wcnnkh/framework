@@ -10,13 +10,13 @@ import scw.env.Environment;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
 
 public class BaseIPVerification extends HashSet<String> implements IPVerification {
 	private static final long serialVersionUID = 1L;
-	private Logger logger = LoggerUtils.getLogger(getClass());
+	private Logger logger = LoggerFactory.getLogger(getClass());
 	private StringMatcher matcher = DefaultStringMatcher.getInstance();
 	
 	public StringMatcher getMatcher() {

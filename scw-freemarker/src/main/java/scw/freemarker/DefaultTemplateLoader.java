@@ -4,16 +4,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import freemarker.cache.TemplateLoader;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
 import scw.io.ResourceUtils;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
-import freemarker.cache.TemplateLoader;
+import scw.logger.LoggerFactory;
 
 public class DefaultTemplateLoader implements TemplateLoader {
-	private static Logger logger = LoggerUtils.getLogger(DefaultTemplateLoader.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultTemplateLoader.class);
 	private final ResourceLoader resourceLoader;
 	
 	public DefaultTemplateLoader(ResourceLoader resourceLoader){
@@ -30,7 +30,7 @@ public class DefaultTemplateLoader implements TemplateLoader {
 			try {
 				return ((Resource) templateSource).lastModified();
 			} catch (IOException e) {
-				logger.error(e, templateSource);
+				logger.error(e, templateSource.toString());
 			}
 		}
 		return 0;

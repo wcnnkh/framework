@@ -59,11 +59,11 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	 */
 	public DirectoryStorage(int exp, NoTypeSpecifiedSerializer serializer, File directory) {
 		Assert.requiredArgument(serializer != null, "serializer");
-		Assert.requiredArgument(directory != null && directory.isDirectory(), "directory");
+		Assert.requiredArgument(directory != null, "directory");
 		this.exp = exp;
 		this.serializer = serializer;
 		this.directory = directory;
-		logger.info("{} exp is {} use cache directory: {}", getClass().getName(), exp, this.directory);
+		logger.info("{} exp is {}s use cache directory: {}", getClass().getName(), exp, this.directory);
 		if (exp > 0) {
 			TIMER.schedule(this, exp * 1000L, exp * 1000L);
 		}

@@ -31,7 +31,7 @@ import scw.event.Observable;
 import scw.io.event.ConvertibleObservablesProperties;
 import scw.lang.Nullable;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.InetUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
@@ -62,7 +62,7 @@ import scw.util.KeyValuePair;
  *
  */
 public class HttpHeaders extends Headers {
-	private static Logger logger = LoggerUtils.getLogger(HttpHeaders.class);
+	private static Logger logger = LoggerFactory.getLogger(HttpHeaders.class);
 	private static final long serialVersionUID = -8578554704772377436L;
 
 	/**

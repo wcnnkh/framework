@@ -5,12 +5,12 @@ import java.lang.reflect.Modifier;
 
 import scw.beans.BeanDefinition;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.Field;
 import scw.mapper.MapperUtils;
 
 public abstract class AbstractIocProcessor implements IocProcessor {
-	protected static Logger logger = LoggerUtils.getLogger(IocProcessor.class);
+	protected static Logger logger = LoggerFactory.getLogger(IocProcessor.class);
 
 	protected boolean acceptModifiers(BeanDefinition beanDefinition, Object bean, int modifiers){
 		if(bean == null){

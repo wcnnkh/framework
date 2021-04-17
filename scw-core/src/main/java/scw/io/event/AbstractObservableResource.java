@@ -18,7 +18,7 @@ public abstract class AbstractObservableResource<T> extends
 			return EventRegistration.EMPTY;
 		}
 
-		return resource.getEventDispatcher().registerListener(
+		return resource.registerListener(
 				new EventListener<ResourceEvent>() {
 					public void onEvent(ResourceEvent event) {
 						eventListener.onEvent(new ChangeEvent<T>(event, forceGet()));

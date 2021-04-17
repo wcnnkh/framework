@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlException;
@@ -13,7 +13,7 @@ import scw.sql.SqlUtils;
 import scw.sql.orm.dialect.SqlDialect;
 
 public abstract class AbstractDataBase implements DataBase {
-	private Logger logger = LoggerUtils.getLogger(this.getClass());
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final String username;
 	private final String password;
 	private final String driverClass;
@@ -64,7 +64,7 @@ public abstract class AbstractDataBase implements DataBase {
 
 	public void execute(Sql sql) {
 		Connection connection = null;
-		logger.info(sql);
+		logger.info(sql.toString());
 		try {
 			connection = getConnection();
 			SqlUtils.execute(connection, sql);

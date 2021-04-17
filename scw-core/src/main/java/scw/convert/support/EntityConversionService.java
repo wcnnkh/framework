@@ -3,6 +3,8 @@ package scw.convert.support;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
@@ -11,29 +13,29 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.instance.NoArgsInstanceFactory;
-import scw.logger.Level;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.Field;
-import scw.mapper.Fields;
 import scw.mapper.FieldFeature;
+import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.util.ConfigurableAccept;
 import scw.util.alias.AliasRegistry;
 
-public abstract class EntityConversionService extends ConditionalConversionService{
-	private static Logger logger = LoggerUtils.getLogger(EntityConversionService.class);
-	private static final String CONNECTOR = ".";
+public abstract class EntityConversionService extends ConditionalConversionService {
+	private static Logger logger = LoggerFactory.getLogger(EntityConversionService.class);
 	private AliasRegistry aliasRegistry;
 	private boolean ignoreStaticField = true;
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
 	private String prefix;
-	private String connector;
-	private boolean strict = true;//默认是严格模式
+	private String connector = ".";
+	private boolean strict = true;// 默认是严格模式
 	private ConversionService conversionService;
 	private NoArgsInstanceFactory instanceFactory;
-	private Level loggerLevel = Level.DEBUG;
-	
+	private Level loggerLevel = scw.logger.Level.DEBUG.getValue();
+	private boolean useSuperClass = true;// 默认也使用父类
+	private boolean ignoreFinalField = false;// 是否忽略常量字段
+
 	public NoArgsInstanceFactory getInstanceFactory() {
 		return instanceFactory;
 	}
@@ -41,7 +43,15 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	public void setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
 	}
-	
+
+	public boolean isIgnoreFinalField() {
+		return ignoreFinalField;
+	}
+
+	public void setIgnoreFinalField(boolean ignoreFinalField) {
+		this.ignoreFinalField = ignoreFinalField;
+	}
+
 	public Level getLoggerLevel() {
 		return loggerLevel;
 	}
@@ -50,10 +60,10 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		this.loggerLevel = loggerLevel;
 	}
 
-	public EntityConversionService(ConversionService conversionService){
+	public EntityConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
-	
+
 	public AliasRegistry getAliasRegistry() {
 		return aliasRegistry;
 	}
@@ -64,6 +74,14 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	public boolean isStrict() {
 		return strict;
+	}
+
+	public boolean isUseSuperClass() {
+		return useSuperClass;
+	}
+
+	public void setUseSuperClass(boolean useSuperClass) {
+		this.useSuperClass = useSuperClass;
 	}
 
 	public void setStrict(boolean strict) {
@@ -78,7 +96,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		this.ignoreStaticField = ignoreStaticField;
 	}
 
-	public String getPrefix() {
+	public final String getPrefix() {
 		return prefix;
 	}
 
@@ -90,21 +108,20 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		return fieldAccept;
 	}
 
-	public String getConnector() {
-		return StringUtils.isEmpty(connector) ? CONNECTOR : connector;
+	public final String getConnector() {
+		return connector;
 	}
 
 	public void setConnector(String connector) {
 		this.connector = connector;
 	}
 
-	private Map<String, Object> getMapByPrefix(Object source, String prefix,
-			String connector) {
+	private Map<String, Object> getMapByPrefix(Object source, String prefix, String connector) {
 		Map<String, Object> map = new LinkedHashMap<String, Object>();
 		Enumeration<String> keys = keys(source);
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement();
-			if (key.equals(prefix) || map.containsKey(key)) {
+			if (StringUtils.isNotEmpty(prefix) && (key.equals(prefix) || map.containsKey(key))) {
 				continue;
 			}
 
@@ -114,8 +131,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 					continue;
 				}
 
-				map.put(key.substring(prefix.length() + connector.length()),
-						value);
+				map.put(StringUtils.isEmpty(prefix)? key:key.substring(prefix.length() + connector.length()), value);
 			}
 		}
 		return map;
@@ -141,118 +157,132 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		String name = field.getSetter().getName();
 		Object value = getProperty(source, name, prefix);
 		if (value == null) {
-			name = StringUtils.humpNamingReplacement(field.getSetter()
-					.getName(), "-");
+			name = StringUtils.humpNamingReplacement(field.getSetter().getName(), "-");
 			value = getProperty(source, name, prefix);
 		}
 		return value;
 	}
 
-	private Map<String, Object> getMapProperty(Object source, Field field,
-			String prefix, String connector) {
+	private Map<String, Object> getMapProperty(Object source, Field field, String prefix, String connector) {
 		Map<String, Object> valueMap = new LinkedHashMap<String, Object>();
-		valueMap.putAll(getMapByPrefix(source, prefix
-				+ field.getSetter().getName(), connector));
-		valueMap.putAll(getMapByPrefix(
-				source,
-				prefix
-						+ StringUtils.humpNamingReplacement(field.getSetter()
-								.getName(), "-"), connector));
+		valueMap.putAll(getMapByPrefix(source, prefix + field.getSetter().getName(), connector));
+		valueMap.putAll(getMapByPrefix(source,
+				prefix + StringUtils.humpNamingReplacement(field.getSetter().getName(), "-"), connector));
 		return valueMap;
 	}
 	
+	/**
+	 * 将source转化为map并插入到targetMap
+	 * @param source
+	 * @param targetMap
+	 * @param keyType
+	 * @param valueType
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void putAll(Object source, Map targetMap, TypeDescriptor keyType, TypeDescriptor valueType){
+		Map<String, Object> sourceMap = getMapByPrefix(source, prefix, connector);
+		for(Entry<String, Object> entry : sourceMap.entrySet()){
+			Object key = conversionService.convert(entry.getKey(), TypeDescriptor.valueOf(String.class), keyType);
+			Object value = conversionService.convert(entry.getValue(), TypeDescriptor.forObject(entry.getValue()), valueType);
+			targetMap.put(key, value);
+		}
+	}
+
 	protected abstract Enumeration<String> keys(Object source);
 
 	protected abstract Object getProperty(Object source, String key);
-	
-	protected Fields getFields(Class<?> type){
-		Fields fields;
+
+	protected Fields getFields(Class<?> type) {
+		Fields fields = MapperUtils.getMapper().getFields(type, isUseSuperClass())
+				.accept(FieldFeature.EXISTING_SETTER_FIELD);
 		if (isIgnoreStaticField()) {
-			fields = MapperUtils.getMapper().getFields(type).accept(FieldFeature.EXISTING_SETTER_FIELD, FieldFeature.IGNORE_STATIC).accept(fieldAccept);
-		} else {
-			fields = MapperUtils.getMapper().getFields(type).accept(FieldFeature.EXISTING_SETTER_FIELD).accept(fieldAccept);
+			fields = fields.accept(FieldFeature.IGNORE_STATIC);
 		}
-		return fields;
+
+		if (isIgnoreFinalField()) {
+			fields = fields.accept(FieldFeature.IGNORE_SETTER_FINAL);
+		}
+		return fields.accept(fieldAccept);
 	}
-	
-	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target, TypeDescriptor targetType){
+
+	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target,
+			TypeDescriptor targetType) {
 		Object valueToUse = conversionService.convert(value, sourceType.narrow(value),
 				new TypeDescriptor(field.getSetter()));
-		if(logger.isLogEnable(loggerLevel)){
-			logger.log(loggerLevel, "Property {} on target {} set value {}", field.getSetter().getName(), targetType.getType(), valueToUse);
+		if (logger.isLoggable(loggerLevel)) {
+			logger.log(loggerLevel, "Property {} on target {} set value {}", field.getSetter().getName(),
+					targetType.getType(), valueToUse);
 		}
 		field.getSetter().set(target, valueToUse);
 	}
-	
-	public void configurationProperties(Object source, Object target){
+
+	public void configurationProperties(Object source, Object target) {
 		configurationProperties(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
 	}
-	
-	public void configurationProperties(Object source, TypeDescriptor sourceType,
-			Object target, TypeDescriptor targetType) {
-		if(source == null){
-			return ;
+
+	public void configurationProperties(Object source, TypeDescriptor sourceType, Object target,
+			TypeDescriptor targetType) {
+		if (source == null) {
+			return;
 		}
-		
+
 		String connector = getConnector();
 		String prefix = getPrefix();
 		prefix = StringUtils.isEmpty(prefix) ? "" : (prefix + connector);
 		Fields fields = getFields(targetType.getType());
-		if(isStrict()){
+		if (isStrict()) {
 			strictConfiguration(fields, source, sourceType, target, targetType, prefix);
-			return ;
-		}
-		
-		for (Field field : fields) {
-			Object value = getProperty(source, field, prefix);
-			if (value == null) {
-				if (Map.class.isAssignableFrom(field.getSetter().getType())) {
-					Map<String, Object> valueMap = getMapProperty(source,
-							field, prefix, connector);
-					if (!CollectionUtils.isEmpty(valueMap)) {
-						value = valueMap;
+		} else {
+			for (Field field : fields) {
+				Object value = getProperty(source, field, prefix);
+				if (value == null) {
+					if (Map.class.isAssignableFrom(field.getSetter().getType())) {
+						Map<String, Object> valueMap = getMapProperty(source, field, prefix, connector);
+						if (!CollectionUtils.isEmpty(valueMap)) {
+							value = valueMap;
+						}
 					}
 				}
-			}
-			
-			if(value != null){
-				setValue(field, value, sourceType, target, targetType);
+
+				if (value != null) {
+					setValue(field, value, sourceType, target, targetType);
+				}
 			}
 		}
 	}
-	
-	protected void strictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target, TypeDescriptor targetType, String prefix){
+
+	protected void strictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target,
+			TypeDescriptor targetType, String prefix) {
 		Enumeration<String> keys = keys(source);
-		while(keys.hasMoreElements()){
+		while (keys.hasMoreElements()) {
 			String originKey = keys.nextElement();
 			String name = originKey;
-			if(StringUtils.isNotEmpty(prefix) && name.startsWith(prefix)){
+			if (StringUtils.isNotEmpty(prefix) && name.startsWith(prefix)) {
 				name = name.substring(prefix.length());
 			}
-			
+
 			Field field = fields.find(name, null);
-			if(field == null && aliasRegistry != null){
-				for(String alias : aliasRegistry.getAliases(name)){
+			if (field == null && aliasRegistry != null) {
+				for (String alias : aliasRegistry.getAliases(name)) {
 					field = fields.find(alias, null);
-					if(field != null){
+					if (field != null) {
 						break;
 					}
 				}
 			}
-			
-			if(field == null){
+
+			if (field == null) {
 				continue;
 			}
-			
+
 			Object value = getProperty(source, originKey);
-			if(value != null){
+			if (value != null) {
 				setValue(field, value, sourceType, target, targetType);
 			}
 		}
 	}
-	
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		if (source == null) {
 			return null;
 		}
@@ -261,23 +291,22 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		configurationProperties(source, sourceType, target, targetType);
 		return target;
 	}
-	
-	protected boolean isInstance(TypeDescriptor targetType){
-		if(instanceFactory == null){
+
+	protected boolean isInstance(TypeDescriptor targetType) {
+		if (instanceFactory == null) {
 			return ReflectionUtils.isInstance(targetType.getType());
 		}
 		return instanceFactory.isInstance(targetType.getType());
 	}
-	
-	protected Object newInstance(TypeDescriptor targetType){
-		if(instanceFactory == null){
+
+	protected Object newInstance(TypeDescriptor targetType) {
+		if (instanceFactory == null) {
 			return ReflectionUtils.newInstance(targetType.getType());
 		}
 		return instanceFactory.getInstance(targetType.getType());
 	}
 
-	public boolean canConvert(TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return super.canConvert(sourceType, targetType) && isInstance(targetType);
 	}
 }

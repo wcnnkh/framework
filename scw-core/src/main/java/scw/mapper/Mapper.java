@@ -35,18 +35,42 @@ public class Mapper extends DefaultMetadataFactory{
 		return Arrays.asList(supplier.get());
 	}
 	
+	/**
+	 * 获取一个类所有的字段，使用父类
+	 * @param entityClass
+	 * @return
+	 */
 	public final Fields getFields(Class<?> entityClass) {
 		return getFields(entityClass, true, null);
 	}
 	
+	/**
+	 * 获取一个类所有的字段
+	 * @param entityClass
+	 * @param useSuperClass 是否使用父类
+	 * @return
+	 */
 	public final Fields getFields(Class<?> entityClass, boolean useSuperClass) {
 		return getFields(entityClass, useSuperClass, null);
 	}
 
+	/**
+	 * 获取一个类所有的字段
+	 * @param entityClass
+	 * @param parentField 父级字段
+	 * @return
+	 */
 	public final Fields getFields(Class<?> entityClass, Field parentField) {
 		return getFields(entityClass, true, parentField);
 	}
 
+	/**
+	 * 获取一个类所有的字段
+	 * @param entityClass 实体类
+	 * @param useSuperClass 是否使用父类
+	 * @param parentField 父级字段
+	 * @return
+	 */
 	public Fields getFields(Class<?> entityClass, boolean useSuperClass, Field parentField) {
 		return new DefaultFields(this, entityClass, useSuperClass, parentField);
 	}

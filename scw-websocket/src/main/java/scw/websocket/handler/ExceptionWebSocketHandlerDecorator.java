@@ -1,14 +1,14 @@
 package scw.websocket.handler;
 
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.messageing.Message;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.WebSocketSession;
 
 public class ExceptionWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
-	private static final Logger logger = LoggerUtils.getLogger(ExceptionWebSocketHandlerDecorator.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExceptionWebSocketHandlerDecorator.class);
 
 	public ExceptionWebSocketHandlerDecorator(WebSocketHandler delegate) {
 		super(delegate);

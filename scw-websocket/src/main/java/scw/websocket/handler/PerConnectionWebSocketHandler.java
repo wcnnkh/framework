@@ -23,7 +23,7 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryAccessor;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.websocket.CloseStatus;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.WebSocketSession;
@@ -49,7 +49,7 @@ import scw.websocket.WebSocketSession;
  */
 public class PerConnectionWebSocketHandler extends BeanFactoryAccessor implements WebSocketHandler {
 
-	private static final Logger logger = LoggerUtils.getLogger(PerConnectionWebSocketHandler.class);
+	private static final Logger logger = LoggerFactory.getLogger(PerConnectionWebSocketHandler.class);
 	private Class<? extends WebSocketHandler> handlerType;
 
 	private final Map<WebSocketSession, WebSocketHandler> handlers = new ConcurrentHashMap<WebSocketSession, WebSocketHandler>();

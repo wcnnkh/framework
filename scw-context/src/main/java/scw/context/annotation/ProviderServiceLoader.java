@@ -8,14 +8,14 @@ import scw.instance.ServiceLoader;
 import scw.instance.support.ClassInstanceIterator;
 
 public class ProviderServiceLoader<S> implements ServiceLoader<S>{
-	private final ClassesLoader<S> providers;
+	private final ClassesLoader providers;
 	private final NoArgsInstanceFactory instanceFactory;
 	
-	public ProviderServiceLoader(ClassesLoader<?> classesLoader, NoArgsInstanceFactory instanceFactory, Class<S> serviceClass){
-		this(new ProviderClassesLoader<S>(classesLoader, serviceClass), instanceFactory);
+	public ProviderServiceLoader(ClassesLoader classesLoader, NoArgsInstanceFactory instanceFactory, Class<S> serviceClass){
+		this(new ProviderClassesLoader(classesLoader, serviceClass), instanceFactory);
 	}
 	
-	public ProviderServiceLoader(ClassesLoader<S> providers, NoArgsInstanceFactory instanceFactory){
+	public ProviderServiceLoader(ClassesLoader providers, NoArgsInstanceFactory instanceFactory){
 		this.providers = providers;
 		this.instanceFactory = instanceFactory;
 	}

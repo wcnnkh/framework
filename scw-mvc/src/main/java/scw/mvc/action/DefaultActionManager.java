@@ -23,7 +23,7 @@ import scw.http.server.HttpControllerDescriptor;
 import scw.http.server.ServerHttpRequest;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mvc.MVCUtils;
 import scw.net.Restful;
 import scw.net.Restful.RestfulMatchingResult;
@@ -32,7 +32,7 @@ import scw.web.WebUtils;
 
 @Provider
 public class DefaultActionManager implements ActionManager {
-	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private Map<Method, Action> actionMap = new LinkedHashMap<Method, Action>();
 	private BasicEventDispatcher<ObjectEvent<Action>> eventDispatcher = new DefaultBasicEventDispatcher<ObjectEvent<Action>>(
 			false);

@@ -12,7 +12,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.Resource;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 import scw.util.DefaultStringMatcher;
@@ -20,7 +20,7 @@ import scw.util.StringMatcher;
 import scw.util.XUtils;
 
 public abstract class AbstractStaticResourceLoader implements StaticResourceLoader {
-	private static Logger logger = LoggerUtils.getLogger(StaticResourceLoader.class);
+	private static Logger logger = LoggerFactory.getLogger(StaticResourceLoader.class);
 	private final TreeMap<String, TreeSet<String>> mappingMap = new TreeMap<String, TreeSet<String>>();
 	private StringMatcher matcher = DefaultStringMatcher.getInstance();
 	private String defaultFileName = "index.html";

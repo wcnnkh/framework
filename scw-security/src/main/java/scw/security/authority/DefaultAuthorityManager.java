@@ -15,10 +15,10 @@ import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public class DefaultAuthorityManager<T extends Authority> implements AuthorityManager<T> {
-	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	public Map<String, T> authorityMap = new HashMap<String, T>();
 
 	public T getAuthority(String id) {

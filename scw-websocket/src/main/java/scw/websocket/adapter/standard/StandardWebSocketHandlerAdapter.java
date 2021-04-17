@@ -9,7 +9,7 @@ import javax.websocket.MessageHandler;
 
 import scw.core.Assert;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.messageing.BinaryFragmentMessage;
 import scw.messageing.BinaryMessage;
 import scw.messageing.TextFragmentMessage;
@@ -20,7 +20,7 @@ import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.ExceptionWebSocketHandlerDecorator;
 
 public class StandardWebSocketHandlerAdapter extends Endpoint {
-	private static final Logger logger = LoggerUtils.getLogger(StandardWebSocketHandlerAdapter.class);
+	private static final Logger logger = LoggerFactory.getLogger(StandardWebSocketHandlerAdapter.class);
 
 	private final WebSocketHandler handler;
 

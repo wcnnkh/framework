@@ -10,8 +10,8 @@ import scw.io.ResourceLoader;
 import scw.io.ResourcePatternResolver;
 import scw.io.support.PathMatchingResourcePatternResolver;
 
-public class ResourcePatternClassesLoader<S> extends
-		AbstractResourceClassesLoader<S> {
+public class ResourcePatternClassesLoader extends
+		AbstractResourceClassesLoader {
 	static final String CLASSES_SUFFIX = "**/*" + SUFFIX;
 	private final String locationPattern;
 

@@ -10,10 +10,10 @@ import scw.core.Constants;
 import scw.core.annotation.AnnotationAttributes;
 import scw.core.reflect.ReflectionUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 abstract class AbstractRecursiveAnnotationVisitor extends AnnotationVisitor {
-	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	protected final AnnotationAttributes attributes;
 

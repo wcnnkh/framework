@@ -9,5 +9,5 @@ public interface ConfigurableApplication extends Application{
 	
 	ConfigurableContextEnvironment getEnvironment();
 	
-	ConfigurableClassesLoader<?> getContextClassesLoader();
+	ConfigurableClassesLoader getContextClassesLoader();
 }

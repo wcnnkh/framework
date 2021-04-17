@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import scw.core.Assert;
 import scw.lang.Nullable;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.messageing.BinaryMessage;
 import scw.messageing.FragmentMessage;
 import scw.messageing.Message;
@@ -17,7 +17,7 @@ import scw.websocket.PingMessage;
 import scw.websocket.PongMessage;
 
 public abstract class AbstractWebSocketSession<T> implements NativeWebSocketSession {
-	protected static final Logger logger = LoggerUtils.getLogger(NativeWebSocketSession.class);
+	protected static final Logger logger = LoggerFactory.getLogger(NativeWebSocketSession.class);
 
 	private final Map<String, Object> attributes = new ConcurrentHashMap<String, Object>();
 

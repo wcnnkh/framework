@@ -15,7 +15,7 @@ import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.util.comparator.CompareUtils;
 
 /**
@@ -25,7 +25,7 @@ import scw.util.comparator.CompareUtils;
  *
  */
 public final class LocalLogger {
-	private static Logger logger = LoggerUtils.getLogger(LocalLogger.class);
+	private static Logger logger = LoggerFactory.getLogger(LocalLogger.class);
 	private final String directory;
 
 	public LocalLogger(String directory) {

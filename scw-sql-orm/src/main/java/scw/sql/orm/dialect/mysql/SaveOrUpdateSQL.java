@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.sql.orm.Column;
 import scw.sql.orm.CounterInfo;
 import scw.sql.orm.OrmUtils;
@@ -15,7 +15,7 @@ import scw.sql.orm.dialect.DialectSql;
 
 public class SaveOrUpdateSQL extends DialectSql {
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerUtils.getLogger(SaveOrUpdateSQL.class);
+	private static Logger logger = LoggerFactory.getLogger(SaveOrUpdateSQL.class);
 	private static final String DUPLICATE_KEY = " ON DUPLICATE KEY UPDATE ";
 	private static final String IF = "IF(";
 	private String sql;

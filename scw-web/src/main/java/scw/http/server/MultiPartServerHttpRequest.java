@@ -8,7 +8,7 @@ import java.util.List;
 import scw.core.utils.CollectionUtils;
 import scw.http.MediaType;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.message.multipart.FileItem;
 import scw.net.message.multipart.FileItemParser;
 import scw.util.LinkedMultiValueMap;
@@ -22,7 +22,7 @@ import scw.util.MultiValueMap;
  *
  */
 public class MultiPartServerHttpRequest extends FileCachingServerHttpRequest implements Closeable {
-	private static Logger logger = LoggerUtils.getLogger(MultiPartServerHttpRequest.class);
+	private static Logger logger = LoggerFactory.getLogger(MultiPartServerHttpRequest.class);
 	private final FileItemParser fileItemParser;
 
 	public MultiPartServerHttpRequest(ServerHttpRequest targetRequest, FileItemParser fileItemParser) {

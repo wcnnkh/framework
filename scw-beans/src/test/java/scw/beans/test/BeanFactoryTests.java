@@ -2,21 +2,68 @@ package scw.beans.test;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Properties;
+
 import org.junit.Test;
 
+import scw.beans.annotation.ConfigurationProperties;
 import scw.beans.support.DefaultBeanFactory;
+import scw.json.JSONUtils;
 import scw.util.XUtils;
 
+@SuppressWarnings("unused")
 public class BeanFactoryTests {
+	private static DefaultBeanFactory beanFactory = new DefaultBeanFactory();
+	
+	static {
+		try {
+			beanFactory.init();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+	
 	@Test
 	public void test() throws Throwable {
-		DefaultBeanFactory beanFactory = new DefaultBeanFactory();
-		beanFactory.init();
-		
 		assertTrue(beanFactory.isInstance(TestFactoryBean1.class));
 		assertTrue(beanFactory.isInstance(TestFactoryBean2.class));
-		
 		System.out.println(beanFactory.getInstance(TestFactoryBean2.class));
+	}
+	
+	@Test
+	public void configurableProperties() {
+		beanFactory.getEnvironment().put("test.a", "abc");
+		beanFactory.getEnvironment().put("test.b", "121");
+		
+		TestConfigurableBean bean = beanFactory.getInstance(TestConfigurableBean.class);
+		System.out.println(JSONUtils.getJsonSupport().toJSONString(bean));
+
+		TestPropertiesBean propertiesBean = beanFactory.getInstance(TestPropertiesBean.class);
+		System.out.println(propertiesBean);
+	}
+	
+	@ConfigurationProperties(prefix = "test")
+	private static class TestPropertiesBean extends Properties{
+		private static final long serialVersionUID = 1L;
+	}
+	
+	@ConfigurationProperties("test")
+	private static class TestConfigurableBean{
+		private String a;
+		private int b;
+		
+		public String getA() {
+			return a;
+		}
+		public void setA(String a) {
+			this.a = a;
+		}
+		public int getB() {
+			return b;
+		}
+		public void setB(int b) {
+			this.b = b;
+		}
 	}
 	
 	public static class TestFactoryBean1 {

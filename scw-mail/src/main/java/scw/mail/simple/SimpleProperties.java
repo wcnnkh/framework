@@ -10,7 +10,7 @@ import scw.util.Verify;
 import scw.value.AnyValue;
 import scw.value.Value;
 
-@ConfigurationProperties(prefix = SimpleProperties.PREFIX)
+@ConfigurationProperties("mail")
 public class SimpleProperties extends Properties implements Verify {
 	private static final long serialVersionUID = 1L;
 	public static final String PREFIX = "mail.";

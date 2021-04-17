@@ -6,7 +6,7 @@ import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.MethodInvoker;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionDefinition;
 import scw.transaction.TransactionManager;
@@ -19,7 +19,7 @@ import scw.transaction.TransactionUtils;
  */
 @Provider(order=Ordered.HIGHEST_PRECEDENCE)
 public final class TransactionMethodInterceptor implements MethodInterceptor{
-	private static Logger logger = LoggerUtils.getLogger(TransactionMethodInterceptor.class);
+	private static Logger logger = LoggerFactory.getLogger(TransactionMethodInterceptor.class);
 	private TransactionDefinition transactionDefinition;
 
 	public TransactionDefinition getTransactionDefinition() {

@@ -8,7 +8,7 @@ import scw.instance.SingletonRegistry;
 
 public interface ConfigurableBeanFactory extends BeanFactory,
 		BeanDefinitionRegistry, SingletonRegistry, BasicEventDispatcher<BeanLifeCycleEvent> {
-	ConfigurableClassesLoader<?> getContextClassesLoader();
+	ConfigurableClassesLoader getContextClassesLoader();
 
 	ConfigurableContextEnvironment getEnvironment();
 	

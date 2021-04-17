@@ -17,7 +17,7 @@ import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
@@ -29,7 +29,7 @@ import scw.net.message.multipart.ResourceFileItem;
 import scw.util.XUtils;
 
 public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
-	private static Logger logger = LoggerUtils.getLogger(MultipartMessageWriter.class);
+	private static Logger logger = LoggerFactory.getLogger(MultipartMessageWriter.class);
 	private static final String DEFAULT_BOUNDARY = XUtils.getUUID();
 	private static final String BOUNDARY_NAME = "boundary";
 	private static final String LINE = "\r\n";

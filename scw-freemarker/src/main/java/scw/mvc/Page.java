@@ -17,7 +17,7 @@ import scw.env.SystemEnvironment;
 import scw.freemarker.mvc.FreemarkerPage;
 import scw.lang.NotFoundException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mvc.page.AbstractPage;
 import scw.mvc.page.PageFactory;
 import scw.mvc.servlet.Jsp;
@@ -31,7 +31,7 @@ import scw.mvc.servlet.Jsp;
  *
  */
 public class Page extends AbstractPage {
-	private static Logger logger = LoggerUtils.getLogger(Page.class);
+	private static Logger logger = LoggerFactory.getLogger(Page.class);
 	private static Map<String, PageType> suffixMap = new HashMap<String, PageType>();
 	private static final long serialVersionUID = 1L;
 	private static Configuration freemarkerConfiguration;

@@ -63,7 +63,7 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 		return true;
 	}
 
-	public final <T> Set<Class<T>> resolve(Resource[] resources, ClassLoader classLoader,
+	public final Set<Class<?>> resolve(Resource[] resources, ClassLoader classLoader,
 			MetadataReaderFactory metadataReaderFactory, TypeFilter typeFilter) {
 		if (ArrayUtils.isEmpty(resources)) {
 			return Collections.emptySet();
@@ -73,7 +73,7 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 				metadataReaderFactory, typeFilter);
 	}
 
-	public final <T> Set<Class<T>> resolve(Resource[] resources, ClassLoader classLoader,
+	public final Set<Class<?>> resolve(Resource[] resources, ClassLoader classLoader,
 			ResourceLoader resourceLoader, TypeFilter typeFilter) {
 		if (ArrayUtils.isEmpty(resources)) {
 			return Collections.emptySet();
@@ -83,7 +83,7 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 				getMetadataReaderFactory(resourceLoader, classLoader), typeFilter);
 	}
 
-	public final <T> Set<Class<T>> resolve(Collection<Resource> resources, ClassLoader classLoader,
+	public final Set<Class<?>> resolve(Collection<Resource> resources, ClassLoader classLoader,
 			ResourceLoader resourceLoader, TypeFilter typeFilter) throws IOException {
 		if (CollectionUtils.isEmpty(resources)) {
 			return Collections.emptySet();
@@ -93,20 +93,19 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 				getMetadataReaderFactory(resourceLoader, classLoader), typeFilter);
 	}
 
-	@SuppressWarnings("unchecked")
-	public final <T> Set<Class<T>> resolve(Collection<Resource> resources, ClassLoader classLoader,
+	public final Set<Class<?>> resolve(Collection<Resource> resources, ClassLoader classLoader,
 			MetadataReaderFactory metadataReaderFactory, TypeFilter typeFilter) {
 		if (CollectionUtils.isEmpty(resources)) {
 			return Collections.emptySet();
 		}
 
-		Set<Class<T>> classes = new LinkedHashSet<Class<T>>();
+		Set<Class<?>> classes = new LinkedHashSet<Class<?>>();
 		for (Resource resource : resources) {
 			try {
 				Class<?> clazz = resolve(resource, classLoader,
 						metadataReaderFactory, typeFilter);
 				if (clazz != null) {
-					classes.add((Class<T>) clazz);
+					classes.add(clazz);
 				}
 			} catch (IOException e) {
 			}

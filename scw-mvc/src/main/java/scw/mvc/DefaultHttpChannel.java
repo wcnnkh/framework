@@ -29,7 +29,7 @@ import scw.instance.NoArgsInstanceFactory;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.AbstractParameterMapping;
 import scw.mapper.MapperUtils;
 import scw.mapper.Mapping;
@@ -56,7 +56,7 @@ import scw.value.Value;
 import scw.web.WebUtils;
 
 public class DefaultHttpChannel extends AbstractParameterFactory implements HttpChannel, Destroy, Target {
-	private static Logger logger = LoggerUtils.getLogger(DefaultHttpChannel.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultHttpChannel.class);
 	private final long createTime;
 	private final JSONSupport jsonSupport;
 	private boolean completed = false;

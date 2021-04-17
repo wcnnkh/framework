@@ -32,7 +32,7 @@ import scw.http.HttpStatus;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.websocket.SubProtocolCapable;
 import scw.websocket.WebSocketExtension;
 import scw.websocket.WebSocketHandler;
@@ -56,7 +56,7 @@ import scw.websocket.server.RequestUpgradeStrategy;
  * @author Juergen Hoeller
  */
 public abstract class DefaultHandshakeHandler implements HandshakeHandler {
-	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final RequestUpgradeStrategy requestUpgradeStrategy;
 

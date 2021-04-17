@@ -51,7 +51,7 @@ import scw.io.ResourceUtils;
 import scw.io.UrlResource;
 import scw.io.VfsResource;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.util.AntPathMatcher;
 import scw.util.PathMatcher;
 
@@ -191,11 +191,6 @@ import scw.util.PathMatcher;
  * Ant-style pattern in such a case, which will search <i>all</i> class path
  * locations that contain the root package.
  *
- * @author Juergen Hoeller
- * @author Colin Sampaleanu
- * @author Marius Bogoevici
- * @author Costin Leau
- * @author Phillip Webb
  * @see #CLASSPATH_ALL_URL_PREFIX
  * @see scw.util.AntPathMatcher
  * @see scw.io.ResourceLoader#getResource(String)
@@ -204,7 +199,7 @@ import scw.util.PathMatcher;
 public class PathMatchingResourcePatternResolver implements
 		ResourcePatternResolver {
 
-	private static final Logger logger = LoggerUtils
+	private static final Logger logger = LoggerFactory
 			.getLogger(PathMatchingResourcePatternResolver.class);
 
 	private static Method equinoxResolveMethod;

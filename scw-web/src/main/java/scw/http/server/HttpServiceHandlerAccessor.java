@@ -12,13 +12,13 @@ import scw.core.utils.CollectionUtils;
 import scw.http.HttpMethod;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.Restful.RestfulMatchingResult;
 import scw.util.comparator.CompareUtils;
 import scw.web.WebUtils;
 
 public final class HttpServiceHandlerAccessor {
-	private static Logger logger = LoggerUtils.getLogger(HttpServiceHandlerAccessor.class);
+	private static Logger logger = LoggerFactory.getLogger(HttpServiceHandlerAccessor.class);
 	private Map<String, EnumMap<HttpMethod, HttpServiceHandlers>> handerMap = new HashMap<String, EnumMap<HttpMethod, HttpServiceHandlers>>();
 	private HttpServiceHandlers handlers = new HttpServiceHandlers();
 

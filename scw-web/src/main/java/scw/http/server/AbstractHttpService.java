@@ -32,7 +32,7 @@ public abstract class AbstractHttpService implements HttpService {
 		ServerHttpResponse responseToUse = wrapperResponse(requestToUse, response, getHttpServiceConfigAccessor());
 
 		if (logger.isDebugEnabled()) {
-			logger.debug(requestToUse);
+			logger.debug(requestToUse.toString());
 		}
 
 		WebUtils.setLocalServerHttpRequest(requestToUse);

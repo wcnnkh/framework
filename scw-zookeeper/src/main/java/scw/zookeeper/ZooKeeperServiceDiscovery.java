@@ -44,7 +44,7 @@ public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInst
 
 	public void process(WatchedEvent event) {
 		if (logger.isTraceEnabled()) {
-			logger.trace(event);
+			logger.trace(event.toString());
 		}
 
 		String eventPath = event.getPath();
@@ -66,7 +66,7 @@ public class ZooKeeperServiceDiscovery extends SimpleDiscoveryClient<ServiceInst
 		}
 
 		if (logger.isDebugEnabled()) {
-			logger.debug(event);
+			logger.debug(event.toString());
 		}
 	}
 

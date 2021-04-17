@@ -11,16 +11,19 @@ import scw.core.OrderComparator;
 import scw.core.utils.CollectionUtils;
 import scw.event.support.DefaultBasicEventDispatcher;
 import scw.util.CollectionFactory;
+import scw.util.Combiner;
 
-public abstract class Observables<T> extends AbstractObservable<T> {
+public class Observables<T> extends AbstractObservable<T> {
 	private final AtomicReference<BasicEventDispatcher<ChangeEvent<T>>> existsDispatcher = new AtomicReference<BasicEventDispatcher<ChangeEvent<T>>>();
 	private final AtomicReference<BasicEventDispatcher<ChangeEvent<T>>> notExistsDispatcher = new AtomicReference<BasicEventDispatcher<ChangeEvent<T>>>();
 	private final Set<ObservableRegistion> registions;
-
+	private final Combiner<T> combiner;
+	
 	private final boolean concurrent;
 
-	public Observables(boolean concurrent) {
+	public Observables(boolean concurrent, Combiner<T> combiner) {
 		this.concurrent = concurrent;
+		this.combiner = combiner;
 		this.registions = CollectionFactory.createSet(concurrent);
 	}
 
@@ -66,10 +69,8 @@ public abstract class Observables<T> extends AbstractObservable<T> {
 				list.add(observable.forceGet());
 			}
 		}
-		return merge(list);
+		return combiner.combine(list);
 	}
-
-	protected abstract T merge(List<T> list);
 
 	private EventRegistration registerListener(
 			EventListener<ChangeEvent<T>> eventListener,

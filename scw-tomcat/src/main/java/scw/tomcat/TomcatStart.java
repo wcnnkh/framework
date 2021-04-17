@@ -69,6 +69,7 @@ public class TomcatStart implements Main, Destroy {
 					if (httpControllerDescriptor.getMethod() == HttpMethod.GET
 							&& !httpControllerDescriptor.getRestful().isRestful()) {
 						controllerDescriptorToUse = httpControllerDescriptor;
+						break;
 					}
 				}
 
@@ -210,7 +211,7 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		ServletContextUtils.setApplication(context.getServletContext(), application);
-		Set<Class<?>> classes = ApplicationUtils.getContextClasses(application);
+		Set<Class<?>> classes = application.getContextClassesLoader().toSet();
 		context.addServletContainerInitializer(new ApplicationServletContainerInitializer(), classes);
 		
 		//init websocket

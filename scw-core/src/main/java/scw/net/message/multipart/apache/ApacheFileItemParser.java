@@ -10,13 +10,13 @@ import org.apache.commons.fileupload.RequestContext;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.net.message.InputMessage;
 import scw.net.message.multipart.FileItem;
 import scw.net.message.multipart.FileItemParser;
 
 public class ApacheFileItemParser implements FileItemParser {
-	private static Logger logger = LoggerUtils.getLogger(ApacheFileItemParser.class);
+	private static Logger logger = LoggerFactory.getLogger(ApacheFileItemParser.class);
 	static {
 		org.apache.commons.fileupload.FileItem.class.getName();
 	}

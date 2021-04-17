@@ -8,11 +8,11 @@ import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
 import scw.core.utils.StringUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.Field;
 
 public abstract class AbstractValueProcesser implements ValueProcesser {
-	final Logger logger = LoggerUtils.getLogger(AbstractValueProcesser.class);
+	final Logger logger = LoggerFactory.getLogger(AbstractValueProcesser.class);
 
 	public void process(BeanDefinition beanDefinition, BeanFactory beanFactory,
 			Object bean, Field field, Value value) {

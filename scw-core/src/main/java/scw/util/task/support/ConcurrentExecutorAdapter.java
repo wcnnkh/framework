@@ -30,7 +30,6 @@ import scw.util.task.TaskExecutor;
  * <em>hiding</em> the TaskExecutor nature of a given object now,
  * solely exposing the standard Executor interface to a client.
  *
- * @author Juergen Hoeller
  * @see java.util.concurrent.Executor
  */
 public class ConcurrentExecutorAdapter implements Executor {

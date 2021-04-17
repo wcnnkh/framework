@@ -10,7 +10,7 @@ import scw.io.FileSystemResource;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
 
-public class DirectoryClassesLoader<S> extends AbstractResourceClassesLoader<S> {
+public class DirectoryClassesLoader extends AbstractResourceClassesLoader {
 	private final File directory;
 
 	public DirectoryClassesLoader(String directory) {

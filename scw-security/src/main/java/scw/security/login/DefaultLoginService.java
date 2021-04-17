@@ -4,10 +4,10 @@ import scw.core.utils.StringUtils;
 import scw.data.TemporaryStorage;
 import scw.data.memory.MemoryDataOperations;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public class DefaultLoginService<T> extends AbstractLoginService<T> {
-	private Logger logger = LoggerUtils.getLogger(getClass());
+	private Logger logger = LoggerFactory.getLogger(getClass());
 	private static final String DEFAULT_PREFIX = "login:";
 	private final String prefix;
 	

@@ -26,12 +26,12 @@ public class DefaultContextEnvironment extends DefaultEnvironment implements Con
 	}
 
 	@Override
-	public ConfigurableClassesLoader<?> getContextClassesLoader() {
+	public ConfigurableClassesLoader getContextClassesLoader() {
 		return loaderFactory.getContextClassesLoader();
 	}
 
 	@Override
-	public ClassesLoader<?> getClassesLoader(String packageName) {
+	public ClassesLoader getClassesLoader(String packageName) {
 		return loaderFactory.getClassesLoader(packageName);
 	}
 
@@ -75,9 +75,8 @@ public class DefaultContextEnvironment extends DefaultEnvironment implements Con
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void componentScan(String packageName) {
-		getContextClassesLoader().add((ClassesLoader) getClassesLoader(packageName));
+		getContextClassesLoader().add(getClassesLoader(packageName));
 	}
 
 	@Override

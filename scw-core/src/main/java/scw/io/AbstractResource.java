@@ -12,7 +12,12 @@ import java.net.URL;
 
 import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
+import scw.event.BasicEventDispatcher;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
 import scw.io.event.DefaultResourceEventDispatcher;
+import scw.io.event.EmptyResourceEventDispatcher;
+import scw.io.event.ResourceEvent;
 import scw.io.event.ResourceEventDispatcher;
 import scw.lang.NestedIOException;
 import scw.lang.NotSupportedException;
@@ -28,18 +33,14 @@ import scw.util.JavaVersion;
  * and "toString" will return the description.
  *
  */
-public abstract class AbstractResource implements Resource {
+public abstract class AbstractResource implements Resource, BasicEventDispatcher<ResourceEvent> {
 	private static final Constructor<ResourceEventDispatcher> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
 			.findConstructor("scw.io.event.WatchServiceResourceEventDispatcher", null, true, Resource.class);
-
-	private volatile ResourceEventDispatcher eventDispatcher;
-
-	public ResourceEventDispatcher getEventDispatcher() {
+	public static final EmptyResourceEventDispatcher EMPTY_EVENT_DISPATCHER = new EmptyResourceEventDispatcher();
+	
+	private volatile BasicEventDispatcher<ResourceEvent> eventDispatcher;
+	private BasicEventDispatcher<ResourceEvent> getEventDispatcher() {
 		if (eventDispatcher == null) {
-			if (!isSupportEventDispatcher()) {
-				return EMPTY_EVENT_DISPATCHER;
-			}
-
 			synchronized (this) {
 				if (eventDispatcher == null) {
 					if (JavaVersion.INSTANCE.getMasterVersion() >= 7) {
@@ -59,7 +60,7 @@ public abstract class AbstractResource implements Resource {
 		return eventDispatcher;
 	}
 
-	public boolean isSupportEventDispatcher() {
+	public boolean isObservable() {
 		if (!SUPPORT_EVENT_DISPATCHER) {
 			return false;
 		}
@@ -74,11 +75,26 @@ public abstract class AbstractResource implements Resource {
 		}
 		return true;
 	}
+	
+	@Override
+	public EventRegistration registerListener(EventListener<ResourceEvent> eventListener) {
+		if(!isObservable()) {
+			return EventRegistration.EMPTY;
+		}
+		return getEventDispatcher().registerListener(eventListener);
+	}
+	
+	@Override
+	public void publishEvent(ResourceEvent event) {
+		if(isObservable()) {
+			getEventDispatcher().publishEvent(event);
+		}
+	}
 
 	/**
 	 * This implementation checks whether a File can be opened, falling back to
-	 * whether an InputStream can be opened. This will cover both directories
-	 * and content resources.
+	 * whether an InputStream can be opened. This will cover both directories and
+	 * content resources.
 	 */
 	public boolean exists() {
 		// Try file existence: can we find the file in the file system?
@@ -186,27 +202,26 @@ public abstract class AbstractResource implements Resource {
 	 * The default implementation delegates to {@link #getFile()}.
 	 * 
 	 * @return the File to use for timestamp checking (never {@code null})
-	 * @throws FileNotFoundException
-	 *             if the resource cannot be resolved as an absolute file path,
-	 *             i.e. is not available in a file system
-	 * @throws IOException
-	 *             in case of general resolution/reading failures
+	 * @throws FileNotFoundException if the resource cannot be resolved as an
+	 *                               absolute file path, i.e. is not available in a
+	 *                               file system
+	 * @throws IOException           in case of general resolution/reading failures
 	 */
 	protected File getFileForLastModifiedCheck() throws IOException {
 		return getFile();
 	}
 
 	/**
-	 * This implementation throws a FileNotFoundException, assuming that
-	 * relative resources cannot be created for this resource.
+	 * This implementation throws a FileNotFoundException, assuming that relative
+	 * resources cannot be created for this resource.
 	 */
 	public Resource createRelative(String relativePath) throws IOException {
 		throw new FileNotFoundException("Cannot create a relative resource for " + getDescription());
 	}
 
 	/**
-	 * This implementation always returns {@code null}, assuming that this
-	 * resource type does not have a filename.
+	 * This implementation always returns {@code null}, assuming that this resource
+	 * type does not have a filename.
 	 */
 	public String getFilename() {
 		return null;

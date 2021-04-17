@@ -83,7 +83,7 @@ public class Sender {
 			return resultFactory.success(response.toJSONString());
 		}
 		
-		logger.error(response);
+		logger.error(response.toString());
 		JsonObject errorResponse = response.getJsonObject("error_response");
 		String msg = errorResponse.getString("sub_msg");
 		if (StringUtils.isEmpty(msg)) {

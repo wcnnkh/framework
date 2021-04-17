@@ -13,10 +13,10 @@ import scw.core.Assert;
 import scw.env.SystemEnvironment;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public class ZooKeeperServerStart extends Thread {
-	private Logger logger = LoggerUtils.getLogger(ZooKeeperServerStart.class);
+	private Logger logger = LoggerFactory.getLogger(ZooKeeperServerStart.class);
 	private static final String DATA_DIR = "dataDir";
 	private static final String DATA_LOG_DIR = "dataLogDir";
 	private static final String CLIENT_PORT = "clientPort";

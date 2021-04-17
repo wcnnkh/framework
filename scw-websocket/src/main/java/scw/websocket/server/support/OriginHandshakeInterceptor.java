@@ -28,7 +28,7 @@ import scw.http.HttpUtils;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.server.HandshakeInterceptor;
 
@@ -40,7 +40,7 @@ import scw.websocket.server.HandshakeInterceptor;
  */
 public class OriginHandshakeInterceptor implements HandshakeInterceptor {
 
-	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final Set<String> allowedOrigins = new LinkedHashSet<String>();
 

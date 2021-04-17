@@ -9,15 +9,15 @@ import scw.io.DefaultResourceLoader;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
 
-public abstract class AbstractResourceClassesLoader<S> extends
-		AbstractClassesLoader<S> {
+public abstract class AbstractResourceClassesLoader extends
+		AbstractClassesLoader {
 	
 	protected ResourceLoader getResourceLoader(ClassLoader classLoader) {
 		return new DefaultResourceLoader(classLoader);
 	}
 
 	@Override
-	protected Set<Class<S>> getClasses(ClassLoader classLoader) {
+	protected Set<Class<?>> getClasses(ClassLoader classLoader) {
 		ResourceLoader resourceLoader = getResourceLoader(classLoader);
 		Collection<Resource> resources;
 		try {

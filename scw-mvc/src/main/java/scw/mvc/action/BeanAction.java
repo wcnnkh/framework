@@ -26,16 +26,16 @@ public class BeanAction extends AbstractAction {
 	 * @param beanFactory
 	 * @param targetClass
 	 * @param method
-	 * @param lazy 是否延迟加载实例
 	 */
-	public BeanAction(BeanFactory beanFactory, Class<?> targetClass, Method method, boolean lazy) {
+	public BeanAction(BeanFactory beanFactory, Class<?> targetClass, Method method) {
 		super(targetClass, method, beanFactory.getEnvironment());
 		this.beanFactory = beanFactory;
 		Supplier<Object> instanceSupplier;
-		if(lazy){
-			instanceSupplier = new NameInstanceSupplier<Object>(beanFactory, targetClass.getName());
+		if(beanFactory.isSingleton(targetClass)){
+			//如果是单例就不延迟加载
+			instanceSupplier = new SimpleInstanceSupplier<Object>(beanFactory.getInstance(targetClass));
 		}else{
-			instanceSupplier = new SimpleInstanceSupplier<Object>(beanFactory.getInstance(targetClass.getName()));
+			instanceSupplier = new NameInstanceSupplier<Object>(beanFactory, targetClass.getName());
 		}
 		this.invoker = beanFactory.getAop().getProxyMethod(targetClass, instanceSupplier, method);
 		String[] names = getActionInterceptorNames();

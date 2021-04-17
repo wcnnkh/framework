@@ -20,7 +20,7 @@ public class YamlPropertiesResolver implements PropertiesResolver{
 	}
 	
 	public boolean canResolveProperties(Resource resource) {
-		return resource.exists() && resource.getFilename().endsWith(".yaml");
+		return resource.exists() && resource.getFilename().endsWith(".yaml") || resource.getFilename().endsWith(".yml");
 	}
 
 	public void resolveProperties(final Properties load, Resource resource,

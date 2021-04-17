@@ -6,10 +6,10 @@ import java.util.Iterator;
 import scw.http.HttpStatus;
 import scw.http.server.cors.CorsUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public class HttpServiceInterceptorChain implements HttpService {
-	private static Logger logger = LoggerUtils.getLogger(HttpService.class);
+	private static Logger logger = LoggerFactory.getLogger(HttpService.class);
 	private HttpServiceHandlerAccessor handlerAccessor;
 	private Iterator<? extends HttpServiceInterceptor> iterator;
 

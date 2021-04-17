@@ -3,13 +3,13 @@ package scw.timer.support;
 import java.util.concurrent.locks.Lock;
 
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.timer.TaskConfig;
 import scw.timer.TaskListener;
 import scw.timer.TaskLockFactory;
 
 public class DefaultTimerTask implements scw.timer.Task {
-	private static Logger logger = LoggerUtils.getLogger(DefaultTimerTask.class);
+	private static Logger logger = LoggerFactory.getLogger(DefaultTimerTask.class);
 	private final TaskLockFactory taskLockFactory;
 	private final TaskConfig config;
 

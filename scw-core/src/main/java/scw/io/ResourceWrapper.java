@@ -8,7 +8,9 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
-import scw.io.event.ResourceEventDispatcher;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
+import scw.io.event.ResourceEvent;
 
 public abstract class ResourceWrapper implements Resource {
 
@@ -69,13 +71,10 @@ public abstract class ResourceWrapper implements Resource {
 	public String getDescription() {
 		return getResource().getDescription();
 	}
-
-	public boolean isSupportEventDispatcher() {
-		return getResource().isSupportEventDispatcher();
-	}
-
-	public ResourceEventDispatcher getEventDispatcher() {
-		return getResource().getEventDispatcher();
+	
+	@Override
+	public EventRegistration registerListener(EventListener<ResourceEvent> eventListener) {
+		return getResource().registerListener(eventListener);
 	}
 	
 	@Override

@@ -10,10 +10,10 @@ import com.rabbitmq.client.Envelope;
 import scw.amqp.Message;
 import scw.amqp.MessageListener;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public class RabbitmqMessageListener extends DefaultConsumer {
-	private static Logger logger = LoggerUtils.getLogger(RabbitmqMessageListener.class);
+	private static Logger logger = LoggerFactory.getLogger(RabbitmqMessageListener.class);
 	private final MessageListener messageListener;
 	private final boolean multiple;
 

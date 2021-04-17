@@ -8,7 +8,9 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
-import scw.io.event.ResourceEventDispatcher;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
+import scw.io.event.ResourceEvent;
 import scw.lang.NotSupportedException;
 
 public final class NonexistentResource implements Resource {
@@ -68,11 +70,12 @@ public final class NonexistentResource implements Resource {
 		return "empty resource";
 	}
 	
-	public ResourceEventDispatcher getEventDispatcher() {
-		return EMPTY_EVENT_DISPATCHER;
-	}
-
 	public boolean isSupportEventDispatcher() {
 		return false;
+	}
+
+	@Override
+	public EventRegistration registerListener(EventListener<ResourceEvent> eventListener) {
+		return EventRegistration.EMPTY;
 	}
 }

@@ -2,14 +2,13 @@ package scw.mapper;
 
 import java.lang.reflect.Modifier;
 
+import scw.lang.Ignore;
 import scw.util.Accept;
 
 public enum FieldFeature {
-	SUPPORT_GETTER(new SupportGetterFieldFilter()), 
-	SUPPORT_SETTER(new SupportSetterFieldFilter()), 
-	GETTER_PUBLIC(new GetterPublicFieldFilter()),
-	SETTER_PUBLIC(new SetterPublicFieldFilter()), 
-	GETTER_IGNORE_STATIC(new IgnoreGetterStaticFieldFilter()), 
+	SUPPORT_GETTER(new SupportGetterFieldFilter()), SUPPORT_SETTER(new SupportSetterFieldFilter()),
+	GETTER_PUBLIC(new GetterPublicFieldFilter()), SETTER_PUBLIC(new SetterPublicFieldFilter()),
+	GETTER_IGNORE_STATIC(new IgnoreGetterStaticFieldFilter()),
 	SETTER_IGNORE_STATIC(new IgnoreSetterStaticFieldFilter()),
 	GETTER_IGNORE_TRANSIENT(new IgnoreGetterTransientFieldFilter()),
 	SETTER_IGNORE_TRANSIENT(new IgnoreSetterTransientFieldFilter()),
@@ -29,7 +28,17 @@ public enum FieldFeature {
 
 	EXISTING_GETTER_FIELD(new ExistingFieldFilter(true)),
 
-	EXISTING_SETTER_FIELD(new ExistingFieldFilter(false));
+	EXISTING_SETTER_FIELD(new ExistingFieldFilter(false)),
+
+	IGNORE_GETTER_FINAL(new IgnoreFinalFieldFilter(true)),
+
+	IGNORE_SETTER_FINAL(new IgnoreFinalFieldFilter(false)),
+	
+	/**
+	 * @see Ignore
+	 */
+	IGNORE_ANNOTATION(new SupportedIgnoreAnnotation()),
+	;
 
 	private final Accept<Field> accept;
 
@@ -39,6 +48,37 @@ public enum FieldFeature {
 
 	public Accept<Field> getAccept() {
 		return accept;
+	}
+
+	private static final class IgnoreFinalFieldFilter implements Accept<Field> {
+		private final boolean getter;
+
+		public IgnoreFinalFieldFilter(boolean getter) {
+			this.getter = getter;
+		}
+
+		@Override
+		public boolean accept(Field field) {
+			if (getter) {
+				if (field.isSupportGetter() && field.getGetter().getField() != null
+						&& Modifier.isFinal(field.getGetter().getField().getModifiers())) {
+					return false;
+				}
+			} else {
+				if (field.isSupportSetter() && field.getSetter().getField() != null
+						&& Modifier.isFinal(field.getSetter().getField().getModifiers())) {
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+	
+	private static final class SupportedIgnoreAnnotation implements Accept<Field>{
+		@Override
+		public boolean accept(Field e) {
+			return e.getAnnotatedElement().getAnnotation(Ignore.class) != null;
+		}
 	}
 
 	private static final class ExistingFieldFilter implements Accept<Field> {

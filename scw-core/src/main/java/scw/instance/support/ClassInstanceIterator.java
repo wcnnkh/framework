@@ -7,11 +7,11 @@ import scw.instance.NoArgsInstanceFactory;
 import scw.util.AbstractIterator;
 
 public class ClassInstanceIterator<E> extends AbstractIterator<E>{
-	private final Iterator<Class<E>> iterator;
+	private final Iterator<Class<?>> iterator;
 	private final NoArgsInstanceFactory instanceFactory;
-	private Class<E> service;
+	private Class<?> service;
 	
-	public ClassInstanceIterator(NoArgsInstanceFactory instanceFactory, Iterator<Class<E>> iterator){
+	public ClassInstanceIterator(NoArgsInstanceFactory instanceFactory, Iterator<Class<?>> iterator){
 		this.instanceFactory = instanceFactory;
 		this.iterator = iterator;
 	}
@@ -37,7 +37,8 @@ public class ClassInstanceIterator<E> extends AbstractIterator<E>{
 			throw new NoSuchElementException();
 		}
 
-		E instance = instanceFactory.getInstance(service);
+		@SuppressWarnings("unchecked")
+		E instance = (E) instanceFactory.getInstance(service);
 		service = null;
 		return instance;
 	}

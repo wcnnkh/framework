@@ -1,13 +1,10 @@
 package scw.logger;
 
-
-public interface ILoggerFactory{
-
-	default Logger getLogger(String name) {
-		return getLogger(name, null);
-	}
-	
-	Logger getLogger(String name, String placeholder);
-	
-	void destroy();
+/**
+ * 扩展logger的一种方式,会使用spi机制加载
+ * @author shuchaowen
+ * @see LoggerFactory
+ */
+public interface ILoggerFactory {
+	Logger getLogger(String name);
 }

@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 
 import scw.logger.ILoggerFactory;
 import scw.logger.Logger;
-import scw.logger.LoggerLevelManager;
 
 public class Log4j2LoggerFactory implements ILoggerFactory {
 
@@ -16,8 +15,8 @@ public class Log4j2LoggerFactory implements ILoggerFactory {
 		LogManager.shutdown();
 	}
 
-	public Logger getLogger(String name, String placeholder) {
+	public Logger getLogger(String name) {
 		org.apache.logging.log4j.Logger logger = LogManager.getLogger(name);
-		return new Log4j2Logger(logger, LoggerLevelManager.getInstance().getLevel(name), placeholder);
+		return new Log4j2Logger(logger, null);
 	}
 }

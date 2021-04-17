@@ -19,7 +19,7 @@ import scw.io.NoTypeSpecifiedSerializer;
 import scw.json.JSONUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.retry.RetryCallback;
 import scw.retry.RetryContext;
 import scw.retry.RetryOperations;
@@ -37,7 +37,7 @@ import scw.transaction.TransactionUtils;
  *
  */
 public abstract class AbstractExchange implements Exchange {
-	protected final Logger logger = LoggerUtils.getLogger(getClass());
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private final NoTypeSpecifiedSerializer serializer;
 	private final ExchangeDeclare exchangeDeclare;
 	private RetryOperations retryOperations = new RetryTemplate();

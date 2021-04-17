@@ -30,11 +30,11 @@ import scw.env.Environment;
 import scw.instance.InstanceUtils;
 import scw.instance.NoArgsInstanceFactory;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 import scw.mapper.Copy;
 import scw.mapper.Field;
-import scw.mapper.Fields;
 import scw.mapper.FieldFeature;
+import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 
 public final class XmlDubboUtils {
@@ -46,7 +46,7 @@ public final class XmlDubboUtils {
 
 	private static final String DEFAULT_PROTOCOL_NAME = "dubbo";
 
-	private static Logger logger = LoggerUtils.getLogger(XmlDubboUtils.class);
+	private static Logger logger = LoggerFactory.getLogger(XmlDubboUtils.class);
 
 	private XmlDubboUtils() {
 	};
@@ -287,7 +287,7 @@ public final class XmlDubboUtils {
 					if (((AbstractConfig) config).isValid()) {
 						list.add(config);
 					} else {
-						logger.error(config);
+						logger.error(config.toString());
 					}
 				} else {
 					list.add(config);

@@ -5,11 +5,11 @@ import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
 import scw.beans.BeanFactory;
 import scw.logger.Logger;
-import scw.logger.LoggerUtils;
+import scw.logger.LoggerFactory;
 
 public abstract class AbstractBeanDefinitionLoaderChain implements
 		BeanDefinitionLoaderChain {
-	private static Logger logger = LoggerUtils
+	private static Logger logger = LoggerFactory
 			.getLogger(AbstractBeanDefinitionLoaderChain.class);
 
 	private BeanDefinitionLoaderChain chain;

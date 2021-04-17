@@ -1,20 +1,14 @@
 package scw.event;
 
-import java.util.List;
-
 import scw.convert.Converter;
+import scw.util.Combiner;
 
-public abstract class ConvertibleObservables<O, T> extends
-		AbstractObservable<T> implements Converter<O, T> {
+public abstract class ConvertibleObservables<O, T> extends AbstractObservable<T> implements Converter<O, T>{
 	private final Observables<O> observables;
 	private final ObservableSyncListener<O, T> listener = new ObservableSyncListener<O, T>(this, true, this);
-
-	public ConvertibleObservables(boolean concurrent) {
-		this.observables = new Observables<O>(concurrent) {
-			protected O merge(List<O> list) {
-				return ConvertibleObservables.this.merge(list);
-			};
-
+	
+	public ConvertibleObservables(boolean concurrent, Combiner<O>combiner) {
+		this.observables = new Observables<O>(concurrent, combiner) {
 			@Override
 			public void onEvent(ChangeEvent<O> event) {
 				super.onEvent(event);
@@ -26,8 +20,6 @@ public abstract class ConvertibleObservables<O, T> extends
 	public void addObservable(Observable<O> observable) {
 		this.observables.addObservable(observable);
 	}
-
-	protected abstract O merge(List<O> list);
 
 	public T forceGet() {
 		O o = observables.forceGet();
