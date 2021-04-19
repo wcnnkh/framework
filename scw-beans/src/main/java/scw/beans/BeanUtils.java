@@ -17,6 +17,7 @@ import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
+import scw.env.EnvironmentAware;
 import scw.instance.InstanceUtils;
 import scw.lang.Nullable;
 import scw.mapper.Field;
@@ -66,6 +67,10 @@ public final class BeanUtils {
 
 		if (instance instanceof BeanDefinitionAware) {
 			((BeanDefinitionAware) instance).setBeanDefinition(beanDefinition);
+		}
+		
+		if(instance instanceof EnvironmentAware) {
+			((EnvironmentAware) instance).setEnvironment(beanFactory.getEnvironment());
 		}
 	}
 

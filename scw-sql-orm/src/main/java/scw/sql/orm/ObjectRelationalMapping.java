@@ -180,7 +180,7 @@ public class ObjectRelationalMapping implements Accept<Field> {
 		if (StringUtils.isEmpty(table.name())) {
 			return StringUtils.humpNamingReplacement(tableClass.getSimpleName(), "_");
 		}
-		return table.name();
+		return SystemEnvironment.getInstance().resolveRequiredPlaceholders(table.name());
 	}
 
 	@SuppressWarnings("unchecked")
