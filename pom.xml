@@ -268,12 +268,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-kdniao</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-db</artifactId>
 				<version>2.0</version>
 			</dependency>
@@ -298,18 +292,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-alibaba</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-apple</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-microsoft</artifactId>
 				<version>2.0</version>
 			</dependency>
@@ -329,12 +311,6 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-rabbitmq</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-tencent</artifactId>
 				<version>2.0</version>
 			</dependency>
 
@@ -458,12 +434,6 @@
 				<version>2.0</version>
 			</dependency>
 			
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-trade</artifactId>
-				<version>2.0</version>
-			</dependency>
-
 			<!-- 通用的依赖版本定义 -->
 			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 			<dependency>
@@ -657,12 +627,8 @@
 	</build>
 	<modules>
 		<module>scw-core</module>
-		<module>scw-alibaba</module>
-		<module>scw-kdniao</module>
 		<module>scw-upload</module>
 		<module>scw-freemarker</module>
-		<module>scw-tencent</module>
-		<module>scw-apple</module>
 		<module>scw-timer</module>
 		<module>scw-db</module>
 		<module>scw-data</module>
@@ -722,6 +688,5 @@
 		<module>scw-netty</module>
 		<module>scw-slf4j</module>
 		<module>scw-consistency</module>
-		<module>scw-trade</module>
 	</modules>
 </project>
