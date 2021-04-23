@@ -3,7 +3,7 @@ package scw.data.file;
 import java.io.File;
 
 import scw.convert.Converter;
-import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.Serializer;
 import scw.io.SerializerUtils;
 
 public class AutoRefreshDirectoryStorage extends DirectoryStorage {
@@ -24,7 +24,7 @@ public class AutoRefreshDirectoryStorage extends DirectoryStorage {
 	 * @param converter
 	 */
 	public AutoRefreshDirectoryStorage(int period, String cacheDirectory, Converter<String, ?> converter) {
-		this(period, SerializerUtils.DEFAULT_SERIALIZER, cacheDirectory, converter);
+		this(period, SerializerUtils.getSerializer(), cacheDirectory, converter);
 	}
 
 	/**
@@ -34,7 +34,7 @@ public class AutoRefreshDirectoryStorage extends DirectoryStorage {
 	 * @param cacheDirectory
 	 * @param converter
 	 */
-	public AutoRefreshDirectoryStorage(int period, NoTypeSpecifiedSerializer serializer,
+	public AutoRefreshDirectoryStorage(int period, Serializer serializer,
 			String cacheDirectory, Converter<String, ?> converter) {
 		super(period, serializer, cacheDirectory);
 		this.converter = converter;

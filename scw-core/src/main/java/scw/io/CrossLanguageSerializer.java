@@ -4,35 +4,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import scw.convert.TypeDescriptor;
+
 /**
- * 不指定类型的序列化
+ * 跨语言的序列化和反序列化
+ * 
  * @author shuchaowen
  *
  */
-public interface NoTypeSpecifiedSerializer {
-	void serialize(OutputStream out, Object data) throws IOException;
+public interface CrossLanguageSerializer {
 
-	default byte[] serialize(Object data) throws SerializerException{
+	void serialize(OutputStream out, TypeDescriptor type, Object data) throws IOException;
+
+	default byte[] serialize(TypeDescriptor type, Object data) {
 		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
 		try {
-			serialize(out, data);
+			serialize(out, type, data);
 			return out.toByteArray();
 		} catch (IOException e) {
-			// 不应该存在此错误
 			throw new SerializerException(e);
 		} finally {
 			out.close();
 		}
 	}
-	
-	<T> T deserialize(InputStream input) throws IOException, ClassNotFoundException;
 
-	default <T> T deserialize(byte[] data) throws ClassNotFoundException, SerializerException{
+	<T> T deserialize(InputStream input, TypeDescriptor type) throws IOException;
+
+	default <T> T deserialize(byte[] data, TypeDescriptor type) {
 		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
 		try {
-			return deserialize(input);
+			return deserialize(input, type);
 		} catch (IOException e) {
-			// 不应该存在此错误
 			throw new SerializerException(e);
 		} finally {
 			input.close();

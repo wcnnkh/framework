@@ -8,7 +8,7 @@ import scw.codec.Signer;
 import scw.codec.encoder.MD5;
 import scw.codec.support.CharsetCodec;
 import scw.io.IOUtils;
-import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.Serializer;
 import scw.io.SerializerUtils;
 import scw.lang.Nullable;
 import scw.net.message.InputMessage;
@@ -22,22 +22,22 @@ import scw.net.message.OutputMessage;
  */
 public class SignerRemoteMessageCodec implements RemoteMessageCodec {
 	private static final String SIGN_HEADER_NAME = "_content_sign";
-	private final NoTypeSpecifiedSerializer serializer;
+	private final Serializer serializer;
 	private final Signer<byte[], String> signer;
 
 	public SignerRemoteMessageCodec(String secretKey) {
 		this(null, secretKey);
 	}
 
-	public SignerRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,
+	public SignerRemoteMessageCodec(@Nullable Serializer serializer,
 			String secretKey) {
 		this(serializer, new MD5().wrapperSecretKey(
 				CharsetCodec.UTF_8.encode(secretKey)).toHex().toSigner());
 	}
 
-	public SignerRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,
+	public SignerRemoteMessageCodec(@Nullable Serializer serializer,
 			Signer<byte[], String> signer) {
-		this.serializer = serializer == null ? SerializerUtils.DEFAULT_SERIALIZER
+		this.serializer = serializer == null ? SerializerUtils.getSerializer()
 				: serializer;
 		this.signer = signer;
 	}

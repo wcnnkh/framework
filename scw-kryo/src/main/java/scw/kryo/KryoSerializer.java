@@ -8,10 +8,12 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 
+import scw.convert.TypeDescriptor;
+import scw.io.CrossLanguageSerializer;
 import scw.io.Serializer;
 import scw.lang.NamedThreadLocal;
 
-public class KryoSerializer implements Serializer {
+public class KryoSerializer implements Serializer, CrossLanguageSerializer {
 	private static final ThreadLocal<Kryo> kryoLocal = new NamedThreadLocal<Kryo>(KryoSerializer.class.getSimpleName() + "-kryo") {
 		protected Kryo initialValue() {
 			Kryo kryo = new Kryo();
@@ -67,44 +69,21 @@ public class KryoSerializer implements Serializer {
 		output.flush();
 	}
 
-	public byte[] serialize(Object data) {
-		Output output = getOutput();
-		getKryo().writeClassAndObject(output, data);
-		return output.toBytes();
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T> T deserialize(InputStream input) throws IOException {
 		return (T) getKryo().readClassAndObject(getInput(input));
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T deserialize(byte[] data) {
-		return (T) getKryo().readClassAndObject(getInput(data));
-	}
-
 	@Override
-	public <T> byte[] serialize(Class<T> type, T data) {
-		Output output = getOutput();
-		getKryo().writeObjectOrNull(output, data, type);
-		output.flush();
-		return output.toBytes();
-	}
-
-	@Override
-	public <T> void serialize(OutputStream out, Class<T> type, T data) {
+	public void serialize(OutputStream out, TypeDescriptor type, Object data) throws IOException {
 		Output output = getOutput(out);
-		getKryo().writeObjectOrNull(output, data, type);
+		getKryo().writeObjectOrNull(output, data, type.getType());
 		output.flush();
 	}
-
+	
+	@SuppressWarnings("unchecked")
 	@Override
-	public <T> T deserialize(Class<T> type, byte[] data) {
-		return getKryo().readObjectOrNull(getInput(data), type);
-	}
-
-	@Override
-	public <T> T deserialize(Class<T> type, InputStream input) {
-		return getKryo().readObjectOrNull(getInput(input), type);
+	public <T> T deserialize(InputStream input, TypeDescriptor type) throws IOException {
+		return (T) getKryo().readObjectOrNull(getInput(input), type.getType());
 	}
 }

@@ -21,7 +21,7 @@ import scw.event.EventType;
 import scw.event.NamedEventDispatcher;
 import scw.event.support.StringNamedEventDispatcher;
 import scw.io.JavaSerializer;
-import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.Serializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.value.AnyValue;
@@ -41,7 +41,7 @@ public class ZookeeperCloudPropertyFactory implements ListenablePropertyFactory,
 	private final NamedEventDispatcher<String, ChangeEvent<String>> eventDispatcher = new StringNamedEventDispatcher<ChangeEvent<String>>(true);
 	private final ZooKeeper zooKeeper;
 	private final String parentPath;
-	private NoTypeSpecifiedSerializer serializer;
+	private Serializer serializer;
 	
 	public ZookeeperCloudPropertyFactory(ZooKeeper zooKeeper, String parentPath){
 		this.zooKeeper = zooKeeper;
@@ -49,11 +49,11 @@ public class ZookeeperCloudPropertyFactory implements ListenablePropertyFactory,
 		zooKeeper.register(this);
 	}
 	
-	public NoTypeSpecifiedSerializer getSerializer() {
+	public Serializer getSerializer() {
 		return serializer == null? JavaSerializer.INSTANCE:serializer;
 	}
 
-	public void setSerializer(NoTypeSpecifiedSerializer serializer) {
+	public void setSerializer(Serializer serializer) {
 		this.serializer = serializer;
 	}
 

@@ -99,7 +99,7 @@ public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProces
 			if (beanFactory.isInstance(Transcoder.class)) {
 				builder.setTranscoder(beanFactory.getInstance(Transcoder.class));
 			} else {
-				builder.setTranscoder(new MyTranscoder(SerializerUtils.DEFAULT_SERIALIZER));
+				builder.setTranscoder(new MyTranscoder(SerializerUtils.getSerializer()));
 			}
 
 			Integer poolSize = beanFactory.getEnvironment().getInteger("memcached.poolsize");

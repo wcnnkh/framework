@@ -101,7 +101,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 		}
 
 		public Object create() throws BeansException {
-			return new RabbitmqExchange(SerializerUtils.DEFAULT_SERIALIZER, beanFactory.getInstance(Connection.class),
+			return new RabbitmqExchange(SerializerUtils.getSerializer(), beanFactory.getInstance(Connection.class),
 					beanFactory.getInstance(ExchangeDeclare.class));
 		}
 	}

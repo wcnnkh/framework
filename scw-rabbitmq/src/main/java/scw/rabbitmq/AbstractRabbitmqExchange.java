@@ -2,6 +2,8 @@ package scw.rabbitmq;
 
 import java.io.IOException;
 
+import com.rabbitmq.client.Channel;
+
 import scw.amqp.ExchangeDeclare;
 import scw.amqp.ExchangeException;
 import scw.amqp.MessageListener;
@@ -9,17 +11,15 @@ import scw.amqp.MessageProperties;
 import scw.amqp.QueueDeclare;
 import scw.amqp.support.AbstractExchange;
 import scw.context.Init;
-import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.Serializer;
 import scw.json.JSONUtils;
-
-import com.rabbitmq.client.Channel;
 
 public abstract class AbstractRabbitmqExchange extends AbstractExchange implements Init {
 	static final String DIX_ROUTING_KEY = "scw.dix.routingKey";
 	static final String X_DEAD_LETTER_EXCHANGE = "x-dead-letter-exchange";
 	static final String DELAY_ROUTING_KEY = "scw.delay.routingKey";
 
-	public AbstractRabbitmqExchange(NoTypeSpecifiedSerializer serializer, ExchangeDeclare exchangeDeclare) {
+	public AbstractRabbitmqExchange(Serializer serializer, ExchangeDeclare exchangeDeclare) {
 		super(serializer, exchangeDeclare);
 		checkName(exchangeDeclare.getName());
 	}

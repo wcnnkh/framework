@@ -15,7 +15,7 @@ import scw.core.utils.StringUtils;
 import scw.data.Storage;
 import scw.env.SystemEnvironment;
 import scw.io.FileUtils;
-import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.Serializer;
 import scw.io.SerializerUtils;
 import scw.lang.NestedRuntimeException;
 import scw.logger.Logger;
@@ -28,14 +28,14 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	// 守望线程，自动退出
 	private static final Timer TIMER = new Timer(DirectoryStorage.class.getSimpleName(), true);
 	private final int exp;// 0表示不过期
-	private final NoTypeSpecifiedSerializer serializer;
+	private final Serializer serializer;
 	private final File directory;
 
 	/**
 	 * @param exp 单位:秒
 	 */
 	protected DirectoryStorage(int exp) {
-		this(exp, SerializerUtils.DEFAULT_SERIALIZER,
+		this(exp, SerializerUtils.getSerializer(),
 				SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + "file_cache_" + exp);
 	}
 
@@ -44,11 +44,11 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	 * @param cacheDirectory
 	 */
 	public DirectoryStorage(int exp, String cacheDirectory) {
-		this(exp, SerializerUtils.DEFAULT_SERIALIZER, cacheDirectory);
+		this(exp, SerializerUtils.getSerializer(), cacheDirectory);
 	}
 
-	public DirectoryStorage(int exp, NoTypeSpecifiedSerializer serializer, String directory) {
-		this(exp, SerializerUtils.DEFAULT_SERIALIZER, new File(StringUtils.cleanPath(directory)));
+	public DirectoryStorage(int exp, Serializer serializer, String directory) {
+		this(exp, SerializerUtils.getSerializer(), new File(StringUtils.cleanPath(directory)));
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	 * @param charsetName
 	 * @param directory
 	 */
-	public DirectoryStorage(int exp, NoTypeSpecifiedSerializer serializer, File directory) {
+	public DirectoryStorage(int exp, Serializer serializer, File directory) {
 		Assert.requiredArgument(serializer != null, "serializer");
 		Assert.requiredArgument(directory != null, "directory");
 		this.exp = exp;
@@ -69,7 +69,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 		}
 	}
 
-	public final NoTypeSpecifiedSerializer getSerializer() {
+	public final Serializer getSerializer() {
 		return serializer;
 	}
 

@@ -19,7 +19,7 @@ public class AmqpBasicEventDisabtcher<T extends Event> extends DefaultBasicEvent
 	private Exchange exchange;
 	private String routingKey;
 	private QueueDeclare queueDeclare;
-	private Serializer serializer = SerializerUtils.DEFAULT_SERIALIZER;
+	private Serializer serializer = SerializerUtils.getSerializer();
 
 	public AmqpBasicEventDisabtcher(Exchange exchange, String routingKey, QueueDeclare queueDeclare) {
 		super(true);

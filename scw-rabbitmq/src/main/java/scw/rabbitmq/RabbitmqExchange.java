@@ -9,7 +9,7 @@ import scw.amqp.ExchangeDeclare;
 import scw.amqp.QueueDeclare;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
-import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.Serializer;
 import scw.lang.NamedThreadLocal;
 
 public class RabbitmqExchange extends AbstractRabbitmqExchange {
@@ -24,7 +24,7 @@ public class RabbitmqExchange extends AbstractRabbitmqExchange {
 	private final ExchangeDeclare dixExchangeDeclare;
 	private final QueueDeclare dixQueueDeclare;
 
-	public RabbitmqExchange(NoTypeSpecifiedSerializer serializer, Connection connection,
+	public RabbitmqExchange(Serializer serializer, Connection connection,
 			ExchangeDeclare exchangeDeclare) {
 		super(serializer, exchangeDeclare);
 		this.connection = connection;

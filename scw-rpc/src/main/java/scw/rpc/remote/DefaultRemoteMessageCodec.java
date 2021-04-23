@@ -10,7 +10,7 @@ import scw.codec.support.CharsetCodec;
 import scw.codec.support.DES;
 import scw.core.Constants;
 import scw.io.IOUtils;
-import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.Serializer;
 import scw.io.SerializerUtils;
 import scw.lang.Nullable;
 import scw.net.message.InputMessage;
@@ -22,7 +22,7 @@ import scw.net.message.OutputMessage;
  *
  */
 public class DefaultRemoteMessageCodec implements RemoteMessageCodec {
-	private final NoTypeSpecifiedSerializer serializer;
+	private final Serializer serializer;
 	private final Codec<byte[], String> codec;
 
 	public DefaultRemoteMessageCodec() {
@@ -34,22 +34,22 @@ public class DefaultRemoteMessageCodec implements RemoteMessageCodec {
 	}
 
 	public DefaultRemoteMessageCodec(@Nullable byte[] secretKey) {
-		this(SerializerUtils.DEFAULT_SERIALIZER, secretKey);
+		this(SerializerUtils.getSerializer(), secretKey);
 	}
 
-	public DefaultRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,
+	public DefaultRemoteMessageCodec(@Nullable Serializer serializer,
 			@Nullable String secretKey) {
 		this(serializer, secretKey == null ? null : CharsetCodec.UTF_8.encode(secretKey));
 	}
 
-	public DefaultRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,
+	public DefaultRemoteMessageCodec(@Nullable Serializer serializer,
 			@Nullable byte[] secretKey) {
 		this(serializer, new DES(secretKey, secretKey).toBase64());
 	}
 
-	public DefaultRemoteMessageCodec(@Nullable NoTypeSpecifiedSerializer serializer,
+	public DefaultRemoteMessageCodec(@Nullable Serializer serializer,
 			@Nullable Codec<byte[], String> codec) {
-		this.serializer = serializer == null? SerializerUtils.DEFAULT_SERIALIZER:serializer;
+		this.serializer = serializer == null? SerializerUtils.getSerializer():serializer;
 		this.codec = codec;
 	}
 
