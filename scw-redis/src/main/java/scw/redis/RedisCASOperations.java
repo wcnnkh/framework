@@ -10,7 +10,6 @@ import scw.codec.Codec;
 import scw.core.utils.CollectionUtils;
 import scw.data.cas.CAS;
 import scw.data.cas.CASOperations;
-import scw.io.Serializer;
 import scw.value.AnyValue;
 
 public class RedisCASOperations implements CASOperations {
@@ -35,14 +34,14 @@ public class RedisCASOperations implements CASOperations {
 	private static final String SET_EXP = "redis.call('set', KEYS[1], ARGV[1], 'EX', KEYS[3]) if redis.call('exists', KEYS[2]) == 1 then redis.call('incr', KEYS[2]) else redis.call('set', KEYS[2], 1, 'EX', KEYS[3]) end";
 	private static final String SET = "redis.call('set', KEYS[1], ARGV[1]) redis.call('incr', KEYS[2], 1) end";
 	private RedisOperations<String, Object> objectOperations;
-	private Codec<String, byte[]> codec;
-	private Serializer serializer;
+	private Codec<String, byte[]> keyCodec;
+	private Codec<Object, byte[]> valueCodec;
 
-	public RedisCASOperations(RedisOperations<String, Object> objectOperations, Serializer serializer,
-			Codec<String, byte[]> codec) {
+	public RedisCASOperations(RedisOperations<String, Object> objectOperations, Codec<String, byte[]> keyCodec,
+			Codec<Object, byte[]> valueCodec) {
 		this.objectOperations = objectOperations;
-		this.codec = codec;
-		this.serializer = serializer;
+		this.keyCodec = keyCodec;
+		this.valueCodec = valueCodec;
 	}
 
 	public boolean cas(String key, Object value, int exp, long cas) {
@@ -72,12 +71,12 @@ public class RedisCASOperations implements CASOperations {
 		if (values.length != 2) {
 			return null;
 		}
-
+		
 		byte[] v0 = values[0].getAsObject(byte[].class);
 		byte[] v1 = values[1].getAsObject(byte[].class);
-		long version = Long.parseLong(codec.decode(v1));
+		long version = Long.parseLong(keyCodec.decode(v1));
 		try {
-			return new CAS<T>(version, v0 == null ? null : (T) serializer.deserialize(v0));
+			return new CAS<T>(version, v0 == null ? null : (T) valueCodec.decode(v0));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

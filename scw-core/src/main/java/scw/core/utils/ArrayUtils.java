@@ -2,7 +2,6 @@ package scw.core.utils;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -40,16 +39,6 @@ public final class ArrayUtils {
 
 	public static boolean isEmpty(char[] array) {
 		return array == null || array.length == 0;
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> T[] toArray(Class<T> type, Collection<? extends T> collection) {
-		if (CollectionUtils.isEmpty(collection)) {
-			return (T[]) Array.newInstance(type, 0);
-		}
-
-		T[] arr = (T[]) Array.newInstance(type, collection.size());
-		return collection.toArray(arr);
 	}
 
 	@SuppressWarnings("unchecked")

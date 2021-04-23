@@ -3,8 +3,6 @@ package scw.sql;
 import java.util.ArrayList;
 import java.util.List;
 
-import scw.core.utils.ArrayUtils;
-
 public class CommonSql extends SerializableSql{
 	private static final long serialVersionUID = 1L;
 	private StringBuilder sb;
@@ -70,7 +68,7 @@ public class CommonSql extends SerializableSql{
 	}
 
 	public Object[] getParams() {
-		return ArrayUtils.toArray(Object.class, paramList);
+		return paramList.toArray();
 	}
 
 	public void clear() {

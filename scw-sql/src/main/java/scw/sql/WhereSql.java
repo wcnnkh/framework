@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 
 public class WhereSql extends SerializableSql {
@@ -120,7 +119,7 @@ public class WhereSql extends SerializableSql {
 	}
 
 	public Object[] getParams() {
-		return ArrayUtils.toArray(Object.class, paramList);
+		return paramList.toArray();
 	}
 
 	public Sql assembleSql(String beforeSql, String afterSql, Object... params) {

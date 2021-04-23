@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import scw.codec.Codec;
+import scw.codec.support.SerializerCodec;
+
 /**
  * 序列化与反序列化
  * 
@@ -36,5 +39,9 @@ public interface Serializer {
 		} finally {
 			input.close();
 		}
+	}
+	
+	default <D> Codec<D, byte[]> toCodec(){
+		return new SerializerCodec<D>(this);
 	}
 }

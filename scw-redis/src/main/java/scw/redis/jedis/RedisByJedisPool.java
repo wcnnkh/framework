@@ -19,6 +19,6 @@ public final class RedisByJedisPool extends RedisImpl {
 
 	public RedisByJedisPool(JedisResourceFactory jedisResourceFactory, Codec<String, byte[]> codec, Serializer serializer) {
 		super(new JedisBinaryOperations(jedisResourceFactory), new JedisStringOperations(jedisResourceFactory),
-				codec, serializer);
+				codec, serializer.toCodec());
 	}
 }
