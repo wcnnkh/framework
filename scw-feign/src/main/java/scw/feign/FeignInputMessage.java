@@ -6,11 +6,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import feign.Response;
-import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpHeaders;
+import scw.http.HttpInputMessage;
+import feign.Response;
 
-public class FeignInputMessage extends AbstractHttpInputMessage {
+public class FeignInputMessage implements HttpInputMessage {
 	private HttpHeaders headers;
 	private Response response;
 

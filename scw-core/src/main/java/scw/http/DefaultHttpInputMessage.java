@@ -5,7 +5,7 @@ import java.io.InputStream;
 
 import scw.net.message.InputMessage;
 
-public class DefaultHttpInputMessage extends AbstractHttpInputMessage implements HttpInputMessage{
+public class DefaultHttpInputMessage implements HttpInputMessage{
 	private HttpHeaders httpHeaders = new HttpHeaders();
 	private InputMessage inputMessage;
 	

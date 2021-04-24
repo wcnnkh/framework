@@ -152,7 +152,7 @@ public class PathResource extends AbstractResource {
 	 * @see java.nio.file.Path#getFileName()
 	 */
 	@Override
-	public String getFilename() {
+	public String getName() {
 		return this.path.getFileName().toString();
 	}
 

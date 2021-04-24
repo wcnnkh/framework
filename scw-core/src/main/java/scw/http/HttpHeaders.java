@@ -64,6 +64,8 @@ import scw.util.KeyValuePair;
 public class HttpHeaders extends Headers {
 	private static Logger logger = LoggerFactory.getLogger(HttpHeaders.class);
 	private static final long serialVersionUID = -8578554704772377436L;
+	
+	public static final HttpHeaders EMPTY = new HttpHeaders(Collections.emptyMap());
 
 	/**
 	 * The HTTP {@code Accept} header field name.

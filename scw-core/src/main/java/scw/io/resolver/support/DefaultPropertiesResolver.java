@@ -21,7 +21,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver{
 	public static final DefaultPropertiesResolver INSTANCE = new DefaultPropertiesResolver();
 	
 	public boolean canResolveProperties(Resource resource) {
-		String name = resource.getFilename();
+		String name = resource.getName();
 		return name.endsWith(".xml") || name.endsWith(".properties");
 	}
 	
@@ -34,7 +34,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver{
 		InputStream is = null;
 		try {
 			is = resource.getInputStream();
-			if (resource.getFilename().endsWith(".xml")) {
+			if (resource.getName().endsWith(".xml")) {
 				properties.loadFromXML(is);
 			} else {
 				if (charset == null) {

@@ -223,7 +223,7 @@ public abstract class AbstractResource implements Resource, BasicEventDispatcher
 	 * This implementation always returns {@code null}, assuming that this resource
 	 * type does not have a filename.
 	 */
-	public String getFilename() {
+	public String getName() {
 		return null;
 	}
 

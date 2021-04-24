@@ -14,7 +14,7 @@ public class DocumentResourceResolver extends AbstractResourceResolver{
 
 	public boolean canResolveResource(Resource resource,
 			TypeDescriptor targetType) {
-		return resource.exists() && resource.getFilename().endsWith(".xml");
+		return resource.exists() && resource.getName().endsWith(".xml");
 	}
 
 	public Object resolveResource(Resource resource, TypeDescriptor targetType) {

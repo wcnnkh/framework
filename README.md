@@ -1,4 +1,4 @@
-# AOP、事务、ORM、MVC、RPC、分布式TCC事务、分布式锁、dubbo(支持hystrix)、zookeeper配置中心,redis、memcached、rabbitmq、websocket、微信公众(开放)平台开发、权限管理
+# AOP、事务、ORM、MVC、RPC、分布式TCC事务、分布式锁、dubbo(支持hystrix)、zookeeper配置中心,redis、memcached、rabbitmq、websocket、权限管理
 
 使用方式:
 ========

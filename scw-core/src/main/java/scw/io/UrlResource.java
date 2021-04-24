@@ -12,14 +12,16 @@ import java.net.URLConnection;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
+import scw.http.HttpHeaders;
+import scw.http.HttpInputMessage;
 
 /**
- * {@link Resource} implementation for {@code java.net.URL} locators.
- * Supports resolution as a {@code URL} and also as a {@code File} in
- * case of the {@code "file:"} protocol.
+ * {@link Resource} implementation for {@code java.net.URL} locators. Supports
+ * resolution as a {@code URL} and also as a {@code File} in case of the
+ * {@code "file:"} protocol.
  */
-public class UrlResource extends AbstractFileResolvingResource {
-
+public class UrlResource extends AbstractFileResolvingResource implements
+		HttpInputMessage {
 	/**
 	 * Original URI, if available; used for URI and File access.
 	 */
@@ -35,11 +37,13 @@ public class UrlResource extends AbstractFileResolvingResource {
 	 */
 	private final URL cleanedUrl;
 
-
 	/**
 	 * Create a new {@code UrlResource} based on the given URI object.
-	 * @param uri a URI
-	 * @throws MalformedURLException if the given URL path is not valid
+	 * 
+	 * @param uri
+	 *            a URI
+	 * @throws MalformedURLException
+	 *             if the given URL path is not valid
 	 */
 	public UrlResource(URI uri) throws MalformedURLException {
 		Assert.notNull(uri, "URI must not be null");
@@ -50,7 +54,9 @@ public class UrlResource extends AbstractFileResolvingResource {
 
 	/**
 	 * Create a new {@code UrlResource} based on the given URL object.
-	 * @param url a URL
+	 * 
+	 * @param url
+	 *            a URL
 	 */
 	public UrlResource(URL url) {
 		Assert.notNull(url, "URL must not be null");
@@ -61,9 +67,13 @@ public class UrlResource extends AbstractFileResolvingResource {
 
 	/**
 	 * Create a new {@code UrlResource} based on a URL path.
-	 * <p>Note: The given path needs to be pre-encoded if necessary.
-	 * @param path a URL path
-	 * @throws MalformedURLException if the given URL path is not valid
+	 * <p>
+	 * Note: The given path needs to be pre-encoded if necessary.
+	 * 
+	 * @param path
+	 *            a URL path
+	 * @throws MalformedURLException
+	 *             if the given URL path is not valid
 	 * @see java.net.URL#URL(String)
 	 */
 	public UrlResource(String path) throws MalformedURLException {
@@ -75,56 +85,70 @@ public class UrlResource extends AbstractFileResolvingResource {
 
 	/**
 	 * Create a new {@code UrlResource} based on a URI specification.
-	 * <p>The given parts will automatically get encoded if necessary.
-	 * @param protocol the URL protocol to use (e.g. "jar" or "file" - without colon);
-	 * also known as "scheme"
-	 * @param location the location (e.g. the file path within that protocol);
-	 * also known as "scheme-specific part"
-	 * @throws MalformedURLException if the given URL specification is not valid
+	 * <p>
+	 * The given parts will automatically get encoded if necessary.
+	 * 
+	 * @param protocol
+	 *            the URL protocol to use (e.g. "jar" or "file" - without
+	 *            colon); also known as "scheme"
+	 * @param location
+	 *            the location (e.g. the file path within that protocol); also
+	 *            known as "scheme-specific part"
+	 * @throws MalformedURLException
+	 *             if the given URL specification is not valid
 	 * @see java.net.URI#URI(String, String, String)
 	 */
-	public UrlResource(String protocol, String location) throws MalformedURLException  {
+	public UrlResource(String protocol, String location)
+			throws MalformedURLException {
 		this(protocol, location, null);
 	}
 
 	/**
 	 * Create a new {@code UrlResource} based on a URI specification.
-	 * <p>The given parts will automatically get encoded if necessary.
-	 * @param protocol the URL protocol to use (e.g. "jar" or "file" - without colon);
-	 * also known as "scheme"
-	 * @param location the location (e.g. the file path within that protocol);
-	 * also known as "scheme-specific part"
-	 * @param fragment the fragment within that location (e.g. anchor on an HTML page,
-	 * as following after a "#" separator)
-	 * @throws MalformedURLException if the given URL specification is not valid
+	 * <p>
+	 * The given parts will automatically get encoded if necessary.
+	 * 
+	 * @param protocol
+	 *            the URL protocol to use (e.g. "jar" or "file" - without
+	 *            colon); also known as "scheme"
+	 * @param location
+	 *            the location (e.g. the file path within that protocol); also
+	 *            known as "scheme-specific part"
+	 * @param fragment
+	 *            the fragment within that location (e.g. anchor on an HTML
+	 *            page, as following after a "#" separator)
+	 * @throws MalformedURLException
+	 *             if the given URL specification is not valid
 	 * @see java.net.URI#URI(String, String, String)
 	 */
-	public UrlResource(String protocol, String location, String fragment) throws MalformedURLException  {
+	public UrlResource(String protocol, String location, String fragment)
+			throws MalformedURLException {
 		try {
 			this.uri = new URI(protocol, location, fragment);
 			this.url = this.uri.toURL();
 			this.cleanedUrl = getCleanedUrl(this.url, this.uri.toString());
-		}
-		catch (URISyntaxException ex) {
-			MalformedURLException exToThrow = new MalformedURLException(ex.getMessage());
+		} catch (URISyntaxException ex) {
+			MalformedURLException exToThrow = new MalformedURLException(
+					ex.getMessage());
 			exToThrow.initCause(ex);
 			throw exToThrow;
 		}
 	}
 
-
 	/**
 	 * Determine a cleaned URL for the given original URL.
-	 * @param originalUrl the original URL
-	 * @param originalPath the original URL path
+	 * 
+	 * @param originalUrl
+	 *            the original URL
+	 * @param originalPath
+	 *            the original URL path
 	 * @return the cleaned URL
 	 * @see org.springframework.util.StringUtils#cleanPath
 	 */
 	private URL getCleanedUrl(URL originalUrl, String originalPath) {
 		try {
 			return new URL(StringUtils.cleanPath(originalPath));
-		}
-		catch (MalformedURLException ex) {
+		} catch (MalformedURLException ex) {
 			// Cleaned URL path cannot be converted to URL
 			// -> take original URL.
 			return originalUrl;
@@ -133,8 +157,10 @@ public class UrlResource extends AbstractFileResolvingResource {
 
 	/**
 	 * This implementation opens an InputStream for the given URL.
-	 * <p>It sets the {@code useCaches} flag to {@code false},
-	 * mainly to avoid jar file locking on Windows.
+	 * <p>
+	 * It sets the {@code useCaches} flag to {@code false}, mainly to avoid jar
+	 * file locking on Windows.
+	 * 
 	 * @see java.net.URL#openConnection()
 	 * @see java.net.URLConnection#setUseCaches(boolean)
 	 * @see java.net.URLConnection#getInputStream()
@@ -144,8 +170,7 @@ public class UrlResource extends AbstractFileResolvingResource {
 		ResourceUtils.useCachesIfNecessary(con);
 		try {
 			return con.getInputStream();
-		}
-		catch (IOException ex) {
+		} catch (IOException ex) {
 			// Close the HTTP connection (if applicable).
 			if (con instanceof HttpURLConnection) {
 				((HttpURLConnection) con).disconnect();
@@ -163,15 +188,13 @@ public class UrlResource extends AbstractFileResolvingResource {
 	}
 
 	/**
-	 * This implementation returns the underlying URI directly,
-	 * if possible.
+	 * This implementation returns the underlying URI directly, if possible.
 	 */
 	@Override
 	public URI getURI() throws IOException {
 		if (this.uri != null) {
 			return this.uri;
-		}
-		else {
+		} else {
 			return super.getURI();
 		}
 	}
@@ -179,25 +202,29 @@ public class UrlResource extends AbstractFileResolvingResource {
 	/**
 	 * This implementation returns a File reference for the underlying URL/URI,
 	 * provided that it refers to a file in the file system.
-	 * @see scw.io.springframework.util.ResourceUtils#getFile(java.net.URL, String)
+	 * 
+	 * @see scw.io.springframework.util.ResourceUtils#getFile(java.net.URL,
+	 *      String)
 	 */
 	@Override
 	public File getFile() throws IOException {
 		if (this.uri != null) {
 			return super.getFile(this.uri);
-		}
-		else {
+		} else {
 			return super.getFile();
 		}
 	}
 
 	/**
-	 * This implementation creates a {@code UrlResource}, applying the given path
-	 * relative to the path of the underlying URL of this resource descriptor.
+	 * This implementation creates a {@code UrlResource}, applying the given
+	 * path relative to the path of the underlying URL of this resource
+	 * descriptor.
+	 * 
 	 * @see java.net.URL#URL(java.net.URL, String)
 	 */
 	@Override
-	public Resource createRelative(String relativePath) throws MalformedURLException {
+	public Resource createRelative(String relativePath)
+			throws MalformedURLException {
 		if (relativePath.startsWith("/")) {
 			relativePath = relativePath.substring(1);
 		}
@@ -206,10 +233,11 @@ public class UrlResource extends AbstractFileResolvingResource {
 
 	/**
 	 * This implementation returns the name of the file that this URL refers to.
+	 * 
 	 * @see java.net.URL#getPath()
 	 */
 	@Override
-	public String getFilename() {
+	public String getName() {
 		return StringUtils.getFilename(this.cleanedUrl.getPath());
 	}
 
@@ -220,22 +248,39 @@ public class UrlResource extends AbstractFileResolvingResource {
 		return "URL [" + this.url + "]";
 	}
 
-
 	/**
 	 * This implementation compares the underlying URL references.
 	 */
 	@Override
 	public boolean equals(Object obj) {
-		return (obj == this ||
-			(obj instanceof UrlResource && this.cleanedUrl.equals(((UrlResource) obj).cleanedUrl)));
+		return (obj == this || (obj instanceof UrlResource && this.cleanedUrl
+				.equals(((UrlResource) obj).cleanedUrl)));
 	}
 
 	/**
-	 * This implementation returns the hash code of the underlying URL reference.
+	 * This implementation returns the hash code of the underlying URL
+	 * reference.
 	 */
 	@Override
 	public int hashCode() {
 		return this.cleanedUrl.hashCode();
 	}
 
+	@Override
+	public HttpHeaders getHeaders() {
+		// Try a URL connection last-modified header
+		URLConnection con;
+		try {
+			con = url.openConnection();
+			customizeConnection(con);
+			return new HttpHeaders(con.getHeaderFields());
+		} catch (IOException e) {
+			return HttpHeaders.EMPTY;
+		}
+	}
+
+	@Override
+	public final InputStream getBody() throws IOException {
+		return getInputStream();
+	}
 }

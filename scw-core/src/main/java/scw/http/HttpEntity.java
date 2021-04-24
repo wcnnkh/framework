@@ -22,7 +22,7 @@ import scw.core.utils.ObjectUtils;
 import scw.net.message.Entity;
 import scw.util.MultiValueMap;
 
-public class HttpEntity<T> extends AbstractHttpMessage implements Entity<T>, HttpMessage, Serializable{
+public class HttpEntity<T> implements Entity<T>, HttpMessage, Serializable{
 	private static final long serialVersionUID = 1L;
 
 	/**

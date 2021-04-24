@@ -248,7 +248,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			ClientHttpRequestFactory requestFactory,
 			ClientHttpResponseExtractor<T> responseExtractor)
 			throws HttpClientException {
-		return execute(requestEntity.getUrl(), requestEntity.getMethod(),
+		return execute(requestEntity.getURI(), requestEntity.getMethod(),
 				createRequestBodyCallback(requestEntity), responseExtractor);
 	}
 
@@ -258,7 +258,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			throws HttpClientException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(
 				requestEntity.getMethod(), responseType);
-		return execute(requestEntity.getUrl(), requestEntity.getMethod(),
+		return execute(requestEntity.getURI(), requestEntity.getMethod(),
 				createRequestBodyCallback(requestEntity), responseExtractor);
 	}
 
@@ -268,7 +268,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 			throws HttpClientException {
 		ClientHttpResponseExtractor<T> responseExtractor = getClientHttpResponseExtractor(
 				requestEntity.getMethod(), TypeDescriptor.valueOf(responseType));
-		return execute(requestEntity.getUrl(), requestEntity.getMethod(),
+		return execute(requestEntity.getURI(), requestEntity.getMethod(),
 				createRequestBodyCallback(requestEntity), responseExtractor);
 	}
 
@@ -303,7 +303,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		if (requestEntity.getMethod() == HttpMethod.GET
 				&& requestEntity != null && requestEntity.hasBody()) {
 			logger.warn("Get request cannot set request body [{}]",
-					requestEntity.getUrl());
+					requestEntity.getURI());
 		}
 
 		final boolean needWriteBody = requestEntity != null

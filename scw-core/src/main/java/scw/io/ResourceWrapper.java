@@ -64,8 +64,8 @@ public abstract class ResourceWrapper implements Resource {
 		return getResource().createRelative(relativePath);
 	}
 
-	public String getFilename() {
-		return getResource().getFilename();
+	public String getName() {
+		return getResource().getName();
 	}
 
 	public String getDescription() {

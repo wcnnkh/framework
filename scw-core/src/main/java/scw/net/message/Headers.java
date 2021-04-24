@@ -14,6 +14,8 @@ import scw.util.LinkedCaseInsensitiveMap;
 
 public class Headers extends AbstractMultiValueMap<String, String> {
 	private static final long serialVersionUID = 1L;
+	public static final Headers EMPTY = new Headers(Collections.emptyMap(), false);
+	
 	private Map<String, List<String>> headers;
 	private boolean readyOnly;
 

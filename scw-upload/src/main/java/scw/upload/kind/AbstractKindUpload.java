@@ -13,8 +13,8 @@ import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
-import scw.upload.UploadException;
-import scw.upload.UploadItem;
+import scw.net.message.multipart.FileItem;
+import scw.upload.UploaderException;
 
 public abstract class AbstractKindUpload implements KindEditor {
 	private final EnumMap<KindDirType, Set<String>> extMap = new EnumMap<KindDirType, Set<String>>(KindDirType.class);
@@ -55,29 +55,29 @@ public abstract class AbstractKindUpload implements KindEditor {
 		maxSizeMap.put(dir, maxSize);
 	}
 
-	public String upload(String group, KindDirType dir, UploadItem item) throws UploadException, IOException {
+	public String upload(String group, KindDirType dir, FileItem item) throws UploaderException, IOException {
 		Assert.requiredArgument(dir != null, "dir");
 		Assert.requiredArgument(item != null, "item");
 
 		String ext = StringUtils.getFilenameExtension(item.getName());
 		if (ext == null) {
-			throw new UploadException("无法获取文件后缀名(" + item.getName() + ")");
+			throw new UploaderException("无法获取文件后缀名(" + item.getName() + ")");
 		}
 
 		Set<String> exts = extMap.get(dir);
 		if (!CollectionUtils.isEmpty(exts) && !exts.contains(ext)) {
-			throw new UploadException("允许使用的文件后缀名：(" + exts + ")");
+			throw new UploaderException("允许使用的文件后缀名：(" + exts + ")");
 		}
 
 		Long maxSize = maxSizeMap.get(dir);
-		if (maxSize != null && maxSize > 0 && item.size() > maxSize) {
-			throw new UploadException("允许上传的文件大小为(" + FileUtils.byteCountToDisplaySize(maxSize) + ")");
+		if (maxSize != null && maxSize > 0 && item.getSize() > maxSize) {
+			throw new UploaderException("允许上传的文件大小为(" + FileUtils.byteCountToDisplaySize(maxSize) + ")");
 		}
 		return uploadInternal(group, dir, item);
 	}
 
-	protected abstract String uploadInternal(String group, KindDirType dir, UploadItem item)
-			throws IOException, UploadException;
+	protected abstract String uploadInternal(String group, KindDirType dir, FileItem item)
+			throws IOException, UploaderException;
 
 	protected abstract String getRootUrl(KindDirType dir);
 

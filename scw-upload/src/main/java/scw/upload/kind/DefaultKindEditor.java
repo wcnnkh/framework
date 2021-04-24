@@ -11,7 +11,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.FileUtils;
-import scw.upload.UploadItem;
+import scw.net.message.multipart.FileItem;
 import scw.util.comparator.FileComparator;
 
 public class DefaultKindEditor extends AbstractKindUpload {
@@ -72,7 +72,7 @@ public class DefaultKindEditor extends AbstractKindUpload {
 	}
 
 	@Override
-	protected String uploadInternal(String group, KindDirType dir, UploadItem item) throws IOException {
+	protected String uploadInternal(String group, KindDirType dir, FileItem item) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		if (StringUtils.isNotEmpty(group)) {
 			sb.append(group).append("/");

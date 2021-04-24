@@ -6,8 +6,7 @@ import java.io.IOException;
 import scw.http.HttpInputMessage;
 import scw.http.HttpStatus;
 
-public interface ClientHttpResponse extends HttpInputMessage,
-		Closeable {
+public interface ClientHttpResponse extends HttpInputMessage, Closeable {
 	/**
 	 * Return the HTTP status code of the response.
 	 * 
@@ -18,11 +17,13 @@ public interface ClientHttpResponse extends HttpInputMessage,
 	 *             in case of an unknown HTTP status code
 	 * @see HttpStatus#valueOf(int)
 	 */
-	HttpStatus getStatusCode() throws IOException;
+	default HttpStatus getStatusCode() throws IOException {
+		return HttpStatus.valueOf(getRawStatusCode());
+	}
 
 	int getRawStatusCode() throws IOException;
 
 	String getStatusText() throws IOException;
-	
+
 	void close();
 }

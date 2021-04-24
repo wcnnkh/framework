@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
 
-import scw.http.AbstractHttpOutputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
@@ -14,7 +13,7 @@ import scw.http.server.ServerHttpResponse;
 import scw.util.Target;
 import scw.util.XUtils;
 
-public class ServletServerHttpResponse extends AbstractHttpOutputMessage implements ServerHttpResponse, Target {
+public class ServletServerHttpResponse implements ServerHttpResponse, Target {
 	private HttpServletResponse httpServletResponse;
 	private HttpServletResponseHeaders headers;
 	private boolean bodyUse = false;
