@@ -1,10 +1,25 @@
 package scw.upload;
 
+import java.io.IOException;
+import java.net.URI;
+
 import scw.codec.support.CharsetCodec;
 import scw.core.utils.StringUtils;
+import scw.data.ResourceStorageService;
+import scw.data.StorageException;
+import scw.http.HttpMethod;
+import scw.http.HttpRequest;
+import scw.http.HttpRequestEntity;
+import scw.http.MediaType;
+import scw.http.server.HttpServiceHandlerAccept;
+import scw.http.server.ServerHttpRequest;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
+import scw.net.uri.UriComponentsBuilder;
 import scw.util.Verify;
 
-public class UploadPolicy implements Verify{
+public class UploadPolicy implements Verify, HttpServiceHandlerAccept {
+	private static Logger logger = LoggerFactory.getLogger(UploadPolicy.class);
 	private String baseUrl;
 	private String controller;
 	private String sign;
@@ -24,7 +39,7 @@ public class UploadPolicy implements Verify{
 	public void setController(String controller) {
 		this.controller = StringUtils.cleanPath(controller);
 	}
-	
+
 	public String getSign() {
 		return sign;
 	}
@@ -33,16 +48,41 @@ public class UploadPolicy implements Verify{
 		this.sign = sign;
 	}
 
-	public String getSign(String key, long expiration){
+	public String getSign(String key, long expiration) {
 		return CharsetCodec.UTF_8.toMD5().encode(key + expiration + sign);
 	}
-	
-	public boolean check(String key, String expiration, String sign){
+
+	public boolean checkSign(String key, String expiration, String sign) {
 		long time = Long.parseLong(expiration);
-		if(System.currentTimeMillis() > time){
+		if (System.currentTimeMillis() > time) {
 			return false;
 		}
 		return CharsetCodec.UTF_8.toMD5().toSigner().verify(key + expiration + this.sign, sign);
+	}
+
+	@Override
+	public boolean accept(ServerHttpRequest request) {
+		return request.getMethod() == HttpMethod.POST && request.getPath().equals(getController());
+	}
+
+	public HttpRequest generate(String key, long expiration) throws StorageException {
+		String sign = getSign(key, expiration);
+		URI uri = UriComponentsBuilder.fromUriString(getBaseUrl() + getController()).queryParam("key", key)
+				.queryParam("sign", sign).queryParam("expiration", expiration).build().toUri();
+		return HttpRequestEntity.post(uri).contentType(MediaType.MULTIPART_FORM_DATA).build();
+	}
+
+	public boolean upload(ServerHttpRequest request, ResourceStorageService rss) throws StorageException, IOException {
+		String key = request.getParameterMap().getFirst("key");
+		String expiration = request.getParameterMap().getFirst("expiration");
+		String sign = request.getParameterMap().getFirst("sign");
+		if (!checkSign(key, expiration, sign)) {
+			return false;
+		}
+
+		logger.info("upload request " + request);
+		rss.put(key, request);
+		return true;
 	}
 
 	@Override

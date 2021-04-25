@@ -13,15 +13,12 @@ import scw.core.utils.StringUtils;
 import scw.data.ResourceStorageService;
 import scw.data.StorageException;
 import scw.http.HttpRequest;
-import scw.http.HttpRequestEntity;
-import scw.http.MediaType;
 import scw.io.FileUtils;
 import scw.io.IOUtils;
 import scw.io.UrlResource;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.message.InputMessage;
-import scw.net.uri.UriComponentsBuilder;
 
 /**
  * 上传器
@@ -91,15 +88,7 @@ public class Uploader implements ResourceStorageService {
 	@Override
 	public HttpRequest generate(String key, long expiration)
 			throws StorageException {
-		String sign = getUploadPolicy().getSign(key, expiration);
-		URI uri = UriComponentsBuilder
-				.fromUriString(
-						getUploadPolicy().getBaseUrl()
-								+ getUploadPolicy().getController())
-				.queryParam("key", key).queryParam("sign", sign)
-				.queryParam("expiration", expiration).build().toUri();
-		return HttpRequestEntity.post(uri)
-				.contentType(MediaType.MULTIPART_FORM_DATA).build();
+		return uploadPolicy.generate(key, expiration);
 	}
 	
 	@Override
