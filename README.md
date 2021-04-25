@@ -15,6 +15,6 @@
 -----------------
 [示例](https://github.com/wcnnkh/scw-example/blob/master/src/main/java/scw/example/ExampleApplication.java)
 
-3.未开始模块
+3.即将开始模块(不分先后顺序)
 -----------------
 JMX,Solr,Elasticsearch,Kafka,Netty

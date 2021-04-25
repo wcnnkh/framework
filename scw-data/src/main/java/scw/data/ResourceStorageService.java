@@ -70,7 +70,7 @@ public interface ResourceStorageService {
 	 * 生成一个会过期的上传方法<br/>
 	 * 另外，此方法和put方法的区别最大的区别是当存储服务使用的是第三方实现时<br/>
 	 * put方法是使用服务器带宽进行上传,而此方法使用的是第三方服务的带宽
-	 * 
+	 * @see scw.upload.UploadPolicy
 	 * @param key
 	 * @param expiration
 	 *            到期时间点
