@@ -1,8 +1,10 @@
 package scw.upload;
 
 import scw.codec.support.CharsetCodec;
+import scw.core.utils.StringUtils;
+import scw.util.Verify;
 
-public class UploadPolicy {
+public class UploadPolicy implements Verify{
 	private String baseUrl;
 	private String controller;
 	private String sign;
@@ -12,7 +14,7 @@ public class UploadPolicy {
 	}
 
 	public void setBaseUrl(String baseUrl) {
-		this.baseUrl = baseUrl;
+		this.baseUrl = StringUtils.cleanPath(baseUrl);
 	}
 
 	public String getController() {
@@ -20,7 +22,7 @@ public class UploadPolicy {
 	}
 
 	public void setController(String controller) {
-		this.controller = controller;
+		this.controller = StringUtils.cleanPath(controller);
 	}
 	
 	public String getSign() {
@@ -41,5 +43,10 @@ public class UploadPolicy {
 			return false;
 		}
 		return CharsetCodec.UTF_8.toMD5().toSigner().verify(key + expiration + this.sign, sign);
+	}
+
+	@Override
+	public boolean isVerified() {
+		return StringUtils.isNotEmpty(baseUrl, controller, sign);
 	}
 }

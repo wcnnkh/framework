@@ -15,8 +15,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class UploadHandler implements HttpServiceHandler,
-		HttpServiceHandlerAccept {
+public class UploadHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	private static Logger logger = LoggerFactory.getLogger(UploadHandler.class);
 	private final Uploader uploader;
 
@@ -25,8 +24,7 @@ public class UploadHandler implements HttpServiceHandler,
 	}
 
 	@Override
-	public void doHandle(ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException {
+	public void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		String key = request.getParameterMap().getFirst("key");
 		String expiration = request.getParameterMap().getFirst("expiration");
 		String sign = request.getParameterMap().getFirst("sign");
@@ -44,8 +42,7 @@ public class UploadHandler implements HttpServiceHandler,
 	@Override
 	public boolean accept(ServerHttpRequest request) {
 		return request.getMethod() == HttpMethod.POST
-				&& request.getPath().equals(
-						uploader.getUploadPolicy().getController());
+				&& request.getPath().equals(uploader.getUploadPolicy().getController());
 	}
 
 }
