@@ -2,13 +2,13 @@ package scw.upload;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Date;
 
 import scw.codec.support.CharsetCodec;
 import scw.core.utils.StringUtils;
 import scw.data.ResourceStorageService;
 import scw.data.StorageException;
 import scw.http.HttpMethod;
-import scw.http.HttpRequest;
 import scw.http.HttpRequestEntity;
 import scw.http.MediaType;
 import scw.http.server.HttpServiceHandlerAccept;
@@ -48,8 +48,8 @@ public class UploadPolicy implements Verify, HttpServiceHandlerAccept {
 		this.sign = sign;
 	}
 
-	public String getSign(String key, long expiration) {
-		return CharsetCodec.UTF_8.toMD5().encode(key + expiration + sign);
+	public String getSign(String key, Date expiration) {
+		return CharsetCodec.UTF_8.toMD5().encode(key + expiration.getTime() + sign);
 	}
 
 	public boolean checkSign(String key, String expiration, String sign) {
@@ -65,10 +65,10 @@ public class UploadPolicy implements Verify, HttpServiceHandlerAccept {
 		return request.getMethod() == HttpMethod.POST && request.getPath().equals(getController());
 	}
 
-	public HttpRequest generate(String key, long expiration) throws StorageException {
+	public HttpRequestEntity<?> generatePolicy(String key, Date expiration) throws StorageException {
 		String sign = getSign(key, expiration);
 		URI uri = UriComponentsBuilder.fromUriString(getBaseUrl() + getController()).queryParam("key", key)
-				.queryParam("sign", sign).queryParam("expiration", expiration).build().toUri();
+				.queryParam("sign", sign).queryParam("expiration", expiration.getTime()).build().toUri();
 		return HttpRequestEntity.post(uri).contentType(MediaType.MULTIPART_FORM_DATA).build();
 	}
 

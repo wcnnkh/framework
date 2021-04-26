@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.data.ResourceStorageService;
 import scw.data.StorageException;
-import scw.http.HttpRequest;
+import scw.http.HttpRequestEntity;
 import scw.io.FileUtils;
 import scw.io.IOUtils;
 import scw.io.UrlResource;
@@ -86,9 +87,9 @@ public class Uploader implements ResourceStorageService {
 	}
 
 	@Override
-	public HttpRequest generate(String key, long expiration)
+	public HttpRequestEntity<?> generatePolicy(String key, Date expiration)
 			throws StorageException {
-		return uploadPolicy.generate(key, expiration);
+		return uploadPolicy.generatePolicy(key, expiration);
 	}
 	
 	@Override

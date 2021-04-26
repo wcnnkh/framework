@@ -2,9 +2,10 @@ package scw.data;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Date;
 import java.util.List;
 
-import scw.http.HttpRequest;
+import scw.http.HttpRequestEntity;
 import scw.io.UrlResource;
 import scw.lang.Nullable;
 import scw.net.message.InputMessage;
@@ -67,7 +68,7 @@ public interface ResourceStorageService {
 			@Nullable String marker, int limit) throws StorageException, IOException;
 
 	/**
-	 * 生成一个会过期的上传方法<br/>
+	 * 生成上传策略<br/>
 	 * 另外，此方法和put方法的区别最大的区别是当存储服务使用的是第三方实现时<br/>
 	 * put方法是使用服务器带宽进行上传,而此方法使用的是第三方服务的带宽
 	 * @see scw.upload.UploadPolicy
@@ -77,5 +78,5 @@ public interface ResourceStorageService {
 	 * @return
 	 * @throws StorageException
 	 */
-	HttpRequest generate(String key, long expiration) throws StorageException;
+	HttpRequestEntity<?> generatePolicy(String key, Date expiration) throws StorageException;
 }
