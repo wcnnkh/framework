@@ -14,7 +14,6 @@ import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.value.AnyValue;
 import scw.value.Value;
-import scw.value.ValueUtils;
 
 
 @SuppressWarnings("rawtypes")
@@ -180,7 +179,7 @@ public class JSONValue {
 			return ((Value) value).getAsString();
 		}
 		
-		if(ValueUtils.isBaseType(value.getClass())){
+		if(Value.isBaseType(value.getClass())){
 			return String.valueOf(value);
 		}
 		

@@ -1,4 +1,4 @@
-package scw.value.factory;
+package scw.value;
 
 import java.util.Iterator;
 
@@ -8,9 +8,6 @@ import scw.core.utils.CollectionUtils;
 import scw.lang.Nullable;
 import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
-import scw.value.AnyValue;
-import scw.value.StringValue;
-import scw.value.Value;
 
 public class SystemPropertyFactory implements PropertyFactory, Ordered{
 	private final ConversionService conversionService;

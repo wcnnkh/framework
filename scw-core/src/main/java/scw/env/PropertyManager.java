@@ -5,15 +5,13 @@ import java.util.Properties;
 
 import scw.event.Observable;
 import scw.util.placeholder.PropertyResolver;
+import scw.value.ConfigurablePropertyFactory;
+import scw.value.ListenablePropertyFactory;
+import scw.value.PropertyFactory;
 import scw.value.Value;
-import scw.value.factory.ConfigurablePropertyFactory;
-import scw.value.factory.ConvertibleObservableValueFactory;
-import scw.value.factory.ObservablePropertyFactory;
-import scw.value.factory.PropertyFactory;
 
 public interface PropertyManager extends PropertyResolver,
-		ConfigurablePropertyFactory, ObservablePropertyFactory,
-		ConvertibleObservableValueFactory<String> {
+		ConfigurablePropertyFactory, ListenablePropertyFactory {
 	void addPropertyFactory(PropertyFactory propertyFactory);
 
 	Observable<Map<String, Value>> loadProperties(

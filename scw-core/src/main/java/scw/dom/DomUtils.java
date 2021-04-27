@@ -24,7 +24,7 @@ import scw.lang.Nullable;
 import scw.util.Accept;
 import scw.util.KeyValuePair;
 import scw.util.placeholder.PropertyResolver;
-import scw.value.ValueUtils;
+import scw.value.StringValue;
 
 public final class DomUtils {
 	private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
@@ -242,7 +242,7 @@ public final class DomUtils {
 		if (value == null) {
 			return defaultValue;
 		} else {
-			return (T) ValueUtils.parse(value, basicType);
+			return (T) StringValue.parse(value, basicType);
 		}
 	}
 

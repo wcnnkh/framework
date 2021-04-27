@@ -5,7 +5,7 @@ import scw.env.Environment;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
 import scw.util.Accept;
-import scw.value.factory.ValueFactory;
+import scw.value.ValueFactory;
 
 public class DefaultServiceLoaderFactory extends SpiServiceLoaderFactory{
 	private final Accept<Class<?>> spiAccept;

@@ -1,27 +1,29 @@
 package scw.value;
 
-import java.io.Serializable;
 import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 
 import scw.core.ResolvableType;
+import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
+import scw.lang.Nullable;
 
-public class StringValue extends AbstractStringValue implements Serializable {
+public class StringValue extends AbstractValue {
 	private static final long serialVersionUID = 1L;
 	private String value;
 	private transient JSONSupport jsonSupport;
 
 	public StringValue(String value) {
-		this(value, EmptyValue.INSTANCE);
+		this(value, null);
 	}
 
-	public StringValue(String value, Value defaultValue) {
+	public StringValue(String value, @Nullable Value defaultValue) {
 		super(defaultValue);
 		this.value = value;
 	}
-	
+
 	public JSONSupport getJsonSupport() {
 		return jsonSupport == null ? JSONUtils.getJsonSupport() : jsonSupport;
 	}
@@ -53,7 +55,8 @@ public class StringValue extends AbstractStringValue implements Serializable {
 			return null;
 		}
 
-		Object array = Array.newInstance(componentType.getRawClass(), values.length);
+		Object array = Array.newInstance(componentType.getRawClass(),
+				values.length);
 		for (int i = 0; i < values.length; i++) {
 			Value value = parseValue(values[i]);
 			if (value != null) {
@@ -62,26 +65,45 @@ public class StringValue extends AbstractStringValue implements Serializable {
 		}
 		return (E[]) array;
 	}
-	
+
 	public <E> E[] getAsArray(Class<E> componentType) {
 		return getAsArray(ResolvableType.forClass(componentType));
 	}
-	
+
 	@Override
-	public Object getAsObject(ResolvableType resolvableType) {
-		if(isSupportArray() && resolvableType.isArray()){
-			return getAsArray(resolvableType.getComponentType());
+	protected Object getAsNonBaseType(ResolvableType type) {
+		if (isSupportArray() && type.isArray()) {
+			return getAsArray(type.getComponentType());
 		}
-		return super.getAsObject(resolvableType);
-	}
-	
-	@Override
-	protected Object getAsObjectNotSupport(ResolvableType type,
-			Class<?> rawClass) {
 		return getJsonSupport().parseObject(getAsString(), type.getType());
 	}
 
-	public boolean isEmpty() {
-		return StringUtils.isEmpty(value);
+	@Override
+	public int hashCode() {
+		return value == null ? super.hashCode() : value.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (value == null) {
+			return false;
+		}
+
+		if (obj == this) {
+			return true;
+		}
+
+		if (obj instanceof StringValue) {
+			return ObjectUtils.nullSafeEquals(value, ((StringValue) obj).value);
+		}
+		return false;
+	}
+
+	public static <T> T parse(String text, Class<T> type) {
+		return new StringValue(text).getAsObject(type);
+	}
+
+	public static Object parse(String text, Type type) {
+		return new StringValue(text).getAsObject(type);
 	}
 }

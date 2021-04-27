@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import scw.http.HttpRequestEntity;
-import scw.io.UrlResource;
+import scw.io.Resource;
 import scw.lang.Nullable;
 import scw.net.message.InputMessage;
 
@@ -23,7 +23,7 @@ public interface ResourceStorageService {
 	 * @return
 	 * @throws StorageException
 	 */
-	UrlResource get(String key) throws StorageException, IOException;
+	Resource get(String key) throws StorageException, IOException;
 
 	/**
 	 * 上传
@@ -64,7 +64,7 @@ public interface ResourceStorageService {
 	 * @return
 	 * @throws StorageException
 	 */
-	List<UrlResource> list(@Nullable String prefix,
+	List<Resource> list(@Nullable String prefix,
 			@Nullable String marker, int limit) throws StorageException, IOException;
 
 	/**

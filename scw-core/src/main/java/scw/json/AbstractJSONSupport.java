@@ -6,7 +6,7 @@ import java.lang.reflect.Type;
 
 import scw.core.utils.ClassUtils;
 import scw.io.IOUtils;
-import scw.value.ValueUtils;
+import scw.value.StringValue;
 
 public abstract class AbstractJSONSupport implements JSONSupport {
 
@@ -21,7 +21,7 @@ public abstract class AbstractJSONSupport implements JSONSupport {
 		}else if(type == String.class){
 			return (T) text;
 		} else if(ClassUtils.isPrimitiveOrWrapper(type)){
-			return ValueUtils.parse(text, type);
+			return StringValue.parse(text, type);
 		}
 		return parseObjectInternal(text, (Class<T>) type);
 	}

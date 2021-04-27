@@ -22,7 +22,7 @@ import scw.instance.InstanceUtils;
 import scw.lang.Nullable;
 import scw.mapper.Field;
 import scw.util.Accept;
-import scw.value.factory.PropertyFactory;
+import scw.value.PropertyFactory;
 
 public final class BeanUtils {
 	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = InstanceUtils.loadAllService(AopEnableSpi.class);

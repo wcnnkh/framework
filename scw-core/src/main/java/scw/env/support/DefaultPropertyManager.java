@@ -23,14 +23,14 @@ import scw.event.support.ObservableMap;
 import scw.event.support.StringNamedEventDispatcher;
 import scw.util.CollectionFactory;
 import scw.util.MultiIterator;
+import scw.value.AbstractPropertyFactory;
 import scw.value.AnyValue;
+import scw.value.ListenablePropertyFactory;
+import scw.value.PropertyFactory;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.factory.ListenablePropertyFactory;
-import scw.value.factory.PropertyFactory;
-import scw.value.factory.support.AbstractObservablePropertyFactory;
 
-public class DefaultPropertyManager extends AbstractObservablePropertyFactory implements PropertyManager{
+public class DefaultPropertyManager extends AbstractPropertyFactory implements PropertyManager{
 	private final ObservableMap<String, Value> propertyMap;
 	private final List<PropertyFactory> propertyFactories;
 	private ConversionService conversionService;
@@ -224,6 +224,7 @@ public class DefaultPropertyManager extends AbstractObservablePropertyFactory im
 	}
 
 	private class AnyFormatValue extends AnyValue {
+		private static final long serialVersionUID = 1L;
 
 		public AnyFormatValue(Object value) {
 			super(value, conversionService);

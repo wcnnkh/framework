@@ -19,7 +19,7 @@ import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
 import scw.util.MultiValueMap;
 import scw.util.XUtils;
-import scw.value.ValueUtils;
+import scw.value.Value;
 
 public class UriUtils {
 	public static final String QUERY_CONNECTOR = "?";
@@ -236,7 +236,7 @@ public class UriUtils {
 			return null;
 		}
 
-		if (ValueUtils.isBaseType(body.getClass())) {
+		if (Value.isBaseType(body.getClass())) {
 			return body.toString();
 		}
 

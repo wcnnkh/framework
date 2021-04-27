@@ -6,7 +6,7 @@ import java.util.Set;
 
 import scw.convert.ConversionService;
 import scw.core.utils.CollectionUtils;
-import scw.value.factory.PropertyFactory;
+import scw.value.PropertyFactory;
 
 public class PropertyFactoryToEntityConversionService extends EntityConversionService{
 	

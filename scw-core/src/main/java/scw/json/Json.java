@@ -1,15 +1,27 @@
 package scw.json;
 
-import scw.value.factory.ConvertibleValueFactory;
+import scw.value.ValueFactory;
 
-public interface Json<K> extends ConvertibleValueFactory<K>, JSONAware{
+public interface Json<K> extends ValueFactory<K>, JSONAware {
 	int size();
 
 	boolean isEmpty();
-	
+
+	default JsonElement getDefaultValue(K key) {
+		return EmptyJsonElement.INSTANCE;
+	};
+
 	JsonElement getValue(K key);
 
-	JsonArray getJsonArray(K key);
+	default JsonArray getJsonArray(K key) {
+		JsonElement jsonElement = getValue(key);
+		return jsonElement == null ? getDefaultValue(key).getAsJsonArray()
+				: jsonElement.getAsJsonArray();
+	}
 
-	JsonObject getJsonObject(K key);
+	default JsonObject getJsonObject(K key) {
+		JsonElement jsonElement = getValue(key);
+		return jsonElement == null ? getDefaultValue(key).getAsJsonObject()
+				: jsonElement.getAsJsonObject();
+	}
 }

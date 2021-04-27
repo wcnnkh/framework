@@ -10,10 +10,10 @@ import scw.core.utils.ClassUtils;
 import scw.event.Observable;
 import scw.instance.InstanceUtils;
 import scw.mapper.Field;
-import scw.mapper.Fields;
 import scw.mapper.FieldFeature;
+import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
-import scw.value.ValueUtils;
+import scw.value.StringValue;
 
 public final class PropertiesFileValueProcesser extends AbstractObservableValueProcesser<Properties> {
 
@@ -29,7 +29,7 @@ public final class PropertiesFileValueProcesser extends AbstractObservableValueP
 			Object bean, Field field, Value value, String name, Charset charset, Properties properties) {
 		if (ClassUtils.isPrimitiveOrWrapper(field.getSetter().getType())
 				|| field.getSetter().getType() == String.class) {
-			return ValueUtils.parse(properties.getProperty(field.getSetter().getName()),
+			return StringValue.parse(properties.getProperty(field.getSetter().getName()),
 					field.getSetter().getGenericType());
 		} else if (Properties.class.isAssignableFrom(field.getSetter().getType())) {
 			return properties;

@@ -5,31 +5,29 @@ import java.util.Set;
 
 import scw.util.KeyValuePair;
 
-public class JsonObjectWrapper extends JsonWrapper<String> implements JsonObject {
-	private JsonObject target;
+public class JsonObjectWrapper extends JsonWrapper<String, JsonObject> implements JsonObject {
 
 	public JsonObjectWrapper(JsonObject target) {
 		super(target);
-		this.target = target;
 	}
 
 	public boolean containsKey(String key) {
-		return target.containsKey(key);
+		return targetFactory.containsKey(key);
 	}
 
 	public boolean remove(String key) {
-		return target.remove(key);
+		return targetFactory.remove(key);
 	}
 
 	public boolean put(String key, Object value) {
-		return target.put(key, value);
+		return targetFactory.put(key, value);
 	}
 
 	public Set<String> keySet() {
-		return target.keySet();
+		return targetFactory.keySet();
 	}
 
 	public Iterator<KeyValuePair<String, JsonElement>> iterator() {
-		return target.iterator();
+		return targetFactory.iterator();
 	}
 }

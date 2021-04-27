@@ -1,8 +1,7 @@
 package scw.json;
 
-import scw.value.factory.support.AbstractConvertibleValueFactory;
 
-public abstract class AbstractJson<K> extends AbstractConvertibleValueFactory<K> implements Json<K> {
+public abstract class AbstractJson<K> implements Json<K> {
 
 	@Override
 	public JsonElement getDefaultValue(K key) {

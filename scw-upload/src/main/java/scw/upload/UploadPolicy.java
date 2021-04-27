@@ -8,17 +8,15 @@ import scw.codec.support.CharsetCodec;
 import scw.core.utils.StringUtils;
 import scw.data.ResourceStorageService;
 import scw.data.StorageException;
-import scw.http.HttpMethod;
 import scw.http.HttpRequestEntity;
 import scw.http.MediaType;
-import scw.http.server.HttpServiceHandlerAccept;
 import scw.http.server.ServerHttpRequest;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.uri.UriComponentsBuilder;
 import scw.util.Verify;
 
-public class UploadPolicy implements Verify, HttpServiceHandlerAccept {
+public class UploadPolicy implements Verify {
 	private static Logger logger = LoggerFactory.getLogger(UploadPolicy.class);
 	private String baseUrl;
 	private String controller;
@@ -60,11 +58,6 @@ public class UploadPolicy implements Verify, HttpServiceHandlerAccept {
 		return CharsetCodec.UTF_8.toMD5().toSigner().verify(key + expiration + this.sign, sign);
 	}
 
-	@Override
-	public boolean accept(ServerHttpRequest request) {
-		return request.getMethod() == HttpMethod.POST && request.getPath().equals(getController());
-	}
-
 	public HttpRequestEntity<?> generatePolicy(String key, Date expiration) throws StorageException {
 		String sign = getSign(key, expiration);
 		URI uri = UriComponentsBuilder.fromUriString(getBaseUrl() + getController()).queryParam("key", key)
@@ -76,6 +69,10 @@ public class UploadPolicy implements Verify, HttpServiceHandlerAccept {
 		String key = request.getParameterMap().getFirst("key");
 		String expiration = request.getParameterMap().getFirst("expiration");
 		String sign = request.getParameterMap().getFirst("sign");
+		if(StringUtils.isEmpty(key, expiration, sign)){
+			return false;
+		}
+		
 		if (!checkSign(key, expiration, sign)) {
 			return false;
 		}

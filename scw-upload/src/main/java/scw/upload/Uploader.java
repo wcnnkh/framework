@@ -16,10 +16,11 @@ import scw.data.StorageException;
 import scw.http.HttpRequestEntity;
 import scw.io.FileUtils;
 import scw.io.IOUtils;
-import scw.io.UrlResource;
+import scw.io.Resource;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.message.InputMessage;
+import scw.net.uri.UriUtils;
 
 /**
  * 上传器
@@ -43,12 +44,13 @@ public class Uploader implements ResourceStorageService {
 	}
 
 	@Override
-	public UrlResource get(String key) throws StorageException, IOException {
+	public Resource get(String key) throws StorageException, IOException {
+		File file = new File(directory, key);
 		StringBuilder sb = new StringBuilder();
 		sb.append(uploadPolicy.getBaseUrl());
 		sb.append("/");
 		sb.append(key);
-		return new UrlResource(sb.toString());
+		return new UploadResource(file, UriUtils.toUri(sb.toString()));
 	}
 
 	@Override
@@ -93,7 +95,7 @@ public class Uploader implements ResourceStorageService {
 	}
 	
 	@Override
-	public List<UrlResource> list(String keyPrefix, String marker, int limit)
+	public List<Resource> list(String keyPrefix, String marker, int limit)
 			throws StorageException, IOException {
 		String prefix = StringUtils.isEmpty(keyPrefix) ? "" : StringUtils.cleanPath(keyPrefix);
 		File file;
@@ -114,7 +116,7 @@ public class Uploader implements ResourceStorageService {
 		}
 
 		FileFilter fileFilter = new ListFileFilter(keyPrefix, marker, limit);
-		List<UrlResource> list = new ArrayList<UrlResource>(limit);
+		List<Resource> list = new ArrayList<Resource>(limit);
 		appendFile(fileFilter, file, list);
 		return list;
 	}
@@ -168,7 +170,7 @@ public class Uploader implements ResourceStorageService {
 		return key.startsWith("/")? key.substring(1):key;
 	}
 
-	private void appendFile(FileFilter fileFilter, File directory, List<UrlResource> list) throws StorageException, IOException {
+	private void appendFile(FileFilter fileFilter, File directory, List<Resource> list) throws StorageException, IOException {
 		for (File fileToUse : directory.listFiles()) {
 			if (fileToUse.isDirectory()) {
 				appendFile(fileFilter, directory, list);

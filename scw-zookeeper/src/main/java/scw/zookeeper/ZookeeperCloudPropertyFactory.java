@@ -25,10 +25,10 @@ import scw.io.Serializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.value.AnyValue;
+import scw.value.ConfigurablePropertyFactory;
 import scw.value.EmptyValue;
+import scw.value.ListenablePropertyFactory;
 import scw.value.Value;
-import scw.value.factory.ConfigurablePropertyFactory;
-import scw.value.factory.ListenablePropertyFactory;
 
 /**
  * 使用zookeeper实现的配置中心

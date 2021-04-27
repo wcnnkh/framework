@@ -11,7 +11,7 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.dom.DomUtils;
 import scw.value.StringValue;
-import scw.value.ValueUtils;
+import scw.value.Value;
 
 class NodeToObjectConversionService extends ConditionalConversionService{
 	private final ConversionService conversionService;
@@ -35,7 +35,7 @@ class NodeToObjectConversionService extends ConditionalConversionService{
 	}
 	
 	public Object convert(Node node, TypeDescriptor sourceType, TypeDescriptor targetType){
-		if(ValueUtils.isBaseType(targetType.getType())){
+		if(Value.isBaseType(targetType.getType())){
 			StringValue value = new StringValue(node.getTextContent());
 			return value.getAsObject(targetType.getResolvableType().getType());
 		}

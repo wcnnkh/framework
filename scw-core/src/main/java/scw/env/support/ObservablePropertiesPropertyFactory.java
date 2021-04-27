@@ -16,9 +16,9 @@ import scw.event.NamedEventDispatcher;
 import scw.event.Observable;
 import scw.event.support.StringNamedEventDispatcher;
 import scw.value.AnyValue;
+import scw.value.ListenablePropertyFactory;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.factory.ListenablePropertyFactory;
 
 public class ObservablePropertiesPropertyFactory extends
 		ConvertibleObservable<Properties, Map<String, Value>> implements ListenablePropertyFactory {

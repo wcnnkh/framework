@@ -1,20 +1,15 @@
 package scw.value;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import scw.core.ResolvableType;
 
-public class EmptyValue extends AbstractValue implements
-		Serializable {
+public class EmptyValue implements Value, Serializable {
 	private static final long serialVersionUID = 1L;
 	public static final EmptyValue INSTANCE = new EmptyValue();
-	
-	@Override
-	protected Object getAsObjectNotSupport(ResolvableType type, Class<?> rawClass) {
-		return null;
-	}
 
 	public String getAsString() {
 		return null;
@@ -112,7 +107,17 @@ public class EmptyValue extends AbstractValue implements
 		return true;
 	}
 
-	public Object getAsObject(ResolvableType resolvableType) {
+	public Object getAsObject(ResolvableType type) {
+		return null;
+	}
+
+	@Override
+	public <T> T getAsObject(Class<T> type) {
+		return null;
+	}
+
+	@Override
+	public Object getAsObject(Type type) {
 		return null;
 	}
 

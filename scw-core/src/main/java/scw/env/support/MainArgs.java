@@ -8,9 +8,9 @@ import scw.core.utils.StringUtils;
 import scw.util.AbstractIterator;
 import scw.util.KeyValuePair;
 import scw.value.AnyValue;
+import scw.value.PropertyFactory;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.factory.PropertyFactory;
 
 public class MainArgs implements PropertyFactory{
 	private final String[] args;

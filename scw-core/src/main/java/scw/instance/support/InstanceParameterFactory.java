@@ -14,7 +14,6 @@ import scw.instance.annotation.PropertyParameter;
 import scw.instance.annotation.ResourceParameter;
 import scw.io.Resource;
 import scw.value.Value;
-import scw.value.ValueUtils;
 
 public abstract class InstanceParameterFactory extends AbstractParameterFactory {
 	private final NoArgsInstanceFactory instanceFactory;
@@ -38,7 +37,7 @@ public abstract class InstanceParameterFactory extends AbstractParameterFactory 
 				.getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
 			Class<?> type = parameterConfig.getType();
-			if (ValueUtils.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
+			if (Value.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
 					|| Map.class.isAssignableFrom(type)) {
 				return true;
 			}

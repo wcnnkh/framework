@@ -31,7 +31,6 @@ import scw.util.Pagination;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.ValueUtils;
 
 public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	protected abstract IndexWriter getIndexWrite() throws IOException;
@@ -82,7 +81,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 			}
 
 			Value v;
-			if (ValueUtils.isBaseType(field.getGetter().getType())) {
+			if (Value.isBaseType(field.getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
 				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));

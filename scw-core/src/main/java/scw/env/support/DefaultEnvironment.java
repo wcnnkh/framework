@@ -33,8 +33,8 @@ import scw.io.ResourceLoader;
 import scw.io.event.ObservableProperties;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
+import scw.value.PropertyFactory;
 import scw.value.Value;
-import scw.value.factory.PropertyFactory;
 
 public class DefaultEnvironment extends DefaultPropertyManager implements ConfigurableEnvironment {
 	private final DefaultEnvironmentResourceLoader resourceLoader = new DefaultEnvironmentResourceLoader(this, this);
