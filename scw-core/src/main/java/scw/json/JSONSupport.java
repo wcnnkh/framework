@@ -31,7 +31,7 @@ public interface JSONSupport {
 			return (T) parseObject(text);
 		} else if (type == JsonArray.class) {
 			return (T) parseArray(text);
-		} else if (type == JsonElement.class) {
+		} else if (type.isAssignableFrom(JsonElement.class)) {
 			return (T) parseJson(text);
 		} else if(type == String.class) {
 			return (T) text;
@@ -73,7 +73,7 @@ public interface JSONSupport {
 			return (T) parseObject(reader);
 		} else if (type == JsonArray.class) {
 			return (T) parseArray(reader);
-		} else if (type == JsonElement.class) {
+		} else if (type.isAssignableFrom(JsonElement.class)) {
 			return (T) parseJson(reader);
 		}
 		return parseObject(new String(IOUtils.toCharArray(reader)), type);

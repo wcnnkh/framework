@@ -58,12 +58,12 @@ public abstract class AbstractValue implements SimpleValue, Serializable {
 			v = getAsChar();
 		} else if (Character.class == type) {
 			v = getAsCharacter();
-		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			v = getAsBigDecimal();
-		} else if (BigInteger.class.isAssignableFrom(type)) {
-			v = getAsBigInteger();
-		} else if (Number.class.isAssignableFrom(type)) {
+		} else if (type.isAssignableFrom(Number.class)) {
 			v = getAsNumber();
+		} else if (type.isAssignableFrom(BigDecimal.class)) {
+			v = getAsBigDecimal();
+		} else if (type.isAssignableFrom(BigInteger.class)) {
+			v = getAsBigInteger();
 		} else if (Class.class == type) {
 			v = getAsClass();
 		} else if (type.isEnum()) {

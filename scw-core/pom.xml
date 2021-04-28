@@ -32,17 +32,6 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<!-- 不编译和复制类 -->
-					<excludes>  
-						<exclude>module-info.class</exclude> 
-                    </excludes>
-				</configuration>
-			</plugin>
-
 			<!-- 使用方式参考https://github.com/cglib/cglib/blob/master/cglib-nodep/pom.xml -->
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
