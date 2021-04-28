@@ -38,7 +38,7 @@
 		<developerConnection>scm:git@https://github.com/wcnnkh/scw.git</developerConnection>
 		<url>https://github.com/wcnnkh/scw.git</url>
 	</scm>
-	
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>sonatype</id>
@@ -427,13 +427,13 @@
 				<artifactId>scw-slf4j</artifactId>
 				<version>2.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-consistency</artifactId>
 				<version>2.0</version>
 			</dependency>
-			
+
 			<!-- 通用的依赖版本定义 -->
 			<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 			<dependency>
@@ -491,7 +491,14 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.2.1</version>
+				</plugin>
+
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.3.0</version>
 				</plugin>
 
 				<!-- ant -->
@@ -513,24 +520,24 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.3</version>
+					<version>3.3.1</version>
 				</plugin>
 
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.18.1</version>
+					<version>2.22.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.9.1</version>
 				</plugin>
 				<!-- Javadoc -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.2.0</version>
 				</plugin>
 				<!-- Gpg Signature -->
 				<plugin>
@@ -592,37 +599,18 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 			</plugin>
-			
+
 			<!-- Javadoc -->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
-			
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
+				<executions> <execution> <phase>package</phase> <goals> <goal>jar</goal> 
+				</goals> </execution> </executions> </plugin> -->
+
 			<!-- Gpg Signature -->
 			<!-- 参考：https://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/ -->
 			<!-- 如果无需使用：mvn install -Dgpg.skip -->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-gpg-plugin</artifactId> 
+				<executions> <execution> <id>sign-artifacts</id> <phase>verify</phase> <goals> 
+				<goal>sign</goal> </goals> </execution> </executions> </plugin> -->
 		</plugins>
 	</build>
 	<modules>

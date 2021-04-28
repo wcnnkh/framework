@@ -16,11 +16,11 @@ public final class SerializerUtils {
 	static {
 		Serializer serializer = InstanceUtils.loadService(Serializer.class);
 		SERIALIZER = serializer == null ? JavaSerializer.INSTANCE : serializer;
-		logger.info("default serializer {}", serializer);
+		logger.info("default serializer {}", SERIALIZER);
 
 		CrossLanguageSerializer crossLanguageSerializer = InstanceUtils.loadService(CrossLanguageSerializer.class);
 		CROSS_LANGUAGE_SERIALIZER = crossLanguageSerializer == null ? JsonSerializer.INSTANCE : crossLanguageSerializer;
-		logger.info("default cross language serializer {}", crossLanguageSerializer);
+		logger.info("default cross language serializer {}", CROSS_LANGUAGE_SERIALIZER);
 	}
 
 	private SerializerUtils() {
