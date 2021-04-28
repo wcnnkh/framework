@@ -5,7 +5,9 @@ import scw.value.ValueFactory;
 public interface Json<K> extends ValueFactory<K>, JSONAware {
 	int size();
 
-	boolean isEmpty();
+	default boolean isEmpty() {
+		return size() == 0;
+	}
 
 	default JsonElement getDefaultValue(K key) {
 		return EmptyJsonElement.INSTANCE;

@@ -10,7 +10,7 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.lang.Nullable;
 import scw.util.CollectionFactory;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 
 class MapToMapConversionService extends ConditionalConversionService{
 	private final ConversionService conversionService;
@@ -36,13 +36,13 @@ class MapToMapConversionService extends ConditionalConversionService{
 		TypeDescriptor keyDesc = targetType.getMapKeyTypeDescriptor();
 		TypeDescriptor valueDesc = targetType.getMapValueTypeDescriptor();
 
-		List<KeyValuePair> targetEntries = new ArrayList<KeyValuePair>(sourceMap.size());
+		List<Pair> targetEntries = new ArrayList<Pair>(sourceMap.size());
 		for (Map.Entry<Object, Object> entry : sourceMap.entrySet()) {
 			Object sourceKey = entry.getKey();
 			Object sourceValue = entry.getValue();
 			Object targetKey = convertKey(sourceKey, sourceType, keyDesc);
 			Object targetValue = convertValue(sourceValue, sourceType, valueDesc);
-			targetEntries.add(new KeyValuePair(targetKey, targetValue));
+			targetEntries.add(new Pair(targetKey, targetValue));
 			if (sourceKey != targetKey || sourceValue != targetValue) {
 				copyRequired = true;
 			}
@@ -53,7 +53,7 @@ class MapToMapConversionService extends ConditionalConversionService{
 
 		Map<Object, Object> targetMap = CollectionFactory.createMap(targetType.getType(),
 				(keyDesc != null ? keyDesc.getType() : null), sourceMap.size());
-		for (KeyValuePair entry : targetEntries) {
+		for (Pair entry : targetEntries) {
 			targetMap.put(entry.getKey(), entry.getValue());
 		}
 		return targetMap;

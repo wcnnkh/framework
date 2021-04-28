@@ -22,7 +22,7 @@ import scw.io.ResourceLoader;
 import scw.lang.NotFoundException;
 import scw.lang.Nullable;
 import scw.util.Accept;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 import scw.util.placeholder.PropertyResolver;
 import scw.value.StringValue;
 
@@ -140,9 +140,9 @@ public final class DomUtils {
 	 * @throws Exception
 	 */
 	public static Map<String, Object> toRecursionMap(Node node) {
-		return toMap(node, new Converter<Node, KeyValuePair<String, Object>>() {
+		return toMap(node, new Converter<Node, Pair<String, Object>>() {
 
-			public KeyValuePair<String, Object> convert(Node n) {
+			public Pair<String, Object> convert(Node n) {
 				NodeList nodeList = n.getChildNodes();
 				Object v;
 				if (nodeList == null || nodeList.getLength() == 0) {
@@ -157,7 +157,7 @@ public final class DomUtils {
 
 					v = list == null ? n.getTextContent() : list;
 				}
-				return new KeyValuePair<String, Object>(n.getNodeName(), v);
+				return new Pair<String, Object>(n.getNodeName(), v);
 			}
 		});
 	}
@@ -195,7 +195,7 @@ public final class DomUtils {
 		return list.isEmpty() ? null : list;
 	}
 
-	public static Map<String, Object> toMap(Node node, Converter<Node, KeyValuePair<String, Object>> nodeParse) {
+	public static Map<String, Object> toMap(Node node, Converter<Node, Pair<String, Object>> nodeParse) {
 		if (ignoreNode(node)) {
 			return null;
 		}
@@ -217,7 +217,7 @@ public final class DomUtils {
 				continue;
 			}
 
-			KeyValuePair<String, Object> keyValuePair = nodeParse.convert(n);
+			Pair<String, Object> keyValuePair = nodeParse.convert(n);
 			if (keyValuePair != null) {
 				map.put(keyValuePair.getKey(), keyValuePair.getValue());
 			}

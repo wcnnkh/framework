@@ -12,13 +12,13 @@ import scw.json.AbstractJson;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONAware;
 import com.alibaba.fastjson.JSONObject;
 
-public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable, Converter<Entry<String, Object>, KeyValuePair<String, JsonElement>> {
+public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable, Converter<Entry<String, Object>, Pair<String, JsonElement>> {
 	private static final long serialVersionUID = 1L;
 	private JSONObject jsonObject;
 
@@ -96,11 +96,11 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 		return jsonObject.remove(key) != null;
 	}
 
-	public Iterator<KeyValuePair<String, JsonElement>> iterator() {
-		return new IteratorConverter<Entry<String, Object>, KeyValuePair<String, JsonElement>>(jsonObject.entrySet().iterator(), this);
+	public Iterator<Pair<String, JsonElement>> iterator() {
+		return new IteratorConverter<Entry<String, Object>, Pair<String, JsonElement>>(jsonObject.entrySet().iterator(), this);
 	}
 
-	public KeyValuePair<String, JsonElement> convert(Entry<String, Object> k) {
-		return new KeyValuePair<String, JsonElement>(k.getKey(), getValue(k.getKey()));
+	public Pair<String, JsonElement> convert(Entry<String, Object> k) {
+		return new Pair<String, JsonElement>(k.getKey(), getValue(k.getKey()));
 	}
 }

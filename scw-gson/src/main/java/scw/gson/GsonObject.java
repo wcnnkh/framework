@@ -9,11 +9,11 @@ import scw.core.IteratorConverter;
 import scw.json.AbstractJson;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 
 import com.google.gson.Gson;
 
-public final class GsonObject extends AbstractJson<String> implements JsonObject, Converter<Entry<String, com.google.gson.JsonElement>, KeyValuePair<String, JsonElement>> {
+public final class GsonObject extends AbstractJson<String> implements JsonObject, Converter<Entry<String, com.google.gson.JsonElement>, Pair<String, JsonElement>> {
 	private com.google.gson.JsonObject gsonJsonObject;
 	private Gson gson;
 
@@ -75,12 +75,12 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 		return gsonJsonObject.remove(key) != null;
 	}
 	
-	public KeyValuePair<String, JsonElement> convert(
+	public Pair<String, JsonElement> convert(
 			Entry<String, com.google.gson.JsonElement> k) {
-		return new KeyValuePair<String, JsonElement>(k.getKey(), new GsonElement(k.getValue(), gson));
+		return new Pair<String, JsonElement>(k.getKey(), new GsonElement(k.getValue(), gson));
 	}
 
-	public Iterator<KeyValuePair<String, JsonElement>> iterator() {
-		return new IteratorConverter<Entry<String, com.google.gson.JsonElement>, KeyValuePair<String,JsonElement>>(gsonJsonObject.entrySet().iterator(), this);
+	public Iterator<Pair<String, JsonElement>> iterator() {
+		return new IteratorConverter<Entry<String, com.google.gson.JsonElement>, Pair<String,JsonElement>>(gsonJsonObject.entrySet().iterator(), this);
 	}
 }

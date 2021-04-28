@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 
 import scw.core.utils.StringUtils;
 import scw.util.AbstractIterator;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 import scw.value.AnyValue;
 import scw.value.PropertyFactory;
 import scw.value.StringValue;
@@ -71,7 +71,7 @@ public class MainArgs implements PropertyFactory{
 		return text.startsWith("--") && text.indexOf("=") != -1;
 	}
 	
-	protected KeyValuePair<String, String> toProperty(String text){
+	protected Pair<String, String> toProperty(String text){
 		if(text.startsWith("--")){
 			return StringUtils.parseKV(text.substring(2), "=");
 		}
@@ -81,7 +81,7 @@ public class MainArgs implements PropertyFactory{
 	public String getProperty(String key){
 		for (String value : args) {
 			if(isProperty(value)){
-				KeyValuePair<String, String> keyValuePair = toProperty(value);
+				Pair<String, String> keyValuePair = toProperty(value);
 				if(keyValuePair != null && keyValuePair.getKey().equals(key)){
 					return keyValuePair.getValue();
 				}
@@ -123,7 +123,7 @@ public class MainArgs implements PropertyFactory{
 				throw new NoSuchElementException();
 			}
 			
-			KeyValuePair<String, String> keyValuePair = toProperty(args[index]);
+			Pair<String, String> keyValuePair = toProperty(args[index]);
 			index ++;
 			return keyValuePair.getKey();
 		}

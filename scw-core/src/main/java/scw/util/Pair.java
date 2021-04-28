@@ -3,20 +3,18 @@ package scw.util;
 import java.io.Serializable;
 
 import scw.core.utils.ObjectUtils;
-import scw.lang.Ignore;
 import scw.mapper.MapperUtils;
 
-@Ignore
-public class KeyValuePair<K, V> implements Serializable {
+public class Pair<K, V> implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
 	private K key;
 	private V value;
-	
-	public KeyValuePair(KeyValuePair<K, V> keyValuePair) {
-		this(keyValuePair.key, keyValuePair.value);
+
+	public Pair(Pair<K, V> pair) {
+		this(pair.key, pair.value);
 	}
 
-	public KeyValuePair(K key, V value) {
+	public Pair(K key, V value) {
 		this.key = key;
 		this.value = value;
 	}
@@ -61,15 +59,20 @@ public class KeyValuePair<K, V> implements Serializable {
 			return true;
 		}
 
-		if (obj instanceof KeyValuePair) {
-			return ObjectUtils.nullSafeEquals(((KeyValuePair) obj).getKey(), getKey())
-					&& ObjectUtils.nullSafeEquals(((KeyValuePair) obj).getValue(), getValue());
+		if (obj instanceof Pair) {
+			return ObjectUtils.nullSafeEquals(((Pair) obj).getKey(), getKey())
+					&& ObjectUtils.nullSafeEquals(((Pair) obj).getValue(), getValue());
 		}
 		return false;
 	}
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(KeyValuePair.class).getValueMap(this).toString();
+		return MapperUtils.getMapper().getFields(Pair.class).getValueMap(this).toString();
+	}
+
+	@Override
+	protected Pair<K, V> clone() throws CloneNotSupportedException {
+		return new Pair<K, V>(key, value);
 	}
 }

@@ -3,7 +3,7 @@ package scw.json;
 import java.util.Iterator;
 import java.util.Set;
 
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 
 public class JsonObjectWrapper extends JsonWrapper<String, JsonObject> implements JsonObject {
 
@@ -27,7 +27,7 @@ public class JsonObjectWrapper extends JsonWrapper<String, JsonObject> implement
 		return targetFactory.keySet();
 	}
 
-	public Iterator<KeyValuePair<String, JsonElement>> iterator() {
+	public Iterator<Pair<String, JsonElement>> iterator() {
 		return targetFactory.iterator();
 	}
 }

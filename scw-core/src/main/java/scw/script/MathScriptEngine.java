@@ -16,7 +16,7 @@ import scw.mapper.MapperUtils;
 import scw.math.BigDecimalHolder;
 import scw.math.Fraction;
 import scw.math.NumberHolder;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 
 /**
  * 实现单简单的数学计算(并不成熟，不推荐进行复杂计算)
@@ -43,7 +43,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 	private void resolve(Collection<Fragment> fragments, String script, Operator lastOperator) {
 		for (Function function : FUNCTIONS) {
-			KeyValuePair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(),
+			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(),
 					function.getSuffix());
 			if (indexPair == null) {
 				continue;
@@ -209,7 +209,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	@Override
 	protected NumberHolder evalInternal(String script) throws ScriptException {
 		for (Function function : FUNCTIONS) {
-			KeyValuePair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(),
+			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(),
 					function.getSuffix());
 			if (indexPair == null) {
 				continue;
