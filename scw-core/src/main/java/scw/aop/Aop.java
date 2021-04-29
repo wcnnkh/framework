@@ -28,4 +28,12 @@ public interface Aop extends AopPolicy, ProxyFactory{
 	<T> MethodInvoker getProxyMethod(Class<? extends T> targetClass, T instance, Method method, @Nullable MethodInterceptor methodInterceptor);
 	
 	<T> MethodInvoker getProxyMethod(Class<? extends T> targetClass, T instance, Method method);
+	
+	default boolean isProxy(Object instance){
+		if(instance == null){
+			return false;
+		}
+		
+		return isProxy(instance.getClass());
+	}
 }

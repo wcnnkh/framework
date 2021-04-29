@@ -15,7 +15,7 @@ import scw.convert.TypeDescriptor;
 import scw.convert.support.EntityConversionService;
 import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.StringUtils;
-import scw.env.support.DefaultEnvironment;
+import scw.env.DefaultEnvironment;
 
 @Provider
 public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {

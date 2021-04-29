@@ -8,7 +8,11 @@ import scw.value.ListenablePropertyFactory;
 public interface BasicEnvironment extends ListenablePropertyFactory, PropertyResolver, PlaceholderReplacer {
 	public static final String WORK_PATH_PROPERTY = "work.path";
 	
-	String getWorkPath();
+	default String getWorkPath() {
+		return getString(WORK_PATH_PROPERTY);
+	}
 	
-	Observable<String> getObservableWorkPath();
+	default Observable<String> getObservableWorkPath() {
+		return getObservableValue(WORK_PATH_PROPERTY, String.class, null);
+	}
 }

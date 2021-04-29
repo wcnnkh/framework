@@ -15,7 +15,10 @@ public interface ConfigurableEnvironment extends Environment, PropertyManager,
 		ConfigurableResourceLoader, ConfigurablePropertiesResolver,
 		ConfigurableConversionService, ConfigurableResourceResolver,
 		ConfigurablePropertyResolver, ConfigurableProxyFactory {
-	void setWorkPath(String path);
+	
+	default void setWorkPath(String path) {
+		put(WORK_PATH_PROPERTY, path);
+	}
 
 	Observable<Map<String, Value>> loadProperties(String resource);
 

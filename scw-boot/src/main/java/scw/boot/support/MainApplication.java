@@ -2,7 +2,7 @@ package scw.boot.support;
 
 import scw.boot.Application;
 import scw.boot.Main;
-import scw.env.support.MainArgs;
+import scw.env.MainArgs;
 import scw.logger.LoggerFactory;
 import scw.util.concurrent.ListenableFuture;
 

@@ -12,7 +12,7 @@ import scw.context.annotation.ComponentScans;
 import scw.core.type.filter.TypeFilter;
 import scw.core.type.scanner.ClassScanner;
 import scw.core.utils.CollectionUtils;
-import scw.env.support.DefaultEnvironment;
+import scw.env.DefaultEnvironment;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
 

@@ -1,4 +1,4 @@
-package scw.env.support;
+package scw.env;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,8 +11,7 @@ import java.util.Properties;
 import scw.convert.ConversionService;
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
-import scw.env.PropertyManager;
-import scw.env.support.ObservablePropertiesPropertyFactory.ValueCreator;
+import scw.env.ObservablePropertiesPropertyFactory.ValueCreator;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;

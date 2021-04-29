@@ -58,8 +58,6 @@ public class DefaultConversionService extends
 		conversionServices.add(new MapToEntityConversionService(this));
 		conversionServices.add(new PropertyFactoryToEntityConversionService(this));
 		conversionServices.add(new NodeListToEntityConversionService(this));
-		
-		conversionServices.add(new CollectionToMapConversionService(this, CollectionToMapConversionService.ANNOTATION));
 	}
 	
 	public DefaultConversionService(PropertiesResolver propertiesResolver, @Nullable Supplier<Charset> charset){

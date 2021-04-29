@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.env.support.DefaultEnvironment;
 import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;

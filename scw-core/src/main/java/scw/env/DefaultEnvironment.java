@@ -1,4 +1,4 @@
-package scw.env.support;
+package scw.env;
 
 import java.nio.charset.Charset;
 import java.util.Collection;
@@ -19,11 +19,8 @@ import scw.convert.resolve.ResourceResolver;
 import scw.convert.resolve.ResourceResolverConversionService;
 import scw.convert.resolve.support.DefaultResourceResolver;
 import scw.convert.support.DefaultConversionService;
-import scw.core.Constants;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.env.ConfigurableEnvironment;
-import scw.env.EnvironmentAware;
 import scw.event.EmptyObservable;
 import scw.event.Observable;
 import scw.instance.ServiceLoaderFactory;
@@ -107,15 +104,6 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 	
 	public Object resolveResource(Resource resource, TypeDescriptor targetType) {
 		return configurableResourceResolver.resolveResource(resource, targetType);
-	}
-	
-	public Object resolveResource(String location, TypeDescriptor targetType) {
-		Resource resource = getResource(location);
-		if(resource == null || !resource.exists()){
-			return null;
-		}
-		
-		return resolveResource(resource, targetType);
 	}
 	
 	public boolean canConvert(TypeDescriptor sourceType,
@@ -253,34 +241,6 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 		}
 	}
 
-	public String getWorkPath() {
-		return getString(WORK_PATH_PROPERTY);
-	}
-	
-	public Observable<String> getObservableWorkPath() {
-		return getObservableValue(WORK_PATH_PROPERTY, String.class, null);
-	}
-
-	public void setWorkPath(String path) {
-		put(WORK_PATH_PROPERTY, path);
-	}
-	
-	public String getCharsetName() {
-		return getValue(CHARSET_PROPERTY, String.class, Constants.UTF_8_NAME);
-	}
-	
-	public Observable<String> getObservableCharsetName() {
-		return getObservableValue(CHARSET_PROPERTY, String.class, Constants.UTF_8_NAME);
-	}
-	
-	public Charset getCharset() {
-		return getValue(CHARSET_PROPERTY, Charset.class, Constants.UTF_8);
-	}
-	
-	public Observable<Charset> getObservableCharset() {
-		return getObservableValue(CHARSET_PROPERTY, Charset.class, Constants.UTF_8);
-	}
-	
 	private final AtomicBoolean loaded = new AtomicBoolean();
 	
 	/**
