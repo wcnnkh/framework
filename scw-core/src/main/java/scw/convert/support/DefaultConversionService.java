@@ -44,10 +44,9 @@ public class DefaultConversionService extends
 		conversionServices.add(new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
 		
 		conversionServices.add(new EntityToMapConversionService(this));
-		conversionServices.add(new ConverterConversionService(Object.class,
-				String.class, new ObjectToStringConverter()));
 		conversionServices.add(new ObjectToArrayConversionService(this));
 		conversionServices.add(new ObjectToCollectionConversionService(this));
+		conversionServices.add(new ObjectToStringConverter());
 		
 		//document
 		conversionServices.add(new DocumentParseConversionService());

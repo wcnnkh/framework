@@ -4,7 +4,9 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
+import scw.json.JsonArray;
 import scw.json.JsonElement;
+import scw.json.JsonObject;
 
 public class JsonConversionService implements ConversionService{
 	private JSONSupport jsonSupport;
@@ -18,7 +20,7 @@ public class JsonConversionService implements ConversionService{
 	}
 
 	private boolean isJsonType(Class<?> type){
-		return JsonElement.class.isAssignableFrom(type);
+		return JsonElement.class.isAssignableFrom(type) || JsonArray.class == type || JsonObject.class == type;
 	}
 	
 	public boolean canConvert(TypeDescriptor sourceType,
