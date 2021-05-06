@@ -3,7 +3,7 @@ package scw.value;
 import java.util.Iterator;
 import java.util.Properties;
 
-import scw.convert.support.ObjectToStringConverter;
+import scw.convert.lang.ObjectToStringConverter;
 import scw.core.IteratorConverter;
 import scw.core.utils.CollectionUtils;
 

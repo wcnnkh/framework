@@ -6,6 +6,8 @@ import java.util.Set;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
+import scw.convert.lang.ConditionalConversionService;
+import scw.convert.lang.ConvertiblePair;
 
 class ArrayToArrayConversionService extends ConditionalConversionService {
 	private final ConversionService conversionService;

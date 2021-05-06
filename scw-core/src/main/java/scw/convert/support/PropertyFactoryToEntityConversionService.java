@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.Set;
 
 import scw.convert.ConversionService;
+import scw.convert.lang.ConvertiblePair;
 import scw.core.utils.CollectionUtils;
 import scw.value.PropertyFactory;
 

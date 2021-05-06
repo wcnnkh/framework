@@ -89,6 +89,9 @@ public interface Value {
 	 * @return
 	 */
 	public static boolean isBaseType(Class<?> type) {
+		if(type == null) {
+			return false;
+		}
 		return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class
 				|| Number.class.isAssignableFrom(type) || type.isEnum()
 				|| type == Class.class;

@@ -8,6 +8,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.convert.ConversionService;
+import scw.convert.lang.ConvertiblePair;
 import scw.dom.DomUtils;
 import scw.util.Accept;
 

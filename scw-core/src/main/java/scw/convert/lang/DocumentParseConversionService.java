@@ -1,4 +1,4 @@
-package scw.convert.support;
+package scw.convert.lang;
 
 import java.io.File;
 import java.io.InputStream;
@@ -14,7 +14,7 @@ import scw.dom.DomBuilder;
 import scw.dom.DomUtils;
 import scw.io.Resource;
 
-class DocumentParseConversionService implements ConversionService{
+public class DocumentParseConversionService implements ConversionService{
 	private DomBuilder domBuilder;
 	
 	public DomBuilder getDomBuilder() {

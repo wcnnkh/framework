@@ -8,6 +8,7 @@ import java.util.logging.Level;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
+import scw.convert.lang.ConditionalConversionService;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
@@ -307,6 +308,6 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	}
 
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return super.canConvert(sourceType, targetType) && isInstance(targetType);
+		return !canDirectlyConvert(sourceType, targetType) && super.canConvert(sourceType, targetType) && isInstance(targetType);
 	}
 }
