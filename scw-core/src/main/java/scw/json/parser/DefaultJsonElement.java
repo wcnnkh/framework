@@ -66,16 +66,6 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 		return new DefaultJsonObject(text);
 	}
 
-	public boolean isJsonArray() {
-		return text.startsWith(JsonArray.PREFIX)
-				&& text.endsWith(JsonArray.SUFFIX);
-	}
-
-	public boolean isJsonObject() {
-		return text.startsWith(JsonObject.PREFIX)
-				&& text.endsWith(JsonObject.SUFFIX);
-	}
-
 	@Override
 	protected Object getAsNonBaseType(ResolvableType type) {
 		return parse(text, type.getType());
