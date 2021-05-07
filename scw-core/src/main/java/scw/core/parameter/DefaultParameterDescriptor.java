@@ -42,10 +42,6 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 		return name;
 	}
 
-	public AnnotatedElement getAnnotatedElement() {
-		return annotatedElement;
-	}
-
 	public Class<?> getType() {
 		return type;
 	}
@@ -69,5 +65,20 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 	@Override
 	public String toString() {
 		return MapperUtils.getMapper().getFields(getClass()).getValueMap(this).toString();
+	}
+
+	@Override
+	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+		return this.annotatedElement.getAnnotation(annotationClass);
+	}
+
+	@Override
+	public Annotation[] getAnnotations() {
+		return this.annotatedElement.getAnnotations();
+	}
+
+	@Override
+	public Annotation[] getDeclaredAnnotations() {
+		return this.annotatedElement.getDeclaredAnnotations();
 	}
 }

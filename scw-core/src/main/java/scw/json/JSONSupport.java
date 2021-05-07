@@ -11,17 +11,33 @@ public interface JSONSupport {
 
 	JsonElement parseJson(String text) throws JSONException;
 
-	default JsonArray parseArray(String text) throws JSONException{
+	default JsonArray parseArray(String text) throws JSONException {
 		JsonElement jsonElement = parseJson(text);
 		return jsonElement == null ? null : jsonElement.getAsJsonArray();
 	}
 
-	default JsonObject parseObject(String text) throws JSONException{
+	default JsonObject parseObject(String text) throws JSONException {
 		JsonElement jsonElement = parseJson(text);
 		return jsonElement == null ? null : jsonElement.getAsJsonObject();
 	}
 
 	default JsonElement parseJson(Object obj) throws JSONException {
+		if(obj == null) {
+			return null;
+		}
+		
+		if (obj instanceof Reader) {
+			try {
+				return parseJson((Reader) obj);
+			} catch (IOException e) {
+				throw new JSONException(obj.toString(), e);
+			}
+		}
+		
+		if(obj instanceof String) {
+			return parseJson((String)obj);
+		}
+		
 		return parseJson(toJSONString(obj));
 	}
 
@@ -33,7 +49,7 @@ public interface JSONSupport {
 			return (T) parseArray(text);
 		} else if (type.isAssignableFrom(JsonElement.class)) {
 			return (T) parseJson(text);
-		} else if(type == String.class) {
+		} else if (type == String.class) {
 			return (T) text;
 		}
 		JsonElement jsonElement = parseJson(text);
@@ -41,11 +57,11 @@ public interface JSONSupport {
 	}
 
 	@SuppressWarnings("unchecked")
-	default <T> T parseObject(String text, Type type) throws JSONException{
-		if(type instanceof Class) {
-			return (T) parseObject(text, (Class<?>)type);
+	default <T> T parseObject(String text, Type type) throws JSONException {
+		if (type instanceof Class) {
+			return (T) parseObject(text, (Class<?>) type);
 		}
-		
+
 		JsonElement jsonElement = parseJson(text);
 		if (jsonElement == null) {
 			return null;

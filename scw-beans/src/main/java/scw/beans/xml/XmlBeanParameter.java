@@ -1,7 +1,6 @@
 package scw.beans.xml;
 
 import java.io.Serializable;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,14 +11,14 @@ import org.w3c.dom.Node;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeansException;
-import scw.core.annotation.AnnotatedElementUtils;
+import scw.core.annotation.EmptyAnnotatedElement;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, Serializable {
+public final class XmlBeanParameter extends EmptyAnnotatedElement implements Cloneable, ParameterDescriptor, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final XmlParameterType parameterType;
 	private Class<?> type;
@@ -66,10 +65,6 @@ public final class XmlBeanParameter implements Cloneable, ParameterDescriptor, S
 
 	public Type getGenericType() {
 		return type;
-	}
-
-	public AnnotatedElement getAnnotatedElement() {
-		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT;
 	}
 
 	public boolean isAccept(ParameterDescriptor parameterDescriptor, BeanFactory beanFactory){

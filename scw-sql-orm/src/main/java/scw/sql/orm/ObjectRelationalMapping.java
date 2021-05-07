@@ -138,12 +138,12 @@ public class ObjectRelationalMapping implements Accept<Field> {
 			return false;
 		}
 
-		Ignore ignore = field.getAnnotatedElement().getAnnotation(Ignore.class);
+		Ignore ignore = field.getAnnotation(Ignore.class);
 		if (ignore != null) {
 			return false;
 		}
 
-		NotColumn exclude = field.getAnnotatedElement().getAnnotation(NotColumn.class);
+		NotColumn exclude = field.getAnnotation(NotColumn.class);
 		if (exclude != null) {
 			return false;
 		}
@@ -153,8 +153,7 @@ public class ObjectRelationalMapping implements Accept<Field> {
 	public Map<IndexInfo, List<IndexInfo>> getIndexInfoMap(Class<?> entityClass) {
 		Map<IndexInfo, List<IndexInfo>> indexMap = new LinkedHashMap<IndexInfo, List<IndexInfo>>();
 		for (Column column : getColumns(entityClass)) {
-			scw.sql.orm.annotation.Index index = column.getField().getAnnotatedElement()
-					.getAnnotation(scw.sql.orm.annotation.Index.class);
+			scw.sql.orm.annotation.Index index = column.getField().getAnnotation(scw.sql.orm.annotation.Index.class);
 			if (index == null) {
 				continue;
 			}

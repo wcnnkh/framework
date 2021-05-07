@@ -18,33 +18,27 @@ public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
 	private final boolean nullable;
 	private ParameterDescriptor setterParameterDescriptor;
 
-	public DefaultSetter(Class<?> declaringClass, String name, Field field,
-			Method method) {
+	public DefaultSetter(Class<?> declaringClass, String name, Field field, Method method) {
 		super(declaringClass, field, method);
 		this.name = name;
 
 		if (method != null) {
 			Annotation[][] annotations = method.getParameterAnnotations();
 			if (!ArrayUtils.isEmpty(annotations)) {
-				setterParameterDescriptor = new DefaultParameterDescriptor(
-						name, annotations[0], method.getParameterTypes()[0],
-						method.getGenericParameterTypes()[0]);
+				setterParameterDescriptor = new DefaultParameterDescriptor(name, annotations[0],
+						method.getParameterTypes()[0], method.getGenericParameterTypes()[0]);
 			}
 		}
 
 		if (setterParameterDescriptor == null) {
-			this.nullable = AnnotationUtils.isNullable(getAnnotatedElement(),
-					false);
+			this.nullable = AnnotationUtils.isNullable(this, false);
 		} else {
-			this.nullable = AnnotationUtils.isNullable(
-					setterParameterDescriptor.getAnnotatedElement(),
-					new Supplier<Boolean>() {
+			this.nullable = AnnotationUtils.isNullable(setterParameterDescriptor, new Supplier<Boolean>() {
 
-						public Boolean get() {
-							return AnnotationUtils.isNullable(
-									getAnnotatedElement(), false);
-						}
-					}).get();
+				public Boolean get() {
+					return AnnotationUtils.isNullable(DefaultSetter.this, false);
+				}
+			}).get();
 		}
 	}
 

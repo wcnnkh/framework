@@ -16,8 +16,7 @@ public class AutowiredIocProcessor extends AbstractFieldIocProcessor {
 
 	@Override
 	protected void processInternal(BeanDefinition beanDefinition, Object bean, BeanFactory beanFactory) throws BeansException {
-		Autowired s = getField().getSetter()
-				.getAnnotatedElement().getAnnotation(Autowired.class);
+		Autowired s = getField().getSetter().getAnnotation(Autowired.class);
 		if (s != null) {
 			String name = s.value();
 			if (name.length() == 0) {

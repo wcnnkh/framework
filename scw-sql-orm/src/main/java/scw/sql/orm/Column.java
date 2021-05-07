@@ -1,19 +1,19 @@
 package scw.sql.orm;
 
 import java.io.Serializable;
-import java.lang.reflect.AnnotatedElement;
 import java.util.Date;
 
+import scw.core.annotation.AnnotatedElementWrapper;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.json.JSONUtils;
 import scw.mapper.Field;
+import scw.orm.annotation.PrimaryKey;
 import scw.sql.SqlUtils;
 import scw.sql.orm.annotation.AutoIncrement;
 import scw.sql.orm.annotation.Counter;
 import scw.sql.orm.annotation.ForceUpdate;
 import scw.sql.orm.annotation.Index;
-import scw.sql.orm.annotation.PrimaryKey;
 import scw.sql.orm.annotation.Table;
 import scw.sql.orm.dialect.SqlType;
 import scw.sql.orm.dialect.SqlTypeFactory;
@@ -27,24 +27,23 @@ import scw.value.Value;
  * @author shuchaowen
  *
  */
-public class Column implements Serializable {
+public class Column extends AnnotatedElementWrapper<Field> implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private Field field;
 
 	public Column(Field field) {
-		this.field = field;
+		super(field);
 	}
 
 	public final Field getField() {
-		return field;
+		return target;
 	}
 
 	public boolean isEntity() {
-		return field.getGetter().getType().getAnnotation(Table.class) != null;
+		return getField().getGetter().getType().getAnnotation(Table.class) != null;
 	}
 
 	public boolean isPrimaryKey() {
-		return field.getAnnotatedElement().getAnnotation(PrimaryKey.class) != null;
+		return getAnnotation(PrimaryKey.class) != null;
 	}
 
 	public String getName() {
@@ -67,7 +66,7 @@ public class Column implements Serializable {
 			return value;
 		}
 
-		Class<?> type = field.getSetter().getType();
+		Class<?> type = getField().getSetter().getType();
 		if (type.isInstance(value)) {
 			return value;
 		} else if (type == Value.class) {
@@ -117,7 +116,7 @@ public class Column implements Serializable {
 		} else if (type.isEnum()) {
 			return Enum.valueOf((Class<? extends Enum>) type, value.toString());
 		} else {
-			return JSONUtils.getJsonSupport().parseObject(value.toString(), field.getSetter().getGenericType());
+			return JSONUtils.getJsonSupport().parseObject(value.toString(), getField().getSetter().getGenericType());
 		}
 	}
 
@@ -137,7 +136,7 @@ public class Column implements Serializable {
 			return;
 		}
 
-		field.getSetter().set(entity, v);
+		getField().getSetter().set(entity, v);
 	}
 
 	/**
@@ -147,7 +146,7 @@ public class Column implements Serializable {
 	 * @return
 	 */
 	public final Object get(Object entity) {
-		Object value = field.getGetter().get(entity);
+		Object value = getField().getGetter().get(entity);
 		return value == null ? null : toDataBaseValue(value);
 	}
 
@@ -162,7 +161,7 @@ public class Column implements Serializable {
 			return ((Enum<?>) value).name();
 		}
 
-		Class<?> type = field.getGetter().getType();
+		Class<?> type = getField().getGetter().getType();
 		if (boolean.class == type) {
 			boolean b = value == null ? false : (Boolean) value;
 			return b ? 1 : 0;
@@ -199,11 +198,11 @@ public class Column implements Serializable {
 	}
 
 	public boolean isIndexColumn() {
-		return field.getAnnotatedElement().getAnnotation(Index.class) != null;
+		return getAnnotation(Index.class) != null;
 	}
 
 	public boolean isNullable() {
-		if (field.getGetter().getType().isPrimitive()) {
+		if (getField().getGetter().getType().isPrimitive()) {
 			return false;
 		}
 
@@ -220,7 +219,7 @@ public class Column implements Serializable {
 	}
 
 	public boolean isAutoIncrement() {
-		return field.getAnnotatedElement().getAnnotation(AutoIncrement.class) != null;
+		return getAnnotation(AutoIncrement.class) != null;
 	}
 
 	public String getCharsetName() {
@@ -234,7 +233,7 @@ public class Column implements Serializable {
 	}
 
 	protected scw.sql.orm.annotation.Column getColumn() {
-		return field.getAnnotatedElement().getAnnotation(scw.sql.orm.annotation.Column.class);
+		return getAnnotation(scw.sql.orm.annotation.Column.class);
 	}
 
 	public CasType getCasType() {
@@ -282,7 +281,7 @@ public class Column implements Serializable {
 			type = column.type();
 		}
 
-		SqlType tempSqlType = StringUtils.isEmpty(type) ? sqlTypeFactory.getSqlType(field.getGetter().getType())
+		SqlType tempSqlType = StringUtils.isEmpty(type) ? sqlTypeFactory.getSqlType(getField().getGetter().getType())
 				: sqlTypeFactory.getSqlType(type);
 		type = tempSqlType.getName();
 
@@ -297,20 +296,11 @@ public class Column implements Serializable {
 	}
 
 	public CounterInfo getCounterInfo() {
-		Counter counter = field.getAnnotatedElement().getAnnotation(Counter.class);
+		Counter counter = getAnnotation(Counter.class);
 		return counter == null ? null : new CounterInfo(counter.min(), counter.max());
-	}
-
-	public AnnotatedElement getAnnotatedElement() {
-		return field.getAnnotatedElement();
 	}
 	
 	public boolean isForceUpdate(){
-		return getAnnotatedElement().getAnnotation(ForceUpdate.class) != null;
-	}
-	
-	@Override
-	public String toString() {
-		return field.toString();
+		return getAnnotation(ForceUpdate.class) != null;
 	}
 }

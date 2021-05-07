@@ -61,7 +61,7 @@ public final class InstanceUtils {
 	}
 	
 	public static String getPropertyName(ParameterDescriptor parameterDescriptor) {
-		PropertyName parameterName = parameterDescriptor.getAnnotatedElement().getAnnotation(PropertyName.class);
+		PropertyName parameterName = parameterDescriptor.getAnnotation(PropertyName.class);
 		if (parameterName != null && StringUtils.isNotEmpty(parameterName.value())) {
 			return parameterName.value();
 		}

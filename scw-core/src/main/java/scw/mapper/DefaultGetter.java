@@ -15,7 +15,7 @@ public class DefaultGetter extends AbstractFieldDescriptor implements Getter {
 			Method method) {
 		super(declaringClass, field, method);
 		this.name = name;
-		this.nullable = AnnotationUtils.isNullable(getAnnotatedElement(), false);
+		this.nullable = AnnotationUtils.isNullable(this, false);
 	}
 
 	public String getName() {

@@ -33,8 +33,7 @@ public abstract class InstanceParameterFactory extends AbstractParameterFactory 
 	}
 
 	protected boolean isProerptyType(ParameterDescriptor parameterConfig) {
-		PropertyParameter propertyParameter = parameterConfig.getAnnotatedElement()
-				.getAnnotation(PropertyParameter.class);
+		PropertyParameter propertyParameter = parameterConfig.getAnnotation(PropertyParameter.class);
 		if (propertyParameter == null) {
 			Class<?> type = parameterConfig.getType();
 			if (Value.isBaseType(type) || type.isArray() || Collection.class.isAssignableFrom(type)
@@ -69,8 +68,7 @@ public abstract class InstanceParameterFactory extends AbstractParameterFactory 
 		}
 
 		if (value != null) {
-			ResourceParameter resourceParameter = parameterDescriptor.getAnnotatedElement()
-					.getAnnotation(ResourceParameter.class);
+			ResourceParameter resourceParameter = parameterDescriptor.getAnnotation(ResourceParameter.class);
 			if (resourceParameter != null) {
 				Resource resource = environment.getResource(value.getAsString());
 				if(resource == null || !resource.exists()){

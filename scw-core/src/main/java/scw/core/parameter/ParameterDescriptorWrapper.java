@@ -1,43 +1,34 @@
 package scw.core.parameter;
 
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
+import scw.core.annotation.AnnotatedElementWrapper;
 import scw.value.Value;
 
-public class ParameterDescriptorWrapper implements ParameterDescriptor {
-	protected final ParameterDescriptor parameterDescriptor;
+public class ParameterDescriptorWrapper<P extends ParameterDescriptor> extends AnnotatedElementWrapper<P>
+		implements ParameterDescriptor {
 
-	public ParameterDescriptorWrapper(ParameterDescriptor parameterDescriptor) {
-		this.parameterDescriptor = parameterDescriptor;
-	}
-
-	public AnnotatedElement getAnnotatedElement() {
-		return parameterDescriptor.getAnnotatedElement();
+	public ParameterDescriptorWrapper(P target) {
+		super(target);
 	}
 
 	public String getName() {
-		return parameterDescriptor.getName();
+		return target.getName();
 	}
 
 	public Class<?> getType() {
-		return parameterDescriptor.getType();
+		return target.getType();
 	}
 
 	public Type getGenericType() {
-		return parameterDescriptor.getGenericType();
+		return target.getGenericType();
 	}
-	
+
 	public boolean isNullable() {
-		return parameterDescriptor.isNullable();
+		return target.isNullable();
 	}
-	
-	@Override
-	public String toString() {
-		return parameterDescriptor.toString();
-	}
-	
+
 	public Value getDefaultValue() {
-		return parameterDescriptor.getDefaultValue();
+		return target.getDefaultValue();
 	}
 }

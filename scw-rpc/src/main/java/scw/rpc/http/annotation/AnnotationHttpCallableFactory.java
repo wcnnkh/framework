@@ -129,7 +129,7 @@ public class AnnotationHttpCallableFactory extends HttpConnectionCallableFactory
 			for(int i=0; i<parameterDescriptors.length; i++){
 				Object value = args[i];
 				ParameterDescriptor parameterDescriptor = parameterDescriptors[i];
-				DefaultValue defaultValue = parameterDescriptor.getAnnotatedElement().getAnnotation(DefaultValue.class);
+				DefaultValue defaultValue = parameterDescriptor.getAnnotation(DefaultValue.class);
 				if(defaultValue != null){
 					parameterDescriptor = new OverrideParameterDescriptor(parameterDescriptor, new StringValue(defaultValue.value()));
 				}
@@ -138,31 +138,31 @@ public class AnnotationHttpCallableFactory extends HttpConnectionCallableFactory
 					value = parameterDescriptor.getDefaultValue().getAsString();
 				}
 				
-				HeaderParam headerParam = parameterDescriptor.getAnnotatedElement().getAnnotation(HeaderParam.class);
+				HeaderParam headerParam = parameterDescriptor.getAnnotation(HeaderParam.class);
 				if(headerParam != null){
 					requestHeaders.add(headerParam.value(), String.valueOf(value));
 					continue;
 				}
 				
-				PathParam pathParam = parameterDescriptor.getAnnotatedElement().getAnnotation(PathParam.class);
+				PathParam pathParam = parameterDescriptor.getAnnotation(PathParam.class);
 				if(pathParam != null){
 					pathParameters.put(pathParam.value(), value);
 					continue;
 				}
 				
-				QueryParam queryParam = parameterDescriptor.getAnnotatedElement().getAnnotation(QueryParam.class);
+				QueryParam queryParam = parameterDescriptor.getAnnotation(QueryParam.class);
 				if(queryParam != null){
 					uriBuilder.queryParam(queryParam.value(), value);
 					continue;
 				}
 				
-				FormParam formParam = parameterDescriptor.getAnnotatedElement().getAnnotation(FormParam.class);
+				FormParam formParam = parameterDescriptor.getAnnotation(FormParam.class);
 				if(formParam != null){
 					formParams.put(formParam.value(), value);
 					continue;
 				}
 				
-				CookieParam cookieParam = parameterDescriptor.getAnnotatedElement().getAnnotation(CookieParam.class);
+				CookieParam cookieParam = parameterDescriptor.getAnnotation(CookieParam.class);
 				if(cookieParam != null){
 					requestHeaders.add(cookieParam.value(), String.valueOf(value));
 					continue;

@@ -48,7 +48,7 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 		for (int i = 0; i < configs.length; i++) {
 			ParameterDescriptor config = configs[i];
 			boolean b = lockConfig.all();
-			LockParameter lockParameter = config.getAnnotatedElement().getAnnotation(LockParameter.class);
+			LockParameter lockParameter = config.getAnnotation(LockParameter.class);
 			if (lockParameter != null) {
 				b = lockParameter.value();
 			}

@@ -45,7 +45,7 @@ import scw.mapper.FieldDescriptor;
  * @see ConversionService#convert(Object, TypeDescriptor, TypeDescriptor)
  */
 @SuppressWarnings("serial")
-public class TypeDescriptor implements Serializable {
+public class TypeDescriptor implements AnnotatedElement, Serializable {
 
 	private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
@@ -97,7 +97,7 @@ public class TypeDescriptor implements Serializable {
 	public TypeDescriptor(FieldDescriptor fieldDescriptor){
 		this.resolvableType = ResolvableType.forType(fieldDescriptor.getGenericType());
 		this.type = this.resolvableType.resolve(fieldDescriptor.getType());
-		this.annotatedElement = new AnnotatedElementAdapter(fieldDescriptor.getAnnotatedElement().getAnnotations());
+		this.annotatedElement = new AnnotatedElementAdapter(fieldDescriptor.getAnnotations());
 	}
 
 	/**
@@ -807,5 +807,12 @@ public class TypeDescriptor implements Serializable {
 			return TypeDescriptor.this.toString();
 		}
 	}
+
+
+	@Override
+	public Annotation[] getDeclaredAnnotations() {
+		return this.annotatedElement.getDeclaredAnnotations();
+	}
+
 
 }

@@ -90,7 +90,7 @@ public class BeanAction extends AbstractAction {
 			}
 		}
 
-		actionInterceptors = getAnnotatedElement().getAnnotation(ActionInterceptors.class);
+		actionInterceptors = getMethod().getAnnotation(ActionInterceptors.class);
 		if (actionInterceptors != null) {
 			sets.clear();
 			for (Class<? extends ActionInterceptor> f : actionInterceptors.value()) {
@@ -105,8 +105,7 @@ public class BeanAction extends AbstractAction {
 			}
 		}
 
-		controller = getAnnotatedElement()
-				.getAnnotation(Controller.class);
+		controller = getMethod().getAnnotation(Controller.class);
 		if (controller != null) {
 			for (Class<?> f : controller.interceptors()) {
 				BeanDefinition definition = getBeanFactory().getDefinition(f);

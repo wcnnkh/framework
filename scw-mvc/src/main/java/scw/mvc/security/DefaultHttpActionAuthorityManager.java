@@ -67,7 +67,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			}
 		}
 
-		ActionAuthority methodAuthority = action.getAnnotatedElement().getAnnotation(ActionAuthority.class);
+		ActionAuthority methodAuthority = action.getAnnotation(ActionAuthority.class);
 		if (methodAuthority == null) {
 			return;
 		}
@@ -78,7 +78,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			return;
 		}
 
-		String parentId = getParentId(new MultiAnnotatedElement(action.getDeclaringClass(), action.getAnnotatedElement()),
+		String parentId = getParentId(new MultiAnnotatedElement(action.getDeclaringClass(), action.getMethod()),
 				action.getDeclaringClass().getName());
 		boolean isMenu = methodAuthority.menu();
 		if (isMenu) {

@@ -1,1 +1,1 @@
-scw.orm.OrmConversionService
+scw.orm.convert.CollectionToMapConversionService

@@ -161,15 +161,13 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 	protected Object getParameterInternal(
 			ParameterDescriptor parameterDescriptor) {
 		Value defaultValue = parameterDescriptor.getDefaultValue();
-		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor
-				.getAnnotatedElement().getAnnotation(BigDecimalMultiply.class);
+		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor.getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
 			return bigDecimalMultiply(parameterDescriptor, bigDecimalMultiply,
 					defaultValue);
 		}
 
-		DateFormat dateFormat = parameterDescriptor.getAnnotatedElement()
-				.getAnnotation(DateFormat.class);
+		DateFormat dateFormat = parameterDescriptor.getAnnotation(DateFormat.class);
 		if (dateFormat != null) {
 			return dateFormat(dateFormat, parameterDescriptor, defaultValue);
 		}
@@ -215,18 +213,16 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 			return getSession(false);
 		}
 
-		if (parameterDescriptor.getAnnotatedElement().getAnnotation(IP.class) != null) {
+		if (parameterDescriptor.getAnnotation(IP.class) != null) {
 			return getRequest().getIp();
 		}
 
-		Attribute attribute = parameterDescriptor.getAnnotatedElement()
-				.getAnnotation(Attribute.class);
+		Attribute attribute = parameterDescriptor.getAnnotation(Attribute.class);
 		if (attribute != null) {
 			return getRequest().getAttribute(attribute.value());
 		}
 
-		RequestBody requestBody = parameterDescriptor.getAnnotatedElement()
-				.getAnnotation(RequestBody.class);
+		RequestBody requestBody = parameterDescriptor.getAnnotation(RequestBody.class);
 		if (requestBody != null) {
 			RequestBodyParse requestBodyParse = getInstanceFactory()
 					.getInstance(requestBody.value());
@@ -239,8 +235,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 			}
 		}
 
-		RequestBean requestBean = parameterDescriptor.getAnnotatedElement()
-				.getAnnotation(RequestBean.class);
+		RequestBean requestBean = parameterDescriptor.getAnnotation(RequestBean.class);
 		if (requestBean != null) {
 			return StringUtils.isEmpty(requestBean.value()) ? getInstanceFactory()
 					.getInstance(parameterDescriptor.getType().getName())

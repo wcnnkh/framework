@@ -1,5 +1,6 @@
 package scw.mapper;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -31,9 +32,20 @@ public abstract class AbstractFieldDescriptor implements FieldDescriptor {
 		this.field = field == null ? null : new SerializableField(field);
 		this.method = method == null ? null : new SerializableMethod(method);
 	}
-
-	public AnnotatedElement getAnnotatedElement() {
-		return annotatedElement;
+	
+	@Override
+	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+		return this.annotatedElement.getAnnotation(annotationClass);
+	}
+	
+	@Override
+	public Annotation[] getAnnotations() {
+		return this.annotatedElement.getAnnotations();
+	}
+	
+	@Override
+	public Annotation[] getDeclaredAnnotations() {
+		return this.annotatedElement.getDeclaredAnnotations();
 	}
 
 	public java.lang.reflect.Field getField() {

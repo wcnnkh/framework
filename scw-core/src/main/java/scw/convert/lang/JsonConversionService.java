@@ -2,22 +2,12 @@ package scw.convert.lang;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
-import scw.json.JSONSupport;
-import scw.json.JSONUtils;
+import scw.json.JSONSupportAccessor;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
 
-public class JsonConversionService implements ConversionService{
-	private JSONSupport jsonSupport;
-	
-	public JSONSupport getJsonSupport() {
-		return jsonSupport == null? JSONUtils.getJsonSupport():jsonSupport;
-	}
-
-	public void setJsonSupport(JSONSupport jsonSupport) {
-		this.jsonSupport = jsonSupport;
-	}
+public class JsonConversionService extends JSONSupportAccessor implements ConversionService{
 
 	private boolean isJsonType(Class<?> type){
 		return JsonElement.class.isAssignableFrom(type) || JsonArray.class == type || JsonObject.class == type;

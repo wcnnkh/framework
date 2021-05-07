@@ -10,6 +10,7 @@ import scw.convert.lang.ConversionServices;
 import scw.convert.lang.ConverterConversionService;
 import scw.convert.lang.DocumentParseConversionService;
 import scw.convert.lang.JsonConversionService;
+import scw.convert.lang.JsonToObjectConversionService;
 import scw.convert.lang.ObjectToStringConverter;
 import scw.convert.lang.ResourceToPropertiesConverter;
 import scw.convert.lang.StringToCharsetConverter;
@@ -37,6 +38,7 @@ public class DefaultConversionService extends ConversionServices {
 
 		addConversionService(new ValueConversionService(this));
 		addConversionService(new JsonConversionService());
+		addConversionService(new JsonToObjectConversionService());
 
 		addConversionService(new ConverterConversionService(String.class, Charset.class, new StringToCharsetConverter()));
 		addConversionService(new ConverterConversionService(String.class, Locale.class, new StringToLocaleConverter()));

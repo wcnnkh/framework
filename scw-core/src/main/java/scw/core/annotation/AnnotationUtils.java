@@ -100,6 +100,8 @@ public abstract class AnnotationUtils {
 	 * The attribute name for annotations with a single element.
 	 */
 	public static final String VALUE = "value";
+	
+	public static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
 	private static final String REPEATABLE_CLASS_NAME = "java.lang.annotation.Repeatable";
 

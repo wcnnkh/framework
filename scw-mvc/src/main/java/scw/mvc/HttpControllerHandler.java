@@ -65,13 +65,14 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 
 		this.actionManager = beanFactory.getInstance(ActionManager.class);
 		this.exceptionHandler = beanFactory.isInstance(ExceptionHandler.class)
-				? beanFactory.getInstance(ExceptionHandler.class) : null;
+				? beanFactory.getInstance(ExceptionHandler.class)
+				: null;
 
-		for(ActionInterceptor actionInterceptor : beanFactory.getServiceLoader(ActionInterceptor.class)){
+		for (ActionInterceptor actionInterceptor : beanFactory.getServiceLoader(ActionInterceptor.class)) {
 			this.actionInterceptor.add(actionInterceptor);
 		}
-		
-		for(MessageConverter messageConverter : beanFactory.getServiceLoader(MessageConverter.class)){
+
+		for (MessageConverter messageConverter : beanFactory.getServiceLoader(MessageConverter.class)) {
 			messageConverterFactory.getMessageConverters().add(messageConverter);
 		}
 	}
@@ -81,7 +82,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 	}
 
 	public JSONSupport getJsonSupport() {
-		return jsonSupport == null? JSONUtils.getJsonSupport():jsonSupport;
+		return jsonSupport == null ? JSONUtils.getJsonSupport() : jsonSupport;
 	}
 
 	public void setJsonSupport(JSONSupport jsonSupport) {
@@ -116,7 +117,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		ServerHttpResponse responseToUse = response;
 
 		// jsonp支持
-		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getDeclaringClass(), action.getAnnotatedElement());
+		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getDeclaringClass(), action);
 		if (jsonp != null && jsonp.value()) {
 			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse, null);
 		}
@@ -175,7 +176,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		}
 
 		FactoryResult factoryResult = AnnotationUtils.getAnnotation(FactoryResult.class, action.getDeclaringClass(),
-				action.getAnnotatedElement());
+				action);
 		if (!(message instanceof Result) && factoryResult != null && factoryResult.enable()) {
 			Result result = beanFactory.getInstance(factoryResult.value()).success(message);
 			writeTextBody(httpChannel, result, MediaType.APPLICATION_JSON, httpChannelDestroy);

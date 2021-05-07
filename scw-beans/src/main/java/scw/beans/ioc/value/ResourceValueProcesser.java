@@ -9,6 +9,11 @@ import scw.convert.TypeDescriptor;
 import scw.io.Resource;
 import scw.mapper.Field;
 
+/**
+ * 资源解析
+ * @author shuchaowen
+ *
+ */
 public class ResourceValueProcesser extends AbstractObservableResourceValueProcesser {
 
 	@Override

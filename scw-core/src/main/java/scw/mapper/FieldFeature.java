@@ -77,7 +77,7 @@ public enum FieldFeature {
 	private static final class SupportedIgnoreAnnotation implements Accept<Field>{
 		@Override
 		public boolean accept(Field e) {
-			return e.getAnnotatedElement().getAnnotation(Ignore.class) != null;
+			return e.getAnnotation(Ignore.class) != null;
 		}
 	}
 
