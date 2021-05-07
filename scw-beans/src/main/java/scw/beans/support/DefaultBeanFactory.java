@@ -315,7 +315,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 		postProcessBeanFactory(new MethodBeanFactoryPostProcessor());
 		postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
 
-		environment.loadServices(this);
+		environment.loadServices(this, logger);
 		aop.loadServices(this);
 
 		for (BeanDefinition definition : getServiceLoader(BeanDefinition.class)) {

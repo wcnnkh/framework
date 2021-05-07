@@ -34,7 +34,7 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	static{
 		instance.loadProperties("system.properties").register();
 		instance.loadProperties(instance.getValue("system.properties.location", String.class, "/private.properties")).register();
-		instance.loadServices(new DefaultServiceLoaderFactory(instance));
+		instance.loadServices(new DefaultServiceLoaderFactory(instance), logger);
 		//初始化日志管理器
 		LoggerLevelManager.getInstance();
 	}
