@@ -7,6 +7,7 @@ import scw.convert.ConversionService;
 import scw.convert.ConversionServiceAware;
 import scw.convert.ConverterNotFoundException;
 import scw.convert.TypeDescriptor;
+import scw.core.utils.ObjectUtils;
 import scw.lang.NamedThreadLocal;
 
 public class ConversionServices extends ConvertibleConditionalComparator<Object>
@@ -35,7 +36,7 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConversionService service : conversionServices) {
-			if(service == NESTING.get()) {
+			if(ObjectUtils.nullSafeEquals(service, NESTING.get())) {
 				continue;
 			}
 			
@@ -52,7 +53,7 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConversionService service : conversionServices) {
-			if(service == NESTING.get()) {
+			if(ObjectUtils.nullSafeEquals(service, NESTING.get())) {
 				continue;
 			}
 			

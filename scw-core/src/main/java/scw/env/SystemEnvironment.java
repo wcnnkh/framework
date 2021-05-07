@@ -16,7 +16,7 @@ import scw.value.StringValue;
 import scw.value.Value;
 
 public final class SystemEnvironment extends DefaultEnvironment {
-	private static Logger logger = LoggerFactory.getLogger(SystemEnvironment.class.getName());
+	private static Logger logger = LoggerFactory.getLogger(SystemEnvironment.class);
 	public static final String PROPERTY_MAVEN_HOME = "maven.home";
 	public static final String PROPERTY_PATH_SEPARATOR = "path.separator";
 	public static final String PROPERTY_JAVA_CLASS_PATH = "java.class.path";
