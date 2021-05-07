@@ -1,27 +1,13 @@
 package scw.convert.lang;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 import scw.convert.ConversionException;
 import scw.convert.ConversionService;
 import scw.convert.Converter;
 import scw.convert.TypeDescriptor;
-import scw.json.JSONSupport;
-import scw.json.JSONUtils;
+import scw.convert.annotation.JSON;
+import scw.json.JSONSupportAccessor;
 
-public class ObjectToStringConverter implements ConversionService, Converter<Object, String> {
-	private JSONSupport jsonSupport;
-
-	public JSONSupport getJsonSupport() {
-		return jsonSupport == null ? JSONUtils.getJsonSupport() : jsonSupport;
-	}
-
-	public void setJsonSupport(JSONSupport jsonSupport) {
-		this.jsonSupport = jsonSupport;
-	}
+public class ObjectToStringConverter extends JSONSupportAccessor implements ConversionService, Converter<Object, String> {
 
 	public String convert(Object o) {
 		return String.valueOf(o);
@@ -41,10 +27,5 @@ public class ObjectToStringConverter implements ConversionService, Converter<Obj
 		}
 
 		return getJsonSupport().toJSONString(source);
-	}
-
-	@Target({ElementType.FIELD, ElementType.TYPE})
-	@Retention(RetentionPolicy.RUNTIME)
-	public static @interface JSON {
 	}
 }

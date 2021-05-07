@@ -41,7 +41,7 @@ public final class Ioc {
 		}
 
 		for (Field field : MapperUtils.getMapper().getFields(targetClass, false).accept(FieldFeature.SUPPORT_SETTER)) {
-			AnnotatedElement annotatedElement = field.getSetter().getAnnotatedElement();
+			AnnotatedElement annotatedElement = field.getSetter();
 			Autowired autowired = annotatedElement.getAnnotation(Autowired.class);
 			if (autowired != null) {
 				this.dependence.getIocProcessors().add(new AutowiredIocProcessor(field));

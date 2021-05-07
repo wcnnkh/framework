@@ -168,14 +168,13 @@ public final class BeanUtils {
 		entityConversionService.getFieldAccept().add(new Accept<Field>() {
 
 			public boolean accept(Field field) {
-				IgnoreConfigurationProperty ignore = field.getAnnotatedElement()
-						.getAnnotation(IgnoreConfigurationProperty.class);
+				IgnoreConfigurationProperty ignore = field.getAnnotation(IgnoreConfigurationProperty.class);
 				if (ignore != null) {
 					return false;
 				}
 
 				// 如果字段上存在beans下的注解应该忽略此字段
-				for (Annotation annotation : field.getAnnotatedElement().getAnnotations()) {
+				for (Annotation annotation : field.getAnnotations()) {
 					if (annotation.annotationType().getName().startsWith("scw.beans.")) {
 						return false;
 					}

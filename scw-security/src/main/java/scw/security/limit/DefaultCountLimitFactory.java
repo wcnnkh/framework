@@ -16,8 +16,7 @@ public class DefaultCountLimitFactory implements CountLimitFactory {
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterDescriptor config = parameterConfigs[i];
 			boolean b = countLimitSecurity.useAllParameters();
-			CountLimitParameter countLimitParameter = config.getAnnotatedElement()
-					.getAnnotation(CountLimitParameter.class);
+			CountLimitParameter countLimitParameter = config.getAnnotation(CountLimitParameter.class);
 			if (countLimitParameter != null) {
 				b = countLimitParameter.value();
 			}

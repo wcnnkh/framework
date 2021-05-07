@@ -27,7 +27,7 @@ public class MultiAnnotatedElement implements AnnotatedElement {
 			Collection<? extends AnnotatedElement> annotatedElements,
 			boolean isDeclared) {
 		if (CollectionUtils.isEmpty(annotatedElements)) {
-			return AnnotatedElementUtils.EMPTY_ANNOTATION_ARRAY;
+			return AnnotationUtils.EMPTY_ANNOTATION_ARRAY;
 		}
 
 		LinkedHashSet<Annotation> annotations = new LinkedHashSet<Annotation>();

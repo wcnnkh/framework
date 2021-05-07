@@ -50,7 +50,8 @@ public class TomcatStart implements Main, Destroy {
 	}
 
 	protected Context createContext(Application application) {
-		Context context = tomcat.addContext(getContextPath(application.getEnvironment()), application.getEnvironment().getWorkPath());
+		Context context = tomcat.addContext(getContextPath(application.getEnvironment()),
+				application.getEnvironment().getWorkPath());
 		context.setParentClassLoader(application.getClassLoader());
 		return context;
 	}
@@ -58,8 +59,7 @@ public class TomcatStart implements Main, Destroy {
 	protected void addErrorPage(Context context, Application application) {
 		if (application.getBeanFactory().isInstance(ActionManager.class)) {
 			for (Action action : application.getBeanFactory().getInstance(ActionManager.class)) {
-				ErrorPageController errorCodeController = action.getAnnotatedElement()
-						.getAnnotation(ErrorPageController.class);
+				ErrorPageController errorCodeController = action.getAnnotation(ErrorPageController.class);
 				if (errorCodeController == null) {
 					continue;
 				}
@@ -138,7 +138,8 @@ public class TomcatStart implements Main, Destroy {
 		String servletName = mainClass.getSimpleName();
 		Servlet servlet = ServletContextUtils.createServlet(application.getBeanFactory());
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
-		Properties properties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(), servletName, true);
+		Properties properties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(), servletName,
+				true);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			wrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 		}
@@ -151,7 +152,8 @@ public class TomcatStart implements Main, Destroy {
 				String tempServletName = "default";
 				Wrapper tempWrapper = Tomcat.addServlet(context, tempServletName,
 						"org.apache.catalina.servlets.DefaultServlet");
-				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(), tempServletName, false);
+				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(),
+						tempServletName, false);
 				for (Entry<Object, Object> entry : tempProperties.entrySet()) {
 					tempWrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 				}
@@ -171,13 +173,12 @@ public class TomcatStart implements Main, Destroy {
 			method.invoke(null);
 		}
 	}
-	
-	public void main(ConfigurableApplication application, Class<?> mainClass,
-			MainArgs args) throws Throwable {
-		if(application.getEnvironment().getValue("tomcat.log.enable", boolean.class, true)){
+
+	public void main(ConfigurableApplication application, Class<?> mainClass, MainArgs args) throws Throwable {
+		if (application.getEnvironment().getValue("tomcat.log.enable", boolean.class, true)) {
 			java.util.logging.Logger.getLogger("org.apache").setLevel(Level.WARNING);
 		}
-		
+
 		try {
 			tomcat8(application.getClassLoader());
 		} catch (Throwable e1) {
@@ -195,28 +196,29 @@ public class TomcatStart implements Main, Destroy {
 
 		configureConnector(tomcat, port, application);
 		tomcat.getHost().setAutoDeploy(false);
-		
+
 		final Context context = createContext(application);
 		if (AprLifecycleListener.isAprAvailable()) {
 			context.addLifecycleListener(new AprLifecycleListener());
 		}
-		
+
 		application.getEnvironment().addPropertyFactory(new ServletContextPropertyFactory(context.getServletContext()));
 
 		configureJSP(context, application);
 		configureServlet(context, application, mainClass);
 
-		for (TomcatContextConfiguration configuration : application.getBeanFactory().getServiceLoader(TomcatContextConfiguration.class)) {
+		for (TomcatContextConfiguration configuration : application.getBeanFactory()
+				.getServiceLoader(TomcatContextConfiguration.class)) {
 			configuration.configuration(application, context);
 		}
 
 		ServletContextUtils.setApplication(context.getServletContext(), application);
 		Set<Class<?>> classes = application.getContextClassesLoader().toSet();
 		context.addServletContainerInitializer(new ApplicationServletContainerInitializer(), classes);
-		
-		//init websocket
+
+		// init websocket
 		TomcatUtils.addWsSci(context, classes, application.getClassLoader());
-		
+
 		tomcat.start();
 		addErrorPage(context, application);
 	}

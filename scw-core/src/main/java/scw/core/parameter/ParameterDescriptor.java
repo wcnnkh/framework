@@ -7,10 +7,8 @@ import scw.lang.Nullable;
 import scw.util.Named;
 import scw.value.Value;
 
-public interface ParameterDescriptor extends Named{
+public interface ParameterDescriptor extends AnnotatedElement, Named{
 	public static final ParameterDescriptor[] EMPTY_ARRAY = new ParameterDescriptor[0];
-	
-	AnnotatedElement getAnnotatedElement();
 	
 	String getName();
 

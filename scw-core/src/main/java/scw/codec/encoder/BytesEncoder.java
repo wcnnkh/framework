@@ -14,6 +14,11 @@ public interface BytesEncoder<D> extends Encoder<D, byte[]>{
 		return toEncoder(HexCodec.DEFAULT);
 	}
 	
+	/**
+	 * 会直接将结果转换为16进制字符串
+	 * @see MD5#DEFAULT
+	 * @return
+	 */
 	default Encoder<D, String> toMD5(){
 		return toEncoder(MD5.DEFAULT);
 	}

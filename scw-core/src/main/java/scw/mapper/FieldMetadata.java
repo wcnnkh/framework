@@ -1,6 +1,7 @@
 package scw.mapper;
 
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 
-public class FieldMetadata implements Serializable {
+public class FieldMetadata implements AnnotatedElement, Serializable {
 	public static final FieldMetadata[] EMPTY_ARRAY = new FieldMetadata[0];
 	private static final long serialVersionUID = 1L;
 	private final Getter getter;
@@ -43,25 +44,50 @@ public class FieldMetadata implements Serializable {
 	public boolean isSupportSetter() {
 		return setter != null;
 	}
-
-	/**
-	 * 将gettr setter的AnnotatedElement结果合并
-	 * 
-	 * @return
-	 */
-	public AnnotatedElement getAnnotatedElement() {
+	
+	@Override
+	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+		T annotation = null;
+		if(isSupportGetter()) {
+			annotation = getGetter().getAnnotation(annotationClass);
+		}
+		
+		if(annotation == null && isSupportSetter()) {
+			annotation = getSetter().getAnnotation(annotationClass);
+		}
+		return annotation;
+	}
+	
+	@Override
+	public Annotation[] getAnnotations() {
 		if (isSupportGetter() && isSupportSetter()) {
-			return new MultiAnnotatedElement(getGetter().getAnnotatedElement(), getSetter().getAnnotatedElement());
+			return new MultiAnnotatedElement(getGetter(), getSetter()).getAnnotations();
 		}
 
 		if (isSupportGetter()) {
-			return getGetter().getAnnotatedElement();
+			return getGetter().getAnnotations();
 		}
 
 		if (isSupportSetter()) {
-			return getSetter().getAnnotatedElement();
+			return getSetter().getAnnotations();
 		}
-		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT;
+		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT.getAnnotations();
+	}
+	
+	@Override
+	public Annotation[] getDeclaredAnnotations() {
+		if (isSupportGetter() && isSupportSetter()) {
+			return new MultiAnnotatedElement(getGetter(), getSetter()).getDeclaredAnnotations();
+		}
+
+		if (isSupportGetter()) {
+			return getGetter().getDeclaredAnnotations();
+		}
+
+		if (isSupportSetter()) {
+			return getSetter().getDeclaredAnnotations();
+		}
+		return AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT.getDeclaredAnnotations();
 	}
 
 	@Override

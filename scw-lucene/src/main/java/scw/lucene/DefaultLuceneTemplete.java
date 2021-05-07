@@ -68,8 +68,7 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 			return new NumericDocValuesField(fieldDescriptor.getName(), value.getAsLong());
 		}
 
-		scw.lucene.annotation.Field annotation = fieldDescriptor.getAnnotatedElement()
-				.getAnnotation(scw.lucene.annotation.Field.class);
+		scw.lucene.annotation.Field annotation = fieldDescriptor.getAnnotation(scw.lucene.annotation.Field.class);
 		if (annotation == null) {
 			return new StringField(fieldDescriptor.getName(), value.getAsString(), Store.YES);
 		}

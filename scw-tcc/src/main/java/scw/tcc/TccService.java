@@ -175,8 +175,7 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 		Object[] args = new Object[parameterDescriptors.length];
 		for (int i = 0; i < parameterDescriptors.length; i++) {
 			ParameterDescriptor descriptor = parameterDescriptors[i];
-			TryResult tryResultAnnotation = descriptor.getAnnotatedElement()
-					.getAnnotation(TryResult.class);
+			TryResult tryResultAnnotation = descriptor.getAnnotation(TryResult.class);
 			if (tryResultAnnotation != null) {
 				args[i] = tryResult;
 				continue;

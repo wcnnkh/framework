@@ -3,22 +3,20 @@ package scw.core.parameter;
 import scw.lang.Nullable;
 import scw.value.Value;
 
-public class OverrideParameterDescriptor extends ParameterDescriptorWrapper {
+public class OverrideParameterDescriptor extends ParameterDescriptorWrapper<ParameterDescriptor> {
 	private final String name;
 	private final Value defaultValue;
 
-	public OverrideParameterDescriptor(ParameterDescriptor parameterDescriptor,
-			@Nullable String name) {
+	public OverrideParameterDescriptor(ParameterDescriptor parameterDescriptor, @Nullable String name) {
 		this(parameterDescriptor, name, null);
 	}
 
-	public OverrideParameterDescriptor(ParameterDescriptor parameterDescriptor,
-			@Nullable Value defaultValue) {
+	public OverrideParameterDescriptor(ParameterDescriptor parameterDescriptor, @Nullable Value defaultValue) {
 		this(parameterDescriptor, null, defaultValue);
 	}
 
-	public OverrideParameterDescriptor(ParameterDescriptor parameterDescriptor,
-			@Nullable String name, @Nullable Value defaultValue) {
+	public OverrideParameterDescriptor(ParameterDescriptor parameterDescriptor, @Nullable String name,
+			@Nullable Value defaultValue) {
 		super(parameterDescriptor);
 		this.name = name;
 		this.defaultValue = defaultValue;

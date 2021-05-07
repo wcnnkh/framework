@@ -25,27 +25,26 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 		if (generatorContext.getOperationType() == OperationType.SAVE
 				|| (generatorContext.getOperationType() == OperationType.SAVE_OR_UPDATE && !MapperUtils
 						.isExistValue(generatorContext.getColumn().getField(), generatorContext.getBean()))) {
-			scw.sql.orm.support.generation.annotation.SequenceId sequenceId = generatorContext.getColumn()
-					.getAnnotatedElement().getAnnotation(scw.sql.orm.support.generation.annotation.SequenceId.class);
+			scw.sql.orm.support.generation.annotation.SequenceId sequenceId = generatorContext.getColumn().getAnnotation(scw.sql.orm.support.generation.annotation.SequenceId.class);
 			if (sequenceId != null) {
 				generatorContext.getColumn().set(generatorContext.getBean(), getSequenceId(generatorContext).getId());
 				return;
 			}
 
-			CreateTime createTime = generatorContext.getColumn().getAnnotatedElement().getAnnotation(CreateTime.class);
+			CreateTime createTime = generatorContext.getColumn().getAnnotation(CreateTime.class);
 			if (createTime != null) {
 				generatorContext.getColumn().set(generatorContext.getBean(), getCreateTime(generatorContext));
 				return;
 			}
 
-			scw.sql.orm.support.generation.annotation.UUID uuid = generatorContext.getColumn().getAnnotatedElement()
+			scw.sql.orm.support.generation.annotation.UUID uuid = generatorContext.getColumn()
 					.getAnnotation(scw.sql.orm.support.generation.annotation.UUID.class);
 			if (uuid != null) {
 				generatorContext.getColumn().set(generatorContext.getBean(), getUUID(generatorContext));
 				return;
 			}
 
-			Generator generator = generatorContext.getColumn().getAnnotatedElement().getAnnotation(Generator.class);
+			Generator generator = generatorContext.getColumn().getAnnotation(Generator.class);
 			if (generator != null) {
 				// 如果是String走uuid流程
 				if (String.class == generatorContext.getColumn().getField().getSetter().getType()) {
@@ -113,7 +112,7 @@ public abstract class AbstractGeneratorService implements GeneratorService {
 						.getColumns(generatorContext.getBean().getClass()).find(new Accept<Column>() {
 
 							public boolean accept(Column e) {
-								return e.getAnnotatedElement().getAnnotation(CreateTime.class) != null;
+								return e.getAnnotation(CreateTime.class) != null;
 							}
 						});
 

@@ -77,12 +77,13 @@ public final class MVCUtils {
 
 	/**
 	 * 通过注解获取action可用的debug级别
+	 * 
 	 * @param action
 	 * @return 如果不存在注解则返回空
 	 */
-	public static Level getActionLoggerLevel(Action action){
+	public static Level getActionLoggerLevel(Action action) {
 		LoggerEnable loggerEnable = AnnotationUtils.getAnnotation(LoggerEnable.class, action.getDeclaringClass(),
-				action.getAnnotatedElement());
+				action);
 		return loggerEnable == null ? null : loggerEnable.value();
 	}
 }

@@ -1,6 +1,5 @@
 package scw.mvc.action;
 
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import scw.core.annotation.AnnotatedElementUtils;
+import scw.core.annotation.AnnotationArrayAnnotatedElement;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.CollectionUtils;
@@ -20,7 +20,7 @@ import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Methods;
 import scw.util.placeholder.PropertyResolver;
 
-public abstract class AbstractAction implements Action {
+public abstract class AbstractAction extends AnnotationArrayAnnotatedElement implements Action {
 	protected Collection<HttpControllerDescriptor> httpHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
 			8);
 	protected Collection<HttpControllerDescriptor> sourceClassHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
@@ -30,18 +30,17 @@ public abstract class AbstractAction implements Action {
 	
 	private final Method method;
 	private final Class<?> sourceClass;
-	private final AnnotatedElement annotatedElement;
 	private final ParameterDescriptors parameterDescriptors;
 
 	public AbstractAction(Class<?> sourceClass, Method method, PropertyResolver propertyResolver) {
+		super(AnnotatedElementUtils.forAnnotations(method.getAnnotations()));
 		this.sourceClass = sourceClass;
 		this.method = method;
-		this.annotatedElement = AnnotatedElementUtils.forAnnotations(method.getAnnotations());
 		this.parameterDescriptors = new MethodParameterDescriptors(sourceClass, method);
 		
 		Controller classController = getDeclaringClass()
 				.getAnnotation(Controller.class);
-		Controller methodController = getAnnotatedElement()
+		Controller methodController = getMethod()
 				.getAnnotation(Controller.class);
 		
 		String controller = classController.value();
@@ -71,10 +70,6 @@ public abstract class AbstractAction implements Action {
 
 	public Method getMethod() {
 		return method;
-	}
-
-	public AnnotatedElement getAnnotatedElement() {
-		return annotatedElement;
 	}
 
 	public ParameterDescriptors getParameterDescriptors() {
@@ -129,9 +124,9 @@ public abstract class AbstractAction implements Action {
 	private Collection<HttpMethod> getControllerHttpMethods() {
 		Controller classController = getDeclaringClass()
 				.getAnnotation(Controller.class);
-		Controller methodController = getAnnotatedElement()
+		Controller methodController = getMethod()
 				.getAnnotation(Controller.class);
-		Methods methods = getAnnotatedElement().getAnnotation(
+		Methods methods = getMethod().getAnnotation(
 				Methods.class);
 		Set<HttpMethod> httpMethods = new HashSet<HttpMethod>();
 		if (methods == null) {
