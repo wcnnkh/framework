@@ -17,8 +17,6 @@ public interface ServerHttpRequest extends Attributes<String, Object>, HttpInput
 	
 	String getContextPath();
 
-	String getCharacterEncoding();
-	
 	BufferedReader getReader() throws IOException;
 
 	/**

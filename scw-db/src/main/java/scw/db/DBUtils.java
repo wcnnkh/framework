@@ -17,7 +17,7 @@ import scw.env.SystemEnvironment;
 import scw.lang.NotSupportedException;
 import scw.logger.Level;
 import scw.util.alias.DefaultAliasRegistry;
-import scw.value.factory.PropertyFactory;
+import scw.value.PropertyFactory;
 
 public final class DBUtils {
 	public static final String DEFAULT_CONFIGURATION = "/db/db.properties";

@@ -5,37 +5,39 @@ import java.math.BigInteger;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
-import scw.convert.support.JsonConversionService;
+import scw.convert.lang.JsonConversionService;
 import scw.core.ResolvableType;
 import scw.core.utils.ObjectUtils;
-import scw.core.utils.StringUtils;
+import scw.lang.Nullable;
 
-public class AnyValue extends SupportDefaultValue {
+public class AnyValue extends AbstractValue {
+	private static final long serialVersionUID = 1L;
 	private volatile ConversionService conversionService;
 	private final Object value;
 
 	public AnyValue(Object value) {
-		this(value, EmptyValue.INSTANCE);
+		this(value, null, null);
 	}
-	
-	public AnyValue(Object value, ConversionService conversionService) {
+
+	public AnyValue(Object value, @Nullable ConversionService conversionService) {
 		this(value, EmptyValue.INSTANCE, conversionService);
 	}
-	
-	public AnyValue(Object value, Value defaultValue){
+
+	public AnyValue(Object value, @Nullable Value defaultValue) {
 		this(value, defaultValue, null);
 	}
 
-	public AnyValue(Object value, Value defaultValue, ConversionService conversionService) {
+	public AnyValue(Object value, Value defaultValue,
+			@Nullable ConversionService conversionService) {
 		super(defaultValue);
 		this.value = value;
 		this.conversionService = conversionService;
 	}
 
 	public ConversionService getConversionService() {
-		if(conversionService == null){
+		if (conversionService == null) {
 			synchronized (this) {
-				if(conversionService == null){
+				if (conversionService == null) {
 					conversionService = new JsonConversionService();
 				}
 			}
@@ -66,7 +68,6 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsString();
 		}
-
 		return value.toString();
 	}
 
@@ -86,8 +87,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsByte();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsByte();
+		return super.getAsByte();
 	}
 
 	public byte getAsByteValue() {
@@ -106,9 +106,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsByteValue();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsByteValue();
+		return super.getAsByteValue();
 	}
 
 	public Short getAsShort() {
@@ -127,8 +125,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsShort();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsShort();
+		return super.getAsShort();
 	}
 
 	public short getAsShortValue() {
@@ -147,9 +144,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsShortValue();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsShortValue();
+		return super.getAsShortValue();
 	}
 
 	public Integer getAsInteger() {
@@ -168,8 +163,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsInteger();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsInteger();
+		return super.getAsInteger();
 	}
 
 	public int getAsIntValue() {
@@ -188,9 +182,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsIntValue();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsIntValue();
+		return super.getAsIntValue();
 	}
 
 	public Long getAsLong() {
@@ -209,8 +201,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsLong();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsLong();
+		return super.getAsLong();
 	}
 
 	public long getAsLongValue() {
@@ -229,9 +220,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsLongValue();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsLongValue();
+		return super.getAsLongValue();
 	}
 
 	public Boolean getAsBoolean() {
@@ -250,8 +239,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsBoolean();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsBoolean();
+		return super.getAsBoolean();
 	}
 
 	public boolean getAsBooleanValue() {
@@ -270,8 +258,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsBooleanValue();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsBoolean();
+		return super.getAsBooleanValue();
 	}
 
 	public Float getAsFloat() {
@@ -290,8 +277,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsFloat();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsFloat();
+		return super.getAsFloat();
 	}
 
 	public float getAsFloatValue() {
@@ -310,9 +296,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsFloatValue();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsFloatValue();
+		return super.getAsFloatValue();
 	}
 
 	public Double getAsDouble() {
@@ -331,8 +315,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsDouble();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsDouble();
+		return super.getAsDouble();
 	}
 
 	public double getAsDoubleValue() {
@@ -351,9 +334,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsDoubleValue();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsDoubleValue();
+		return super.getAsDoubleValue();
 	}
 
 	public char getAsChar() {
@@ -368,8 +349,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsChar();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsChar();
+		return super.getAsChar();
 	}
 
 	public Character getAsCharacter() {
@@ -384,9 +364,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsCharacter();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsCharacter();
+		return super.getAsCharacter();
 	}
 
 	public BigInteger getAsBigInteger() {
@@ -405,9 +383,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsBigInteger();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsBigInteger();
+		return super.getAsBigInteger();
 	}
 
 	public BigDecimal getAsBigDecimal() {
@@ -430,9 +406,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsBigDecimal();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsBigDecimal();
+		return super.getAsBigDecimal();
 	}
 
 	public Number getAsNumber() {
@@ -447,8 +421,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsNumber();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsNumber();
+		return super.getAsNumber();
 	}
 
 	public Class<?> getAsClass() {
@@ -463,8 +436,7 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsClass();
 		}
-
-		return new StringValue(getAsString(), getDefaultValue()).getAsClass();
+		return super.getAsClass();
 	}
 
 	public Enum<?> getAsEnum(Class<?> enumType) {
@@ -480,33 +452,27 @@ public class AnyValue extends SupportDefaultValue {
 			return ((Value) value).getAsEnum(enumType);
 		}
 
-		return new StringValue(getAsString(), getDefaultValue())
-				.getAsEnum(enumType);
+		return super.getAsEnum(enumType);
 	}
 
 	@Override
-	protected Object getAsObjectNotSupport(ResolvableType type,
-			Class<?> rawClass) {
-		return getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
-	}
-	
-	@Override
-	public Object getAsObject(ResolvableType resolvableType) {
+	protected Object getAsNonBaseType(ResolvableType type) {
 		if (value == null) {
-			return getDefaultValue().getAsObject(resolvableType);
+			return getDefaultValue().getAsObject(type);
 		}
 
-		Class<?> type = resolvableType.getRawClass();
-		if (type == Object.class || type == null) {
+		Class<?> rawClass = type.getRawClass();
+		if (rawClass == Object.class || rawClass == null) {
 			return value;
 		}
 
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return super.getAsObject(resolvableType);
+		return getConversionService().convert(value,
+				TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return value == null ? super.hashCode() : value.hashCode();
@@ -526,7 +492,7 @@ public class AnyValue extends SupportDefaultValue {
 			return ObjectUtils.nullSafeEquals(value, ((AnyValue) obj).value);
 		}
 
-		return obj.equals(value);
+		return false;
 	}
 
 	public boolean isEmpty() {
@@ -534,14 +500,10 @@ public class AnyValue extends SupportDefaultValue {
 			return true;
 		}
 
-		if (value instanceof CharSequence) {
-			return StringUtils.isEmpty((CharSequence) value);
-		}
-
 		if (value instanceof Value) {
 			return ((Value) value).isEmpty();
 		}
-		return false;
+		return super.isEmpty();
 	}
 
 	public boolean isNumber() {
@@ -552,24 +514,10 @@ public class AnyValue extends SupportDefaultValue {
 		if (value instanceof Number) {
 			return true;
 		}
-		
-		if(value instanceof String){
-			StringValue textValue = new StringValue((String)value);
-			return textValue.isNumber();
-		}
-
-		if (value instanceof CharSequence) {
-			return StringUtils.isNumeric((CharSequence) value);
-		}
 
 		if (value instanceof Value) {
 			return ((Value) value).isNumber();
 		}
-		return false;
-	}
-
-	@Override
-	public String toString() {
-		return getAsString();
+		return super.isNumber();
 	}
 }

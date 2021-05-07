@@ -37,7 +37,7 @@ import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
 import scw.util.DefaultStringMatcher;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -64,6 +64,8 @@ import scw.util.KeyValuePair;
 public class HttpHeaders extends Headers {
 	private static Logger logger = LoggerFactory.getLogger(HttpHeaders.class);
 	private static final long serialVersionUID = -8578554704772377436L;
+	
+	public static final HttpHeaders EMPTY = new HttpHeaders(Collections.emptyMap());
 
 	/**
 	 * The HTTP {@code Accept} header field name.
@@ -1524,7 +1526,7 @@ public class HttpHeaders extends Headers {
 				continue;
 			}
 			
-			KeyValuePair<String, String> hs = StringUtils.parseKV(header, ":");
+			Pair<String, String> hs = StringUtils.parseKV(header, ":");
 			if(hs == null){
 				throw new IllegalStateException("error header [" + header + "]");
 			}

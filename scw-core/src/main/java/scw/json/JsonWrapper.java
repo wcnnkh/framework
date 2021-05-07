@@ -1,60 +1,40 @@
 package scw.json;
 
-import scw.value.factory.support.ConvertibleValueFactoryWrapper;
+import scw.value.ValueFactoryWrapper;
 
-public class JsonWrapper<K> extends ConvertibleValueFactoryWrapper<K> implements Json<K> {
-	private final Json<K> target;
+public class JsonWrapper<K, F extends Json<K>> extends
+		ValueFactoryWrapper<K, F> implements Json<K> {
 
-	public JsonWrapper(Json<K> target) {
+	public JsonWrapper(F target) {
 		super(target);
-		this.target = target;
+	}
+	
+	@Override
+	public JsonElement getDefaultValue(K key) {
+		return targetFactory.getDefaultValue(key);
 	}
 
 	public int size() {
-		return target.size();
+		return targetFactory.size();
 	}
 
 	public boolean isEmpty() {
-		return target.isEmpty();
+		return targetFactory.isEmpty();
 	}
 
 	public JsonElement getValue(K key) {
-		return target.getValue(key);
+		return targetFactory.getValue(key);
 	}
 
 	public JsonArray getJsonArray(K key) {
-		return target.getJsonArray(key);
+		return targetFactory.getJsonArray(key);
 	}
 
 	public JsonObject getJsonObject(K key) {
-		return target.getJsonObject(key);
+		return targetFactory.getJsonObject(key);
 	}
 
 	public String toJSONString() {
-		return target.toJSONString();
-	}
-
-	@Override
-	public String toString() {
-		return target.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return target.hashCode();
-	}
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-
-		if (obj instanceof JsonWrapper) {
-			return ((JsonWrapper) obj).target.equals(target);
-		}
-
-		return target.equals(obj);
+		return targetFactory.toJSONString();
 	}
 }

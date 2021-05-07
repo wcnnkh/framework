@@ -39,7 +39,7 @@ public class ResourceFileItem extends AbstractFileItem {
 
 	@Override
 	public String getName() {
-		return resource.getFilename();
+		return resource.getName();
 	}
 
 	public long getSize() {

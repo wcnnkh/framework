@@ -10,7 +10,7 @@ import scw.lang.Nullable;
 import scw.net.uri.UriUtils;
 import scw.util.MultiValueMap;
 
-public class HttpRequestEntity<T> extends HttpEntity<T> {
+public class HttpRequestEntity<T> extends HttpEntity<T> implements HttpRequest {
 	private static final long serialVersionUID = 1L;
 
 	@Nullable
@@ -131,13 +131,14 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 	public HttpMethod getMethod() {
 		return this.method;
 	}
-
+	
 	/**
-	 * Return the URL of the request.
+	 * Return the URI of the request.
 	 * 
 	 * @return the URL as a {@code URI}
 	 */
-	public URI getUrl() {
+	@Override
+	public final URI getURI() {
 		return this.url;
 	}
 
@@ -170,7 +171,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 			HttpRequestEntity<?> otherEntity = (HttpRequestEntity<?>) other;
 			return (ObjectUtils
 					.nullSafeEquals(getMethod(), otherEntity.getMethod()) && ObjectUtils
-					.nullSafeEquals(getUrl(), otherEntity.getUrl()));
+					.nullSafeEquals(getURI(), otherEntity.getURI()));
 		}
 		return false;
 	}
@@ -188,7 +189,7 @@ public class HttpRequestEntity<T> extends HttpEntity<T> {
 		StringBuilder builder = new StringBuilder("<");
 		builder.append(getMethod());
 		builder.append(' ');
-		builder.append(getUrl());
+		builder.append(getURI());
 		builder.append(',');
 		T body = getBody();
 		HttpHeaders headers = getHeaders();

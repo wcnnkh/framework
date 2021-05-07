@@ -38,7 +38,7 @@
 		<developerConnection>scm:git@https://github.com/wcnnkh/scw.git</developerConnection>
 		<url>https://github.com/wcnnkh/scw.git</url>
 	</scm>
-	
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>sonatype</id>
@@ -95,6 +95,12 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-transaction</artifactId>
+				<version>2.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-orm</artifactId>
 				<version>2.0</version>
 			</dependency>
 
@@ -268,12 +274,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-kdniao</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-db</artifactId>
 				<version>2.0</version>
 			</dependency>
@@ -298,18 +298,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-alibaba</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-apple</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-microsoft</artifactId>
 				<version>2.0</version>
 			</dependency>
@@ -329,12 +317,6 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-rabbitmq</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-tencent</artifactId>
 				<version>2.0</version>
 			</dependency>
 
@@ -451,10 +433,16 @@
 				<artifactId>scw-slf4j</artifactId>
 				<version>2.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-consistency</artifactId>
+				<version>2.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-jackson</artifactId>
 				<version>2.0</version>
 			</dependency>
 
@@ -515,7 +503,14 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.2.1</version>
+				</plugin>
+
+				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.3.0</version>
 				</plugin>
 
 				<!-- ant -->
@@ -537,24 +532,24 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>2.3</version>
+					<version>3.3.1</version>
 				</plugin>
 
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.18.1</version>
+					<version>2.22.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.7.1</version>
+					<version>3.9.1</version>
 				</plugin>
 				<!-- Javadoc -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>3.0.1</version>
+					<version>3.2.0</version>
 				</plugin>
 				<!-- Gpg Signature -->
 				<plugin>
@@ -616,47 +611,24 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
 			</plugin>
-			
+
 			<!-- Javadoc -->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
-			
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
+				<executions> <execution> <phase>package</phase> <goals> <goal>jar</goal> 
+				</goals> </execution> </executions> </plugin> -->
+
 			<!-- Gpg Signature -->
 			<!-- 参考：https://blog.sonatype.com/2010/01/how-to-generate-pgp-signatures-with-maven/ -->
 			<!-- 如果无需使用：mvn install -Dgpg.skip -->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-gpg-plugin</artifactId> 
+				<executions> <execution> <id>sign-artifacts</id> <phase>verify</phase> <goals> 
+				<goal>sign</goal> </goals> </execution> </executions> </plugin> -->
 		</plugins>
 	</build>
 	<modules>
 		<module>scw-core</module>
-		<module>scw-alibaba</module>
-		<module>scw-kdniao</module>
 		<module>scw-upload</module>
 		<module>scw-freemarker</module>
-		<module>scw-tencent</module>
-		<module>scw-apple</module>
 		<module>scw-timer</module>
 		<module>scw-db</module>
 		<module>scw-data</module>
@@ -716,5 +688,7 @@
 		<module>scw-netty</module>
 		<module>scw-slf4j</module>
 		<module>scw-consistency</module>
+		<module>scw-jackson</module>
+		<module>scw-orm</module>
 	</modules>
 </project>

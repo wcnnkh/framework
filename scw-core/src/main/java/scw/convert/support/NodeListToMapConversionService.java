@@ -9,6 +9,8 @@ import org.w3c.dom.NodeList;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
+import scw.convert.lang.ConditionalConversionService;
+import scw.convert.lang.ConvertiblePair;
 import scw.dom.DomUtils;
 import scw.util.CollectionFactory;
 

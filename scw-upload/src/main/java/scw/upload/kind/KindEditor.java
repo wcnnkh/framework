@@ -2,20 +2,20 @@ package scw.upload.kind;
 
 import java.io.IOException;
 
-import scw.upload.UploadException;
-import scw.upload.UploadItem;
+import scw.net.message.multipart.FileItem;
+import scw.upload.UploaderException;
 
 public interface KindEditor {
 	/**
 	 * 上传成功后返回url
 	 * @param group
 	 * @param dir
-	 * @param uploadItem
+	 * @param fileItem
 	 * @return
 	 * @throws UploadException
 	 * @throws IOException
 	 */
-	String upload(String group, KindDirType dir, UploadItem uploadItem) throws UploadException, IOException;
+	String upload(String group, KindDirType dir, FileItem fileItem) throws UploaderException, IOException;
 
 	KindManagerResult manager(String group, KindDirType dir, String path, KindOrderType orderType);
 }

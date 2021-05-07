@@ -1,18 +1,16 @@
 package scw.json;
 
-import scw.value.AbstractStringValue;
+import scw.value.AbstractValue;
+import scw.value.Value;
 
-public abstract class AbstractJsonElement extends AbstractStringValue implements JsonElement {
+public abstract class AbstractJsonElement extends AbstractValue implements
+		JsonElement {
+	private static final long serialVersionUID = 1L;
 
-	public AbstractJsonElement(JsonElement defaultValue) {
+	public AbstractJsonElement(Value defaultValue) {
 		super(defaultValue);
 	}
-	
-	@Override
-	public JsonElement getDefaultValue() {
-		return (JsonElement) super.getDefaultValue();
-	}
-	
+
 	@Override
 	public String toString() {
 		return toJSONString();

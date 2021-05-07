@@ -1,5 +1,6 @@
 package scw.util;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +10,8 @@ import java.util.concurrent.ConcurrentMap;
 
 import scw.core.utils.ObjectUtils;
 
-public class SmartMap<K, V> implements Map<K, V>, Cloneable {
+public class SmartMap<K, V> implements Map<K, V>, Cloneable, Serializable {
+	private static final long serialVersionUID = 1L;
 	private final Map<K, V> targetMap;
 
 	public SmartMap(boolean concurrent) {

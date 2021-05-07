@@ -20,7 +20,6 @@ import javax.servlet.http.HttpSession;
 
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.http.AbstractHttpInputMessage;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
@@ -38,8 +37,8 @@ import scw.util.MultiValueMap;
 import scw.util.Target;
 import scw.util.XUtils;
 
-public class ServletServerHttpRequest extends AbstractHttpInputMessage
-		implements ServerHttpRequest, Target, RestfulParameterMapAware {
+public class ServletServerHttpRequest implements ServerHttpRequest, Target,
+		RestfulParameterMapAware {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletAsyncControl asyncControl;
@@ -82,7 +81,7 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	public Session getSession(boolean create) {
 		HttpSession httpSession = httpServletRequest.getSession(create);
-		return httpSession == null? null:new ServletHttpSession(httpSession);
+		return httpSession == null ? null : new ServletHttpSession(httpSession);
 	}
 
 	public Principal getPrincipal() {
@@ -93,7 +92,8 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	public InetSocketAddress getLocalAddress() {
 		if (localAddress == null) {
-			localAddress = new InetSocketAddress(this.httpServletRequest.getLocalName(),
+			localAddress = new InetSocketAddress(
+					this.httpServletRequest.getLocalName(),
 					this.httpServletRequest.getLocalPort());
 		}
 		return localAddress;
@@ -103,7 +103,8 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	public InetSocketAddress getRemoteAddress() {
 		if (remoteAddress == null) {
-			remoteAddress = new InetSocketAddress(this.httpServletRequest.getRemoteHost(),
+			remoteAddress = new InetSocketAddress(
+					this.httpServletRequest.getRemoteHost(),
 					this.httpServletRequest.getRemotePort());
 		}
 		return remoteAddress;
@@ -112,10 +113,11 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 	public HttpHeaders getHeaders() {
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
-			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names.hasMoreElements();) {
+			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names
+					.hasMoreElements();) {
 				String headerName = (String) names.nextElement();
-				for (Enumeration<?> headerValues = httpServletRequest.getHeaders(headerName); headerValues
-						.hasMoreElements();) {
+				for (Enumeration<?> headerValues = httpServletRequest
+						.getHeaders(headerName); headerValues.hasMoreElements();) {
 					String headerValue = (String) headerValues.nextElement();
 					this.headers.add(headerName, headerValue);
 				}
@@ -126,9 +128,11 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 			try {
 				MediaType contentType = this.headers.getContentType();
 				if (contentType == null) {
-					String requestContentType = httpServletRequest.getContentType();
+					String requestContentType = httpServletRequest
+							.getContentType();
 					if (StringUtils.hasLength(requestContentType)) {
-						contentType = MediaType.parseMediaType(requestContentType);
+						contentType = MediaType
+								.parseMediaType(requestContentType);
 						this.headers.setContentType(contentType);
 					}
 				}
@@ -139,7 +143,9 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 						Map<String, String> params = new LinkedCaseInsensitiveMap<String>();
 						params.putAll(contentType.getParameters());
 						params.put("charset", charSet.toString());
-						MediaType mediaType = new MediaType(contentType.getType(), contentType.getSubtype(), params);
+						MediaType mediaType = new MediaType(
+								contentType.getType(),
+								contentType.getSubtype(), params);
 						this.headers.setContentType(mediaType);
 					}
 				}
@@ -149,7 +155,8 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 			}
 
 			if (this.headers.getContentLength() < 0) {
-				int requestContentLength = httpServletRequest.getContentLength();
+				int requestContentLength = httpServletRequest
+						.getContentLength();
 				if (requestContentLength != -1) {
 					this.headers.setContentLength(requestContentLength);
 				}
@@ -195,7 +202,8 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 			valueMap.put(entry.getKey(), Arrays.asList(values));
 		}
 
-		this.parameterMap = CollectionUtils.toMultiValueMap(Collections.unmodifiableMap(valueMap));
+		this.parameterMap = CollectionUtils.toMultiValueMap(Collections
+				.unmodifiableMap(valueMap));
 	}
 
 	public MultiValueMap<String, String> getParameterMap() {
@@ -205,8 +213,9 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 
 	@Override
 	public String getCharacterEncoding() {
-		String charsetName = super.getCharacterEncoding();
-		return charsetName == null ? httpServletRequest.getCharacterEncoding() : charsetName;
+		String charsetName = ServerHttpRequest.super.getCharacterEncoding();
+		return charsetName == null ? httpServletRequest.getCharacterEncoding()
+				: charsetName;
 	}
 
 	public String getRawMethod() {
@@ -240,11 +249,14 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 	public ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response) {
 		if (asyncControl == null) {
 			if (response instanceof ServletServerHttpResponse) {
-				this.asyncControl = new HttpServletAsyncControl(httpServletRequest,
-						((ServletServerHttpResponse) response).getHttpServletResponse());
+				this.asyncControl = new HttpServletAsyncControl(
+						httpServletRequest,
+						((ServletServerHttpResponse) response)
+								.getHttpServletResponse());
 			} else {
 				throw new IllegalArgumentException(
-						"Response must be a ServletServerHttpResponse: " + response.getClass());
+						"Response must be a ServletServerHttpResponse: "
+								+ response.getClass());
 			}
 		}
 		return this.asyncControl;
@@ -263,8 +275,10 @@ public class ServletServerHttpRequest extends AbstractHttpInputMessage
 		return restfulParameterMap;
 	}
 
-	public void setRestfulParameterMap(MultiValueMap<String, String> restfulParameterMap) {
-		this.restfulParameterMap = CollectionUtils.unmodifiableMultiValueMap(restfulParameterMap);
+	public void setRestfulParameterMap(
+			MultiValueMap<String, String> restfulParameterMap) {
+		this.restfulParameterMap = CollectionUtils
+				.unmodifiableMultiValueMap(restfulParameterMap);
 	}
 
 	@Override

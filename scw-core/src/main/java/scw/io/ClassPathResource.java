@@ -248,7 +248,7 @@ public class ClassPathResource extends AbstractFileResolvingResource {
 	 * @see org.springframework.util.StringUtils#getFilename(String)
 	 */
 	@Override
-	public String getFilename() {
+	public String getName() {
 		return StringUtils.getFilename(this.path);
 	}
 

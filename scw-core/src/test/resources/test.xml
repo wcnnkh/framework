@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/2002/xmlspec/dtd/2.10/xmlspec.dtd">
+<config>
+	<config>
+		<id>1</id>
+		<name>哈哈</name>
+	</config>
+	<config>
+		<id>2</id>
+		<name>哈哈2</name>
+	</config>
+	<config>
+		<id>3</id>
+		<name>哈哈3</name>
+	</config>
+</config>

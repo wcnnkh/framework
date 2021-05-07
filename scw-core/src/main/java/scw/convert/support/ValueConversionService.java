@@ -5,7 +5,6 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.value.AnyValue;
 import scw.value.Value;
-import scw.value.ValueUtils;
 
 class ValueConversionService implements ConversionService {
 	private final ConversionService conversionService;
@@ -30,9 +29,9 @@ class ValueConversionService implements ConversionService {
 	
 	public boolean canConvert(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {
-		return ValueUtils.isBaseType(sourceType.getType())
+		return Value.isBaseType(sourceType.getType())
 				|| Value.class.isAssignableFrom(sourceType.getType())
-				|| ValueUtils.isBaseType(targetType.getType())
+				|| Value.isBaseType(targetType.getType())
 				|| targetType.getType() == Value.class || AnyValue.class == targetType.getType();
 	}
 }

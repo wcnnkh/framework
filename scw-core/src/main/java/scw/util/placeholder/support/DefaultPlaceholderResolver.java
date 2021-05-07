@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import scw.util.placeholder.PlaceholderResolver;
+import scw.value.MapValueFactory;
+import scw.value.PropertiesValueFactory;
 import scw.value.Value;
-import scw.value.factory.PropertiesValueFactory;
-import scw.value.factory.ValueFactory;
-import scw.value.factory.support.MapValueFactory;
+import scw.value.ValueFactory;
 
 public class DefaultPlaceholderResolver implements PlaceholderResolver {
 	private final ValueFactory<String> valueFactory;

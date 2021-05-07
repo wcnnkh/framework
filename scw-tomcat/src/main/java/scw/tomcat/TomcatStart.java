@@ -31,7 +31,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
-import scw.env.support.MainArgs;
+import scw.env.MainArgs;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
 import scw.instance.InstanceUtils;

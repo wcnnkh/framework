@@ -1,25 +1,25 @@
 package scw.memcached.x;
 
 import net.rubyeye.xmemcached.transcoders.SerializingTranscoder;
-import scw.io.Serializer;
+import scw.codec.Codec;
 
 public class MyTranscoder extends SerializingTranscoder {
-	private final Serializer serializer;
+	private final Codec<Object, byte[]> codec;
 
-	public MyTranscoder(Serializer serializer) {
+	public MyTranscoder(Codec<Object, byte[]> codec) {
 		super();
-		this.serializer = serializer;
+		this.codec = codec;
 	}
 
-	public MyTranscoder(int transcoderMaxDataSize, Serializer serializer) {
+	public MyTranscoder(int transcoderMaxDataSize, Codec<Object, byte[]> codec) {
 		super(transcoderMaxDataSize);
-		this.serializer = serializer;
+		this.codec = codec;
 	}
 
 	@Override
 	protected Object deserialize(byte[] in) {
 		try {
-			return serializer == null ? super.deserialize(in) : serializer.deserialize(in);
+			return codec == null ? super.deserialize(in) : codec.decode(in);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -27,6 +27,6 @@ public class MyTranscoder extends SerializingTranscoder {
 
 	@Override
 	protected byte[] serialize(Object o) {
-		return serializer == null ? super.serialize(o) : serializer.serialize(o);
+		return codec == null ? super.serialize(o) : codec.encode(o);
 	}
 }

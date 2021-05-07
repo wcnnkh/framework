@@ -1,24 +1,29 @@
 package scw.value;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import scw.core.ResolvableType;
+import scw.lang.Nullable;
 
-public abstract class AbstractValue implements Value {
+public abstract class AbstractValue implements SimpleValue, Serializable {
+	private static final long serialVersionUID = 1L;
+	private final Value defaultValue;
+
+	public AbstractValue(@Nullable Value defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public Value getDefaultValue() {
+		return defaultValue == null ? SimpleValue.super.getDefaultValue()
+				: defaultValue;
+	}
+
 	@SuppressWarnings("unchecked")
-	public <T> T getAsObject(Class<T> type) {
-		return (T) getAsObject(ResolvableType.forClass(type));
-	}
-	
-	public Object getAsObject(Type type) {
-		return getAsObject(ResolvableType.forType(type));
-	}
-	
-	public Object getAsObject(ResolvableType resolvableType) {
+	public final <T> T getAsObject(Class<T> type) {
 		Object v = null;
-		Class<?> type = resolvableType.getRawClass();
 		if (String.class == type) {
 			v = getAsString();
 		} else if (int.class == type) {
@@ -53,12 +58,12 @@ public abstract class AbstractValue implements Value {
 			v = getAsChar();
 		} else if (Character.class == type) {
 			v = getAsCharacter();
-		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			v = getAsBigDecimal();
-		} else if (BigInteger.class.isAssignableFrom(type)) {
-			v = getAsBigInteger();
-		} else if (Number.class.isAssignableFrom(type)) {
+		} else if (type.isAssignableFrom(Number.class)) {
 			v = getAsNumber();
+		} else if (type.isAssignableFrom(BigDecimal.class)) {
+			v = getAsBigDecimal();
+		} else if (type.isAssignableFrom(BigInteger.class)) {
+			v = getAsBigInteger();
 		} else if (Class.class == type) {
 			v = getAsClass();
 		} else if (type.isEnum()) {
@@ -66,15 +71,42 @@ public abstract class AbstractValue implements Value {
 		} else if (type == Value.class) {
 			v = this;
 		} else {
-			v = getAsObjectNotSupport(resolvableType, type);
+			v = getAsNonBaseType(ResolvableType.forClass(type));
+			if (v == null) {
+				v = getDefaultValue().getAsObject(type);
+			}
+		}
+		return (T) v;
+	}
+
+	public final Object getAsObject(Type type) {
+		if (type instanceof Class) {
+			return getAsObject((Class<?>) type);
+		}
+		Object v = getAsNonBaseType(ResolvableType.forType(type));
+		if (v == null) {
+			v = getDefaultValue().getAsObject(type);
 		}
 		return v;
 	}
-	
-	protected abstract Object getAsObjectNotSupport(ResolvableType type, Class<?> rawClass);
-	
+
+	public final Object getAsObject(ResolvableType type) {
+		Class<?> rawClass = type.getRawClass();
+		if (Value.isBaseType(rawClass)) {
+			return getAsObject(rawClass);
+		}
+
+		Object v = getAsNonBaseType(type);
+		if (v == null) {
+			v = getDefaultValue().getAsObject(type);
+		}
+		return v;
+	}
+
 	@Override
 	public String toString() {
 		return getAsString();
 	}
+
+	protected abstract Object getAsNonBaseType(ResolvableType type);
 }

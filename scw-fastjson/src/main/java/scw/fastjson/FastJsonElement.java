@@ -23,8 +23,7 @@ public final class FastJsonElement extends AbstractJsonElement implements JSONAw
 	}
 
 	@Override
-	protected Object getAsObjectNotSupport(ResolvableType type,
-			Class<?> rawClass) {
+	protected Object getAsNonBaseType(ResolvableType type) {
 		return JSON.parseObject(text, type.getType(), Feature.SupportNonPublicField);
 	}
 

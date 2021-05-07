@@ -24,7 +24,7 @@ import scw.core.utils.StringUtils;
 import scw.http.HttpHeaders;
 import scw.io.StreamUtils;
 
-final class SimpleClientHttpResponse extends AbstractClientHttpResponse {
+final class SimpleClientHttpResponse implements ClientHttpResponse {
 
 	private final HttpURLConnection connection;
 

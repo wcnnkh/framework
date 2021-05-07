@@ -6,7 +6,7 @@ import java.util.Iterator;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
 import scw.value.Value;
-import scw.value.factory.ValueFactory;
+import scw.value.ValueFactory;
 
 public class ConfigServiceLoader<S> implements ServiceLoader<S>{
 	private final Class<S> serviceClass;

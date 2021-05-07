@@ -4,7 +4,6 @@ import scw.codec.Codec;
 import scw.data.AbstractDataOperationsWrapper;
 import scw.data.DataOperations;
 import scw.data.cas.CASOperations;
-import scw.io.Serializer;
 
 public class RedisImpl extends AbstractDataOperationsWrapper implements Redis {
 	private final RedisOperations<byte[], byte[]> binaryOperations;
@@ -14,11 +13,11 @@ public class RedisImpl extends AbstractDataOperationsWrapper implements Redis {
 	private final DataOperations dataOperations;
 
 	public RedisImpl(RedisOperations<byte[], byte[]> binaryOperations, RedisOperations<String, String> stringOperations,
-			Codec<String, byte[]> codec, Serializer serializer) {
+			Codec<String, byte[]> keyCodec, Codec<Object, byte[]> valueCodec) {
 		this.binaryOperations = binaryOperations;
 		this.stringOperations = stringOperations;
-		this.objectOperations = new ObjectOperations(binaryOperations, serializer, codec);
-		this.casOperations = new RedisCASOperations(objectOperations, serializer, codec);
+		this.objectOperations = new ConvertibleRedisOperations<String, byte[], Object, byte[]>(binaryOperations, keyCodec, valueCodec);
+		this.casOperations = new RedisCASOperations(objectOperations, keyCodec, valueCodec);
 		this.dataOperations = new RedisDataOperations(this);
 	}
 

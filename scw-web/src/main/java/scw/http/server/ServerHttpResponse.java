@@ -29,8 +29,4 @@ public interface ServerHttpResponse extends Flushable, Closeable, HttpOutputMess
 	PrintWriter getWriter() throws IOException;
 	
 	boolean isCommitted();
-	
-	String getCharacterEncoding();
-	
-	void setCharacterEncoding(String env);
 }

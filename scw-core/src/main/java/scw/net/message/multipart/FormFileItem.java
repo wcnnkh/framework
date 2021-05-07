@@ -10,7 +10,7 @@ import scw.http.MediaType;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.json.JSONSupport;
 import scw.net.message.converter.JsonMessageConverter;
-import scw.value.ValueUtils;
+import scw.value.Value;
 
 public class FormFileItem extends AbstractFileItem {
 	private String body;
@@ -20,7 +20,7 @@ public class FormFileItem extends AbstractFileItem {
 		super(name);
 		this.charset = charset;
 		getHeaders().setContentDisposition(ContentDisposition.builder("form-data").name(name).build());
-		if (ValueUtils.isBaseType(body.getClass())) {
+		if (Value.isBaseType(body.getClass())) {
 			this.body = body.toString();
 			getHeaders().setContentType(new MediaType(MediaType.TEXT_HTML, charset));
 		} else {

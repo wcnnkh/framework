@@ -10,7 +10,7 @@ import scw.redis.RedisImpl;
 public final class RedisByJedisPool extends RedisImpl {
 
 	public RedisByJedisPool(JedisResourceFactory jedisResourceFactory) {
-		this(jedisResourceFactory, SerializerUtils.DEFAULT_SERIALIZER);
+		this(jedisResourceFactory, SerializerUtils.getSerializer());
 	}
 
 	public RedisByJedisPool(JedisResourceFactory jedisResourceFactory, Serializer serializer) {
@@ -19,6 +19,6 @@ public final class RedisByJedisPool extends RedisImpl {
 
 	public RedisByJedisPool(JedisResourceFactory jedisResourceFactory, Codec<String, byte[]> codec, Serializer serializer) {
 		super(new JedisBinaryOperations(jedisResourceFactory), new JedisStringOperations(jedisResourceFactory),
-				codec, serializer);
+				codec, serializer.toCodec());
 	}
 }

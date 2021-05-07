@@ -94,7 +94,7 @@ public class VfsResource extends AbstractResource {
 	}
 
 	@Override
-	public String getFilename() {
+	public String getName() {
 		return VfsUtils.getName(this.resource);
 	}
 

@@ -162,7 +162,7 @@ public class FileSystemResource extends AbstractResource {
 	 * @see java.io.File#getName()
 	 */
 	@Override
-	public String getFilename() {
+	public String getName() {
 		return this.file.getName();
 	}
 

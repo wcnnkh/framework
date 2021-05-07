@@ -6,11 +6,11 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import feign.RequestTemplate;
-import scw.http.AbstractHttpOutputMessage;
 import scw.http.HttpHeaders;
+import scw.http.HttpOutputMessage;
+import feign.RequestTemplate;
 
-public class FeignOutputMessage extends AbstractHttpOutputMessage {
+public class FeignOutputMessage implements HttpOutputMessage {
 	private RequestTemplate requestTemplate;
 	private OutputStream body;
 	private HttpHeaders headers;

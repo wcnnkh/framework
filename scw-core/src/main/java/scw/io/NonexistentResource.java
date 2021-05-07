@@ -62,7 +62,7 @@ public final class NonexistentResource implements Resource {
 		throw new NotSupportedException("empty resource");
 	}
 
-	public String getFilename() {
+	public String getName() {
 		throw new NotSupportedException("empty resource");
 	}
 

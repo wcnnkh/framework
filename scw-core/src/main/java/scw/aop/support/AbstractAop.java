@@ -44,14 +44,6 @@ public abstract class AbstractAop implements Aop{
 		return getProxyFactory().isProxy(className, classLoader);
 	}
 	
-	public boolean isProxy(Object instance) {
-		if(instance == null){
-			return false;
-		}
-		
-		return getProxyFactory().isProxy(instance.getClass());
-	}
-
 	public Proxy getProxy(Class<?> clazz, Class<?>[] interfaces,
 			MethodInterceptor methodInterceptor) {
 		if(methodInterceptor == null){

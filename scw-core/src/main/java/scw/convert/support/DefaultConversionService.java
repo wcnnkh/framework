@@ -5,113 +5,63 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
-import java.util.TreeSet;
 
-import scw.convert.ConfigurableConversionService;
-import scw.convert.ConversionService;
-import scw.convert.ConversionServiceAware;
-import scw.convert.ConverterNotFoundException;
-import scw.convert.TypeDescriptor;
+import scw.convert.lang.ConversionServices;
+import scw.convert.lang.ConverterConversionService;
+import scw.convert.lang.DocumentParseConversionService;
+import scw.convert.lang.JsonConversionService;
+import scw.convert.lang.ObjectToStringConverter;
+import scw.convert.lang.ResourceToPropertiesConverter;
+import scw.convert.lang.StringToCharsetConverter;
+import scw.convert.lang.StringToCurrencyConverter;
+import scw.convert.lang.StringToLocaleConverter;
+import scw.convert.lang.StringToTimeZoneConverter;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
 import scw.util.Supplier;
 
-public class DefaultConversionService extends
-		ConvertibleConditionalComparator<Object> implements
-		ConfigurableConversionService, Comparable<Object> {
-	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(
-			this);
-	
+public class DefaultConversionService extends ConversionServices {
+
 	public DefaultConversionService() {
-		conversionServices.add(new ArrayToArrayConversionService(this));
-		conversionServices.add(new ArrayToCollectionConversionService(this));
-		
-		conversionServices.add(new ByteBufferConversionService(this));
-		
-		conversionServices.add(new CollectionToArrayConversionService(this));
-		conversionServices.add(new CollectionToCollectionConversionService(this));
-		conversionServices.add(new CollectionToObjectConversionService(this));
-		
-		conversionServices.add(new MapToMapConversionService(this));
-		
-		conversionServices.add(new ValueConversionService(this));
-		conversionServices.add(new JsonConversionService());
-		
-		conversionServices.add(new ConverterConversionService(String.class, Charset.class, new StringToCharsetConverter()));
-		conversionServices.add(new ConverterConversionService(String.class, Locale.class, new StringToLocaleConverter()));
-		conversionServices.add(new ConverterConversionService(String.class, TimeZone.class, new StringToTimeZoneConverter()));
-		conversionServices.add(new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
-		
-		conversionServices.add(new EntityToMapConversionService(this));
-		conversionServices.add(new ConverterConversionService(Object.class,
-				String.class, new ObjectToStringConverter()));
-		conversionServices.add(new ObjectToArrayConversionService(this));
-		conversionServices.add(new ObjectToCollectionConversionService(this));
-		
-		//document
-		conversionServices.add(new DocumentParseConversionService());
-		conversionServices.add(new NodeListToCollectionConversionService(this));
-		conversionServices.add(new NodeListToMapConversionService(this));
-		conversionServices.add(new NodeToObjectConversionService(this));
+		addConversionService(new ArrayToArrayConversionService(this));
+		addConversionService(new ArrayToCollectionConversionService(this));
 
-		conversionServices.add(new MapToEntityConversionService(this));
-		conversionServices.add(new PropertyFactoryToEntityConversionService(this));
-		conversionServices.add(new NodeListToEntityConversionService(this));
-		
-		conversionServices.add(new CollectionToMapConversionService(this, CollectionToMapConversionService.ANNOTATION));
+		addConversionService(new ByteBufferConversionService(this));
+
+		addConversionService(new CollectionToArrayConversionService(this));
+		addConversionService(new CollectionToCollectionConversionService(this));
+		addConversionService(new CollectionToObjectConversionService(this));
+
+		addConversionService(new MapToMapConversionService(this));
+
+		addConversionService(new ValueConversionService(this));
+		addConversionService(new JsonConversionService());
+
+		addConversionService(new ConverterConversionService(String.class, Charset.class, new StringToCharsetConverter()));
+		addConversionService(new ConverterConversionService(String.class, Locale.class, new StringToLocaleConverter()));
+		addConversionService(new ConverterConversionService(String.class, TimeZone.class, new StringToTimeZoneConverter()));
+		addConversionService(new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
+
+		addConversionService(new EntityToMapConversionService(this));
+		addConversionService(new ObjectToArrayConversionService(this));
+		addConversionService(new ObjectToCollectionConversionService(this));
+		addConversionService(new ObjectToStringConverter());
+
+		// document
+		addConversionService(new DocumentParseConversionService());
+		addConversionService(new NodeListToCollectionConversionService(this));
+		addConversionService(new NodeListToMapConversionService(this));
+		addConversionService(new NodeToObjectConversionService(this));
+
+		addConversionService(new MapToEntityConversionService(this));
+		addConversionService(new PropertyFactoryToEntityConversionService(this));
+		addConversionService(new NodeListToEntityConversionService(this));
 	}
-	
-	public DefaultConversionService(PropertiesResolver propertiesResolver, @Nullable Supplier<Charset> charset){
+
+	public DefaultConversionService(PropertiesResolver propertiesResolver, @Nullable Supplier<Charset> charset) {
 		this();
-		conversionServices.add(new ConverterConversionService(Resource.class, Properties.class, new ResourceToPropertiesConverter(propertiesResolver, charset)));
-	}
-
-	public void addConversionService(ConversionService conversionService) {
-		if(conversionService instanceof ConversionServiceAware){
-			((ConversionServiceAware) conversionService).setConversionService(this);
-		}
-		
-		synchronized (conversionServices) {
-			conversionServices.add(conversionService);
-		}
-	}
-	
-	public boolean canConvert(TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		for (ConversionService service : conversionServices) {
-			if (service.canConvert(sourceType, targetType)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		if (sourceType != null && targetType != null
-				&& targetType.isAssignableTo(sourceType)) {
-			return source;
-		}
-
-		if (targetType.getType() == Object.class) {
-			return source;
-		}
-
-		for (ConversionService service : conversionServices) {
-			if (service.canConvert(sourceType, targetType)) {
-				return service.convert(source, sourceType, targetType);
-			}
-		}
-		throw new ConverterNotFoundException(sourceType, targetType);
-	}
-
-	public int compareTo(Object o) {
-		for (ConversionService service : conversionServices) {
-			if (ConvertibleConditionalComparator.INSTANCE.compare(service, o) == 1) {
-				return 1;
-			}
-		}
-		return -1;
+		addConversionService(new ConverterConversionService(Resource.class, Properties.class,
+				new ResourceToPropertiesConverter(propertiesResolver, charset)));
 	}
 }

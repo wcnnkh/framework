@@ -2,23 +2,22 @@ package scw.json;
 
 import java.util.Iterator;
 
-public class JsonArrayWrapper extends JsonWrapper<Integer> implements JsonArray {
-	private final JsonArray target;
+public class JsonArrayWrapper extends JsonWrapper<Integer, JsonArray> implements
+		JsonArray {
 
 	public JsonArrayWrapper(JsonArray target) {
 		super(target);
-		this.target = target;
 	}
 
 	public Iterator<JsonElement> iterator() {
-		return target.iterator();
+		return targetFactory.iterator();
 	}
 
 	public boolean add(Object element) {
-		return target.add(element);
+		return targetFactory.add(element);
 	}
 
 	public boolean remove(int index) {
-		return target.remove(index);
+		return targetFactory.remove(index);
 	}
 }

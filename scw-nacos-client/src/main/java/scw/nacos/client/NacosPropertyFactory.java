@@ -6,10 +6,10 @@ import java.util.Iterator;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
+import scw.value.ConfigurablePropertyFactory;
+import scw.value.ListenablePropertyFactory;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.factory.ConfigurablePropertyFactory;
-import scw.value.factory.ListenablePropertyFactory;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.exception.NacosException;

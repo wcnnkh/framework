@@ -32,7 +32,7 @@ public final class DownloadView implements View {
 			mimeType = new MediaType(mimeType, encoding);
 		}
 		httpChannel.getResponse().setContentType(mimeType);
-		setResponseFileDisposition(resource.getFilename(), httpChannel.getResponse());
+		setResponseFileDisposition(resource.getName(), httpChannel.getResponse());
 
 		InputStream is = null;
 		OutputStream os = null;

@@ -39,7 +39,7 @@ public class FileMimeTypeUitls {
 			return null;
 		}
 
-		return getMimeType(resource.getFilename());
+		return getMimeType(resource.getName());
 	}
 
 	public static MimeType getMimeType(@Nullable String filename) {

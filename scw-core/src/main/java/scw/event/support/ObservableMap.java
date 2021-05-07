@@ -13,6 +13,7 @@ import scw.event.NamedEventDispatcher;
 import scw.util.SmartMap;
 
 public class ObservableMap<K, V> extends SmartMap<K, V> {
+	private static final long serialVersionUID = 1L;
 	private final NamedEventDispatcher<K, KeyValuePairEvent<K, V>> eventDispatcher;
 
 	public ObservableMap(boolean concurrent) {

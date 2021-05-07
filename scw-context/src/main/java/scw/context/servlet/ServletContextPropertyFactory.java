@@ -5,9 +5,9 @@ import java.util.Iterator;
 import javax.servlet.ServletContext;
 
 import scw.core.utils.CollectionUtils;
+import scw.value.PropertyFactory;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.factory.PropertyFactory;
 
 public class ServletContextPropertyFactory implements PropertyFactory {
 	private final ServletContext servletContext;

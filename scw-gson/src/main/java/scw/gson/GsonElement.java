@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 public final class GsonElement extends AbstractJsonElement {
+	private static final long serialVersionUID = 1L;
 	private JsonElement gsonJsonElement;
 	private Gson gson;
 	
@@ -28,8 +29,7 @@ public final class GsonElement extends AbstractJsonElement {
 	}
 	
 	@Override
-	protected Object getAsObjectNotSupport(ResolvableType type,
-			Class<?> rawClass) {
+	protected Object getAsNonBaseType(ResolvableType type) {
 		return gson.fromJson(gsonJsonElement, type.getType());
 	}
 

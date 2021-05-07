@@ -30,7 +30,6 @@ import scw.util.XUtils;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
-import scw.value.ValueUtils;
 
 public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
@@ -149,7 +148,7 @@ public final class WebUtils {
 				}
 			}
 		}
-		return ValueUtils.EMPTY_ARRAY;
+		return Value.EMPTY_ARRAY;
 	}
 
 	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request,

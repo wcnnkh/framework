@@ -64,7 +64,7 @@ public interface Resource extends InputStreamSource, OutputStreamSource, BasicEv
 
 	Resource createRelative(String relativePath) throws IOException;
 
-	String getFilename();
+	String getName();
 
 	String getDescription();
 	

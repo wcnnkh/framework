@@ -18,7 +18,7 @@ import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
 import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
-import scw.value.ValueUtils;
+import scw.value.Value;
 
 public final class XUtils {
 	private XUtils() {
@@ -64,7 +64,7 @@ public final class XUtils {
 			return parseMap((Map) instance);
 		}
 
-		if (ValueUtils.isBaseType(instance.getClass())) {
+		if (Value.isBaseType(instance.getClass())) {
 			throw new NotSupportedException(instance.getClass().getName());
 		}
 
@@ -93,7 +93,7 @@ public final class XUtils {
 			return value;
 		}
 
-		if (ValueUtils.isBaseType(value.getClass())) {
+		if (Value.isBaseType(value.getClass())) {
 			return value;
 		} else if (value instanceof ToMap) {
 			return parseMap(((ToMap) value).toMap());

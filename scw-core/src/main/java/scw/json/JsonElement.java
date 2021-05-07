@@ -1,15 +1,24 @@
 package scw.json;
 
+import scw.lang.Nullable;
 import scw.value.Value;
 
 public interface JsonElement extends Value, JSONAware {
-	static final String SPLIT = ",";
-	
+	@Nullable
 	JsonArray getAsJsonArray();
 
+	@Nullable
 	JsonObject getAsJsonObject();
 
-	boolean isJsonArray();
+	default boolean isJsonArray() {
+		String text = getAsString();
+		return text.startsWith(JsonArray.PREFIX)
+				&& text.endsWith(JsonArray.SUFFIX);
+	}
 
-	boolean isJsonObject();
+	default boolean isJsonObject() {
+		String text = getAsString();
+		return text.startsWith(JsonObject.PREFIX)
+				&& text.endsWith(JsonObject.SUFFIX);
+	}
 }

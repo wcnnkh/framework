@@ -11,11 +11,11 @@ import scw.json.AbstractJson;
 import scw.json.JSONException;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultJsonObject extends AbstractJson<String> implements
-		JsonObject, Converter<Entry, KeyValuePair<String, JsonElement>>, Serializable {
+		JsonObject, Converter<Entry, Pair<String, JsonElement>>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private SimpleJSONObject simpleJSONObject;
 
@@ -58,14 +58,14 @@ public class DefaultJsonObject extends AbstractJson<String> implements
 		return true;
 	}
 	
-	public KeyValuePair<String, JsonElement> convert(Entry k) {
+	public Pair<String, JsonElement> convert(Entry k) {
 		Object key = k.getValue();
 		Object value = simpleJSONObject.get(key);
-		return new KeyValuePair<String, JsonElement>(String.valueOf(key), value == null ? null : new DefaultJsonElement(value));
+		return new Pair<String, JsonElement>(String.valueOf(key), value == null ? null : new DefaultJsonElement(value));
 	}
 
-	public Iterator<KeyValuePair<String, JsonElement>> iterator() {
-		return new IteratorConverter<Entry, KeyValuePair<String, JsonElement>>(simpleJSONObject.entrySet().iterator(), this);
+	public Iterator<Pair<String, JsonElement>> iterator() {
+		return new IteratorConverter<Entry, Pair<String, JsonElement>>(simpleJSONObject.entrySet().iterator(), this);
 	}
 
 }

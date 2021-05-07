@@ -28,7 +28,7 @@ import scw.core.Assert;
 import scw.lang.Nullable;
 import scw.lang.ParameterException;
 import scw.util.Accept;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 
 public final class StringUtils {
 	private static final String FOLDER_SEPARATOR = "/";
@@ -2012,13 +2012,13 @@ public final class StringUtils {
 	}
 
 	@Nullable
-	public static KeyValuePair<String, String> parseKV(String text, String separator) {
+	public static Pair<String, String> parseKV(String text, String separator) {
 		int index = text.indexOf(separator);
 		if (index == -1) {
 			return null;
 		}
 
-		return new KeyValuePair<String, String>(text.substring(0, index), text.substring(index + separator.length()));
+		return new Pair<String, String>(text.substring(0, index), text.substring(index + separator.length()));
 	}
 
 	public static String toString(Object value, Object defaultValue) {
@@ -2483,11 +2483,11 @@ public final class StringUtils {
 	 * @param suffix
 	 * @return
 	 */
-	public static KeyValuePair<Integer, Integer> indexOf(String text, String prefix, String suffix) {
+	public static Pair<Integer, Integer> indexOf(String text, String prefix, String suffix) {
 		return indexOf(text, prefix, suffix, 0);
 	}
 
-	public static KeyValuePair<Integer, Integer> indexOf(String text, String prefix, String suffix, int fromIndex) {
+	public static Pair<Integer, Integer> indexOf(String text, String prefix, String suffix, int fromIndex) {
 		return indexOf(text.toCharArray(), prefix.toCharArray(), suffix.toCharArray(), fromIndex, text.length());
 	}
 
@@ -2501,7 +2501,7 @@ public final class StringUtils {
 	 * @param endIndex
 	 * @return
 	 */
-	public static KeyValuePair<Integer, Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex,
+	public static Pair<Integer, Integer> indexOf(char[] source, char[] prefix, char[] suffix, int fromIndex,
 			int endIndex) {
 		int begin = indexOf(source, prefix, 0, endIndex);
 		if (begin == -1) {
@@ -2538,7 +2538,7 @@ public final class StringUtils {
 				}
 			}
 		}
-		return new KeyValuePair<Integer, Integer>(begin, tempEnd);
+		return new Pair<Integer, Integer>(begin, tempEnd);
 	}
 
 	public static int lastIndexOf(String text, String index, int beginIndex, int endIndex) {

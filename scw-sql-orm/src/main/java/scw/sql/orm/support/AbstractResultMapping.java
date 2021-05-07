@@ -14,7 +14,7 @@ import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.OrmUtils;
 import scw.sql.orm.ResultMapping;
 import scw.sql.orm.TableNameMapping;
-import scw.value.ValueUtils;
+import scw.value.Value;
 
 public abstract class AbstractResultMapping implements ResultMapping {
 	private static final long serialVersionUID = 1L;
@@ -37,7 +37,7 @@ public abstract class AbstractResultMapping implements ResultMapping {
 			return null;
 		}
 
-		if (ValueUtils.isBaseType(clazz)) {
+		if (Value.isBaseType(clazz)) {
 			return get(clazz, 0);
 		}
 

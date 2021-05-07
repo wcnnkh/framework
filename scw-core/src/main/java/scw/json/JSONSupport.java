@@ -4,24 +4,86 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Type;
 
+import scw.io.IOUtils;
+
 public interface JSONSupport {
-	String toJSONString(Object obj);
+	String toJSONString(Object obj) throws JSONException;
 
-	JsonArray parseArray(String text);
+	JsonElement parseJson(String text) throws JSONException;
 
-	JsonObject parseObject(String text);
-	
-	JsonElement parseJson(String text);
+	default JsonArray parseArray(String text) throws JSONException{
+		JsonElement jsonElement = parseJson(text);
+		return jsonElement == null ? null : jsonElement.getAsJsonArray();
+	}
 
-	<T> T parseObject(String text, Class<T> type);
+	default JsonObject parseObject(String text) throws JSONException{
+		JsonElement jsonElement = parseJson(text);
+		return jsonElement == null ? null : jsonElement.getAsJsonObject();
+	}
 
-	<T> T parseObject(String text, Type type);
+	default JsonElement parseJson(Object obj) throws JSONException {
+		return parseJson(toJSONString(obj));
+	}
 
-	JsonArray parseArray(Reader reader) throws IOException;
+	@SuppressWarnings("unchecked")
+	default <T> T parseObject(String text, Class<T> type) throws JSONException {
+		if (type == JsonObject.class) {
+			return (T) parseObject(text);
+		} else if (type == JsonArray.class) {
+			return (T) parseArray(text);
+		} else if (type.isAssignableFrom(JsonElement.class)) {
+			return (T) parseJson(text);
+		} else if(type == String.class) {
+			return (T) text;
+		}
+		JsonElement jsonElement = parseJson(text);
+		return jsonElement == null ? null : jsonElement.getAsObject(type);
+	}
 
-	JsonObject parseObject(Reader reader) throws IOException;
+	@SuppressWarnings("unchecked")
+	default <T> T parseObject(String text, Type type) throws JSONException{
+		if(type instanceof Class) {
+			return (T) parseObject(text, (Class<?>)type);
+		}
+		
+		JsonElement jsonElement = parseJson(text);
+		if (jsonElement == null) {
+			return null;
+		}
+		return (T) jsonElement.getAsObject(type);
+	}
 
-	<T> T parseObject(Reader reader, Class<T> type) throws IOException;
+	default JsonArray parseArray(Reader reader) throws IOException, JSONException {
+		JsonElement jsonElement = parseJson(reader);
+		return jsonElement == null ? null : jsonElement.getAsJsonArray();
+	}
 
-	<T> T parseObject(Reader reader, Type type) throws IOException;
+	default JsonObject parseObject(Reader reader) throws IOException, JSONException {
+		JsonElement jsonElement = parseJson(reader);
+		return jsonElement == null ? null : jsonElement.getAsJsonObject();
+	}
+
+	default JsonElement parseJson(Reader reader) throws IOException, JSONException {
+		return parseJson(new String(IOUtils.toCharArray(reader)));
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> T parseObject(Reader reader, Class<T> type) throws IOException, JSONException {
+		if (type == JsonObject.class) {
+			return (T) parseObject(reader);
+		} else if (type == JsonArray.class) {
+			return (T) parseArray(reader);
+		} else if (type.isAssignableFrom(JsonElement.class)) {
+			return (T) parseJson(reader);
+		}
+		return parseObject(new String(IOUtils.toCharArray(reader)), type);
+	}
+
+	@SuppressWarnings("unchecked")
+	default <T> T parseObject(Reader reader, Type type) throws IOException, JSONException {
+		if (type instanceof Class) {
+			return (T) parseObject(reader, (Class<?>) type);
+		}
+		return parseObject(new String(IOUtils.toCharArray(reader)), type);
+	}
 }

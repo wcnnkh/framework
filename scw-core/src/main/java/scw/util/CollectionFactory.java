@@ -405,6 +405,15 @@ public final class CollectionFactory {
 	public static <E> Set<E> createSet(boolean concurrent, int initialCapacity) {
 		return concurrent ? new CopyOnWriteArraySet<E>() : new LinkedHashSet<E>(initialCapacity);
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static <T> Class<T> getEnumMapKeyType(Map map){
+		Class<T> keyType = null;
+		if (map instanceof EnumMap) {
+			keyType = (Class<T>) ReflectionUtils.getField(KEY_TYPE_FIELD, map);
+		}
+		return keyType;
+	}
 
 	/**
 	 * 克隆一个map
@@ -421,19 +430,24 @@ public final class CollectionFactory {
 		if (map instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) map);
 		} else {
-			Class<?> keyType = null;
-			if (map instanceof EnumMap) {
-				keyType = (Class<?>) ReflectionUtils.getField(KEY_TYPE_FIELD, map);
-			}
-
-			M cloneMap = (M) createMap(map.getClass(), keyType, map.size());
+			M cloneMap = (M) createMap(map.getClass(), getEnumMapKeyType(map), map.size());
 			cloneMap.putAll(map);
 			return cloneMap;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> getEnumSetElementType(@SuppressWarnings("rawtypes") Collection collection) {
+		Class<T> elementType = null;
+		if (collection instanceof EnumSet) {
+			elementType = (Class<T>) ReflectionUtils.getField(ELEMENT_TYPE_FIELD, collection);
+		}
+		return elementType;
+	}
+	
 	/**
 	 * 克隆一个collection
+	 * 
 	 * @param <C>
 	 * @param <E>
 	 * @param collection
@@ -445,12 +459,7 @@ public final class CollectionFactory {
 		if (collection instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) collection);
 		} else {
-			Class<?> elementType = null;
-			if (collection instanceof EnumSet) {
-				elementType = (Class<?>) ReflectionUtils.getField(ELEMENT_TYPE_FIELD, collection);
-			}
-
-			C cloneCollection = (C) createCollection(collection.getClass(), elementType, collection.size());
+			C cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection), collection.size());
 			cloneCollection.addAll(collection);
 			return cloneCollection;
 		}

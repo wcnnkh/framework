@@ -4,27 +4,44 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import scw.codec.Codec;
+import scw.codec.support.SerializerCodec;
+
 /**
- * 序列化
+ * 序列化与反序列化
  * 
  * @author shuchaowen
  *
  */
-public interface Serializer extends NoTypeSpecifiedSerializer,
-		SpecifiedTypeSerializer {
-	@Override
-	default <T> void serialize(OutputStream out, Class<T> type, T data)
-			throws IOException {
-		serialize(out, data);
+public interface Serializer {
+	void serialize(OutputStream out, Object data) throws IOException;
+
+	default byte[] serialize(Object data) throws SerializerException {
+		UnsafeByteArrayOutputStream out = new UnsafeByteArrayOutputStream();
+		try {
+			serialize(out, data);
+			return out.toByteArray();
+		} catch (IOException e) {
+			throw new SerializerException(e);
+		} finally {
+			out.close();
+		}
 	}
 
-	@Override
-	default <T> T deserialize(Class<T> type, InputStream input)
-			throws IOException, SerializerException {
+	<T> T deserialize(InputStream input) throws IOException, ClassNotFoundException;
+
+	default <T> T deserialize(byte[] data) throws ClassNotFoundException, SerializerException {
+		UnsafeByteArrayInputStream input = new UnsafeByteArrayInputStream(data);
 		try {
 			return deserialize(input);
-		} catch (ClassNotFoundException e) {
-			throw new SerializerException(type.toString(), e);
+		} catch (IOException e) {
+			throw new SerializerException(e);
+		} finally {
+			input.close();
 		}
+	}
+	
+	default <D> Codec<D, byte[]> toCodec(){
+		return new SerializerCodec<D>(this);
 	}
 }

@@ -59,4 +59,21 @@ public interface ConversionService{
 	 */
 	@Nullable
 	Object convert(@Nullable Object source, @Nullable TypeDescriptor sourceType, TypeDescriptor targetType) throws ConversionException;
+
+	/**
+	 * 是否能直接转换
+	 * @param sourceType
+	 * @param targetType
+	 * @return
+	 */
+	default boolean canDirectlyConvert(@Nullable TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (sourceType != null && targetType != null && targetType.isAssignableTo(sourceType)) {
+			return true;
+		}
+
+		if (targetType.getType() == Object.class) {
+			return true;
+		}
+		return false;
+	}
 }

@@ -1,6 +1,5 @@
 package scw.json.parser;
 
-import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -20,16 +19,16 @@ import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
 import scw.mapper.Field;
-import scw.mapper.Fields;
 import scw.mapper.FieldFeature;
+import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.value.AnyValue;
 import scw.value.StringValue;
-import scw.value.ValueUtils;
+import scw.value.Value;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultJsonElement extends AbstractJsonElement implements
-		JsonElement, Serializable {
+		JsonElement {
 	private static final long serialVersionUID = 1L;
 	private String text;
 
@@ -67,19 +66,8 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 		return new DefaultJsonObject(text);
 	}
 
-	public boolean isJsonArray() {
-		return text.startsWith(JsonArray.PREFIX)
-				&& text.endsWith(JsonArray.SUFFIX);
-	}
-
-	public boolean isJsonObject() {
-		return text.startsWith(JsonObject.PREFIX)
-				&& text.endsWith(JsonObject.SUFFIX);
-	}
-
 	@Override
-	protected Object getAsObjectNotSupport(ResolvableType type,
-			Class<?> rawClass) {
+	protected Object getAsNonBaseType(ResolvableType type) {
 		return parse(text, type.getType());
 	}
 
@@ -89,7 +77,7 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 	}
 
 	public static String toJSONString(Object json) {
-		if (ValueUtils.isBaseType(json.getClass())) {
+		if (Value.isBaseType(json.getClass())) {
 			return String.valueOf(json);
 		} else {
 			return JSONValue.toJSONString(json);
@@ -101,9 +89,9 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 		if (json == null) {
 			return null;
 		}
-		
-		if(json instanceof String){
-			return parse((String)json, type, instanceFactory);
+
+		if (json instanceof String) {
+			return parse((String) json, type, instanceFactory);
 		}
 
 		Class<?> clazz = type.getRawClass();
@@ -115,7 +103,7 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 			return json;
 		}
 
-		if (ValueUtils.isBaseType(clazz)) {
+		if (Value.isBaseType(clazz)) {
 			return new AnyValue(json).getAsObject(type.getType());
 		}
 
@@ -169,9 +157,11 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 				return map;
 			}
 
-			Fields fields = MapperUtils.getMapper().getFields(clazz).accept(
-					FieldFeature.SETTER_IGNORE_STATIC,
-					FieldFeature.SETTER_PUBLIC);
+			Fields fields = MapperUtils
+					.getMapper()
+					.getFields(clazz)
+					.accept(FieldFeature.SETTER_IGNORE_STATIC,
+							FieldFeature.SETTER_PUBLIC);
 			Object instance = instanceFactory.getInstance(clazz);
 			for (Field field : fields) {
 				Object value = jsonObject.get(field.getSetter().getName());
@@ -203,7 +193,7 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 			return null;
 		}
 
-		if (ValueUtils.isBaseType(clazz)) {
+		if (Value.isBaseType(clazz)) {
 			return new StringValue(text).getAsObject(type.getType());
 		}
 

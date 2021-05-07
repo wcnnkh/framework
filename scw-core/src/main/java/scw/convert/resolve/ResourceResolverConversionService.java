@@ -5,8 +5,8 @@ import java.util.Set;
 
 import scw.convert.ConversionException;
 import scw.convert.TypeDescriptor;
-import scw.convert.support.ConditionalConversionService;
-import scw.convert.support.ConvertiblePair;
+import scw.convert.lang.ConditionalConversionService;
+import scw.convert.lang.ConvertiblePair;
 import scw.io.Resource;
 
 public class ResourceResolverConversionService extends ConditionalConversionService{

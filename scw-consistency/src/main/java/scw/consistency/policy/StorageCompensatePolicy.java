@@ -2,7 +2,7 @@ package scw.consistency.policy;
 
 import scw.core.Assert;
 import scw.io.JavaSerializer;
-import scw.io.NoTypeSpecifiedSerializer;
+import scw.io.Serializer;
 
 /**
  * 基于存储的实现
@@ -12,7 +12,7 @@ import scw.io.NoTypeSpecifiedSerializer;
 public abstract class StorageCompensatePolicy extends AbstractCompensatePolicy{
 	//分钟
 	private int compenstBeforeMinute = 5;
-	private NoTypeSpecifiedSerializer serializer = JavaSerializer.INSTANCE;
+	private Serializer serializer = JavaSerializer.INSTANCE;
 
 	public int getCompenstBeforeMinute() {
 		return compenstBeforeMinute;
@@ -23,11 +23,11 @@ public abstract class StorageCompensatePolicy extends AbstractCompensatePolicy{
 		this.compenstBeforeMinute = compenstBeforeMinute;
 	}
 
-	public NoTypeSpecifiedSerializer getSerializer() {
+	public Serializer getSerializer() {
 		return serializer;
 	}
 
-	public void setSerializer(NoTypeSpecifiedSerializer serializer) {
+	public void setSerializer(Serializer serializer) {
 		this.serializer = serializer;
 	}
 }

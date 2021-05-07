@@ -21,7 +21,7 @@ import scw.io.FileUtils;
 import scw.io.SerializerException;
 import scw.locks.FileLockFactory;
 import scw.locks.LockFactory;
-import scw.util.KeyValuePair;
+import scw.util.Pair;
 import scw.util.comparator.CompareUtils;
 
 public class FileCompensatePolicy extends StorageCompensatePolicy {
@@ -77,7 +77,7 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 		for (File file : files) {
 			String name = file.getName().substring(0,
 					file.getName().length() - SUFFIX.length());
-			KeyValuePair<String, String> pair = StringUtils.parseKV(name,
+			Pair<String, String> pair = StringUtils.parseKV(name,
 					CONNECTOR);
 			sets.add(URLCodec.UTF_8.decode(pair.getKey()));
 		}
@@ -112,7 +112,7 @@ public class FileCompensatePolicy extends StorageCompensatePolicy {
 		File file = files[0];
 		String name = file.getName().substring(0,
 				file.getName().length() - SUFFIX.length());
-		KeyValuePair<String, String> pair = StringUtils
+		Pair<String, String> pair = StringUtils
 				.parseKV(name, CONNECTOR);
 		return URLCodec.UTF_8.decode(pair.getValue());
 	}
