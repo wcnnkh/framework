@@ -516,6 +516,12 @@ public abstract class CollectionUtils {
 		}
 	}
 
+	/**
+	 * 获取一个迭代器
+	 * @param list
+	 * @param previous 是否反向迭代
+	 * @return
+	 */
 	public static <E> Iterator<E> getIterator(List<E> list, boolean previous) {
 		if (isEmpty(list)) {
 			return Collections.emptyIterator();

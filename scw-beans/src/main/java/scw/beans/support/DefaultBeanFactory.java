@@ -27,6 +27,7 @@ import scw.core.parameter.ConstructorParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ClassUtils;
 import scw.env.Environment;
+import scw.env.SystemEnvironment;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.support.DefaultBasicEventDispatcher;
@@ -68,6 +69,8 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 				return BeanUtils.getRuntimeBean(instance) != null;
 			}
 		});
+		getEnvironment().addPropertyFactory(SystemEnvironment.getInstance());
+		
 		registerSingleton(BeanFactory.class.getName(), this);
 		registerAlias(BeanFactory.class.getName(), InstanceFactory.class.getName());
 		registerAlias(BeanFactory.class.getName(), NoArgsInstanceFactory.class.getName());

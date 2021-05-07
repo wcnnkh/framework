@@ -107,6 +107,10 @@ public class DefaultEnvironmentResourceLoader extends FileSystemResourceLoader i
 	
 	@Override
 	protected boolean ignoreClassPathResource(FileSystemResource resource) {
+		String workPath = environment.getWorkPath();
+		if(workPath == null){
+			System.err.println(resource);
+		}
 		return super.ignoreClassPathResource(resource) || resource.getPath().startsWith(environment.getWorkPath());
 	}
 
