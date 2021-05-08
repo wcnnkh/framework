@@ -1,6 +1,5 @@
 package scw.mapper;
 
-import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Modifier;
@@ -14,9 +13,8 @@ import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 
-public class FieldMetadata implements AnnotatedElement, Serializable {
+public class FieldMetadata implements AnnotatedElement {
 	public static final FieldMetadata[] EMPTY_ARRAY = new FieldMetadata[0];
-	private static final long serialVersionUID = 1L;
 	private final Getter getter;
 	private final Setter setter;
 	

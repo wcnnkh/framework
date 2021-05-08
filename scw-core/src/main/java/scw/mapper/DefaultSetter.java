@@ -13,7 +13,6 @@ import scw.util.Supplier;
 import scw.value.Value;
 
 public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
-	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final boolean nullable;
 	private ParameterDescriptor setterParameterDescriptor;

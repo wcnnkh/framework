@@ -3,7 +3,6 @@ package scw.mapper;
 import java.lang.reflect.Method;
 
 public final class Field extends FieldMetadata {
-	private static final long serialVersionUID = 1L;
 	private final Field parentField;
 
 	public Field(Field parentField, Class<?> declaringClass, String name, java.lang.reflect.Field field, Method getter,

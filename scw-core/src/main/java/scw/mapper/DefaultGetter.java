@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 import scw.core.annotation.AnnotationUtils;
 
 public class DefaultGetter extends AbstractFieldDescriptor implements Getter {
-	private static final long serialVersionUID = 1L;
 	private final String name;
 	private final boolean nullable;
 

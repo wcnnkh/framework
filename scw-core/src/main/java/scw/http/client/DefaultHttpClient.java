@@ -25,9 +25,9 @@ import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.InetUtils;
-import scw.net.message.converter.DefaultMessageConverters;
-import scw.net.message.converter.MessageConverter;
-import scw.net.message.converter.MessageConverters;
+import scw.net.message.convert.DefaultMessageConverters;
+import scw.net.message.convert.MessageConverter;
+import scw.net.message.convert.MessageConverters;
 import scw.net.uri.UriTemplateHandler;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {

@@ -14,7 +14,7 @@ import feign.codec.EncodeException;
 import feign.codec.Encoder;
 import scw.io.FastByteArrayOutputStream;
 import scw.net.MimeType;
-import scw.net.message.converter.MessageConverter;
+import scw.net.message.convert.MessageConverter;
 
 public class FeignEncoder implements Encoder {
 	private MessageConverter messageConverter;

@@ -1,6 +1,5 @@
 package scw.mapper;
 
-import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -8,7 +7,7 @@ import scw.core.parameter.ParameterDescriptor;
 import scw.core.reflect.FieldHolder;
 import scw.core.reflect.MethodHolder;
 
-public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, FieldHolder, Serializable{
+public interface FieldDescriptor extends ParameterDescriptor, MethodHolder, FieldHolder{
 	int getModifiers();
 	
 	/**

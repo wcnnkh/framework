@@ -1,4 +1,4 @@
-package scw.net.message.converter;
+package scw.net.message.convert;
 
 
 public class MessageConvertException extends RuntimeException {
