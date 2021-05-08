@@ -30,6 +30,7 @@ import scw.io.ResourceLoader;
 import scw.io.event.ObservableProperties;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
+import scw.logger.Logger;
 import scw.value.PropertyFactory;
 import scw.value.Value;
 
@@ -248,31 +249,37 @@ public class DefaultEnvironment extends DefaultPropertyManager implements Config
 	 * @param serviceLoaderFactory
 	 * @return 返回是否加载成功
 	 */
-	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory){
+	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory, Logger logger){
 		if(loaded.compareAndSet(false, true)){
 			proxyFactory.loadServices(serviceLoaderFactory);
 			
 			for(PropertiesResolver propertiesResolver : serviceLoaderFactory.getServiceLoader(PropertiesResolver.class)){
+				logger.info("add properties resolver: {}", propertiesResolver);
 				addPropertiesResolver(propertiesResolver);
 			}
 			
 			for(ResourceResolver resourceResolver : serviceLoaderFactory.getServiceLoader(ResourceResolver.class)){
+				logger.info("add resource resolver: {}", resourceResolver);
 				addResourceResolver(resourceResolver);
 			}
 			
 			for(ResourceLoader resourceLoader : serviceLoaderFactory.getServiceLoader(ResourceLoader.class)){
+				logger.info("add resource loader: {}", resourceLoader);
 				addResourceLoader(resourceLoader);
 			}
 			
 			for(ProtocolResolver protocolResolver : serviceLoaderFactory.getServiceLoader(ProtocolResolver.class)){
+				logger.info("add protocol resolver: {}", protocolResolver);
 				addProtocolResolver(protocolResolver);
 			}
 			
 			for(ConversionService conversionService : serviceLoaderFactory.getServiceLoader(ConversionService.class)){
+				logger.info("add conversion service: {}", conversionService);
 				addConversionService(conversionService);
 			}
 			
 			for(PropertyFactory propertyFactory : serviceLoaderFactory.getServiceLoader(PropertyFactory.class)){
+				logger.info("add property factory: {}", propertyFactory);
 				addPropertyFactory(propertyFactory);
 			}
 			return true;

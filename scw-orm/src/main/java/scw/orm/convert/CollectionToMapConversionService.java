@@ -31,7 +31,11 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		ConversionServices.setNesting(this);
-		return conversionService.canConvert(sourceType, COLLECTION_TYPE) && targetType.isMap();
+		try{
+			return conversionService.canConvert(sourceType, COLLECTION_TYPE) && targetType.isMap();
+		}finally{
+			ConversionServices.removeNesting(this);
+		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

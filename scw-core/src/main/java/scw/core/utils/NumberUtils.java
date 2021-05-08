@@ -42,7 +42,7 @@ public abstract class NumberUtils {
 	public static Object converPrimitive(Number number, Class<?> targetClass) {
 		Assert.notNull(number, "Number must not be null");
 		Assert.notNull(targetClass, "Target class must not be null");
-		
+
 		if (ClassUtils.isByte(targetClass)) {
 			return number.byteValue();
 		} else if (ClassUtils.isShort(targetClass)) {
@@ -86,7 +86,8 @@ public abstract class NumberUtils {
 	 * @see java.math.BigDecimal
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Number> T convertNumberToTargetClass(Number number, Class<T> targetClass)
+	public static <T extends Number> T convertNumberToTargetClass(
+			Number number, Class<T> targetClass)
 			throws IllegalArgumentException {
 
 		Assert.notNull(number, "Number must not be null");
@@ -133,8 +134,10 @@ public abstract class NumberUtils {
 			// (see BigDecimal javadoc for details)
 			return (T) new BigDecimal(number.toString());
 		} else {
-			throw new IllegalArgumentException("Could not convert number [" + number + "] of type ["
-					+ number.getClass().getName() + "] to unknown target class [" + targetClass.getName() + "]");
+			throw new IllegalArgumentException("Could not convert number ["
+					+ number + "] of type [" + number.getClass().getName()
+					+ "] to unknown target class [" + targetClass.getName()
+					+ "]");
 		}
 	}
 
@@ -148,8 +151,9 @@ public abstract class NumberUtils {
 	 */
 	@SuppressWarnings("rawtypes")
 	private static void raiseOverflowException(Number number, Class targetClass) {
-		throw new IllegalArgumentException("Could not convert number [" + number + "] of type ["
-				+ number.getClass().getName() + "] to target class [" + targetClass.getName() + "]: overflow");
+		throw new IllegalArgumentException("Could not convert number ["
+				+ number + "] of type [" + number.getClass().getName()
+				+ "] to target class [" + targetClass.getName() + "]: overflow");
 	}
 
 	/**
@@ -177,31 +181,44 @@ public abstract class NumberUtils {
 	 * @see java.math.BigDecimal#BigDecimal(String)
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Number> T parseNumber(String text, Class<T> targetClass) {
+	public static <T extends Number> T parseNumber(String text,
+			Class<T> targetClass) {
 		Assert.notNull(text, "Text must not be null");
 		Assert.notNull(targetClass, "Target class must not be null");
 		String trimmed = StringUtils.trimAllWhitespace(text);
 
 		if (targetClass.equals(Byte.class)) {
-			return (T) (isHexNumber(trimmed) ? Byte.decode(trimmed) : Byte.valueOf(trimmed));
+			return (T) (isHexNumber(trimmed) ? Byte.decode(trimmed) : Byte
+					.valueOf(trimmed));
 		} else if (targetClass.equals(Short.class)) {
-			return (T) (isHexNumber(trimmed) ? Short.decode(trimmed) : Short.valueOf(trimmed));
+			return (T) (isHexNumber(trimmed) ? Short.decode(trimmed) : Short
+					.valueOf(trimmed));
 		} else if (targetClass.equals(Integer.class)) {
-			return (T) (isHexNumber(trimmed) ? Integer.decode(trimmed) : Integer.valueOf(trimmed));
+			return (T) (isHexNumber(trimmed) ? Integer.decode(trimmed)
+					: Integer.valueOf(trimmed));
 		} else if (targetClass.equals(Long.class)) {
-			return (T) (isHexNumber(trimmed) ? Long.decode(trimmed) : Long.valueOf(trimmed));
+			return (T) (isHexNumber(trimmed) ? Long.decode(trimmed) : Long
+					.valueOf(trimmed));
 		} else if (targetClass.equals(BigInteger.class)) {
-			return (T) (isHexNumber(trimmed) ? decodeBigInteger(trimmed) : new BigInteger(trimmed));
+			return (T) (isHexNumber(trimmed) ? decodeBigInteger(trimmed)
+					: new BigInteger(trimmed));
 		} else if (targetClass.equals(Float.class)) {
 			return (T) Float.valueOf(trimmed);
 		} else if (targetClass.equals(Double.class)) {
 			return (T) Double.valueOf(trimmed);
-		} else if (targetClass.equals(BigDecimal.class) || targetClass.equals(Number.class)) {
+		} else if (targetClass.equals(BigDecimal.class)
+				|| targetClass.equals(Number.class)) {
 			return (T) new BigDecimal(trimmed);
 		} else {
-			throw new IllegalArgumentException(
-					"Cannot convert String [" + text + "] to target class [" + targetClass.getName() + "]");
+			throw new IllegalArgumentException("Cannot convert String [" + text
+					+ "] to target class [" + targetClass.getName() + "]");
 		}
+	}
+
+	public static boolean isNumber(Class<?> type) {
+		return type == long.class || type == int.class || type == byte.class
+				|| type == short.class || type == float.class
+				|| type == double.class || Number.class.isAssignableFrom(type);
 	}
 
 	/**
@@ -224,7 +241,8 @@ public abstract class NumberUtils {
 	 * @see #convertNumberToTargetClass
 	 * @see #parseNumber(String, Class)
 	 */
-	public static <T extends Number> T parseNumber(String text, Class<T> targetClass, NumberFormat numberFormat) {
+	public static <T extends Number> T parseNumber(String text,
+			Class<T> targetClass, NumberFormat numberFormat) {
 		if (numberFormat != null) {
 			Assert.notNull(text, "Text must not be null");
 			Assert.notNull(targetClass, "Target class must not be null");
@@ -232,16 +250,19 @@ public abstract class NumberUtils {
 			boolean resetBigDecimal = false;
 			if (numberFormat instanceof DecimalFormat) {
 				decimalFormat = (DecimalFormat) numberFormat;
-				if (BigDecimal.class.equals(targetClass) && !decimalFormat.isParseBigDecimal()) {
+				if (BigDecimal.class.equals(targetClass)
+						&& !decimalFormat.isParseBigDecimal()) {
 					decimalFormat.setParseBigDecimal(true);
 					resetBigDecimal = true;
 				}
 			}
 			try {
-				Number number = numberFormat.parse(StringUtils.trimAllWhitespace(text));
+				Number number = numberFormat.parse(StringUtils
+						.trimAllWhitespace(text));
 				return convertNumberToTargetClass(number, targetClass);
 			} catch (ParseException ex) {
-				throw new IllegalArgumentException("Could not parse number: " + ex.getMessage());
+				throw new IllegalArgumentException("Could not parse number: "
+						+ ex.getMessage());
 			} finally {
 				if (resetBigDecimal) {
 					decimalFormat.setParseBigDecimal(false);
@@ -259,7 +280,8 @@ public abstract class NumberUtils {
 	 */
 	private static boolean isHexNumber(String value) {
 		int index = (value.startsWith("-") ? 1 : 0);
-		return (value.startsWith("0x", index) || value.startsWith("0X", index) || value.startsWith("#", index));
+		return (value.startsWith("0x", index) || value.startsWith("0X", index) || value
+				.startsWith("#", index));
 	}
 
 	/**

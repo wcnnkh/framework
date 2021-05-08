@@ -8,6 +8,7 @@ import java.util.TimeZone;
 
 import scw.convert.lang.ConversionServices;
 import scw.convert.lang.ConverterConversionService;
+import scw.convert.lang.DateFormatConversionService;
 import scw.convert.lang.DocumentParseConversionService;
 import scw.convert.lang.JsonConversionService;
 import scw.convert.lang.JsonToObjectConversionService;
@@ -33,6 +34,8 @@ public class DefaultConversionService extends ConversionServices {
 		addConversionService(new CollectionToArrayConversionService(this));
 		addConversionService(new CollectionToCollectionConversionService(this));
 		addConversionService(new CollectionToObjectConversionService(this));
+		
+		addConversionService(new DateFormatConversionService());
 
 		addConversionService(new MapToMapConversionService(this));
 

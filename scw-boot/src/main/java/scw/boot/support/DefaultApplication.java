@@ -14,7 +14,6 @@ import scw.context.ConfigurableContextEnvironment;
 import scw.context.support.LifecycleAuxiliary;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
 import scw.event.BasicEventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
@@ -49,7 +48,6 @@ public class DefaultApplication extends LifecycleAuxiliary
 		beanFactory = new XmlBeanFactory(StringUtils.isEmpty(xml) ? XmlBeanFactory.DEFAULT_CONFIG : xml);
 		beanFactory.setClassLoaderProvider(this);
 		getBeanFactory().registerSingleton(Application.class.getName(), this);
-		getEnvironment().addPropertyFactory(SystemEnvironment.getInstance());
 		beanFactory.registerListener(this);
 	}
 
