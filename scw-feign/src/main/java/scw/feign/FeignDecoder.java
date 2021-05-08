@@ -8,7 +8,7 @@ import feign.Response;
 import feign.codec.DecodeException;
 import feign.codec.Decoder;
 import scw.convert.TypeDescriptor;
-import scw.net.message.converter.MessageConverter;
+import scw.net.message.convert.MessageConverter;
 
 public class FeignDecoder implements Decoder {
 	private MessageConverter messageConverter;

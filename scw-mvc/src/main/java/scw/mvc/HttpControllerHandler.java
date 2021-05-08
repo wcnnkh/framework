@@ -38,8 +38,8 @@ import scw.net.MimeType;
 import scw.net.message.Entity;
 import scw.net.message.InputMessage;
 import scw.net.message.Text;
-import scw.net.message.converter.MessageConverter;
-import scw.net.message.converter.MessageConverters;
+import scw.net.message.convert.MessageConverter;
+import scw.net.message.convert.MessageConverters;
 import scw.util.MultiIterable;
 import scw.web.WebUtils;
 

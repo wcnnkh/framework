@@ -1,63 +1,41 @@
 package scw.mapper;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import scw.core.annotation.AnnotationArrayAnnotatedElement;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.parameter.annotation.DefaultValue;
-import scw.core.reflect.FieldHolder;
-import scw.core.reflect.MethodHolder;
 import scw.core.reflect.ReflectionUtils;
-import scw.core.reflect.SerializableField;
-import scw.core.reflect.SerializableMethod;
 import scw.lang.NestedExceptionUtils;
 import scw.lang.NotSupportedException;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public abstract class AbstractFieldDescriptor implements FieldDescriptor {
-	private static final long serialVersionUID = 1L;
+public abstract class AbstractFieldDescriptor extends AnnotationArrayAnnotatedElement implements FieldDescriptor {
 	private final Class<?> declaringClass;
-	private final FieldHolder field;
-	private final MethodHolder method;
-	private final AnnotatedElement annotatedElement;
+	private final Field field;
+	private final Method method;
 
 	public AbstractFieldDescriptor(Class<?> declaringClass, Field field, Method method) {
+		super(MultiAnnotatedElement.forAnnotatedElements(method, field));
 		this.declaringClass = declaringClass;
-		this.annotatedElement = MultiAnnotatedElement.forAnnotatedElements(true, method, field);
-		this.field = field == null ? null : new SerializableField(field);
-		this.method = method == null ? null : new SerializableMethod(method);
+		this.field = field;
+		this.method = method;
 	}
 	
-	@Override
-	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-		return this.annotatedElement.getAnnotation(annotationClass);
-	}
-	
-	@Override
-	public Annotation[] getAnnotations() {
-		return this.annotatedElement.getAnnotations();
-	}
-	
-	@Override
-	public Annotation[] getDeclaredAnnotations() {
-		return this.annotatedElement.getDeclaredAnnotations();
-	}
-
 	public java.lang.reflect.Field getField() {
-		return field == null ? null : field.getField();
+		return field;
 	}
 
 	public Method getMethod() {
-		return method == null ? null : method.getMethod();
+		return method;
 	}
 	
 	public Value getDefaultValue() {
-		DefaultValue defaultValue = AnnotationUtils.getAnnotation(DefaultValue.class, annotatedElement);
+		DefaultValue defaultValue = AnnotationUtils.getAnnotation(DefaultValue.class, this);
 		return defaultValue == null? null:new StringValue(defaultValue.value());
 	}
 	

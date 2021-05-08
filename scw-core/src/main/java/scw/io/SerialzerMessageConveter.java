@@ -7,8 +7,8 @@ import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.net.message.converter.AbstractMessageConverter;
-import scw.net.message.converter.MessageConvertException;
+import scw.net.message.convert.AbstractMessageConverter;
+import scw.net.message.convert.MessageConvertException;
 
 public class SerialzerMessageConveter extends AbstractMessageConverter<Object> {
 	private Serializer serializer;

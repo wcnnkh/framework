@@ -9,7 +9,7 @@ import scw.http.ContentDisposition;
 import scw.http.MediaType;
 import scw.io.UnsafeByteArrayInputStream;
 import scw.json.JSONSupport;
-import scw.net.message.converter.JsonMessageConverter;
+import scw.net.message.convert.JsonMessageConverter;
 import scw.value.Value;
 
 public class FormFileItem extends AbstractFileItem {

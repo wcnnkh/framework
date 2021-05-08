@@ -48,21 +48,8 @@ public class MultiAnnotatedElement implements AnnotatedElement {
 		return annotations.toArray(new Annotation[annotations.size()]);
 	}
 
-	public static Annotation[] toAnnotations(boolean isDeclared,
-			AnnotatedElement... annotatedElements) {
-		return toAnnotations(Arrays.asList(annotatedElements), isDeclared);
-	}
-
-	public static AnnotatedElement forAnnotatedElements(
-			Collection<AnnotatedElement> annotatedElements, boolean isDeclared) {
-		return AnnotatedElementUtils.forAnnotations(toAnnotations(
-				annotatedElements, isDeclared));
-	}
-
-	public static AnnotatedElement forAnnotatedElements(boolean isDeclared,
-			AnnotatedElement... annotatedElements) {
-		return AnnotatedElementUtils.forAnnotations(toAnnotations(isDeclared,
-				annotatedElements));
+	public static AnnotatedElement forAnnotatedElements(AnnotatedElement... annotatedElements) {
+		return new MultiAnnotatedElement(annotatedElements);
 	}
 
 	public Collection<AnnotatedElement> getAnnotatedElements() {

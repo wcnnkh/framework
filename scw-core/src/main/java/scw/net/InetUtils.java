@@ -24,9 +24,9 @@ import scw.instance.InstanceUtils;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
-import scw.net.message.converter.DefaultMessageConverters;
-import scw.net.message.converter.MessageConverter;
-import scw.net.message.converter.MessageConverters;
+import scw.net.message.convert.DefaultMessageConverters;
+import scw.net.message.convert.MessageConverter;
+import scw.net.message.convert.MessageConverters;
 import scw.net.message.multipart.FileItemParser;
 import scw.util.Accept;
 

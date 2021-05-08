@@ -1,4 +1,4 @@
-package scw.net.message.converter;
+package scw.net.message.convert;
 
 import java.io.IOException;
 import java.util.Collection;

@@ -7,7 +7,7 @@ import scw.beans.BeanFactory;
 import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.core.utils.StringUtils;
-import scw.net.message.converter.DefaultMessageConverters;
+import scw.net.message.convert.DefaultMessageConverters;
 
 public class FeignBeanDefinition extends DefaultBeanDefinition {
 	private scw.feign.annotation.FeignClient feignClient;
