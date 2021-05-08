@@ -8,18 +8,18 @@ import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.lang.Nullable;
 
-public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<LevelFactory>> {
+public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<LevelRegistry>> {
 	private EventRegistration eventRegistration;
 	private Level level;
 
 	public synchronized void registerListener() {
 		if(eventRegistration == null) {
-			eventRegistration = LoggerLevelEventDispatcher.getInstance().registerListener(this);
+			eventRegistration = LoggerFactory.getLevelManager().getRegistry().registerListener(this);
 		}
 	}
 
 	@Override
-	public void onEvent(ChangeEvent<LevelFactory> event) {
+	public void onEvent(ChangeEvent<LevelRegistry> event) {
 		Level oldLevel = getLevel();
 		Level newLevel = event.getSource().getLevel(getName());
 		if (!ObjectUtils.nullSafeEquals(oldLevel, newLevel)) {

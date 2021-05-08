@@ -1,18 +1,20 @@
 package scw.logger;
 
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Properties;
 import java.util.logging.Level;
 
-import scw.core.utils.CollectionUtils;
-import scw.event.BasicEvent;
-import scw.event.support.DefaultBasicEventDispatcher;
+import scw.event.ChangeEvent;
+import scw.event.EventListener;
+import scw.io.event.ConvertibleObservablesProperties;
 
-public class LevelManager extends DefaultBasicEventDispatcher<BasicEvent> {
+/**
+ * 动态管理日志等级管理<br/>
+ * @author shuchaowen
+ *
+ */
+public class LevelManager extends ConvertibleObservablesProperties<LevelRegistry>{
 	public static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
 		public int compare(String o1, String o2) {
 			if (o1.equals(o2)) {
@@ -22,99 +24,57 @@ public class LevelManager extends DefaultBasicEventDispatcher<BasicEvent> {
 			return o1.length() > o2.length() ? -1 : 1;
 		};
 	};
-
-	private volatile TreeMap<String, Level> levelMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);
+	
+	private final LevelRegistry customLevelRegistry = new LevelRegistry();
 
 	public LevelManager() {
 		super(true);
-	}
-
-	public Level getLevel(String name) {
-		Level level = levelMap.get(name);
-		if (level != null) {
-			return level;
-		}
-
-		for (Entry<String, Level> entry : levelMap.entrySet()) {
-			if (name.startsWith(entry.getKey())) {
-				return entry.getValue();
+		customLevelRegistry.registerListener(new EventListener<ChangeEvent<LevelRegistry>>() {
+			
+			@Override
+			public void onEvent(ChangeEvent<LevelRegistry> event) {
+				onEvent(new ChangeEvent<LevelRegistry>(event.getEventType(), forceGet()));
 			}
-		}
-		return null;
+		});
+	}
+	
+	@Override
+	public LevelRegistry forceGet() {
+		LevelRegistry levelFactory = new LevelRegistry();
+		levelFactory.putAll(super.forceGet());
+		levelFactory.putAll(customLevelRegistry);
+		return levelFactory;
 	}
 
-	/**
-	 * 是否存在此定义
-	 * 
-	 * @param name
-	 * @return
-	 */
-	public boolean exists(String name) {
-		for (String key : levelMap.keySet()) {
-			if (name.equals(key) || name.startsWith(key)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public Level getMaxLevel() {
-		Level maxLevel = null;
-		for (Level level : levelMap.values()) {
-			if (maxLevel == null) {
-				maxLevel = level;
+	public LevelRegistry convert(Properties properties) {
+		LevelRegistry levelFactory = new LevelRegistry();
+		for (Entry<Object, Object> entry : properties.entrySet()) {
+			Object key = entry.getKey();
+			if (key == null) {
 				continue;
 			}
 
-			if (CustomLevel.isGreaterOrEqual(level, maxLevel)) {
-				maxLevel = level;
-			}
-		}
-		return maxLevel;
-	}
-
-	public Level getMinLevel() {
-		Level minLevel = null;
-		for (Level level : levelMap.values()) {
-			if (minLevel == null) {
-				minLevel = level;
+			Object value = entry.getValue();
+			if (value == null) {
 				continue;
 			}
 
-			if (!CustomLevel.isGreaterOrEqual(level, minLevel)) {
-				minLevel = level;
+			Level level = CustomLevel.parse(value.toString());
+			if (level == null) {
+				continue;
 			}
+			
+			levelFactory.put(String.valueOf(key), level);
 		}
-		return minLevel;
+		return levelFactory;
 	}
 
-	public SortedMap<String, Level> getLevelMap() {
-		return Collections.unmodifiableSortedMap(levelMap);
+	@Override
+	public LevelRegistry get() {
+		return super.get().clone();
 	}
 
-	public void setLevelMap(Map<String, Level> levelMap) {
-		TreeMap<String, Level> sortedMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);
-		if (!CollectionUtils.isEmpty(levelMap)) {
-			sortedMap.putAll(levelMap);
-		}
-		synchronized (this.levelMap) {
-			this.levelMap = sortedMap;
-		}
-		publishEvent(new BasicEvent());
-	}
-
-	public void put(String name, Level level) {
-		synchronized (this.levelMap) {
-			levelMap.put(name, level);
-		}
-		publishEvent(new BasicEvent());
-	}
-
-	public void remove(String name) {
-		synchronized (this.levelMap) {
-			if (levelMap.remove(name) != null) {
-				publishEvent(new BasicEvent());
-			}
-		}
+	public LevelRegistry getCustomLevelRegistry() {
+		return customLevelRegistry;
 	}
 }

@@ -21,7 +21,8 @@ public final class LoggerFactory {
 	private static final LevelManager LEVEL_MANAGER;
 
 	static {
-		Iterator<LevelManager> levelManagerIterator = ServiceLoader.load(LevelManager.class).iterator();
+		Iterator<LevelManager> levelManagerIterator = ServiceLoader.load(
+				LevelManager.class).iterator();
 		if (levelManagerIterator.hasNext()) {
 			LEVEL_MANAGER = levelManagerIterator.next();
 		} else {
@@ -29,7 +30,8 @@ public final class LoggerFactory {
 		}
 
 		// 使用spi机制加载handlers
-		List<Handler> handlers = CollectionUtils.toList(ServiceLoader.load(Handler.class));
+		List<Handler> handlers = CollectionUtils.toList(ServiceLoader
+				.load(Handler.class));
 		if (!CollectionUtils.isEmpty(handlers)) {
 			// 存在自定义handler的情况不使用父级的handler
 			ROOT_LOGGER.setUseParentHandlers(false);
@@ -37,7 +39,10 @@ public final class LoggerFactory {
 				ROOT_LOGGER.info("Use logger handler [" + handler + "]");
 				ROOT_LOGGER.addHandler(handler);
 			}
-		} else {
+		}
+
+		if (LOGGER_FACTORY == null) {
+			//使用jdk自身的日志系统
 			java.util.logging.Logger logger = ROOT_LOGGER;
 			while (logger != null) {
 				Handler[] rootHandlers = logger.getHandlers();
@@ -53,15 +58,14 @@ public final class LoggerFactory {
 					break;
 				}
 			}
-		}
-
-		// 存在第三方日志系统
-		if (LOGGER_FACTORY != null) {
-			Logger logger = LOGGER_FACTORY.getLogger(LoggerFactory.class.getName());
+		}else{
+			// 存在第三方日志系统
+			Logger logger = LOGGER_FACTORY.getLogger(LoggerFactory.class
+					.getName());
 			logger.info("Use logger factory [" + LOGGER_FACTORY + "]");
 		}
 	}
-	
+
 	public static LevelManager getLevelManager() {
 		return LEVEL_MANAGER;
 	}
@@ -106,7 +110,8 @@ public final class LoggerFactory {
 				cacheLogger = loggerMap.get(name);
 				if (cacheLogger == null) {
 					if (LOGGER_FACTORY == null) {
-						java.util.logging.Logger logger = java.util.logging.Logger.getLogger(name);
+						java.util.logging.Logger logger = java.util.logging.Logger
+								.getLogger(name);
 						java.util.logging.Logger parent = logger.getParent();
 						if (parent != ROOT_LOGGER) {
 							logger.setParent(ROOT_LOGGER);

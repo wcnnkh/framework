@@ -1,13 +1,14 @@
 package scw.env;
 
 import java.util.Iterator;
+import java.util.Properties;
 
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.event.Observable;
 import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.logger.LoggerLevelManager;
 import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
 import scw.util.XUtils;
@@ -35,7 +36,11 @@ public final class SystemEnvironment extends DefaultEnvironment {
 		instance.loadProperties(instance.getValue("system.properties.location", String.class, "/private.properties")).register();
 		instance.loadServices(new DefaultServiceLoaderFactory(instance), logger);
 		//初始化日志管理器
-		LoggerLevelManager.getInstance();
+		
+		Observable<Properties> observable = SystemEnvironment.getInstance().getProperties(SystemEnvironment
+				.getInstance().getValue("scw.logger.level.config", String.class, "/logger-level.properties"));
+		observable.register();
+		LoggerFactory.getLevelManager().addObservable(observable);
 	}
 
 	public static SystemEnvironment getInstance() {
