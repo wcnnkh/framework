@@ -48,6 +48,6 @@ public class JdkLogger extends CustomLogger {
 
 	@Override
 	public boolean isLoggable(Level level) {
-		return super.isLoggable(level) && logger.isLoggable(level);
+		return logger.isLoggable(level);
 	}
 }

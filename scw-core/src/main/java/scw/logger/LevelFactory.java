@@ -12,4 +12,10 @@ public interface LevelFactory {
 	 */
 	@Nullable
 	Level getLevel(String name);
+	
+	@Nullable
+	Level getMaxLevel();
+	
+	@Nullable
+	Level getMinLevel();
 }

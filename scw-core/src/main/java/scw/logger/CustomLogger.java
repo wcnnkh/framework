@@ -20,7 +20,12 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 
 	@Override
 	public void onEvent(ChangeEvent<LevelFactory> event) {
-		setLevel(event.getSource().getLevel(getName()));
+		Level oldLevel = getLevel();
+		Level newLevel = event.getSource().getLevel(getName());
+		if (!ObjectUtils.nullSafeEquals(oldLevel, newLevel)) {
+			info("Level [{}] change to [{}]", oldLevel, newLevel);
+		}
+		setLevel(newLevel);
 	}
 
 	@Nullable
@@ -39,10 +44,6 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 	}
 
 	public void setLevel(@Nullable Level level) {
-		if (ObjectUtils.nullSafeEquals(getLevel(), level)) {
-			// 这里使用off是为了任意日志级别都会显示该日志
-			log(Level.OFF, "Level [{}] change to [{}]", getLevel(), level);
-		}
 		this.level = level;
 	}
 	
@@ -53,5 +54,10 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 		}
 		eventRegistration = null;
 		super.finalize();
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + getLevel() + "] " + getName();
 	}
 }

@@ -11,7 +11,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 
 import scw.core.utils.CollectionUtils;
-import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
@@ -23,11 +22,12 @@ import scw.io.event.ConvertibleObservablesProperties;
 /**
  * 动态管理日志等级管理<br/>
  * 初始化行为发生在{@link SystemEnvironment}
+ * 
  * @see SystemEnvironment
  * @author shuchaowen
  *
  */
-public final class LoggerLevelManager extends ConvertibleObservablesProperties<SortedMap<String, Level>> implements LevelFactory{
+public final class LoggerLevelManager extends ConvertibleObservablesProperties<SortedMap<String, Level>> {
 	private static final SortedMap<String, Level> DEFAULT_LEVEL_MAP;
 	private static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
 		public int compare(String o1, String o2) {
@@ -40,12 +40,8 @@ public final class LoggerLevelManager extends ConvertibleObservablesProperties<S
 	};
 
 	private static LoggerLevelManager loggerLevelManager;
-	private final Level defaultLevel;
 
 	static {
-		String defaultLevel = SystemEnvironment.getInstance().getString(Level.class.getName());
-		Level defLevel = StringUtils.isEmpty(defaultLevel) ? Level.INFO : CustomLevel.parse(defaultLevel);
-
 		TreeMap<String, Level> levelMap = new TreeMap<String, Level>(LEVEL_NAME_COMPARATOR);
 		try {
 			for (Resource resource : ResourceUtils.getSystemResources("scw/logger-level.properties")) {
@@ -61,17 +57,17 @@ public final class LoggerLevelManager extends ConvertibleObservablesProperties<S
 			DEFAULT_LEVEL_MAP = Collections.unmodifiableSortedMap(levelMap);
 		}
 
-		loggerLevelManager = new LoggerLevelManager(defLevel);
+		loggerLevelManager = new LoggerLevelManager();
 		Observable<Properties> observable = SystemEnvironment.getInstance().getProperties(SystemEnvironment
 				.getInstance().getValue("scw.logger.level.config", String.class, "/logger-level.properties"));
 		observable.register();
 		loggerLevelManager.addObservable(observable);
-		
-		loggerLevelManager.registerListener(new EventListener<ChangeEvent<SortedMap<String, Level>>>() {
-			
+		loggerLevelManager.register();
+		loggerLevelManager.getRegistry().registerListener(new EventListener<ChangeEvent<SortedMap<String, Level>>>() {
+
 			@Override
 			public void onEvent(ChangeEvent<SortedMap<String, Level>> event) {
-				LoggerLevelEventDispatcher.getInstance().publish(loggerLevelManager);
+				LoggerFactory.getLevelManager().setLevelMap(event.getSource());
 			}
 		});
 	}
@@ -80,9 +76,8 @@ public final class LoggerLevelManager extends ConvertibleObservablesProperties<S
 		return loggerLevelManager;
 	}
 
-	private LoggerLevelManager(Level defaultLevel) {
+	private LoggerLevelManager() {
 		super(true);
-		this.defaultLevel = defaultLevel;
 	}
 
 	@Override
@@ -156,13 +151,8 @@ public final class LoggerLevelManager extends ConvertibleObservablesProperties<S
 		return null;
 	}
 
-	public Level getDefaultLevel() {
-		return defaultLevel;
-	}
-
 	public Level getLevel(String name) {
-		Level level = getLevel(get(), name);
-		return level == null ? defaultLevel : level;
+		return getLevel(get(), name);
 	}
 
 	@Override
