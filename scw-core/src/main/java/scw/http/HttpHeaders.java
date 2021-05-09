@@ -22,13 +22,13 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import scw.convert.Converter;
 import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
-import scw.event.Observable;
-import scw.io.event.ConvertibleObservablesProperties;
+import scw.io.event.ConvertibleObservableProperties;
 import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -511,9 +511,8 @@ public class HttpHeaders extends Headers {
 
 	public static final String X_FORWARDED_FOR = "X-Forwarded-For";
 	
-	private static final ConvertibleObservablesProperties<Map<String, String[]>> AJAX_HEADERS = new ConvertibleObservablesProperties<Map<String, String[]>>(false) {
-
-		public Map<String, String[]> convert(Properties properties) {
+	private static final Converter<Properties, Map<String, String[]>> CONVERTER = new Converter<Properties, Map<String,String[]>>() {
+		public java.util.Map<String,String[]> convert(Properties properties) {
 			if(CollectionUtils.isEmpty(properties)){
 				return Collections.emptyMap();
 			}
@@ -539,15 +538,15 @@ public class HttpHeaders extends Headers {
 			}
 			
 			return Collections.unmodifiableMap(map);
-		}
+		};
 	};
 	
+	private static final ConvertibleObservableProperties<Map<String, String[]>> AJAX_HEADERS = new ConvertibleObservableProperties<Map<String, String[]>>(CONVERTER);
+	
 	static {
-		AJAX_HEADERS.addObservable(SystemEnvironment.getInstance().getProperties("/scw/net/headers/ajax.headers.properties"));
-		Observable<Properties> resource = SystemEnvironment.getInstance().getProperties(SystemEnvironment.getInstance().getValue("scw.net.ajax.headers", String.class,
-				"/ajax-headers.properties"));
-		resource.register(true);
-		AJAX_HEADERS.addObservable(resource);
+		AJAX_HEADERS.combine(SystemEnvironment.getInstance().getProperties("/scw/net/headers/ajax.headers.properties"));
+		AJAX_HEADERS.combine(SystemEnvironment.getInstance().getProperties(SystemEnvironment.getInstance().getValue("scw.net.ajax.headers", String.class,
+				"/ajax-headers.properties")));
 	}
 
 	public HttpHeaders() {

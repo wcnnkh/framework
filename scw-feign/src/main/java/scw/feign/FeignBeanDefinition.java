@@ -35,9 +35,9 @@ public class FeignBeanDefinition extends DefaultBeanDefinition {
 	@Override
 	public Object create() throws BeansException {
 		Encoder encoder = beanFactory.isInstance(Encoder.class) ? beanFactory.getInstance(Encoder.class)
-				: new FeignEncoder(new DefaultMessageConverters(getEnvironment(), beanFactory));
+				: new FeignEncoder(new DefaultMessageConverters(getEnvironment().getConversionService(), beanFactory));
 		Decoder decoder = beanFactory.isInstance(Decoder.class) ? beanFactory.getInstance(Decoder.class)
-				: new FeignDecoder(new DefaultMessageConverters(getEnvironment(), beanFactory));
+				: new FeignDecoder(new DefaultMessageConverters(getEnvironment().getConversionService(), beanFactory));
 		Object proxy = Feign.builder().encoder(encoder).decoder(decoder).target(getTargetClass(), getHost());
 		return beanFactory.getAop().getProxy(getTargetClass(), proxy).create();
 	}

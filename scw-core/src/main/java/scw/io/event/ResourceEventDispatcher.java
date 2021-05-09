@@ -1,7 +1,7 @@
 package scw.io.event;
 
-import scw.event.BasicEventDispatcher;
+import scw.event.EventDispatcher;
 
 public interface ResourceEventDispatcher extends
-		BasicEventDispatcher<ResourceEvent> {
+		EventDispatcher<ResourceEvent> {
 }

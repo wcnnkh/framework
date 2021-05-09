@@ -8,6 +8,7 @@ import java.util.List;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.Assert;
+import scw.env.SystemEnvironment;
 import scw.http.HttpMethod;
 import scw.http.HttpRequestEntity;
 import scw.http.HttpResponseEntity;
@@ -24,7 +25,6 @@ import scw.instance.ServiceLoaderFactory;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.InetUtils;
 import scw.net.message.convert.DefaultMessageConverters;
 import scw.net.message.convert.MessageConverter;
 import scw.net.message.convert.MessageConverters;
@@ -63,7 +63,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 
 	public DefaultHttpClient() {
 		messageConverter = new MessageConverters();
-		messageConverter.getMessageConverters().add(InetUtils.getMessageConverter());
+		messageConverter.getMessageConverters().add(SystemEnvironment.getInstance().getMessageConverter());
 	}
 	
 	public DefaultHttpClient(ConversionService conversionService, NoArgsInstanceFactory instanceFactory, ServiceLoaderFactory serviceLoaderFactory){

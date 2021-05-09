@@ -2,13 +2,13 @@ package scw.mvc.action;
 
 import java.lang.reflect.Method;
 
-import scw.event.BasicEventRegistry;
+import scw.event.EventRegistry;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.ObjectEvent;
 import scw.http.server.ServerHttpRequest;
 
-public interface ActionManager extends BasicEventRegistry<ObjectEvent<Action>>, Iterable<Action> {
+public interface ActionManager extends EventRegistry<ObjectEvent<Action>>, Iterable<Action> {
 	Action getAction(Method method);
 
 	Action getAction(ServerHttpRequest request);

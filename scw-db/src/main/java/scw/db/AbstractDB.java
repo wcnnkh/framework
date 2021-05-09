@@ -15,7 +15,7 @@ import scw.core.utils.CollectionUtils;
 import scw.db.AbstractDB.AsyncExecuteEvent;
 import scw.event.BasicEvent;
 import scw.event.EventListener;
-import scw.event.support.DefaultAsyncBasicEventDispatcher;
+import scw.event.support.DefaultAsyncEventDispatcher;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.sql.ConnectionFactory;
@@ -36,7 +36,7 @@ import scw.sql.transaction.SqlTransactionUtils;
 public abstract class AbstractDB extends AbstractEntityOperations
 		implements DB, EventListener<AsyncExecuteEvent>, BeanFactoryAware, Destroy, ConnectionFactory {
 	private static Logger logger = LoggerFactory.getLogger(AbstractDB.class);
-	private final DefaultAsyncBasicEventDispatcher<AsyncExecuteEvent> asyncBasicEventDispatcher = new DefaultAsyncBasicEventDispatcher<AsyncExecuteEvent>(
+	private final DefaultAsyncEventDispatcher<AsyncExecuteEvent> asyncBasicEventDispatcher = new DefaultAsyncEventDispatcher<AsyncExecuteEvent>(
 			false, getClass().getName());
 	private volatile CacheManager cacheManager;
 	private volatile GeneratorService generatorService;
@@ -170,7 +170,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		}
 
 		if (beanFactory != null) {
-			Class<?> clazz = beanFactory.getEnvironment().getUserClass(asyncExecute.getClass());
+			Class<?> clazz = beanFactory.getEnvironment().getProxyFactory().getUserClass(asyncExecute.getClass());
 			BeanDefinition definition = (BeanDefinition) beanFactory.getDefinition(clazz);
 			if (definition != null) {
 					definition.dependence(asyncExecute);

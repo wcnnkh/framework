@@ -10,12 +10,12 @@ import scw.env.SystemEnvironment;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventType;
-import scw.event.support.DefaultBasicEventDispatcher;
+import scw.event.support.DefaultEventDispatcher;
 import scw.io.AbstractResource;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<ResourceEvent> {
+public class DefaultResourceEventDispatcher extends DefaultEventDispatcher<ResourceEvent> {
 	private static Logger logger = LoggerFactory.getLogger(DefaultResourceEventDispatcher.class);
 	/**
 	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)

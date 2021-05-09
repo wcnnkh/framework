@@ -54,7 +54,7 @@ public class XmlHttpAuthorityManager extends
 				continue;
 			}
 			
-			Map<String, String> map = (Map<String, String>) SystemEnvironment.getInstance().convert(node, TypeDescriptor.forObject(node), TypeDescriptor.map(Map.class, String.class, String.class));
+			Map<String, String> map = (Map<String, String>) SystemEnvironment.getInstance().getConversionService().convert(node, TypeDescriptor.forObject(node), TypeDescriptor.map(Map.class, String.class, String.class));
 			if (map.isEmpty()) {
 				continue;
 			}

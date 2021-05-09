@@ -1,8 +1,8 @@
 package scw.io.event;
 
-import scw.event.support.DefaultBasicEventDispatcher;
+import scw.event.support.DefaultEventDispatcher;
 
-public class SimpleResourceEventDispatcher extends DefaultBasicEventDispatcher<ResourceEvent>
+public class SimpleResourceEventDispatcher extends DefaultEventDispatcher<ResourceEvent>
 		implements ResourceEventDispatcher {
 
 	public SimpleResourceEventDispatcher() {

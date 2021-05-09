@@ -121,7 +121,7 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 		public Object create() throws BeansException {
 			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
-			MapToEntityConversionService configure = new MapToEntityConversionService(beanFactory.getEnvironment());
+			MapToEntityConversionService configure = new MapToEntityConversionService(beanFactory.getEnvironment().getConversionService());
 			configure.setPrefix("exchange");
 			configure.configurationProperties(properties, exchangeDeclare);
 			return exchangeDeclare;

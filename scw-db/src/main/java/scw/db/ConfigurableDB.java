@@ -6,8 +6,7 @@ import scw.beans.BeanFactory;
 import scw.core.utils.StringUtils;
 import scw.data.TemporaryStorage;
 import scw.db.database.DataBase;
-import scw.env.DefaultPropertyManager;
-import scw.env.PropertyManager;
+import scw.env.DefaultEnvironment;
 import scw.env.SystemEnvironment;
 import scw.lang.Nullable;
 import scw.logger.Logger;
@@ -21,7 +20,7 @@ public abstract class ConfigurableDB extends AbstractDB {
 			.getLogger(ConfigurableDB.class);
 	private static final String DEFAULT_CACHE_PREFIX = "db:";
 	private final AtomicBoolean init = new AtomicBoolean(false);
-	private volatile PropertyManager propertyManager;
+	private volatile DefaultEnvironment propertyManager;
 	private DataBase dataBase;
 	private TemporaryStorage temporaryCache;
 
@@ -40,12 +39,12 @@ public abstract class ConfigurableDB extends AbstractDB {
 		if (propertyManager == null) {
 			synchronized (this) {
 				if (propertyManager == null) {
-					this.propertyManager = new DefaultPropertyManager(false);
+					this.propertyManager = new DefaultEnvironment();
 				}
 			}
 		}
 		
-		propertyManager.loadProperties(SystemEnvironment.getInstance().getProperties(configLocation)).register();
+		propertyManager.loadProperties(SystemEnvironment.getInstance().getProperties(configLocation));
 	}
 
 	/**
@@ -54,7 +53,7 @@ public abstract class ConfigurableDB extends AbstractDB {
 	 * @return
 	 */
 	@Nullable
-	public PropertyManager getPropertyManager() {
+	public DefaultEnvironment getPropertyManager() {
 		return propertyManager;
 	}
 

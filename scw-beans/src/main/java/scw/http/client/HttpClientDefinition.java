@@ -17,6 +17,6 @@ public class HttpClientDefinition extends DefaultBeanDefinition{
 	
 	@Override
 	public Object create() throws InstanceException {
-		return new DefaultHttpClient(beanFactory.getEnvironment(), beanFactory, beanFactory);
+		return new DefaultHttpClient(beanFactory.getEnvironment().getConversionService(), beanFactory, beanFactory);
 	}
 }

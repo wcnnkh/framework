@@ -12,7 +12,7 @@ import java.net.URL;
 
 import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
-import scw.event.BasicEventDispatcher;
+import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.io.event.DefaultResourceEventDispatcher;
@@ -33,13 +33,13 @@ import scw.util.JavaVersion;
  * and "toString" will return the description.
  *
  */
-public abstract class AbstractResource implements Resource, BasicEventDispatcher<ResourceEvent> {
+public abstract class AbstractResource implements Resource, EventDispatcher<ResourceEvent> {
 	private static final Constructor<ResourceEventDispatcher> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
 			.findConstructor("scw.io.event.WatchServiceResourceEventDispatcher", null, true, Resource.class);
 	public static final EmptyResourceEventDispatcher EMPTY_EVENT_DISPATCHER = new EmptyResourceEventDispatcher();
 	
-	private volatile BasicEventDispatcher<ResourceEvent> eventDispatcher;
-	private BasicEventDispatcher<ResourceEvent> getEventDispatcher() {
+	private volatile EventDispatcher<ResourceEvent> eventDispatcher;
+	private EventDispatcher<ResourceEvent> getEventDispatcher() {
 		if (eventDispatcher == null) {
 			synchronized (this) {
 				if (eventDispatcher == null) {

@@ -12,6 +12,7 @@ public class ObservableValue<K, V> extends AbstractObservable<V> {
 	private final K name;
 	private final V defaultValue;
 	private final Type type;
+	private final EventRegistration eventRegistration;
 
 	public ObservableValue(final ListenableValueFactory<K> valueFactory,
 			K name, Type type, V defaultValue) {
@@ -19,27 +20,23 @@ public class ObservableValue<K, V> extends AbstractObservable<V> {
 		this.name = name;
 		this.type = type;
 		this.defaultValue = defaultValue;
-		setRegisterOnlyExists(false);
-		register();
+		this.eventRegistration = valueFactory.registerListener(name, new EventListener<ChangeEvent<K>>() {
+
+			@Override
+			public void onEvent(ChangeEvent<K> event) {
+				ObservableValue.this.publishEvent(new ChangeEvent<V>(event.getEventType(), forceGet()));
+			}
+		});
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		eventRegistration.unregister();
+		super.finalize();
 	}
 
 	@SuppressWarnings("unchecked")
 	public V forceGet() {
 		return (V) valueFactory.getValue(name, type, defaultValue);
-	}
-
-	public EventRegistration registerListener(boolean exists,
-			final EventListener<ChangeEvent<V>> eventListener) {
-		if (exists && !valueFactory.containsKey(name)) {
-			return EventRegistration.EMPTY;
-		}
-
-		return valueFactory.registerListener(name,
-				new EventListener<ChangeEvent<K>>() {
-					public void onEvent(ChangeEvent<K> event) {
-						eventListener.onEvent(new ChangeEvent<V>(event,
-								forceGet()));
-					}
-				});
 	}
 }

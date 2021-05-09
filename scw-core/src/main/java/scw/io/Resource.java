@@ -7,12 +7,12 @@ import java.net.URI;
 import java.net.URL;
 
 import scw.env.SystemEnvironment;
-import scw.event.BasicEventRegistry;
+import scw.event.EventRegistry;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.io.event.ResourceEvent;
 
-public interface Resource extends InputStreamSource, OutputStreamSource, BasicEventRegistry<ResourceEvent> {
+public interface Resource extends InputStreamSource, OutputStreamSource, EventRegistry<ResourceEvent> {
 	public static final Resource NONEXISTENT_RESOURCE = new NonexistentResource();
 	/**
 	 * 是否开启支资源的监听，默认开启

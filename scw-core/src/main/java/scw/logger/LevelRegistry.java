@@ -2,21 +2,23 @@ package scw.logger;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 
-import scw.event.BasicEventDispatcher;
+import scw.convert.Converter;
+import scw.event.EventDispatcher;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventType;
-import scw.event.support.DefaultBasicEventDispatcher;
+import scw.event.support.DefaultEventDispatcher;
 import scw.lang.Nullable;
 
 public class LevelRegistry extends TreeMap<String, Level> implements
-		BasicEventDispatcher<ChangeEvent<LevelRegistry>> {
+		EventDispatcher<ChangeEvent<LevelRegistry>> {
 	private static final long serialVersionUID = 1L;
 
 	public static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
@@ -28,8 +30,35 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 			return o1.length() > o2.length() ? -1 : 1;
 		};
 	};
+	
+	public static final Converter<Properties, LevelRegistry> CONVERTER = new Converter<Properties, LevelRegistry>() {
 
-	private volatile BasicEventDispatcher<ChangeEvent<LevelRegistry>> dispatcher;
+		@Override
+		public LevelRegistry convert(Properties properties) {
+			LevelRegistry levelFactory = new LevelRegistry();
+			for (Entry<Object, Object> entry : properties.entrySet()) {
+				Object key = entry.getKey();
+				if (key == null) {
+					continue;
+				}
+
+				Object value = entry.getValue();
+				if (value == null) {
+					continue;
+				}
+
+				Level level = CustomLevel.parse(value.toString());
+				if (level == null) {
+					continue;
+				}
+				
+				levelFactory.put(String.valueOf(key), level);
+			}
+			return levelFactory;
+		}
+	};
+
+	private volatile EventDispatcher<ChangeEvent<LevelRegistry>> dispatcher;
 
 	@Override
 	public EventRegistration registerListener(
@@ -37,7 +66,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 		if (dispatcher == null) {
 			synchronized (this) {
 				if (dispatcher == null) {
-					dispatcher = new DefaultBasicEventDispatcher<ChangeEvent<LevelRegistry>>(
+					dispatcher = new DefaultEventDispatcher<ChangeEvent<LevelRegistry>>(
 							true);
 				}
 			}
@@ -54,12 +83,12 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 	}
 
 	@Nullable
-	public final BasicEventDispatcher<ChangeEvent<LevelRegistry>> getDispatcher() {
+	public final EventDispatcher<ChangeEvent<LevelRegistry>> getDispatcher() {
 		return dispatcher;
 	}
 
 	public void setDispatcher(
-			BasicEventDispatcher<ChangeEvent<LevelRegistry>> dispatcher) {
+			EventDispatcher<ChangeEvent<LevelRegistry>> dispatcher) {
 		this.dispatcher = dispatcher;
 	}
 

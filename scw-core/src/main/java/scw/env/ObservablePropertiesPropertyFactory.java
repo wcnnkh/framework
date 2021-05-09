@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import scw.convert.Converter;
 import scw.core.utils.CollectionUtils;
 import scw.event.ChangeEvent;
 import scw.event.ConvertibleObservable;
@@ -21,42 +22,50 @@ import scw.value.StringValue;
 import scw.value.Value;
 
 public class ObservablePropertiesPropertyFactory extends
-		ConvertibleObservable<Properties, Map<String, Value>> implements ListenablePropertyFactory {
-	private final NamedEventDispatcher<String, ChangeEvent<String>> eventDispatcher;
-	private final ValueCreator valueCreator;
-	private final String keyPrefix;
+		ConvertibleObservable<Properties, Map<String, Value>> implements
+		ListenablePropertyFactory {
+	private final NamedEventDispatcher<String, ChangeEvent<String>> dispatcher = new StringNamedEventDispatcher<ChangeEvent<String>>(
+			true);
 
 	public ObservablePropertiesPropertyFactory(
 			Observable<Properties> properties, String keyPrefix,
-			boolean concurrent, ValueCreator valueCreator) {
-		super(properties);
-		this.eventDispatcher = new StringNamedEventDispatcher<ChangeEvent<String>>(
-				concurrent);
-		this.keyPrefix = keyPrefix;
-		this.valueCreator = valueCreator;
-	}
+			ValueCreator valueCreator) {
+		super(properties, new Converter<Properties, Map<String, Value>>() {
 
-	public Map<String, Value> convert(Properties properties) {
-		if (CollectionUtils.isEmpty(properties)) {
-			return Collections.emptyMap();
-		}
+			@Override
+			public Map<String, Value> convert(Properties properties) {
+				if (CollectionUtils.isEmpty(properties)) {
+					return Collections.emptyMap();
+				}
 
-		Map<String, Value> valueMap = new LinkedHashMap<String, Value>(
-				properties.size());
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			Object value = entry.getValue();
-			if (value == null) {
-				continue;
+				Map<String, Value> valueMap = new LinkedHashMap<String, Value>(
+						properties.size());
+				for (Entry<Object, Object> entry : properties.entrySet()) {
+					Object value = entry.getValue();
+					if (value == null) {
+						continue;
+					}
+
+					String key = entry.getKey().toString();
+					String k = keyPrefix == null ? key : (keyPrefix + key);
+					valueMap.put(
+							k,
+							valueCreator == null ? ValueCreator.CREATOR.create(
+									k, value) : valueCreator.create(k, value));
+				}
+				return Collections.unmodifiableMap(valueMap);
 			}
+		});
+		registerListener(new EventListener<ChangeEvent<Map<String, Value>>>() {
 
-			String key = entry.getKey().toString();
-			String k = keyPrefix == null ? key : (keyPrefix + key);
-			valueMap.put(
-					k,
-					valueCreator == null ? ValueCreator.CREATOR
-							.create(k, value) : valueCreator.create(k, value));
-		}
-		return Collections.unmodifiableMap(valueMap);
+			@Override
+			public void onEvent(ChangeEvent<Map<String, Value>> event) {
+				for (Entry<String, Value> entry : event.getSource().entrySet()) {
+					dispatcher.publishEvent(entry.getKey(),
+							new ChangeEvent<String>(event, entry.getKey()));
+				}
+			}
+		});
 	}
 
 	@Override
@@ -65,7 +74,7 @@ public class ObservablePropertiesPropertyFactory extends
 		if (valueMap == null) {
 			return Collections.emptyMap();
 		}
-		return valueMap;
+		return Collections.unmodifiableMap(valueMap);
 	}
 
 	public Value getValue(String key) {
@@ -82,16 +91,7 @@ public class ObservablePropertiesPropertyFactory extends
 
 	public EventRegistration registerListener(String name,
 			EventListener<ChangeEvent<String>> eventListener) {
-		return eventDispatcher.registerListener(name, eventListener);
-	}
-
-	@Override
-	public void onEvent(ChangeEvent<Map<String, Value>> event) {
-		Map<String, Value> oldValueMap = new LinkedHashMap<String, Value>(get());
-		super.onEvent(event);
-		for (Entry<String, Value> entry : oldValueMap.entrySet()) {
-			eventDispatcher.publishEvent(entry.getKey(), new ChangeEvent<String>(event, entry.getKey()));
-		}
+		return dispatcher.registerListener(name, eventListener);
 	}
 
 	public interface ValueCreator {

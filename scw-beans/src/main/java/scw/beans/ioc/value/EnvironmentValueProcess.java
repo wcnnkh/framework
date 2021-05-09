@@ -30,18 +30,18 @@ public class EnvironmentValueProcess extends AbstractValueProcesser {
 		
 		if(name.startsWith(PlaceholderReplacer.PLACEHOLDER_PREFIX) && name.endsWith(PlaceholderReplacer.PLACEHOLDER_SUFFIX)){
 			String v = beanFactory.getEnvironment().resolvePlaceholders(name);
-			set(beanFactory.getEnvironment(), bean, field, name, v);
+			set(beanFactory.getEnvironment().getConversionService(), bean, field, name, v);
 			return ;
 		}
 		
 		scw.value.Value v = beanFactory.getEnvironment().getValue(name);
-		set(beanFactory.getEnvironment(), bean, field, name, v);
+		set(beanFactory.getEnvironment().getConversionService(), bean, field, name, v);
 		if (isRegisterListener(beanDefinition, field, value)) {
 			beanFactory.getEnvironment().registerListener(name, new EventListener<ChangeEvent<String>>() {
 
 				public void onEvent(ChangeEvent<String> event) {
 					try {
-						set(beanFactory.getEnvironment(), bean, field, name, beanFactory.getEnvironment().getValue(name));
+						set(beanFactory.getEnvironment().getConversionService(), bean, field, name, beanFactory.getEnvironment().getValue(name));
 					} catch (Exception e) {
 						logger.error(e, field.toString());
 					}

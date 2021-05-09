@@ -20,7 +20,7 @@ public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
 
 		public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
 			if (JSONAware.class.isAssignableFrom(typeToken.getRawType()) || Value.class.isAssignableFrom(typeToken.getRawType())
-					|| SystemEnvironment.getInstance().isProxy(typeToken.getRawType())) {
+					|| SystemEnvironment.getInstance().getProxyFactory().isProxy(typeToken.getRawType())) {
 				return (TypeAdapter) new ExtendGsonTypeAdapter(gson);
 			}
 			return null;
@@ -77,7 +77,7 @@ public class ExtendGsonTypeAdapter extends TypeAdapter<Object> {
 			return ;
 		}
 
-		Class clazz = SystemEnvironment.getInstance().getUserClass(value.getClass());
+		Class clazz = SystemEnvironment.getInstance().getProxyFactory().getUserClass(value.getClass());
 		TypeAdapter<Object> typeAdapter = getTypeAdapter(clazz);
 		typeAdapter.write(out, value);
 	}

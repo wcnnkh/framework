@@ -42,10 +42,9 @@ public class ExtendFastJsonValueFilter implements ValueFilter {
 			return null;
 		}
 
-		if (SystemEnvironment.getInstance().isProxy(value.getClass())) {
-			return Copy.copy(SystemEnvironment.getInstance().getUserClass(value.getClass()), value);
+		if (SystemEnvironment.getInstance().getProxyFactory().isProxy(value.getClass())) {
+			return Copy.copy(SystemEnvironment.getInstance().getProxyFactory().getUserClass(value.getClass()), value);
 		}
-		
 		return value;
 	}
 }

@@ -49,7 +49,7 @@ public final class DBManager {
 	 * @return
 	 */
 	public static DB getDB(Class<?> tableClass) {
-		DB db = CLASS_TO_DB.get(SystemEnvironment.getInstance().getUserClass(tableClass));
+		DB db = CLASS_TO_DB.get(SystemEnvironment.getInstance().getProxyFactory().getUserClass(tableClass));
 		if (db == null) {
 			throw new NullPointerException(tableClass + " not found db");
 		}

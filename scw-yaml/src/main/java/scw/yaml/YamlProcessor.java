@@ -23,18 +23,20 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.reader.UnicodeReader;
 import org.yaml.snakeyaml.representer.Representer;
 
+import scw.convert.Converter;
 import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
+import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.CollectionFactory;
 
-public class YamlProcessor {
+public class YamlProcessor implements Converter<Resource, Properties>, PropertiesResolver{
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private ResolutionMethod resolutionMethod = ResolutionMethod.OVERRIDE;
@@ -472,5 +474,33 @@ public class YamlProcessor {
 					"Unsupported type encountered in YAML document: " + name);
 			return super.getClassForName(name);
 		}
+	}
+
+	@Override
+	public Properties convert(Resource resource) {
+		final Properties allProperties = new Properties();
+		process(new MatchCallback() {
+
+			public void process(Properties properties, Map<String, Object> map) {
+				allProperties.putAll(properties);
+			}
+		}, null, resource);
+		return allProperties;
+	}
+	
+	@Override
+	public boolean canResolveProperties(Resource resource) {
+		return resource.exists() && resource.getName().endsWith(".yaml") || resource.getName().endsWith(".yml");
+	}
+
+	@Override
+	public void resolveProperties(Properties properties, Resource resource,
+			Charset charset) {
+		process(new MatchCallback() {
+
+			public void process(Properties properties, Map<String, Object> map) {
+				properties.putAll(properties);
+			}
+		}, charset, resource);
 	}
 }

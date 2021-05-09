@@ -1,20 +1,17 @@
 package scw.logger;
 
 import java.util.Comparator;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.logging.Level;
 
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
-import scw.io.event.ConvertibleObservablesProperties;
+import scw.io.event.ConvertibleObservableProperties;
 
 /**
  * 动态管理日志等级管理<br/>
  * @author shuchaowen
  *
  */
-public class LevelManager extends ConvertibleObservablesProperties<LevelRegistry>{
+public class LevelManager extends ConvertibleObservableProperties<LevelRegistry>{
 	public static final Comparator<String> LEVEL_NAME_COMPARATOR = new Comparator<String>() {
 		public int compare(String o1, String o2) {
 			if (o1.equals(o2)) {
@@ -28,44 +25,20 @@ public class LevelManager extends ConvertibleObservablesProperties<LevelRegistry
 	private final LevelRegistry customLevelRegistry = new LevelRegistry();
 
 	public LevelManager() {
-		super(true);
+		super(LevelRegistry.CONVERTER);
 		customLevelRegistry.registerListener(new EventListener<ChangeEvent<LevelRegistry>>() {
 			
 			@Override
 			public void onEvent(ChangeEvent<LevelRegistry> event) {
-				onEvent(new ChangeEvent<LevelRegistry>(event.getEventType(), forceGet()));
+				LevelManager.this.publishEvent(new ChangeEvent<LevelRegistry>(event.getEventType(), forceGet()));
 			}
 		});
 	}
 	
-	@Override
-	public LevelRegistry forceGet() {
+	protected LevelRegistry forceGet() {
 		LevelRegistry levelFactory = new LevelRegistry();
 		levelFactory.putAll(super.forceGet());
 		levelFactory.putAll(customLevelRegistry);
-		return levelFactory;
-	}
-
-	public LevelRegistry convert(Properties properties) {
-		LevelRegistry levelFactory = new LevelRegistry();
-		for (Entry<Object, Object> entry : properties.entrySet()) {
-			Object key = entry.getKey();
-			if (key == null) {
-				continue;
-			}
-
-			Object value = entry.getValue();
-			if (value == null) {
-				continue;
-			}
-
-			Level level = CustomLevel.parse(value.toString());
-			if (level == null) {
-				continue;
-			}
-			
-			levelFactory.put(String.valueOf(key), level);
-		}
 		return levelFactory;
 	}
 

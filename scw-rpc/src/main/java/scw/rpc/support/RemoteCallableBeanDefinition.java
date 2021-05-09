@@ -28,7 +28,7 @@ public class RemoteCallableBeanDefinition extends DefaultBeanDefinition{
 	@Override
 	public Object create() throws InstanceException {
 		MethodInterceptor interceptor = new RemoteMethodInterceptor(callableFactory);
-		Proxy proxy = beanFactory.getEnvironment().getProxy(getTargetClass(), null, interceptor);
+		Proxy proxy = beanFactory.getEnvironment().getProxyFactory().getProxy(getTargetClass(), null, interceptor);
 		Object reference = proxy.create();
 		return reference;
 	}

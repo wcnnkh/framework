@@ -97,7 +97,7 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 		}
 
 		public Object create() throws BeansException {
-			DefaultEnvironment propertyFactory = new DefaultEnvironment(false);
+			DefaultEnvironment propertyFactory = new DefaultEnvironment();
 			scw.event.Observable<Properties> observable = beanFactory.getEnvironment().getProperties(getConfigName());
 			propertyFactory.loadProperties(observable);
 			String host = propertyFactory.getString(HOST_CONFIG_KEY);
@@ -107,7 +107,7 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			EntityConversionService entityConfigure = new PropertyFactoryToEntityConversionService(beanFactory.getEnvironment());
+			EntityConversionService entityConfigure = new PropertyFactoryToEntityConversionService(beanFactory.getEnvironment().getConversionService());
 			entityConfigure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
 			entityConfigure.setPrefix("redis");
 			entityConfigure.setStrict(true);

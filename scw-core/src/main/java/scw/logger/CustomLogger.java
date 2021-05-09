@@ -14,7 +14,7 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 
 	public synchronized void registerListener() {
 		if(eventRegistration == null) {
-			eventRegistration = LoggerFactory.getLevelManager().getRegistry().registerListener(this);
+			eventRegistration = LoggerFactory.getLevelManager().registerListener(this);
 		}
 	}
 

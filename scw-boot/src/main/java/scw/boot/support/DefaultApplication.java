@@ -14,12 +14,11 @@ import scw.context.ConfigurableContextEnvironment;
 import scw.context.support.LifecycleAuxiliary;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.event.BasicEventDispatcher;
+import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.support.DefaultBasicEventDispatcher;
-import scw.instance.InstanceUtils;
-import scw.io.resolver.PropertiesResolver;
+import scw.event.support.DefaultEventDispatcher;
+import scw.io.Resource;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.ClassLoaderProvider;
@@ -28,12 +27,10 @@ import scw.util.SplitLine;
 
 public class DefaultApplication extends LifecycleAuxiliary
 		implements ConfigurableApplication, EventListener<BeanLifeCycleEvent> {
-	private static final PropertiesResolver YAML_PROPERTIES_RESOLVER = InstanceUtils.INSTANCE_FACTORY
-			.getInstance("scw.yaml.YamlPropertiesResolver");
 	private static final String APPLICATION_PREFIX = "application";
 
 	private final XmlBeanFactory beanFactory;
-	private final BasicEventDispatcher<ApplicationEvent> applicationEventDispathcer = new DefaultBasicEventDispatcher<ApplicationEvent>(
+	private final EventDispatcher<ApplicationEvent> applicationEventDispathcer = new DefaultEventDispatcher<ApplicationEvent>(
 			true);
 	private volatile Logger logger;
 	private ClassLoaderProvider classLoaderProvider;
@@ -93,11 +90,11 @@ public class DefaultApplication extends LifecycleAuxiliary
 
 	@Override
 	protected void beforeInit() throws Throwable {
-		getEnvironment().loadProperties(APPLICATION_PREFIX + ".properties").register();
-		if (YAML_PROPERTIES_RESOLVER != null) {
-			getEnvironment().addPropertiesResolver(YAML_PROPERTIES_RESOLVER);
-			getEnvironment().loadProperties(APPLICATION_PREFIX + ".yml").register();
-			getEnvironment().loadProperties(APPLICATION_PREFIX + ".yaml").register();
+		for(String suffix : new String[]{".properties", ".yaml", ".yml"}){
+			Resource resource = getEnvironment().getResource(APPLICATION_PREFIX + suffix);
+			if(resource != null && resource.exists() && getEnvironment().getPropertiesResolver().canResolveProperties(resource)){
+				getEnvironment().loadProperties(resource);
+			}
 		}
 		beanFactory.init();
 	}

@@ -106,7 +106,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 
 		String file = DomUtils.getNodeAttributeValue(node, "file");
 		if (!StringUtils.isEmpty(file)) {
-			getEnvironment().loadProperties(prefixToUse, file, charsetNameToUse).register();
+			getEnvironment().loadProperties(prefixToUse, file, charsetNameToUse);
 		}
 
 		String name = DomUtils.getNodeAttributeValue(node, "name");
