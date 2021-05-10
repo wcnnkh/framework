@@ -14,7 +14,7 @@ import scw.net.message.multipart.FileItemParser;
 public class MultipartMessageConverter extends MultipartMessageWriter {
 
 	private final FileItemParser fileItemParser;
-
+	
 	public MultipartMessageConverter(FileItemParser fileItemParser) {
 		this.fileItemParser = fileItemParser;
 		supportMimeTypes.add(MimeTypeUtils.MULTIPART_FORM_DATA);

@@ -1,10 +1,10 @@
 package scw.net.message.convert;
 
 import scw.convert.ConversionService;
+import scw.instance.ServiceLoaderFactory;
+import scw.net.InetUtils;
 
 public class DefaultMessageConverters extends MessageConverters {
-//	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
-//			"scw.net.message.multipart.apache.ApacheFileItemParser");
 
 	public DefaultMessageConverters(ConversionService conversionService) {
 		addMessageConverter(new JsonMessageConverter());
@@ -12,10 +12,17 @@ public class DefaultMessageConverters extends MessageConverters {
 		addMessageConverter(new ByteArrayMessageConverter());
 		addMessageConverter(new XmlMessageConverter(conversionService));
 		addMessageConverter(new HttpFormMessageConveter());
-		addMessageConverter(new MultipartMessageWriter());
+		addMessageConverter(new MultipartMessageConverter(
+				InetUtils.getFileItemParser()));
 		addMessageConverter(new ResourceMessageConverter());
-//		if(FILE_ITEM_PARSER != null){
-//			addMessageConverter(new MultipartMessageConverter(FILE_ITEM_PARSER));
-//		}
+	}
+
+	public DefaultMessageConverters(ConversionService conversionService,
+			ServiceLoaderFactory serviceLoaderFactory) {
+		this(conversionService);
+		for (MessageConverter messageConverter : serviceLoaderFactory
+				.getServiceLoader(MessageConverter.class)) {
+			addMessageConverter(messageConverter);
+		}
 	}
 }

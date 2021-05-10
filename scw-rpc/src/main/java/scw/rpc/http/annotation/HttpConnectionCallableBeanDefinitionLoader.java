@@ -31,7 +31,7 @@ public class HttpConnectionCallableBeanDefinitionLoader implements
 		}
 		
 		if(httpConnectionFactory == null){
-			httpConnectionFactory = new DefaultHttpClient(beanFactory.getEnvironment().getMessageConverter());
+			httpConnectionFactory = new DefaultHttpClient(beanFactory.getEnvironment().getConversionService(), beanFactory, beanFactory);
 		}
 		
 		CallableFactory callableFactory;

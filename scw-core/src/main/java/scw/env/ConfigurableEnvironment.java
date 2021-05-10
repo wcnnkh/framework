@@ -10,7 +10,6 @@ import scw.io.ConfigurableResourceLoader;
 import scw.io.Resource;
 import scw.io.event.ObservableResource;
 import scw.io.resolver.ConfigurablePropertiesResolver;
-import scw.net.message.convert.MessageConverters;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
 import scw.value.ConfigurablePropertyFactory;
 import scw.value.PropertyFactory;
@@ -57,6 +56,4 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	ConfigurableResourceResolver getResourceResolver();
 
 	void addFactory(PropertyFactory propertyFactory);
-
-	MessageConverters getMessageConverter();
 }

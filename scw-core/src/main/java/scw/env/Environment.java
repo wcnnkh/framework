@@ -19,7 +19,6 @@ import scw.io.ResourceUtils;
 import scw.io.event.ObservableProperties;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
-import scw.net.message.convert.MessageConverter;
 import scw.util.placeholder.PlaceholderReplacer;
 import scw.util.placeholder.PropertyResolver;
 import scw.value.PropertyFactory;
@@ -148,6 +147,4 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 	ResourceResolver getResourceResolver();
 
 	Resource[] getResources(String locationPattern);
-
-	MessageConverter getMessageConverter();
 }

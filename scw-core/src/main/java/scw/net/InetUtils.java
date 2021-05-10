@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 
 import scw.core.utils.StringUtils;
 import scw.instance.InstanceUtils;
+import scw.lang.Nullable;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
@@ -46,6 +47,7 @@ public final class InetUtils {
 	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
 			"scw.net.message.multipart.apache.ApacheFileItemParser");
 	
+	@Nullable
 	public static FileItemParser getFileItemParser() {
 		return FILE_ITEM_PARSER;
 	}

@@ -31,9 +31,6 @@ import scw.io.resolver.PropertiesResolver;
 import scw.io.resolver.support.PropertiesResolvers;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.message.convert.DefaultMessageConverters;
-import scw.net.message.convert.MessageConverter;
-import scw.net.message.convert.MessageConverters;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
 import scw.util.placeholder.PlaceholderReplacer;
@@ -62,8 +59,6 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	private final ConfigurableResourceResolver configurableResourceResolver = new DefaultResourceResolver(
 			configurableConversionService, configurablePropertiesResolver, getObservableCharset());
 	private final DefaultConfigurableProxyFactory proxyFactory = new DefaultConfigurableProxyFactory();
-	private final DefaultMessageConverters messageConverters = new DefaultMessageConverters(
-			configurableConversionService);
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
 
 	public DefaultEnvironment() {
@@ -290,11 +285,6 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 				addFactory(propertyFactory);
 			}
 
-			for (MessageConverter messageConverter : serviceLoaderFactory.getServiceLoader(MessageConverter.class)) {
-				logger.info("add message converter: {}", messageConverter);
-				messageConverters.addMessageConverter(messageConverter);
-			}
-
 			for (PlaceholderReplacer placeholderReplacer : serviceLoaderFactory
 					.getServiceLoader(PlaceholderReplacer.class)) {
 				logger.info("add placeholder replacer: {}", placeholderReplacer);
@@ -328,10 +318,5 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	@Override
 	public ConfigurableResourceResolver getResourceResolver() {
 		return configurableResourceResolver;
-	}
-
-	@Override
-	public MessageConverters getMessageConverter() {
-		return messageConverters;
 	}
 }
