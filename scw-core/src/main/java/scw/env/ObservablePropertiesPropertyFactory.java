@@ -17,18 +17,16 @@ import scw.event.NamedEventDispatcher;
 import scw.event.Observable;
 import scw.event.support.StringNamedEventDispatcher;
 import scw.value.AnyValue;
-import scw.value.ListenablePropertyFactory;
+import scw.value.PropertyFactory;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public class ObservablePropertiesPropertyFactory extends
-		ConvertibleObservable<Properties, Map<String, Value>> implements
-		ListenablePropertyFactory {
+public class ObservablePropertiesPropertyFactory extends ConvertibleObservable<Properties, Map<String, Value>>
+		implements PropertyFactory {
 	private final NamedEventDispatcher<String, ChangeEvent<String>> dispatcher = new StringNamedEventDispatcher<ChangeEvent<String>>(
 			true);
 
-	public ObservablePropertiesPropertyFactory(
-			Observable<Properties> properties, String keyPrefix,
+	public ObservablePropertiesPropertyFactory(Observable<Properties> properties, String keyPrefix,
 			ValueCreator valueCreator) {
 		super(properties, new Converter<Properties, Map<String, Value>>() {
 
@@ -38,8 +36,7 @@ public class ObservablePropertiesPropertyFactory extends
 					return Collections.emptyMap();
 				}
 
-				Map<String, Value> valueMap = new LinkedHashMap<String, Value>(
-						properties.size());
+				Map<String, Value> valueMap = new LinkedHashMap<String, Value>(properties.size());
 				for (Entry<Object, Object> entry : properties.entrySet()) {
 					Object value = entry.getValue();
 					if (value == null) {
@@ -48,10 +45,8 @@ public class ObservablePropertiesPropertyFactory extends
 
 					String key = entry.getKey().toString();
 					String k = keyPrefix == null ? key : (keyPrefix + key);
-					valueMap.put(
-							k,
-							valueCreator == null ? ValueCreator.CREATOR.create(
-									k, value) : valueCreator.create(k, value));
+					valueMap.put(k, valueCreator == null ? ValueCreator.CREATOR.create(k, value)
+							: valueCreator.create(k, value));
 				}
 				return Collections.unmodifiableMap(valueMap);
 			}
@@ -61,8 +56,7 @@ public class ObservablePropertiesPropertyFactory extends
 			@Override
 			public void onEvent(ChangeEvent<Map<String, Value>> event) {
 				for (Entry<String, Value> entry : event.getSource().entrySet()) {
-					dispatcher.publishEvent(entry.getKey(),
-							new ChangeEvent<String>(event, entry.getKey()));
+					dispatcher.publishEvent(entry.getKey(), new ChangeEvent<String>(event, entry.getKey()));
 				}
 			}
 		});
@@ -89,8 +83,7 @@ public class ObservablePropertiesPropertyFactory extends
 		return get().containsKey(key);
 	}
 
-	public EventRegistration registerListener(String name,
-			EventListener<ChangeEvent<String>> eventListener) {
+	public EventRegistration registerListener(String name, EventListener<ChangeEvent<String>> eventListener) {
 		return dispatcher.registerListener(name, eventListener);
 	}
 

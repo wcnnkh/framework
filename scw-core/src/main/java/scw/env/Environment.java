@@ -22,10 +22,9 @@ import scw.lang.Nullable;
 import scw.net.message.convert.MessageConverter;
 import scw.util.placeholder.PlaceholderReplacer;
 import scw.util.placeholder.PropertyResolver;
-import scw.value.ListenablePropertyFactory;
+import scw.value.PropertyFactory;
 
-public interface Environment extends ResourcePatternResolver,
-		ListenablePropertyFactory, PropertyResolver, PlaceholderReplacer {
+public interface Environment extends ResourcePatternResolver, PropertyFactory, PropertyResolver {
 	public static final String CHARSET_PROPERTY = "charset.name";
 	public static final String WORK_PATH_PROPERTY = "work.path";
 
@@ -42,8 +41,7 @@ public interface Environment extends ResourcePatternResolver,
 	}
 
 	default Observable<String> getObservableCharsetName() {
-		return getObservableValue(CHARSET_PROPERTY, String.class,
-				Constants.UTF_8_NAME);
+		return getObservableValue(CHARSET_PROPERTY, String.class, Constants.UTF_8_NAME);
 	}
 
 	default Charset getCharset() {
@@ -51,8 +49,7 @@ public interface Environment extends ResourcePatternResolver,
 	}
 
 	default Observable<Charset> getObservableCharset() {
-		return getObservableValue(CHARSET_PROPERTY, Charset.class,
-				Constants.UTF_8);
+		return getObservableValue(CHARSET_PROPERTY, Charset.class, Constants.UTF_8);
 	}
 
 	default Object resolveResource(String location, TypeDescriptor targetType) {
@@ -63,7 +60,7 @@ public interface Environment extends ResourcePatternResolver,
 
 		return getResourceResolver().resolveResource(resource, targetType);
 	}
-	
+
 	default Resource getResource(String location) {
 		Resource[] resources = getResources(location);
 		if (ArrayUtils.isEmpty(resources)) {
@@ -96,33 +93,25 @@ public interface Environment extends ResourcePatternResolver,
 		return getProperties(getPropertiesResolver(), location);
 	}
 
-	default Observable<Properties> getProperties(String location,
-			@Nullable String charsetName) {
+	default Observable<Properties> getProperties(String location, @Nullable String charsetName) {
 		return getProperties(getPropertiesResolver(), location, charsetName);
 	}
 
-	default Observable<Properties> getProperties(String location,
-			@Nullable Charset charset) {
+	default Observable<Properties> getProperties(String location, @Nullable Charset charset) {
 		return getProperties(getPropertiesResolver(), location, charset);
 	}
 
-	default Observable<Properties> getProperties(
-			PropertiesResolver propertiesResolver, String location) {
+	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location) {
 		return getProperties(getPropertiesResolver(), location, (String) null);
 	}
 
-	default Observable<Properties> getProperties(
-			PropertiesResolver propertiesResolver, String location,
+	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location,
 			@Nullable String charsetName) {
-		return getProperties(
-				propertiesResolver,
-				location,
-				StringUtils.isEmpty(charsetName) ? null : Charset
-						.forName(charsetName));
+		return getProperties(propertiesResolver, location,
+				StringUtils.isEmpty(charsetName) ? null : Charset.forName(charsetName));
 	}
 
-	default Observable<Properties> getProperties(
-			PropertiesResolver propertiesResolver, String location,
+	default Observable<Properties> getProperties(PropertiesResolver propertiesResolver, String location,
 			@Nullable Charset charset) {
 		Resource[] resources = getResources(location);
 		if (ArrayUtils.isEmpty(resources)) {
@@ -130,15 +119,26 @@ public interface Environment extends ResourcePatternResolver,
 		}
 
 		ObservableProperties properties = new ObservableProperties();
-		Converter<Resource, Properties> converter = propertiesResolver
-				.toPropertiesConverter(charset);
+		Converter<Resource, Properties> converter = propertiesResolver.toPropertiesConverter(charset);
 		// 颠倒一下，优先级高的覆盖优先级低的
 		for (Resource resource : (Resource[]) ArrayUtils.reversal(resources)) {
 			properties.combine(resource, converter);
 		}
 		return properties;
 	}
-	
+
+	@Override
+	default String resolvePlaceholders(String text) {
+		return getPlaceholderReplacer().replacePlaceholders(text, this);
+	}
+
+	@Override
+	default String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
+		return getPlaceholderReplacer().replaceRequiredPlaceholders(text, this);
+	}
+
+	PlaceholderReplacer getPlaceholderReplacer();
+
 	PropertiesResolver getPropertiesResolver();
 
 	ProxyFactory getProxyFactory();
@@ -148,6 +148,6 @@ public interface Environment extends ResourcePatternResolver,
 	ResourceResolver getResourceResolver();
 
 	Resource[] getResources(String locationPattern);
-	
+
 	MessageConverter getMessageConverter();
 }

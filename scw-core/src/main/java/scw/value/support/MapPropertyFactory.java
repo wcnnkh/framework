@@ -1,7 +1,9 @@
-package scw.value;
+package scw.value.support;
 
 import java.util.Iterator;
 import java.util.Map;
+
+import scw.value.PropertyFactory;
 
 public class MapPropertyFactory extends MapValueFactory<String> implements PropertyFactory{
 	

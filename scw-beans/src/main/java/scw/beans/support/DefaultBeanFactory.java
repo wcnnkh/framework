@@ -69,7 +69,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 				return BeanUtils.getRuntimeBean(instance) != null;
 			}
 		});
-		getEnvironment().addPropertyFactory(SystemEnvironment.getInstance());
+		getEnvironment().addFactory(SystemEnvironment.getInstance());
 		
 		registerSingleton(BeanFactory.class.getName(), this);
 		registerAlias(BeanFactory.class.getName(), InstanceFactory.class.getName());

@@ -1,6 +1,10 @@
-package scw.value;
+package scw.value.support;
 
 import java.util.Properties;
+
+import scw.value.AnyValue;
+import scw.value.Value;
+import scw.value.ValueFactory;
 
 public class PropertiesValueFactory<K> implements ValueFactory<K>{
 	protected final Properties properties;

@@ -15,7 +15,7 @@ public class MainApplication extends DefaultApplication implements Application {
 		this.mainArgs = new MainArgs(args);
 		setClassLoader(mainClass.getClassLoader());
 		getEnvironment().source(mainClass);
-		getEnvironment().addPropertyFactory(mainArgs);
+		getEnvironment().addFactory(mainArgs);
 		setLogger(LoggerFactory.getLogger(mainClass));
 		if (args != null) {
 			getLogger().debug("args: {}", this.mainArgs);

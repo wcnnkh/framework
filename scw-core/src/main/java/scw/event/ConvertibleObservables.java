@@ -12,40 +12,41 @@ import scw.util.CollectionFactory;
 import scw.util.Combiner;
 
 public class ConvertibleObservables<S, T> extends AbstractObservable<T> {
-	private final Set<Observable<S>> registions;
+	private final Set<Observable<S>> observables;
 	private final Combiner<S> combiner;
 	private final Converter<S, T> converter;
+	private final List<EventRegistration> registrations;
 
 	public ConvertibleObservables(Converter<S, T> converter, Combiner<S> combiner) {
 		this.converter = converter;
 		this.combiner = combiner;
-		this.registions = CollectionFactory.createSet(isConcurrent());
+		this.observables = CollectionFactory.createSet(isConcurrent());
+		this.registrations = CollectionFactory.createArrayList(isConcurrent());
 	}
 
 	public boolean combine(Observable<S> observable) {
-		if (this.registions.add(observable)) {
+		if (this.observables.add(observable)) {
 			publishEvent(new ChangeEvent<T>(EventType.UPDATE, forceGet()));
-			observable.registerListener(new EventListener<ChangeEvent<S>>() {
+			EventRegistration registration = observable.registerListener(new EventListener<ChangeEvent<S>>() {
 
 				@Override
 				public void onEvent(ChangeEvent<S> event) {
-					publishEvent(new ChangeEvent<T>(event.getEventType(),
-							forceGet()));
+					publishEvent(new ChangeEvent<T>(event.getEventType(), forceGet()));
 				}
 			});
+			registrations.add(registration);
 			return true;
 		}
 		return false;
 	}
 
 	public List<Observable<S>> getObservables() {
-		if (CollectionUtils.isEmpty(registions)) {
+		if (CollectionUtils.isEmpty(observables)) {
 			return Collections.emptyList();
 		}
 
-		List<Observable<S>> observables = new ArrayList<Observable<S>>(
-				this.registions.size());
-		for (Observable<S> registion : this.registions) {
+		List<Observable<S>> observables = new ArrayList<Observable<S>>(this.observables.size());
+		for (Observable<S> registion : this.observables) {
 			observables.add(registion);
 		}
 
@@ -67,5 +68,13 @@ public class ConvertibleObservables<S, T> extends AbstractObservable<T> {
 		}
 		S value = combiner.combine(list);
 		return converter.convert(value);
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		for (EventRegistration registration : registrations) {
+			registration.unregister();
+		}
+		super.finalize();
 	}
 }

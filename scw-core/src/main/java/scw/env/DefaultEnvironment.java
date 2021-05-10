@@ -2,9 +2,6 @@ package scw.env;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,17 +18,9 @@ import scw.convert.support.DefaultConversionService;
 import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.ObservablePropertiesPropertyFactory.ValueCreator;
-import scw.event.ChangeEvent;
-import scw.event.EventListener;
-import scw.event.EventRegistration;
-import scw.event.KeyValuePairEvent;
-import scw.event.MultiEventRegistration;
 import scw.event.Observable;
-import scw.event.support.ObservableMap;
-import scw.event.support.StringNamedEventDispatcher;
 import scw.instance.ServiceLoaderFactory;
 import scw.io.FileSystemResourceLoader;
 import scw.io.ProtocolResolver;
@@ -44,46 +33,44 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.message.convert.DefaultMessageConverters;
 import scw.net.message.convert.MessageConverters;
-import scw.util.CollectionFactory;
 import scw.util.ConcurrentReferenceHashMap;
-import scw.util.MultiIterator;
-import scw.value.AbstractPropertyFactory;
+import scw.util.placeholder.ConfigurablePlaceholderReplacer;
+import scw.util.placeholder.support.DefaultPlaceholderReplacer;
 import scw.value.AnyValue;
-import scw.value.ListenablePropertyFactory;
 import scw.value.PropertyFactory;
 import scw.value.StringValue;
 import scw.value.Value;
+import scw.value.support.DefaultPropertyFactory;
 
-public class DefaultEnvironment extends AbstractPropertyFactory implements ConfigurableEnvironment {
-	private static final String[] SUFFIXS = new String[] {"scw_res_suffix", "SHUCHAOWEN_CONFIG_SUFFIX", "resource.suffix"};
+public class DefaultEnvironment extends DefaultPropertyFactory implements ConfigurableEnvironment {
+	private static final String[] SUFFIXS = new String[] { "scw_res_suffix", "SHUCHAOWEN_CONFIG_SUFFIX",
+			"resource.suffix" };
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
-	
+
 	private final ConcurrentReferenceHashMap<String, Resource> cacheMap = new ConcurrentReferenceHashMap<String, Resource>();
-	private final FileSystemResourceLoader configurableResourceLoader = new FileSystemResourceLoader(){
+	private final FileSystemResourceLoader configurableResourceLoader = new FileSystemResourceLoader() {
 		protected boolean ignoreClassPathResource(scw.io.FileSystemResource resource) {
 			return super.ignoreClassPathResource(resource) || resource.getPath().startsWith(getWorkPath());
 		};
 	};
-	
+
 	private final PropertiesResolvers configurablePropertiesResolver = new PropertiesResolvers();
-	private final ConfigurableConversionService configurableConversionService = new DefaultConversionService(configurablePropertiesResolver, getObservableCharset());
-	private final ConfigurableResourceResolver configurableResourceResolver = new DefaultResourceResolver(configurableConversionService, configurablePropertiesResolver, getObservableCharset());
+	private final ConfigurableConversionService configurableConversionService = new DefaultConversionService(
+			configurablePropertiesResolver, getObservableCharset());
+	private final ConfigurableResourceResolver configurableResourceResolver = new DefaultResourceResolver(
+			configurableConversionService, configurablePropertiesResolver, getObservableCharset());
 	private final DefaultConfigurableProxyFactory proxyFactory = new DefaultConfigurableProxyFactory();
-	private final ObservableMap<String, Value> propertyMap;
-	private final List<PropertyFactory> propertyFactories;
-	private final DefaultMessageConverters messageConverters = new DefaultMessageConverters(configurableConversionService);
-	
-	public DefaultEnvironment(){
+	private final DefaultMessageConverters messageConverters = new DefaultMessageConverters(
+			configurableConversionService);
+	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
+
+	public DefaultEnvironment() {
+		super(true);
 		configurableResourceLoader.setClassLoaderProvider(this);
-		configurableConversionService.addConversionService(new ResourceResolverConversionService(configurableResourceResolver));
-		this.propertyMap = new ObservableMap<String, Value>(
-				true,
-				new StringNamedEventDispatcher<KeyValuePairEvent<String, Value>>(
-						true));
-		this.propertyFactories = CollectionFactory.createArrayList(true,
-				8);
+		configurableConversionService
+				.addConversionService(new ResourceResolverConversionService(configurableResourceResolver));
 	}
-	
+
 	@Override
 	public void addProtocolResolver(ProtocolResolver resolver) {
 		configurableResourceLoader.addProtocolResolver(resolver);
@@ -93,7 +80,7 @@ public class DefaultEnvironment extends AbstractPropertyFactory implements Confi
 	public void addResourceLoader(ResourceLoader resourceLoader) {
 		configurableResourceLoader.addResourceLoader(resourceLoader);
 	}
-	
+
 	private Resource getResourceByCache(String location) {
 		Resource resource = cacheMap.get(location);
 		if (resource == null) {
@@ -101,8 +88,8 @@ public class DefaultEnvironment extends AbstractPropertyFactory implements Confi
 			Resource cache = cacheMap.putIfAbsent(location, resource);
 			if (cache != null) {
 				resource = cache;
-			}else {
-				if(logger.isDebugEnabled()) {
+			} else {
+				if (logger.isDebugEnabled()) {
 					logger.debug("Find resource {} result {}", location, resource);
 				}
 			}
@@ -120,9 +107,9 @@ public class DefaultEnvironment extends AbstractPropertyFactory implements Confi
 	 */
 	protected String[] getResourceEnvironmentalNames() {
 		Value value = null;
-		for(String suffix : SUFFIXS) {
+		for (String suffix : SUFFIXS) {
 			value = getValue(suffix);
-			if(value != null && !value.isEmpty()) {
+			if (value != null && !value.isEmpty()) {
 				return value.getAsObject(String[].class);
 			}
 		}
@@ -158,7 +145,7 @@ public class DefaultEnvironment extends AbstractPropertyFactory implements Confi
 			return resourceName.substring(0, index) + evnironmental + resourceName.substring(index);
 		}
 	};
-	
+
 	public Resource[] getResources(String locationPattern) {
 		List<String> nameList = getEnvironmentalResourceNameList(locationPattern);
 		List<Resource> resources = new ArrayList<Resource>(nameList.size());
@@ -169,131 +156,31 @@ public class DefaultEnvironment extends AbstractPropertyFactory implements Confi
 			}
 			resources.add(res);
 		}
-		
-		if(logger.isDebugEnabled()) {
+
+		if (logger.isDebugEnabled()) {
 			logger.debug("Get resources [{}] results {}", resources);
 		}
 		return resources.toArray(new Resource[0]);
 	}
-	
-	protected void aware(Object instance){
-		if(instance instanceof EnvironmentAware){
-			((EnvironmentAware) instance).setEnvironment(this);
-		}
-	}
-	
-	@Override
-	public void addPropertyFactory(PropertyFactory propertyFactory) {
-		if (propertyFactory == null) {
+
+	protected void aware(Object instance) {
+		if (instance == null) {
 			return;
 		}
 
-		aware(propertyFactory);
-		propertyFactories.add(propertyFactory);
+		if (instance instanceof EnvironmentAware) {
+			((EnvironmentAware) instance).setEnvironment(this);
+		}
 	}
-	
+
+	@Override
+	public void addFactory(PropertyFactory propertyFactory) {
+		aware(propertyFactory);
+		super.addFactory(propertyFactory);
+	}
+
 	public ClassLoader getClassLoader() {
 		return ClassUtils.getDefaultClassLoader();
-	}
-	
-	protected Iterator<PropertyFactory> getPropertyFactoriesIterator() {
-		return CollectionUtils.getIterator(propertyFactories, true);
-	}
-
-	public List<PropertyFactory> getPropertyFactories() {
-		return Collections.unmodifiableList(propertyFactories);
-	}
-
-	public Value getValue(String key) {
-		Value value = propertyMap.get(key);
-		if (value != null) {
-			return value;
-		}
-
-		Iterator<PropertyFactory> iterator = getPropertyFactoriesIterator();
-		while (iterator.hasNext()) {
-			value = iterator.next().getValue(key);
-			if (value != null) {
-				return value;
-			}
-		}
-		return null;
-	}
-
-	public Iterator<String> iterator() {
-		List<Iterator<String>> iterators = new LinkedList<Iterator<String>>();
-		iterators.add(propertyMap.keySet().iterator());
-		Iterator<PropertyFactory> iterator = getPropertyFactoriesIterator();
-		while (iterator.hasNext()) {
-			iterators.add(iterator.next().iterator());
-		}
-		return new MultiIterator<String>(iterators);
-	}
-
-	public boolean containsKey(String key) {
-		if (propertyMap.containsKey(key)) {
-			return true;
-		}
-
-		Iterator<PropertyFactory> iterator = getPropertyFactoriesIterator();
-		while (iterator.hasNext()) {
-			if (iterator.next().containsKey(key)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public EventRegistration registerListener(final String key,
-			final EventListener<ChangeEvent<String>> eventListener) {
-		EventRegistration registration1 = this.propertyMap.getEventDispatcher()
-				.registerListener(key,
-						new EventListener<KeyValuePairEvent<String, Value>>() {
-
-							public void onEvent(
-									KeyValuePairEvent<String, Value> event) {
-								eventListener.onEvent(new ChangeEvent<String>(
-										event, event.getSource().getKey()));
-							}
-						});
-
-		if (propertyFactories.size() == 0) {
-			return registration1;
-		}
-
-		List<EventRegistration> registrations = new ArrayList<EventRegistration>(
-				propertyFactories.size());
-		registrations.add(registration1);
-		Iterator<PropertyFactory> iterator = getPropertyFactoriesIterator();
-		while (iterator.hasNext()) {
-			PropertyFactory propertyFactory = iterator.next();
-			if (propertyFactory instanceof ListenablePropertyFactory) {
-				EventRegistration registration = ((ListenablePropertyFactory) propertyFactory)
-						.registerListener(key, eventListener);
-				registrations.add(registration);
-			}
-		}
-		return new MultiEventRegistration(
-				registrations.toArray(new EventRegistration[0]));
-	}
-
-	public boolean remove(String key) {
-		Assert.requiredArgument(key != null, "key");
-		Value value = propertyMap.remove(key);
-		return value != null;
-	}
-
-	public boolean put(String key, Value value) {
-		Assert.requiredArgument(key != null, "key");
-		Assert.requiredArgument(value != null, "value");
-		propertyMap.put(key, value);
-		return true;
-	}
-
-	public boolean putIfAbsent(String key, Value value) {
-		Assert.requiredArgument(key != null, "key");
-		Assert.requiredArgument(value != null, "value");
-		return propertyMap.putIfAbsent(key, value) == null;
 	}
 
 	public boolean put(String key, Object value) {
@@ -317,15 +204,10 @@ public class DefaultEnvironment extends AbstractPropertyFactory implements Confi
 	public boolean putIfAbsent(String key, Object value) {
 		Assert.requiredArgument(key != null, "key");
 		Assert.requiredArgument(value != null, "value");
-		return propertyMap.putIfAbsent(key, toProperty(value)) == null;
+		return putIfAbsent(key, toProperty(value));
 	}
 
-	public void clear() {
-		propertyMap.clear();
-	}
-	
-	public void loadProperties(
-			String keyPrefix, Observable<Properties> properties) {
+	public void loadProperties(String keyPrefix, Observable<Properties> properties) {
 		ValueCreator valueCreator = new ValueCreator() {
 
 			public Value create(String key, Object value) {
@@ -333,9 +215,9 @@ public class DefaultEnvironment extends AbstractPropertyFactory implements Confi
 			}
 		};
 
-		ObservablePropertiesPropertyFactory factory = new ObservablePropertiesPropertyFactory(
-				properties, keyPrefix, valueCreator);
-		addPropertyFactory(factory);
+		ObservablePropertiesPropertyFactory factory = new ObservablePropertiesPropertyFactory(properties, keyPrefix,
+				valueCreator);
+		addFactory(factory);
 	}
 
 	private class StringFormatValue extends StringValue {
@@ -362,50 +244,57 @@ public class DefaultEnvironment extends AbstractPropertyFactory implements Confi
 			return resolvePlaceholders(super.getAsString());
 		};
 	}
-	
+
 	private final AtomicBoolean loaded = new AtomicBoolean();
-	
+
 	/**
 	 * 使用ServiceLoaderFactory加载依赖服务
+	 * 
 	 * @param serviceLoaderFactory
 	 * @return 返回是否加载成功
 	 */
-	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory, Logger logger){
-		if(loaded.compareAndSet(false, true)){
+	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory, Logger logger) {
+		if (loaded.compareAndSet(false, true)) {
 			proxyFactory.loadServices(serviceLoaderFactory);
-			
-			for(PropertiesResolver propertiesResolver : serviceLoaderFactory.getServiceLoader(PropertiesResolver.class)){
+
+			for (PropertiesResolver propertiesResolver : serviceLoaderFactory
+					.getServiceLoader(PropertiesResolver.class)) {
 				logger.info("add properties resolver: {}", propertiesResolver);
 				configurablePropertiesResolver.addPropertiesResolver(propertiesResolver);
 			}
-			
-			for(ResourceResolver resourceResolver : serviceLoaderFactory.getServiceLoader(ResourceResolver.class)){
+
+			for (ResourceResolver resourceResolver : serviceLoaderFactory.getServiceLoader(ResourceResolver.class)) {
 				logger.info("add resource resolver: {}", resourceResolver);
 				configurableResourceResolver.addResourceResolver(resourceResolver);
 			}
-			
-			for(ResourceLoader resourceLoader : serviceLoaderFactory.getServiceLoader(ResourceLoader.class)){
+
+			for (ResourceLoader resourceLoader : serviceLoaderFactory.getServiceLoader(ResourceLoader.class)) {
 				logger.info("add resource loader: {}", resourceLoader);
 				addResourceLoader(resourceLoader);
 			}
-			
-			for(ProtocolResolver protocolResolver : serviceLoaderFactory.getServiceLoader(ProtocolResolver.class)){
+
+			for (ProtocolResolver protocolResolver : serviceLoaderFactory.getServiceLoader(ProtocolResolver.class)) {
 				logger.info("add protocol resolver: {}", protocolResolver);
 				addProtocolResolver(protocolResolver);
 			}
-			
-			for(ConversionService conversionService : serviceLoaderFactory.getServiceLoader(ConversionService.class)){
+
+			for (ConversionService conversionService : serviceLoaderFactory.getServiceLoader(ConversionService.class)) {
 				logger.info("add conversion service: {}", conversionService);
 				configurableConversionService.addConversionService(conversionService);
 			}
-			
-			for(PropertyFactory propertyFactory : serviceLoaderFactory.getServiceLoader(PropertyFactory.class)){
+
+			for (PropertyFactory propertyFactory : serviceLoaderFactory.getServiceLoader(PropertyFactory.class)) {
 				logger.info("add property factory: {}", propertyFactory);
-				addPropertyFactory(propertyFactory);
+				addFactory(propertyFactory);
 			}
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public ConfigurablePlaceholderReplacer getPlaceholderReplacer() {
+		return placeholderReplacer;
 	}
 
 	@Override
@@ -427,7 +316,7 @@ public class DefaultEnvironment extends AbstractPropertyFactory implements Confi
 	public ConfigurableResourceResolver getResourceResolver() {
 		return configurableResourceResolver;
 	}
-	
+
 	@Override
 	public MessageConverters getMessageConverter() {
 		return messageConverters;

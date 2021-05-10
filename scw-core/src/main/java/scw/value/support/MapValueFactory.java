@@ -1,6 +1,10 @@
-package scw.value;
+package scw.value.support;
 
 import java.util.Map;
+
+import scw.value.AnyValue;
+import scw.value.Value;
+import scw.value.ValueFactory;
 
 public class MapValueFactory<K> implements ValueFactory<K> {
 	protected final Map<K, ?> map;

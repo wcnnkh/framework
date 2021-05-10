@@ -8,13 +8,13 @@ import scw.event.EventListener;
 import scw.event.EventRegistration;
 
 public class ObservableValue<K, V> extends AbstractObservable<V> {
-	private final ListenableValueFactory<K> valueFactory;
+	private final ValueFactory<K> valueFactory;
 	private final K name;
 	private final V defaultValue;
 	private final Type type;
 	private final EventRegistration eventRegistration;
 
-	public ObservableValue(final ListenableValueFactory<K> valueFactory,
+	public ObservableValue(final ValueFactory<K> valueFactory,
 			K name, Type type, V defaultValue) {
 		this.valueFactory = valueFactory;
 		this.name = name;

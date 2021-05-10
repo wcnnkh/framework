@@ -1,4 +1,4 @@
-package scw.value;
+package scw.value.support;
 
 import java.util.Iterator;
 
@@ -8,6 +8,10 @@ import scw.core.utils.CollectionUtils;
 import scw.lang.Nullable;
 import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
+import scw.value.AnyValue;
+import scw.value.PropertyFactory;
+import scw.value.StringValue;
+import scw.value.Value;
 
 public class SystemPropertyFactory implements PropertyFactory, Ordered{
 	private final ConversionService conversionService;
@@ -46,9 +50,4 @@ public class SystemPropertyFactory implements PropertyFactory, Ordered{
 						.toIterator(EnumerationConvert.convertToStringEnumeration(System.getProperties().keys())),
 				System.getenv().keySet().iterator());
 	}
-
-	public boolean containsKey(String key) {
-		return getValue(key) != null;
-	}
-
 }

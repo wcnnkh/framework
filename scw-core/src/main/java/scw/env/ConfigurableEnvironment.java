@@ -13,22 +13,20 @@ import scw.io.resolver.ConfigurablePropertiesResolver;
 import scw.net.message.convert.MessageConverters;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
 import scw.value.ConfigurablePropertyFactory;
-import scw.value.ListenablePropertyFactory;
 import scw.value.PropertyFactory;
 
-public interface ConfigurableEnvironment extends Environment,
-		ConfigurablePropertyFactory, ListenablePropertyFactory,
-		ConfigurableResourceLoader, ConfigurablePlaceholderReplacer {
+public interface ConfigurableEnvironment extends Environment, ConfigurablePropertyFactory, ConfigurableResourceLoader {
 
 	default void setWorkPath(String path) {
 		put(WORK_PATH_PROPERTY, path);
 	}
-	
-	default void loadProperties(Resource resource){
-		Observable<Properties> observable = new ObservableResource<Properties>(resource, getPropertiesResolver().toPropertiesConverter());
+
+	default void loadProperties(Resource resource) {
+		Observable<Properties> observable = new ObservableResource<Properties>(resource,
+				getPropertiesResolver().toPropertiesConverter());
 		loadProperties(observable);
 	}
-	
+
 	default void loadProperties(String resource) {
 		loadProperties((String) resource, (String) null);
 	}
@@ -37,8 +35,7 @@ public interface ConfigurableEnvironment extends Environment,
 		loadProperties(null, resource, charsetName);
 	}
 
-	default void loadProperties(String keyPrefix, String location,
-			String charsetName) {
+	default void loadProperties(String keyPrefix, String location, String charsetName) {
 		Observable<Properties> observable = getProperties(location, charsetName);
 		loadProperties(keyPrefix, observable);
 	}
@@ -49,6 +46,8 @@ public interface ConfigurableEnvironment extends Environment,
 
 	void loadProperties(String prefix, Observable<Properties> properties);
 
+	ConfigurablePlaceholderReplacer getPlaceholderReplacer();
+
 	ConfigurablePropertiesResolver getPropertiesResolver();
 
 	ConfigurableProxyFactory getProxyFactory();
@@ -57,7 +56,7 @@ public interface ConfigurableEnvironment extends Environment,
 
 	ConfigurableResourceResolver getResourceResolver();
 
-	void addPropertyFactory(PropertyFactory propertyFactory);
-	
+	void addFactory(PropertyFactory propertyFactory);
+
 	MessageConverters getMessageConverter();
 }
