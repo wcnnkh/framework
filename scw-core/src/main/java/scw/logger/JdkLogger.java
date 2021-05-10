@@ -11,20 +11,24 @@ public class JdkLogger extends CustomLogger {
 
 	public JdkLogger(Logger logger) {
 		this.logger = logger;
+		Level level = LoggerFactory.getLevelManager().get().getLevel(logger.getName());
+		if (level != null) {
+			setLevel(level);
+		}
 		registerListener();
 	}
-	
+
 	@Override
 	public Level getLevel() {
 		return logger.getLevel();
 	}
-	
+
 	@Override
 	public void setLevel(Level level) {
 		logger.setLevel(level);
 		super.setLevel(level);
 	}
-	
+
 	@Override
 	public String getName() {
 		return logger.getName();
@@ -32,16 +36,15 @@ public class JdkLogger extends CustomLogger {
 
 	@Override
 	public void log(Level level, Throwable e, String format, Object... args) {
-		if(!isLoggable(level)) {
-			return ;
+		if (!isLoggable(level)) {
+			return;
 		}
-		
+
 		logger.logp(level, null, null, e, new Supplier<String>() {
 
 			@Override
 			public String get() {
-				return FormatUtils.formatPlaceholder(format, null,
-						args);
+				return FormatUtils.formatPlaceholder(format, null, args);
 			}
 		});
 	}
