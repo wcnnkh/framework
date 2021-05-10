@@ -32,9 +32,11 @@ import scw.io.resolver.support.PropertiesResolvers;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.message.convert.DefaultMessageConverters;
+import scw.net.message.convert.MessageConverter;
 import scw.net.message.convert.MessageConverters;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
+import scw.util.placeholder.PlaceholderReplacer;
 import scw.util.placeholder.support.DefaultPlaceholderReplacer;
 import scw.value.AnyValue;
 import scw.value.PropertyFactory;
@@ -286,6 +288,17 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 			for (PropertyFactory propertyFactory : serviceLoaderFactory.getServiceLoader(PropertyFactory.class)) {
 				logger.info("add property factory: {}", propertyFactory);
 				addFactory(propertyFactory);
+			}
+
+			for (MessageConverter messageConverter : serviceLoaderFactory.getServiceLoader(MessageConverter.class)) {
+				logger.info("add message converter: {}", messageConverter);
+				messageConverters.addMessageConverter(messageConverter);
+			}
+
+			for (PlaceholderReplacer placeholderReplacer : serviceLoaderFactory
+					.getServiceLoader(PlaceholderReplacer.class)) {
+				logger.info("add placeholder replacer: {}", placeholderReplacer);
+				this.placeholderReplacer.addPlaceholderReplacer(placeholderReplacer);
 			}
 			return true;
 		}

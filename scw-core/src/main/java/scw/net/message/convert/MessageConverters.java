@@ -1,9 +1,7 @@
 package scw.net.message.convert;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import scw.convert.TypeDescriptor;
@@ -14,24 +12,23 @@ import scw.net.MimeTypes;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
 
-public class MessageConverters implements
-		MessageConverter {
-	private static Logger logger = LoggerFactory
-			.getLogger(MessageConverters.class);
-	private final TreeSet<MessageConverter> messageConverters = new TreeSet<MessageConverter>(new ComparatorMessageConverter());
+public class MessageConverters implements MessageConverter {
+	private static Logger logger = LoggerFactory.getLogger(MessageConverters.class);
+	private final TreeSet<MessageConverter> messageConverters = new TreeSet<MessageConverter>(
+			new ComparatorMessageConverter());
 
-	public SortedSet<MessageConverter> getMessageConverters() {
-		return Collections.synchronizedSortedSet(messageConverters);
+	public void addMessageConverter(MessageConverter messageConverter) {
+		synchronized (messageConverter) {
+			messageConverters.add(messageConverter);
+		}
 	}
 
-	private static class ComparatorMessageConverter implements
-			Comparator<MessageConverter> {
+	private static class ComparatorMessageConverter implements Comparator<MessageConverter> {
 
 		public int compare(MessageConverter o1, MessageConverter o2) {
 			for (MimeType mimeType1 : o1.getSupportMimeTypes()) {
 				for (MimeType mimeType2 : o2.getSupportMimeTypes()) {
-					if (mimeType1.equals(mimeType2)
-							|| mimeType2.includes(mimeType1)) {
+					if (mimeType1.equals(mimeType2) || mimeType2.includes(mimeType1)) {
 						return -1;
 					}
 				}
@@ -40,33 +37,28 @@ public class MessageConverters implements
 		}
 	}
 
-	public Object read(TypeDescriptor type, InputMessage inputMessage)
-			throws IOException, MessageConvertException {
+	public Object read(TypeDescriptor type, InputMessage inputMessage) throws IOException, MessageConvertException {
 		for (MessageConverter converter : messageConverters) {
 			if (converter.canRead(type, inputMessage.getContentType())) {
 				if (logger.isTraceEnabled()) {
-					logger.trace("{} read type={}, contentType={}", converter,
-							type, inputMessage.getContentType());
+					logger.trace("{} read type={}, contentType={}", converter, type, inputMessage.getContentType());
 				}
 				return converter.read(type, inputMessage);
 			}
 		}
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("not support read type={}, contentType={}", type,
-					inputMessage.getContentType());
+			logger.debug("not support read type={}, contentType={}", type, inputMessage.getContentType());
 		}
 		return null;
 	}
 
-	public void write(TypeDescriptor type, Object body, MimeType contentType,
-			OutputMessage outputMessage) throws IOException,
-			MessageConvertException {
+	public void write(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
+			throws IOException, MessageConvertException {
 		for (MessageConverter converter : messageConverters) {
 			if (converter.canWrite(type, body, contentType)) {
 				if (logger.isTraceEnabled()) {
-					logger.trace("{} write body={}, contentType={}", converter,
-							body, contentType);
+					logger.trace("{} write body={}, contentType={}", converter, body, contentType);
 				}
 				converter.write(type, body, contentType, outputMessage);
 				return;
@@ -74,8 +66,7 @@ public class MessageConverters implements
 		}
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("not support wirte body={}, contentType={}", body,
-					contentType);
+			logger.debug("not support wirte body={}, contentType={}", body, contentType);
 		}
 	}
 
@@ -100,8 +91,7 @@ public class MessageConverters implements
 	public MimeTypes getSupportMimeTypes() {
 		MimeTypes mimeTypes = new MimeTypes();
 		for (MessageConverter converter : messageConverters) {
-			mimeTypes.getMimeTypes().addAll(
-					converter.getSupportMimeTypes().getMimeTypes());
+			mimeTypes.getMimeTypes().addAll(converter.getSupportMimeTypes().getMimeTypes());
 		}
 		return mimeTypes.readyOnly();
 	}
@@ -115,14 +105,12 @@ public class MessageConverters implements
 		return false;
 	}
 
-	public void write(Object body, MimeType contentType,
-			OutputMessage outputMessage) throws IOException,
-			MessageConvertException {
+	public void write(Object body, MimeType contentType, OutputMessage outputMessage)
+			throws IOException, MessageConvertException {
 		for (MessageConverter converter : messageConverters) {
 			if (converter.canWrite(body, contentType)) {
 				if (logger.isTraceEnabled()) {
-					logger.trace("{} write body={}, contentType={}", converter,
-							body, contentType);
+					logger.trace("{} write body={}, contentType={}", converter, body, contentType);
 				}
 				converter.write(body, contentType, outputMessage);
 				return;
@@ -130,8 +118,7 @@ public class MessageConverters implements
 		}
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("not support wirte body={}, contentType={}", body,
-					contentType);
+			logger.debug("not support wirte body={}, contentType={}", body, contentType);
 		}
 	}
 }

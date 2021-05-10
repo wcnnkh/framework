@@ -38,7 +38,6 @@ import scw.net.MimeType;
 import scw.net.message.Entity;
 import scw.net.message.InputMessage;
 import scw.net.message.Text;
-import scw.net.message.convert.MessageConverter;
 import scw.net.message.convert.MessageConverters;
 import scw.util.MultiIterable;
 import scw.web.WebUtils;
@@ -71,10 +70,8 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		for (ActionInterceptor actionInterceptor : beanFactory.getServiceLoader(ActionInterceptor.class)) {
 			this.actionInterceptor.add(actionInterceptor);
 		}
-
-		for (MessageConverter messageConverter : beanFactory.getServiceLoader(MessageConverter.class)) {
-			messageConverterFactory.getMessageConverters().add(messageConverter);
-		}
+		
+		messageConverterFactory.addMessageConverter(beanFactory.getEnvironment().getMessageConverter());
 	}
 
 	public MessageConverters getMessageConverterFactory() {

@@ -7,7 +7,6 @@ import scw.beans.BeanFactory;
 import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.core.utils.StringUtils;
-import scw.net.message.convert.DefaultMessageConverters;
 
 public class FeignBeanDefinition extends DefaultBeanDefinition {
 	private scw.feign.annotation.FeignClient feignClient;
@@ -35,9 +34,9 @@ public class FeignBeanDefinition extends DefaultBeanDefinition {
 	@Override
 	public Object create() throws BeansException {
 		Encoder encoder = beanFactory.isInstance(Encoder.class) ? beanFactory.getInstance(Encoder.class)
-				: new FeignEncoder(new DefaultMessageConverters(getEnvironment().getConversionService(), beanFactory));
+				: new FeignEncoder(beanFactory.getEnvironment().getMessageConverter());
 		Decoder decoder = beanFactory.isInstance(Decoder.class) ? beanFactory.getInstance(Decoder.class)
-				: new FeignDecoder(new DefaultMessageConverters(getEnvironment().getConversionService(), beanFactory));
+				: new FeignDecoder(beanFactory.getEnvironment().getMessageConverter());
 		Object proxy = Feign.builder().encoder(encoder).decoder(decoder).target(getTargetClass(), getHost());
 		return beanFactory.getAop().getProxy(getTargetClass(), proxy).create();
 	}
