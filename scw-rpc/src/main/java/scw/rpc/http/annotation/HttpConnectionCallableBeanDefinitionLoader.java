@@ -25,15 +25,7 @@ public class HttpConnectionCallableBeanDefinitionLoader implements
 			return loaderChain.load(beanFactory, sourceClass);
 		}
 		
-		HttpConnectionFactory httpConnectionFactory = null;
-		if(remote != null){
-			httpConnectionFactory = beanFactory.getInstance(remote.factory());
-		}
-		
-		if(httpConnectionFactory == null){
-			httpConnectionFactory = new DefaultHttpClient(beanFactory.getEnvironment().getConversionService(), beanFactory, beanFactory);
-		}
-		
+		HttpConnectionFactory httpConnectionFactory = new DefaultHttpClient(beanFactory.getEnvironment().getConversionService(), beanFactory, beanFactory);
 		CallableFactory callableFactory;
 		if(remote != null){
 			callableFactory = new AnnotationHttpCallableFactory(

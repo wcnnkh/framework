@@ -9,7 +9,11 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 
 import scw.core.utils.CollectionUtils;
+import scw.instance.ServiceLoaderFactory;
+import scw.instance.support.DefaultServiceLoaderFactory;
+import scw.instance.support.SimpleNoArgsInstanceFactory;
 import scw.lang.Nullable;
+import scw.value.support.SystemPropertyFactory;
 
 public final class LoggerFactory {
 	private static final java.util.logging.Logger ROOT_LOGGER = java.util.logging.Logger
@@ -21,8 +25,8 @@ public final class LoggerFactory {
 	private static final LevelManager LEVEL_MANAGER;
 
 	static {
-		Iterator<LevelManager> levelManagerIterator = ServiceLoader.load(
-				LevelManager.class).iterator();
+		ServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(new SimpleNoArgsInstanceFactory(), new SystemPropertyFactory());
+		Iterator<LevelManager> levelManagerIterator = serviceLoaderFactory.getServiceLoader(LevelManager.class).iterator();
 		if (levelManagerIterator.hasNext()) {
 			LEVEL_MANAGER = levelManagerIterator.next();
 		} else {
@@ -30,8 +34,7 @@ public final class LoggerFactory {
 		}
 
 		// 使用spi机制加载handlers
-		List<Handler> handlers = CollectionUtils.toList(ServiceLoader
-				.load(Handler.class));
+		List<Handler> handlers = serviceLoaderFactory.getServiceLoader(Handler.class).toList();
 		if (!CollectionUtils.isEmpty(handlers)) {
 			// 存在自定义handler的情况不使用父级的handler
 			ROOT_LOGGER.setUseParentHandlers(false);

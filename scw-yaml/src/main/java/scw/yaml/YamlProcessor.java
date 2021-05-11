@@ -498,8 +498,8 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 			Charset charset) {
 		process(new MatchCallback() {
 
-			public void process(Properties properties, Map<String, Object> map) {
-				properties.putAll(properties);
+			public void process(Properties props, Map<String, Object> map) {
+				properties.putAll(props);
 			}
 		}, charset, resource);
 	}

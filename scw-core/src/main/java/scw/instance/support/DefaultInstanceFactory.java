@@ -8,6 +8,7 @@ import scw.instance.InstanceDefinition;
 import scw.instance.InstanceException;
 import scw.instance.NoArgsInstanceFactory;
 import scw.util.ConcurrentReferenceHashMap;
+import scw.util.XUtils;
 
 public class DefaultInstanceFactory extends AbstractInstanceFactory {
 	private ConcurrentMap<Class<?>, InstanceDefinition> cacheMap;
@@ -22,7 +23,7 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 	}
 	
 	public InstanceDefinition getDefinition(String name) {
-		Class<?> type = getClass(name);
+		Class<?> type = ClassUtils.getClass(name, getClassLoader());
 		if(type == null){
 			return null;
 		}
@@ -38,14 +39,14 @@ public class DefaultInstanceFactory extends AbstractInstanceFactory {
 		if (ClassUtils.isAssignableValue(clazz, this)) {
 			return new InternalInstanceBuilder(this, environment, clazz, clazz.cast(this));
 		}
-		
+			
 		if (Environment.class == clazz) {
 			return new InternalInstanceBuilder(this, environment, clazz, clazz.cast(environment));
 		}
 		
 		InstanceDefinition instanceBuilder = cacheMap == null? null:(InstanceDefinition) cacheMap.get(clazz);
 		if (instanceBuilder == null) {
-			if (!isPresent(clazz)) {
+			if (!XUtils.isAvailable(clazz)) {
 				return null;
 			}
 			

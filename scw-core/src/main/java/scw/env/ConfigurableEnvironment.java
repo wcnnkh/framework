@@ -10,6 +10,7 @@ import scw.io.ConfigurableResourceLoader;
 import scw.io.Resource;
 import scw.io.event.ObservableResource;
 import scw.io.resolver.ConfigurablePropertiesResolver;
+import scw.lang.NotSupportedException;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
 import scw.value.ConfigurablePropertyFactory;
 import scw.value.PropertyFactory;
@@ -21,6 +22,10 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	}
 
 	default void loadProperties(Resource resource) {
+		if(!getPropertiesResolver().canResolveProperties(resource)){
+			throw new NotSupportedException(resource.getDescription());
+		}
+		
 		Observable<Properties> observable = new ObservableResource<Properties>(resource,
 				getPropertiesResolver().toPropertiesConverter());
 		loadProperties(observable);

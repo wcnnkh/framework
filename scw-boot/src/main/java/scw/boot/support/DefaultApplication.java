@@ -1,5 +1,7 @@
 package scw.boot.support;
 
+import java.util.Properties;
+
 import scw.beans.BeanLifeCycleEvent;
 import scw.beans.BeanLifeCycleEvent.Step;
 import scw.beans.xml.XmlBeanFactory;
@@ -14,9 +16,11 @@ import scw.context.ConfigurableContextEnvironment;
 import scw.context.support.LifecycleAuxiliary;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
 import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
+import scw.event.Observable;
 import scw.event.support.DefaultEventDispatcher;
 import scw.io.Resource;
 import scw.logger.Logger;
@@ -92,8 +96,9 @@ public class DefaultApplication extends LifecycleAuxiliary
 	protected void beforeInit() throws Throwable {
 		for(String suffix : new String[]{".properties", ".yaml", ".yml"}){
 			Resource resource = getEnvironment().getResource(APPLICATION_PREFIX + suffix);
-			if(resource != null && resource.exists() && getEnvironment().getPropertiesResolver().canResolveProperties(resource)){
-				getEnvironment().loadProperties(resource);
+			if(resource != null && resource.exists()){
+				Observable<Properties> properties = SystemEnvironment.getInstance().toObservableProperties(resource);
+				getEnvironment().loadProperties(properties);
 			}
 		}
 		beanFactory.init();

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import scw.core.Assert;
+import scw.core.OrderComparator;
 import scw.core.utils.CollectionUtils;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
@@ -35,6 +36,7 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 		}
 
 		factories.add(factory);
+		Collections.sort(factories, OrderComparator.INSTANCE.reversed());
 	}
 
 	public ObservableMap<K, Value> getValueMap() {
@@ -57,7 +59,11 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 
 		Iterator<F> iterator = getFactoriesIterator();
 		while (iterator.hasNext()) {
-			value = iterator.next().getValue(key);
+			ValueFactory<K> valueFactory = iterator.next();
+			if(valueFactory == null){
+				continue;
+			}
+			value = valueFactory.getValue(key);
 			if (value != null) {
 				return value;
 			}

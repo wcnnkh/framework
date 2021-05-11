@@ -7,7 +7,7 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.aop.ConfigurableProxyFactory;
-import scw.aop.support.DefaultConfigurableProxyFactory;
+import scw.aop.support.DefaultProxyFactory;
 import scw.convert.ConfigurableConversionService;
 import scw.convert.ConversionService;
 import scw.convert.resolve.ConfigurableResourceResolver;
@@ -58,7 +58,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 			configurablePropertiesResolver, getObservableCharset());
 	private final ConfigurableResourceResolver configurableResourceResolver = new DefaultResourceResolver(
 			configurableConversionService, configurablePropertiesResolver, getObservableCharset());
-	private final DefaultConfigurableProxyFactory proxyFactory = new DefaultConfigurableProxyFactory();
+	private final DefaultProxyFactory proxyFactory = new DefaultProxyFactory();
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
 
 	public DefaultEnvironment() {
@@ -256,38 +256,38 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 
 			for (PropertiesResolver propertiesResolver : serviceLoaderFactory
 					.getServiceLoader(PropertiesResolver.class)) {
-				logger.info("add properties resolver: {}", propertiesResolver);
+				logger.debug("add properties resolver: {}", propertiesResolver);
 				configurablePropertiesResolver.addPropertiesResolver(propertiesResolver);
 			}
 
 			for (ResourceResolver resourceResolver : serviceLoaderFactory.getServiceLoader(ResourceResolver.class)) {
-				logger.info("add resource resolver: {}", resourceResolver);
+				logger.debug("add resource resolver: {}", resourceResolver);
 				configurableResourceResolver.addResourceResolver(resourceResolver);
 			}
 
 			for (ResourceLoader resourceLoader : serviceLoaderFactory.getServiceLoader(ResourceLoader.class)) {
-				logger.info("add resource loader: {}", resourceLoader);
+				logger.debug("add resource loader: {}", resourceLoader);
 				addResourceLoader(resourceLoader);
 			}
 
 			for (ProtocolResolver protocolResolver : serviceLoaderFactory.getServiceLoader(ProtocolResolver.class)) {
-				logger.info("add protocol resolver: {}", protocolResolver);
+				logger.debug("add protocol resolver: {}", protocolResolver);
 				addProtocolResolver(protocolResolver);
 			}
 
 			for (ConversionService conversionService : serviceLoaderFactory.getServiceLoader(ConversionService.class)) {
-				logger.info("add conversion service: {}", conversionService);
+				logger.debug("add conversion service: {}", conversionService);
 				configurableConversionService.addConversionService(conversionService);
 			}
 
 			for (PropertyFactory propertyFactory : serviceLoaderFactory.getServiceLoader(PropertyFactory.class)) {
-				logger.info("add property factory: {}", propertyFactory);
+				logger.debug("add property factory: {}", propertyFactory);
 				addFactory(propertyFactory);
 			}
 
 			for (PlaceholderReplacer placeholderReplacer : serviceLoaderFactory
 					.getServiceLoader(PlaceholderReplacer.class)) {
-				logger.info("add placeholder replacer: {}", placeholderReplacer);
+				logger.debug("add placeholder replacer: {}", placeholderReplacer);
 				this.placeholderReplacer.addPlaceholderReplacer(placeholderReplacer);
 			}
 			return true;

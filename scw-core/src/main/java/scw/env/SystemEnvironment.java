@@ -32,13 +32,21 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	private static SystemEnvironment instance = new SystemEnvironment();
 	
 	static{
+		/**
+		 * 加载配置文件
+		 */
 		instance.loadProperties("system.properties");
 		instance.loadProperties(instance.getValue("system.properties.location", String.class, "/private.properties"));
-		instance.loadServices(new DefaultServiceLoaderFactory(instance), logger);
+		
 		//初始化日志管理器
 		Observable<Properties> observable = SystemEnvironment.getInstance().getProperties(SystemEnvironment
 				.getInstance().getValue("scw.logger.level.config", String.class, "/logger-level.properties"));
 		LoggerFactory.getLevelManager().combine(observable);
+		
+		/**
+		 * 加载默认服务
+		 */
+		instance.loadServices(new DefaultServiceLoaderFactory(instance), logger);
 	}
 
 	public static SystemEnvironment getInstance() {

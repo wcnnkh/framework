@@ -25,6 +25,7 @@ public class ObservablePropertiesPropertyFactory extends ConvertibleObservable<P
 		implements PropertyFactory {
 	private final NamedEventDispatcher<String, ChangeEvent<String>> dispatcher = new StringNamedEventDispatcher<ChangeEvent<String>>(
 			true);
+	private final EventRegistration eventRegistration;
 
 	public ObservablePropertiesPropertyFactory(Observable<Properties> properties, String keyPrefix,
 			ValueCreator valueCreator) {
@@ -51,7 +52,7 @@ public class ObservablePropertiesPropertyFactory extends ConvertibleObservable<P
 				return Collections.unmodifiableMap(valueMap);
 			}
 		});
-		registerListener(new EventListener<ChangeEvent<Map<String, Value>>>() {
+		eventRegistration = registerListener(new EventListener<ChangeEvent<Map<String, Value>>>() {
 
 			@Override
 			public void onEvent(ChangeEvent<Map<String, Value>> event) {
@@ -60,6 +61,12 @@ public class ObservablePropertiesPropertyFactory extends ConvertibleObservable<P
 				}
 			}
 		});
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		eventRegistration.unregister();
+		super.finalize();
 	}
 
 	@Override

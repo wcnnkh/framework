@@ -116,11 +116,19 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 		if (ArrayUtils.isEmpty(resources)) {
 			return new EmptyObservable<Properties>();
 		}
-
+		
+		// 颠倒一下，优先级高的覆盖优先级低的
+		return toObservableProperties(propertiesResolver, charset, (Resource[]) ArrayUtils.reversal(resources));
+	}
+	
+	default Observable<Properties> toObservableProperties(Resource ...resources){
+		return toObservableProperties(getPropertiesResolver(), getCharset(), resources);
+	}
+	
+	default Observable<Properties> toObservableProperties(PropertiesResolver propertiesResolver, @Nullable Charset charset, Resource ...resources){
 		ObservableProperties properties = new ObservableProperties();
 		Converter<Resource, Properties> converter = propertiesResolver.toPropertiesConverter(charset);
-		// 颠倒一下，优先级高的覆盖优先级低的
-		for (Resource resource : (Resource[]) ArrayUtils.reversal(resources)) {
+		for (Resource resource : resources) {
 			properties.combine(resource, converter);
 		}
 		return properties;
