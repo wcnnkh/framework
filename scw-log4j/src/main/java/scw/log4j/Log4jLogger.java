@@ -84,6 +84,9 @@ public class Log4jLogger extends CustomLogger {
 	}
 
 	private static org.apache.log4j.Level parse(Level level) {
+		if(level == null){
+			return org.apache.log4j.Level.INFO;
+		}
 		return org.apache.log4j.Level.toLevel(level.getName(), new CustomLog4jLevel(level));
 	}
 
