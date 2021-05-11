@@ -1,1 +1,2 @@
 scw.orm.convert.CollectionToMapConversionService
+scw.orm.convert.DateConversionService
