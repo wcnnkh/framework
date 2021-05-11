@@ -1,27 +1,29 @@
 package scw.db;
 
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.beans.BeanFactory;
 import scw.core.utils.StringUtils;
 import scw.data.TemporaryStorage;
 import scw.db.database.DataBase;
-import scw.env.DefaultPropertyManager;
-import scw.env.PropertyManager;
 import scw.env.SystemEnvironment;
+import scw.event.Observable;
+import scw.io.event.ObservableProperties;
 import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.sql.orm.cache.CacheManager;
 import scw.sql.orm.cache.TemporaryCacheManager;
 import scw.sql.orm.dialect.SqlDialect;
+import scw.value.PropertyFactory;
+import scw.value.support.DefaultPropertyFactory;
 
 public abstract class ConfigurableDB extends AbstractDB {
-	private static Logger logger = LoggerFactory
-			.getLogger(ConfigurableDB.class);
+	private static Logger logger = LoggerFactory.getLogger(ConfigurableDB.class);
 	private static final String DEFAULT_CACHE_PREFIX = "db:";
 	private final AtomicBoolean init = new AtomicBoolean(false);
-	private volatile PropertyManager propertyManager;
+	private volatile DefaultPropertyFactory propertyFactory;
 	private DataBase dataBase;
 	private TemporaryStorage temporaryCache;
 
@@ -37,15 +39,17 @@ public abstract class ConfigurableDB extends AbstractDB {
 	}
 
 	public void loadProperties(String configLocation) {
-		if (propertyManager == null) {
+		if (propertyFactory == null) {
 			synchronized (this) {
-				if (propertyManager == null) {
-					this.propertyManager = new DefaultPropertyManager(false);
+				if (propertyFactory == null) {
+					this.propertyFactory = new DefaultPropertyFactory(false);
 				}
 			}
 		}
-		
-		propertyManager.loadProperties(SystemEnvironment.getInstance().getProperties(configLocation)).register();
+
+		Observable<Properties> properties = SystemEnvironment.getInstance().getProperties(configLocation);
+		PropertyFactory propertyFactory = new ObservableProperties(properties);
+		this.propertyFactory.addFactory(propertyFactory);
 	}
 
 	/**
@@ -54,8 +58,8 @@ public abstract class ConfigurableDB extends AbstractDB {
 	 * @return
 	 */
 	@Nullable
-	public PropertyManager getPropertyManager() {
-		return propertyManager;
+	public DefaultPropertyFactory getPropertyManager() {
+		return propertyFactory;
 	}
 
 	public DataBase getDataBase() {
@@ -94,19 +98,17 @@ public abstract class ConfigurableDB extends AbstractDB {
 		TemporaryStorage temporaryCache = getTemporaryCache();
 		if (temporaryCache != null) {
 			String keyPrefix = getCachePrefix();
-			logger.info("Use temporary cache [{}], key prefix [{}]",
-					temporaryCache, keyPrefix);
+			logger.info("Use temporary cache [{}], key prefix [{}]", temporaryCache, keyPrefix);
 			return new TemporaryCacheManager(temporaryCache, true, keyPrefix);
 		}
 		return super.createDefaultCacheManager();
 	}
 
 	protected String getCachePrefix() {
-		if (propertyManager == null) {
+		if (propertyFactory == null) {
 			return DEFAULT_CACHE_PREFIX;
 		}
-		return StringUtils.toString(propertyManager.getString("cache.prefix"), "")
-				+ DEFAULT_CACHE_PREFIX;
+		return StringUtils.toString(propertyFactory.getString("cache.prefix"), "") + DEFAULT_CACHE_PREFIX;
 	}
 
 	public boolean isInitialized() {
@@ -129,9 +131,8 @@ public abstract class ConfigurableDB extends AbstractDB {
 	protected void initConfig() {
 		if (dataBase != null) {
 			boolean create = true;
-			if (propertyManager != null) {
-				create = propertyManager.getValue("create.database", boolean.class,
-						create);
+			if (propertyFactory != null) {
+				create = propertyFactory.getValue("create.database", boolean.class, create);
 			}
 
 			if (create) {
@@ -139,16 +140,13 @@ public abstract class ConfigurableDB extends AbstractDB {
 			}
 		}
 
-		if (propertyManager == null) {
+		if (propertyFactory == null) {
 			return;
 		}
-		setCheckTableChange(propertyManager.getValue("check.table.change",
-				boolean.class, true));
-		String create = StringUtils.toString(propertyManager.getString("create"),
-				null);
+		setCheckTableChange(propertyFactory.getValue("check.table.change", boolean.class, true));
+		String create = StringUtils.toString(propertyFactory.getString("create"), null);
 		if (StringUtils.isNotEmpty(create)) {
-			createTable(create, propertyManager.getValue("table.register.manager",
-					boolean.class, true));
+			createTable(create, propertyFactory.getValue("table.register.manager", boolean.class, true));
 		}
 	}
 }

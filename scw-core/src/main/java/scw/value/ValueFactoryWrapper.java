@@ -5,9 +5,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import scw.core.utils.ObjectUtils;
+import scw.event.ChangeEvent;
+import scw.event.EventListener;
+import scw.event.EventRegistration;
+import scw.event.Observable;
 
-public class ValueFactoryWrapper<K, F extends ValueFactory<K>> implements
-		ValueFactory<K> {
+public class ValueFactoryWrapper<K, F extends ValueFactory<K>> implements ValueFactory<K> {
 	protected final F targetFactory;
 
 	public ValueFactoryWrapper(F targetFactory) {
@@ -132,6 +135,41 @@ public class ValueFactoryWrapper<K, F extends ValueFactory<K>> implements
 	}
 
 	@Override
+	public Observable<Value> getObservableValue(K key) {
+		return targetFactory.getObservableValue(key);
+	}
+
+	@Override
+	public <T> Observable<T> getObservableValue(K key, Class<? extends T> type) {
+		return targetFactory.getObservableValue(key, type);
+	}
+
+	@Override
+	public <T> Observable<T> getObservableValue(K key, Class<? extends T> type, T defaultValue) {
+		return targetFactory.getObservableValue(key, type, defaultValue);
+	}
+
+	@Override
+	public Observable<Object> getObservableValue(K key, Type type) {
+		return targetFactory.getObservableValue(key, type);
+	}
+
+	@Override
+	public Observable<Object> getObservableValue(K key, Type type, Object defaultValue) {
+		return targetFactory.getObservableValue(key, type, defaultValue);
+	}
+
+	@Override
+	public Observable<Value> getObservableValue(K key, Value defaultValue) {
+		return targetFactory.getObservableValue(key, defaultValue);
+	}
+
+	@Override
+	public EventRegistration registerListener(K name, EventListener<ChangeEvent<K>> eventListener) {
+		return targetFactory.registerListener(name, eventListener);
+	}
+
+	@Override
 	public String toString() {
 		return targetFactory.toString();
 	}
@@ -149,8 +187,7 @@ public class ValueFactoryWrapper<K, F extends ValueFactory<K>> implements
 		}
 
 		if (obj instanceof ValueFactoryWrapper) {
-			return ObjectUtils.nullSafeEquals(
-					((ValueFactoryWrapper) obj).targetFactory, targetFactory);
+			return ObjectUtils.nullSafeEquals(((ValueFactoryWrapper) obj).targetFactory, targetFactory);
 		}
 
 		return ObjectUtils.nullSafeEquals(obj, targetFactory);

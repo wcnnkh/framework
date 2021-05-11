@@ -1,1 +1,5 @@
 scw.orm.convert.CollectionToMapConversionService
+
+## SQL TYPE ##
+scw.orm.convert.sql.DateConversionService
+## SQL TYPE ##

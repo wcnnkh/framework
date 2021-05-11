@@ -15,7 +15,7 @@ import scw.convert.TypeDescriptor;
 import scw.convert.support.EntityConversionService;
 import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.StringUtils;
-import scw.env.DefaultEnvironment;
+import scw.io.event.ObservableProperties;
 
 @Provider
 public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
@@ -97,21 +97,21 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 		}
 
 		public Object create() throws BeansException {
-			DefaultEnvironment propertyFactory = new DefaultEnvironment(false);
+			ObservableProperties properties = new ObservableProperties();
 			scw.event.Observable<Properties> observable = beanFactory.getEnvironment().getProperties(getConfigName());
-			propertyFactory.loadProperties(observable);
-			String host = propertyFactory.getString(HOST_CONFIG_KEY);
+			properties.combine(observable);
+			String host = properties.getString(HOST_CONFIG_KEY);
 			if (StringUtils.isEmpty(host)) {
 				host = "127.0.0.1";
 			}
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			EntityConversionService entityConfigure = new PropertyFactoryToEntityConversionService(beanFactory.getEnvironment());
-			entityConfigure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
+			EntityConversionService entityConfigure = new PropertyFactoryToEntityConversionService(beanFactory.getEnvironment().getConversionService());
+			entityConfigure.configurationProperties(properties, TypeDescriptor.forObject(properties), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
 			entityConfigure.setPrefix("redis");
 			entityConfigure.setStrict(true);
-			entityConfigure.configurationProperties(propertyFactory, TypeDescriptor.forObject(propertyFactory), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
+			entityConfigure.configurationProperties(properties, TypeDescriptor.forObject(properties), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
 			return jedisPoolConfig;
 		}
 	}

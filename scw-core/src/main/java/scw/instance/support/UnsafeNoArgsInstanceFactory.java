@@ -3,6 +3,7 @@ package scw.instance.support;
 import scw.instance.InstanceException;
 import scw.lang.NotSupportedException;
 import scw.util.UnsafeUtils;
+import scw.util.XUtils;
 
 public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	static {
@@ -16,7 +17,7 @@ public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 			return null;
 		}
 		
-		if(!isPresent(type)){
+		if(!XUtils.isAvailable(type)){
 			return null;
 		}
 
@@ -28,15 +29,6 @@ public class UnsafeNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	}
 
 	public boolean isInstance(Class<?> clazz) {
-		return isPresent(clazz);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name) {
-		return (T) getInstance(getClass(name));
-	}
-
-	public boolean isInstance(String name) {
-		return isInstance(getClass(name));
+		return XUtils.isAvailable(clazz);
 	}
 }

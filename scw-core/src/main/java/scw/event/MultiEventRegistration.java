@@ -30,7 +30,7 @@ public class MultiEventRegistration implements EventRegistration {
 		}
 	}
 	
-	public static <T extends Event> EventRegistration registerListener(EventListener<T> eventListener, Collection<? extends BasicEventRegistry<T>> registries){
+	public static <T extends Event> EventRegistration registerListener(EventListener<T> eventListener, Collection<? extends EventRegistry<T>> registries){
 		int size = CollectionUtils.isEmpty(registries)? 0:registries.size();
 		if(size == 0){
 			return EventRegistration.EMPTY;
@@ -38,7 +38,7 @@ public class MultiEventRegistration implements EventRegistration {
 		
 		List<EventRegistration> registrations = new ArrayList<EventRegistration>(size);
 		if(!CollectionUtils.isEmpty(registries)){
-			for(BasicEventRegistry<T> registry : registries){
+			for(EventRegistry<T> registry : registries){
 				if(registry == null){
 					continue;
 				}
@@ -54,7 +54,7 @@ public class MultiEventRegistration implements EventRegistration {
 	}
 	
 	@SafeVarargs
-	public static <T extends Event> EventRegistration registerListener(EventListener<T> eventListener, BasicEventRegistry<T> ...registries){
+	public static <T extends Event> EventRegistration registerListener(EventListener<T> eventListener, EventRegistry<T> ...registries){
 		return registerListener(eventListener, registries == null? null:Arrays.asList(registries));
 	}
 	

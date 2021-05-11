@@ -38,7 +38,7 @@ import scw.net.MimeType;
 import scw.net.message.Entity;
 import scw.net.message.InputMessage;
 import scw.net.message.Text;
-import scw.net.message.convert.MessageConverter;
+import scw.net.message.convert.DefaultMessageConverters;
 import scw.net.message.convert.MessageConverters;
 import scw.util.MultiIterable;
 import scw.web.WebUtils;
@@ -47,7 +47,7 @@ import scw.web.WebUtils;
 public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport;
-	private final MessageConverters messageConverterFactory = new MessageConverters();
+	private final MessageConverters messageConverters;
 	private final ExceptionHandler exceptionHandler;
 	private final HttpChannelFactory httpChannelFactory;
 	protected final BeanFactory beanFactory;
@@ -71,14 +71,12 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		for (ActionInterceptor actionInterceptor : beanFactory.getServiceLoader(ActionInterceptor.class)) {
 			this.actionInterceptor.add(actionInterceptor);
 		}
-
-		for (MessageConverter messageConverter : beanFactory.getServiceLoader(MessageConverter.class)) {
-			messageConverterFactory.getMessageConverters().add(messageConverter);
-		}
+		
+		messageConverters = new DefaultMessageConverters(beanFactory.getEnvironment().getConversionService(), beanFactory);
 	}
 
-	public MessageConverters getMessageConverterFactory() {
-		return messageConverterFactory;
+	public MessageConverters getMessageConverters() {
+		return messageConverters;
 	}
 
 	public JSONSupport getJsonSupport() {
@@ -203,9 +201,9 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		} else if (message instanceof Entity) {
 			@SuppressWarnings("rawtypes")
 			Entity entity = (Entity) message;
-			if (messageConverterFactory.canWrite(entity.getBody(), entity.getContentType())) {
+			if (messageConverters.canWrite(entity.getBody(), entity.getContentType())) {
 				InetUtils.writeHeader(entity, httpChannel.getResponse());
-				messageConverterFactory.write(entity.getBody(), entity.getContentType(), httpChannel.getResponse());
+				messageConverters.write(entity.getBody(), entity.getContentType(), httpChannel.getResponse());
 			}
 		} else {
 			if ((message instanceof String) || (ClassUtils.isPrimitiveOrWrapper(message.getClass()))) {

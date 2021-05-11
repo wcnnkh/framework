@@ -246,7 +246,7 @@ public final class XmlDubboUtils {
 			if (logger.isDebugEnabled()) {
 				logger.debug("{} set name={}, value={}", instance.getClass(), name, value);
 			}
-			MapperUtils.setValue(environment, instance, field, value);
+			MapperUtils.setValue(environment.getConversionService(), instance, field, value);
 		}
 	}
 

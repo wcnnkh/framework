@@ -19,7 +19,7 @@ public abstract class AbstractCacheManager<C extends Storage> implements CacheMa
 	
 	@SuppressWarnings("unchecked")
 	protected <T> Class<T> getUserClass(Class<T> clazz){
-		return (Class<T>) SystemEnvironment.getInstance().getUserClass(clazz);
+		return (Class<T>) SystemEnvironment.getInstance().getProxyFactory().getUserClass(clazz);
 	}
 
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {

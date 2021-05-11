@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import scw.boot.ApplicationEvent;
 import scw.cloud.event.HeartbeatEvent;
 import scw.core.reflect.ReflectionUtils;
-import scw.event.BasicEventDispatcher;
+import scw.event.EventDispatcher;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -49,7 +49,7 @@ public class CloudEurekaClient extends DiscoveryClient {
 
 	private final AtomicLong cacheRefreshedCount = new AtomicLong(0);
 
-	private BasicEventDispatcher<ApplicationEvent> publisher;
+	private EventDispatcher<ApplicationEvent> publisher;
 
 	private Field eurekaTransportField;
 
@@ -58,12 +58,12 @@ public class CloudEurekaClient extends DiscoveryClient {
 	private AtomicReference<EurekaHttpClient> eurekaHttpClient = new AtomicReference<>();
 
 	public CloudEurekaClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config,
-			BasicEventDispatcher<ApplicationEvent> publisher) {
+			EventDispatcher<ApplicationEvent> publisher) {
 		this(applicationInfoManager, config, null, publisher);
 	}
 
 	public CloudEurekaClient(ApplicationInfoManager applicationInfoManager, EurekaClientConfig config,
-			AbstractDiscoveryClientOptionalArgs<?> args, BasicEventDispatcher<ApplicationEvent> publisher) {
+			AbstractDiscoveryClientOptionalArgs<?> args, EventDispatcher<ApplicationEvent> publisher) {
 		super(applicationInfoManager, config, args);
 		this.applicationInfoManager = applicationInfoManager;
 		this.publisher = publisher;

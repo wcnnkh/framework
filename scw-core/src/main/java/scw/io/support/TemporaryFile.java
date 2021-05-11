@@ -6,11 +6,11 @@ import java.io.IOException;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.event.BasicEvent;
-import scw.event.BasicEventDispatcher;
+import scw.event.EventDispatcher;
 import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.support.DefaultBasicEventDispatcher;
+import scw.event.support.DefaultEventDispatcher;
 import scw.io.FileUtils;
 
 /**
@@ -21,7 +21,7 @@ import scw.io.FileUtils;
  */
 public class TemporaryFile extends File {
 	private static final long serialVersionUID = 1L;
-	private static final BasicEventDispatcher<Event> DELETE_EVENT_DISPATCHER = new DefaultBasicEventDispatcher<Event>(
+	private static final EventDispatcher<Event> DELETE_EVENT_DISPATCHER = new DefaultEventDispatcher<Event>(
 			true);
 
 	static {

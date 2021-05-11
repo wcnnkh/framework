@@ -1,7 +1,7 @@
 package scw.io.event;
 
-import scw.event.support.EmptyBasicEventDispatcher;
+import scw.event.support.EmptyEventDispatcher;
 
 public class EmptyResourceEventDispatcher extends
-		EmptyBasicEventDispatcher<ResourceEvent> implements ResourceEventDispatcher {
+		EmptyEventDispatcher<ResourceEvent> implements ResourceEventDispatcher {
 }

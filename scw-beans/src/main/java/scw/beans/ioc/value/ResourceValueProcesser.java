@@ -20,6 +20,6 @@ public class ResourceValueProcesser extends AbstractObservableResourceValueProce
 	protected Object parse(BeanDefinition beanDefinition, BeanFactory beanFactory,
 			Object bean, Field field, Value value, String name, Charset charset, Resource resource)
 			throws Exception {
-		return beanFactory.getEnvironment().resolveResource(resource, new TypeDescriptor(field.getSetter()));
+		return beanFactory.getEnvironment().getResourceResolver().resolveResource(resource, new TypeDescriptor(field.getSetter()));
 	}
 }

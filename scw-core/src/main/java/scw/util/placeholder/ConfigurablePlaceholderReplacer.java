@@ -1,7 +1,6 @@
 package scw.util.placeholder;
 
-public interface ConfigurablePlaceholderReplacer extends PlaceholderReplacer{
+public interface ConfigurablePlaceholderReplacer extends PlaceholderReplacer,
+		Iterable<PlaceholderReplacer> {
 	void addPlaceholderReplacer(PlaceholderReplacer placeholderReplacer);
-	
-	String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver) throws IllegalArgumentException;
 }

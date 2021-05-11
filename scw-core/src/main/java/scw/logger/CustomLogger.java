@@ -8,19 +8,24 @@ import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.lang.Nullable;
 
-public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<LevelFactory>> {
+public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<LevelRegistry>> {
 	private EventRegistration eventRegistration;
 	private Level level;
 
 	public synchronized void registerListener() {
 		if(eventRegistration == null) {
-			eventRegistration = LoggerLevelEventDispatcher.getInstance().registerListener(this);
+			eventRegistration = LoggerFactory.getLevelManager().registerListener(this);
 		}
 	}
 
 	@Override
-	public void onEvent(ChangeEvent<LevelFactory> event) {
-		setLevel(event.getSource().getLevel(getName()));
+	public void onEvent(ChangeEvent<LevelRegistry> event) {
+		Level oldLevel = getLevel();
+		Level newLevel = event.getSource().getLevel(getName());
+		if (!ObjectUtils.nullSafeEquals(oldLevel, newLevel)) {
+			info("Level [{}] change to [{}]", oldLevel, newLevel);
+		}
+		setLevel(newLevel);
 	}
 
 	@Nullable
@@ -39,10 +44,6 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 	}
 
 	public void setLevel(@Nullable Level level) {
-		if (ObjectUtils.nullSafeEquals(getLevel(), level)) {
-			// 这里使用off是为了任意日志级别都会显示该日志
-			log(Level.OFF, "Level [{}] change to [{}]", getLevel(), level);
-		}
 		this.level = level;
 	}
 	
@@ -53,5 +54,10 @@ public abstract class CustomLogger implements Logger, EventListener<ChangeEvent<
 		}
 		eventRegistration = null;
 		super.finalize();
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + getLevel() + "] " + getName();
 	}
 }

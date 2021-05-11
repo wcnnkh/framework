@@ -19,14 +19,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
 import scw.instance.InstanceUtils;
+import scw.lang.Nullable;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
-import scw.net.message.convert.DefaultMessageConverters;
-import scw.net.message.convert.MessageConverter;
-import scw.net.message.convert.MessageConverters;
 import scw.net.message.multipart.FileItemParser;
 import scw.util.Accept;
 
@@ -49,22 +46,14 @@ public final class InetUtils {
 
 	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
 			"scw.net.message.multipart.apache.ApacheFileItemParser");
-	private static final MessageConverters MESSAGE_CONVERTER = new DefaultMessageConverters(SystemEnvironment.getInstance());
 	
-	static {
-		MESSAGE_CONVERTER.getMessageConverters().addAll(InstanceUtils.loadAllService(MessageConverter.class));
-	}
-	
+	@Nullable
 	public static FileItemParser getFileItemParser() {
 		return FILE_ITEM_PARSER;
 	}
 
 	public static boolean isSupportMultiPart() {
 		return FILE_ITEM_PARSER != null;
-	}
-
-	public static MessageConverter getMessageConverter() {
-		return MESSAGE_CONVERTER;
 	}
 
 	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {

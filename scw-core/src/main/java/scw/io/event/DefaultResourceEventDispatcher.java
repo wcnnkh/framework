@@ -6,22 +6,20 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.core.utils.XTime;
-import scw.env.SystemEnvironment;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventType;
-import scw.event.support.DefaultBasicEventDispatcher;
+import scw.event.support.DefaultEventDispatcher;
 import scw.io.AbstractResource;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<ResourceEvent> {
+public class DefaultResourceEventDispatcher extends DefaultEventDispatcher<ResourceEvent> {
 	private static Logger logger = LoggerFactory.getLogger(DefaultResourceEventDispatcher.class);
 	/**
 	 * 默认的监听周期5s(经过多次尝试，在性能和实时性间取舍)
 	 */
-	static final long LISTENER_PERIOD = Math.max(1,
-			SystemEnvironment.getInstance().getValue("resource.listener.period", int.class, 5)) * 1000L;
+	static final long LISTENER_PERIOD = Math.max(1, Integer.getInteger("resource.listener.period", 5)) * 1000L;
 	static final Timer TIMER = new Timer(DefaultResourceEventDispatcher.class.getSimpleName(), true);// 守护进程，自动退出
 	private volatile AtomicBoolean lock = new AtomicBoolean(false);
 	private final AbstractResource resource;
@@ -63,6 +61,9 @@ public class DefaultResourceEventDispatcher extends DefaultBasicEventDispatcher<
 	}
 	
 	protected void onChange(ResourceEvent resourceEvent){
+		if(logger.isDebugEnabled()){
+			logger.debug(resourceEvent.toString());
+		}
 		publishEvent(resourceEvent);
 	}
 

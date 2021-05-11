@@ -1,7 +1,12 @@
 package scw.util.placeholder.support;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
+import scw.core.OrderComparator;
+import scw.core.utils.CollectionUtils;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
 import scw.util.placeholder.PlaceholderReplacer;
 import scw.util.placeholder.PlaceholderResolver;
@@ -11,20 +16,35 @@ public class DefaultPlaceholderReplacer implements ConfigurablePlaceholderReplac
 	private static final String DEFAULT_SUFFIX = "}";
 	private static final PlaceholderReplacer DEFAULT_SIMPLE_REPLACER = new SimplePlaceholderReplaer(DEFAULT_PREFIX, DEFAULT_SUFFIX, true);
 	private static final PlaceholderReplacer DEFAULT_SMART_REPLACER = new SmartPlaceholderReplacer(DEFAULT_PREFIX, DEFAULT_SUFFIX, true);	
-	
-	private final LinkedList<PlaceholderReplacer> placeholderReplacers = new LinkedList<PlaceholderReplacer>();
+	private volatile List<PlaceholderReplacer> placeholderReplacers;
 	
 	public void addPlaceholderReplacer(PlaceholderReplacer placeholderReplacer){
-		synchronized (placeholderReplacers) {
-			this.placeholderReplacers.add(placeholderReplacer);
+		if(placeholderReplacer == null){
+			return ;
 		}
+		
+		synchronized (this) {
+			if(placeholderReplacers == null){
+				placeholderReplacers = new ArrayList<PlaceholderReplacer>(8);
+			}
+			this.placeholderReplacers.add(placeholderReplacer);
+			Collections.sort(placeholderReplacers, OrderComparator.INSTANCE.reversed());
+		}
+	}
+	
+	@Override
+	public Iterator<PlaceholderReplacer> iterator() {
+		if(placeholderReplacers == null){
+			return Collections.emptyIterator();
+		}
+		return CollectionUtils.getIterator(placeholderReplacers, true);
 	}
 	
 	public String replacePlaceholders(String value,
 			PlaceholderResolver placeholderResolver) {
 		String textToUse = value;
-		for(PlaceholderReplacer placeholderReplacer : placeholderReplacers){
-			textToUse = placeholderReplacer.replacePlaceholders(textToUse, placeholderResolver);
+		for(PlaceholderReplacer replacer : this){
+			textToUse = replacer.replacePlaceholders(textToUse, placeholderResolver);
 		}
 		
 		textToUse = SimplePlaceholderReplaer.NON_STRICT_REPLACER.replacePlaceholders(textToUse, placeholderResolver);
@@ -36,8 +56,8 @@ public class DefaultPlaceholderReplacer implements ConfigurablePlaceholderReplac
 	
 	public String replaceRequiredPlaceholders(String value, PlaceholderResolver placeholderResolver){
 		String textToUse = value;
-		for(PlaceholderReplacer placeholderReplacer : placeholderReplacers){
-			textToUse = placeholderReplacer.replacePlaceholders(textToUse, new RequiredPlaceholderResolver(textToUse, placeholderResolver));
+		for(PlaceholderReplacer replacer : this){
+			textToUse = replacer.replacePlaceholders(textToUse, new RequiredPlaceholderResolver(textToUse, placeholderResolver));
 		}
 		
 		textToUse = SimplePlaceholderReplaer.NON_STRICT_REPLACER.replacePlaceholders(textToUse, new RequiredPlaceholderResolver(textToUse, placeholderResolver));

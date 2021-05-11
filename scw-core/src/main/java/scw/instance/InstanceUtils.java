@@ -2,17 +2,13 @@ package scw.instance;
 
 import java.util.List;
 
-import scw.core.annotation.AnnotationUtils;
 import scw.core.parameter.ParameterDescriptor;
-import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
 import scw.instance.annotation.PropertyName;
 import scw.instance.support.DefaultInstanceFactory;
 import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.lang.NotSupportedException;
-import scw.util.JavaVersion;
 
 
 public final class InstanceUtils {
@@ -50,14 +46,6 @@ public final class InstanceUtils {
 	public static <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String ...defaultNames){
 		DefaultServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(INSTANCE_FACTORY, SystemEnvironment.getInstance());
 		return serviceLoaderFactory.getServiceLoader(serviceClass, defaultNames);
-	}
-	
-	public static boolean isSupported(Class<?> clazz) {
-		if(ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz)){
-			return false;
-		}
-		
-		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
 	}
 	
 	public static String getPropertyName(ParameterDescriptor parameterDescriptor) {

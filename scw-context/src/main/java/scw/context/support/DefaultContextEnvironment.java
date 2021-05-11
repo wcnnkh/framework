@@ -21,7 +21,6 @@ public class DefaultContextEnvironment extends DefaultEnvironment implements Con
 	private final Set<Class<?>> sourceClasses = new LinkedHashSet<Class<?>>(8);
 
 	public DefaultContextEnvironment(boolean concurrent, boolean cache, NoArgsInstanceFactory instanceFactory) {
-		super(concurrent);
 		this.loaderFactory = new DefaultProviderLoaderFactory(concurrent, false, this, instanceFactory);
 	}
 

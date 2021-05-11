@@ -46,7 +46,7 @@ public final class DBUtils {
 	}
 	
 	public static void loadProperties(Object instance, PropertyFactory propertyFactory) {
-		EntityConversionService configure = new PropertyFactoryToEntityConversionService(SystemEnvironment.getInstance());
+		EntityConversionService configure = new PropertyFactoryToEntityConversionService(SystemEnvironment.getInstance().getConversionService());
 		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
 		configure.setStrict(true);
 		configure.setLoggerLevel(Level.INFO.getValue());

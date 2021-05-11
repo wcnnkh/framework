@@ -202,7 +202,7 @@ public class TomcatStart implements Main, Destroy {
 			context.addLifecycleListener(new AprLifecycleListener());
 		}
 
-		application.getEnvironment().addPropertyFactory(new ServletContextPropertyFactory(context.getServletContext()));
+		application.getEnvironment().addFactory(new ServletContextPropertyFactory(context.getServletContext()));
 
 		configureJSP(context, application);
 		configureServlet(context, application, mainClass);

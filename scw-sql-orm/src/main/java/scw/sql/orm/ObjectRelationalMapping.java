@@ -184,8 +184,8 @@ public class ObjectRelationalMapping implements Accept<Field> {
 
 	@SuppressWarnings("unchecked")
 	public <T> T newEntity(Class<T> entityClass) {
-		if (isTable(entityClass) && SystemEnvironment.getInstance().canProxy(entityClass)) {
-			return (T) FieldSetterListenUtils.getFieldSetterListenProxy(SystemEnvironment.getInstance(), entityClass).create();
+		if (isTable(entityClass) && SystemEnvironment.getInstance().getProxyFactory().canProxy(entityClass)) {
+			return (T) FieldSetterListenUtils.getFieldSetterListenProxy(SystemEnvironment.getInstance().getProxyFactory(), entityClass).create();
 		} else {
 			return InstanceUtils.INSTANCE_FACTORY.getInstance(entityClass);
 		}

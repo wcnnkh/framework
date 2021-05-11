@@ -43,7 +43,7 @@ public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 		public Object create() throws BeansException {
 			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-			MapToEntityConversionService conversionService = new MapToEntityConversionService(beanFactory.getEnvironment());
+			MapToEntityConversionService conversionService = new MapToEntityConversionService(beanFactory.getEnvironment().getConversionService());
 			conversionService.configurationProperties(properties, connectionFactory);
 			return connectionFactory;
 		}

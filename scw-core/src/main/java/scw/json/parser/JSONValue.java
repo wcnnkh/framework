@@ -183,7 +183,7 @@ public class JSONValue {
 			return String.valueOf(value);
 		}
 		
-		Class<?> userClass = SystemEnvironment.getInstance().getUserClass(value.getClass());
+		Class<?> userClass = SystemEnvironment.getInstance().getProxyFactory().getUserClass(value.getClass());
 		Fields fields = MapperUtils.getMapper().getFields(userClass).accept(FieldFeature.IGNORE_STATIC);
 		return SimpleJSONObject.toJSONString(fields.getValueMap(value));
 	}

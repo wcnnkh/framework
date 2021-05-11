@@ -141,7 +141,7 @@ public final class BeanUtils {
 	
 	public static void configurationProperties(Object instance, @Nullable AnnotatedElement annotatedElement, Environment environment) {
 		ConfigurationProperties configurationProperties = annotatedElement == null? null: annotatedElement.getAnnotation(ConfigurationProperties.class);
-		Class<?> configurationPropertiesClass = environment.getUserClass(instance.getClass());
+		Class<?> configurationPropertiesClass = environment.getProxyFactory().getUserClass(instance.getClass());
 		if (configurationProperties == null) {
 			// 定义上不存在此注解
 			while (configurationPropertiesClass != null && configurationPropertiesClass != Object.class) {
@@ -163,7 +163,7 @@ public final class BeanUtils {
 	
 	private static EntityConversionService createEntityConversionService(Environment environment, ConfigurationProperties configurationProperties){
 		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService(
-				environment);
+				environment.getConversionService());
 		entityConversionService.setStrict(false);
 		entityConversionService.getFieldAccept().add(new Accept<Field>() {
 

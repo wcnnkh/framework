@@ -73,13 +73,4 @@ public class SunNoArgsInstanceFactory extends AbstractNoArgsInstanceFactory {
 	public boolean isInstance(Class<?> clazz) {
 		return isInstance(clazz);
 	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> T getInstance(String name) {
-		return (T) getInstance(getClass(name));
-	}
-
-	public boolean isInstance(String name) {
-		return isInstance(getClass(name));
-	}
 }

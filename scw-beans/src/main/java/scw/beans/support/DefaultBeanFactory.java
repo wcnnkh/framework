@@ -30,7 +30,7 @@ import scw.env.Environment;
 import scw.env.SystemEnvironment;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.support.DefaultBasicEventDispatcher;
+import scw.event.support.DefaultEventDispatcher;
 import scw.instance.InstanceFactory;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
@@ -44,7 +44,7 @@ import scw.util.Result;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultBeanFactory extends LifecycleAuxiliary implements ConfigurableBeanFactory {
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanFactory.class);
-	private final DefaultBasicEventDispatcher<BeanLifeCycleEvent> beanLifeCycleEventDispatcher = new DefaultBasicEventDispatcher<BeanLifeCycleEvent>(
+	private final DefaultEventDispatcher<BeanLifeCycleEvent> beanLifeCycleEventDispatcher = new DefaultEventDispatcher<BeanLifeCycleEvent>(
 			true);
 	private final DefaultContextEnvironment environment = new DefaultContextEnvironment(true, true, this) {
 		public ClassLoader getClassLoader() {
@@ -52,7 +52,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 		};
 	};
 
-	private final DefaultConfigurableAop aop = new DefaultConfigurableAop(environment);
+	private final DefaultConfigurableAop aop = new DefaultConfigurableAop(environment.getProxyFactory());
 
 	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(this);
 	private final SingletonBeanRegistry singletonBeanRegistry = new DefaultSingletonBeanRegistry(this);
@@ -69,7 +69,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 				return BeanUtils.getRuntimeBean(instance) != null;
 			}
 		});
-		getEnvironment().addPropertyFactory(SystemEnvironment.getInstance());
+		getEnvironment().addFactory(SystemEnvironment.getInstance());
 		
 		registerSingleton(BeanFactory.class.getName(), this);
 		registerAlias(BeanFactory.class.getName(), InstanceFactory.class.getName());
@@ -394,7 +394,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 		}
 
 		public Class getTargetClass() {
-			return getEnvironment().getUserClass(instance.getClass());
+			return getEnvironment().getProxyFactory().getUserClass(instance.getClass());
 		}
 
 		public boolean isSingleton() {

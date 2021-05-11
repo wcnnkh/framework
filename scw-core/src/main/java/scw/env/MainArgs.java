@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import scw.core.Ordered;
 import scw.core.utils.StringUtils;
 import scw.util.AbstractIterator;
 import scw.util.Pair;
@@ -12,7 +13,7 @@ import scw.value.PropertyFactory;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public class MainArgs implements PropertyFactory{
+public class MainArgs implements PropertyFactory, Ordered{
 	private final String[] args;
 
 	public MainArgs(String[] args) {
@@ -30,6 +31,14 @@ public class MainArgs implements PropertyFactory{
 	
 	public boolean contains(String value){
 		return indexOf(value) != -1;
+	}
+
+	/**
+	 * 默认的最高优先级
+	 */
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE;
 	}
 
 	public Value get(int index) {

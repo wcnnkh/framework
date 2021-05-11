@@ -3,16 +3,15 @@ package scw.nacos.client;
 import java.util.Collections;
 import java.util.Iterator;
 
+import com.alibaba.nacos.api.config.ConfigService;
+import com.alibaba.nacos.api.exception.NacosException;
+
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.value.ConfigurablePropertyFactory;
-import scw.value.ListenablePropertyFactory;
 import scw.value.StringValue;
 import scw.value.Value;
-
-import com.alibaba.nacos.api.config.ConfigService;
-import com.alibaba.nacos.api.exception.NacosException;
 
 /**
  * 使用nacos实现配置中心
@@ -20,7 +19,7 @@ import com.alibaba.nacos.api.exception.NacosException;
  * @author shuchaowen
  *
  */
-public class NacosPropertyFactory implements ListenablePropertyFactory, ConfigurablePropertyFactory{
+public class NacosPropertyFactory implements ConfigurablePropertyFactory{
 	private final ConfigService configService;
 	private final String group;
 	private final long timeoutMs;

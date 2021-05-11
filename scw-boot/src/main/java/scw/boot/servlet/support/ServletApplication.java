@@ -19,7 +19,7 @@ public class ServletApplication extends DefaultApplication {
 			getContextClassesLoader().add(new DirectoryClassesLoader(webRoot));
 		}
 		
-		getEnvironment().addPropertyFactory(new ServletContextPropertyFactory(servletContext));
+		getEnvironment().addFactory(new ServletContextPropertyFactory(servletContext));
 		getEnvironment().addResourceLoader(new ServletContextResourceLoader(servletContext));
 	}
 

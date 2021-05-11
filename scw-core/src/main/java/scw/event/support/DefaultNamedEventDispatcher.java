@@ -1,6 +1,6 @@
 package scw.event.support;
 
-import scw.event.BasicEventDispatcher;
+import scw.event.EventDispatcher;
 import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
@@ -9,7 +9,7 @@ import scw.util.SmartMap;
 
 public class DefaultNamedEventDispatcher<K, T extends Event> implements
 		NamedEventDispatcher<K, T> {
-	private volatile SmartMap<K, BasicEventDispatcher<T>> namedEventListenerMap;
+	private volatile SmartMap<K, EventDispatcher<T>> namedEventListenerMap;
 	private final boolean concurrent;
 	private final int initialCapacity;
 
@@ -26,7 +26,7 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements
 		return concurrent;
 	}
 
-	public SmartMap<K, BasicEventDispatcher<T>> getNamedEventListenerMap() {
+	public SmartMap<K, EventDispatcher<T>> getNamedEventListenerMap() {
 		if (namedEventListenerMap == null) {
 			synchronized (this) {
 				if (namedEventListenerMap == null) {
@@ -37,17 +37,17 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements
 		return namedEventListenerMap;
 	}
 
-	protected BasicEventDispatcher<T> createBasicEventDispatcher(K name) {
-		return new DefaultBasicEventDispatcher<T>(isConcurrent());
+	protected EventDispatcher<T> createBasicEventDispatcher(K name) {
+		return new DefaultEventDispatcher<T>(isConcurrent());
 	}
 
 	public EventRegistration registerListener(K name,
 			EventListener<T> eventListener) {
-		BasicEventDispatcher<T> eventDispatcher = getNamedEventListenerMap()
+		EventDispatcher<T> eventDispatcher = getNamedEventListenerMap()
 				.get(name);
 		if (eventDispatcher == null) {
 			eventDispatcher = createBasicEventDispatcher(name);
-			BasicEventDispatcher<T> dispatcher = getNamedEventListenerMap()
+			EventDispatcher<T> dispatcher = getNamedEventListenerMap()
 					.putIfAbsent(name, eventDispatcher);
 			if (dispatcher != null) {
 				eventDispatcher = dispatcher;
@@ -58,7 +58,7 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements
 	}
 
 	public void publishEvent(K name, T event) {
-		BasicEventDispatcher<T> dispatcher = getNamedEventListenerMap().get(
+		EventDispatcher<T> dispatcher = getNamedEventListenerMap().get(
 				name);
 		if (dispatcher == null) {
 			return;

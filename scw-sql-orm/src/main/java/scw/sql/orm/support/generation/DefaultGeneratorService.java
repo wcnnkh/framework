@@ -45,7 +45,7 @@ public class DefaultGeneratorService extends AbstractGeneratorService {
 	}
 	
 	protected Class<?> getUserClass(Class<?> clazz){
-		return SystemEnvironment.getInstance().getUserClass(clazz);
+		return SystemEnvironment.getInstance().getProxyFactory().getUserClass(clazz);
 	}
 
 	protected long getMaxId(GeneratorContext generatorContext) {

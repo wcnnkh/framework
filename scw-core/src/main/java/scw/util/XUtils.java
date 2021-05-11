@@ -15,6 +15,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
+import scw.core.annotation.AnnotationUtils;
+import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.NotSupportedException;
@@ -260,5 +263,22 @@ public final class XUtils {
 			 */
 		}
 		return path;
+	}
+	
+	/**
+	 * 此类是否可用
+	 * @param clazz
+	 * @return
+	 */
+	public static boolean isAvailable(Class<?> clazz) {
+		if(clazz == null){
+			return false;
+		}
+		
+		if(ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz)){
+			return false;
+		}
+		
+		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
 	}
 }

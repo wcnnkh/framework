@@ -1,5 +1,6 @@
 package scw.convert.support;
 
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Currency;
 import java.util.Locale;
@@ -13,6 +14,7 @@ import scw.convert.lang.DocumentParseConversionService;
 import scw.convert.lang.JsonConversionService;
 import scw.convert.lang.JsonToObjectConversionService;
 import scw.convert.lang.ObjectToStringConverter;
+import scw.convert.lang.ReaderToStringConverter;
 import scw.convert.lang.ResourceToPropertiesConverter;
 import scw.convert.lang.StringToCharsetConverter;
 import scw.convert.lang.StringToCurrencyConverter;
@@ -47,7 +49,8 @@ public class DefaultConversionService extends ConversionServices {
 		addConversionService(new ConverterConversionService(String.class, Locale.class, new StringToLocaleConverter()));
 		addConversionService(new ConverterConversionService(String.class, TimeZone.class, new StringToTimeZoneConverter()));
 		addConversionService(new ConverterConversionService(String.class, Currency.class, new StringToCurrencyConverter()));
-
+		addConversionService(new ConverterConversionService(Reader.class, String.class, new ReaderToStringConverter()));
+		
 		addConversionService(new EntityToMapConversionService(this));
 		addConversionService(new ObjectToArrayConversionService(this));
 		addConversionService(new ObjectToCollectionConversionService(this));

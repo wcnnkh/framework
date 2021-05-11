@@ -18,11 +18,11 @@ import scw.context.annotation.ProviderClassesLoader;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.instance.InstanceUtils;
 import scw.instance.ServiceLoader;
 import scw.instance.support.InstanceIterable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.XUtils;
 
 public class LazyBeanDefinitionRegsitry extends
 		DefaultBeanDefinitionRegistry {
@@ -121,7 +121,7 @@ public class LazyBeanDefinitionRegsitry extends
 			return null;
 		}
 
-		if (!InstanceUtils.isSupported(clazz)) {
+		if (!XUtils.isAvailable(clazz)) {
 			return null;
 		}
 		
@@ -194,7 +194,7 @@ public class LazyBeanDefinitionRegsitry extends
 				continue;
 			}
 
-			if (!InstanceUtils.isSupported(clz)) {
+			if (!XUtils.isAvailable(clz)) {
 				logger.debug("{} not present", clz);
 				continue;
 			}

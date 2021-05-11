@@ -2,14 +2,29 @@ package scw.event;
 
 import scw.convert.Converter;
 
-public abstract class ConvertibleObservable<O, T> extends AbstractObservable<T>
-		implements Converter<O, T> {
+public class ConvertibleObservable<O, T> extends AbstractObservable<T> {
 	private final Observable<O> observable;
+	private final Converter<O, T> converter;
+	private final EventRegistration eventRegistration;
 
-	public ConvertibleObservable(Observable<O> observable) {
+	public ConvertibleObservable(Observable<O> observable,
+			Converter<O, T> converter) {
 		this.observable = observable;
-		observable.getRegistry().registerListener(
-				new ObservableSyncListener<O, T>(this, true, this));
+		this.converter = converter;
+		this.eventRegistration = observable.registerListener(new EventListener<ChangeEvent<O>>() {
+
+			@Override
+			public void onEvent(ChangeEvent<O> event) {
+				ConvertibleObservable.this.publishEvent(new ChangeEvent<T>(
+						event.getEventType(), forceGet()));
+			}
+		});
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		eventRegistration.unregister();
+		super.finalize();
 	}
 
 	public Observable<O> getOriginObservable() {
@@ -17,12 +32,6 @@ public abstract class ConvertibleObservable<O, T> extends AbstractObservable<T>
 	}
 
 	public T forceGet() {
-		return convert(observable.forceGet());
-	}
-
-	public EventRegistration registerListener(boolean exists,
-			EventListener<ChangeEvent<T>> eventListener) {
-		return observable.registerListener(exists, new ObservableSyncListener<O, T>(this,
-				false, eventListener));
+		return converter.convert(observable.get());
 	}
 }

@@ -13,11 +13,11 @@ import java.util.Set;
 
 import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
-import scw.event.BasicEventDispatcher;
+import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.ObjectEvent;
-import scw.event.support.DefaultBasicEventDispatcher;
+import scw.event.support.DefaultEventDispatcher;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
 import scw.http.server.ServerHttpRequest;
@@ -34,7 +34,7 @@ import scw.web.WebUtils;
 public class DefaultActionManager implements ActionManager {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private Map<Method, Action> actionMap = new LinkedHashMap<Method, Action>();
-	private BasicEventDispatcher<ObjectEvent<Action>> eventDispatcher = new DefaultBasicEventDispatcher<ObjectEvent<Action>>(
+	private EventDispatcher<ObjectEvent<Action>> eventDispatcher = new DefaultEventDispatcher<ObjectEvent<Action>>(
 			false);
 	private final EnumMap<HttpMethod, Map<Restful, Action>> restfulActionMap = new EnumMap<HttpMethod, Map<Restful, Action>>(
 			HttpMethod.class);

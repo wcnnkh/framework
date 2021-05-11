@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import scw.lang.Nullable;
 import scw.logger.CustomLogger;
+import scw.logger.LoggerFactory;
 import scw.util.PlaceholderFormat;
 
 public class Log4jLogger extends CustomLogger {
@@ -15,6 +16,10 @@ public class Log4jLogger extends CustomLogger {
 	public Log4jLogger(Logger logger, @Nullable String placeholder) {
 		this.placeholder = placeholder;
 		this.logger = logger;
+		Level level = LoggerFactory.getLevelManager().get().getLevel(logger.getName());
+		if (level != null) {
+			setLevel(level);
+		}
 		registerListener();
 	}
 
@@ -79,6 +84,9 @@ public class Log4jLogger extends CustomLogger {
 	}
 
 	private static org.apache.log4j.Level parse(Level level) {
+		if(level == null){
+			return org.apache.log4j.Level.INFO;
+		}
 		return org.apache.log4j.Level.toLevel(level.getName(), new CustomLog4jLevel(level));
 	}
 

@@ -5,10 +5,10 @@ import scw.context.Destroy;
 import scw.context.Init;
 import scw.context.ProviderClassesLoaderFactory;
 import scw.env.Environment;
-import scw.event.BasicEventDispatcher;
+import scw.event.EventDispatcher;
 import scw.logger.Logger;
 
-public interface Application extends ProviderClassesLoaderFactory, Init, Destroy, BasicEventDispatcher<ApplicationEvent> {
+public interface Application extends ProviderClassesLoaderFactory, Init, Destroy, EventDispatcher<ApplicationEvent> {
 	BeanFactory getBeanFactory();
 
 	Environment getEnvironment();

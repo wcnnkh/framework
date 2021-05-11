@@ -17,6 +17,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import scw.event.EventType;
 import scw.io.AbstractResource;
 import scw.lang.RequiredJavaVersion;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 /**
  * 使用WatchService实现resource监听<br/>
@@ -27,6 +29,7 @@ import scw.lang.RequiredJavaVersion;
  */
 @RequiredJavaVersion(7)
 public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDispatcher {
+	private static Logger logger = LoggerFactory.getLogger(WatchServiceResourceEventDispatcher.class);
 	private static final WatchService WATCH_SERVICE;
 	private static ConcurrentHashMap<Path, ResourceWatchKey> listenerMap;
 
@@ -214,7 +217,11 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 				File file = path.toFile();
 				for(ResourceItem item : resources){
 					if (file.getName().equals(item.getName())) {
-						item.getResource().publishEvent(new ResourceEvent(eventType, item.getResource()));
+						ResourceEvent resourceEvent = new ResourceEvent(eventType, item.getResource());
+						if(logger.isDebugEnabled()){
+							logger.debug(resourceEvent.toString());
+						}
+						item.getResource().publishEvent(resourceEvent);
 					}
 				};
 			}
