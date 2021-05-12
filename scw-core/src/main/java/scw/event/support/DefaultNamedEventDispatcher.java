@@ -7,6 +7,13 @@ import scw.event.EventRegistration;
 import scw.event.NamedEventDispatcher;
 import scw.util.SmartMap;
 
+/**
+ * 这是一个同步的基于命名的事件分发器
+ * @author shuchaowen
+ *
+ * @param <K>
+ * @param <T>
+ */
 public class DefaultNamedEventDispatcher<K, T extends Event> implements
 		NamedEventDispatcher<K, T> {
 	private volatile SmartMap<K, EventDispatcher<T>> namedEventListenerMap;

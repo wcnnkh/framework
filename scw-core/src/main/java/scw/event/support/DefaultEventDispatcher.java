@@ -10,6 +10,12 @@ import scw.event.EventRegistration;
 import scw.lang.AlreadyExistsException;
 import scw.util.CollectionFactory;
 
+/**
+ * 这是一个同步的事件分发服务
+ * @author shuchaowen
+ *
+ * @param <T>
+ */
 public class DefaultEventDispatcher<T extends Event> implements EventDispatcher<T> {
 	private volatile Collection<EventRegistrationInternal> eventListeners;
 	private final boolean concurrent;
