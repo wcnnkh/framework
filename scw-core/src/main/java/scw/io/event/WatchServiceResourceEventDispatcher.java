@@ -38,7 +38,7 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 		try {
 			watchService = FileSystems.getDefault().newWatchService();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e, "无法创建WatchService");
 		}
 
 		WATCH_SERVICE = watchService;
@@ -53,7 +53,11 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 								key.run();
 							}
 						} catch (Throwable e) {
-							logger.error(e, "轮询文件变化异常");
+							//如果出现异常就休眠一秒再轮询
+							try {
+								Thread.sleep(1000L);
+							} catch (InterruptedException e1) {
+							}
 						}
 					}
 				};
@@ -196,49 +200,53 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 			}
 			
 			List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
-			for (WatchEvent<?> event : watchEvents) {
-				Object context = event.context();
-				if(context == null){
-					continue;
-				}
-				
-				if (!(context instanceof Path)) {
-					continue;
-				}
-				
-				Path path = (Path) context;
-				File file = path.toFile();
-				if(file == null){
-					continue;
-				}
-				
-				EventType eventType = null;
-				if (StandardWatchEventKinds.ENTRY_CREATE.equals(event.kind())) {
-					eventType = EventType.CREATE;
-				} else if (StandardWatchEventKinds.ENTRY_MODIFY.equals(event.kind())) {
-					eventType = EventType.UPDATE;
-				} else if (StandardWatchEventKinds.ENTRY_DELETE.equals(event.kind())) {
-					eventType = EventType.DELETE;
-				}
-				
-				if (eventType == null) {
-					continue;
-				}
-				
-				for(ResourceItem item : resources){
-					if (file.getName().equals(item.getName())) {
-						ResourceEvent resourceEvent = new ResourceEvent(eventType, item.getResource());
-						if(logger.isDebugEnabled()){
-							logger.debug(resourceEvent.toString());
-						}
-						
-						try {
-							item.getResource().publishEvent(resourceEvent);
-						} catch (Throwable e) {
-							logger.error(e, item.getResource().getDescription());
-						}
+			try {
+				for (WatchEvent<?> event : watchEvents) {
+					Object context = event.context();
+					if(context == null){
+						continue;
 					}
-				};
+					
+					if (!(context instanceof Path)) {
+						continue;
+					}
+					
+					Path path = (Path) context;
+					File file = path.toFile();
+					if(file == null){
+						continue;
+					}
+					
+					EventType eventType = null;
+					if (StandardWatchEventKinds.ENTRY_CREATE.equals(event.kind())) {
+						eventType = EventType.CREATE;
+					} else if (StandardWatchEventKinds.ENTRY_MODIFY.equals(event.kind())) {
+						eventType = EventType.UPDATE;
+					} else if (StandardWatchEventKinds.ENTRY_DELETE.equals(event.kind())) {
+						eventType = EventType.DELETE;
+					}
+					
+					if (eventType == null) {
+						continue;
+					}
+					
+					for(ResourceItem item : resources){
+						if (file.getName().equals(item.getName())) {
+							ResourceEvent resourceEvent = new ResourceEvent(eventType, item.getResource());
+							if(logger.isDebugEnabled()){
+								logger.debug(resourceEvent.toString());
+							}
+							
+							try {
+								item.getResource().publishEvent(resourceEvent);
+							} catch (Throwable e) {
+								logger.error(e, item.getResource().getDescription());
+							}
+						}
+					};
+				}
+			} catch (Throwable e) {
+				logger.error(e, watchKey.toString());
 			}
 			watchKey.reset();
 		}

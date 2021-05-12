@@ -26,6 +26,7 @@ public abstract class AbstractObservable<T> extends
 	@Override
 	public void publishEvent(ChangeEvent<T> event) {
 		valueSupplier.setCache(event.getSource());
+		//即便publish出现异常值也在上一步插入了
 		super.publishEvent(event);
 	}
 	
