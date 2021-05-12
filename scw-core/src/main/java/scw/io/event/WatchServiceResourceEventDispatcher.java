@@ -38,7 +38,7 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 		try {
 			watchService = FileSystems.getDefault().newWatchService();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e, "无法创建WatchService");
 		}
 
 		WATCH_SERVICE = watchService;
@@ -53,6 +53,11 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 								key.run();
 							}
 						} catch (Throwable e) {
+							//如果出现异常就休眠一秒再轮询
+							try {
+								Thread.sleep(1000L);
+							} catch (InterruptedException e1) {
+							}
 						}
 					}
 				};
