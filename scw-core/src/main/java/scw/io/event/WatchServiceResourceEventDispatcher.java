@@ -52,7 +52,8 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 							for (ResourceWatchKey key : listenerMap.values()) {
 								key.run();
 							}
-						} catch (Exception e) {
+						} catch (Throwable e) {
+							logger.error(e, "轮询文件变化异常");
 						}
 					}
 				};
@@ -197,35 +198,48 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 			List<WatchEvent<?>> watchEvents = watchKey.pollEvents();
 			for (WatchEvent<?> event : watchEvents) {
 				Object context = event.context();
+				if(context == null){
+					continue;
+				}
+				
 				if (!(context instanceof Path)) {
 					continue;
 				}
 				
 				Path path = (Path) context;
+				File file = path.toFile();
+				if(file == null){
+					continue;
+				}
+				
 				EventType eventType = null;
-				if (event.kind().equals(StandardWatchEventKinds.ENTRY_CREATE)) {
+				if (StandardWatchEventKinds.ENTRY_CREATE.equals(event.kind())) {
 					eventType = EventType.CREATE;
-				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_MODIFY)) {
+				} else if (StandardWatchEventKinds.ENTRY_MODIFY.equals(event.kind())) {
 					eventType = EventType.UPDATE;
-				} else if (event.kind().equals(StandardWatchEventKinds.ENTRY_DELETE)) {
+				} else if (StandardWatchEventKinds.ENTRY_DELETE.equals(event.kind())) {
 					eventType = EventType.DELETE;
 				}
+				
 				if (eventType == null) {
-					return;
+					continue;
 				}
-
-				File file = path.toFile();
+				
 				for(ResourceItem item : resources){
 					if (file.getName().equals(item.getName())) {
 						ResourceEvent resourceEvent = new ResourceEvent(eventType, item.getResource());
 						if(logger.isDebugEnabled()){
 							logger.debug(resourceEvent.toString());
 						}
-						item.getResource().publishEvent(resourceEvent);
+						
+						try {
+							item.getResource().publishEvent(resourceEvent);
+						} catch (Throwable e) {
+							logger.error(e, item.getResource().getDescription());
+						}
 					}
 				};
 			}
-
 			watchKey.reset();
 		}
 	}
