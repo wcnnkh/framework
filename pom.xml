@@ -690,5 +690,6 @@
 		<module>scw-consistency</module>
 		<module>scw-jackson</module>
 		<module>scw-orm</module>
+		<module>scw-apollo-client</module>
 	</modules>
 </project>
