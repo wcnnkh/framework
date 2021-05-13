@@ -13,10 +13,8 @@ import java.util.Set;
 
 import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
-import scw.event.EventDispatcher;
-import scw.event.EventListener;
-import scw.event.EventRegistration;
-import scw.event.ObjectEvent;
+import scw.event.ChangeEvent;
+import scw.event.EventType;
 import scw.event.support.DefaultEventDispatcher;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
@@ -31,16 +29,18 @@ import scw.value.Value;
 import scw.web.WebUtils;
 
 @Provider
-public class DefaultActionManager implements ActionManager {
+public class DefaultActionManager extends DefaultEventDispatcher<ChangeEvent<Action>> implements ActionManager {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private Map<Method, Action> actionMap = new LinkedHashMap<Method, Action>();
-	private EventDispatcher<ObjectEvent<Action>> eventDispatcher = new DefaultEventDispatcher<ObjectEvent<Action>>(
-			false);
 	private final EnumMap<HttpMethod, Map<Restful, Action>> restfulActionMap = new EnumMap<HttpMethod, Map<Restful, Action>>(
 			HttpMethod.class);
 	private final Map<String, EnumMap<HttpMethod, Action>> pathActionMap = new HashMap<String, EnumMap<HttpMethod, Action>>();
 	private final Map<String, EnumMap<HttpMethod, Map<String, Action>>> pathParameterActionMap = new HashMap<String, EnumMap<HttpMethod, Map<String, Action>>>();
 	private String actionParameterName = "action";
+	
+	public DefaultActionManager() {
+		super(true);
+	}
 	
 	public final String getActionParameterName() {
 		return actionParameterName;
@@ -133,8 +133,6 @@ public class DefaultActionManager implements ActionManager {
 		}
 
 		actionMap.put(action.getMethod(), action);
-		eventDispatcher.publishEvent(new ObjectEvent<Action>(action));
-
 		for (HttpControllerDescriptor descriptor : action
 				.getHttpControllerDescriptors()) {
 			if (!descriptor.getRestful().isRestful()) {
@@ -187,6 +185,8 @@ public class DefaultActionManager implements ActionManager {
 				}
 			}
 		}
+		
+		publishEvent(new ChangeEvent<Action>(EventType.CREATE, action));
 	}
 
 	private void register(HttpMethod httpMethod, String classController,
@@ -225,10 +225,4 @@ public class DefaultActionManager implements ActionManager {
 		}
 		return actions;
 	}
-
-	public EventRegistration registerListener(
-			EventListener<ObjectEvent<Action>> eventListener) {
-		return eventDispatcher.registerListener(eventListener);
-	}
-
 }

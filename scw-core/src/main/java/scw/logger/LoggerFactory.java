@@ -11,13 +11,14 @@ import java.util.logging.Level;
 import scw.core.utils.CollectionUtils;
 import scw.instance.ServiceLoaderFactory;
 import scw.instance.support.DefaultServiceLoaderFactory;
-import scw.instance.support.SimpleNoArgsInstanceFactory;
 import scw.lang.Nullable;
+import scw.value.PropertyFactory;
 import scw.value.support.SystemPropertyFactory;
 
 public final class LoggerFactory {
 	private static final java.util.logging.Logger ROOT_LOGGER = java.util.logging.Logger
 			.getLogger(LoggerFactory.class.getName());
+	
 	private static final ILoggerFactory LOGGER_FACTORY = CollectionUtils
 			.first(ServiceLoader.load(ILoggerFactory.class));
 	private volatile static Map<String, Logger> loggerMap = new HashMap<String, Logger>();
@@ -25,7 +26,8 @@ public final class LoggerFactory {
 	private static final LevelManager LEVEL_MANAGER;
 
 	static {
-		ServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(new SimpleNoArgsInstanceFactory(), new SystemPropertyFactory());
+		PropertyFactory propertyFactory = SystemPropertyFactory.INSTANCE;
+		ServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(propertyFactory, null);
 		Iterator<LevelManager> levelManagerIterator = serviceLoaderFactory.getServiceLoader(LevelManager.class).iterator();
 		if (levelManagerIterator.hasNext()) {
 			LEVEL_MANAGER = levelManagerIterator.next();
@@ -34,16 +36,18 @@ public final class LoggerFactory {
 		}
 
 		// 使用spi机制加载handlers
-		List<Handler> handlers = serviceLoaderFactory.getServiceLoader(Handler.class).toList();
-		if (!CollectionUtils.isEmpty(handlers)) {
-			// 存在自定义handler的情况不使用父级的handler
-			ROOT_LOGGER.setUseParentHandlers(false);
-			for (Handler handler : handlers) {
-				ROOT_LOGGER.info("Use logger handler [" + handler + "]");
-				ROOT_LOGGER.addHandler(handler);
+		if(propertyFactory.getValue("scw.logger.handlers.enable", boolean.class, true)) {
+			List<Handler> handlers = serviceLoaderFactory.getServiceLoader(Handler.class).toList();
+			if (!CollectionUtils.isEmpty(handlers)) {
+				// 存在自定义handler的情况不使用父级的handler
+				ROOT_LOGGER.setUseParentHandlers(false);
+				for (Handler handler : handlers) {
+					ROOT_LOGGER.info("Use logger handler [" + handler + "]");
+					ROOT_LOGGER.addHandler(handler);
+				}
 			}
 		}
-
+		
 		if (LOGGER_FACTORY == null) {
 			//使用jdk自身的日志系统
 			java.util.logging.Logger logger = ROOT_LOGGER;
@@ -74,8 +78,7 @@ public final class LoggerFactory {
 	}
 
 	/**
-	 * 获取根日志记录器<br/>
-	 * 一般不使用此记录器进行输出，除非你知道你想做什么
+	 * 获取自定义根日志记录器
 	 * 
 	 * @see #getLogger(String)
 	 * @see #getLogger(Class)

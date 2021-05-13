@@ -1,25 +1,34 @@
 package scw.beans;
 
-import scw.event.BasicEvent;
+import scw.event.Event;
 
 /**
  * 生命周期事件
  * @author shuchaowen
  *
  */
-@SuppressWarnings("serial")
-public class BeanLifeCycleEvent extends BasicEvent{
-	private transient final BeanFactory beanFactory;
+public class BeanLifeCycleEvent implements Event{
+	private final long createTime;
+	private final BeanFactory beanFactory;
 	private final Step step;
-	private final BeanDefinition beanDefinition;
 	private final Object source;
+	private final BeanDefinition beanDefinition;
 
 	public BeanLifeCycleEvent(BeanDefinition beanDefinition, Object source, BeanFactory beanFactory, Step step) {
+		this.createTime = System.currentTimeMillis();
 		this.source = source;
 		this.beanFactory = beanFactory;
 		this.beanDefinition = beanDefinition;
 		this.step = step;
 	}
+	
+	public Object getSource() {
+		return source;
+	}
+	
+	public long getCreateTime() {
+		return this.createTime;
+	};
 	
 	public BeanFactory getBeanFactory() {
 		return beanFactory;
@@ -28,11 +37,7 @@ public class BeanLifeCycleEvent extends BasicEvent{
 	public Step getStep() {
 		return step;
 	}
-
-	public Object getSource() {
-		return source;
-	}
-
+	
 	public BeanDefinition getBeanDefinition() {
 		return beanDefinition;
 	}

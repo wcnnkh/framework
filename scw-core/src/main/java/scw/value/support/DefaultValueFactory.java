@@ -12,10 +12,10 @@ import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.MultiEventRegistration;
-import scw.event.PairChangeEvent;
 import scw.event.support.DefaultNamedEventDispatcher;
 import scw.event.support.ObservableMap;
 import scw.util.CollectionFactory;
+import scw.util.Pair;
 import scw.value.ConfigurableValueFactory;
 import scw.value.Value;
 import scw.value.ValueFactory;
@@ -26,7 +26,7 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 
 	public DefaultValueFactory(boolean concurrent) {
 		this.valueMap = new ObservableMap<K, Value>(concurrent,
-				new DefaultNamedEventDispatcher<K, PairChangeEvent<K, Value>>(concurrent));
+				new DefaultNamedEventDispatcher<K, ChangeEvent<Pair<K, Value>>>(concurrent));
 		this.factories = CollectionFactory.createArrayList(concurrent, 8);
 	}
 
@@ -87,9 +87,9 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 
 	public EventRegistration registerListener(final K key, final EventListener<ChangeEvent<K>> eventListener) {
 		EventRegistration registration1 = this.valueMap.getEventDispatcher().registerListener(key,
-				new EventListener<PairChangeEvent<K, Value>>() {
+				new EventListener<ChangeEvent<Pair<K, Value>>>() {
 
-					public void onEvent(PairChangeEvent<K, Value> event) {
+					public void onEvent(ChangeEvent<Pair<K, Value>> event) {
 						eventListener.onEvent(new ChangeEvent<K>(event, event.getSource().getKey()));
 					}
 				});

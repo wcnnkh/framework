@@ -1,6 +1,5 @@
 package scw.http.server;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +20,7 @@ import scw.util.MultiValueMap;
  * @see MediaType#MULTIPART_FORM_DATA
  *
  */
-public class MultiPartServerHttpRequest extends FileCachingServerHttpRequest implements Closeable {
+public class MultiPartServerHttpRequest extends ServerHttpRequestWrapper implements AutoCloseable {
 	private static Logger logger = LoggerFactory.getLogger(MultiPartServerHttpRequest.class);
 	private final FileItemParser fileItemParser;
 

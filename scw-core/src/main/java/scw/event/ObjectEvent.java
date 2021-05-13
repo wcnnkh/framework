@@ -5,12 +5,19 @@ import java.util.EventObject;
 import scw.core.utils.XTime;
 import scw.mapper.MapperUtils;
 
-public class ObjectEvent<T> extends EventObject implements Event {
+/**
+ * 这和jdk自身提供的区别是source字段可以被序列化
+ * @see EventObject
+ * @author shuchaowen
+ *
+ * @param <T>
+ */
+public class ObjectEvent<T> extends BasicEvent {
 	private static final long serialVersionUID = 1L;
-	private final long createTime;
+	private final T source;
 
 	public ObjectEvent(ObjectEvent<T> event) {
-		this(event.getSource(), event.createTime);
+		this(event.getSource(), event.getCreateTime());
 	}
 
 	public ObjectEvent(T source) {
@@ -18,23 +25,17 @@ public class ObjectEvent<T> extends EventObject implements Event {
 	}
 
 	public ObjectEvent(T source, long createTime) {
-		super(source);
-		this.createTime = createTime;
+		super(createTime);
+		this.source = source;
 	}
 
-	public long getCreateTime() {
-		return createTime;
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
 	public T getSource() {
-		return (T) super.getSource();
+		return source;
 	}
 
 	@Override
 	public String toString() {
-		return XTime.format(createTime, "yyyy-MM-dd HH:mm:ss") + " <"
+		return XTime.format(getCreateTime(), "yyyy-MM-dd HH:mm:ss") + " <"
 				+ MapperUtils.getMapper().getFields(getClass()).getValueMap(this).toString() + ">";
 	}
 }

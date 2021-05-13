@@ -6,6 +6,11 @@ import java.util.logging.Logger;
 
 import scw.util.FormatUtils;
 
+/**
+ * 包装的jdk日志记录器
+ * @author shuchaowen
+ *
+ */
 public class JdkLogger extends CustomLogger {
 	private final Logger logger;
 
@@ -16,6 +21,10 @@ public class JdkLogger extends CustomLogger {
 			setLevel(level);
 		}
 		registerListener();
+	}
+
+	public Logger getTargetLogger() {
+		return logger;
 	}
 
 	@Override

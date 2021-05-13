@@ -36,7 +36,6 @@ import org.apache.commons.io.FileExistsException;
 import scw.core.IteratorCallback;
 import scw.core.IteratorCallback.All;
 import scw.core.IteratorCallback.First;
-import scw.env.SystemEnvironment;
 import scw.lang.AlreadyExistsException;
 import scw.util.Accept;
 
@@ -126,7 +125,7 @@ public final class FileUtils {
 	}
 
 	public static String getTempDirectoryPath() {
-		return SystemEnvironment.getInstance().getTempDirectoryPath();
+		return System.getProperty("java.io.tmpdir");
 	}
 
 	public static File getTempDirectory() {
@@ -134,7 +133,7 @@ public final class FileUtils {
 	}
 
 	public static String getUserDirectoryPath() {
-		return SystemEnvironment.getInstance().getUserHome();
+		return System.getProperty("user.home");
 	}
 
 	public static File getUserDirectory() {

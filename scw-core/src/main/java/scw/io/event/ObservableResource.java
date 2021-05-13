@@ -16,10 +16,10 @@ public class ObservableResource<T> extends AbstractObservable<T> {
 			Converter<Resource, T> converter) {
 		this.resource = resource;
 		this.converter = converter;
-		this.eventRegistration = resource.registerListener(new EventListener<ResourceEvent>() {
+		this.eventRegistration = resource.registerListener(new EventListener<ChangeEvent<Resource>>() {
 			
 			@Override
-			public void onEvent(ResourceEvent event) {
+			public void onEvent(ChangeEvent<Resource> event) {
 				publishEvent(new ChangeEvent<T>(event.getEventType(), forceGet()));
 			}
 		});
