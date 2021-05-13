@@ -6,14 +6,14 @@ import java.util.Iterator;
 
 import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
+import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.MultiEventRegistration;
-import scw.io.event.ResourceEvent;
+import scw.event.Observable;
 
-public class AutomaticResource extends ResourceWrapper {
+public class AutomaticResource extends ResourceWrapper implements Observable<Resource>{
 	private Collection<Resource> resources;
-	private volatile Resource currentResource;
 	
 	public AutomaticResource(Resource ...resources) {
 		this(Arrays.asList(resources));
@@ -26,10 +26,10 @@ public class AutomaticResource extends ResourceWrapper {
 	public AutomaticResource(Collection<Resource> resources) {
 		Assert.requiredArgument(!CollectionUtils.isEmpty(resources), "resources");
 		this.resources = resources;
-		this.currentResource = getCurrentResource();
 	}
-
-	private Resource getCurrentResource() {
+	
+	@Override
+	public Resource get() {
 		Iterator<Resource> iterator = this.resources.iterator();
 		while (iterator.hasNext()) {
 			Resource resource = iterator.next();
@@ -41,17 +41,12 @@ public class AutomaticResource extends ResourceWrapper {
 	}
 
 	@Override
-	public Resource getResource() {
-		return currentResource;
-	}
-	
-	@Override
-	public EventRegistration registerListener(EventListener<ResourceEvent> eventListener) {
-		return MultiEventRegistration.registerListener(new EventListener<ResourceEvent>() {
+	public EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
+		return MultiEventRegistration.registerListener(new EventListener<ChangeEvent<Resource>>() {
 
 			@Override
-			public void onEvent(ResourceEvent event) {
-				eventListener.onEvent(new ResourceEvent(event.getEventType(), AutomaticResource.this));
+			public void onEvent(ChangeEvent<Resource> event) {
+				eventListener.onEvent(new ChangeEvent<Resource>(event.getEventType(), AutomaticResource.this));
 			}
 		}, resources);
 	}

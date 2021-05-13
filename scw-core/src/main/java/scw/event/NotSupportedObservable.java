@@ -15,8 +15,4 @@ public class NotSupportedObservable<T> implements Observable<T> {
 			EventListener<ChangeEvent<T>> eventListener) {
 		return EventRegistration.EMPTY;
 	}
-
-	@Override
-	public void publishEvent(ChangeEvent<T> event) {
-	}
 }

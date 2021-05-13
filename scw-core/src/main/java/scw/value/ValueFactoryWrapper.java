@@ -3,6 +3,7 @@ package scw.value;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.Supplier;
 
 import scw.core.utils.ObjectUtils;
 import scw.event.ChangeEvent;
@@ -191,5 +192,30 @@ public class ValueFactoryWrapper<K, F extends ValueFactory<K>> implements ValueF
 		}
 
 		return ObjectUtils.nullSafeEquals(obj, targetFactory);
+	}
+	
+	@Override
+	public <T> Observable<T> getObservableValue(K key, Class<? extends T> type, Supplier<? extends T> defaultValue) {
+		return targetFactory.getObservableValue(key, type, defaultValue);
+	}
+	
+	@Override
+	public Observable<Value> getObservableValue(K key, Supplier<? extends Value> defaultValue) {
+		return targetFactory.getObservableValue(key, defaultValue);
+	}
+	
+	@Override
+	public Observable<Object> getObservableValue(K key, Type type, Supplier<?> defaultValue) {
+		return targetFactory.getObservableValue(key, type, defaultValue);
+	}
+	
+	@Override
+	public <T> T getValue(K key, Class<? extends T> type, Supplier<? extends T> defaultValue) {
+		return targetFactory.getValue(key, type, defaultValue);
+	}
+	
+	@Override
+	public Object getValue(K key, Type type, Supplier<?> defaultValue) {
+		return targetFactory.getValue(key, type, defaultValue);
 	}
 }

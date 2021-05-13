@@ -8,77 +8,76 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
 
+import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.io.event.ResourceEvent;
+import scw.event.Observable;
 
-public abstract class ResourceWrapper implements Resource {
-
-	public abstract Resource getResource();
+public abstract class ResourceWrapper implements Resource, Observable<Resource>{
 
 	public InputStream getInputStream() throws IOException {
-		return getResource().getInputStream();
+		return get().getInputStream();
 	}
 
 	public OutputStream getOutputStream() throws IOException {
-		return getResource().getOutputStream();
+		return get().getOutputStream();
 	}
 
 	public boolean exists() {
-		return getResource().exists();
+		return get().exists();
 	}
 
 	public boolean isReadable() {
-		return getResource().isReadable();
+		return get().isReadable();
 	}
 
 	public boolean isWritable() {
-		return getResource().isWritable();
+		return get().isWritable();
 	}
 
 	public boolean isOpen() {
-		return getResource().isOpen();
+		return get().isOpen();
 	}
 
 	public URL getURL() throws IOException {
-		return getResource().getURL();
+		return get().getURL();
 	}
 
 	public URI getURI() throws IOException {
-		return getResource().getURI();
+		return get().getURI();
 	}
 
 	public File getFile() throws IOException, FileNotFoundException {
-		return getResource().getFile();
+		return get().getFile();
 	}
 
 	public long contentLength() throws IOException {
-		return getResource().contentLength();
+		return get().contentLength();
 	}
 
 	public long lastModified() throws IOException {
-		return getResource().lastModified();
+		return get().lastModified();
 	}
 
 	public Resource createRelative(String relativePath) throws IOException {
-		return getResource().createRelative(relativePath);
+		return get().createRelative(relativePath);
 	}
 
 	public String getName() {
-		return getResource().getName();
+		return get().getName();
 	}
 
 	public String getDescription() {
-		return getResource().getDescription();
+		return get().getDescription();
 	}
 	
 	@Override
-	public EventRegistration registerListener(EventListener<ResourceEvent> eventListener) {
-		return getResource().registerListener(eventListener);
+	public EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
+		return get().registerListener(eventListener);
 	}
 	
 	@Override
 	public String toString() {
-		return getResource().toString();
+		return get().toString();
 	}
 }

@@ -169,7 +169,7 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 		return v == null ? (defaultValue == null ? getDefaultValue(key).getAsObject(type) : defaultValue) : v;
 	}
 	
-	default Object getValue(K key, Type type, @Nullable Supplier<?> supplier) {
+	default Object getValue(K key, Type type, @Nullable Supplier<?> defaultValue) {
 		Object v;
 		if (ClassUtils.isPrimitive(type)) {
 			v = getObject(key, ClassUtils.resolvePrimitiveIfNecessary((Class<?>) type));
@@ -177,7 +177,7 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 			v = getObject(key, type);
 		}
 
-		return v == null ? (supplier == null ? getDefaultValue(key).getAsObject(type) : supplier.get()) : v;
+		return v == null ? (defaultValue == null ? getDefaultValue(key).getAsObject(type) : defaultValue.get()) : v;
 	}
 
 	@Nullable

@@ -12,13 +12,11 @@ import java.net.URL;
 
 import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
+import scw.event.ChangeEvent;
 import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.io.event.DefaultResourceEventDispatcher;
-import scw.io.event.EmptyResourceEventDispatcher;
-import scw.io.event.ResourceEvent;
-import scw.io.event.ResourceEventDispatcher;
+import scw.io.event.SimpleResourceEventDispatcher;
 import scw.lang.NestedIOException;
 import scw.lang.NotSupportedException;
 import scw.util.JavaVersion;
@@ -33,13 +31,12 @@ import scw.util.JavaVersion;
  * and "toString" will return the description.
  *
  */
-public abstract class AbstractResource implements Resource, EventDispatcher<ResourceEvent> {
-	private static final Constructor<ResourceEventDispatcher> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
+public abstract class AbstractResource implements Resource, EventDispatcher<ChangeEvent<Resource>> {
+	private static final Constructor<EventDispatcher<ChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
 			.findConstructor("scw.io.event.WatchServiceResourceEventDispatcher", null, true, Resource.class);
-	public static final EmptyResourceEventDispatcher EMPTY_EVENT_DISPATCHER = new EmptyResourceEventDispatcher();
 	
-	private volatile EventDispatcher<ResourceEvent> eventDispatcher;
-	private EventDispatcher<ResourceEvent> getEventDispatcher() {
+	private volatile EventDispatcher<ChangeEvent<Resource>> eventDispatcher;
+	private EventDispatcher<ChangeEvent<Resource>> getEventDispatcher() {
 		if (eventDispatcher == null) {
 			synchronized (this) {
 				if (eventDispatcher == null) {
@@ -52,7 +49,7 @@ public abstract class AbstractResource implements Resource, EventDispatcher<Reso
 					}
 
 					if (eventDispatcher == null) {
-						eventDispatcher = new DefaultResourceEventDispatcher(this);
+						eventDispatcher = new SimpleResourceEventDispatcher(this);
 					}
 				}
 			}
@@ -77,7 +74,7 @@ public abstract class AbstractResource implements Resource, EventDispatcher<Reso
 	}
 	
 	@Override
-	public EventRegistration registerListener(EventListener<ResourceEvent> eventListener) {
+	public EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
 		if(!isObservable()) {
 			return EventRegistration.EMPTY;
 		}
@@ -85,7 +82,7 @@ public abstract class AbstractResource implements Resource, EventDispatcher<Reso
 	}
 	
 	@Override
-	public void publishEvent(ResourceEvent event) {
+	public void publishEvent(ChangeEvent<Resource> event) {
 		if(isObservable()) {
 			getEventDispatcher().publishEvent(event);
 		}

@@ -5,14 +5,14 @@ import java.math.BigInteger;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
-import scw.convert.lang.JsonConversionService;
 import scw.core.ResolvableType;
 import scw.core.utils.ObjectUtils;
+import scw.env.SystemEnvironment;
 import scw.lang.Nullable;
 
 public class AnyValue extends AbstractValue {
 	private static final long serialVersionUID = 1L;
-	private volatile ConversionService conversionService;
+	private transient ConversionService conversionService;
 	private final Object value;
 
 	public AnyValue(Object value) {
@@ -27,22 +27,14 @@ public class AnyValue extends AbstractValue {
 		this(value, defaultValue, null);
 	}
 
-	public AnyValue(Object value, Value defaultValue,
-			@Nullable ConversionService conversionService) {
+	public AnyValue(Object value, Value defaultValue, @Nullable ConversionService conversionService) {
 		super(defaultValue);
 		this.value = value;
 		this.conversionService = conversionService;
 	}
 
 	public ConversionService getConversionService() {
-		if (conversionService == null) {
-			synchronized (this) {
-				if (conversionService == null) {
-					conversionService = new JsonConversionService();
-				}
-			}
-		}
-		return conversionService;
+		return conversionService == null ? SystemEnvironment.getInstance().getConversionService() : conversionService;
 	}
 
 	public Object getValue() {
@@ -469,8 +461,7 @@ public class AnyValue extends AbstractValue {
 		if (value instanceof Value) {
 			return ((Value) value).getAsObject(type);
 		}
-		return getConversionService().convert(value,
-				TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
+		return getConversionService().convert(value, TypeDescriptor.forObject(value), TypeDescriptor.valueOf(type));
 	}
 
 	@Override

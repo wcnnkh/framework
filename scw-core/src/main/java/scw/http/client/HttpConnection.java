@@ -113,9 +113,14 @@ public interface HttpConnection extends HttpConnectionFactory {
 	 */
 	HttpConnection contentType(MediaType contentType);
 	
-	HttpConnection contentType(MediaType contentType, String charsetName);
+	default HttpConnection contentType(MediaType contentType, Charset charset) {
+		return contentType(new MediaType(contentType, charset));
+	}
 	
-	HttpConnection contentType(MediaType contentType, Charset charset);
+	default HttpConnection contentType(MediaType contentType,
+			String charsetName) {
+		return contentType(new MediaType(contentType, charsetName));
+	}
 
 	/**
 	 * Set the body of the request entity and build the RequestEntity.
@@ -172,7 +177,15 @@ public interface HttpConnection extends HttpConnectionFactory {
 	<T> HttpResponseEntity<T> execute(TypeDescriptor responseType)
 			throws HttpClientException;
 
-	HttpResponseEntity<File> download();
+	/**
+	 * 虽然返回的文件会自动删除(并非完全可靠的),但是推荐在使用完后手动删除
+	 * @return
+	 */
+	default HttpResponseEntity<File> download(){
+		DownLoadResponseExtractor responseExtractor = new DownLoadResponseExtractor(
+				getURI());
+		return execute(responseExtractor);
+	}
 
 	interface RedirectManager {
 		URI getRedirect(ClientHttpResponse response) throws IOException;
@@ -236,15 +249,16 @@ public interface HttpConnection extends HttpConnectionFactory {
 				fileName = InetUtils.getFilename(url.getPath());
 			}
 
-			TemporaryFile file = TemporaryFile.createInTempDirectory(XUtils
-					.getUUID() + File.separator + fileName);
+			TemporaryFile file = new TemporaryFile(FileUtils.getTempDirectory() + File.separator + XUtils.getUUID() + File.separator + fileName);
 			if (logger.isDebugEnabled()) {
 				logger.debug("{} download to {}", url, file.getPath());
 			}
 
-			FileUtils.copyInputStreamToFile(response.getBody(), file);
-			// 设置在垃圾回收时也进行删除
-			file.setDeleteOnFinalize(true);
+			try {
+				FileUtils.copyInputStreamToFile(response.getBody(), file);
+			} finally {
+				file.deleteOnExit();
+			}
 			return file;
 		}
 	}
@@ -302,15 +316,6 @@ public interface HttpConnection extends HttpConnectionFactory {
 			return this;
 		}
 		
-		public HttpConnection contentType(MediaType contentType, Charset charset) {
-			return contentType(new MediaType(contentType, charset));
-		}
-		
-		public HttpConnection contentType(MediaType contentType,
-				String charsetName) {
-			return contentType(new MediaType(contentType, charsetName));
-		}
-
 		public HttpHeaders getHeaders() {
 			return headers;
 		}
@@ -433,12 +438,6 @@ public interface HttpConnection extends HttpConnectionFactory {
 			} catch (CloneNotSupportedException e) {
 				throw new RuntimeException(e);
 			}
-		}
-
-		public final HttpResponseEntity<File> download() {
-			DownLoadResponseExtractor responseExtractor = new DownLoadResponseExtractor(
-					getURI());
-			return execute(responseExtractor);
 		}
 	}
 }

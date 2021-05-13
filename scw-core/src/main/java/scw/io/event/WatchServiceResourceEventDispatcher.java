@@ -14,8 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import scw.event.ChangeEvent;
 import scw.event.EventType;
 import scw.io.AbstractResource;
+import scw.io.Resource;
 import scw.lang.RequiredJavaVersion;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -28,7 +30,7 @@ import scw.logger.LoggerFactory;
  *
  */
 @RequiredJavaVersion(7)
-public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDispatcher {
+public class WatchServiceResourceEventDispatcher extends SimpleResourceEventDispatcher {
 	private static Logger logger = LoggerFactory.getLogger(WatchServiceResourceEventDispatcher.class);
 	private static final WatchService WATCH_SERVICE;
 	private static ConcurrentHashMap<Path, ResourceWatchKey> listenerMap;
@@ -127,7 +129,7 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 	}
 
 	@Override
-	protected void onChange(ResourceEvent resourceEvent) {
+	protected void onChange(ChangeEvent<Resource> resourceEvent) {
 		if (resourceEvent.getEventType() == EventType.CREATE) {
 			//如果资源创建了，那么尝试重新注册
 			if (watchServiceRegister()) {
@@ -232,7 +234,7 @@ public class WatchServiceResourceEventDispatcher extends DefaultResourceEventDis
 					
 					for(ResourceItem item : resources){
 						if (file.getName().equals(item.getName())) {
-							ResourceEvent resourceEvent = new ResourceEvent(eventType, item.getResource());
+							ChangeEvent<Resource> resourceEvent = new ChangeEvent<Resource>(eventType, item.getResource());
 							if(logger.isDebugEnabled()){
 								logger.debug(resourceEvent.toString());
 							}

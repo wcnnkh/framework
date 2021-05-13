@@ -1,10 +1,8 @@
 package scw.net.message.multipart;
 
-import java.io.Closeable;
-
 import scw.http.HttpInputMessage;
 
-public interface FileItem extends HttpInputMessage, Closeable {
+public interface FileItem extends HttpInputMessage, AutoCloseable {
 
 	long getSize();
 
