@@ -2713,7 +2713,7 @@ public abstract class AnnotationUtils {
 		return nullable == null ? defaultValue : nullable.value();
 	}
 	
-	public static Supplier<Boolean> isNullable(final AnnotatedElement annotatedElement, final Supplier<Boolean> defaultValue){
+	public static Supplier<Boolean> isNullable(final AnnotatedElement annotatedElement, final java.util.function.Supplier<Boolean> defaultValue){
 		return new Supplier<Boolean>() {
 
 			public Boolean get() {

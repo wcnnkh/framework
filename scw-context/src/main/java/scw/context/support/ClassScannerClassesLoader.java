@@ -3,6 +3,7 @@ package scw.context.support;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
@@ -13,7 +14,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.ClassLoaderProvider;
 import scw.util.StaticSupplier;
-import scw.util.Supplier;
 
 public class ClassScannerClassesLoader extends
 		AbstractClassesLoader implements TypeFilter{

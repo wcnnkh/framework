@@ -2,13 +2,13 @@ package scw.convert.lang;
 
 import java.nio.charset.Charset;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import scw.convert.Converter;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
 import scw.util.StaticSupplier;
-import scw.util.Supplier;
 
 public class ResourceToPropertiesConverter implements Converter<Resource, Properties>{
 	private final PropertiesResolver propertiesResolver;

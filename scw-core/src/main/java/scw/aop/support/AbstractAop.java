@@ -2,6 +2,7 @@ package scw.aop.support;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.function.Supplier;
 
 import scw.aop.Aop;
 import scw.aop.MethodInterceptor;
@@ -12,7 +13,6 @@ import scw.core.reflect.MethodInvoker;
 import scw.core.utils.ArrayUtils;
 import scw.instance.InstanceException;
 import scw.util.StaticSupplier;
-import scw.util.Supplier;
 
 public abstract class AbstractAop implements Aop{
 	
@@ -61,12 +61,12 @@ public abstract class AbstractAop implements Aop{
 	}
 	
 	public <T> Proxy getProxy(Class<? extends T> clazz,
-			Supplier<T> instanceSupplier, Class<?>[] interfaces,
+			Supplier<? extends T> instanceSupplier, Class<?>[] interfaces,
 			MethodInterceptor methodInterceptor) {
 		return new InstanceProxy(clazz, interfaces, methodInterceptor, instanceSupplier);
 	}
 	
-	public final <T> Proxy getProxy(Class<? extends T> clazz, Supplier<T> instanceSupplier) {
+	public final <T> Proxy getProxy(Class<? extends T> clazz, Supplier<? extends T> instanceSupplier) {
 		return getProxy(clazz, instanceSupplier, null, null);
 	}
 	
@@ -104,7 +104,7 @@ public abstract class AbstractAop implements Aop{
 	}
 	
 	public final <T> MethodInvoker getProxyMethod(Class<? extends T> targetClass,
-			Supplier<T> instanceSupplier, Method method) {
+			Supplier<? extends T> instanceSupplier, Method method) {
 		return getProxyMethod(targetClass, instanceSupplier, method, null);
 	}
 
@@ -115,7 +115,7 @@ public abstract class AbstractAop implements Aop{
 	}
 
 	public <T> MethodInvoker getProxyMethod(Class<? extends T> targetClass,
-			Supplier<T> instanceSupplier, Method method,
+			Supplier<? extends T> instanceSupplier, Method method,
 			MethodInterceptor methodInterceptor) {
 		return new ProxyMethod(instanceSupplier, targetClass, method,
 				methodInterceptor);

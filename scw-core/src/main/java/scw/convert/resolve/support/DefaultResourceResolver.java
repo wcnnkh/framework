@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 
 import scw.convert.ConversionService;
 import scw.convert.ConversionServiceAware;
@@ -16,7 +17,6 @@ import scw.core.utils.CollectionUtils;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.NotSupportedException;
-import scw.util.Supplier;
 
 public class DefaultResourceResolver extends PropertiesResourceResolver
 		implements ConfigurableResourceResolver {

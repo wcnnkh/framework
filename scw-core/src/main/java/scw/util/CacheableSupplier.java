@@ -1,10 +1,10 @@
 package scw.util;
 
 public class CacheableSupplier<T> implements Supplier<T>{
-	private final Supplier<T> supplier;
-	private volatile Supplier<T> cache;
+	private final java.util.function.Supplier<T> supplier;
+	private volatile java.util.function.Supplier<T> cache;
 	
-	public CacheableSupplier(Supplier<T> supplier){
+	public CacheableSupplier(java.util.function.Supplier<T> supplier){
 		this.supplier = supplier;
 	}
 	

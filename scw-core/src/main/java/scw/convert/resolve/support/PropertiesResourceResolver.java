@@ -2,12 +2,12 @@ package scw.convert.resolve.support;
 
 import java.nio.charset.Charset;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
-import scw.util.Supplier;
 
 public class PropertiesResourceResolver extends AbstractResourceResolver {
 	private static final TypeDescriptor PROPERTIES_TYPE = TypeDescriptor.valueOf(Properties.class);

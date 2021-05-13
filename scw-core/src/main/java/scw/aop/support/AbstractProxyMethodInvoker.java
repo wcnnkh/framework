@@ -1,13 +1,13 @@
 package scw.aop.support;
 
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.ProxyInstanceTarget;
 import scw.core.reflect.DefaultMethodInvoker;
 import scw.core.reflect.MethodInvoker;
 import scw.core.utils.ArrayUtils;
-import scw.util.Supplier;
 
 public abstract class AbstractProxyMethodInvoker extends DefaultMethodInvoker implements MethodInterceptor{
 	private static final long serialVersionUID = 1L;

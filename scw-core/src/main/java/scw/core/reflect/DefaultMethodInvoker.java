@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.supplier.NameInstanceSupplier;
-import scw.util.Supplier;
 
 public class DefaultMethodInvoker implements MethodInvoker, Serializable, Cloneable, Supplier<Object> {
 	private static final long serialVersionUID = 1L;
