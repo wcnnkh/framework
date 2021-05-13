@@ -5,9 +5,9 @@ import java.io.Serializable;
 public class Result<T> implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private final boolean active;
-	private final Supplier<T> result;
+	private final java.util.function.Supplier<T> result;
 	
-	public Result(boolean active, Supplier<T> result){
+	public Result(boolean active, java.util.function.Supplier<T> result){
 		this.active = active;
 		this.result = result;
 	}

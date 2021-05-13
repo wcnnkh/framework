@@ -6,6 +6,7 @@ import java.util.Currency;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
+import java.util.function.Supplier;
 
 import scw.convert.lang.ConversionServices;
 import scw.convert.lang.ConverterConversionService;
@@ -23,7 +24,6 @@ import scw.convert.lang.StringToTimeZoneConverter;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
-import scw.util.Supplier;
 
 public class DefaultConversionService extends ConversionServices {
 

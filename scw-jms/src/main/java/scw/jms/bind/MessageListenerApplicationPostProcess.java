@@ -1,6 +1,7 @@
 package scw.jms.bind;
 
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -51,7 +52,7 @@ public class MessageListenerApplicationPostProcess implements ApplicationPostPro
 			for (Method method : clazz.getDeclaredMethods()) {
 				messageListener = method.getAnnotation(scw.jms.bind.MessageListener.class);
 				if (messageListener != null) {
-					scw.util.Supplier<Object> supplier = new NameInstanceSupplier<Object>(application.getBeanFactory(),
+					Supplier<Object> supplier = new NameInstanceSupplier<Object>(application.getBeanFactory(),
 							clazz.getName());
 					MethodInvoker methodInvoker = application.getBeanFactory().getAop().getProxyMethod(clazz, supplier,
 							method);

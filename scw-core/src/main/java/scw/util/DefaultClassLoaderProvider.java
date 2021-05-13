@@ -4,9 +4,9 @@ import scw.core.utils.ClassUtils;
 import scw.lang.Nullable;
 
 public final class DefaultClassLoaderProvider implements ClassLoaderProvider {
-	private final Supplier<ClassLoader> classLoader;
+	private final Supplier<? extends ClassLoader> classLoader;
 	
-	public DefaultClassLoaderProvider(@Nullable Supplier<ClassLoader> classLoader) {
+	public DefaultClassLoaderProvider(@Nullable Supplier<? extends ClassLoader> classLoader) {
 		this.classLoader = classLoader;
 	}
 

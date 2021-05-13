@@ -2,8 +2,7 @@ package scw.data.cas;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import scw.util.Supplier;
+import java.util.function.Supplier;
 
 public final class CasUtils {
 	private CasUtils() {

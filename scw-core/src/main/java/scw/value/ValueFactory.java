@@ -3,6 +3,7 @@ package scw.value;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.function.Supplier;
 
 import scw.core.utils.ClassUtils;
 import scw.event.ChangeEvent;
@@ -157,7 +158,7 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 	}
 
 	@Nullable
-	default Object getValue(K key, Type type, Object defaultValue) {
+	default Object getValue(K key, Type type, @Nullable Object defaultValue) {
 		Object v;
 		if (ClassUtils.isPrimitive(type)) {
 			v = getObject(key, ClassUtils.resolvePrimitiveIfNecessary((Class<?>) type));
@@ -167,12 +168,30 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 
 		return v == null ? (defaultValue == null ? getDefaultValue(key).getAsObject(type) : defaultValue) : v;
 	}
+	
+	default Object getValue(K key, Type type, @Nullable Supplier<?> supplier) {
+		Object v;
+		if (ClassUtils.isPrimitive(type)) {
+			v = getObject(key, ClassUtils.resolvePrimitiveIfNecessary((Class<?>) type));
+		} else {
+			v = getObject(key, type);
+		}
+
+		return v == null ? (supplier == null ? getDefaultValue(key).getAsObject(type) : supplier.get()) : v;
+	}
 
 	@Nullable
 	default <T> T getValue(K key, Class<? extends T> type, T defaultValue) {
 		@SuppressWarnings("unchecked")
 		T v = (T) getObject(key, ClassUtils.resolvePrimitiveIfNecessary(type));
 		return v == null ? (defaultValue == null ? getDefaultValue(key).getAsObject(type) : defaultValue) : v;
+	}
+	
+	@Nullable
+	default <T> T getValue(K key, Class<? extends T> type, Supplier<? extends T> defaultValue) {
+		@SuppressWarnings("unchecked")
+		T v = (T) getObject(key, ClassUtils.resolvePrimitiveIfNecessary(type));
+		return v == null ? (defaultValue == null ? getDefaultValue(key).getAsObject(type) : defaultValue.get()) : v;
 	}
 
 	default boolean containsKey(K key) {
@@ -193,6 +212,12 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 		return new ObservableValue<K, Value>(this, key, Value.class,
 				defaultValue);
 	}
+	
+	default Observable<Value> getObservableValue(K key,
+			@Nullable Supplier<? extends Value> defaultValue) {
+		return new ObservableValue<K, Value>(this, key, Value.class,
+				defaultValue);
+	}
 
 	default <T> Observable<T> getObservableValue(K key, Class<? extends T> type) {
 		return new ObservableValue<K, T>(this, key, type, null);
@@ -202,6 +227,11 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 			Class<? extends T> type, T defaultValue) {
 		return new ObservableValue<K, T>(this, key, type, defaultValue);
 	}
+	
+	default <T> Observable<T> getObservableValue(K key,
+			Class<? extends T> type, Supplier<? extends T> defaultValue) {
+		return new ObservableValue<K, T>(this, key, type, defaultValue);
+	}
 
 	default Observable<Object> getObservableValue(K key, Type type) {
 		return new ObservableValue<K, Object>(this, key, type, null);
@@ -209,6 +239,11 @@ public interface ValueFactory<K> extends NamedEventRegistry<K, ChangeEvent<K>> {
 
 	default Observable<Object> getObservableValue(K key, Type type,
 			Object defaultValue) {
+		return new ObservableValue<K, Object>(this, key, type, defaultValue);
+	}
+	
+	default Observable<Object> getObservableValue(K key, Type type,
+			Supplier<?> defaultValue) {
 		return new ObservableValue<K, Object>(this, key, type, defaultValue);
 	}
 }

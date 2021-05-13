@@ -3,8 +3,7 @@ package scw.core.reflect;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import scw.util.Supplier;
+import java.util.function.Supplier;
 
 public class MethodInvokerWrapper implements MethodInvoker, Serializable {
 	private static final long serialVersionUID = 1L;
