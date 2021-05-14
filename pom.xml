@@ -154,12 +154,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-search</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-lucene</artifactId>
 				<version>2.0</version>
 			</dependency>

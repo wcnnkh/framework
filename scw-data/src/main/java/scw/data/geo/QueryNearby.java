@@ -1,42 +1,32 @@
-package scw.search.location;
+package scw.data.geo;
 
 import scw.util.comparator.OrderBy;
 
 /**
  * 查询附近的点所需的参数
+ * 
  * @author shuchaowen
  *
  */
-public class QueryNearby extends Location {
+public class QueryNearby extends Point {
 	private static final long serialVersionUID = 1L;
-	/**
-	 * 范围(米)
-	 */
-	private int range;
-	/**
-	 * 范围单位
-	 */
-	private DistanceUnit rangeUnit;
+	private Distance distance;
 	/**
 	 * 数量
 	 */
 	private int count;
 	private OrderBy orderBy;
 
-	public int getRange() {
-		return range;
+	public QueryNearby(double x, double y) {
+		super(x, y);
 	}
 
-	public void setRange(int range) {
-		this.range = range;
+	public Distance getDistance() {
+		return distance;
 	}
 
-	public DistanceUnit getRangeUnit() {
-		return rangeUnit;
-	}
-
-	public void setRangeUnit(DistanceUnit rangeUnit) {
-		this.rangeUnit = rangeUnit;
+	public void setDistance(Distance distance) {
+		this.distance = distance;
 	}
 
 	public int getCount() {
