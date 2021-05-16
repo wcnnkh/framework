@@ -371,8 +371,6 @@ public class Range<T extends Comparable<T>> {
 	/**
 	 * Builder for {@link Range} allowing to specify the upper boundary.
 	 *
-	 * @author Mark Paluch
-	 * @since 2.0
 	 * @soundtrack Aly and Fila - Future Sound Of Egypt 493
 	 */
 	public static class RangeBuilder<T extends Comparable<T>> {
