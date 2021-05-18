@@ -8,6 +8,8 @@ import scw.util.Accept;
 public interface AuthorityManager<T extends Authority> {
 	void register(T authority);
 	
+	void remove(T authority);
+	
 	T getAuthority(String id);
 
 	/**

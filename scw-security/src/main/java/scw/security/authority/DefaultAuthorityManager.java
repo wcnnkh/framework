@@ -208,4 +208,9 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 		}
 		return list;
 	}
+
+	@Override
+	public void remove(T authority) {
+		authorityMap.remove(authority);
+	}
 }

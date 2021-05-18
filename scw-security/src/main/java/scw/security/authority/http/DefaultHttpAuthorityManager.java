@@ -44,5 +44,16 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
 		}
 		super.register(authority);
 	};
+	
+	@Override
+	public void remove(T authority) {
+		if (StringUtils.isNotEmpty(authority.getPath())) {
+			Map<HttpMethod, String> map = pathMap.get(authority.getPath());
+			if(map != null){
+				map.remove(authority.getHttpMethod());
+			}
+		}
+		super.remove(authority);
+	}
 
 }
