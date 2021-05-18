@@ -9,7 +9,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import scw.codec.CodecException;
 import scw.codec.EncodeException;
-import scw.codec.multiple.MultipleEncoder;
+import scw.codec.MultipleEncoder;
 
 /**
  * 

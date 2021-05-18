@@ -225,7 +225,7 @@ public class YamlProcessor implements Converter<Resource, Properties>, Propertie
 			handleProcessError(resource, e);
 		} finally {
 			if (!resource.isOpen()) {
-				IOUtils.close(reader, is);
+				IOUtils.closeQuietly(reader, is);
 			}
 		}
 		return (count > 0);

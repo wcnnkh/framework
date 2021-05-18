@@ -10,7 +10,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 import scw.codec.CodecException;
-import scw.codec.multiple.MultipleCodec;
+import scw.codec.MultipleCodec;
 
 public abstract class SecurityCodec implements BytesCodec<byte[]>, MultipleCodec<byte[]> {
 	

@@ -142,7 +142,7 @@ public class DomBuilder{
 		try {
 			return parse(documentBuilder, stringReader, systemId);
 		} finally{
-			IOUtils.close(stringReader);
+			IOUtils.closeQuietly(stringReader);
 		}
 	}
 	
@@ -180,7 +180,7 @@ public class DomBuilder{
 		} catch (IOException e) {
 			throw new RuntimeException(resource.getDescription(), e);
 		}finally{
-			IOUtils.close(is);
+			IOUtils.closeQuietly(is);
 		}
 	}
 	
@@ -243,7 +243,7 @@ public class DomBuilder{
 			transform(transformer, domSource, result);
 			content = sw.toString();
 		} finally {
-			IOUtils.close(sw);
+			IOUtils.closeQuietly(sw);
 		}
 		return content;
 	}

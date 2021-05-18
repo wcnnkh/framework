@@ -27,8 +27,7 @@ import scw.value.StringValue;
 import scw.value.Value;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class DefaultJsonElement extends AbstractJsonElement implements
-		JsonElement {
+public class DefaultJsonElement extends AbstractJsonElement implements JsonElement {
 	private static final long serialVersionUID = 1L;
 	private String text;
 
@@ -72,8 +71,7 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 	}
 
 	public static Object parse(String text, Type type) {
-		return parse(text, ResolvableType.forType(type),
-				InstanceUtils.INSTANCE_FACTORY);
+		return parse(text, ResolvableType.forType(type), InstanceUtils.INSTANCE_FACTORY);
 	}
 
 	public static String toJSONString(Object json) {
@@ -84,8 +82,7 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 		}
 	}
 
-	public static Object parse(Object json, ResolvableType type,
-			NoArgsInstanceFactory instanceFactory) {
+	public static Object parse(Object json, ResolvableType type, NoArgsInstanceFactory instanceFactory) {
 		if (json == null) {
 			return null;
 		}
@@ -111,13 +108,10 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 			List jsonArray = (List) json;
 			int size = jsonArray.size();
 			if (clazz.isArray()) {
-				ResolvableType componentType = ResolvableType.forClass(clazz
-						.getComponentType());
-				Object array = Array
-						.newInstance(clazz.getComponentType(), size);
+				ResolvableType componentType = ResolvableType.forClass(clazz.getComponentType());
+				Object array = Array.newInstance(clazz.getComponentType(), size);
 				for (int i = 0; i < size; i++) {
-					Object value = parse(jsonArray.get(i), componentType,
-							instanceFactory);
+					Object value = parse(jsonArray.get(i), componentType, instanceFactory);
 					Array.set(array, i, value);
 				}
 				return array;
@@ -129,8 +123,7 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 						continue;
 					}
 
-					Object value = parse(item, type.getGeneric(0),
-							instanceFactory);
+					Object value = parse(item, type.getGeneric(0), instanceFactory);
 					list.add(value);
 				}
 				return list;
@@ -148,20 +141,15 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 						continue;
 					}
 
-					Object key = parse(entry.getKey(), type.getGeneric(0),
-							instanceFactory);
-					Object value = parse(entry.getValue(), type.getGeneric(1),
-							instanceFactory);
+					Object key = parse(entry.getKey(), type.getGeneric(0), instanceFactory);
+					Object value = parse(entry.getValue(), type.getGeneric(1), instanceFactory);
 					map.put(key, value);
 				}
 				return map;
 			}
 
-			Fields fields = MapperUtils
-					.getMapper()
-					.getFields(clazz)
-					.accept(FieldFeature.SETTER_IGNORE_STATIC,
-							FieldFeature.SETTER_PUBLIC);
+			Fields fields = MapperUtils.getMapper().getFields(clazz).accept(FieldFeature.SETTER_IGNORE_STATIC)
+					.accept(FieldFeature.SETTER_PUBLIC);
 			Object instance = instanceFactory.getInstance(clazz);
 			for (Field field : fields) {
 				Object value = jsonObject.get(field.getSetter().getName());
@@ -169,8 +157,7 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 					continue;
 				}
 
-				value = parse(value, ResolvableType.forType(field.getSetter()
-						.getGenericType()), instanceFactory);
+				value = parse(value, ResolvableType.forType(field.getSetter().getGenericType()), instanceFactory);
 				if (value == null) {
 					continue;
 				}
@@ -182,8 +169,7 @@ public class DefaultJsonElement extends AbstractJsonElement implements
 		throw new JSONException(type + " <== " + json);
 	}
 
-	public static Object parse(String text, ResolvableType type,
-			NoArgsInstanceFactory instanceFactory) {
+	public static Object parse(String text, ResolvableType type, NoArgsInstanceFactory instanceFactory) {
 		if (text == null) {
 			return null;
 		}

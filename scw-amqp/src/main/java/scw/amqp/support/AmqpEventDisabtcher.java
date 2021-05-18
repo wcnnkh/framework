@@ -14,14 +14,14 @@ import scw.event.support.DefaultEventDispatcher;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;
 
-public class AmqpBasicEventDisabtcher<T extends Event> extends DefaultEventDispatcher<T>
+public class AmqpEventDisabtcher<T extends Event> extends DefaultEventDispatcher<T>
 		implements MessageListener {
 	private Exchange exchange;
 	private String routingKey;
 	private QueueDeclare queueDeclare;
 	private Serializer serializer = SerializerUtils.getSerializer();
 
-	public AmqpBasicEventDisabtcher(Exchange exchange, String routingKey, QueueDeclare queueDeclare) {
+	public AmqpEventDisabtcher(Exchange exchange, String routingKey, QueueDeclare queueDeclare) {
 		super(true);
 		this.exchange = exchange;
 		this.queueDeclare = queueDeclare;

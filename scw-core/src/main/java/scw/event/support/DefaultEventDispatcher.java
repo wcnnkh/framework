@@ -1,10 +1,11 @@
 package scw.event.support;
 
 import java.util.Collection;
+import java.util.Iterator;
 
 import scw.core.Assert;
-import scw.event.EventDispatcher;
 import scw.event.Event;
+import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.lang.AlreadyExistsException;
@@ -59,9 +60,22 @@ public class DefaultEventDispatcher<T extends Event> implements EventDispatcher<
 
 	public void publishEvent(T event) {
 		Assert.requiredArgument(event != null, "event");
-
-		for (EventRegistrationInternal registrationInternal : getEventListeners()) {
-			registrationInternal.getEventListener().onEvent(event);
+		publishEvent(event, getEventListeners().iterator());
+	}
+	
+	/**
+	 * 使用此方法的原因是即便发生了异常也将所有的listener通知一遍
+	 * @param event
+	 * @param iterator
+	 */
+	private void publishEvent(T event, Iterator<EventRegistrationInternal> iterator) {
+		if(iterator.hasNext()) {
+			EventRegistrationInternal registration = iterator.next();
+			try {
+				registration.getEventListener().onEvent(event);
+			} finally {
+				publishEvent(event, iterator);
+			}
 		}
 	}
 

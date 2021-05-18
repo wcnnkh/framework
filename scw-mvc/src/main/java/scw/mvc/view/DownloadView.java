@@ -41,7 +41,7 @@ public final class DownloadView implements View {
 			is = resource.getInputStream();
 			IOUtils.write(is, os, 1024);
 		} finally {
-			IOUtils.close(is, os);
+			IOUtils.closeQuietly(is, os);
 		}
 	}
 	

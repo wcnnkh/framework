@@ -7,13 +7,13 @@ import java.util.Map;
 
 import scw.util.Accept;
 
-public class FieldsWrapper implements Fields{
+public class FieldsWrapper implements Fields {
 	private final Fields fields;
-	
-	public FieldsWrapper(Fields fields){
+
+	public FieldsWrapper(Fields fields) {
 		this.fields = fields;
 	}
-	
+
 	public Iterator<Field> iterator() {
 		return fields.iterator();
 	}
@@ -32,10 +32,6 @@ public class FieldsWrapper implements Fields{
 
 	public Fields accept(Accept<Field> accept) {
 		return fields.accept(accept);
-	}
-
-	public Fields accept(FieldFeature... features) {
-		return fields.accept(features);
 	}
 
 	public Fields duplicateRemoval() {
@@ -57,20 +53,14 @@ public class FieldsWrapper implements Fields{
 	public Map<String, Object> getValueMap(Object instance) {
 		return fields.getValueMap(instance);
 	}
-	
+
 	public Fields exclude(Accept<Field> accept) {
 		return fields.exclude(accept);
 	}
-	
-	public Fields exclude(FieldFeature... features) {
-		return fields.exclude(features);
-	}
-	
-	public void test(Object instance, FieldTest test)
-			throws IllegalArgumentException {
+	public void test(Object instance, FieldTest test) throws IllegalArgumentException {
 		fields.test(instance, test);
 	}
-	
+
 	public Fields exclude(Collection<String> names) {
 		return fields.exclude(names);
 	}

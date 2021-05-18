@@ -63,7 +63,7 @@ public class DefaultPropertiesResolver implements PropertiesResolver{
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
 			if (!resource.isOpen()) {
-				IOUtils.close(is);
+				IOUtils.closeQuietly(is);
 			}
 		}
 	}

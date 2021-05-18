@@ -726,7 +726,7 @@ public final class ResourceUtils {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
 			if (!resource.isOpen()) {
-				IOUtils.close(is);
+				IOUtils.closeQuietly(is);
 			}
 		}
 	}
@@ -749,7 +749,7 @@ public final class ResourceUtils {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
 			if (!resource.isOpen()) {
-				IOUtils.close(is);
+				IOUtils.closeQuietly(is);
 			}
 		}
 	}
@@ -773,7 +773,7 @@ public final class ResourceUtils {
 			throw new NestedRuntimeException(resource.getDescription(), e);
 		} finally {
 			if (!resource.isOpen()) {
-				IOUtils.close(is);
+				IOUtils.closeQuietly(is);
 			}
 		}
 	}

@@ -1,7 +1,4 @@
-package scw.codec.multiple;
-
-import scw.codec.EncodeException;
-import scw.codec.Encoder;
+package scw.codec;
 
 /**
  * 多次编码器
@@ -55,7 +52,7 @@ public interface MultipleEncoder<E> extends Encoder<E, E> {
 		};
 	}
 	
-	static <E> MultipleEncoder<E> construct(Encoder<E, E> encoder){
+	static <E> MultipleEncoder<E> build(Encoder<E, E> encoder){
 		return new MultipleEncoder<E>() {
 
 			@Override

@@ -1,7 +1,4 @@
-package scw.codec.multiple;
-
-import scw.codec.DecodeException;
-import scw.codec.Decoder;
+package scw.codec;
 
 /**
  * 多次解码器
@@ -49,7 +46,7 @@ public interface MultipleDecoder<D> extends Decoder<D, D>{
 		};
 	}
 	
-	static <D> MultipleDecoder<D> construct(Decoder<D, D> decoder){
+	static <D> MultipleDecoder<D> build(Decoder<D, D> decoder){
 		return new MultipleDecoder<D>() {
 
 			@Override
