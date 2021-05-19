@@ -48,7 +48,7 @@
 					<dependency>
 						<groupId>org.ow2.asm</groupId>
 						<artifactId>asm</artifactId>
-						<version>5.0.4</version>
+						<version>5.1</version>
 					</dependency>
 				</dependencies>
 				<executions>
@@ -61,19 +61,11 @@
 				<configuration>
 					<overwrite>true</overwrite>
 					<includes>
-						<include>*:gson</include>
 						<include>*:asm</include>
 						<include>*:cglib</include>
+						<include>*:gson</include>
 					</includes>
 					<rules>
-						<rule>
-							<pattern>com.google.code.gson.*</pattern>
-							<result>scw.gson.$@1</result>
-						</rule>
-						<rule>
-							<pattern>com.google.code.gson.**.*</pattern>
-							<result>scw.gson.@1.$@2</result>
-						</rule>
 						<rule>
 							<pattern>org.objectweb.asm.*</pattern>
 							<result>scw.asm.$@1</result>
@@ -89,6 +81,14 @@
 						<rule>
 							<pattern>net.sf.cglib.**.*</pattern>
 							<result>scw.cglib.@1.$@2</result>
+						</rule>
+						<rule>
+							<pattern>com.google.code.gson.*</pattern>
+							<result>scw.gson.$@1</result>
+						</rule>
+						<rule>
+							<pattern>com.google.code.gson.**.*</pattern>
+							<result>scw.gson.@1.$@2</result>
 						</rule>
 						<keep>
 							<pattern>scw.**.*</pattern>
