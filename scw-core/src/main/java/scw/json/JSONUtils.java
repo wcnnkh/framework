@@ -1,12 +1,11 @@
 package scw.json;
 
+import scw.gson.GsonSupport;
 import scw.instance.InstanceUtils;
-import scw.json.parser.DefaultJSONSupport;
 import scw.lang.NamedThreadLocal;
 
 public final class JSONUtils {
-	private static ThreadLocal<JSONSupport> local = new NamedThreadLocal<JSONSupport>(
-			JSONUtils.class.getSimpleName());
+	private static ThreadLocal<JSONSupport> local = new NamedThreadLocal<JSONSupport>(JSONUtils.class.getSimpleName());
 
 	private JSONUtils() {
 	};
@@ -18,8 +17,7 @@ public final class JSONUtils {
 
 	static {
 		JSONSupport jsonSupport = InstanceUtils.loadService(JSONSupport.class);
-		JSON_SUPPORT = jsonSupport == null ? new DefaultJSONSupport()
-				: jsonSupport;
+		JSON_SUPPORT = jsonSupport == null ? GsonSupport.INSTANCE : jsonSupport;
 	}
 
 	public static JSONSupport getDefaultJsonSupport() {
@@ -30,16 +28,16 @@ public final class JSONUtils {
 		JSONSupport jsonSupport = local.get();
 		return jsonSupport == null ? JSON_SUPPORT : jsonSupport;
 	}
-	
-	public static boolean hasJsonSupport(){
+
+	public static boolean hasJsonSupport() {
 		return local.get() != null;
 	}
-	
-	public static JSONSupport setJsonSupport(JSONSupport jsonSupport){
+
+	public static JSONSupport setJsonSupport(JSONSupport jsonSupport) {
 		JSONSupport old = local.get();
-		if(jsonSupport == null){
+		if (jsonSupport == null) {
 			local.remove();
-		}else{
+		} else {
 			local.set(jsonSupport);
 		}
 		return old;

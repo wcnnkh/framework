@@ -80,6 +80,13 @@
 				<version>3.3.0</version>
 			</dependency>
 
+			<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.8.5</version>
+			</dependency>
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-core</artifactId>
@@ -97,7 +104,7 @@
 				<artifactId>scw-transaction</artifactId>
 				<version>2.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-orm</artifactId>
@@ -406,12 +413,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-gson</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-kafka</artifactId>
 				<version>2.0</version>
 			</dependency>
@@ -433,13 +434,13 @@
 				<artifactId>scw-consistency</artifactId>
 				<version>2.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-jackson</artifactId>
 				<version>2.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-apollo-client</artifactId>
@@ -460,12 +461,6 @@
 				<artifactId>commons-fileupload</artifactId>
 				<version>${commons-fileupload.version}</version>
 			</dependency>
-
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.8.5</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -485,6 +480,12 @@
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -636,7 +637,6 @@
 		<module>scw-websocket</module>
 		<module>scw-cloud</module>
 		<module>scw-security</module>
-		<module>scw-search</module>
 		<module>scw-microsoft</module>
 		<module>scw-dubbo</module>
 		<module>scw-zookeeper</module>
@@ -680,7 +680,6 @@
 		<module>scw-kryo</module>
 		<module>scw-fastjson</module>
 		<module>scw-hessian</module>
-		<module>scw-gson</module>
 		<module>scw-rpc</module>
 		<module>scw-seata</module>
 		<module>scw-nacos-client</module>

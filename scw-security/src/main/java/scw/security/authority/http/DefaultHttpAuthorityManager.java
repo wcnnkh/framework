@@ -34,12 +34,12 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
 				map = new HashMap<HttpMethod, String>();
 			}
 
-			if (map.containsKey(authority.getHttpMethod())) {
+			if (map.containsKey(authority.getMethod())) {
 				throw new AlreadyExistsException(
 						JSONUtils.getJsonSupport().toJSONString(authority));
 			}
 
-			map.put(authority.getHttpMethod(), authority.getId());
+			map.put(authority.getMethod(), authority.getId());
 			pathMap.put(authority.getPath(), map);
 		}
 		super.register(authority);
@@ -50,7 +50,7 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
 		if (StringUtils.isNotEmpty(authority.getPath())) {
 			Map<HttpMethod, String> map = pathMap.get(authority.getPath());
 			if(map != null){
-				map.remove(authority.getHttpMethod());
+				map.remove(authority.getMethod());
 			}
 		}
 		super.remove(authority);

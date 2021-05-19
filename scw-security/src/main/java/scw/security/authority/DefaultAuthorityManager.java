@@ -211,6 +211,6 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 
 	@Override
 	public void remove(T authority) {
-		authorityMap.remove(authority);
+		authorityMap.remove(authority.getId());
 	}
 }

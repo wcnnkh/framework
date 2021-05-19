@@ -6,11 +6,8 @@ import java.lang.reflect.Type;
 
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.parameter.annotation.DefaultValue;
 import scw.core.parameter.annotation.Named;
 import scw.mapper.MapperUtils;
-import scw.value.StringValue;
-import scw.value.Value;
 
 public class DefaultParameterDescriptor implements ParameterDescriptor {
 	private final String name;
@@ -54,14 +51,6 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 		return AnnotationUtils.isNullable(annotatedElement, false);
 	}
 	
-	public Value getDefaultValue() {
-		DefaultValue defaultValue = annotatedElement.getAnnotation(DefaultValue.class);
-		if(defaultValue == null){
-			return null;
-		}
-		return new StringValue(defaultValue.value());
-	}
-
 	@Override
 	public String toString() {
 		return MapperUtils.getMapper().getFields(getClass()).getValueMap(this).toString();

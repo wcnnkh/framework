@@ -31,4 +31,9 @@ public class ParameterDescriptorWrapper<P extends ParameterDescriptor> extends A
 	public Value getDefaultValue() {
 		return target.getDefaultValue();
 	}
+
+	@Override
+	public String getDescription() {
+		return target.getDescription();
+	}
 }
