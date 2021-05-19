@@ -31,7 +31,7 @@ public class JsonTest {
 		List<TestJsonObjectWrapper> wrappers = jsonArray.convert(TestJsonObjectWrapper.class);
 		System.out.println(wrappers);
 		
-		TestInfo testInfo = JSONUtils.getJsonSupport().parseObject(content, TestInfo.class);
+		List<TestInfo> testInfo = JSONUtils.getJsonSupport().parseArray(content).convert(TestInfo.class);
 		System.out.println(testInfo);
 	}
 	
