@@ -105,7 +105,7 @@ public class DefaultAuthorityManager<T extends Authority> implements AuthorityMa
 		}
 
 		if (authorityMap.containsKey(authority.getId())) {
-			throw new AlreadyExistsException(JSONUtils.getJsonSupport().toJSONString(authority));
+			throw new AlreadyExistsException(authority.toString());
 		}
 
 		if (authority.getId().equals(authority.getParentId())) {
