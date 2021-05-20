@@ -10,28 +10,54 @@ import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.context.annotation.Provider;
 import scw.core.Ordered;
+import scw.event.ChangeEvent;
 import scw.event.EventListener;
+import scw.event.EventType;
 import scw.mvc.annotation.Controller;
+import scw.mvc.security.HttpActionAuthorityManager;
 
-@Provider(order=Ordered.HIGHEST_PRECEDENCE)
-public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanLifeCycleEvent>{
-	
+@Provider(order = Ordered.HIGHEST_PRECEDENCE)
+public class ActionManagerPostProcesser implements BeanFactoryPostProcessor,
+		EventListener<BeanLifeCycleEvent> {
+
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
 			throws BeansException {
 		beanFactory.registerListener(this);
+
+		if (beanFactory.isInstance(HttpActionAuthorityManager.class)
+				&& beanFactory.isSingleton(HttpActionAuthorityManager.class)
+				&& beanFactory.isInstance(ActionManager.class)
+				&& beanFactory.isSingleton(ActionManager.class)) {
+			ActionManager actionManager = beanFactory
+					.getInstance(ActionManager.class);
+			HttpActionAuthorityManager actionAuthorityManager = beanFactory.getInstance(HttpActionAuthorityManager.class);
+			for(Action action : actionManager){
+				actionAuthorityManager.register(action);
+			}
+			
+			actionManager.registerListener(new EventListener<ChangeEvent<Action>>() {
+
+				@Override
+				public void onEvent(ChangeEvent<Action> event) {
+					if(event.getEventType() == EventType.CREATE){
+						actionAuthorityManager.register(event.getSource());
+					}
+				}
+			});
+		}
 	}
 
 	public void onEvent(BeanLifeCycleEvent event) {
 		Object source = event.getSource();
-		if(source == null){
-			return ;
+		if (source == null) {
+			return;
 		}
-		
-		if(event.getStep() != Step.AFTER_DEPENDENCE){
-			return ;
+
+		if (event.getStep() != Step.AFTER_DEPENDENCE) {
+			return;
 		}
-		
-		if(source instanceof ActionManager){
+
+		if (source instanceof ActionManager) {
 			BeanFactory beanFactory = event.getBeanFactory();
 			ActionManager actionManager = (ActionManager) source;
 			for (Class<?> clz : beanFactory.getContextClassesLoader()) {

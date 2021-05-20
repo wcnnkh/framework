@@ -9,14 +9,10 @@ import scw.codec.support.CharsetCodec;
 import scw.context.annotation.Provider;
 import scw.core.annotation.KeyValuePair;
 import scw.core.annotation.MultiAnnotatedElement;
-import scw.event.ChangeEvent;
-import scw.event.EventListener;
-import scw.event.EventType;
 import scw.http.HttpMethod;
 import scw.http.server.HttpControllerDescriptor;
 import scw.lang.NotSupportedException;
 import scw.mvc.action.Action;
-import scw.mvc.action.ActionManager;
 import scw.mvc.annotation.ActionAuthority;
 import scw.mvc.annotation.ActionAuthorityParent;
 import scw.security.authority.http.DefaultHttpAuthority;
@@ -25,23 +21,8 @@ import scw.security.authority.http.HttpAuthority;
 
 @Provider(value = HttpActionAuthorityManager.class)
 public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority>
-		implements HttpActionAuthorityManager, EventListener<ChangeEvent<Action>> {
+		implements HttpActionAuthorityManager {
 	private static final Encoder<String, String> ID_ENCODER = CharsetCodec.UTF_8.toBase64();
-
-	public DefaultHttpActionAuthorityManager(ActionManager actionManager) {
-		for (Action action : actionManager) {
-			register(action);
-		}
-		
-		actionManager.registerListener(this);
-	}
-	
-	@Override
-	public void onEvent(ChangeEvent<Action> event) {
-		if(event.getEventType() == EventType.CREATE) {
-			register(event.getSource());
-		}
-	}
 
 	private String getParentId(AnnotatedElement annotatedElement, String defaultId) {
 		ActionAuthorityParent actionAuthorityParent = annotatedElement.getAnnotation(ActionAuthorityParent.class);
