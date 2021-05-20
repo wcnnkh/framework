@@ -3,8 +3,11 @@ package scw.json;
 import scw.gson.GsonSupport;
 import scw.instance.InstanceUtils;
 import scw.lang.NamedThreadLocal;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 
 public final class JSONUtils {
+	private static Logger logger = LoggerFactory.getLogger(JSONUtils.class);
 	private static ThreadLocal<JSONSupport> local = new NamedThreadLocal<JSONSupport>(JSONUtils.class.getSimpleName());
 
 	private JSONUtils() {
@@ -18,6 +21,7 @@ public final class JSONUtils {
 	static {
 		JSONSupport jsonSupport = InstanceUtils.loadService(JSONSupport.class);
 		JSON_SUPPORT = jsonSupport == null ? GsonSupport.INSTANCE : jsonSupport;
+		logger.info("default json support [{}]", JSON_SUPPORT);
 	}
 
 	public static JSONSupport getDefaultJsonSupport() {
@@ -36,8 +40,10 @@ public final class JSONUtils {
 	public static JSONSupport setJsonSupport(JSONSupport jsonSupport) {
 		JSONSupport old = local.get();
 		if (jsonSupport == null) {
+			logger.debug("remove json support {}", old);
 			local.remove();
 		} else {
+			logger.debug("set json support {}", jsonSupport);
 			local.set(jsonSupport);
 		}
 		return old;
