@@ -10,38 +10,32 @@ import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.context.annotation.Provider;
 import scw.core.Ordered;
-import scw.event.ChangeEvent;
 import scw.event.EventListener;
-import scw.event.EventType;
+import scw.event.ObjectEvent;
 import scw.mvc.annotation.Controller;
 import scw.mvc.security.HttpActionAuthorityManager;
 
 @Provider(order = Ordered.HIGHEST_PRECEDENCE)
-public class ActionManagerPostProcesser implements BeanFactoryPostProcessor,
-		EventListener<BeanLifeCycleEvent> {
+public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanLifeCycleEvent> {
 
-	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
-			throws BeansException {
+	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
 		beanFactory.registerListener(this);
 
 		if (beanFactory.isInstance(HttpActionAuthorityManager.class)
 				&& beanFactory.isSingleton(HttpActionAuthorityManager.class)
-				&& beanFactory.isInstance(ActionManager.class)
-				&& beanFactory.isSingleton(ActionManager.class)) {
-			ActionManager actionManager = beanFactory
-					.getInstance(ActionManager.class);
-			HttpActionAuthorityManager actionAuthorityManager = beanFactory.getInstance(HttpActionAuthorityManager.class);
-			for(Action action : actionManager){
+				&& beanFactory.isInstance(ActionManager.class) && beanFactory.isSingleton(ActionManager.class)) {
+			ActionManager actionManager = beanFactory.getInstance(ActionManager.class);
+			HttpActionAuthorityManager actionAuthorityManager = beanFactory
+					.getInstance(HttpActionAuthorityManager.class);
+			for (Action action : actionManager) {
 				actionAuthorityManager.register(action);
 			}
-			
-			actionManager.registerListener(new EventListener<ChangeEvent<Action>>() {
+
+			actionManager.registerListener(new EventListener<ObjectEvent<Action>>() {
 
 				@Override
-				public void onEvent(ChangeEvent<Action> event) {
-					if(event.getEventType() == EventType.CREATE){
-						actionAuthorityManager.register(event.getSource());
-					}
+				public void onEvent(ObjectEvent<Action> event) {
+					actionAuthorityManager.register(event.getSource());
 				}
 			});
 		}

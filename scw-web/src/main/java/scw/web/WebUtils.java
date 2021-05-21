@@ -2,13 +2,13 @@ package scw.web;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import scw.core.utils.CollectionUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpMethod;
 import scw.http.HttpStatus;
 import scw.http.server.DefaultHttpService;
-import scw.http.server.HttpServiceConfigAccessor;
 import scw.http.server.JsonServerHttpRequest;
 import scw.http.server.MultiPartServerHttpRequest;
 import scw.http.server.ServerHttpRequest;
@@ -21,10 +21,7 @@ import scw.json.JsonObject;
 import scw.lang.NamedThreadLocal;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.InetUtils;
 import scw.net.MimeType;
-import scw.net.Restful;
-import scw.net.Restful.RestfulMatchingResult;
 import scw.net.message.multipart.FileItemParser;
 import scw.util.XUtils;
 import scw.value.EmptyValue;
@@ -33,8 +30,10 @@ import scw.value.Value;
 
 public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
-	private static ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedThreadLocal<ServerHttpRequest>(WebUtils.class.getSimpleName() + "-ServerHttpRequest");
-	
+	private static ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedThreadLocal<ServerHttpRequest>(
+			WebUtils.class.getSimpleName() + "-ServerHttpRequest");
+	private static final String RESTFUL_PARAMETER_MAP = "_restful_parameter_map";
+
 	/**
 	 * 缓存是否过期,如果未过期那么返回304，如果已过期则setLastModified
 	 * 
@@ -73,7 +72,7 @@ public final class WebUtils {
 	 */
 	public static void writeStaticResource(ServerHttpRequest request, ServerHttpResponse response, Resource resource,
 			MimeType mimeType) throws IOException {
-		if (!resource.exists()) {
+		if (resource == null || !resource.exists()) {
 			response.sendError(HttpStatus.NOT_FOUND.value(), "The resource does not exist!");
 			return;
 		}
@@ -151,15 +150,13 @@ public final class WebUtils {
 		return Value.EMPTY_ARRAY;
 	}
 
-	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request,
-			HttpServiceConfigAccessor configAccessor) {
+	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request) {
 		if (request.getMethod() == HttpMethod.GET) {
 			return request;
 		}
 
 		// 如果是一个json请求，那么包装一下
-		if (request.getHeaders().isJsonContentType()
-				&& (configAccessor == null || configAccessor.isSupportJsonWrapper(request))) {
+		if (request.getHeaders().isJsonContentType()) {
 			JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
 			if (jsonServerHttpRequest != null) {
 				// 返回原始对象
@@ -171,12 +168,8 @@ public final class WebUtils {
 		return request;
 	}
 
-	private static FileItemParser getFileItemParser(HttpServiceConfigAccessor configAccessor) {
-		return configAccessor == null ? InetUtils.getFileItemParser() : configAccessor.getFileItemParser();
-	}
-
 	public static ServerHttpRequest wrapperServerMultipartFormRequest(ServerHttpRequest request,
-			HttpServiceConfigAccessor configAccessor) {
+			FileItemParser fileItemParser) {
 		if (request.getMethod() == HttpMethod.GET) {
 			return request;
 		}
@@ -190,7 +183,6 @@ public final class WebUtils {
 				return request;
 			}
 
-			FileItemParser fileItemParser = getFileItemParser(configAccessor);
 			if (fileItemParser == null) {
 				logger.warn("Multipart is not supported: {}", request);
 			} else {
@@ -199,14 +191,13 @@ public final class WebUtils {
 		}
 		return request;
 	}
-	
+
 	/**
 	 * 从cookie中获取数据
 	 * 
 	 * @param request
 	 * 
-	 * @param name
-	 *            cookie中的名字
+	 * @param name    cookie中的名字
 	 * @return
 	 */
 	public static HttpCookie getCookie(ServerHttpRequest request, String name) {
@@ -230,36 +221,47 @@ public final class WebUtils {
 		}
 		return null;
 	}
-	
-	public static RestfulMatchingResult matching(Restful restful, ServerHttpRequest request) {
-		RestfulMatchingResult result = restful.matching(request.getPath());
-		if (result.isSuccess()) {
-			ServerHttpRequest targetRequest = request;
-			Restful.restfulParameterMapAware(targetRequest, result.getParameterMap());
-		}
-		return result;
-	}
-	
+
 	/**
 	 * 将一个ServerhttpRequest保存在ThreadLocal中
+	 * 
 	 * @see DefaultHttpService#service(ServerHttpRequest, ServerHttpResponse)
 	 * @param request
 	 */
-	public static void setLocalServerHttpRequest(ServerHttpRequest request){
-		if(request == null){
+	public static void setLocalServerHttpRequest(ServerHttpRequest request) {
+		if (request == null) {
 			SERVER_HTTP_REQUEST_LOCAL.remove();
-		}else{
+		} else {
 			SERVER_HTTP_REQUEST_LOCAL.set(request);
 		}
 	}
-	
+
 	/**
 	 * 获取一个存储在ThreadLocal中的ServerHttpRequest
+	 * 
 	 * @see #setLocalServerHttpRequest(ServerHttpRequest)
 	 * @see #SERVER_HTTP_REQUEST_LOCAL
 	 * @return
 	 */
-	public static ServerHttpRequest getLocalServerHttpRequest(){
+	public static ServerHttpRequest getLocalServerHttpRequest() {
 		return SERVER_HTTP_REQUEST_LOCAL.get();
+	}
+
+	public static void setRestfulParameterMap(ServerHttpRequest request, Map<String, String> restfulMap) {
+		request.setAttribute(RESTFUL_PARAMETER_MAP, restfulMap);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, String> getRestfulParameterMap(ServerHttpRequest request) {
+		return (Map<String, String>) request.getAttribute(RESTFUL_PARAMETER_MAP);
+	}
+
+	public static String getRestfulParameter(ServerHttpRequest request, String name) {
+		Map<String, String> parameterMap = getRestfulParameterMap(request);
+		if (parameterMap == null) {
+			return null;
+		}
+
+		return parameterMap.get(name);
 	}
 }

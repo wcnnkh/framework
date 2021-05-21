@@ -28,7 +28,6 @@ import scw.http.MediaType;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.net.RestfulParameterMapAware;
 import scw.net.uri.UriUtils;
 import scw.security.session.Session;
 import scw.servlet.ServletUtils;
@@ -37,8 +36,7 @@ import scw.util.MultiValueMap;
 import scw.util.Target;
 import scw.util.XUtils;
 
-public class ServletServerHttpRequest implements ServerHttpRequest, Target,
-		RestfulParameterMapAware {
+public class ServletServerHttpRequest implements ServerHttpRequest, Target {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletAsyncControl asyncControl;

@@ -5,16 +5,12 @@ import java.util.Collection;
 
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.reflect.MethodInvoker;
-import scw.http.server.HttpControllerDescriptor;
+import scw.http.server.pattern.HttpPattern;
 
 public interface Action extends MethodInvoker, AnnotatedElement {
 	ParameterDescriptors getParameterDescriptors();
-
-	Collection<HttpControllerDescriptor> getHttpControllerDescriptors();
-
-	Collection<HttpControllerDescriptor> getSourceClassHttpControllerDescriptors();
-
-	Collection<HttpControllerDescriptor> getMethodHttpControllerDescriptors();
+	
+	Collection<HttpPattern> getPatternts();
 
 	Iterable<ActionInterceptor> getActionInterceptors();
 }

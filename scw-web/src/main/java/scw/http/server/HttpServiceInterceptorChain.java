@@ -10,25 +10,22 @@ import scw.logger.LoggerFactory;
 
 public class HttpServiceInterceptorChain implements HttpService {
 	private static Logger logger = LoggerFactory.getLogger(HttpService.class);
-	private HttpServiceHandlerAccessor handlerAccessor;
 	private Iterator<? extends HttpServiceInterceptor> iterator;
+	private HttpService service;
 
-	public HttpServiceInterceptorChain(Iterator<? extends HttpServiceInterceptor> iterator,
-			HttpServiceHandlerAccessor handlerAccessor) {
+	public HttpServiceInterceptorChain(Iterator<? extends HttpServiceInterceptor> iterator, HttpService service) {
 		this.iterator = iterator;
-		this.handlerAccessor = handlerAccessor;
+		this.service = service;
 	}
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		HttpServiceInterceptor interceptor = getNextHttpServiceInterceptor(request);
 		if (interceptor == null) {
-			HttpServiceHandler handler = handlerAccessor == null ? null : handlerAccessor.get(request);
-			if (handler == null) {
+			if (service == null) {
 				notfound(request, response);
 				return;
 			}
-
-			handler.doHandle(request, response);
+			service.service(request, response);
 			return;
 		}
 		interceptor.intercept(request, response, this);

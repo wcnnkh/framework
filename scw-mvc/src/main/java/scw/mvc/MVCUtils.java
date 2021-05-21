@@ -86,4 +86,12 @@ public final class MVCUtils {
 				action);
 		return loggerEnable == null ? null : loggerEnable.value();
 	}
+
+	public static void setAction(ServerHttpRequest request, Action action) {
+		request.setAttribute(Action.class.getName(), action);
+	}
+
+	public static Action getAction(ServerHttpRequest request) {
+		return (Action) request.getAttribute(Action.class.getName());
+	}
 }

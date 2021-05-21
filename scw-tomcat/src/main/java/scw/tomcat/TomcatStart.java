@@ -1,6 +1,7 @@
 package scw.tomcat;
 
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -33,7 +34,7 @@ import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.env.MainArgs;
 import scw.http.HttpMethod;
-import scw.http.server.HttpControllerDescriptor;
+import scw.http.server.pattern.HttpPattern;
 import scw.instance.InstanceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -64,26 +65,22 @@ public class TomcatStart implements Main, Destroy {
 					continue;
 				}
 
-				HttpControllerDescriptor controllerDescriptorToUse = null;
-				for (HttpControllerDescriptor httpControllerDescriptor : action.getHttpControllerDescriptors()) {
-					if (httpControllerDescriptor.getMethod() == HttpMethod.GET
-							&& !httpControllerDescriptor.getRestful().isRestful()) {
-						controllerDescriptorToUse = httpControllerDescriptor;
-						break;
+				for (HttpPattern pattern : action.getPatternts()) {
+					if (pattern.isPattern() && pattern.getMethod() == HttpMethod.GET) {
+						continue;
 					}
-				}
 
-				if (controllerDescriptorToUse == null) {
-					logger.warn("not support error controller action: {}", action);
-					continue;
-				}
-
-				if (errorCodeController != null) {
-					for (int code : errorCodeController.value()) {
-						ErrorPage errorPage = new ErrorPage();
-						errorPage.setErrorCode(code);
-						errorPage.setLocation(controllerDescriptorToUse.getPath());
-						context.addErrorPage(errorPage);
+					if (errorCodeController != null) {
+						for (int code : errorCodeController.value()) {
+							ErrorPage errorPage = new ErrorPage();
+							errorPage.setErrorCode(code);
+							errorPage.setCharset(Charset.forName(errorCodeController.exceptionType()));
+							errorPage.setExceptionType(errorCodeController.exceptionType());
+							errorPage.setLocation(pattern.getPath());
+							context.addErrorPage(errorPage);
+						}
+					} else {
+						logger.warn("not support error controller action: {}", action);
 					}
 				}
 			}

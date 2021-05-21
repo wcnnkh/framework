@@ -42,7 +42,6 @@ import scw.mvc.annotation.RequestBody;
 import scw.mvc.parameter.RequestBodyParse;
 import scw.mvc.security.UserSessionFactoryAdapter;
 import scw.mvc.security.UserSessionResolver;
-import scw.net.RestfulParameterMapAware;
 import scw.security.session.Session;
 import scw.security.session.UserSession;
 import scw.security.session.UserSessionFactory;
@@ -321,8 +320,8 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 	protected String getStringValue(String name) {
 		Value value = WebUtils.getParameter(getRequest(), name);
 		String v = value.getAsString();
-		if (v == null && request instanceof RestfulParameterMapAware) {
-			v = request.getRestfulParameterMap().getFirst(name);
+		if(v == null) {
+			v = WebUtils.getRestfulParameter(request, name);
 		}
 
 		if (v != null && HttpMethod.GET == request.getMethod()) {

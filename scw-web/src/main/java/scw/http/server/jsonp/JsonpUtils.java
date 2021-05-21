@@ -2,10 +2,8 @@ package scw.http.server.jsonp;
 
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
-import scw.http.server.HttpServiceConfigAccessor;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
-import scw.lang.Nullable;
 import scw.util.XUtils;
 
 public final class JsonpUtils {
@@ -17,8 +15,7 @@ public final class JsonpUtils {
 	public static final String JSONP_CALLBACK = "callback";
 	private static final String JSONP_CALLBACK_VALID = "^[a-zA-Z_]+[\\w0-9_]*$";
 
-	public static ServerHttpResponse wrapper(ServerHttpRequest request, ServerHttpResponse response,
-			@Nullable HttpServiceConfigAccessor configAccessor) {
+	public static ServerHttpResponse wrapper(ServerHttpRequest request, ServerHttpResponse response) {
 		if (request.getMethod() != HttpMethod.GET) {
 			return response;
 		}
@@ -30,10 +27,6 @@ public final class JsonpUtils {
 
 		JsonpServerHttpResponse jsonpServerHttpResponse = XUtils.getTarget(request, JsonpServerHttpResponse.class);
 		if (jsonpServerHttpResponse != null) {
-			return response;
-		}
-
-		if (configAccessor != null && !configAccessor.isSupportJsonp(request)) {
 			return response;
 		}
 

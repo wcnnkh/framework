@@ -7,11 +7,10 @@ import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.http.HttpMethod;
 import scw.http.MediaType;
-import scw.http.server.HttpControllerDescriptor;
-import scw.http.server.HttpServiceHandler;
-import scw.http.server.HttpServiceHandlerControllerDesriptor;
+import scw.http.server.HttpService;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.http.server.pattern.HttpPattern;
 import scw.instance.NoArgsInstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -25,36 +24,28 @@ import scw.rpc.support.ServiceCallableFactory;
 
 /**
  * 依赖web模块
+ * 
  * @author shuchaowen
  *
  */
-@Provider(order=Ordered.HIGHEST_PRECEDENCE)
-public class RemoteHttpServiceHandler implements HttpServiceHandler,
-		HttpServiceHandlerControllerDesriptor {
-	private static Logger logger = LoggerFactory
-			.getLogger(RemoteHttpServiceHandler.class);
+@Provider(order = Ordered.HIGHEST_PRECEDENCE)
+public class RemoteHttpServiceHandler extends HttpPattern implements HttpService {
+	private static Logger logger = LoggerFactory.getLogger(RemoteHttpServiceHandler.class);
 	private final CallableFactory callableFactory;
 	private final RemoteMessageCodec messageCodec;
-	private final HttpControllerDescriptor controllerDescriptor;
-	
-	public RemoteHttpServiceHandler(NoArgsInstanceFactory instanceFactory, RemoteMessageCodec messageCodec, String path){
+
+	public RemoteHttpServiceHandler(NoArgsInstanceFactory instanceFactory, RemoteMessageCodec messageCodec,
+			String path) {
 		this(new ServiceCallableFactory(instanceFactory), messageCodec, path);
 	}
 
-	public RemoteHttpServiceHandler(CallableFactory callableFactory,
-			RemoteMessageCodec messageCodec, String path) {
+	public RemoteHttpServiceHandler(CallableFactory callableFactory, RemoteMessageCodec messageCodec, String path) {
+		super(path, HttpMethod.POST);
 		this.callableFactory = callableFactory;
 		this.messageCodec = messageCodec;
-		this.controllerDescriptor = new HttpControllerDescriptor(path,
-				HttpMethod.POST);
 	}
 
-	public HttpControllerDescriptor getHttpControllerDescriptor()  {
-		return controllerDescriptor;
-	}
-
-	public void doHandle(final ServerHttpRequest request, ServerHttpResponse response)
-			throws IOException {
+	public void service(final ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		DefaultRemoteResponseMessage responseMessage = new DefaultRemoteResponseMessage();
 		RemoteRequestMessage requestMessage = null;
 		try {
@@ -63,12 +54,11 @@ public class RemoteHttpServiceHandler implements HttpServiceHandler,
 			responseMessage.setThrowable(e);
 			logger.error(e, "message decode error");
 			response(response, responseMessage, requestMessage);
-			return ;
+			return;
 		}
-		
-		Callable<Object> callable = callableFactory.getCallable(
-				requestMessage.getTargetClass(), requestMessage.getMethod(),
-				requestMessage.getArgs());
+
+		Callable<Object> callable = callableFactory.getCallable(requestMessage.getTargetClass(),
+				requestMessage.getMethod(), requestMessage.getArgs());
 
 		try {
 			Object obj = callable.call();
@@ -79,8 +69,9 @@ public class RemoteHttpServiceHandler implements HttpServiceHandler,
 		}
 		response(response, responseMessage, requestMessage);
 	}
-	
-	private void response(final ServerHttpResponse response, RemoteResponseMessage responseMessage, RemoteRequestMessage requestMessage) throws RemoteMessageCodecException, IOException{
+
+	private void response(final ServerHttpResponse response, RemoteResponseMessage responseMessage,
+			RemoteRequestMessage requestMessage) throws RemoteMessageCodecException, IOException {
 		response.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		messageCodec.encode(response, responseMessage, requestMessage);
 	}

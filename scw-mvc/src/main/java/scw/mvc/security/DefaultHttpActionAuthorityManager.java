@@ -10,7 +10,7 @@ import scw.context.annotation.Provider;
 import scw.core.annotation.KeyValuePair;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.http.HttpMethod;
-import scw.http.server.HttpControllerDescriptor;
+import scw.http.server.pattern.HttpPattern;
 import scw.lang.NotSupportedException;
 import scw.mvc.action.Action;
 import scw.mvc.annotation.ActionAuthority;
@@ -56,7 +56,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 			return;
 		}
 
-		HttpControllerDescriptor descriptor = getAuthorityControllerDescriptor(action);
+		HttpPattern descriptor = getAuthorityHttpPattern(action);
 		if (descriptor == null) {
 			logger.warn("not found controller descriptor: {}", action);
 			return;
@@ -86,7 +86,7 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 	}
 
 	public HttpAuthority getAuthority(Action action) {
-		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
+		for (HttpPattern descriptor : action.getPatternts()) {
 			HttpAuthority authority = getAuthority(descriptor.getPath(), descriptor.getMethod());
 			if (authority != null) {
 				return authority;
@@ -111,14 +111,14 @@ public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManag
 		return attributeMap.isEmpty() ? null : attributeMap;
 	}
 
-	protected HttpControllerDescriptor getAuthorityControllerDescriptor(Action action) {
-		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
+	protected HttpPattern getAuthorityHttpPattern(Action action) {
+		for (HttpPattern descriptor : action.getPatternts()) {
 			if (descriptor.getMethod() == HttpMethod.GET) {
 				return descriptor;
 			}
 		}
 
-		for (HttpControllerDescriptor descriptor : action.getHttpControllerDescriptors()) {
+		for (HttpPattern descriptor : action.getPatternts()) {
 			return descriptor;
 		}
 		return null;

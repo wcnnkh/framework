@@ -15,17 +15,13 @@ import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
-import scw.http.server.HttpControllerDescriptor;
+import scw.http.server.pattern.HttpPattern;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Methods;
 import scw.util.placeholder.PropertyResolver;
 
 public abstract class AbstractAction extends AnnotationArrayAnnotatedElement implements Action {
-	protected Collection<HttpControllerDescriptor> httpHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
-			8);
-	protected Collection<HttpControllerDescriptor> sourceClassHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
-			8);
-	protected Collection<HttpControllerDescriptor> methodHttpControllerDescriptors = new HashSet<HttpControllerDescriptor>(
+	protected Collection<HttpPattern> httpPatterns = new HashSet<HttpPattern>(
 			8);
 	
 	private final Method method;
@@ -48,20 +44,12 @@ public abstract class AbstractAction extends AnnotationArrayAnnotatedElement imp
 		
 		String methodControllerValue = methodController.value();
 		methodControllerValue = propertyResolver.resolvePlaceholders(methodControllerValue);
-		
-		httpHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
+		httpPatterns.addAll(createHttpControllerDescriptors(
 				StringUtils.mergePath("/", controller, methodControllerValue), getControllerHttpMethods()));
-		sourceClassHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
-				StringUtils.mergePath("/", controller),
-				Arrays.asList(classController.methods())));
-		methodHttpControllerDescriptors.addAll(createHttpControllerDescriptors(
-				methodControllerValue, Arrays.asList(methodController.methods())));
 	}
 
 	public void optimization() {
-		this.httpHttpControllerDescriptors = Arrays.asList(httpHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
-		this.sourceClassHttpControllerDescriptors = Arrays.asList(sourceClassHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
-		this.methodHttpControllerDescriptors = Arrays.asList(methodHttpControllerDescriptors.toArray(new HttpControllerDescriptor[0]));
+		this.httpPatterns = Arrays.asList(httpPatterns.toArray(new HttpPattern[0]));
 	}
 
 	public Class<?> getDeclaringClass() {
@@ -74,6 +62,11 @@ public abstract class AbstractAction extends AnnotationArrayAnnotatedElement imp
 
 	public ParameterDescriptors getParameterDescriptors() {
 		return parameterDescriptors;
+	}
+	
+	@Override
+	public Collection<HttpPattern> getPatternts() {
+		return httpPatterns;
 	}
 
 	@Override
@@ -97,26 +90,14 @@ public abstract class AbstractAction extends AnnotationArrayAnnotatedElement imp
 		return false;
 	}
 	
-	public Collection<HttpControllerDescriptor> getHttpControllerDescriptors() {
-		return httpHttpControllerDescriptors;
-	}
-
-	public Collection<HttpControllerDescriptor> getSourceClassHttpControllerDescriptors() {
-		return sourceClassHttpControllerDescriptors;
-	}
-
-	public Collection<HttpControllerDescriptor> getMethodHttpControllerDescriptors() {
-		return methodHttpControllerDescriptors;
-	}
-	
-	protected Collection<HttpControllerDescriptor> createHttpControllerDescriptors(
+	protected Collection<HttpPattern> createHttpControllerDescriptors(
 			String controller, Collection<HttpMethod> httpMethods) {
 		if (controller == null || CollectionUtils.isEmpty(httpMethods)) {
-			return Arrays.asList(new HttpControllerDescriptor(controller, HttpMethod.GET));
+			return Arrays.asList(new HttpPattern(controller, HttpMethod.GET));
 		}
-		List<HttpControllerDescriptor> descriptors = new LinkedList<HttpControllerDescriptor>();
+		List<HttpPattern> descriptors = new LinkedList<HttpPattern>();
 		for (HttpMethod httpMethod : httpMethods) {
-			descriptors.add(new HttpControllerDescriptor(controller, httpMethod));
+			descriptors.add(new HttpPattern(controller, httpMethod));
 		}
 		return descriptors;
 	}

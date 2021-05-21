@@ -1,6 +1,8 @@
 package scw.http.server.cors;
 
-import scw.http.server.HttpServiceConfig;
+import scw.http.server.pattern.HttpPattern;
+import scw.http.server.pattern.HttpPatternRegistry;
+import scw.http.server.pattern.HttpPatternRegsitration;
 
 /**
  * 跨域路径注册
@@ -8,11 +10,11 @@ import scw.http.server.HttpServiceConfig;
  * @author shuchaowen
  *
  */
-public class CorsRegistry extends HttpServiceConfig<Cors> {
+public class CorsRegistry extends HttpPatternRegistry<Cors> {
 
-	@Override
-	public void addMapping(String pattern, Cors cors) {
+	public HttpPatternRegsitration<Cors> addMapping(String pattern, Cors cors) {
+		HttpPattern httpPattern = new HttpPattern(pattern);
 		Cors corsToUse = cors.isReadyOnly() ? cors : cors.clone().readyOnly();
-		super.addMapping(pattern, corsToUse);
+		return register(httpPattern, corsToUse);
 	}
 }

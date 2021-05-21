@@ -11,12 +11,12 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.event.Observable;
 import scw.http.MediaType;
-import scw.http.server.HttpServiceHandler;
-import scw.http.server.HttpServiceHandlerAccept;
+import scw.http.server.HttpService;
 import scw.http.server.ServerHttpAsyncControl;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
 import scw.http.server.jsonp.JsonpUtils;
+import scw.http.server.pattern.ServerHttpRequestAccept;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.json.JSONSupport;
@@ -43,8 +43,8 @@ import scw.net.message.convert.MessageConverters;
 import scw.util.MultiIterable;
 import scw.web.WebUtils;
 
-@Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpServiceHandler.class)
-public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
+@Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
+public class HttpControllerHandler implements HttpService, ServerHttpRequestAccept {
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport;
 	private final MessageConverters messageConverters;
@@ -92,19 +92,16 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 	}
 
 	private Action getAction(ServerHttpRequest request) {
-		Object value = request.getAttribute(Action.class.getName());
-		if (value != null && value instanceof Action) {
-			return (Action) value;
-		}
-
-		Action action = actionManager.getAction(request);
-		if (value != null) {
-			request.setAttribute(Action.class.getName(), action);
+		Action action = MVCUtils.getAction(request);
+		if(action == null) {
+			action = actionManager.getAction(request);
+			MVCUtils.setAction(request, action);
 		}
 		return action;
 	}
-
-	public void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+	
+	@Override
+	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		Action action = getAction(request);
 		if (action == null) {
 			// 不应该到这里的，因为accept里面已经判断过了
@@ -117,7 +114,7 @@ public class HttpControllerHandler implements HttpServiceHandler, HttpServiceHan
 		// jsonp支持
 		Jsonp jsonp = AnnotationUtils.getAnnotation(Jsonp.class, action.getDeclaringClass(), action);
 		if (jsonp != null && jsonp.value()) {
-			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse, null);
+			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
 		}
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);

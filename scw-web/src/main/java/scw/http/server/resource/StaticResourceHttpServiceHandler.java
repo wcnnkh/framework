@@ -3,15 +3,15 @@ package scw.http.server.resource;
 import java.io.IOException;
 
 import scw.http.HttpMethod;
-import scw.http.server.HttpServiceHandler;
-import scw.http.server.HttpServiceHandlerAccept;
+import scw.http.server.HttpService;
 import scw.http.server.ServerHttpRequest;
 import scw.http.server.ServerHttpResponse;
+import scw.http.server.pattern.ServerHttpRequestAccept;
 import scw.io.Resource;
 import scw.net.MimeType;
 import scw.web.WebUtils;
 
-public class StaticResourceHttpServiceHandler implements HttpServiceHandler, HttpServiceHandlerAccept {
+public class StaticResourceHttpServiceHandler implements HttpService, ServerHttpRequestAccept {
 	private StaticResourceLoader resourceLoader;
 
 	public StaticResourceLoader getResourceLoader() {
@@ -35,7 +35,8 @@ public class StaticResourceHttpServiceHandler implements HttpServiceHandler, Htt
 		return resource != null && resource.exists();
 	}
 
-	public void doHandle(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+	@Override
+	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		Resource resource = resourceLoader.getResource(request.getPath());
 		MimeType mimeType = resourceLoader.getMimeType(resource);
 		WebUtils.writeStaticResource(request, response, resource, mimeType);
