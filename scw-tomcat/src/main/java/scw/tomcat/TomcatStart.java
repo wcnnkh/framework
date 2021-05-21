@@ -74,8 +74,14 @@ public class TomcatStart implements Main, Destroy {
 						for (int code : errorCodeController.value()) {
 							ErrorPage errorPage = new ErrorPage();
 							errorPage.setErrorCode(code);
-							errorPage.setCharset(Charset.forName(errorCodeController.exceptionType()));
-							errorPage.setExceptionType(errorCodeController.exceptionType());
+							
+							if(StringUtils.isNotEmpty(errorCodeController.charset())){
+								errorPage.setCharset(Charset.forName(errorCodeController.charset()));
+							}
+							
+							if(StringUtils.isNotEmpty(errorCodeController.exceptionType())){
+								errorPage.setExceptionType(errorCodeController.exceptionType());
+							}
 							errorPage.setLocation(pattern.getPath());
 							context.addErrorPage(errorPage);
 						}

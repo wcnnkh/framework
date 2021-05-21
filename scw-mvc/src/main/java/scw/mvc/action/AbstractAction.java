@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.AnnotationArrayAnnotatedElement;
+import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.CollectionUtils;
@@ -29,7 +29,7 @@ public abstract class AbstractAction extends AnnotationArrayAnnotatedElement imp
 	private final ParameterDescriptors parameterDescriptors;
 
 	public AbstractAction(Class<?> sourceClass, Method method, PropertyResolver propertyResolver) {
-		super(AnnotatedElementUtils.forAnnotations(method.getAnnotations()));
+		super(MultiAnnotatedElement.forAnnotatedElements(method));
 		this.sourceClass = sourceClass;
 		this.method = method;
 		this.parameterDescriptors = new MethodParameterDescriptors(sourceClass, method);

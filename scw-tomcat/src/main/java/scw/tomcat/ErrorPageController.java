@@ -5,8 +5,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.core.Constants;
-
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ErrorPageController {
@@ -14,5 +12,5 @@ public @interface ErrorPageController {
 
 	public String exceptionType() default "";
 
-	public String charset() default Constants.UTF_8_NAME;
+	public String charset() default "";
 }

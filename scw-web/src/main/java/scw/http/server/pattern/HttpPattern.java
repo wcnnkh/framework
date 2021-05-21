@@ -40,7 +40,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable {
 		return pathMatcher == null ? DEFAULT_PATH_MATCHER : pathMatcher;
 	}
 
-	public void setPathMatcher(PathMatcher pathMatcher) {
+	public synchronized void setPathMatcher(PathMatcher pathMatcher) {
 		this.pathMatcher = pathMatcher;
 	}
 
