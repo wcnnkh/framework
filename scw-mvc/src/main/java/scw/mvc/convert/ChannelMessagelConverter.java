@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
 
 public interface ChannelMessagelConverter {
 	boolean canRead(ParameterDescriptor parameterDescriptor);

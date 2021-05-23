@@ -1,15 +1,19 @@
 package scw.mvc;
 
+import java.io.IOException;
+
+import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterFactory;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
 import scw.instance.NoArgsInstanceFactory;
 import scw.lang.Nullable;
 import scw.mvc.security.UserSessionFactoryAdapter;
 import scw.mvc.security.UserSessionResolver;
 import scw.security.session.UserSession;
 import scw.value.Value;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
+import scw.web.convert.WebMessagelConverterException;
 
 public interface HttpChannel extends ParameterFactory, UserSessionFactoryAdapter {
 	static final String UID_ATTRIBUTE = "mvc.http.channel.uid";
@@ -45,4 +49,6 @@ public interface HttpChannel extends ParameterFactory, UserSessionFactoryAdapter
 	<T> UserSession<T> getUserSession(Class<T> type);
 	
 	<T> UserSession<T> createUserSession(Class<T> type, T uid, String sessionId);
+	
+	void write(TypeDescriptor type, Object body) throws IOException, WebMessagelConverterException;
 }

@@ -8,8 +8,8 @@ import java.util.List;
 import scw.convert.TypeDescriptor;
 import scw.core.OrderComparator;
 import scw.core.parameter.ParameterDescriptor;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
 
 public class ChanneMessagelConverters implements ChannelMessagelConverter {
 	private volatile List<ChannelMessagelConverter> converters;

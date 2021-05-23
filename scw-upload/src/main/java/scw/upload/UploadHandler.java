@@ -6,11 +6,11 @@ import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.http.HttpMethod;
 import scw.http.HttpStatus;
-import scw.http.server.HttpService;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
-import scw.http.server.cors.Cors;
-import scw.http.server.pattern.ServerHttpRequestAccept;
+import scw.web.HttpService;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
+import scw.web.cors.Cors;
+import scw.web.pattern.ServerHttpRequestAccept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class UploadHandler implements HttpService, ServerHttpRequestAccept {

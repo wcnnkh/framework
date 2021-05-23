@@ -34,12 +34,12 @@ import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.env.MainArgs;
 import scw.http.HttpMethod;
-import scw.http.server.pattern.HttpPattern;
 import scw.instance.InstanceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionManager;
+import scw.web.pattern.HttpPattern;
 
 public class TomcatStart implements Main, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(TomcatStart.class);

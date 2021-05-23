@@ -3,8 +3,8 @@ package scw.mvc.convert;
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.ObjectUtils;
-import scw.http.server.ServerHttpRequest;
 import scw.lang.NestedRuntimeException;
+import scw.web.ServerHttpRequest;
 
 public class ChannelMessagelConverterException extends NestedRuntimeException {
 	private static final long serialVersionUID = 1L;

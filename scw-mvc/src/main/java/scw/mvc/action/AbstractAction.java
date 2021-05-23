@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import scw.convert.TypeDescriptor;
+import scw.core.ResolvableType;
 import scw.core.annotation.AnnotationArrayAnnotatedElement;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.parameter.MethodParameterDescriptors;
@@ -15,37 +17,42 @@ import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
-import scw.http.server.pattern.HttpPattern;
 import scw.mvc.annotation.Controller;
 import scw.mvc.annotation.Methods;
 import scw.util.placeholder.PropertyResolver;
+import scw.web.pattern.HttpPattern;
 
 public abstract class AbstractAction extends AnnotationArrayAnnotatedElement implements Action {
-	protected Collection<HttpPattern> httpPatterns = new HashSet<HttpPattern>(
-			8);
-	
+	protected Collection<HttpPattern> httpPatterns = new HashSet<HttpPattern>(8);
+
 	private final Method method;
 	private final Class<?> sourceClass;
 	private final ParameterDescriptors parameterDescriptors;
+	private final TypeDescriptor returnType;
 
 	public AbstractAction(Class<?> sourceClass, Method method, PropertyResolver propertyResolver) {
 		super(MultiAnnotatedElement.forAnnotatedElements(method));
+		this.returnType = new TypeDescriptor(ResolvableType.forMethodReturnType(method), method.getReturnType(),
+				MultiAnnotatedElement.forAnnotatedElements(this, sourceClass).getAnnotations());
 		this.sourceClass = sourceClass;
 		this.method = method;
 		this.parameterDescriptors = new MethodParameterDescriptors(sourceClass, method);
-		
-		Controller classController = getDeclaringClass()
-				.getAnnotation(Controller.class);
-		Controller methodController = getMethod()
-				.getAnnotation(Controller.class);
-		
+
+		Controller classController = getDeclaringClass().getAnnotation(Controller.class);
+		Controller methodController = getMethod().getAnnotation(Controller.class);
+
 		String controller = classController.value();
 		controller = propertyResolver.resolvePlaceholders(controller);
-		
+
 		String methodControllerValue = methodController.value();
 		methodControllerValue = propertyResolver.resolvePlaceholders(methodControllerValue);
 		httpPatterns.addAll(createHttpControllerDescriptors(
 				StringUtils.mergePath("/", controller, methodControllerValue), getControllerHttpMethods()));
+	}
+
+	@Override
+	public TypeDescriptor getReturnType() {
+		return returnType;
 	}
 
 	public void optimization() {
@@ -63,7 +70,7 @@ public abstract class AbstractAction extends AnnotationArrayAnnotatedElement imp
 	public ParameterDescriptors getParameterDescriptors() {
 		return parameterDescriptors;
 	}
-	
+
 	@Override
 	public Collection<HttpPattern> getPatternts() {
 		return httpPatterns;
@@ -89,9 +96,9 @@ public abstract class AbstractAction extends AnnotationArrayAnnotatedElement imp
 		}
 		return false;
 	}
-	
-	protected Collection<HttpPattern> createHttpControllerDescriptors(
-			String controller, Collection<HttpMethod> httpMethods) {
+
+	protected Collection<HttpPattern> createHttpControllerDescriptors(String controller,
+			Collection<HttpMethod> httpMethods) {
 		if (controller == null || CollectionUtils.isEmpty(httpMethods)) {
 			return Arrays.asList(new HttpPattern(controller, HttpMethod.GET));
 		}
@@ -103,17 +110,13 @@ public abstract class AbstractAction extends AnnotationArrayAnnotatedElement imp
 	}
 
 	private Collection<HttpMethod> getControllerHttpMethods() {
-		Controller classController = getDeclaringClass()
-				.getAnnotation(Controller.class);
-		Controller methodController = getMethod()
-				.getAnnotation(Controller.class);
-		Methods methods = getMethod().getAnnotation(
-				Methods.class);
+		Controller classController = getDeclaringClass().getAnnotation(Controller.class);
+		Controller methodController = getMethod().getAnnotation(Controller.class);
+		Methods methods = getMethod().getAnnotation(Methods.class);
 		Set<HttpMethod> httpMethods = new HashSet<HttpMethod>();
 		if (methods == null) {
 			if (classController != null) {
-				for (scw.http.HttpMethod requestType : classController
-						.methods()) {
+				for (scw.http.HttpMethod requestType : classController.methods()) {
 					httpMethods.add(requestType);
 				}
 			}
@@ -124,8 +127,7 @@ public abstract class AbstractAction extends AnnotationArrayAnnotatedElement imp
 		}
 
 		if (methodController != null) {
-			for (scw.http.HttpMethod requestType : methodController
-					.methods()) {
+			for (scw.http.HttpMethod requestType : methodController.methods()) {
 				httpMethods.add(requestType);
 			}
 		}

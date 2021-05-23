@@ -15,8 +15,7 @@ public final class SystemContextClassesLoader extends ClassScannerClassesLoader 
 		"scw.json.", "scw.io.", "scw.env.", "scw.instance.",
 		"scw.convert.", "scw.aop.", "scw.event.", "scw.lang.",
 		"scw.mapper.", "scw.logger.", "scw.serializer.", "scw.beans.",
-		"scw.boot.", "scw.dom.", "scw.script.", "scw.math.", "scw.net.",
-		"scw.http.server.", "scw.configure", "scw.apple.", "scw.data.", "scw.db." };
+		"scw.boot.", "scw.dom.", "scw.script.", "scw.math.", "scw.net.", "scw.configure", "scw.apple.", "scw.data.", "scw.db." };
 	
 	public SystemContextClassesLoader(ClassScanner classScanner,
 			ClassLoaderProvider classLoaderProvider){

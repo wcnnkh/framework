@@ -20,8 +20,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
 import scw.websocket.WebSocketExtension;
 import scw.websocket.WebSocketHandler;
 

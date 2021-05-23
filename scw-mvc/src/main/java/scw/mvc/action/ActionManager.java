@@ -6,7 +6,7 @@ import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventRegistry;
 import scw.event.ObjectEvent;
-import scw.http.server.ServerHttpRequest;
+import scw.web.ServerHttpRequest;
 
 public interface ActionManager extends EventRegistry<ObjectEvent<Action>>, Iterable<Action> {
 	Action getAction(Method method);

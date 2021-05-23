@@ -25,10 +25,10 @@ import java.util.Set;
 import scw.core.Assert;
 import scw.http.HttpStatus;
 import scw.http.HttpUtils;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.server.HandshakeInterceptor;
 

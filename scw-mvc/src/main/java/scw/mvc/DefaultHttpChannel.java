@@ -1,5 +1,6 @@
 package scw.mvc;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -13,6 +14,7 @@ import scw.beans.BeanFactory;
 import scw.beans.support.ExtendBeanFactory;
 import scw.codec.support.CharsetCodec;
 import scw.context.Destroy;
+import scw.convert.TypeDescriptor;
 import scw.core.ResolvableType;
 import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.ParameterDescriptor;
@@ -23,8 +25,6 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.http.HttpMethod;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
 import scw.instance.NoArgsInstanceFactory;
 import scw.json.JSONSupport;
 import scw.lang.ParameterException;
@@ -52,26 +52,35 @@ import scw.value.AbstractValue;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
 import scw.web.WebUtils;
+import scw.web.convert.WebMessageConverter;
+import scw.web.convert.WebMessageConverters;
+import scw.web.convert.WebMessagelConverterException;
 
-public class DefaultHttpChannel extends AbstractParameterFactory implements
-		HttpChannel, Destroy, Target {
-	private static Logger logger = LoggerFactory
-			.getLogger(DefaultHttpChannel.class);
+public class DefaultHttpChannel extends AbstractParameterFactory implements HttpChannel, Destroy, Target {
+	private static Logger logger = LoggerFactory.getLogger(DefaultHttpChannel.class);
 	private final long createTime;
 	private final JSONSupport jsonSupport;
 	private boolean completed = false;
 	private final ServerHttpRequest request;
 	private final ServerHttpResponse response;
 	private final ExtendBeanFactory extendBeanFactory;
+	private final WebMessageConverters messageConverters;
 
-	public DefaultHttpChannel(BeanFactory beanFactory, JSONSupport jsonSupport,
-			ServerHttpRequest request, ServerHttpResponse response) {
+	public DefaultHttpChannel(BeanFactory beanFactory, JSONSupport jsonSupport, ServerHttpRequest request,
+			ServerHttpResponse response, WebMessageConverter messageConverter) {
 		this.createTime = System.currentTimeMillis();
+		this.messageConverters = new WebMessageConverters(messageConverter);
 		this.jsonSupport = jsonSupport;
 		this.request = request;
 		this.response = response;
 		this.extendBeanFactory = new ExtendBeanFactory(this, beanFactory);
+	}
+
+	public void write(TypeDescriptor type, Object body) throws WebMessagelConverterException, IOException {
+		messageConverters.write(type, body, request, response);
 	}
 
 	public final JSONSupport getJsonSupport() {
@@ -108,8 +117,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 	}
 
 	public final Value getValue(String name, Value defaultValue) {
-		return new RequestValue(name,
-				defaultValue == null ? EmptyValue.INSTANCE : defaultValue);
+		return new RequestValue(name, defaultValue == null ? EmptyValue.INSTANCE : defaultValue);
 	}
 
 	protected Value parseValue(String value) {
@@ -117,8 +125,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 	}
 
 	@SuppressWarnings("unchecked")
-	protected final <E> E[] parseArray(
-			MultiValueMap<String, String> parameterMap, String name,
+	protected final <E> E[] parseArray(MultiValueMap<String, String> parameterMap, String name,
 			Class<? extends E> type) {
 		List<String> values = request.getParameterMap().get(name);
 		if (CollectionUtils.isEmpty(values)) {
@@ -145,25 +152,22 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 	}
 
 	@Override
-	protected boolean isAccept(ParameterDescriptors parameterDescriptors,
-			ParameterDescriptor parameterDescriptor, int index) {
+	protected boolean isAccept(ParameterDescriptors parameterDescriptors, ParameterDescriptor parameterDescriptor,
+			int index) {
 		return getParameter(parameterDescriptor) != null;
 	}
 
 	@Override
-	protected Object getParameter(ParameterDescriptors parameterDescriptors,
-			ParameterDescriptor parameterDescriptor, int index)
-			throws Exception {
+	protected Object getParameter(ParameterDescriptors parameterDescriptors, ParameterDescriptor parameterDescriptor,
+			int index) throws Exception {
 		return getParameter(parameterDescriptor);
 	}
 
-	protected Object getParameterInternal(
-			ParameterDescriptor parameterDescriptor) {
+	protected Object getParameterInternal(ParameterDescriptor parameterDescriptor) {
 		Value defaultValue = parameterDescriptor.getDefaultValue();
 		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor.getAnnotation(BigDecimalMultiply.class);
 		if (bigDecimalMultiply != null) {
-			return bigDecimalMultiply(parameterDescriptor, bigDecimalMultiply,
-					defaultValue);
+			return bigDecimalMultiply(parameterDescriptor, bigDecimalMultiply, defaultValue);
 		}
 
 		DateFormat dateFormat = parameterDescriptor.getAnnotation(DateFormat.class);
@@ -203,8 +207,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 		}
 
 		if (UserSession.class == parameterDescriptor.getType()) {
-			ResolvableType resolvableType = ResolvableType
-					.forType(parameterDescriptor.getGenericType());
+			ResolvableType resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
 			return getUserSession(resolvableType.getGeneric(0).getRawClass());
 		}
 
@@ -223,34 +226,29 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 
 		RequestBody requestBody = parameterDescriptor.getAnnotation(RequestBody.class);
 		if (requestBody != null) {
-			RequestBodyParse requestBodyParse = getInstanceFactory()
-					.getInstance(requestBody.value());
+			RequestBodyParse requestBodyParse = getInstanceFactory().getInstance(requestBody.value());
 			try {
-				return requestBodyParse.requestBodyParse(this,
-						getJsonSupport(), parameterDescriptor);
+				return requestBodyParse.requestBodyParse(this, getJsonSupport(), parameterDescriptor);
 			} catch (Exception e) {
-				throw ParameterException.createError(
-						parameterDescriptor.getName(), e);
+				throw ParameterException.createError(parameterDescriptor.getName(), e);
 			}
 		}
 
 		RequestBean requestBean = parameterDescriptor.getAnnotation(RequestBean.class);
 		if (requestBean != null) {
-			return StringUtils.isEmpty(requestBean.value()) ? getInstanceFactory()
-					.getInstance(parameterDescriptor.getType().getName())
+			return StringUtils.isEmpty(requestBean.value())
+					? getInstanceFactory().getInstance(parameterDescriptor.getType().getName())
 					: getInstanceFactory().getInstance(requestBean.value());
 		}
 
 		return getParameterInternal(parameterDescriptor);
 	}
 
-	private Object dateFormat(DateFormat dateFormat,
-			ParameterDescriptor parameterDescriptor, Value defaultValue) {
-		String value = getValue(parameterDescriptor.getName(), defaultValue)
-				.getAsString();
+	private Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterDescriptor, Value defaultValue) {
+		String value = getValue(parameterDescriptor.getName(), defaultValue).getAsString();
 		if (ClassUtils.isString(parameterDescriptor.getType())) {
-			return StringUtils.isEmpty(value) ? value : new SimpleDateFormat(
-					dateFormat.value()).format(StringUtils.parseLong(value));
+			return StringUtils.isEmpty(value) ? value
+					: new SimpleDateFormat(dateFormat.value()).format(StringUtils.parseLong(value));
 		}
 
 		long time = 0;
@@ -259,8 +257,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 			try {
 				time = format.parse(value).getTime();
 			} catch (ParseException e) {
-				logger.error("{} format error value:{}", dateFormat.value(),
-						value);
+				logger.error("{} format error value:{}", dateFormat.value(), value);
 			}
 		}
 
@@ -275,14 +272,12 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 			calendar.setTimeInMillis(time);
 			return calendar;
 		}
-		throw new ParameterException("not support type ["
-				+ parameterDescriptor.getType() + "]");
+		throw new ParameterException("not support type [" + parameterDescriptor.getType() + "]");
 	}
 
-	private Object bigDecimalMultiply(ParameterDescriptor parameterDescriptor,
-			BigDecimalMultiply bigDecimalMultiply, Value defaultValue) {
-		String value = getValue(parameterDescriptor.getName(), defaultValue)
-				.getAsString();
+	private Object bigDecimalMultiply(ParameterDescriptor parameterDescriptor, BigDecimalMultiply bigDecimalMultiply,
+			Value defaultValue) {
+		String value = getValue(parameterDescriptor.getName(), defaultValue).getAsString();
 		if (StringUtils.isEmpty(value)) {
 			return castBigDecimal(null, parameterDescriptor.getType());
 		}
@@ -313,14 +308,13 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 			return value;
 		}
 
-		return new CharsetCodec(request.getCharacterEncoding())
-				.decode(CharsetCodec.ISO_8859_1.encode(value));
+		return new CharsetCodec(request.getCharacterEncoding()).decode(CharsetCodec.ISO_8859_1.encode(value));
 	}
 
 	protected String getStringValue(String name) {
 		Value value = WebUtils.getParameter(getRequest(), name);
 		String v = value.getAsString();
-		if(v == null) {
+		if (v == null) {
 			v = WebUtils.getRestfulParameter(request, name);
 		}
 
@@ -367,8 +361,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 	}
 
 	public String getSessionId() {
-		String sessionId = (String) getRequest().getAttribute(
-				SESSIONID_ATTRIBUTE);
+		String sessionId = (String) getRequest().getAttribute(SESSIONID_ATTRIBUTE);
 		if (sessionId != null) {
 			return sessionId;
 		}
@@ -417,17 +410,14 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 			Mapping mapping = new AbstractParameterMapping(true, name) {
 
 				@Override
-				protected Object getValue(
-						ParameterDescriptor parameterDescriptor) {
+				protected Object getValue(ParameterDescriptor parameterDescriptor) {
 					return getParameter(parameterDescriptor);
 				}
 			};
 			try {
-				return MapperUtils.getMapper().mapping(type.getRawClass(),
-						null, mapping);
+				return MapperUtils.getMapper().mapping(type.getRawClass(), null, mapping);
 			} catch (Exception e) {
-				throw new ParameterException("name=" + name + ", type=" + type,
-						e);
+				throw new ParameterException("name=" + name + ", type=" + type, e);
 			}
 		}
 	}
@@ -459,32 +449,26 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 
 		UserSessionFactoryAdapter userSessionFactoryAdapter = getService(UserSessionFactoryAdapter.class);
 		if (userSessionFactoryAdapter != null) {
-			userSessionFactory = userSessionFactoryAdapter
-					.getUserSessionFactory(type);
+			userSessionFactory = userSessionFactoryAdapter.getUserSessionFactory(type);
 		}
 
-		if (userSessionFactory == null
-				&& extendBeanFactory.isInstance(UserSessionFactory.class)) {
-			userSessionFactory = extendBeanFactory
-					.getInstance(UserSessionFactory.class);
+		if (userSessionFactory == null && extendBeanFactory.isInstance(UserSessionFactory.class)) {
+			userSessionFactory = extendBeanFactory.getInstance(UserSessionFactory.class);
 		}
 
 		if (userSessionFactory != null) {
-			getRequest().setAttribute(UserSessionFactory.class.getName(),
-					userSessionFactory);
+			getRequest().setAttribute(UserSessionFactory.class.getName(), userSessionFactory);
 		}
 
 		if (userSessionFactory == null) {
-			logger.error("Not support user session factory: {}",
-					this.toString());
+			logger.error("Not support user session factory: {}", this.toString());
 		}
 		return userSessionFactory;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> UserSession<T> getUserSession(Class<T> type) {
-		UserSession<T> userSession = (UserSession<T>) getRequest()
-				.getAttribute(UserSession.class.getName());
+		UserSession<T> userSession = (UserSession<T>) getRequest().getAttribute(UserSession.class.getName());
 		if (userSession != null) {
 			return userSession;
 		}
@@ -511,8 +495,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 		return userSession;
 	}
 
-	public <T> UserSession<T> createUserSession(Class<T> type, T uid,
-			String sessionId) {
+	public <T> UserSession<T> createUserSession(Class<T> type, T uid, String sessionId) {
 		if (uid == null || type == null || StringUtils.isEmpty(sessionId)) {
 			throw new IllegalArgumentException();
 		}
@@ -522,8 +505,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements
 			return null;
 		}
 
-		UserSession<T> userSession = userSessionFactory.getUserSession(uid,
-				sessionId, true);
+		UserSession<T> userSession = userSessionFactory.getUserSession(uid, sessionId, true);
 		if (userSession != null) {
 			getRequest().setAttribute(UID_ATTRIBUTE, uid);
 			getRequest().setAttribute(SESSIONID_ATTRIBUTE, sessionId);

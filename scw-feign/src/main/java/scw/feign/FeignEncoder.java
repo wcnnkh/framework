@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import feign.RequestTemplate;
 import feign.codec.EncodeException;
 import feign.codec.Encoder;
+import scw.convert.TypeDescriptor;
 import scw.io.FastByteArrayOutputStream;
 import scw.net.MimeType;
 import scw.net.message.convert.MessageConverter;
@@ -26,9 +27,10 @@ public class FeignEncoder implements Encoder {
 	public void encode(Object body, Type bodyType, RequestTemplate template) throws EncodeException {
 		FastByteArrayOutputStream byteBody = new FastByteArrayOutputStream();
 		FeignOutputMessage outputMessage = new FeignOutputMessage(template, byteBody);
-		if (messageConverter.canWrite(body, outputMessage.getContentType())) {
+		TypeDescriptor typeDescriptor = TypeDescriptor.forObject(body);
+		if (messageConverter.canWrite(typeDescriptor, body, outputMessage.getContentType())) {
 			try {
-				messageConverter.write(body, outputMessage.getContentType(), outputMessage);
+				messageConverter.write(typeDescriptor, body, outputMessage.getContentType(), outputMessage);
 
 				MimeType mimeType = outputMessage.getContentType();
 				Charset charset = mimeType.getCharset();

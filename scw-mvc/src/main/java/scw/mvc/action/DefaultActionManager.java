@@ -8,12 +8,12 @@ import java.util.Map;
 import scw.context.annotation.Provider;
 import scw.event.ObjectEvent;
 import scw.event.support.DefaultEventDispatcher;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.pattern.HttpPattern;
-import scw.http.server.pattern.HttpPatternRegistry;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.web.ServerHttpRequest;
+import scw.web.pattern.HttpPattern;
+import scw.web.pattern.HttpPatternRegistry;
 
 @Provider
 public class DefaultActionManager extends DefaultEventDispatcher<ObjectEvent<Action>> implements ActionManager {

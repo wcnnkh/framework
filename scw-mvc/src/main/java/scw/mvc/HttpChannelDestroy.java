@@ -8,13 +8,13 @@ import scw.context.Destroy;
 import scw.context.result.BaseResult;
 import scw.context.support.LifecycleAuxiliary;
 import scw.http.HttpStatus;
-import scw.http.server.ServerHttpAsyncEvent;
-import scw.http.server.ServerHttpAsyncListener;
 import scw.io.IOUtils;
 import scw.logger.CustomLevel;
 import scw.logger.Level;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.web.ServerHttpAsyncEvent;
+import scw.web.ServerHttpAsyncListener;
 
 public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);

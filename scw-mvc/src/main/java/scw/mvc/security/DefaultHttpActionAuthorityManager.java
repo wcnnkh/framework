@@ -10,7 +10,6 @@ import scw.context.annotation.Provider;
 import scw.core.annotation.KeyValuePair;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.http.HttpMethod;
-import scw.http.server.pattern.HttpPattern;
 import scw.lang.NotSupportedException;
 import scw.mvc.action.Action;
 import scw.mvc.annotation.ActionAuthority;
@@ -18,6 +17,7 @@ import scw.mvc.annotation.ActionAuthorityParent;
 import scw.security.authority.http.DefaultHttpAuthority;
 import scw.security.authority.http.DefaultHttpAuthorityManager;
 import scw.security.authority.http.HttpAuthority;
+import scw.web.pattern.HttpPattern;
 
 @Provider(value = HttpActionAuthorityManager.class)
 public class DefaultHttpActionAuthorityManager extends DefaultHttpAuthorityManager<HttpAuthority>

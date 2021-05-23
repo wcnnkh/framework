@@ -1,7 +1,7 @@
 package scw.mvc.security;
 
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.pattern.HttpPatternRegistry;
+import scw.web.ServerHttpRequest;
+import scw.web.pattern.HttpPatternRegistry;
 
 public class LoginRequiredRegistry extends HttpPatternRegistry<Boolean> {
 

@@ -19,14 +19,9 @@ public interface MessageConverter{
 	
 	boolean canWrite(TypeDescriptor typeDescriptor, Object body, MimeType contentType);
 	
-	boolean canWrite(Object body, MimeType contentType);
-	
 	Object read(TypeDescriptor typeDescriptor, InputMessage inputMessage) throws IOException,
 			MessageConvertException;
 	
 	void write(TypeDescriptor typeDescriptor, Object body, MimeType contentType, OutputMessage outputMessage)
-			throws IOException, MessageConvertException;
-	
-	void write(Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException;
 }

@@ -15,7 +15,7 @@ import scw.event.ObjectEvent;
 import scw.mvc.annotation.Controller;
 import scw.mvc.security.HttpActionAuthorityManager;
 
-@Provider(order = Ordered.HIGHEST_PRECEDENCE)
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanLifeCycleEvent> {
 
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {

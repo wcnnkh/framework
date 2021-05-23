@@ -8,11 +8,11 @@ import java.util.Map.Entry;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
-import scw.http.server.ServerHttpRequest;
 import scw.logger.Level;
 import scw.mvc.action.Action;
 import scw.mvc.annotation.LoggerEnable;
 import scw.util.MultiValueMap;
+import scw.web.ServerHttpRequest;
 
 public final class MVCUtils {
 	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet", null);

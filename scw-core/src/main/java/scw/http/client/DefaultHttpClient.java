@@ -322,7 +322,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements
 				&& requestEntity.hasBody()
 				&& requestEntity.getMethod() != HttpMethod.GET;
 		if (needWriteBody) {
-			if (!getMessageConverter().canWrite(
+			if (!getMessageConverter().canWrite(requestEntity.getTypeDescriptor(),
 					requestEntity.getBody(),
 					requestEntity == null ? null : requestEntity
 							.getContentType())) {

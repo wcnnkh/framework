@@ -32,10 +32,10 @@ import scw.core.Assert;
 import scw.core.MethodParameter;
 import scw.core.ResolvableType;
 import scw.core.annotation.AnnotatedElementUtils;
+import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.lang.Nullable;
-import scw.mapper.FieldDescriptor;
 
 /**
  * Contextual descriptor about a type to convert from or to.
@@ -94,10 +94,10 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		this.annotatedElement = new AnnotatedElementAdapter(field.getAnnotations());
 	}
 	
-	public TypeDescriptor(FieldDescriptor fieldDescriptor){
-		this.resolvableType = ResolvableType.forType(fieldDescriptor.getGenericType());
-		this.type = this.resolvableType.resolve(fieldDescriptor.getType());
-		this.annotatedElement = new AnnotatedElementAdapter(fieldDescriptor.getAnnotations());
+	public TypeDescriptor(ParameterDescriptor parameterDescriptor){
+		this.resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
+		this.type = this.resolvableType.resolve(parameterDescriptor.getType());
+		this.annotatedElement = new AnnotatedElementAdapter(parameterDescriptor.getAnnotations());
 	}
 
 	/**

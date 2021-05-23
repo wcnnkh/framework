@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.dom.DomUtils;
-import scw.http.server.ServerHttpRequest;
+import scw.web.ServerHttpRequest;
 
 public final class XmlMap extends LinkedHashMap<String, String> {
 	private static final long serialVersionUID = 1L;

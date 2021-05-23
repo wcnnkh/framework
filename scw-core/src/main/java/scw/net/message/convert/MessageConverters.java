@@ -95,30 +95,4 @@ public class MessageConverters implements MessageConverter {
 		}
 		return mimeTypes.readyOnly();
 	}
-
-	public boolean canWrite(Object body, MimeType contentType) {
-		for (MessageConverter converter : messageConverters) {
-			if (converter.canWrite(body, contentType)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public void write(Object body, MimeType contentType, OutputMessage outputMessage)
-			throws IOException, MessageConvertException {
-		for (MessageConverter converter : messageConverters) {
-			if (converter.canWrite(body, contentType)) {
-				if (logger.isTraceEnabled()) {
-					logger.trace("{} write body={}, contentType={}", converter, body, contentType);
-				}
-				converter.write(body, contentType, outputMessage);
-				return;
-			}
-		}
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("not support wirte body={}, contentType={}", body, contentType);
-		}
-	}
 }

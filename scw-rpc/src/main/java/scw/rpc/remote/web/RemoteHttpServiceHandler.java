@@ -7,10 +7,6 @@ import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.http.HttpMethod;
 import scw.http.MediaType;
-import scw.http.server.HttpService;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
-import scw.http.server.pattern.HttpPattern;
 import scw.instance.NoArgsInstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -21,6 +17,10 @@ import scw.rpc.remote.RemoteMessageCodecException;
 import scw.rpc.remote.RemoteRequestMessage;
 import scw.rpc.remote.RemoteResponseMessage;
 import scw.rpc.support.ServiceCallableFactory;
+import scw.web.HttpService;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
+import scw.web.pattern.HttpPattern;
 
 /**
  * 依赖web模块

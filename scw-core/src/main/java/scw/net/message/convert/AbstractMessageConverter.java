@@ -109,27 +109,9 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 		return canWrite(type) && canWrite(contentType);
 	}
 	
-	public boolean canWrite(Object body, MimeType contentType) {
-		if (body == null) {
-			return false;
-		}
-		
-		return canWrite(TypeDescriptor.forObject(body), body, contentType);
-	}
-
 	public Object read(TypeDescriptor type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		return readInternal(type, inputMessage);
-	}
-	
-	public void write(Object body, MimeType contentType,
-			OutputMessage outputMessage) throws IOException,
-			MessageConvertException {
-		if(body == null){
-			return ;
-		}
-		
-		write(TypeDescriptor.forObject(body), body, contentType, outputMessage);
 	}
 	
 	@SuppressWarnings("unchecked")

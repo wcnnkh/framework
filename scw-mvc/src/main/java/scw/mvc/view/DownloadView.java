@@ -6,13 +6,13 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
 import scw.http.MediaType;
-import scw.http.server.ServerHttpResponse;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.mapper.MapperUtils;
 import scw.mvc.HttpChannel;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
+import scw.web.ServerHttpResponse;
 
 public final class DownloadView implements View {
 	private String encoding;
