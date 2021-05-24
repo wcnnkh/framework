@@ -1,18 +1,15 @@
 package scw.web.message.support;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
 
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
-import scw.core.ResolvableType;
 import scw.core.parameter.ParameterDescriptor;
 import scw.dom.DomUtils;
 import scw.json.JSONUtils;
-import scw.util.MultiValueMap;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.WebUtils;
@@ -21,8 +18,7 @@ import scw.web.message.WebMessagelConverterException;
 import scw.web.message.annotation.RequestBody;
 
 public class RequestBodyMessageConverter implements WebMessageConverter {
-	private static final TypeDescriptor PARAMETER_MAP_TYPE = TypeDescriptor.map(Map.class,
-			ResolvableType.forClass(String.class), ResolvableType.forClassWithGenerics(List.class, String.class));
+	private static final TypeDescriptor PARAMETER_MAP_TYPE = TypeDescriptor.map(Map.class, String.class, Object.class);
 
 	private final ConversionService conversionService;
 
@@ -45,7 +41,7 @@ public class RequestBodyMessageConverter implements WebMessageConverter {
 			return conversionService.convert(document, TypeDescriptor.forObject(document),
 					new TypeDescriptor(parameterDescriptor));
 		} else {
-			MultiValueMap<String, String> parameterMap = WebUtils.getParameterMap(request);
+			Map<String, Object> parameterMap = WebUtils.getParameterMap(request, null);
 			return conversionService.convert(parameterMap, PARAMETER_MAP_TYPE, new TypeDescriptor(parameterDescriptor));
 		}
 	}

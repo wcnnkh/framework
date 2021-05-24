@@ -33,7 +33,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
 	private String prefix;
 	private String connector = ".";
-	private boolean strict = true;// 默认是严格模式
+	private boolean strict = false;
 	private ConversionService conversionService;
 	private NoArgsInstanceFactory instanceFactory;
 	private Level loggerLevel = scw.logger.Level.DEBUG.getValue();

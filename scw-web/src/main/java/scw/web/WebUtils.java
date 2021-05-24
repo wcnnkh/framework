@@ -1,6 +1,8 @@
 package scw.web;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,8 +24,6 @@ import scw.logger.LoggerFactory;
 import scw.net.MimeType;
 import scw.net.message.multipart.FileItem;
 import scw.net.message.multipart.FileItemParser;
-import scw.util.LinkedMultiValueMap;
-import scw.util.MultiValueMap;
 import scw.util.XUtils;
 import scw.value.AnyValue;
 import scw.value.EmptyValue;
@@ -304,20 +304,30 @@ public final class WebUtils {
 		return new CharsetCodec(request.getCharacterEncoding()).decode(CharsetCodec.ISO_8859_1.encode(value));
 	}
 
-	public static MultiValueMap<String, String> getParameterMap(ServerHttpRequest request) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+	@SuppressWarnings("unchecked")
+	public static <T> Map<String, T> getParameterMap(ServerHttpRequest request, String appendValueChars) {
+		Map<String, Object> parameterMap = new LinkedHashMap<String, Object>();
 		for (Entry<String, List<String>> entry : request.getParameterMap().entrySet()) {
-			for (String value : entry.getValue()) {
-				map.add(value, decodeGETParameter(request, value));
+			List<String> values = entry.getValue();
+			if (CollectionUtils.isEmpty(values)) {
+				continue;
 			}
-		}
 
-		Map<String, String> restfulMap = getRestfulParameterMap(request);
-		if (restfulMap != null) {
-			for (Entry<String, String> entry : restfulMap.entrySet()) {
-				map.add(entry.getKey(), decodeGETParameter(request, entry.getValue()));
+			List<String> arrays = new ArrayList<String>(values.size());
+			for (String value : values) {
+				arrays.add(decodeGETParameter(request, value));
+			}
+
+			if (appendValueChars == null) {
+				if (arrays.size() == 1) {
+					parameterMap.put(entry.getKey(), arrays.get(0));
+				} else {
+					parameterMap.put(entry.getKey(), arrays);
+				}
+			} else {
+				parameterMap.put(entry.getKey(), StringUtils.collectionToDelimitedString(arrays, appendValueChars));
 			}
 		}
-		return map;
+		return (Map<String, T>) parameterMap;
 	}
 }

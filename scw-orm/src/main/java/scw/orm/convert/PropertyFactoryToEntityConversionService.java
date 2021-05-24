@@ -10,10 +10,6 @@ import scw.value.PropertyFactory;
 
 public class PropertyFactoryToEntityConversionService extends EntityConversionService{
 	
-	public PropertyFactoryToEntityConversionService() {
-		setStrict(false);//默认非严格模式
-	}
-	
 	@Override
 	protected Enumeration<String> keys(Object source) {
 		return CollectionUtils.toEnumeration(((PropertyFactory)source).iterator());

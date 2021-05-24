@@ -1,4 +1,4 @@
-package scw.mvc;
+package scw.mvc.action;
 
 import java.lang.reflect.AnnotatedElement;
 
