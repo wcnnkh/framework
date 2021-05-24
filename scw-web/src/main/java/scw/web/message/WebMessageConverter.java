@@ -1,4 +1,4 @@
-package scw.web.convert;
+package scw.web.message;
 
 import java.io.IOException;
 
@@ -13,7 +13,7 @@ public interface WebMessageConverter {
 	Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
 			throws IOException, WebMessagelConverterException;
 
-	boolean canWrite(TypeDescriptor type, Object body);
+	boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request);
 
 	void write(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException, WebMessagelConverterException;

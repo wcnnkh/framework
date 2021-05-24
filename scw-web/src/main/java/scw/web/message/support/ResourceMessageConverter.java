@@ -1,4 +1,4 @@
-package scw.web.convert.support;
+package scw.web.message.support;
 
 import java.io.IOException;
 
@@ -10,8 +10,8 @@ import scw.net.MimeType;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.WebUtils;
-import scw.web.convert.WebMessageConverter;
-import scw.web.convert.WebMessagelConverterException;
+import scw.web.message.WebMessageConverter;
+import scw.web.message.WebMessagelConverterException;
 
 public class ResourceMessageConverter implements WebMessageConverter {
 
@@ -27,7 +27,7 @@ public class ResourceMessageConverter implements WebMessageConverter {
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body) {
+	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
 		return body != null && body instanceof Resource;
 	}
 

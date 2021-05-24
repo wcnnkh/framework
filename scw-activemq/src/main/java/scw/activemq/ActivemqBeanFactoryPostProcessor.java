@@ -12,8 +12,8 @@ import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
-import scw.convert.support.MapToEntityConversionService;
 import scw.io.ResourceUtils;
+import scw.orm.convert.MapToEntityConversionService;
 
 @Provider
 public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcessor{
@@ -43,7 +43,8 @@ public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 		public Object create() throws BeansException {
 			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
-			MapToEntityConversionService conversionService = new MapToEntityConversionService(beanFactory.getEnvironment().getConversionService());
+			MapToEntityConversionService conversionService = new MapToEntityConversionService();
+			conversionService.setConversionService(beanFactory.getEnvironment().getConversionService());
 			conversionService.configurationProperties(properties, connectionFactory);
 			return connectionFactory;
 		}

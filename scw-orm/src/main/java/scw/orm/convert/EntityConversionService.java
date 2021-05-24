@@ -1,4 +1,4 @@
-package scw.convert.support;
+package scw.orm.convert;
 
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
@@ -7,12 +7,14 @@ import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import scw.convert.ConversionService;
+import scw.convert.ConversionServiceAware;
 import scw.convert.TypeDescriptor;
 import scw.convert.lang.ConditionalConversionService;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.env.SystemEnvironment;
 import scw.instance.NoArgsInstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -20,10 +22,11 @@ import scw.mapper.Field;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
+import scw.orm.annotation.Entity;
 import scw.util.ConfigurableAccept;
 import scw.util.alias.AliasRegistry;
 
-public abstract class EntityConversionService extends ConditionalConversionService {
+public abstract class EntityConversionService extends ConditionalConversionService implements ConversionServiceAware {
 	private static Logger logger = LoggerFactory.getLogger(EntityConversionService.class);
 	private AliasRegistry aliasRegistry;
 	private boolean ignoreStaticField = true;
@@ -49,6 +52,14 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		return ignoreFinalField;
 	}
 
+	public final ConversionService getConversionService() {
+		return conversionService == null ? SystemEnvironment.getInstance().getConversionService() : conversionService;
+	}
+
+	public void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
+	}
+
 	public void setIgnoreFinalField(boolean ignoreFinalField) {
 		this.ignoreFinalField = ignoreFinalField;
 	}
@@ -59,10 +70,6 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	public void setLoggerLevel(Level loggerLevel) {
 		this.loggerLevel = loggerLevel;
-	}
-
-	public EntityConversionService(ConversionService conversionService) {
-		this.conversionService = conversionService;
 	}
 
 	public AliasRegistry getAliasRegistry() {
@@ -132,7 +139,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 					continue;
 				}
 
-				map.put(StringUtils.isEmpty(prefix)? key:key.substring(prefix.length() + connector.length()), value);
+				map.put(StringUtils.isEmpty(prefix) ? key : key.substring(prefix.length() + connector.length()), value);
 			}
 		}
 		return map;
@@ -171,20 +178,22 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 				prefix + StringUtils.humpNamingReplacement(field.getSetter().getName(), "-"), connector));
 		return valueMap;
 	}
-	
+
 	/**
 	 * 将source转化为map并插入到targetMap
+	 * 
 	 * @param source
 	 * @param targetMap
 	 * @param keyType
 	 * @param valueType
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void putAll(Object source, Map targetMap, TypeDescriptor keyType, TypeDescriptor valueType){
+	public void putAll(Object source, Map targetMap, TypeDescriptor keyType, TypeDescriptor valueType) {
 		Map<String, Object> sourceMap = getMapByPrefix(source, prefix, connector);
-		for(Entry<String, Object> entry : sourceMap.entrySet()){
-			Object key = conversionService.convert(entry.getKey(), TypeDescriptor.valueOf(String.class), keyType);
-			Object value = conversionService.convert(entry.getValue(), TypeDescriptor.forObject(entry.getValue()), valueType);
+		for (Entry<String, Object> entry : sourceMap.entrySet()) {
+			Object key = getConversionService().convert(entry.getKey(), TypeDescriptor.valueOf(String.class), keyType);
+			Object value = getConversionService().convert(entry.getValue(), TypeDescriptor.forObject(entry.getValue()),
+					valueType);
 			targetMap.put(key, value);
 		}
 	}
@@ -208,7 +217,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target,
 			TypeDescriptor targetType) {
-		Object valueToUse = conversionService.convert(value, sourceType.narrow(value),
+		Object valueToUse = getConversionService().convert(value, sourceType.narrow(value),
 				new TypeDescriptor(field.getSetter()));
 		if (logger.isLoggable(loggerLevel)) {
 			logger.log(loggerLevel, "Property {} on target {} set value {}", field.getSetter().getName(),
@@ -234,8 +243,24 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		if (isStrict()) {
 			strictConfiguration(fields, source, sourceType, target, targetType, prefix);
 		} else {
-			for (Field field : fields) {
-				Object value = getProperty(source, field, prefix);
+			noStrictConfiguration(fields, source, sourceType, target, targetType, prefix, connector);
+		}
+	}
+
+	private void noStrictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target,
+			TypeDescriptor targetType, String prefix, String connector) {
+		for (Field field : fields) {
+			Object value = null;
+			if (field.isAnnotationPresent(Entity.class)
+					|| field.getSetter().getType().isAnnotationPresent(Entity.class)) {
+				// 如果是一个实体
+				String entityPrefix = prefix + connector + field.getSetter().getName();
+				Class<?> entityClass = field.getSetter().getType();
+				value = getInstanceFactory().getInstance(entityClass);
+				noStrictConfiguration(getFields(entityClass), source, sourceType, value,
+						new TypeDescriptor(field.getSetter()), entityPrefix, connector);
+			} else {
+				value = getProperty(source, field, prefix);
 				if (value == null) {
 					if (Map.class.isAssignableFrom(field.getSetter().getType())) {
 						Map<String, Object> valueMap = getMapProperty(source, field, prefix, connector);
@@ -244,10 +269,9 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 						}
 					}
 				}
-
-				if (value != null) {
-					setValue(field, value, sourceType, target, targetType);
-				}
+			}
+			if (value != null) {
+				setValue(field, value, sourceType, target, targetType);
 			}
 		}
 	}
@@ -308,6 +332,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	}
 
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		return !canDirectlyConvert(sourceType, targetType) && super.canConvert(sourceType, targetType) && isInstance(targetType);
+		return !canDirectlyConvert(sourceType, targetType) && super.canConvert(sourceType, targetType)
+				&& isInstance(targetType);
 	}
 }

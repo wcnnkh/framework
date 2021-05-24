@@ -1,17 +1,22 @@
-package scw.web.convert;
+package scw.web.message;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import scw.convert.TypeDescriptor;
 import scw.core.OrderComparator;
 import scw.core.parameter.ParameterDescriptor;
+import scw.lang.LinkedThreadLocal;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 
-public class WebMessageConverters implements WebMessageConverter, WebMessageConverterAware {
+public class WebMessageConverters implements WebMessageConverter, WebMessageConverterAware, Iterable<WebMessageConverter> {
+	private static final LinkedThreadLocal<WebMessageConverter> NESTED = new LinkedThreadLocal<WebMessageConverter>(
+			WebMessageConverters.class.getName());
+
 	private volatile List<WebMessageConverter> converters;
 	private WebMessageConverter parentMessageConverter;
 	private WebMessageConverter awareMessageConverter = this;
@@ -42,12 +47,30 @@ public class WebMessageConverters implements WebMessageConverter, WebMessageConv
 			Collections.sort(converters, OrderComparator.INSTANCE.reversed());
 		}
 	}
-
+	
+	@Override
+	public Iterator<WebMessageConverter> iterator() {
+		if(converters == null) {
+			return Collections.emptyIterator();
+		}
+		
+		return converters.iterator();
+	}
+	
 	@Override
 	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
-		for (WebMessageConverter converter : converters) {
-			if (converter.canRead(parameterDescriptor, request)) {
-				return true;
+		for (WebMessageConverter converter : this) {
+			if (NESTED.exists(converter)) {
+				continue;
+			}
+
+			NESTED.set(converter);
+			try {
+				if (converter.canRead(parameterDescriptor, request)) {
+					return true;
+				}
+			} finally {
+				NESTED.remove(converter);
 			}
 		}
 		return (parentMessageConverter != null && parentMessageConverter.canRead(parameterDescriptor, request));
@@ -56,9 +79,18 @@ public class WebMessageConverters implements WebMessageConverter, WebMessageConv
 	@Override
 	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
 			throws IOException, WebMessagelConverterException {
-		for (WebMessageConverter converter : converters) {
-			if (converter.canRead(parameterDescriptor, request)) {
-				return converter.read(parameterDescriptor, request);
+		for (WebMessageConverter converter : this) {
+			if (NESTED.exists(converter)) {
+				continue;
+			}
+
+			NESTED.set(converter);
+			try {
+				if (converter.canRead(parameterDescriptor, request)) {
+					return converter.read(parameterDescriptor, request);
+				}
+			} finally {
+				NESTED.remove(converter);
 			}
 		}
 
@@ -70,17 +102,26 @@ public class WebMessageConverters implements WebMessageConverter, WebMessageConv
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body) {
+	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
 		if (body != null && body instanceof WebMessageWriter) {
 			return true;
 		}
 
-		for (WebMessageConverter converter : converters) {
-			if (converter.canWrite(type, body)) {
-				return true;
+		for (WebMessageConverter converter : this) {
+			if (NESTED.exists(converter)) {
+				continue;
+			}
+
+			NESTED.set(converter);
+			try {
+				if (converter.canWrite(type, body, request)) {
+					return true;
+				}
+			} finally {
+				NESTED.remove(converter);
 			}
 		}
-		return (parentMessageConverter != null && parentMessageConverter.canWrite(type, body));
+		return (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, request));
 	}
 
 	@Override
@@ -91,14 +132,23 @@ public class WebMessageConverters implements WebMessageConverter, WebMessageConv
 			return;
 		}
 
-		for (WebMessageConverter converter : converters) {
-			if (converter.canWrite(type, body)) {
-				converter.write(type, body, request, response);
-				return;
+		for (WebMessageConverter converter : this) {
+			if (NESTED.exists(converter)) {
+				continue;
+			}
+
+			NESTED.set(converter);
+			try {
+				if (converter.canWrite(type, body, request)) {
+					converter.write(type, body, request, response);
+					return;
+				}
+			} finally {
+				NESTED.remove(converter);
 			}
 		}
 
-		if (parentMessageConverter != null && parentMessageConverter.canWrite(type, body)) {
+		if (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, request)) {
 			parentMessageConverter.write(type, body, request, response);
 			return;
 		}

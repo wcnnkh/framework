@@ -12,8 +12,6 @@ import scw.beans.annotation.IgnoreConfigurationProperty;
 import scw.beans.annotation.Service;
 import scw.beans.annotation.Singleton;
 import scw.convert.TypeDescriptor;
-import scw.convert.support.EntityConversionService;
-import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
@@ -21,6 +19,8 @@ import scw.env.EnvironmentAware;
 import scw.instance.InstanceUtils;
 import scw.lang.Nullable;
 import scw.mapper.Field;
+import scw.orm.convert.EntityConversionService;
+import scw.orm.convert.PropertyFactoryToEntityConversionService;
 import scw.util.Accept;
 import scw.value.PropertyFactory;
 
@@ -162,8 +162,8 @@ public final class BeanUtils {
 	}
 	
 	private static EntityConversionService createEntityConversionService(Environment environment, ConfigurationProperties configurationProperties){
-		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService(
-				environment.getConversionService());
+		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService();
+		entityConversionService.setConversionService(environment.getConversionService());
 		entityConversionService.setStrict(false);
 		entityConversionService.getFieldAccept().add(new Accept<Field>() {
 

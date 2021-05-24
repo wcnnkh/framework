@@ -1,18 +1,21 @@
-package scw.web.convert.support;
+package scw.web.message.support;
 
 import java.io.IOException;
 
+import scw.context.annotation.Provider;
 import scw.context.result.Result;
 import scw.context.result.ResultFactory;
 import scw.convert.TypeDescriptor;
+import scw.core.Ordered;
 import scw.core.parameter.ParameterDescriptor;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
-import scw.web.convert.WebMessageConverter;
-import scw.web.convert.WebMessageConverterAware;
-import scw.web.convert.WebMessagelConverterException;
-import scw.web.convert.annotation.FactoryResult;
+import scw.web.message.WebMessageConverter;
+import scw.web.message.WebMessageConverterAware;
+import scw.web.message.WebMessagelConverterException;
+import scw.web.message.annotation.FactoryResult;
 
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class FactoryResultMessageConverter implements WebMessageConverter, WebMessageConverterAware {
 	private final ResultFactory resultFactory;
 	private WebMessageConverter messageConverter;
@@ -38,7 +41,7 @@ public class FactoryResultMessageConverter implements WebMessageConverter, WebMe
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body) {
+	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
 		if (body == null) {
 			return false;
 		}

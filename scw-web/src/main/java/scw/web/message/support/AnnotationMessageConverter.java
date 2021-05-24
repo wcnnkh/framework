@@ -1,47 +1,47 @@
-package scw.web.model;
+package scw.web.message.support;
 
 import java.io.IOException;
 
-import scw.context.annotation.Provider;
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
-import scw.net.MimeType;
-import scw.net.MimeTypeUtils;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.message.WebMessageConverter;
 import scw.web.message.WebMessagelConverterException;
+import scw.web.message.annotation.Attribute;
+import scw.web.message.annotation.IP;
 
-@Provider
-public class TextMessageConverter implements WebMessageConverter {
+public class AnnotationMessageConverter implements WebMessageConverter {
 
 	@Override
 	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
-		return false;
+		return parameterDescriptor.isAnnotationPresent(IP.class)
+				|| parameterDescriptor.isAnnotationPresent(Attribute.class);
 	}
 
 	@Override
 	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
 			throws IOException, WebMessagelConverterException {
+		if (parameterDescriptor.isAnnotationPresent(IP.class)) {
+			String ip = request.getIp();
+			return ip == null ? parameterDescriptor.getDefaultValue().getAsString() : ip;
+		}
+
+		Attribute attribute = parameterDescriptor.getAnnotation(Attribute.class);
+		if (attribute != null) {
+			return request.getAttribute(attribute.value());
+		}
 		return null;
 	}
 
 	@Override
 	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
-		return body != null && body instanceof Text;
+		return false;
 	}
 
 	@Override
 	public void write(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException, WebMessagelConverterException {
-		Text text = (Text) body;
-		MimeType mimeType = text.getMimeType();
-		if (mimeType == null) {
-			mimeType = MimeTypeUtils.TEXT_HTML;
-		}
-		response.setContentType(mimeType);
-		String content = text.toTextContent();
-		response.getWriter().write(content);
 	}
 
 }

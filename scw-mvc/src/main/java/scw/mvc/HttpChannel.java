@@ -10,12 +10,13 @@ import scw.lang.Nullable;
 import scw.mvc.security.UserSessionFactoryAdapter;
 import scw.mvc.security.UserSessionResolver;
 import scw.security.session.UserSession;
-import scw.value.Value;
+import scw.value.ValueFactory;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
-import scw.web.convert.WebMessagelConverterException;
+import scw.web.message.WebMessageConverters;
+import scw.web.message.WebMessagelConverterException;
 
-public interface HttpChannel extends ParameterFactory, UserSessionFactoryAdapter {
+public interface HttpChannel extends ParameterFactory, UserSessionFactoryAdapter, ValueFactory<String> {
 	static final String UID_ATTRIBUTE = "mvc.http.channel.uid";
 	static final String SESSIONID_ATTRIBUTE = "mvc.http.channel.sessionid";
 	
@@ -24,16 +25,12 @@ public interface HttpChannel extends ParameterFactory, UserSessionFactoryAdapter
 	ServerHttpRequest getRequest();
 
 	ServerHttpResponse getResponse();
-
-	<E> E[] getArray(String name, Class<E> type);
+	
+	WebMessageConverters getMessageConverters();
 
 	boolean isCompleted();
 
-	Value getValue(String name);
-
-	Value getValue(String name, Value defaultValue);
-
-	Object getParameter(ParameterDescriptor parameterDescriptor);
+	Object getParameter(ParameterDescriptor parameterDescriptor) throws IOException;
 	
 	NoArgsInstanceFactory getInstanceFactory();
 	

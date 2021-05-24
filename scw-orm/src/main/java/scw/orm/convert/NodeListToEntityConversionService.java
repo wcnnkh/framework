@@ -1,4 +1,4 @@
-package scw.convert.support;
+package scw.orm.convert;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -7,16 +7,11 @@ import java.util.Set;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import scw.convert.ConversionService;
 import scw.convert.lang.ConvertiblePair;
 import scw.dom.DomUtils;
 import scw.util.Accept;
 
 public class NodeListToEntityConversionService extends EntityConversionService {
-
-	public NodeListToEntityConversionService(ConversionService conversionService) {
-		super(conversionService);
-	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(NodeList.class, Object.class));

@@ -9,8 +9,8 @@ import scw.http.MediaType;
 import scw.net.message.Headers;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
-import scw.web.convert.WebMessageConverter;
-import scw.web.convert.WebMessagelConverterException;
+import scw.web.message.WebMessageConverter;
+import scw.web.message.WebMessagelConverterException;
 
 public abstract class PageMessageConverter implements WebMessageConverter {
 	static final String REQUEST = "_request";
@@ -27,10 +27,10 @@ public abstract class PageMessageConverter implements WebMessageConverter {
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body) {
+	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
 		return body != null && body instanceof Page && canWrite((Page) body);
 	}
-
+	
 	protected abstract boolean canWrite(Page page);
 
 	@Override

@@ -1,4 +1,4 @@
-package scw.web.convert.support;
+package scw.web.message.support;
 
 import java.io.IOException;
 import java.util.List;
@@ -7,17 +7,18 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.ClassUtils;
+import scw.json.JSONUtils;
 import scw.net.MimeTypeUtils;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.WebUtils;
-import scw.web.convert.WebMessageConverter;
-import scw.web.convert.WebMessagelConverterException;
+import scw.web.message.WebMessageConverter;
+import scw.web.message.WebMessagelConverterException;
 
-public class ConversionWebMessageConverters implements WebMessageConverter {
+public class ConversionMessageConverter implements WebMessageConverter {
 	private final ConversionService conversionService;
 
-	public ConversionWebMessageConverters(ConversionService conversionService) {
+	public ConversionMessageConverter(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
@@ -38,25 +39,23 @@ public class ConversionWebMessageConverters implements WebMessageConverter {
 		if (parameterDescriptor.getClass().isArray()) {
 			source = WebUtils.getParameterValues(request, parameterDescriptor.getName());
 		} else {
-			source = request.getParameterMap().getFirst(parameterDescriptor.getName());
+			source = WebUtils.getParameter(request, parameterDescriptor.getName());
 		}
-
-		if (source == null) {
-			source = WebUtils.getRestfulParameter(request, parameterDescriptor.getName());
+		
+		if(source == null) {
+			source = parameterDescriptor.getDefaultValue();
 		}
 
 		if (source != null) {
 			sourceType = targetType.narrow(source);
 		}
+
 		return conversionService.convert(source, sourceType, targetType);
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body) {
-		if (body == null) {
-			return false;
-		}
-		return conversionService.canConvert(TypeDescriptor.forObject(body), TypeDescriptor.valueOf(String.class));
+	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
+		return body != null;
 	}
 
 	@Override
@@ -68,8 +67,7 @@ public class ConversionWebMessageConverters implements WebMessageConverter {
 			response.setContentType(MimeTypeUtils.APPLICATION_JSON);
 		}
 
-		String content = (String) conversionService.convert(body, type.narrow(body),
-				TypeDescriptor.valueOf(String.class));
+		String content = JSONUtils.getJsonSupport().toJSONString(body);
 		response.getWriter().write(content);
 	}
 

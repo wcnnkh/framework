@@ -22,8 +22,8 @@ import scw.net.message.convert.MessageConvertException;
 import scw.net.message.convert.MessageConverter;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
-import scw.web.convert.WebMessageConverter;
-import scw.web.convert.WebMessagelConverterException;
+import scw.web.message.WebMessageConverter;
+import scw.web.message.WebMessagelConverterException;
 import scw.web.model.Page;
 import scw.web.model.PageMessageConverter;
 
@@ -44,11 +44,6 @@ public class FreemarkerMessageConverter extends PageMessageConverter implements 
 	@Override
 	public boolean canRead(TypeDescriptor type, MimeType contentType) {
 		return false;
-	}
-
-	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, MimeType contentType) {
-		return canWrite(type, body);
 	}
 
 	@Override
@@ -93,5 +88,10 @@ public class FreemarkerMessageConverter extends PageMessageConverter implements 
 		} catch (TemplateException e) {
 			logger.error(e, "freemarker:{}", page);
 		}
+	}
+
+	@Override
+	public boolean canWrite(TypeDescriptor typeDescriptor, Object body, MimeType contentType) {
+		return body != null && body instanceof Page && canWrite((Page) body);
 	}
 }

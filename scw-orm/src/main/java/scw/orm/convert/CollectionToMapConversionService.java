@@ -9,7 +9,6 @@ import scw.convert.ConversionFailedException;
 import scw.convert.ConversionService;
 import scw.convert.ConversionServiceAware;
 import scw.convert.TypeDescriptor;
-import scw.convert.lang.ConversionServices;
 import scw.lang.AlreadyExistsException;
 import scw.mapper.Field;
 import scw.mapper.FieldFeature;
@@ -34,12 +33,7 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 			return false;
 		}
 		
-		ConversionServices.setNesting(this);
-		try{
-			return conversionService.canConvert(sourceType, COLLECTION_TYPE);
-		}finally{
-			ConversionServices.removeNesting(this);
-		}
+		return conversionService.canConvert(sourceType, COLLECTION_TYPE);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

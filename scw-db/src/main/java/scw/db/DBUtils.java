@@ -6,8 +6,6 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 
 import scw.convert.TypeDescriptor;
-import scw.convert.support.EntityConversionService;
-import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.StringUtils;
 import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
@@ -16,6 +14,8 @@ import scw.db.database.SqlServerDataBase;
 import scw.env.SystemEnvironment;
 import scw.lang.NotSupportedException;
 import scw.logger.Level;
+import scw.orm.convert.EntityConversionService;
+import scw.orm.convert.PropertyFactoryToEntityConversionService;
 import scw.util.alias.DefaultAliasRegistry;
 import scw.value.PropertyFactory;
 
@@ -46,7 +46,8 @@ public final class DBUtils {
 	}
 	
 	public static void loadProperties(Object instance, PropertyFactory propertyFactory) {
-		EntityConversionService configure = new PropertyFactoryToEntityConversionService(SystemEnvironment.getInstance().getConversionService());
+		EntityConversionService configure = new PropertyFactoryToEntityConversionService();
+		configure.setConversionService(SystemEnvironment.getInstance().getConversionService());
 		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
 		configure.setStrict(true);
 		configure.setLoggerLevel(Level.INFO.getValue());

@@ -1,63 +1,34 @@
 package scw.mvc;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 import scw.beans.BeanFactory;
 import scw.beans.support.ExtendBeanFactory;
-import scw.codec.support.CharsetCodec;
 import scw.context.Destroy;
 import scw.convert.TypeDescriptor;
 import scw.core.ResolvableType;
 import scw.core.parameter.AbstractParameterFactory;
+import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
-import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ClassUtils;
-import scw.core.utils.CollectionUtils;
-import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
-import scw.http.HttpMethod;
 import scw.instance.NoArgsInstanceFactory;
 import scw.json.JSONSupport;
-import scw.lang.ParameterException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.mapper.AbstractParameterMapping;
-import scw.mapper.MapperUtils;
-import scw.mapper.Mapping;
-import scw.mvc.annotation.Attribute;
-import scw.mvc.annotation.BigDecimalMultiply;
-import scw.mvc.annotation.DateFormat;
-import scw.mvc.annotation.IP;
-import scw.mvc.annotation.RequestBean;
-import scw.mvc.annotation.RequestBody;
-import scw.mvc.parameter.RequestBodyParse;
 import scw.mvc.security.UserSessionFactoryAdapter;
 import scw.mvc.security.UserSessionResolver;
-import scw.security.session.Session;
+import scw.mvc.view.View;
 import scw.security.session.UserSession;
 import scw.security.session.UserSessionFactory;
-import scw.util.MultiValueMap;
 import scw.util.Target;
 import scw.util.XUtils;
-import scw.value.AbstractValue;
-import scw.value.EmptyValue;
-import scw.value.StringValue;
 import scw.value.Value;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
-import scw.web.WebUtils;
-import scw.web.convert.WebMessageConverter;
-import scw.web.convert.WebMessageConverters;
-import scw.web.convert.WebMessagelConverterException;
+import scw.web.message.WebMessageConverter;
+import scw.web.message.WebMessageConverters;
+import scw.web.message.WebMessagelConverterException;
 
 public class DefaultHttpChannel extends AbstractParameterFactory implements HttpChannel, Destroy, Target {
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpChannel.class);
@@ -80,7 +51,16 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 	}
 
 	public void write(TypeDescriptor type, Object body) throws WebMessagelConverterException, IOException {
-		messageConverters.write(type, body, request, response);
+		if(body == null) {
+			return ;
+		}
+		
+		if(body instanceof View) {
+			((scw.mvc.view.View) body).render(this);
+			return ;
+		}
+
+		getMessageConverters().write(type, body, request, response);
 	}
 
 	public final JSONSupport getJsonSupport() {
@@ -113,42 +93,12 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 	}
 
 	public final Value getValue(String name) {
-		return getValue(name, EmptyValue.INSTANCE);
-	}
-
-	public final Value getValue(String name, Value defaultValue) {
-		return new RequestValue(name, defaultValue == null ? EmptyValue.INSTANCE : defaultValue);
-	}
-
-	protected Value parseValue(String value) {
-		return new StringValue(value);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected final <E> E[] parseArray(MultiValueMap<String, String> parameterMap, String name,
-			Class<? extends E> type) {
-		List<String> values = request.getParameterMap().get(name);
-		if (CollectionUtils.isEmpty(values)) {
-			return (E[]) Array.newInstance(type, 0);
+		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name, Value.class);
+		try {
+			return (Value) getMessageConverters().read(parameterDescriptor, request);
+		} catch (IOException e) {
+			throw new WebMessagelConverterException(name, e);
 		}
-
-		Object array = Array.newInstance(type, values.size());
-		for (int i = 0, len = values.size(); i < len; i++) {
-			Value value = parseValue(values.get(i));
-			Array.set(array, i, value.getAsObject(type));
-		}
-
-		return (E[]) array;
-	}
-
-	@SuppressWarnings("unchecked")
-	public <E> E[] getArray(String name, Class<E> type) {
-		Value[] values = WebUtils.getParameterValues(getRequest(), name);
-		Object array = Array.newInstance(type, values.length);
-		for (int i = 0, len = values.length; i < len; i++) {
-			Array.set(array, i, values[i].getAsObject(type));
-		}
-		return (E[]) array;
 	}
 
 	@Override
@@ -163,22 +113,6 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		return getParameter(parameterDescriptor);
 	}
 
-	protected Object getParameterInternal(ParameterDescriptor parameterDescriptor) {
-		Value defaultValue = parameterDescriptor.getDefaultValue();
-		BigDecimalMultiply bigDecimalMultiply = parameterDescriptor.getAnnotation(BigDecimalMultiply.class);
-		if (bigDecimalMultiply != null) {
-			return bigDecimalMultiply(parameterDescriptor, bigDecimalMultiply, defaultValue);
-		}
-
-		DateFormat dateFormat = parameterDescriptor.getAnnotation(DateFormat.class);
-		if (dateFormat != null) {
-			return dateFormat(dateFormat, parameterDescriptor, defaultValue);
-		}
-
-		Value value = getValue(parameterDescriptor.getName(), defaultValue);
-		return value.getAsObject(parameterDescriptor.getGenericType());
-	}
-
 	public <T> T getTarget(Class<T> targetType) {
 		T target = XUtils.getTarget(getRequest(), targetType);
 		if (target != null) {
@@ -190,10 +124,6 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			return target;
 		}
 		return null;
-	}
-
-	public Session getSession(boolean create) {
-		return getRequest().getSession(create);
 	}
 
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
@@ -210,118 +140,11 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			ResolvableType resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
 			return getUserSession(resolvableType.getGeneric(0).getRawClass());
 		}
-
-		if (Session.class == parameterDescriptor.getType()) {
-			return getSession(false);
+		try {
+			return getMessageConverters().read(parameterDescriptor, request);
+		} catch (IOException e) {
+			throw new WebMessagelConverterException("[" + request + "] - " + parameterDescriptor, e);
 		}
-
-		if (parameterDescriptor.getAnnotation(IP.class) != null) {
-			return getRequest().getIp();
-		}
-
-		Attribute attribute = parameterDescriptor.getAnnotation(Attribute.class);
-		if (attribute != null) {
-			return getRequest().getAttribute(attribute.value());
-		}
-
-		RequestBody requestBody = parameterDescriptor.getAnnotation(RequestBody.class);
-		if (requestBody != null) {
-			RequestBodyParse requestBodyParse = getInstanceFactory().getInstance(requestBody.value());
-			try {
-				return requestBodyParse.requestBodyParse(this, getJsonSupport(), parameterDescriptor);
-			} catch (Exception e) {
-				throw ParameterException.createError(parameterDescriptor.getName(), e);
-			}
-		}
-
-		RequestBean requestBean = parameterDescriptor.getAnnotation(RequestBean.class);
-		if (requestBean != null) {
-			return StringUtils.isEmpty(requestBean.value())
-					? getInstanceFactory().getInstance(parameterDescriptor.getType().getName())
-					: getInstanceFactory().getInstance(requestBean.value());
-		}
-
-		return getParameterInternal(parameterDescriptor);
-	}
-
-	private Object dateFormat(DateFormat dateFormat, ParameterDescriptor parameterDescriptor, Value defaultValue) {
-		String value = getValue(parameterDescriptor.getName(), defaultValue).getAsString();
-		if (ClassUtils.isString(parameterDescriptor.getType())) {
-			return StringUtils.isEmpty(value) ? value
-					: new SimpleDateFormat(dateFormat.value()).format(StringUtils.parseLong(value));
-		}
-
-		long time = 0;
-		if (StringUtils.isNotEmpty(value)) {
-			SimpleDateFormat format = new SimpleDateFormat(dateFormat.value());
-			try {
-				time = format.parse(value).getTime();
-			} catch (ParseException e) {
-				logger.error("{} format error value:{}", dateFormat.value(), value);
-			}
-		}
-
-		if (Date.class.isAssignableFrom(parameterDescriptor.getType())) {
-			return new Date(time);
-		} else if (ClassUtils.isLong(parameterDescriptor.getType())) {
-			return time;
-		} else if (ClassUtils.isInt(parameterDescriptor.getType())) {
-			return time / 1000;
-		} else if (Calendar.class == parameterDescriptor.getType()) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(time);
-			return calendar;
-		}
-		throw new ParameterException("not support type [" + parameterDescriptor.getType() + "]");
-	}
-
-	private Object bigDecimalMultiply(ParameterDescriptor parameterDescriptor, BigDecimalMultiply bigDecimalMultiply,
-			Value defaultValue) {
-		String value = getValue(parameterDescriptor.getName(), defaultValue).getAsString();
-		if (StringUtils.isEmpty(value)) {
-			return castBigDecimal(null, parameterDescriptor.getType());
-		}
-
-		BigDecimal a = new BigDecimal(value);
-		BigDecimal b = new BigDecimal(bigDecimalMultiply.value());
-		return castBigDecimal(a.multiply(b), parameterDescriptor.getType());
-	}
-
-	private Object castBigDecimal(BigDecimal bigDecimal, Class<?> type) {
-		if (type == BigDecimal.class) {
-			return bigDecimal;
-		}
-
-		if (type == BigInteger.class) {
-			return bigDecimal == null ? null : bigDecimal.toBigInteger();
-		}
-
-		if (bigDecimal == null) {
-			return type.isPrimitive() ? 0 : null;
-		}
-
-		return NumberUtils.converPrimitive(bigDecimal, type);
-	}
-
-	protected final String decodeGETParameter(String value) {
-		if (StringUtils.containsChinese(value)) {
-			return value;
-		}
-
-		return new CharsetCodec(request.getCharacterEncoding()).decode(CharsetCodec.ISO_8859_1.encode(value));
-	}
-
-	protected String getStringValue(String name) {
-		Value value = WebUtils.getParameter(getRequest(), name);
-		String v = value.getAsString();
-		if (v == null) {
-			v = WebUtils.getRestfulParameter(request, name);
-		}
-
-		if (v != null && HttpMethod.GET == request.getMethod()) {
-			v = decodeGETParameter(v);
-		}
-		return v;
 	}
 
 	public ServerHttpRequest getRequest() {
@@ -376,50 +199,6 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			getRequest().setAttribute(SESSIONID_ATTRIBUTE, sessionId);
 		}
 		return sessionId;
-	}
-
-	private final class RequestValue extends AbstractValue {
-		private static final long serialVersionUID = 1L;
-		private final String name;
-
-		public RequestValue(String name, Value defaultValue) {
-			super(defaultValue);
-			this.name = name;
-		}
-
-		public String getAsString() {
-			return DefaultHttpChannel.this.getStringValue(name);
-		}
-
-		@Override
-		protected Object getAsNonBaseType(ResolvableType type) {
-			Value value = WebUtils.getParameter(getRequest(), name);
-			if (!value.isEmpty()) {
-				return value.getAsObject(type);
-			}
-
-			if (type.isArray()) {
-				return getArray(name, type.getComponentType().getRawClass());
-			}
-
-			// 不可以被实例化且不存在无参的构造方法
-			if (!ReflectionUtils.isInstance(type.getRawClass())) {
-				return getInstanceFactory().getInstance(type.getRawClass());
-			}
-
-			Mapping mapping = new AbstractParameterMapping(true, name) {
-
-				@Override
-				protected Object getValue(ParameterDescriptor parameterDescriptor) {
-					return getParameter(parameterDescriptor);
-				}
-			};
-			try {
-				return MapperUtils.getMapper().mapping(type.getRawClass(), null, mapping);
-			} catch (Exception e) {
-				throw new ParameterException("name=" + name + ", type=" + type, e);
-			}
-		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -512,5 +291,10 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			getRequest().setAttribute(UserSession.class.getName(), userSession);
 		}
 		return userSession;
+	}
+
+	@Override
+	public WebMessageConverters getMessageConverters() {
+		return messageConverters;
 	}
 }

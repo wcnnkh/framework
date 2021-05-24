@@ -13,7 +13,7 @@ import scw.core.utils.StringUtils;
 import scw.util.XUtils;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
-import scw.web.convert.WebMessagelConverterException;
+import scw.web.message.WebMessagelConverterException;
 import scw.web.model.Page;
 import scw.web.model.PageMessageConverter;
 import scw.web.servlet.ServletUtils;

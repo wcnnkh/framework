@@ -15,6 +15,10 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 	private final Class<?> type;
 	private final Type genericType;
 
+	public DefaultParameterDescriptor(String name, Class<?> type) {
+		this(name, type, type);
+	}
+
 	public DefaultParameterDescriptor(String name, Class<?> type, Type genericType) {
 		this(name, AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT, type, genericType);
 	}
@@ -25,16 +29,16 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 
 	public DefaultParameterDescriptor(String name, AnnotatedElement annotatedElement, Class<?> type, Type genericType) {
 		this.annotatedElement = annotatedElement;
-		if(annotatedElement == null){
+		if (annotatedElement == null) {
 			this.name = name;
-		}else{
+		} else {
 			Named parameterName = annotatedElement.getAnnotation(Named.class);
-			this.name = parameterName == null? name:parameterName.value();
+			this.name = parameterName == null ? name : parameterName.value();
 		}
 		this.type = type;
 		this.genericType = genericType;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -46,11 +50,11 @@ public class DefaultParameterDescriptor implements ParameterDescriptor {
 	public Type getGenericType() {
 		return genericType;
 	}
-	
+
 	public boolean isNullable() {
 		return AnnotationUtils.isNullable(annotatedElement, false);
 	}
-	
+
 	@Override
 	public String toString() {
 		return MapperUtils.getMapper().getFields(getClass()).getValueMap(this).toString();

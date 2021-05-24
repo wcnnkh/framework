@@ -1,4 +1,4 @@
-package scw.web.convert;
+package scw.web.message;
 
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;

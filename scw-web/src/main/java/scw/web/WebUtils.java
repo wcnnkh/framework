@@ -3,8 +3,11 @@ package scw.web;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import scw.codec.support.CharsetCodec;
 import scw.core.utils.CollectionUtils;
+import scw.core.utils.StringUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpMethod;
 import scw.http.HttpStatus;
@@ -17,8 +20,12 @@ import scw.lang.NamedThreadLocal;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.MimeType;
+import scw.net.message.multipart.FileItem;
 import scw.net.message.multipart.FileItemParser;
+import scw.util.LinkedMultiValueMap;
+import scw.util.MultiValueMap;
 import scw.util.XUtils;
+import scw.value.AnyValue;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
@@ -91,7 +98,15 @@ public final class WebUtils {
 	 */
 	public static Value getParameter(ServerHttpRequest request, String name) {
 		String value = request.getParameterMap().getFirst(name);
+		if (value == null) {
+			Map<String, String> parameterMap = getRestfulParameterMap(request);
+			if (parameterMap != null) {
+				value = parameterMap.get(name);
+			}
+		}
+
 		if (value != null) {
+			value = decodeGETParameter(request, value);
 			return new StringValue(value);
 		}
 
@@ -103,6 +118,15 @@ public final class WebUtils {
 				if (element != null) {
 					return element;
 				}
+			}
+		}
+
+		MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
+				MultiPartServerHttpRequest.class);
+		if (multiPartServerHttpRequest != null) {
+			FileItem fileItem = multiPartServerHttpRequest.getMultiPartMap().getFirst(name);
+			if (fileItem != null) {
+				return new AnyValue(fileItem);
 			}
 		}
 		return EmptyValue.INSTANCE;
@@ -121,7 +145,7 @@ public final class WebUtils {
 			Value[] values = new Value[valueList.size()];
 			int index = 0;
 			for (String value : valueList) {
-				values[index++] = new StringValue(value);
+				values[index++] = new StringValue(decodeGETParameter(request, value));
 			}
 			return values;
 		}
@@ -142,6 +166,19 @@ public final class WebUtils {
 				}
 			}
 		}
+
+		MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
+				MultiPartServerHttpRequest.class);
+		if (multiPartServerHttpRequest != null) {
+			List<FileItem> items = multiPartServerHttpRequest.getMultiPartMap().get(name);
+			Value[] values = new Value[items.size()];
+			int index = 0;
+			for (FileItem element : items) {
+				values[index++] = new AnyValue(element);
+			}
+			return values;
+		}
+
 		return Value.EMPTY_ARRAY;
 	}
 
@@ -251,12 +288,36 @@ public final class WebUtils {
 		return (Map<String, String>) request.getAttribute(RESTFUL_PARAMETER_MAP);
 	}
 
-	public static String getRestfulParameter(ServerHttpRequest request, String name) {
-		Map<String, String> parameterMap = getRestfulParameterMap(request);
-		if (parameterMap == null) {
-			return null;
+	public static String decodeGETParameter(ServerHttpRequest request, String value) {
+		if (StringUtils.isEmpty(value)) {
+			return value;
 		}
 
-		return parameterMap.get(name);
+		if (request.getMethod() != HttpMethod.GET) {
+			return value;
+		}
+
+		if (StringUtils.containsChinese(value)) {
+			return value;
+		}
+
+		return new CharsetCodec(request.getCharacterEncoding()).decode(CharsetCodec.ISO_8859_1.encode(value));
+	}
+
+	public static MultiValueMap<String, String> getParameterMap(ServerHttpRequest request) {
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		for (Entry<String, List<String>> entry : request.getParameterMap().entrySet()) {
+			for (String value : entry.getValue()) {
+				map.add(value, decodeGETParameter(request, value));
+			}
+		}
+
+		Map<String, String> restfulMap = getRestfulParameterMap(request);
+		if (restfulMap != null) {
+			for (Entry<String, String> entry : restfulMap.entrySet()) {
+				map.add(entry.getKey(), decodeGETParameter(request, entry.getValue()));
+			}
+		}
+		return map;
 	}
 }

@@ -17,9 +17,9 @@ import scw.beans.BeanFactory;
 import scw.beans.BeansException;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
-import scw.convert.support.MapToEntityConversionService;
 import scw.io.ResourceUtils;
 import scw.io.SerializerUtils;
+import scw.orm.convert.MapToEntityConversionService;
 
 @Provider
 public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
@@ -121,7 +121,8 @@ public class RabbitmqBeanDefinitionLoader implements BeanDefinitionLoader {
 		public Object create() throws BeansException {
 			Properties properties = beanFactory.getEnvironment().getProperties(DEFAULT_CONFIG).get();
 			ExchangeDeclare exchangeDeclare = new ExchangeDeclare(null);
-			MapToEntityConversionService configure = new MapToEntityConversionService(beanFactory.getEnvironment().getConversionService());
+			MapToEntityConversionService configure = new MapToEntityConversionService();
+			configure.setConversionService(beanFactory.getEnvironment().getConversionService());
 			configure.setPrefix("exchange");
 			configure.configurationProperties(properties, exchangeDeclare);
 			return exchangeDeclare;

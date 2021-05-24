@@ -1,19 +1,18 @@
-package scw.web.model;
+package scw.web.message.support;
 
 import java.io.IOException;
+import java.io.InputStream;
 
-import scw.context.annotation.Provider;
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
-import scw.net.MimeType;
-import scw.net.MimeTypeUtils;
+import scw.http.MediaType;
+import scw.io.IOUtils;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.message.WebMessageConverter;
 import scw.web.message.WebMessagelConverterException;
 
-@Provider
-public class TextMessageConverter implements WebMessageConverter {
+public class ByteArrayMessageConverter implements WebMessageConverter {
 
 	@Override
 	public boolean canRead(ParameterDescriptor parameterDescriptor, ServerHttpRequest request) {
@@ -28,20 +27,25 @@ public class TextMessageConverter implements WebMessageConverter {
 
 	@Override
 	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
-		return body != null && body instanceof Text;
+		return body != null && (body instanceof byte[] || body instanceof InputStream);
 	}
 
 	@Override
 	public void write(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException, WebMessagelConverterException {
-		Text text = (Text) body;
-		MimeType mimeType = text.getMimeType();
-		if (mimeType == null) {
-			mimeType = MimeTypeUtils.TEXT_HTML;
+		if(body == null) {
+			return ;
 		}
-		response.setContentType(mimeType);
-		String content = text.toTextContent();
-		response.getWriter().write(content);
+
+		response.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		if(body instanceof byte[]) {
+			response.getBody().write((byte[])body);
+			return ;
+		}else if(body instanceof InputStream) {
+			IOUtils.copy((InputStream)body, response.getBody());
+			return ;
+		}
+		throw new WebMessagelConverterException(type, body, request, null);
 	}
 
 }

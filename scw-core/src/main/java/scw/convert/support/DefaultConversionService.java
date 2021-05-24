@@ -61,10 +61,6 @@ public class DefaultConversionService extends ConversionServices {
 		addConversionService(new NodeListToCollectionConversionService(this));
 		addConversionService(new NodeListToMapConversionService(this));
 		addConversionService(new NodeToObjectConversionService(this));
-
-		addConversionService(new MapToEntityConversionService(this));
-		addConversionService(new PropertyFactoryToEntityConversionService(this));
-		addConversionService(new NodeListToEntityConversionService(this));
 	}
 
 	public DefaultConversionService(PropertiesResolver propertiesResolver, @Nullable Supplier<Charset> charset) {

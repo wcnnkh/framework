@@ -1,4 +1,4 @@
-package scw.web.convert.annotation;
+package scw.web.message.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
