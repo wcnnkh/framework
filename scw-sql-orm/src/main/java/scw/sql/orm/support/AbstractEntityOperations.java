@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import scw.aop.support.FieldSetterListen;
+import scw.aop.support.ProxyUtils;
 import scw.context.ClassesLoaderFactory;
 import scw.context.support.DefaultClassesLoaderFactory;
 import scw.core.IteratorCallback;
@@ -20,7 +21,6 @@ import scw.core.type.scanner.DefaultClassScanner;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.MapperUtils;
@@ -179,7 +179,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	
 	@SuppressWarnings("unchecked")
 	protected <T> Class<T> getUserClass(Class<T> clazz){
-		return (Class<T>) SystemEnvironment.getInstance().getProxyFactory().getUserClass(clazz);
+		return (Class<T>) ProxyUtils.getFactory().getUserClass(clazz);
 	}
 
 	public boolean save(Object bean, String tableName) {

@@ -2,6 +2,7 @@ package scw.rpc.support;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.Proxy;
+import scw.aop.support.ProxyUtils;
 import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.instance.InstanceException;
@@ -28,7 +29,7 @@ public class RemoteCallableBeanDefinition extends DefaultBeanDefinition{
 	@Override
 	public Object create() throws InstanceException {
 		MethodInterceptor interceptor = new RemoteMethodInterceptor(callableFactory);
-		Proxy proxy = beanFactory.getEnvironment().getProxyFactory().getProxy(getTargetClass(), null, interceptor);
+		Proxy proxy = ProxyUtils.getFactory().getProxy(getTargetClass(), null, interceptor);
 		Object reference = proxy.create();
 		return reference;
 	}

@@ -7,7 +7,7 @@ import scw.beans.BeanFactory;
 import scw.core.utils.StringUtils;
 import scw.data.TemporaryStorage;
 import scw.db.database.DataBase;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.event.Observable;
 import scw.io.event.ObservableProperties;
 import scw.lang.Nullable;
@@ -47,7 +47,7 @@ public abstract class ConfigurableDB extends AbstractDB {
 			}
 		}
 
-		Observable<Properties> properties = SystemEnvironment.getInstance().getProperties(configLocation);
+		Observable<Properties> properties = Sys.env.getProperties(configLocation);
 		PropertyFactory propertyFactory = new ObservableProperties(properties);
 		this.propertyFactory.addFactory(propertyFactory);
 	}

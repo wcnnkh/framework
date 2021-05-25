@@ -11,7 +11,7 @@ import scw.db.database.DataBase;
 import scw.db.database.MysqlDataBase;
 import scw.db.database.OracleDataBase;
 import scw.db.database.SqlServerDataBase;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.lang.NotSupportedException;
 import scw.logger.Level;
 import scw.orm.convert.EntityConversionService;
@@ -47,7 +47,7 @@ public final class DBUtils {
 	
 	public static void loadProperties(Object instance, PropertyFactory propertyFactory) {
 		EntityConversionService configure = new PropertyFactoryToEntityConversionService();
-		configure.setConversionService(SystemEnvironment.getInstance().getConversionService());
+		configure.setConversionService(Sys.env.getConversionService());
 		configure.setAliasRegistry(getCommonPropertiesAliasRegistry());
 		configure.setStrict(true);
 		configure.setLoggerLevel(Level.INFO.getValue());

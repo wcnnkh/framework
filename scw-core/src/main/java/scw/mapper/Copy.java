@@ -4,7 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 
 import scw.core.reflect.ReflectionUtils;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.instance.NoArgsInstanceFactory;
 import scw.util.Accept;
 import scw.util.ConfigurableAccept;
@@ -90,7 +90,7 @@ public class Copy {
 	}
 
 	public final NoArgsInstanceFactory getInstanceFactory() {
-		return instanceFactory == null ? SystemEnvironment.getInstanceFactory() : instanceFactory;
+		return instanceFactory == null ? Sys.getInstanceFactory() : instanceFactory;
 	}
 
 	public Copy setInstanceFactory(NoArgsInstanceFactory instanceFactory) {

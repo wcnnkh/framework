@@ -15,7 +15,7 @@ import scw.boot.ApplicationEvent;
 import scw.boot.ApplicationPostProcessor;
 import scw.boot.ConfigurableApplication;
 import scw.core.OrderComparator;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
@@ -40,7 +40,7 @@ public class DefaultApplication extends XmlBeanFactory implements ConfigurableAp
 
 	public DefaultApplication(String xml) {
 		super(xml);
-		this.createTime = System.currentTimeMillis();
+		this.createTime = Sys.currentTimeMillis();
 		registerSingleton(Application.class.getName(), this);
 		getLifecycleDispatcher().registerListener(this);
 	}
@@ -89,7 +89,7 @@ public class DefaultApplication extends XmlBeanFactory implements ConfigurableAp
 		for (String suffix : new String[] { ".properties", ".yaml", ".yml" }) {
 			Resource resource = getEnvironment().getResource(APPLICATION_PREFIX + suffix);
 			if (resource != null && resource.exists()) {
-				Observable<Properties> properties = SystemEnvironment.getInstance().toObservableProperties(resource);
+				Observable<Properties> properties = Sys.env.toObservableProperties(resource);
 				getEnvironment().loadProperties(properties);
 			}
 		}
@@ -104,7 +104,7 @@ public class DefaultApplication extends XmlBeanFactory implements ConfigurableAp
 		}
 
 		getLogger().info(
-				new SplitLine("Start up complete in " + (System.currentTimeMillis() - createTime) + "ms").toString());
+				new SplitLine("Start up complete in " + (Sys.currentTimeMillis() - createTime) + "ms").toString());
 	}
 	
 	public void destroy() throws Throwable{

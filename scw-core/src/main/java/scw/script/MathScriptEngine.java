@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.core.utils.StringUtils;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.mapper.Field;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
@@ -29,7 +29,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	static final Function[] FUNCTIONS;
 
 	static {
-		List<Function> functions = new ArrayList<Function>(InstanceUtils.loadAllService(Function.class));
+		List<Function> functions = new ArrayList<Function>(Sys.getInstanceFactory().getServiceLoader(Function.class).toList());
 		functions.add(new MaxFunction());
 		functions.add(new MinFunction());
 		functions.add(new MeaninglessFunction("{", "}"));

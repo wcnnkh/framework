@@ -8,6 +8,7 @@ import java.util.Iterator;
 import scw.aop.AopPolicy;
 import scw.aop.ConfigurableAop;
 import scw.aop.support.DefaultConfigurableAop;
+import scw.aop.support.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionRegistry;
 import scw.beans.BeanFactory;
@@ -25,7 +26,7 @@ import scw.core.parameter.ConstructorParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ClassUtils;
 import scw.env.Environment;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.event.EventDispatcher;
 import scw.event.support.DefaultEventDispatcher;
 import scw.instance.InstanceFactory;
@@ -45,7 +46,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanFactory.class);
 	private final DefaultEventDispatcher<BeanlifeCycleEvent> beanLifeCycleEventDispatcher = new DefaultEventDispatcher<BeanlifeCycleEvent>(
 			true);
-	private final DefaultConfigurableAop aop = new DefaultConfigurableAop(getEnvironment().getProxyFactory());
+	private final DefaultConfigurableAop aop = new DefaultConfigurableAop();
 	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(this);
 	private final SingletonBeanRegistry singletonBeanRegistry = new DefaultSingletonBeanRegistry(this);
 	private ClassLoaderProvider classLoaderProvider;
@@ -58,7 +59,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 				return BeanUtils.getRuntimeBean(instance) != null;
 			}
 		});
-		getEnvironment().addFactory(SystemEnvironment.getInstance());
+		getEnvironment().addFactory(Sys.env);
 
 		registerSingleton(BeanFactory.class.getName(), this);
 		registerAlias(BeanFactory.class.getName(), InstanceFactory.class.getName());
@@ -358,7 +359,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 		}
 
 		public Class getTargetClass() {
-			return getEnvironment().getProxyFactory().getUserClass(instance.getClass());
+			return ProxyUtils.getFactory().getUserClass(instance.getClass());
 		}
 
 		public boolean isSingleton() {

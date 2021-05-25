@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import scw.aop.ConfigurableProxyFactory;
-import scw.aop.support.DefaultProxyFactory;
 import scw.convert.ConfigurableConversionService;
 import scw.convert.ConversionService;
 import scw.convert.resolve.ConfigurableResourceResolver;
@@ -60,7 +58,6 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 			configurablePropertiesResolver, getObservableCharset());
 	private final ConfigurableResourceResolver configurableResourceResolver = new DefaultResourceResolver(
 			configurableConversionService, configurablePropertiesResolver, getObservableCharset());
-	private final DefaultProxyFactory proxyFactory = new DefaultProxyFactory();
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
 	private ClassLoaderProvider classLoaderProvider;
 	
@@ -260,8 +257,6 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	 */
 	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory, Logger logger) {
 		if (loaded.compareAndSet(false, true)) {
-			proxyFactory.loadServices(serviceLoaderFactory);
-
 			for (PropertiesResolver propertiesResolver : serviceLoaderFactory
 					.getServiceLoader(PropertiesResolver.class)) {
 				logger.debug("add properties resolver: {}", propertiesResolver);
@@ -311,11 +306,6 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	@Override
 	public ConfigurablePropertiesResolver getPropertiesResolver() {
 		return configurablePropertiesResolver;
-	}
-
-	@Override
-	public ConfigurableProxyFactory getProxyFactory() {
-		return proxyFactory;
 	}
 
 	@Override

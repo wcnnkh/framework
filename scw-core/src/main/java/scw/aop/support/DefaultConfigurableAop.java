@@ -13,31 +13,36 @@ import scw.core.utils.CollectionUtils;
 import scw.instance.ServiceLoader;
 import scw.instance.ServiceLoaderFactory;
 
-public class DefaultConfigurableAop extends AbstractAop implements ConfigurableAop {
+public class DefaultConfigurableAop extends AbstractAop implements
+		ConfigurableAop {
 	private final ProxyFactory proxyFactory;
 	private final ConfigurableMethodInterceptor configurableMethodInterceptor = new ConfigurableMethodInterceptor();
 	private final List<AopPolicy> policies = new CopyOnWriteArrayList<AopPolicy>();
-	
-	public DefaultConfigurableAop(ProxyFactory proxyFactory){
+
+	public DefaultConfigurableAop(){
+		this(ProxyUtils.getFactory());
+	}
+
+	public DefaultConfigurableAop(ProxyFactory proxyFactory) {
 		this.proxyFactory = proxyFactory;
 	}
-	
+
 	@Override
 	public ProxyFactory getProxyFactory() {
 		return proxyFactory;
 	}
-	
+
 	public ConfigurableMethodInterceptor getMethodInterceptor() {
 		return configurableMethodInterceptor;
 	}
-	
+
 	public void addAopPolicy(AopPolicy aopPolicy) {
 		synchronized (policies) {
 			policies.add(aopPolicy);
 		}
 	}
-	
-	public Iterator<AopPolicy> getPolicyIterator(){
+
+	public Iterator<AopPolicy> getPolicyIterator() {
 		return CollectionUtils.getIterator(policies, true);
 	}
 
@@ -45,26 +50,29 @@ public class DefaultConfigurableAop extends AbstractAop implements ConfigurableA
 		if (instance == null) {
 			return false;
 		}
-		
+
 		Iterator<AopPolicy> iterator = getPolicyIterator();
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			AopPolicy aopPolicy = iterator.next();
-			if(aopPolicy.isProxy(instance)){
+			if (aopPolicy.isProxy(instance)) {
 				return true;
 			}
 		}
 		return super.isProxy(instance);
 	}
-	
+
 	private final AtomicBoolean loaded = new AtomicBoolean();
+
 	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory) {
-		if(loaded.compareAndSet(false, true)){
+		if (loaded.compareAndSet(false, true)) {
 			ServiceLoader<MethodInterceptor> interceptorLoader = serviceLoaderFactory
 					.getServiceLoader(MethodInterceptor.class);
-			configurableMethodInterceptor.addMethodInterceptor(new UnmodifiableMethodInterceptors(
-					interceptorLoader));
-			
-			for(AopPolicy aopPolicy : serviceLoaderFactory.getServiceLoader(AopPolicy.class)){
+			configurableMethodInterceptor
+					.addMethodInterceptor(new UnmodifiableMethodInterceptors(
+							interceptorLoader));
+
+			for (AopPolicy aopPolicy : serviceLoaderFactory
+					.getServiceLoader(AopPolicy.class)) {
 				addAopPolicy(aopPolicy);
 			}
 			return true;

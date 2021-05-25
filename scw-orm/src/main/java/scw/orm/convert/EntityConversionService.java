@@ -14,7 +14,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.instance.NoArgsInstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -53,7 +53,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	}
 
 	public final ConversionService getConversionService() {
-		return conversionService == null ? SystemEnvironment.getInstance().getConversionService() : conversionService;
+		return conversionService == null ? Sys.env.getConversionService() : conversionService;
 	}
 
 	public void setConversionService(ConversionService conversionService) {

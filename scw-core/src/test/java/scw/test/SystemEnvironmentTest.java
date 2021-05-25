@@ -4,12 +4,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 
 public class SystemEnvironmentTest {
 	@Test
 	public void test(){
-		boolean value = SystemEnvironment.getInstance().getValue("scw.test._key", boolean.class, true);
+		boolean value = Sys.env.getValue("scw.test._key", boolean.class, true);
 		assertTrue(value);
 	}
 }

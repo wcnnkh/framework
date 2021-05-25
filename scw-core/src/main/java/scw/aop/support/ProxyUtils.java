@@ -3,6 +3,7 @@ package scw.aop.support;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 
+import scw.aop.ConfigurableProxyFactory;
 import scw.aop.MethodInterceptor;
 import scw.aop.Proxy;
 import scw.aop.ProxyFactory;
@@ -10,10 +11,24 @@ import scw.aop.WriteReplaceInterface;
 import scw.core.reflect.MethodInvoker;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
+import scw.instance.support.SpiServiceLoader;
 
 public final class ProxyUtils {
+	private static final ConfigurableProxyFactory FACTORY = new DefaultProxyFactory();
+	
+	static{
+		SpiServiceLoader<ProxyFactory> serviceLoader = new SpiServiceLoader<ProxyFactory>(ProxyFactory.class);
+		for(ProxyFactory proxyFactory : serviceLoader){
+			FACTORY.addProxyFactory(proxyFactory);
+		}
+	}
+	
 	private ProxyUtils() {
 	};
+	
+	public static ProxyFactory getFactory() {
+		return FACTORY;
+	}
 
 	/**
 	 * 代理一个对象并忽略其指定的方法

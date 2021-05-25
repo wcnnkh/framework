@@ -2,11 +2,11 @@ package scw.sql.orm.support.generation;
 
 import java.util.concurrent.locks.Lock;
 
+import scw.aop.support.ProxyUtils;
 import scw.data.Counter;
 import scw.data.generator.SequenceId;
 import scw.data.generator.SequenceIdGenerator;
 import scw.data.memory.MemoryDataOperations;
-import scw.env.SystemEnvironment;
 import scw.locks.LockFactory;
 import scw.locks.ReentrantLockFactory;
 
@@ -45,7 +45,7 @@ public class DefaultGeneratorService extends AbstractGeneratorService {
 	}
 	
 	protected Class<?> getUserClass(Class<?> clazz){
-		return SystemEnvironment.getInstance().getProxyFactory().getUserClass(clazz);
+		return ProxyUtils.getFactory().getUserClass(clazz);
 	}
 
 	protected long getMaxId(GeneratorContext generatorContext) {

@@ -8,7 +8,7 @@ import java.util.List;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.Assert;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.http.HttpMethod;
 import scw.http.HttpRequestEntity;
 import scw.http.HttpResponseEntity;
@@ -19,7 +19,6 @@ import scw.http.client.HttpConnection.RedirectManager;
 import scw.http.client.HttpConnectionFactory.AbstractHttpConnectionFactory;
 import scw.http.client.exception.HttpClientException;
 import scw.http.client.exception.HttpClientResourceAccessException;
-import scw.instance.InstanceUtils;
 import scw.instance.ServiceLoaderFactory;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
@@ -29,21 +28,19 @@ import scw.net.message.convert.MessageConverters;
 import scw.net.uri.UriTemplateHandler;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {
-	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = InstanceUtils
-			.loadService(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory");
-	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = InstanceUtils.loadService(UriTemplateHandler.class,
-			"scw.net.uri.DefaultUriTemplateHandler");
+	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.getInstanceFactory().getServiceLoader(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory").getFirst();
+	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.getInstanceFactory().getServiceLoader(UriTemplateHandler.class,
+			"scw.net.uri.DefaultUriTemplateHandler").getFirst();
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	static final HttpClientCookieManager COOKIE_MANAGER;
-	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = InstanceUtils
-			.loadAllService(ClientHttpRequestInterceptor.class);
+	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.getInstanceFactory().getServiceLoader(ClientHttpRequestInterceptor.class).toList();
 
 	static {
-		ClientHttpResponseErrorHandler errorHandler = InstanceUtils.loadService(ClientHttpResponseErrorHandler.class);
+		ClientHttpResponseErrorHandler errorHandler = Sys.getInstanceFactory().getServiceLoader(ClientHttpResponseErrorHandler.class).getFirst();
 		CLIENT_HTTP_RESPONSE_ERROR_HANDLER = errorHandler == null ? new DefaultClientHttpResponseErrorHandler()
 				: errorHandler;
 
-		COOKIE_MANAGER = InstanceUtils.loadService(HttpClientCookieManager.class);
+		COOKIE_MANAGER = Sys.getInstanceFactory().getServiceLoader(HttpClientCookieManager.class).getFirst();
 	}
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpClient.class);
@@ -55,7 +52,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 	private UriTemplateHandler uriTemplateHandler;
 
 	public DefaultHttpClient() {
-		this(SystemEnvironment.getInstance().getConversionService());
+		this(Sys.env.getConversionService());
 	}
 
 	public DefaultHttpClient(ConversionService conversionService) {

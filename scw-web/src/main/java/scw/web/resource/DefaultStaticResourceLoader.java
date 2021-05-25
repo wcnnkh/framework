@@ -3,7 +3,7 @@ package scw.web.resource;
 import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
 import scw.env.Environment;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
 
@@ -24,7 +24,7 @@ public class DefaultStaticResourceLoader extends AbstractStaticResourceLoader {
 	}
 
 	public ResourceLoader getResourceLoader() {
-		return resourceLoader == null? SystemEnvironment.getInstance():resourceLoader;
+		return resourceLoader == null? Sys.env:resourceLoader;
 	}
 
 	public void setResourceLoader(ResourceLoader resourceLoader) {

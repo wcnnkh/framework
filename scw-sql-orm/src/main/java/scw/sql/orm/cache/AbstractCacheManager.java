@@ -5,8 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import scw.aop.support.ProxyUtils;
 import scw.data.Storage;
-import scw.env.SystemEnvironment;
 import scw.sql.orm.ObjectRelationalMapping;
 import scw.sql.orm.OrmUtils;
 
@@ -19,7 +19,7 @@ public abstract class AbstractCacheManager<C extends Storage> implements CacheMa
 	
 	@SuppressWarnings("unchecked")
 	protected <T> Class<T> getUserClass(Class<T> clazz){
-		return (Class<T>) SystemEnvironment.getInstance().getProxyFactory().getUserClass(clazz);
+		return (Class<T>) ProxyUtils.getFactory().getUserClass(clazz);
 	}
 
 	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {

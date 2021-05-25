@@ -7,7 +7,7 @@ import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.ResolvableType;
 import scw.core.utils.ObjectUtils;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.lang.Nullable;
 
 public class AnyValue extends AbstractValue {
@@ -34,7 +34,7 @@ public class AnyValue extends AbstractValue {
 	}
 
 	public ConversionService getConversionService() {
-		return conversionService == null ? SystemEnvironment.getInstance().getConversionService() : conversionService;
+		return conversionService == null ? Sys.env.getConversionService() : conversionService;
 	}
 
 	public Object getValue() {

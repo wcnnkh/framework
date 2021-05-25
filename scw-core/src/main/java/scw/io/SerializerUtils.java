@@ -1,6 +1,6 @@
 package scw.io;
 
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.json.JsonSerializer;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -14,11 +14,11 @@ public final class SerializerUtils {
 	private static final CrossLanguageSerializer CROSS_LANGUAGE_SERIALIZER;
 
 	static {
-		Serializer serializer = InstanceUtils.loadService(Serializer.class);
+		Serializer serializer = Sys.getInstanceFactory().getServiceLoader(Serializer.class).getFirst();
 		SERIALIZER = serializer == null ? JavaSerializer.INSTANCE : serializer;
 		logger.info("default serializer {}", SERIALIZER);
 
-		CrossLanguageSerializer crossLanguageSerializer = InstanceUtils.loadService(CrossLanguageSerializer.class);
+		CrossLanguageSerializer crossLanguageSerializer = Sys.getInstanceFactory().getServiceLoader(CrossLanguageSerializer.class).getFirst();
 		CROSS_LANGUAGE_SERIALIZER = crossLanguageSerializer == null ? JsonSerializer.INSTANCE : crossLanguageSerializer;
 		logger.info("default cross language serializer {}", CROSS_LANGUAGE_SERIALIZER);
 	}

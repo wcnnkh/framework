@@ -7,13 +7,13 @@ import scw.beans.BeanFactory;
 import scw.boot.Application;
 import scw.boot.ConfigurableApplication;
 import scw.boot.servlet.ServletApplicationStartup;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.lang.Nullable;
 import scw.logger.Logger;
 
 public abstract class ServletContextUtils {
-	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = InstanceUtils.loadService(ServletApplicationStartup.class,
-			"scw.boot.servlet.support.Servlet3ApplicationStartup", "scw.boot.servlet.support.DefaultServletApplicationStartup");
+	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.getInstanceFactory().getServiceLoader(ServletApplicationStartup.class,
+			"scw.boot.servlet.support.Servlet3ApplicationStartup", "scw.boot.servlet.support.DefaultServletApplicationStartup").getFirst();
 	
 	public static ServletApplicationStartup getServletApplicationStartup() {
 		return SERVLET_APPLICATION_STARTUP;

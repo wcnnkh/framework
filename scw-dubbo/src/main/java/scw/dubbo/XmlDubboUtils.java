@@ -27,7 +27,7 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
 import scw.env.Environment;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.instance.NoArgsInstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -275,7 +275,7 @@ public final class XmlDubboUtils {
 					continue;
 				}
 
-				T config = defaultConfig == null ? SystemEnvironment.getInstanceFactory().getInstance(type)
+				T config = defaultConfig == null ? Sys.getInstanceFactory().getInstance(type)
 						: Copy.copy(type, defaultConfig);
 				loader(config, environment, node);
 

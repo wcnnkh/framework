@@ -20,6 +20,7 @@ import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.io.FileUtils;
 import scw.lang.NotSupportedException;
 import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
@@ -213,7 +214,7 @@ public final class XUtils {
 	 */
 	public static String getRuntimeDirectory(ClassLoader classLoader) {
 		URL url = classLoader.getResource("");
-		return url == null ? System.getProperty("user.dir") : url.getPath();
+		return url == null ? FileUtils.getUserDir() : url.getPath();
 	}
 	
 	/**
@@ -280,5 +281,31 @@ public final class XUtils {
 		}
 		
 		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
+	}
+	
+	public static String getClassPath() {
+		return System.getProperty("java.class.path");
+	}
+	
+	/**
+	 * 获取环境变量分割符
+	 * 
+	 * @return
+	 */
+	public static String getPathSeparator() {
+		return System.getProperty("path.separator");
+	}
+
+	public static String[] getClassPathArray() {
+		String classPath = getClassPath();
+		if (StringUtils.isEmpty(classPath)) {
+			return null;
+		}
+
+		return StringUtils.split(classPath, getPathSeparator());
+	}
+	
+	public static String getOSName() {
+		return System.getProperty("os.name");
 	}
 }

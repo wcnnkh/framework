@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 
+import scw.aop.support.ProxyUtils;
 import scw.beans.annotation.AopEnable;
 import scw.beans.annotation.ConfigurationProperties;
 import scw.beans.annotation.IgnoreConfigurationProperty;
@@ -17,7 +18,7 @@ import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.env.EnvironmentAware;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.lang.Nullable;
 import scw.mapper.Field;
 import scw.orm.convert.EntityConversionService;
@@ -26,7 +27,7 @@ import scw.util.Accept;
 import scw.value.PropertyFactory;
 
 public final class BeanUtils {
-	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = InstanceUtils.loadAllService(AopEnableSpi.class);
+	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = Sys.getInstanceFactory().getServiceLoader(AopEnableSpi.class).toList();
 
 	private BeanUtils() {
 	};
@@ -148,7 +149,7 @@ public final class BeanUtils {
 			Environment environment) {
 		ConfigurationProperties configurationProperties = annotatedElement == null ? null
 				: annotatedElement.getAnnotation(ConfigurationProperties.class);
-		Class<?> configurationPropertiesClass = environment.getProxyFactory().getUserClass(instance.getClass());
+		Class<?> configurationPropertiesClass = ProxyUtils.getFactory().getUserClass(instance.getClass());
 		if (configurationProperties == null) {
 			// 定义上不存在此注解
 			while (configurationPropertiesClass != null && configurationPropertiesClass != Object.class) {

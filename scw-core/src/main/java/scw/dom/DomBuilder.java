@@ -32,7 +32,7 @@ import scw.convert.TypeDescriptor;
 import scw.dom.append.AppendChildService;
 import scw.dom.append.AppendChildServiceFactory;
 import scw.dom.append.DefaultAppendChildServiceFactory;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.io.IOUtils;
 import scw.io.Resource;
 
@@ -40,7 +40,7 @@ public class DomBuilder{
 	private static final AppendChildServiceFactory APPEND_CHILD_SERVICE_FACTORY = new DefaultAppendChildServiceFactory();
 	
 	static{
-		APPEND_CHILD_SERVICE_FACTORY.getServices().addAll(InstanceUtils.loadAllService(AppendChildService.class));
+		APPEND_CHILD_SERVICE_FACTORY.getServices().addAll(Sys.getInstanceFactory().getServiceLoader(AppendChildService.class).toList());
 	}
 	
 	private final DocumentBuilderFactory documentBuilderFactory;

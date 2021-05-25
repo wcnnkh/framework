@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import scw.convert.TypeDescriptor;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.http.HttpHeaders;
 import scw.io.IOUtils;
 import scw.json.JSONSupport;
@@ -45,7 +45,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	}
 	
 	public Charset getCharset() {
-		return charset == null? SystemEnvironment.getInstance().getCharset():charset;
+		return charset == null? Sys.env.getCharset():charset;
 	}
 
 	public void setCharset(Charset charset) {

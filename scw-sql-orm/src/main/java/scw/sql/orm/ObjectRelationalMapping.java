@@ -10,9 +10,10 @@ import java.util.List;
 import java.util.Map;
 
 import scw.aop.support.FieldSetterListenUtils;
+import scw.aop.support.ProxyUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.lang.Ignore;
 import scw.mapper.Field;
 import scw.mapper.FieldFeature;
@@ -33,7 +34,7 @@ public class ObjectRelationalMapping implements Accept<Field> {
 	 * 默认对象主键的连接符
 	 */
 	public static final char PRIMARY_KEY_CONNECTOR_CHARACTER = StringUtils
-			.parseChar(SystemEnvironment.getInstance().getString("orm.primary.key.connector.character"), ':');
+			.parseChar(Sys.env.getString("orm.primary.key.connector.character"), ':');
 
 	public Mapper getMapper() {
 		return MapperUtils.getMapper();
@@ -178,15 +179,15 @@ public class ObjectRelationalMapping implements Accept<Field> {
 		if (StringUtils.isEmpty(table.name())) {
 			return StringUtils.humpNamingReplacement(tableClass.getSimpleName(), "_");
 		}
-		return SystemEnvironment.getInstance().resolveRequiredPlaceholders(table.name());
+		return Sys.env.resolveRequiredPlaceholders(table.name());
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T newEntity(Class<T> entityClass) {
-		if (isTable(entityClass) && SystemEnvironment.getInstance().getProxyFactory().canProxy(entityClass)) {
-			return (T) FieldSetterListenUtils.getFieldSetterListenProxy(SystemEnvironment.getInstance().getProxyFactory(), entityClass).create();
+		if (isTable(entityClass) && ProxyUtils.getFactory().canProxy(entityClass)) {
+			return (T) FieldSetterListenUtils.getFieldSetterListenProxy(ProxyUtils.getFactory(), entityClass).create();
 		} else {
-			return SystemEnvironment.getInstanceFactory().getInstance(entityClass);
+			return Sys.getInstanceFactory().getInstance(entityClass);
 		}
 	}
 }

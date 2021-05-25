@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.List;
 
 import scw.core.utils.ArrayUtils;
+import scw.env.Sys;
 import scw.http.HttpOutputMessage;
 import scw.http.HttpUtils;
-import scw.instance.InstanceUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.lang.NotSupportedException;
@@ -21,8 +21,8 @@ public final class MicrosoftUtils {
 	private MicrosoftUtils() {
 	};
 
-	private static final ExcelOperations EXCEL_OPERATIONS = InstanceUtils.loadService(ExcelOperations.class,
-			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations");
+	private static final ExcelOperations EXCEL_OPERATIONS = Sys.getInstanceFactory().getServiceLoader(ExcelOperations.class,
+			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations").getFirst();
 
 	static {
 		if (EXCEL_OPERATIONS == null) {

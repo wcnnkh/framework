@@ -27,7 +27,7 @@ import scw.core.Assert;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.io.event.ConvertibleObservableProperties;
 import scw.lang.Nullable;
 import scw.logger.Logger;
@@ -544,8 +544,8 @@ public class HttpHeaders extends Headers {
 	private static final ConvertibleObservableProperties<Map<String, String[]>> AJAX_HEADERS = new ConvertibleObservableProperties<Map<String, String[]>>(CONVERTER);
 	
 	static {
-		AJAX_HEADERS.combine(SystemEnvironment.getInstance().getProperties("/scw/net/headers/ajax.headers.properties"));
-		AJAX_HEADERS.combine(SystemEnvironment.getInstance().getProperties(SystemEnvironment.getInstance().getValue("scw.net.ajax.headers", String.class,
+		AJAX_HEADERS.combine(Sys.env.getProperties("/scw/net/headers/ajax.headers.properties"));
+		AJAX_HEADERS.combine(Sys.env.getProperties(Sys.env.getValue("scw.net.ajax.headers", String.class,
 				"/ajax-headers.properties")));
 	}
 

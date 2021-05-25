@@ -1,6 +1,6 @@
 package scw.jackson;
 
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.json.AbstractJSONSupport;
 import scw.json.EmptyJsonElement;
 import scw.json.JSONException;
@@ -19,7 +19,7 @@ public class JacksonJSONSupport extends AbstractJSONSupport {
 	private ObjectMapper mapper;
 
 	public JacksonJSONSupport() {
-		this.mapper = InstanceUtils.loadService(ObjectMapper.class);
+		this.mapper = Sys.getInstanceFactory().getServiceLoader(ObjectMapper.class).getFirst();
 		if (mapper == null) {
 			mapper = new ObjectMapper();
 			// 对于空的对象转json的时候不抛出错误

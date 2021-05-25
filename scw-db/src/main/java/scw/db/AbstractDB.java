@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import scw.aop.support.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryAware;
@@ -169,7 +170,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 		}
 
 		if (beanFactory != null) {
-			Class<?> clazz = beanFactory.getEnvironment().getProxyFactory().getUserClass(asyncExecute.getClass());
+			Class<?> clazz = ProxyUtils.getFactory().getUserClass(asyncExecute.getClass());
 			BeanDefinition definition = (BeanDefinition) beanFactory.getDefinition(clazz);
 			if (definition != null) {
 					definition.dependence(asyncExecute);

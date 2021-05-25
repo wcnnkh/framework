@@ -1,13 +1,13 @@
 package scw.sql.orm;
 
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.lang.NotSupportedException;
 import scw.sql.Sql;
 import scw.sql.orm.dialect.SqlDialect;
 import scw.sql.orm.enums.OperationType;
 
 public final class OrmUtils {
-	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING = InstanceUtils.loadService(ObjectRelationalMapping.class, "scw.sql.orm.ObjectRelationalMapping");
+	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING = Sys.getInstanceFactory().getServiceLoader(ObjectRelationalMapping.class, "scw.sql.orm.ObjectRelationalMapping").getFirst();
 
 	private OrmUtils() {
 	};

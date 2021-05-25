@@ -33,7 +33,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.env.MainArgs;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.http.HttpMethod;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -116,7 +116,7 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet", application.getClassLoader())) {
-			ServletContainerInitializer containerInitializer = SystemEnvironment.getInstanceFactory()
+			ServletContainerInitializer containerInitializer = Sys.getInstanceFactory()
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
 				context.addServletContainerInitializer(containerInitializer, null);

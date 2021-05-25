@@ -120,20 +120,16 @@ public final class FileUtils {
 		return file;
 	}
 
-	public static String getTempDirectoryPath() {
+	public static String getTempDirectory() {
 		return System.getProperty("java.io.tmpdir");
 	}
-
-	public static File getTempDirectory() {
-		return new File(getTempDirectoryPath());
-	}
-
-	public static String getUserDirectoryPath() {
+	
+	public static String getUserHome(){
 		return System.getProperty("user.home");
 	}
-
-	public static File getUserDirectory() {
-		return new File(getUserDirectoryPath());
+	
+	public static String getUserDir() {
+		return System.getProperty("user.dir");
 	}
 
 	public static FileInputStream openInputStream(File file) throws IOException {

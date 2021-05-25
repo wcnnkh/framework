@@ -1,7 +1,7 @@
 package scw.json;
 
+import scw.env.Sys;
 import scw.gson.GsonSupport;
-import scw.instance.InstanceUtils;
 import scw.lang.NamedThreadLocal;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -19,7 +19,7 @@ public final class JSONUtils {
 	public static final JSONSupport JSON_SUPPORT;
 
 	static {
-		JSONSupport jsonSupport = InstanceUtils.loadService(JSONSupport.class);
+		JSONSupport jsonSupport = Sys.getInstanceFactory().getServiceLoader(JSONSupport.class).getFirst();
 		JSON_SUPPORT = jsonSupport == null ? GsonSupport.INSTANCE : jsonSupport;
 		logger.info("default json support [{}]", JSON_SUPPORT);
 	}
