@@ -13,7 +13,6 @@ import scw.aop.support.FieldSetterListenUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
-import scw.instance.InstanceUtils;
 import scw.lang.Ignore;
 import scw.mapper.Field;
 import scw.mapper.FieldFeature;
@@ -187,7 +186,7 @@ public class ObjectRelationalMapping implements Accept<Field> {
 		if (isTable(entityClass) && SystemEnvironment.getInstance().getProxyFactory().canProxy(entityClass)) {
 			return (T) FieldSetterListenUtils.getFieldSetterListenProxy(SystemEnvironment.getInstance().getProxyFactory(), entityClass).create();
 		} else {
-			return InstanceUtils.INSTANCE_FACTORY.getInstance(entityClass);
+			return SystemEnvironment.getInstanceFactory().getInstance(entityClass);
 		}
 	}
 }

@@ -34,7 +34,7 @@ public class XmlDubboExport implements Runnable{
 		@SuppressWarnings("rawtypes")
 		List<ServiceConfig> serviceConfigs = XmlDubboUtils
 				.parseServiceConfigList(beanFactory.getEnvironment(),
-						nodeList, null, beanFactory, beanFactory);
+						nodeList, null, beanFactory, beanFactory.getClassesLoaderFactory());
 		if (!serviceConfigs.isEmpty()) {
 			if (protocolConfigs.isEmpty()) {
 				startLog();

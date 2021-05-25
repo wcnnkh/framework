@@ -7,14 +7,14 @@ import scw.event.Event;
  * @author shuchaowen
  *
  */
-public class BeanLifeCycleEvent implements Event{
+public class BeanlifeCycleEvent implements Event{
 	private final long createTime;
 	private final BeanFactory beanFactory;
 	private final Step step;
 	private final Object source;
 	private final BeanDefinition beanDefinition;
 
-	public BeanLifeCycleEvent(BeanDefinition beanDefinition, Object source, BeanFactory beanFactory, Step step) {
+	public BeanlifeCycleEvent(BeanDefinition beanDefinition, Object source, BeanFactory beanFactory, Step step) {
 		this.createTime = System.currentTimeMillis();
 		this.source = source;
 		this.beanFactory = beanFactory;

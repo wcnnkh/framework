@@ -16,6 +16,14 @@ public class MessageConverters implements MessageConverter {
 	private static Logger logger = LoggerFactory.getLogger(MessageConverters.class);
 	private final TreeSet<MessageConverter> messageConverters = new TreeSet<MessageConverter>(
 			new ComparatorMessageConverter());
+	private MessageConverter parentMessageConverter;
+	
+	public MessageConverters() {
+	}
+	
+	public MessageConverters(MessageConverter parentMessageConverter) {
+		this.parentMessageConverter = parentMessageConverter;
+	}
 
 	public void addMessageConverter(MessageConverter messageConverter) {
 		synchronized (messageConverter) {
@@ -46,6 +54,10 @@ public class MessageConverters implements MessageConverter {
 				return converter.read(type, inputMessage);
 			}
 		}
+		
+		if(parentMessageConverter != null && parentMessageConverter.canRead(type, inputMessage.getContentType())) {
+			return parentMessageConverter.read(type, inputMessage);
+		}
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("not support read type={}, contentType={}", type, inputMessage.getContentType());
@@ -64,6 +76,11 @@ public class MessageConverters implements MessageConverter {
 				return;
 			}
 		}
+		
+		if(parentMessageConverter != null && parentMessageConverter.canWrite(type, body, contentType)) {
+			parentMessageConverter.write(type, body, contentType, outputMessage);
+			return ;
+		}
 
 		if (logger.isDebugEnabled()) {
 			logger.debug("not support wirte body={}, contentType={}", body, contentType);
@@ -76,7 +93,7 @@ public class MessageConverters implements MessageConverter {
 				return true;
 			}
 		}
-		return false;
+		return (parentMessageConverter != null && parentMessageConverter.canRead(type, mimeType));
 	}
 
 	public boolean canWrite(TypeDescriptor type, Object body, MimeType contentType) {
@@ -85,7 +102,7 @@ public class MessageConverters implements MessageConverter {
 				return true;
 			}
 		}
-		return false;
+		return (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, contentType));
 	}
 
 	public MimeTypes getSupportMimeTypes() {
@@ -93,6 +110,11 @@ public class MessageConverters implements MessageConverter {
 		for (MessageConverter converter : messageConverters) {
 			mimeTypes.getMimeTypes().addAll(converter.getSupportMimeTypes().getMimeTypes());
 		}
+		
+		if(parentMessageConverter != null) {
+			mimeTypes.getMimeTypes().addAll(parentMessageConverter.getSupportMimeTypes().getMimeTypes());
+		}
+		
 		return mimeTypes.readyOnly();
 	}
 }

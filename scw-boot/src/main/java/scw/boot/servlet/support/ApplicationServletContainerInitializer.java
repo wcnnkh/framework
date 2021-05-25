@@ -6,7 +6,7 @@ import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import scw.boot.Application;
+import scw.boot.ConfigurableApplication;
 import scw.util.Result;
 
 /**
@@ -17,7 +17,7 @@ import scw.util.Result;
 public class ApplicationServletContainerInitializer extends ApplicationServletContextListener implements ServletContainerInitializer{
 	public void onStartup(Set<Class<?>> classes, ServletContext servletContext)
 			throws ServletException {
-		Result<Application> startUp = ServletContextUtils.getServletApplicationStartup().start(servletContext);
+		Result<ConfigurableApplication> startUp = ServletContextUtils.getServletApplicationStartup().start(servletContext);
 		if(startUp.isActive()){
 			servletContext.addListener(this);
 		}

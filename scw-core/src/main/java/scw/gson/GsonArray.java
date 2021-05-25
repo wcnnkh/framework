@@ -5,7 +5,7 @@ import java.util.Iterator;
 import com.google.gson.Gson;
 
 import scw.convert.Converter;
-import scw.core.IteratorConverter;
+import scw.convert.ConvertibleIterator;
 import scw.json.AbstractJson;
 import scw.json.EmptyJsonElement;
 import scw.json.JsonArray;
@@ -26,7 +26,7 @@ public final class GsonArray extends AbstractJson<Integer>
 	}
 
 	public Iterator<scw.json.JsonElement> iterator() {
-		return new IteratorConverter<com.google.gson.JsonElement, JsonElement>(gsonJsonArray.iterator(), this);
+		return new ConvertibleIterator<com.google.gson.JsonElement, JsonElement>(gsonJsonArray.iterator(), this);
 	}
 
 	public JsonElement getValue(Integer index) {

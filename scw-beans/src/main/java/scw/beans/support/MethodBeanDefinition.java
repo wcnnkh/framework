@@ -6,8 +6,8 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import scw.beans.BeanFactory;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.core.parameter.MethodParameterDescriptors;
 import scw.core.parameter.MethodParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
@@ -19,7 +19,7 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 	private final Class<?> methodTargetClass;
 	private final MethodParameterDescriptors methodParameterDescriptors;
 	
-	public MethodBeanDefinition(BeanFactory beanFactory, Class<?> methodTargetClass,
+	public MethodBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> methodTargetClass,
 			Method method) {
 		super(beanFactory, method.getReturnType());
 		this.methodTargetClass = methodTargetClass;

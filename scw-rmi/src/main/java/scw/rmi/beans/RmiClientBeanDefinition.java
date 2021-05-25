@@ -6,15 +6,15 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import scw.beans.BeanFactory;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 
 
 public class RmiClientBeanDefinition extends DefaultBeanDefinition{
 	private String host;
 	
-	public RmiClientBeanDefinition(BeanFactory beanFactory, Class<?> targetClass, String host) {
+	public RmiClientBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> targetClass, String host) {
 		super(beanFactory, targetClass);
 		this.host = host;
 	}

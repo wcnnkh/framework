@@ -4,14 +4,14 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.google.gson.Gson;
+
 import scw.convert.Converter;
-import scw.core.IteratorConverter;
+import scw.convert.ConvertibleIterator;
 import scw.json.AbstractJson;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
 import scw.util.Pair;
-
-import com.google.gson.Gson;
 
 public final class GsonObject extends AbstractJson<String> implements JsonObject, Converter<Entry<String, com.google.gson.JsonElement>, Pair<String, JsonElement>> {
 	private com.google.gson.JsonObject gsonJsonObject;
@@ -81,6 +81,6 @@ public final class GsonObject extends AbstractJson<String> implements JsonObject
 	}
 
 	public Iterator<Pair<String, JsonElement>> iterator() {
-		return new IteratorConverter<Entry<String, com.google.gson.JsonElement>, Pair<String,JsonElement>>(gsonJsonObject.entrySet().iterator(), this);
+		return new ConvertibleIterator<Entry<String, com.google.gson.JsonElement>, Pair<String,JsonElement>>(gsonJsonObject.entrySet().iterator(), this);
 	}
 }

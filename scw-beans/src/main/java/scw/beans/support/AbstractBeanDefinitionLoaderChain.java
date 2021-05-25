@@ -3,7 +3,7 @@ package scw.beans.support;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
-import scw.beans.BeanFactory;
+import scw.beans.ConfigurableBeanFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
@@ -18,7 +18,7 @@ public abstract class AbstractBeanDefinitionLoaderChain implements
 		this.chain = chain;
 	}
 
-	public final BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass) {
+	public final BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 		BeanDefinitionLoader loader = getNext(beanFactory, sourceClass);
 		if (loader == null) {
 			return chain == null ? null : chain
@@ -36,5 +36,5 @@ public abstract class AbstractBeanDefinitionLoaderChain implements
 		}
 	}
 
-	protected abstract BeanDefinitionLoader getNext(BeanFactory beanFactory, Class<?> sourceClass);
+	protected abstract BeanDefinitionLoader getNext(ConfigurableBeanFactory beanFactory, Class<?> sourceClass);
 }

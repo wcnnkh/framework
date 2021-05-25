@@ -1,6 +1,5 @@
 package scw.rpc.remote.web;
 
-import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
@@ -31,7 +30,7 @@ public class WebBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	private static class RemoteHttpServiceHandlerDefinition extends
 			DefaultBeanDefinition {
 
-		public RemoteHttpServiceHandlerDefinition(BeanFactory beanFactory) {
+		public RemoteHttpServiceHandlerDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, RemoteHttpServiceHandler.class);
 		}
 

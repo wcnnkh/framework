@@ -2,11 +2,17 @@ package scw.netflix.eureka;
 
 import java.util.Map;
 
+import com.netflix.appinfo.ApplicationInfoManager;
+import com.netflix.appinfo.EurekaInstanceConfig;
+import com.netflix.appinfo.InstanceInfo;
+import com.netflix.discovery.EurekaClient;
+import com.netflix.discovery.EurekaClientConfig;
+
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
-import scw.beans.BeanFactory;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.boot.Application;
 import scw.boot.support.ApplicationUtils;
@@ -19,17 +25,11 @@ import scw.netflix.eureka.metadata.DefaultManagementMetadataProvider;
 import scw.netflix.eureka.metadata.ManagementMetadata;
 import scw.netflix.eureka.metadata.ManagementMetadataProvider;
 
-import com.netflix.appinfo.ApplicationInfoManager;
-import com.netflix.appinfo.EurekaInstanceConfig;
-import com.netflix.appinfo.InstanceInfo;
-import com.netflix.discovery.EurekaClient;
-import com.netflix.discovery.EurekaClientConfig;
-
 @Provider
 public class EurekaClientBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	@Override
-	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
 		if (sourceClass == EurekaClientConfig.class
 				|| sourceClass == CloudEurekaInstanceConfig.class) {
 			return new EurekaClientConfigBuilder(beanFactory, sourceClass);
@@ -57,7 +57,7 @@ public class EurekaClientBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class ApplicationInfoManagerBuilder extends DefaultBeanDefinition {
 
-		public ApplicationInfoManagerBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public ApplicationInfoManagerBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -75,7 +75,7 @@ public class EurekaClientBeanDefinitionLoader implements BeanDefinitionLoader {
 	}
 
 	private static class InetUtilsBuilder extends DefaultBeanDefinition {
-		public InetUtilsBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public InetUtilsBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -93,7 +93,7 @@ public class EurekaClientBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class EurekaInstanceConfigBuilder extends DefaultBeanDefinition {
 
-		public EurekaInstanceConfigBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public EurekaInstanceConfigBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -184,7 +184,7 @@ public class EurekaClientBeanDefinitionLoader implements BeanDefinitionLoader {
 	
 	private static class EurekaClientBuilder extends DefaultBeanDefinition {
 
-		public EurekaClientBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public EurekaClientBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -205,7 +205,7 @@ public class EurekaClientBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class EurekaClientConfigBuilder extends DefaultBeanDefinition {
 
-		public EurekaClientConfigBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public EurekaClientConfigBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 

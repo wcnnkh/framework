@@ -6,7 +6,6 @@ import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.StringUtils;
 import scw.env.SystemEnvironment;
 import scw.instance.annotation.PropertyName;
-import scw.instance.support.DefaultInstanceFactory;
 import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.lang.NotSupportedException;
 
@@ -15,12 +14,6 @@ public final class InstanceUtils {
 	private InstanceUtils() {
 	};
 
-	/**
-	 * 默认的实例工厂
-	 */
-	public static final DefaultInstanceFactory INSTANCE_FACTORY = new DefaultInstanceFactory(
-			SystemEnvironment.getInstance(), true);
-	
 	/**
 	 * 不调用构造方法实例化对象
 	 */
@@ -44,7 +37,7 @@ public final class InstanceUtils {
 	}
 	
 	public static <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass, String ...defaultNames){
-		DefaultServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(INSTANCE_FACTORY, SystemEnvironment.getInstance());
+		DefaultServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(SystemEnvironment.getInstanceFactory(), SystemEnvironment.getInstance());
 		return serviceLoaderFactory.getServiceLoader(serviceClass, defaultNames);
 	}
 	

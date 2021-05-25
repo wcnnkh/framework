@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.boot.Application;
 import scw.boot.ApplicationAware;
+import scw.boot.ConfigurableApplication;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -67,7 +68,7 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 			initialized = true;
 			try {
 				if(application == null){
-					Result<Application> startUp = ServletContextUtils.getServletApplicationStartup().start(servletConfig.getServletContext());
+					Result<ConfigurableApplication> startUp = ServletContextUtils.getServletApplicationStartup().start(servletConfig.getServletContext());
 					this.application = startUp.getResult();
 					if(startUp.isActive()){
 						reference = false;

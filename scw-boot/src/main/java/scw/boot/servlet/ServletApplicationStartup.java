@@ -3,12 +3,12 @@ package scw.boot.servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import scw.boot.Application;
+import scw.boot.ConfigurableApplication;
 import scw.util.Result;
 
 public interface ServletApplicationStartup {
 	
-	Result<Application> start(ServletContext servletContext) throws ServletException;
+	Result<ConfigurableApplication> start(ServletContext servletContext) throws ServletException;
 	
-	boolean start(ServletContext servletContext, Application application) throws ServletException;
+	boolean start(ServletContext servletContext, ConfigurableApplication application) throws ServletException;
 }

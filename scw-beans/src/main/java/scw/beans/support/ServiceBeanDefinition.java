@@ -4,15 +4,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import scw.beans.BeanFactory;
 import scw.beans.BeanUtils;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.annotation.Service;
 import scw.core.utils.ArrayUtils;
 
 public class ServiceBeanDefinition extends DefaultBeanDefinition {
 	private Collection<String> names;
 	
-	public ServiceBeanDefinition(BeanFactory beanFactory, Class<?> targetClass) {
+	public ServiceBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> targetClass) {
 		super(beanFactory, targetClass);
 		this.names = getInternalNames();
 		this.names = Arrays.asList(names.toArray(new String[0]));

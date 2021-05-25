@@ -6,6 +6,7 @@ import java.util.Properties;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.event.Observable;
+import scw.instance.support.DefaultInstanceFactory;
 import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -30,32 +31,46 @@ public final class SystemEnvironment extends DefaultEnvironment {
 	public static final String WEB_ROOT_PROPERTY = "web.root";
 	
 	private static SystemEnvironment instance = new SystemEnvironment();
+	private static DefaultInstanceFactory instanceFactory = new DefaultInstanceFactory(instance, true);
+	private static DefaultServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(instanceFactory, instance);
+
 	
 	static{
-		/**
-		 * 加载配置文件
-		 */
-		instance.loadProperties("system.properties");
-		instance.loadProperties(instance.getValue("system.properties.location", String.class, "/private.properties"));
-		
-		//初始化日志管理器
-		Observable<Properties> observable = SystemEnvironment.getInstance().getProperties(SystemEnvironment
-				.getInstance().getValue("scw.logger.level.config", String.class, "/logger-level.properties"));
-		LoggerFactory.getLevelManager().combine(observable);
-		
-		/**
-		 * 加载默认服务
-		 */
-		instance.loadServices(new DefaultServiceLoaderFactory(instance), logger);
+		instance.load();
 	}
-
+	
 	public static SystemEnvironment getInstance() {
 		return instance;
+	}
+
+	public static DefaultInstanceFactory getInstanceFactory() {
+		return instanceFactory;
+	}
+
+	public static DefaultServiceLoaderFactory getServiceLoaderFactory() {
+		return serviceLoaderFactory;
 	}
 
 	private SystemEnvironment() {
 		super();
 	};
+
+	private void load() {
+		/**
+		 * 加载配置文件
+		 */
+		loadProperties("system.properties");
+		loadProperties(getValue("system.properties.location", String.class, "/private.properties"));
+		
+		//初始化日志管理器
+		Observable<Properties> observable = getProperties(getValue("scw.logger.level.config", String.class, "/logger-level.properties"));
+		LoggerFactory.getLevelManager().combine(observable);
+		
+		/**
+		 * 加载默认服务
+		 */
+		loadServices(serviceLoaderFactory, logger);
+	}
 
 	public Iterator<String> iterator() {
 		return new MultiIterator<String>(super.iterator(),

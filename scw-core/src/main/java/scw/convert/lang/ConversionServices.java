@@ -13,14 +13,21 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 		implements ConfigurableConversionService, Comparable<Object>, ConversionServiceAware {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
 			ConversionServices.class.getName());
+	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(this);
 	private ConversionService awareConversionService = this;
-
+	private ConversionService parentConversionService;
+	
+	public ConversionServices() {
+	}
+	
+	public ConversionServices(ConversionService parentConversionServices) {
+		this.parentConversionService = parentConversionServices;
+	}
+	
 	@Override
 	public void setConversionService(ConversionService conversionService) {
 		this.awareConversionService = conversionService;
 	}
-
-	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(this);
 
 	public void addConversionService(ConversionService conversionService) {
 		if (conversionService instanceof ConversionServiceAware) {
@@ -47,6 +54,11 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 				NESTED.remove(service);
 			}
 		}
+		
+		if(parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
+			return true;
+		}
+		
 		return canDirectlyConvert(sourceType, targetType);
 	}
 
@@ -64,6 +76,10 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 			} finally {
 				NESTED.remove(service);
 			}
+		}
+		
+		if(parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
+			return parentConversionService.convert(source, sourceType, targetType);
 		}
 
 		if (canDirectlyConvert(sourceType, targetType)) {

@@ -11,6 +11,7 @@ import scw.beans.annotation.ConfigurationProperties;
 import scw.beans.annotation.IgnoreConfigurationProperty;
 import scw.beans.annotation.Service;
 import scw.beans.annotation.Singleton;
+import scw.context.ContextAware;
 import scw.convert.TypeDescriptor;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.StringUtils;
@@ -68,9 +69,13 @@ public final class BeanUtils {
 		if (instance instanceof BeanDefinitionAware) {
 			((BeanDefinitionAware) instance).setBeanDefinition(beanDefinition);
 		}
-		
-		if(instance instanceof EnvironmentAware) {
+
+		if (instance instanceof EnvironmentAware) {
 			((EnvironmentAware) instance).setEnvironment(beanFactory.getEnvironment());
+		}
+		
+		if(instance instanceof ContextAware) {
+			((ContextAware) instance).setContext(beanFactory);
 		}
 	}
 
@@ -138,30 +143,38 @@ public final class BeanUtils {
 		}
 		return false;
 	}
-	
-	public static void configurationProperties(Object instance, @Nullable AnnotatedElement annotatedElement, Environment environment) {
-		ConfigurationProperties configurationProperties = annotatedElement == null? null: annotatedElement.getAnnotation(ConfigurationProperties.class);
+
+	public static void configurationProperties(Object instance, @Nullable AnnotatedElement annotatedElement,
+			Environment environment) {
+		ConfigurationProperties configurationProperties = annotatedElement == null ? null
+				: annotatedElement.getAnnotation(ConfigurationProperties.class);
 		Class<?> configurationPropertiesClass = environment.getProxyFactory().getUserClass(instance.getClass());
 		if (configurationProperties == null) {
 			// 定义上不存在此注解
 			while (configurationPropertiesClass != null && configurationPropertiesClass != Object.class) {
 				configurationProperties = configurationPropertiesClass.getAnnotation(ConfigurationProperties.class);
 				if (configurationProperties != null) {
-					EntityConversionService entityConversionService = createEntityConversionService(environment, configurationProperties);
-					configurationMap(getPrefix(configurationProperties), instance, environment, entityConversionService);
-					configurationProperties(configurationProperties, instance, configurationPropertiesClass, environment, entityConversionService);
+					EntityConversionService entityConversionService = createEntityConversionService(environment,
+							configurationProperties);
+					configurationMap(getPrefix(configurationProperties), instance, environment,
+							entityConversionService);
+					configurationProperties(configurationProperties, instance, configurationPropertiesClass,
+							environment, entityConversionService);
 					break;
 				}
 				configurationPropertiesClass = configurationPropertiesClass.getSuperclass();
 			}
 		} else {
-			EntityConversionService entityConversionService = createEntityConversionService(environment, configurationProperties);
+			EntityConversionService entityConversionService = createEntityConversionService(environment,
+					configurationProperties);
 			configurationMap(getPrefix(configurationProperties), instance, environment, entityConversionService);
-			configurationProperties(configurationProperties, instance, configurationPropertiesClass, environment, entityConversionService);
+			configurationProperties(configurationProperties, instance, configurationPropertiesClass, environment,
+					entityConversionService);
 		}
 	}
-	
-	private static EntityConversionService createEntityConversionService(Environment environment, ConfigurationProperties configurationProperties){
+
+	private static EntityConversionService createEntityConversionService(Environment environment,
+			ConfigurationProperties configurationProperties) {
 		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService();
 		entityConversionService.setConversionService(environment.getConversionService());
 		entityConversionService.setStrict(false);
@@ -187,16 +200,18 @@ public final class BeanUtils {
 		entityConversionService.setUseSuperClass(false);
 		return entityConversionService;
 	}
-	
+
 	@SuppressWarnings({ "rawtypes" })
-	private static void configurationMap(String prefix, Object instance, Environment environment, EntityConversionService conversionService) {
+	private static void configurationMap(String prefix, Object instance, Environment environment,
+			EntityConversionService conversionService) {
 		if (!(instance instanceof Map)) {
 			return;
 		}
 
 		Map properties = (Map) instance;
 		TypeDescriptor descriptor = TypeDescriptor.forObject(instance);
-		conversionService.putAll(environment, properties, descriptor.getMapKeyTypeDescriptor(), descriptor.getMapKeyTypeDescriptor());
+		conversionService.putAll(environment, properties, descriptor.getMapKeyTypeDescriptor(),
+				descriptor.getMapKeyTypeDescriptor());
 	}
 
 	private static String getPrefix(ConfigurationProperties configurationProperties) {
@@ -212,8 +227,8 @@ public final class BeanUtils {
 				entityConversionService.setPrefix(getPrefix(configuration));
 				entityConversionService.setLoggerLevel(configuration.loggerLevel().getValue());
 			}
-			entityConversionService.configurationProperties(environment,
-					TypeDescriptor.valueOf(PropertyFactory.class), instance, TypeDescriptor.valueOf(clazz));
+			entityConversionService.configurationProperties(environment, TypeDescriptor.valueOf(PropertyFactory.class),
+					instance, TypeDescriptor.valueOf(clazz));
 			clazz = clazz.getSuperclass();
 		}
 	}

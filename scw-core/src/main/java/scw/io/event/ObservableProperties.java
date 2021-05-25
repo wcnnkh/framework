@@ -4,9 +4,9 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import scw.convert.ConvertibleIterator;
 import scw.convert.EmptyConverter;
 import scw.convert.lang.ObjectToStringConverter;
-import scw.core.IteratorConverter;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
@@ -31,7 +31,7 @@ public class ObservableProperties extends ConvertibleObservableProperties<Proper
 
 	@Override
 	public Iterator<String> iterator() {
-		return new IteratorConverter<Object, String>(get().keySet().iterator(), new ObjectToStringConverter());
+		return new ConvertibleIterator<Object, String>(get().keySet().iterator(), new ObjectToStringConverter());
 	}
 
 	@Override

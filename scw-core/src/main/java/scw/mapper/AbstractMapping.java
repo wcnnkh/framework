@@ -4,12 +4,12 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import scw.core.utils.ClassUtils;
-import scw.instance.InstanceUtils;
+import scw.env.SystemEnvironment;
 
 public abstract class AbstractMapping implements Mapping {
 
 	public <T> T newInstance(Class<? extends T> type) {
-		return InstanceUtils.INSTANCE_FACTORY.getInstance(type);
+		return SystemEnvironment.getInstanceFactory().getInstance(type);
 	}
 	
 	public <T> T mapping(Class<T> entityClass, Fields fields, Mapper mapper) {

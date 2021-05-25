@@ -5,7 +5,6 @@ import java.util.Properties;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
@@ -38,7 +37,7 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	
 	private static final class JedisPoolBeanDefinition extends DefaultBeanDefinition {
 
-		public JedisPoolBeanDefinition(BeanFactory beanFactory) {
+		public JedisPoolBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, JedisPool.class);
 		}
 		
@@ -85,7 +84,7 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	private static final class JedisPoolConfigBeanDefinition extends DefaultBeanDefinition {
 
-		public JedisPoolConfigBeanDefinition(BeanFactory beanFactory) {
+		public JedisPoolConfigBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, JedisPoolConfig.class);
 		}
 		public String getConfigName(){

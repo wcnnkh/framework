@@ -29,8 +29,10 @@ import scw.io.ResourceLoader;
 import scw.io.resolver.ConfigurablePropertiesResolver;
 import scw.io.resolver.PropertiesResolver;
 import scw.io.resolver.support.PropertiesResolvers;
+import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.ClassLoaderProvider;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
 import scw.util.placeholder.PlaceholderReplacer;
@@ -60,14 +62,20 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 			configurableConversionService, configurablePropertiesResolver, getObservableCharset());
 	private final DefaultProxyFactory proxyFactory = new DefaultProxyFactory();
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
-
+	private ClassLoaderProvider classLoaderProvider;
+	
 	public DefaultEnvironment() {
+		this(null);
+	}
+	
+	public DefaultEnvironment(@Nullable ClassLoaderProvider classLoaderProvider) {
 		super(true);
+		this.classLoaderProvider = classLoaderProvider;
 		configurableResourceLoader.setClassLoaderProvider(this);
 		configurableConversionService
 				.addConversionService(new ResourceResolverConversionService(configurableResourceResolver));
 	}
-
+	
 	@Override
 	public void addProtocolResolver(ProtocolResolver resolver) {
 		configurableResourceLoader.addProtocolResolver(resolver);
@@ -177,7 +185,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	}
 
 	public ClassLoader getClassLoader() {
-		return ClassUtils.getDefaultClassLoader();
+		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 
 	public boolean put(String key, Object value) {

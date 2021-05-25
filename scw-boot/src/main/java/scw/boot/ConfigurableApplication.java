@@ -1,13 +1,7 @@
 package scw.boot;
 
-import scw.beans.ConfigurableBeanFactory;
-import scw.context.ConfigurableClassesLoader;
-import scw.context.ConfigurableContextEnvironment;
+import scw.context.ConfigurableContext;
 
-public interface ConfigurableApplication extends Application{
-	ConfigurableBeanFactory getBeanFactory();
-	
-	ConfigurableContextEnvironment getEnvironment();
-	
-	ConfigurableClassesLoader getContextClassesLoader();
+public interface ConfigurableApplication extends Application, ConfigurableContext {
+	void addPostProcessor(ApplicationPostProcessor postProcessor);
 }

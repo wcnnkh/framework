@@ -1,7 +1,6 @@
 package scw.hikari;
 
 import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
@@ -26,7 +25,7 @@ public class HikariBeanFactoryPostProcessor implements BeanFactoryPostProcessor 
 
 	private static class HikariCPDBBeanDefinitaion extends DefaultBeanDefinition {
 
-		public HikariCPDBBeanDefinitaion(BeanFactory beanFactory) {
+		public HikariCPDBBeanDefinitaion(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, HikariDB.class);
 		}
 

@@ -59,9 +59,8 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	
 	public ClassesLoaderFactory getClassesLoaderFactory() {
 		if(beanFactory != null){
-			return beanFactory;
+			return beanFactory.getClassesLoaderFactory();
 		}
-		
 		return super.getClassesLoaderFactory();
 	}
 
@@ -155,7 +154,7 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	public boolean createTable(Class<?> tableClass, boolean registerManager) {
 		return createTable(tableClass, null, registerManager);
 	}
-
+	
 	public final BeanFactory getBeanFactory() {
 		return beanFactory;
 	}

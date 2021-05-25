@@ -33,8 +33,8 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.env.MainArgs;
+import scw.env.SystemEnvironment;
 import scw.http.HttpMethod;
-import scw.instance.InstanceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.action.Action;
@@ -51,8 +51,8 @@ public class TomcatStart implements Main, Destroy {
 	}
 
 	protected Context createContext(Application application) {
-		Context context = tomcat.addContext(getContextPath(application.getEnvironment()),
-				application.getEnvironment().getWorkPath());
+		Context context = tomcat.addContext(getContextPath(application.getBeanFactory().getEnvironment()),
+				application.getBeanFactory().getEnvironment().getWorkPath());
 		context.setParentClassLoader(application.getClassLoader());
 		return context;
 	}
@@ -99,11 +99,11 @@ public class TomcatStart implements Main, Destroy {
 
 	protected void configureConnector(Tomcat tomcat, int port, Application application) {
 		Connector connector = null;
-		String connectorName = TomcatUtils.getTomcatConnectorName(application.getEnvironment());
+		String connectorName = TomcatUtils.getTomcatConnectorName(application.getBeanFactory().getEnvironment());
 		if (!StringUtils.isEmpty(connectorName)) {
 			connector = application.getBeanFactory().getInstance(connectorName);
 		} else {
-			connector = new Connector(TomcatUtils.getTomcatProtocol(application.getEnvironment()));
+			connector = new Connector(TomcatUtils.getTomcatProtocol(application.getBeanFactory().getEnvironment()));
 		}
 
 		connector.setPort(port);
@@ -116,7 +116,7 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet", application.getClassLoader())) {
-			ServletContainerInitializer containerInitializer = InstanceUtils.INSTANCE_FACTORY
+			ServletContainerInitializer containerInitializer = SystemEnvironment.getInstanceFactory()
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
 				context.addServletContainerInitializer(containerInitializer, null);
@@ -141,21 +141,21 @@ public class TomcatStart implements Main, Destroy {
 		String servletName = mainClass.getSimpleName();
 		Servlet servlet = ServletContextUtils.createServlet(application.getBeanFactory());
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
-		Properties properties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(), servletName,
+		Properties properties = TomcatUtils.getServletInitParametersConfig(application.getBeanFactory().getEnvironment(), servletName,
 				true);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			wrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 		}
 
 		addServletMapping(context, "/", servletName);
-		String sourceMapping = TomcatUtils.getDefaultServletMapping(application.getEnvironment());
+		String sourceMapping = TomcatUtils.getDefaultServletMapping(application.getBeanFactory().getEnvironment());
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
 				String tempServletName = "default";
 				Wrapper tempWrapper = Tomcat.addServlet(context, tempServletName,
 						"org.apache.catalina.servlets.DefaultServlet");
-				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(),
+				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(application.getBeanFactory().getEnvironment(),
 						tempServletName, false);
 				for (Entry<Object, Object> entry : tempProperties.entrySet()) {
 					tempWrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());

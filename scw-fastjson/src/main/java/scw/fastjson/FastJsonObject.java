@@ -6,17 +6,17 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONAware;
+import com.alibaba.fastjson.JSONObject;
+
 import scw.convert.Converter;
-import scw.core.IteratorConverter;
+import scw.convert.ConvertibleIterator;
 import scw.json.AbstractJson;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
 import scw.util.Pair;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONAware;
-import com.alibaba.fastjson.JSONObject;
 
 public final class FastJsonObject extends AbstractJson<String> implements JsonObject, JSONAware, Serializable, Converter<Entry<String, Object>, Pair<String, JsonElement>> {
 	private static final long serialVersionUID = 1L;
@@ -97,7 +97,7 @@ public final class FastJsonObject extends AbstractJson<String> implements JsonOb
 	}
 
 	public Iterator<Pair<String, JsonElement>> iterator() {
-		return new IteratorConverter<Entry<String, Object>, Pair<String, JsonElement>>(jsonObject.entrySet().iterator(), this);
+		return new ConvertibleIterator<Entry<String, Object>, Pair<String, JsonElement>>(jsonObject.entrySet().iterator(), this);
 	}
 
 	public Pair<String, JsonElement> convert(Entry<String, Object> k) {

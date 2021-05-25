@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
-import scw.beans.BeanLifeCycleEvent;
-import scw.beans.BeanLifeCycleEvent.Step;
+import scw.beans.BeanlifeCycleEvent;
+import scw.beans.BeanlifeCycleEvent.Step;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.context.annotation.Provider;
@@ -16,10 +16,10 @@ import scw.mvc.annotation.Controller;
 import scw.mvc.security.HttpActionAuthorityManager;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
-public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanLifeCycleEvent> {
+public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanlifeCycleEvent> {
 
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		beanFactory.registerListener(this);
+		beanFactory.getLifecycleDispatcher().registerListener(this);
 
 		if (beanFactory.isInstance(HttpActionAuthorityManager.class)
 				&& beanFactory.isSingleton(HttpActionAuthorityManager.class)
@@ -41,7 +41,7 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 		}
 	}
 
-	public void onEvent(BeanLifeCycleEvent event) {
+	public void onEvent(BeanlifeCycleEvent event) {
 		Object source = event.getSource();
 		if (source == null) {
 			return;

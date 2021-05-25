@@ -13,8 +13,8 @@ import org.apache.lucene.store.LockFactory;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
-import scw.beans.BeanFactory;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
@@ -22,7 +22,7 @@ import scw.core.utils.StringUtils;
 @Provider
 public class LuceneBeanDefinitionLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
 		if (sourceClass == Directory.class) {
 			return new DirectorBeanBuilder(beanFactory, sourceClass);
 		}
@@ -36,7 +36,7 @@ public class LuceneBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class DirectorBeanBuilder extends DefaultBeanDefinition {
 
-		public DirectorBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public DirectorBeanBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -68,7 +68,7 @@ public class LuceneBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class AnalyzerBeanBuilder extends DefaultBeanDefinition {
 
-		public AnalyzerBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public AnalyzerBeanBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 

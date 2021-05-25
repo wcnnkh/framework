@@ -10,8 +10,8 @@ import org.hibernate.service.ServiceRegistry;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
-import scw.beans.BeanFactory;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.io.Resource;
@@ -19,7 +19,7 @@ import scw.io.Resource;
 @Provider
 public class HibernateBeanDefinitionLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain serviceChain) {
+	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain serviceChain) {
 		if (sourceClass == org.hibernate.cfg.Configuration.class) {
 			return new ConfigurationBeanBuilder(beanFactory, sourceClass);
 		} else if (sourceClass == SessionFactory.class) {
@@ -30,7 +30,7 @@ public class HibernateBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static final class SessionFactoryBeanBuilder extends DefaultBeanDefinition {
 
-		public SessionFactoryBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public SessionFactoryBeanBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -59,7 +59,7 @@ public class HibernateBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static final class ConfigurationBeanBuilder extends DefaultBeanDefinition {
 		
-		public ConfigurationBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public ConfigurationBeanBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 

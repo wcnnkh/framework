@@ -16,6 +16,7 @@ import scw.context.ClassesLoaderFactory;
 import scw.context.support.DefaultClassesLoaderFactory;
 import scw.core.IteratorCallback;
 import scw.core.IteratorCallback.Row;
+import scw.core.type.scanner.DefaultClassScanner;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
@@ -59,7 +60,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	
 	public ClassesLoaderFactory getClassesLoaderFactory(){
 		if(classesLoaderFactory == null){
-			return new DefaultClassesLoaderFactory(false, null);
+			return new DefaultClassesLoaderFactory(new DefaultClassScanner(), false, null);
 		}else{
 			return classesLoaderFactory;
 		}

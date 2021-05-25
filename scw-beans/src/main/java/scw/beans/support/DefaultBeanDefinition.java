@@ -10,11 +10,11 @@ import scw.aop.Proxy;
 import scw.aop.support.ConfigurableMethodInterceptor;
 import scw.beans.AopEnableSpi;
 import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
-import scw.beans.BeanLifeCycleEvent;
-import scw.beans.BeanLifeCycleEvent.Step;
+import scw.beans.BeanlifeCycleEvent;
+import scw.beans.BeanlifeCycleEvent.Step;
 import scw.beans.BeanUtils;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.RuntimeBean;
 import scw.beans.annotation.Bean;
 import scw.beans.ioc.Ioc;
@@ -32,12 +32,12 @@ import scw.mapper.MapperUtils;
 public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		implements BeanDefinition, Cloneable, AopEnableSpi {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	protected final BeanFactory beanFactory;
+	protected final ConfigurableBeanFactory beanFactory;
 	protected Ioc ioc = new Ioc();
 	private boolean isNew = true;
 	private final ConfigurableMethodInterceptor methodInterceptors = new ConfigurableMethodInterceptor();
 
-	public DefaultBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass) {
+	public DefaultBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 		super(beanFactory, beanFactory.getEnvironment(), sourceClass);
 		this.beanFactory = beanFactory;
 	}
@@ -47,7 +47,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		if (runtimeBean != null && !runtimeBean._dependence()) {
 			return;
 		}
-		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DEPENDENCE));
+		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DEPENDENCE));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
 				ioc.getDependence().process(this, instance, beanFactory);
@@ -59,7 +59,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 
 			BeanUtils.aware(instance, beanFactory, this);
 		}
-		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_DEPENDENCE));
+		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_DEPENDENCE));
 	}
 
 	protected void configurationProperties(Object instance) {
@@ -71,7 +71,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 		if (runtimeBean != null && !runtimeBean._init()) {
 			return;
 		}
-		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_INIT));
+		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.BEFORE_INIT));
 		if (instance != null) {
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
 				ioc.getInit().process(this, instance, beanFactory);
@@ -83,7 +83,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 				throw new BeansException(e);
 			}
 		}
-		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_INIT));
+		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_INIT));
 	}
 
 	public void destroy(Object instance) throws BeansException {
@@ -92,7 +92,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			return;
 		}
 
-		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DESTROY));
+		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.BEFORE_DESTROY));
 		if (instance != null) {
 			try {
 				LifecycleAuxiliary.destroy(instance);
@@ -104,7 +104,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 				ioc.getDestroy().process(this, instance, beanFactory);
 			}
 		}
-		beanFactory.publishEvent(new BeanLifeCycleEvent(this, instance, beanFactory, Step.AFTER_DESTROY));
+		beanFactory.getLifecycleDispatcher().publishEvent(new BeanlifeCycleEvent(this, instance, beanFactory, Step.AFTER_DESTROY));
 	}
 
 	public String getId() {

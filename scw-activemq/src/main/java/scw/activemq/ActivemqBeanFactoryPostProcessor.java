@@ -6,7 +6,6 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 
-import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
@@ -32,7 +31,7 @@ public class ActivemqBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 
 	private static class ConnectionFactoryBeanDefinition extends DefaultBeanDefinition {
 
-		public ConnectionFactoryBeanDefinition(BeanFactory beanFactory) {
+		public ConnectionFactoryBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, ActiveMQConnectionFactory.class);
 		}
 

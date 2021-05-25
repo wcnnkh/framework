@@ -7,8 +7,8 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.annotation.Value;
 import scw.core.utils.ClassUtils;
+import scw.env.SystemEnvironment;
 import scw.event.Observable;
-import scw.instance.InstanceUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
@@ -35,7 +35,7 @@ public final class PropertiesFileValueProcesser extends AbstractObservableValueP
 			return properties;
 		} else {
 			Class<?> fieldType = field.getSetter().getType();
-			Object obj = InstanceUtils.INSTANCE_FACTORY.getInstance(fieldType);
+			Object obj = SystemEnvironment.getInstanceFactory().getInstance(fieldType);
 			Fields fields = MapperUtils.getMapper().getFields(fieldType).accept(FieldFeature.SUPPORT_SETTER);
 			for (final Object key : properties.keySet()) {
 				Field keyField = fields.findSetter(key.toString(), null);

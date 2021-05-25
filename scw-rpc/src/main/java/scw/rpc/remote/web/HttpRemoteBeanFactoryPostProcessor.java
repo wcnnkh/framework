@@ -47,7 +47,7 @@ public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProces
 				supplier.config(node, beanFactory);
 				CallableFactory callableFactory = supplier.get();
 				if (!StringUtils.isEmpty(packageName)) {
-					for (Class<?> clz : beanFactory.getClassesLoader(packageName)) {
+					for (Class<?> clz : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName)) {
 						if (!clz.isInterface() || AnnotationUtils.isIgnore(clz)) {
 							continue;
 						}

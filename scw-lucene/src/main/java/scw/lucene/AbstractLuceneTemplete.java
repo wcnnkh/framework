@@ -18,7 +18,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.TopFieldDocs;
 
 import scw.convert.ConversionService;
-import scw.instance.InstanceUtils;
+import scw.env.SystemEnvironment;
 import scw.json.JSONUtils;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.FieldFeature;
@@ -135,7 +135,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	}
 
 	protected <T> T newInstance(Class<? extends T> type) {
-		return InstanceUtils.INSTANCE_FACTORY.getInstance(type);
+		return SystemEnvironment.getInstanceFactory().getInstance(type);
 	}
 
 	@SuppressWarnings("unchecked")

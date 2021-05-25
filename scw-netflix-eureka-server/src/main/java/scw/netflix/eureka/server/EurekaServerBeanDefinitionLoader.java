@@ -2,14 +2,6 @@ package scw.netflix.eureka.server;
 
 import java.util.Collections;
 
-import scw.beans.BeanDefinition;
-import scw.beans.BeanDefinitionLoader;
-import scw.beans.BeanDefinitionLoaderChain;
-import scw.beans.BeanFactory;
-import scw.beans.BeansException;
-import scw.beans.support.DefaultBeanDefinition;
-import scw.context.annotation.Provider;
-
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.discovery.EurekaClientConfig;
@@ -20,10 +12,19 @@ import com.netflix.eureka.cluster.PeerEurekaNodes;
 import com.netflix.eureka.registry.PeerAwareInstanceRegistry;
 import com.netflix.eureka.resources.ServerCodecs;
 
+import scw.beans.BeanDefinition;
+import scw.beans.BeanDefinitionLoader;
+import scw.beans.BeanDefinitionLoaderChain;
+import scw.beans.BeanFactory;
+import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.context.annotation.Provider;
+
 @Provider
 public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 	@Override
-	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
 		if (sourceClass == ServerCodecs.class) {
 			return new ServerCodecsBuilder(beanFactory, sourceClass);
 		}
@@ -49,7 +50,7 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 	
 	private static class EurekaServerConfigBuilder extends DefaultBeanDefinition{
 
-		public EurekaServerConfigBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public EurekaServerConfigBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 		
@@ -72,7 +73,7 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class EurekaServerContextBuilder extends DefaultBeanDefinition {
 
-		public EurekaServerContextBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public EurekaServerContextBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -105,7 +106,7 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class PeerEurekaNodesBuilder extends DefaultBeanDefinition {
 
-		public PeerEurekaNodesBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public PeerEurekaNodesBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -133,7 +134,7 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class PeerAwareInstanceRegistryBuilder extends DefaultBeanDefinition {
 
-		public PeerAwareInstanceRegistryBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public PeerAwareInstanceRegistryBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 
@@ -161,7 +162,7 @@ public class EurekaServerBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static class ServerCodecsBuilder extends DefaultBeanDefinition {
 
-		public ServerCodecsBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public ServerCodecsBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 

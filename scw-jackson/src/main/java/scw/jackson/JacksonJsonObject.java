@@ -7,15 +7,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import scw.convert.Converter;
-import scw.core.IteratorConverter;
-import scw.core.utils.CollectionUtils;
-import scw.json.AbstractJson;
-import scw.json.JsonElement;
-import scw.json.JsonObject;
-import scw.util.Pair;
-import scw.value.EmptyValue;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
@@ -23,6 +14,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import scw.convert.Converter;
+import scw.convert.ConvertibleIterator;
+import scw.core.utils.CollectionUtils;
+import scw.json.AbstractJson;
+import scw.json.JsonElement;
+import scw.json.JsonObject;
+import scw.util.Pair;
+import scw.value.EmptyValue;
 
 public class JacksonJsonObject extends AbstractJson<String> implements
 		JsonObject, JsonSerializable, Converter<JsonNode, JsonElement> {
@@ -52,7 +52,7 @@ public class JacksonJsonObject extends AbstractJson<String> implements
 
 	@Override
 	public Iterator<Pair<String, JsonElement>> iterator() {
-		return new IteratorConverter<Entry<String, JsonNode>, Pair<String, JsonElement>>(
+		return new ConvertibleIterator<Entry<String, JsonNode>, Pair<String, JsonElement>>(
 				objectNode.fields(),
 				new Converter<Entry<String, JsonNode>, Pair<String, JsonElement>>() {
 
