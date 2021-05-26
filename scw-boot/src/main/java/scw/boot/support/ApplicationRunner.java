@@ -19,12 +19,7 @@ public class ApplicationRunner<T extends ConfigurableApplication> {
 		consumer.accept(application);
 		return this;
 	}
-
-	public ApplicationRunner<T> source(Class<?> sourceClass) {
-		application.source(sourceClass);
-		return this;
-	}
-
+	
 	public ListenableFuture<T> start() {
 		Runtime.getRuntime().addShutdownHook(new ApplicationShutdown());
 		ApplicationStart start = new ApplicationStart();

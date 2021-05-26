@@ -5,7 +5,6 @@ import javax.servlet.ServletContext;
 
 import scw.beans.BeanFactory;
 import scw.boot.Application;
-import scw.boot.ConfigurableApplication;
 import scw.boot.servlet.ServletApplicationStartup;
 import scw.env.Sys;
 import scw.lang.Nullable;
@@ -19,11 +18,11 @@ public abstract class ServletContextUtils {
 		return SERVLET_APPLICATION_STARTUP;
 	}
 	
-	public static ConfigurableApplication getApplication(ServletContext servletContext){
-		return (ConfigurableApplication) servletContext.getAttribute(Application.class.getName());
+	public static Application getApplication(ServletContext servletContext){
+		return (Application) servletContext.getAttribute(Application.class.getName());
 	}
 	
-	public static void setApplication(ServletContext servletContext, ConfigurableApplication application){
+	public static void setApplication(ServletContext servletContext, Application application){
 		servletContext.setAttribute(Application.class.getName(), application);
 	}
 	

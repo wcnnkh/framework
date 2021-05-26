@@ -301,8 +301,10 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 		postProcessBeanFactory(new MethodBeanFactoryPostProcessor());
 		postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
 		postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
-		super.init();
-		aop.loadServices(this);
+
+		for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {
+			postProcessBeanFactory(processor);
+		}
 
 		for (BeanDefinition definition : getServiceLoader(BeanDefinition.class)) {
 			if (containsDefinition(definition.getId())) {
@@ -312,11 +314,9 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 			registerDefinition(definition.getId(), definition);
 		}
 
-		for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {
-			postProcessBeanFactory(processor);
-		}
-
-		// 初始化所有单例(原来是想全部懒加载，但是后来出现问题了)
+		aop.loadServices(this);
+		super.init();
+		// TODO 初始化所有单例(原来是想全部懒加载，但是后来出现问题了)
 		for (String id : beanDefinitionRegistry.getDefinitionIds()) {
 			if (isSingleton(id) && isInstance(id)) {
 				getInstance(id);
@@ -414,7 +414,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	}
 
 	@Override
-	protected NoArgsInstanceFactory getTargetInstanceFactory() {
+	protected final NoArgsInstanceFactory getTargetInstanceFactory() {
 		return this;
 	}
 }

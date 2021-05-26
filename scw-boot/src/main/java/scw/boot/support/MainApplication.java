@@ -22,6 +22,7 @@ public class MainApplication extends DefaultApplication implements Application, 
 		if (args != null) {
 			getLogger().debug("args: {}", this.mainArgs);
 		}
+		addPostProcessor(this);
 	}
 
 	public Class<?> getMainClass() {
@@ -46,7 +47,8 @@ public class MainApplication extends DefaultApplication implements Application, 
 
 	public static ListenableFuture<MainApplication> run(Class<?> mainClass,
 			String[] args) {
-		return main(mainClass, args).start();
+		ApplicationRunner<MainApplication> runner = new ApplicationRunner<MainApplication>(new MainApplication(mainClass, args), mainClass.getSimpleName());
+		return runner.start();
 	}
 
 	public static final ListenableFuture<MainApplication> run(Class<?> mainClass) {

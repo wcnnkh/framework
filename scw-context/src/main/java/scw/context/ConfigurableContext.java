@@ -8,6 +8,8 @@ public interface ConfigurableContext extends Context {
 	ConfigurableEnvironment getEnvironment();
 
 	void source(Class<?> sourceClass);
+	
+	void componentScan(String packageName);
 
 	ConfigurableClassesLoader getContextClassesLoader();
 

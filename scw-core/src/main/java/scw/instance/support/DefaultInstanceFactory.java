@@ -9,7 +9,9 @@ import scw.instance.InstanceDefinition;
 import scw.instance.InstanceException;
 import scw.instance.InstanceFactory;
 import scw.instance.NoArgsInstanceFactory;
+import scw.util.ClassLoaderProvider;
 import scw.util.ConcurrentReferenceHashMap;
+import scw.util.DefaultClassLoaderProvider;
 import scw.util.XUtils;
 import scw.value.ValueFactory;
 
@@ -17,6 +19,7 @@ import scw.value.ValueFactory;
 public class DefaultInstanceFactory extends AbstractServiceLoaderFactory implements InstanceFactory {
 	private ConcurrentMap<Class<?>, InstanceDefinition> cacheMap;
 	private final Environment environment;
+	private ClassLoaderProvider classLoaderProvider;
 
 	public DefaultInstanceFactory(Environment environment, boolean cache) {
 		this.environment = environment;
@@ -25,9 +28,20 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 		}
 	}
 
+	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
+	}
+
+	public void setClassLoader(ClassLoader classLoader) {
+		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
+	}
+
 	@Override
 	public ClassLoader getClassLoader() {
-		return environment.getClassLoader();
+		if (classLoaderProvider == null) {
+			return ClassUtils.getClassLoader(environment);
+		}
+		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 
 	public <T> T getInstance(Class<T> clazz) {
@@ -193,12 +207,12 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 	}
 
 	@Override
-	protected ValueFactory<String> getConfigFactory() {
+	protected final ValueFactory<String> getConfigFactory() {
 		return environment;
 	}
 
 	@Override
-	protected NoArgsInstanceFactory getTargetInstanceFactory() {
+	protected final NoArgsInstanceFactory getTargetInstanceFactory() {
 		return this;
 	}
 }

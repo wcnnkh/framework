@@ -32,6 +32,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.ClassLoaderProvider;
 import scw.util.ConcurrentReferenceHashMap;
+import scw.util.DefaultClassLoaderProvider;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
 import scw.util.placeholder.PlaceholderReplacer;
 import scw.util.placeholder.support.DefaultPlaceholderReplacer;
@@ -71,6 +72,14 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 		configurableResourceLoader.setClassLoaderProvider(this);
 		configurableConversionService
 				.addConversionService(new ResourceResolverConversionService(configurableResourceResolver));
+	}
+	
+	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
+	}
+
+	public void setClassLoader(ClassLoader classLoader) {
+		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
 	}
 	
 	@Override

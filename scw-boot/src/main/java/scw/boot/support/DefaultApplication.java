@@ -26,14 +26,15 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.SplitLine;
 
-public class DefaultApplication extends XmlBeanFactory implements ConfigurableApplication, EventListener<BeanlifeCycleEvent> {
+public class DefaultApplication extends XmlBeanFactory
+		implements ConfigurableApplication, EventListener<BeanlifeCycleEvent> {
 	private static final String APPLICATION_PREFIX = "application";
 	private final EventDispatcher<ApplicationEvent> applicationEventDispathcer = new DefaultEventDispatcher<ApplicationEvent>(
 			true);
 	private volatile Logger logger;
 	private final long createTime;
 	private List<ApplicationPostProcessor> postProcessors = new ArrayList<ApplicationPostProcessor>(8);
-	
+
 	public DefaultApplication() {
 		this(XmlBeanFactory.DEFAULT_CONFIG);
 	}
@@ -45,7 +46,6 @@ public class DefaultApplication extends XmlBeanFactory implements ConfigurableAp
 		getLifecycleDispatcher().registerListener(this);
 	}
 
-	@Override
 	public void addPostProcessor(ApplicationPostProcessor postProcessor) {
 		synchronized (postProcessors) {
 			postProcessors.add(postProcessor);
@@ -95,19 +95,19 @@ public class DefaultApplication extends XmlBeanFactory implements ConfigurableAp
 		}
 		super.init();
 
-		for (ApplicationPostProcessor postProcessor : postProcessors) {
-			postProcessApplication(postProcessor);
-		}
-
 		for (ApplicationPostProcessor initializer : getBeanFactory().getServiceLoader(ApplicationPostProcessor.class)) {
 			postProcessApplication(initializer);
+		}
+
+		for (ApplicationPostProcessor postProcessor : postProcessors) {
+			postProcessApplication(postProcessor);
 		}
 
 		getLogger().info(
 				new SplitLine("Start up complete in " + (Sys.currentTimeMillis() - createTime) + "ms").toString());
 	}
-	
-	public void destroy() throws Throwable{
+
+	public void destroy() throws Throwable {
 		getLogger().info(new SplitLine("destroy").toString());
 		super.destroy();
 	}
@@ -119,7 +119,7 @@ public class DefaultApplication extends XmlBeanFactory implements ConfigurableAp
 	public void publishEvent(ApplicationEvent event) {
 		applicationEventDispathcer.publishEvent(event);
 	}
-	
+
 	public EventRegistration registerListener(EventListener<ApplicationEvent> eventListener) {
 		return applicationEventDispathcer.registerListener(eventListener);
 	}

@@ -1,7 +1,7 @@
 package scw.boot;
 
-import scw.context.ConfigurableContext;
+import scw.env.ConfigurableEnvironment;
 
-public interface ConfigurableApplication extends Application, ConfigurableContext {
-	void addPostProcessor(ApplicationPostProcessor postProcessor);
+public interface ConfigurableApplication extends Application {
+	ConfigurableEnvironment getEnvironment();
 }

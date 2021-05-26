@@ -18,6 +18,7 @@ import org.w3c.dom.NodeList;
 
 import scw.convert.Converter;
 import scw.core.utils.StringUtils;
+import scw.env.Sys;
 import scw.io.ResourceLoader;
 import scw.lang.NotFoundException;
 import scw.lang.Nullable;
@@ -39,15 +40,18 @@ public final class DomUtils {
 			return 0;
 		}
 	};
-	
+
+	private static final DomBuilder DOM_BUILDER;
+
 	static {
-		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(true);
-		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(true);
-		DOCUMENT_BUILDER_FACTORY.setCoalescing(true);
-		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(false);
+		DOCUMENT_BUILDER_FACTORY.setIgnoringElementContentWhitespace(Sys.env.getValue("dom.ignoring.element.content.whitespace", boolean.class, true));
+		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(Sys.env.getValue("dom.ignoring.comments", boolean.class, true));
+		DOCUMENT_BUILDER_FACTORY.setCoalescing(Sys.env.getValue("dom.coalescing", boolean.class, true));
+		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(Sys.env.getValue("dom.expand.entity.references", boolean.class, false));
+		
+		DomBuilder domBuilder = Sys.loadService(DomBuilder.class);
+		DOM_BUILDER = domBuilder == null ? new DomBuilder(DOCUMENT_BUILDER_FACTORY, TRANSFORMER_FACTORY) : domBuilder;
 	}
-	
-	private static final DomBuilder DOM_BUILDER = new DomBuilder(DOCUMENT_BUILDER_FACTORY, TRANSFORMER_FACTORY);
 
 	private DomUtils() {
 	}
@@ -65,7 +69,8 @@ public final class DomUtils {
 		return document.getDocumentElement();
 	}
 
-	private static MyNodeList getIncludeNodeList(ResourceLoader resourceLoader, HashSet<String> includeHashSet, Node includeNode) {
+	private static MyNodeList getIncludeNodeList(ResourceLoader resourceLoader, HashSet<String> includeHashSet,
+			Node includeNode) {
 		String file = getNodeAttributeValueOrNodeContent(includeNode, "file");
 		if (StringUtils.isEmpty(file)) {
 			return new MyNodeList();
@@ -95,7 +100,8 @@ public final class DomUtils {
 		return list;
 	}
 
-	private static MyNodeList converIncludeNodeList(ResourceLoader resourceLoader, NodeList nodeList, HashSet<String> includeHashSet) {
+	private static MyNodeList converIncludeNodeList(ResourceLoader resourceLoader, NodeList nodeList,
+			HashSet<String> includeHashSet) {
 		MyNodeList list = new MyNodeList();
 		if (nodeList != null) {
 			for (int i = 0, size = nodeList.getLength(); i < size; i++) {
@@ -120,10 +126,12 @@ public final class DomUtils {
 			return null;
 		}
 
-		return resourceLoader != null ? converIncludeNodeList(resourceLoader, node.getChildNodes(), new HashSet<String>()) : node.getChildNodes();
+		return resourceLoader != null
+				? converIncludeNodeList(resourceLoader, node.getChildNodes(), new HashSet<String>())
+				: node.getChildNodes();
 	}
-	
-	public static List<Object> toRecursionList(Node node){
+
+	public static List<Object> toRecursionList(Node node) {
 		return toList(node, new Converter<Node, Object>() {
 
 			public Object convert(Node o) {
@@ -225,7 +233,7 @@ public final class DomUtils {
 
 		return map.isEmpty() ? null : map;
 	}
-	
+
 	public static String getNodeAttributeValue(Node node, String name) {
 		return getNodeAttributeValue(node, name, null);
 	}
@@ -328,7 +336,7 @@ public final class DomUtils {
 		if (!getBooleanValue(node, "replace", true)) {
 			return value;
 		}
-		
+
 		return propertyResolver.resolvePlaceholders(value);
 	}
 
@@ -366,41 +374,41 @@ public final class DomUtils {
 		}
 		return value;
 	}
-	
-	public static NodeList toNodeList(final NamedNodeMap namedNodeMap){
-		if(namedNodeMap == null){
+
+	public static NodeList toNodeList(final NamedNodeMap namedNodeMap) {
+		if (namedNodeMap == null) {
 			return null;
 		}
-		
+
 		return new NodeList() {
-			
+
 			public Node item(int index) {
 				return namedNodeMap.item(index);
 			}
-			
+
 			public int getLength() {
 				return namedNodeMap.getLength();
 			}
 		};
 	}
-	
-	public static Node findNode(NodeList nodeList, Accept<Node> accept){
-		if(nodeList == null){
+
+	public static Node findNode(NodeList nodeList, Accept<Node> accept) {
+		if (nodeList == null) {
 			return null;
 		}
-		
+
 		int len = nodeList.getLength();
-		if(len == 0){
+		if (len == 0) {
 			return null;
 		}
-		
-		for(int i=0; i<len; i++){
+
+		for (int i = 0; i < len; i++) {
 			Node item = nodeList.item(i);
-			if(item == null){
+			if (item == null) {
 				continue;
 			}
-			
-			if(accept.accept(item)){
+
+			if (accept.accept(item)) {
 				return item;
 			}
 		}

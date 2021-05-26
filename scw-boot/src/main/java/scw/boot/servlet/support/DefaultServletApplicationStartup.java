@@ -4,7 +4,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import scw.boot.Application;
-import scw.boot.ConfigurableApplication;
 import scw.boot.servlet.ServletApplicationStartup;
 import scw.boot.servlet.ServletContextInitialization;
 import scw.logger.Logger;
@@ -14,8 +13,8 @@ import scw.util.Result;
 public class DefaultServletApplicationStartup implements ServletApplicationStartup{
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected Result<ConfigurableApplication> getStartup(ServletContext servletContext) throws ServletException{
-		ConfigurableApplication application = ServletContextUtils.getApplication(servletContext);
+	protected Result<Application> getStartup(ServletContext servletContext) throws ServletException{
+		Application application = ServletContextUtils.getApplication(servletContext);
 		if(application == null){
 			ServletContextUtils.startLogger(logger, servletContext, null, false);
 			application = new ServletApplication(servletContext);
@@ -25,20 +24,20 @@ public class DefaultServletApplicationStartup implements ServletApplicationStart
 				ServletContextUtils.startLogger(logger, servletContext, e, false);
 			}
 			ServletContextUtils.setApplication(servletContext, application);
-			return new Result<ConfigurableApplication>(true, application);
+			return new Result<Application>(true, application);
 		}else{
-			return new Result<ConfigurableApplication>(false, application);
+			return new Result<Application>(false, application);
 		}
 	}
 	
-	public Result<ConfigurableApplication> start(ServletContext servletContext) throws ServletException {
-		Result<ConfigurableApplication> startUp = getStartup(servletContext);
+	public Result<Application> start(ServletContext servletContext) throws ServletException {
+		Result<Application> startUp = getStartup(servletContext);
 		start(servletContext, startUp.getResult());
 		return startUp;
 	}
 
 	public final boolean start(final ServletContext servletContext,
-			ConfigurableApplication application) throws ServletException {
+			Application application) throws ServletException {
 		String nameToUse = ServletApplicationStartup.class.getName();
 		if (servletContext.getAttribute(nameToUse) != null) {
 			return false;
