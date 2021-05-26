@@ -1,5 +1,7 @@
 package scw.orm.test;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 
@@ -24,14 +26,17 @@ public class XmlResolverTest {
 		Map<String, TestBean> map = (Map<String, TestBean>) Sys.env.getResourceResolver().resolveResource(resource,
 				mapType);
 		logger.info(map.toString());
+		assertTrue(map.size() == 3);
 		List<TestBean> list = (List<TestBean>) Sys.env.getResourceResolver().resolveResource(resource, listType);
 		logger.info(list.toString());
+		assertTrue(list.size() == 3);
 
 		TypeDescriptor nestedType2 = TypeDescriptor.map(Map.class, String.class, TestBean2.class);
 		TypeDescriptor mapType2 = TypeDescriptor.map(Map.class, TypeDescriptor.valueOf(String.class), nestedType2);
 		Map<String, Map<String, TestBean>> map2 = (Map<String, Map<String, TestBean>>) Sys.env.getResourceResolver().resolveResource(resource,
 				mapType2);
 		logger.info(map2.toString());
+		assertTrue(map2.size() == 3);
 	}
 
 	private static final class TestBean {

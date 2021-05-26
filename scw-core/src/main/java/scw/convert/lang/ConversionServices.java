@@ -16,24 +16,27 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(this);
 	private ConversionService awareConversionService = this;
 	private ConversionService parentConversionService;
-	
+
 	public ConversionServices() {
 	}
-	
+
 	public ConversionServices(ConversionService parentConversionServices) {
 		this.parentConversionService = parentConversionServices;
 	}
-	
+
 	@Override
 	public void setConversionService(ConversionService conversionService) {
 		this.awareConversionService = conversionService;
 	}
 
-	public void addConversionService(ConversionService conversionService) {
+	protected void aware(ConversionService conversionService) {
 		if (conversionService instanceof ConversionServiceAware) {
 			((ConversionServiceAware) conversionService).setConversionService(awareConversionService);
 		}
+	}
 
+	public void addConversionService(ConversionService conversionService) {
+		aware(conversionService);
 		synchronized (conversionServices) {
 			conversionServices.add(conversionService);
 		}
@@ -41,44 +44,39 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConversionService service : conversionServices) {
-			if (NESTED.exists(service)) {
-				continue;
-			}
-
-			NESTED.set(service);
-			try {
-				if (service.canConvert(sourceType, targetType)) {
-					return true;
-				}
-			} finally {
-				NESTED.remove(service);
+			if (canConvert(service, sourceType, targetType)) {
+				return true;
 			}
 		}
-		
-		if(parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
+
+		if (parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
 			return true;
 		}
-		
+
 		return canDirectlyConvert(sourceType, targetType);
+	}
+
+	private boolean canConvert(ConversionService service, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (NESTED.exists(service)) {
+			return false;
+		}
+
+		NESTED.set(service);
+		try {
+			return service.canConvert(sourceType, targetType);
+		} finally {
+			NESTED.remove(service);
+		}
 	}
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConversionService service : conversionServices) {
-			if (NESTED.exists(service)) {
-				continue;
-			}
-
-			NESTED.set(service);
-			try {
-				if (service.canConvert(sourceType, targetType)) {
-					return service.convert(source, sourceType, targetType);
-				}
-			} finally {
-				NESTED.remove(service);
+			if (canConvert(service, sourceType, targetType)) {
+				return service.convert(source, sourceType, targetType);
 			}
 		}
-		
-		if(parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
+
+		if (parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
 			return parentConversionService.convert(source, sourceType, targetType);
 		}
 
