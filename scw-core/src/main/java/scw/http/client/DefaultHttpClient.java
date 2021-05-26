@@ -29,18 +29,18 @@ import scw.net.uri.UriTemplateHandler;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {
 	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.loadService(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory");
-	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.getInstanceFactory().getServiceLoader(UriTemplateHandler.class,
-			"scw.net.uri.DefaultUriTemplateHandler").getFirst();
+	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.loadService(UriTemplateHandler.class,
+			"scw.net.uri.DefaultUriTemplateHandler");
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	static final HttpClientCookieManager COOKIE_MANAGER;
-	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.getInstanceFactory().getServiceLoader(ClientHttpRequestInterceptor.class).toList();
+	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.loadAllService(ClientHttpRequestInterceptor.class);
 
 	static {
-		ClientHttpResponseErrorHandler errorHandler = Sys.getInstanceFactory().getServiceLoader(ClientHttpResponseErrorHandler.class).getFirst();
+		ClientHttpResponseErrorHandler errorHandler = Sys.loadService(ClientHttpResponseErrorHandler.class);
 		CLIENT_HTTP_RESPONSE_ERROR_HANDLER = errorHandler == null ? new DefaultClientHttpResponseErrorHandler()
 				: errorHandler;
 
-		COOKIE_MANAGER = Sys.getInstanceFactory().getServiceLoader(HttpClientCookieManager.class).getFirst();
+		COOKIE_MANAGER = Sys.loadService(HttpClientCookieManager.class);
 	}
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpClient.class);

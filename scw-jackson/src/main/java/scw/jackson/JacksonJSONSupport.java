@@ -19,7 +19,7 @@ public class JacksonJSONSupport extends AbstractJSONSupport {
 	private ObjectMapper mapper;
 
 	public JacksonJSONSupport() {
-		this.mapper = Sys.getInstanceFactory().getServiceLoader(ObjectMapper.class).getFirst();
+		this.mapper = Sys.loadService(ObjectMapper.class);
 		if (mapper == null) {
 			mapper = new ObjectMapper();
 			// 对于空的对象转json的时候不抛出错误

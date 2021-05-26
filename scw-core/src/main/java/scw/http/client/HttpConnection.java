@@ -26,9 +26,9 @@ import scw.net.InetUtils;
 import scw.util.XUtils;
 
 public interface HttpConnection extends HttpConnectionFactory {
-	static final RedirectManager REDIRECT_MANAGER = Sys.getInstanceFactory().getServiceLoader(
+	static final RedirectManager REDIRECT_MANAGER = Sys.loadService(
 			RedirectManager.class,
-			"scw.http.client.HttpConnection.DefaultRedirectManager").getFirst();
+			"scw.http.client.HttpConnection.DefaultRedirectManager");
 
 	/**
 	 * Add the given, single header value under the given name.

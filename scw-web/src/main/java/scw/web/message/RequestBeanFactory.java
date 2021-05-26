@@ -21,6 +21,7 @@ import scw.orm.convert.EntityConversionService;
 import scw.util.Accept;
 import scw.util.Creator;
 import scw.util.Result;
+import scw.value.support.MapPropertyFactory;
 import scw.web.ServerHttpRequest;
 import scw.web.WebUtils;
 import scw.web.message.annotation.RequestBody;
@@ -80,8 +81,8 @@ public class RequestBeanFactory extends RequestParameterFactory
 					result = new Result<Object>(true, beanDefinition.create(parameterDescriptors.getTypes(),
 							getParameters(parameterDescriptors)));
 				}
-
-				if (result.isActive()) {
+				
+				if (result != null && result.isActive()) {
 					EntityConversionService conversionService = BeanUtils.createEntityConversionService(
 							beanFactory.getEnvironment(),
 							beanDefinition.getAnnotatedElement().getAnnotation(ConfigurationProperties.class));
@@ -108,7 +109,7 @@ public class RequestBeanFactory extends RequestParameterFactory
 
 					Map<String, Object> parameterMap = (Map<String, Object>) beanFactory.getEnvironment()
 							.getConversionService().convert(body, TypeDescriptor.forObject(body), REQUEST_BODY_TYPE);
-					conversionService.configurationProperties(parameterMap, result.getResult());
+					conversionService.configurationProperties(new MapPropertyFactory(parameterMap), result.getResult());
 				}
 				break;
 			}
@@ -122,7 +123,7 @@ public class RequestBeanFactory extends RequestParameterFactory
 			}
 			return (T) obj;
 		}
-		return beanFactory.getInstance(name);
+		return null;
 	}
 
 	public boolean isInstance(String name) {

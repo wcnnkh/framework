@@ -5,7 +5,7 @@ import scw.math.gcd.DivisionAlgorithm;
 import scw.math.gcd.GreatestCommonDivisor;
 
 public final class MathUtils {
-	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = Sys.getInstanceFactory().getServiceLoader(GreatestCommonDivisor.class, DivisionAlgorithm.class.getName()).getFirst();
+	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = Sys.loadService(GreatestCommonDivisor.class, DivisionAlgorithm.class.getName());
 	
 	private MathUtils() {
 	};

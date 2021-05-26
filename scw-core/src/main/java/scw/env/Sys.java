@@ -92,16 +92,33 @@ public final class Sys extends DefaultEnvironment {
 		return instanceFactory.getServiceLoader(serviceClass).getFirst();
 	}
 
+	/**
+	 * DefaultInstanceFactory#getServiceLoader(Class, String...)
+	 * @param serviceClass
+	 * @return
+	 */
 	public static <S> List<S> loadAllService(Class<S> serviceClass) {
 		return instanceFactory.getServiceLoader(serviceClass).toList();
 	}
 
+	/**
+	 * @see DefaultInstanceFactory#getServiceLoader(Class, String...)
+	 * @param serviceClass
+	 * @param defaultNames
+	 * @return
+	 */
 	public static <S> S loadService(Class<S> serviceClass,
 			String... defaultNames) {
 		return instanceFactory.getServiceLoader(serviceClass, defaultNames)
 				.getFirst();
 	}
 
+	/**
+	 * @see DefaultInstanceFactory#getServiceLoader(Class, String...)
+	 * @param serviceClass
+	 * @param defaultNames
+	 * @return
+	 */
 	public static <S> List<S> loadAllService(Class<S> serviceClass,
 			String... defaultNames) {
 		return instanceFactory.getServiceLoader(serviceClass, defaultNames)
@@ -112,6 +129,10 @@ public final class Sys extends DefaultEnvironment {
 		return clock;
 	}
 
+	/**
+	 * @see Clock#currentTimeMillis()
+	 * @return
+	 */
 	public static long currentTimeMillis() {
 		return clock.currentTimeMillis();
 	}

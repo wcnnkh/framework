@@ -3,7 +3,7 @@ package scw.sql.orm.dialect;
 import scw.env.Sys;
 
 public class DialectHelper {
-	private static final SqlTypeFactory SQL_TYPE_FACTORY = Sys.getInstanceFactory().getServiceLoader(SqlTypeFactory.class, "scw.sql.orm.dialect.DefaultSqlTypeFactory").getFirst();
+	private static final SqlTypeFactory SQL_TYPE_FACTORY = Sys.loadService(SqlTypeFactory.class, "scw.sql.orm.dialect.DefaultSqlTypeFactory");
 	private static final char POINT = '.';
 	private String escapeCharacter = "`";
 	private SqlTypeFactory sqlTypeFactory;

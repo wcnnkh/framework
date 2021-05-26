@@ -11,8 +11,8 @@ import scw.lang.Nullable;
 import scw.logger.Logger;
 
 public abstract class ServletContextUtils {
-	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.getInstanceFactory().getServiceLoader(ServletApplicationStartup.class,
-			"scw.boot.servlet.support.Servlet3ApplicationStartup", "scw.boot.servlet.support.DefaultServletApplicationStartup").getFirst();
+	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.loadService(ServletApplicationStartup.class,
+			"scw.boot.servlet.support.Servlet3ApplicationStartup", "scw.boot.servlet.support.DefaultServletApplicationStartup");
 	
 	public static ServletApplicationStartup getServletApplicationStartup() {
 		return SERVLET_APPLICATION_STARTUP;

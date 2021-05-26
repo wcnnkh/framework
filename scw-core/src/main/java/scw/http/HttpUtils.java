@@ -19,8 +19,8 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final HttpClient HTTP_CLIENT = Sys.getInstanceFactory().getServiceLoader(HttpClient.class,
-			"scw.http.client.DefaultHttpClient").getFirst();
+	private static final HttpClient HTTP_CLIENT = Sys.loadService(HttpClient.class,
+			"scw.http.client.DefaultHttpClient");
 
 	/**
 	 * 获取默认的HttpClient(获取spi机制加载)

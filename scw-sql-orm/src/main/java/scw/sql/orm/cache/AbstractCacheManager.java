@@ -22,7 +22,7 @@ public abstract class AbstractCacheManager<C extends Storage> implements CacheMa
 		return (Class<T>) ProxyUtils.getFactory().getUserClass(clazz);
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIds, Object... params) {
 		if (params.length != getObjectRelationalMapping().getColumns(type).getPrimaryKeys().size() - 1) {
 			return null;
 		}

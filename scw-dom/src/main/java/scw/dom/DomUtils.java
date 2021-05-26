@@ -48,6 +48,7 @@ public final class DomUtils {
 		DOCUMENT_BUILDER_FACTORY.setIgnoringComments(Sys.env.getValue("dom.ignoring.comments", boolean.class, true));
 		DOCUMENT_BUILDER_FACTORY.setCoalescing(Sys.env.getValue("dom.coalescing", boolean.class, true));
 		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(Sys.env.getValue("dom.expand.entity.references", boolean.class, false));
+		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(Sys.env.getValue("dom.namespace.aware", boolean.class, false));
 		
 		DomBuilder domBuilder = Sys.loadService(DomBuilder.class);
 		DOM_BUILDER = domBuilder == null ? new DomBuilder(DOCUMENT_BUILDER_FACTORY, TRANSFORMER_FACTORY) : domBuilder;

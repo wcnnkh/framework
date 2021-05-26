@@ -40,7 +40,7 @@ public class DomBuilder{
 	private static final AppendChildServiceFactory APPEND_CHILD_SERVICE_FACTORY = new DefaultAppendChildServiceFactory();
 	
 	static{
-		APPEND_CHILD_SERVICE_FACTORY.getServices().addAll(Sys.getInstanceFactory().getServiceLoader(AppendChildService.class).toList());
+		APPEND_CHILD_SERVICE_FACTORY.getServices().addAll(Sys.loadAllService(AppendChildService.class));
 	}
 	
 	private final DocumentBuilderFactory documentBuilderFactory;

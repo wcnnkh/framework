@@ -67,10 +67,10 @@ public class CreateTableSql extends DialectSql {
 				sb.append(" character set ").append(col.getCharsetName());
 			}
 
-			if (StringUtils.isNotEmpty(col.getDescription())) {
+			/*if (StringUtils.isNotEmpty(col.getDescription())) {
 				sb.append(" comment \'").append(col.getDescription())
 						.append("\'");
-			}
+			}*/
 
 			if (iterator.hasNext()) {
 				sb.append(",");
