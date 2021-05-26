@@ -18,16 +18,12 @@ import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.NotSupportedException;
 
-public class DefaultResourceResolver extends PropertiesResourceResolver
-		implements ConfigurableResourceResolver {
+public class DefaultResourceResolver extends PropertiesResourceResolver implements ConfigurableResourceResolver {
 	protected List<ResourceResolver> resourceResolvers;
-	private final ConversionService conversionService;
 
-	public DefaultResourceResolver(ConversionService conversionService,
-			PropertiesResolver propertiesResolver, Supplier<Charset> charset) {
+	public DefaultResourceResolver(ConversionService conversionService, PropertiesResolver propertiesResolver,
+			Supplier<Charset> charset) {
 		super(conversionService, propertiesResolver, charset);
-		this.conversionService = conversionService;
-		addResourceResolver(new DocumentResourceResolver(conversionService));
 	}
 
 	@Override
@@ -38,29 +34,29 @@ public class DefaultResourceResolver extends PropertiesResourceResolver
 		return CollectionUtils.getIterator(resourceResolvers, true);
 	}
 
-	public void addResourceResolver(ResourceResolver resourceResolver) {
-		if(resourceResolver == null){
-			return ;
+	protected void aware(ResourceResolver resourceResolver) {
+		if (resourceResolver instanceof ConversionServiceAware) {
+			((ConversionServiceAware) resourceResolver).setConversionService(getConversionService());
 		}
-		
+	}
+
+	public void addResourceResolver(ResourceResolver resourceResolver) {
+		if (resourceResolver == null) {
+			return;
+		}
+
 		synchronized (this) {
 			if (resourceResolvers == null) {
 				resourceResolvers = new ArrayList<ResourceResolver>(8);
 			}
 
-			if (resourceResolver instanceof ConversionServiceAware) {
-				((ConversionServiceAware) resourceResolver)
-						.setConversionService(conversionService);
-			}
-			
+			aware(resourceResolver);
 			resourceResolvers.add(resourceResolver);
-			Collections.sort(resourceResolvers,
-					OrderComparator.INSTANCE.reversed());
+			Collections.sort(resourceResolvers, OrderComparator.INSTANCE.reversed());
 		}
 	}
 
-	public boolean canResolveResource(Resource resource,
-			TypeDescriptor targetType) {
+	public boolean canResolveResource(Resource resource, TypeDescriptor targetType) {
 		for (ResourceResolver resolver : this) {
 			if (resolver.canResolveResource(resource, targetType)) {
 				return true;

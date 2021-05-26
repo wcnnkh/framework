@@ -17,16 +17,20 @@ public class MessageConverters implements MessageConverter {
 	private final TreeSet<MessageConverter> messageConverters = new TreeSet<MessageConverter>(
 			new ComparatorMessageConverter());
 	private MessageConverter parentMessageConverter;
-	
+
 	public MessageConverters() {
 	}
-	
+
 	public MessageConverters(MessageConverter parentMessageConverter) {
 		this.parentMessageConverter = parentMessageConverter;
 	}
 
+	protected void aware(MessageConverter messageConverter) {
+	}
+
 	public void addMessageConverter(MessageConverter messageConverter) {
 		synchronized (messageConverter) {
+			aware(messageConverter);
 			messageConverters.add(messageConverter);
 		}
 	}
@@ -54,8 +58,8 @@ public class MessageConverters implements MessageConverter {
 				return converter.read(type, inputMessage);
 			}
 		}
-		
-		if(parentMessageConverter != null && parentMessageConverter.canRead(type, inputMessage.getContentType())) {
+
+		if (parentMessageConverter != null && parentMessageConverter.canRead(type, inputMessage.getContentType())) {
 			return parentMessageConverter.read(type, inputMessage);
 		}
 
@@ -76,10 +80,10 @@ public class MessageConverters implements MessageConverter {
 				return;
 			}
 		}
-		
-		if(parentMessageConverter != null && parentMessageConverter.canWrite(type, body, contentType)) {
+
+		if (parentMessageConverter != null && parentMessageConverter.canWrite(type, body, contentType)) {
 			parentMessageConverter.write(type, body, contentType, outputMessage);
-			return ;
+			return;
 		}
 
 		if (logger.isDebugEnabled()) {
@@ -110,11 +114,11 @@ public class MessageConverters implements MessageConverter {
 		for (MessageConverter converter : messageConverters) {
 			mimeTypes.getMimeTypes().addAll(converter.getSupportMimeTypes().getMimeTypes());
 		}
-		
-		if(parentMessageConverter != null) {
+
+		if (parentMessageConverter != null) {
 			mimeTypes.getMimeTypes().addAll(parentMessageConverter.getSupportMimeTypes().getMimeTypes());
 		}
-		
+
 		return mimeTypes.readyOnly();
 	}
 }

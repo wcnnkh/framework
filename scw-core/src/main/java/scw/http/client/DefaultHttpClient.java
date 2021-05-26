@@ -28,7 +28,7 @@ import scw.net.message.convert.MessageConverters;
 import scw.net.uri.UriTemplateHandler;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {
-	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.getInstanceFactory().getServiceLoader(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory").getFirst();
+	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.loadService(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory");
 	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.getInstanceFactory().getServiceLoader(UriTemplateHandler.class,
 			"scw.net.uri.DefaultUriTemplateHandler").getFirst();
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER;

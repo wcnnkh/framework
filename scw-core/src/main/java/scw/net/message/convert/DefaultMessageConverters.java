@@ -1,28 +1,35 @@
 package scw.net.message.convert;
 
 import scw.convert.ConversionService;
+import scw.convert.ConversionServiceAware;
 import scw.instance.ServiceLoaderFactory;
 import scw.net.InetUtils;
 
 public class DefaultMessageConverters extends MessageConverters {
+	private final ConversionService conversionService;
 
 	public DefaultMessageConverters(ConversionService conversionService) {
+		this.conversionService = conversionService;
 		addMessageConverter(new JsonMessageConverter());
 		addMessageConverter(new StringMessageConverter(conversionService));
 		addMessageConverter(new ByteArrayMessageConverter());
-		addMessageConverter(new XmlMessageConverter(conversionService));
 		addMessageConverter(new HttpFormMessageConveter());
-		addMessageConverter(new MultipartMessageConverter(
-				InetUtils.getFileItemParser()));
+		addMessageConverter(new MultipartMessageConverter(InetUtils.getFileItemParser()));
 		addMessageConverter(new ResourceMessageConverter());
 	}
 
-	public DefaultMessageConverters(ConversionService conversionService,
-			ServiceLoaderFactory serviceLoaderFactory) {
+	public DefaultMessageConverters(ConversionService conversionService, ServiceLoaderFactory serviceLoaderFactory) {
 		this(conversionService);
-		for (MessageConverter messageConverter : serviceLoaderFactory
-				.getServiceLoader(MessageConverter.class)) {
+		for (MessageConverter messageConverter : serviceLoaderFactory.getServiceLoader(MessageConverter.class)) {
 			addMessageConverter(messageConverter);
 		}
+	}
+
+	@Override
+	protected void aware(MessageConverter messageConverter) {
+		if (messageConverter instanceof ConversionServiceAware) {
+			((ConversionServiceAware) messageConverter).setConversionService(conversionService);
+		}
+		super.aware(messageConverter);
 	}
 }

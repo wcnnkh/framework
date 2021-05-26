@@ -1,4 +1,4 @@
-package scw.convert.support;
+package scw.orm.convert.dom;
 
 import java.util.Collections;
 import java.util.Set;
@@ -8,6 +8,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.convert.ConversionService;
+import scw.convert.ConversionServiceAware;
 import scw.convert.TypeDescriptor;
 import scw.convert.lang.ConditionalConversionService;
 import scw.convert.lang.ConvertiblePair;
@@ -15,10 +16,11 @@ import scw.dom.DomUtils;
 import scw.value.StringValue;
 import scw.value.Value;
 
-class NodeToObjectConversionService extends ConditionalConversionService{
-	private final ConversionService conversionService;
+class NodeToObjectConversionService extends ConditionalConversionService implements ConversionServiceAware{
+	private ConversionService conversionService;
 	
-	public NodeToObjectConversionService(ConversionService conversionService){
+	@Override
+	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 	
