@@ -1,4 +1,4 @@
-package scw.orm.convert;
+package scw.orm.convert.dom;
 
 import java.util.Collections;
 import java.util.Enumeration;
@@ -9,6 +9,7 @@ import org.w3c.dom.NodeList;
 
 import scw.convert.lang.ConvertiblePair;
 import scw.dom.DomUtils;
+import scw.orm.convert.EntityConversionService;
 import scw.util.Accept;
 
 public class NodeListToEntityConversionService extends EntityConversionService {
