@@ -1,5 +1,6 @@
 package scw.mvc.action;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 import scw.convert.TypeDescriptor;
 import scw.core.ResolvableType;
+import scw.core.annotation.AnnotatedElementWrapper;
 import scw.core.annotation.AnnotationArrayAnnotatedElement;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.parameter.MethodParameterDescriptors;
@@ -22,7 +24,7 @@ import scw.mvc.annotation.Methods;
 import scw.util.placeholder.PropertyResolver;
 import scw.web.pattern.HttpPattern;
 
-public abstract class AbstractAction extends AnnotationArrayAnnotatedElement implements Action {
+public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedElement> implements Action {
 	protected Collection<HttpPattern> httpPatterns = new HashSet<HttpPattern>(8);
 
 	private final Method method;
@@ -31,7 +33,7 @@ public abstract class AbstractAction extends AnnotationArrayAnnotatedElement imp
 	private final TypeDescriptor returnType;
 
 	public AbstractAction(Class<?> sourceClass, Method method, PropertyResolver propertyResolver) {
-		super(MultiAnnotatedElement.forAnnotatedElements(method));
+		super(new AnnotationArrayAnnotatedElement(method));
 		this.returnType = new TypeDescriptor(ResolvableType.forMethodReturnType(method), method.getReturnType(),
 				MultiAnnotatedElement.forAnnotatedElements(this, sourceClass).getAnnotations());
 		this.sourceClass = sourceClass;

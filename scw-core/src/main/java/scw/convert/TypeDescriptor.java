@@ -22,7 +22,6 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,10 +31,12 @@ import scw.core.Assert;
 import scw.core.MethodParameter;
 import scw.core.ResolvableType;
 import scw.core.annotation.AnnotatedElementUtils;
+import scw.core.annotation.AnnotationArrayAnnotatedElement;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.ObjectUtils;
 import scw.lang.Nullable;
+import scw.util.XUtils;
 
 /**
  * Contextual descriptor about a type to convert from or to.
@@ -46,9 +47,6 @@ import scw.lang.Nullable;
  */
 @SuppressWarnings("serial")
 public class TypeDescriptor implements AnnotatedElement, Serializable {
-
-	private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
-
 	private static final Map<Class<?>, TypeDescriptor> commonTypesCache = new HashMap<Class<?>, TypeDescriptor>(32);
 
 	private static final Class<?>[] CACHED_COMMON_TYPES = {
@@ -79,7 +77,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	public TypeDescriptor(MethodParameter methodParameter) {
 		this.resolvableType = ResolvableType.forMethodParameter(methodParameter);
 		this.type = this.resolvableType.resolve(methodParameter.getNestedParameterType());
-		this.annotatedElement = new AnnotatedElementAdapter(methodParameter.getParameterIndex() == -1 ?
+		this.annotatedElement = new AnnotationArrayAnnotatedElement(methodParameter.getParameterIndex() == -1 ?
 				methodParameter.getMethodAnnotations() : methodParameter.getParameterAnnotations());
 	}
 
@@ -91,13 +89,14 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	public TypeDescriptor(Field field) {
 		this.resolvableType = ResolvableType.forField(field);
 		this.type = this.resolvableType.resolve(field.getType());
-		this.annotatedElement = new AnnotatedElementAdapter(field.getAnnotations());
+		this.annotatedElement = new AnnotationArrayAnnotatedElement(field);
 	}
 	
 	public TypeDescriptor(ParameterDescriptor parameterDescriptor){
 		this.resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
 		this.type = this.resolvableType.resolve(parameterDescriptor.getType());
-		this.annotatedElement = new AnnotatedElementAdapter(parameterDescriptor.getAnnotations());
+		AnnotatedElement arrayAnnnotation = XUtils.getTarget(parameterDescriptor, AnnotationArrayAnnotatedElement.class);
+		this.annotatedElement = arrayAnnnotation == null? new AnnotationArrayAnnotatedElement(parameterDescriptor):arrayAnnnotation;
 	}
 
 	/**
@@ -111,7 +110,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	public TypeDescriptor(ResolvableType resolvableType, @Nullable Class<?> type, @Nullable Annotation[] annotations) {
 		this.resolvableType = resolvableType;
 		this.type = (type != null ? type : resolvableType.toClass());
-		this.annotatedElement = new AnnotatedElementAdapter(annotations);
+		this.annotatedElement = new AnnotationArrayAnnotatedElement(annotations);
 	}
 
 
@@ -742,72 +741,6 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 		}
 		return new TypeDescriptor(type, null, source.getAnnotations());
 	}
-
-
-	/**
-	 * Adapter class for exposing a {@code TypeDescriptor}'s annotations as an
-	 * {@link AnnotatedElement}, in particular to {@link AnnotatedElementUtils}.
-	 * @see AnnotatedElementUtils#isAnnotated(AnnotatedElement, Class)
-	 * @see AnnotatedElementUtils#getMergedAnnotation(AnnotatedElement, Class)
-	 */
-	private class AnnotatedElementAdapter implements AnnotatedElement, Serializable {
-
-		@Nullable
-		private final Annotation[] annotations;
-
-		public AnnotatedElementAdapter(@Nullable Annotation[] annotations) {
-			this.annotations = annotations;
-		}
-
-		public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
-			for (Annotation annotation : getAnnotations()) {
-				if (annotation.annotationType() == annotationClass) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		@Nullable
-		@SuppressWarnings("unchecked")
-		public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-			for (Annotation annotation : getAnnotations()) {
-				if (annotation.annotationType() == annotationClass) {
-					return (T) annotation;
-				}
-			}
-			return null;
-		}
-
-		public Annotation[] getAnnotations() {
-			return (this.annotations != null ? this.annotations.clone() : EMPTY_ANNOTATION_ARRAY);
-		}
-
-		public Annotation[] getDeclaredAnnotations() {
-			return getAnnotations();
-		}
-
-		/*public boolean isEmpty() {
-			return ObjectUtils.isEmpty(this.annotations);
-		}*/
-
-		@Override
-		public boolean equals(@Nullable Object other) {
-			return (this == other || (other instanceof AnnotatedElementAdapter &&
-					Arrays.equals(this.annotations, ((AnnotatedElementAdapter) other).annotations)));
-		}
-
-		@Override
-		public int hashCode() {
-			return Arrays.hashCode(this.annotations);
-		}
-
-		@Override
-		public String toString() {
-			return TypeDescriptor.this.toString();
-		}
-	}
-
 
 	@Override
 	public Annotation[] getDeclaredAnnotations() {

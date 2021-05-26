@@ -3,7 +3,7 @@ package scw.instance.support;
 import java.util.Collection;
 import java.util.Map;
 
-import scw.core.parameter.AbstractParameterFactory;
+import scw.core.parameter.AbstractParametersFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.reflect.ReflectionUtils;
@@ -15,11 +15,11 @@ import scw.instance.annotation.ResourceParameter;
 import scw.io.Resource;
 import scw.value.Value;
 
-public abstract class InstanceParameterFactory extends AbstractParameterFactory {
+public abstract class InstanceParametersFactory extends AbstractParametersFactory {
 	private final NoArgsInstanceFactory instanceFactory;
 	private final Environment environment;
 	
-	public InstanceParameterFactory(NoArgsInstanceFactory instanceFactory, Environment environment){
+	public InstanceParametersFactory(NoArgsInstanceFactory instanceFactory, Environment environment){
 		this.instanceFactory = instanceFactory;
 		this.environment = environment;
 	}

@@ -1,15 +1,15 @@
 package scw.beans.xml;
 
 import scw.beans.BeanFactory;
-import scw.core.parameter.AbstractParameterFactory;
+import scw.core.parameter.AbstractParametersFactory;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
 
-public class XmlParameterFactory extends AbstractParameterFactory {
+public class XmlParametersFactory extends AbstractParametersFactory {
 	private final XmlBeanParameter[] xmlBeanParameters;
 	private final BeanFactory beanFactory;
 
-	public XmlParameterFactory(BeanFactory beanFactory,
+	public XmlParametersFactory(BeanFactory beanFactory,
 			XmlBeanParameter[] xmlBeanParameters) {
 		this.beanFactory = beanFactory;
 		this.xmlBeanParameters = xmlBeanParameters;

@@ -174,7 +174,7 @@ public final class BeanUtils {
 		}
 	}
 
-	private static EntityConversionService createEntityConversionService(Environment environment,
+	public static EntityConversionService createEntityConversionService(Environment environment,
 			ConfigurationProperties configurationProperties) {
 		PropertyFactoryToEntityConversionService entityConversionService = new PropertyFactoryToEntityConversionService();
 		entityConversionService.setConversionService(environment.getConversionService());
@@ -196,8 +196,10 @@ public final class BeanUtils {
 				return true;
 			}
 		});
-		entityConversionService.setPrefix(getPrefix(configurationProperties));
-		entityConversionService.setLoggerLevel(configurationProperties.loggerLevel().getValue());
+		if(configurationProperties != null) {
+			entityConversionService.setPrefix(getPrefix(configurationProperties));
+			entityConversionService.setLoggerLevel(configurationProperties.loggerLevel().getValue());
+		}
 		entityConversionService.setUseSuperClass(false);
 		return entityConversionService;
 	}

@@ -3,17 +3,12 @@ package scw.mvc;
 import java.io.IOException;
 
 import scw.beans.BeanFactory;
-import scw.beans.support.ExtendBeanFactory;
 import scw.context.Destroy;
 import scw.convert.TypeDescriptor;
 import scw.core.ResolvableType;
-import scw.core.parameter.AbstractParameterFactory;
 import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
-import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.StringUtils;
-import scw.instance.NoArgsInstanceFactory;
-import scw.json.JSONSupport;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.security.UserSessionFactoryAdapter;
@@ -26,56 +21,43 @@ import scw.util.XUtils;
 import scw.value.Value;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
+import scw.web.message.RequestBeanFactory;
 import scw.web.message.WebMessageConverter;
-import scw.web.message.WebMessageConverters;
 import scw.web.message.WebMessagelConverterException;
 
-public class DefaultHttpChannel extends AbstractParameterFactory implements HttpChannel, Destroy, Target {
+public class DefaultHttpChannel extends RequestBeanFactory implements HttpChannel, Destroy, Target {
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpChannel.class);
 	private final long createTime;
-	private final JSONSupport jsonSupport;
 	private boolean completed = false;
-	private final ServerHttpRequest request;
 	private final ServerHttpResponse response;
-	private final ExtendBeanFactory extendBeanFactory;
-	private final WebMessageConverters messageConverters;
+	private final BeanFactory beanFactory;
 
-	public DefaultHttpChannel(BeanFactory beanFactory, JSONSupport jsonSupport, ServerHttpRequest request,
-			ServerHttpResponse response, WebMessageConverter messageConverter) {
+	public DefaultHttpChannel(BeanFactory beanFactory, ServerHttpRequest request, ServerHttpResponse response,
+			WebMessageConverter messageConverter) {
+		super(request, messageConverter, beanFactory);
 		this.createTime = System.currentTimeMillis();
-		this.messageConverters = new WebMessageConverters(messageConverter);
-		this.jsonSupport = jsonSupport;
-		this.request = request;
+		this.beanFactory = beanFactory;
 		this.response = response;
-		this.extendBeanFactory = new ExtendBeanFactory(this, beanFactory);
 	}
 
 	public void write(TypeDescriptor type, Object body) throws WebMessagelConverterException, IOException {
-		if(body == null) {
-			return ;
+		if (body == null) {
+			return;
 		}
-		
-		if(body instanceof View) {
+
+		if (body instanceof View) {
 			((scw.mvc.view.View) body).render(this);
-			return ;
+			return;
 		}
 
-		getMessageConverters().write(type, body, request, response);
-	}
-
-	public final JSONSupport getJsonSupport() {
-		return jsonSupport;
+		getMessageConverters().write(type, body, getRequest(), response);
 	}
 
 	public boolean isCompleted() {
 		return completed;
 	}
 
-	public NoArgsInstanceFactory getInstanceFactory() {
-		return extendBeanFactory;
-	}
-
-	public void destroy() throws Exception {
+	public void destroy() {
 		if (isCompleted()) {
 			return;
 		}
@@ -85,7 +67,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			logger.trace("destroy channel: {}", toString());
 		}
 
-		extendBeanFactory.destroy();
+		super.destroy();
 	}
 
 	public final long getCreateTime() {
@@ -95,22 +77,10 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 	public final Value getValue(String name) {
 		ParameterDescriptor parameterDescriptor = new DefaultParameterDescriptor(name, Value.class);
 		try {
-			return (Value) getMessageConverters().read(parameterDescriptor, request);
+			return (Value) getMessageConverters().read(parameterDescriptor, getRequest());
 		} catch (IOException e) {
 			throw new WebMessagelConverterException(name, e);
 		}
-	}
-
-	@Override
-	protected boolean isAccept(ParameterDescriptors parameterDescriptors, ParameterDescriptor parameterDescriptor,
-			int index) {
-		return getParameter(parameterDescriptor) != null;
-	}
-
-	@Override
-	protected Object getParameter(ParameterDescriptors parameterDescriptors, ParameterDescriptor parameterDescriptor,
-			int index) throws Exception {
-		return getParameter(parameterDescriptor);
 	}
 
 	public <T> T getTarget(Class<T> targetType) {
@@ -126,7 +96,7 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		return null;
 	}
 
-	public Object getParameter(ParameterDescriptor parameterDescriptor) {
+	protected Object getExtend(ParameterDescriptor parameterDescriptor) {
 		Object target = XUtils.getTarget(this, parameterDescriptor.getType());
 		if (target != null) {
 			return target;
@@ -140,15 +110,20 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			ResolvableType resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
 			return getUserSession(resolvableType.getGeneric(0).getRawClass());
 		}
-		try {
-			return getMessageConverters().read(parameterDescriptor, request);
-		} catch (IOException e) {
-			throw new WebMessagelConverterException("[" + request + "] - " + parameterDescriptor, e);
-		}
+		return null;
 	}
 
-	public ServerHttpRequest getRequest() {
-		return request;
+	@Override
+	public boolean isAccept(ParameterDescriptor parameterDescriptor) {
+		return getExtend(parameterDescriptor) != null || super.isAccept(parameterDescriptor);
+	}
+
+	public Object getParameter(ParameterDescriptor parameterDescriptor) {
+		Object target = getExtend(parameterDescriptor);
+		if (target != null) {
+			return target;
+		}
+		return super.getParameter(parameterDescriptor);
 	}
 
 	public ServerHttpResponse getResponse() {
@@ -208,8 +183,8 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			return service;
 		}
 
-		if (extendBeanFactory.isInstance(type)) {
-			service = extendBeanFactory.getInstance(type);
+		if (beanFactory.isInstance(type)) {
+			service = beanFactory.getInstance(type);
 		}
 
 		if (service != null) {
@@ -229,14 +204,13 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 		UserSessionFactoryAdapter userSessionFactoryAdapter = getService(UserSessionFactoryAdapter.class);
 		if (userSessionFactoryAdapter != null) {
 			userSessionFactory = userSessionFactoryAdapter.getUserSessionFactory(type);
+			if (userSessionFactory != null) {
+				getRequest().setAttribute(UserSessionFactory.class.getName(), userSessionFactory);
+			}
 		}
 
-		if (userSessionFactory == null && extendBeanFactory.isInstance(UserSessionFactory.class)) {
-			userSessionFactory = extendBeanFactory.getInstance(UserSessionFactory.class);
-		}
-
-		if (userSessionFactory != null) {
-			getRequest().setAttribute(UserSessionFactory.class.getName(), userSessionFactory);
+		if (userSessionFactory == null) {
+			userSessionFactory = getService(UserSessionFactory.class);
 		}
 
 		if (userSessionFactory == null) {
@@ -291,10 +265,5 @@ public class DefaultHttpChannel extends AbstractParameterFactory implements Http
 			getRequest().setAttribute(UserSession.class.getName(), userSession);
 		}
 		return userSession;
-	}
-
-	@Override
-	public WebMessageConverters getMessageConverters() {
-		return messageConverters;
 	}
 }

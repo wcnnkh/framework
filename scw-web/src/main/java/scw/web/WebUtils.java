@@ -7,14 +7,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.w3c.dom.Document;
+
 import scw.codec.support.CharsetCodec;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.dom.DomUtils;
 import scw.http.HttpCookie;
 import scw.http.HttpMethod;
 import scw.http.HttpStatus;
 import scw.io.IOUtils;
 import scw.io.Resource;
+import scw.json.JSONUtils;
 import scw.json.JsonArray;
 import scw.json.JsonElement;
 import scw.json.JsonObject;
@@ -329,5 +333,16 @@ public final class WebUtils {
 			}
 		}
 		return (Map<String, T>) parameterMap;
+	}
+
+	public static Object getRequestBody(ServerHttpRequest request) throws IOException {
+		if (request.getHeaders().isJsonContentType()) {
+			return JSONUtils.getJsonSupport().parseJson(request);
+		} else if (request.getHeaders().isXmlContentType()) {
+			Document document = DomUtils.getDomBuilder().parse(request.getReader());
+			return document;
+		} else {
+			return WebUtils.getParameterMap(request, null);
+		}
 	}
 }

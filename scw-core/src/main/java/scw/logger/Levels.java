@@ -1,6 +1,6 @@
 package scw.logger;
 
-public enum Level {
+public enum Levels {
 	ALL(java.util.logging.Level.ALL),
 	TRACE(CustomLevel.TRACE),
 	DEBUG(CustomLevel.DEBUG),
@@ -12,7 +12,7 @@ public enum Level {
 
 	private final java.util.logging.Level value;
 
-	private Level(java.util.logging.Level value) {
+	private Levels(java.util.logging.Level value) {
 		this.value = value;
 	}
 

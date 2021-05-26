@@ -1,9 +1,11 @@
 package scw.mapper;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import scw.core.annotation.AnnotatedElementWrapper;
 import scw.core.annotation.AnnotationArrayAnnotatedElement;
 import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.MultiAnnotatedElement;
@@ -14,13 +16,13 @@ import scw.lang.NotSupportedException;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public abstract class AbstractFieldDescriptor extends AnnotationArrayAnnotatedElement implements FieldDescriptor {
+public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<AnnotatedElement> implements FieldDescriptor {
 	private final Class<?> declaringClass;
 	private final Field field;
 	private final Method method;
 
 	public AbstractFieldDescriptor(Class<?> declaringClass, Field field, Method method) {
-		super(MultiAnnotatedElement.forAnnotatedElements(method, field));
+		super(new AnnotationArrayAnnotatedElement(MultiAnnotatedElement.forAnnotatedElements(method, field)));
 		this.declaringClass = declaringClass;
 		this.field = field;
 		this.method = method;

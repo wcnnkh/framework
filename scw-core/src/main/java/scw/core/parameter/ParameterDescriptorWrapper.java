@@ -13,27 +13,27 @@ public class ParameterDescriptorWrapper<P extends ParameterDescriptor> extends A
 	}
 
 	public String getName() {
-		return target.getName();
+		return wrappedTarget.getName();
 	}
 
 	public Class<?> getType() {
-		return target.getType();
+		return wrappedTarget.getType();
 	}
 
 	public Type getGenericType() {
-		return target.getGenericType();
+		return wrappedTarget.getGenericType();
 	}
 
 	public boolean isNullable() {
-		return target.isNullable();
+		return wrappedTarget.isNullable();
 	}
 
 	public Value getDefaultValue() {
-		return target.getDefaultValue();
+		return wrappedTarget.getDefaultValue();
 	}
 
 	@Override
 	public String getDescription() {
-		return target.getDescription();
+		return wrappedTarget.getDescription();
 	}
 }

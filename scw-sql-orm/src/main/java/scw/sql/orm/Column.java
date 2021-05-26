@@ -1,6 +1,5 @@
 package scw.sql.orm;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import scw.core.annotation.AnnotatedElementWrapper;
@@ -27,15 +26,13 @@ import scw.value.Value;
  * @author shuchaowen
  *
  */
-public class Column extends AnnotatedElementWrapper<Field> implements Serializable {
-	private static final long serialVersionUID = 1L;
-
+public class Column extends AnnotatedElementWrapper<Field> {
 	public Column(Field field) {
 		super(field);
 	}
 
 	public final Field getField() {
-		return target;
+		return wrappedTarget;
 	}
 
 	public boolean isEntity() {

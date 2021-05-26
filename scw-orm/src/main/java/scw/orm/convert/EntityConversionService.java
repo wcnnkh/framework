@@ -36,7 +36,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private boolean strict = false;
 	private ConversionService conversionService;
 	private NoArgsInstanceFactory instanceFactory;
-	private Level loggerLevel = scw.logger.Level.DEBUG.getValue();
+	private Level loggerLevel = scw.logger.Levels.DEBUG.getValue();
 	private boolean useSuperClass = true;// 默认也使用父类
 	private boolean ignoreFinalField = false;// 是否忽略常量字段
 

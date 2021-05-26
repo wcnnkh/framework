@@ -3,7 +3,6 @@ package scw.mvc;
 import java.io.IOException;
 
 import scw.beans.BeanFactory;
-import scw.json.JSONSupportAccessor;
 import scw.net.InetUtils;
 import scw.net.message.multipart.FileItemParser;
 import scw.web.ServerHttpRequest;
@@ -14,7 +13,7 @@ import scw.web.message.WebMessageConverters;
 import scw.web.message.support.DefaultWebMessageConverters;
 import scw.web.pattern.HttpPatternRegistry;
 
-public class DefaultHttpChannelFactory extends JSONSupportAccessor implements HttpChannelFactory {
+public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	protected final BeanFactory beanFactory;
 	private FileItemParser fileItemParser;
 	private final HttpPatternRegistry<Boolean> jsonpSupportConfig = new HttpPatternRegistry<Boolean>();
@@ -78,6 +77,6 @@ public class DefaultHttpChannelFactory extends JSONSupportAccessor implements Ht
 		if (isSupportJsonp(requestToUse)) {
 			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
 		}
-		return new DefaultHttpChannel(beanFactory, getJsonSupport(), requestToUse, responseToUse, webMessageConverters);
+		return new DefaultHttpChannel(beanFactory, requestToUse, responseToUse, webMessageConverters);
 	}
 }

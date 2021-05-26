@@ -27,7 +27,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private List<String> names = new ArrayList<String>();
 	private final String id;
 	private final Boolean singleton;
-	private final XmlParameterFactory xmlParameterFactory;
+	private final XmlParametersFactory xmlParameterFactory;
 
 	public XmlBeanDefinition(ConfigurableBeanFactory beanFactory, Node beanNode) throws Exception {
 		this(beanFactory, XmlBeanUtils.getClass(beanNode, true, beanFactory.getClassLoader()), beanNode);
@@ -47,7 +47,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
 		ioc.getDependence().getIocProcessors()
 				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(targetClass, nodeList, beanFactory.getClassLoader()));
-		this.xmlParameterFactory = new XmlParameterFactory(beanFactory,
+		this.xmlParameterFactory = new XmlParametersFactory(beanFactory,
 				XmlBeanUtils.getConstructorParameters(nodeList, beanFactory.getClassLoader()));
 		this.id = getId(beanNode);
 		this.names.addAll(super.getNames());
