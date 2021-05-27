@@ -72,6 +72,19 @@ public class StringValue extends AbstractValue {
 
 	@Override
 	protected Object getAsNonBaseType(ResolvableType type) {
+		if (value == null) {
+			return getDefaultValue().getAsObject(type);
+		}
+		
+		if(type.isInstance(value)) {
+			return value;
+		}
+
+		Class<?> rawClass = type.getRawClass();
+		if (rawClass == Object.class || rawClass == null) {
+			return value;
+		}
+		
 		if (isSupportArray() && type.isArray()) {
 			return getAsArray(type.getComponentType());
 		}

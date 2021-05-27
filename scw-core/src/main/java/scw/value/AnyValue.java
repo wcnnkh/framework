@@ -452,6 +452,10 @@ public class AnyValue extends AbstractValue {
 		if (value == null) {
 			return getDefaultValue().getAsObject(type);
 		}
+		
+		if(type.isInstance(value)) {
+			return value;
+		}
 
 		Class<?> rawClass = type.getRawClass();
 		if (rawClass == Object.class || rawClass == null) {
