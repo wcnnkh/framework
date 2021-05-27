@@ -6,5 +6,5 @@ import scw.security.authority.Authority;
 public interface HttpAuthority extends Authority {
 	String getPath();
 
-	HttpMethod getHttpMethod();
+	HttpMethod getMethod();
 }

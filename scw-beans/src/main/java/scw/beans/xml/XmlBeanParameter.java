@@ -141,8 +141,4 @@ public final class XmlBeanParameter extends EmptyAnnotatedElement implements Clo
 	public boolean isNullable() {
 		return type == null? true:!type.isPrimitive();
 	}
-
-	public Value getDefaultValue() {
-		return null;
-	}
 }

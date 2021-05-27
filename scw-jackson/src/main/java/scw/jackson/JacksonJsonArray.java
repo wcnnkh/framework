@@ -3,13 +3,6 @@ package scw.jackson;
 import java.io.IOException;
 import java.util.Iterator;
 
-import scw.convert.Converter;
-import scw.core.IteratorConverter;
-import scw.json.AbstractJson;
-import scw.json.EmptyJsonElement;
-import scw.json.JsonArray;
-import scw.json.JsonElement;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializable;
@@ -17,6 +10,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+
+import scw.convert.Converter;
+import scw.convert.ConvertibleIterator;
+import scw.json.AbstractJson;
+import scw.json.EmptyJsonElement;
+import scw.json.JsonArray;
+import scw.json.JsonElement;
 
 public class JacksonJsonArray extends AbstractJson<Integer> implements
 		JsonArray, JsonSerializable, Converter<JsonNode, JsonElement> {
@@ -45,7 +45,7 @@ public class JacksonJsonArray extends AbstractJson<Integer> implements
 
 	@Override
 	public Iterator<JsonElement> iterator() {
-		return new IteratorConverter<JsonNode, JsonElement>(
+		return new ConvertibleIterator<JsonNode, JsonElement>(
 				arrayNode.iterator(), this);
 	}
 

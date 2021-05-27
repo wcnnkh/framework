@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import scw.core.utils.ClassUtils;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.lang.RequiredJavaVersion;
 import scw.microsoft.DefaultExcelExport;
 import scw.microsoft.Excel;
@@ -25,9 +25,9 @@ import scw.microsoft.WritableExcel;
 
 @RequiredJavaVersion(8)
 public class PoiExcelOperations implements ExcelOperations {
-	private static final ExcelReader OLE2_READER = InstanceUtils.INSTANCE_FACTORY
+	private static final ExcelReader OLE2_READER = Sys.getInstanceFactory()
 			.getInstance("scw.microsoft.poi.HSSFExcelReader");
-	private static final ExcelReader OOXML_READER = InstanceUtils.INSTANCE_FACTORY
+	private static final ExcelReader OOXML_READER = Sys.getInstanceFactory()
 			.getInstance("scw.microsoft.poi.XSSFExcelReader");
 	private static final boolean XSSF_SUPPORT = ClassUtils
 			.isPresent("org.apache.poi.xssf.usermodel.XSSFWorkbookFactory", null);
@@ -76,14 +76,14 @@ public class PoiExcelOperations implements ExcelOperations {
 
 	public WritableExcel create(OutputStream outputStream) throws IOException, ExcelException {
 		Workbook workbook = SXSS_WORKBOOK_CLASS != null
-				? InstanceUtils.INSTANCE_FACTORY.getInstance(SXSS_WORKBOOK_CLASS)
+				? Sys.getInstanceFactory().getInstance(SXSS_WORKBOOK_CLASS)
 				: WorkbookFactory.create(XSSF_SUPPORT);
 		return new PoiExcel(workbook, outputStream);
 	}
 
 	public WritableExcel createWritableExcel(File file) throws IOException, ExcelException {
 		Workbook workbook = SXSS_WORKBOOK_CLASS != null
-				? InstanceUtils.INSTANCE_FACTORY.getInstance(SXSS_WORKBOOK_CLASS)
+				? Sys.getInstanceFactory().getInstance(SXSS_WORKBOOK_CLASS)
 				: WorkbookFactory.create(file, null, false);
 		return new PoiExcel(workbook, new FileOutputStream(file));
 	}
@@ -109,7 +109,7 @@ public class PoiExcelOperations implements ExcelOperations {
 		if (excelVersionTouse == ExcelVersion.XLS) {
 			workbook = WorkbookFactory.create(false);
 		} else {
-			workbook = SXSS_WORKBOOK_CLASS != null ? InstanceUtils.INSTANCE_FACTORY.getInstance(SXSS_WORKBOOK_CLASS)
+			workbook = SXSS_WORKBOOK_CLASS != null ? Sys.getInstanceFactory().getInstance(SXSS_WORKBOOK_CLASS)
 					: WorkbookFactory.create(true);
 		}
 		return new PoiExcel(workbook, outputStream);

@@ -13,7 +13,6 @@ import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.data.Storage;
-import scw.env.SystemEnvironment;
 import scw.io.FileUtils;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;
@@ -36,7 +35,7 @@ public class DirectoryStorage extends TimerTask implements Storage {
 	 */
 	protected DirectoryStorage(int exp) {
 		this(exp, SerializerUtils.getSerializer(),
-				SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + "file_cache_" + exp);
+				FileUtils.getTempDirectory() + File.separator + "file_cache_" + exp);
 	}
 
 	/**
@@ -285,6 +284,6 @@ public class DirectoryStorage extends TimerTask implements Storage {
 
 	public static DirectoryStorage create(String cacheDirectorySuffix, int exp) {
 		return new DirectoryStorage(exp,
-				SystemEnvironment.getInstance().getTempDirectoryPath() + File.separator + cacheDirectorySuffix);
+				FileUtils.getTempDirectory() + File.separator + cacheDirectorySuffix);
 	}
 }

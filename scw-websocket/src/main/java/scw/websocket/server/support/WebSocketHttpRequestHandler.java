@@ -23,10 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import scw.core.Assert;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.ExceptionWebSocketHandlerDecorator;
 import scw.websocket.handler.LoggingWebSocketHandlerDecorator;

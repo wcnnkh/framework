@@ -21,6 +21,6 @@ public class AmqpNamedEventDispatcher<T extends Event> extends DefaultNamedEvent
 
 	@Override
 	protected EventDispatcher<T> createBasicEventDispatcher(String name) {
-		return new AmqpBasicEventDisabtcher<T>(exchange, name, createQueueDeclare(name));
+		return new AmqpEventDisabtcher<T>(exchange, name, createQueueDeclare(name));
 	}
 }

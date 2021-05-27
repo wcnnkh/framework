@@ -19,25 +19,19 @@ public class ApplicationRunner<T extends ConfigurableApplication> {
 		consumer.accept(application);
 		return this;
 	}
-
-	public ApplicationRunner<T> source(Class<?> sourceClass) {
-		application.getEnvironment().source(sourceClass);
-		return this;
-	}
 	
 	public ListenableFuture<T> start() {
 		Runtime.getRuntime().addShutdownHook(new ApplicationShutdown());
 		ApplicationStart start = new ApplicationStart();
 		Thread run = new Thread(start);
-		run.setContextClassLoader(application.getClassLoader());
+		run.setContextClassLoader(application.getEnvironment().getClassLoader());
 		run.setName(threadName);
 		run.setDaemon(false);
 		run.start();
 		return start;
 	}
 
-	private class ApplicationStart extends SettableListenableFuture<T>
-			implements Runnable {
+	private class ApplicationStart extends SettableListenableFuture<T> implements Runnable {
 
 		public void run() {
 			try {
@@ -60,17 +54,15 @@ public class ApplicationRunner<T extends ConfigurableApplication> {
 	private class ApplicationShutdown extends Thread {
 		public ApplicationShutdown() {
 			setName("shutdown-" + threadName);
-			setContextClassLoader(application.getClassLoader());
+			setContextClassLoader(application.getEnvironment().getClassLoader());
 		}
 
 		@Override
 		public void run() {
-			if (application.isInitialized()) {
-				try {
-					application.destroy();
-				} catch (Throwable e) {
-					application.getLogger().error(e, "destroy error");
-				}
+			try {
+				application.destroy();
+			} catch (Throwable e) {
+				application.getLogger().error(e, "destroy error");
 			}
 			super.run();
 		}

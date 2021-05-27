@@ -4,14 +4,14 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 
 import scw.core.reflect.ReflectionUtils;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.instance.NoArgsInstanceFactory;
 import scw.util.Accept;
 import scw.util.ConfigurableAccept;
 
 @SuppressWarnings("unchecked")
 public class Copy {
-	private NoArgsInstanceFactory instanceFactory = InstanceUtils.INSTANCE_FACTORY;
+	private NoArgsInstanceFactory instanceFactory;
 	private Mapper mapper = MapperUtils.getMapper();
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
 
@@ -90,7 +90,7 @@ public class Copy {
 	}
 
 	public final NoArgsInstanceFactory getInstanceFactory() {
-		return instanceFactory;
+		return instanceFactory == null ? Sys.getInstanceFactory() : instanceFactory;
 	}
 
 	public Copy setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
@@ -148,10 +148,8 @@ public class Copy {
 	/**
 	 * 获取对应的数据来源字段
 	 * 
-	 * @param sourceClass
-	 *            数据来源
-	 * @param targetField
-	 *            要插入的字段
+	 * @param sourceClass 数据来源
+	 * @param targetField 要插入的字段
 	 * @return
 	 */
 	protected Field getSourceField(Class<?> sourceClass, Fields sourceFields, final Field targetField) {
@@ -264,8 +262,7 @@ public class Copy {
 		}
 
 		Class<?> sourceClass = source.getClass();
-		if (sourceClass.isPrimitive() || sourceClass.isEnum()
-				|| !getInstanceFactory().isInstance(sourceClass)) {
+		if (sourceClass.isPrimitive() || sourceClass.isEnum() || !getInstanceFactory().isInstance(sourceClass)) {
 			return source;
 		}
 
@@ -274,7 +271,7 @@ public class Copy {
 		}
 
 		if (isInvokeCloneableMethod() && source instanceof Cloneable) {
-			return ReflectionUtils.clone((Cloneable)source);
+			return ReflectionUtils.clone((Cloneable) source);
 		}
 
 		Object target = getInstanceFactory().getInstance(sourceClass);

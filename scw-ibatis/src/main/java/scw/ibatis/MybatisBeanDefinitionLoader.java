@@ -6,8 +6,8 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
-import scw.beans.BeanFactory;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.io.Resource;
@@ -16,7 +16,7 @@ import scw.io.ResourceUtils;
 @Provider
 public class MybatisBeanDefinitionLoader implements BeanDefinitionLoader {
 
-	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
+	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass, BeanDefinitionLoaderChain loaderChain) {
 		if (sourceClass == SqlSessionFactory.class) {
 			return new SqlSessionFactoryBeanBuilder(beanFactory, sourceClass);
 		}
@@ -25,7 +25,7 @@ public class MybatisBeanDefinitionLoader implements BeanDefinitionLoader {
 
 	private static final class SqlSessionFactoryBeanBuilder extends DefaultBeanDefinition {
 
-		public SqlSessionFactoryBeanBuilder(BeanFactory beanFactory, Class<?> sourceClass) {
+		public SqlSessionFactoryBeanBuilder(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 			super(beanFactory, sourceClass);
 		}
 

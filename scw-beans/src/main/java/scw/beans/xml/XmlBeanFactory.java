@@ -22,38 +22,38 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 	private static final String TAG_NAME = "bean";
 	private NodeList nodeList;
 	private String xml;
-	
+
 	public XmlBeanFactory(String xml) {
-		this.xml = xml;
+		this.xml = StringUtils.isEmpty(xml) ? DEFAULT_CONFIG : xml;
 	}
 
 	public NodeList getNodeList() {
 		return nodeList == null ? DomUtils.EMPTY_NODE_LIST : nodeList;
 	}
-	
+
 	public String getXml() {
 		return xml;
 	}
 
 	@Override
-	protected void beforeInit() throws Throwable {
+	public void init() throws Throwable {
 		Resource resource = null;
-		if(StringUtils.isNotEmpty(xml)){
+		if (StringUtils.isNotEmpty(xml)) {
 			resource = getEnvironment().getResource(xml);
 		}
-		
-		if(resource == null || !resource.exists()){
+
+		if (resource == null || !resource.exists()) {
 			String config = getEnvironment().getString(CONFIG_NAME);
-			if(StringUtils.isNotEmpty(config)){
+			if (StringUtils.isNotEmpty(config)) {
 				resource = getEnvironment().getResource(config);
 			}
 		}
-		
-		if(resource == null || !resource.exists()){
+
+		if (resource == null || !resource.exists()) {
 			resource = getEnvironment().getResource(DEFAULT_CONFIG);
 		}
-		
-		if(resource != null && resource.exists()){
+
+		if (resource != null && resource.exists()) {
 			this.nodeList = XmlBeanUtils.getRootNodeList(resource, getEnvironment());
 			logger.info("Use config {}", resource);
 			loadXmlEnv(nodeList);
@@ -67,10 +67,10 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 				}
 			}
 		}
-		super.beforeInit();
+		super.init();
 	}
-	
-	private void loadXmlEnv(NodeList nodeList){
+
+	private void loadXmlEnv(NodeList nodeList) {
 		for (int i = 0, size = nodeList.getLength(); i < size; i++) {
 			Node node = nodeList.item(i);
 			if (node == null) {
@@ -84,24 +84,20 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 			loadXmlEnv(null, null, node);
 		}
 	}
-	
-	private void loadXmlEnv(String prefix,
-			String charsetName, Node node) {
+
+	private void loadXmlEnv(String prefix, String charsetName, Node node) {
 		String prefixToUse = DomUtils.getNodeAttributeValue(node, "prefix");
 		if (StringUtils.isEmpty(prefixToUse)) {
 			prefixToUse = prefix;
 		} else {
-			prefixToUse = StringUtils.isEmpty(prefix) ? prefixToUse
-					: (prefix + prefixToUse);
+			prefixToUse = StringUtils.isEmpty(prefix) ? prefixToUse : (prefix + prefixToUse);
 		}
 
-		String charsetNameToUse = DomUtils.getNodeAttributeValue(node,
-				"charsetName");
+		String charsetNameToUse = DomUtils.getNodeAttributeValue(node, "charsetName");
 		if (StringUtils.isEmpty(charsetNameToUse)) {
 			charsetNameToUse = charsetName;
 		} else {
-			charsetNameToUse = StringUtils.isEmpty(charsetName) ? charsetNameToUse
-					: charsetName;
+			charsetNameToUse = StringUtils.isEmpty(charsetName) ? charsetNameToUse : charsetName;
 		}
 
 		String file = DomUtils.getNodeAttributeValue(node, "file");
@@ -111,18 +107,15 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 
 		String name = DomUtils.getNodeAttributeValue(node, "name");
 		if (StringUtils.isNotEmpty(name)) {
-			name = StringUtils.isEmpty(prefixToUse) ? name
-					: (prefixToUse + name);
+			name = StringUtils.isEmpty(prefixToUse) ? name : (prefixToUse + name);
 
 			String url = getURL(node);
 			if (StringUtils.isNotEmpty(url)) {
-				String value = HttpUtils.getHttpClient().get(String.class, url)
-						.getBody();
+				String value = HttpUtils.getHttpClient().get(String.class, url).getBody();
 				getEnvironment().put(name, value);
 			}
 
-			String value = DomUtils.getNodeAttributeValueOrNodeContent(
-					getEnvironment(), node, "value");
+			String value = DomUtils.getNodeAttributeValueOrNodeContent(getEnvironment(), node, "value");
 			if (StringUtils.isNotEmpty(value)) {
 				getEnvironment().put(name, value);
 			}
@@ -144,7 +137,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 			}
 		}
 	}
-	
+
 	private static String getURL(Node node) {
 		return DomUtils.getNodeAttributeValue(node, "url");
 	}
@@ -164,7 +157,7 @@ public class XmlBeanFactory extends DefaultBeanFactory {
 				Collection<String> names = Arrays.asList(
 						StringUtils.commonSplit(DomUtils.getRequireNodeAttributeValue(getEnvironment(), node, "name")));
 				String id = DomUtils.getRequireNodeAttributeValueOrNodeContent(getEnvironment(), node, "id");
-				for(String name : names){
+				for (String name : names) {
 					registerAlias(id, name);
 				}
 			}

@@ -7,7 +7,7 @@ import java.nio.charset.Charset;
 
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
-import scw.codec.multiple.MultipleCodec;
+import scw.codec.MultipleCodec;
 import scw.core.Constants;
 
 public class URLCodec implements MultipleCodec<String>{

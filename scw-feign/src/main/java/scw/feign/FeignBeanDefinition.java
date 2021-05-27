@@ -1,18 +1,18 @@
 package scw.feign;
 
-import scw.beans.BeanFactory;
-import scw.beans.BeansException;
-import scw.beans.support.DefaultBeanDefinition;
-import scw.core.utils.StringUtils;
-import scw.net.message.convert.DefaultMessageConverters;
 import feign.Feign;
 import feign.codec.Decoder;
 import feign.codec.Encoder;
+import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
+import scw.beans.support.DefaultBeanDefinition;
+import scw.core.utils.StringUtils;
+import scw.net.message.convert.DefaultMessageConverters;
 
 public class FeignBeanDefinition extends DefaultBeanDefinition {
 	private scw.feign.annotation.FeignClient feignClient;
 
-	public FeignBeanDefinition(BeanFactory beanFactory, Class<?> sourceClass,
+	public FeignBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> sourceClass,
 			scw.feign.annotation.FeignClient feignClient) {
 		super(beanFactory, sourceClass);
 		this.feignClient = feignClient;

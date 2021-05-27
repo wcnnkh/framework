@@ -8,69 +8,59 @@ import java.util.Iterator;
 import scw.aop.AopPolicy;
 import scw.aop.ConfigurableAop;
 import scw.aop.support.DefaultConfigurableAop;
+import scw.aop.support.ProxyUtils;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionRegistry;
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
-import scw.beans.BeanLifeCycleEvent;
 import scw.beans.BeanUtils;
+import scw.beans.BeanlifeCycleEvent;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.beans.SingletonBeanRegistry;
 import scw.beans.ioc.Ioc;
-import scw.context.ClassesLoader;
-import scw.context.ConfigurableClassesLoader;
-import scw.context.ConfigurableContextEnvironment;
-import scw.context.support.DefaultContextEnvironment;
-import scw.context.support.LifecycleAuxiliary;
+import scw.context.Destroy;
+import scw.context.Init;
+import scw.context.support.AbstractConfigurableContext;
 import scw.core.parameter.ConstructorParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ClassUtils;
 import scw.env.Environment;
-import scw.env.SystemEnvironment;
-import scw.event.EventListener;
-import scw.event.EventRegistration;
+import scw.env.Sys;
+import scw.event.EventDispatcher;
 import scw.event.support.DefaultEventDispatcher;
 import scw.instance.InstanceFactory;
 import scw.instance.NoArgsInstanceFactory;
-import scw.instance.ServiceLoader;
+import scw.instance.ServiceLoaderFactory;
 import scw.lang.NotSupportedException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.ClassLoaderProvider;
 import scw.util.Creator;
+import scw.util.DefaultClassLoaderProvider;
 import scw.util.Result;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
-public class DefaultBeanFactory extends LifecycleAuxiliary implements ConfigurableBeanFactory {
+public class DefaultBeanFactory extends AbstractConfigurableContext
+		implements ConfigurableBeanFactory, ServiceLoaderFactory, Init, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanFactory.class);
-	private final DefaultEventDispatcher<BeanLifeCycleEvent> beanLifeCycleEventDispatcher = new DefaultEventDispatcher<BeanLifeCycleEvent>(
+	private final DefaultEventDispatcher<BeanlifeCycleEvent> beanLifeCycleEventDispatcher = new DefaultEventDispatcher<BeanlifeCycleEvent>(
 			true);
-	private final DefaultContextEnvironment environment = new DefaultContextEnvironment(true, true, this) {
-		public ClassLoader getClassLoader() {
-			return DefaultBeanFactory.this.getClassLoader();
-		};
-	};
-
-	private final DefaultConfigurableAop aop = new DefaultConfigurableAop(environment.getProxyFactory());
-
+	private final DefaultConfigurableAop aop = new DefaultConfigurableAop();
 	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(this);
 	private final SingletonBeanRegistry singletonBeanRegistry = new DefaultSingletonBeanRegistry(this);
 	private ClassLoaderProvider classLoaderProvider;
 
-	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
-		this.classLoaderProvider = classLoaderProvider;
-	}
-
 	public DefaultBeanFactory() {
+		super(true);
 		aop.addAopPolicy(new AopPolicy() {
 
 			public boolean isProxy(Object instance) {
 				return BeanUtils.getRuntimeBean(instance) != null;
 			}
 		});
-		getEnvironment().addFactory(SystemEnvironment.getInstance());
-		
+		getEnvironment().addFactory(Sys.env);
+
 		registerSingleton(BeanFactory.class.getName(), this);
 		registerAlias(BeanFactory.class.getName(), InstanceFactory.class.getName());
 		registerAlias(BeanFactory.class.getName(), NoArgsInstanceFactory.class.getName());
@@ -78,20 +68,26 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 		registerSingleton(Environment.class.getName(), getEnvironment());
 	}
 
-	public ConfigurableAop getAop() {
-		return aop;
+	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
 	}
 
+	public void setClassLoader(ClassLoader classLoader) {
+		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
+	}
+
+	@Override
 	public ClassLoader getClassLoader() {
 		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 
-	public EventRegistration registerListener(EventListener<BeanLifeCycleEvent> eventListener) {
-		return beanLifeCycleEventDispatcher.registerListener(eventListener);
+	@Override
+	public EventDispatcher<BeanlifeCycleEvent> getLifecycleDispatcher() {
+		return beanLifeCycleEventDispatcher;
 	}
 
-	public void publishEvent(BeanLifeCycleEvent event) {
-		beanLifeCycleEventDispatcher.publishEvent(event);
+	public ConfigurableAop getAop() {
+		return aop;
 	}
 
 	public final boolean containsDefinition(String beanName) {
@@ -140,18 +136,6 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 
 	public final void removeAlias(String alias) {
 		beanDefinitionRegistry.removeAlias(alias);
-	}
-
-	public final ClassesLoader getClassesLoader(String packageName) {
-		return environment.getClassesLoader(packageName);
-	}
-
-	public final ConfigurableContextEnvironment getEnvironment() {
-		return environment;
-	}
-
-	public final ConfigurableClassesLoader getContextClassesLoader() {
-		return environment.getContextClassesLoader();
 	}
 
 	public Object getSingletonMutex() {
@@ -313,13 +297,14 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 		beanFactoryPostProcessor.postProcessBeanFactory(this);
 	}
 
-	@Override
-	protected void beforeInit() throws Throwable {
+	public void init() throws Throwable {
 		postProcessBeanFactory(new MethodBeanFactoryPostProcessor());
 		postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
+		postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
 
-		environment.loadServices(this, logger);
-		aop.loadServices(this);
+		for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {
+			postProcessBeanFactory(processor);
+		}
 
 		for (BeanDefinition definition : getServiceLoader(BeanDefinition.class)) {
 			if (containsDefinition(definition.getId())) {
@@ -329,23 +314,15 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 			registerDefinition(definition.getId(), definition);
 		}
 
-		for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {
-			postProcessBeanFactory(processor);
-		}
-		super.beforeInit();
-	}
-
-	@Override
-	protected void afterInit() throws Throwable {
-		postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
-		
-		//初始化所有单例(原来是想全部懒加载，但是后来出现问题了)
-		for(String id : beanDefinitionRegistry.getDefinitionIds()) {
-			if(isSingleton(id) && isInstance(id)) {
+		aop.loadServices(this);
+		super.init();
+		// TODO 初始化所有单例(原来是想全部懒加载，但是后来出现问题了)
+		for (String id : beanDefinitionRegistry.getDefinitionIds()) {
+			if (isSingleton(id) && isInstance(id)) {
 				getInstance(id);
 			}
 		}
-		
+
 		// 处理静态依赖
 		for (Class<?> clazz : getContextClassesLoader()) {
 			for (Ioc ioc : Ioc.forClass(clazz)) {
@@ -353,27 +330,15 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 				ioc.getInit().process(null, null, this);
 			}
 		}
-		super.afterInit();
 	}
 
-	@Override
-	protected void beforeDestroy() throws Throwable {
+	public void destroy() throws Throwable {
 		singletonBeanRegistry.destroyAll();
-		super.beforeDestroy();
-	}
-
-	@Override
-	protected void afterDestroy() throws Throwable {
 		for (Class<?> clazz : getContextClassesLoader()) {
 			for (Ioc ioc : Ioc.forClass(clazz)) {
 				ioc.getDestroy().process(null, null, this);
 			}
 		}
-		super.afterDestroy();
-	}
-
-	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
-		return environment.getServiceLoader(serviceClass);
 	}
 
 	private final class SingletionBeanDefinition implements BeanDefinition {
@@ -394,7 +359,7 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 		}
 
 		public Class getTargetClass() {
-			return getEnvironment().getProxyFactory().getUserClass(instance.getClass());
+			return ProxyUtils.getFactory().getUserClass(instance.getClass());
 		}
 
 		public boolean isSingleton() {
@@ -446,5 +411,10 @@ public class DefaultBeanFactory extends LifecycleAuxiliary implements Configurab
 		public boolean isInstance(Class[] parameterTypes) {
 			return false;
 		}
+	}
+
+	@Override
+	protected final NoArgsInstanceFactory getTargetInstanceFactory() {
+		return this;
 	}
 }

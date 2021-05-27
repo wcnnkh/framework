@@ -11,7 +11,7 @@ public class FileLockFactory implements LockFactory{
 	private final File directory;
 	
 	public FileLockFactory() {
-		this(FileUtils.getTempDirectory());
+		this(new File(FileUtils.getTempDirectory()));
 	}
 	
 	public FileLockFactory(File directory) {

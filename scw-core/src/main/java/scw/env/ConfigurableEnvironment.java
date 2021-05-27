@@ -2,7 +2,6 @@ package scw.env;
 
 import java.util.Properties;
 
-import scw.aop.ConfigurableProxyFactory;
 import scw.convert.ConfigurableConversionService;
 import scw.convert.resolve.ConfigurableResourceResolver;
 import scw.event.Observable;
@@ -53,8 +52,6 @@ public interface ConfigurableEnvironment extends Environment, ConfigurableProper
 	ConfigurablePlaceholderReplacer getPlaceholderReplacer();
 
 	ConfigurablePropertiesResolver getPropertiesResolver();
-
-	ConfigurableProxyFactory getProxyFactory();
 
 	ConfigurableConversionService getConversionService();
 

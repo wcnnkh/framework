@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
-import scw.codec.multiple.MultipleCodec;
+import scw.codec.MultipleCodec;
 import scw.lang.Nullable;
 
 /**

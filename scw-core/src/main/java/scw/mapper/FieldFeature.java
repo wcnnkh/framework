@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 import scw.lang.Ignore;
 import scw.util.Accept;
 
-public enum FieldFeature {
+public enum FieldFeature implements Accept<Field> {
 	SUPPORT_GETTER(new SupportGetterFieldFilter()), SUPPORT_SETTER(new SupportSetterFieldFilter()),
 	GETTER_PUBLIC(new GetterPublicFieldFilter()), SETTER_PUBLIC(new SetterPublicFieldFilter()),
 	GETTER_IGNORE_STATIC(new IgnoreGetterStaticFieldFilter()),
@@ -33,12 +33,11 @@ public enum FieldFeature {
 	IGNORE_GETTER_FINAL(new IgnoreFinalFieldFilter(true)),
 
 	IGNORE_SETTER_FINAL(new IgnoreFinalFieldFilter(false)),
-	
+
 	/**
 	 * @see Ignore
 	 */
-	IGNORE_ANNOTATION(new SupportedIgnoreAnnotation()),
-	;
+	IGNORE_ANNOTATION(new SupportedIgnoreAnnotation()),;
 
 	private final Accept<Field> accept;
 
@@ -48,6 +47,11 @@ public enum FieldFeature {
 
 	public Accept<Field> getAccept() {
 		return accept;
+	}
+
+	@Override
+	public boolean accept(Field e) {
+		return accept.accept(e);
 	}
 
 	private static final class IgnoreFinalFieldFilter implements Accept<Field> {
@@ -73,8 +77,8 @@ public enum FieldFeature {
 			return true;
 		}
 	}
-	
-	private static final class SupportedIgnoreAnnotation implements Accept<Field>{
+
+	private static final class SupportedIgnoreAnnotation implements Accept<Field> {
 		@Override
 		public boolean accept(Field e) {
 			return e.getAnnotation(Ignore.class) != null;

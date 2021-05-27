@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>scw</groupId>
@@ -70,7 +69,7 @@
 			<dependency>
 				<groupId>org.ow2.asm</groupId>
 				<artifactId>asm</artifactId>
-				<version>7.1</version>
+				<version>7.3.1</version>
 			</dependency>
 
 			<!-- https://mvnrepository.com/artifact/cglib/cglib -->
@@ -78,6 +77,13 @@
 				<groupId>cglib</groupId>
 				<artifactId>cglib</artifactId>
 				<version>3.3.0</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.8.5</version>
 			</dependency>
 
 			<dependency>
@@ -97,7 +103,7 @@
 				<artifactId>scw-transaction</artifactId>
 				<version>2.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-orm</artifactId>
@@ -149,12 +155,6 @@
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-cloud</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
-				<artifactId>scw-search</artifactId>
 				<version>2.0</version>
 			</dependency>
 
@@ -412,12 +412,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-gson</artifactId>
-				<version>2.0</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-kafka</artifactId>
 				<version>2.0</version>
 			</dependency>
@@ -439,10 +433,22 @@
 				<artifactId>scw-consistency</artifactId>
 				<version>2.0</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-jackson</artifactId>
+				<version>2.0</version>
+			</dependency>
+
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-apollo-client</artifactId>
+				<version>2.0</version>
+			</dependency>
+			
+			<dependency>
+				<groupId>scw</groupId>
+				<artifactId>scw-dom</artifactId>
 				<version>2.0</version>
 			</dependency>
 
@@ -459,12 +465,6 @@
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
 				<version>${commons-fileupload.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>2.8.5</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -487,6 +487,12 @@
 			<artifactId>cglib</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -506,6 +512,12 @@
 					<version>3.2.1</version>
 				</plugin>
 
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>jarjar-maven-plugin</artifactId>
+					<version>1.9</version>
+				</plugin>
+
 				<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -519,13 +531,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-antrun-plugin</artifactId>
 					<version>3.0.0</version>
-				</plugin>
-
-				<!-- 方便使用jarjar -->
-				<plugin>
-					<groupId>org.sonatype.plugins</groupId>
-					<artifactId>jarjar-maven-plugin</artifactId>
-					<version>1.9</version>
 				</plugin>
 
 				<!-- 打包成war时使用的插件 -->
@@ -636,7 +641,6 @@
 		<module>scw-websocket</module>
 		<module>scw-cloud</module>
 		<module>scw-security</module>
-		<module>scw-search</module>
 		<module>scw-microsoft</module>
 		<module>scw-dubbo</module>
 		<module>scw-zookeeper</module>
@@ -680,7 +684,6 @@
 		<module>scw-kryo</module>
 		<module>scw-fastjson</module>
 		<module>scw-hessian</module>
-		<module>scw-gson</module>
 		<module>scw-rpc</module>
 		<module>scw-seata</module>
 		<module>scw-nacos-client</module>
@@ -690,5 +693,7 @@
 		<module>scw-consistency</module>
 		<module>scw-jackson</module>
 		<module>scw-orm</module>
+		<module>scw-apollo-client</module>
+		<module>scw-dom</module>
 	</modules>
 </project>

@@ -18,8 +18,8 @@ package scw.websocket.server;
 
 import java.util.Map;
 
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
 import scw.websocket.WebSocketHandler;
 import scw.websocket.handler.PerConnectionWebSocketHandler;
 

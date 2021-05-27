@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
 import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.lang.Nullable;
@@ -19,7 +18,7 @@ public class FileMimeTypeUitls {
 	private static MultiValueMap<String, MimeType> parseMimeTypes() {
 		MultiValueMap<String, MimeType> result = new LinkedMultiValueMap<String, MimeType>();
 		String mimeTypesFileName = "/scw/net/mime/mime.types";
-		Resource resource = SystemEnvironment.getInstance().getResource(mimeTypesFileName);
+		Resource resource = ResourceUtils.getSystemResource(mimeTypesFileName);
 		for(String line : ResourceUtils.getLines(resource, MimeTypeUtils.US_ASCII)){
 			if (line.isEmpty() || line.charAt(0) == '#') {
 				continue;

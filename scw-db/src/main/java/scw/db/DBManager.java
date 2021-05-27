@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import scw.env.SystemEnvironment;
+import scw.aop.support.ProxyUtils;
 import scw.lang.AlreadyExistsException;
 import scw.sql.Sql;
 
@@ -49,7 +49,7 @@ public final class DBManager {
 	 * @return
 	 */
 	public static DB getDB(Class<?> tableClass) {
-		DB db = CLASS_TO_DB.get(SystemEnvironment.getInstance().getProxyFactory().getUserClass(tableClass));
+		DB db = CLASS_TO_DB.get(ProxyUtils.getFactory().getUserClass(tableClass));
 		if (db == null) {
 			throw new NullPointerException(tableClass + " not found db");
 		}

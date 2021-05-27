@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
 
+import scw.json.JSONUtils;
+
 public class DefaultAuthority implements Authority, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final String id;
@@ -41,5 +43,10 @@ public class DefaultAuthority implements Authority, Serializable {
 
 	public boolean isMenu() {
 		return menu;
+	}
+	
+	@Override
+	public String toString() {
+		return JSONUtils.getJsonSupport().toJSONString(this);
 	}
 }

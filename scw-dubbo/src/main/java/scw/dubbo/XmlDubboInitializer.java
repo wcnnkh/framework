@@ -2,7 +2,7 @@ package scw.dubbo;
 
 import org.w3c.dom.NodeList;
 
-import scw.beans.ConfigurableBeanFactory;
+import scw.beans.BeanFactory;
 import scw.beans.xml.XmlBeanFactory;
 import scw.boot.ApplicationPostProcessor;
 import scw.boot.ConfigurableApplication;
@@ -20,7 +20,7 @@ public class XmlDubboInitializer implements ApplicationPostProcessor {
 	@Override
 	public void postProcessApplication(ConfigurableApplication application)
 			throws Throwable {
-		ConfigurableBeanFactory beanFactory = application.getBeanFactory();
+		BeanFactory beanFactory = application.getBeanFactory();
 		if (beanFactory instanceof XmlBeanFactory) {
 			NodeList nodeList = ((XmlBeanFactory) beanFactory).getNodeList();
 			if (nodeList == null) {

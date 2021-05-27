@@ -6,13 +6,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import scw.http.server.MultiPartServerHttpRequest;
 import scw.net.message.multipart.FileItem;
 import scw.upload.ueditor.PathFormat;
 import scw.upload.ueditor.define.AppInfo;
 import scw.upload.ueditor.define.BaseState;
 import scw.upload.ueditor.define.FileType;
 import scw.upload.ueditor.define.State;
+import scw.web.MultiPartServerHttpRequest;
 
 public class BinaryUploader {
 

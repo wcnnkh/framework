@@ -8,6 +8,7 @@ import java.util.Arrays;
 
 import scw.convert.TypeDescriptor;
 import scw.core.utils.StringUtils;
+import scw.env.Sys;
 import scw.http.ContentDisposition;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
@@ -16,7 +17,6 @@ import scw.http.HttpResponseEntity;
 import scw.http.HttpStatus;
 import scw.http.MediaType;
 import scw.http.client.exception.HttpClientException;
-import scw.instance.InstanceUtils;
 import scw.io.FileUtils;
 import scw.io.support.TemporaryFile;
 import scw.lang.Nullable;
@@ -26,7 +26,7 @@ import scw.net.InetUtils;
 import scw.util.XUtils;
 
 public interface HttpConnection extends HttpConnectionFactory {
-	static final RedirectManager REDIRECT_MANAGER = InstanceUtils.loadService(
+	static final RedirectManager REDIRECT_MANAGER = Sys.loadService(
 			RedirectManager.class,
 			"scw.http.client.HttpConnection.DefaultRedirectManager");
 

@@ -6,12 +6,12 @@ import javax.servlet.ServletContext;
 import scw.beans.BeanFactory;
 import scw.boot.Application;
 import scw.boot.servlet.ServletApplicationStartup;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.lang.Nullable;
 import scw.logger.Logger;
 
 public abstract class ServletContextUtils {
-	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = InstanceUtils.loadService(ServletApplicationStartup.class,
+	private static final ServletApplicationStartup SERVLET_APPLICATION_STARTUP = Sys.loadService(ServletApplicationStartup.class,
 			"scw.boot.servlet.support.Servlet3ApplicationStartup", "scw.boot.servlet.support.DefaultServletApplicationStartup");
 	
 	public static ServletApplicationStartup getServletApplicationStartup() {

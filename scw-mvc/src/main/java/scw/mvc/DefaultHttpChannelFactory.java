@@ -3,28 +3,80 @@ package scw.mvc;
 import java.io.IOException;
 
 import scw.beans.BeanFactory;
-import scw.http.server.ServerHttpRequest;
-import scw.http.server.ServerHttpResponse;
-import scw.json.JSONSupport;
-import scw.json.JSONUtils;
+import scw.net.InetUtils;
+import scw.net.message.multipart.FileItemParser;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
+import scw.web.WebUtils;
+import scw.web.jsonp.JsonpUtils;
+import scw.web.message.WebMessageConverters;
+import scw.web.message.support.DefaultWebMessageConverters;
+import scw.web.pattern.HttpPatternRegistry;
 
 public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	protected final BeanFactory beanFactory;
-	private JSONSupport jsonSupport;
+	private FileItemParser fileItemParser;
+	private final HttpPatternRegistry<Boolean> jsonpSupportConfig = new HttpPatternRegistry<Boolean>();
+	private final HttpPatternRegistry<Boolean> jsonSupportWrapperConfig = new HttpPatternRegistry<Boolean>();
+	private final HttpPatternRegistry<Boolean> multipartFormSupportWrapperConfig = new HttpPatternRegistry<Boolean>();
+	private final WebMessageConverters webMessageConverters;
 
 	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
+		webMessageConverters = new DefaultWebMessageConverters(beanFactory.getEnvironment().getConversionService(),
+				beanFactory);
 	}
 
-	public final JSONSupport getJsonSupport() {
-		return jsonSupport == null? JSONUtils.getJsonSupport():jsonSupport;
+	public FileItemParser getFileItemParser() {
+		return fileItemParser == null ? InetUtils.getFileItemParser() : fileItemParser;
 	}
 
-	public void setJsonSupport(JSONSupport jsonSupport) {
-		this.jsonSupport = jsonSupport;
+	public void setFileItemParser(FileItemParser fileItemParser) {
+		this.fileItemParser = fileItemParser;
+	}
+
+	public final HttpPatternRegistry<Boolean> getJsonpSupportConfig() {
+		return jsonpSupportConfig;
+	}
+
+	public final HttpPatternRegistry<Boolean> getJsonSupportWrapperConfig() {
+		return jsonSupportWrapperConfig;
+	}
+
+	public final HttpPatternRegistry<Boolean> getMultipartFormSupportWrapperConfig() {
+		return multipartFormSupportWrapperConfig;
+	}
+
+	public boolean isSupportJsonWrapper(ServerHttpRequest request) {
+		return jsonSupportWrapperConfig.get(request, true);
+	}
+
+	public boolean isSupportJsonp(ServerHttpRequest request) {
+		return jsonSupportWrapperConfig.get(request, true);
+	}
+
+	public boolean isSupportMultipartFormWrapper(ServerHttpRequest request) {
+		return multipartFormSupportWrapperConfig.get(request, true);
+	}
+
+	public WebMessageConverters getWebMessageConverters() {
+		return webMessageConverters;
 	}
 
 	public HttpChannel create(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		return new DefaultHttpChannel(beanFactory, getJsonSupport(), request, response);
+		ServerHttpRequest requestToUse = request;
+		if (isSupportJsonWrapper(requestToUse)) {
+			requestToUse = WebUtils.wrapperServerJsonRequest(requestToUse);
+		}
+
+		if (isSupportMultipartFormWrapper(requestToUse)) {
+			requestToUse = WebUtils.wrapperServerMultipartFormRequest(requestToUse, getFileItemParser());
+		}
+
+		ServerHttpResponse responseToUse = response;
+		if (isSupportJsonp(requestToUse)) {
+			responseToUse = JsonpUtils.wrapper(requestToUse, responseToUse);
+		}
+		return new DefaultHttpChannel(beanFactory, requestToUse, responseToUse, webMessageConverters);
 	}
 }

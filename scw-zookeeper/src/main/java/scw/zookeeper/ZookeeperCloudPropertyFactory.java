@@ -140,7 +140,11 @@ public class ZookeeperCloudPropertyFactory implements ConfigurablePropertyFactor
 			break;
 		}
 
-		eventDispatcher.publishEvent(key, changeEvent);
+		try {
+			eventDispatcher.publishEvent(key, changeEvent);
+		} catch (Exception e) {
+			logger.error(e, "zookeeper config publish error");
+		}
 	}
 
 	public boolean put(String key, Object value) {

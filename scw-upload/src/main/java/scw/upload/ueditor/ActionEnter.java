@@ -3,8 +3,6 @@ package scw.upload.ueditor;
 import java.util.List;
 import java.util.Map;
 
-import scw.http.server.MultiPartServerHttpRequest;
-import scw.http.server.ServerHttpRequest;
 import scw.upload.ueditor.define.ActionMap;
 import scw.upload.ueditor.define.AppInfo;
 import scw.upload.ueditor.define.BaseState;
@@ -13,6 +11,8 @@ import scw.upload.ueditor.hunter.FileManager;
 import scw.upload.ueditor.hunter.ImageHunter;
 import scw.upload.ueditor.upload.Uploader;
 import scw.util.XUtils;
+import scw.web.MultiPartServerHttpRequest;
+import scw.web.ServerHttpRequest;
 
 public class ActionEnter {
 

@@ -17,7 +17,7 @@ import scw.instance.ServiceLoader;
 import scw.lang.NotFoundException;
 import scw.lang.NotSupportedException;
 
-public class DefaultInstanceDefinition extends InstanceParameterFactory implements InstanceDefinition {
+public class DefaultInstanceDefinition extends InstanceParametersFactory implements InstanceDefinition {
 	private Class<?> targetClass;
 	@SuppressWarnings("rawtypes")
 	private ServiceLoader serviceLoader;

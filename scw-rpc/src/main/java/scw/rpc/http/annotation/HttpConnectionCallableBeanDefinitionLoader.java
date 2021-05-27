@@ -5,7 +5,7 @@ import javax.ws.rs.Path;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
-import scw.beans.BeanFactory;
+import scw.beans.ConfigurableBeanFactory;
 import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.http.client.DefaultHttpClient;
@@ -17,7 +17,7 @@ import scw.rpc.support.RemoteCallableBeanDefinition;
 public class HttpConnectionCallableBeanDefinitionLoader implements
 		BeanDefinitionLoader {
 
-	public BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass,
+	public BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass,
 			BeanDefinitionLoaderChain loaderChain) {
 		HttpRemote remote = sourceClass.getAnnotation(HttpRemote.class);
 		Path path = sourceClass.getAnnotation(Path.class);
@@ -25,7 +25,7 @@ public class HttpConnectionCallableBeanDefinitionLoader implements
 			return loaderChain.load(beanFactory, sourceClass);
 		}
 		
-		HttpConnectionFactory httpConnectionFactory = new DefaultHttpClient(beanFactory.getEnvironment().getConversionService(), beanFactory, beanFactory);
+		HttpConnectionFactory httpConnectionFactory = new DefaultHttpClient(beanFactory.getEnvironment().getConversionService(), beanFactory);
 		CallableFactory callableFactory;
 		if(remote != null){
 			callableFactory = new AnnotationHttpCallableFactory(

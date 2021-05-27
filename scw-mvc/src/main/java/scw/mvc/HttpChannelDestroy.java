@@ -8,19 +8,19 @@ import scw.context.Destroy;
 import scw.context.result.BaseResult;
 import scw.context.support.LifecycleAuxiliary;
 import scw.http.HttpStatus;
-import scw.http.server.ServerHttpAsyncEvent;
-import scw.http.server.ServerHttpAsyncListener;
 import scw.io.IOUtils;
 import scw.logger.CustomLevel;
-import scw.logger.Level;
+import scw.logger.Levels;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.web.ServerHttpAsyncEvent;
+import scw.web.ServerHttpAsyncListener;
 
 public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);
 
 	private Long executeWarnTime;
-	private java.util.logging.Level enableLevel = Level.ALL.getValue();
+	private java.util.logging.Level enableLevel = Levels.ALL.getValue();
 	private final HttpChannel httpChannel;
 	private Object responseBody;
 	private Throwable error;
@@ -76,26 +76,26 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 	protected void log() {
 		long useTime = System.currentTimeMillis() - httpChannel.getCreateTime();
 		Long executeWarnTime = getExecuteWarnTime();
-		Level level = (executeWarnTime != null && useTime > executeWarnTime) ? Level.WARN : Level.DEBUG;
+		Levels level = (executeWarnTime != null && useTime > executeWarnTime) ? Levels.WARN : Levels.DEBUG;
 		if (error != null) {
 			logger.error(error, "Execution {}ms of {}", useTime, this);
 			return;
 		}
 
 		if ((responseBody != null && responseBody instanceof BaseResult && ((BaseResult) responseBody).isError())) {
-			level = Level.ERROR;
+			level = Levels.ERROR;
 		}
 
-		if (!level.equals(Level.ERROR)) {
+		if (!level.equals(Levels.ERROR)) {
 			HttpStatus status = HttpStatus.valueOf(httpChannel.getResponse().getStatus());
 			if (status != null && status.isError()) {
-				level = Level.ERROR;
+				level = Levels.ERROR;
 			}
 		}
 
 		// 禁用指定级别级别以下的日志
 		if (CustomLevel.isGreaterOrEqual(level.getValue(), getEnableLevel()) && logger.isLoggable(level.getValue())) {
-			Object messag = (logger.isDebugEnabled() || !level.equals(Level.WARN)) ? this : httpChannel.getRequest();
+			Object messag = (logger.isDebugEnabled() || !level.equals(Levels.WARN)) ? this : httpChannel.getRequest();
 			logger.log(level.getValue(), "Execution {}ms of {}", useTime, messag);
 		}
 	}

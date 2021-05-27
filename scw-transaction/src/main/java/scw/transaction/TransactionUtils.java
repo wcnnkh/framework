@@ -1,6 +1,6 @@
 package scw.transaction;
 
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.lang.NamedThreadLocal;
 
 public final class TransactionUtils {
@@ -11,8 +11,7 @@ public final class TransactionUtils {
 	/**
 	 * Global default transactions(全局默认使用的事务)
 	 */
-	private static final TransactionManager DEFAULT = InstanceUtils
-			.loadService(TransactionManager.class,
+	private static final TransactionManager DEFAULT = Sys.loadService(TransactionManager.class,
 					"scw.transaction.ThreadLocalTransactionManager");
 	private static ThreadLocal<TransactionManager> LOCAL = new NamedThreadLocal<TransactionManager>(
 			TransactionUtils.class.getSimpleName());

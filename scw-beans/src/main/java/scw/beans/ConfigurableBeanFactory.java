@@ -2,15 +2,15 @@ package scw.beans;
 
 import scw.aop.ConfigurableAop;
 import scw.context.ConfigurableClassesLoader;
-import scw.context.ConfigurableContextEnvironment;
+import scw.context.ConfigurableContext;
 import scw.event.EventDispatcher;
 import scw.instance.SingletonRegistry;
 
-public interface ConfigurableBeanFactory extends BeanFactory,
-		BeanDefinitionRegistry, SingletonRegistry, EventDispatcher<BeanLifeCycleEvent> {
+public interface ConfigurableBeanFactory
+		extends BeanFactory, ConfigurableContext, BeanDefinitionRegistry, SingletonRegistry {
 	ConfigurableClassesLoader getContextClassesLoader();
 
-	ConfigurableContextEnvironment getEnvironment();
-	
 	ConfigurableAop getAop();
+
+	EventDispatcher<BeanlifeCycleEvent> getLifecycleDispatcher();
 }

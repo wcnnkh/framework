@@ -27,7 +27,12 @@ public final class LoggerFactory {
 
 	static {
 		PropertyFactory propertyFactory = SystemPropertyFactory.INSTANCE;
-		ServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(propertyFactory, null);
+		ServiceLoaderFactory serviceLoaderFactory = new DefaultServiceLoaderFactory(propertyFactory) {
+			@Override
+			protected boolean useSpi(Class<?> serviceClass) {
+				return true;
+			}
+		};
 		Iterator<LevelManager> levelManagerIterator = serviceLoaderFactory.getServiceLoader(LevelManager.class).iterator();
 		if (levelManagerIterator.hasNext()) {
 			LEVEL_MANAGER = levelManagerIterator.next();

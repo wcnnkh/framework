@@ -24,10 +24,8 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.XUtils;
 
-public class LazyBeanDefinitionRegsitry extends
-		DefaultBeanDefinitionRegistry {
-	private static Logger logger = LoggerFactory
-			.getLogger(LazyBeanDefinitionRegsitry.class);
+public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
+	private static Logger logger = LoggerFactory.getLogger(LazyBeanDefinitionRegsitry.class);
 	private ConfigurableBeanFactory beanFactory;
 
 	public LazyBeanDefinitionRegsitry(ConfigurableBeanFactory beanFactory) {
@@ -35,10 +33,10 @@ public class LazyBeanDefinitionRegsitry extends
 	}
 
 	private BeanDefinition load(Class<?> clazz) {
-		if(BeanDefinitionLoader.class.isAssignableFrom(clazz)){
+		if (BeanDefinitionLoader.class.isAssignableFrom(clazz)) {
 			return null;
 		}
-		
+
 		ServiceLoader<BeanDefinitionLoader> serviceLoader = beanFactory.getServiceLoader(BeanDefinitionLoader.class);
 		return new IteratorBeanDefinitionLoaderChain(serviceLoader.iterator()).load(beanFactory, clazz);
 	}
@@ -48,32 +46,31 @@ public class LazyBeanDefinitionRegsitry extends
 		if (sourceClass.isInterface()) {
 			String name = sourceClass.getName() + "Impl";
 			Class<?> targetClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
-			if(targetClass != null && sourceClass.isAssignableFrom(targetClass) && beanFactory.isInstance(targetClass)){
+			if (targetClass != null && sourceClass.isAssignableFrom(targetClass)
+					&& beanFactory.isInstance(targetClass)) {
 				return beanFactory.getDefinition(targetClass.getName());
 			}
-			
+
 			int index = sourceClass.getName().lastIndexOf(".");
 			name = index == -1 ? (sourceClass.getName() + "Impl")
-					: (sourceClass.getName().substring(0, index) + ".impl."
-							+ sourceClass.getSimpleName() + "Impl");
+					: (sourceClass.getName().substring(0, index) + ".impl." + sourceClass.getSimpleName() + "Impl");
 			targetClass = ClassUtils.getClass(name, beanFactory.getClassLoader());
-			if(targetClass != null && sourceClass.isAssignableFrom(targetClass) && beanFactory.isInstance(targetClass)){
+			if (targetClass != null && sourceClass.isAssignableFrom(targetClass)
+					&& beanFactory.isInstance(targetClass)) {
 				return beanFactory.getDefinition(targetClass.getName());
 			}
 		}
 		return null;
 	}
-	
-	private BeanDefinition autoImpl(Class<?> sourceClass){
+
+	private BeanDefinition autoImpl(Class<?> sourceClass) {
 		AutoImpl autoImpl = sourceClass.getAnnotation(AutoImpl.class);
-		Collection<Class<?>> autoImpls = autoImpl == null ? null
-				: getAutoImplClass(autoImpl, sourceClass);
+		Collection<Class<?>> autoImpls = autoImpl == null ? null : getAutoImplClass(autoImpl, sourceClass);
 		if (!CollectionUtils.isEmpty(autoImpls)) {
 			for (Class<?> impl : autoImpls) {
 				BeanDefinition definition = super.getDefinition(impl);
 				if (definition == null) {
-					definition = new DefaultBeanDefinition(beanFactory,
-							impl);
+					definition = new DefaultBeanDefinition(beanFactory, impl);
 				}
 				if (definition != null && definition.isInstance()) {
 					logger.info("Auto {} impl {}", sourceClass, impl);
@@ -83,9 +80,10 @@ public class LazyBeanDefinitionRegsitry extends
 		}
 		return null;
 	}
-	
-	private BeanDefinition provider(Class<?> sourceClass){
-		ProviderClassesLoader classesLoader = new ProviderClassesLoader(beanFactory.getContextClassesLoader(), sourceClass);
+
+	private BeanDefinition provider(Class<?> sourceClass) {
+		ProviderClassesLoader classesLoader = new ProviderClassesLoader(beanFactory.getContextClassesLoader(),
+				sourceClass);
 		for (Class<?> impl : classesLoader) {
 			BeanDefinition definition = super.getDefinition(impl);
 			if (definition == null) {
@@ -99,14 +97,14 @@ public class LazyBeanDefinitionRegsitry extends
 		}
 		return null;
 	}
-	
-	private BeanDefinition proxy(Class<?> sourceClass){
-		if (sourceClass.isInterface()
-				|| Modifier.isAbstract(sourceClass.getModifiers())) {
+
+	private BeanDefinition proxy(Class<?> sourceClass) {
+		if (sourceClass.isInterface() || Modifier.isAbstract(sourceClass.getModifiers())) {
 			Proxy proxy = sourceClass.getAnnotation(Proxy.class);
 			if (proxy != null) {
 				DefaultBeanDefinition definition = new DefaultBeanDefinition(beanFactory, sourceClass);
-				MethodInterceptor methodInterceptor = new UnmodifiableMethodInterceptors(new InstanceIterable<MethodInterceptor>(beanFactory, getProxyNames(proxy)));
+				MethodInterceptor methodInterceptor = new UnmodifiableMethodInterceptors(
+						new InstanceIterable<MethodInterceptor>(beanFactory, getProxyNames(proxy)));
 				definition.getMethodInterceptors().addFirstMethodInterceptor(methodInterceptor);
 				return definition;
 			}
@@ -115,8 +113,7 @@ public class LazyBeanDefinitionRegsitry extends
 	}
 
 	public BeanDefinition load(String name) {
-		Class<?> clazz = ClassUtils.getClass(name,
-				beanFactory.getClassLoader());
+		Class<?> clazz = ClassUtils.getClass(name, beanFactory.getClassLoader());
 		if (clazz == null) {
 			return null;
 		}
@@ -124,24 +121,24 @@ public class LazyBeanDefinitionRegsitry extends
 		if (!XUtils.isAvailable(clazz)) {
 			return null;
 		}
-		
+
 		BeanDefinition definition = autoImpl(clazz);
-		if(definition == null){
+		if (definition == null) {
 			definition = provider(clazz);
 		}
-		
-		if(definition == null){
+
+		if (definition == null) {
 			definition = load(clazz);
 		}
 
 		if (definition == null) {
 			definition = reference(clazz);
 		}
-		
-		if(definition == null){
+
+		if (definition == null) {
 			definition = proxy(clazz);
 		}
-		return definition == null? new DefaultBeanDefinition(beanFactory, clazz):definition;
+		return definition == null ? new DefaultBeanDefinition(beanFactory, clazz) : definition;
 	}
 
 	@Override
@@ -150,7 +147,7 @@ public class LazyBeanDefinitionRegsitry extends
 		if (definition == null) {
 			synchronized (getDefinitionMutex()) {
 				definition = super.getDefinition(name);
-				if(definition == null){
+				if (definition == null) {
 					BeanDefinition first = load(name);
 					definition = first;
 					if (definition == null || !definition.isInstance()) {
@@ -168,10 +165,10 @@ public class LazyBeanDefinitionRegsitry extends
 					}
 
 					if (definition != null) {
-						if(logger.isTraceEnabled()){
+						if (logger.isTraceEnabled()) {
 							logger.trace("lazy load beanName name [{}] definition {}", name, definition);
 						}
-						
+
 						definition = registerDefinition(name, definition);
 					}
 				}
@@ -188,8 +185,7 @@ public class LazyBeanDefinitionRegsitry extends
 			}
 
 			name = beanFactory.getEnvironment().resolvePlaceholders(name);
-			Class<?> clz = ClassUtils.getClass(name,
-					beanFactory.getClassLoader());
+			Class<?> clz = ClassUtils.getClass(name, beanFactory.getClassLoader());
 			if (clz == null) {
 				continue;
 			}
@@ -202,8 +198,7 @@ public class LazyBeanDefinitionRegsitry extends
 			if (sourceClass.isAssignableFrom(clz)) {
 				list.add(clz);
 			} else {
-				logger.warn("{} not is assignable from name {}", sourceClass,
-						clz);
+				logger.warn("{} not is assignable from name {}", sourceClass, clz);
 			}
 		}
 

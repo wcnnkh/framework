@@ -11,7 +11,7 @@ import scw.core.parameter.annotation.DefaultValue;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
 import scw.env.Environment;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.http.HttpMethod;
 import scw.instance.annotation.PropertyName;
 import scw.instance.annotation.ResourceParameter;
@@ -54,7 +54,7 @@ public class XmlHttpAuthorityManager extends
 				continue;
 			}
 			
-			Map<String, String> map = (Map<String, String>) SystemEnvironment.getInstance().getConversionService().convert(node, TypeDescriptor.forObject(node), TypeDescriptor.map(Map.class, String.class, String.class));
+			Map<String, String> map = (Map<String, String>) Sys.env.getConversionService().convert(node, TypeDescriptor.forObject(node), TypeDescriptor.map(Map.class, String.class, String.class));
 			if (map.isEmpty()) {
 				continue;
 			}

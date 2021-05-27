@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import scw.convert.TypeDescriptor;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.http.HttpHeaders;
 import scw.io.IOUtils;
 import scw.json.JSONSupport;
@@ -45,7 +45,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	}
 	
 	public Charset getCharset() {
-		return charset == null? SystemEnvironment.getInstance().getCharset():charset;
+		return charset == null? Sys.env.getCharset():charset;
 	}
 
 	public void setCharset(Charset charset) {
@@ -109,27 +109,9 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 		return canWrite(type) && canWrite(contentType);
 	}
 	
-	public boolean canWrite(Object body, MimeType contentType) {
-		if (body == null) {
-			return false;
-		}
-		
-		return canWrite(TypeDescriptor.forObject(body), body, contentType);
-	}
-
 	public Object read(TypeDescriptor type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		return readInternal(type, inputMessage);
-	}
-	
-	public void write(Object body, MimeType contentType,
-			OutputMessage outputMessage) throws IOException,
-			MessageConvertException {
-		if(body == null){
-			return ;
-		}
-		
-		write(TypeDescriptor.forObject(body), body, contentType, outputMessage);
 	}
 	
 	@SuppressWarnings("unchecked")

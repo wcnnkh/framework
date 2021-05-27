@@ -12,8 +12,8 @@ import org.w3c.dom.NodeList;
 
 import scw.aop.MethodInterceptor;
 import scw.aop.support.UnmodifiableMethodInterceptors;
-import scw.beans.BeanFactory;
 import scw.beans.BeansException;
+import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ArrayUtils;
@@ -27,13 +27,13 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 	private List<String> names = new ArrayList<String>();
 	private final String id;
 	private final Boolean singleton;
-	private final XmlParameterFactory xmlParameterFactory;
+	private final XmlParametersFactory xmlParameterFactory;
 
-	public XmlBeanDefinition(BeanFactory beanFactory, Node beanNode) throws Exception {
+	public XmlBeanDefinition(ConfigurableBeanFactory beanFactory, Node beanNode) throws Exception {
 		this(beanFactory, XmlBeanUtils.getClass(beanNode, true, beanFactory.getClassLoader()), beanNode);
 	}
 
-	public XmlBeanDefinition(BeanFactory beanFactory, Class<?> targetClass,
+	public XmlBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> targetClass,
 			Node beanNode) throws Exception {
 		super(beanFactory, targetClass);
 		Collection<String> names = getFilters(beanNode);
@@ -47,7 +47,7 @@ public class XmlBeanDefinition extends DefaultBeanDefinition {
 				.addAll(XmlBeanUtils.getDestroyMethodIocProcessors(getTargetClass(), nodeList, beanFactory.getClassLoader()));
 		ioc.getDependence().getIocProcessors()
 				.addAll(XmlBeanUtils.getBeanPropertiesIocProcessors(targetClass, nodeList, beanFactory.getClassLoader()));
-		this.xmlParameterFactory = new XmlParameterFactory(beanFactory,
+		this.xmlParameterFactory = new XmlParametersFactory(beanFactory,
 				XmlBeanUtils.getConstructorParameters(nodeList, beanFactory.getClassLoader()));
 		this.id = getId(beanNode);
 		this.names.addAll(super.getNames());

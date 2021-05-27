@@ -11,7 +11,7 @@ import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.mapper.MapperUtils;
 import scw.net.MimeType;
-import scw.net.message.Text;
+import scw.web.model.Text;
 
 public class KindManagerResult implements Serializable, Text {
 	private static final long serialVersionUID = 1L;

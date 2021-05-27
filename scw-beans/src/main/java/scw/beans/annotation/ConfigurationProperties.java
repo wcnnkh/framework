@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 import scw.beans.support.DefaultBeanDefinition;
 import scw.core.annotation.AliasFor;
-import scw.logger.Level;
+import scw.logger.Levels;
 
 /**
  * 该行为发生在autowired之后aware之前<br/>
@@ -38,5 +38,5 @@ public @interface ConfigurationProperties {
 	 * 输出的日志等级，默认为debug
 	 * @return
 	 */
-	public Level loggerLevel() default Level.DEBUG;
+	public Levels loggerLevel() default Levels.DEBUG;
 }

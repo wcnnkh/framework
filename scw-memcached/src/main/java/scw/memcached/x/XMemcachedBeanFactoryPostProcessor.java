@@ -8,7 +8,6 @@ import net.rubyeye.xmemcached.XMemcachedClientBuilder;
 import net.rubyeye.xmemcached.command.BinaryCommandFactory;
 import net.rubyeye.xmemcached.transcoders.Transcoder;
 import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
@@ -39,7 +38,7 @@ public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProces
 
 	private static final class MemcachedClientBeanDefinition extends DefaultBeanDefinition {
 
-		public MemcachedClientBeanDefinition(BeanFactory beanFactory) {
+		public MemcachedClientBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, MemcachedClient.class);
 		}
 
@@ -70,7 +69,7 @@ public class XMemcachedBeanFactoryPostProcessor implements BeanFactoryPostProces
 
 	private static final class XMemcachedClientBuilderBeanDefinition extends DefaultBeanDefinition {
 
-		public XMemcachedClientBuilderBeanDefinition(BeanFactory beanFactory) {
+		public XMemcachedClientBuilderBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, XMemcachedClientBuilder.class);
 		}
 

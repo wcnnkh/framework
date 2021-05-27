@@ -10,11 +10,11 @@ import scw.data.ResourceStorageService;
 import scw.data.StorageException;
 import scw.http.HttpRequestEntity;
 import scw.http.MediaType;
-import scw.http.server.ServerHttpRequest;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.uri.UriComponentsBuilder;
 import scw.util.Verify;
+import scw.web.ServerHttpRequest;
 
 public class UploadPolicy implements Verify {
 	private static Logger logger = LoggerFactory.getLogger(UploadPolicy.class);
