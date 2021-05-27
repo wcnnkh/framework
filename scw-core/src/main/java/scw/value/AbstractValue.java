@@ -17,8 +17,7 @@ public abstract class AbstractValue implements SimpleValue, Serializable {
 	}
 
 	public Value getDefaultValue() {
-		return defaultValue == null ? SimpleValue.super.getDefaultValue()
-				: defaultValue;
+		return defaultValue == null ? SimpleValue.super.getDefaultValue() : defaultValue;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -58,12 +57,12 @@ public abstract class AbstractValue implements SimpleValue, Serializable {
 			v = getAsChar();
 		} else if (Character.class == type) {
 			v = getAsCharacter();
-		} else if (type.isAssignableFrom(Number.class)) {
-			v = getAsNumber();
-		} else if (type.isAssignableFrom(BigDecimal.class)) {
+		} else if (BigDecimal.class == type) {
 			v = getAsBigDecimal();
-		} else if (type.isAssignableFrom(BigInteger.class)) {
+		} else if (BigInteger.class == type) {
 			v = getAsBigInteger();
+		} else if (Number.class == type) {
+			v = getAsNumber();
 		} else if (Class.class == type) {
 			v = getAsClass();
 		} else if (type.isEnum()) {
