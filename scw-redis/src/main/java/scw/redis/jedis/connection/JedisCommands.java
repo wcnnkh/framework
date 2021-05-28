@@ -1,6 +1,7 @@
 package scw.redis.jedis.connection;
 
 import java.util.Collection;
+import java.util.List;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ScanParams;
@@ -11,16 +12,18 @@ import scw.redis.connection.Cursor;
 import scw.redis.connection.DataType;
 import scw.redis.connection.RedisAuth;
 import scw.redis.connection.RedisKeysCommands;
+import scw.redis.connection.RedisStringCommands;
 import scw.redis.connection.RedisValueEncoding;
 import scw.redis.connection.RedisValueEncodings;
 import scw.redis.connection.ScanCursor;
 import scw.redis.connection.ScanIteration;
 import scw.redis.connection.ScanOptions;
+import scw.util.Pair;
 
-public class JedisKeysCommands implements RedisKeysCommands<byte[], byte[]> {
+public class JedisCommands implements RedisKeysCommands<byte[], byte[]>, RedisStringCommands<byte[], byte[]> {
 	private final Jedis jedis;
 
-	public JedisKeysCommands(Jedis jedis) {
+	public JedisCommands(Jedis jedis) {
 		this.jedis = jedis;
 	}
 
@@ -223,5 +226,169 @@ public class JedisKeysCommands implements RedisKeysCommands<byte[], byte[]> {
 	@Override
 	public Long wait(int numreplicas, long timeout) {
 		return jedis.waitReplicas(numreplicas, timeout);
+	}
+
+	@Override
+	public Long append(byte[] key, byte[] value) {
+		return jedis.append(key, value);
+	}
+
+	@Override
+	public Long bitcount(byte[] key, long start, long end) {
+		return jedis.bitcount(key, start, end);
+	}
+
+	@Override
+	public Long bitop(BitOP op, byte[] destkey, byte[]... srcKeys) {
+		switch (op) {
+		case AND:
+			return jedis.bitop(redis.clients.jedis.BitOP.AND, destkey, srcKeys);
+		case NOT:
+			return jedis.bitop(redis.clients.jedis.BitOP.NOT, destkey, srcKeys);
+		case OR:
+			return jedis.bitop(redis.clients.jedis.BitOP.OR, destkey, srcKeys);
+		case XOR:
+			return jedis.bitop(redis.clients.jedis.BitOP.XOR, destkey, srcKeys);
+		default:
+			return null;
+		}
+	}
+
+	@Override
+	public Long bitpos(byte[] key, byte bit, long start, long end) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long decr(byte[] key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long decrby(byte[] key, long decrement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] get(byte[] key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer getbit(byte[] key, int offset) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] getdel(byte[] key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] getex(byte[] key, ExpireOption option, Long time) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] getrange(byte[] key, int start, int end) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] getset(byte[] key, byte[] value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long incr(byte[] key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Long incrby(byte[] key, long increment) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Float incrbyfloat(byte[] key, float increment) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<byte[]> mget(byte[]... keys) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] mset(Pair<byte[], byte[]>... pairs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer msetnx(Pair<byte[], byte[]>... pairs) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] psetex(byte[] key, long expire, byte[] value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] set(byte[] key, byte[] value, ExpireOption option, long time, SetOption setOption, boolean get) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer setbit(byte[] key, int offset, byte[] value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public byte[] setex(byte[] key, int seconds, byte[] value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer setnx(byte[] key, byte[] value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer setrange(byte[] key, int offset, byte[] value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object stralgo(byte[] algoName, byte[]... args) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Integer strlen(byte[] key) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
