@@ -1,6 +1,6 @@
 package scw.redis.connection;
 
-import java.util.List;
+import java.util.Collection;
 
 import scw.lang.Nullable;
 
@@ -10,7 +10,8 @@ import scw.lang.Nullable;
  * @author shuchaowen
  *
  */
-public interface RedisKeysCommands {
+@SuppressWarnings("unchecked")
+public interface RedisKeysCommands<K, V> {
 	/**
 	 * https://redis.io/commands/copy
 	 * 
@@ -18,7 +19,7 @@ public interface RedisKeysCommands {
 	 * @param destination
 	 * @return 1 if source was copied. 0 if source was not copied.
 	 */
-	Integer copy(byte[] source, byte[] destination);
+	Boolean copy(K source, K destination, @Nullable Integer destinationDB, boolean replace);
 
 	/**
 	 * https://redis.io/commands/del
@@ -26,7 +27,7 @@ public interface RedisKeysCommands {
 	 * @param keys
 	 * @return The number of keys that were removed.
 	 */
-	Integer del(byte[]... keys);
+	Long del(K... keys);
 
 	/**
 	 * https://redis.io/commands/dump
@@ -34,7 +35,7 @@ public interface RedisKeysCommands {
 	 * @param key
 	 * @return Bulk string reply: the serialized value.
 	 */
-	byte[] dump(byte[] key);
+	V dump(K key);
 
 	/**
 	 * https://redis.io/commands/exists
@@ -50,7 +51,7 @@ public interface RedisKeysCommands {
 	 *         Keys mentioned multiple times and existing are counted multiple
 	 *         times.
 	 */
-	Integer exists(byte[]... keys);
+	Long exists(K... keys);
 
 	/**
 	 * https://redis.io/commands/expire
@@ -61,7 +62,7 @@ public interface RedisKeysCommands {
 	 * 
 	 *         1 if the timeout was set. 0 if key does not exist.
 	 */
-	Integer expire(byte[] key, int seconds);
+	Long expire(K key, long seconds);
 
 	/**
 	 * https://redis.io/commands/expireat
@@ -72,7 +73,7 @@ public interface RedisKeysCommands {
 	 * 
 	 *         1 if the timeout was set. 0 if key does not exist.
 	 */
-	Integer expireat(byte[] key, long timestamp);
+	Long expireAt(K key, long timestamp);
 
 	/**
 	 * Supported glob-style patterns:
@@ -87,7 +88,9 @@ public interface RedisKeysCommands {
 	 * @param pattern
 	 * @return Array reply: list of keys matching pattern.
 	 */
-	List<byte[]> keys(byte[] pattern);
+	Collection<V> keys(K pattern);
+
+	String migrate(String host, int port, K key, int targetDB, int timeout);
 
 	/**
 	 * https://redis.io/commands/migrate
@@ -110,7 +113,8 @@ public interface RedisKeysCommands {
 	 * @return Simple string reply: The command returns OK on success, or NOKEY if
 	 *         no keys were found in the source instance.
 	 */
-	byte[] migrate(byte[] host, int port, byte[] key, int targetDB, long timeout, String option, byte[]... keys);
+	String migrate(String host, int port, int targetDB, int timeout, boolean copy, boolean replace, RedisAuth auth,
+			K... keys);
 
 	/**
 	 * https://redis.io/commands/move
@@ -121,20 +125,33 @@ public interface RedisKeysCommands {
 	 * 
 	 *         1 if key was moved. 0 if key was not moved.
 	 */
-	Integer move(byte[] key, int targetDB);
+	Long move(K key, int targetDB);
 
 	/**
 	 * https://redis.io/commands/object
 	 * 
-	 * @param subcommand
-	 * @param args
-	 * @return Different return values are used for different subcommands.
-	 * 
-	 *         Subcommands refcount and idletime return integers. Subcommand
-	 *         encoding returns a bulk reply. If the object you try to inspect is
-	 *         missing, a null bulk reply is returned.
+	 * @param key
+	 * @return
 	 */
-	Object object(String subcommand, byte[]... args);
+	Long objectRefCount(K key);
+
+	/**
+	 * https://redis.io/commands/object
+	 * 
+	 * @param key
+	 * @return
+	 */
+	RedisValueEncoding objectEncoding(K key);
+
+	/**
+	 * https://redis.io/commands/object
+	 * 
+	 * @param key
+	 * @return
+	 */
+	Long objectIdletime(K key);
+
+	Long objectFreq(K key);
 
 	/**
 	 * https://redis.io/commands/persist
@@ -145,7 +162,7 @@ public interface RedisKeysCommands {
 	 *         1 if the timeout was removed. 0 if key does not exist or does not
 	 *         have an associated timeout.
 	 */
-	Integer persist(byte[] key);
+	Long persist(K key);
 
 	/**
 	 * https://redis.io/commands/pexpire
@@ -156,7 +173,7 @@ public interface RedisKeysCommands {
 	 * 
 	 *         1 if the timeout was set. 0 if key does not exist.
 	 */
-	Integer pexpire(byte[] key, long milliseconds);
+	Long pexpire(K key, long milliseconds);
 
 	/**
 	 * PEXPIREAT has the same effect and semantic as EXPIREAT, but the Unix time at
@@ -171,7 +188,7 @@ public interface RedisKeysCommands {
 	 * 
 	 *         1 if the timeout was set. 0 if key does not exist.
 	 */
-	Integer pexpireat(byte[] key, long timestamp);
+	Long pexpireAt(K key, long timestamp);
 
 	/**
 	 * Like TTL this command returns the remaining time to live of a key that has an
@@ -192,7 +209,7 @@ public interface RedisKeysCommands {
 	 * @return Integer reply: TTL in milliseconds, or a negative value in order to
 	 *         signal an error (see the description above).
 	 */
-	Long pttl(byte[] key);
+	Long pttl(K key);
 
 	/**
 	 * Return a random key from the currently selected database. <br/>
@@ -200,7 +217,7 @@ public interface RedisKeysCommands {
 	 * 
 	 * @return Bulk string reply: the random key, or nil when the database is empty.
 	 */
-	byte[] randomkey();
+	K randomkey();
 
 	/**
 	 * Renames key to newkey. It returns an error when key does not exist. If newkey
@@ -221,9 +238,9 @@ public interface RedisKeysCommands {
 	 * 
 	 * @param key
 	 * @param newKey
-	 * @return
+	 * @return Return value Simple string reply
 	 */
-	byte[] rename(byte[] key, byte[] newKey);
+	String rename(K key, K newKey);
 
 	/**
 	 * Renames key to newkey if newkey does not yet exist. It returns an error when
@@ -244,7 +261,7 @@ public interface RedisKeysCommands {
 	 * 
 	 *         1 if key was renamed to newkey. 0 if newkey already exists.
 	 */
-	Integer renamenx(byte[] key, byte[] newKey);
+	Boolean renamenx(byte[] key, byte[] newKey);
 
 	/**
 	 * Create a key associated with a value that is obtained by deserializing the
@@ -273,25 +290,8 @@ public interface RedisKeysCommands {
 	 * @param serializedValue
 	 * @return Simple string reply: The command returns OK on success.
 	 */
-	byte[] restore(byte[] key, long ttl, byte[] serializedValue, byte[]... options);
-
-	static class ScanResult {
-		private final int cursor;
-		private final List<byte[]> keys;
-
-		public ScanResult(int cursor, List<byte[]> keys) {
-			this.cursor = cursor;
-			this.keys = keys;
-		}
-
-		public int getCursor() {
-			return cursor;
-		}
-
-		public List<byte[]> getKeys() {
-			return keys;
-		}
-	}
+	String restore(K key, long ttl, byte[] serializedValue, boolean replace, boolean absTtl, Long idleTime,
+			Long frequency);
 
 	/**
 	 * https://redis.io/commands/scan
@@ -324,10 +324,9 @@ public interface RedisKeysCommands {
 	 *                one iteration to the other as required, as long as the cursor
 	 *                passed in the next call is the one obtained in the previous
 	 *                call to the command.
-	 * @param type
 	 * @return
 	 */
-	ScanResult scan(int cursor, @Nullable byte[] pattern, @Nullable Integer count, @Nullable byte[] type);
+	Cursor<K> scan(long cursorId, ScanOptions<byte[]> options);
 
 	/**
 	 * https://redis.io/commands/touch
@@ -336,7 +335,7 @@ public interface RedisKeysCommands {
 	 *             does not exist.
 	 * @return Integer reply: The number of keys that were touched.
 	 */
-	Integer touch(byte[]... keys);
+	Long touch(K... keys);
 
 	/**
 	 * https://redis.io/commands/ttl <br/>
@@ -359,7 +358,7 @@ public interface RedisKeysCommands {
 	 * @return Integer reply: TTL in seconds, or a negative value in order to signal
 	 *         an error (see the description above).
 	 */
-	Integer ttl(byte[] key);
+	Long ttl(K key);
 
 	/**
 	 * https://redis.io/commands/type<br/>
@@ -371,7 +370,7 @@ public interface RedisKeysCommands {
 	 * @param key
 	 * @return Simple string reply: type of key, or none when key does not exist.
 	 */
-	byte[] type(byte[] key);
+	DataType type(K key);
 
 	/**
 	 * https://redis.io/commands/unlink<br/>
@@ -386,7 +385,7 @@ public interface RedisKeysCommands {
 	 * @param keys
 	 * @return Integer reply: The number of keys that were unlinked.
 	 */
-	Integer unlink(byte[]... keys);
+	Long unlink(K... keys);
 
 	/**
 	 * https://redis.io/commands/wait<br/>
@@ -396,5 +395,5 @@ public interface RedisKeysCommands {
 	 * @return Integer reply: The command returns the number of replicas reached by
 	 *         all the writes performed in the context of the current connection.
 	 */
-	Integer wait(int numreplicas, long timeout);
+	Long wait(int numreplicas, long timeout);
 }
