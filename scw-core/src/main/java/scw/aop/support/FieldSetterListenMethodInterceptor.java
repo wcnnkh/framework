@@ -11,12 +11,11 @@ public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl im
 	private static final long serialVersionUID = 1L;
 
 	private Field getField(Class<?> clazz, String name, Class<?> type) {
-		return MapperUtils.getMapper().getFields(clazz)
-				.accept(FieldFeature.SUPPORT_GETTER, FieldFeature.IGNORE_STATIC).find(name, type);
+		return MapperUtils.getMapper().getFields(clazz).accept(FieldFeature.SUPPORT_GETTER)
+				.accept(FieldFeature.IGNORE_STATIC).find(name, type);
 	}
 
-	private final Object change(MethodInvoker invoker, Object[] args, Field field)
-			throws Throwable {
+	private final Object change(MethodInvoker invoker, Object[] args, Field field) throws Throwable {
 		Object oldValue = field.getGetter().get(invoker.getInstance());
 		if (FieldSetterListen.class.isAssignableFrom(invoker.getDeclaringClass())) {
 			((FieldSetterListen) invoker.getInstance()).field_setter(invoker, field, oldValue);

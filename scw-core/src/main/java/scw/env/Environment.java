@@ -3,7 +3,6 @@ package scw.env;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
-import scw.aop.ProxyFactory;
 import scw.convert.ConversionService;
 import scw.convert.Converter;
 import scw.convert.TypeDescriptor;
@@ -147,8 +146,6 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 	PlaceholderReplacer getPlaceholderReplacer();
 
 	PropertiesResolver getPropertiesResolver();
-
-	ProxyFactory getProxyFactory();
 
 	ConversionService getConversionService();
 

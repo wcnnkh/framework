@@ -2,8 +2,9 @@ package scw.security.authority;
 
 import java.util.Set;
 
-public class AuthorityIdFilter<T extends Authority> implements
-		AuthorityFilter<T> {
+import scw.util.Accept;
+
+public class AuthorityIdFilter<T extends Authority> implements Accept<T> {
 	private Set<String> ids;
 
 	public AuthorityIdFilter(Set<String> ids) {

@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import scw.core.utils.StringUtils;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.lang.Nullable;
 import scw.net.message.Headers;
 import scw.net.message.Message;
@@ -44,7 +44,7 @@ public final class InetUtils {
 			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
 			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
 
-	private static final FileItemParser FILE_ITEM_PARSER = InstanceUtils.loadService(FileItemParser.class,
+	private static final FileItemParser FILE_ITEM_PARSER = Sys.loadService(FileItemParser.class,
 			"scw.net.message.multipart.apache.ApacheFileItemParser");
 	
 	@Nullable

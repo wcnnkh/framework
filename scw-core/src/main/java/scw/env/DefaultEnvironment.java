@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import scw.aop.ConfigurableProxyFactory;
-import scw.aop.support.DefaultProxyFactory;
 import scw.convert.ConfigurableConversionService;
 import scw.convert.ConversionService;
 import scw.convert.resolve.ConfigurableResourceResolver;
@@ -29,9 +27,12 @@ import scw.io.ResourceLoader;
 import scw.io.resolver.ConfigurablePropertiesResolver;
 import scw.io.resolver.PropertiesResolver;
 import scw.io.resolver.support.PropertiesResolvers;
+import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.ClassLoaderProvider;
 import scw.util.ConcurrentReferenceHashMap;
+import scw.util.DefaultClassLoaderProvider;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
 import scw.util.placeholder.PlaceholderReplacer;
 import scw.util.placeholder.support.DefaultPlaceholderReplacer;
@@ -58,16 +59,29 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 			configurablePropertiesResolver, getObservableCharset());
 	private final ConfigurableResourceResolver configurableResourceResolver = new DefaultResourceResolver(
 			configurableConversionService, configurablePropertiesResolver, getObservableCharset());
-	private final DefaultProxyFactory proxyFactory = new DefaultProxyFactory();
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
-
+	private ClassLoaderProvider classLoaderProvider;
+	
 	public DefaultEnvironment() {
+		this(null);
+	}
+	
+	public DefaultEnvironment(@Nullable ClassLoaderProvider classLoaderProvider) {
 		super(true);
+		this.classLoaderProvider = classLoaderProvider;
 		configurableResourceLoader.setClassLoaderProvider(this);
 		configurableConversionService
 				.addConversionService(new ResourceResolverConversionService(configurableResourceResolver));
 	}
+	
+	public void setClassLoaderProvider(ClassLoaderProvider classLoaderProvider) {
+		this.classLoaderProvider = classLoaderProvider;
+	}
 
+	public void setClassLoader(ClassLoader classLoader) {
+		setClassLoaderProvider(new DefaultClassLoaderProvider(classLoader));
+	}
+	
 	@Override
 	public void addProtocolResolver(ProtocolResolver resolver) {
 		configurableResourceLoader.addProtocolResolver(resolver);
@@ -177,7 +191,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	}
 
 	public ClassLoader getClassLoader() {
-		return ClassUtils.getDefaultClassLoader();
+		return ClassUtils.getClassLoader(classLoaderProvider);
 	}
 
 	public boolean put(String key, Object value) {
@@ -252,8 +266,6 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	 */
 	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory, Logger logger) {
 		if (loaded.compareAndSet(false, true)) {
-			proxyFactory.loadServices(serviceLoaderFactory);
-
 			for (PropertiesResolver propertiesResolver : serviceLoaderFactory
 					.getServiceLoader(PropertiesResolver.class)) {
 				logger.debug("add properties resolver: {}", propertiesResolver);
@@ -303,11 +315,6 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	@Override
 	public ConfigurablePropertiesResolver getPropertiesResolver() {
 		return configurablePropertiesResolver;
-	}
-
-	@Override
-	public ConfigurableProxyFactory getProxyFactory() {
-		return proxyFactory;
 	}
 
 	@Override

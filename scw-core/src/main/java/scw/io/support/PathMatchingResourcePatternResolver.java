@@ -41,7 +41,6 @@ import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.env.SystemEnvironment;
 import scw.io.DefaultResourceLoader;
 import scw.io.FileSystemResource;
 import scw.io.Resource;
@@ -54,6 +53,7 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.AntPathMatcher;
 import scw.util.PathMatcher;
+import scw.util.XUtils;
 
 /**
  * A {@link ResourcePatternResolver} implementation that is able to resolve a
@@ -388,8 +388,7 @@ public class PathMatchingResourcePatternResolver implements
 
 	protected void addAllRsrcResources(String path,
 			Collection<Resource> resources) throws IOException {
-		for (String classPath : SystemEnvironment.getInstance()
-				.getJavaClassPathArray()) {
+		for (String classPath : XUtils.getClassPathArray()) {
 			FileSystemResource fileSystemResource = new FileSystemResource(
 					classPath);
 			if (!fileSystemResource.exists()) {

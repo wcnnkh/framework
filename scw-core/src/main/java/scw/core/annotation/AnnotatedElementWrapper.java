@@ -3,69 +3,41 @@ package scw.core.annotation;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-import scw.core.utils.ObjectUtils;
+import scw.util.Wrapper;
 
-public class AnnotatedElementWrapper<A extends AnnotatedElement> implements AnnotatedElement {
-	protected final A target;
+public class AnnotatedElementWrapper<A extends AnnotatedElement> extends Wrapper<A> implements AnnotatedElement{
 
-	public AnnotatedElementWrapper(A target) {
-		this.target = target;
-	}
-
-	public A getTarget() {
-		return target;
+	public AnnotatedElementWrapper(A wrappedTarget) {
+		super(wrappedTarget);
 	}
 
 	@Override
 	public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-		return target.getAnnotation(annotationClass);
+		return wrappedTarget.getAnnotation(annotationClass);
 	}
 
 	@Override
 	public Annotation[] getAnnotations() {
-		return target.getAnnotations();
+		return wrappedTarget.getAnnotations();
 	}
 
 	@Override
 	public Annotation[] getDeclaredAnnotations() {
-		return target.getDeclaredAnnotations();
+		return wrappedTarget.getDeclaredAnnotations();
 	}
 
 	@Override
 	public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-		return target.getAnnotationsByType(annotationClass);
+		return wrappedTarget.getAnnotationsByType(annotationClass);
 	}
 
 	@Override
 	public <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
-		return target.getDeclaredAnnotation(annotationClass);
+		return wrappedTarget.getDeclaredAnnotation(annotationClass);
 	}
 
 	@Override
 	public <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-		return target.getDeclaredAnnotationsByType(annotationClass);
-	}
-
-	@Override
-	public String toString() {
-		return target.toString();
-	}
-
-	@Override
-	public int hashCode() {
-		return target.hashCode();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-
-		if (obj instanceof AnnotatedElementWrapper) {
-			return ObjectUtils.nullSafeEquals(((AnnotatedElementWrapper<?>) obj).target, this.target);
-		}
-
-		return ObjectUtils.nullSafeEquals(obj, this.target);
+		return wrappedTarget.getDeclaredAnnotationsByType(annotationClass);
 	}
 }

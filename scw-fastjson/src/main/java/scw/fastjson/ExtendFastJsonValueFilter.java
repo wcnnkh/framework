@@ -2,7 +2,7 @@ package scw.fastjson;
 
 import scw.aop.support.FieldSetterListen;
 import scw.aop.support.FieldSetterListenImpl;
-import scw.env.SystemEnvironment;
+import scw.aop.support.ProxyUtils;
 import scw.json.JSONAware;
 import scw.mapper.Copy;
 import scw.value.AnyValue;
@@ -42,8 +42,8 @@ public class ExtendFastJsonValueFilter implements ValueFilter {
 			return null;
 		}
 
-		if (SystemEnvironment.getInstance().getProxyFactory().isProxy(value.getClass())) {
-			return Copy.copy(SystemEnvironment.getInstance().getProxyFactory().getUserClass(value.getClass()), value);
+		if (ProxyUtils.getFactory().isProxy(value.getClass())) {
+			return Copy.copy(ProxyUtils.getFactory().getUserClass(value.getClass()), value);
 		}
 		return value;
 	}

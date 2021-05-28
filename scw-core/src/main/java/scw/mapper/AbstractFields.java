@@ -64,16 +64,8 @@ public abstract class AbstractFields implements Fields {
 		return new AcceptFields(accept, false);
 	}
 	
-	public Fields accept(FieldFeature... features) {
-		return new FeatureFields(features, false);
-	}
-	
 	public Fields exclude(Accept<Field> accept) {
 		return new AcceptFields(accept, true);
-	}
-	
-	public Fields exclude(FieldFeature... features) {
-		return new FeatureFields(features, true);
 	}
 	
 	public Fields exclude(final Collection<String> names) {
@@ -170,41 +162,6 @@ public abstract class AbstractFields implements Fields {
 			}
 
 			throw new IllegalArgumentException(field.getGetter().toString());
-		}
-	}
-	
-	private final class FeatureFields extends AbstractFields implements Accept<Field>{
-		private final FieldFeature[] features;
-		private final boolean exclude;
-		
-		public FeatureFields(FieldFeature[] features, boolean exclude){
-			this.features = features;
-			this.exclude = exclude;
-		}
-		
-		public Iterator<Field> iterator() {
-			if(features == null || features.length == 0){
-				return AbstractFields.this.iterator();
-			}
-			
-			return new AcceptIterator<Field>(AbstractFields.this.iterator(), FeatureFields.this);
-		}
-
-		public boolean accept(Field e) {
-			for(FieldFeature feature : features){
-				if(feature == null || feature.getAccept().accept(e)){
-					if(exclude){
-						return false;
-					}
-					continue;
-				}
-				
-				if(exclude){
-					return true;
-				}
-				return false;
-			}
-			return true;
 		}
 	}
 	

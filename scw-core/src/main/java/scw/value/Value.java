@@ -83,17 +83,16 @@ public interface Value {
 	Enum<?> getAsEnum(Class<?> enumType);
 
 	/**
-	 * 这并不是基本数据类型，这是指Value可以直接转换的类型
+	 * 这并不是指基本数据类型，这是指Value可以直接转换的类型
 	 * 
 	 * @param type
 	 * @return
 	 */
 	public static boolean isBaseType(Class<?> type) {
-		if(type == null) {
+		if (type == null) {
 			return false;
 		}
-		return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class
-				|| Number.class.isAssignableFrom(type) || type.isEnum()
-				|| type == Class.class;
+		return ClassUtils.isPrimitiveOrWrapper(type) || type == String.class || type == BigDecimal.class
+				|| type == BigInteger.class || Number.class == type || type.isEnum() || type == Class.class;
 	}
 }

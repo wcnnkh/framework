@@ -62,7 +62,7 @@ public class XmlDubboBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 
 			for (ReferenceConfig<?> config : XmlDubboUtils
 					.parseReferenceConfigList(beanFactory.getEnvironment(),
-							nodeList, null, beanFactory)) {
+							nodeList, null, beanFactory.getClassesLoaderFactory())) {
 				DubboBeanDefinition xmlDubboBean = new DubboBeanDefinition(
 						beanFactory, config.getInterfaceClass(), config);
 				beanFactory.registerDefinition(xmlDubboBean);

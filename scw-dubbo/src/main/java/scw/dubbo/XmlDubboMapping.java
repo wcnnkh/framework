@@ -4,7 +4,7 @@ import org.w3c.dom.Node;
 
 import scw.beans.BeanFactory;
 import scw.dom.DomAttributeMapping;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.mapper.Field;
 
 public class XmlDubboMapping extends DomAttributeMapping {
@@ -17,7 +17,7 @@ public class XmlDubboMapping extends DomAttributeMapping {
 	
 	@Override
 	public <T> T newInstance(Class<? extends T> type) {
-		return InstanceUtils.NO_ARGS_INSTANCE_FACTORY.getInstance(type);
+		return Sys.getUnsafeInstanceFactory().getInstance(type);
 	}
 	
 	@Override

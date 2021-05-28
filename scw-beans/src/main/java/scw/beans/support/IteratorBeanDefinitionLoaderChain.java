@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 import scw.beans.BeanDefinitionLoader;
 import scw.beans.BeanDefinitionLoaderChain;
-import scw.beans.BeanFactory;
+import scw.beans.ConfigurableBeanFactory;
 
 public class IteratorBeanDefinitionLoaderChain extends AbstractBeanDefinitionLoaderChain {
 	private Iterator<BeanDefinitionLoader> iterator;
@@ -19,7 +19,7 @@ public class IteratorBeanDefinitionLoaderChain extends AbstractBeanDefinitionLoa
 	}
 
 	@Override
-	protected BeanDefinitionLoader getNext(BeanFactory beanFactory, Class<?> sourceClass) {
+	protected BeanDefinitionLoader getNext(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 		if (iterator == null) {
 			return null;
 		}

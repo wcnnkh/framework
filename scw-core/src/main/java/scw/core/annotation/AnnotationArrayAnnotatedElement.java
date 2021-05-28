@@ -1,9 +1,11 @@
 package scw.core.annotation;
 
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 
-public class AnnotationArrayAnnotatedElement implements AnnotatedElement {
+public class AnnotationArrayAnnotatedElement implements AnnotatedElement, Serializable{
+	private static final long serialVersionUID = 1L;
 	private final Annotation[] annotations;
 	private final Annotation[] declaredAnnotations;
 

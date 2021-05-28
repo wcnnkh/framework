@@ -5,17 +5,16 @@ import java.util.Properties;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.context.annotation.Provider;
 import scw.convert.TypeDescriptor;
-import scw.convert.support.EntityConversionService;
-import scw.convert.support.PropertyFactoryToEntityConversionService;
 import scw.core.utils.StringUtils;
 import scw.io.event.ObservableProperties;
+import scw.orm.convert.EntityConversionService;
+import scw.orm.convert.PropertyFactoryToEntityConversionService;
 
 @Provider
 public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
@@ -38,7 +37,7 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 	
 	private static final class JedisPoolBeanDefinition extends DefaultBeanDefinition {
 
-		public JedisPoolBeanDefinition(BeanFactory beanFactory) {
+		public JedisPoolBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, JedisPool.class);
 		}
 		
@@ -85,7 +84,7 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	private static final class JedisPoolConfigBeanDefinition extends DefaultBeanDefinition {
 
-		public JedisPoolConfigBeanDefinition(BeanFactory beanFactory) {
+		public JedisPoolConfigBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, JedisPoolConfig.class);
 		}
 		public String getConfigName(){
@@ -107,7 +106,8 @@ public class JedisBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 			JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
 			// 兼容老版本
-			EntityConversionService entityConfigure = new PropertyFactoryToEntityConversionService(beanFactory.getEnvironment().getConversionService());
+			EntityConversionService entityConfigure = new PropertyFactoryToEntityConversionService();
+			entityConfigure.setConversionService(beanFactory.getEnvironment().getConversionService());
 			entityConfigure.configurationProperties(properties, TypeDescriptor.forObject(properties), jedisPoolConfig, TypeDescriptor.forObject(jedisPoolConfig));
 			entityConfigure.setPrefix("redis");
 			entityConfigure.setStrict(true);

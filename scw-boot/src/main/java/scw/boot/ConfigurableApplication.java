@@ -1,13 +1,7 @@
 package scw.boot;
 
-import scw.beans.ConfigurableBeanFactory;
-import scw.context.ConfigurableClassesLoader;
-import scw.context.ConfigurableContextEnvironment;
+import scw.env.ConfigurableEnvironment;
 
-public interface ConfigurableApplication extends Application{
-	ConfigurableBeanFactory getBeanFactory();
-	
-	ConfigurableContextEnvironment getEnvironment();
-	
-	ConfigurableClassesLoader getContextClassesLoader();
+public interface ConfigurableApplication extends Application {
+	ConfigurableEnvironment getEnvironment();
 }

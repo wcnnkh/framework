@@ -8,13 +8,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import scw.context.Destroy;
 import scw.data.cas.CAS;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
 public final class MemoryDataManager implements Destroy {
 	// 单位：秒
-	private static final int DEFAULT_CLEAR_PERIOD = SystemEnvironment.getInstance()
+	private static final int DEFAULT_CLEAR_PERIOD = Sys.env
 			.getValue("memory.temporary.cache.clear.period", int.class, 60);
 	private static final Timer TIMER = new Timer(MemoryDataManager.class.getSimpleName(), true);
 

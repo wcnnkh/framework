@@ -2,6 +2,6 @@ package scw.beans;
 
 
 public interface BeanDefinitionLoader {
-	BeanDefinition load(BeanFactory beanFactory, Class<?> sourceClass,
+	BeanDefinition load(ConfigurableBeanFactory beanFactory, Class<?> sourceClass,
 			BeanDefinitionLoaderChain loaderChain);
 }

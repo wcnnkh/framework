@@ -3,13 +3,9 @@ package scw.boot.servlet.support;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
-import scw.beans.BeanLifeCycleEvent;
-import scw.beans.BeanLifeCycleEvent.Step;
 import scw.boot.Application;
 import scw.boot.servlet.ServletApplicationStartup;
-import scw.boot.servlet.ServletContextAware;
 import scw.boot.servlet.ServletContextInitialization;
-import scw.event.EventListener;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.Result;
@@ -48,19 +44,6 @@ public class DefaultServletApplicationStartup implements ServletApplicationStart
 		}
 
 		servletContext.setAttribute(nameToUse, true);
-		
-		application.getBeanFactory().registerListener(new EventListener<BeanLifeCycleEvent>() {
-
-			public void onEvent(BeanLifeCycleEvent event) {
-				if (event.getStep() == Step.BEFORE_INIT) {
-					Object source = event.getSource();
-					if (source != null && source instanceof ServletContextAware) {
-						((ServletContextAware) source).setServletContext(servletContext);
-					}
-				}
-			}
-		});
-		
 		afterStarted(servletContext, application);
 		ServletContextUtils.startLogger(logger, servletContext, null, true);
 		return true;

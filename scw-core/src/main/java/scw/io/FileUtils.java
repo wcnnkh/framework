@@ -16,10 +16,6 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -124,20 +120,16 @@ public final class FileUtils {
 		return file;
 	}
 
-	public static String getTempDirectoryPath() {
+	public static String getTempDirectory() {
 		return System.getProperty("java.io.tmpdir");
 	}
-
-	public static File getTempDirectory() {
-		return new File(getTempDirectoryPath());
-	}
-
-	public static String getUserDirectoryPath() {
+	
+	public static String getUserHome(){
 		return System.getProperty("user.home");
 	}
-
-	public static File getUserDirectory() {
-		return new File(getUserDirectoryPath());
+	
+	public static String getUserDir() {
+		return System.getProperty("user.dir");
 	}
 
 	public static FileInputStream openInputStream(File file) throws IOException {
@@ -2793,92 +2785,5 @@ public final class FileUtils {
 			return filePath.substring(sufIndex + 1);
 		}
 		return null;
-	}
-
-	public static boolean copyFile(String oldFile, String newFile) {
-		Path oldP = Paths.get(oldFile);
-		Path newP = Paths.get(newFile);
-		if (oldP.toFile().exists()) {
-			try {
-				Files.copy(oldP, newP, StandardCopyOption.REPLACE_EXISTING);
-				return true;
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-
-	public static void copyFileUsingFileChannels(File source, File dest)
-			throws IOException {
-		FileChannel inputChannel = null;
-		FileChannel outputChannel = null;
-		FileInputStream fis = null;
-		FileOutputStream fos = null;
-		try {
-			fis = new FileInputStream(source);
-			fos = new FileOutputStream(dest);
-			inputChannel = fis.getChannel();
-			outputChannel = fos.getChannel();
-			outputChannel.transferFrom(inputChannel, 0, inputChannel.size());
-		} finally {
-			fis.close();
-			fos.close();
-			inputChannel.close();
-			outputChannel.close();
-		}
-	}
-
-	public static String readerFileContent(File file, int buffSize,
-			String charsetName) {
-		FileInputStream fileInputStream = null;
-		try {
-			fileInputStream = new FileInputStream(file);
-			return IOUtils.readContent(fileInputStream, buffSize, charsetName);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			IOUtils.close(fileInputStream);
-		}
-	}
-
-	public static List<String> getFileContentLineList(File file,
-			String charsetName) {
-		FileInputStream fis = null;
-		try {
-			fis = new FileInputStream(file);
-			return IOUtils.readLines(fis, charsetName);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		} finally {
-			IOUtils.close(fis);
-		}
-	}
-
-	public static void writeFileContent(String filePath, String content,
-			String charsetName) {
-		File file = new File(filePath);
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
-		writeFileContent(file, content, charsetName);
-	}
-
-	public static void writeFileContent(File file, String content,
-			String charsetName) {
-		FileOutputStream fos = null;
-		try {
-			fos = new FileOutputStream(file);
-			fos.write(content.getBytes(charsetName));
-			fos.flush();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			IOUtils.close(fos);
-		}
 	}
 }

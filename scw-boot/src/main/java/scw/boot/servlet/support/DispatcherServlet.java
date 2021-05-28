@@ -13,9 +13,9 @@ import scw.boot.ApplicationAware;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.servlet.ServletService;
-import scw.servlet.ServletUtils;
 import scw.util.Result;
+import scw.web.servlet.ServletService;
+import scw.web.servlet.ServletUtils;
 
 public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 	private static final long serialVersionUID = 1L;

@@ -1,15 +1,17 @@
 package scw.context.result;
 
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.event.Observable;
 
 public class ResultFactory {
-	static final Observable<String> DEFAULT_ERROR_MESSAGE = SystemEnvironment.getInstance()
+	static final Observable<String> DEFAULT_ERROR_MESSAGE = Sys.env
 			.getObservableValue("result.error.msg", String.class, "系统错误");
-	static final Observable<String> AUTHORIZATION_FAILURE_MESSAGE = SystemEnvironment.getInstance()
-			.getObservableValue("result.authorization.failure.msg", String.class, "登录状态已过期");
-	static final Observable<String> PARAMETER_ERROR_MESSAGE = SystemEnvironment.getInstance()
-			.getObservableValue("result.parameter.error.msg", String.class, "参数错误");
+	static final Observable<String> AUTHORIZATION_FAILURE_MESSAGE = Sys.env
+			.getObservableValue("result.authorization.failure.msg",
+					String.class, "登录状态已过期");
+	static final Observable<String> PARAMETER_ERROR_MESSAGE = Sys.env
+			.getObservableValue("result.parameter.error.msg", String.class,
+					"参数错误");
 
 	private final ResultMessageFactory resultMessageFactory;
 	private final int defaultErrorCode;
@@ -25,7 +27,8 @@ public class ResultFactory {
 		this(resultMessageFactory, 1, 0, -1, 2);
 	}
 
-	public ResultFactory(ResultMessageFactory resultMessageFactory, int defaultErrorCode, int successCode,
+	public ResultFactory(ResultMessageFactory resultMessageFactory,
+			int defaultErrorCode, int successCode,
 			int authorizationFailureCode, int parameterErrorCode) {
 		this.resultMessageFactory = resultMessageFactory;
 		this.defaultErrorCode = defaultErrorCode;
@@ -56,7 +59,8 @@ public class ResultFactory {
 	public final <T> DataResult<T> authorizationFailure() {
 		long code = getAuthorizationFailureCode();
 		String msg = getMsg(code);
-		return error(code, msg == null ? AUTHORIZATION_FAILURE_MESSAGE.get() : msg);
+		return error(code, msg == null ? AUTHORIZATION_FAILURE_MESSAGE.get()
+				: msg);
 	}
 
 	public final <T> DataResult<T> parameterError() {
@@ -79,7 +83,8 @@ public class ResultFactory {
 
 	public final <T> DataResult<T> error(long code, String msg) {
 		if (code == getSuccessCode()) {
-			throw new IllegalArgumentException("Error code cannot be " + getSuccessCode());
+			throw new IllegalArgumentException("Error code cannot be "
+					+ getSuccessCode());
 		}
 		return error(code, msg, null);
 	}
@@ -116,6 +121,7 @@ public class ResultFactory {
 	}
 
 	protected String getMsg(long code) {
-		return resultMessageFactory == null ? null : resultMessageFactory.getMessage(code);
+		return resultMessageFactory == null ? null : resultMessageFactory
+				.getMessage(code);
 	}
 }

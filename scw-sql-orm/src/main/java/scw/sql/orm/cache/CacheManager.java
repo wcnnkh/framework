@@ -14,9 +14,9 @@ public interface CacheManager {
 
 	void saveOrUpdate(Object bean);
 
-	<T> T getById(Class<T> type, Object... params);
+	<T> T getById(Class<? extends T> type, Object... params);
 
-	<K, V> Map<K, V> getInIdList(Class<V> type, Collection<K> inIds, Object... params);
+	<K, V> Map<K, V> getInIdList(Class<? extends V> type, Collection<? extends K> inIds, Object... params);
 
 	/**
 	 * 是否应该从数据库查找

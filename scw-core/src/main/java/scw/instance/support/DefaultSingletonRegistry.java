@@ -8,27 +8,24 @@ import scw.instance.SingletonRegistry;
 import scw.util.Creator;
 import scw.util.Result;
 
-public class DefaultSingletonRegistry implements SingletonRegistry{
+public class DefaultSingletonRegistry implements SingletonRegistry {
 	private volatile Map<String, Object> singletionMap = new LinkedHashMap<String, Object>();
-	
+
 	public void registerSingleton(String beanName, Object singletonObject) {
 		synchronized (singletionMap) {
-			Object oldObject = singletionMap.get(beanName);
-			if (oldObject != null) {
-				throw new IllegalStateException("Could not register object [" + singletonObject +
-						"] under bean name '" + beanName + "': there is already object [" + oldObject + "] bound");
+			Object old = singletionMap.get(beanName);
+			if (old != null) {
+				throw new IllegalStateException("Could not register object ["
+						+ singletonObject + "] under bean name '" + beanName
+						+ "': there is already object [" + old + "] bound");
 			}
-			
+
 			singletionMap.put(beanName, singletonObject);
 		}
 	}
 
 	public Object getSingleton(String beanName) {
-		Object instance = singletionMap.get(beanName);
-		if(instance == null){
-			return null;
-		}
-		return instance;
+		return singletionMap.get(beanName);
 	}
 
 	public boolean containsSingleton(String beanName) {
@@ -40,7 +37,7 @@ public class DefaultSingletonRegistry implements SingletonRegistry{
 			return StringUtils.toStringArray(singletionMap.keySet());
 		}
 	}
-	
+
 	public void removeSingleton(String name) {
 		synchronized (singletionMap) {
 			singletionMap.remove(name);
@@ -52,13 +49,12 @@ public class DefaultSingletonRegistry implements SingletonRegistry{
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Result<T> getSingleton(final String beanName,
-			Creator<T> creater) {
+	public <T> Result<T> getSingleton(final String beanName, Creator<T> creater) {
 		T object = (T) singletionMap.get(beanName);
-		if(object == null){
+		if (object == null) {
 			synchronized (singletionMap) {
 				object = (T) singletionMap.get(beanName);
-				if(object == null){
+				if (object == null) {
 					object = creater.create();
 					registerSingleton(beanName, object);
 					return new Result<T>(true, object);

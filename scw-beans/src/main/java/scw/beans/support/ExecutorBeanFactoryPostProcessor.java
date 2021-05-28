@@ -8,7 +8,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
@@ -45,7 +44,7 @@ public class ExecutorBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 
 	private final class ScheduledExecutorServiceBeanDefinition extends DefaultBeanDefinition {
 
-		public ScheduledExecutorServiceBeanDefinition(BeanFactory beanFactory) {
+		public ScheduledExecutorServiceBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, ScheduledThreadPoolExecutor.class);
 		}
 
@@ -67,7 +66,7 @@ public class ExecutorBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 	}
 
 	private final class ThreadPoolExecutorBeanDefinition extends DefaultBeanDefinition {
-		public ThreadPoolExecutorBeanDefinition(BeanFactory beanFactory) {
+		public ThreadPoolExecutorBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, ThreadPoolExecutor.class);
 		}
 

@@ -2,8 +2,8 @@ package scw.upload.ueditor.upload;
 
 import java.util.Map;
 
-import scw.http.server.MultiPartServerHttpRequest;
 import scw.upload.ueditor.define.State;
+import scw.web.MultiPartServerHttpRequest;
 
 public class Uploader {
 	private MultiPartServerHttpRequest request = null;

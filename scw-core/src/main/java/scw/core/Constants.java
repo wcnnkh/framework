@@ -20,8 +20,6 @@ public class Constants {
 	/**
 	 * The ASM version used internally throughout the framework.<br/>
 	 * 默认的asm版本
-	 * 
-	 * @see Opcodes#ASM4
 	 */
 	public static final int ASM_VERSION = Opcodes.ASM7;
 	

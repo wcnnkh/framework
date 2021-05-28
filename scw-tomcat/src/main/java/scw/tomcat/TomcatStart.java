@@ -1,6 +1,7 @@
 package scw.tomcat;
 
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -32,13 +33,13 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.env.MainArgs;
+import scw.env.Sys;
 import scw.http.HttpMethod;
-import scw.http.server.HttpControllerDescriptor;
-import scw.instance.InstanceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionManager;
+import scw.web.pattern.HttpPattern;
 
 public class TomcatStart implements Main, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(TomcatStart.class);
@@ -50,8 +51,8 @@ public class TomcatStart implements Main, Destroy {
 	}
 
 	protected Context createContext(Application application) {
-		Context context = tomcat.addContext(getContextPath(application.getEnvironment()),
-				application.getEnvironment().getWorkPath());
+		Context context = tomcat.addContext(getContextPath(application.getBeanFactory().getEnvironment()),
+				application.getBeanFactory().getEnvironment().getWorkPath());
 		context.setParentClassLoader(application.getClassLoader());
 		return context;
 	}
@@ -64,26 +65,28 @@ public class TomcatStart implements Main, Destroy {
 					continue;
 				}
 
-				HttpControllerDescriptor controllerDescriptorToUse = null;
-				for (HttpControllerDescriptor httpControllerDescriptor : action.getHttpControllerDescriptors()) {
-					if (httpControllerDescriptor.getMethod() == HttpMethod.GET
-							&& !httpControllerDescriptor.getRestful().isRestful()) {
-						controllerDescriptorToUse = httpControllerDescriptor;
-						break;
+				for (HttpPattern pattern : action.getPatternts()) {
+					if (pattern.isPattern() && pattern.getMethod() == HttpMethod.GET) {
+						continue;
 					}
-				}
 
-				if (controllerDescriptorToUse == null) {
-					logger.warn("not support error controller action: {}", action);
-					continue;
-				}
-
-				if (errorCodeController != null) {
-					for (int code : errorCodeController.value()) {
-						ErrorPage errorPage = new ErrorPage();
-						errorPage.setErrorCode(code);
-						errorPage.setLocation(controllerDescriptorToUse.getPath());
-						context.addErrorPage(errorPage);
+					if (errorCodeController != null) {
+						for (int code : errorCodeController.value()) {
+							ErrorPage errorPage = new ErrorPage();
+							errorPage.setErrorCode(code);
+							
+							if(StringUtils.isNotEmpty(errorCodeController.charset())){
+								errorPage.setCharset(Charset.forName(errorCodeController.charset()));
+							}
+							
+							if(StringUtils.isNotEmpty(errorCodeController.exceptionType())){
+								errorPage.setExceptionType(errorCodeController.exceptionType());
+							}
+							errorPage.setLocation(pattern.getPath());
+							context.addErrorPage(errorPage);
+						}
+					} else {
+						logger.warn("not support error controller action: {}", action);
 					}
 				}
 			}
@@ -96,11 +99,11 @@ public class TomcatStart implements Main, Destroy {
 
 	protected void configureConnector(Tomcat tomcat, int port, Application application) {
 		Connector connector = null;
-		String connectorName = TomcatUtils.getTomcatConnectorName(application.getEnvironment());
+		String connectorName = TomcatUtils.getTomcatConnectorName(application.getBeanFactory().getEnvironment());
 		if (!StringUtils.isEmpty(connectorName)) {
 			connector = application.getBeanFactory().getInstance(connectorName);
 		} else {
-			connector = new Connector(TomcatUtils.getTomcatProtocol(application.getEnvironment()));
+			connector = new Connector(TomcatUtils.getTomcatProtocol(application.getBeanFactory().getEnvironment()));
 		}
 
 		connector.setPort(port);
@@ -113,7 +116,7 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet", application.getClassLoader())) {
-			ServletContainerInitializer containerInitializer = InstanceUtils.INSTANCE_FACTORY
+			ServletContainerInitializer containerInitializer = Sys.getInstanceFactory()
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
 				context.addServletContainerInitializer(containerInitializer, null);
@@ -138,21 +141,21 @@ public class TomcatStart implements Main, Destroy {
 		String servletName = mainClass.getSimpleName();
 		Servlet servlet = ServletContextUtils.createServlet(application.getBeanFactory());
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
-		Properties properties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(), servletName,
+		Properties properties = TomcatUtils.getServletInitParametersConfig(application.getBeanFactory().getEnvironment(), servletName,
 				true);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			wrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 		}
 
 		addServletMapping(context, "/", servletName);
-		String sourceMapping = TomcatUtils.getDefaultServletMapping(application.getEnvironment());
+		String sourceMapping = TomcatUtils.getDefaultServletMapping(application.getBeanFactory().getEnvironment());
 		if (!StringUtils.isEmpty(sourceMapping)) {
 			String[] patternArr = StringUtils.commonSplit(sourceMapping);
 			if (!ArrayUtils.isEmpty(patternArr)) {
 				String tempServletName = "default";
 				Wrapper tempWrapper = Tomcat.addServlet(context, tempServletName,
 						"org.apache.catalina.servlets.DefaultServlet");
-				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(application.getEnvironment(),
+				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(application.getBeanFactory().getEnvironment(),
 						tempServletName, false);
 				for (Entry<Object, Object> entry : tempProperties.entrySet()) {
 					tempWrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());

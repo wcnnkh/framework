@@ -12,9 +12,4 @@ public interface HttpMessage extends Message{
 	default MediaType getContentType() {
 		return getHeaders().getContentType();
 	}
-
-	default String getCharacterEncoding() {
-		MediaType mediaType = getContentType();
-		return mediaType == null ? null : mediaType.getCharsetName();
-	}
 }

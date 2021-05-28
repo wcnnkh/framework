@@ -1,5 +1,15 @@
-scw.orm.convert.CollectionToMapConversionService
-
 ## SQL TYPE ##
 scw.orm.convert.sql.DateConversionService
 ## SQL TYPE ##
+
+## DOM ##
+scw.orm.convert.dom.DocumentParseConversionService
+scw.orm.convert.dom.NodeListToCollectionConversionService
+scw.orm.convert.dom.NodeListToMapConversionService
+scw.orm.convert.dom.NodeToObjectConversionService
+scw.orm.convert.dom.NodeListToEntityConversionService
+## DOM ##
+
+scw.orm.convert.CollectionToMapConversionService
+scw.orm.convert.PropertyFactoryToEntityConversionService
+scw.orm.convert.MapToEntityConversionService

@@ -7,4 +7,6 @@ import scw.security.authority.http.HttpAuthorityManager;
 public interface HttpActionAuthorityManager extends
 		HttpAuthorityManager<HttpAuthority> {
 	HttpAuthority getAuthority(Action action);
+	
+	void register(Action action);
 }

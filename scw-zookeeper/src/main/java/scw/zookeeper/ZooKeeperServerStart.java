@@ -10,7 +10,7 @@ import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.apache.zookeeper.server.quorum.QuorumPeerConfig.ConfigException;
 
 import scw.core.Assert;
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.json.JSONUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -37,13 +37,13 @@ public class ZooKeeperServerStart extends Thread {
 	protected ServerConfig parse(Properties properties) throws IOException,
 			ConfigException {
 		if (!properties.containsKey(DATA_DIR)) {
-			properties.setProperty(DATA_DIR, SystemEnvironment
-					.getInstance().getWorkPath() + File.separator + "zk_data");
+			properties.setProperty(DATA_DIR, Sys
+					.env.getWorkPath() + File.separator + "zk_data");
 		}
 
 		if (!properties.containsKey(DATA_LOG_DIR)) {
-			properties.setProperty(DATA_LOG_DIR, SystemEnvironment
-					.getInstance().getWorkPath() + File.separator + "zk_logs");
+			properties.setProperty(DATA_LOG_DIR, Sys
+					.env.getWorkPath() + File.separator + "zk_logs");
 		}
 
 		if (!properties.containsKey(CLIENT_PORT)) {

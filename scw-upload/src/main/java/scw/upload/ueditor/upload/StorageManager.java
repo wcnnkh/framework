@@ -116,9 +116,8 @@ public class StorageManager {
 	}
 
 	private static File getTmpFile() {
-		File tmpDir = FileUtils.getTempDirectory();
 		String tmpFileName = (Math.random() * 10000 + "").replace(".", "");
-		return new File(tmpDir, tmpFileName);
+		return new File(FileUtils.getTempDirectory(), tmpFileName);
 	}
 
 	private static State saveTmpFile(File tmpFile, String path) {

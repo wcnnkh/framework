@@ -1661,16 +1661,6 @@ public final class StringUtils {
 	}
 
 	/**
-	 * 把钱保留两位小数
-	 * 
-	 * @param price 单位:分
-	 * @return
-	 */
-	public static String formatNothingToYuan(long price) {
-		return formatNumberPrecision((double) price / 100, 2);
-	}
-
-	/**
 	 * 保留小数点精度
 	 * 
 	 * @param number

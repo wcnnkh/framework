@@ -7,16 +7,25 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 public class MimeTypes implements Comparator<MimeType>, Iterable<MimeType> {
-	private final TreeSet<MimeType> mimeTypes = new TreeSet<MimeType>(this);
+	public static final MimeTypes EMPTY = new MimeTypes(Collections.emptySortedSet());
+	private final SortedSet<MimeType> mimeTypes;
 	private boolean readyOnly;
+
+	public MimeTypes() {
+		this.mimeTypes = new TreeSet<MimeType>(this);
+	}
+
+	public MimeTypes(SortedSet<MimeType> mimeTypes) {
+		this.mimeTypes = mimeTypes;
+		this.readyOnly = true;
+	}
 
 	public Iterator<MimeType> iterator() {
 		return Collections.unmodifiableCollection(mimeTypes).iterator();
 	}
 
 	public final SortedSet<MimeType> getMimeTypes() {
-		return readyOnly ? Collections.unmodifiableSortedSet(mimeTypes)
-				: mimeTypes;
+		return readyOnly ? Collections.unmodifiableSortedSet(mimeTypes) : mimeTypes;
 	}
 
 	public final MimeTypes add(MimeType... mimeTypes) {

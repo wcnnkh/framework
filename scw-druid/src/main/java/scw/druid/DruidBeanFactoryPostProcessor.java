@@ -1,7 +1,6 @@
 package scw.druid;
 
 import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
@@ -26,7 +25,7 @@ public class DruidBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
 	private static class DruidDBBeanDefinition extends DefaultBeanDefinition {
 
-		public DruidDBBeanDefinition(BeanFactory beanFactory) {
+		public DruidDBBeanDefinition(ConfigurableBeanFactory beanFactory) {
 			super(beanFactory, DruidDB.class);
 		}
 

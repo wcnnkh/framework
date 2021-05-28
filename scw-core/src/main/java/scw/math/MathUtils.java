@@ -1,11 +1,11 @@
 package scw.math;
 
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.math.gcd.DivisionAlgorithm;
 import scw.math.gcd.GreatestCommonDivisor;
 
 public final class MathUtils {
-	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = InstanceUtils.loadService(GreatestCommonDivisor.class, DivisionAlgorithm.class.getName());
+	private static final GreatestCommonDivisor GREATEST_COMMON_DIVISOR = Sys.loadService(GreatestCommonDivisor.class, DivisionAlgorithm.class.getName());
 	
 	private MathUtils() {
 	};

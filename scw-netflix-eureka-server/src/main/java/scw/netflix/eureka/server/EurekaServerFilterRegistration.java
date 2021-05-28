@@ -11,13 +11,13 @@ import javax.servlet.Filter;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Application;
 
+import com.sun.jersey.api.core.DefaultResourceConfig;
+import com.sun.jersey.spi.container.servlet.ServletContainer;
+
 import scw.boot.servlet.FilterRegistration;
 import scw.context.annotation.Provider;
 import scw.core.utils.StringUtils;
 import scw.netflix.eureka.EurekaConstants;
-
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 @Provider
 public class EurekaServerFilterRegistration implements FilterRegistration {
@@ -34,7 +34,7 @@ public class EurekaServerFilterRegistration implements FilterRegistration {
 	
 	public static Application getApplication(scw.boot.Application application) {
 		Set<Class<?>> classes = new HashSet<>();
-		for (Class<?> clazz : application.getClassesLoader(StringUtils.arrayToCommaDelimitedString(EUREKA_PACKAGES))) {
+		for (Class<?> clazz : application.getBeanFactory().getClassesLoaderFactory().getClassesLoader(StringUtils.arrayToCommaDelimitedString(EUREKA_PACKAGES))) {
 			if (clazz.getAnnotation(Path.class) != null
 					|| clazz.getAnnotation(javax.ws.rs.ext.Provider.class) != null) {
 				classes.add(clazz);

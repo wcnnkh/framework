@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import scw.convert.lang.ConversionServices;
 import scw.convert.lang.ConverterConversionService;
 import scw.convert.lang.DateFormatConversionService;
-import scw.convert.lang.DocumentParseConversionService;
 import scw.convert.lang.JsonConversionService;
 import scw.convert.lang.JsonToObjectConversionService;
 import scw.convert.lang.ObjectToStringConverter;
@@ -55,16 +54,6 @@ public class DefaultConversionService extends ConversionServices {
 		addConversionService(new ObjectToArrayConversionService(this));
 		addConversionService(new ObjectToCollectionConversionService(this));
 		addConversionService(new ObjectToStringConverter());
-
-		// document
-		addConversionService(new DocumentParseConversionService());
-		addConversionService(new NodeListToCollectionConversionService(this));
-		addConversionService(new NodeListToMapConversionService(this));
-		addConversionService(new NodeToObjectConversionService(this));
-
-		addConversionService(new MapToEntityConversionService(this));
-		addConversionService(new PropertyFactoryToEntityConversionService(this));
-		addConversionService(new NodeListToEntityConversionService(this));
 	}
 
 	public DefaultConversionService(PropertiesResolver propertiesResolver, @Nullable Supplier<Charset> charset) {

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>scw</groupId>
 		<artifactId>scw</artifactId>
-		<version>2.0</version>
+		<version>2.1</version>
 	</parent>
 	<artifactId>scw-lucene</artifactId>
 	<properties>
@@ -13,7 +13,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-search</artifactId>
+			<artifactId>scw-data</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-beans</artifactId>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- lucene相关 -->

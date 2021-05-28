@@ -123,7 +123,7 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryStorage
 		}
 	}
 
-	public <T> T getById(Class<T> type, Object... params) {
+	public <T> T getById(Class<? extends T> type, Object... params) {
 		CacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return null;
@@ -134,8 +134,8 @@ public class TemporaryCacheManager extends AbstractCacheManager<TemporaryStorage
 						Arrays.asList(params)), config.getExp());
 	}
 
-	public <K, V> Map<K, V> getInIdList(Class<V> type,
-			Collection<K> inIds, Object... params) {
+	public <K, V> Map<K, V> getInIdList(Class<? extends V> type,
+			Collection<? extends K> inIds, Object... params) {
 		CacheConfig config = getCacheConfig(type);
 		if (!config.isEnable()) {
 			return null;

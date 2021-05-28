@@ -8,13 +8,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import scw.core.utils.StringUtils;
-import scw.instance.InstanceUtils;
+import scw.env.Sys;
 import scw.mapper.Field;
-import scw.mapper.Fields;
 import scw.mapper.FieldFeature;
+import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.math.BigDecimalHolder;
-import scw.math.Fraction;
+import scw.math.Calculator;
+import scw.math.Calculators;
 import scw.math.NumberHolder;
 import scw.util.Pair;
 
@@ -26,12 +27,9 @@ import scw.util.Pair;
  */
 public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	static final Function[] FUNCTIONS;
-	static final Operator[][] OPERATORS = new Operator[][] { { new PowOperator() },
-			{ new MultiplicationOperator(), new DivisionOperator(), new RemainderOperator() },
-			{ new AdditionOperator(), new SubtractionOperator() } };
 
 	static {
-		List<Function> functions = new ArrayList<Function>(InstanceUtils.loadAllService(Function.class));
+		List<Function> functions = new ArrayList<Function>(Sys.loadAllService(Function.class));
 		functions.add(new MaxFunction());
 		functions.add(new MinFunction());
 		functions.add(new MeaninglessFunction("{", "}"));
@@ -41,10 +39,9 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		FUNCTIONS = functions.toArray(new Function[0]);
 	}
 
-	private void resolve(Collection<Fragment> fragments, String script, Operator lastOperator) {
+	private void resolve(Collection<Fragment> fragments, String script, Calculator lastOperator) {
 		for (Function function : FUNCTIONS) {
-			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(),
-					function.getSuffix());
+			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(), function.getSuffix());
 			if (indexPair == null) {
 				continue;
 			}
@@ -59,9 +56,9 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			String right = end == (scriptLength - suffixLength) ? null
 					: script.substring(end + suffixLength, scriptLength);
 			if (left != null) {
-				Operator leftOperator = null;
-				for (Operator[] operators : OPERATORS) {
-					for (Operator operator : operators) {
+				Calculator leftOperator = null;
+				for (Calculator[] operators : Calculators.GROUPS) {
+					for (Calculator operator : operators) {
 						if (left.endsWith(operator.getOperator())) {
 							leftOperator = operator;
 							break;
@@ -77,11 +74,11 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 				resolve(fragments, left, leftOperator);
 			}
 
-			Operator centerOperator = null;
+			Calculator centerOperator = null;
 			if (right != null) {
-				Operator rightOperator = null;
-				for (Operator[] operators : OPERATORS) {
-					for (Operator operator : operators) {
+				Calculator rightOperator = null;
+				for (Calculator[] operators : Calculators.GROUPS) {
+					for (Calculator operator : operators) {
 						if (right.startsWith(operator.getOperator())) {
 							rightOperator = operator;
 							break;
@@ -112,8 +109,8 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return;
 		}
 
-		for (Operator[] operators : OPERATORS) {
-			for (Operator operator : operators) {
+		for (Calculator[] operators : Calculators.GROUPS) {
+			for (Calculator operator : operators) {
 				int index = script.indexOf(operator.getOperator());
 				if (index != -1) {
 					String s = script.substring(0, index);
@@ -131,53 +128,53 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	}
 
 	private Fragment operator(Fragment left, Fragment right) {
-		NumberHolder value = left.getOperator().operation(left.getValue(), right.getValue());
+		NumberHolder value = left.getOperator().calculate(left.getValue(), right.getValue());
 		Fragment valueFragment = new ValueFragment(value);
 		valueFragment.setOperator(right.getOperator());
 		return valueFragment;
 	}
 
-	private int indexOf(Operator operator, Collection<Fragment> fragments){
+	private int indexOf(Calculator operator, Collection<Fragment> fragments) {
 		Iterator<Fragment> iterator = fragments.iterator();
 		int index = 0;
-		while(iterator.hasNext()){
+		while (iterator.hasNext()) {
 			Fragment fragment = iterator.next();
-			if(iterator.hasNext() && fragment.getOperator().getOperator().equals(operator.getOperator())){//不是最后一个
+			if (iterator.hasNext() && fragment.getOperator().getOperator().equals(operator.getOperator())) {// 不是最后一个
 				return index;
 			}
-			index ++;
+			index++;
 		}
 		return -1;
 	}
-	
+
 	private NumberHolder eval(Collection<Fragment> fragments) {
 		if (fragments == null || fragments.isEmpty()) {
 			return null;
 		}
-		
-		for(Operator[] operators : OPERATORS){
+
+		for (Calculator[] operators : Calculators.GROUPS) {
 			int indexToUse = -1;
-			//找到同个一个运算优先级中最左边的片段
-			for(Operator operator : operators){
+			// 找到同个一个运算优先级中最左边的片段
+			for (Calculator operator : operators) {
 				int index = indexOf(operator, fragments);
-				if(index != -1 && (indexToUse == -1 || index < indexToUse)){
+				if (index != -1 && (indexToUse == -1 || index < indexToUse)) {
 					indexToUse = index;
 				}
 			}
-			
-			if(indexToUse != -1){
+
+			if (indexToUse != -1) {
 				LinkedList<Fragment> nextFragments = new LinkedList<Fragment>();
 				int index = 0;
 				Iterator<Fragment> iterator = fragments.iterator();
-				while(iterator.hasNext()){
+				while (iterator.hasNext()) {
 					Fragment fragment = iterator.next();
-					if(index == indexToUse){
+					if (index == indexToUse) {
 						Fragment value = operator(fragment, iterator.next());
 						nextFragments.add(value);
-					}else{
+					} else {
 						nextFragments.add(fragment);
 					}
-					index ++;
+					index++;
 				}
 
 				if (nextFragments.size() != fragments.size()) {
@@ -209,8 +206,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	@Override
 	protected NumberHolder evalInternal(String script) throws ScriptException {
 		for (Function function : FUNCTIONS) {
-			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(),
-					function.getSuffix());
+			Pair<Integer, Integer> indexPair = StringUtils.indexOf(script, function.getPrefix(), function.getSuffix());
 			if (indexPair == null) {
 				continue;
 			}
@@ -242,7 +238,8 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 
 		public ObjectFieldScriptResolver(Object instance) {
 			this.instance = instance;
-			this.fields = instance == null? null:MapperUtils.getMapper().getFields(instance.getClass()).accept(FieldFeature.SUPPORT_GETTER);
+			this.fields = instance == null ? null
+					: MapperUtils.getMapper().getFields(instance.getClass()).accept(FieldFeature.SUPPORT_GETTER);
 		}
 
 		public boolean isSupport(String script) {
@@ -254,7 +251,7 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 		}
 
 		public Field getField(final String name) {
-			return fields == null? null:fields.find(name, null);
+			return fields == null ? null : fields.find(name, null);
 		}
 
 		public NumberHolder eval(ScriptEngine<NumberHolder> engine, String script) throws ScriptException {
@@ -275,15 +272,15 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 	}
 
 	abstract class Fragment {
-		private Operator operator;
+		private Calculator operator;
 
 		public abstract NumberHolder getValue();
 
-		public Operator getOperator() {
+		public Calculator getOperator() {
 			return operator;
 		}
 
-		public Fragment setOperator(Operator operator) {
+		public Fragment setOperator(Calculator operator) {
 			this.operator = operator;
 			return this;
 		}
@@ -414,119 +411,5 @@ public final class MathScriptEngine extends AbstractScriptEngine<NumberHolder> {
 			return leftValue.compareTo(rightValue) < 0 ? leftValue : rightValue;
 		}
 
-	}
-
-	/**
-	 * 运算符
-	 * 
-	 * @author shuchaowen
-	 *
-	 */
-	static interface Operator {
-		String getOperator();
-
-		NumberHolder operation(NumberHolder left, NumberHolder right);
-	}
-
-	/**
-	 * 乘法
-	 * 
-	 * @author shuchaowen
-	 *
-	 */
-	static final class MultiplicationOperator implements Operator {
-
-		public String getOperator() {
-			return "*";
-		}
-
-		public NumberHolder operation(NumberHolder left, NumberHolder right) {
-			return left.multiply(right);
-		}
-	}
-
-	/**
-	 * 除法
-	 * 
-	 * @author shuchaowen
-	 *
-	 */
-	static final class DivisionOperator implements Operator {
-
-		public String getOperator() {
-			return "/";
-		}
-
-		public NumberHolder operation(NumberHolder left, NumberHolder right) {
-			return new Fraction(left, right);
-		}
-	}
-
-	/**
-	 * 加法
-	 * 
-	 * @author shuchaowen
-	 *
-	 */
-	static final class AdditionOperator implements Operator {
-
-		public String getOperator() {
-			return "+";
-		}
-
-		public NumberHolder operation(NumberHolder left, NumberHolder right) {
-			return left.add(right);
-		}
-	}
-
-	/**
-	 * 减法
-	 * 
-	 * @author shuchaowen
-	 *
-	 */
-	static final class SubtractionOperator implements Operator {
-
-		public String getOperator() {
-			return "-";
-		}
-
-		public NumberHolder operation(NumberHolder left, NumberHolder right) {
-			return left.subtract(right);
-		}
-	}
-
-	/**
-	 * 取余
-	 * 
-	 * @author shuchaowen
-	 *
-	 */
-	static final class RemainderOperator implements Operator {
-
-		public String getOperator() {
-			return "%";
-		}
-
-		public NumberHolder operation(NumberHolder left, NumberHolder right) {
-			return left.remainder(right);
-		}
-	}
-
-	/**
-	 * 指数运算
-	 * 
-	 * @author shuchaowen
-	 *
-	 */
-	static final class PowOperator implements Operator {
-
-		public String getOperator() {
-			return "^";
-		}
-
-		public NumberHolder operation(NumberHolder left, NumberHolder right) {
-			return left.pow(right);
-		}
 	}
 }

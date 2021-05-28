@@ -1,105 +1,83 @@
 package scw.convert.lang;
 
-import java.util.LinkedList;
 import java.util.TreeSet;
 
 import scw.convert.ConfigurableConversionService;
-import scw.convert.ConversionException;
 import scw.convert.ConversionService;
 import scw.convert.ConversionServiceAware;
 import scw.convert.ConverterNotFoundException;
 import scw.convert.TypeDescriptor;
-import scw.core.utils.ObjectUtils;
-import scw.lang.NamedThreadLocal;
+import scw.lang.LinkedThreadLocal;
 
-public class ConversionServices extends
-		ConvertibleConditionalComparator<Object> implements
-		ConfigurableConversionService, Comparable<Object> {
-	private static final ThreadLocal<LinkedList<ConversionService>> NESTING = new NamedThreadLocal<LinkedList<ConversionService>>(
+public class ConversionServices extends ConvertibleConditionalComparator<Object>
+		implements ConfigurableConversionService, Comparable<Object>, ConversionServiceAware {
+	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
 			ConversionServices.class.getName());
+	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(this);
+	private ConversionService awareConversionService = this;
+	private ConversionService parentConversionService;
 
-	/**
-	 * 处理嵌套使用的情况
-	 * 
-	 * @param conversionService
-	 */
-	public static void setNesting(ConversionService conversionService) {
-		LinkedList<ConversionService> list = NESTING.get();
-		if (list == null) {
-			list = new LinkedList<ConversionService>();
-			NESTING.set(list);
-		}
-		list.add(conversionService);
+	public ConversionServices() {
 	}
 
-	public static void removeNesting(ConversionService conversionService) {
-		LinkedList<ConversionService> list = NESTING.get();
-		if (list == null) {
-			throw new ConversionException("remove nesting conversion service "
-					+ conversionService);
-		}
-
-		ConversionService nesting = list.getLast();
-		if (!ObjectUtils.nullSafeEquals(conversionService, nesting)) {
-			throw new ConversionException("remove nesting [" + nesting
-					+ "] conversion service [" + conversionService + "]");
-		}
-
-		list.removeLast();
-		if (list.isEmpty()) {
-			NESTING.remove();
-		} else {
-			NESTING.set(list);
-		}
+	public ConversionServices(ConversionService parentConversionServices) {
+		this.parentConversionService = parentConversionServices;
 	}
 
-	private static boolean isIgnore(ConversionService conversionService) {
-		LinkedList<ConversionService> list = NESTING.get();
-		if (list == null) {
-			return false;
-		}
-
-		return ObjectUtils.nullSafeEquals(conversionService, list.getLast());
+	@Override
+	public void setConversionService(ConversionService conversionService) {
+		this.awareConversionService = conversionService;
 	}
 
-	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(
-			this);
+	protected void aware(ConversionService conversionService) {
+		if (conversionService instanceof ConversionServiceAware) {
+			((ConversionServiceAware) conversionService).setConversionService(awareConversionService);
+		}
+	}
 
 	public void addConversionService(ConversionService conversionService) {
-		if (conversionService instanceof ConversionServiceAware) {
-			((ConversionServiceAware) conversionService)
-					.setConversionService(this);
-		}
-
+		aware(conversionService);
 		synchronized (conversionServices) {
 			conversionServices.add(conversionService);
 		}
 	}
 
-	public boolean canConvert(TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
+	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConversionService service : conversionServices) {
-			if (isIgnore(service)) {
-				continue;
-			}
-
-			if (service.canConvert(sourceType, targetType)) {
+			if (canConvert(service, sourceType, targetType)) {
 				return true;
 			}
 		}
+
+		if (parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
+			return true;
+		}
+
 		return canDirectlyConvert(sourceType, targetType);
 	}
 
-	public Object convert(Object source, TypeDescriptor sourceType,
-			TypeDescriptor targetType) {
-		for (ConversionService service : conversionServices) {
-			if (isIgnore(service)) {
-				continue;
-			}
+	private boolean canConvert(ConversionService service, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		if (NESTED.exists(service)) {
+			return false;
+		}
 
-			if (service.canConvert(sourceType, targetType)) {
+		NESTED.set(service);
+		try {
+			return service.canConvert(sourceType, targetType);
+		} finally {
+			NESTED.remove(service);
+		}
+	}
+
+	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		for (ConversionService service : conversionServices) {
+			if (canConvert(service, sourceType, targetType)) {
 				return service.convert(source, sourceType, targetType);
 			}
+		}
+
+		if (parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
+			return parentConversionService.convert(source, sourceType, targetType);
 		}
 
 		if (canDirectlyConvert(sourceType, targetType)) {

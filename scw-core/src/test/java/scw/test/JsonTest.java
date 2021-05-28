@@ -30,6 +30,26 @@ public class JsonTest {
 		JsonArray jsonArray = JSONUtils.getJsonSupport().parseArray(content);
 		List<TestJsonObjectWrapper> wrappers = jsonArray.convert(TestJsonObjectWrapper.class);
 		System.out.println(wrappers);
+		
+		List<TestInfo> testInfo = JSONUtils.getJsonSupport().parseArray(content).convert(TestInfo.class);
+		System.out.println(testInfo);
+	}
+	
+	public static class TestInfo{
+		private String id;
+		private String value;
+		public String getId() {
+			return id;
+		}
+		public void setId(String id) {
+			this.id = id;
+		}
+		public String getValue() {
+			return value;
+		}
+		public void setValue(String value) {
+			this.value = value;
+		}
 	}
 	
 	public static class TestJsonObjectWrapper extends JsonObjectWrapper{

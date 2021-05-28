@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONAware;
 
 import scw.convert.Converter;
-import scw.core.IteratorConverter;
+import scw.convert.ConvertibleIterator;
 import scw.json.AbstractJson;
 import scw.json.EmptyJsonElement;
 import scw.json.JsonArray;
@@ -36,7 +36,7 @@ public final class FastJsonArray extends AbstractJson<Integer> implements JsonAr
 	}
 
 	public Iterator<JsonElement> iterator() {
-		return new IteratorConverter<Object, JsonElement>(jsonArray.iterator(), this);
+		return new ConvertibleIterator<Object, JsonElement>(jsonArray.iterator(), this);
 	}
 
 	public JsonElement getValue(Integer index) {

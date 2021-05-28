@@ -22,7 +22,7 @@ public class DefaultHttpAuthority extends DefaultAuthority implements
 		return path;
 	}
 
-	public HttpMethod getHttpMethod() {
+	public HttpMethod getMethod() {
 		return httpMethod == null ? HttpMethod.GET : httpMethod;
 	}
 }

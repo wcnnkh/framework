@@ -9,8 +9,8 @@ import scw.core.Constants;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
+import scw.env.Sys;
 import scw.http.client.HttpClient;
-import scw.instance.InstanceUtils;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 import scw.net.uri.UriComponentsBuilder;
@@ -19,7 +19,7 @@ public final class HttpUtils {
 	private HttpUtils() {
 	};
 
-	private static final HttpClient HTTP_CLIENT = InstanceUtils.loadService(HttpClient.class,
+	private static final HttpClient HTTP_CLIENT = Sys.loadService(HttpClient.class,
 			"scw.http.client.DefaultHttpClient");
 
 	/**

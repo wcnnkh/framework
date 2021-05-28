@@ -1,16 +1,20 @@
 package scw.http.client.accessor;
 
-import scw.env.SystemEnvironment;
+import scw.env.Sys;
 import scw.event.Observable;
 
 public class HttpClientConfigAccessor {
-	private static final Observable<Integer> DEFAULT_CONNECT_TIMEOUT = SystemEnvironment.getInstance()
-			.getObservableValue("scw.http.client.connect.timeout", Integer.class, 10000);
-	private static final Observable<Integer> DEFAULT_READ_TIMEOUT = SystemEnvironment.getInstance()
-			.getObservableValue("scw.http.client.read.timeout", Integer.class, 10000);
-	private static final Observable<String> DEFAULT_UA = SystemEnvironment.getInstance().getObservableValue(
-			"scw.http.client.headers.ua", String.class,
-			"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
+	private static final Observable<Integer> DEFAULT_CONNECT_TIMEOUT = Sys.env
+			.getObservableValue("scw.http.client.connect.timeout",
+					Integer.class, 10000);
+	private static final Observable<Integer> DEFAULT_READ_TIMEOUT = Sys.env
+			.getObservableValue("scw.http.client.read.timeout", Integer.class,
+					10000);
+	private static final Observable<String> DEFAULT_UA = Sys.env
+			.getObservableValue(
+					"scw.http.client.headers.ua",
+					String.class,
+					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.143 Safari/537.36");
 
 	private Integer connectTimeout;
 
@@ -25,7 +29,8 @@ public class HttpClientConfigAccessor {
 	}
 
 	public int getConnectTimeout() {
-		return connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT.get() : connectTimeout;
+		return connectTimeout == null ? DEFAULT_CONNECT_TIMEOUT.get()
+				: connectTimeout;
 	}
 
 	public void setConnectTimeout(Integer connectTimeout) {
