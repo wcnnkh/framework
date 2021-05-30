@@ -134,6 +134,14 @@ public class Distance implements Serializable, Comparable<Distance> {
 		return this.metric.equals(metric) ? this : new Distance(getNormalizedValue() * metric.getMultiplier(), metric);
 	}
 
+	public double getValue() {
+		return value;
+	}
+
+	public Metric getMetric() {
+		return metric;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)

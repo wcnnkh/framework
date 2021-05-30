@@ -1,8 +1,7 @@
 package scw.redis.connection;
 
-public interface RedisCommands extends RedisConnectionCommands,
-		RedisCusterCommands, RedisGeoCommands, RedisHashesCommands,
-		RedisHyperloglogCommands, RedisKeysCommands<byte[], byte[]>, RedisListsCommands,
+public interface RedisCommands<K, V> extends RedisConnectionCommands<K, V>, RedisGeoCommands<K, V>, RedisHashesCommands<K, V>,
+		RedisHyperloglogCommands<K, V>, RedisKeysCommands<K, V>, RedisListsCommands<K, V>,
 		RedisPubSubCommands, RedisScriptingCommands, RedisSortedSetsCommands,
-		RedisStreamsCommands, RedisStringCommands, RedisTransactionsCommands {
+		RedisStreamsCommands, RedisStringCommands<K, V>, RedisTransactionsCommands {
 }

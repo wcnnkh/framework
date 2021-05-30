@@ -1,5 +1,7 @@
 package scw.convert;
 
+import java.util.Collection;
+
 import scw.codec.DecodeException;
 import scw.codec.Decoder;
 import scw.codec.EncodeException;
@@ -49,5 +51,17 @@ public interface Converter<S, T> {
 				return convert(source);
 			}
 		};
+	}
+	
+	default <SL extends Collection<S>, TL extends Collection<T>> TL convert(SL sourceList, TL targetList){
+		if(sourceList == null){
+			return targetList;
+		}
+
+		for(S source : sourceList){
+			T target = convert(source);
+			targetList.add(target);
+		}
+		return targetList;
 	}
 }

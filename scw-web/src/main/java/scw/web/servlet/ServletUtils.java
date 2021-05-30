@@ -50,11 +50,11 @@ public final class ServletUtils {
 	}
 
 	public static HttpServletRequest getHttpServletRequest(ServerHttpRequest request) {
-		return XUtils.getTarget(request, HttpServletRequest.class);
+		return XUtils.getDelegate(request, HttpServletRequest.class);
 	}
 
 	public static HttpServletResponse getHttpServletResponse(ServerHttpResponse response) {
-		return XUtils.getTarget(response, HttpServletResponse.class);
+		return XUtils.getDelegate(response, HttpServletResponse.class);
 	}
 	
 	public static ServletService createServletService(BeanFactory beanFactory){

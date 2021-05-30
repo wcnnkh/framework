@@ -1,8 +1,10 @@
 package scw.redis.connection;
 
 import java.util.List;
+import java.util.Set;
 
-public interface RedisSetsCommands {
+@SuppressWarnings("unchecked")
+public interface RedisSetsCommands<K, V> {
 	/**
 	 * Add the specified members to the set stored at key. Specified members
 	 * that are already a member of this set are ignored. If key does not exist,
@@ -15,7 +17,7 @@ public interface RedisSetsCommands {
 	 * @return Integer reply: the number of elements that were added to the set,
 	 *         not including all the elements already present in the set.
 	 */
-	Integer sadd(byte[] key, byte[]... members);
+	Long sadd(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/scard<br/>
@@ -27,7 +29,7 @@ public interface RedisSetsCommands {
 	 * @return Integer reply: the cardinality (number of elements) of the set,
 	 *         or 0 if key does not exist.
 	 */
-	Integer scard(byte[] key);
+	Long scard(K key);
 
 	/**
 	 * https://redis.io/commands/sdiff<br/>
@@ -38,7 +40,7 @@ public interface RedisSetsCommands {
 	 * @param keys
 	 * @return Array reply: list with members of the resulting set.
 	 */
-	List<byte[]> sdiff(byte[]... keys);
+	Set<V> sdiff(K... keys);
 
 	/**
 	 * https://redis.io/commands/sdiffstore<br/>
@@ -48,11 +50,11 @@ public interface RedisSetsCommands {
 	 * 
 	 * If destination already exists, it is overwritten.
 	 * 
-	 * @param destination
+	 * @param destinationKey
 	 * @param keys
 	 * @return Integer reply: the number of elements in the resulting set.
 	 */
-	Integer sdiffstore(byte[] destination, byte[]... keys);
+	Long sdiffstore(K destinationKey, K... keys);
 
 	/**
 	 * https://redis.io/commands/sinter<br/>
@@ -63,17 +65,17 @@ public interface RedisSetsCommands {
 	 * @param keys
 	 * @return Array reply: list with members of the resulting set.
 	 */
-	List<byte[]> sinter(byte[]... keys);
+	Set<V> sinter(K... keys);
 
 	/**
 	 * https://redis.io/commands/sinterstore<br/>
 	 * <br/>
 	 * 
-	 * @param destination
+	 * @param destinationKey
 	 * @param keys
 	 * @return Integer reply: the number of elements in the resulting set.
 	 */
-	Integer sinterstore(byte[] destination, byte[]... keys);
+	Long sinterstore(K destinationKey, K... keys);
 
 	/**
 	 * https://redis.io/commands/sismember<br/>
@@ -87,7 +89,7 @@ public interface RedisSetsCommands {
 	 *         1 if the element is a member of the set. 0 if the element is not
 	 *         a member of the set, or if key does not exist.
 	 */
-	Integer sismember(byte[] key, byte[] member);
+	Boolean sismember(K key, V member);
 
 	/**
 	 * https://redis.io/commands/smembers<br/>
@@ -99,7 +101,7 @@ public interface RedisSetsCommands {
 	 * @param key
 	 * @return Array reply: all elements of the set.
 	 */
-	List<byte[]> smembers(byte[] key);
+	Set<V> smembers(K key);
 
 	/**
 	 * https://redis.io/commands/smismember<br/>
@@ -114,7 +116,7 @@ public interface RedisSetsCommands {
 	 * @return Array reply: list representing the membership of the given
 	 *         elements, in the same order as they are requested.
 	 */
-	List<byte[]> smismember(byte[] key, byte[]... members);
+	List<Boolean> smismember(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/smove<br/>
@@ -139,7 +141,7 @@ public interface RedisSetsCommands {
 	 *         1 if the element is moved. 0 if the element is not a member of
 	 *         source and no operation was performed.
 	 */
-	Integer smove(byte[] source, byte[] destination, byte[] member);
+	Boolean sMove(K sourceKey, K destinationKey, V member);
 
 	/**
 	 * https://redis.io/commands/spop<br/>
@@ -167,7 +169,7 @@ public interface RedisSetsCommands {
 	 *         Array reply: the removed members, or an empty array when key does
 	 *         not exist.
 	 */
-	List<byte[]> spop(byte[] key, Integer count);
+	Set<V> spop(K key, int count);
 
 	/**
 	 * https://redis.io/commands/srandmember<br/>
@@ -194,7 +196,7 @@ public interface RedisSetsCommands {
 	 *         command returns an array of elements, or an empty array when key
 	 *         does not exist.
 	 */
-	List<byte[]> srandmember(byte[] key, Integer count);
+	List<V> srandmember(K key, int count);
 
 	/**
 	 * https://redis.io/commands/srem<br/>
@@ -212,7 +214,7 @@ public interface RedisSetsCommands {
 	 * @return Integer reply: the number of members that were removed from the
 	 *         set, not including non existing members.
 	 */
-	Integer srem(byte[] key, byte[]... members);
+	Long srem(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/sunion<br/>
@@ -223,7 +225,7 @@ public interface RedisSetsCommands {
 	 * @param keys
 	 * @return Array reply: list with members of the resulting set.
 	 */
-	List<byte[]> sunion(byte[]... keys);
+	Set<V> sunion(K... keys);
 
 	/**
 	 * https://redis.io/commands/sunionstore<br/>
@@ -237,5 +239,15 @@ public interface RedisSetsCommands {
 	 * @param keys
 	 * @return Integer reply: the number of elements in the resulting set.
 	 */
-	Integer sunionstore(byte[] destination, byte[]... keys);
+	Long sunionstore(K destinationKey, K... keys);
+	
+	/**
+	 * Use a {@link Cursor} to iterate over elements in set at {@code key}.
+	 *
+	 * @param key must not be {@literal null}.
+	 * @param options must not be {@literal null}.
+	 * @return never {@literal null}.
+	 * @see <a href="https://redis.io/commands/scan">Redis Documentation: SCAN</a>
+	 */
+	Cursor<K> sScan(long cursorId, K key, ScanOptions<K> options);
 }

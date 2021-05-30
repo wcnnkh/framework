@@ -22,7 +22,7 @@ public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 	private byte[] bytes;
 
 	public byte[] getBytes() throws IOException {
-		CachingServerHttpRequest cachingServerHttpRequest = XUtils.getTarget(getTargetRequest(),
+		CachingServerHttpRequest cachingServerHttpRequest = XUtils.getDelegate(getTargetRequest(),
 				CachingServerHttpRequest.class);
 		if (cachingServerHttpRequest != null) {
 			return cachingServerHttpRequest.getBytes();

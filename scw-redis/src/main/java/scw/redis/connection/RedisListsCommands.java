@@ -2,7 +2,8 @@ package scw.redis.connection;
 
 import java.util.List;
 
-public interface RedisListsCommands {
+@SuppressWarnings("unchecked")
+public interface RedisListsCommands<K, V>{
 	static enum MovePosition {
 		LEFT, RIGHT
 	}
@@ -21,16 +22,13 @@ public interface RedisListsCommands {
 	 * 
 	 * See LMOVE for more information.
 	 * 
-	 * @param source
-	 * @param destination
-	 * @param option1
-	 * @param option2
-	 * @param timout
 	 * @return Bulk string reply: the element being popped from source and pushed to
 	 *         destination. If timeout is reached, a Null reply is returned.
 	 */
-	byte[] blmove(byte[] source, byte[] destination, MovePosition option1, MovePosition option2, int timout);
+	V blmove(K sourceKey, K destinationKey, MovePosition from, MovePosition to, long timout);
 
+	List<V> blpop(K ...keys);
+	
 	/**
 	 * https://redis.io/commands/blpop<br/>
 	 * <br/>
@@ -40,8 +38,6 @@ public interface RedisListsCommands {
 	 * <br/>
 	 * <br/>
 	 * 
-	 * @param keys
-	 * @param timeout
 	 * @return Array reply: specifically:
 	 * 
 	 *         A nil multi-bulk when no element could be popped and the timeout
@@ -49,8 +45,11 @@ public interface RedisListsCommands {
 	 *         name of the key where an element was popped and the second element
 	 *         being the value of the popped element.
 	 */
-	List<byte[]> blpop(List<byte[]> keys, int timeout);
+	List<V> blpop(double timeout, K ...keys);
 
+	
+	List<V> brpop(K ...keys);
+	
 	/**
 	 * https://redis.io/commands/brpop <br/>
 	 * <br/>
@@ -64,8 +63,6 @@ public interface RedisListsCommands {
 	 * to BLPOP with the only difference being that it pops elements from the tail
 	 * of a list instead of popping from the head.
 	 * 
-	 * @param keys
-	 * @param timeout
 	 * @return Array reply: specifically:
 	 * 
 	 *         A nil multi-bulk when no element could be popped and the timeout
@@ -73,19 +70,17 @@ public interface RedisListsCommands {
 	 *         name of the key where an element was popped and the second element
 	 *         being the value of the popped element.
 	 */
-	List<byte[]> brpop(List<byte[]> keys, int timeout);
+	List<V> brpop(double timeout, K ...keys);
 
 	/**
 	 * https://redis.io/commands/brpoplpush <br/>
 	 * 
-	 * @param source
-	 * @param destination
 	 * @param timout      History >= 6.0: timeout is interpreted as a double instead
 	 *                    of an integer.
 	 * @return Bulk string reply: the element being popped from source and pushed to
 	 *         destination. If timeout is reached, a Null reply is returned.
 	 */
-	byte[] brpoplpush(byte[] source, byte[] destination, int timout);
+	V brpoplpush(K sourceKey, K destinationKey, double timout);
 
 	/**
 	 * Returns the element at index index in the list stored at key. The index is
@@ -101,7 +96,7 @@ public interface RedisListsCommands {
 	 * @return Bulk string reply: the requested element, or nil when index is out of
 	 *         range.
 	 */
-	byte[] lindex(byte[] key, int index);
+	V lindex(K key, long index);
 
 	static enum InsertPosition {
 		BEFORE, AFTER
@@ -125,7 +120,7 @@ public interface RedisListsCommands {
 	 * @return Integer reply: the length of the list after the insert operation, or
 	 *         -1 when the value pivot was not found.
 	 */
-	Integer linsert(byte[] key, InsertPosition position, byte[] pivot, byte[] value);
+	Long linsert(K key, InsertPosition position, V pivot, V value);
 
 	/**
 	 * https://redis.io/commands/llen<br/>
@@ -137,7 +132,7 @@ public interface RedisListsCommands {
 	 * @param key
 	 * @return Integer reply: the length of the list at key.
 	 */
-	Integer llen(byte[] key);
+	Long llen(K key);
 
 	/**
 	 * https://redis.io/commands/lmove<br/>
@@ -166,7 +161,7 @@ public interface RedisListsCommands {
 	 * @param position2
 	 * @return Bulk string reply: the element being popped and pushed.
 	 */
-	byte[] lmove(byte[] source, byte[] destination, MovePosition position1, MovePosition position2);
+	V lmove(K sourceKey, K destinationKey, MovePosition from, MovePosition to);
 
 	/**
 	 * https://redis.io/commands/lpop<br/>
@@ -189,7 +184,7 @@ public interface RedisListsCommands {
 	 *         Array reply: the values of the first elements, or nil when key does
 	 *         not exist.
 	 */
-	List<byte[]> lpop(byte[] key, Integer count);
+	List<V> lpop(K key, int count);
 
 	/**
 	 * https://redis.io/commands/lpush<br/>
@@ -209,7 +204,7 @@ public interface RedisListsCommands {
 	 * @param elements
 	 * @return Integer reply: the length of the list after the push operations.
 	 */
-	Integer lpush(byte[] key, byte[]... elements);
+	Long lpush(K key, V... elements);
 
 	/**
 	 * https://redis.io/commands/lpushx<br/>
@@ -222,7 +217,7 @@ public interface RedisListsCommands {
 	 * @param elements
 	 * @return Integer reply: the length of the list after the push operation.
 	 */
-	Integer lpushx(byte[] key, byte[]... elements);
+	Long lpushx(K key, V... elements);
 
 	/**
 	 * https://redis.io/commands/lrange<br/>
@@ -237,7 +232,7 @@ public interface RedisListsCommands {
 	 * @param stop
 	 * @return Array reply: list of elements in the specified range.
 	 */
-	List<byte[]> lrange(byte[] key, int start, int stop);
+	List<V> lrange(K key, long start, long stop);
 
 	/**
 	 * https://redis.io/commands/lrem<br/>
@@ -259,7 +254,7 @@ public interface RedisListsCommands {
 	 * @param element
 	 * @return Integer reply: the number of removed elements.
 	 */
-	Integer lrem(byte[] key, int count, byte[] element);
+	Long lrem(K key, int count, V element);
 
 	/**
 	 * https://redis.io/commands/lset<br/>
@@ -274,7 +269,7 @@ public interface RedisListsCommands {
 	 * @param element
 	 * @return Simple string reply
 	 */
-	byte[] lset(byte[] key, int index, byte[] element);
+	Boolean lset(K key, long index, V element);
 
 	/**
 	 * https://redis.io/commands/ltrim
@@ -284,7 +279,7 @@ public interface RedisListsCommands {
 	 * @param stop
 	 * @return Simple string reply
 	 */
-	byte[] ltrim(byte[] key, int start, int stop);
+	Boolean ltrim(K key, long start, long stop);
 
 	/**
 	 * https://redis.io/commands/rpop<br/>
@@ -309,7 +304,7 @@ public interface RedisListsCommands {
 	 *         Array reply: the values of the last elements, or nil when key does
 	 *         not exist.
 	 */
-	List<byte[]> rpop(byte[] key, Integer count);
+	List<V> rpop(K key, int count);
 
 	/**
 	 * https://redis.io/commands/rpoplpush<br/>
@@ -330,11 +325,9 @@ public interface RedisListsCommands {
 	 * As per Redis 6.2.0, RPOPLPUSH is considered deprecated. Please prefer LMOVE
 	 * in new code.
 	 * 
-	 * @param source
-	 * @param destination
 	 * @return Bulk string reply: the element being popped and pushed.
 	 */
-	byte[] rpoplpush(byte[] source, byte[] destination);
+	V rpoplpush(K sourceKey, K destinationKey);
 
 	/**
 	 * https://redis.io/commands/rpush<br/>
@@ -354,7 +347,7 @@ public interface RedisListsCommands {
 	 * @param elements
 	 * @return Integer reply: the length of the list after the push operation.
 	 */
-	Integer rpush(byte[] key, byte[]... elements);
+	Long rpush(K key, V... elements);
 
 	/**
 	 * https://redis.io/commands/rpushx<br/>
@@ -367,5 +360,5 @@ public interface RedisListsCommands {
 	 * @param elements
 	 * @return Integer reply: the length of the list after the push operation.
 	 */
-	Integer rpushx(byte[] key, byte[]... elements);
+	Long rpushx(K key, V... elements);
 }

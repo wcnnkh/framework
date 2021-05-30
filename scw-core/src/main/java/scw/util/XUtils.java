@@ -22,6 +22,7 @@ import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
 import scw.lang.NotSupportedException;
+import scw.lang.Nullable;
 import scw.mapper.FieldFeature;
 import scw.mapper.MapperUtils;
 import scw.value.Value;
@@ -152,13 +153,14 @@ public final class XUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T getTarget(Object wrapper, Class<T> targetType) {
+	@Nullable
+	public static <T> T getDelegate(Object wrapper, Class<T> targetType) {
 		if (targetType.isInstance(wrapper)) {
 			return (T) wrapper;
 		}
 
-		if (wrapper instanceof Target) {
-			return ((Target) wrapper).getTarget(targetType);
+		if (wrapper instanceof Decorator) {
+			return ((Decorator) wrapper).getDelegate(targetType);
 		}
 		return null;
 	}

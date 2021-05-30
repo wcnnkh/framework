@@ -7,11 +7,11 @@ import java.util.NoSuchElementException;
 import scw.core.utils.CollectionUtils;
 import scw.lang.Nullable;
 
-public abstract class ScanCursor<P, T> implements Cursor<T> {
+public abstract class ScanCursor<K, T> implements Cursor<T> {
 	private CursorState state;
 	private long cursorId;
 	private Iterator<T> delegate;
-	private final ScanOptions<P> scanOptions;
+	private final ScanOptions<K> scanOptions;
 	private long position;
 
 	/**
@@ -20,7 +20,7 @@ public abstract class ScanCursor<P, T> implements Cursor<T> {
 	 * @param cursorId the cursor Id.
 	 * @param options  Defaulted to {@link ScanOptions#NONE} if {@code null}.
 	 */
-	public ScanCursor(long cursorId, @Nullable ScanOptions<P> options) {
+	public ScanCursor(long cursorId, @Nullable ScanOptions<K> options) {
 		this.scanOptions = options;
 		this.cursorId = cursorId;
 		this.state = CursorState.READY;
@@ -40,12 +40,12 @@ public abstract class ScanCursor<P, T> implements Cursor<T> {
 	 * @param options
 	 * @return
 	 */
-	protected abstract ScanIteration<T> doScan(long cursorId, ScanOptions<P> options);
+	protected abstract ScanIteration<T> doScan(long cursorId, ScanOptions<K> options);
 
 	/**
 	 * Initialize the {@link Cursor} prior to usage.
 	 */
-	public final ScanCursor<P, T> open() {
+	public final ScanCursor<K, T> open() {
 		if (!isReady()) {
 			throw new IllegalStateException("Cursor already " + state + ". Cannot (re)open it.");
 		}

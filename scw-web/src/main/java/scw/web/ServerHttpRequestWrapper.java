@@ -17,10 +17,10 @@ import scw.http.HttpMethod;
 import scw.http.MediaType;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
-import scw.util.Target;
+import scw.util.Decorator;
 import scw.util.XUtils;
 
-public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
+public class ServerHttpRequestWrapper implements ServerHttpRequest, Decorator {
 	private final ServerHttpRequest targetRequest;
 	private final boolean overrideBody;
 
@@ -41,8 +41,8 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, Target {
 		return targetRequest;
 	}
 
-	public <T> T getTarget(Class<T> targetType) {
-		return XUtils.getTarget(targetRequest, targetType);
+	public <T> T getDelegate(Class<T> targetType) {
+		return XUtils.getDelegate(targetRequest, targetType);
 	}
 
 	public InputStream getBody() throws IOException {

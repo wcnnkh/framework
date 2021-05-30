@@ -95,7 +95,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	public TypeDescriptor(ParameterDescriptor parameterDescriptor){
 		this.resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
 		this.type = this.resolvableType.resolve(parameterDescriptor.getType());
-		AnnotatedElement arrayAnnnotation = XUtils.getTarget(parameterDescriptor, AnnotationArrayAnnotatedElement.class);
+		AnnotatedElement arrayAnnnotation = XUtils.getDelegate(parameterDescriptor, AnnotationArrayAnnotatedElement.class);
 		this.annotatedElement = arrayAnnnotation == null? new AnnotationArrayAnnotatedElement(parameterDescriptor):arrayAnnnotation;
 	}
 

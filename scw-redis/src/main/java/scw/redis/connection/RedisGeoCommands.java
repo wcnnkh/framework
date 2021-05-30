@@ -5,7 +5,6 @@ import java.util.List;
 import scw.data.geo.Circle;
 import scw.data.geo.Distance;
 import scw.data.geo.Marker;
-import scw.data.geo.Metric;
 import scw.data.geo.Point;
 import scw.util.comparator.OrderBy;
 
@@ -14,7 +13,7 @@ import scw.util.comparator.OrderBy;
  * @author shuchaowen
  *
  */
-public interface RedisGeoCommands {
+public interface RedisGeoCommands<K, V> {
 	/**
 	 * Note: The XX and NX options are mutually exclusive.
 	 * 
@@ -54,7 +53,7 @@ public interface RedisGeoCommands {
 	 *         specified, the number of elements that were changed (added or
 	 *         updated).
 	 */
-	Integer geoadd(byte[] key, GeoaddOption option, @SuppressWarnings("unchecked") Marker<byte[]>... elements);
+	Long geoadd(K key, GeoaddOption option, @SuppressWarnings("unchecked") Marker<V>... elements);
 
 	/**
 	 * https://redis.io/commands/geodist <br/>
@@ -70,7 +69,7 @@ public interface RedisGeoCommands {
 	 *         string) in the specified unit, or NULL if one or both the elements
 	 *         are missing.
 	 */
-	Distance geodist(byte[] key, byte[] member1, byte[] member2, Metric metric);
+	Double geodist(byte[] key, byte[] member1, byte[] member2, GeoUnit unit);
 
 	/**
 	 * https://redis.io/commands/geohash<br/>
@@ -105,7 +104,7 @@ public interface RedisGeoCommands {
 	 *         The command returns an array where each element is the Geohash
 	 *         corresponding to each member name passed as argument to the command.
 	 */
-	List<byte[]> geohash(byte[] key, byte[]... members);
+	List<String> geohash(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/geopos<br/>
@@ -135,7 +134,7 @@ public interface RedisGeoCommands {
 	 * 
 	 * 
 	 */
-	List<Point> geopos(byte[] key, byte[]... members);
+	List<Point> geopos(K key, V... members);
 
 	static class GeoradiusStroage {
 		private final String option;

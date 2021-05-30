@@ -1,6 +1,7 @@
 package scw.redis.connection;
 
-public interface RedisHyperloglogCommands {
+@SuppressWarnings("unchecked")
+public interface RedisHyperloglogCommands<K, V> {
 	/**
 	 * https://redis.io/commands/pfadd<br/>
 	 * <br/>
@@ -32,7 +33,7 @@ public interface RedisHyperloglogCommands {
 	 *         1 if at least 1 HyperLogLog internal register was altered. 0
 	 *         otherwise.
 	 */
-	Long pfadd(byte[] key, byte[]... elements);
+	Long pfadd(K key, V... elements);
 
 	/**
 	 * https://redis.io/commands/pfcount<br/>
@@ -61,13 +62,11 @@ public interface RedisHyperloglogCommands {
 	 * HyperLogLog is modified, since the last 8 bytes encode the latest computed
 	 * cardinality for caching purposes. So PFCOUNT is technically a write command.
 	 * 
-	 * @param key
-	 * @param keys
 	 * @return Integer reply, specifically:
 	 * 
 	 *         The approximated number of unique elements observed via PFADD.
 	 */
-	Long pfcount(byte[] key, byte[]... keys);
+	Long pfcount(K... keys);
 
 	/**
 	 * https://redis.io/commands/pfmerge<br/>
@@ -87,5 +86,5 @@ public interface RedisHyperloglogCommands {
 	 * @param sourceKeys
 	 * @return Simple string reply: The command just returns OK.
 	 */
-	void pfmerge(byte[] destKey, byte[]... sourceKeys);
+	Boolean pfmerge(K destKey, K... sourceKeys);
 }

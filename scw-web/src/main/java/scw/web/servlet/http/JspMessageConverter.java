@@ -29,8 +29,8 @@ public class JspMessageConverter extends PageMessageConverter {
 	@Override
 	protected void writePage(TypeDescriptor type, Page page, ServerHttpRequest request, ServerHttpResponse response)
 			throws IOException, WebMessagelConverterException {
-		HttpServletRequest servletRequest = XUtils.getTarget(request, HttpServletRequest.class);
-		HttpServletResponse servletResponse = XUtils.getTarget(response, HttpServletResponse.class);
+		HttpServletRequest servletRequest = XUtils.getDelegate(request, HttpServletRequest.class);
+		HttpServletResponse servletResponse = XUtils.getDelegate(response, HttpServletResponse.class);
 		if (servletRequest == null || servletResponse == null) {
 			throw new WebMessagelConverterException(type, page, request, null);
 		}

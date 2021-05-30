@@ -9,11 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
-import scw.util.Target;
+import scw.util.Decorator;
 import scw.util.XUtils;
 import scw.web.ServerHttpResponse;
 
-public class ServletServerHttpResponse implements ServerHttpResponse, Target {
+public class ServletServerHttpResponse implements ServerHttpResponse, Decorator {
 	private HttpServletResponse httpServletResponse;
 	private HttpServletResponseHeaders headers;
 	private boolean bodyUse = false;
@@ -23,8 +23,8 @@ public class ServletServerHttpResponse implements ServerHttpResponse, Target {
 		this.headers = new HttpServletResponseHeaders(httpServletResponse);
 	}
 
-	public <T> T getTarget(Class<T> targetType) {
-		return XUtils.getTarget(httpServletResponse, targetType);
+	public <T> T getDelegate(Class<T> targetType) {
+		return XUtils.getDelegate(httpServletResponse, targetType);
 	}
 
 	public OutputStream getBody() throws IOException {

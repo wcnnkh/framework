@@ -1,9 +1,9 @@
 package scw.redis.connection;
 
 import java.util.List;
+import java.util.Map;
 
-import scw.util.Pair;
-
+@SuppressWarnings("unchecked")
 public interface RedisStringCommands<K, V> {
 	/**
 	 * https://redis.io/commands/append<br/>
@@ -91,7 +91,7 @@ public interface RedisStringCommands<K, V> {
 	 *         the specified range, the function returns -1 as the user specified a
 	 *         clear range and there are no 0 bits in that range.
 	 */
-	Long bitpos(K key, byte bit, long start, long end);
+	Long bitpos(K key, boolean bit, Long start, Long end);
 
 	/**
 	 * https://redis.io/commands/decr
@@ -99,7 +99,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param key
 	 * @return Integer reply: the value of key after the decrement
 	 */
-	Long decr(byte[] key);
+	Long decr(K key);
 
 	/**
 	 * https://redis.io/commands/decrby
@@ -108,7 +108,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param decrement
 	 * @return Integer reply: the value of key after the decrement
 	 */
-	Long decrby(byte[] key, long decrement);
+	Long decrBy(K key, long decrement);
 
 	/**
 	 * https://redis.io/commands/get<br/>
@@ -120,7 +120,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param key
 	 * @return Bulk string reply: the value of key, or nil when key does not exist.
 	 */
-	byte[] get(byte[] key);
+	V get(K key);
 
 	/**
 	 * https://redis.io/commands/getbit
@@ -129,7 +129,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param offset
 	 * @return Integer reply: the bit value stored at offset.
 	 */
-	Integer getbit(byte[] key, int offset);
+	Boolean getbit(K key, Long offset);
 
 	/**
 	 * https://redis.io/commands/getdel<br/>
@@ -143,7 +143,7 @@ public interface RedisStringCommands<K, V> {
 	 * @return Bulk string reply: the value of key, nil when key does not exist, or
 	 *         an error if the key's value type isn't a string.
 	 */
-	byte[] getdel(byte[] key);
+	V getdel(K key);
 
 	static enum ExpireOption {
 		/**
@@ -170,7 +170,7 @@ public interface RedisStringCommands<K, V> {
 		 */
 		PERSIST
 	}
-
+	
 	/**
 	 * https://redis.io/commands/getex<br/>
 	 * <br/>
@@ -182,18 +182,16 @@ public interface RedisStringCommands<K, V> {
 	 * @param time
 	 * @return Bulk string reply: the value of key, or nil when key does not exist.
 	 */
-	byte[] getex(byte[] key, ExpireOption option, Long time);
+	V getEx(K key, ExpireOption option, Long time);
 
 	/**
 	 * https://redis.io/commands/getrange<br/>
 	 * <br/>
 	 * 
 	 * @param key
-	 * @param start
-	 * @param end
 	 * @return Bulk string reply
 	 */
-	byte[] getrange(byte[] key, int start, int end);
+	V getrange(K key, long startOffset, long endOffset);
 
 	/**
 	 * https://redis.io/commands/getset<br/>
@@ -206,7 +204,7 @@ public interface RedisStringCommands<K, V> {
 	 * @return Bulk string reply: the old value stored at key, or nil when key did
 	 *         not exist.
 	 */
-	byte[] getset(byte[] key, byte[] value);
+	V getset(K key, V value);
 
 	/**
 	 * https://redis.io/commands/incr
@@ -214,7 +212,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param key
 	 * @return Integer reply: the value of key after the increment
 	 */
-	Long incr(byte[] key);
+	Long incr(K key);
 
 	/**
 	 * https://redis.io/commands/incrby
@@ -223,7 +221,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param increment
 	 * @return Integer reply: the value of key after the increment
 	 */
-	Long incrby(byte[] key, long increment);
+	Long incrBy(K key, long increment);
 
 	/**
 	 * https://redis.io/commands/incrbyfloat
@@ -232,7 +230,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param increment
 	 * @return Bulk string reply: the value of key after the increment.
 	 */
-	Float incrbyfloat(byte[] key, float increment);
+	Double incrByFloat(K key, double increment);
 
 	/**
 	 * https://redis.io/commands/mget
@@ -240,7 +238,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param keys
 	 * @return Array reply: list of values at the specified keys.
 	 */
-	List<byte[]> mget(byte[]... keys);
+	List<V> mget(K... keys);
 
 	/**
 	 * https://redis.io/commands/mset
@@ -248,7 +246,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param pairs
 	 * @return Simple string reply: always OK since MSET can't fail.
 	 */
-	byte[] mset(@SuppressWarnings("unchecked") Pair<byte[], byte[]>... pairs);
+	Boolean mset(Map<K, V> pairs);
 
 	/**
 	 * https://redis.io/commands/msetnx
@@ -259,7 +257,7 @@ public interface RedisStringCommands<K, V> {
 	 *         1 if the all the keys were set. 0 if no key was set (at least one key
 	 *         already existed).
 	 */
-	Integer msetnx(@SuppressWarnings("unchecked") Pair<byte[], byte[]>... pairs);
+	Long msetnx(Map<K, V> pairs);
 
 	/**
 	 * https://redis.io/commands/psetex<br/>
@@ -268,11 +266,11 @@ public interface RedisStringCommands<K, V> {
 	 * is specified in milliseconds instead of seconds.
 	 * 
 	 * @param key
-	 * @param expire
+	 * @param milliseconds
 	 * @param value
 	 * @return
 	 */
-	byte[] psetex(byte[] key, long expire, byte[] value);
+	Boolean psetex(K key, long milliseconds, V value);
 
 	static enum SetOption {
 		/**
@@ -316,7 +314,7 @@ public interface RedisStringCommands<K, V> {
 	 *         or XX option but the condition was not met, or if the user specified
 	 *         the GET option and there was no previous value for the key.
 	 */
-	byte[] set(byte[] key, byte[] value, ExpireOption option, long time, SetOption setOption, boolean get);
+	Boolean set(K key, V value, ExpireOption option, long time, SetOption setOption, boolean get);
 
 	/**
 	 * https://redis.io/commands/setbit<br/>
@@ -336,7 +334,7 @@ public interface RedisStringCommands<K, V> {
 	 * @param value
 	 * @return Integer reply: the original bit value stored at offset.
 	 */
-	Integer setbit(byte[] key, int offset, byte[] value);
+	Boolean setbit(K key, long offset, boolean value);
 
 	/**
 	 * https://redis.io/commands/setex<br/>
@@ -351,7 +349,7 @@ public interface RedisStringCommands<K, V> {
 	 * 
 	 *         Examples
 	 */
-	byte[] setex(byte[] key, int seconds, byte[] value);
+	Boolean setex(K key, long seconds, V value);
 
 	/**
 	 * https://redis.io/commands/setnx<br/>
@@ -366,7 +364,7 @@ public interface RedisStringCommands<K, V> {
 	 * 
 	 *         1 if the key was set 0 if the key was not set
 	 */
-	Integer setnx(byte[] key, byte[] value);
+	Boolean setNX(K key, V value);
 
 	/**
 	 * https://redis.io/commands/setrange<br/>
@@ -384,34 +382,7 @@ public interface RedisStringCommands<K, V> {
 	 * @return Integer reply: the length of the string after it was modified by the
 	 *         command.
 	 */
-	Integer setrange(byte[] key, int offset, byte[] value);
-
-	/**
-	 * https://redis.io/commands/stralgo<br/>
-	 * <br/>
-	 * The STRALGO implements complex algorithms that operate on strings. Right now
-	 * the only algorithm implemented is the LCS algorithm (longest common
-	 * substring). However new algorithms could be implemented in the future. The
-	 * goal of this command is to provide to Redis users algorithms that need fast
-	 * implementations and are normally not provided in the standard library of most
-	 * programming languages.
-	 * 
-	 * The first argument of the command selects the algorithm to use, right now the
-	 * argument must be "LCS", since this is the only implemented one.
-	 * 
-	 * @param algoName LCS
-	 * @param args
-	 * @return For the LCS algorithm:
-	 * 
-	 *         Without modifiers the string representing the longest common
-	 *         substring is returned. When LEN is given the command returns the
-	 *         length of the longest common substring. When IDX is given the command
-	 *         returns an array with the LCS length and all the ranges in both the
-	 *         strings, start and end offset for each string, where there are
-	 *         matches. When WITHMATCHLEN is given each array representing a match
-	 *         will also have the length of the match (see examples).
-	 */
-	Object stralgo(byte[] algoName, byte[]... args);
+	Long setrange(K key, Long offset, V value);
 
 	/**
 	 * https://redis.io/commands/strlen<br/>
@@ -423,5 +394,5 @@ public interface RedisStringCommands<K, V> {
 	 * @return Integer reply: the length of the string at key, or 0 when key does
 	 *         not exist.
 	 */
-	Integer strlen(byte[] key);
+	Long strlen(K key);
 }

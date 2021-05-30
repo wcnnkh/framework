@@ -114,7 +114,7 @@ public final class WebUtils {
 			return new StringValue(value);
 		}
 
-		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
+		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getDelegate(request, JsonServerHttpRequest.class);
 		if (jsonServerHttpRequest != null) {
 			JsonObject jsonObject = jsonServerHttpRequest.getJsonObject();
 			if (jsonObject != null) {
@@ -125,7 +125,7 @@ public final class WebUtils {
 			}
 		}
 
-		MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
+		MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getDelegate(request,
 				MultiPartServerHttpRequest.class);
 		if (multiPartServerHttpRequest != null) {
 			FileItem fileItem = multiPartServerHttpRequest.getMultiPartMap().getFirst(name);
@@ -154,7 +154,7 @@ public final class WebUtils {
 			return values;
 		}
 
-		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
+		JsonServerHttpRequest jsonServerHttpRequest = XUtils.getDelegate(request, JsonServerHttpRequest.class);
 		if (jsonServerHttpRequest != null) {
 			JsonObject jsonObject = jsonServerHttpRequest.getJsonObject();
 			if (jsonObject != null) {
@@ -171,7 +171,7 @@ public final class WebUtils {
 			}
 		}
 
-		MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
+		MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getDelegate(request,
 				MultiPartServerHttpRequest.class);
 		if (multiPartServerHttpRequest != null) {
 			List<FileItem> items = multiPartServerHttpRequest.getMultiPartMap().get(name);
@@ -193,7 +193,7 @@ public final class WebUtils {
 
 		// 如果是一个json请求，那么包装一下
 		if (request.getHeaders().isJsonContentType()) {
-			JsonServerHttpRequest jsonServerHttpRequest = XUtils.getTarget(request, JsonServerHttpRequest.class);
+			JsonServerHttpRequest jsonServerHttpRequest = XUtils.getDelegate(request, JsonServerHttpRequest.class);
 			if (jsonServerHttpRequest != null) {
 				// 返回原始对象
 				return request;
@@ -212,7 +212,7 @@ public final class WebUtils {
 
 		// 如果是 一个MultiParty请求，那么包装一下
 		if (request.getHeaders().isMultipartFormContentType()) {
-			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
+			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getDelegate(request,
 					MultiPartServerHttpRequest.class);
 			if (multiPartServerHttpRequest != null) {
 				// 返回原始对象

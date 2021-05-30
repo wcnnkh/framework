@@ -1,6 +1,6 @@
 package scw.redis.connection;
 
-import java.util.Collection;
+import java.util.Set;
 
 import scw.lang.Nullable;
 
@@ -88,7 +88,7 @@ public interface RedisKeysCommands<K, V> {
 	 * @param pattern
 	 * @return Array reply: list of keys matching pattern.
 	 */
-	Collection<V> keys(K pattern);
+	Set<V> keys(K pattern);
 
 	String migrate(String host, int port, K key, int targetDB, int timeout);
 
@@ -326,7 +326,7 @@ public interface RedisKeysCommands<K, V> {
 	 *                call to the command.
 	 * @return
 	 */
-	Cursor<K> scan(long cursorId, ScanOptions<byte[]> options);
+	Cursor<K> scan(long cursorId, ScanOptions<K> options);
 
 	/**
 	 * https://redis.io/commands/touch

@@ -29,14 +29,14 @@ import scw.net.uri.UriUtils;
 import scw.security.session.Session;
 import scw.util.LinkedCaseInsensitiveMap;
 import scw.util.MultiValueMap;
-import scw.util.Target;
+import scw.util.Decorator;
 import scw.util.XUtils;
 import scw.web.ServerHttpAsyncControl;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.servlet.ServletUtils;
 
-public class ServletServerHttpRequest implements ServerHttpRequest, Target {
+public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletAsyncControl asyncControl;
@@ -55,8 +55,8 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Target {
 		return httpServletRequest.getServletPath();
 	}
 
-	public <T> T getTarget(Class<T> targetType) {
-		return XUtils.getTarget(httpServletRequest, targetType);
+	public <T> T getDelegate(Class<T> targetType) {
+		return XUtils.getDelegate(httpServletRequest, targetType);
 	}
 
 	public HttpCookie[] getCookies() {

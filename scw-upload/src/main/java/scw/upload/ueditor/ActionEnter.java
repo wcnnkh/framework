@@ -59,7 +59,7 @@ public class ActionEnter {
 		case ActionMap.UPLOAD_VIDEO:
 		case ActionMap.UPLOAD_FILE:
 			conf = this.configManager.getConfig(actionCode);
-			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getTarget(request,
+			MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getDelegate(request,
 					MultiPartServerHttpRequest.class);
 			if (multiPartServerHttpRequest == null) {
 				state = new BaseState(false, AppInfo.NOT_MULTIPART_CONTENT);

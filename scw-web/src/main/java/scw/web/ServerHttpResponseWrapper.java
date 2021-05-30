@@ -10,10 +10,10 @@ import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.http.MediaType;
 import scw.net.MimeType;
-import scw.util.Target;
+import scw.util.Decorator;
 import scw.util.XUtils;
 
-public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
+public class ServerHttpResponseWrapper implements ServerHttpResponse, Decorator {
 	private final ServerHttpResponse targetResponse;
 
 	public ServerHttpResponseWrapper(ServerHttpResponse targetResponse) {
@@ -24,8 +24,8 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 		return targetResponse;
 	}
 
-	public <T> T getTarget(Class<T> targetType) {
-		return XUtils.getTarget(targetResponse, targetType);
+	public <T> T getDelegate(Class<T> targetType) {
+		return XUtils.getDelegate(targetResponse, targetType);
 	}
 
 	public void setContentType(MimeType contentType) {

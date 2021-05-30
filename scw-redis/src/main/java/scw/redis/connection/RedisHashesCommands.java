@@ -10,7 +10,7 @@ import scw.util.Pair;
  * @author shuchaowen
  *
  */
-public interface RedisHashesCommands {
+public interface RedisHashesCommands<K, V> {
 	/**
 	 * https://redis.io/commands/hdel<br/>
 	 * <br/>
