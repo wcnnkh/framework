@@ -1,6 +1,6 @@
 package scw.redis.connection;
 
-import org.springframework.lang.Nullable;
+import scw.lang.Nullable;
 
 public abstract class KeyBoundCursor<K, T> extends ScanCursor<K, T> {
 

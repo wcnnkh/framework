@@ -1,18 +1,21 @@
 package scw.redis.connection;
 
+import java.util.Collection;
 import java.util.List;
 
 import scw.data.geo.Circle;
 import scw.data.geo.Distance;
 import scw.data.geo.Marker;
 import scw.data.geo.Point;
-import scw.util.comparator.OrderBy;
+import scw.util.comparator.Sort;
 
 /**
  * https://redis.io/commands#geo
+ * 
  * @author shuchaowen
  *
  */
+@SuppressWarnings("unchecked")
 public interface RedisGeoCommands<K, V> {
 	/**
 	 * Note: The XX and NX options are mutually exclusive.
@@ -53,7 +56,7 @@ public interface RedisGeoCommands<K, V> {
 	 *         specified, the number of elements that were changed (added or
 	 *         updated).
 	 */
-	Long geoadd(K key, GeoaddOption option, @SuppressWarnings("unchecked") Marker<V>... elements);
+	Long geoadd(K key, GeoaddOption option, Marker<V>... elements);
 
 	/**
 	 * https://redis.io/commands/geodist <br/>
@@ -230,14 +233,16 @@ public interface RedisGeoCommands<K, V> {
 	 *         unit specified in the radius. The geohash integer. The coordinates as
 	 *         a two items x,y array (longitude,latitude).
 	 */
-	List<GeoResults> georadius(byte[] key, Circle within, Integer count, OrderBy orderBy, GeoradiusStroage store,
-			GeoResultWith... withs);
+
+	Collection<V> georadius(byte[] key, Circle within, GeoRadiusArgs<K> args);
+
+	List<GeoWithin<V>> georadius(byte[] key, Circle within, GeoRadiusWith with, GeoRadiusArgs<K> args);
 
 	/**
 	 * https://redis.io/commands/georadiusbymember<br/>
 	 * <br/>
 	 * 
-	 * @see #georadius(byte[], Circle, Integer, OrderBy, GeoradiusStroage,
+	 * @see #georadius(byte[], Circle, Integer, Sort, GeoradiusStroage,
 	 *      GeoResultWith...)
 	 * @param key
 	 * @param member
@@ -248,6 +253,6 @@ public interface RedisGeoCommands<K, V> {
 	 * @param withs
 	 * @return
 	 */
-	List<GeoResults> georadiusbymember(byte[] key, byte[] member, Distance distance, Integer count, OrderBy orderBy,
+	List<GeoResults> georadiusbymember(byte[] key, byte[] member, Distance distance, Integer count, Sort orderBy,
 			GeoradiusStroage store, GeoResultWith... withs);
 }

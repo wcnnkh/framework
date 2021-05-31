@@ -5,7 +5,8 @@ import scw.codec.Codec;
 import scw.codec.DecodeException;
 import scw.codec.EncodeException;
 
-public class JedisCodec implements Codec<String, byte[]>{
+public class JedisCodec implements Codec<String, byte[]> {
+	public static final JedisCodec INSTANCE = new JedisCodec();
 
 	@Override
 	public byte[] encode(String source) throws EncodeException {

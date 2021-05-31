@@ -272,17 +272,6 @@ public interface RedisStringCommands<K, V> {
 	 */
 	Boolean psetex(K key, long milliseconds, V value);
 
-	static enum SetOption {
-		/**
-		 * Only set the key if it does not already exist.
-		 */
-		NX,
-		/**
-		 * Only set the key if it already exist.
-		 */
-		XX
-	}
-
 	/**
 	 * https://redis.io/commands/set<br/>
 	 * <br/>
@@ -301,12 +290,6 @@ public interface RedisStringCommands<K, V> {
 	 * live associated with the key. GET -- Return the old value stored at key, or
 	 * nil when key did not exist.
 	 * 
-	 * @param key
-	 * @param value
-	 * @param option
-	 * @param time
-	 * @param setOption
-	 * @param get
 	 * @return Simple string reply: OK if SET was executed correctly. Bulk string
 	 *         reply: when GET option is set, the old value stored at key, or nil
 	 *         when key did not exist. Null reply: a Null Bulk Reply is returned if

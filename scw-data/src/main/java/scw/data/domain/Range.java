@@ -1,11 +1,11 @@
 package scw.data.domain;
 
+import java.util.Comparator;
 import java.util.Optional;
 
 import scw.core.Assert;
 
-public class Range<T extends Comparable<T>> {
-
+public class Range<T> {
 	private final static Range<?> UNBOUNDED = Range.of(Bound.unbounded(), Bound.UNBOUNDED);
 
 	/**
@@ -35,10 +35,9 @@ public class Range<T extends Comparable<T>> {
 	 * Returns an unbounded {@link Range}.
 	 *
 	 * @return
-	 * @since 2.0
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T extends Comparable<T>> Range<T> unbounded() {
+	public static <T> Range<T> unbounded() {
 		return (Range<T>) UNBOUNDED;
 	}
 
@@ -49,9 +48,8 @@ public class Range<T extends Comparable<T>> {
 	 * @param from must not be {@literal null}.
 	 * @param to   must not be {@literal null}.
 	 * @return
-	 * @since 2.2
 	 */
-	public static <T extends Comparable<T>> Range<T> closed(T from, T to) {
+	public static <T> Range<T> closed(T from, T to) {
 		return new Range<>(Bound.inclusive(from), Bound.inclusive(to));
 	}
 
@@ -62,9 +60,8 @@ public class Range<T extends Comparable<T>> {
 	 * @param from must not be {@literal null}.
 	 * @param to   must not be {@literal null}.
 	 * @return
-	 * @since 2.2
 	 */
-	public static <T extends Comparable<T>> Range<T> open(T from, T to) {
+	public static <T> Range<T> open(T from, T to) {
 		return new Range<>(Bound.exclusive(from), Bound.exclusive(to));
 	}
 
@@ -75,9 +72,8 @@ public class Range<T extends Comparable<T>> {
 	 * @param from must not be {@literal null}.
 	 * @param to   must not be {@literal null}.
 	 * @return
-	 * @since 2.2
 	 */
-	public static <T extends Comparable<T>> Range<T> leftOpen(T from, T to) {
+	public static <T> Range<T> leftOpen(T from, T to) {
 		return new Range<>(Bound.exclusive(from), Bound.inclusive(to));
 	}
 
@@ -88,9 +84,8 @@ public class Range<T extends Comparable<T>> {
 	 * @param from must not be {@literal null}.
 	 * @param to   must not be {@literal null}.
 	 * @return
-	 * @since 2.2
 	 */
-	public static <T extends Comparable<T>> Range<T> rightOpen(T from, T to) {
+	public static <T> Range<T> rightOpen(T from, T to) {
 		return new Range<>(Bound.inclusive(from), Bound.exclusive(to));
 	}
 
@@ -101,9 +96,8 @@ public class Range<T extends Comparable<T>> {
 	 * @param <T>
 	 * @param to  the right {@link Bound}, must not be {@literal null}.
 	 * @return
-	 * @since 2.2
 	 */
-	public static <T extends Comparable<T>> Range<T> leftUnbounded(Bound<T> to) {
+	public static <T> Range<T> leftUnbounded(Bound<T> to) {
 		return new Range<>(Bound.unbounded(), to);
 	}
 
@@ -114,9 +108,8 @@ public class Range<T extends Comparable<T>> {
 	 * @param <T>
 	 * @param from the left {@link Bound}, must not be {@literal null}.
 	 * @return
-	 * @since 2.2
 	 */
-	public static <T extends Comparable<T>> Range<T> rightUnbounded(Bound<T> from) {
+	public static <T> Range<T> rightUnbounded(Bound<T> from) {
 		return new Range<>(from, Bound.unbounded());
 	}
 
@@ -125,9 +118,8 @@ public class Range<T extends Comparable<T>> {
 	 *
 	 * @param lower must not be {@literal null}.
 	 * @return
-	 * @since 2.0
 	 */
-	public static <T extends Comparable<T>> RangeBuilder<T> from(Bound<T> lower) {
+	public static <T> RangeBuilder<T> from(Bound<T> lower) {
 
 		Assert.notNull(lower, "Lower bound must not be null!");
 		return new RangeBuilder<>(lower);
@@ -139,10 +131,9 @@ public class Range<T extends Comparable<T>> {
 	 *
 	 * @param lowerBound must not be {@literal null}.
 	 * @param upperBound must not be {@literal null}.
-	 * @since 2.0
 	 * @see #from(Bound)
 	 */
-	public static <T extends Comparable<T>> Range<T> of(Bound<T> lowerBound, Bound<T> upperBound) {
+	public static <T> Range<T> of(Bound<T> lowerBound, Bound<T> upperBound) {
 		return new Range<>(lowerBound, upperBound);
 	}
 
@@ -152,9 +143,8 @@ public class Range<T extends Comparable<T>> {
 	 * @param <T>
 	 * @param value must not be {@literal null}.
 	 * @return
-	 * @see Range#closed(Comparable, Comparable)
 	 */
-	public static <T extends Comparable<T>> Range<T> just(T value) {
+	public static <T> Range<T> just(T value) {
 		return Range.closed(value, value);
 	}
 
@@ -164,18 +154,19 @@ public class Range<T extends Comparable<T>> {
 	 * @param value must not be {@literal null}.
 	 * @return
 	 */
-	public boolean contains(T value) {
+	public boolean contains(T value, Comparator<T> comparator) {
 
 		Assert.notNull(value, "Reference value must not be null!");
 
 		boolean greaterThanLowerBound = lowerBound.getValue() //
-				.map(it -> lowerBound.isInclusive() ? it.compareTo(value) <= 0 : it.compareTo(value) < 0) //
+				.map(it -> lowerBound.isInclusive() ? comparator.compare(it, value) <= 0
+						: comparator.compare(it, value) < 0) //
 				.orElse(true);
 
 		boolean lessThanUpperBound = upperBound.getValue() //
-				.map(it -> upperBound.isInclusive() ? it.compareTo(value) >= 0 : it.compareTo(value) > 0) //
+				.map(it -> upperBound.isInclusive() ? comparator.compare(it, value) >= 0
+						: comparator.compare(it, value) > 0) //
 				.orElse(true);
-
 		return greaterThanLowerBound && lessThanUpperBound;
 	}
 
@@ -189,16 +180,7 @@ public class Range<T extends Comparable<T>> {
 		return String.format("%s-%s", lowerBound.toPrefixString(), upperBound.toSuffixString());
 	}
 
-	/**
-	 * Value object representing a boundary. A boundary can either be
-	 * {@link #unbounded() unbounded}, {@link #inclusive(Comparable) including its
-	 * value} or {@link #exclusive(Comparable) its value}.
-	 *
-	 * @author Mark Paluch
-	 * @since 2.0
-	 * @soundtrack Mohamed Ragab - Excelsior Sessions (March 2017)
-	 */
-	public static class Bound<T extends Comparable<T>> {
+	public static class Bound<T> {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" }) //
 		private static final Bound<?> UNBOUNDED = new Bound(Optional.empty(), true);
@@ -223,7 +205,7 @@ public class Range<T extends Comparable<T>> {
 		 * Creates an unbounded {@link Bound}.
 		 */
 		@SuppressWarnings("unchecked")
-		public static <T extends Comparable<T>> Bound<T> unbounded() {
+		public static <T> Bound<T> unbounded() {
 			return (Bound<T>) UNBOUNDED;
 		}
 
@@ -242,7 +224,7 @@ public class Range<T extends Comparable<T>> {
 		 * @param value must not be {@literal null}.
 		 * @return
 		 */
-		public static <T extends Comparable<T>> Bound<T> inclusive(T value) {
+		public static <T> Bound<T> inclusive(T value) {
 
 			Assert.notNull(value, "Value must not be null!");
 			return new Bound<>(Optional.of(value), true);
@@ -294,7 +276,7 @@ public class Range<T extends Comparable<T>> {
 		 * @param value must not be {@literal null}.
 		 * @return
 		 */
-		public static <T extends Comparable<T>> Bound<T> exclusive(T value) {
+		public static <T> Bound<T> exclusive(T value) {
 
 			Assert.notNull(value, "Value must not be null!");
 			return new Bound<>(Optional.of(value), false);
@@ -373,7 +355,7 @@ public class Range<T extends Comparable<T>> {
 	 *
 	 * @soundtrack Aly and Fila - Future Sound Of Egypt 493
 	 */
-	public static class RangeBuilder<T extends Comparable<T>> {
+	public static class RangeBuilder<T> {
 
 		private final Bound<T> lower;
 

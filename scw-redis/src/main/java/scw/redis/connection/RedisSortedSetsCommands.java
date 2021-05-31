@@ -1,59 +1,63 @@
 package scw.redis.connection;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
-import scw.redis.connection.RedisStringCommands.SetOption;
-import scw.util.Pair;
+import scw.core.utils.ObjectUtils;
+import scw.data.domain.Range;
+import scw.lang.Nullable;
+import scw.util.Supplier;
 
-public interface RedisSortedSetsCommands {
+@SuppressWarnings("unchecked")
+public interface RedisSortedSetsCommands<K, V> {
 	/**
 	 * https://redis.io/commands/bzpopmin<br/>
 	 * <br/>
 	 * 
 	 * Available since 5.0.0.
 	 * 
-	 * Time complexity: O(log(N)) with N being the number of elements in the
-	 * sorted set.
+	 * Time complexity: O(log(N)) with N being the number of elements in the sorted
+	 * set.
 	 * 
 	 * BZPOPMIN is the blocking variant of the sorted set ZPOPMIN primitive.
 	 * 
-	 * It is the blocking version because it blocks the connection when there
-	 * are no members to pop from any of the given sorted sets. A member with
-	 * the lowest score is popped from first sorted set that is non-empty, with
-	 * the given keys being checked in the order that they are given.
+	 * It is the blocking version because it blocks the connection when there are no
+	 * members to pop from any of the given sorted sets. A member with the lowest
+	 * score is popped from first sorted set that is non-empty, with the given keys
+	 * being checked in the order that they are given.
 	 * 
-	 * The timeout argument is interpreted as an double value specifying the
-	 * maximum number of seconds to block. A timeout of zero can be used to
-	 * block indefinitely.
+	 * The timeout argument is interpreted as an double value specifying the maximum
+	 * number of seconds to block. A timeout of zero can be used to block
+	 * indefinitely.
 	 * 
 	 * See the BLPOP documentation for the exact semantics, since BZPOPMIN is
-	 * identical to BLPOP with the only difference being the data structure
-	 * being popped from.
+	 * identical to BLPOP with the only difference being the data structure being
+	 * popped from.
 	 * 
-	 * @param timeout
-	 *            >= 6.0: timeout is interpreted as a double instead of an
-	 *            integer.
+	 * @param timeout >= 6.0: timeout is interpreted as a double instead of an
+	 *                integer.
 	 * @param keys
 	 * @return Array reply: specifically:
 	 * 
 	 *         A nil multi-bulk when no element could be popped and the timeout
-	 *         expired. A three-element multi-bulk with the first element being
-	 *         the name of the key where a member was popped, the second element
-	 *         is the popped member itself, and the third element is the score
-	 *         of the popped element.
+	 *         expired. A three-element multi-bulk with the first element being the
+	 *         name of the key where a member was popped, the second element is the
+	 *         popped member itself, and the third element is the score of the
+	 *         popped element.
 	 */
-	List<byte[]> bzpopmin(double timeout, byte[]... keys);
+	List<V> bzpopmin(double timeout, K... keys);
 
 	static enum ScoreOption {
 		/**
-		 * Only update existing elements if the new score is greater than the
-		 * current score. This flag doesn't prevent adding new elements.
+		 * Only update existing elements if the new score is greater than the current
+		 * score. This flag doesn't prevent adding new elements.
 		 */
 		GT,
 		/**
-		 * Only update existing elements if the new score is less than the
-		 * current score. This flag doesn't prevent adding new elements.
+		 * Only update existing elements if the new score is less than the current
+		 * score. This flag doesn't prevent adding new elements.
 		 */
 		LT
 	}
@@ -62,29 +66,19 @@ public interface RedisSortedSetsCommands {
 	 * https://redis.io/commands/zadd<br/>
 	 * <br/>
 	 * 
-	 * @param key
-	 * @param setOption
-	 * @param scoreOption
-	 * @param ch
-	 * @param incr
-	 * @param memberScorePairs
-	 * @return When used without optional arguments, the number of elements
-	 *         added to the sorted set (excluding score updates). If the CH
-	 *         option is specified, the number of elements that were changed
-	 *         (added or updated). If the INCR option is specified, the return
-	 *         value will be Bulk string reply:
+	 * @return When used without optional arguments, the number of elements added to
+	 *         the sorted set (excluding score updates). If the CH option is
+	 *         specified, the number of elements that were changed (added or
+	 *         updated). If the INCR option is specified, the return value will be
+	 *         Bulk string reply:
 	 * 
-	 *         The new score of member (a double precision floating point
-	 *         number) represented as string, or nil if the operation was
-	 *         aborted (when called with either the XX or the NX option).
+	 *         The new score of member (a double precision floating point number)
+	 *         represented as string, or nil if the operation was aborted (when
+	 *         called with either the XX or the NX option).
 	 */
-	Object zadd(
-			byte[] key,
-			SetOption setOption,
-			ScoreOption scoreOption,
-			Integer ch,
-			Boolean incr,
-			@SuppressWarnings("unchecked") Pair<byte[], Float>... memberScorePairs);
+	Long zadd(K key, SetOption setOption, ScoreOption scoreOption, boolean changed, Map<V, Double> memberScores);
+
+	Double zaddIncr(K key, SetOption setOption, ScoreOption scoreOption, boolean changed, double score, V member);
 
 	/**
 	 * https://redis.io/commands/zcard<br/>
@@ -96,35 +90,34 @@ public interface RedisSortedSetsCommands {
 	 * @return Integer reply: the cardinality (number of elements) of the sorted
 	 *         set, or 0 if key does not exist.
 	 */
-	Integer zcard(byte[] key);
+	Long zcard(K key);
 
 	/**
 	 * https://redis.io/commands/zcount<br/>
 	 * <br/>
-	 * Returns the number of elements in the sorted set at key with a score
-	 * between min and max.
+	 * Returns the number of elements in the sorted set at key with a score between
+	 * min and max.
 	 * 
 	 * The min and max arguments have the same semantic as described for
 	 * ZRANGEBYSCORE.
 	 * 
-	 * Note: the command has a complexity of just O(log(N)) because it uses
-	 * elements ranks (see ZRANK) to get an idea of the range. Because of this
-	 * there is no need to do a work proportional to the size of the range.
+	 * Note: the command has a complexity of just O(log(N)) because it uses elements
+	 * ranks (see ZRANK) to get an idea of the range. Because of this there is no
+	 * need to do a work proportional to the size of the range.
 	 * 
 	 * @param key
 	 * @param min
 	 * @param max
-	 * @return Integer reply: the number of elements in the specified score
-	 *         range.
+	 * @return Integer reply: the number of elements in the specified score range.
 	 */
-	Integer zcount(byte[] key, byte[] min, byte[] max);
+	Long zcount(K key, Range<? extends Number> range);
 
 	/**
 	 * https://redis.io/commands/zdiffstore<br/>
 	 * <br/>
 	 * Computes the difference between the first and all successive input sorted
-	 * sets and stores the result in destination. The total number of input keys
-	 * is specified by numkeys.
+	 * sets and stores the result in destination. The total number of input keys is
+	 * specified by numkeys.
 	 * 
 	 * Keys that do not exist are considered to be empty sets.
 	 * 
@@ -133,95 +126,153 @@ public interface RedisSortedSetsCommands {
 	 * @param destination
 	 * @param numKeys
 	 * @param keys
-	 * @return Integer reply: the number of elements in the resulting sorted set
-	 *         at destination.
+	 * @return Integer reply: the number of elements in the resulting sorted set at
+	 *         destination.
 	 */
-	Integer zdiffstore(byte[] destination, Integer numKeys, byte[]... keys);
+	Long zdiffstore(K destinationKey, K... keys);
 
-	byte[] zincrby(byte[] key, double increment, byte[] member);
+	Double zincrby(K key, double increment, V member);
 
-	static enum WithOption {
-		WITHSCORES
+	static enum Aggregate {
+		SUM, MIN, MAX
 	}
 
-	static enum InterOption {
-		AGGREGATE_SUM, MIN, MAX
+	static class InterArgs implements Serializable {
+		private static final long serialVersionUID = 1L;
+		private Aggregate aggregate;
+		private double[] weights;
+
+		public InterArgs aggregate(Aggregate aggregate) {
+			this.aggregate = aggregate;
+			return this;
+		}
+
+		public Aggregate getAggregate() {
+			return aggregate;
+		}
+
+		@Nullable
+		public double[] getWeights() {
+			return weights;
+		}
+
+		public InterArgs weights(double... weights) {
+			this.weights = weights;
+			return this;
+		}
 	}
 
 	/**
 	 * https://redis.io/commands/zinter<br/>
 	 * <br/>
-	 * This command is similar to ZINTERSTORE, but instead of storing the
-	 * resulting sorted set, it is returned to the client.
+	 * This command is similar to ZINTERSTORE, but instead of storing the resulting
+	 * sorted set, it is returned to the client.
 	 * 
 	 * For a description of the WEIGHTS and AGGREGATE options, see ZUNIONSTORE.
 	 * 
-	 * @param keys
-	 * @param weights
-	 * @param option
-	 * @param withOption
 	 * @return Array reply: the result of intersection (optionally with their
 	 *         scores, in case the WITHSCORES option is given).
 	 */
-	List<byte[]> zinter(List<byte[]> keys, List<Integer> weights,
-			InterOption option, WithOption withOption);
+	Collection<V> zinter(InterArgs args, K... keys);
+
+	static class Tuple<V> implements Supplier<V>, Serializable {
+		private static final long serialVersionUID = 1L;
+		private final V value;
+		private final double score;
+
+		public Tuple(V value, double score) {
+			this.value = value;
+			this.score = score;
+		}
+
+		@Override
+		public V get() {
+			return value;
+		}
+
+		public V getValue() {
+			return value;
+		}
+
+		public double getScore() {
+			return score;
+		}
+
+		@SuppressWarnings("rawtypes")
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) {
+				return false;
+			}
+
+			if (o instanceof Tuple) {
+				return ObjectUtils.nullSafeEquals(value, ((Tuple) o).value)
+						&& Double.compare(this.score, ((Tuple) o).score) == 0;
+			}
+			return false;
+		}
+
+		@Override
+		public int hashCode() {
+			long temp = Double.doubleToLongBits(score);
+			int result = (int) (temp ^ (temp >>> 32));
+			result = 31 * result + (value != null ? value.hashCode() : 0);
+			return result;
+		}
+
+		@Override
+		public String toString() {
+			return value != null ? String.format("ScoredValue[%f, %s]", score, getValue())
+					: String.format("ScoredValue[%f].empty", score);
+		}
+	}
+
+	Collection<Tuple<V>> zinterWithScores(InterArgs args, K... keys);
 
 	/**
 	 * https://redis.io/commands/zinterstore<br/>
 	 * <br/>
-	 * Computes the intersection of numkeys sorted sets given by the specified
-	 * keys, and stores the result in destination. It is mandatory to provide
-	 * the number of input keys (numkeys) before passing the input keys and the
-	 * other (optional) arguments.
+	 * Computes the intersection of numkeys sorted sets given by the specified keys,
+	 * and stores the result in destination. It is mandatory to provide the number
+	 * of input keys (numkeys) before passing the input keys and the other
+	 * (optional) arguments.
 	 * 
-	 * By default, the resulting score of an element is the sum of its scores in
-	 * the sorted sets where it exists. Because intersection requires an element
-	 * to be a member of every given sorted set, this results in the score of
-	 * every element in the resulting sorted set to be equal to the number of
-	 * input sorted sets.
+	 * By default, the resulting score of an element is the sum of its scores in the
+	 * sorted sets where it exists. Because intersection requires an element to be a
+	 * member of every given sorted set, this results in the score of every element
+	 * in the resulting sorted set to be equal to the number of input sorted sets.
 	 * 
 	 * For a description of the WEIGHTS and AGGREGATE options, see ZUNIONSTORE.
 	 * 
 	 * If destination already exists, it is overwritten.
 	 * 
-	 * @param destination
-	 * @param keys
-	 * @param weights
-	 * @param option
-	 * @return Integer reply: the number of elements in the resulting sorted set
-	 *         at destination.
+	 * @return Integer reply: the number of elements in the resulting sorted set at
+	 *         destination.
 	 */
-	Integer zinterstore(byte[] destination, List<byte[]> keys,
-			List<Integer> weights, InterOption option);
+	Long zinterstore(K destinationKey, InterArgs interArgs, K... keys);
 
 	/**
 	 * https://redis.io/commands/zlexcount<br/>
 	 * <br/>
-	 * When all the elements in a sorted set are inserted with the same score,
-	 * in order to force lexicographical ordering, this command returns the
-	 * number of elements in the sorted set at key with a value between min and
-	 * max.
+	 * When all the elements in a sorted set are inserted with the same score, in
+	 * order to force lexicographical ordering, this command returns the number of
+	 * elements in the sorted set at key with a value between min and max.
 	 * 
-	 * The min and max arguments have the same meaning as described for
-	 * ZRANGEBYLEX.
+	 * The min and max arguments have the same meaning as described for ZRANGEBYLEX.
 	 * 
-	 * Note: the command has a complexity of just O(log(N)) because it uses
-	 * elements ranks (see ZRANK) to get an idea of the range. Because of this
-	 * there is no need to do a work proportional to the size of the range.
+	 * Note: the command has a complexity of just O(log(N)) because it uses elements
+	 * ranks (see ZRANK) to get an idea of the range. Because of this there is no
+	 * need to do a work proportional to the size of the range.
 	 * 
-	 * @param key
-	 * @param min
-	 * @param max
-	 * @return Integer reply: the number of elements in the specified score
-	 *         range.
+	 * @return Integer reply: the number of elements in the specified score range.
 	 */
-	Integer zlexcount(byte[] key, byte[] min, byte[] max);
+	Long zlexcount(K key, Range<? extends V> range);
 
 	/**
 	 * https://redis.io/commands/zmscore<br/>
 	 * <br/>
-	 * Returns the scores associated with the specified members in the sorted
-	 * set stored at key.
+	 * Returns the scores associated with the specified members in the sorted set
+	 * stored at key.
 	 * 
 	 * For every member that does not exist in the sorted set, a nil value is
 	 * returned.
@@ -229,47 +280,45 @@ public interface RedisSortedSetsCommands {
 	 * @param key
 	 * @param members
 	 * @return Array reply: list of scores or nil associated with the specified
-	 *         member values (a double precision floating point number),
-	 *         represented as strings.
+	 *         member values (a double precision floating point number), represented
+	 *         as strings.
 	 */
-	List<byte[]> zmscore(byte[] key, byte[]... members);
+	List<Double> zmscore(K key, byte[]... members);
 
 	/**
 	 * https://redis.io/commands/zpopmax<br/>
 	 * <br/>
 	 * 
-	 * Removes and returns up to count members with the highest scores in the
-	 * sorted set stored at key.
+	 * Removes and returns up to count members with the highest scores in the sorted
+	 * set stored at key.
 	 * 
-	 * When left unspecified, the default value for count is 1. Specifying a
-	 * count value that is higher than the sorted set's cardinality will not
-	 * produce an error. When returning multiple elements, the one with the
-	 * highest score will be the first, followed by the elements with lower
-	 * scores.
+	 * When left unspecified, the default value for count is 1. Specifying a count
+	 * value that is higher than the sorted set's cardinality will not produce an
+	 * error. When returning multiple elements, the one with the highest score will
+	 * be the first, followed by the elements with lower scores.
 	 * 
 	 * @param key
 	 * @param count
 	 * @return Array reply: list of popped elements and scores.
 	 */
-	List<byte[]> zpopmax(byte[] key, Integer count);
+	Collection<Tuple<V>> zpopmax(K key, int count);
 
 	/**
 	 * https://redis.io/commands/zpopmin <br/>
 	 * <br/>
-	 * Removes and returns up to count members with the lowest scores in the
-	 * sorted set stored at key.
+	 * Removes and returns up to count members with the lowest scores in the sorted
+	 * set stored at key.
 	 * 
-	 * When left unspecified, the default value for count is 1. Specifying a
-	 * count value that is higher than the sorted set's cardinality will not
-	 * produce an error. When returning multiple elements, the one with the
-	 * lowest score will be the first, followed by the elements with greater
-	 * scores.
+	 * When left unspecified, the default value for count is 1. Specifying a count
+	 * value that is higher than the sorted set's cardinality will not produce an
+	 * error. When returning multiple elements, the one with the lowest score will
+	 * be the first, followed by the elements with greater scores.
 	 * 
 	 * @param key
 	 * @param count
 	 * @return Array reply: list of popped elements and scores.
 	 */
-	List<byte[]> zpopmin(byte[] key, Integer count);
+	Collection<Tuple<V>> zpopmin(K key, int count);
 
 	/**
 	 * https://redis.io/commands/zrandmember<br/>
@@ -279,48 +328,28 @@ public interface RedisSortedSetsCommands {
 	 * sorted set value stored at key.
 	 * 
 	 * If the provided count argument is positive, return an array of distinct
-	 * elements. The array's length is either count or the sorted set's
-	 * cardinality (ZCARD), whichever is lower.
+	 * elements. The array's length is either count or the sorted set's cardinality
+	 * (ZCARD), whichever is lower.
 	 * 
 	 * If called with a negative count, the behavior changes and the command is
-	 * allowed to return the same element multiple times. In this case, the
-	 * number of returned elements is the absolute value of the specified count.
+	 * allowed to return the same element multiple times. In this case, the number
+	 * of returned elements is the absolute value of the specified count.
 	 * 
 	 * The optional WITHSCORES modifier changes the reply so it includes the
 	 * respective scores of the randomly selected elements from the sorted set.
 	 * 
-	 * @param key
-	 * @param count
-	 * @param withOption
-	 * @return Bulk string reply: without the additional count argument, the
-	 *         command returns a Bulk Reply with the randomly selected element,
-	 *         or nil when key does not exist.
+	 * @return Bulk string reply: without the additional count argument, the command
+	 *         returns a Bulk Reply with the randomly selected element, or nil when
+	 *         key does not exist.
 	 * 
 	 *         Array reply: when the additional count argument is passed, the
-	 *         command returns an array of elements, or an empty array when key
-	 *         does not exist. If the WITHSCORES modifier is used, the reply is
-	 *         a list elements and their scores from the sorted set.
+	 *         command returns an array of elements, or an empty array when key does
+	 *         not exist. If the WITHSCORES modifier is used, the reply is a list
+	 *         elements and their scores from the sorted set.
 	 */
-	List<byte[]> zrandmember(byte[] key, Integer count, WithOption withOption);
+	Collection<V> zrandmember(K key, int count);
 
-	static class Limit implements Serializable {
-		private static final long serialVersionUID = 1L;
-		private final int offset;
-		private final int count;
-
-		public Limit(int offset, int count) {
-			this.offset = offset;
-			this.count = count;
-		}
-
-		public int getOffset() {
-			return offset;
-		}
-
-		public int getCount() {
-			return count;
-		}
-	}
+	Collection<Tuple<V>> zrandmemberWithScores(K key, int count);
 
 	static enum RangeBy {
 		SCORE, LEX
@@ -334,68 +363,16 @@ public interface RedisSortedSetsCommands {
 	 * <br/>
 	 * >= 6.2: Added the REV, BYSCORE, BYLEX and LIMIT options.
 	 * 
-	 * @param key
-	 * @param min
-	 * @param max
-	 * @param by
-	 * @param prv
-	 * @param limit
-	 * @param withOption
-	 * @return Array reply: list of elements in the specified range (optionally
-	 *         with their scores, in case the WITHSCORES option is given).
+	 * @return Array reply: list of elements in the specified range (optionally with
+	 *         their scores, in case the WITHSCORES option is given).
 	 */
-	List<byte[]> zrange(byte[] key, byte[] min, byte[] max, RangeBy by,
-			Boolean pev, Limit limit, WithOption withOption);
+	Collection<V> zrange(K key, long start, long stop);
 
-	/**
-	 * https://redis.io/commands/zrangebylex<br/>
-	 * <br/>
-	 * 
-	 * @param key
-	 * @param min
-	 * @param max
-	 * @param limit
-	 * @return Array reply: list of elements in the specified score range.
-	 */
-	List<byte[]> zrangebylex(byte[] key, byte[] min, byte[] max, Limit limit);
+	Collection<V> zrangeByLex(K key, Range<? extends V> range, int offset, int limit);
 
-	/**
-	 * https://redis.io/commands/zrangebyscore<br/>
-	 * <br/>
-	 * Returns all the elements in the sorted set at key with a score between
-	 * min and max (including elements with score equal to min or max). The
-	 * elements are considered to be ordered from low to high scores.
-	 * 
-	 * @param key
-	 * @param min
-	 * @param max
-	 * @param withOption
-	 * @param limit
-	 * @return Array reply: list of elements in the specified score range
-	 *         (optionally with their scores).
-	 */
-	List<byte[]> zrangebyscore(byte[] key, byte[] min, byte[] max,
-			WithOption withOption, Limit limit);
+	Collection<V> zrangeByScore(K key, Range<? extends V> range, int offset, int limit);
 
-	/**
-	 * https://redis.io/commands/zrangestore<br/>
-	 * <br/>
-	 * 
-	 * This command is like ZRANGE, but stores the result in the <dst>
-	 * destination key.
-	 * 
-	 * @param des
-	 * @param src
-	 * @param min
-	 * @param max
-	 * @param by
-	 * @param pev
-	 * @param limit
-	 * @return Integer reply: the number of elements in the resulting sorted
-	 *         set.
-	 */
-	Integer zrangestore(byte[] des, byte[] src, byte[] min, byte[] max,
-			RangeBy by, Boolean pev, Limit limit);
+	Collection<Tuple<V>> zrangeByScoreWithScores(K key, Range<? extends V> range, int offset, int limit);
 
 	/**
 	 * https://redis.io/commands/zrank<br/>
@@ -404,16 +381,16 @@ public interface RedisSortedSetsCommands {
 	 * @param key
 	 * @param member
 	 * @return If member exists in the sorted set, Integer reply: the rank of
-	 *         member. If member does not exist in the sorted set or key does
-	 *         not exist, Bulk string reply: nil.
+	 *         member. If member does not exist in the sorted set or key does not
+	 *         exist, Bulk string reply: nil.
 	 */
-	Object zrank(byte[] key, byte[] member);
+	Long zrank(K key, V member);
 
 	/**
 	 * https://redis.io/commands/zrem<br/>
 	 * <br/>
-	 * Removes the specified members from the sorted set stored at key. Non
-	 * existing members are ignored.
+	 * Removes the specified members from the sorted set stored at key. Non existing
+	 * members are ignored.
 	 * 
 	 * An error is returned when key exists and does not hold a sorted set.
 	 * 
@@ -421,71 +398,70 @@ public interface RedisSortedSetsCommands {
 	 * @param members
 	 * @return Integer reply, specifically:
 	 * 
-	 *         The number of members removed from the sorted set, not including
-	 *         non existing members.
+	 *         The number of members removed from the sorted set, not including non
+	 *         existing members.
 	 */
-	Integer zrem(byte[] key, byte[]... members);
+	Long zrem(K key, V... members);
 
 	/**
 	 * https://redis.io/commands/zremrangebylex<br/>
 	 * <br/>
-	 * When all the elements in a sorted set are inserted with the same score,
-	 * in order to force lexicographical ordering, this command removes all
-	 * elements in the sorted set stored at key between the lexicographical
-	 * range specified by min and max.
+	 * When all the elements in a sorted set are inserted with the same score, in
+	 * order to force lexicographical ordering, this command removes all elements in
+	 * the sorted set stored at key between the lexicographical range specified by
+	 * min and max.
 	 * 
 	 * The meaning of min and max are the same of the ZRANGEBYLEX command.
-	 * Similarly, this command actually returns the same elements that
-	 * ZRANGEBYLEX would return if called with the same min and max arguments.
+	 * Similarly, this command actually returns the same elements that ZRANGEBYLEX
+	 * would return if called with the same min and max arguments.
 	 * 
 	 * @param key
 	 * @param min
 	 * @param max
 	 * @return Integer reply: the number of elements removed.
 	 */
-	Integer zremrangebylex(byte[] key, byte[] min, byte[] max);
+	Long zremrangebylex(K key, Range<? extends V> range);
 
 	/**
 	 * https://redis.io/commands/zremrangebyrank<br/>
 	 * <br/>
 	 * 
-	 * Removes all elements in the sorted set stored at key with rank between
-	 * start and stop. Both start and stop are 0 -based indexes with 0 being the
-	 * element with the lowest score. These indexes can be negative numbers,
-	 * where they indicate offsets starting at the element with the highest
-	 * score. For example: -1 is the element with the highest score, -2 the
-	 * element with the second highest score and so forth.
+	 * Removes all elements in the sorted set stored at key with rank between start
+	 * and stop. Both start and stop are 0 -based indexes with 0 being the element
+	 * with the lowest score. These indexes can be negative numbers, where they
+	 * indicate offsets starting at the element with the highest score. For example:
+	 * -1 is the element with the highest score, -2 the element with the second
+	 * highest score and so forth.
 	 * 
 	 * @param key
 	 * @param start
 	 * @param stop
 	 * @return Integer reply: the number of elements removed.
 	 */
-	Integer zremrangebyrank(byte[] key, Integer start, Integer stop);
+	Long zremrangebyrank(K key, long start, long stop);
 
 	/**
 	 * https://redis.io/commands/zremrangebyscore<br/>
 	 * <br/>
-	 * Removes all elements in the sorted set stored at key with a score between
-	 * min and max (inclusive).
+	 * Removes all elements in the sorted set stored at key with a score between min
+	 * and max (inclusive).
 	 * 
-	 * Since version 2.1.6, min and max can be exclusive, following the syntax
-	 * of ZRANGEBYSCORE.
+	 * Since version 2.1.6, min and max can be exclusive, following the syntax of
+	 * ZRANGEBYSCORE.
 	 * 
 	 * @param key
 	 * @param max
 	 * @param limit
 	 * @return Integer reply: the number of elements removed.
 	 */
-	Integer zremrangebyscore(byte[] key, byte[] max, byte[] limit);
+	Long zremrangebyscore(K key, Range<? extends V> range);
 
 	/**
 	 * https://redis.io/commands/zrevrange<br/>
 	 * <br/>
-	 * Returns the specified range of elements in the sorted set stored at key.
-	 * The elements are considered to be ordered from the highest to the lowest
-	 * score. Descending lexicographical order is used for elements with equal
-	 * score.
+	 * Returns the specified range of elements in the sorted set stored at key. The
+	 * elements are considered to be ordered from the highest to the lowest score.
+	 * Descending lexicographical order is used for elements with equal score.
 	 * 
 	 * Apart from the reversed ordering, ZREVRANGE is similar to ZRANGE.
 	 * 
@@ -496,44 +472,38 @@ public interface RedisSortedSetsCommands {
 	 * @param start
 	 * @param stop
 	 * @param withOption
-	 * @return Array reply: list of elements in the specified range (optionally
-	 *         with their scores).
+	 * @return Array reply: list of elements in the specified range (optionally with
+	 *         their scores).
 	 */
-	List<byte[]> zrevrange(byte[] key, Integer start, byte[] stop,
-			WithOption withOption);
+	Collection<V> zrevrange(K key, Long start, Long stop);
 
 	/**
 	 * https://redis.io/commands/zrevrangebylex<br/>
 	 * <br/>
 	 * 
-	 * When all the elements in a sorted set are inserted with the same score,
-	 * in order to force lexicographical ordering, this command returns all the
+	 * When all the elements in a sorted set are inserted with the same score, in
+	 * order to force lexicographical ordering, this command returns all the
 	 * elements in the sorted set at key with a value between max and min.
 	 * 
-	 * Apart from the reversed ordering, ZREVRANGEBYLEX is similar to
-	 * ZRANGEBYLEX.
+	 * Apart from the reversed ordering, ZREVRANGEBYLEX is similar to ZRANGEBYLEX.
 	 * 
 	 * As per Redis 6.2.0, this command is considered deprecated. Please prefer
 	 * using the ZRANGE command with the BYLEX and REV arguments in new code.
 	 * 
-	 * @param key
-	 * @param max
-	 * @param min
-	 * @param limit
 	 * @return Array reply: list of elements in the specified score range.
 	 */
-	List<byte[]> zrevrangebylex(byte[] key, byte[] max, byte[] min, Limit limit);
+	Collection<V> zrevrangebylex(K key, Range<? extends V> range, int offset, int count);
 
 	/**
 	 * https://redis.io/commands/zrevrangebyscore<br/>
 	 * <br/>
-	 * Returns all the elements in the sorted set at key with a score between
-	 * max and min (including elements with score equal to max or min). In
-	 * contrary to the default ordering of sorted sets, for this command the
-	 * elements are considered to be ordered from high to low scores.
+	 * Returns all the elements in the sorted set at key with a score between max
+	 * and min (including elements with score equal to max or min). In contrary to
+	 * the default ordering of sorted sets, for this command the elements are
+	 * considered to be ordered from high to low scores.
 	 * 
-	 * The elements having the same score are returned in reverse
-	 * lexicographical order.
+	 * The elements having the same score are returned in reverse lexicographical
+	 * order.
 	 * 
 	 * Apart from the reversed ordering, ZREVRANGEBYSCORE is similar to
 	 * ZRANGEBYSCORE.
@@ -549,26 +519,27 @@ public interface RedisSortedSetsCommands {
 	 * @return Array reply: list of elements in the specified score range
 	 *         (optionally with their scores).
 	 */
-	List<byte[]> zrevrangebyscore(byte[] key, byte[] max, byte[] min,
-			WithOption option, Limit limit);
+	Collection<V> zrevrangebyscore(K key, Range<? extends V> range, int offset, int count);
+
+	Collection<Tuple<V>> zrevrangebyscoreWithScores(K key, Range<? extends V> range, int offset, int count);
 
 	/**
 	 * https://redis.io/commands/zrevrank<br/>
 	 * <br/>
-	 * Returns the rank of member in the sorted set stored at key, with the
-	 * scores ordered from high to low. The rank (or index) is 0-based, which
-	 * means that the member with the highest score has rank 0.
+	 * Returns the rank of member in the sorted set stored at key, with the scores
+	 * ordered from high to low. The rank (or index) is 0-based, which means that
+	 * the member with the highest score has rank 0.
 	 * 
-	 * Use ZRANK to get the rank of an element with the scores ordered from low
-	 * to high.
+	 * Use ZRANK to get the rank of an element with the scores ordered from low to
+	 * high.
 	 * 
 	 * @param key
 	 * @param member
-	 * @return Return value If member exists in the sorted set, Integer reply:
-	 *         the rank of member. If member does not exist in the sorted set or
-	 *         key does not exist, Bulk string reply: nil.
+	 * @return Return value If member exists in the sorted set, Integer reply: the
+	 *         rank of member. If member does not exist in the sorted set or key
+	 *         does not exist, Bulk string reply: nil.
 	 */
-	Object zrevrank(byte[] key, byte[] member);
+	Long zrevrank(K key, V member);
 
 	/**
 	 * https://redis.io/commands/zscore<br/>
@@ -580,16 +551,16 @@ public interface RedisSortedSetsCommands {
 	 * 
 	 * @param key
 	 * @param member
-	 * @return Bulk string reply: the score of member (a double precision
-	 *         floating point number), represented as string.
+	 * @return Bulk string reply: the score of member (a double precision floating
+	 *         point number), represented as string.
 	 */
-	byte[] zscore(byte[] key, byte[] member);
+	Double zscore(K key, V member);
 
 	/**
 	 * https://redis.io/commands/zunion<br/>
 	 * <br/>
-	 * This command is similar to ZUNIONSTORE, but instead of storing the
-	 * resulting sorted set, it is returned to the client.
+	 * This command is similar to ZUNIONSTORE, but instead of storing the resulting
+	 * sorted set, it is returned to the client.
 	 * 
 	 * For a description of the WEIGHTS and AGGREGATE options, see ZUNIONSTORE.
 	 * 
@@ -597,34 +568,35 @@ public interface RedisSortedSetsCommands {
 	 * @param weights
 	 * @param option
 	 * @param withOption
-	 * @return Array reply: the result of union (optionally with their scores,
-	 *         in case the WITHSCORES option is given).
+	 * @return Array reply: the result of union (optionally with their scores, in
+	 *         case the WITHSCORES option is given).
 	 */
-	List<Object> zunion(List<byte[]> keys, List<Integer> weights,
-			InterOption option, WithOption withOption);
+	Collection<V> zunion(InterArgs interArgs, K... keys);
+
+	Collection<Tuple<V>> zunionWithScores(InterArgs interArgs, K... keys);
 
 	/**
 	 * https://redis.io/commands/zunionstore<br/>
 	 * <br/>
-	 * Computes the union of numkeys sorted sets given by the specified keys,
-	 * and stores the result in destination. It is mandatory to provide the
-	 * number of input keys (numkeys) before passing the input keys and the
-	 * other (optional) arguments.
+	 * Computes the union of numkeys sorted sets given by the specified keys, and
+	 * stores the result in destination. It is mandatory to provide the number of
+	 * input keys (numkeys) before passing the input keys and the other (optional)
+	 * arguments.
 	 * 
-	 * By default, the resulting score of an element is the sum of its scores in
-	 * the sorted sets where it exists.
+	 * By default, the resulting score of an element is the sum of its scores in the
+	 * sorted sets where it exists.
 	 * 
-	 * Using the WEIGHTS option, it is possible to specify a multiplication
-	 * factor for each input sorted set. This means that the score of every
-	 * element in every input sorted set is multiplied by this factor before
-	 * being passed to the aggregation function. When WEIGHTS is not given, the
-	 * multiplication factors default to 1.
+	 * Using the WEIGHTS option, it is possible to specify a multiplication factor
+	 * for each input sorted set. This means that the score of every element in
+	 * every input sorted set is multiplied by this factor before being passed to
+	 * the aggregation function. When WEIGHTS is not given, the multiplication
+	 * factors default to 1.
 	 * 
-	 * With the AGGREGATE option, it is possible to specify how the results of
-	 * the union are aggregated. This option defaults to SUM, where the score of
-	 * an element is summed across the inputs where it exists. When this option
-	 * is set to either MIN or MAX, the resulting set will contain the minimum
-	 * or maximum score of an element across the inputs where it exists.
+	 * With the AGGREGATE option, it is possible to specify how the results of the
+	 * union are aggregated. This option defaults to SUM, where the score of an
+	 * element is summed across the inputs where it exists. When this option is set
+	 * to either MIN or MAX, the resulting set will contain the minimum or maximum
+	 * score of an element across the inputs where it exists.
 	 * 
 	 * If destination already exists, it is overwritten.
 	 * 
@@ -632,9 +604,8 @@ public interface RedisSortedSetsCommands {
 	 * @param keys
 	 * @param weights
 	 * @param option
-	 * @return Integer reply: the number of elements in the resulting sorted set
-	 *         at destination.
+	 * @return Integer reply: the number of elements in the resulting sorted set at
+	 *         destination.
 	 */
-	Integer zunionstore(byte[] destination, List<byte[]> keys,
-			List<Integer> weights, InterOption option);
+	Long zunionstore(byte[] destination, InterArgs interArgs, K... keys);
 }

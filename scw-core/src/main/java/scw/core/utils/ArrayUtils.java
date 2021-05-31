@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import scw.core.Assert;
+
 public final class ArrayUtils {
 	private ArrayUtils() {
 	};
@@ -73,6 +75,7 @@ public final class ArrayUtils {
 
 	@SuppressWarnings("unchecked")
 	public static <T> T merge(T arr1, T arr2) {
+		Assert.requiredArgument(arr1 == null && arr2 == null, "It can't be all empty");
 		if (arr1 == null) {
 			return clone(arr2);
 		}

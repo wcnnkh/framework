@@ -6,7 +6,7 @@ package scw.util.comparator;
  * @author shuchaowen
  *
  */
-public enum OrderBy {
+public enum Sort {
 	/**
 	 * 正序(由小到大)
 	 */
