@@ -468,14 +468,10 @@ public interface RedisSortedSetsCommands<K, V> {
 	 * As per Redis 6.2.0, this command is considered deprecated. Please prefer
 	 * using the ZRANGE command with the REV argument in new code.
 	 * 
-	 * @param key
-	 * @param start
-	 * @param stop
-	 * @param withOption
 	 * @return Array reply: list of elements in the specified range (optionally with
 	 *         their scores).
 	 */
-	Collection<V> zrevrange(K key, Long start, Long stop);
+	Collection<V> zrevrange(K key, long start, long stop);
 
 	/**
 	 * https://redis.io/commands/zrevrangebylex<br/>
@@ -600,12 +596,8 @@ public interface RedisSortedSetsCommands<K, V> {
 	 * 
 	 * If destination already exists, it is overwritten.
 	 * 
-	 * @param destination
-	 * @param keys
-	 * @param weights
-	 * @param option
 	 * @return Integer reply: the number of elements in the resulting sorted set at
 	 *         destination.
 	 */
-	Long zunionstore(byte[] destination, InterArgs interArgs, K... keys);
+	Long zunionstore(K destinationKey, InterArgs interArgs, K... keys);
 }

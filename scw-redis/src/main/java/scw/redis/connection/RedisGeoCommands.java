@@ -244,15 +244,9 @@ public interface RedisGeoCommands<K, V> {
 	 * 
 	 * @see #georadius(byte[], Circle, Integer, Sort, GeoradiusStroage,
 	 *      GeoResultWith...)
-	 * @param key
-	 * @param member
-	 * @param distance
-	 * @param count
-	 * @param orderBy
-	 * @param store
-	 * @param withs
 	 * @return
 	 */
-	List<GeoResults> georadiusbymember(byte[] key, byte[] member, Distance distance, Integer count, Sort orderBy,
-			GeoradiusStroage store, GeoResultWith... withs);
+	List<V> georadiusbymember(K key, V member, Distance distance, GeoRadiusArgs<K> args);
+	
+	List<GeoWithin<V>> georadiusbymember(K key, V member, Distance distance, GeoRadiusWith with, GeoRadiusArgs<K> args);
 }

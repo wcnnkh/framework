@@ -7,21 +7,22 @@ import java.util.Collection;
  * threads. Note that once a subscription died, it cannot accept any more subscriptions.
  *
  */
-public interface Subscription {
+@SuppressWarnings("unchecked")
+public interface Subscription<K, V> {
 
 	/**
 	 * Adds the given channels to the current subscription.
 	 *
 	 * @param channels channel names. Must not be empty.
 	 */
-	void subscribe(byte[]... channels) throws RedisInvalidSubscriptionException;
+	void subscribe(K... channels) throws RedisInvalidSubscriptionException;
 
 	/**
 	 * Adds the given channel patterns to the current subscription.
 	 *
 	 * @param patterns channel patterns. Must not be empty.
 	 */
-	void pSubscribe(byte[]... patterns) throws RedisInvalidSubscriptionException;
+	void pSubscribe(K... patterns) throws RedisInvalidSubscriptionException;
 
 	/**
 	 * Cancels the current subscription for all channels given by name.
@@ -33,7 +34,7 @@ public interface Subscription {
 	 *
 	 * @param channels channel names. Must not be empty.
 	 */
-	void unsubscribe(byte[]... channels);
+	void unsubscribe(K... channels);
 
 	/**
 	 * Cancels the subscription for all channels matched by patterns.
@@ -45,28 +46,28 @@ public interface Subscription {
 	 *
 	 * @param patterns must not be empty.
 	 */
-	void pUnsubscribe(byte[]... patterns);
+	void pUnsubscribe(K... patterns);
 
 	/**
 	 * Returns the (named) channels for this subscription.
 	 *
 	 * @return collection of named channels
 	 */
-	Collection<byte[]> getChannels();
+	Collection<K> getChannels();
 
 	/**
 	 * Returns the channel patters for this subscription.
 	 *
 	 * @return collection of channel patterns
 	 */
-	Collection<byte[]> getPatterns();
+	Collection<K> getPatterns();
 
 	/**
 	 * Returns the listener used for this subscription.
 	 *
 	 * @return the listener used for this subscription.
 	 */
-	MessageListener getListener();
+	MessageListener<K, V> getListener();
 
 	/**
 	 * Indicates whether this subscription is still 'alive' or not.

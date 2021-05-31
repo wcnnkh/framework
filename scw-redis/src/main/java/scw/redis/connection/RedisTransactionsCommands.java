@@ -2,7 +2,8 @@ package scw.redis.connection;
 
 import java.util.List;
 
-public interface RedisTransactionsCommands {
+@SuppressWarnings("unchecked")
+public interface RedisTransactionsCommands<K> {
 	/**
 	 * https://redis.io/commands/discard<br/>
 	 * <br/>
@@ -13,7 +14,7 @@ public interface RedisTransactionsCommands {
 	 * 
 	 * @return Simple string reply: always OK.
 	 */
-	byte[] discard();
+	void discard();
 
 	/**
 	 * https://redis.io/commands/exec<br/>
@@ -40,7 +41,7 @@ public interface RedisTransactionsCommands {
 	 * 
 	 * @return Simple string reply: always OK.
 	 */
-	byte[] multi();
+	void multi();
 
 	/**
 	 * https://redis.io/commands/unwatch<br/>
@@ -51,7 +52,7 @@ public interface RedisTransactionsCommands {
 	 * 
 	 * @return Simple string reply: always OK.
 	 */
-	byte[] unwatch();
+	void unwatch();
 
 	/**
 	 * https://redis.io/commands/watch<br/>
@@ -63,5 +64,5 @@ public interface RedisTransactionsCommands {
 	 * @param keys
 	 * @return Simple string reply: always OK.
 	 */
-	byte[] watch(byte[]... keys);
+	void watch(K... keys);
 }

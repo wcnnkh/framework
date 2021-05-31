@@ -2,7 +2,8 @@ package scw.redis.connection;
 
 import scw.lang.Nullable;
 
-public interface RedisPubSubCommands {
+@SuppressWarnings("unchecked")
+public interface RedisPubSubCommands<K, V> {
 
 	/**
 	 * Indicates whether the current connection is subscribed (to at least one channel) or not.
@@ -17,7 +18,7 @@ public interface RedisPubSubCommands {
 	 * @return the current subscription, {@literal null} if none is available.
 	 */
 	@Nullable
-	Subscription getSubscription();
+	Subscription<K, V> getSubscription();
 
 	/**
 	 * Publishes the given message to the given channel.
@@ -28,7 +29,7 @@ public interface RedisPubSubCommands {
 	 * @see <a href="https://redis.io/commands/publish">Redis Documentation: PUBLISH</a>
 	 */
 	@Nullable
-	Long publish(byte[] channel, byte[] message);
+	Long publish(K channel, V message);
 
 	/**
 	 * Subscribes the connection to the given channels. Once subscribed, a connection enters listening mode and can only
@@ -40,7 +41,7 @@ public interface RedisPubSubCommands {
 	 * @param channels channel names, must not be {@literal null}.
 	 * @see <a href="https://redis.io/commands/subscribe">Redis Documentation: SUBSCRIBE</a>
 	 */
-	void subscribe(MessageListener listener, byte[]... channels);
+	void subscribe(MessageListener<K, V> listener, K... channels);
 
 	/**
 	 * Subscribes the connection to all channels matching the given patterns. Once subscribed, a connection enters
@@ -53,5 +54,5 @@ public interface RedisPubSubCommands {
 	 * @param patterns channel name patterns, must not be {@literal null}.
 	 * @see <a href="https://redis.io/commands/psubscribe">Redis Documentation: PSUBSCRIBE</a>
 	 */
-	void pSubscribe(MessageListener listener, byte[]... patterns);
+	void pSubscribe(MessageListener<K, V> listener, K... patterns);
 }

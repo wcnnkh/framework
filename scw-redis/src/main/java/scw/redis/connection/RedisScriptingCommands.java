@@ -2,50 +2,43 @@ package scw.redis.connection;
 
 import java.util.List;
 
-public interface RedisScriptingCommands {
-	Object eval(byte[] script, int numberKeys, byte[]... args);
+import scw.lang.Nullable;
 
-	Object evalsha(byte[] sha1, int numberKeys, byte[]... args);
+@SuppressWarnings("unchecked")
+public interface RedisScriptingCommands<K, V> {
+	@Nullable
+	<T> T eval(K script, ReturnType returnType, List<K> keys, List<V> args);
 
-	static enum DebugType {
-		YES, SYNC, NO
-	}
+	Object evalsha(K sha1, ReturnType returnType, List<K> keys, List<V> args);
 
-	/**
-	 * https://redis.io/commands/script-debug
-	 * 
-	 * @param type
-	 * @return Simple string reply: OK.
-	 */
-	byte[] scriptDebug(DebugType type);
+	List<Boolean> scriptexists(K... sha1);
 
-	List<Integer> scriptexists(byte[] sha1);
-
-	static enum FlushType {
+	static enum FlushMode {
 		ASYNC, SYNC
 	}
+	
+	void scriptFlush();
 
 	/**
 	 * https://redis.io/commands/script-flush
 	 * 
-	 * @param type
 	 * @return Simple string reply
 	 */
-	byte[] scriptFlush(FlushType type);
+	void scriptFlush(FlushMode flushMode);
 
 	/**
 	 * https://redis.io/commands/script-kill
 	 * 
 	 * @return
 	 */
-	byte[] scriptKill();
+	void scriptKill();
 
 	/**
 	 * https://redis.io/commands/script-load
 	 * 
 	 * @param script
-	 * @return Bulk string reply This command returns the SHA1 digest of the script
-	 *         added into the script cache.
+	 * @return Bulk string reply This command returns the SHA1 digest of the
+	 *         script added into the script cache.
 	 */
-	byte[] scriptLoad(byte[] script);
+	K scriptLoad(K script);
 }

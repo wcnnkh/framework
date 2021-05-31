@@ -1,8 +1,10 @@
 package scw.redis.connection;
 
+import java.io.Serializable;
 import java.util.List;
 
-public interface RedisStreamsCommands {
+@SuppressWarnings("unchecked")
+public interface RedisStreamsCommands<K, V> {
 	/**
 	 * https://redis.io/commands/xack<br/>
 	 * <br/>
@@ -33,41 +35,73 @@ public interface RedisStreamsCommands {
 	 *         PEL (for example because they have already been acknowledged),
 	 *         and XACK will not count them as successfully acknowledged.
 	 */
-	Integer xack(byte[] key, byte[] group, byte[]... ids);
+	Long xack(K key, K group, K... ids);
+	
+	static class ClaimArgs implements Serializable{
+		private static final long serialVersionUID = 1L;
+		private Long idle;
+		private Long time;
+		private Integer retryCount;
+		private boolean force;
+		private boolean justId;
+		
+		public ClaimArgs idel(long idelMs){
+			this.idle = idelMs;
+			return this;
+		}
+		
+		public ClaimArgs time(long msUnixTime){
+			this.time = msUnixTime;
+			return this;
+		}
+		
+		public ClaimArgs retryCount(Integer retryCount){
+			this.retryCount = retryCount;
+			return this;
+		}
+		
+		public ClaimArgs setForce(boolean force){
+			this.force = force;
+			return this;
+		}
+		
+		public ClaimArgs force(){
+			return setForce(true);
+		}
+		
+		public ClaimArgs justId(boolean justId){
+			this.justId = justId;
+			return this;
+		}
+		
+		public ClaimArgs justId(){
+			return justId(true);
+		}
 
-	/**
-	 * https://redis.io/commands/xautoclaim
-	 * 
-	 * @param key
-	 * @param group
-	 * @param customer
-	 * @param minIdleTime
-	 * @param start
-	 * @param count
-	 * @return Array reply, specifically:
-	 * 
-	 *         An array with two elements:
-	 * 
-	 *         The first element is a stream ID to be used as the <start>
-	 *         argument for the next call to XAUTOCLAIM The second element is an
-	 *         array containing all the successfully claimed messages in the
-	 *         same format as XRANGE.
-	 */
-	List<byte[]> xautoclaim(byte[] key, byte[] group, byte[] customer,
-			long minIdleTime, int start, int count);
+		public Long getIdle() {
+			return idle;
+		}
 
+		public Long getTime() {
+			return time;
+		}
+
+		public Integer getRetryCount() {
+			return retryCount;
+		}
+
+		public boolean isForce() {
+			return force;
+		}
+
+		public boolean isJustId() {
+			return justId;
+		}
+	}
+	
 	/**
 	 * https://redis.io/commands/xclaim
 	 * 
-	 * @param key
-	 * @param group
-	 * @param consumer
-	 * @param minIdleTime
-	 * @param ids
-	 * @param idleMs
-	 * @param time
-	 * @param retryCount
-	 * @param force
 	 * @return Array reply, specifically:
 	 * 
 	 *         The command returns all the messages successfully claimed, in the
@@ -75,15 +109,14 @@ public interface RedisStreamsCommands {
 	 *         specified, only the message IDs are reported, without including
 	 *         the actual message.
 	 */
-	List<byte[]> xclaim(byte[] key, byte[] group, byte[] consumer,
-			long minIdleTime, List<byte[]> ids, Long idleMs, Long time,
-			Integer retryCount, Boolean force);
-	
+	List<V> xclaim(K key, K group, K consumer, long minIdleTime, ClaimArgs args, K... ids);
+
 	/**
 	 * https://redis.io/commands/xdel
+	 * 
 	 * @param key
 	 * @param ids
 	 * @return Integer reply: the number of entries actually deleted.
 	 */
-	Integer xdel(byte[] key, byte[] ...ids);
+	Long xdel(K key, K... ids);
 }

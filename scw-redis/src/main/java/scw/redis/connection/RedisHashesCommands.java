@@ -1,8 +1,8 @@
 package scw.redis.connection;
 
 import java.util.List;
-
-import scw.util.Pair;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * https://redis.io/commands#hash
@@ -10,6 +10,7 @@ import scw.util.Pair;
  * @author shuchaowen
  *
  */
+@SuppressWarnings("unchecked")
 public interface RedisHashesCommands<K, V> {
 	/**
 	 * https://redis.io/commands/hdel<br/>
@@ -23,7 +24,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @return Integer reply: the number of fields that were removed from the hash,
 	 *         not including specified but non existing fields.
 	 */
-	Integer hdel(byte[] key, byte[]... fields);
+	Long hdel(K key, K... fields);
 
 	/**
 	 * https://redis.io/commands/hexists<br/>
@@ -37,7 +38,7 @@ public interface RedisHashesCommands<K, V> {
 	 *         1 if the hash contains field. 0 if the hash does not contain field,
 	 *         or key does not exist.
 	 */
-	Integer hexists(byte[] key, byte[] field);
+	Boolean hexists(K key, K field);
 
 	/**
 	 * https://redis.io/commands/hget<br/>
@@ -49,7 +50,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @return Bulk string reply: the value associated with field, or nil when field
 	 *         is not present in the hash or key does not exist.
 	 */
-	byte[] hget(byte[] key, byte[] field);
+	V hget(K key, K field);
 
 	/**
 	 * https://redis.io/commands/hgetall<br/>
@@ -62,7 +63,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @return Array reply: list of fields and their values stored in the hash, or
 	 *         an empty list when key does not exist.
 	 */
-	List<byte[]> hgetall(byte[] key);
+	Map<K, V> hgetall(K key);
 
 	/**
 	 * Increments the number stored at field in the hash stored at key by increment.
@@ -77,7 +78,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @param increment
 	 * @return Integer reply: the value at field after the increment operation.
 	 */
-	Long hincrby(byte[] key, byte[] field, long increment);
+	Long hincrby(K key, K field, long increment);
 
 	/**
 	 * 
@@ -100,7 +101,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @param increment
 	 * @return Bulk string reply: the value of field after the increment.
 	 */
-	Float hincrbyfloat(byte[] key, byte[] field, float increment);
+	Double hincrbyfloat(K key, K field, double increment);
 
 	/**
 	 * https://redis.io/commands/hkeys<br/>
@@ -111,7 +112,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @return Array reply: list of fields in the hash, or an empty list when key
 	 *         does not exist.
 	 */
-	List<byte[]> hkeys(byte[] key);
+	Set<K> hkeys(K key);
 
 	/**
 	 * https://redis.io/commands/hlen<br/>
@@ -122,7 +123,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @return Integer reply: number of fields in the hash, or 0 when key does not
 	 *         exist.
 	 */
-	Integer hlen(byte[] key);
+	Long hlen(K key);
 
 	/**
 	 * https://redis.io/commands/hmget<br/>
@@ -139,7 +140,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @return Array reply: list of values associated with the given fields, in the
 	 *         same order as they are requested.
 	 */
-	List<byte[]> hmget(byte[] key, byte[]... fields);
+	List<V> hmget(K key, K... fields);
 
 	/**
 	 * https://redis.io/commands/hmset<br/>
@@ -155,7 +156,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @param pairs
 	 * @return Simple string reply
 	 */
-	byte[] hmset(byte[] key, @SuppressWarnings("unchecked") Pair<byte[], byte[]>... pairs);
+	void hmset(K key, Map<K, V> values);
 
 	/**
 	 * https://redis.io/commands/hrandfield<br/>
@@ -187,7 +188,9 @@ public interface RedisHashesCommands<K, V> {
 	 *         not exist. If the WITHVALUES modifier is used, the reply is a list
 	 *         fields and their values from the hash.
 	 */
-	List<byte[]> hrandfield(byte[] key, Integer count, Boolean withValues);
+	List<K> hrandfield(K key, Integer count);
+	
+	Map<K, V> hrandfieldWithValue(K key, Integer count);
 
 	/**
 	 * https://redis.io/commands/hset<br/>
@@ -203,7 +206,7 @@ public interface RedisHashesCommands<K, V> {
 	 * @param pairs
 	 * @return Integer reply: The number of fields that were added.
 	 */
-	Integer hset(byte[] key, @SuppressWarnings("unchecked") Pair<byte[], byte[]>... pairs);
+	Long hset(K key, Map<K, V> values);
 
 	/**
 	 * https://redis.io/commands/hsetnx<br/>
@@ -220,7 +223,7 @@ public interface RedisHashesCommands<K, V> {
 	 *         1 if field is a new field in the hash and value was set. 0 if field
 	 *         already exists in the hash and no operation was performed.
 	 */
-	Integer hsetnx(byte[] key, byte[] field, byte[] value);
+	Boolean hsetnx(K key, K field, V value);
 
 	/**
 	 * https://redis.io/commands/hstrlen<br/>
@@ -234,7 +237,7 @@ public interface RedisHashesCommands<K, V> {
 	 *         or zero when field is not present in the hash or key does not exist
 	 *         at all.
 	 */
-	Integer hstrlen(byte[] key, byte[] field);
+	Long hstrlen(K key, V field);
 
 	/**
 	 * Returns all values in the hash stored at key.
@@ -243,5 +246,5 @@ public interface RedisHashesCommands<K, V> {
 	 * @return Array reply: list of values in the hash, or an empty list when key
 	 *         does not exist.
 	 */
-	List<byte[]> hvals(byte[] key);
+	List<V> hvals(K key);
 }

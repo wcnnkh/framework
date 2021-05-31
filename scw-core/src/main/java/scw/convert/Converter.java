@@ -53,7 +53,7 @@ public interface Converter<S, T> {
 		};
 	}
 	
-	default <SL extends Collection<S>, TL extends Collection<T>> TL convert(SL sourceList, TL targetList){
+	default <SL extends Collection<? extends S>, TL extends Collection<T>> TL convert(SL sourceList, TL targetList){
 		if(sourceList == null){
 			return targetList;
 		}
