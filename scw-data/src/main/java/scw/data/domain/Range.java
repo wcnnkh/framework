@@ -3,6 +3,7 @@ package scw.data.domain;
 import java.util.Comparator;
 import java.util.Optional;
 
+import scw.convert.Converter;
 import scw.core.Assert;
 
 public class Range<T> {
@@ -21,6 +22,10 @@ public class Range<T> {
 	public Range(Bound<T> lowerBound, Bound<T> upperBound) {
 		this.lowerBound = lowerBound;
 		this.upperBound = upperBound;
+	}
+	
+	public <V> Range<V> convert(Converter<T, V> converter){
+		return new Range<V>(lowerBound.convert(converter), upperBound.convert(converter));
 	}
 
 	public Bound<T> getLowerBound() {
@@ -199,6 +204,10 @@ public class Range<T> {
 
 		public boolean isInclusive() {
 			return inclusive;
+		}
+
+		public <V> Bound<V> convert(Converter<T, V> converter) {
+			return new Bound<V>(Optional.of(converter.convert(value.get())), inclusive);
 		}
 
 		/**

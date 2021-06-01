@@ -1,6 +1,5 @@
 package scw.codec;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,32 +43,7 @@ public interface Decoder<E, D> {
 	@Nullable
 	@SuppressWarnings("unchecked")
 	default D[] decode(E... sources) throws DecodeException {
-		if (sources == null) {
-			return null;
-		}
-
-		int index = 0;
-		Object array = null;
-		for (int i = 0; i < sources.length; i++) {
-			D target = decode(sources[i]);
-			if (target != null) {
-				index = i;
-				array = Array.newInstance(target.getClass(), sources.length);
-			}
-
-			if (array != null) {
-				Array.set(array, i, target);
-			}
-		}
-		
-		if(array == null) {
-			//所有内容都为空，无法解析数组类型
-		}else {
-			for (int i = 0; i < index; i++) {
-				Array.set(array, i, null);
-			}
-		}
-		return (D[]) array;
+		return toDecodeConverter().convert(sources);
 	}
 
 	static class NestedDecoder<D, T, E> implements Decoder<D, E> {

@@ -21,7 +21,7 @@ import java.util.List;
 import redis.clients.jedis.util.SafeEncoder;
 import scw.convert.Converter;
 import scw.lang.Nullable;
-import scw.redis.connection.ReturnType;
+import scw.redis.core.ReturnType;
 
 /**
  * Converts the value returned by Jedis script eval to the expected {@link ReturnType}

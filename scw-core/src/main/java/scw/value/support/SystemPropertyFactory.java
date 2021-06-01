@@ -2,8 +2,8 @@ package scw.value.support;
 
 import java.util.Iterator;
 
+import scw.convert.ConvertibleEnumeration;
 import scw.core.utils.CollectionUtils;
-import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
 import scw.value.PropertyFactory;
 import scw.value.StringValue;
@@ -28,7 +28,7 @@ public class SystemPropertyFactory implements PropertyFactory {
 	public Iterator<String> iterator() {
 		return new MultiIterator<String>(
 				CollectionUtils
-						.toIterator(EnumerationConvert.convertToStringEnumeration(System.getProperties().keys())),
+						.toIterator(ConvertibleEnumeration.convertToStringEnumeration(System.getProperties().keys())),
 				System.getenv().keySet().iterator());
 	}
 }

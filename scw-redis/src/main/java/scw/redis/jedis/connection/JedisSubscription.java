@@ -17,8 +17,8 @@ package scw.redis.jedis.connection;
 
 import redis.clients.jedis.BinaryJedisPubSub;
 import scw.lang.Nullable;
-import scw.redis.connection.AbstractSubscription;
-import scw.redis.connection.MessageListener;
+import scw.redis.core.AbstractSubscription;
+import scw.redis.core.MessageListener;
 
 
 /**

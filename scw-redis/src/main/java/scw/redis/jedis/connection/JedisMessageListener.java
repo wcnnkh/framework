@@ -17,8 +17,8 @@ package scw.redis.jedis.connection;
 
 import redis.clients.jedis.BinaryJedisPubSub;
 import scw.core.Assert;
-import scw.redis.connection.DefaultMessage;
-import scw.redis.connection.MessageListener;
+import scw.redis.core.DefaultMessage;
+import scw.redis.core.MessageListener;
 
 /**
  * MessageListener adapter on top of Jedis.

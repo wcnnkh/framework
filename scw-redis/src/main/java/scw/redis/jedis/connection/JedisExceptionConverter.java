@@ -23,10 +23,10 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.jedis.exceptions.JedisRedirectionException;
 import scw.convert.Converter;
-import scw.redis.connection.ClusterRedirectException;
-import scw.redis.connection.RedisConnectionFailureException;
-import scw.redis.connection.RedisSystemException;
-import scw.redis.connection.TooManyClusterRedirectionsException;
+import scw.redis.core.ClusterRedirectException;
+import scw.redis.core.RedisConnectionFailureException;
+import scw.redis.core.RedisSystemException;
+import scw.redis.core.TooManyClusterRedirectionsException;
 
 public class JedisExceptionConverter implements Converter<Exception, RedisSystemException> {
 

@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import scw.convert.ConvertibleEnumeration;
 import scw.core.utils.CollectionUtils;
 import scw.event.Observable;
 import scw.instance.NoArgsInstanceFactory;
@@ -11,7 +12,6 @@ import scw.instance.support.DefaultInstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.Clock;
-import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
 import scw.util.XUtils;
 import scw.value.StringValue;
@@ -139,7 +139,7 @@ public final class Sys extends DefaultEnvironment {
 
 	public Iterator<String> iterator() {
 		return new MultiIterator<String>(super.iterator(),
-				CollectionUtils.toIterator(EnumerationConvert
+				CollectionUtils.toIterator(ConvertibleEnumeration
 						.convertToStringEnumeration(System.getProperties()
 								.keys())), System.getenv().keySet().iterator());
 	}
