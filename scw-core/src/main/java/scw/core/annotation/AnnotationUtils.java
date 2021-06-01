@@ -210,7 +210,6 @@ public abstract class AnnotationUtils {
 	 * @param annotationType
 	 *            the annotation type to look for
 	 * @return the first matching annotation, or {@code null} if not found
-	 * @see org.springframework.core.BridgeMethodResolver#findBridgedMethod(Method)
 	 * @see #getAnnotation(AnnotatedElement, Class)
 	 */
 	public static <A extends Annotation> A getAnnotation(Method method, Class<A> annotationType) {
@@ -254,7 +253,6 @@ public abstract class AnnotationUtils {
 	 * @return the annotations found, an empty array, or {@code null} if not
 	 *         resolvable (e.g. because nested Class values in annotation
 	 *         attributes failed to resolve at runtime)
-	 * @see org.springframework.core.BridgeMethodResolver#findBridgedMethod(Method)
 	 * @see AnnotatedElement#getAnnotations()
 	 */
 	public static Annotation[] getAnnotations(Method method) {
@@ -296,7 +294,6 @@ public abstract class AnnotationUtils {
 	 * @see #getDeclaredRepeatableAnnotations(AnnotatedElement, Class, Class)
 	 * @see AnnotatedElementUtils#getMergedRepeatableAnnotations(AnnotatedElement,
 	 *      Class)
-	 * @see org.springframework.core.BridgeMethodResolver#findBridgedMethod
 	 * @see java.lang.annotation.Repeatable
 	 * @see java.lang.reflect.AnnotatedElement#getAnnotationsByType
 	 */
@@ -340,7 +337,6 @@ public abstract class AnnotationUtils {
 	 * @see #getDeclaredRepeatableAnnotations(AnnotatedElement, Class, Class)
 	 * @see AnnotatedElementUtils#getMergedRepeatableAnnotations(AnnotatedElement,
 	 *      Class, Class)
-	 * @see org.springframework.core.BridgeMethodResolver#findBridgedMethod
 	 * @see java.lang.annotation.Repeatable
 	 * @see java.lang.reflect.AnnotatedElement#getAnnotationsByType
 	 */
@@ -394,7 +390,6 @@ public abstract class AnnotationUtils {
 	 * @see #getDeclaredRepeatableAnnotations(AnnotatedElement, Class, Class)
 	 * @see AnnotatedElementUtils#getMergedRepeatableAnnotations(AnnotatedElement,
 	 *      Class)
-	 * @see org.springframework.core.BridgeMethodResolver#findBridgedMethod
 	 * @see java.lang.annotation.Repeatable
 	 * @see java.lang.reflect.AnnotatedElement#getDeclaredAnnotationsByType
 	 */
@@ -438,7 +433,6 @@ public abstract class AnnotationUtils {
 	 * @see #getDeclaredRepeatableAnnotations(AnnotatedElement, Class)
 	 * @see AnnotatedElementUtils#getMergedRepeatableAnnotations(AnnotatedElement,
 	 *      Class, Class)
-	 * @see org.springframework.core.BridgeMethodResolver#findBridgedMethod
 	 * @see java.lang.annotation.Repeatable
 	 * @see java.lang.reflect.AnnotatedElement#getDeclaredAnnotationsByType
 	 */
@@ -1081,11 +1075,6 @@ public abstract class AnnotationUtils {
 	 * 
 	 * @param annotation
 	 *            the annotation to retrieve the attributes for
-	 * @param classValuesAsString
-	 *            whether to convert Class references into Strings (for
-	 *            compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as Class references
 	 * @return the Map of annotation attributes, with attribute names as keys
 	 *         and corresponding attribute values as values (never {@code null})
 	 * @see #getAnnotationAttributes(Annotation, boolean, boolean)
@@ -1100,20 +1089,9 @@ public abstract class AnnotationUtils {
 	 * <p>
 	 * This method provides fully recursive annotation reading capabilities on
 	 * par with the reflection-based
-	 * {@link org.springframework.core.type.StandardAnnotationMetadata}.
 	 * 
 	 * @param annotation
 	 *            the annotation to retrieve the attributes for
-	 * @param classValuesAsString
-	 *            whether to convert Class references into Strings (for
-	 *            compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as Class references
-	 * @param nestedAnnotationsAsMap
-	 *            whether to convert nested annotations into
-	 *            {@link AnnotationAttributes} maps (for compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as {@code Annotation} instances
 	 * @return the annotation attributes (a specialized Map) with attribute
 	 *         names as keys and corresponding attribute values as values (never
 	 *         {@code null})
@@ -1155,23 +1133,12 @@ public abstract class AnnotationUtils {
 	 * <p>
 	 * This method provides fully recursive annotation reading capabilities on
 	 * par with the reflection-based
-	 * {@link org.springframework.core.type.StandardAnnotationMetadata}.
 	 * 
 	 * @param annotatedElement
 	 *            the element that is annotated with the supplied annotation;
 	 *            may be {@code null} if unknown
 	 * @param annotation
 	 *            the annotation to retrieve the attributes for
-	 * @param classValuesAsString
-	 *            whether to convert Class references into Strings (for
-	 *            compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as Class references
-	 * @param nestedAnnotationsAsMap
-	 *            whether to convert nested annotations into
-	 *            {@link AnnotationAttributes} maps (for compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as {@code Annotation} instances
 	 * @return the annotation attributes (a specialized Map) with attribute
 	 *         names as keys and corresponding attribute values as values (never
 	 *         {@code null})
@@ -1198,7 +1165,6 @@ public abstract class AnnotationUtils {
 	 * <p>
 	 * This method provides fully recursive annotation reading capabilities on
 	 * par with the reflection-based
-	 * {@link org.springframework.core.type.StandardAnnotationMetadata}.
 	 * <p>
 	 * <strong>NOTE</strong>: This variant of {@code getAnnotationAttributes()}
 	 * is only intended for use within the framework. The following special
@@ -1216,16 +1182,6 @@ public abstract class AnnotationUtils {
 	 *            may be {@code null} if unknown
 	 * @param annotation
 	 *            the annotation to retrieve the attributes for
-	 * @param classValuesAsString
-	 *            whether to convert Class references into Strings (for
-	 *            compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as Class references
-	 * @param nestedAnnotationsAsMap
-	 *            whether to convert nested annotations into
-	 *            {@link AnnotationAttributes} maps (for compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as {@code Annotation} instances
 	 * @return the annotation attributes (a specialized Map) with attribute
 	 *         names as keys and corresponding attribute values as values (never
 	 *         {@code null})
@@ -1271,16 +1227,6 @@ public abstract class AnnotationUtils {
 	 *            may be {@code null} if unknown
 	 * @param value
 	 *            the annotation attribute value
-	 * @param classValuesAsString
-	 *            whether to convert Class references into Strings (for
-	 *            compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as Class references
-	 * @param nestedAnnotationsAsMap
-	 *            whether to convert nested annotations into
-	 *            {@link AnnotationAttributes} maps (for compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as {@code Annotation} instances
 	 * @return the adapted value, or the original value if no adaptation is
 	 *         needed
 	 */
@@ -1377,11 +1323,6 @@ public abstract class AnnotationUtils {
 	 *            be {@code null} if unknown
 	 * @param attributes
 	 *            the annotation attributes to post-process
-	 * @param classValuesAsString
-	 *            whether to convert Class references into Strings (for
-	 *            compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as Class references
 	 * @see #postProcessAnnotationAttributes(Object, AnnotationAttributes,
 	 *      boolean, boolean)
 	 * @see #getDefaultValue(Class, String)
@@ -1406,16 +1347,6 @@ public abstract class AnnotationUtils {
 	 *            be {@code null} if unknown
 	 * @param attributes
 	 *            the annotation attributes to post-process
-	 * @param classValuesAsString
-	 *            whether to convert Class references into Strings (for
-	 *            compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as Class references
-	 * @param nestedAnnotationsAsMap
-	 *            whether to convert nested annotations into
-	 *            {@link AnnotationAttributes} maps (for compatibility with
-	 *            {@link org.springframework.core.type.AnnotationMetadata}) or
-	 *            to preserve them as {@code Annotation} instances
 	 * @see #retrieveAnnotationAttributes(Object, Annotation, boolean, boolean)
 	 * @see #getDefaultValue(Class, String)
 	 */
@@ -1680,7 +1611,6 @@ public abstract class AnnotationUtils {
 				annotatedElement);
 		InvocationHandler handler = new SynthesizedAnnotationInvocationHandler(attributeExtractor);
 
-		// Can always expose Spring's SynthesizedAnnotation marker since we
 		// explicitly check for a
 		// synthesizable annotation before (which needs to declare @AliasFor
 		// from the same package)

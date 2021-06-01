@@ -273,7 +273,6 @@ public final class CollectionFactory {
 	 * @return a new map instance
 	 * @see java.util.LinkedHashMap
 	 * @see java.util.TreeMap
-	 * @see org.springframework.util.LinkedMultiValueMap
 	 * @see java.util.EnumMap
 	 * @throws IllegalArgumentException if the supplied {@code mapType} is
 	 *                                  {@code null}; or if the desired

@@ -44,20 +44,16 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 	}
 
 	/**
-	 * Constructs a new <code>AbstractSubscription</code> instance. Allows
-	 * channels and patterns to be added to the subscription w/o triggering a
-	 * subscription action (as some clients (Jedis) require an initial call
-	 * before entering into listening mode).
+	 * Constructs a new <code>AbstractSubscription</code> instance. Allows channels
+	 * and patterns to be added to the subscription w/o triggering a subscription
+	 * action (as some clients (Jedis) require an initial call before entering into
+	 * listening mode).
 	 *
-	 * @param listener
-	 *            must not be {@literal null}.
-	 * @param channels
-	 *            can be {@literal null}.
-	 * @param patterns
-	 *            can be {@literal null}.
+	 * @param listener must not be {@literal null}.
+	 * @param channels can be {@literal null}.
+	 * @param patterns can be {@literal null}.
 	 */
-	protected AbstractSubscription(MessageListener<K, V> listener,
-			@Nullable K[] channels, @Nullable K[] patterns) {
+	protected AbstractSubscription(MessageListener<K, V> listener, @Nullable K[] channels, @Nullable K[] patterns) {
 
 		Assert.notNull(listener, "MessageListener must not be null!");
 
@@ -74,45 +70,38 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 	/**
 	 * Subscribe to the given channels.
 	 *
-	 * @param channels
-	 *            channels to subscribe to
+	 * @param channels channels to subscribe to
 	 */
 	protected abstract void doSubscribe(K... channels);
 
 	/**
 	 * Channel unsubscribe.
 	 *
-	 * @param all
-	 *            true if all the channels are unsubscribed (used as a hint for
-	 *            the underlying implementation).
-	 * @param channels
-	 *            channels to be unsubscribed
+	 * @param all      true if all the channels are unsubscribed (used as a hint for
+	 *                 the underlying implementation).
+	 * @param channels channels to be unsubscribed
 	 */
 	protected abstract void doUnsubscribe(boolean all, K... channels);
 
 	/**
 	 * Subscribe to the given patterns
 	 *
-	 * @param patterns
-	 *            patterns to subscribe to
+	 * @param patterns patterns to subscribe to
 	 */
 	protected abstract void doPsubscribe(K... patterns);
 
 	/**
 	 * Pattern unsubscribe.
 	 *
-	 * @param all
-	 *            true if all the patterns are unsubscribed (used as a hint for
-	 *            the underlying implementation).
-	 * @param patterns
-	 *            patterns to be unsubscribed
+	 * @param all      true if all the patterns are unsubscribed (used as a hint for
+	 *                 the underlying implementation).
+	 * @param patterns patterns to be unsubscribed
 	 */
 	protected abstract void doPUnsubscribe(boolean all, K... patterns);
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.data.redis.connection.Subscription#close()
 	 */
 	@Override
 	public void close() {
@@ -127,7 +116,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.data.redis.connection.Subscription#getListener()
 	 */
 	@Override
 	public MessageListener<K, V> getListener() {
@@ -137,7 +125,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.data.redis.connection.Subscription#getChannels()
 	 */
 	@Override
 	public Collection<K> getChannels() {
@@ -149,7 +136,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.data.redis.connection.Subscription#getPatterns()
 	 */
 	@Override
 	public Collection<K> getPatterns() {
@@ -160,10 +146,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.data.redis.connection.Subscription#pSubscribe(byte
-	 * [][])
 	 */
 	@Override
 	public void pSubscribe(K... patterns) {
@@ -181,8 +163,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.redis.connection.Subscription#pUnsubscribe()
 	 */
 	@Override
 	public void pUnsubscribe() {
@@ -192,9 +172,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.redis.connection.Subscription#subscribe(byte
-	 * [][])
 	 */
 	@Override
 	public void subscribe(K... channels) {
@@ -211,8 +188,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.data.redis.connection.Subscription#unsubscribe()
 	 */
 	@Override
 	public void unsubscribe() {
@@ -221,10 +196,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.springframework.data.redis.connection.Subscription#pUnsubscribe(byte
-	 * [][])
 	 */
 
 	@Override
@@ -258,9 +229,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * org.springframework.data.redis.connection.Subscription#unsubscribe(byte
-	 * [][])
 	 */
 	@Override
 	public void unsubscribe(@Nullable K... chans) {
@@ -292,8 +260,6 @@ public abstract class AbstractSubscription<K, V> implements Subscription<K, V> {
 
 	/*
 	 * (non-Javadoc)
-	 * 
-	 * @see org.springframework.data.redis.connection.Subscription#isAlive()
 	 */
 	@Override
 	public boolean isAlive() {

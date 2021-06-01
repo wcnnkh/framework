@@ -1,18 +1,3 @@
-/*
- * Copyright 2011-2021 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package scw.redis.jedis.connection;
 
 import redis.clients.jedis.BinaryJedisPubSub;
@@ -38,7 +23,6 @@ class JedisSubscription extends AbstractSubscription<byte[], byte[]> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.redis.connection.util.AbstractSubscription#doClose()
 	 */
 	@Override
 	protected void doClose() {
@@ -52,7 +36,6 @@ class JedisSubscription extends AbstractSubscription<byte[], byte[]> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.redis.connection.util.AbstractSubscription#doPsubscribe(byte[][])
 	 */
 	@Override
 	protected void doPsubscribe(byte[]... patterns) {
@@ -61,7 +44,6 @@ class JedisSubscription extends AbstractSubscription<byte[], byte[]> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.redis.connection.util.AbstractSubscription#doPUnsubscribe(boolean, byte[][])
 	 */
 	@Override
 	protected void doPUnsubscribe(boolean all, byte[]... patterns) {
@@ -74,7 +56,6 @@ class JedisSubscription extends AbstractSubscription<byte[], byte[]> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.redis.connection.util.AbstractSubscription#doSubscribe(byte[][])
 	 */
 	@Override
 	protected void doSubscribe(byte[]... channels) {
@@ -83,7 +64,6 @@ class JedisSubscription extends AbstractSubscription<byte[], byte[]> {
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.data.redis.connection.util.AbstractSubscription#doUnsubscribe(boolean, byte[][])
 	 */
 	@Override
 	protected void doUnsubscribe(boolean all, byte[]... channels) {

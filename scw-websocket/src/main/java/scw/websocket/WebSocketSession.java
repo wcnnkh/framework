@@ -34,13 +34,6 @@ public interface WebSocketSession extends Session {
 
 	/**
 	 * Return the map with attributes associated with the WebSocket session.
-	 * <p>
-	 * On the server side the map can be populated initially through a
-	 * {@link org.springframework.web.socket.server.HandshakeInterceptor
-	 * HandshakeInterceptor}. On the client side the map can be populated via
-	 * {@link org.springframework.web.socket.client.WebSocketClient
-	 * WebSocketClient} handshake methods.
-	 * 
 	 * @return a Map with the session attributes (never {@code null})
 	 */
 	Map<String, Object> getAttributes();

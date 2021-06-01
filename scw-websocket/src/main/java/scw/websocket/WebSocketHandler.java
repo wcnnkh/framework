@@ -45,9 +45,6 @@ public interface WebSocketHandler {
 	 * {@code true} and the underlying WebSocket server supports partial messages,
 	 * then a large WebSocket message, or one of an unknown size may be split and
 	 * maybe received over multiple calls to
-	 * {@link #handleMessage(WebSocketSession1, WebSocketMessage)}. The flag
-	 * {@link org.springframework.web.socket.WebSocketMessage#isLast()} indicates if
-	 * the message is partial and whether it is the last part.
 	 */
 	boolean supportsPartialMessages();
 }

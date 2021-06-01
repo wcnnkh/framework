@@ -828,11 +828,6 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Set the {@code Content-Disposition} header when creating a
 	 * {@code "multipart/form-data"} request.
-	 * <p>
-	 * Applications typically would not set this header directly but rather
-	 * prepare a {@code MultiValueMap<String, Object>}, containing an Object or
-	 * a {@link org.springframework.core.io.Resource} for each part, and then
-	 * pass that to the {@code RestTemplate} or {@code WebClient}.
 	 * 
 	 * @param name
 	 *            the control name

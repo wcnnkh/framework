@@ -20,9 +20,6 @@ import scw.lang.Nullable;
 /**
  * Exception thrown when issuing commands on a connection that is subscribed and waiting for events.
  *
- * @author Costin Leau
- * @author Christoph Strobl
- * @see org.springframework.data.redis.connection.RedisPubSubCommands
  */
 public class RedisSubscribedConnectionException extends RedisSystemException {
 	private static final long serialVersionUID = 1L;

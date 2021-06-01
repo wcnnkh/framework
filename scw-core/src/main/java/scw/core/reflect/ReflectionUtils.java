@@ -1011,18 +1011,10 @@ public abstract class ReflectionUtils {
 	 * found.
 	 * <p>
 	 * <b>NOTE:</b> In contrast to
-	 * {@link shuchaowen.spring.aop.support.AopUtils#getMostSpecificMethod},
 	 * this method does <i>not</i> resolve Java 5 bridge methods automatically.
 	 * Call
-	 * {@link shuchaowen.spring.core.reference.spring.core.spring.core.BridgeMethodResolver#findBridgedMethod}
 	 * if bridge method resolution is desirable (e.g. for obtaining metadata
 	 * from the original method definition).
-	 * <p>
-	 * <b>NOTE:</b> Since Spring 3.1.1, if Java security settings disallow
-	 * reflective access (e.g. calls to {@code Class#getDeclaredMethods} etc,
-	 * this implementation will fall back to returning the originally provided
-	 * method.
-	 * 
 	 * @param method
 	 *            the method to be invoked, which may come from an interface
 	 * @param targetClass

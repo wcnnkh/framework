@@ -56,16 +56,6 @@ import scw.util.PathMatcher;
 import scw.util.XUtils;
 
 /**
- * A {@link ResourcePatternResolver} implementation that is able to resolve a
- * specified resource location path into one or more matching Resources. The
- * source path may be a simple path which has a one-t o-one mapping to a target
- * {@link org.springframework.core.io.Resource}, or alternatively may contain
- * the special "{@code classpath*:}" prefix and/or internal Ant-style regular
- * expressions (matched using Spring's
- * {@link org.springframework.util.AntPathMatcher} utility). Both of the latter
- * are effectively wildcards.
- *
- * <p>
  * <b>No Wildcards:</b>
  *
  * <p>
@@ -228,7 +218,6 @@ public class PathMatchingResourcePatternResolver implements
 	 * <p>
 	 * ClassLoader access will happen via the thread context class loader.
 	 * 
-	 * @see scw.io.springframework.core.io.DefaultResourceLoader
 	 */
 	public PathMatchingResourcePatternResolver() {
 		this.resourceLoader = new DefaultResourceLoader();
@@ -256,7 +245,6 @@ public class PathMatchingResourcePatternResolver implements
 	 *            the ClassLoader to load classpath resources with, or
 	 *            {@code null} for using the thread context class loader at the
 	 *            time of actual resource access
-	 * @see scw.io.springframework.core.io.DefaultResourceLoader
 	 */
 	public PathMatchingResourcePatternResolver(ClassLoader classLoader) {
 		this.resourceLoader = new DefaultResourceLoader(classLoader);
@@ -277,7 +265,6 @@ public class PathMatchingResourcePatternResolver implements
 	 * Set the PathMatcher implementation to use for this resource pattern
 	 * resolver. Default is AntPathMatcher.
 	 * 
-	 * @see org.springframework.util.AntPathMatcher
 	 */
 	public void setPathMatcher(PathMatcher pathMatcher) {
 		Assert.notNull(pathMatcher, "PathMatcher must not be null");
@@ -416,7 +403,6 @@ public class PathMatchingResourcePatternResolver implements
 	 *            a URL as returned from the ClassLoader
 	 * @return the corresponding Resource object
 	 * @see java.lang.ClassLoader#getResources
-	 * @see org.springframework.core.io.Resource
 	 */
 	protected Resource convertClassLoaderURL(URL url) {
 		return new UrlResource(url);
@@ -574,7 +560,6 @@ public class PathMatchingResourcePatternResolver implements
 	 *             in case of I/O errors
 	 * @see #doFindPathMatchingJarResources
 	 * @see #doFindPathMatchingFileResources
-	 * @see org.springframework.util.PathMatcher
 	 */
 	protected Resource[] findPathMatchingResources(String locationPattern)
 			throws IOException {
@@ -644,12 +629,6 @@ public class PathMatchingResourcePatternResolver implements
 
 	/**
 	 * Resolve the specified resource for path matching.
-	 * <p>
-	 * By default, Equinox OSGi "bundleresource:" / "bundleentry:" URL will be
-	 * resolved into a standard jar file URL that be traversed using Spring's
-	 * standard jar file traversal algorithm. For any preceding custom
-	 * resolution, override this method and replace the resource handle
-	 * accordingly.
 	 * 
 	 * @param original
 	 *            the resource to resolve
@@ -676,7 +655,6 @@ public class PathMatchingResourcePatternResolver implements
 	 *            the resource handle to check (usually the root directory to
 	 *            start path matching from)
 	 * @see #doFindPathMatchingJarResources
-	 * @see scw.io.springframework.util.ResourceUtils#isJarURL
 	 */
 	protected boolean isJarResource(Resource resource) throws IOException {
 		return false;
@@ -818,7 +796,6 @@ public class PathMatchingResourcePatternResolver implements
 	 * @throws IOException
 	 *             in case of I/O errors
 	 * @see #retrieveMatchingFiles
-	 * @see org.springframework.util.PathMatcher
 	 */
 	protected Set<Resource> doFindPathMatchingFileResources(
 			Resource rootDirResource, String subPattern) throws IOException {
@@ -855,7 +832,6 @@ public class PathMatchingResourcePatternResolver implements
 	 * @throws IOException
 	 *             in case of I/O errors
 	 * @see #retrieveMatchingFiles
-	 * @see org.springframework.util.PathMatcher
 	 */
 	protected Set<Resource> doFindMatchingFileSystemResources(File rootDir,
 			String subPattern) throws IOException {

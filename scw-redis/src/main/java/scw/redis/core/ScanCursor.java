@@ -95,7 +95,6 @@ public abstract class ScanCursor<K, T> implements Cursor<T> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.data.redis.core.Cursor#getCursorId()
 	 */
 	@Override
 	public long getCursorId() {
@@ -193,7 +192,6 @@ public abstract class ScanCursor<K, T> implements Cursor<T> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.data.redis.core.Cursor#isClosed()
 	 */
 	@Override
 	public boolean isClosed() {
@@ -211,7 +209,6 @@ public abstract class ScanCursor<K, T> implements Cursor<T> {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.springframework.data.redis.core.Cursor#getPosition()
 	 */
 	@Override
 	public long getPosition() {

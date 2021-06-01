@@ -18,6 +18,11 @@ import scw.core.Constants;
  *
  */
 public class CharsetCodec implements BytesCodec<String> {
+	/**
+	 * @see Charset#defaultCharset()
+	 */
+	public static final CharsetCodec DEFAULT = new CharsetCodec(Charset.defaultCharset());
+	
 	public static final CharsetCodec UTF_8 = new CharsetCodec(Constants.UTF_8);
 
 	public static final CharsetCodec ISO_8859_1 = new CharsetCodec(Constants.ISO_8859_1);

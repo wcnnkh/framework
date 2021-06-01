@@ -113,7 +113,6 @@ public class SimpleRetryPolicy implements RetryPolicy {
 	 * according to this policy. Has to be aware of the latest exception and the
 	 * number of attempts.
 	 *
-	 * @see org.springframework.retry.RetryPolicy#open(RetryContext)
 	 */
 	public RetryContext open(RetryContext parent) {
 		return new SimpleRetryContext(parent);

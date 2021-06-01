@@ -19,11 +19,6 @@ import scw.core.type.MethodMetadata;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 
-/**
- * ASM class visitor which looks for the class name and implemented types as
- * well as for the annotations defined on the class, exposing them through
- * the {@link org.springframework.core.type.AnnotationMetadata} interface.
- */
 public class AnnotationMetadataReadingVisitor extends ClassMetadataReadingVisitor implements AnnotationMetadata {
 
 	protected final ClassLoader classLoader;

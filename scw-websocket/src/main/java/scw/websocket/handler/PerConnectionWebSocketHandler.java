@@ -38,13 +38,6 @@ import scw.websocket.WebSocketSession;
  * {@link WebSocketHandler} class to create for each connection, and then pass
  * it to any API method that expects a {@link WebSocketHandler}.
  *
- * <p>
- * If initializing the target {@link WebSocketHandler} type requires a Spring
- * BeanFctory, then the {@link #setBeanFactory(BeanFactory)} property
- * accordingly. Simply declaring this class as a Spring bean will do that.
- * Otherwise, {@link WebSocketHandler} instances of the target type will be
- * created using the default constructor.
- *
  * @author Rossen Stoyanchev
  */
 public class PerConnectionWebSocketHandler extends BeanFactoryAccessor implements WebSocketHandler {

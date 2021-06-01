@@ -75,9 +75,7 @@ public class DefaultClientHttpResponseErrorHandler implements
 	/**
 	 * This default implementation throws a {@link HttpClientErrorException} if
 	 * the response status code is
-	 * {@link org.springframework.http.HttpStatus.Series#CLIENT_ERROR}, a
 	 * {@link HttpServerErrorException} if it is
-	 * {@link org.springframework.http.HttpStatus.Series#SERVER_ERROR}, and a
 	 * {@link RestClientException} in other cases.
 	 */
 	public void handleError(ClientHttpResponse response) throws IOException {

@@ -15,10 +15,6 @@ import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 
 /**
- * {@link InvocationHandler} for an {@link Annotation} that Spring has
- * <em>synthesized</em> (i.e., wrapped in a dynamic proxy) with additional
- * functionality.
- *
  * @see Annotation
  * @see AnnotationAttributeExtractor
  * @see AnnotationUtils#synthesizeAnnotation(Annotation, AnnotatedElement)
@@ -183,11 +179,6 @@ class SynthesizedAnnotationInvocationHandler implements InvocationHandler {
 	}
 
 	/**
-	 * WARNING: we can NOT use any of the {@code nullSafeHashCode()} methods in
-	 * Spring's {@link ObjectUtils} because those hash code generation
-	 * algorithms do not comply with the requirements specified in
-	 * {@link Annotation#hashCode()}.
-	 * 
 	 * @param array
 	 *            the array to compute the hash code for
 	 */

@@ -565,67 +565,27 @@ public enum HttpStatus {
 		return Series.valueOf(this);
 	}
 
-	/**
-	 * Whether this status code is in the HTTP series
-	 * {@link scw.net.http.springframework.http.HttpStatus.Series#INFORMATIONAL}. This is
-	 * a shortcut for checking the value of {@link #series()}.
-	 * 
-	 * @see #series()
-	 */
 	public boolean is1xxInformational() {
 		return (series() == Series.INFORMATIONAL);
 	}
 
-	/**
-	 * Whether this status code is in the HTTP series
-	 * {@link scw.net.http.springframework.http.HttpStatus.Series#SUCCESSFUL}. This is a
-	 * shortcut for checking the value of {@link #series()}.
-	 * 
-	 * @see #series()
-	 */
 	public boolean is2xxSuccessful() {
 		return (series() == Series.SUCCESSFUL);
 	}
 
-	/**
-	 * Whether this status code is in the HTTP series
-	 * {@link scw.net.http.springframework.http.HttpStatus.Series#REDIRECTION}. This is a
-	 * shortcut for checking the value of {@link #series()}.
-	 * 
-	 * @see #series()
-	 */
 	public boolean is3xxRedirection() {
 		return (series() == Series.REDIRECTION);
 	}
 
-	/**
-	 * Whether this status code is in the HTTP series
-	 * {@link scw.net.http.springframework.http.HttpStatus.Series#CLIENT_ERROR}. This is
-	 * a shortcut for checking the value of {@link #series()}.
-	 * 
-	 * @see #series()
-	 */
 	public boolean is4xxClientError() {
 		return (series() == Series.CLIENT_ERROR);
 	}
 
-	/**
-	 * Whether this status code is in the HTTP series
-	 * {@link scw.net.http.springframework.http.HttpStatus.Series#SERVER_ERROR}. This is
-	 * a shortcut for checking the value of {@link #series()}.
-	 * 
-	 * @see #series()
-	 */
 	public boolean is5xxServerError() {
 		return (series() == Series.SERVER_ERROR);
 	}
 
 	/**
-	 * Whether this status code is in the HTTP series
-	 * {@link scw.net.http.springframework.http.HttpStatus.Series#CLIENT_ERROR} or
-	 * {@link scw.net.http.springframework.http.HttpStatus.Series#SERVER_ERROR}. This is
-	 * a shortcut for checking the value of {@link #series()}.
-	 * 
 	 * @see #is4xxClientError()
 	 * @see #is5xxServerError()
 	 */

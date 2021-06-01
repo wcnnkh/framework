@@ -241,7 +241,6 @@ public class UriComponentsBuilder implements Cloneable {
 	 * if present, in order to reflect the client-originated protocol and address.
 	 * Consider using the {@code ForwardedHeaderFilter} in order to choose from a
 	 * central place whether to extract and use, or to discard such headers.
-	 * See the Spring Framework reference for more on this filter.
 	 * @param request the source request
 	 * @return the URI components of the URI
 	 */
