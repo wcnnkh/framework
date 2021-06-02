@@ -9,7 +9,13 @@ package scw.data;
  */
 public interface TemporaryStorage extends Storage{
 	
-	<T> T getAndTouch(String key, int exp);
+	default <T> T getAndTouch(String key, int exp) {
+		T value = get(key);
+		if(value != null) {
+			touch(key, exp);
+		}
+		return value;
+	}
 
 	boolean touch(String key, int exp);
 

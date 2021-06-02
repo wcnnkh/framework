@@ -7,10 +7,10 @@ import scw.lang.Nullable;
 @SuppressWarnings("unchecked")
 public interface RedisScriptingCommands<K, V> {
 	@Nullable
-	<T> T eval(K script, ReturnType returnType, List<K> keys, List<V> args);
+	<T> T eval(K script, List<K> keys, List<V> args);
 
 	@Nullable
-	<T> T evalsha(K sha1, ReturnType returnType, List<K> keys, List<V> args);
+	<T> T evalsha(K sha1, List<K> keys, List<V> args);
 
 	List<Boolean> scriptexists(K... sha1);
 

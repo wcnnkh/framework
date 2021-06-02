@@ -1,4 +1,4 @@
-package scw.redis.jedis.connection;
+package scw.redis.jedis;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,14 +52,12 @@ import scw.redis.core.RedisConnection;
 import scw.redis.core.RedisSubscribedConnectionException;
 import scw.redis.core.RedisValueEncoding;
 import scw.redis.core.RedisValueEncodings;
-import scw.redis.core.ReturnType;
 import scw.redis.core.ScanCursor;
 import scw.redis.core.ScanIteration;
 import scw.redis.core.ScanOptions;
 import scw.redis.core.SetOption;
 import scw.redis.core.Subscription;
 import scw.redis.core.convert.RedisConverters;
-import scw.redis.jedis.JedisCodec;
 import scw.util.Decorator;
 import scw.util.XUtils;
 import scw.util.comparator.Sort;
@@ -442,6 +440,11 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public Boolean psetex(byte[] key, long milliseconds, byte[] value) {
 		return "OK".equalsIgnoreCase(jedis.psetex(key, milliseconds, value));
+	}
+	
+	@Override
+	public void set(byte[] key, byte[] value) {
+		jedis.set(key, value);
 	}
 
 	@Override
@@ -1091,8 +1094,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public Collection<Tuple<byte[]>> zrangeByScoreWithScores(byte[] key, Range<byte[]> range, int offset,
-			int limit) {
+	public Collection<Tuple<byte[]>> zrangeByScoreWithScores(byte[] key, Range<byte[]> range, int offset, int limit) {
 		Set<redis.clients.jedis.Tuple> tuples = jedis.zrangeByScoreWithScores(key,
 				RedisConverters.convertLowerBound(range.getLowerBound(), JedisCodec.INSTANCE),
 				RedisConverters.convertUpperBound(range.getUpperBound(), JedisCodec.INSTANCE), offset, limit);
@@ -1225,25 +1227,23 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	}
 
 	@Override
-	public <T> T eval(byte[] script, ReturnType returnType, List<byte[]> keys, List<byte[]> args) {
+	public <T> T eval(byte[] script, List<byte[]> keys, List<byte[]> args) {
 		Assert.notNull(script, "Script must not be null!");
-		JedisScriptReturnConverter converter = new JedisScriptReturnConverter(returnType);
 		Object value = jedis.eval(script, keys, args);
 		if (value == null) {
 			return null;
 		}
-		return (T) converter.convert(value);
+		return (T) value;
 	}
 
 	@Override
-	public <T> T evalsha(byte[] sha1, ReturnType returnType, List<byte[]> keys, List<byte[]> args) {
+	public <T> T evalsha(byte[] sha1, List<byte[]> keys, List<byte[]> args) {
 		Assert.notNull(sha1, "sha1 must not be null!");
-		JedisScriptReturnConverter converter = new JedisScriptReturnConverter(returnType);
 		Object value = jedis.evalsha(sha1, keys, args);
 		if (value == null) {
 			return null;
 		}
-		return (T) converter.convert(value);
+		return (T) value;
 	}
 
 	@Override

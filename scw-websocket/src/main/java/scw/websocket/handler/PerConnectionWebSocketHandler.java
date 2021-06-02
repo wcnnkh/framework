@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import scw.beans.BeanDefinition;
-import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryAccessor;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;

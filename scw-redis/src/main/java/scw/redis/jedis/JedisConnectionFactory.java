@@ -1,4 +1,4 @@
-package scw.redis.jedis.connection;
+package scw.redis.jedis;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -13,7 +13,7 @@ public class JedisConnectionFactory implements RedisConnectionFactory<byte[], by
 	}
 
 	@Override
-	public RedisConnection<byte[], byte[]> getRedisConnection() {
+	public RedisConnection<byte[], byte[]> getConnection() {
 		Jedis jedis = jedisPool.getResource();
 		return new JedisConnection(jedis);
 	}

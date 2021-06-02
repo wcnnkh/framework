@@ -13,10 +13,10 @@ import scw.data.geo.Point;
 
 @SuppressWarnings("unchecked")
 public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
-	RedisConnection<K, V> getRedisConnection();
+	RedisConnection<K, V> getConnection();
 
 	default <T> T execute(RedisCallback<K, V, T> callback) throws RedisSystemException {
-		RedisConnection<K, V> connection = getRedisConnection();
+		RedisConnection<K, V> connection = getConnection();
 		try {
 			return callback.doInRedis(connection);
 		} finally {
@@ -614,16 +614,16 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	}
 
 	@Override
-	default <T> T eval(K script, ReturnType returnType, List<K> keys, List<V> args) {
+	default <T> T eval(K script, List<K> keys, List<V> args) {
 		return execute((commands) -> {
-			return commands.eval(script, returnType, keys, args);
+			return commands.eval(script, keys, args);
 		});
 	}
 
 	@Override
-	default <T> T evalsha(K sha1, ReturnType returnType, List<K> keys, List<V> args) {
+	default <T> T evalsha(K sha1, List<K> keys, List<V> args) {
 		return execute((commands) -> {
-			return commands.evalsha(sha1, returnType, keys, args);
+			return commands.evalsha(sha1, keys, args);
 		});
 	}
 
@@ -1056,6 +1056,14 @@ public interface RedisConnectionFactory<K, V> extends RedisCommands<K, V> {
 	default Boolean psetex(K key, long milliseconds, V value) {
 		return execute((commands) -> {
 			return commands.psetex(key, milliseconds, value);
+		});
+	}
+	
+	@Override
+	default void set(K key, V value) {
+		execute((commands) -> {
+			commands.set(key, value);
+			return null;
 		});
 	}
 

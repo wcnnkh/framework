@@ -271,6 +271,8 @@ public interface RedisStringCommands<K, V> {
 	 * @return
 	 */
 	Boolean psetex(K key, long milliseconds, V value);
+	
+	void set(K key, V value);
 
 	/**
 	 * https://redis.io/commands/set<br/>

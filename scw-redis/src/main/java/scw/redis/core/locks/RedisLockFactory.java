@@ -1,4 +1,4 @@
-package scw.redis.locks;
+package scw.redis.core.locks;
 
 import java.util.concurrent.TimeUnit;
 
@@ -6,7 +6,7 @@ import scw.context.annotation.Provider;
 import scw.locks.LockFactory;
 import scw.locks.RenewableLock;
 import scw.locks.RenewableLockFactory;
-import scw.redis.Redis;
+import scw.redis.core.Redis;
 import scw.util.XUtils;
 
 @Provider(value = LockFactory.class)

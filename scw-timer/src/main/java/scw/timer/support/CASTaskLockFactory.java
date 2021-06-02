@@ -5,7 +5,7 @@ import java.util.concurrent.locks.Lock;
 import scw.context.annotation.Provider;
 import scw.data.cas.CASOperations;
 import scw.memcached.Memcached;
-import scw.redis.Redis;
+import scw.redis.core.Redis;
 import scw.timer.TaskConfig;
 import scw.timer.TaskLockFactory;
 

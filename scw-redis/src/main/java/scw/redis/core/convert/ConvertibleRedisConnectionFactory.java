@@ -17,8 +17,8 @@ public class ConvertibleRedisConnectionFactory<TK, TV, K, V> implements RedisCon
 	}
 
 	@Override
-	public RedisConnection<K, V> getRedisConnection() {
-		RedisConnection<TK, TV> connection = targetConnectionFactory.getRedisConnection();
+	public RedisConnection<K, V> getConnection() {
+		RedisConnection<TK, TV> connection = targetConnectionFactory.getConnection();
 		return new ConvertibleRedisConnection<TK, TV, K, V>(connection, keyCodec, valueCodec);
 	}
 

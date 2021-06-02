@@ -20,6 +20,7 @@ import scw.env.Environment;
 import scw.env.EnvironmentAware;
 import scw.env.Sys;
 import scw.lang.Nullable;
+import scw.logger.Levels;
 import scw.mapper.Field;
 import scw.orm.convert.EntityConversionService;
 import scw.orm.convert.PropertyFactoryToEntityConversionService;
@@ -74,8 +75,8 @@ public final class BeanUtils {
 		if (instance instanceof EnvironmentAware) {
 			((EnvironmentAware) instance).setEnvironment(beanFactory.getEnvironment());
 		}
-		
-		if(instance instanceof ContextAware) {
+
+		if (instance instanceof ContextAware) {
 			((ContextAware) instance).setContext(beanFactory);
 		}
 	}
@@ -149,6 +150,36 @@ public final class BeanUtils {
 			Environment environment) {
 		ConfigurationProperties configurationProperties = annotatedElement == null ? null
 				: annotatedElement.getAnnotation(ConfigurationProperties.class);
+		configurationProperties(instance, configurationProperties, environment);
+	}
+
+	public static void configurationProperties(Object instance, Environment environment, String prefix, Levels levels) {
+		configurationProperties(instance, new ConfigurationProperties() {
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return ConfigurationProperties.class;
+			}
+
+			@Override
+			public String value() {
+				return null;
+			}
+
+			@Override
+			public String prefix() {
+				return prefix;
+			}
+
+			@Override
+			public Levels loggerLevel() {
+				return levels;
+			}
+		}, environment);
+	}
+
+	public static void configurationProperties(Object instance,
+			@Nullable ConfigurationProperties configurationProperties, Environment environment) {
 		Class<?> configurationPropertiesClass = ProxyUtils.getFactory().getUserClass(instance.getClass());
 		if (configurationProperties == null) {
 			// 定义上不存在此注解
@@ -196,7 +227,7 @@ public final class BeanUtils {
 				return true;
 			}
 		});
-		if(configurationProperties != null) {
+		if (configurationProperties != null) {
 			entityConversionService.setPrefix(getPrefix(configurationProperties));
 			entityConversionService.setLoggerLevel(configurationProperties.loggerLevel().getValue());
 		}
@@ -225,7 +256,9 @@ public final class BeanUtils {
 			Class<?> configClass, Environment environment, EntityConversionService entityConversionService) {
 		Class<?> clazz = configClass;
 		while (clazz != null && clazz != Object.class) {
-			ConfigurationProperties configuration = clazz.getAnnotation(ConfigurationProperties.class);
+			ConfigurationProperties configuration = configurationProperties == null
+					? clazz.getAnnotation(ConfigurationProperties.class)
+					: configurationProperties;
 			if (configuration != null) {
 				entityConversionService.setPrefix(getPrefix(configuration));
 				entityConversionService.setLoggerLevel(configuration.loggerLevel().getValue());

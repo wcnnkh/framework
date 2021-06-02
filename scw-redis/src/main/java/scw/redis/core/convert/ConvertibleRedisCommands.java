@@ -28,7 +28,6 @@ import scw.redis.core.MessageListener;
 import scw.redis.core.RedisAuth;
 import scw.redis.core.RedisCommands;
 import scw.redis.core.RedisValueEncoding;
-import scw.redis.core.ReturnType;
 import scw.redis.core.ScanOptions;
 import scw.redis.core.SetOption;
 import scw.redis.core.Subscription;
@@ -629,19 +628,19 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	}
 
 	@Override
-	public <T> T eval(K script, ReturnType returnType, List<K> keys, List<V> args) {
+	public <T> T eval(K script, List<K> keys, List<V> args) {
 		TK k = keyCodec.encode(script);
 		List<TK> ks = keyCodec.encode(keys);
 		List<TV> vs = valueCodec.encode(args);
-		return getTargetRedisCommands().eval(k, returnType, ks, vs);
+		return getTargetRedisCommands().eval(k, ks, vs);
 	}
 
 	@Override
-	public <T> T evalsha(K sha1, ReturnType returnType, List<K> keys, List<V> args) {
+	public <T> T evalsha(K sha1, List<K> keys, List<V> args) {
 		TK k = keyCodec.encode(sha1);
 		List<TK> ks = keyCodec.encode(keys);
 		List<TV> vs = valueCodec.encode(args);
-		return getTargetRedisCommands().evalsha(k, returnType, ks, vs);
+		return getTargetRedisCommands().evalsha(k, ks, vs);
 	}
 
 	@Override
@@ -1031,6 +1030,11 @@ public abstract class ConvertibleRedisCommands<TK, TV, K, V> implements RedisCom
 	@Override
 	public Boolean psetex(K key, long milliseconds, V value) {
 		return getTargetRedisCommands().psetex(keyCodec.encode(key), milliseconds, valueCodec.encode(value));
+	}
+	
+	@Override
+	public void set(K key, V value) {
+		getTargetRedisCommands().set(keyCodec.encode(key), valueCodec.encode(value));
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package scw.hikari;
 
 import scw.core.annotation.Order;
-import scw.redis.Redis;
+import scw.redis.core.Redis;
 import scw.sql.orm.cache.TemporaryCacheManager;
 import scw.sql.orm.support.generation.RedisGeneratorService;
 
@@ -14,7 +14,7 @@ public class HikariRedisDB extends HikariDB {
 	@Order
 	public HikariRedisDB(String configLocation, Redis redis) {
 		super(configLocation);
-		setCacheManager(new TemporaryCacheManager(redis, true, getCachePrefix()));
+		setCacheManager(new TemporaryCacheManager(redis.getDataOperations(), true, getCachePrefix()));
 		setGeneratorService(new RedisGeneratorService(redis));
 	}
 }

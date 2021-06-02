@@ -4,11 +4,13 @@ import java.io.Serializable;
 
 public class RedisConfiguration implements Serializable {
 	private static final long serialVersionUID = 1L;
+	private String clientName;
 	private String host;
 	private Integer port;
 	private String username;
 	private String password;
 	private Integer database;
+	private Integer timeout;
 
 	public String getHost() {
 		return host;
@@ -28,6 +30,14 @@ public class RedisConfiguration implements Serializable {
 
 	public Integer getDatabase() {
 		return database;
+	}
+
+	public Integer getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(Integer timeout) {
+		this.timeout = timeout;
 	}
 
 	public RedisConfiguration setHost(String host) {
@@ -53,5 +63,13 @@ public class RedisConfiguration implements Serializable {
 	public RedisConfiguration setDatabase(Integer database) {
 		this.database = database;
 		return this;
+	}
+
+	public String getClientName() {
+		return clientName;
+	}
+
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
 	}
 }

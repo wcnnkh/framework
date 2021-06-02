@@ -1,4 +1,4 @@
-package scw.redis.jedis.connection;
+package scw.redis.jedis;
 
 import redis.clients.jedis.BinaryJedisPubSub;
 import scw.lang.Nullable;
