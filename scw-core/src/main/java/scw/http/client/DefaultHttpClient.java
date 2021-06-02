@@ -28,12 +28,14 @@ import scw.net.message.convert.MessageConverters;
 import scw.net.uri.UriTemplateHandler;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {
-	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.loadService(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory");
+	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys
+			.loadService(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory");
 	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.loadService(UriTemplateHandler.class,
 			"scw.net.uri.DefaultUriTemplateHandler");
 	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
 	static final HttpClientCookieManager COOKIE_MANAGER;
-	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.loadAllService(ClientHttpRequestInterceptor.class);
+	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys
+			.loadAllService(ClientHttpRequestInterceptor.class);
 
 	static {
 		ClientHttpResponseErrorHandler errorHandler = Sys.loadService(ClientHttpResponseErrorHandler.class);
@@ -145,13 +147,9 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		ClientHttpResponseErrorHandler errorHandler = getClientHttpResponseErrorHandler();
 		boolean hasError = errorHandler.hasError(response);
 		if (logger.isDebugEnabled()) {
-			try {
-				logger.debug(request.getMethod().name() + " request for \"" + request.getURI() + "\" resulted in "
-						+ response.getRawStatusCode() + " (" + response.getStatusText() + ")"
-						+ (hasError ? "; invoking error handler" : ""));
-			} catch (IOException ex) {
-				// ignore
-			}
+			logger.debug(request.getMethod().name() + " request for \"" + request.getURI() + "\" resulted in "
+					+ response.getRawStatusCode() + " (" + response.getStatusText() + ")"
+					+ (hasError ? "; invoking error handler" : ""));
 		}
 		if (hasError) {
 			errorHandler.handleError(response);

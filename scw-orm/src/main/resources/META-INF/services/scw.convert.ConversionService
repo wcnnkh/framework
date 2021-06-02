@@ -1,5 +1,5 @@
 ## SQL TYPE ##
-scw.orm.convert.sql.DateConversionService
+scw.orm.sql.convert.DateConversionService
 ## SQL TYPE ##
 
 ## DOM ##
