@@ -62,7 +62,7 @@ import scw.util.Decorator;
 import scw.util.XUtils;
 import scw.util.comparator.Sort;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked"})
 public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorator {
 	private final Jedis jedis;
 

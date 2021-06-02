@@ -3,8 +3,9 @@ package scw.data.geo;
 import java.util.List;
 
 import scw.lang.Nullable;
+import scw.util.comparator.Sort;
 
-public interface MarkerService<K> {
+public interface MarkerManager<K> {
 	/**
 	 * 上报位置信息
 	 * 
@@ -22,8 +23,7 @@ public interface MarkerService<K> {
 	/**
 	 * 查询附近的点
 	 * 
-	 * @param queryNearby
 	 * @return
 	 */
-	List<Marker<K>> getNearbyMarkers(QueryNearby queryNearby);
+	List<Marker<K>> getNearbyMarkers(Point point, Distance radius, int count, Sort sort);
 }
