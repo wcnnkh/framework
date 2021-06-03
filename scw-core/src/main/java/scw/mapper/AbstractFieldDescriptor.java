@@ -59,7 +59,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 	}
 
 	protected NotSupportedException createNotSupportException() {
-		return new NotSupportedException("class=[" + getDeclaringClass() + "] column [" + getName() + "]");
+		return new NotSupportedException("class=[" + getDeclaringClass() + "] field [" + getName() + "]");
 	}
 
 	public Class<?> getDeclaringClass() {

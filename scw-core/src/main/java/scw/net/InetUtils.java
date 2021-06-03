@@ -44,8 +44,8 @@ public final class InetUtils {
 			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
 			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
 
-	private static final FileItemParser FILE_ITEM_PARSER = Sys.loadService(FileItemParser.class,
-			"scw.net.message.multipart.apache.ApacheFileItemParser");
+	private static final FileItemParser FILE_ITEM_PARSER = Sys.env.getServiceLoader(FileItemParser.class,
+			"scw.net.message.multipart.apache.ApacheFileItemParser").first();
 	
 	@Nullable
 	public static FileItemParser getFileItemParser() {

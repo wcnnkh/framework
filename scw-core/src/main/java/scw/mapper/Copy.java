@@ -90,7 +90,7 @@ public class Copy {
 	}
 
 	public final NoArgsInstanceFactory getInstanceFactory() {
-		return instanceFactory == null ? Sys.getInstanceFactory() : instanceFactory;
+		return instanceFactory == null ? Sys.env : instanceFactory;
 	}
 
 	public Copy setInstanceFactory(NoArgsInstanceFactory instanceFactory) {

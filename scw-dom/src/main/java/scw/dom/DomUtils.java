@@ -50,7 +50,7 @@ public final class DomUtils {
 		DOCUMENT_BUILDER_FACTORY.setExpandEntityReferences(Sys.env.getValue("dom.expand.entity.references", boolean.class, false));
 		DOCUMENT_BUILDER_FACTORY.setNamespaceAware(Sys.env.getValue("dom.namespace.aware", boolean.class, false));
 		
-		DomBuilder domBuilder = Sys.loadService(DomBuilder.class);
+		DomBuilder domBuilder = Sys.env.getServiceLoader(DomBuilder.class).first();
 		DOM_BUILDER = domBuilder == null ? new DomBuilder(DOCUMENT_BUILDER_FACTORY, TRANSFORMER_FACTORY) : domBuilder;
 	}
 

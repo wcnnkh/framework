@@ -40,11 +40,11 @@ import scw.lang.Nullable;
 
 public class DomBuilder {
 	@Nullable
-	private static final EntityResolver ENTITY_RESOLVER = Sys.loadService(EntityResolver.class);
+	private static final EntityResolver ENTITY_RESOLVER = Sys.env.getServiceLoader(EntityResolver.class).first();
 	private static final AppendChildServiceFactory APPEND_CHILD_SERVICE_FACTORY = new DefaultAppendChildServiceFactory();
 
 	static {
-		APPEND_CHILD_SERVICE_FACTORY.getServices().addAll(Sys.loadAllService(AppendChildService.class));
+		APPEND_CHILD_SERVICE_FACTORY.getServices().addAll(Sys.env.getServiceLoader(AppendChildService.class).toList());
 	}
 
 	private final DocumentBuilderFactory documentBuilderFactory;

@@ -9,6 +9,7 @@ import scw.instance.InstanceDefinition;
 import scw.instance.InstanceException;
 import scw.instance.InstanceFactory;
 import scw.instance.NoArgsInstanceFactory;
+import scw.instance.ServiceLoaderFactory;
 import scw.util.ClassLoaderProvider;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.DefaultClassLoaderProvider;
@@ -165,11 +166,11 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 		}
 
 		if (ClassUtils.isAssignableValue(clazz, this)) {
-			return new InternalInstanceBuilder(this, environment, clazz, clazz.cast(this));
+			return new InternalInstanceBuilder(this, environment, clazz, this, clazz.cast(this));
 		}
 
 		if (Environment.class == clazz) {
-			return new InternalInstanceBuilder(this, environment, clazz, clazz.cast(environment));
+			return new InternalInstanceBuilder(this, environment, clazz, this, clazz.cast(environment));
 		}
 
 		InstanceDefinition instanceBuilder = cacheMap == null ? null : (InstanceDefinition) cacheMap.get(clazz);
@@ -178,7 +179,7 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 				return null;
 			}
 
-			instanceBuilder = new DefaultInstanceDefinition(this, environment, clazz);
+			instanceBuilder = new DefaultInstanceDefinition(this, environment, clazz, this);
 			InstanceDefinition cache = cacheMap == null ? null
 					: (InstanceDefinition) cacheMap.putIfAbsent(clazz, instanceBuilder);
 			if (cache != null) {
@@ -192,8 +193,8 @@ public class DefaultInstanceFactory extends AbstractServiceLoaderFactory impleme
 		private final Object instance;
 
 		public InternalInstanceBuilder(NoArgsInstanceFactory instanceFactory, Environment environment,
-				Class<?> targetClass, Object instance) {
-			super(instanceFactory, environment, targetClass);
+				Class<?> targetClass, ServiceLoaderFactory serviceLoaderFactory, Object instance) {
+			super(instanceFactory, environment, targetClass, serviceLoaderFactory);
 			this.instance = instance;
 		}
 

@@ -18,9 +18,9 @@ import scw.value.AnyValue;
 
 public class Redis implements RedisConnectionFactory<String, String> {
 	private static final String INCR_AND_INIT_SCRIPT = ResourceUtils
-			.getContent(ResourceUtils.getSystemResource("/scw/data/redis/incr.script"), Constants.UTF_8);
+			.getContent(ResourceUtils.getSystemResource("/scw/redis/core/incr.script"), Constants.UTF_8);
 	private static final String DECR_AND_INIT_SCRIPT = ResourceUtils
-			.getContent(ResourceUtils.getSystemResource("/scw/data/redis/decr.script"), Constants.UTF_8);
+			.getContent(ResourceUtils.getSystemResource("/scw/redis/core/decr.script"), Constants.UTF_8);
 
 	private Codec<String, byte[]> keyCodec = CharsetCodec.DEFAULT;
 	private Codec<String, byte[]> valueCodec = CharsetCodec.DEFAULT;

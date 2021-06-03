@@ -9,7 +9,7 @@ import scw.env.Sys;
 public abstract class AbstractMapping implements Mapping {
 
 	public <T> T newInstance(Class<? extends T> type) {
-		return Sys.getInstanceFactory().getInstance(type);
+		return Sys.env.getInstance(type);
 	}
 	
 	public <T> T mapping(Class<T> entityClass, Fields fields, Mapper mapper) {
@@ -30,7 +30,7 @@ public abstract class AbstractMapping implements Mapping {
 	}
 	
 	public boolean accept(Field field) {
-		return FieldFeature.GETTER_IGNORE_STATIC.getAccept().accept(field);
+		return FieldFeature.GETTER_IGNORE_STATIC.accept(field);
 	}
 
 	protected boolean isNesting(FieldDescriptor fieldDescriptor) {

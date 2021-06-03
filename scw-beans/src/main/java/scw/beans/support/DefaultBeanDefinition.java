@@ -22,6 +22,7 @@ import scw.context.support.LifecycleAuxiliary;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
+import scw.env.Sys;
 import scw.instance.InstanceException;
 import scw.instance.support.DefaultInstanceDefinition;
 import scw.logger.Logger;
@@ -38,7 +39,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 	private final ConfigurableMethodInterceptor methodInterceptors = new ConfigurableMethodInterceptor();
 
 	public DefaultBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
-		super(beanFactory, beanFactory.getEnvironment(), sourceClass);
+		super(beanFactory, beanFactory.getEnvironment(), sourceClass, Sys.env);
 		this.beanFactory = beanFactory;
 	}
 

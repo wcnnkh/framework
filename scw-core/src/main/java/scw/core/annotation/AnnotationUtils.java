@@ -24,7 +24,6 @@ import scw.core.BridgeMethodResolver;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.lang.Description;
 import scw.lang.Ignore;
 import scw.lang.Nullable;
 import scw.logger.Logger;
@@ -2651,15 +2650,5 @@ public abstract class AnnotationUtils {
 				return nullable == null ? defaultValue.get() : nullable.value();
 			}
 		};
-	}
-
-	/**
-	 * 获取描述
-	 * @param annotatedElement
-	 * @return 如果没有就返回空
-	 */
-	public static String getDescription(AnnotatedElement annotatedElement) {
-		Description description = annotatedElement.getAnnotation(Description.class);
-		return description == null ? null : description.value();
 	}
 }

@@ -14,12 +14,12 @@ import scw.mapper.Field;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
-import scw.orm.annotation.PrimaryKeyAccept;
+import scw.orm.OrmUtils;
+import scw.util.Accept;
 import scw.util.CollectionFactory;
 
 class CollectionToMapConversionService implements ConversionService, ConversionServiceAware {
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
-
 	private ConversionService conversionService;
 
 	@Override
@@ -29,10 +29,10 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 
 	@Override
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if(sourceType == null || sourceType.isMap() || !targetType.isMap()){
+		if (sourceType == null || sourceType.isMap() || !targetType.isMap()) {
 			return false;
 		}
-		
+
 		return conversionService.canConvert(sourceType, COLLECTION_TYPE);
 	}
 
@@ -56,10 +56,16 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 			if (item == null) {
 				continue;
 			}
-			
+
 			Object value = conversionService.convert(item, sourceType.narrow(item), itemType);
 			Fields primaryKeyFields = MapperUtils.getMapper().getFields(itemType.getType())
-					.accept(FieldFeature.SUPPORT_GETTER).accept(new PrimaryKeyAccept()).shared();
+					.accept(FieldFeature.SUPPORT_GETTER).accept(new Accept<Field>() {
+
+						@Override
+						public boolean accept(Field e) {
+							return OrmUtils.getMapping().isPrimaryKey(e);
+						}
+					}).shared();
 			Iterator<Field> primaryKeyIterator = primaryKeyFields.iterator();
 			Map nestMap = map;
 			TypeDescriptor keyType = targetType.getMapKeyTypeDescriptor();
@@ -83,7 +89,7 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 					keyType = valueType.getMapKeyTypeDescriptor();
 					valueType = valueType.getMapValueTypeDescriptor();
 				} else {
-					if(nestMap.containsKey(key)) {
+					if (nestMap.containsKey(key)) {
 						Throwable alreadyex = new AlreadyExistsException(String.valueOf(key));
 						throw new ConversionFailedException(sourceType, targetType, value, alreadyex);
 					}
@@ -93,10 +99,10 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 		}
 		return map;
 	}
-	
+
 	private TypeDescriptor getValueType(TypeDescriptor typeDescriptor) {
 		TypeDescriptor valueType = typeDescriptor;
-		while(valueType.isMap()) {
+		while (valueType.isMap()) {
 			valueType = valueType.getMapValueTypeDescriptor();
 		}
 		return valueType;

@@ -22,7 +22,7 @@ import scw.mapper.Field;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
-import scw.orm.annotation.Entity;
+import scw.orm.OrmUtils;
 import scw.util.ConfigurableAccept;
 import scw.util.alias.AliasRegistry;
 
@@ -251,8 +251,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 			TypeDescriptor targetType, String prefix, String connector) {
 		for (Field field : fields) {
 			Object value = null;
-			if (field.isAnnotationPresent(Entity.class)
-					|| field.getSetter().getType().isAnnotationPresent(Entity.class)) {
+			if (OrmUtils.getMapping().isEntity(field)) {
 				// 如果是一个实体
 				String entityPrefix = prefix + connector + field.getSetter().getName();
 				Class<?> entityClass = field.getSetter().getType();

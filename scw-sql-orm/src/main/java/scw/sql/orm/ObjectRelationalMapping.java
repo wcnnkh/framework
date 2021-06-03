@@ -130,7 +130,7 @@ public class ObjectRelationalMapping implements Accept<Field> {
 	 */
 	public boolean accept(Field field) {
 		if (!(field.isSupportGetter() && field.isSupportSetter()
-				&& FieldFeature.IGNORE_STATIC.getAccept().accept(field))) {
+				&& FieldFeature.IGNORE_STATIC.accept(field))) {
 			return false;
 		}
 
@@ -187,7 +187,7 @@ public class ObjectRelationalMapping implements Accept<Field> {
 		if (isTable(entityClass) && ProxyUtils.getFactory().canProxy(entityClass)) {
 			return (T) FieldSetterListenUtils.getFieldSetterListenProxy(ProxyUtils.getFactory(), entityClass).create();
 		} else {
-			return Sys.getInstanceFactory().getInstance(entityClass);
+			return Sys.env.getInstance(entityClass);
 		}
 	}
 }

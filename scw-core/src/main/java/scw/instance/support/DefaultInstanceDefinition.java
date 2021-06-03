@@ -14,6 +14,7 @@ import scw.instance.InstanceDefinition;
 import scw.instance.InstanceException;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoader;
+import scw.instance.ServiceLoaderFactory;
 import scw.lang.NotFoundException;
 import scw.lang.NotSupportedException;
 
@@ -21,13 +22,13 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	private Class<?> targetClass;
 	@SuppressWarnings("rawtypes")
 	private ServiceLoader serviceLoader;
-	private final DefaultServiceLoaderFactory serviceLoaderFactory;
+	private final ServiceLoaderFactory serviceLoaderFactory;
 
 	public DefaultInstanceDefinition(NoArgsInstanceFactory instanceFactory, Environment environment,
-			Class<?> targetClass) {
+			Class<?> targetClass, ServiceLoaderFactory serviceLoaderFactory) {
 		super(instanceFactory, environment);
 		this.targetClass = targetClass;
-		this.serviceLoaderFactory = new DefaultServiceLoaderFactory(instanceFactory, environment);
+		this.serviceLoaderFactory = serviceLoaderFactory;
 	}
 
 	public Class<?> getTargetClass() {

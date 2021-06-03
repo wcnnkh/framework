@@ -74,12 +74,12 @@ public class TomcatStart implements Main, Destroy {
 						for (int code : errorCodeController.value()) {
 							ErrorPage errorPage = new ErrorPage();
 							errorPage.setErrorCode(code);
-							
-							if(StringUtils.isNotEmpty(errorCodeController.charset())){
+
+							if (StringUtils.isNotEmpty(errorCodeController.charset())) {
 								errorPage.setCharset(Charset.forName(errorCodeController.charset()));
 							}
-							
-							if(StringUtils.isNotEmpty(errorCodeController.exceptionType())){
+
+							if (StringUtils.isNotEmpty(errorCodeController.exceptionType())) {
 								errorPage.setExceptionType(errorCodeController.exceptionType());
 							}
 							errorPage.setLocation(pattern.getPath());
@@ -116,7 +116,7 @@ public class TomcatStart implements Main, Destroy {
 		}
 
 		if (ClassUtils.isPresent("org.apache.jasper.servlet.JspServlet", application.getClassLoader())) {
-			ServletContainerInitializer containerInitializer = Sys.getInstanceFactory()
+			ServletContainerInitializer containerInitializer = Sys.env
 					.getInstance("org.apache.jasper.servlet.JasperInitializer");
 			if (containerInitializer != null) {
 				context.addServletContainerInitializer(containerInitializer, null);
@@ -141,8 +141,8 @@ public class TomcatStart implements Main, Destroy {
 		String servletName = mainClass.getSimpleName();
 		Servlet servlet = ServletContextUtils.createServlet(application.getBeanFactory());
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
-		Properties properties = TomcatUtils.getServletInitParametersConfig(application.getBeanFactory().getEnvironment(), servletName,
-				true);
+		Properties properties = TomcatUtils
+				.getServletInitParametersConfig(application.getBeanFactory().getEnvironment(), servletName, true);
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			wrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 		}
@@ -155,8 +155,8 @@ public class TomcatStart implements Main, Destroy {
 				String tempServletName = "default";
 				Wrapper tempWrapper = Tomcat.addServlet(context, tempServletName,
 						"org.apache.catalina.servlets.DefaultServlet");
-				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(application.getBeanFactory().getEnvironment(),
-						tempServletName, false);
+				Properties tempProperties = TomcatUtils.getServletInitParametersConfig(
+						application.getBeanFactory().getEnvironment(), tempServletName, false);
 				for (Entry<Object, Object> entry : tempProperties.entrySet()) {
 					tempWrapper.addInitParameter(entry.getKey().toString(), entry.getValue().toString());
 				}

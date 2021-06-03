@@ -28,7 +28,7 @@ import scw.util.Accept;
 import scw.value.PropertyFactory;
 
 public final class BeanUtils {
-	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = Sys.loadAllService(AopEnableSpi.class);
+	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = Sys.env.getServiceLoader(AopEnableSpi.class).toList();
 
 	private BeanUtils() {
 	};

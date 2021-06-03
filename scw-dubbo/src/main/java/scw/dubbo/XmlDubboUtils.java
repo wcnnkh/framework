@@ -275,7 +275,7 @@ public final class XmlDubboUtils {
 					continue;
 				}
 
-				T config = defaultConfig == null ? Sys.getInstanceFactory().getInstance(type)
+				T config = defaultConfig == null ? Sys.env.getInstance(type)
 						: Copy.copy(type, defaultConfig);
 				loader(config, environment, node);
 

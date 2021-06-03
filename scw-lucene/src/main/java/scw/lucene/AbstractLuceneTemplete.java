@@ -135,7 +135,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	}
 
 	protected <T> T newInstance(Class<? extends T> type) {
-		return Sys.getInstanceFactory().getInstance(type);
+		return Sys.env.getInstance(type);
 	}
 
 	@SuppressWarnings("unchecked")

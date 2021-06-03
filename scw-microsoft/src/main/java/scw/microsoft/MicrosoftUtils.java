@@ -21,8 +21,8 @@ public final class MicrosoftUtils {
 	private MicrosoftUtils() {
 	};
 
-	private static final ExcelOperations EXCEL_OPERATIONS = Sys.loadService(ExcelOperations.class,
-			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations");
+	private static final ExcelOperations EXCEL_OPERATIONS = Sys.env.getServiceLoader(ExcelOperations.class,
+			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations").first();
 
 	static {
 		if (EXCEL_OPERATIONS == null) {

@@ -3,6 +3,8 @@ package scw.mapper;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import scw.lang.Nullable;
 import scw.util.Accept;
@@ -69,4 +71,8 @@ public interface Fields extends Iterable<Field> {
 	Map<String, Object> getValueMap(Object instance);
 
 	Map<String, Object> getValueMap(Object instance, boolean nullable);
+	
+	default Stream<Field> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
 }

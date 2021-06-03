@@ -26,4 +26,10 @@ public interface SqlType {
 	 * @return
 	 */
 	Class<?> getType();
+	
+	/**
+	 * 返回此类型支持的最大长度
+	 * @return 返回空就说明无限制
+	 */
+	Integer getMaxLength();
 }

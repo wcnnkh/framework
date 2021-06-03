@@ -28,22 +28,13 @@ import scw.net.message.convert.MessageConverters;
 import scw.net.uri.UriTemplateHandler;
 
 public class DefaultHttpClient extends AbstractHttpConnectionFactory implements HttpClient {
-	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys
-			.loadService(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory");
-	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.loadService(UriTemplateHandler.class,
-			"scw.net.uri.DefaultUriTemplateHandler");
-	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER;
-	static final HttpClientCookieManager COOKIE_MANAGER;
-	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys
-			.loadAllService(ClientHttpRequestInterceptor.class);
-
-	static {
-		ClientHttpResponseErrorHandler errorHandler = Sys.loadService(ClientHttpResponseErrorHandler.class);
-		CLIENT_HTTP_RESPONSE_ERROR_HANDLER = errorHandler == null ? new DefaultClientHttpResponseErrorHandler()
-				: errorHandler;
-
-		COOKIE_MANAGER = Sys.loadService(HttpClientCookieManager.class);
-	}
+	private static final ClientHttpRequestFactory CLIENT_HTTP_REQUEST_FACTORY = Sys.env.getServiceLoader(ClientHttpRequestFactory.class, "scw.http.client.SimpleClientHttpRequestFactory").first();
+	private static final UriTemplateHandler URI_TEMPLATE_HANDLER = Sys.env.getServiceLoader(UriTemplateHandler.class,
+			"scw.net.uri.DefaultUriTemplateHandler").first();
+	static final ClientHttpResponseErrorHandler CLIENT_HTTP_RESPONSE_ERROR_HANDLER = Sys.env.getServiceLoader(ClientHttpResponseErrorHandler.class, DefaultClientHttpResponseErrorHandler.class).first();
+	static final HttpClientCookieManager COOKIE_MANAGER = Sys.env.getServiceLoader(HttpClientCookieManager.class).first();
+	static final List<ClientHttpRequestInterceptor> ROOT_INTERCEPTORS = Sys.
+			env.getServiceLoader(ClientHttpRequestInterceptor.class).toList();
 
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpClient.class);
 	private HttpClientCookieManager cookieManager = COOKIE_MANAGER;

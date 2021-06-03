@@ -188,7 +188,7 @@ public final class CollectionFactory {
 				throw new IllegalArgumentException("Unsupported Collection type: " + collectionType.getName());
 			}
 			try {
-				return (Collection<E>) Sys.getInstanceFactory().getInstance(collectionType);
+				return (Collection<E>) Sys.env.getInstance(collectionType);
 			} catch (Throwable ex) {
 				throw new IllegalArgumentException("Could not instantiate Collection type: " + collectionType.getName(),
 						ex);
@@ -301,7 +301,7 @@ public final class CollectionFactory {
 				throw new IllegalArgumentException("Unsupported Map type: " + mapType.getName());
 			}
 			try {
-				return (Map<K, V>) Sys.getInstanceFactory().getInstance(mapType);
+				return (Map<K, V>) Sys.env.getInstance(mapType);
 			} catch (Throwable ex) {
 				throw new IllegalArgumentException("Could not instantiate Map type: " + mapType.getName(), ex);
 			}

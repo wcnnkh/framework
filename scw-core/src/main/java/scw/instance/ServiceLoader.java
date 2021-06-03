@@ -4,10 +4,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.Set;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import scw.core.OrderComparator;
 import scw.core.utils.CollectionUtils;
 import scw.lang.Nullable;
+import scw.util.Supplier;
 
 /**
  * A simple service-provider loading facility.
@@ -182,24 +185,22 @@ import scw.lang.Nullable;
  * misconfigured web server to return the correct response code (HTTP 404) along
  * with the HTML error page.
  *
- * @param <S>
- *            The type of the service to be loaded by this loader
+ * @param <S> The type of the service to be loaded by this loader
  *
  */
 
 public interface ServiceLoader<S> extends Iterable<S> {
 	/**
-	 * Clear this loader's provider cache so that all providers will be
-	 * reloaded.
+	 * Clear this loader's provider cache so that all providers will be reloaded.
 	 *
 	 * <p>
-	 * After invoking this method, subsequent invocations of the
-	 * {@link #iterator() iterator} method will lazily look up and instantiate
-	 * providers from scratch, just as is done by a newly-created loader.
+	 * After invoking this method, subsequent invocations of the {@link #iterator()
+	 * iterator} method will lazily look up and instantiate providers from scratch,
+	 * just as is done by a newly-created loader.
 	 *
 	 * <p>
-	 * This method is intended for use in situations in which new providers can
-	 * be installed into a running Java virtual machine.
+	 * This method is intended for use in situations in which new providers can be
+	 * installed into a running Java virtual machine.
 	 */
 	void reload();
 
@@ -207,45 +208,43 @@ public interface ServiceLoader<S> extends Iterable<S> {
 	 * Lazily loads the available providers of this loader's service.
 	 *
 	 * <p>
-	 * The iterator returned by this method first yields all of the elements of
-	 * the provider cache, in instantiation order. It then lazily loads and
-	 * instantiates any remaining providers, adding each one to the cache in
-	 * turn.
+	 * The iterator returned by this method first yields all of the elements of the
+	 * provider cache, in instantiation order. It then lazily loads and instantiates
+	 * any remaining providers, adding each one to the cache in turn.
 	 *
 	 * <p>
 	 * To achieve laziness the actual work of parsing the available
-	 * provider-configuration files and instantiating providers must be done by
-	 * the iterator itself. Its {@link java.util.Iterator#hasNext hasNext} and
+	 * provider-configuration files and instantiating providers must be done by the
+	 * iterator itself. Its {@link java.util.Iterator#hasNext hasNext} and
 	 * {@link java.util.Iterator#next next} methods can therefore throw a
-	 * {@link ServiceConfigurationError} if a provider-configuration file
-	 * violates the specified format, or if it names a provider class that
-	 * cannot be found and instantiated, or if the result of instantiating the
-	 * class is not assignable to the service type, or if any other kind of
-	 * exception or error is thrown as the next provider is located and
-	 * instantiated. To write robust code it is only necessary to catch
-	 * {@link ServiceConfigurationError} when using a service iterator.
+	 * {@link ServiceConfigurationError} if a provider-configuration file violates
+	 * the specified format, or if it names a provider class that cannot be found
+	 * and instantiated, or if the result of instantiating the class is not
+	 * assignable to the service type, or if any other kind of exception or error is
+	 * thrown as the next provider is located and instantiated. To write robust code
+	 * it is only necessary to catch {@link ServiceConfigurationError} when using a
+	 * service iterator.
 	 *
 	 * <p>
-	 * If such an error is thrown then subsequent invocations of the iterator
-	 * will make a best effort to locate and instantiate the next available
-	 * provider, but in general such recovery cannot be guaranteed.
+	 * If such an error is thrown then subsequent invocations of the iterator will
+	 * make a best effort to locate and instantiate the next available provider, but
+	 * in general such recovery cannot be guaranteed.
 	 *
 	 * <blockquote style="font-size: smaller; line-height: 1.2"><span style=
-	 * "padding-right: 1em; font-weight: bold">Design Note</span> Throwing an
-	 * error in these cases may seem extreme. The rationale for this behavior is
-	 * that a malformed provider-configuration file, like a malformed class
-	 * file, indicates a serious problem with the way the Java virtual machine
-	 * is configured or is being used. As such it is preferable to throw an
-	 * error rather than try to recover or, even worse, fail
-	 * silently.</blockquote>
+	 * "padding-right: 1em; font-weight: bold">Design Note</span> Throwing an error
+	 * in these cases may seem extreme. The rationale for this behavior is that a
+	 * malformed provider-configuration file, like a malformed class file, indicates
+	 * a serious problem with the way the Java virtual machine is configured or is
+	 * being used. As such it is preferable to throw an error rather than try to
+	 * recover or, even worse, fail silently.</blockquote>
 	 *
 	 * <p>
-	 * The iterator returned by this method does not support removal. Invoking
-	 * its {@link java.util.Iterator#remove() remove} method will cause an
+	 * The iterator returned by this method does not support removal. Invoking its
+	 * {@link java.util.Iterator#remove() remove} method will cause an
 	 * {@link UnsupportedOperationException} to be thrown.
 	 *
-	 * @implNote When adding providers to the cache, the {@link #iterator
-	 *           Iterator} processes resources in the order that the
+	 * @implNote When adding providers to the cache, the {@link #iterator Iterator}
+	 *           processes resources in the order that the
 	 *           {@link java.lang.ClassLoader#getResources(java.lang.String)
 	 *           ClassLoader.getResources(String)} method finds the service
 	 *           configuration files.
@@ -253,19 +252,33 @@ public interface ServiceLoader<S> extends Iterable<S> {
 	 * @return An iterator that lazily loads providers for this loader's service
 	 */
 	Iterator<S> iterator();
-	
+
 	@Nullable
-	default S getFirst() {
+	default S first() {
 		return CollectionUtils.first(this);
 	}
-	
-	default List<S> toList(){
+
+	default S first(S service) {
+		S s = CollectionUtils.first(this);
+		return s == null ? service : s;
+	}
+
+	default S first(Supplier<? extends S> supplier) {
+		S s = CollectionUtils.first(this);
+		return s == null ? (supplier == null ? null : supplier.get()) : s;
+	}
+
+	default List<S> toList() {
 		List<S> list = CollectionUtils.toList(this);
 		OrderComparator.sort(list);
 		return list;
 	}
-	
-	default Set<S> toSet(){
+
+	default Set<S> toSet() {
 		return CollectionUtils.toSet(toList());
+	}
+
+	default Stream<S> stream() {
+		return StreamSupport.stream(spliterator(), false).sorted(OrderComparator.INSTANCE);
 	}
 }

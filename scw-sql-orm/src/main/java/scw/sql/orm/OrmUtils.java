@@ -7,7 +7,7 @@ import scw.sql.orm.dialect.SqlDialect;
 import scw.sql.orm.enums.OperationType;
 
 public final class OrmUtils {
-	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING = Sys.loadService(ObjectRelationalMapping.class, "scw.sql.orm.ObjectRelationalMapping");
+	private static final ObjectRelationalMapping OBJECT_RELATIONAL_MAPPING = Sys.env.getServiceLoader(ObjectRelationalMapping.class, "scw.sql.orm.ObjectRelationalMapping").first();
 
 	private OrmUtils() {
 	};
