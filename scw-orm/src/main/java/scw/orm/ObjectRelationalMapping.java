@@ -16,7 +16,7 @@ import scw.util.Accept;
  * @author shuchaowen
  *
  */
-public interface ObjectRelationalMapping {
+public interface ObjectRelationalMapping extends EntityNameMapping{
 	static final Accept<Field> ACCEPT = FieldFeature.EXISTING_GETTER_FIELD.and(FieldFeature.EXISTING_SETTER_FIELD)
 			.and(FieldFeature.IGNORE_STATIC).and(FieldFeature.GETTER_IGNORE_TRANSIENT)
 			.and(FieldFeature.SETTER_IGNORE_TRANSIENT);
@@ -36,7 +36,7 @@ public interface ObjectRelationalMapping {
 	 * @return
 	 */
 	Collection<String> getSetterNames(Field field);
-
+	
 	/**
 	 * 字段描述
 	 * 

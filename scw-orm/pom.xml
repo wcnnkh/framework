@@ -15,5 +15,9 @@
   		<groupId>scw</groupId>
   		<artifactId>scw-dom</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>scw</groupId>
+  		<artifactId>scw-sql</artifactId>
+  	</dependency>
   </dependencies>
 </project>

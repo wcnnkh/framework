@@ -1,5 +1,6 @@
 ## SQL TYPE ##
 scw.orm.sql.convert.DateConversionService
+scw.orm.sql.convert.ResultSetRowToEntityConversionService
 ## SQL TYPE ##
 
 ## DOM ##

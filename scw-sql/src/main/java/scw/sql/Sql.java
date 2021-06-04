@@ -18,11 +18,4 @@ public interface Sql {
 	 * @return
 	 */
 	Object[] getParams();
-
-	/**
-	 * 是否是存储过程
-	 * 
-	 * @return
-	 */
-	boolean isStoredProcedure();
 }

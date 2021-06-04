@@ -1,13 +1,17 @@
-package scw.orm.annotation;
+package scw.orm;
 
 import java.util.Arrays;
 import java.util.Collection;
 
+import scw.aop.support.ProxyUtils;
+import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
 import scw.mapper.Field;
-import scw.orm.ObjectRelationalMapping;
+import scw.orm.annotation.Description;
+import scw.orm.annotation.Entity;
+import scw.orm.annotation.PrimaryKey;
 
-public class AnnotationObjectRelationalMapping implements ObjectRelationalMapping {
+public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	@Override
 	public String getName(Field field) {
@@ -38,6 +42,19 @@ public class AnnotationObjectRelationalMapping implements ObjectRelationalMappin
 	@Override
 	public boolean ignore(Field field) {
 		return field.isAnnotationPresent(Ignore.class);
+	}
+
+	@Override
+	public String getEntityName(Class<?> entityClass) {
+		return StringUtils.humpNamingReplacement(ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName(),
+				"_");
+	}
+
+	@Override
+	public Collection<String> getSetterEntityNames(Class<?> entityClass) {
+		String name = StringUtils
+				.humpNamingReplacement(ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName(), "_");
+		return Arrays.asList(name);
 	}
 
 }

@@ -36,7 +36,7 @@ public final class SqlUtils {
 
 	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql) throws SQLException {
 		PreparedStatement statement;
-		if (sql.isStoredProcedure()) {
+		if (sql instanceof StoredProcedure) {
 			statement = connection.prepareCall(sql.getSql());
 		} else {
 			statement = connection.prepareStatement(sql.getSql());
@@ -68,7 +68,7 @@ public final class SqlUtils {
 	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
 			int resultSetConcurrency) throws SQLException {
 		PreparedStatement preparedStatement;
-		if (sql.isStoredProcedure()) {
+		if (sql instanceof StoredProcedure) {
 			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency);
 		} else {
 			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency);
@@ -86,7 +86,7 @@ public final class SqlUtils {
 	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
 			int resultSetConcurrency, int resultSetHoldability) throws SQLException {
 		PreparedStatement preparedStatement;
-		if (sql.isStoredProcedure()) {
+		if (sql instanceof StoredProcedure) {
 			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency,
 					resultSetHoldability);
 		} else {
