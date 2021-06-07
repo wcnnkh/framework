@@ -2,17 +2,17 @@ package scw.event.support;
 
 import java.util.Map.Entry;
 
-import scw.event.EventDispatcher;
 import scw.event.Event;
-import scw.util.DefaultStringMatcher;
+import scw.event.EventDispatcher;
 import scw.util.StringMatcher;
+import scw.util.StringMatchers;
 
 public class StringNamedEventDispatcher<T extends Event> extends DefaultNamedEventDispatcher<String, T> {
 	private StringMatcher stringMatcher;
 
 	public StringNamedEventDispatcher(boolean concurrent) {
 		super(concurrent);
-		setStringMatcher(DefaultStringMatcher.getInstance());
+		setStringMatcher(StringMatchers.SIMPLE);
 	}
 
 	public StringMatcher getStringMatcher() {

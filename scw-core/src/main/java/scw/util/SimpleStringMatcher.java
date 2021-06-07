@@ -9,14 +9,9 @@ import scw.core.utils.StringUtils;
  * @author shuchaowen
  *
  */
-public class DefaultStringMatcher implements StringMatcher {
-	private static final DefaultStringMatcher INSTANCE = new DefaultStringMatcher();
-	
-	public static DefaultStringMatcher getInstance(){
-		return INSTANCE;
-	}
-	
-	private DefaultStringMatcher() {
+public class SimpleStringMatcher implements StringMatcher {
+
+	public SimpleStringMatcher() {
 	}
 
 	private boolean testInternal(String text, String match) {

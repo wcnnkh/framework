@@ -1,6 +1,7 @@
 package scw.env;
 
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.Properties;
 
 import scw.convert.ConversionService;
@@ -18,6 +19,7 @@ import scw.io.ResourceUtils;
 import scw.io.event.ObservableProperties;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
+import scw.util.StringMatcher;
 import scw.util.placeholder.PlaceholderReplacer;
 import scw.util.placeholder.PropertyResolver;
 import scw.value.PropertyFactory;
@@ -115,16 +117,17 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 		if (ArrayUtils.isEmpty(resources)) {
 			return new EmptyObservable<Properties>();
 		}
-		
+
 		// 颠倒一下，优先级高的覆盖优先级低的
 		return toObservableProperties(propertiesResolver, charset, (Resource[]) ArrayUtils.reversal(resources));
 	}
-	
-	default Observable<Properties> toObservableProperties(Resource ...resources){
+
+	default Observable<Properties> toObservableProperties(Resource... resources) {
 		return toObservableProperties(getPropertiesResolver(), getCharset(), resources);
 	}
-	
-	default Observable<Properties> toObservableProperties(PropertiesResolver propertiesResolver, @Nullable Charset charset, Resource ...resources){
+
+	default Observable<Properties> toObservableProperties(PropertiesResolver propertiesResolver,
+			@Nullable Charset charset, Resource... resources) {
 		ObservableProperties properties = new ObservableProperties();
 		Converter<Resource, Properties> converter = propertiesResolver.toPropertiesConverter(charset);
 		for (Resource resource : resources) {
@@ -141,6 +144,10 @@ public interface Environment extends ResourcePatternResolver, PropertyFactory, P
 	@Override
 	default String resolveRequiredPlaceholders(String text) throws IllegalArgumentException {
 		return getPlaceholderReplacer().replaceRequiredPlaceholders(text, this);
+	}
+
+	default <K, V, M extends Map<K, V>> M getMap(String pattern, StringMatcher keyMatcher, TypeDescriptor mapType) {
+		return getMap(pattern, keyMatcher, mapType, getConversionService());
 	}
 
 	PlaceholderReplacer getPlaceholderReplacer();

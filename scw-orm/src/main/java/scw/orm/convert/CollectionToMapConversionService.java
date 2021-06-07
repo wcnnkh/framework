@@ -14,13 +14,22 @@ import scw.mapper.Field;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.OrmUtils;
-import scw.util.Accept;
 import scw.util.CollectionFactory;
 
 class CollectionToMapConversionService implements ConversionService, ConversionServiceAware {
 	private static final TypeDescriptor COLLECTION_TYPE = TypeDescriptor.collection(List.class, Object.class);
 	private ConversionService conversionService;
+	private ObjectRelationalMapping objectRelationalMapping;
+
+	public ObjectRelationalMapping getObjectRelationalMapping() {
+		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
+	}
+
+	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
+		this.objectRelationalMapping = objectRelationalMapping;
+	}
 
 	@Override
 	public void setConversionService(ConversionService conversionService) {
@@ -59,13 +68,7 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 
 			Object value = conversionService.convert(item, sourceType.narrow(item), itemType);
 			Fields primaryKeyFields = MapperUtils.getMapper().getFields(itemType.getType())
-					.accept(FieldFeature.SUPPORT_GETTER).accept(new Accept<Field>() {
-
-						@Override
-						public boolean accept(Field e) {
-							return OrmUtils.getMapping().isPrimaryKey(e);
-						}
-					}).shared();
+					.accept(FieldFeature.SUPPORT_GETTER).accept(getObjectRelationalMapping().getPrimaryKeyAccept()).shared();
 			Iterator<Field> primaryKeyIterator = primaryKeyFields.iterator();
 			Map nestMap = map;
 			TypeDescriptor keyType = targetType.getMapKeyTypeDescriptor();

@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 
 import scw.util.AbstractIterator;
 
-public class DefaultFields extends AbstractFields {
+public class DefaultFields implements Fields {
 	private final FieldMetadataFactory metadataFactory;
 	private final Class<?> entityClass;
 	private final boolean useSuperClass;

@@ -54,7 +54,7 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 	public Collection<String> getSetterEntityNames(Class<?> entityClass) {
 		String name = StringUtils
 				.humpNamingReplacement(ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName(), "_");
-		return Arrays.asList(name);
+		return Arrays.asList(entityClass.getName(), name);
 	}
 
 }

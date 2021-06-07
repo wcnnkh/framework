@@ -22,8 +22,8 @@ import scw.timer.TaskConfig;
 import scw.timer.TaskContext;
 import scw.timer.TaskFactory;
 import scw.timer.TaskLockFactory;
-import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
+import scw.util.StringMatchers;
 
 /**
  * 默认的Timer实现
@@ -38,7 +38,7 @@ public final class DefaultTimer implements scw.timer.Timer, Destroy {
 	private final java.util.Timer timer;
 	private final ExecutorService executorService;
 	private final TaskFactory taskFactory;
-	private StringMatcher matcher = DefaultStringMatcher.getInstance();
+	private StringMatcher matcher = StringMatchers.SIMPLE;
 	
 	public DefaultTimer(ExecutorService executorService, TaskFactory taskFactory){
 		this(new EmptyTaskLockFactory(), executorService, taskFactory);

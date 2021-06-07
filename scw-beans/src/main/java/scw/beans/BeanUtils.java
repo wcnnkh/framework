@@ -25,6 +25,7 @@ import scw.mapper.Field;
 import scw.orm.convert.EntityConversionService;
 import scw.orm.convert.PropertyFactoryToEntityConversionService;
 import scw.util.Accept;
+import scw.util.StringMatchers;
 import scw.value.PropertyFactory;
 
 public final class BeanUtils {
@@ -235,7 +236,7 @@ public final class BeanUtils {
 		return entityConversionService;
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void configurationMap(String prefix, Object instance, Environment environment,
 			EntityConversionService conversionService) {
 		if (!(instance instanceof Map)) {
@@ -244,8 +245,7 @@ public final class BeanUtils {
 
 		Map properties = (Map) instance;
 		TypeDescriptor descriptor = TypeDescriptor.forObject(instance);
-		conversionService.putAll(environment, properties, descriptor.getMapKeyTypeDescriptor(),
-				descriptor.getMapKeyTypeDescriptor());
+		properties.putAll(environment.getMap(prefix, StringMatchers.PREFIX, descriptor));
 	}
 
 	private static String getPrefix(ConfigurationProperties configurationProperties) {
