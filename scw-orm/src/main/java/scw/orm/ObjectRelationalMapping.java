@@ -5,6 +5,7 @@ import java.util.Collection;
 import scw.aop.support.ProxyUtils;
 import scw.lang.Nullable;
 import scw.mapper.Field;
+import scw.mapper.FieldDescriptor;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
@@ -16,29 +17,20 @@ import scw.util.Accept;
  * @author shuchaowen
  *
  */
-public interface ObjectRelationalMapping extends EntityNameMapping {
-	static final Accept<Field> ACCEPT = FieldFeature.EXISTING_GETTER_FIELD.and(FieldFeature.EXISTING_SETTER_FIELD)
-			.and(FieldFeature.IGNORE_STATIC).and(FieldFeature.GETTER_IGNORE_TRANSIENT)
-			.and(FieldFeature.SETTER_IGNORE_TRANSIENT);
+public interface ObjectRelationalMapping {
+	static final Accept<Field> GETTER_ACCEPT = FieldFeature.SUPPORT_GETTER.and(FieldFeature.IGNORE_STATIC);
+	static final Accept<Field> SETTER_ACCEPT = FieldFeature.SUPPORT_SETTER.and(FieldFeature.IGNORE_STATIC);
 
-	boolean ignore(Field field);
+	boolean ignore(FieldDescriptor fieldDescriptor);
 	
-	/**
-	 * 字段名称
-	 * 
-	 * @param field
-	 * @return
-	 */
-	String getName(Field field);
+	String getName(FieldDescriptor fieldDescriptor);
+	
+	Collection<String> getAliasNames(FieldDescriptor fieldDescriptor);
+	
+	String getName(Class<?> clazz);
 
-	/**
-	 * 字段可用于setter的名称
-	 * 
-	 * @param field
-	 * @return
-	 */
-	Collection<String> getSetterNames(Field field);
-	
+	Collection<String> getAliasNames(Class<?> entityClass);
+
 	/**
 	 * 字段描述
 	 * 
@@ -46,7 +38,7 @@ public interface ObjectRelationalMapping extends EntityNameMapping {
 	 * @return
 	 */
 	@Nullable
-	String getDescription(Field field);
+	String getDescription(FieldDescriptor fieldDescriptor);
 
 	/**
 	 * 是否是主键
@@ -54,7 +46,7 @@ public interface ObjectRelationalMapping extends EntityNameMapping {
 	 * @param field
 	 * @return
 	 */
-	boolean isPrimaryKey(Field field);
+	boolean isPrimaryKey(FieldDescriptor fieldDescriptor);
 
 	/**
 	 * 是否是一个实体类
@@ -62,45 +54,47 @@ public interface ObjectRelationalMapping extends EntityNameMapping {
 	 * @param field
 	 * @return
 	 */
-	boolean isEntity(Field field);
-	
-	String getEntityName(Class<?> clazz);
+	boolean isEntity(FieldDescriptor fieldDescriptor);
 
-	Collection<String> getSetterEntityNames(Class<?> entityClass);
-
-	default Accept<Field> getPrimaryKeyAccept() {
-		return new Accept<Field>() {
+	default Accept<FieldDescriptor> getPrimaryKeyAccept() {
+		return new Accept<FieldDescriptor>() {
 			@Override
-			public boolean accept(Field e) {
+			public boolean accept(FieldDescriptor e) {
 				return isPrimaryKey(e) && !ignore(e);
 			}
 		};
 	}
 
-	default Accept<Field> getEntityAccept() {
-		return new Accept<Field>() {
+	default Accept<FieldDescriptor> getEntityAccept() {
+		return new Accept<FieldDescriptor>() {
 
 			@Override
-			public boolean accept(Field e) {
+			public boolean accept(FieldDescriptor e) {
 				return isEntity(e) && !ignore(e);
 			}
 		};
 	}
 
-	/**
-	 * 获取对象的全部字段
-	 * 
-	 * @param clazz
-	 * @return
-	 */
-	default Fields getFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
+	default Fields getGetterFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
 		return MapperUtils.getMapper()
-				.getFields(ProxyUtils.getFactory().getUserClass(clazz), useSuperClass, parentField).accept(ACCEPT)
+				.getFields(ProxyUtils.getFactory().getUserClass(clazz), useSuperClass, parentField).accept(GETTER_ACCEPT)
 				.accept(new Accept<Field>() {
 
 					@Override
 					public boolean accept(Field e) {
-						return !ignore(e);
+						return !ignore(e.getGetter());
+					}
+				});
+	}
+
+	default Fields getSetterFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
+		return MapperUtils.getMapper()
+				.getFields(ProxyUtils.getFactory().getUserClass(clazz), useSuperClass, parentField).accept(SETTER_ACCEPT)
+				.accept(new Accept<Field>() {
+
+					@Override
+					public boolean accept(Field e) {
+						return !ignore(e.getSetter());
 					}
 				});
 	}

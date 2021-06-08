@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.AnnotatedElementWrapper;
 import scw.core.annotation.AnnotationUtils;
-import scw.core.parameter.annotation.Named;
 import scw.core.utils.ObjectUtils;
 import scw.lang.Nullable;
 import scw.mapper.MapperUtils;
@@ -34,8 +33,7 @@ public class DefaultParameterDescriptor extends AnnotatedElementWrapper<Annotate
 	public DefaultParameterDescriptor(String name, AnnotatedElement annotatedElement, Class<?> type,
 			@Nullable Type genericType) {
 		super(annotatedElement);
-		Named parameterName = annotatedElement.getAnnotation(Named.class);
-		this.name = parameterName == null ? name : parameterName.value();
+		this.name = name;
 		this.type = type;
 		this.genericType = genericType;
 	}

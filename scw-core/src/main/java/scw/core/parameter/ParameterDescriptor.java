@@ -3,7 +3,7 @@ package scw.core.parameter;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
-import scw.core.parameter.annotation.DefaultValue;
+import scw.lang.DefaultValue;
 import scw.lang.Nullable;
 import scw.util.Named;
 import scw.value.StringValue;

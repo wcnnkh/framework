@@ -19,6 +19,11 @@ public class PropertyFactoryToEntityConversionService extends EntityConversionSe
 	protected Object getProperty(Object source, String key) {
 		return ((PropertyFactory)source).getValue(key);
 	}
+	
+	@Override
+	protected boolean containsKey(Object source, String key) {
+		return ((PropertyFactory)source).containsKey(key);
+	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(PropertyFactory.class, Object.class));

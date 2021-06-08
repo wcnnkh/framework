@@ -174,7 +174,8 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	protected abstract Object getProperty(Object source, String key);
 
 	protected Fields getFields(Class<?> type, Field parentField) {
-		return getObjectRelationalMapping().getFields(type, isUseSuperClass(), parentField).accept(getFieldAccept());
+		return getObjectRelationalMapping().getSetterFields(type, isUseSuperClass(), parentField)
+				.accept(getFieldAccept());
 	}
 
 	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target) {
@@ -193,7 +194,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	private Collection<String> getUseSetterNames(Field field) {
 		List<String> useNames = new ArrayList<String>(8);
-		Collection<String> names = getObjectRelationalMapping().getSetterNames(field);
+		Collection<String> names = getObjectRelationalMapping().getAliasNames(field.getSetter());
 		for (String name : names) {
 			useNames.add(name);
 			for (String alias : getAliasRegistry().getAliases(name)) {
@@ -225,7 +226,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 			Field field) {
 		Field parent = field.getParentField();
 		if (parent == null) {
-			for (String name : getObjectRelationalMapping().getSetterNames(field)) {
+			for (String name : getObjectRelationalMapping().getAliasNames(field.getSetter())) {
 				names.add(toUseName(parentName, name));
 				if (aliasRegistry != null) {
 					for (String alias : aliasRegistry.getAliases(name)) {
@@ -234,7 +235,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 				}
 			}
 
-			for (String name : getObjectRelationalMapping().getSetterEntityNames(field.getSetter().getType())) {
+			for (String name : getObjectRelationalMapping().getAliasNames(field.getSetter().getType())) {
 				names.add(toUseName(parentName, name));
 				if (aliasRegistry != null) {
 					for (String alias : aliasRegistry.getAliases(name)) {
@@ -276,7 +277,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private void noStrictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target) {
 		for (Field field : fields) {
 			Object value = null;
-			if (getObjectRelationalMapping().isEntity(field)) {
+			if (getObjectRelationalMapping().isEntity(field.getSetter())) {
 				// 如果是一个实体
 				Class<?> entityClass = field.getSetter().getType();
 				value = getInstanceFactory().getInstance(entityClass);

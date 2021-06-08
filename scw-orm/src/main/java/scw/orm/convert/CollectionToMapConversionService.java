@@ -68,7 +68,7 @@ class CollectionToMapConversionService implements ConversionService, ConversionS
 
 			Object value = conversionService.convert(item, sourceType.narrow(item), itemType);
 			Fields primaryKeyFields = MapperUtils.getMapper().getFields(itemType.getType())
-					.accept(FieldFeature.SUPPORT_GETTER).accept(getObjectRelationalMapping().getPrimaryKeyAccept()).shared();
+					.accept(FieldFeature.SUPPORT_GETTER).acceptGetter(getObjectRelationalMapping().getPrimaryKeyAccept()).shared();
 			Iterator<Field> primaryKeyIterator = primaryKeyFields.iterator();
 			Map nestMap = map;
 			TypeDescriptor keyType = targetType.getMapKeyTypeDescriptor();

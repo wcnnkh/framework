@@ -22,6 +22,11 @@ public class MapToEntityConversionService extends EntityConversionService{
 	protected Object getProperty(Object source, String key) {
 		return ((Map)source).get(key);
 	}
+	
+	@Override
+	protected boolean containsKey(Object source, String key) {
+		return ((Map)source).containsKey(key);
+	}
 
 	public Set<ConvertiblePair> getConvertibleTypes() {
 		return Collections.singleton(new ConvertiblePair(Map.class, Object.class));

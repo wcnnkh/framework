@@ -7,7 +7,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.convert.TypeDescriptor;
-import scw.core.parameter.annotation.DefaultValue;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
 import scw.env.Environment;
@@ -16,6 +15,7 @@ import scw.http.HttpMethod;
 import scw.instance.annotation.PropertyName;
 import scw.instance.annotation.ResourceParameter;
 import scw.json.JSONUtils;
+import scw.lang.DefaultValue;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 

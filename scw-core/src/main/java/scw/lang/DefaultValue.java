@@ -1,4 +1,4 @@
-package scw.core.parameter.annotation;
+package scw.lang;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

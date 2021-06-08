@@ -13,6 +13,11 @@ import scw.convert.lang.ConvertiblePair;
 import scw.orm.convert.EntityConversionService;
 
 public class ResultSetRowToEntityConversionService extends EntityConversionService {
+	
+	public ResultSetRowToEntityConversionService() {
+		//使用严格模式
+		setStrict(true);
+	}
 
 	@Override
 	public Set<ConvertiblePair> getConvertibleTypes() {
