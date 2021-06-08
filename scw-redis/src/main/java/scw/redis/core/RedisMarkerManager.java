@@ -14,6 +14,7 @@ import scw.data.geo.MarkerManager;
 import scw.data.geo.Point;
 import scw.util.comparator.Sort;
 
+@SuppressWarnings("unchecked")
 public class RedisMarkerManager<K, V> implements MarkerManager<V> {
 	private final RedisCommands<K, V> redisCommands;
 	private final K key;

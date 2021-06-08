@@ -1,11 +1,10 @@
 package scw.value;
 
 import java.util.Iterator;
-import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import scw.convert.ConversionService;
-import scw.convert.TypeDescriptor;
-import scw.util.CollectionFactory;
 import scw.util.StringMatcher;
 import scw.util.StringMatchers;
 import scw.util.placeholder.PlaceholderResolver;
@@ -17,28 +16,17 @@ public interface PropertyFactory extends ValueFactory<String>, Iterable<String>,
 		return getString(placeholderName);
 	}
 
-	@SuppressWarnings("unchecked")
-	default <K, V, M extends Map<K, V>> M getMap(String pattern, StringMatcher keyMatcher, TypeDescriptor mapType,
-			ConversionService conversionService) {
-		if (!mapType.isMap()) {
-			throw new IllegalArgumentException(mapType.toString());
-		}
+	default Stream<String> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
 
-		M map = (M) CollectionFactory.createMap(mapType.getType(), 16);
-		for (String key : this) {
-			if (StringMatchers.match(keyMatcher, pattern, key)) {
-				Value sourceValue = getValue(key);
-				if (sourceValue == null) {
-					continue;
-				}
+	default Stream<String> stream(String pattern, StringMatcher keyMatcher) {
+		return stream().filter(new Predicate<String>() {
 
-				K targetKey = (K) conversionService.convert(key, TypeDescriptor.forObject(key),
-						mapType.getMapKeyTypeDescriptor());
-				V targetValue = (V) conversionService.convert(sourceValue, TypeDescriptor.forObject(sourceValue),
-						mapType.getMapValueTypeDescriptor());
-				map.put(targetKey, targetValue);
+			@Override
+			public boolean test(String t) {
+				return StringMatchers.match(keyMatcher, pattern, t);
 			}
-		}
-		return map;
+		});
 	}
 }

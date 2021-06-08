@@ -221,25 +221,31 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		return nameAppend.toString();
 	}
 
-	private void appendNames(List<String> names, String parentName, Field field) {
+	private void appendNames(@Nullable AliasRegistry aliasRegistry, List<String> names, String parentName,
+			Field field) {
 		Field parent = field.getParentField();
 		if (parent == null) {
 			for (String name : getObjectRelationalMapping().getSetterNames(field)) {
 				names.add(toUseName(parentName, name));
-				for (String alias : getAliasRegistry().getAliases(name)) {
-					names.add(toUseName(parentName, alias));
+				if (aliasRegistry != null) {
+					for (String alias : aliasRegistry.getAliases(name)) {
+						names.add(toUseName(parentName, alias));
+					}
 				}
 			}
 
 			for (String name : getObjectRelationalMapping().getSetterEntityNames(field.getSetter().getType())) {
 				names.add(toUseName(parentName, name));
-				for (String alias : getAliasRegistry().getAliases(name)) {
-					names.add(toUseName(parentName, alias));
+				if (aliasRegistry != null) {
+					for (String alias : aliasRegistry.getAliases(name)) {
+						names.add(toUseName(parentName, alias));
+					}
 				}
 			}
 		} else {
 			for (String name : getUseSetterNames(parent)) {
-				appendNames(names, parentName == null ? (name + connector) : (name + connector + parentName),
+				appendNames(aliasRegistry, names,
+						parentName == null ? (name + connector) : (name + connector + parentName),
 						field.getParentField());
 			}
 		}
@@ -247,7 +253,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	private Collection<String> getSetterNames(Field field) {
 		List<String> names = new ArrayList<String>(8);
-		appendNames(names, null, field);
+		appendNames(getAliasRegistry(), names, null, field);
 		return names;
 	}
 

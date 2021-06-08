@@ -27,6 +27,7 @@ import scw.orm.convert.PropertyFactoryToEntityConversionService;
 import scw.util.Accept;
 import scw.util.StringMatchers;
 import scw.value.PropertyFactory;
+import scw.value.Value;
 
 public final class BeanUtils {
 	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = Sys.env.getServiceLoader(AopEnableSpi.class).toList();
@@ -245,7 +246,20 @@ public final class BeanUtils {
 
 		Map properties = (Map) instance;
 		TypeDescriptor descriptor = TypeDescriptor.forObject(instance);
-		properties.putAll(environment.getMap(prefix, StringMatchers.PREFIX, descriptor));
+		environment.stream(prefix, StringMatchers.PREFIX).forEach((key) -> {
+			Value value = environment.getValue(key);
+			if (value == null) {
+				return;
+			}
+
+			String targetKey = StringUtils.isEmpty(prefix) ? key
+					: key.substring(prefix.length() + conversionService.getConnector().length());
+			Object mapKey = environment.getConversionService().convert(targetKey, TypeDescriptor.forObject(targetKey),
+					descriptor.getMapKeyTypeDescriptor());
+			Object mapValue = environment.getConversionService().convert(value, TypeDescriptor.forObject(value),
+					descriptor.getMapValueTypeDescriptor());
+			properties.put(mapKey, mapValue);
+		});
 	}
 
 	private static String getPrefix(ConfigurationProperties configurationProperties) {
