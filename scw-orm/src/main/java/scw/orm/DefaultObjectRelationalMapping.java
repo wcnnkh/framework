@@ -54,7 +54,7 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	@Override
 	public Collection<String> getAliasNames(FieldDescriptor fieldDescriptor) {
-		List<String> names = new ArrayList<String>(4);
+		List<String> names = new ArrayList<String>(8);
 		names.add(fieldDescriptor.getName());
 		names.add(StringUtils.humpNamingReplacement(fieldDescriptor.getName(), "_"));
 		if (isEntity(fieldDescriptor)) {
