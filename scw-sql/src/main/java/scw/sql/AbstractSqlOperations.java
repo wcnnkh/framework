@@ -1,8 +1,6 @@
 package scw.sql;
 
-import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import scw.logger.Logger;
@@ -12,7 +10,7 @@ public abstract class AbstractSqlOperations implements SqlOperations, Connection
 	private static Logger logger = LoggerFactory.getLogger(AbstractSqlOperations.class);
 
 	@Override
-	public <T> T process(String sql, PreparedStatementProcessor<T> processor) throws SqlException {
+	public <T> T process(String sql, StatementProcessor<T> processor) throws SqlException {
 		if (logger.isDebugEnabled()) {
 			logger.debug(sql);
 		}
@@ -21,15 +19,7 @@ public abstract class AbstractSqlOperations implements SqlOperations, Connection
 
 				@Override
 				public T processConnection(Connection connection) throws SQLException {
-					PreparedStatement ps = null;
-					try {
-						ps = connection.prepareStatement(sql);
-						return processor.processPreparedStatement(ps);
-					} finally {
-						if (ps != null && !ps.isClosed()) {
-							ps.close();
-						}
-					}
+					return SqlUtils.process(connection, sql, processor);
 				}
 			});
 		} catch (SQLException e) {
@@ -47,15 +37,7 @@ public abstract class AbstractSqlOperations implements SqlOperations, Connection
 
 				@Override
 				public T processConnection(Connection connection) throws SQLException {
-					CallableStatement cs = null;
-					try {
-						cs = connection.prepareCall(storedProcedure);
-						return processor.processCallableStatement(cs);
-					} finally {
-						if (cs != null && !cs.isClosed()) {
-							cs.close();
-						}
-					}
+					return SqlUtils.process(connection, storedProcedure, processor);
 				}
 			});
 		} catch (SQLException e) {
