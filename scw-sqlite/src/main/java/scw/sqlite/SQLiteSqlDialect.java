@@ -3,9 +3,9 @@ package scw.sqlite;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import scw.orm.sql.SqlDialectException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
-import scw.sql.orm.dialect.SqlDialectException;
 import scw.sql.orm.dialect.TableStructureMapping;
 import scw.sql.orm.dialect.mysql.MySqlSqlDialect;
 

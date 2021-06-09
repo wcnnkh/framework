@@ -24,12 +24,15 @@ import scw.core.utils.StringUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.MapperUtils;
+import scw.orm.sql.SqlDialectException;
 import scw.orm.sql.TableName;
 import scw.sql.AbstractSqlOperations;
+import scw.sql.ConnectionProcessor;
 import scw.sql.ResultSetMapper;
 import scw.sql.RowCallback;
 import scw.sql.RowMapper;
 import scw.sql.Sql;
+import scw.sql.SqlException;
 import scw.sql.orm.Column;
 import scw.sql.orm.Columns;
 import scw.sql.orm.EntityOperations;
@@ -51,21 +54,21 @@ import scw.util.Pagination;
 public abstract class AbstractEntityOperations extends AbstractSqlOperations implements EntityOperations {
 	private static Logger logger = LoggerFactory.getLogger(AbstractEntityOperations.class);
 	private ClassesLoaderFactory classesLoaderFactory;
-	
+
 	public abstract SqlDialect getSqlDialect();
 
 	public abstract CacheManager getCacheManager();
 
 	public abstract GeneratorService getGeneratorService();
-	
-	public ClassesLoaderFactory getClassesLoaderFactory(){
-		if(classesLoaderFactory == null){
+
+	public ClassesLoaderFactory getClassesLoaderFactory() {
+		if (classesLoaderFactory == null) {
 			return new DefaultClassesLoaderFactory(new DefaultClassScanner(), false, null);
-		}else{
+		} else {
 			return classesLoaderFactory;
 		}
 	}
-	
+
 	public void setClassesLoaderFactory(ClassesLoaderFactory classesLoaderFactory) {
 		this.classesLoaderFactory = classesLoaderFactory;
 	}
@@ -82,7 +85,8 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 
 	public final String getTableName(Class<?> clazz, String tableName) {
 		return (tableName == null || tableName.length() == 0)
-				? OrmUtils.getObjectRelationalMapping().getTableName(clazz) : tableName;
+				? OrmUtils.getObjectRelationalMapping().getTableName(clazz)
+				: tableName;
 	}
 
 	public final <T> T getById(Class<? extends T> type, Object... params) {
@@ -138,47 +142,49 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	 * @param operationType
 	 * @param clazz
 	 * @param bean
-	 * @param tableName
-	 *            入参，并非指实际表名
+	 * @param tableName     入参，并非指实际表名
 	 * @return
 	 */
 	protected boolean orm(OperationType operationType, Class<?> clazz, Object bean, String tableName) {
 		GeneratorContext generatorContext = new GeneratorContext(this, operationType, bean, tableName);
-		for(Column column : OrmUtils.getObjectRelationalMapping().getColumns(clazz)){
+		for (Column column : OrmUtils.getObjectRelationalMapping().getColumns(clazz)) {
 			generatorContext.setColumn(column);
 			getGeneratorService().process(generatorContext);
 		}
 
 		String tableNameToUse = getTableName(clazz, bean, tableName);
 		Sql sql = OrmUtils.toSql(operationType, getSqlDialect(), clazz, bean, tableNameToUse);
-		Connection connection = null;
 		try {
-			connection = getUserConnection();
-			int count = update(sql, connection);
-			for (Column column : OrmUtils.getObjectRelationalMapping().getColumns(clazz)) {
-				if (column.isAutoIncrement()) {
-					if (operationType == OperationType.SAVE || operationType == OperationType.SAVE_OR_UPDATE) {
-						if (count == 0) {
-							logger.warn("Number of rows affected is 0, execute: {}", sql);
-						} else if (count == 1) {
-							if (operationType == OperationType.SAVE
-									|| !MapperUtils.isExistValue(column.getField(), bean)) {
-								column.set(bean, getAutoIncrementLastId(connection, tableNameToUse));
+			int count = process(new ConnectionProcessor<Integer>() {
+
+				@Override
+				public Integer process(Connection connection) throws SQLException {
+					int count = update(sql, connection);
+					for (Column column : OrmUtils.getObjectRelationalMapping().getColumns(clazz)) {
+						if (column.isAutoIncrement()) {
+							if (operationType == OperationType.SAVE || operationType == OperationType.SAVE_OR_UPDATE) {
+								if (count == 0) {
+									logger.warn("Number of rows affected is 0, execute: {}", sql);
+								} else if (count == 1) {
+									if (operationType == OperationType.SAVE
+											|| !MapperUtils.isExistValue(column.getField(), bean)) {
+										column.set(bean, getAutoIncrementLastId(connection, tableNameToUse));
+									}
+								}
 							}
 						}
 					}
+					return count;
 				}
-			}
+			});
 			return count != 0;
 		} catch (SQLException e) {
 			throw new ORMException(sql, e);
-		} finally {
-			close(connection);
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	protected <T> Class<T> getUserClass(Class<T> clazz){
+	protected <T> Class<T> getUserClass(Class<T> clazz) {
 		return (Class<T>) ProxyUtils.getFactory().getUserClass(clazz);
 	}
 
@@ -231,9 +237,13 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 
 	public boolean deleteById(String tableName, Class<?> type, Object... params) {
 		Sql sql = getSqlDialect().toDeleteByIdSql(type, getTableName(type, tableName), params);
-		if (update(sql) != 0) {
-			getCacheManager().deleteById(type, params);
-			return true;
+		try {
+			if (update(sql) != 0) {
+				getCacheManager().deleteById(type, params);
+				return true;
+			}
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
 		}
 		return false;
 	}
@@ -285,7 +295,8 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		}
 
 		if (primaryKeys != null
-				&& primaryKeys.length > OrmUtils.getObjectRelationalMapping().getColumns(type).getPrimaryKeys().size() - 1) {
+				&& primaryKeys.length > OrmUtils.getObjectRelationalMapping().getColumns(type).getPrimaryKeys().size()
+						- 1) {
 			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
 		}
 
@@ -337,12 +348,16 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	}
 
 	public ResultSet select(Sql sql) {
-		return query(sql, new ResultSetMapper<ResultSet>() {
+		try {
+			return query(sql, new ResultSetMapper<ResultSet>() {
 
-			public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
-				return new DefaultResultSet(resultSet);
-			}
-		});
+				public ResultSet mapper(java.sql.ResultSet resultSet) throws SQLException {
+					return new DefaultResultSet(resultSet);
+				}
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
 	}
 
 	public <T> List<T> select(Class<? extends T> type, Sql sql) {
@@ -370,7 +385,12 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	}
 
 	public boolean createTable(Class<?> tableClass, String tableName) {
-		return execute(getSqlDialect().toCreateTableSql(tableClass, getTableName(tableClass, tableName)));
+		Sql sql = getSqlDialect().toCreateTableSql(tableClass, getTableName(tableClass, tableName));
+		try {
+			return execute(sql);
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
 	}
 
 	public void createTable(String packageName) {
@@ -464,12 +484,16 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	}
 
 	public void iterator(Sql sql, final IteratorCallback<ResultMapping> iterator) {
-		query(sql, new RowCallback() {
+		try {
+			query(sql, new RowCallback() {
 
-			public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
-				return iterator.iteratorCallback(new DefaultResultMapping(rs));
-			}
-		});
+				public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
+					return iterator.iteratorCallback(new DefaultResultMapping(rs));
+				}
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
 	}
 
 	public <T> void query(final Class<? extends T> tableClass, final IteratorCallback<Row<T>> iterator) {
@@ -503,12 +527,16 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 	}
 
 	public void query(Sql sql, final IteratorCallback<Row<ResultMapping>> iterator) {
-		query(sql, new RowCallback() {
+		try {
+			query(sql, new RowCallback() {
 
-			public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
-				return iterator.iteratorCallback(new Row<ResultMapping>(rowNum, new DefaultResultMapping(rs)));
-			}
-		});
+				public boolean processRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
+					return iterator.iteratorCallback(new Row<ResultMapping>(rowNum, new DefaultResultMapping(rs)));
+				}
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
 	}
 
 	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, String idField) {
@@ -529,8 +557,7 @@ public abstract class AbstractEntityOperations extends AbstractSqlOperations imp
 		final TableStructureMapping tableStructureMapping = getSqlDialect().getTableStructureMapping(tableClass, tName);
 		List<String> list = query(tableStructureMapping.getSql(), new RowMapper<String>() {
 
-			public String mapRow(java.sql.ResultSet rs, int rowNum)
-					throws SQLException {
+			public String mapRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
 				return tableStructureMapping.getName(rs);
 			}
 		});

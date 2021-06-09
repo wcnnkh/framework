@@ -1,4 +1,4 @@
-package scw.sql.orm.enums;
+package scw.orm.sql.annotation;
 
 /**
  * 索引的排序方式

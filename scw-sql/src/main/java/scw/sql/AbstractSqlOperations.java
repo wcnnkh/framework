@@ -1,269 +1,65 @@
 package scw.sql;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
 
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
-public abstract class AbstractSqlOperations implements SqlOperations {
+public abstract class AbstractSqlOperations implements SqlOperations, ConnectionFactory {
 	private static Logger logger = LoggerFactory.getLogger(AbstractSqlOperations.class);
 
-	protected abstract Connection getUserConnection() throws SQLException;
-
-	protected void close(Connection connection) throws SqlException {
-		if (connection != null) {
-			try {
-				connection.close();
-			} catch (SQLException e) {
-				throw new SqlException(e);
-			}
-		}
-	}
-
-	protected boolean execute(Sql sql, Connection connection) throws SQLException {
+	@Override
+	public <T> T process(String sql, PreparedStatementProcessor<T> processor) throws SqlException {
 		if (logger.isDebugEnabled()) {
-			logger.debug(sql.toString());
+			logger.debug(sql);
 		}
-		
-		PreparedStatement statement = null;
 		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			return statement.execute();
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
+			return process(new ConnectionProcessor<T>() {
 
-	public boolean execute(Sql sql) throws SqlException {
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			return execute(sql, connection);
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		} finally {
-			close(connection);
-		}
-	}
-
-	private void query(PreparedStatement statement, ResultSetCallback resultSetCallback) throws SQLException {
-		ResultSet resultSet = null;
-		try {
-			resultSet = statement.executeQuery();
-			resultSetCallback.process(resultSet);
-		} finally {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
-	}
-
-	protected void query(Sql sql, Connection connection, ResultSetCallback resultSetCallback) throws SQLException {
-		if (logger.isDebugEnabled()) {
-			logger.debug(sql.toString());
-		}
-		
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			query(statement, resultSetCallback);
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public void query(Sql sql, ResultSetCallback resultSetCallback) throws SqlException {
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			query(sql, connection, resultSetCallback);
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		} finally {
-			close(connection);
-		}
-	}
-
-	public void query(Sql sql, RowCallback rowCallback) throws SqlException {
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			query(sql, connection, new DefaultResultSetCallback(rowCallback));
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		} finally {
-			close(connection);
-		}
-	}
-
-	private <T> T query(PreparedStatement statement, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		ResultSet resultSet = null;
-		try {
-			resultSet = statement.executeQuery();
-			return resultSetMapper.mapper(resultSet);
-		} finally {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
-	}
-
-	protected <T> T query(Sql sql, Connection connection, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		if (logger.isDebugEnabled()) {
-			logger.debug(sql.toString());
-		}
-		
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			return query(statement, resultSetMapper);
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper) throws SqlException {
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			return query(sql, connection, resultSetMapper);
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		} finally {
-			close(connection);
-		}
-	}
-
-	public <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			return query(sql, connection, new DefaultResultSetMapper<T>(rowMapper));
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		} finally {
-			close(connection);
-		}
-	}
-
-	public List<Object[]> query(Sql sql) throws SqlException {
-		return query(sql, new RowMapper<Object[]>() {
-
-			public Object[] mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return SqlUtils.getRowValues(rs, rs.getMetaData().getColumnCount());
-			}
-
-		});
-	}
-
-	protected int update(Sql sql, Connection connection) throws SQLException {
-		if (logger.isDebugEnabled()) {
-			logger.debug(sql.toString());
-		}
-		
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			return statement.executeUpdate();
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public int update(Sql sql) throws SqlException {
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			return update(sql, connection);
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		} finally {
-			close(connection);
-		}
-	}
-
-	protected int[] batch(Connection connection, Collection<String> sqls) throws SQLException {
-		PreparedStatement preparedStatement = null;
-		String currentSql = null;
-		try {
-			for (String sql : sqls) {
-				currentSql = sql;
-				if(logger.isDebugEnabled()){
-					logger.debug(SqlUtils.toString(sql));
+				@Override
+				public T processConnection(Connection connection) throws SQLException {
+					PreparedStatement ps = null;
+					try {
+						ps = connection.prepareStatement(sql);
+						return processor.processPreparedStatement(ps);
+					} finally {
+						if (ps != null && !ps.isClosed()) {
+							ps.close();
+						}
+					}
 				}
-				if (preparedStatement == null) {
-					preparedStatement = connection.prepareStatement(sql);
-				} else {
-					preparedStatement.addBatch(sql);
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
+	}
+
+	@Override
+	public <T> T process(String storedProcedure, CallableStatementProcessor<T> processor) throws SqlException {
+		if (logger.isDebugEnabled()) {
+			logger.debug(storedProcedure);
+		}
+		try {
+			return process(new ConnectionProcessor<T>() {
+
+				@Override
+				public T processConnection(Connection connection) throws SQLException {
+					CallableStatement cs = null;
+					try {
+						cs = connection.prepareCall(storedProcedure);
+						return processor.processCallableStatement(cs);
+					} finally {
+						if (cs != null && !cs.isClosed()) {
+							cs.close();
+						}
+					}
 				}
-			}
-			return preparedStatement.executeBatch();
+			});
 		} catch (SQLException e) {
-			throw currentSql == null ? e : new SQLException(currentSql, e);
-		} finally {
-			if (preparedStatement != null) {
-				preparedStatement.clearBatch();
-				preparedStatement.close();
-			}
-		}
-	}
-
-	public int[] batch(Collection<String> sqls) throws SqlException {
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			return batch(connection, sqls);
-		} catch (SQLException e) {
-			throw new SqlException(e);
-		} finally {
-			close(connection);
-		}
-	}
-
-	protected int[] batch(Connection connection, String sql, Collection<Object[]> batchArgs) throws SQLException {
-		PreparedStatement preparedStatement = null;
-		try {
-			preparedStatement = connection.prepareStatement(sql);
-			for (Object[] args : batchArgs) {
-				if(logger.isDebugEnabled()){
-					logger.debug(SqlUtils.toString(sql, args));
-				}
-				SqlUtils.setSqlParams(preparedStatement, args);
-				preparedStatement.addBatch();
-			}
-			return preparedStatement.executeBatch();
-		} catch (SQLException e) {
-			throw new SQLException(sql, e);
-		} finally {
-			if (preparedStatement != null) {
-				preparedStatement.clearBatch();
-				preparedStatement.close();
-			}
-		}
-	}
-
-	public int[] batch(String sql, Collection<Object[]> batchArgs) throws SqlException {
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			return batch(connection, sql, batchArgs);
-		} catch (SQLException e) {
-			throw new SqlException(e);
-		} finally {
-			close(connection);
+			throw new SqlException(storedProcedure, e);
 		}
 	}
 }

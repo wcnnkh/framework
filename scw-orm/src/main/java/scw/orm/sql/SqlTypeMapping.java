@@ -1,5 +1,5 @@
 package scw.orm.sql;
 
-public interface SqlMapping {
+public interface SqlTypeMapping {
 	SqlType getSqlType(Class<?> javaType);
 }

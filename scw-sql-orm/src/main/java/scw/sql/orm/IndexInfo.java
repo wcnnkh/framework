@@ -2,9 +2,9 @@ package scw.sql.orm;
 
 import java.io.Serializable;
 
-import scw.sql.orm.enums.IndexMethod;
-import scw.sql.orm.enums.IndexOrder;
-import scw.sql.orm.enums.IndexType;
+import scw.orm.sql.annotation.IndexMethod;
+import scw.orm.sql.annotation.IndexOrder;
+import scw.orm.sql.annotation.IndexType;
 
 /**
  * 索引名和索引方法相同被视为同一组索引

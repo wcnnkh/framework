@@ -44,7 +44,7 @@ public class DefaultEntityOperations extends AbstractEntityOperations {
 		return generatorService;
 	}
 
-	public Connection getUserConnection() throws SQLException {
+	public Connection getConnection() throws SQLException {
 		return SqlTransactionUtils.getTransactionConnection(connectionFactory);
 	}
 }

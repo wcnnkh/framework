@@ -1,6 +1,13 @@
-package scw.sql.orm.dialect;
+package scw.orm.sql;
 
-public class SqlDialectException extends RuntimeException {
+import scw.sql.SqlException;
+
+/**
+ * 转换为sql方言进发生的错误
+ * @author 35984
+ *
+ */
+public class SqlDialectException extends SqlException {
 	private static final long serialVersionUID = 1L;
 	
 	public SqlDialectException(String message){

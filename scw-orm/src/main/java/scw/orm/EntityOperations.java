@@ -1,15 +1,18 @@
 package scw.orm;
 
+import scw.lang.Nullable;
+
 public interface EntityOperations {
-	void save(Object entity);
+	boolean save(Object entity);
 
-	void delete(Object entity);
+	boolean delete(Object entity);
 
-	void deleteById(Class<?> entityClass, Object... ids);
+	boolean deleteById(Class<?> entityClass, Object... ids);
 
-	void update(Object entity);
+	boolean update(Object entity);
 
+	boolean saveOrUpdate(Object entity);
+
+	@Nullable
 	<T> T getById(Class<? extends T> entityClass, Object... ids);
-
-	boolean exists(Class<?> entityClass, Object... ids);
 }

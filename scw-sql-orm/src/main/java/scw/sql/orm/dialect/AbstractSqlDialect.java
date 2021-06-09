@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import scw.aop.support.FieldSetterListen;
+import scw.orm.sql.SqlDialectException;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.util.Pagination;

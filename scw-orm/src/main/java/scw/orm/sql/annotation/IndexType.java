@@ -1,4 +1,4 @@
-package scw.sql.orm.enums;
+package scw.orm.sql.annotation;
 
 public enum IndexType {
 	/**

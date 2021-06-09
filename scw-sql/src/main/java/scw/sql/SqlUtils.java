@@ -10,6 +10,7 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -19,8 +20,8 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 
 public final class SqlUtils {
-	
-	public static String toString(String sql, Object... args){
+
+	public static String toString(String sql, Object... args) {
 		if (args == null || args.length == 0) {
 			return sql;
 		} else {
@@ -64,8 +65,18 @@ public final class SqlUtils {
 			}
 		}
 	}
+	
+	public static PreparedStatement prepared(Connection connection, Sql sql) throws SQLException {
+		PreparedStatement preparedStatement;
+		if (sql instanceof StoredProcedure) {
+			preparedStatement = connection.prepareCall(sql.getSql());
+		} else {
+			preparedStatement = connection.prepareStatement(sql.getSql());
+		}
+		return preparedStatement;
+	}
 
-	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
+	public static PreparedStatement prepared(Connection connection, Sql sql, int resultSetType,
 			int resultSetConcurrency) throws SQLException {
 		PreparedStatement preparedStatement;
 		if (sql instanceof StoredProcedure) {
@@ -73,7 +84,12 @@ public final class SqlUtils {
 		} else {
 			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency);
 		}
+		return preparedStatement;
+	}
 
+	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
+			int resultSetConcurrency) throws SQLException {
+		PreparedStatement preparedStatement = prepared(connection, sql, resultSetType, resultSetConcurrency);
 		try {
 			setSqlParams(preparedStatement, sql.getParams());
 		} catch (SQLException e) {
@@ -205,5 +221,29 @@ public final class SqlUtils {
 				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
 				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
 				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
+	}
+
+	/**
+	 * Determine the column name to use. The column name is determined based on a
+	 * lookup using ResultSetMetaData.
+	 * <p>
+	 * This method implementation takes into account recent clarifications expressed
+	 * in the JDBC 4.0 specification:
+	 * <p>
+	 * <i>columnLabel - the label for the column specified with the SQL AS clause.
+	 * If the SQL AS clause was not specified, then the label is the name of the
+	 * column</i>.
+	 * 
+	 * @param resultSetMetaData the current meta-data to use
+	 * @param columnIndex       the index of the column for the look up
+	 * @return the column name to use
+	 * @throws SQLException in case of lookup failure
+	 */
+	public static String lookupColumnName(ResultSetMetaData resultSetMetaData, int columnIndex) throws SQLException {
+		String name = resultSetMetaData.getColumnLabel(columnIndex);
+		if (!StringUtils.hasLength(name)) {
+			name = resultSetMetaData.getColumnName(columnIndex);
+		}
+		return name;
 	}
 }

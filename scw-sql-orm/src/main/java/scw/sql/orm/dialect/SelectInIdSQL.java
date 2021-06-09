@@ -7,6 +7,7 @@ import java.util.List;
 
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
+import scw.orm.sql.SqlDialectException;
 import scw.sql.orm.Column;
 import scw.sql.orm.OrmUtils;
 

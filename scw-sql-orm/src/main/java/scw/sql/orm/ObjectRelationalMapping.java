@@ -153,7 +153,7 @@ public class ObjectRelationalMapping implements Accept<Field> {
 	public Map<IndexInfo, List<IndexInfo>> getIndexInfoMap(Class<?> entityClass) {
 		Map<IndexInfo, List<IndexInfo>> indexMap = new LinkedHashMap<IndexInfo, List<IndexInfo>>();
 		for (Column column : getColumns(entityClass)) {
-			scw.sql.orm.annotation.Index index = column.getField().getAnnotation(scw.sql.orm.annotation.Index.class);
+			scw.orm.sql.annotation.Index index = column.getField().getAnnotation(scw.orm.sql.annotation.Index.class);
 			if (index == null) {
 				continue;
 			}

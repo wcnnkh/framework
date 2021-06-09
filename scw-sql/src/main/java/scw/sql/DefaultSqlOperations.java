@@ -13,7 +13,7 @@ public class DefaultSqlOperations extends AbstractSqlOperations {
 	}
 
 	@Override
-	public Connection getUserConnection() throws SQLException {
+	public Connection getConnection() throws SQLException {
 		return SqlTransactionUtils.getTransactionConnection(connectionFactory);
 	}
 

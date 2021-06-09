@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import scw.core.utils.StringUtils;
+import scw.orm.sql.annotation.IndexMethod;
+import scw.orm.sql.annotation.IndexOrder;
 import scw.sql.orm.Column;
 import scw.sql.orm.Columns;
 import scw.sql.orm.IndexInfo;
@@ -14,8 +16,6 @@ import scw.sql.orm.annotation.Table;
 import scw.sql.orm.dialect.DialectHelper;
 import scw.sql.orm.dialect.DialectSql;
 import scw.sql.orm.dialect.SqlType;
-import scw.sql.orm.enums.IndexMethod;
-import scw.sql.orm.enums.IndexOrder;
 
 public class CreateTableSql extends DialectSql {
 	private static final long serialVersionUID = 1L;

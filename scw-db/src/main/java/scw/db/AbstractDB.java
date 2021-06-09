@@ -1,7 +1,5 @@
 package scw.db;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +30,6 @@ import scw.sql.orm.enums.OperationType;
 import scw.sql.orm.support.AbstractEntityOperations;
 import scw.sql.orm.support.generation.DefaultGeneratorService;
 import scw.sql.orm.support.generation.GeneratorService;
-import scw.sql.transaction.SqlTransactionUtils;
 
 public abstract class AbstractDB extends AbstractEntityOperations
 		implements DB, EventListener<AsyncExecuteEvent>, BeanFactoryAware, Destroy, ConnectionFactory {
@@ -301,11 +298,6 @@ public abstract class AbstractDB extends AbstractEntityOperations
 	@Deprecated
 	public Select createSelect() {
 		return new MysqlSelect(this);
-	}
-
-	@Override
-	protected final Connection getUserConnection() throws SQLException {
-		return SqlTransactionUtils.getTransactionConnection(this);
 	}
 
 	public static class AsyncExecuteEvent extends BasicEvent {
