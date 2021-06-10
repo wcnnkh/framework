@@ -57,6 +57,8 @@ public interface ObjectRelationalMapping {
 	boolean isEntity(FieldDescriptor fieldDescriptor);
 
 	boolean isEntity(Class<?> clazz);
+	
+	boolean isVersionField(FieldDescriptor fieldDescriptor);
 
 	default Accept<FieldDescriptor> getPrimaryKeyAccept() {
 		return new Accept<FieldDescriptor>() {

@@ -16,6 +16,7 @@ import scw.mapper.FieldDescriptor;
 import scw.orm.annotation.Description;
 import scw.orm.annotation.Entity;
 import scw.orm.annotation.PrimaryKey;
+import scw.orm.annotation.Version;
 
 public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 	/**
@@ -124,5 +125,10 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 		} else {
 			return Arrays.asList(name, simpleName, humpName);
 		}
+	}
+
+	@Override
+	public boolean isVersionField(FieldDescriptor fieldDescriptor) {
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Version.class);
 	}
 }
