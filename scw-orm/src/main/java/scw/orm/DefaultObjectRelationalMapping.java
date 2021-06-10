@@ -33,33 +33,46 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 	}
 
 	private String getDefaultName(FieldDescriptor fieldDescriptor) {
-		return humpNamingReplacement ? StringUtils.humpNamingReplacement(fieldDescriptor.getName(), "_")
-				: fieldDescriptor.getName();
+		return humpNamingReplacement ? StringUtils.humpNamingReplacement(
+				fieldDescriptor.getName(), "_") : fieldDescriptor.getName();
+	}
+
+	private String getAnnotationFeldName(AnnotatedElement annotatedElement) {
+		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
+				.getMergedAnnotationAttributes(annotatedElement, Named.class);
+		if (annotationAttributes == null) {
+			return null;
+		}
+
+		String name = annotationAttributes.getString("value");
+		return StringUtils.isEmpty(name) ? null : name;
 	}
 
 	@Override
 	public String getName(FieldDescriptor fieldDescriptor) {
-		Named named = fieldDescriptor.getAnnotation(Named.class);
-		if (named == null) {
+		String name = getAnnotationFeldName(fieldDescriptor);
+		if (name == null) {
 			return getDefaultName(fieldDescriptor);
 		}
-
-		if (StringUtils.isEmpty(named.value())) {
-			return getDefaultName(fieldDescriptor);
-		}
-		return named.value();
+		return name;
 	}
 
 	private String getDefaultEntityName(Class<?> entityClass) {
-		String className = ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName();
+		String className = ProxyUtils.getFactory().getUserClass(entityClass)
+				.getSimpleName();
 		return StringUtils.humpNamingReplacement(className, "_");
 	}
 
 	@Override
 	public Collection<String> getAliasNames(FieldDescriptor fieldDescriptor) {
 		List<String> names = new ArrayList<String>(8);
+		String name = getAnnotationFeldName(fieldDescriptor);
+		if (name != null) {
+			names.add(name);
+		}
 		names.add(fieldDescriptor.getName());
-		names.add(StringUtils.humpNamingReplacement(fieldDescriptor.getName(), "_"));
+		names.add(StringUtils.humpNamingReplacement(fieldDescriptor.getName(),
+				"_"));
 		if (isEntity(fieldDescriptor)) {
 			names.addAll(getAliasNames(fieldDescriptor.getType()));
 		}
@@ -68,13 +81,15 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	@Override
 	public String getDescription(FieldDescriptor fieldDescriptor) {
-		Description description = fieldDescriptor.getAnnotation(Description.class);
+		Description description = fieldDescriptor
+				.getAnnotation(Description.class);
 		return description == null ? null : description.value();
 	}
 
 	@Override
 	public boolean isPrimaryKey(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, PrimaryKey.class);
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor,
+				PrimaryKey.class);
 	}
 
 	@Override
@@ -84,7 +99,8 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	@Override
 	public boolean isEntity(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Entity.class) || isEntity(fieldDescriptor.getType());
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Entity.class)
+				|| isEntity(fieldDescriptor.getType());
 	}
 
 	@Override
@@ -92,7 +108,8 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 		return fieldDescriptor.isAnnotationPresent(Ignore.class);
 	}
 
-	private String getEntityNameByAnnotatedElement(AnnotatedElement annotatedElement) {
+	private String getEntityNameByAnnotatedElement(
+			AnnotatedElement annotatedElement) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(annotatedElement, Entity.class);
 		if (annotationAttributes == null) {
@@ -118,7 +135,8 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 	@Override
 	public Collection<String> getAliasNames(Class<?> entityClass) {
 		String name = getEntityNameByAnnotatedElement(entityClass);
-		String simpleName = ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName();
+		String simpleName = ProxyUtils.getFactory().getUserClass(entityClass)
+				.getSimpleName();
 		String humpName = StringUtils.humpNamingReplacement(simpleName, "_");
 		if (name == null) {
 			return Arrays.asList(simpleName, humpName);
@@ -129,6 +147,7 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	@Override
 	public boolean isVersionField(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Version.class);
+		return AnnotatedElementUtils
+				.isAnnotated(fieldDescriptor, Version.class);
 	}
 }

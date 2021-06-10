@@ -166,11 +166,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	}
 
 	@Override
-	public <T> List<T> query(TypeDescriptor typeDescriptor, Sql sql) {
-		return query(sql, new SmartRowMapper<T>(objectRelationalMapping, typeDescriptor));
-	}
-
-	@Override
 	public <T> Stream<T> streamQuery(Connection connection, TypeDescriptor resultTypeDescriptor, Sql sql) {
 		return streamQuery(connection, sql, new SmartRowMapper<T>(objectRelationalMapping, resultTypeDescriptor));
 	}

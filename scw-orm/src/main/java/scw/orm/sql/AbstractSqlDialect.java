@@ -29,23 +29,15 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 	private static final char POINT = '.';
 
 	private String escapeCharacter = "`";
-	private SqlTypeMapping sqlTypeMapping;
 	private ObjectRelationalMapping objectRelationalMapping;
 	private ConversionService conversionService;
-
-	public SqlTypeMapping getSqlTypeMapping() {
-		return sqlTypeMapping;
-	}
-
-	public void setSqlTypeMapping(SqlTypeMapping sqlTypeMapping) {
-		this.sqlTypeMapping = sqlTypeMapping;
-	}
 
 	public ObjectRelationalMapping getObjectRelationalMapping() {
 		return objectRelationalMapping;
 	}
 
-	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
+	public void setObjectRelationalMapping(
+			ObjectRelationalMapping objectRelationalMapping) {
 		this.objectRelationalMapping = objectRelationalMapping;
 	}
 
@@ -58,21 +50,26 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 	}
 
 	public Fields getFields(Class<?> clazz) {
-		return getObjectRelationalMapping().getGetterFields(clazz, true, null)
+		return getObjectRelationalMapping()
+				.getGetterFields(clazz, true, null)
 				.accept(FieldFeature.EXISTING_GETTER_FIELD)
-				.acceptGetter(getObjectRelationalMapping().getEntityAccept().negate());
+				.acceptGetter(
+						getObjectRelationalMapping().getEntityAccept().negate());
 	}
 
 	public Fields getPrimaryKey(Class<?> clazz) {
-		return getFields(clazz).acceptGetter(getObjectRelationalMapping().getPrimaryKeyAccept());
+		return getFields(clazz).acceptGetter(
+				getObjectRelationalMapping().getPrimaryKeyAccept());
 	}
 
 	public Fields getNotPrimaryKeys(Class<?> clazz) {
-		return getFields(clazz).acceptGetter(getObjectRelationalMapping().getPrimaryKeyAccept().negate());
+		return getFields(clazz).acceptGetter(
+				getObjectRelationalMapping().getPrimaryKeyAccept().negate());
 	}
 
 	public Object getDataBaseValue(Object entity, Field field) {
-		return toDataBaseValue(field.getGetter().get(entity), new TypeDescriptor(field.getGetter()));
+		return toDataBaseValue(field.getGetter().get(entity),
+				new TypeDescriptor(field.getGetter()));
 	}
 
 	public Object toDataBaseValue(Object value) {
@@ -84,12 +81,13 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 			return null;
 		}
 
-		SqlType sqlType = sqlTypeMapping.getSqlType(value.getClass());
+		SqlType sqlType = getSqlType(value.getClass());
 		if (sqlType == null) {
 			return value;
 		}
 
-		return conversionService.convert(value, sourceType, TypeDescriptor.valueOf(sqlType.getType()));
+		return conversionService.convert(value, sourceType,
+				TypeDescriptor.valueOf(sqlType.getType()));
 	}
 
 	public String getEscapeCharacter() {
@@ -100,18 +98,24 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 		this.escapeCharacter = escapeCharacter;
 	}
 
-	public void appendFieldName(StringBuilder sb, FieldDescriptor fieldDescriptor) {
-		keywordProcessing(sb, getObjectRelationalMapping().getName(fieldDescriptor));
+	public void appendFieldName(StringBuilder sb,
+			FieldDescriptor fieldDescriptor) {
+		keywordProcessing(sb,
+				getObjectRelationalMapping().getName(fieldDescriptor));
 	}
 
 	public void keywordProcessing(StringBuilder sb, String column) {
-		sb.append(getEscapeCharacter()).append(column).append(getEscapeCharacter());
+		sb.append(getEscapeCharacter()).append(column)
+				.append(getEscapeCharacter());
 	}
 
-	public void keywordProcessing(StringBuilder sb, String tableName, String column) {
-		sb.append(getEscapeCharacter()).append(tableName).append(getEscapeCharacter());
+	public void keywordProcessing(StringBuilder sb, String tableName,
+			String column) {
+		sb.append(getEscapeCharacter()).append(tableName)
+				.append(getEscapeCharacter());
 		sb.append(POINT);
-		sb.append(getEscapeCharacter()).append(column).append(getEscapeCharacter());
+		sb.append(getEscapeCharacter()).append(column)
+				.append(getEscapeCharacter());
 	}
 
 	public String getSqlName(String tableName, String column) {
@@ -127,14 +131,15 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 	public Map<IndexInfo, List<IndexInfo>> getIndexInfoMap(Class<?> entityClass) {
 		Map<IndexInfo, List<IndexInfo>> indexMap = new LinkedHashMap<IndexInfo, List<IndexInfo>>();
 		for (Field column : getFields(entityClass)) {
-			scw.orm.sql.annotation.Index index = AnnotatedElementUtils.getMergedAnnotation(column,
-					scw.orm.sql.annotation.Index.class);
+			scw.orm.sql.annotation.Index index = AnnotatedElementUtils
+					.getMergedAnnotation(column,
+							scw.orm.sql.annotation.Index.class);
 			if (index == null) {
 				continue;
 			}
 
-			IndexInfo indexInfo = new IndexInfo(column, index.name(), index.type(), index.length(), index.method(),
-					index.order());
+			IndexInfo indexInfo = new IndexInfo(column, index.name(),
+					index.type(), index.length(), index.method(), index.order());
 			List<IndexInfo> list = indexMap.get(indexInfo);
 			if (list == null) {
 				list = new ArrayList<IndexInfo>();
@@ -143,5 +148,25 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 			list.add(indexInfo);
 		}
 		return indexMap;
+	}
+
+	@Override
+	public String getComment(Field field) {
+		String desc = getObjectRelationalMapping().getDescription(
+				field.getGetter());
+		if (desc == null) {
+			desc = getObjectRelationalMapping().getDescription(
+					field.getSetter());
+		}
+		return desc;
+	}
+
+	@Override
+	public boolean isNullable(FieldDescriptor fieldDescriptor) {
+		return AnnotatedElementUtils
+				.isNullable(
+						fieldDescriptor,
+						!(getObjectRelationalMapping().isPrimaryKey(
+								fieldDescriptor) || isUnique(fieldDescriptor)));
 	}
 }
