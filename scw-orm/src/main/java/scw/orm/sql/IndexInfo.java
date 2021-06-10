@@ -1,27 +1,28 @@
-package scw.sql.orm;
+package scw.orm.sql;
 
 import java.io.Serializable;
 
+import scw.mapper.Field;
 import scw.orm.sql.annotation.IndexMethod;
 import scw.orm.sql.annotation.IndexOrder;
 import scw.orm.sql.annotation.IndexType;
 
 /**
  * 索引名和索引方法相同被视为同一组索引
+ * 
  * @author shuchaowen
  *
  */
 public class IndexInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
-	private final Column column;
+	private final Field column;
 	private final String name;
 	private final IndexType type;
 	private final int length;
 	private final IndexMethod method;
 	private IndexOrder order;
 
-	public IndexInfo(Column column, String name, IndexType type, int length,
-			IndexMethod method, IndexOrder order) {
+	public IndexInfo(Field column, String name, IndexType type, int length, IndexMethod method, IndexOrder order) {
 		this.column = column;
 		this.name = name;
 		this.method = method;
@@ -30,7 +31,7 @@ public class IndexInfo implements Serializable {
 		this.order = order;
 	}
 
-	public Column getColumn() {
+	public Field getColumn() {
 		return column;
 	}
 
@@ -75,8 +76,7 @@ public class IndexInfo implements Serializable {
 
 		if (obj instanceof IndexInfo) {
 			IndexInfo indexInfo = (IndexInfo) obj;
-			return indexInfo.getName().equals(getName())
-					&& indexInfo.getMethod() == getMethod();
+			return indexInfo.getName().equals(getName()) && indexInfo.getMethod() == getMethod();
 		}
 		return false;
 	}

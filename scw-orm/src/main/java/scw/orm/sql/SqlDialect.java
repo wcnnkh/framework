@@ -1,11 +1,20 @@
 package scw.orm.sql;
 
+import scw.core.annotation.AnnotatedElementUtils;
 import scw.mapper.FieldDescriptor;
+import scw.orm.sql.annotation.AutoIncrement;
+import scw.orm.sql.annotation.Counter;
 import scw.sql.Sql;
 
 public interface SqlDialect {
-	boolean isAutoIncrement(FieldDescriptor fieldDescriptor);
+	default boolean isAutoIncrement(FieldDescriptor fieldDescriptor) {
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, AutoIncrement.class);
+	}
 
+	default Counter getCounter(FieldDescriptor fieldDescriptor) {
+		return AnnotatedElementUtils.findMergedAnnotation(fieldDescriptor, Counter.class);
+	}
+	
 	Sql getById(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException;
 
 	<T> Sql save(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException;

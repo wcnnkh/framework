@@ -6,12 +6,12 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import scw.core.utils.StringUtils;
+import scw.orm.sql.IndexInfo;
 import scw.orm.sql.annotation.IndexMethod;
 import scw.orm.sql.annotation.IndexOrder;
 import scw.orm.sql.annotation.Table;
 import scw.sql.orm.Column;
 import scw.sql.orm.Columns;
-import scw.sql.orm.IndexInfo;
 import scw.sql.orm.OrmUtils;
 import scw.sql.orm.dialect.DialectHelper;
 import scw.sql.orm.dialect.DialectSql;

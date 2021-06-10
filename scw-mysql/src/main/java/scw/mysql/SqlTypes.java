@@ -15,6 +15,8 @@ import scw.orm.sql.SqlType;
  *
  */
 public enum SqlTypes implements SqlType {
+	BIT("bit", Boolean.class),
+
 	/**
 	 * 保存固定长度的字符串（可包含字母、数字以及特殊字符）。在括号中指定字符串的长度。最多 255 个字符。
 	 */

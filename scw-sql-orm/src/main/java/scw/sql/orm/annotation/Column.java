@@ -5,16 +5,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import scw.sql.orm.enums.CasType;
+import scw.core.annotation.AliasFor;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Column {
+	@AliasFor("name")
+	public String value() default "";
+
+	@AliasFor("value")
 	public String name() default "";
-
-	public String type() default "";
-
-	public int length() default 0;
 
 	/**
 	 * 默认是可以为空的，但是基本数据类型(值类型)、索引、主键列是不能为空的
@@ -32,11 +32,5 @@ public @interface Column {
 
 	public String comment() default "";
 
-	/**
-	 * 指定此字段以指定类型的cas方式更新,默认不参与 cas，在主键上设置无效
-	 * @return
-	 */
-	public CasType casType() default CasType.NOTHING;
-	
 	public String charsetName() default "";
 }
