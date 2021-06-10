@@ -14,9 +14,9 @@ import scw.db.DB;
 import scw.db.locks.TableLockFactory;
 import scw.io.SerializerException;
 import scw.orm.annotation.PrimaryKey;
+import scw.orm.sql.annotation.Table;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
-import scw.sql.orm.annotation.Table;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DBCompensatePolicy extends StorageCompensatePolicy{

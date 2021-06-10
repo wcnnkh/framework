@@ -3,7 +3,7 @@ package scw.db.locks;
 import java.io.Serializable;
 
 import scw.orm.annotation.PrimaryKey;
-import scw.sql.orm.annotation.Table;
+import scw.orm.sql.annotation.Table;
 import scw.sql.orm.cache.CacheEnable;
 
 @CacheEnable(false)

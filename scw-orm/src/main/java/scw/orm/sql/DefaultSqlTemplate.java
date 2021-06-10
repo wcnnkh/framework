@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import scw.aop.support.ProxyUtils;
 import scw.convert.ConversionService;
@@ -22,6 +23,7 @@ import scw.sql.ConnectionFactory;
 import scw.sql.DefaultSqlOperations;
 import scw.sql.Sql;
 import scw.sql.SqlProcessor;
+import scw.util.Pagination;
 
 public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
 	private static Logger logger = LoggerFactory.getLogger(DefaultSqlTemplate.class);
@@ -166,5 +168,30 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	@Override
 	public <T> List<T> query(TypeDescriptor typeDescriptor, Sql sql) {
 		return query(sql, new SmartRowMapper<T>(objectRelationalMapping, typeDescriptor));
+	}
+
+	@Override
+	public <T> Stream<T> streamQuery(Connection connection, TypeDescriptor resultTypeDescriptor, Sql sql) {
+		return streamQuery(connection, sql, new SmartRowMapper<T>(objectRelationalMapping, resultTypeDescriptor));
+	}
+
+	@Override
+	public <T> Pagination<T> queryPagination(TypeDescriptor resultType, Sql sql, long page, int limit) {
+		if (limit <= 0 || page <= 0) {
+			throw new RuntimeException("page=" + page + ", limit=" + limit);
+		}
+
+		long start = Pagination.getBegin(page, limit);
+		PaginationSql paginationSql = sqlDialect.toPaginationSql(sql, start, limit);
+		Long count = streamQuery(Long.class, sql).findFirst().orElse(0L);
+		Pagination<T> pagination = new Pagination<T>(limit);
+		if (count == null || count == 0) {
+			pagination.emptyData();
+			return pagination;
+		} else {
+			pagination.setTotalCount(count);
+			pagination.setData(query(resultType, paginationSql.getResultSql()));
+		}
+		return pagination;
 	}
 }

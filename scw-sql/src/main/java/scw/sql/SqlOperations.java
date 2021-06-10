@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 public interface SqlOperations extends ConnectionFactory {
 	default <T> T process(SqlProcessor<Connection, T> process) throws SQLException {
@@ -124,6 +126,82 @@ public interface SqlOperations extends ConnectionFactory {
 		}
 	}
 
+	default int update(Connection connection, Sql sql) throws SqlException {
+		return process(connection, sql, new SqlProcessor<PreparedStatement, Integer>() {
+
+			@Override
+			public Integer process(PreparedStatement statement) throws SQLException {
+				return statement.executeUpdate();
+			}
+		});
+	}
+
+	default int update(Sql sql) throws SqlException {
+		try {
+			return process(new SqlProcessor<Connection, Integer>() {
+
+				@Override
+				public Integer process(Connection connection) throws SQLException {
+					return update(connection, sql);
+				}
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
+	}
+
+	default Stream<ResultSet> streamQuery(Connection connection, Sql sql) throws SqlException {
+		try {
+			return SqlUtils.query(connection, prepare(sql), sql.getParams(), (resultSet) -> {
+				try {
+					resultSet.close();
+				} catch (SQLException e) {
+					throw new SqlException(sql, e);
+				}
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
+	}
+
+	default <T> Stream<T> streamQuery(Connection connection, Sql sql,
+			SqlProcessor<ResultSet, ? extends T> resultSetProcessor) throws SqlException {
+		return streamQuery(connection, sql).map(new Function<ResultSet, T>() {
+			@Override
+			public T apply(ResultSet t) {
+				try {
+					return resultSetProcessor.process(t);
+				} catch (SQLException e) {
+					throw new SqlException(sql, e);
+				}
+			}
+		});
+	}
+
+	default Stream<ResultSet> streamQuery(Sql sql) throws SqlException {
+		try {
+			return process((connection) -> {
+				return streamQuery(connection, sql);
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
+	}
+
+	default <T> Stream<T> streamQuery(Sql sql, SqlProcessor<ResultSet, ? extends T> resultSetProcessor)
+			throws SqlException {
+		return streamQuery(sql).map(new Function<ResultSet, T>() {
+			@Override
+			public T apply(ResultSet t) {
+				try {
+					return resultSetProcessor.process(t);
+				} catch (SQLException e) {
+					throw new SqlException(sql, e);
+				}
+			}
+		});
+	}
+
 	default <T> T query(Connection connection, Sql sql, SqlProcessor<ResultSet, T> resultSetProcessor)
 			throws SqlException {
 		try {
@@ -164,30 +242,6 @@ public interface SqlOperations extends ConnectionFactory {
 
 	default <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
 		return query(sql, new RowMapperProcessor<T>(rowMapper));
-	}
-
-	default int update(Connection connection, Sql sql) throws SqlException {
-		return process(connection, sql, new SqlProcessor<PreparedStatement, Integer>() {
-
-			@Override
-			public Integer process(PreparedStatement statement) throws SQLException {
-				return statement.executeUpdate();
-			}
-		});
-	}
-
-	default int update(Sql sql) throws SqlException {
-		try {
-			return process(new SqlProcessor<Connection, Integer>() {
-
-				@Override
-				public Integer process(Connection connection) throws SQLException {
-					return update(connection, sql);
-				}
-			});
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		}
 	}
 
 	default List<Object[]> query(Sql sql) throws SqlException {

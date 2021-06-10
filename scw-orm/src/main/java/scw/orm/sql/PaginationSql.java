@@ -1,4 +1,4 @@
-package scw.sql.orm.dialect;
+package scw.orm.sql;
 
 import java.io.Serializable;
 

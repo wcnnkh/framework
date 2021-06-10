@@ -2,8 +2,6 @@ package scw.orm.sql;
 
 import java.sql.Date;
 
-import scw.lang.Nullable;
-
 /**
  * sql类型
  * 
@@ -28,11 +26,4 @@ public interface SqlType {
 	 * @return
 	 */
 	Class<?> getType();
-	
-	/**
-	 * 返回此类型支持的最大长度
-	 * @return 返回空就说明无限制
-	 */
-	@Nullable
-	Long getMaxLength();
 }

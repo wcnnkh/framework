@@ -2,6 +2,7 @@ package scw.sql.orm.dialect;
 
 import java.util.Collection;
 
+import scw.orm.sql.PaginationSql;
 import scw.orm.sql.SqlDialectException;
 import scw.sql.Sql;
 

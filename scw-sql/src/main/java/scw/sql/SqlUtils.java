@@ -17,10 +17,15 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
+import scw.util.Callback;
 
 public final class SqlUtils {
 
@@ -110,7 +115,8 @@ public final class SqlUtils {
 	}
 
 	public static <P extends Statement, T> T process(Connection connection,
-			SqlProcessor<Connection, ? extends P> statementCreator, SqlProcessor<P, T> processor) throws SQLException {
+			SqlProcessor<Connection, ? extends P> statementCreator, SqlProcessor<P, ? extends T> processor)
+			throws SQLException {
 		P ps = null;
 		try {
 			ps = statementCreator.process(connection);
@@ -244,5 +250,34 @@ public final class SqlUtils {
 			SqlProcessor<Connection, ? extends PreparedStatement> connectionProcessor, Collection<Object[]> batchArgs)
 			throws SQLException {
 		return executeBatch(connection, connectionProcessor, batchArgs, null);
+	}
+
+	public static <P extends Statement> Stream<ResultSet> query(Connection connection,
+			SqlProcessor<Connection, ? extends P> statementCreate, SqlProcessor<P, ResultSet> query,
+			Callback<ResultSet, RuntimeException> closeCallback) throws SQLException {
+		return process(connection, statementCreate, new SqlProcessor<P, Stream<ResultSet>>() {
+
+			@Override
+			public Stream<ResultSet> process(P source) throws SQLException {
+				ResultSet resultSet = query.process(source);
+				ResultSetIterator iterator = new ResultSetIterator(resultSet);
+				Spliterator<ResultSet> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+				return StreamSupport.stream(spliterator, false).onClose(() -> {
+					closeCallback.call(resultSet);
+				});
+			}
+		});
+	}
+
+	public static <P extends PreparedStatement> Stream<ResultSet> query(Connection connection,
+			SqlProcessor<Connection, ? extends P> statementCreate, Object[] args,
+			Callback<ResultSet, RuntimeException> closeCallback) throws SQLException {
+		return query(connection, statementCreate, new SqlProcessor<P, ResultSet>() {
+
+			@Override
+			public ResultSet process(P source) throws SQLException {
+				return source.executeQuery();
+			}
+		}, closeCallback);
 	}
 }

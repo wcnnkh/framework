@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 import scw.aop.support.ProxyUtils;
+import scw.core.annotation.AnnotatedElementUtils;
+import scw.core.annotation.AnnotationAttributes;
 import scw.core.annotation.Named;
 import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
@@ -49,7 +51,7 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	private String getDefaultEntityName(Class<?> entityClass) {
 		String className = ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName();
-		return humpNamingReplacement ? StringUtils.humpNamingReplacement(className, "_") : className;
+		return StringUtils.humpNamingReplacement(className, "_");
 	}
 
 	@Override
@@ -71,17 +73,17 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	@Override
 	public boolean isPrimaryKey(FieldDescriptor fieldDescriptor) {
-		return fieldDescriptor.isAnnotationPresent(PrimaryKey.class);
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, PrimaryKey.class);
 	}
 
 	@Override
 	public boolean isEntity(Class<?> clazz) {
-		return clazz.isAnnotationPresent(Entity.class);
+		return AnnotatedElementUtils.isAnnotated(clazz, Entity.class);
 	}
 
 	@Override
 	public boolean isEntity(FieldDescriptor fieldDescriptor) {
-		return fieldDescriptor.isAnnotationPresent(Entity.class) || isEntity(fieldDescriptor.getType());
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Entity.class) || isEntity(fieldDescriptor.getType());
 	}
 
 	@Override
@@ -90,16 +92,17 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 	}
 
 	private String getEntityNameByAnnotatedElement(AnnotatedElement annotatedElement) {
-		Entity entity = annotatedElement.getAnnotation(Entity.class);
-		if (entity == null) {
+		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
+				.getMergedAnnotationAttributes(annotatedElement, Entity.class);
+		if (annotationAttributes == null) {
 			return null;
 		}
 
-		String name = entity.name();
+		String name = annotationAttributes.getString("name");
 		if (StringUtils.isEmpty(name)) {
-			name = entity.value();
+			return null;
 		}
-		return StringUtils.isEmpty(name) ? null : name;
+		return name;
 	}
 
 	@Override

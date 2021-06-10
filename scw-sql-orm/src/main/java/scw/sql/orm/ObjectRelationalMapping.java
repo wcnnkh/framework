@@ -19,8 +19,8 @@ import scw.mapper.Field;
 import scw.mapper.FieldFeature;
 import scw.mapper.Mapper;
 import scw.mapper.MapperUtils;
+import scw.orm.sql.annotation.Table;
 import scw.sql.orm.annotation.NotColumn;
-import scw.sql.orm.annotation.Table;
 import scw.util.Accept;
 
 /**

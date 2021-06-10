@@ -10,6 +10,7 @@ import scw.orm.ObjectRelationalMapping;
 import scw.orm.OrmUtils;
 import scw.orm.convert.PropertyFactoryToEntityConversionService;
 import scw.sql.RowMapper;
+import scw.sql.SqlProcessor;
 import scw.sql.SqlUtils;
 
 /**
@@ -19,7 +20,7 @@ import scw.sql.SqlUtils;
  *
  * @param <T>
  */
-public class SmartRowMapper<T> implements RowMapper<T> {
+public class SmartRowMapper<T> implements RowMapper<T>, SqlProcessor<ResultSet, T> {
 	private final ConversionService conversionService;
 	private final TypeDescriptor typeDescriptor;
 	private final ObjectRelationalMapping objectRelationalMapping;
@@ -39,9 +40,14 @@ public class SmartRowMapper<T> implements RowMapper<T> {
 		this.typeDescriptor = typeDescriptor;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public T mapRow(ResultSet rs, int rowNum) throws SQLException {
+		return process(rs);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public T process(ResultSet rs) throws SQLException {
 		if (typeDescriptor.isArray() || typeDescriptor.isCollection()) {
 			Object[] array = SqlUtils.getRowValues(rs, rs.getMetaData().getColumnCount());
 			return (T) conversionService.convert(array, TypeDescriptor.forObject(array), typeDescriptor);
