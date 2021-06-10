@@ -8,7 +8,7 @@ public class SqlException extends RuntimeException {
 	}
 	
 	public SqlException(Sql sql, Throwable cause) {
-		this(sql.toString(), cause);
+		this("Execute - " + sql.toString(), cause);
 	}
 
 	public SqlException(String msg) {

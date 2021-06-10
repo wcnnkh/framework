@@ -1,5 +1,6 @@
 package scw.sql;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,11 +9,11 @@ import java.util.Collection;
 import java.util.List;
 
 public interface SqlOperations extends ConnectionFactory {
-	default <T> T process(ConnectionProcessor<T> process) throws SQLException {
+	default <T> T process(SqlProcessor<Connection, T> process) throws SQLException {
 		Connection connection = null;
 		try {
 			connection = getConnection();
-			return process.processConnection(connection);
+			return process.process(connection);
 		} finally {
 			if (connection != null && !connection.isClosed()) {
 				connection.close();
@@ -21,58 +22,49 @@ public interface SqlOperations extends ConnectionFactory {
 	}
 
 	/**
-	 * @see #process(ConnectionProcessor)
+	 * @see #process(SqlProcessor)
 	 * @param callback
 	 * @throws SQLException
 	 */
-	default void process(ConnectionCallback callback) throws SQLException {
-		process(new ConnectionProcessor<Void>() {
+	default void process(SqlCallback<Connection> callback) throws SQLException {
+		process(new SqlProcessor<Connection, Void>() {
 
 			@Override
-			public Void processConnection(Connection connection)
-					throws SQLException {
-				callback.doInConnection(connection);
+			public Void process(Connection connection) throws SQLException {
+				callback.call(connection);
 				return null;
 			}
 		});
 	}
 
-	default PreparedStatement create(Connection connection, Sql sql)
-			throws SQLException {
-		PreparedStatement ps;
-		if (sql instanceof StoredProcedure) {
-			ps = connection.prepareCall(sql.getSql());
-		} else {
-			ps = connection.prepareStatement(sql.getSql());
-		}
-		SqlUtils.setSqlParams(ps, sql.getParams());
-		return ps;
+	default SqlProcessor<Connection, PreparedStatement> prepareStatement(String sql) {
+		return new PreparedStatementCreator(sql);
 	}
 
-	default <T> T process(Connection connection, Sql sql,
-			StatementProcessor<PreparedStatement, T> processor)
-			throws SQLException {
-		return SqlUtils.process(connection,
-				new StatementCreator<PreparedStatement>() {
-
-					@Override
-					public PreparedStatement create(Connection connection)
-							throws SQLException {
-						return SqlOperations.this.create(connection, sql);
-					}
-				}, processor);
+	default SqlProcessor<Connection, CallableStatement> prepareCall(String sql) {
+		return new CallableStatementCreator(sql);
 	}
 
-	default <T> T process(Sql sql,
-			StatementProcessor<PreparedStatement, T> processor)
+	default SqlProcessor<Connection, ? extends PreparedStatement> prepare(Sql sql) {
+		return new SqlPreparedStatementCreator(sql);
+	}
+
+	default <T> T process(Connection connection, Sql sql, SqlProcessor<PreparedStatement, T> processor)
 			throws SqlException {
 		try {
-			return process(new ConnectionProcessor<T>() {
+			return SqlUtils.process(connection, prepare(sql), sql.getParams(), processor);
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
+	}
+
+	default <T> T process(Sql sql, SqlProcessor<PreparedStatement, T> processor) throws SqlException {
+		try {
+			return process(new SqlProcessor<Connection, T>() {
 
 				@Override
-				public T processConnection(Connection connection)
-						throws SQLException {
-					return process(connection, sql, processor);
+				public T process(Connection connection) throws SQLException {
+					return SqlOperations.this.process(connection, sql, processor);
 				}
 			});
 		} catch (SQLException e) {
@@ -80,26 +72,20 @@ public interface SqlOperations extends ConnectionFactory {
 		}
 	}
 
-	default void process(Connection connection, Sql sql,
-			StatementCallback<PreparedStatement> callback) throws SQLException {
-		SqlUtils.process(connection, new StatementCreator<PreparedStatement>() {
-
-			@Override
-			public PreparedStatement create(Connection connection)
-					throws SQLException {
-				return SqlOperations.this.create(connection, sql);
-			}
-		}, callback);
+	default void process(Connection connection, Sql sql, SqlCallback<PreparedStatement> callback) throws SqlException {
+		try {
+			SqlUtils.process(connection, prepare(sql), sql.getParams(), callback);
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
 	}
 
-	default void process(Sql sql, StatementCallback<PreparedStatement> callback)
-			throws SqlException {
+	default void process(Sql sql, SqlCallback<PreparedStatement> callback) throws SqlException {
 		try {
-			process(new ConnectionCallback() {
+			process(new SqlCallback<Connection>() {
 
 				@Override
-				public void doInConnection(Connection connection)
-						throws SQLException {
+				public void call(Connection connection) throws SQLException {
 					process(connection, sql, callback);
 				}
 			});
@@ -110,15 +96,7 @@ public interface SqlOperations extends ConnectionFactory {
 
 	default boolean execute(Connection connection, Sql sql) throws SqlException {
 		try {
-			return SqlUtils.execute(connection, sql,
-					new StatementCreator<PreparedStatement>() {
-
-						@Override
-						public PreparedStatement create(Connection connection)
-								throws SQLException {
-							return SqlOperations.this.create(connection, sql);
-						}
-					});
+			return SqlUtils.execute(connection, prepare(sql), sql.getParams());
 		} catch (SQLException e) {
 			throw new SqlException(sql, e);
 		}
@@ -129,16 +107,15 @@ public interface SqlOperations extends ConnectionFactory {
 	 * 
 	 * @param sql
 	 * @return 返回结果并不代表是否执行成功，意义请参考jdk文档<br/>
-	 *         true if the first result is a ResultSet object; false if the
-	 *         first result is an update count or there is no result
+	 *         true if the first result is a ResultSet object; false if the first
+	 *         result is an update count or there is no result
 	 */
 	default boolean execute(Sql sql) throws SqlException {
 		try {
-			return process(new ConnectionProcessor<Boolean>() {
+			return process(new SqlProcessor<Connection, Boolean>() {
 
 				@Override
-				public Boolean processConnection(Connection connection)
-						throws SQLException {
+				public Boolean process(Connection connection) throws SQLException {
 					return execute(connection, sql);
 				}
 			});
@@ -147,33 +124,35 @@ public interface SqlOperations extends ConnectionFactory {
 		}
 	}
 
-	default <T> T query(Sql sql, ResultSetMapper<T> resultSetMapper)
+	default <T> T query(Connection connection, Sql sql, SqlProcessor<ResultSet, T> resultSetProcessor)
 			throws SqlException {
-		return process(sql, new StatementProcessor<T>() {
-
-			@Override
-			public T processPreparedStatement(PreparedStatement ps)
-					throws SQLException {
-				ResultSet resultSet = null;
-				try {
-					resultSet = ps.executeQuery();
-					return resultSetMapper.mapper(resultSet);
-				} finally {
-					if (resultSet != null && !resultSet.isClosed()) {
-						resultSet.close();
-					}
-				}
-			}
-		});
+		try {
+			return SqlUtils.query(connection, prepare(sql), sql.getParams(), resultSetProcessor);
+		} catch (SQLException e) {
+			throw new SqlException(e);
+		}
 	}
 
-	default void query(Sql sql, ResultSetCallback resultSetCallback)
-			throws SqlException {
-		query(sql, new ResultSetMapper<Void>() {
+	default <T> T query(Sql sql, SqlProcessor<ResultSet, T> resultSetProcessor) throws SqlException {
+		try {
+			return process(new SqlProcessor<Connection, T>() {
+
+				@Override
+				public T process(Connection connection) throws SQLException {
+					return query(connection, sql, resultSetProcessor);
+				}
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
+	}
+
+	default void query(Sql sql, SqlCallback<ResultSet> resultSetCallback) throws SqlException {
+		query(sql, new SqlProcessor<ResultSet, Void>() {
 
 			@Override
-			public Void mapper(ResultSet resultSet) throws SQLException {
-				resultSetCallback.process(resultSet);
+			public Void process(ResultSet resultSet) throws SQLException {
+				resultSetCallback.call(resultSet);
 				return null;
 			}
 		});
@@ -183,46 +162,62 @@ public interface SqlOperations extends ConnectionFactory {
 		query(sql, new DefaultResultSetCallback(rowCallback));
 	}
 
-	default <T> List<T> query(Sql sql, RowMapper<T> rowMapper)
-			throws SqlException {
-		return query(sql, new DefaultResultSetMapper<T>(rowMapper));
+	default <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
+		return query(sql, new RowMapperProcessor<T>(rowMapper));
+	}
+
+	default int update(Connection connection, Sql sql) throws SqlException {
+		return process(connection, sql, new SqlProcessor<PreparedStatement, Integer>() {
+
+			@Override
+			public Integer process(PreparedStatement statement) throws SQLException {
+				return statement.executeUpdate();
+			}
+		});
 	}
 
 	default int update(Sql sql) throws SqlException {
-		return process(sql, new StatementProcessor<Integer>() {
+		try {
+			return process(new SqlProcessor<Connection, Integer>() {
 
-			@Override
-			public Integer processPreparedStatement(PreparedStatement ps)
-					throws SQLException {
-				return ps.executeUpdate();
-			}
-		});
+				@Override
+				public Integer process(Connection connection) throws SQLException {
+					return update(connection, sql);
+				}
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
 	}
 
 	default List<Object[]> query(Sql sql) throws SqlException {
 		return query(sql, new RowMapper<Object[]>() {
 
-			public Object[] mapRow(ResultSet rs, int rowNum)
-					throws SQLException {
-				return SqlUtils.getRowValues(rs, rs.getMetaData()
-						.getColumnCount());
+			public Object[] mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return SqlUtils.getRowValues(rs, rs.getMetaData().getColumnCount());
 			}
 		});
 	}
 
-	default int[] batchUpdate(String sql, Collection<Object[]> batchArgs)
-			throws SqlException {
-		return process(sql, new StatementProcessor<int[]>() {
+	default int[] executeBatch(Connection connection, String sql, Collection<Object[]> batchArgs) throws SqlException {
+		try {
+			return SqlUtils.executeBatch(connection, prepareStatement(sql), batchArgs);
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
+	}
 
-			@Override
-			public int[] processPreparedStatement(PreparedStatement ps)
-					throws SQLException {
-				for (Object[] args : batchArgs) {
-					SqlUtils.setSqlParams(ps, args);
-					ps.addBatch();
+	default int[] executeBatch(String sql, Collection<Object[]> batchArgs) throws SqlException {
+		try {
+			return process(new SqlProcessor<Connection, int[]>() {
+
+				@Override
+				public int[] process(Connection connection) throws SQLException {
+					return executeBatch(connection, sql, batchArgs);
 				}
-				return ps.executeBatch();
-			}
-		});
+			});
+		} catch (SQLException e) {
+			throw new SqlException(sql, e);
+		}
 	}
 }

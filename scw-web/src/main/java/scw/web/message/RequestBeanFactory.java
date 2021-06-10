@@ -14,12 +14,10 @@ import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.parameter.ParameterFactory;
-import scw.instance.InstanceException;
 import scw.instance.NoArgsInstanceFactory;
 import scw.mapper.Field;
 import scw.orm.convert.EntityConversionService;
 import scw.util.Accept;
-import scw.util.Creator;
 import scw.util.Result;
 import scw.value.support.MapPropertyFactory;
 import scw.web.ServerHttpRequest;
@@ -70,18 +68,15 @@ public class RequestBeanFactory extends RequestParameterFactory
 		for (final ParameterDescriptors parameterDescriptors : beanDefinition) {
 			if (isAccept(parameterDescriptors)) {
 				if (beanDefinition.isSingleton()) {
-					result = singletonBeanRegistry.getSingleton(beanDefinition.getId(), new Creator<Object>() {
-
-						public Object create() throws InstanceException {
-							return beanDefinition.create(parameterDescriptors.getTypes(),
-									getParameters(parameterDescriptors));
-						}
+					result = singletonBeanRegistry.getSingleton(beanDefinition.getId(), () -> {
+						return beanDefinition.create(parameterDescriptors.getTypes(),
+								getParameters(parameterDescriptors));
 					});
 				} else {
 					result = new Result<Object>(true, beanDefinition.create(parameterDescriptors.getTypes(),
 							getParameters(parameterDescriptors)));
 				}
-				
+
 				if (result != null && result.isActive()) {
 					EntityConversionService conversionService = BeanUtils.createEntityConversionService(
 							beanFactory.getEnvironment(),

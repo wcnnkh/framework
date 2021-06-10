@@ -2,6 +2,7 @@ package scw.orm.sql;
 
 import java.util.List;
 
+import scw.convert.TypeDescriptor;
 import scw.lang.Nullable;
 import scw.orm.EntityOperations;
 import scw.sql.Sql;
@@ -55,5 +56,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 
 	<T> T getById(@Nullable String tableName, Class<? extends T> entityClass, Object... ids);
 
-	<T> List<T> query(Class<? extends T> entityClass, Sql sql);
+	<T> List<T> query(TypeDescriptor typeDescriptor, Sql sql);
+
+	default <T> List<T> query(Class<? extends T> entityClass, Sql sql) {
+		return query(TypeDescriptor.valueOf(entityClass), sql);
+	}
 }

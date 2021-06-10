@@ -5,14 +5,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DefaultResultSetMapper<T> implements ResultSetMapper<List<T>> {
+public class RowMapperProcessor<T> implements SqlProcessor<ResultSet, List<T>> {
 	private RowMapper<T> rowMapper;
 
-	public DefaultResultSetMapper(RowMapper<T> rowMapper) {
+	public RowMapperProcessor(RowMapper<T> rowMapper) {
 		this.rowMapper = rowMapper;
 	}
 
-	public List<T> mapper(ResultSet resultSet) throws SQLException {
+	public List<T> process(ResultSet resultSet) throws SQLException {
 		List<T> list = new ArrayList<T>();
 		for (int i = 1; resultSet.next(); i++) {
 			T t = rowMapper.mapRow(resultSet, i);

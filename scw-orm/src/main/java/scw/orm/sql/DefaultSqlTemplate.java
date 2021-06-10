@@ -1,11 +1,14 @@
 package scw.orm.sql;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 import scw.aop.support.ProxyUtils;
 import scw.convert.ConversionService;
+import scw.convert.TypeDescriptor;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Sys;
@@ -13,15 +16,12 @@ import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.Field;
-import scw.mapper.MapperUtils;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.convert.SmartRowMapper;
 import scw.sql.ConnectionFactory;
 import scw.sql.DefaultSqlOperations;
-import scw.sql.ResultSetMapper;
 import scw.sql.Sql;
-import scw.sql.SqlException;
-import scw.sql.orm.enums.OperationType;
+import scw.sql.SqlProcessor;
 
 public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
 	private static Logger logger = LoggerFactory.getLogger(DefaultSqlTemplate.class);
@@ -74,9 +74,9 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	private Object getAutoIncrementLastId(Connection connection, String tableName) throws SQLException {
 		Sql sql = sqlDialect.toLastInsertIdSql(tableName);
-		return query(sql, connection, new ResultSetMapper<Object>() {
+		return query(connection, sql, new SqlProcessor<ResultSet, Object>() {
 
-			public Object mapper(java.sql.ResultSet resultSet) throws SQLException {
+			public Object process(ResultSet resultSet) throws SQLException {
 				if (resultSet.next()) {
 					return resultSet.getObject(1);
 				}
@@ -104,35 +104,31 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		Class<?> clazz = getUserEntityClass(entity.getClass());
 		String tName = getTableName(tableName, clazz, entity);
 		Sql sql = sqlDialect.save(tName, clazz, entity);
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			int updateCount = update(sql, connection);
-			setAutoIncrementLastId(updateCount, sql, connection, tName, clazz, entity);
-			return updateCount > 0;
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		} finally {
-			close(connection);
-		}
+		return process(sql, new SqlProcessor<PreparedStatement, Integer>() {
+
+			@Override
+			public Integer process(PreparedStatement statement) throws SQLException {
+				int updateCount = statement.executeUpdate();
+				setAutoIncrementLastId(updateCount, sql, statement.getConnection(), tName, clazz, entity);
+				return updateCount;
+			}
+		}) > 0;
 	}
-	
+
 	@Override
 	public boolean saveOrUpdate(String tableName, Object entity) {
 		Class<?> clazz = getUserEntityClass(entity.getClass());
 		String tName = getTableName(tableName, clazz, entity);
 		Sql sql = sqlDialect.saveOrUpdate(tName, clazz, entity);
-		Connection connection = null;
-		try {
-			connection = getUserConnection();
-			int updateCount = update(sql, connection);
-			setAutoIncrementLastId(updateCount, sql, connection, tName, clazz, entity);
-			return updateCount > 0;
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		} finally {
-			close(connection);
-		}
+		return process(sql, new SqlProcessor<PreparedStatement, Integer>() {
+
+			@Override
+			public Integer process(PreparedStatement statement) throws SQLException {
+				int updateCount = statement.executeUpdate();
+				setAutoIncrementLastId(updateCount, sql, statement.getConnection(), tName, clazz, entity);
+				return updateCount;
+			}
+		}) > 0;
 	}
 
 	@Override
@@ -168,7 +164,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	}
 
 	@Override
-	public <T> List<T> query(Class<? extends T> entityClass, Sql sql) {
-		return query(sql, new SmartRowMapper<T>(entityClass));
+	public <T> List<T> query(TypeDescriptor typeDescriptor, Sql sql) {
+		return query(sql, new SmartRowMapper<T>(objectRelationalMapping, typeDescriptor));
 	}
 }

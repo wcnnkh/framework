@@ -2,7 +2,7 @@ package scw.instance;
 
 import scw.util.Creator;
 
-public interface InstanceCreator<T> extends Creator<T>{
+public interface InstanceCreator<T> extends Creator<T, InstanceException>{
 	T create() throws InstanceException;
 	
 	/**

@@ -9,6 +9,7 @@ import scw.logger.LoggerFactory;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlException;
+import scw.sql.SqlPreparedStatementCreator;
 import scw.sql.SqlUtils;
 import scw.sql.orm.dialect.SqlDialect;
 
@@ -67,7 +68,7 @@ public abstract class AbstractDataBase implements DataBase {
 		logger.info(sql.toString());
 		try {
 			connection = getConnection();
-			SqlUtils.execute(connection, sql);
+			SqlUtils.execute(connection, new SqlPreparedStatementCreator(sql), sql.getParams());
 		} catch (SQLException e) {
 			throw new SqlException(e);
 		} finally {

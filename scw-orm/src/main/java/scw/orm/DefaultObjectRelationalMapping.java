@@ -75,16 +75,20 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 	}
 
 	@Override
+	public boolean isEntity(Class<?> clazz) {
+		return clazz.isAnnotationPresent(Entity.class);
+	}
+
+	@Override
 	public boolean isEntity(FieldDescriptor fieldDescriptor) {
-		return fieldDescriptor.isAnnotationPresent(Entity.class)
-				|| fieldDescriptor.getType().isAnnotationPresent(Entity.class);
+		return fieldDescriptor.isAnnotationPresent(Entity.class) || isEntity(fieldDescriptor.getType());
 	}
 
 	@Override
 	public boolean ignore(FieldDescriptor fieldDescriptor) {
 		return fieldDescriptor.isAnnotationPresent(Ignore.class);
 	}
-	
+
 	private String getEntityNameByAnnotatedElement(AnnotatedElement annotatedElement) {
 		Entity entity = annotatedElement.getAnnotation(Entity.class);
 		if (entity == null) {

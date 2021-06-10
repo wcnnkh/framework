@@ -22,11 +22,11 @@ public interface ObjectRelationalMapping {
 	static final Accept<Field> SETTER_ACCEPT = FieldFeature.SUPPORT_SETTER.and(FieldFeature.IGNORE_STATIC);
 
 	boolean ignore(FieldDescriptor fieldDescriptor);
-	
+
 	String getName(FieldDescriptor fieldDescriptor);
-	
+
 	Collection<String> getAliasNames(FieldDescriptor fieldDescriptor);
-	
+
 	String getName(Class<?> clazz);
 
 	Collection<String> getAliasNames(Class<?> entityClass);
@@ -56,6 +56,8 @@ public interface ObjectRelationalMapping {
 	 */
 	boolean isEntity(FieldDescriptor fieldDescriptor);
 
+	boolean isEntity(Class<?> clazz);
+
 	default Accept<FieldDescriptor> getPrimaryKeyAccept() {
 		return new Accept<FieldDescriptor>() {
 			@Override
@@ -77,8 +79,8 @@ public interface ObjectRelationalMapping {
 
 	default Fields getGetterFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
 		return MapperUtils.getMapper()
-				.getFields(ProxyUtils.getFactory().getUserClass(clazz), useSuperClass, parentField).accept(GETTER_ACCEPT)
-				.accept(new Accept<Field>() {
+				.getFields(ProxyUtils.getFactory().getUserClass(clazz), useSuperClass, parentField)
+				.accept(GETTER_ACCEPT).accept(new Accept<Field>() {
 
 					@Override
 					public boolean accept(Field e) {
@@ -89,8 +91,8 @@ public interface ObjectRelationalMapping {
 
 	default Fields getSetterFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
 		return MapperUtils.getMapper()
-				.getFields(ProxyUtils.getFactory().getUserClass(clazz), useSuperClass, parentField).accept(SETTER_ACCEPT)
-				.accept(new Accept<Field>() {
+				.getFields(ProxyUtils.getFactory().getUserClass(clazz), useSuperClass, parentField)
+				.accept(SETTER_ACCEPT).accept(new Accept<Field>() {
 
 					@Override
 					public boolean accept(Field e) {
