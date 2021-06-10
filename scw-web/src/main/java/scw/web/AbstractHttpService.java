@@ -12,6 +12,7 @@ public abstract class AbstractHttpService implements HttpService {
 	private static Logger logger = LoggerFactory.getLogger(HttpService.class);
 	private final HttpServiceRegistry serviceRegistry = new HttpServiceRegistry();
 	private CorsRegistry corsRegistry;
+	private NotFoundServiceRegistry notFoundServiceRegistry;
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
 		CorsRegistry corsRegistry = getCorsRegistry();
@@ -31,6 +32,13 @@ public abstract class AbstractHttpService implements HttpService {
 		WebUtils.setLocalServerHttpRequest(request);
 		Iterable<? extends HttpServiceInterceptor> interceptors = getHttpServiceInterceptors();
 		HttpService service = serviceRegistry.get(request);
+		if(service == null){
+			//not found
+			NotFoundServiceRegistry notFoundServiceRegistry = getNotFoundServiceRegistry();
+			if(notFoundServiceRegistry != null){
+				service = notFoundServiceRegistry.get(request);
+			}
+		}
 		HttpService serviceToUse = new HttpServiceInterceptorChain(
 				interceptors == null ? null : interceptors.iterator(), service);
 		try {
@@ -52,6 +60,17 @@ public abstract class AbstractHttpService implements HttpService {
 			}
 		}
 	}
+
+	public NotFoundServiceRegistry getNotFoundServiceRegistry() {
+		return notFoundServiceRegistry;
+	}
+
+	public void setNotFoundServiceRegistry(
+			NotFoundServiceRegistry notFoundServiceRegistry) {
+		this.notFoundServiceRegistry = notFoundServiceRegistry;
+	}
+
+
 
 	public HttpServiceRegistry getServiceRegistry() {
 		return serviceRegistry;
