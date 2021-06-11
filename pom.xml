@@ -643,7 +643,6 @@
 		<module>scw-netflix-hystrix</module>
 		<module>scw-feign</module>
 		<module>scw-tomcat</module>
-		<module>scw-sql-orm</module>
 		<module>scw-web</module>
 		<module>scw-memcached</module>
 		<module>scw-redis</module>
