@@ -48,6 +48,21 @@ public interface ObjectRelationalMapping {
 	 */
 	boolean isPrimaryKey(FieldDescriptor fieldDescriptor);
 
+	default boolean isPrimaryKey(Field field) {
+		return (field.isSupportGetter() && isPrimaryKey(field.getGetter()))
+				|| (field.isSupportSetter() && isPrimaryKey(field.getSetter()));
+	}
+
+	default Accept<Field> getPrimaryKeyAccept() {
+		return new Accept<Field>() {
+
+			@Override
+			public boolean accept(Field field) {
+				return isPrimaryKey(field);
+			}
+		};
+	}
+
 	/**
 	 * 是否是一个实体类
 	 * 
@@ -57,24 +72,16 @@ public interface ObjectRelationalMapping {
 	boolean isEntity(FieldDescriptor fieldDescriptor);
 
 	boolean isEntity(Class<?> clazz);
-	
+
 	boolean isVersionField(FieldDescriptor fieldDescriptor);
 
-	default Accept<FieldDescriptor> getPrimaryKeyAccept() {
-		return new Accept<FieldDescriptor>() {
-			@Override
-			public boolean accept(FieldDescriptor e) {
-				return isPrimaryKey(e) && !ignore(e);
-			}
-		};
-	}
-
-	default Accept<FieldDescriptor> getEntityAccept() {
-		return new Accept<FieldDescriptor>() {
+	default Accept<Field> getEntityAccept() {
+		return new Accept<Field>() {
 
 			@Override
-			public boolean accept(FieldDescriptor e) {
-				return isEntity(e) && !ignore(e);
+			public boolean accept(Field field) {
+				return (field.isSupportGetter() && isEntity(field.getGetter()))
+						|| (field.isSupportSetter() && isEntity(field.getSetter()));
 			}
 		};
 	}
@@ -102,4 +109,5 @@ public interface ObjectRelationalMapping {
 					}
 				});
 	}
+
 }

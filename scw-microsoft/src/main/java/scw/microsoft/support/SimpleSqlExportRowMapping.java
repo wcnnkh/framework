@@ -1,23 +1,24 @@
 package scw.microsoft.support;
 
-import scw.sql.orm.ResultMapping;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public class SimpleSqlExportRowMapping implements SqlExportRowMapping {
+import scw.sql.SqlProcessor;
+import scw.sql.SqlUtils;
+
+public class SimpleSqlExportRowMapping implements SqlProcessor<ResultSet, String[]> {
 	private int colCount;
 
 	public SimpleSqlExportRowMapping(int colCount) {
 		this.colCount = colCount;
 	}
 
-	public String[] mapping(ResultMapping resultMapping) {
-		Object[] values = resultMapping.getValues();
-		String[] strs = new String[colCount];
-		int i = 0;
-		for (Object v : values) {
-			strs[i++] = v.toString();
-			if (i >= colCount) {
-				break;
-			}
+	@Override
+	public String[] process(ResultSet source) throws SQLException {
+		Object[] values = SqlUtils.getRowValues(source, colCount);
+		String[] strs = new String[values.length];
+		for (int i = 0; i < values.length; i++) {
+			strs[i] = String.valueOf(values[i]);
 		}
 		return strs;
 	}

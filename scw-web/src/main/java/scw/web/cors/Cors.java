@@ -16,7 +16,7 @@ public class Cors {
 			HttpHeaders.ORIGIN };
 	public static final Cors DEFAULT = new Cors().readyOnly();
 	public static final Cors EMPTY = new Cors().readyOnly();
-	
+
 	private static final String[] EMPTY_ARRAY = new String[0];
 
 	/**
@@ -143,12 +143,7 @@ public class Cors {
 	}
 
 	public void write(ServerHttpRequest request, HttpHeaders headers) {
-		String origin = request.getHeaders().getOrigin();
-		if(StringUtils.isEmpty(origin)){
-			return ;
-		}
-		
-		writeValues(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, this.origins, origin);
+		writeValues(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, this.origins, "*");
 		writeValues(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, this.methods, "*");
 		writeValues(headers, HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, this.headers, "*");
 		if (maxAge != null) {

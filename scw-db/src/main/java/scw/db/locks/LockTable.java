@@ -4,9 +4,7 @@ import java.io.Serializable;
 
 import scw.orm.annotation.PrimaryKey;
 import scw.orm.sql.annotation.Table;
-import scw.sql.orm.cache.CacheEnable;
 
-@CacheEnable(false)
 @Table(name = TableLock.TABLE_NAME)
 public class LockTable implements Serializable {
 	private static final long serialVersionUID = 1L;

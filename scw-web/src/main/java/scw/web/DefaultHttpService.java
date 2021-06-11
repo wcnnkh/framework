@@ -6,7 +6,7 @@ import java.util.List;
 import scw.beans.BeanFactory;
 import scw.web.cors.CorsRegistry;
 import scw.web.resource.DefaultStaticResourceLoader;
-import scw.web.resource.StaticResourceHttpServiceHandler;
+import scw.web.resource.StaticResourceHttpService;
 import scw.web.resource.StaticResourceLoader;
 
 public class DefaultHttpService extends AbstractHttpService {
@@ -18,10 +18,15 @@ public class DefaultHttpService extends AbstractHttpService {
 		if (beanFactory.isInstance(CorsRegistry.class)) {
 			setCorsRegistry(beanFactory.getInstance(CorsRegistry.class));
 		}
+
+		if (beanFactory.isInstance(NotFoundServiceRegistry.class)) {
+			setNotFoundServiceRegistry(beanFactory.getInstance(NotFoundServiceRegistry.class));
+		}
+
 		StaticResourceLoader staticResourceLoader = beanFactory.isInstance(StaticResourceLoader.class)
 				? beanFactory.getInstance(StaticResourceLoader.class)
 				: new DefaultStaticResourceLoader(beanFactory.getEnvironment());
-		StaticResourceHttpServiceHandler resourceHandler = new StaticResourceHttpServiceHandler();
+		StaticResourceHttpService resourceHandler = new StaticResourceHttpService();
 		resourceHandler.setResourceLoader(staticResourceLoader);
 		getServiceRegistry().register(resourceHandler);
 

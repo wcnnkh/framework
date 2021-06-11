@@ -40,7 +40,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 	@Override
 	public Enumeration<String> getUnfinishedGroups() {
 		Sql sql = new SimpleSql("select `group` from " + TABLE_NAME + " where cts<? group by `group` order by cts desc", (System.currentTimeMillis() - XTime.ONE_MINUTE * getCompenstBeforeMinute()));
-		List<String> groups = db.select(String.class, sql);
+		List<String> groups = db.query(String.class, sql);
 		if(CollectionUtils.isEmpty(groups)){
 			return Collections.emptyEnumeration();
 		}
@@ -51,7 +51,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 	@Override
 	public String getLastUnfinishedId(String group) {
 		Sql sql = new SimpleSql("select `id` from " + TABLE_NAME + " where group=? order by cts desc limit 0,1");
-		return db.selectOne(String.class, sql);
+		return db.queryFirst(String.class, sql).orElse(null);
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 	
 	@Override
 	public boolean exists(String group, String id) {
-		return db.selectOne(String.class, new SimpleSql("select id from " + TABLE_NAME + " where group=? and id=?", group, id)) != null;
+		return db.queryFirst(String.class, new SimpleSql("select id from " + TABLE_NAME + " where group=? and id=?", group, id)).isPresent();
 	}
 	
 	@Override

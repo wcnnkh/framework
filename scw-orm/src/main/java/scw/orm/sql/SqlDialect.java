@@ -1,62 +1,95 @@
 package scw.orm.sql;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import scw.convert.TypeDescriptor;
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
+import scw.orm.ObjectKeyFormat;
 import scw.orm.sql.annotation.AutoIncrement;
 import scw.orm.sql.annotation.Counter;
 import scw.orm.sql.annotation.Unique;
 import scw.sql.Sql;
 
-public interface SqlDialect {
+public interface SqlDialect extends ObjectKeyFormat {
 	SqlType getSqlType(Class<?> javaType);
 
 	default boolean isAutoIncrement(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isAnnotated(fieldDescriptor,
-				AutoIncrement.class);
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, AutoIncrement.class);
+	}
+
+	default boolean isAutoIncrement(Field field) {
+		return (field.isSupportGetter() && isAutoIncrement(field.getGetter())
+				|| (field.isSupportSetter() && isAutoIncrement(field.getSetter())));
 	}
 
 	default Counter getCounter(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.findMergedAnnotation(fieldDescriptor,
-				Counter.class);
+		return AnnotatedElementUtils.findMergedAnnotation(fieldDescriptor, Counter.class);
 	}
 
 	default boolean isUnique(FieldDescriptor fieldDescriptor) {
 		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Unique.class);
 	}
-	
+
+	default boolean isUnique(Field field) {
+		return (field.isSupportGetter() && isUnique(field.getGetter()))
+				|| (field.isSupportSetter() && isUnique(field.getSetter()));
+	}
+
+	default Object toDataBaseValue(Object value) {
+		return toDataBaseValue(value, TypeDescriptor.forObject(value));
+	}
+
+	Object toDataBaseValue(Object value, TypeDescriptor sourceType);
+
 	boolean isNullable(FieldDescriptor fieldDescriptor);
-	
+
+	default boolean isNullable(Field field) {
+		return (field.isSupportGetter() && isNullable(field.getGetter()))
+				|| (field.isSupportSetter() && isNullable(field.getSetter()));
+	}
+
+	String getCharsetName(FieldDescriptor fieldDescriptor);
+
 	String getComment(Field field);
 
 	Map<IndexInfo, List<IndexInfo>> getIndexInfoMap(Class<?> entityClass);
 
-	Sql getById(String tableName, Class<?> entityClass, Object... ids)
-			throws SqlDialectException;
+	Sql toSelectByIdsSql(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException;
 
-	<T> Sql save(String tableName, Class<? extends T> entityClass, T entity)
-			throws SqlDialectException;
+	<T> Sql save(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException;
 
-	<T> Sql delete(String tableName, Class<? extends T> entityClass, T entity)
-			throws SqlDialectException;
+	<T> Sql delete(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException;
 
-	Sql deleteById(String tableName, Class<?> entityClass, Object... ids)
-			throws SqlDialectException;
+	Sql deleteById(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException;
 
-	<T> Sql update(String tableName, Class<? extends T> entityClass, T entity)
-			throws SqlDialectException;
+	<T> Sql update(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException;
 
-	<T> Sql saveOrUpdate(String tableName, Class<? extends T> entityClass,
-			T entity) throws SqlDialectException;
+	<T> Sql toSaveOrUpdateSql(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException;
 
-	Sql createTable(String tableName, Class<?> entityClass)
-			throws SqlDialectException;
+	Sql toCreateTableSql(String tableName, Class<?> entityClass) throws SqlDialectException;
 
 	Sql toLastInsertIdSql(String tableName) throws SqlDialectException;
 
-	PaginationSql toPaginationSql(Sql sql, long start, int limit)
+	PaginationSql toPaginationSql(Sql sql, long start, int limit) throws SqlDialectException;
+
+	Sql getInIds(String tableName, Class<?> entityClass, Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException;
+
+	/**
+	 * 复制表结构
+	 * 
+	 * @param newTableName
+	 * @param oldTableName
+	 * @return
+	 */
+	Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
+			throws SqlDialectException;
+
+	Sql toMaxIdSql(Class<?> clazz, String tableName, Field field) throws SqlDialectException;
+
+	TableStructureMapping getTableStructureMapping(Class<?> clazz, String tableName);
 }

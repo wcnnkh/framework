@@ -1,7 +1,7 @@
 package scw.db.database;
 
+import scw.orm.sql.SqlDialect;
 import scw.sql.ConnectionFactory;
-import scw.sql.orm.dialect.SqlDialect;
 
 /**
  * 数据库
@@ -11,12 +11,7 @@ import scw.sql.orm.dialect.SqlDialect;
  */
 public interface DataBase extends ConnectionFactory {
 
-	/**
-	 * 获取一个未指定数据库连接的地址
-	 * 
-	 * @return
-	 */
-	String getConnectionURL();
+	String getUrl();
 
 	/**
 	 * 获取数据库名称
@@ -49,7 +44,9 @@ public interface DataBase extends ConnectionFactory {
 	/**
 	 * 创建数据库
 	 */
-	void create();
+	default void create() {
+		create(getName());
+	}
 
 	/**
 	 * 创建数据库

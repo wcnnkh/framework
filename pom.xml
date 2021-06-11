@@ -106,12 +106,6 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-orm</artifactId>
-				<version>2.1</version>
-			</dependency>
-
-			<dependency>
-				<groupId>scw</groupId>
 				<artifactId>scw-beans</artifactId>
 				<version>2.1</version>
 			</dependency>
@@ -178,7 +172,7 @@
 
 			<dependency>
 				<groupId>scw</groupId>
-				<artifactId>scw-sql-orm</artifactId>
+				<artifactId>scw-orm</artifactId>
 				<version>2.1</version>
 			</dependency>
 

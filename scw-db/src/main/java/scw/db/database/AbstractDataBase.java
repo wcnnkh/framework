@@ -6,12 +6,12 @@ import java.sql.SQLException;
 
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.orm.sql.SqlDialect;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.SqlPreparedStatementCreator;
 import scw.sql.SqlUtils;
-import scw.sql.orm.dialect.SqlDialect;
 
 public abstract class AbstractDataBase implements DataBase {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -52,11 +52,7 @@ public abstract class AbstractDataBase implements DataBase {
 			e.printStackTrace();
 		}
 
-		return DriverManager.getConnection(getConnectionURL(), getUsername(), getPassword());
-	}
-
-	public void create() {
-		create(getName());
+		return DriverManager.getConnection(getUrl(), getUsername(), getPassword());
 	}
 
 	public void create(String database) {

@@ -2,6 +2,7 @@ package scw.web;
 
 import java.io.IOException;
 
+import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.web.cors.Cors;
@@ -32,13 +33,18 @@ public abstract class AbstractHttpService implements HttpService {
 		WebUtils.setLocalServerHttpRequest(request);
 		Iterable<? extends HttpServiceInterceptor> interceptors = getHttpServiceInterceptors();
 		HttpService service = serviceRegistry.get(request);
-		if(service == null){
-			//not found
+		if (service == null) {
+			// not found
 			NotFoundServiceRegistry notFoundServiceRegistry = getNotFoundServiceRegistry();
-			if(notFoundServiceRegistry != null){
+			if (notFoundServiceRegistry != null) {
 				service = notFoundServiceRegistry.get(request);
 			}
 		}
+
+		if (service == null) {
+			service = (req, resp) -> notfound(req, resp);
+		}
+
 		HttpService serviceToUse = new HttpServiceInterceptorChain(
 				interceptors == null ? null : interceptors.iterator(), service);
 		try {
@@ -61,16 +67,22 @@ public abstract class AbstractHttpService implements HttpService {
 		}
 	}
 
+	public void notfound(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+		if (CorsUtils.isPreFlightRequest(request)) {
+			return;
+		}
+
+		response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+		logger.error("Not found {}", request.toString());
+	}
+
 	public NotFoundServiceRegistry getNotFoundServiceRegistry() {
 		return notFoundServiceRegistry;
 	}
 
-	public void setNotFoundServiceRegistry(
-			NotFoundServiceRegistry notFoundServiceRegistry) {
+	public void setNotFoundServiceRegistry(NotFoundServiceRegistry notFoundServiceRegistry) {
 		this.notFoundServiceRegistry = notFoundServiceRegistry;
 	}
-
-
 
 	public HttpServiceRegistry getServiceRegistry() {
 		return serviceRegistry;

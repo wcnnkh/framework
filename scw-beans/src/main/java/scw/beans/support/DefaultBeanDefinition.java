@@ -10,9 +10,9 @@ import scw.aop.Proxy;
 import scw.aop.support.ConfigurableMethodInterceptor;
 import scw.beans.AopEnableSpi;
 import scw.beans.BeanDefinition;
+import scw.beans.BeanUtils;
 import scw.beans.BeanlifeCycleEvent;
 import scw.beans.BeanlifeCycleEvent.Step;
-import scw.beans.BeanUtils;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.beans.RuntimeBean;
@@ -100,6 +100,7 @@ public class DefaultBeanDefinition extends DefaultInstanceDefinition
 			} catch (Throwable e) {
 				throw new BeansException(e);
 			}
+			
 			ioc.getDestroy().process(this, instance, beanFactory);
 			for (Ioc ioc : Ioc.forClass(instance.getClass())) {
 				ioc.getDestroy().process(this, instance, beanFactory);
