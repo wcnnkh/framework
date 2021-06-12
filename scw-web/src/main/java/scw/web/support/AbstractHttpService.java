@@ -1,10 +1,19 @@
-package scw.web;
+package scw.web.support;
 
 import java.io.IOException;
 
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.web.HttpService;
+import scw.web.HttpServiceInterceptor;
+import scw.web.HttpServiceInterceptorChain;
+import scw.web.HttpServiceRegistry;
+import scw.web.ServerHttpAsyncControl;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
+import scw.web.ServerHttpResponseCompleteAsyncListener;
+import scw.web.WebUtils;
 import scw.web.cors.Cors;
 import scw.web.cors.CorsRegistry;
 import scw.web.cors.CorsUtils;
@@ -15,7 +24,8 @@ public abstract class AbstractHttpService implements HttpService {
 	private CorsRegistry corsRegistry;
 	private NotFoundServiceRegistry notFoundServiceRegistry;
 
-	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+	public void service(ServerHttpRequest request, ServerHttpResponse response)
+			throws IOException {
 		CorsRegistry corsRegistry = getCorsRegistry();
 		if (corsRegistry != null) {
 			if (CorsUtils.isCorsRequest(request)) {
@@ -53,9 +63,12 @@ public abstract class AbstractHttpService implements HttpService {
 			try {
 				if (!response.isCommitted()) {
 					if (request.isSupportAsyncControl()) {
-						ServerHttpAsyncControl serverHttpAsyncControl = request.getAsyncControl(response);
+						ServerHttpAsyncControl serverHttpAsyncControl = request
+								.getAsyncControl(response);
 						if (serverHttpAsyncControl.isStarted()) {
-							serverHttpAsyncControl.addListener(new ServerHttpResponseCompleteAsyncListener(response));
+							serverHttpAsyncControl
+									.addListener(new ServerHttpResponseCompleteAsyncListener(
+											response));
 							return;
 						}
 					}
@@ -67,12 +80,14 @@ public abstract class AbstractHttpService implements HttpService {
 		}
 	}
 
-	public void notfound(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+	public void notfound(ServerHttpRequest request, ServerHttpResponse response)
+			throws IOException {
 		if (CorsUtils.isPreFlightRequest(request)) {
 			return;
 		}
 
-		response.sendError(HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.getReasonPhrase());
+		response.sendError(HttpStatus.NOT_FOUND.value(),
+				HttpStatus.NOT_FOUND.getReasonPhrase());
 		logger.error("Not found {}", request.toString());
 	}
 
@@ -80,7 +95,8 @@ public abstract class AbstractHttpService implements HttpService {
 		return notFoundServiceRegistry;
 	}
 
-	public void setNotFoundServiceRegistry(NotFoundServiceRegistry notFoundServiceRegistry) {
+	public void setNotFoundServiceRegistry(
+			NotFoundServiceRegistry notFoundServiceRegistry) {
 		this.notFoundServiceRegistry = notFoundServiceRegistry;
 	}
 

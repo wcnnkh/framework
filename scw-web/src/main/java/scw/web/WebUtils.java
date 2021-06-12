@@ -33,6 +33,7 @@ import scw.value.AnyValue;
 import scw.value.EmptyValue;
 import scw.value.StringValue;
 import scw.value.Value;
+import scw.web.support.DefaultHttpService;
 
 public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
