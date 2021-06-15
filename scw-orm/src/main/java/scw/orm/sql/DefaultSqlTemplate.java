@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import scw.aop.support.ProxyUtils;
@@ -252,7 +251,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		if (cacheManager == null || (value == null && cacheManager.isKeepLooking(entityClass, ids))) {
 			Class<?> clazz = getUserEntityClass(entityClass);
 			Sql sql = sqlDialect.toSelectByIdsSql(getTableName(tableName, clazz, null), clazz, ids);
-			value = queryFirst(entityClass, sql).orElse(null);
+			value = queryFirst(entityClass, sql);
 			if (value != null && cacheManager != null) {
 				cacheManager.save(value);
 			}
@@ -316,7 +315,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	}
 
 	@Override
-	public <T> Optional<T> getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, Field field) {
+	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, Field field) {
 		String tName = getTableName(tableName, tableClass, null);
 		Sql sql = sqlDialect.toMaxIdSql(tableClass, tName, field);
 		return queryFirst(type, sql);

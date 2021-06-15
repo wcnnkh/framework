@@ -343,7 +343,7 @@ public class MysqlDialect extends AbstractSqlDialect {
 				sb.append(" UNIQUE");
 			}
 
-			if (!isNullable(col.getGetter()) || !isNullable(col.getSetter())) {
+			if (!isNullable(col)) {
 				sb.append(" not null");
 			}
 

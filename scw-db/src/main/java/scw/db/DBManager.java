@@ -61,7 +61,7 @@ public final class DBManager {
 	}
 
 	public static <T> T selectOne(Class<T> type, Sql sql) {
-		return getDB(type).queryFirst(type, sql).orElse(null);
+		return getDB(type).queryFirst(type, sql);
 	}
 
 	/**

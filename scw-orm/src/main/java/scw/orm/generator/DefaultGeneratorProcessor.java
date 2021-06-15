@@ -98,7 +98,8 @@ public class DefaultGeneratorProcessor implements GeneratorProcessor {
 	}
 
 	public <T> Number getMaxId(Class<? extends T> entityClass, Object entity, Field field) {
-		return getSqlTemplate().getMaxValue(Number.class, entityClass, field).orElse(0);
+		Number number = getSqlTemplate().getMaxValue(Number.class, entityClass, field);
+		return number == null ? 0 : number;
 	};
 
 	protected <T> String getCacheKey(Class<? extends T> entityClass, Object entity, Field field) {

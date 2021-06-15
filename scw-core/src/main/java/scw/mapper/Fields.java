@@ -58,7 +58,8 @@ public interface Fields extends Iterable<Field> {
 
 			@Override
 			public boolean accept(Field e) {
-				return acceptFieldDescriptor.accept(e.getGetter()) || acceptFieldDescriptor.accept(e.getSetter());
+				return (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
+						|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter()));
 			}
 		});
 	}

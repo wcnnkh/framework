@@ -87,7 +87,7 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 			return value;
 		}
 
-		return conversionService.convert(value, sourceType, TypeDescriptor.valueOf(sqlType.getType()));
+		return getConversionService().convert(value, sourceType, TypeDescriptor.valueOf(sqlType.getType()));
 	}
 
 	private void appendObjectKeyByValue(StringBuilder appendable, Field field, Object value) {
@@ -215,6 +215,6 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 	@Override
 	public boolean isNullable(FieldDescriptor fieldDescriptor) {
 		return AnnotatedElementUtils.isNullable(fieldDescriptor,
-				!(getObjectRelationalMapping().isPrimaryKey(fieldDescriptor) || isUnique(fieldDescriptor)));
+				!(getObjectRelationalMapping().isPrimaryKey(fieldDescriptor)));
 	}
 }

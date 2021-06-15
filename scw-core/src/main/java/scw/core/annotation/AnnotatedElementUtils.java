@@ -15,6 +15,7 @@ import java.util.Set;
 import scw.core.Assert;
 import scw.core.BridgeMethodResolver;
 import scw.core.utils.CollectionUtils;
+import scw.lang.Description;
 import scw.lang.Ignore;
 import scw.lang.Nullable;
 import scw.util.LinkedMultiValueMap;
@@ -837,6 +838,11 @@ public class AnnotatedElementUtils {
 	public static Boolean ignore(AnnotatedElement annotatedElement, Boolean defaultValue) {
 		Ignore ignore = getMergedAnnotation(annotatedElement, Ignore.class);
 		return ignore == null ? defaultValue : ignore.value();
+	}
+
+	public static String getDescription(AnnotatedElement annotatedElement) {
+		Description description = getMergedAnnotation(annotatedElement, Description.class);
+		return description == null ? null : description.value();
 	}
 
 	/**

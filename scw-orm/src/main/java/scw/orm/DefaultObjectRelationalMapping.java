@@ -13,7 +13,6 @@ import scw.core.annotation.Named;
 import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
 import scw.mapper.FieldDescriptor;
-import scw.orm.annotation.Description;
 import scw.orm.annotation.Entity;
 import scw.orm.annotation.PrimaryKey;
 import scw.orm.annotation.Version;
@@ -81,9 +80,7 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	@Override
 	public String getDescription(FieldDescriptor fieldDescriptor) {
-		Description description = fieldDescriptor
-				.getAnnotation(Description.class);
-		return description == null ? null : description.value();
+		return AnnotatedElementUtils.getDescription(fieldDescriptor);
 	}
 
 	@Override

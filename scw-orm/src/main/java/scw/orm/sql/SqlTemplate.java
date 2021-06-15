@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -108,9 +107,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 		return streamQuery(TypeDescriptor.valueOf(resultType), sql);
 	}
 
-	default <T> Optional<T> queryFirst(Class<? extends T> resultType, Sql sql) {
+	@Nullable
+	default <T> T queryFirst(Class<? extends T> resultType, Sql sql) {
 		Stream<T> stream = streamQuery(resultType, sql);
-		return stream.findFirst();
+		return stream.findFirst().orElse(null);
 	}
 
 	default <T> List<T> query(TypeDescriptor typeDescriptor, Sql sql) {
@@ -156,7 +156,8 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 	 * @param field
 	 * @return
 	 */
-	default <T> Optional<T> getMaxValue(Class<? extends T> type, Class<?> tableClass, Field field) {
+	@Nullable
+	default <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, Field field) {
 		return getMaxValue(type, tableClass, null, field);
 	}
 
@@ -169,5 +170,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 	 * @param field
 	 * @return
 	 */
-	<T> Optional<T> getMaxValue(Class<? extends T> type, Class<?> tableClass, @Nullable String tableName, Field field);
+	@Nullable
+	<T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, @Nullable String tableName, Field field);
 }

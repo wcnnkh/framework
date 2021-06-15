@@ -1,6 +1,5 @@
 package scw.web;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -95,9 +94,7 @@ public class MultiPartServerHttpRequest extends ServerHttpRequestWrapper impleme
 	public void close() throws IOException {
 		if (!CollectionUtils.isEmpty(multipartMessageMap)) {
 			for (MultipartMessage message : multipartMessageList) {
-				if (message instanceof Closeable) {
-					((Closeable) message).close();
-				}
+				message.close();
 			}
 		}
 	}

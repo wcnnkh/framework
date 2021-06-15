@@ -51,7 +51,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 	@Override
 	public String getLastUnfinishedId(String group) {
 		Sql sql = new SimpleSql("select `id` from " + TABLE_NAME + " where group=? order by cts desc limit 0,1");
-		return db.queryFirst(String.class, sql).orElse(null);
+		return db.queryFirst(String.class, sql);
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 	
 	@Override
 	public boolean exists(String group, String id) {
-		return db.queryFirst(String.class, new SimpleSql("select id from " + TABLE_NAME + " where group=? and id=?", group, id)).isPresent();
+		return db.queryFirst(String.class, new SimpleSql("select id from " + TABLE_NAME + " where group=? and id=?", group, id)) != null;
 	}
 	
 	@Override

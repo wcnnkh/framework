@@ -50,7 +50,7 @@ public class SQLiteDialect extends MysqlDialect {
 				sb.append(" UNIQUE");
 			}
 
-			if (isNullable(col)) {
+			if (!isNullable(col)) {
 				sb.append(" not null");
 			}
 
@@ -111,7 +111,7 @@ public class SQLiteDialect extends MysqlDialect {
 				}
 			}
 
-			appendFieldName(sb, column.getGetter());
+			appendFieldName(cols, column.getGetter());
 			values.append("?");
 			params.add(value);
 

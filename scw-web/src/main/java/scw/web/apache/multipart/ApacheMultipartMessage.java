@@ -1,6 +1,5 @@
 package scw.web.apache.multipart;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import scw.net.MimeType;
 import scw.net.message.Headers;
 import scw.net.message.multipart.MultipartMessage;
 
-public class ApacheMultipartMessage implements MultipartMessage, Serializable, Closeable {
+public class ApacheMultipartMessage implements MultipartMessage, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final FileItem fileItem;
 
