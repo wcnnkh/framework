@@ -39,10 +39,10 @@ public class ByteArrayMessageConverter implements WebMessageConverter {
 
 		response.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		if(body instanceof byte[]) {
-			response.getBody().write((byte[])body);
+			response.getOutputStream().write((byte[])body);
 			return ;
 		}else if(body instanceof InputStream) {
-			IOUtils.copy((InputStream)body, response.getBody());
+			IOUtils.copy((InputStream)body, response.getOutputStream());
 			return ;
 		}
 		throw new WebMessagelConverterException(type, body, request, null);

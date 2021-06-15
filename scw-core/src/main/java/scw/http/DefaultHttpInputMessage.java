@@ -14,10 +14,11 @@ public class DefaultHttpInputMessage implements HttpInputMessage{
 		this.httpHeaders.putAll(inputMessage.getHeaders());
 	}
 	
-	public InputStream getBody() throws IOException {
-		return inputMessage.getBody();
+	@Override
+	public InputStream getInputStream() throws IOException {
+		return inputMessage.getInputStream();
 	}
-
+	
 	public HttpHeaders getHeaders() {
 		return httpHeaders;
 	}

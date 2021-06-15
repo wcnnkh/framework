@@ -255,7 +255,7 @@ public interface HttpConnection extends HttpConnectionFactory {
 			}
 
 			try {
-				FileUtils.copyInputStreamToFile(response.getBody(), file);
+				FileUtils.copyInputStreamToFile(response.getInputStream(), file);
 			} finally {
 				file.deleteOnExit();
 			}

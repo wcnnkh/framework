@@ -19,7 +19,7 @@ public class PartMultipartMessage implements MultipartMessage {
 	}
 
 	@Override
-	public InputStream getBody() throws IOException {
+	public InputStream getInputStream() throws IOException {
 		return part.getInputStream();
 	}
 

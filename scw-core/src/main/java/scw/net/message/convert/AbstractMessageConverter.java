@@ -182,7 +182,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 	}
 
 	protected String readTextBody(InputMessage inputMessage) throws IOException {
-		return IOUtils.toString(inputMessage.getBody(),
+		return IOUtils.toString(inputMessage.getInputStream(),
 				getCharset(inputMessage).name());
 	}
 
@@ -192,7 +192,7 @@ public abstract class AbstractMessageConverter<T> implements MessageConverter {
 			return;
 		}
 
-		IOUtils.write(text, outputMessage.getBody(), getCharset(outputMessage)
+		IOUtils.write(text, outputMessage.getOutputStream(), getCharset(outputMessage)
 				.name());
 	}
 

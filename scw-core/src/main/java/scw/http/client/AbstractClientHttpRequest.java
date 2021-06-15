@@ -19,7 +19,7 @@ public abstract class AbstractClientHttpRequest implements ClientHttpRequest {
 		return headers;
 	}
 
-	public final OutputStream getBody() throws IOException {
+	public final OutputStream getOutputStream() throws IOException {
 		assertNotExecuted();
 		return getBodyInternal(this.headers);
 	}

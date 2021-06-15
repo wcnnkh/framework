@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
 
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
@@ -77,12 +78,32 @@ public abstract class ResourceWrapper implements Resource, Observable<Resource> 
 	public <T> T read(IoProcessor<InputStream, ? extends T> processor) throws IOException {
 		return get().read(processor);
 	}
-	
+
 	@Override
 	public ReadableByteChannel readableChannel() throws IOException {
 		return get().readableChannel();
 	}
-	
+
+	@Override
+	public void read(IoCallback<InputStream> callback) throws IOException {
+		get().read(callback);
+	}
+
+	@Override
+	public byte[] getBytes() throws IOException {
+		return get().getBytes();
+	}
+
+	@Override
+	public void transferTo(File dest) throws IOException, IllegalStateException {
+		get().transferTo(dest);
+	}
+
+	@Override
+	public void transferTo(Path dest) throws IOException, IllegalStateException {
+		get().transferTo(dest);
+	}
+
 	@Override
 	public String toString() {
 		return get().toString();

@@ -55,7 +55,7 @@ public class ApacheMultipartMessageResolver implements MultipartMessageResolver 
 		}
 
 		public InputStream getInputStream() throws IOException {
-			return inputMessage.getBody();
+			return inputMessage.getInputStream();
 		}
 
 	}

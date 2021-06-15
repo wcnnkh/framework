@@ -27,7 +27,7 @@ public class SerialzerMessageConveter extends AbstractMessageConverter<Object> {
 	protected Object readInternal(TypeDescriptor type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
 		try {
-			return serializer.deserialize(inputMessage.getBody());
+			return serializer.deserialize(inputMessage.getInputStream());
 		} catch (ClassNotFoundException e) {
 			throw new MessageConvertException(e);
 		}
@@ -37,7 +37,7 @@ public class SerialzerMessageConveter extends AbstractMessageConverter<Object> {
 	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
-		serializer.serialize(outputMessage.getBody(), body);
+		serializer.serialize(outputMessage.getOutputStream(), body);
 	}
 
 }

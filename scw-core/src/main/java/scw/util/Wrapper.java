@@ -21,7 +21,6 @@ public class Wrapper<W> implements Decorator{
 		return wrappedTarget.toString();
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -29,7 +28,7 @@ public class Wrapper<W> implements Decorator{
 		}
 
 		if (obj instanceof Wrapper) {
-			return ObjectUtils.nullSafeEquals(wrappedTarget, ((Wrapper) obj).wrappedTarget);
+			return ObjectUtils.nullSafeEquals(wrappedTarget, ((Wrapper<?>) obj).wrappedTarget);
 		}
 		return false;
 	}

@@ -24,8 +24,7 @@ public class FromMultipartMessage extends AbstractMultipartMessage {
 	}
 
 	@Override
-	public InputStream getBody() throws IOException {
+	public InputStream getInputStream() throws IOException {
 		return new UnsafeByteArrayInputStream(body);
 	}
-
 }

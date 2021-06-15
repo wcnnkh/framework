@@ -20,7 +20,7 @@ public class FeignOutputMessage implements HttpOutputMessage {
 		this.body = body;
 	}
 
-	public OutputStream getBody() throws IOException {
+	public OutputStream getOutputStream() throws IOException {
 		return body;
 	}
 

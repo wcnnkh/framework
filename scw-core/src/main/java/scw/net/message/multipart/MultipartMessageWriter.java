@@ -106,7 +106,7 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 			writeItem(boundary, body, outputMessage);
 		}
 
-		OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), getCharset(outputMessage));
+		OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getOutputStream(), getCharset(outputMessage));
 		osw.write(LINE);
 		osw.write(BOUNDARY_APPEND);
 		osw.write(boundary);
@@ -182,7 +182,7 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 	}
 
 	protected void writeItem(String boundary, MultipartMessage multipartMessage, OutputMessage outputMessage) throws IOException {
-		OutputStream os = outputMessage.getBody();
+		OutputStream os = outputMessage.getOutputStream();
 		OutputStreamWriter osw = new OutputStreamWriter(os, getCharset(outputMessage));
 		osw.write(LINE);
 		osw.write(BOUNDARY_APPEND);
@@ -194,7 +194,7 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 		}
 		osw.write(LINE);
 		osw.flush();
-		InputStream inputStream = multipartMessage.getBody();
+		InputStream inputStream = multipartMessage.getInputStream();
 		IOUtils.write(inputStream, os);
 		os.flush();
 	}

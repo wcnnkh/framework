@@ -10,6 +10,7 @@ import scw.util.XUtils;
 
 /**
  * 缓存请求体，未处理内存溢出的情况
+ * 
  * @author shuchaowen
  *
  */
@@ -22,7 +23,7 @@ public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 	private byte[] bytes;
 
 	public byte[] getBytes() throws IOException {
-		CachingServerHttpRequest cachingServerHttpRequest = XUtils.getDelegate(getTargetRequest(),
+		CachingServerHttpRequest cachingServerHttpRequest = XUtils.getDelegate(wrappedTarget,
 				CachingServerHttpRequest.class);
 		if (cachingServerHttpRequest != null) {
 			return cachingServerHttpRequest.getBytes();
@@ -32,7 +33,7 @@ public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 			return null;
 		}
 
-		InputStream inputStream = super.getBody();
+		InputStream inputStream = super.getInputStream();
 		if (inputStream == null) {
 			return null;
 		}
@@ -44,7 +45,7 @@ public class CachingServerHttpRequest extends ServerHttpRequestWrapper {
 	}
 
 	@Override
-	public InputStream getBody() throws IOException {
+	public InputStream getInputStream() throws IOException {
 		byte[] bytes = getBytes();
 		if (bytes == null) {
 			return null;

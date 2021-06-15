@@ -38,7 +38,7 @@ public class StringMessageConverter extends AbstractMessageConverter<Object> {
 	protected void writeInternal(TypeDescriptor type, Object body, MimeType contentType, OutputMessage outputMessage)
 			throws IOException, MessageConvertException {
 		if (body instanceof byte[]) {
-			IOUtils.write((byte[]) body, outputMessage.getBody());
+			IOUtils.write((byte[]) body, outputMessage.getOutputStream());
 		} else {
 			writeTextBody(body.toString(), contentType, outputMessage);
 		}

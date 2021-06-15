@@ -93,7 +93,7 @@ public class DefaultKindEditor extends AbstractKindUpload {
 		}
 
 		File file = new File(filePath);
-		FileUtils.copyInputStreamToFile(item.getBody(), file);
+		FileUtils.copyInputStreamToFile(item.getInputStream(), file);
 
 		String url = path;
 		if (StringUtils.isNotEmpty(rootUrl)) {

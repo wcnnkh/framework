@@ -171,7 +171,7 @@ public abstract class DefaultHandshakeHandler implements HandshakeHandler {
 			logger.error("Handshake failed due to invalid Upgrade header: " + request.getHeaders().getUpgrade());
 		}
 		response.setStatusCode(HttpStatus.BAD_REQUEST);
-		response.getBody().write("Can \"Upgrade\" only to \"WebSocket\".".getBytes(Constants.UTF_8));
+		response.getOutputStream().write("Can \"Upgrade\" only to \"WebSocket\".".getBytes(Constants.UTF_8));
 	}
 
 	protected void handleInvalidConnectHeader(ServerHttpRequest request, ServerHttpResponse response)
@@ -180,7 +180,7 @@ public abstract class DefaultHandshakeHandler implements HandshakeHandler {
 			logger.error("Handshake failed due to invalid Connection header " + request.getHeaders().getConnection());
 		}
 		response.setStatusCode(HttpStatus.BAD_REQUEST);
-		response.getBody().write("\"Connection\" must be \"upgrade\".".getBytes(Constants.UTF_8));
+		response.getOutputStream().write("\"Connection\" must be \"upgrade\".".getBytes(Constants.UTF_8));
 	}
 
 	protected boolean isWebSocketVersionSupported(WebSocketHttpHeaders httpHeaders) {

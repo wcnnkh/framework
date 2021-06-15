@@ -37,7 +37,7 @@ public final class DownloadView implements View {
 		InputStream is = null;
 		OutputStream os = null;
 		try {
-			os = httpChannel.getResponse().getBody();
+			os = httpChannel.getResponse().getOutputStream();
 			is = resource.getInputStream();
 			IOUtils.write(is, os, 1024);
 		} finally {

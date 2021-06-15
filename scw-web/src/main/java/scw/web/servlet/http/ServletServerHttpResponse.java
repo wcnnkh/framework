@@ -27,7 +27,7 @@ public class ServletServerHttpResponse implements ServerHttpResponse, Decorator 
 		return XUtils.getDelegate(httpServletResponse, targetType);
 	}
 
-	public OutputStream getBody() throws IOException {
+	public OutputStream getOutputStream() throws IOException {
 		bodyUse = true;
 		headers.write();
 		return httpServletResponse.getOutputStream();

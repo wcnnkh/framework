@@ -81,7 +81,7 @@ public class ResourceMessageConverter extends AbstractMessageConverter<Resource>
 
 		InputStream is = resource.getInputStream();
 		try {
-			IOUtils.write(is, outputMessage.getBody());
+			IOUtils.write(is, outputMessage.getOutputStream());
 		} finally {
 			is.close();
 		}

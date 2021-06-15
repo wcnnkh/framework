@@ -35,7 +35,7 @@ public class InputMessageConverter implements WebMessageConverter {
 			throws IOException, WebMessagelConverterException {
 		InputMessage inputMessage = (InputMessage) body;
 		InetUtils.writeHeader(inputMessage, response);
-		IOUtils.write(inputMessage.getBody(), response.getBody());
+		IOUtils.write(inputMessage.getInputStream(), response.getOutputStream());
 	}
 
 }

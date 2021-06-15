@@ -42,7 +42,7 @@ public class BinaryUploader {
 
 			String physicalPath = (String) conf.get("rootPath") + savePath;
 
-			InputStream is = fileItem.getBody();
+			InputStream is = fileItem.getInputStream();
 			State storageState = StorageManager.saveFileByInputStream(is,
 					physicalPath, maxSize);
 			is.close();

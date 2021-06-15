@@ -275,9 +275,4 @@ public class UrlResource extends AbstractFileResolvingResource implements
 			return HttpHeaders.EMPTY;
 		}
 	}
-
-	@Override
-	public final InputStream getBody() throws IOException {
-		return getInputStream();
-	}
 }

@@ -15,13 +15,11 @@ import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpMethod;
 import scw.http.MediaType;
+import scw.net.message.InputMessageWrapper;
 import scw.security.session.Session;
 import scw.util.MultiValueMap;
-import scw.util.Decorator;
-import scw.util.XUtils;
 
-public class ServerHttpRequestWrapper implements ServerHttpRequest, Decorator {
-	private final ServerHttpRequest targetRequest;
+public class ServerHttpRequestWrapper extends InputMessageWrapper<ServerHttpRequest> implements ServerHttpRequest {
 	private final boolean overrideBody;
 
 	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest) {
@@ -29,7 +27,7 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, Decorator {
 	}
 
 	public ServerHttpRequestWrapper(ServerHttpRequest targetRequest, boolean overrideBody) {
-		this.targetRequest = targetRequest;
+		super(targetRequest);
 		this.overrideBody = overrideBody;
 	}
 
@@ -37,32 +35,12 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, Decorator {
 		return overrideBody;
 	}
 
-	public ServerHttpRequest getTargetRequest() {
-		return targetRequest;
-	}
-
-	public <T> T getDelegate(Class<T> targetType) {
-		return XUtils.getDelegate(targetRequest, targetType);
-	}
-
-	public InputStream getBody() throws IOException {
-		return targetRequest.getBody();
-	}
-
-	public long getContentLength() {
-		return targetRequest.getContentLength();
-	}
-
-	public String getCharacterEncoding() {
-		return targetRequest.getCharacterEncoding();
-	}
-
 	private BufferedReader reader;
 
 	public BufferedReader getReader() throws IOException {
 		if (isOverrideBody()) {
 			if (reader == null) {
-				InputStream inputStream = getBody();
+				InputStream inputStream = getInputStream();
 				if (inputStream == null) {
 					return null;
 				}
@@ -75,101 +53,101 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, Decorator {
 			}
 			return reader;
 		}
-		return targetRequest.getReader();
+		return wrappedTarget.getReader();
 	}
 
 	public InetSocketAddress getLocalAddress() {
-		return targetRequest.getLocalAddress();
+		return wrappedTarget.getLocalAddress();
 	}
 
 	public InetSocketAddress getRemoteAddress() {
-		return targetRequest.getRemoteAddress();
+		return wrappedTarget.getRemoteAddress();
 	}
 
 	public MultiValueMap<String, String> getParameterMap() {
-		return targetRequest.getParameterMap();
+		return wrappedTarget.getParameterMap();
 	}
 
 	public Principal getPrincipal() {
-		return targetRequest.getPrincipal();
+		return wrappedTarget.getPrincipal();
 	}
 
 	public void setAttribute(String name, Object o) {
-		targetRequest.setAttribute(name, o);
+		wrappedTarget.setAttribute(name, o);
 	}
 
 	public void removeAttribute(String name) {
-		targetRequest.removeAttribute(name);
+		wrappedTarget.removeAttribute(name);
 	}
 
 	public Object getAttribute(String name) {
-		return targetRequest.getAttribute(name);
+		return wrappedTarget.getAttribute(name);
 	}
 
 	public Enumeration<String> getAttributeNames() {
-		return targetRequest.getAttributeNames();
+		return wrappedTarget.getAttributeNames();
 	}
 
 	public String getPath() {
-		return targetRequest.getPath();
+		return wrappedTarget.getPath();
 	}
 
 	public String getContextPath() {
-		return targetRequest.getContextPath();
+		return wrappedTarget.getContextPath();
 	}
 
 	public HttpHeaders getHeaders() {
-		return targetRequest.getHeaders();
+		return wrappedTarget.getHeaders();
 	}
 
 	public MediaType getContentType() {
-		return targetRequest.getContentType();
+		return wrappedTarget.getContentType();
 	}
 
 	public HttpMethod getMethod() {
-		return targetRequest.getMethod();
+		return wrappedTarget.getMethod();
 	}
 
 	public URI getURI() {
-		return targetRequest.getURI();
+		return wrappedTarget.getURI();
 	}
 
 	public String getRawMethod() {
-		return targetRequest.getRawMethod();
+		return wrappedTarget.getRawMethod();
 	}
 
 	public HttpCookie[] getCookies() {
-		return targetRequest.getCookies();
+		return wrappedTarget.getCookies();
 	}
 
 	public Session getSession() {
-		return targetRequest.getSession();
+		return wrappedTarget.getSession();
 	}
 
 	public Session getSession(boolean create) {
-		return targetRequest.getSession(create);
+		return wrappedTarget.getSession(create);
 	}
 
 	public boolean isSupportAsyncControl() {
-		return targetRequest.isSupportAsyncControl();
+		return wrappedTarget.isSupportAsyncControl();
 	}
 
 	public ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response) {
-		return targetRequest.getAsyncControl(response);
+		return wrappedTarget.getAsyncControl(response);
 	}
 
 	public String getIp() {
-		return targetRequest.getIp();
+		return wrappedTarget.getIp();
 	}
 
 	@Override
 	public String toString() {
-		return targetRequest.toString();
+		return wrappedTarget.toString();
 	}
 
 	@Override
 	public int hashCode() {
-		return targetRequest.hashCode();
+		return wrappedTarget.hashCode();
 	}
 
 	@Override
@@ -179,7 +157,7 @@ public class ServerHttpRequestWrapper implements ServerHttpRequest, Decorator {
 		}
 
 		if (obj instanceof ServerHttpRequestWrapper) {
-			return ObjectUtils.nullSafeEquals(targetRequest, ((ServerHttpRequestWrapper) obj).targetRequest);
+			return ObjectUtils.nullSafeEquals(wrappedTarget, ((ServerHttpRequestWrapper) obj).wrappedTarget);
 		}
 		return false;
 	}

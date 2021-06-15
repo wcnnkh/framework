@@ -53,7 +53,7 @@ class MultipartFileResource extends AbstractResource {
 	 */
 	@Override
 	public InputStream getInputStream() throws IOException, IllegalStateException {
-		return this.multipartMessage.getBody();
+		return this.multipartMessage.getInputStream();
 	}
 
 	/**

@@ -7,7 +7,7 @@ import java.nio.channels.WritableByteChannel;
 
 public interface OutputStreamSource {
 	OutputStream getOutputStream() throws IOException;
-	
+
 	/**
 	 * Return a {@link WritableByteChannel}.
 	 * <p>
@@ -38,5 +38,18 @@ public interface OutputStreamSource {
 				os.close();
 			}
 		}
+	}
+
+	/**
+	 * 一般不需要重写此方法，默认调用的是{@see OutputStreamSource#write(IoProcessor)}
+	 * 
+	 * @param callback
+	 * @throws IOException
+	 */
+	default void write(IoCallback<OutputStream> callback) throws IOException {
+		write((is) -> {
+			callback.call(is);
+			return null;
+		});
 	}
 }

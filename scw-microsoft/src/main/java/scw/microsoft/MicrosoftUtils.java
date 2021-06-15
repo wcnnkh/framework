@@ -113,6 +113,6 @@ public final class MicrosoftUtils {
 		if (excelVersion == null) {
 			excelVersion = ExcelVersion.XLS;
 		}
-		return getExcelOperations().createExcelExport(outputMessage.getBody(), excelVersion);
+		return getExcelOperations().createExcelExport(outputMessage.getOutputStream(), excelVersion);
 	}
 }

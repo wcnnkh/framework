@@ -175,7 +175,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 		return httpServletRequest.getReader();
 	}
 
-	public InputStream getBody() throws IOException {
+	public InputStream getInputStream() throws IOException {
 		return httpServletRequest.getInputStream();
 	}
 

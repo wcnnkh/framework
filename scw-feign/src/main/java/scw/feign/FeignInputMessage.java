@@ -32,7 +32,7 @@ public class FeignInputMessage implements HttpInputMessage {
 		return headers;
 	}
 
-	public InputStream getBody() throws IOException {
+	public InputStream getInputStream() throws IOException {
 		return response.body().asInputStream();
 	}
 }

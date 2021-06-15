@@ -133,7 +133,7 @@ public class DefaultClientHttpResponseErrorHandler implements
 	 */
 	protected byte[] getResponseBody(ClientHttpResponse response) {
 		try {
-			return FileCopyUtils.copyToByteArray(response.getBody());
+			return FileCopyUtils.copyToByteArray(response.getInputStream());
 		} catch (IOException ex) {
 			// ignore
 		}

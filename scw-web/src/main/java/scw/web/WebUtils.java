@@ -91,7 +91,7 @@ public final class WebUtils {
 		if (!isExpired(request, response, resource.lastModified())) {
 			return;
 		}
-		IOUtils.copy(resource.getInputStream(), response.getBody());
+		IOUtils.copy(resource.getInputStream(), response.getOutputStream());
 	}
 
 	/**

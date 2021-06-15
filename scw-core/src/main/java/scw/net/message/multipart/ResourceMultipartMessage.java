@@ -31,9 +31,9 @@ public class ResourceMultipartMessage extends AbstractMultipartMessage {
 		}
 		getHeaders().setContentLength(resource.contentLength());
 	}
-
+	
 	@Override
-	public InputStream getBody() throws IOException {
+	public InputStream getInputStream() throws IOException {
 		return resource.getInputStream();
 	}
 

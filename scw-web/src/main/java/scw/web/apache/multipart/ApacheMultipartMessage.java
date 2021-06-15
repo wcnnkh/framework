@@ -21,7 +21,7 @@ public class ApacheMultipartMessage implements MultipartMessage, Serializable, C
 	}
 
 	@Override
-	public InputStream getBody() throws IOException {
+	public InputStream getInputStream() throws IOException {
 		return fileItem.getInputStream();
 	}
 
