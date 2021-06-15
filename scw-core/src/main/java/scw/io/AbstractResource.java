@@ -34,8 +34,9 @@ import scw.util.JavaVersion;
 public abstract class AbstractResource implements Resource, EventDispatcher<ChangeEvent<Resource>> {
 	private static final Constructor<EventDispatcher<ChangeEvent<Resource>>> WATCH_SERVICE_CONSTRUCTOR = ReflectionUtils
 			.findConstructor("scw.io.event.WatchServiceResourceEventDispatcher", null, true, Resource.class);
-	
+
 	private volatile EventDispatcher<ChangeEvent<Resource>> eventDispatcher;
+
 	private EventDispatcher<ChangeEvent<Resource>> getEventDispatcher() {
 		if (eventDispatcher == null) {
 			synchronized (this) {
@@ -57,33 +58,38 @@ public abstract class AbstractResource implements Resource, EventDispatcher<Chan
 		return eventDispatcher;
 	}
 
-	public boolean isObservable() {
-		if (!SUPPORT_EVENT_DISPATCHER) {
-			return false;
-		}
+	/**
+	 * 是否监听jar包
+	 * 
+	 * @return
+	 */
+	protected boolean isObserableJar() {
+		return false;
+	}
 
+	public boolean isObservable() {
 		if (exists()) {
 			try {
 				if (ResourceUtils.isJarURL(getURL())) {
-					return SUPPORT_JAR_RESOURCE_EVENT_DISPATCHER;
+					return isObserableJar();
 				}
 			} catch (IOException e) {
 			}
 		}
 		return true;
 	}
-	
+
 	@Override
 	public EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
-		if(!isObservable()) {
+		if (!isObservable()) {
 			return EventRegistration.EMPTY;
 		}
 		return getEventDispatcher().registerListener(eventListener);
 	}
-	
+
 	@Override
 	public void publishEvent(ChangeEvent<Resource> event) {
-		if(isObservable()) {
+		if (isObservable()) {
 			getEventDispatcher().publishEvent(event);
 		}
 	}

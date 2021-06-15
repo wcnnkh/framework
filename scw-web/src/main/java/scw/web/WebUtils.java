@@ -26,8 +26,8 @@ import scw.lang.NamedThreadLocal;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.MimeType;
-import scw.net.message.multipart.FileItem;
-import scw.net.message.multipart.FileItemParser;
+import scw.net.message.multipart.MultipartMessage;
+import scw.net.message.multipart.MultipartMessageResolver;
 import scw.util.XUtils;
 import scw.value.AnyValue;
 import scw.value.EmptyValue;
@@ -129,9 +129,9 @@ public final class WebUtils {
 		MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getDelegate(request,
 				MultiPartServerHttpRequest.class);
 		if (multiPartServerHttpRequest != null) {
-			FileItem fileItem = multiPartServerHttpRequest.getMultiPartMap().getFirst(name);
-			if (fileItem != null) {
-				return new AnyValue(fileItem);
+			MultipartMessage multipartMessage = multiPartServerHttpRequest.getMultipartMessageMap().getFirst(name);
+			if (multipartMessage != null) {
+				return new AnyValue(multipartMessage);
 			}
 		}
 		return EmptyValue.INSTANCE;
@@ -175,10 +175,10 @@ public final class WebUtils {
 		MultiPartServerHttpRequest multiPartServerHttpRequest = XUtils.getDelegate(request,
 				MultiPartServerHttpRequest.class);
 		if (multiPartServerHttpRequest != null) {
-			List<FileItem> items = multiPartServerHttpRequest.getMultiPartMap().get(name);
+			List<MultipartMessage> items = multiPartServerHttpRequest.getMultipartMessageMap().get(name);
 			Value[] values = new Value[items.size()];
 			int index = 0;
-			for (FileItem element : items) {
+			for (MultipartMessage element : items) {
 				values[index++] = new AnyValue(element);
 			}
 			return values;
@@ -206,7 +206,7 @@ public final class WebUtils {
 	}
 
 	public static ServerHttpRequest wrapperServerMultipartFormRequest(ServerHttpRequest request,
-			FileItemParser fileItemParser) {
+			MultipartMessageResolver multipartMessageResolver) {
 		if (request.getMethod() == HttpMethod.GET) {
 			return request;
 		}
@@ -220,10 +220,10 @@ public final class WebUtils {
 				return request;
 			}
 
-			if (fileItemParser == null) {
+			if (multipartMessageResolver == null) {
 				logger.warn("Multipart is not supported: {}", request);
 			} else {
-				return new MultiPartServerHttpRequest(request, fileItemParser);
+				return new MultiPartServerHttpRequest(request, multipartMessageResolver);
 			}
 		}
 		return request;

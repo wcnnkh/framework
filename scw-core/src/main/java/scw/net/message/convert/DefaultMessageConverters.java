@@ -4,6 +4,7 @@ import scw.convert.ConversionService;
 import scw.convert.ConversionServiceAware;
 import scw.instance.ServiceLoaderFactory;
 import scw.net.InetUtils;
+import scw.net.message.multipart.MultipartMessageConverter;
 
 public class DefaultMessageConverters extends MessageConverters {
 	private final ConversionService conversionService;
@@ -14,7 +15,7 @@ public class DefaultMessageConverters extends MessageConverters {
 		addMessageConverter(new StringMessageConverter(conversionService));
 		addMessageConverter(new ByteArrayMessageConverter());
 		addMessageConverter(new HttpFormMessageConveter());
-		addMessageConverter(new MultipartMessageConverter(InetUtils.getFileItemParser()));
+		addMessageConverter(new MultipartMessageConverter(InetUtils.getMultipartMessageResolver()));
 		addMessageConverter(new ResourceMessageConverter());
 	}
 

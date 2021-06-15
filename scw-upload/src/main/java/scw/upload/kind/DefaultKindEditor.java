@@ -11,7 +11,7 @@ import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.core.utils.XTime;
 import scw.io.FileUtils;
-import scw.net.message.multipart.FileItem;
+import scw.net.message.multipart.MultipartMessage;
 import scw.util.comparator.FileComparator;
 
 public class DefaultKindEditor extends AbstractKindUpload {
@@ -72,7 +72,7 @@ public class DefaultKindEditor extends AbstractKindUpload {
 	}
 
 	@Override
-	protected String uploadInternal(String group, KindDirType dir, FileItem item) throws IOException {
+	protected String uploadInternal(String group, KindDirType dir, MultipartMessage item) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		if (StringUtils.isNotEmpty(group)) {
 			sb.append(group).append("/");
@@ -80,7 +80,7 @@ public class DefaultKindEditor extends AbstractKindUpload {
 		sb.append(dir).append("/");
 		sb.append(XTime.format(System.currentTimeMillis(), "yyyy/MM/dd"));
 		sb.append("/");
-		sb.append(item.getName());
+		sb.append(item.getOriginalFilename());
 		String path = sb.toString();
 
 		String filePath = path;

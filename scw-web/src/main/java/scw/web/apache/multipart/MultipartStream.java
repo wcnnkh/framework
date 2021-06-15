@@ -1,4 +1,4 @@
-package scw.net.message.multipart.apache;
+package scw.web.apache.multipart;
 
 import java.io.IOException;
 import java.io.InputStream;

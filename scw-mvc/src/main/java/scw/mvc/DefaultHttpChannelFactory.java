@@ -3,8 +3,7 @@ package scw.mvc;
 import java.io.IOException;
 
 import scw.beans.BeanFactory;
-import scw.net.InetUtils;
-import scw.net.message.multipart.FileItemParser;
+import scw.net.message.multipart.MultipartMessageResolver;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.WebUtils;
@@ -15,7 +14,7 @@ import scw.web.pattern.HttpPatternRegistry;
 
 public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	protected final BeanFactory beanFactory;
-	private FileItemParser fileItemParser;
+	private MultipartMessageResolver multipartMessageResolver;
 	private final HttpPatternRegistry<Boolean> jsonpSupportConfig = new HttpPatternRegistry<Boolean>();
 	private final HttpPatternRegistry<Boolean> jsonSupportWrapperConfig = new HttpPatternRegistry<Boolean>();
 	private final HttpPatternRegistry<Boolean> multipartFormSupportWrapperConfig = new HttpPatternRegistry<Boolean>();
@@ -27,12 +26,12 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 				beanFactory);
 	}
 
-	public FileItemParser getFileItemParser() {
-		return fileItemParser == null ? InetUtils.getFileItemParser() : fileItemParser;
+	public MultipartMessageResolver getMultipartMessageResolver() {
+		return multipartMessageResolver;
 	}
 
-	public void setFileItemParser(FileItemParser fileItemParser) {
-		this.fileItemParser = fileItemParser;
+	public void setMultipartMessageResolver(MultipartMessageResolver multipartMessageResolver) {
+		this.multipartMessageResolver = multipartMessageResolver;
 	}
 
 	public final HttpPatternRegistry<Boolean> getJsonpSupportConfig() {
@@ -70,7 +69,7 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 		}
 
 		if (isSupportMultipartFormWrapper(requestToUse)) {
-			requestToUse = WebUtils.wrapperServerMultipartFormRequest(requestToUse, getFileItemParser());
+			requestToUse = WebUtils.wrapperServerMultipartFormRequest(requestToUse, getMultipartMessageResolver());
 		}
 
 		ServerHttpResponse responseToUse = response;

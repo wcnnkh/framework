@@ -18,7 +18,7 @@ import scw.core.utils.StringUtils;
  * Implements the extended {@link WritableResource} interface.
  *
  */
-public class FileSystemResource extends AbstractResource {
+public class FileSystemResource extends AbstractResource implements WritableResource{
 
 	private final File file;
 
@@ -110,6 +110,11 @@ public class FileSystemResource extends AbstractResource {
 	 */
 	public OutputStream getOutputStream() throws IOException {
 		return new FileOutputStream(this.file);
+	}
+	
+	@Override
+	public boolean isFile() {
+		return true;
 	}
 
 	/**

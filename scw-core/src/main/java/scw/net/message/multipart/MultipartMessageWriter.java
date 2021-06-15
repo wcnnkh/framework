@@ -1,4 +1,4 @@
-package scw.net.message.convert;
+package scw.net.message.multipart;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Array;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +23,8 @@ import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.InputMessage;
 import scw.net.message.OutputMessage;
-import scw.net.message.multipart.DefaultFileItem;
-import scw.net.message.multipart.FileItem;
-import scw.net.message.multipart.FormFileItem;
-import scw.net.message.multipart.ResourceFileItem;
+import scw.net.message.convert.AbstractMessageConverter;
+import scw.net.message.convert.MessageConvertException;
 import scw.util.XUtils;
 
 public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
@@ -82,9 +81,9 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 			map.put(BOUNDARY_NAME, boundary);
 			outputMessage.setContentType(new MimeType(MimeTypeUtils.MULTIPART_FORM_DATA, map));
 		}
-
-		if (body instanceof FileItem) {
-			writeItem(boundary, (FileItem) body, outputMessage);
+		
+		if(body instanceof MultipartMessage) {
+			writeItem(boundary, (MultipartMessage) body, outputMessage);
 		} else if (body.getClass().isArray()) {
 			int len = Array.getLength(body);
 			for (int i = 0; i < len; i++) {
@@ -118,31 +117,33 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 
 	protected void writeItem(String boundary, String fieldName, Object value, OutputMessage outputMessage)
 			throws IOException {
-		FileItem item;
+		MultipartMessage multipartMessage;
 		if (value instanceof File) {
 			File file = (File) value;
 			if (!file.exists()) {
 				logger.error("non existent file [{}]", file.getPath());
 				return;
 			}
-
-			item = new DefaultFileItem(fieldName, (File) value);
+			
+			multipartMessage = new ResourceMultipartMessage(fieldName, (File) value);
 		} else if (value instanceof Resource) {
 			Resource resource = (Resource) value;
 			if (!resource.exists()) {
 				logger.error("non existent resource [{}]", resource.getDescription());
 				return;
 			}
-			item = new ResourceFileItem(fieldName, resource);
+			multipartMessage = new ResourceMultipartMessage(fieldName, resource);
 		} else {
-			item = new FormFileItem(fieldName, value, getCharset(outputMessage), getJsonSupport());
+			Charset charset = getCharset(outputMessage);
+			String content = getJsonSupport().toJSONString(value);
+			multipartMessage = new FromMultipartMessage(fieldName, content.getBytes(charset));
 		}
-		writeItem(boundary, item, outputMessage);
+		writeItem(boundary, multipartMessage, outputMessage);
 	}
 
 	protected void writeItem(String boundary, Object multipartItem, OutputMessage outputMessage) throws IOException {
-		if (multipartItem instanceof FileItem) {
-			writeItem(boundary, (FileItem) multipartItem, outputMessage);
+		if (multipartItem instanceof MultipartMessage) {
+			writeItem(boundary, (MultipartMessage) multipartItem, outputMessage);
 		} else if (multipartItem instanceof File) {
 			writeItem(boundary, "file", multipartItem, outputMessage);
 		} else if (multipartItem instanceof Map) {
@@ -180,20 +181,20 @@ public class MultipartMessageWriter extends AbstractMessageConverter<Object> {
 		}
 	}
 
-	protected void writeItem(String boundary, FileItem fileItem, OutputMessage outputMessage) throws IOException {
+	protected void writeItem(String boundary, MultipartMessage multipartMessage, OutputMessage outputMessage) throws IOException {
 		OutputStream os = outputMessage.getBody();
 		OutputStreamWriter osw = new OutputStreamWriter(os, getCharset(outputMessage));
 		osw.write(LINE);
 		osw.write(BOUNDARY_APPEND);
 		osw.write(boundary);
 		osw.write(LINE);
-		for (Entry<String, List<String>> entry : fileItem.getHeaders().entrySet()) {
+		for (Entry<String, List<String>> entry : multipartMessage.getHeaders().entrySet()) {
 			osw.write(entry.getKey() + ": " + StringUtils.collectionToDelimitedString(entry.getValue(), ", "));
 			osw.write(LINE);
 		}
 		osw.write(LINE);
 		osw.flush();
-		InputStream inputStream = fileItem.getBody();
+		InputStream inputStream = multipartMessage.getBody();
 		IOUtils.write(inputStream, os);
 		os.flush();
 	}

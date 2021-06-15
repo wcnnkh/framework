@@ -1,4 +1,4 @@
-package scw.net.message.multipart.apache;
+package scw.web.apache.multipart;
 
 import static java.lang.String.format;
 
@@ -29,7 +29,7 @@ import org.apache.commons.fileupload.util.FileItemHeadersImpl;
 import org.apache.commons.fileupload.util.LimitedInputStream;
 import org.apache.commons.fileupload.util.Streams;
 
-import scw.net.message.multipart.apache.MultipartStream.ItemInputStream;
+import scw.web.apache.multipart.MultipartStream.ItemInputStream;
 
 /**
  * <p>High level API for processing file uploads.</p>

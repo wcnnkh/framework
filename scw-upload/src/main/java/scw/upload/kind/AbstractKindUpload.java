@@ -13,7 +13,7 @@ import scw.core.Assert;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
-import scw.net.message.multipart.FileItem;
+import scw.net.message.multipart.MultipartMessage;
 import scw.upload.UploaderException;
 
 public abstract class AbstractKindUpload implements KindEditor {
@@ -55,13 +55,13 @@ public abstract class AbstractKindUpload implements KindEditor {
 		maxSizeMap.put(dir, maxSize);
 	}
 
-	public String upload(String group, KindDirType dir, FileItem item) throws UploaderException, IOException {
+	public String upload(String group, KindDirType dir, MultipartMessage item) throws UploaderException, IOException {
 		Assert.requiredArgument(dir != null, "dir");
 		Assert.requiredArgument(item != null, "item");
 
-		String ext = StringUtils.getFilenameExtension(item.getName());
+		String ext = StringUtils.getFilenameExtension(item.getOriginalFilename());
 		if (ext == null) {
-			throw new UploaderException("无法获取文件后缀名(" + item.getName() + ")");
+			throw new UploaderException("无法获取文件后缀名(" + item.getOriginalFilename() + ")");
 		}
 
 		Set<String> exts = extMap.get(dir);
@@ -76,7 +76,7 @@ public abstract class AbstractKindUpload implements KindEditor {
 		return uploadInternal(group, dir, item);
 	}
 
-	protected abstract String uploadInternal(String group, KindDirType dir, FileItem item)
+	protected abstract String uploadInternal(String group, KindDirType dir, MultipartMessage item)
 			throws IOException, UploaderException;
 
 	protected abstract String getRootUrl(KindDirType dir);
