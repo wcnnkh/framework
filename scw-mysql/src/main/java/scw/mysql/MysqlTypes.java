@@ -4,17 +4,18 @@ import java.sql.Blob;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.Year;
 import java.util.Set;
 
 import scw.orm.sql.SqlType;
 
 /**
- * mysql中的数据类型
+ * 一些常见的类型
  * 
  * @author shuchaowen
  *
  */
-public enum SqlTypes implements SqlType {
+public enum MysqlTypes implements SqlType {
 	BIT("bit", Boolean.class),
 
 	/**
@@ -56,6 +57,7 @@ public enum SqlTypes implements SqlType {
 	 * 可以按照此格式输入可能的值： ENUM('X','Y','Z')
 	 */
 	ENUM("enum", Enum.class),
+	
 	/**
 	 * 与 ENUM 类似，不同的是，SET 最多只能包含 64 个列表项且 SET 可存储一个以上的选择。
 	 */
@@ -135,12 +137,12 @@ public enum SqlTypes implements SqlType {
 	/**
 	 * 2 位或 4 位格式的年。 注释：4 位格式所允许的值：1901 到 2155。2 位格式所允许的值：70 到 69，表示从 1970 到 2069。
 	 */
-	YEAR("year", String.class);
+	YEAR("year", Year.class);
 
 	private final String name;
 	private final Class<?> type;
 
-	SqlTypes(String name, Class<?> type) {
+	MysqlTypes(String name, Class<?> type) {
 		this.name = name;
 		this.type = type;
 	}

@@ -49,42 +49,43 @@ public class MysqlDialect extends AbstractSqlDialect {
 
 	public SqlType getSqlType(java.lang.Class<?> type) {
 		if (ClassUtils.isString(type) || type.isEnum()) {
-			return SqlTypes.VARCHAR;
+			return MysqlTypes.VARCHAR;
 		} else if (ClassUtils.isBoolean(type)) {
-			return SqlTypes.BIT;
+			return MysqlTypes.BIT;
 		} else if (ClassUtils.isByte(type)) {
-			return SqlTypes.TINYINT;
+			return MysqlTypes.TINYINT;
 		} else if (ClassUtils.isShort(type)) {
-			return SqlTypes.SMALLINT;
+			return MysqlTypes.SMALLINT;
 		} else if (ClassUtils.isInt(type)) {
-			return SqlTypes.INT;
+			return MysqlTypes.INT;
 		} else if (ClassUtils.isLong(type)) {
-			return SqlTypes.BIGINT;
+			return MysqlTypes.BIGINT;
 		} else if (ClassUtils.isFloat(type)) {
-			return SqlTypes.FLOAT;
+			return MysqlTypes.FLOAT;
 		} else if (ClassUtils.isDouble(type)) {
-			return SqlTypes.DOUBLE;
+			return MysqlTypes.DOUBLE;
 		} else if (Date.class.isAssignableFrom(type)) {
-			return SqlTypes.DATE;
+			return MysqlTypes.DATE;
 		} else if (Timestamp.class.isAssignableFrom(type)) {
-			return SqlTypes.TIMESTAMP;
+			return MysqlTypes.TIMESTAMP;
 		} else if (Time.class.isAssignableFrom(type)) {
-			return SqlTypes.TIME;
+			return MysqlTypes.TIME;
 		} else if (Year.class.isAssignableFrom(type)) {
-			return SqlTypes.YEAR;
+			return MysqlTypes.YEAR;
 		} else if (Blob.class.isAssignableFrom(type)) {
-			return SqlTypes.BLOB;
+			return MysqlTypes.BLOB;
 		} else if (Clob.class.isAssignableFrom(type)) {
-			return SqlTypes.BLOB;
+			return MysqlTypes.BLOB;
 		} else if (BigDecimal.class.isAssignableFrom(type)) {
-			return SqlTypes.DECIMAL;
+			return MysqlTypes.DECIMAL;
 		} else {
-			return SqlTypes.TEXT;
+			return MysqlTypes.TEXT;
 		}
 	};
 
 	@Override
-	public Sql toSelectByIdsSql(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException {
+	public Sql toSelectByIdsSql(String tableName, Class<?> entityClass,
+			Object... ids) throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(SELECT_ALL_PREFIX);
 		keywordProcessing(sb, tableName);
@@ -101,7 +102,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 		while (iterator.hasNext() && valueIterator.hasNext()) {
 			Field column = iterator.next();
 			Object value = valueIterator.next();
-			params[i++] = toDataBaseValue(value, TypeDescriptor.forObject(value));
+			params[i++] = toDataBaseValue(value,
+					TypeDescriptor.forObject(value));
 			appendFieldName(sb, column.getGetter());
 			sb.append("=?");
 			if (iterator.hasNext() && valueIterator.hasNext()) {
@@ -112,7 +114,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public <T> Sql save(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
+	public <T> Sql save(String tableName, Class<? extends T> entityClass,
+			T entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder sql = new StringBuilder();
@@ -144,7 +147,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public <T> Sql delete(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
+	public <T> Sql delete(String tableName, Class<? extends T> entityClass,
+			T entity) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -169,7 +173,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public Sql deleteById(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException {
+	public Sql deleteById(String tableName, Class<?> entityClass, Object... ids)
+			throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass);
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
@@ -201,7 +206,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public <T> Sql update(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
+	public <T> Sql update(String tableName, Class<? extends T> entityClass,
+			T entity) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException(tableName + " not found primary key");
@@ -234,7 +240,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public <T> Sql toSaveOrUpdateSql(String tableName, Class<? extends T> entityClass, T entity)
+	public <T> Sql toSaveOrUpdateSql(String tableName,
+			Class<? extends T> entityClass, T entity)
 			throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass);
 		if (primaryKeys.size() == 0) {
@@ -312,7 +319,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public Sql toCreateTableSql(String tableName, Class<?> entityClass) throws SqlDialectException {
+	public Sql toCreateTableSql(String tableName, Class<?> entityClass)
+			throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
 		sb.append(" ");
@@ -358,7 +366,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 			}
 		}
 
-		for (Entry<IndexInfo, List<IndexInfo>> entry : getIndexInfoMap(entityClass).entrySet()) {
+		for (Entry<IndexInfo, List<IndexInfo>> entry : getIndexInfoMap(
+				entityClass).entrySet()) {
 			sb.append(",");
 			if (entry.getKey().getMethod() != IndexMethod.DEFAULT) {
 				sb.append(" ");
@@ -438,7 +447,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public PaginationSql toPaginationSql(Sql sql, long start, int limit) throws SqlDialectException {
+	public PaginationSql toPaginationSql(Sql sql, long start, int limit)
+			throws SqlDialectException {
 		String str = sql.getSql();
 		int fromIndex = str.indexOf(" from ");// ignore select
 		if (fromIndex == -1) {
@@ -461,26 +471,32 @@ public class MysqlDialect extends AbstractSqlDialect {
 			whereSql = str.substring(fromIndex, orderIndex);
 		}
 
-		Sql countSql = new SimpleSql("select count(*)" + whereSql, sql.getParams());
+		Sql countSql = new SimpleSql("select count(*)" + whereSql,
+				sql.getParams());
 		StringBuilder sb = new StringBuilder(str);
 		sb.append(" limit ").append(start).append(",").append(limit);
-		return new PaginationSql(countSql, new SimpleSql(sb.toString(), sql.getParams()));
+		return new PaginationSql(countSql, new SimpleSql(sb.toString(),
+				sql.getParams()));
 	}
 
 	@Override
-	public Sql getInIds(String tableName, Class<?> entityClass, Object[] primaryKeys, Collection<?> inPrimaryKeys)
+	public Sql getInIds(String tableName, Class<?> entityClass,
+			Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException {
 		if (CollectionUtils.isEmpty(inPrimaryKeys)) {
 			throw new SqlDialectException("in 语句至少要有一个in条件");
 		}
 
 		Fields primaryKeyColumns = getPrimaryKeys(entityClass);
-		int whereSize = ArrayUtils.isEmpty(primaryKeys) ? 0 : primaryKeys.length;
+		int whereSize = ArrayUtils.isEmpty(primaryKeys) ? 0
+				: primaryKeys.length;
 		if (whereSize > primaryKeyColumns.size()) {
-			throw new NullPointerException("primaryKeys length  greater than primary key lenght");
+			throw new NullPointerException(
+					"primaryKeys length  greater than primary key lenght");
 		}
 
-		List<Object> params = new ArrayList<Object>(inPrimaryKeys.size() + whereSize);
+		List<Object> params = new ArrayList<Object>(inPrimaryKeys.size()
+				+ whereSize);
 		StringBuilder sb = new StringBuilder();
 		Iterator<Field> iterator = primaryKeyColumns.iterator();
 		if (whereSize > 0) {
@@ -523,7 +539,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
+	public Sql toCopyTableStructureSql(Class<?> entityClass,
+			String newTableName, String oldTableName)
 			throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(getCreateTablePrefix());
@@ -535,7 +552,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public Sql toMaxIdSql(Class<?> clazz, String tableName, Field field) throws SqlDialectException {
+	public Sql toMaxIdSql(Class<?> clazz, String tableName, Field field)
+			throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select ");
 		appendFieldName(sb, field.getGetter());
@@ -548,7 +566,8 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public TableStructureMapping getTableStructureMapping(Class<?> clazz, String tableName) {
+	public TableStructureMapping getTableStructureMapping(Class<?> clazz,
+			String tableName) {
 		return new TableStructureMapping() {
 
 			public Sql getSql() {

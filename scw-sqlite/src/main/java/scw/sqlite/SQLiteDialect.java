@@ -1,22 +1,41 @@
 package scw.sqlite;
 
+import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import scw.core.utils.ClassUtils;
+import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.mapper.Field;
 import scw.mapper.Fields;
 import scw.mysql.MysqlDialect;
 import scw.orm.sql.SqlDialectException;
+import scw.orm.sql.SqlType;
 import scw.orm.sql.TableStructureMapping;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.value.AnyValue;
 
 public class SQLiteDialect extends MysqlDialect {
+	
+	@Override
+	public SqlType getSqlType(Class<?> type) {
+		if(type == String.class){
+			return SQLiteTypes.TEXT;
+		}else if(ClassUtils.isFloat(type) || ClassUtils.isDouble(type)){
+			return SQLiteTypes.REAL;
+		}else if(NumberUtils.isNumber(type)){
+			return SQLiteTypes.INTEGER;
+		}else if(Blob.class == type){
+			return SQLiteTypes.BLOB;
+		}else{
+			return SQLiteTypes.TEXT;
+		}
+	}
 
 	@Override
 	public Sql toCreateTableSql(String tableName, Class<?> entityClass) throws SqlDialectException {

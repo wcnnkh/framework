@@ -56,7 +56,7 @@ public enum StringMatchers implements StringMatcher {
 	}
 
 	public static boolean match(StringMatcher stringMatcher, String pattern, String text) {
-		if (text != null && stringMatcher.isPattern(text)) {
+		if (pattern != null && stringMatcher.isPattern(pattern)) {
 			return stringMatcher.match(pattern, text);
 		} else {
 			return StringUtils.equals(pattern, text);
