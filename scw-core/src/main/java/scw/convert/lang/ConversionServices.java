@@ -70,21 +70,26 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 	}
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+		TypeDescriptor sourceTypeToUse = sourceType;
+		if(sourceType == null && source != null){
+			sourceTypeToUse = TypeDescriptor.forObject(source);
+		}
+		
 		for (ConversionService service : conversionServices) {
-			if (canConvert(service, sourceType, targetType)) {
-				return service.convert(source, sourceType, targetType);
+			if (canConvert(service, sourceTypeToUse, targetType)) {
+				return service.convert(source, sourceTypeToUse, targetType);
 			}
 		}
 
-		if (parentConversionService != null && parentConversionService.canConvert(sourceType, targetType)) {
-			return parentConversionService.convert(source, sourceType, targetType);
+		if (parentConversionService != null && parentConversionService.canConvert(sourceTypeToUse, targetType)) {
+			return parentConversionService.convert(source, sourceTypeToUse, targetType);
 		}
 
-		if (canDirectlyConvert(sourceType, targetType)) {
+		if (canDirectlyConvert(sourceTypeToUse, targetType)) {
 			return source;
 		}
 
-		throw new ConverterNotFoundException(sourceType, targetType);
+		throw new ConverterNotFoundException(sourceTypeToUse, targetType);
 	}
 
 	public int compareTo(Object o) {

@@ -5,15 +5,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.AnnotatedElementWrapper;
 import scw.core.annotation.AnnotationArrayAnnotatedElement;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.lang.NotSupportedException;
-import scw.value.StringValue;
-import scw.value.Value;
 
 public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<AnnotatedElement> implements FieldDescriptor {
 	private final Class<?> declaringClass;
@@ -33,11 +30,6 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 
 	public Method getMethod() {
 		return method;
-	}
-	
-	public Value getDefaultValue() {
-		String value = AnnotatedElementUtils.getDefaultValue(this);
-		return value == null? null:new StringValue(value);
 	}
 	
 	public int getModifiers() {
