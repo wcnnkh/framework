@@ -7,27 +7,67 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.sql.SqlUtils;
+import scw.util.MultiIterator;
+import scw.util.StringMatcher;
+import scw.util.StringMatchers;
 import scw.value.AnyValue;
 import scw.value.PropertyFactory;
 import scw.value.Value;
 
 public class ResultSetPropertyFactory implements PropertyFactory, Serializable {
 	private static final long serialVersionUID = 1L;
-	private Map<String, Value> valueMap = new LinkedHashMap<String, Value>();
+	private String connector = ".";
+	private StringMatcher stringMatcher = StringMatchers.SIMPLE.split(connector);
+
+	/**
+	 * 多表字段对应的索引
+	 */
+	private Map<String, Integer> valueMap = new LinkedHashMap<String, Integer>();
+	// 单表字段对应的索引
+	private Map<String, Integer> singletonTableMap = new LinkedHashMap<String, Integer>();
+	private Object[] values;
 
 	public ResultSetPropertyFactory(ResultSet resultSet) throws SQLException {
 		ResultSetMetaData metaData = resultSet.getMetaData();
 		int columnCount = metaData.getColumnCount();
-		for (int i = 1; i <= columnCount; i++) {
-			String tableName = getTableName(metaData, i);
+		values = new Object[columnCount];
+		for (int i = 1, index = 0; i <= columnCount; i++, index++) {
+			values[index] = resultSet.getObject(i);
 			String name = SqlUtils.lookupColumnName(metaData, i);
-			String key = StringUtils.isEmpty(tableName) ? name : (tableName + "." + name);
-			Object value = resultSet.getObject(i);
-			valueMap.put(key, new AnyValue(value));
+			if (singletonTableMap.containsKey(name)) {
+				// 如果单表索引中已经存在相同的字段名
+				singletonTableMap.remove(name);
+
+				String tableName = getTableName(metaData, i);
+				String key = StringUtils.isEmpty(tableName) ? name : (tableName + connector + name);
+				valueMap.put(key, index);
+			} else {
+				singletonTableMap.put(name, index);
+			}
 		}
+	}
+
+	public final StringMatcher getStringMatcher() {
+		return stringMatcher;
+	}
+
+	public void setStringMatcher(StringMatcher stringMatcher) {
+		Assert.requiredArgument(stringMatcher != null, "stringMatcher");
+		this.stringMatcher = stringMatcher.split(connector);
+	}
+
+	public final String getConnector() {
+		return connector;
+	}
+
+	public void setConnector(String connector) {
+		Assert.requiredArgument(connector != null, "connector");
+		this.connector = connector;
 	}
 
 	protected String getTableName(ResultSetMetaData metaData, int i) throws SQLException {
@@ -36,16 +76,44 @@ public class ResultSetPropertyFactory implements PropertyFactory, Serializable {
 
 	@Override
 	public Value getValue(String key) {
-		return valueMap.get(key);
+		Integer index = getIndex(key);
+		if (index == null) {
+			return null;
+		}
+
+		return new AnyValue(values[index]);
+	}
+
+	private Integer getIndex(String key) {
+		if (stringMatcher.isPattern(key)) {
+			for (Entry<String, Integer> entry : singletonTableMap.entrySet()) {
+				if (stringMatcher.match(key, entry.getKey())) {
+					return entry.getValue();
+				}
+			}
+
+			for (Entry<String, Integer> entry : valueMap.entrySet()) {
+				if (stringMatcher.match(key, entry.getKey())) {
+					return entry.getValue();
+				}
+			}
+			return null;
+		}
+		
+		Integer index = singletonTableMap.get(key);
+		if(index == null) {
+			index = valueMap.get(key);
+		}
+		return index;
 	}
 
 	@Override
 	public boolean containsKey(String key) {
-		return valueMap.containsKey(key);
+		return getIndex(key) != null;
 	}
 
 	@Override
 	public Iterator<String> iterator() {
-		return valueMap.keySet().iterator();
+		return new MultiIterator<String>(singletonTableMap.keySet().iterator(), valueMap.keySet().iterator());
 	}
 }

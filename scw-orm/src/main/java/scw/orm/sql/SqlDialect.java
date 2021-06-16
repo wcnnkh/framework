@@ -9,12 +9,13 @@ import scw.core.annotation.AnnotatedElementUtils;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
 import scw.orm.ObjectKeyFormat;
+import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.annotation.AutoIncrement;
 import scw.orm.sql.annotation.Counter;
 import scw.orm.sql.annotation.Unique;
 import scw.sql.Sql;
 
-public interface SqlDialect extends ObjectKeyFormat {
+public interface SqlDialect extends ObjectKeyFormat, ObjectRelationalMapping{
 	SqlType getSqlType(Class<?> javaType);
 
 	default boolean isAutoIncrement(FieldDescriptor fieldDescriptor) {
@@ -44,13 +45,6 @@ public interface SqlDialect extends ObjectKeyFormat {
 	}
 
 	Object toDataBaseValue(Object value, TypeDescriptor sourceType);
-
-	boolean isNullable(FieldDescriptor fieldDescriptor);
-
-	default boolean isNullable(Field field) {
-		return (field.isSupportGetter() && isNullable(field.getGetter()))
-				|| (field.isSupportSetter() && isNullable(field.getSetter()));
-	}
 
 	String getCharsetName(FieldDescriptor fieldDescriptor);
 

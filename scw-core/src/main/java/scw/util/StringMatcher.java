@@ -30,4 +30,8 @@ public interface StringMatcher {
 	 *         it didn't
 	 */
 	boolean match(String pattern, String text);
+	
+	default StringMatcher split(String split) {
+		return new SplitStringMatcher(this, split);
+	}
 }

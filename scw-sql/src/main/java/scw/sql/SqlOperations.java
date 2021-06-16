@@ -11,34 +11,6 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public interface SqlOperations extends ConnectionFactory {
-	default <T> T process(SqlProcessor<Connection, T> process) throws SQLException {
-		Connection connection = null;
-		try {
-			connection = getConnection();
-			return process.process(connection);
-		} finally {
-			if (connection != null && !connection.isClosed()) {
-				connection.close();
-			}
-		}
-	}
-
-	/**
-	 * @see #process(SqlProcessor)
-	 * @param callback
-	 * @throws SQLException
-	 */
-	default void process(SqlCallback<Connection> callback) throws SQLException {
-		process(new SqlProcessor<Connection, Void>() {
-
-			@Override
-			public Void process(Connection connection) throws SQLException {
-				callback.call(connection);
-				return null;
-			}
-		});
-	}
-
 	default SqlProcessor<Connection, PreparedStatement> prepareStatement(String sql) {
 		return new PreparedStatementCreator(sql);
 	}
@@ -152,13 +124,7 @@ public interface SqlOperations extends ConnectionFactory {
 
 	default Stream<ResultSet> streamQuery(Connection connection, Sql sql) throws SqlException {
 		try {
-			return SqlUtils.query(connection, prepare(sql), sql.getParams(), (resultSet) -> {
-				try {
-					resultSet.close();
-				} catch (SQLException e) {
-					throw new SqlException(sql, e);
-				}
-			});
+			return SqlUtils.query(connection, prepare(sql), sql.getParams(), () -> sql.toString());
 		} catch (SQLException e) {
 			throw new SqlException(sql, e);
 		}
@@ -180,9 +146,9 @@ public interface SqlOperations extends ConnectionFactory {
 
 	default Stream<ResultSet> streamQuery(Sql sql) throws SqlException {
 		try {
-			return process((connection) -> {
+			return streamProcess((connection) -> {
 				return streamQuery(connection, sql);
-			});
+			}, () -> sql.toString());
 		} catch (SQLException e) {
 			throw new SqlException(sql, e);
 		}
@@ -242,15 +208,6 @@ public interface SqlOperations extends ConnectionFactory {
 
 	default <T> List<T> query(Sql sql, RowMapper<T> rowMapper) throws SqlException {
 		return query(sql, new RowMapperProcessor<T>(rowMapper));
-	}
-
-	default List<Object[]> query(Sql sql) throws SqlException {
-		return query(sql, new RowMapper<Object[]>() {
-
-			public Object[] mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return SqlUtils.getRowValues(rs, rs.getMetaData().getColumnCount());
-			}
-		});
 	}
 
 	default int[] executeBatch(Connection connection, String sql, Collection<Object[]> batchArgs) throws SqlException {

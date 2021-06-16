@@ -25,8 +25,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.Field;
 import scw.mapper.Fields;
-import scw.orm.ObjectRelationalMapping;
-import scw.orm.OrmUtils;
 import scw.orm.cache.CacheManager;
 import scw.orm.generator.DefaultGeneratorProcessor;
 import scw.orm.generator.GeneratorProcessor;
@@ -41,14 +39,14 @@ import scw.util.Pagination;
 public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
 	private static Logger logger = LoggerFactory.getLogger(DefaultSqlTemplate.class);
 	private final SqlDialect sqlDialect;
-	private ObjectRelationalMapping objectRelationalMapping;
 	private ConversionService conversionService;
 	private CacheManager cacheManager;
-	private GeneratorProcessor generatorProcessor = new DefaultGeneratorProcessor();
+	private GeneratorProcessor generatorProcessor;
 
 	public DefaultSqlTemplate(ConnectionFactory connectionFactory, SqlDialect sqlDialect) {
 		super(connectionFactory);
 		this.sqlDialect = sqlDialect;
+		this.generatorProcessor = new DefaultGeneratorProcessor(this);
 	}
 
 	public GeneratorProcessor getGeneratorProcessor() {
@@ -58,8 +56,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	public void setGeneratorProcessor(GeneratorProcessor generatorProcessor) {
 		this.generatorProcessor = generatorProcessor;
 	}
-
-
 
 	public SqlDialect getSqlDialect() {
 		return sqlDialect;
@@ -71,14 +67,6 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	public void setCacheManager(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
-	}
-
-	public ObjectRelationalMapping getObjectRelationalMapping() {
-		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
-	}
-
-	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
-		this.objectRelationalMapping = objectRelationalMapping;
 	}
 
 	public ConversionService getConversionService() {
@@ -104,7 +92,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		}
 
 		if (StringUtils.isEmpty(entityName)) {
-			entityName = getObjectRelationalMapping().getName(entityClass);
+			entityName = sqlDialect.getName(entityClass);
 		}
 		return entityName;
 	}
@@ -132,7 +120,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	private void setAutoIncrementLastId(int updateCount, Sql sql, Connection connection, String tableName,
 			Class<?> entityClass, Object entity) throws SQLException {
-		for (Field field : getObjectRelationalMapping().getSetterFields(entityClass, true, null)) {
+		for (Field field : sqlDialect.getFields(entityClass)) {
 			if (sqlDialect.isAutoIncrement(field.getSetter())) {
 				if (updateCount == 0) {
 					logger.error("Number of rows affected is 0, execute: {}", sql);
@@ -261,7 +249,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	@Override
 	public <T> Stream<T> streamQuery(Connection connection, TypeDescriptor resultTypeDescriptor, Sql sql) {
-		return streamQuery(connection, sql, new SmartRowMapper<T>(getObjectRelationalMapping(), resultTypeDescriptor));
+		return streamQuery(connection, sql, new SmartRowMapper<T>(sqlDialect, resultTypeDescriptor));
 	}
 
 	@Override
@@ -295,7 +283,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		});
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
-		Fields fields = getObjectRelationalMapping().getGetterFields(tableClass, true, null);
+		Fields fields = sqlDialect.getFields(tableClass);
 		for (String name : list) {
 			hashSet.add(name);
 			Field column = fields.find(name, null);
@@ -305,8 +293,8 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		}
 
 		List<Field> addList = new ArrayList<Field>();
-		for (Field column : getObjectRelationalMapping().getGetterFields(tableClass, true, null)) {
-			String name = getObjectRelationalMapping().getName(column.getGetter());
+		for (Field column : sqlDialect.getFields(tableClass)) {
+			String name = sqlDialect.getName(column.getGetter());
 			if (!hashSet.contains(name)) {// 在已有的数据库中不存在，应该添加
 				addList.add(column);
 			}

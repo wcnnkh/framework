@@ -19,13 +19,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
-import scw.util.Callback;
 
 public final class SqlUtils {
 
@@ -143,7 +143,7 @@ public final class SqlUtils {
 
 	public static <P extends PreparedStatement, T> T process(Connection connection,
 			SqlProcessor<Connection, ? extends P> preparedStatementCreator, @Nullable Object[] args,
-			SqlProcessor<P, T> processor) throws SQLException {
+			SqlProcessor<P, ? extends T> processor) throws SQLException {
 		return SqlUtils.process(connection, preparedStatementCreator, new SqlProcessor<P, T>() {
 
 			@Override
@@ -252,32 +252,60 @@ public final class SqlUtils {
 		return executeBatch(connection, connectionProcessor, batchArgs, null);
 	}
 
-	public static <P extends Statement> Stream<ResultSet> query(Connection connection,
-			SqlProcessor<Connection, ? extends P> statementCreate, SqlProcessor<P, ResultSet> query,
-			Callback<ResultSet, RuntimeException> closeCallback) throws SQLException {
-		return process(connection, statementCreate, new SqlProcessor<P, Stream<ResultSet>>() {
-
-			@Override
-			public Stream<ResultSet> process(P source) throws SQLException {
-				ResultSet resultSet = query.process(source);
-				ResultSetIterator iterator = new ResultSetIterator(resultSet);
-				Spliterator<ResultSet> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
-				return StreamSupport.stream(spliterator, false).onClose(() -> {
-					closeCallback.call(resultSet);
-				});
+	public static <S> Stream<ResultSet> query(S source, SqlProcessor<S, ResultSet> query,
+			@Nullable Supplier<String> desc) throws SQLException {
+		ResultSet resultSet = query.process(source);
+		ResultSetIterator iterator = new ResultSetIterator(resultSet);
+		Spliterator<ResultSet> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+		return StreamSupport.stream(spliterator, false).onClose(() -> {
+			try {
+				if (!resultSet.isClosed()) {
+					resultSet.close();
+				}
+			} catch (SQLException e) {
+				if (desc == null) {
+					throw new SqlException(e);
+				}
+				throw new SqlException(desc.get(), e);
 			}
 		});
 	}
 
+	public static <P extends Statement> Stream<ResultSet> query(Connection connection,
+			SqlProcessor<Connection, ? extends P> statementCreate, SqlProcessor<P, ResultSet> query,
+			@Nullable Supplier<String> desc) throws SQLException {
+		P statement = statementCreate.process(connection);
+		try {
+			return query(statement, query, desc).onClose(() -> {
+				try {
+					if (!statement.isClosed()) {
+						statement.close();
+					}
+				} catch (SQLException e) {
+					if (desc == null) {
+						throw new SqlException(e);
+					}
+					throw new SqlException(desc.get(), e);
+				}
+			});
+		} catch (SQLException e) {
+			if (!statement.isClosed()) {
+				statement.close();
+			}
+			throw e;
+		}
+	}
+
 	public static <P extends PreparedStatement> Stream<ResultSet> query(Connection connection,
-			SqlProcessor<Connection, ? extends P> statementCreate, Object[] args,
-			Callback<ResultSet, RuntimeException> closeCallback) throws SQLException {
+			SqlProcessor<Connection, ? extends P> statementCreate, Object[] args, @Nullable Supplier<String> desc)
+			throws SQLException {
 		return query(connection, statementCreate, new SqlProcessor<P, ResultSet>() {
 
 			@Override
 			public ResultSet process(P source) throws SQLException {
+				setSqlParams(source, args);
 				return source.executeQuery();
 			}
-		}, closeCallback);
+		}, desc);
 	}
 }

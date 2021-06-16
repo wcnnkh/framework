@@ -3,6 +3,7 @@ package scw.orm;
 import java.util.Collection;
 
 import scw.aop.support.ProxyUtils;
+import scw.core.annotation.AnnotatedElementUtils;
 import scw.lang.Nullable;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
@@ -18,9 +19,6 @@ import scw.util.Accept;
  *
  */
 public interface ObjectRelationalMapping {
-	static final Accept<Field> GETTER_ACCEPT = FieldFeature.SUPPORT_GETTER.and(FieldFeature.IGNORE_STATIC);
-	static final Accept<Field> SETTER_ACCEPT = FieldFeature.SUPPORT_SETTER.and(FieldFeature.IGNORE_STATIC);
-
 	boolean ignore(FieldDescriptor fieldDescriptor);
 
 	String getName(FieldDescriptor fieldDescriptor);
@@ -63,6 +61,15 @@ public interface ObjectRelationalMapping {
 		};
 	}
 
+	default boolean isNullable(FieldDescriptor fieldDescriptor) {
+		return AnnotatedElementUtils.isNullable(fieldDescriptor, !isPrimaryKey(fieldDescriptor));
+	}
+
+	default boolean isNullable(Field field) {
+		return (field.isSupportGetter() && isNullable(field.getGetter()))
+				|| (field.isSupportSetter() && isNullable(field.getSetter()));
+	}
+
 	/**
 	 * 是否是一个实体类
 	 * 
@@ -86,28 +93,34 @@ public interface ObjectRelationalMapping {
 		};
 	}
 
-	default Fields getGetterFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
-		return MapperUtils.getMapper()
-				.getFields(ProxyUtils.getFactory().getUserClass(clazz), useSuperClass, parentField)
-				.accept(GETTER_ACCEPT).accept(new Accept<Field>() {
-
-					@Override
-					public boolean accept(Field e) {
-						return !ignore(e.getGetter());
-					}
-				});
+	/**
+	 * 此方法返回结果包含entity字段
+	 * 
+	 * @param clazz
+	 * @param useSuperClass
+	 * @param parentField
+	 * @return
+	 */
+	default Fields getFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
+		return MapperUtils.getMapper().getFields(ProxyUtils.getFactory().getUserClass(clazz))
+				.accept(FieldFeature.IGNORE_STATIC);
 	}
 
-	default Fields getSetterFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
-		return MapperUtils.getMapper()
-				.getFields(ProxyUtils.getFactory().getUserClass(clazz), useSuperClass, parentField)
-				.accept(SETTER_ACCEPT).accept(new Accept<Field>() {
-
-					@Override
-					public boolean accept(Field e) {
-						return !ignore(e.getSetter());
-					}
-				});
+	/**
+	 * 此方法返回结果不包含entity字段
+	 * 
+	 * @param clazz
+	 * @return
+	 */
+	default Fields getFields(Class<?> clazz) {
+		return getFields(clazz, true, null).accept(getEntityAccept().negate());
 	}
 
+	default Fields getPrimaryKeys(Class<?> clazz) {
+		return getFields(clazz).accept(getPrimaryKeyAccept());
+	}
+
+	default Fields getNotPrimaryKeys(Class<?> clazz) {
+		return getFields(clazz).accept(getPrimaryKeyAccept().negate());
+	}
 }

@@ -18,10 +18,9 @@ import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
-import scw.orm.ObjectRelationalMapping;
-import scw.orm.OrmUtils;
+import scw.orm.DefaultObjectRelationalMapping;
 
-public abstract class AbstractSqlDialect implements SqlDialect {
+public abstract class AbstractSqlDialect extends DefaultObjectRelationalMapping implements SqlDialect {
 	protected static final String UPDATE_PREFIX = "update ";
 	protected static final String DELETE_PREFIX = "delete from ";
 	protected static final String SELECT_ALL_PREFIX = "select * from ";
@@ -36,16 +35,7 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 	private static final char POINT = '.';
 
 	private String escapeCharacter = "`";
-	private ObjectRelationalMapping objectRelationalMapping;
 	private ConversionService conversionService;
-
-	public ObjectRelationalMapping getObjectRelationalMapping() {
-		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
-	}
-
-	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
-		this.objectRelationalMapping = objectRelationalMapping;
-	}
 
 	public ConversionService getConversionService() {
 		return conversionService == null ? Sys.env.getConversionService() : conversionService;
@@ -55,18 +45,10 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 		this.conversionService = conversionService;
 	}
 
-	public Fields getFields(Class<?> clazz) {
-		return getObjectRelationalMapping().getGetterFields(clazz, true, null)
-				.accept(FieldFeature.EXISTING_GETTER_FIELD)
-				.accept(getObjectRelationalMapping().getEntityAccept().negate());
-	}
-
-	public Fields getPrimaryKeys(Class<?> clazz) {
-		return getFields(clazz).accept(getObjectRelationalMapping().getPrimaryKeyAccept());
-	}
-
-	public Fields getNotPrimaryKeys(Class<?> clazz) {
-		return getFields(clazz).accept(getObjectRelationalMapping().getPrimaryKeyAccept().negate());
+	@Override
+	public Fields getFields(Class<?> clazz, boolean useSuperClass, Field parentField) {
+		return super.getFields(clazz, useSuperClass, parentField).accept(FieldFeature.SUPPORT_GETTER)
+				.accept(FieldFeature.SUPPORT_SETTER).accept(FieldFeature.EXISTING_GETTER_FIELD);
 	}
 
 	public Object getDataBaseValue(Object entity, Field field) {
@@ -154,7 +136,7 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 	}
 
 	public void appendFieldName(StringBuilder sb, FieldDescriptor fieldDescriptor) {
-		keywordProcessing(sb, getObjectRelationalMapping().getName(fieldDescriptor));
+		keywordProcessing(sb, getName(fieldDescriptor));
 	}
 
 	public void keywordProcessing(StringBuilder sb, String column) {
@@ -200,9 +182,9 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 
 	@Override
 	public String getComment(Field field) {
-		String desc = getObjectRelationalMapping().getDescription(field.getGetter());
+		String desc = getDescription(field.getGetter());
 		if (desc == null) {
-			desc = getObjectRelationalMapping().getDescription(field.getSetter());
+			desc = getDescription(field.getSetter());
 		}
 		return desc;
 	}
@@ -210,11 +192,5 @@ public abstract class AbstractSqlDialect implements SqlDialect {
 	@Override
 	public String getCharsetName(FieldDescriptor fieldDescriptor) {
 		return AnnotatedElementUtils.getCharsetName(fieldDescriptor, null);
-	}
-
-	@Override
-	public boolean isNullable(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isNullable(fieldDescriptor,
-				!(getObjectRelationalMapping().isPrimaryKey(fieldDescriptor)));
 	}
 }

@@ -338,7 +338,7 @@ public class MysqlDialect extends AbstractSqlDialect {
 			sb.append(sqlType.getName());
 
 			if (primaryKeys.size() == 1) {
-				if (getObjectRelationalMapping().isPrimaryKey(col.getGetter())) {
+				if (isPrimaryKey(col)) {
 					sb.append(" PRIMARY KEY");
 				}
 

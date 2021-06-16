@@ -12,14 +12,20 @@ import scw.convert.TypeDescriptor;
 import scw.lang.Nullable;
 import scw.mapper.Field;
 import scw.orm.EntityOperations;
+import scw.orm.MaxValueFactory;
 import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.SqlOperations;
-import scw.sql.SqlProcessor;
 import scw.util.Pagination;
 
-public interface SqlTemplate extends EntityOperations, SqlOperations {
+public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
+	SqlDialect getSqlDialect();
+
 	default boolean createTable(Class<?> entityClass) {
+		if (entityClass == null) {
+			return false;
+		}
+
 		return createTable(null, entityClass);
 	}
 
@@ -27,6 +33,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 
 	@Override
 	default <T> boolean save(Class<? extends T> entityClass, T entity) {
+		if (entityClass == null || entity == null) {
+			return false;
+		}
+
 		return save(null, entityClass, entity);
 	}
 
@@ -34,6 +44,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 
 	@Override
 	default <T> boolean delete(Class<? extends T> entityClass, T entity) {
+		if (entityClass == null || entity == null) {
+			return false;
+		}
+
 		return delete(null, entityClass, entity);
 	}
 
@@ -41,6 +55,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 
 	@Override
 	default boolean deleteById(Class<?> entityClass, Object... ids) {
+		if (entityClass == null) {
+			return false;
+		}
+
 		return deleteById(null, entityClass, ids);
 	}
 
@@ -48,6 +66,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 
 	@Override
 	default <T> boolean update(Class<? extends T> entityClass, T entity) {
+		if (entityClass == null || entity == null) {
+			return false;
+		}
+
 		return update(null, entityClass, entity);
 	}
 
@@ -55,6 +77,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 
 	@Override
 	default <T> boolean saveOrUpdate(Class<? extends T> entityClass, T entity) {
+		if (entityClass == null || entity == null) {
+			return false;
+		}
+
 		return saveOrUpdate(null, entityClass, entity);
 	}
 
@@ -87,13 +113,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations {
 
 	default <T> Stream<T> streamQuery(TypeDescriptor resultTypeDescriptor, Sql sql) {
 		try {
-			return process(new SqlProcessor<Connection, Stream<T>>() {
-
-				@Override
-				public Stream<T> process(Connection source) throws SQLException {
-					return streamQuery(source, resultTypeDescriptor, sql);
-				}
-			});
+			return streamProcess((connection) -> {
+				return streamQuery(connection, resultTypeDescriptor, sql);
+			}, () -> sql.toString());
 		} catch (SQLException e) {
 			throw new SqlException(sql, e);
 		}

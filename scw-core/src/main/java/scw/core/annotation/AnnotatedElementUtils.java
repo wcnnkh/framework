@@ -15,6 +15,7 @@ import java.util.Set;
 import scw.core.Assert;
 import scw.core.BridgeMethodResolver;
 import scw.core.utils.CollectionUtils;
+import scw.lang.DefaultValue;
 import scw.lang.Description;
 import scw.lang.Ignore;
 import scw.lang.Nullable;
@@ -843,6 +844,11 @@ public class AnnotatedElementUtils {
 	public static String getDescription(AnnotatedElement annotatedElement) {
 		Description description = getMergedAnnotation(annotatedElement, Description.class);
 		return description == null ? null : description.value();
+	}
+
+	public static String getDefaultValue(AnnotatedElement annotatedElement) {
+		DefaultValue defaultValue = getMergedAnnotation(annotatedElement, DefaultValue.class);
+		return defaultValue == null ? null : defaultValue.value();
 	}
 
 	/**

@@ -56,7 +56,7 @@ public class SQLiteDialect extends MysqlDialect {
 			sb.append(sqlType.getName());
 
 			if (primaryKeys.size() == 1) {
-				if (getObjectRelationalMapping().isPrimaryKey(col)) {
+				if (isPrimaryKey(col)) {
 					sb.append(" PRIMARY KEY");
 				}
 

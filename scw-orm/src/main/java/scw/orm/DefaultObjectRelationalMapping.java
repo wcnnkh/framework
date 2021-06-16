@@ -2,7 +2,6 @@ package scw.orm;
 
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -10,9 +9,11 @@ import scw.aop.support.ProxyUtils;
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.AnnotationAttributes;
 import scw.core.annotation.Named;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Ignore;
 import scw.mapper.FieldDescriptor;
+import scw.orm.annotation.Alias;
 import scw.orm.annotation.Entity;
 import scw.orm.annotation.PrimaryKey;
 import scw.orm.annotation.Version;
@@ -32,8 +33,8 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 	}
 
 	private String getDefaultName(FieldDescriptor fieldDescriptor) {
-		return humpNamingReplacement ? StringUtils.humpNamingReplacement(
-				fieldDescriptor.getName(), "_") : fieldDescriptor.getName();
+		return humpNamingReplacement ? StringUtils.humpNamingReplacement(fieldDescriptor.getName(), "_")
+				: fieldDescriptor.getName();
 	}
 
 	private String getAnnotationFeldName(AnnotatedElement annotatedElement) {
@@ -57,8 +58,7 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 	}
 
 	private String getDefaultEntityName(Class<?> entityClass) {
-		String className = ProxyUtils.getFactory().getUserClass(entityClass)
-				.getSimpleName();
+		String className = ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName();
 		return StringUtils.humpNamingReplacement(className, "_");
 	}
 
@@ -69,9 +69,26 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 		if (name != null) {
 			names.add(name);
 		}
-		names.add(fieldDescriptor.getName());
-		names.add(StringUtils.humpNamingReplacement(fieldDescriptor.getName(),
-				"_"));
+
+		String[] aliasArray = getAnnotatedAlias(fieldDescriptor);
+		if (aliasArray != null) {
+			for (String alias : aliasArray) {
+				if (StringUtils.isNotEmpty(alias)) {
+					names.add(alias);
+				}
+			}
+		}
+		
+		if(StringUtils.isEmpty(name) && ArrayUtils.isEmpty(aliasArray)) {
+			//如果没有设置过别名
+			String defaultName = fieldDescriptor.getName();
+			names.add(defaultName);
+			String humpName = StringUtils.humpNamingReplacement(defaultName, "_");
+			if(!humpName.equals(defaultName)) {
+				names.add(humpName);
+			}
+		}
+		
 		if (isEntity(fieldDescriptor)) {
 			names.addAll(getAliasNames(fieldDescriptor.getType()));
 		}
@@ -85,8 +102,7 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	@Override
 	public boolean isPrimaryKey(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isAnnotated(fieldDescriptor,
-				PrimaryKey.class);
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, PrimaryKey.class);
 	}
 
 	@Override
@@ -96,8 +112,7 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 
 	@Override
 	public boolean isEntity(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Entity.class)
-				|| isEntity(fieldDescriptor.getType());
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Entity.class) || isEntity(fieldDescriptor.getType());
 	}
 
 	@Override
@@ -105,8 +120,7 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 		return fieldDescriptor.isAnnotationPresent(Ignore.class);
 	}
 
-	private String getEntityNameByAnnotatedElement(
-			AnnotatedElement annotatedElement) {
+	private String getEntityNameByAnnotatedElement(AnnotatedElement annotatedElement) {
 		AnnotationAttributes annotationAttributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(annotatedElement, Entity.class);
 		if (annotationAttributes == null) {
@@ -129,22 +143,42 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 		return name;
 	}
 
+	private String[] getAnnotatedAlias(AnnotatedElement annotatedElement) {
+		Alias alias = AnnotatedElementUtils.getMergedAnnotation(annotatedElement, Alias.class);
+		return alias == null ? null : alias.value();
+	}
+
 	@Override
 	public Collection<String> getAliasNames(Class<?> entityClass) {
+		List<String> list = new ArrayList<String>(8);
 		String name = getEntityNameByAnnotatedElement(entityClass);
-		String simpleName = ProxyUtils.getFactory().getUserClass(entityClass)
-				.getSimpleName();
-		String humpName = StringUtils.humpNamingReplacement(simpleName, "_");
-		if (name == null) {
-			return Arrays.asList(simpleName, humpName);
-		} else {
-			return Arrays.asList(name, simpleName, humpName);
+		if (StringUtils.isNotEmpty(name)) {
+			list.add(name);
 		}
+
+		String[] aliasArray = getAnnotatedAlias(entityClass);
+		if (aliasArray != null) {
+			for (String alias : aliasArray) {
+				if (StringUtils.isNotEmpty(alias)) {
+					list.add(alias);
+				}
+			}
+		}
+		
+		if(StringUtils.isEmpty(name) && ArrayUtils.isEmpty(aliasArray)) {
+			//如果没有使用过别名，那就设置默认名称
+			String simpleName = ProxyUtils.getFactory().getUserClass(entityClass).getSimpleName();
+			list.add(simpleName);
+			String humpName = StringUtils.humpNamingReplacement(simpleName, "_");
+			if(!simpleName.endsWith(humpName)) {
+				list.add(humpName);
+			}
+		}
+		return list;
 	}
 
 	@Override
 	public boolean isVersionField(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils
-				.isAnnotated(fieldDescriptor, Version.class);
+		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, Version.class);
 	}
 }

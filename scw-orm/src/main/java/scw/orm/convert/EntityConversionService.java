@@ -20,6 +20,7 @@ import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.Field;
+import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.OrmUtils;
@@ -39,6 +40,16 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private ObjectRelationalMapping objectRelationalMapping;
 	private boolean useSuperClass = true;// 默认也使用父类
 	private Field parentField;
+	//是否先检查key存在
+	private boolean checkKeyExists = false;
+	
+	public final boolean isCheckKeyExists() {
+		return checkKeyExists;
+	}
+
+	public void setCheckKeyExists(boolean checkKeyExists) {
+		this.checkKeyExists = checkKeyExists;
+	}
 
 	public final Field getParentField() {
 		return parentField;
@@ -147,8 +158,11 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	@Nullable
 	private Object getProperty(Object source, Field field) {
 		Collection<String> names = getSetterNames(field);
+		if(logger.isTraceEnabled()) {
+			logger.trace(field + " - " + names);
+		}
 		for (String name : names) {
-			if (containsKey(source, name)) {
+			if (!checkKeyExists || containsKey(source, name)) {
 				return getProperty(source, name);
 			}
 		}
@@ -174,8 +188,8 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	protected abstract Object getProperty(Object source, String key);
 
 	protected Fields getFields(Class<?> type, Field parentField) {
-		return getObjectRelationalMapping().getSetterFields(type, isUseSuperClass(), parentField)
-				.accept(getFieldAccept());
+		return getObjectRelationalMapping().getFields(type, isUseSuperClass(), parentField)
+				.accept(FieldFeature.SUPPORT_SETTER).accept(getFieldAccept());
 	}
 
 	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target) {
@@ -226,7 +240,9 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 			Field field) {
 		Field parent = field.getParentField();
 		if (parent == null) {
-			for (String name : getObjectRelationalMapping().getAliasNames(field.getSetter())) {
+			//最顶层的字段
+			Collection<String> aliasNames = getObjectRelationalMapping().getAliasNames(field.getSetter());
+			for (String name : aliasNames) {
 				names.add(toUseName(parentName, name));
 				if (aliasRegistry != null) {
 					for (String alias : aliasRegistry.getAliases(name)) {
@@ -234,12 +250,16 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 					}
 				}
 			}
-
-			for (String name : getObjectRelationalMapping().getAliasNames(field.getSetter().getType())) {
-				names.add(toUseName(parentName, name));
-				if (aliasRegistry != null) {
-					for (String alias : aliasRegistry.getAliases(name)) {
-						names.add(toUseName(parentName, alias));
+			
+			//该字段的声明类
+			Class<?> declaringClass = field.getSetter().getDeclaringClass();
+			for(String entityName : getObjectRelationalMapping().getAliasNames(declaringClass)) {
+				for(String alias : aliasNames) {
+					names.add(toUseName(parentName, entityName + connector + alias));
+					if (aliasRegistry != null) {
+						for (String aliasName : aliasRegistry.getAliases(alias)) {
+							names.add(toUseName(parentName, entityName + connector + aliasName));
+						}
 					}
 				}
 			}
