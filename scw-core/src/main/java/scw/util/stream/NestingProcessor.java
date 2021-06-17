@@ -1,15 +1,19 @@
-package scw.util;
+package scw.util.stream;
 
-public class NestingProcessor<F, P, S, T, E extends Throwable> implements Processor<P, T, E> {
+import scw.lang.Nullable;
+
+public class NestingProcessor<P, S, T, E extends Throwable> implements
+		Processor<P, T, E> {
 	private final Processor<P, ? extends S, ? extends E> processor;
 	private final Processor<S, ? extends T, ? extends E> nextProcessor;
-	private final Callback<S, ? extends E> finallyCallback;
+	private final Callback<S, ? extends E> closeProcessor;
 
 	public NestingProcessor(Processor<P, ? extends S, ? extends E> processor,
-			Processor<S, ? extends T, ? extends E> nextProcessor, Callback<S, ? extends E> finallyCallback) {
+			Processor<S, ? extends T, ? extends E> nextProcessor,
+			@Nullable Callback<S, ? extends E> closeProcessor) {
 		this.processor = processor;
 		this.nextProcessor = nextProcessor;
-		this.finallyCallback = finallyCallback;
+		this.closeProcessor = closeProcessor;
 	}
 
 	@Override
@@ -18,7 +22,9 @@ public class NestingProcessor<F, P, S, T, E extends Throwable> implements Proces
 		try {
 			return nextProcessor.process(s);
 		} finally {
-			finallyCallback.call(s);
+			if(closeProcessor != null){
+				closeProcessor.call(s);
+			}
 		}
 	}
 }
