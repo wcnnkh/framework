@@ -14,6 +14,8 @@ import scw.sql.SqlProcessor;
 import scw.sql.SqlUtils;
 
 /**
+ * 对ResultSet和实体之间的映射做了最大的兼容,支持任意对象的组合
+ * 
  * @see ResultSetPropertyFactory
  * @see PropertyFactoryToEntityConversionService
  * @author shuchaowen

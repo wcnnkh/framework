@@ -260,7 +260,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 		long start = Pagination.getBegin(page, limit);
 		PaginationSql paginationSql = sqlDialect.toPaginationSql(sql, start, limit);
-		Long count = streamQuery(Long.class, sql).findFirst().orElse(0L);
+		Long count = streamQuery(Long.class, paginationSql.getCountSql()).findFirst().orElse(0L);
 		Pagination<T> pagination = new Pagination<T>(limit);
 		if (count == null || count == 0) {
 			pagination.emptyData();

@@ -12,6 +12,11 @@ import scw.convert.ConversionException;
 import scw.convert.lang.ConvertiblePair;
 import scw.orm.convert.EntityConversionService;
 
+/**
+ * 这是一个很简单的ResultSet映射
+ * @author shuchaowen
+ *
+ */
 public class ResultSetRowToEntityConversionService extends EntityConversionService {
 	
 	public ResultSetRowToEntityConversionService() {
