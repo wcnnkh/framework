@@ -86,11 +86,14 @@ public class MysqlDialect extends AbstractSqlDialect {
 	@Override
 	public Sql toSelectByIdsSql(String tableName, Class<?> entityClass,
 			Object... ids) throws SqlDialectException {
+		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
+		if(ids.length > primaryKeys.size()) {
+			throw new SqlDialectException("Wrong number of primary key parameters");
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append(SELECT_ALL_PREFIX);
 		keywordProcessing(sb, tableName);
-
-		Fields primaryKeys = getPrimaryKeys(entityClass);
 		Iterator<Field> iterator = primaryKeys.iterator();
 		Iterator<Object> valueIterator = Arrays.asList(ids).iterator();
 		if (iterator.hasNext() && valueIterator.hasNext()) {

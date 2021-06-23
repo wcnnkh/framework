@@ -1,7 +1,6 @@
 package scw.util.stream;
 
-public abstract class AbstractStreamProcessor<T, E extends Throwable>
-		implements StreamProcessor<T, E>, Callback<T, E>{
+public abstract class AbstractStreamProcessor<T, E extends Throwable> implements StreamProcessor<T, E> {
 	private CallbackProcessor<E> closeProcessor;
 
 	@Override
@@ -9,15 +8,9 @@ public abstract class AbstractStreamProcessor<T, E extends Throwable>
 		if (this.closeProcessor == null) {
 			this.closeProcessor = closeProcessor;
 		} else {
-			this.closeProcessor = this.closeProcessor
-					.afterProcess(closeProcessor);
+			this.closeProcessor = this.closeProcessor.afterProcess(closeProcessor);
 		}
 		return this;
-	}
-	
-	@Override
-	public void call(T source) throws E {
-		close();
 	}
 
 	@Override

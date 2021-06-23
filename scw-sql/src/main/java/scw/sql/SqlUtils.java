@@ -262,7 +262,10 @@ public final class SqlUtils {
 				if (!resultSet.isClosed()) {
 					resultSet.close();
 				}
-			} catch (SQLException e) {
+			} catch (Throwable e) {
+				if(e instanceof SqlException) {
+					throw (SqlException)e;
+				}
 				if (desc == null) {
 					throw new SqlException(e);
 				}
@@ -281,7 +284,10 @@ public final class SqlUtils {
 					if (!statement.isClosed()) {
 						statement.close();
 					}
-				} catch (SQLException e) {
+				} catch (Throwable e) {
+					if(e instanceof SqlException) {
+						throw (SqlException)e;
+					}
 					if (desc == null) {
 						throw new SqlException(e);
 					}

@@ -27,7 +27,10 @@ public interface SqlOperations extends ConnectionFactory {
 			throws SqlException {
 		try {
 			return SqlUtils.process(connection, prepare(sql), sql.getParams(), processor);
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -41,7 +44,10 @@ public interface SqlOperations extends ConnectionFactory {
 					return SqlOperations.this.process(connection, sql, processor);
 				}
 			});
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -49,7 +55,10 @@ public interface SqlOperations extends ConnectionFactory {
 	default void process(Connection connection, Sql sql, SqlCallback<PreparedStatement> callback) throws SqlException {
 		try {
 			SqlUtils.process(connection, prepare(sql), sql.getParams(), callback);
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -63,7 +72,10 @@ public interface SqlOperations extends ConnectionFactory {
 					process(connection, sql, callback);
 				}
 			});
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -93,7 +105,10 @@ public interface SqlOperations extends ConnectionFactory {
 					return execute(connection, sql);
 				}
 			});
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -117,7 +132,10 @@ public interface SqlOperations extends ConnectionFactory {
 					return update(connection, sql);
 				}
 			});
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -125,7 +143,10 @@ public interface SqlOperations extends ConnectionFactory {
 	default Stream<ResultSet> streamQuery(Connection connection, Sql sql) throws SqlException {
 		try {
 			return SqlUtils.query(connection, prepare(sql), sql.getParams(), () -> sql.toString());
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -149,7 +170,10 @@ public interface SqlOperations extends ConnectionFactory {
 			return streamProcess((connection) -> {
 				return streamQuery(connection, sql);
 			}, () -> sql.toString());
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -172,8 +196,11 @@ public interface SqlOperations extends ConnectionFactory {
 			throws SqlException {
 		try {
 			return SqlUtils.query(connection, prepare(sql), sql.getParams(), resultSetProcessor);
-		} catch (SQLException e) {
-			throw new SqlException(e);
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
+			throw new SqlException(sql, e);
 		}
 	}
 
@@ -186,7 +213,10 @@ public interface SqlOperations extends ConnectionFactory {
 					return query(connection, sql, resultSetProcessor);
 				}
 			});
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -213,7 +243,10 @@ public interface SqlOperations extends ConnectionFactory {
 	default int[] executeBatch(Connection connection, String sql, Collection<Object[]> batchArgs) throws SqlException {
 		try {
 			return SqlUtils.executeBatch(connection, prepareStatement(sql), batchArgs);
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -227,7 +260,10 @@ public interface SqlOperations extends ConnectionFactory {
 					return executeBatch(connection, sql, batchArgs);
 				}
 			});
-		} catch (SQLException e) {
+		} catch (Throwable e) {
+			if(e instanceof SqlException) {
+				throw (SqlException)e;
+			}
 			throw new SqlException(sql, e);
 		}
 	}

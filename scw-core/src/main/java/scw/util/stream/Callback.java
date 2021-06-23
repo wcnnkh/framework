@@ -14,6 +14,11 @@ package scw.util.stream;
 public interface Callback<S, E extends Throwable> {
 	void call(S source) throws E;
 
+	/**
+	 * 在执行之前添加一个回调
+	 * @param callback
+	 * @return
+	 */
 	default Callback<S, E> beforeCall(Callback<S, E> callback) {
 		if (callback == null) {
 			return this;
@@ -33,6 +38,11 @@ public interface Callback<S, E extends Throwable> {
 		};
 	}
 
+	/**
+	 * 在回调之后追加一个回调
+	 * @param callback
+	 * @return
+	 */
 	default Callback<S, E> afterCall(Callback<S, E> callback) {
 		if (callback == null) {
 			return this;
@@ -45,7 +55,7 @@ public interface Callback<S, E extends Throwable> {
 			public void call(S source) throws E {
 				try {
 					self.call(source);
-				} catch (Exception e) {
+				} finally {
 					callback.call(source);
 				}
 			}

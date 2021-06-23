@@ -23,6 +23,11 @@ public interface CallbackProcessor<E extends Throwable> {
 		};
 	}
 
+	/**
+	 * 在执行器外部追加指定的执行器
+	 * @param processor
+	 * @return
+	 */
 	default CallbackProcessor<E> afterProcess(
 			CallbackProcessor<? extends E> processor) {
 		if (processor == null) {

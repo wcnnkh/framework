@@ -15,7 +15,9 @@ public interface ConnectionFactory {
 			connection = getConnection();
 			return process.process(connection);
 		} finally {
+			System.out.println("开始关闭连接:" + connection);
 			if (connection != null && !connection.isClosed()) {
+				System.out.println("关闭连接:" + connection);
 				connection.close();
 			}
 		}
