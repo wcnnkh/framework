@@ -11,11 +11,10 @@ import scw.lang.Nullable;
  * @see #close()
  * @see MapStreamProcessor
  * @see DefaultStreamProcessor
+ * @see AutoCloseStreamProcessor
+ * @see AutoCloseStreamProcessorWrapper
  */
 public interface StreamProcessor<T, E extends Throwable> extends CallableProcessor<T, E> {
-	/**
-	 * 在执行此方法后会自动调用close方法
-	 */
 	@Nullable
 	T process() throws E;
 

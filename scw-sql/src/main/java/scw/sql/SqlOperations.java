@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import scw.util.stream.AutoCloseStream;
+import scw.util.stream.StreamProcessorSupport;
 
 public interface SqlOperations extends ConnectionFactory {
 	default SqlProcessor<Connection, PreparedStatement> prepareStatement(String sql) {
@@ -30,8 +31,8 @@ public interface SqlOperations extends ConnectionFactory {
 		try {
 			return SqlUtils.process(connection, prepare(sql), sql.getParams(), processor);
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
@@ -47,8 +48,8 @@ public interface SqlOperations extends ConnectionFactory {
 				}
 			});
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
@@ -58,8 +59,8 @@ public interface SqlOperations extends ConnectionFactory {
 		try {
 			SqlUtils.process(connection, prepare(sql), sql.getParams(), callback);
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
@@ -75,8 +76,8 @@ public interface SqlOperations extends ConnectionFactory {
 				}
 			});
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
@@ -108,8 +109,8 @@ public interface SqlOperations extends ConnectionFactory {
 				}
 			});
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
@@ -135,19 +136,19 @@ public interface SqlOperations extends ConnectionFactory {
 				}
 			});
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
 	}
 
-	default AutoCloseStream<ResultSet> streamQuery(Connection connection, Sql sql) throws SqlException {
+	default Stream<ResultSet> streamQuery(Connection connection, Sql sql) throws SqlException {
 		try {
 			return SqlUtils.query(connection, prepare(sql), sql.getParams(), () -> sql.toString());
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
@@ -155,7 +156,7 @@ public interface SqlOperations extends ConnectionFactory {
 
 	default <T> AutoCloseStream<T> streamQuery(Connection connection, Sql sql,
 			SqlProcessor<ResultSet, ? extends T> resultSetProcessor) throws SqlException {
-		return streamQuery(connection, sql).map(new Function<ResultSet, T>() {
+		Stream<T> stream = streamQuery(connection, sql).map(new Function<ResultSet, T>() {
 			@Override
 			public T apply(ResultSet t) {
 				try {
@@ -165,24 +166,25 @@ public interface SqlOperations extends ConnectionFactory {
 				}
 			}
 		});
+		return StreamProcessorSupport.autoClose(stream);
 	}
 
-	default AutoCloseStream<ResultSet> streamQuery(Sql sql) throws SqlException {
+	default Stream<ResultSet> streamQuery(Sql sql) throws SqlException {
 		try {
 			return streamProcess((connection) -> {
 				return streamQuery(connection, sql);
 			}, () -> sql.toString());
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
 	}
 
-	default <T> Stream<T> streamQuery(Sql sql, SqlProcessor<ResultSet, ? extends T> resultSetProcessor)
+	default <T> AutoCloseStream<T> streamQuery(Sql sql, SqlProcessor<ResultSet, ? extends T> resultSetProcessor)
 			throws SqlException {
-		return streamQuery(sql).map(new Function<ResultSet, T>() {
+		Stream<T> stream = streamQuery(sql).map(new Function<ResultSet, T>() {
 			@Override
 			public T apply(ResultSet t) {
 				try {
@@ -192,6 +194,7 @@ public interface SqlOperations extends ConnectionFactory {
 				}
 			}
 		});
+		return StreamProcessorSupport.autoClose(stream);
 	}
 
 	default <T> T query(Connection connection, Sql sql, SqlProcessor<ResultSet, T> resultSetProcessor)
@@ -199,8 +202,8 @@ public interface SqlOperations extends ConnectionFactory {
 		try {
 			return SqlUtils.query(connection, prepare(sql), sql.getParams(), resultSetProcessor);
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
@@ -216,8 +219,8 @@ public interface SqlOperations extends ConnectionFactory {
 				}
 			});
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
@@ -246,8 +249,8 @@ public interface SqlOperations extends ConnectionFactory {
 		try {
 			return SqlUtils.executeBatch(connection, prepareStatement(sql), batchArgs);
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}
@@ -263,8 +266,8 @@ public interface SqlOperations extends ConnectionFactory {
 				}
 			});
 		} catch (Throwable e) {
-			if(e instanceof SqlException) {
-				throw (SqlException)e;
+			if (e instanceof SqlException) {
+				throw (SqlException) e;
 			}
 			throw new SqlException(sql, e);
 		}

@@ -12,11 +12,7 @@ public class MapStreamProcessor<A, T, E extends Throwable> extends AbstractStrea
 	@Override
 	public T process() throws E {
 		A source = sourceProcessor.process();
-		try {
-			return processor.process(source);
-		} finally {
-			close();
-		}
+		return processor.process(source);
 	}
 
 	@Override

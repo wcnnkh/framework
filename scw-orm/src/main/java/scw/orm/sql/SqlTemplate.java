@@ -18,6 +18,7 @@ import scw.sql.SqlException;
 import scw.sql.SqlOperations;
 import scw.util.Pagination;
 import scw.util.stream.AutoCloseStream;
+import scw.util.stream.StreamProcessorSupport;
 
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
 	SqlDialect getSqlDialect();
@@ -114,9 +115,10 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	default <T> AutoCloseStream<T> streamQuery(TypeDescriptor resultTypeDescriptor, Sql sql) {
 		try {
-			return streamProcess((connection) -> {
+			Stream<T> stream = streamProcess((connection) -> {
 				return streamQuery(connection, resultTypeDescriptor, sql);
 			}, () -> sql.toString());
+			return StreamProcessorSupport.autoClose(stream);
 		} catch (SQLException e) {
 			throw new SqlException(sql, e);
 		}

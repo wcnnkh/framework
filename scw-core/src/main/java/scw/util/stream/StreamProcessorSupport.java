@@ -26,6 +26,11 @@ public final class StreamProcessorSupport {
 		});
 	}
 
+	public static <T, E extends Throwable> AutoCloseStreamProcessor<T, E> autoClose(
+			StreamProcessor<T, E> streamProcessor) {
+		return new AutoCloseStreamProcessorWrapper<>(streamProcessor);
+	}
+
 	public static <T> AutoCloseStream<T> autoClose(Stream<T> stream) {
 		return new AutoCloseStreamWrapper<>(stream);
 	}

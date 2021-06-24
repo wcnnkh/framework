@@ -9,11 +9,7 @@ public class DefaultStreamProcessor<T, E extends Throwable> extends AbstractStre
 
 	@Override
 	public T process() throws E {
-		try {
-			return processor.process();
-		} finally {
-			close();
-		}
+		return processor.process();
 	}
 
 	@Override

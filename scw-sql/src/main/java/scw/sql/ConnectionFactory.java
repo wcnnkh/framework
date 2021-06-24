@@ -3,8 +3,10 @@ package scw.sql;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
-import scw.util.stream.AutoCloseStream;
+import scw.util.stream.StreamProcessor;
+import scw.util.stream.StreamProcessorSupport;
 
 @FunctionalInterface
 public interface ConnectionFactory {
@@ -38,8 +40,18 @@ public interface ConnectionFactory {
 		});
 	}
 
-	default <T> AutoCloseStream<T> streamProcess(SqlProcessor<Connection, AutoCloseStream<T>> processor,
-			Supplier<String> descSupplier) throws SQLException {
+	default StreamProcessor<Connection, SQLException> stream() throws SQLException {
+		Connection connection = getConnection();
+		StreamProcessor<Connection, SQLException> processor = StreamProcessorSupport.stream(connection);
+		return processor.onClose(() -> {
+			if (connection != null && !connection.isClosed()) {
+				connection.close();
+			}
+		});
+	}
+
+	default <T> Stream<T> streamProcess(SqlProcessor<Connection, Stream<T>> processor, Supplier<String> descSupplier)
+			throws SQLException {
 		Connection connection = getConnection();
 		return processor.process(connection).onClose(new Runnable() {
 

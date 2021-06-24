@@ -17,13 +17,15 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
-import scw.util.stream.AutoCloseStream;
-import scw.util.stream.StreamProcessorSupport;
 
 public final class SqlUtils {
 
@@ -250,19 +252,20 @@ public final class SqlUtils {
 		return executeBatch(connection, connectionProcessor, batchArgs, null);
 	}
 
-	public static <S> AutoCloseStream<ResultSet> query(S source, SqlProcessor<S, ResultSet> query,
+	public static <S> Stream<ResultSet> query(S source, SqlProcessor<S, ResultSet> query,
 			@Nullable Supplier<String> desc) throws SQLException {
 		ResultSet resultSet = query.process(source);
 		ResultSetIterator iterator = new ResultSetIterator(resultSet);
-		AutoCloseStream<ResultSet> stream = StreamProcessorSupport.stream(iterator);
+		Spliterator<ResultSet> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+		Stream<ResultSet> stream = StreamSupport.stream(spliterator, false);
 		return stream.onClose(() -> {
 			try {
 				if (!resultSet.isClosed()) {
 					resultSet.close();
 				}
 			} catch (Throwable e) {
-				if(e instanceof SqlException) {
-					throw (SqlException)e;
+				if (e instanceof SqlException) {
+					throw (SqlException) e;
 				}
 				if (desc == null) {
 					throw new SqlException(e);
@@ -272,7 +275,7 @@ public final class SqlUtils {
 		});
 	}
 
-	public static <P extends Statement> AutoCloseStream<ResultSet> query(Connection connection,
+	public static <P extends Statement> Stream<ResultSet> query(Connection connection,
 			SqlProcessor<Connection, ? extends P> statementCreate, SqlProcessor<P, ResultSet> query,
 			@Nullable Supplier<String> desc) throws SQLException {
 		P statement = statementCreate.process(connection);
@@ -283,8 +286,8 @@ public final class SqlUtils {
 						statement.close();
 					}
 				} catch (Throwable e) {
-					if(e instanceof SqlException) {
-						throw (SqlException)e;
+					if (e instanceof SqlException) {
+						throw (SqlException) e;
 					}
 					if (desc == null) {
 						throw new SqlException(e);
@@ -300,7 +303,7 @@ public final class SqlUtils {
 		}
 	}
 
-	public static <P extends PreparedStatement> AutoCloseStream<ResultSet> query(Connection connection,
+	public static <P extends PreparedStatement> Stream<ResultSet> query(Connection connection,
 			SqlProcessor<Connection, ? extends P> statementCreate, Object[] args, @Nullable Supplier<String> desc)
 			throws SQLException {
 		return query(connection, statementCreate, new SqlProcessor<P, ResultSet>() {
