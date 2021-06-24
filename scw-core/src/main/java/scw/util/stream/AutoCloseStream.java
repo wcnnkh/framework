@@ -12,6 +12,14 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+/**
+ * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对应后未调用任何方法
+ * 
+ * @author shuchaowen
+ *
+ * @param <T>
+ * @see AutoCloseStreamWrapper
+ */
 public interface AutoCloseStream<T> extends Stream<T>, AutoCloseBaseStream<T, Stream<T>> {
 	AutoCloseStream<T> filter(Predicate<? super T> predicate);
 
@@ -22,9 +30,9 @@ public interface AutoCloseStream<T> extends Stream<T>, AutoCloseBaseStream<T, St
 	AutoCloseLongStream mapToLong(ToLongFunction<? super T> mapper);
 
 	AutoCloseDoubleStream mapToDouble(ToDoubleFunction<? super T> mapper);
-	
+
 	<R> AutoCloseStream<R> flatMap(Function<? super T, ? extends Stream<? extends R>> mapper);
-	
+
 	AutoCloseIntStream flatMapToInt(Function<? super T, ? extends IntStream> mapper);
 
 	AutoCloseLongStream flatMapToLong(Function<? super T, ? extends LongStream> mapper);
@@ -42,12 +50,12 @@ public interface AutoCloseStream<T> extends Stream<T>, AutoCloseBaseStream<T, St
 	AutoCloseStream<T> limit(long maxSize);
 
 	AutoCloseStream<T> skip(long n);
-	
+
 	AutoCloseStream<T> sequential();
 
 	AutoCloseStream<T> parallel();
 
 	AutoCloseStream<T> unordered();
-	
+
 	AutoCloseStream<T> onClose(Runnable closeHandler);
 }

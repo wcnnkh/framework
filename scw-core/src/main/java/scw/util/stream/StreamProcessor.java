@@ -10,6 +10,7 @@ import scw.lang.Nullable;
  * @param <E>
  * @see #close()
  * @see MapStreamProcessor
+ * @see DefaultStreamProcessor
  */
 public interface StreamProcessor<T, E extends Throwable> extends CallableProcessor<T, E> {
 	/**
