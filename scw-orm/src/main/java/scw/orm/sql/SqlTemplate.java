@@ -17,6 +17,7 @@ import scw.sql.Sql;
 import scw.sql.SqlException;
 import scw.sql.SqlOperations;
 import scw.util.Pagination;
+import scw.util.stream.AutoCloseStream;
 
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
 	SqlDialect getSqlDialect();
@@ -109,9 +110,9 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	<K, V> Map<K, V> getInIds(String tableName, Class<? extends V> entityClass, Collection<? extends K> inPrimaryKeys,
 			Object... primaryKeys);
 
-	<T> Stream<T> streamQuery(Connection connection, TypeDescriptor resultTypeDescriptor, Sql sql);
+	<T> AutoCloseStream<T> streamQuery(Connection connection, TypeDescriptor resultTypeDescriptor, Sql sql);
 
-	default <T> Stream<T> streamQuery(TypeDescriptor resultTypeDescriptor, Sql sql) {
+	default <T> AutoCloseStream<T> streamQuery(TypeDescriptor resultTypeDescriptor, Sql sql) {
 		try {
 			return streamProcess((connection) -> {
 				return streamQuery(connection, resultTypeDescriptor, sql);
@@ -121,11 +122,11 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 		}
 	}
 
-	default <T> Stream<T> streamQuery(Connection connection, Class<? extends T> resultType, Sql sql) {
+	default <T> AutoCloseStream<T> streamQuery(Connection connection, Class<? extends T> resultType, Sql sql) {
 		return streamQuery(connection, TypeDescriptor.valueOf(resultType), sql);
 	}
 
-	default <T> Stream<T> streamQuery(Class<? extends T> resultType, Sql sql) {
+	default <T> AutoCloseStream<T> streamQuery(Class<? extends T> resultType, Sql sql) {
 		return streamQuery(TypeDescriptor.valueOf(resultType), sql);
 	}
 

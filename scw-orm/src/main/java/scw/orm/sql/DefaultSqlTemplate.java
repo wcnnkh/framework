@@ -12,7 +12,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import scw.aop.support.ProxyUtils;
 import scw.convert.ConversionService;
@@ -35,6 +34,7 @@ import scw.sql.RowMapper;
 import scw.sql.Sql;
 import scw.sql.SqlProcessor;
 import scw.util.Pagination;
+import scw.util.stream.AutoCloseStream;
 
 public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
 	private static Logger logger = LoggerFactory.getLogger(DefaultSqlTemplate.class);
@@ -248,7 +248,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	}
 
 	@Override
-	public <T> Stream<T> streamQuery(Connection connection, TypeDescriptor resultTypeDescriptor, Sql sql) {
+	public <T> AutoCloseStream<T> streamQuery(Connection connection, TypeDescriptor resultTypeDescriptor, Sql sql) {
 		return streamQuery(connection, sql, new SmartRowMapper<T>(sqlDialect, resultTypeDescriptor));
 	}
 

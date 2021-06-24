@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import scw.util.stream.AutoCloseStream;
+
 public interface SqlOperations extends ConnectionFactory {
 	default SqlProcessor<Connection, PreparedStatement> prepareStatement(String sql) {
 		return new PreparedStatementCreator(sql);
@@ -140,7 +142,7 @@ public interface SqlOperations extends ConnectionFactory {
 		}
 	}
 
-	default Stream<ResultSet> streamQuery(Connection connection, Sql sql) throws SqlException {
+	default AutoCloseStream<ResultSet> streamQuery(Connection connection, Sql sql) throws SqlException {
 		try {
 			return SqlUtils.query(connection, prepare(sql), sql.getParams(), () -> sql.toString());
 		} catch (Throwable e) {
@@ -151,7 +153,7 @@ public interface SqlOperations extends ConnectionFactory {
 		}
 	}
 
-	default <T> Stream<T> streamQuery(Connection connection, Sql sql,
+	default <T> AutoCloseStream<T> streamQuery(Connection connection, Sql sql,
 			SqlProcessor<ResultSet, ? extends T> resultSetProcessor) throws SqlException {
 		return streamQuery(connection, sql).map(new Function<ResultSet, T>() {
 			@Override
@@ -165,7 +167,7 @@ public interface SqlOperations extends ConnectionFactory {
 		});
 	}
 
-	default Stream<ResultSet> streamQuery(Sql sql) throws SqlException {
+	default AutoCloseStream<ResultSet> streamQuery(Sql sql) throws SqlException {
 		try {
 			return streamProcess((connection) -> {
 				return streamQuery(connection, sql);

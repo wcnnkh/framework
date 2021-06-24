@@ -21,7 +21,7 @@ public class MapStreamProcessor<A, T, E extends Throwable> extends AbstractStrea
 
 	@Override
 	public <S> StreamProcessor<S, E> map(Processor<T, S, E> processor) {
-		Processor<A, S, E> mapProcessor = this.processor.afterProcess(processor, (s)->{
+		Processor<A, S, E> mapProcessor = this.processor.afterProcess(processor, (s) -> {
 			close();
 		});
 		return new MapStreamProcessor<A, S, E>(sourceProcessor, mapProcessor);
