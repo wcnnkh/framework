@@ -9,7 +9,7 @@ import java.util.function.DoubleUnaryOperator;
 import java.util.stream.DoubleStream;
 
 /**
- * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对应后未调用任何方法
+ * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
  * 
  * @author shuchaowen
  * @see AutoCloseDoubleStreamWrapper

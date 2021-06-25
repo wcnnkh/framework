@@ -1,6 +1,6 @@
 package scw.util.stream;
 
-public class MapStreamProcessor<A, T, E extends Throwable> extends AbstractStreamProcessor<T, E> {
+public final class MapStreamProcessor<A, T, E extends Throwable> extends AbstractStreamProcessor<T, E> {
 	private final CallableProcessor<A, E> sourceProcessor;
 	private final Processor<A, T, E> processor;
 
@@ -16,7 +16,7 @@ public class MapStreamProcessor<A, T, E extends Throwable> extends AbstractStrea
 	}
 
 	@Override
-	public <S> StreamProcessor<S, E> map(Processor<T, S, E> processor) {
+	public <S> StreamProcessor<S, E> map(Processor<T, ? extends S, ? extends E> processor) {
 		Processor<A, S, E> mapProcessor = this.processor.afterProcess(processor, (s) -> {
 			close();
 		});

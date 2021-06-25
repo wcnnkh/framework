@@ -26,8 +26,15 @@ public class SqlPreparedStatementCreator implements SqlProcessor<Connection, Pre
 		if (logger.isDebugEnabled()) {
 			logger.debug(sql.toString());
 		}
-		return sql.isStoredProcedure() ? prepareCall(connection, sql.getSql())
+		PreparedStatement ps = sql.isStoredProcedure() ? prepareCall(connection, sql.getSql())
 				: prepareStatement(connection, sql.getSql());
+		try {
+			SqlUtils.setSqlParams(ps, sql.getParams());
+		} catch (Exception e) {
+			ps.close();
+			throw e;
+		}
+		return ps;
 	}
 
 	protected PreparedStatement prepareCall(Connection connection, String sql) throws SQLException {

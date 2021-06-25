@@ -13,7 +13,9 @@ public class DefaultStreamProcessor<T, E extends Throwable> extends AbstractStre
 	}
 
 	@Override
-	public <S> StreamProcessor<S, E> map(Processor<T, S, E> processor) {
-		return new MapStreamProcessor<T, S, E>(this.processor, processor).onClose(() -> close());
+	public <S> StreamProcessor<S, E> map(Processor<T, ? extends S, ? extends E> processor) {
+		return new MapStreamProcessor<T, S, E>(this.processor, (t) -> {
+			return processor.process(t);
+		}).onClose(() -> close());
 	}
 }

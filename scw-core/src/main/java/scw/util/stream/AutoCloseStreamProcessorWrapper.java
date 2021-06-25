@@ -19,7 +19,25 @@ public class AutoCloseStreamProcessorWrapper<T, E extends Throwable> implements 
 	}
 
 	@Override
-	public <S> AutoCloseStreamProcessor<S, E> map(Processor<T, S, E> processor) {
+	public void process(Callback<T, ? extends E> callback) throws E {
+		try {
+			callback.call(streamProcessor.process());
+		} finally {
+			close();
+		}
+	}
+	
+	@Override
+	public <V> V process(Processor<T, ? extends V, ? extends E> processor) throws E {
+		try {
+			return processor.process(streamProcessor.process());
+		} finally {
+			close();
+		}
+	}
+
+	@Override
+	public <S> AutoCloseStreamProcessor<S, E> map(Processor<T, ? extends S, ? extends E> processor) {
 		StreamProcessor<S, E> streamProcessor = this.streamProcessor.map(processor);
 		if (streamProcessor instanceof AutoCloseStreamProcessor) {
 			return (AutoCloseStreamProcessor<S, E>) streamProcessor;
@@ -48,7 +66,8 @@ public class AutoCloseStreamProcessorWrapper<T, E extends Throwable> implements 
 		}
 
 		if (obj instanceof AutoCloseStreamProcessorWrapper) {
-			return ObjectUtils.nullSafeEquals(((AutoCloseStreamProcessorWrapper<?, ?>) obj).streamProcessor, this.streamProcessor);
+			return ObjectUtils.nullSafeEquals(((AutoCloseStreamProcessorWrapper<?, ?>) obj).streamProcessor,
+					this.streamProcessor);
 		}
 		return false;
 	}

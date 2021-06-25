@@ -29,7 +29,7 @@ public interface SqlOperations extends ConnectionFactory {
 	default <T> T process(Connection connection, Sql sql, SqlProcessor<PreparedStatement, T> processor)
 			throws SqlException {
 		try {
-			return SqlUtils.process(connection, prepare(sql), sql.getParams(), processor);
+			return SqlUtils.process(connection, prepare(sql), processor);
 		} catch (Throwable e) {
 			if (e instanceof SqlException) {
 				throw (SqlException) e;
@@ -57,7 +57,7 @@ public interface SqlOperations extends ConnectionFactory {
 
 	default void process(Connection connection, Sql sql, SqlCallback<PreparedStatement> callback) throws SqlException {
 		try {
-			SqlUtils.process(connection, prepare(sql), sql.getParams(), callback);
+			SqlUtils.process(connection, prepare(sql), callback);
 		} catch (Throwable e) {
 			if (e instanceof SqlException) {
 				throw (SqlException) e;
@@ -85,7 +85,7 @@ public interface SqlOperations extends ConnectionFactory {
 
 	default boolean execute(Connection connection, Sql sql) throws SqlException {
 		try {
-			return SqlUtils.execute(connection, prepare(sql), sql.getParams());
+			return SqlUtils.execute(connection, prepare(sql));
 		} catch (SQLException e) {
 			throw new SqlException(sql, e);
 		}
@@ -136,20 +136,14 @@ public interface SqlOperations extends ConnectionFactory {
 				}
 			});
 		} catch (Throwable e) {
-			if (e instanceof SqlException) {
-				throw (SqlException) e;
-			}
 			throw new SqlException(sql, e);
 		}
 	}
 
 	default Stream<ResultSet> streamQuery(Connection connection, Sql sql) throws SqlException {
 		try {
-			return SqlUtils.query(connection, prepare(sql), sql.getParams(), () -> sql.toString());
+			return SqlUtils.streamQuery(connection, prepare(sql), (ps) -> ps.executeQuery(), () -> sql.toString());
 		} catch (Throwable e) {
-			if (e instanceof SqlException) {
-				throw (SqlException) e;
-			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -200,7 +194,7 @@ public interface SqlOperations extends ConnectionFactory {
 	default <T> T query(Connection connection, Sql sql, SqlProcessor<ResultSet, T> resultSetProcessor)
 			throws SqlException {
 		try {
-			return SqlUtils.query(connection, prepare(sql), sql.getParams(), resultSetProcessor);
+			return SqlUtils.query(connection, prepare(sql), (ps) -> ps.executeQuery(), resultSetProcessor);
 		} catch (Throwable e) {
 			if (e instanceof SqlException) {
 				throw (SqlException) e;
