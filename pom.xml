@@ -688,5 +688,6 @@
 		<module>scw-orm</module>
 		<module>scw-apollo-client</module>
 		<module>scw-dom</module>
+		<module>scw-swagger</module>
 	</modules>
 </project>
