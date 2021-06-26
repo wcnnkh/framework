@@ -6,7 +6,6 @@ import java.lang.reflect.Type;
 
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.AnnotatedElementWrapper;
-import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ObjectUtils;
 import scw.lang.Nullable;
 import scw.mapper.MapperUtils;
@@ -51,7 +50,7 @@ public class DefaultParameterDescriptor extends AnnotatedElementWrapper<Annotate
 	}
 
 	public boolean isNullable() {
-		return AnnotationUtils.isNullable(this, false);
+		return AnnotatedElementUtils.isNullable(this, () -> false);
 	}
 
 	@Override

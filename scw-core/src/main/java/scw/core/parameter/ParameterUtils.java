@@ -17,16 +17,7 @@ public final class ParameterUtils {
 	static {
 		ParameterNameDiscoverer parameterNameDiscoverer = null;
 		if (JavaVersion.INSTANCE.getMasterVersion() >= 8) {
-			try {
-				parameterNameDiscoverer = (ParameterNameDiscoverer) ClassUtils
-						.forName("scw.core.parameter.Jdk8ParameterNameDiscoverer", null).newInstance();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
+			parameterNameDiscoverer = ClassUtils.newInstance("scw.core.parameter.Jdk8ParameterNameDiscoverer", null);
 		} else {
 			parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 		}

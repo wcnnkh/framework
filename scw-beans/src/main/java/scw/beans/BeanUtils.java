@@ -14,7 +14,7 @@ import scw.beans.annotation.Service;
 import scw.beans.annotation.Singleton;
 import scw.context.ContextAware;
 import scw.convert.TypeDescriptor;
-import scw.core.annotation.AnnotationUtils;
+import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.env.EnvironmentAware;
@@ -54,7 +54,7 @@ public final class BeanUtils {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
 			for (Class<?> i : classToUse.getInterfaces()) {
-				if (AnnotationUtils.isIgnore(classToUse) || i.getMethods().length == 0) {
+				if (AnnotatedElementUtils.isIgnore(classToUse) || i.getMethods().length == 0) {
 					continue;
 				}
 

@@ -24,12 +24,9 @@ import scw.core.BridgeMethodResolver;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
-import scw.lang.Ignore;
-import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.ConcurrentReferenceHashMap;
-import scw.util.Supplier;
 
 /**
  * General utility methods for working with annotations, handling
@@ -2626,29 +2623,5 @@ public abstract class AnnotationUtils {
 			}
 		}
 		return old;
-	}
-
-	public static boolean isIgnore(AnnotatedElement... annotatedElements) {
-		Ignore ignore = getAnnotation(Ignore.class, annotatedElements);
-		if (ignore == null) {
-			return false;
-		}
-
-		return ignore.value();
-	}
-	
-	public static boolean isNullable(AnnotatedElement annotatedElement, boolean defaultValue) {
-		Nullable nullable = annotatedElement.getAnnotation(Nullable.class);
-		return nullable == null ? defaultValue : nullable.value();
-	}
-	
-	public static Supplier<Boolean> isNullable(final AnnotatedElement annotatedElement, final java.util.function.Supplier<Boolean> defaultValue){
-		return new Supplier<Boolean>() {
-
-			public Boolean get() {
-				Nullable nullable = annotatedElement.getAnnotation(Nullable.class);
-				return nullable == null ? defaultValue.get() : nullable.value();
-			}
-		};
 	}
 }

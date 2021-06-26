@@ -11,9 +11,11 @@ import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventRegistry;
+import scw.lang.Ignore;
 import scw.lang.NotFoundException;
 import scw.lang.NotSupportedException;
 
+@Ignore
 public interface Resource extends InputStreamSource, EventRegistry<ChangeEvent<Resource>> {
 	/**
 	 * 是否存在

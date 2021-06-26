@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.context.ClassesLoaderFactory;
-import scw.core.annotation.AnnotationUtils;
+import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
 import scw.env.Environment;
@@ -190,7 +190,7 @@ public final class XmlDubboUtils {
 						String packageName = getPackageName(environment, node);
 						if (StringUtils.isNotEmpty(packageName)) {
 							for (Class<?> clazz : classesLoaderFactory.getClassesLoader(packageName)) {
-								if (!clazz.isInterface() || AnnotationUtils.isIgnore(clazz)) {
+								if (!clazz.isInterface() || AnnotatedElementUtils.isIgnore(clazz)) {
 									continue;
 								}
 

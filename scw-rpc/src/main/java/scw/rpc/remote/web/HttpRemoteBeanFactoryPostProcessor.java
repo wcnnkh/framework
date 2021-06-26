@@ -10,7 +10,7 @@ import scw.beans.ConfigurableBeanFactory;
 import scw.beans.xml.XmlBeanFactory;
 import scw.beans.xml.XmlBeanUtils;
 import scw.context.annotation.Provider;
-import scw.core.annotation.AnnotationUtils;
+import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
@@ -48,7 +48,7 @@ public class HttpRemoteBeanFactoryPostProcessor implements BeanFactoryPostProces
 				CallableFactory callableFactory = supplier.get();
 				if (!StringUtils.isEmpty(packageName)) {
 					for (Class<?> clz : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName)) {
-						if (!clz.isInterface() || AnnotationUtils.isIgnore(clz)) {
+						if (!clz.isInterface() || AnnotatedElementUtils.isIgnore(clz)) {
 							continue;
 						}
 

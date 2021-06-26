@@ -4,17 +4,16 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import scw.core.annotation.AnnotationUtils;
+import scw.core.annotation.AnnotatedElementUtils;
 
 public class DefaultGetter extends AbstractFieldDescriptor implements Getter {
 	private final String name;
 	private final boolean nullable;
 
-	public DefaultGetter(Class<?> declaringClass, String name, Field field,
-			Method method) {
+	public DefaultGetter(Class<?> declaringClass, String name, Field field, Method method) {
 		super(declaringClass, field, method);
 		this.name = name;
-		this.nullable = AnnotationUtils.isNullable(this, false);
+		this.nullable = AnnotatedElementUtils.isNullable(this, () -> false);
 	}
 
 	public String getName() {
