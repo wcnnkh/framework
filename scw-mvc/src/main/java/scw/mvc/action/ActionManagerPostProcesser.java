@@ -12,7 +12,7 @@ import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.event.EventListener;
 import scw.event.ObjectEvent;
-import scw.mvc.annotation.Controller;
+import scw.mvc.HttpPatternResolvers;
 import scw.mvc.security.HttpActionAuthorityManager;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
@@ -53,34 +53,24 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 
 		if (source instanceof ActionManager) {
 			BeanFactory beanFactory = event.getBeanFactory();
+			HttpPatternResolvers patternResolver = new HttpPatternResolvers(beanFactory);
+			patternResolver.setPropertyResolver(beanFactory.getEnvironment());
+			
 			ActionManager actionManager = (ActionManager) source;
 			for (Class<?> clz : beanFactory.getContextClassesLoader()) {
-				if (!isSupport(beanFactory, clz)) {
+				if(!patternResolver.canResolveHttpPattern(clz)){
 					continue;
 				}
 
 				for (Method method : clz.getDeclaredMethods()) {
-					if (!isSupport(method)) {
+					if(!patternResolver.canResolveHttpPattern(clz, method)){
 						continue;
 					}
 
-					Action action = new BeanAction(beanFactory, clz, method);
+					Action action = new BeanAction(beanFactory, clz, method, patternResolver);
 					actionManager.register(action);
 				}
 			}
 		}
-	}
-
-	protected boolean isSupport(BeanFactory beanFactory, Class<?> clazz) {
-		Controller clzController = clazz.getAnnotation(Controller.class);
-		if (clzController == null) {
-			return false;
-		}
-
-		return beanFactory.isInstance(clazz);
-	}
-
-	protected boolean isSupport(Method method) {
-		return method.getAnnotation(Controller.class) != null;
 	}
 }

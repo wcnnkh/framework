@@ -12,6 +12,7 @@ import scw.instance.supplier.SimpleInstanceSupplier;
 import scw.instance.support.InstanceIterable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.mvc.HttpPatternResolver;
 import scw.mvc.annotation.ActionInterceptors;
 import scw.mvc.annotation.Controller;
 import scw.util.Supplier;
@@ -27,8 +28,8 @@ public class BeanAction extends AbstractAction {
 	 * @param targetClass
 	 * @param method
 	 */
-	public BeanAction(BeanFactory beanFactory, Class<?> targetClass, Method method) {
-		super(targetClass, method, beanFactory.getEnvironment());
+	public BeanAction(BeanFactory beanFactory, Class<?> targetClass, Method method, HttpPatternResolver httpPatternResolver) {
+		super(targetClass, method, httpPatternResolver);
 		this.beanFactory = beanFactory;
 		Supplier<Object> instanceSupplier;
 		if(beanFactory.isSingleton(targetClass)){
