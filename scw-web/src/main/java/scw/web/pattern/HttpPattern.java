@@ -6,7 +6,7 @@ import java.util.Map;
 import scw.core.utils.ObjectUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
-import scw.net.MimeType;
+import scw.net.MimeTypes;
 import scw.util.AntPathMatcher;
 import scw.util.PathMatcher;
 import scw.web.ServerHttpRequest;
@@ -19,7 +19,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable,
 	private final String path;
 	private final String method;
 	private PathMatcher pathMatcher;
-	private final MimeType mimeType;
+	private final MimeTypes mimeTypes;
 
 	public HttpPattern(String path) {
 		this(path, null, null);
@@ -30,16 +30,17 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable,
 	}
 
 	public HttpPattern(String path, @Nullable String method,
-			@Nullable MimeType mimeType) {
+			@Nullable MimeTypes mimeTypes) {
 		this.path = path;
 		this.method = method;
-		this.mimeType = mimeType;
+		this.mimeTypes = mimeTypes == null ? null : mimeTypes.readyOnly();
 	}
 
 	protected HttpPattern(HttpPattern httpPattern) {
 		this.path = httpPattern == null ? null : httpPattern.path;
 		this.method = httpPattern == null ? null : httpPattern.method;
-		this.mimeType = httpPattern == null ? null : httpPattern.mimeType;
+		this.mimeTypes = httpPattern == null ? null : httpPattern.mimeTypes
+				.readyOnly();
 		if (httpPattern != null) {
 			this.pathMatcher = httpPattern.pathMatcher;
 		}
@@ -52,13 +53,13 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable,
 	public String getPath() {
 		return path;
 	}
-	
+
 	public String getMethod() {
 		return method;
 	}
 
-	public MimeType getMimeType() {
-		return mimeType;
+	public MimeTypes getMimeTypes() {
+		return mimeTypes;
 	}
 
 	public boolean isPattern() {
@@ -76,8 +77,8 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable,
 			return false;
 		}
 
-		if (mimeType != null
-				&& !mimeType.isCompatibleWith(request.getContentType())) {
+		if (mimeTypes != null
+				&& !mimeTypes.isCompatibleWith(request.getContentType())) {
 			return false;
 		}
 
@@ -119,8 +120,8 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable,
 			code += method.hashCode();
 		}
 
-		if (mimeType != null) {
-			code += mimeType.hashCode();
+		if (mimeTypes != null) {
+			code += mimeTypes.hashCode();
 		}
 		return code;
 	}
@@ -137,7 +138,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable,
 				return false;
 			}
 
-			if (!ObjectUtils.nullSafeEquals(mimeType, httpPattern.mimeType)) {
+			if (!ObjectUtils.nullSafeEquals(mimeTypes, httpPattern.mimeTypes)) {
 				return false;
 			}
 
@@ -158,7 +159,7 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable,
 
 	@Override
 	public String toString() {
-		if (method == null && path == null && mimeType == null) {
+		if (method == null && path == null && mimeTypes == null) {
 			return "[ANY]";
 		}
 
@@ -174,8 +175,8 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable,
 			sb.append(path);
 		}
 
-		if (mimeType != null) {
-			sb.append(mimeType);
+		if (mimeTypes != null) {
+			sb.append(mimeTypes);
 		}
 		return sb.toString();
 	}
@@ -187,10 +188,9 @@ public class HttpPattern implements ServerHttpRequestAccept, Cloneable,
 
 	@Override
 	public int compareTo(HttpPattern o) {
-		if (o.mimeType != null && this.mimeType != null) {
-			return this.mimeType.compareTo(o.mimeType);
+		if (o.mimeTypes != null && this.mimeTypes != null) {
+			return this.mimeTypes.compareTo(o.mimeTypes);
 		}
-
 		return this.equals(o) ? 0 : 1;
 	}
 

@@ -3,7 +3,9 @@ package scw.swagger.test;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 @Path("abc")
@@ -16,10 +18,11 @@ public class ApiTest {
 		return "";
 	}
 	
-	@GET
+	@POST
 	@Operation(description="获取手机号")
 	@Path("/def")
-	public String b() {
-		return "";
+	@Consumes("text/xml")
+	public String b(String a, String b) {
+		return "hello";
 	}
 }
