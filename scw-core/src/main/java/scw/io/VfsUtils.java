@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URL;
 
 import scw.core.reflect.ReflectionUtils;
+import scw.lang.Ignore;
 
 /**
  * Utility for detecting and accessing JBoss VFS in the classpath.
@@ -21,6 +22,7 @@ import scw.core.reflect.ReflectionUtils;
  * <p>Thanks go to Marius Bogoevici for the initial patch.
  * <b>Note:</b> This is an internal class and should not be used outside the framework.
  */
+@Ignore
 public abstract class VfsUtils {
 
 	private static final String VFS3_PKG = "org.jboss.vfs.";

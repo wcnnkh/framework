@@ -40,7 +40,7 @@ public class RemoteHttpServiceHandler extends HttpPattern implements HttpService
 	}
 
 	public RemoteHttpServiceHandler(CallableFactory callableFactory, RemoteMessageCodec messageCodec, String path) {
-		super(path, HttpMethod.POST);
+		super(path, HttpMethod.POST.name());
 		this.callableFactory = callableFactory;
 		this.messageCodec = messageCodec;
 	}

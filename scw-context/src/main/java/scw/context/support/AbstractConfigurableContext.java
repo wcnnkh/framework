@@ -111,6 +111,7 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 	}
 
 	public void componentScan(String packageName) {
-		getContextClassesLoader().add(getClassesLoaderFactory().getClassesLoader(packageName));
+		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName);
+		getContextClassesLoader().add(classesLoader);
 	}
 }

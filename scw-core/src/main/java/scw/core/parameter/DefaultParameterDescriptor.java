@@ -3,16 +3,17 @@ package scw.core.parameter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
+import java.util.HashMap;
+import java.util.Map;
 
 import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.AnnotatedElementWrapper;
-import scw.core.annotation.AnnotationUtils;
 import scw.core.utils.ObjectUtils;
 import scw.lang.Nullable;
-import scw.mapper.MapperUtils;
 
-public class DefaultParameterDescriptor extends AnnotatedElementWrapper<AnnotatedElement>
-		implements ParameterDescriptor {
+public class DefaultParameterDescriptor extends
+		AnnotatedElementWrapper<AnnotatedElement> implements
+		ParameterDescriptor {
 	private final String name;
 	private final Class<?> type;
 	private final Type genericType;
@@ -21,16 +22,20 @@ public class DefaultParameterDescriptor extends AnnotatedElementWrapper<Annotate
 		this(name, type, type);
 	}
 
-	public DefaultParameterDescriptor(String name, Class<?> type, @Nullable Type genericType) {
-		this(name, AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT, type, genericType);
-	}
-
-	public DefaultParameterDescriptor(String name, Annotation[] annotations, Class<?> type,
+	public DefaultParameterDescriptor(String name, Class<?> type,
 			@Nullable Type genericType) {
-		this(name, AnnotatedElementUtils.forAnnotations(annotations), type, genericType);
+		this(name, AnnotatedElementUtils.EMPTY_ANNOTATED_ELEMENT, type,
+				genericType);
 	}
 
-	public DefaultParameterDescriptor(String name, AnnotatedElement annotatedElement, Class<?> type,
+	public DefaultParameterDescriptor(String name, Annotation[] annotations,
+			Class<?> type, @Nullable Type genericType) {
+		this(name, AnnotatedElementUtils.forAnnotations(annotations), type,
+				genericType);
+	}
+
+	public DefaultParameterDescriptor(String name,
+			AnnotatedElement annotatedElement, Class<?> type,
 			@Nullable Type genericType) {
 		super(annotatedElement);
 		this.name = name;
@@ -51,19 +56,28 @@ public class DefaultParameterDescriptor extends AnnotatedElementWrapper<Annotate
 	}
 
 	public boolean isNullable() {
-		return AnnotationUtils.isNullable(this, false);
+		return AnnotatedElementUtils.isNullable(wrappedTarget, () -> false);
 	}
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(getClass()).getValueMap(this).toString();
+		Map<String, Object> map = new HashMap<String, Object>(4, 1);
+		map.put("name", name);
+		map.put("type", type);
+		map.put("genericType", genericType);
+		return map.toString();
 	}
 
 	@Override
 	public int hashCode() {
 		int code = super.hashCode();
-		code += name.hashCode();
-		code += type.hashCode();
+		if (name != null) {
+			code += name.hashCode();
+		}
+		if (type != null) {
+			code += type.hashCode();
+		}
+
 		if (genericType != null) {
 			code += genericType.hashCode();
 		}
@@ -77,9 +91,13 @@ public class DefaultParameterDescriptor extends AnnotatedElementWrapper<Annotate
 		}
 
 		if (obj instanceof DefaultParameterDescriptor) {
-			return super.equals(obj) && ObjectUtils.nullSafeEquals(name, ((DefaultParameterDescriptor) obj).name)
-					&& ObjectUtils.nullSafeEquals(type, ((DefaultParameterDescriptor) obj).type)
-					&& ObjectUtils.nullSafeEquals(genericType, ((DefaultParameterDescriptor) obj).genericType);
+			return super.equals(obj)
+					&& ObjectUtils.nullSafeEquals(name,
+							((DefaultParameterDescriptor) obj).name)
+					&& ObjectUtils.nullSafeEquals(type,
+							((DefaultParameterDescriptor) obj).type)
+					&& ObjectUtils.nullSafeEquals(genericType,
+							((DefaultParameterDescriptor) obj).genericType);
 		}
 		return false;
 	}

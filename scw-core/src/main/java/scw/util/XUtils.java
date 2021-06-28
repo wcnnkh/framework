@@ -15,12 +15,12 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 
-import scw.core.annotation.AnnotationUtils;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.io.FileUtils;
+import scw.lang.Ignore;
 import scw.lang.NotSupportedException;
 import scw.lang.Nullable;
 import scw.mapper.FieldFeature;
@@ -278,7 +278,7 @@ public final class XUtils {
 			return false;
 		}
 		
-		if(ClassUtils.isPrimitiveOrWrapper(clazz) || AnnotationUtils.isIgnore(clazz)){
+		if(ClassUtils.isPrimitiveOrWrapper(clazz) || clazz.isAnnotationPresent(Ignore.class)){
 			return false;
 		}
 		

@@ -11,6 +11,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import scw.core.Assert;
 import scw.core.BridgeMethodResolver;
@@ -826,19 +827,23 @@ public class AnnotatedElementUtils {
 		return postProcessAndSynthesizeAggregatedResults(element, annotationType, processor.getAggregatedResults());
 	}
 
-	public static Boolean isNullable(AnnotatedElement annotatedElement, Boolean defaultValue) {
+	public static Boolean isNullable(AnnotatedElement annotatedElement, Supplier<Boolean> defaultValue) {
 		Nullable nullable = getMergedAnnotation(annotatedElement, Nullable.class);
-		return nullable == null ? defaultValue : nullable.value();
+		return nullable == null ? defaultValue.get() : nullable.value();
 	}
 
-	public static String getCharsetName(AnnotatedElement annotatedElement, String defaultValue) {
+	public static String getCharsetName(AnnotatedElement annotatedElement, Supplier<String> defaultValue) {
 		CharsetName charsetName = getMergedAnnotation(annotatedElement, CharsetName.class);
-		return charsetName == null ? defaultValue : charsetName.value();
+		return charsetName == null ? defaultValue.get() : charsetName.value();
 	}
 
-	public static Boolean ignore(AnnotatedElement annotatedElement, Boolean defaultValue) {
+	public static Boolean isIgnore(AnnotatedElement annotatedElement) {
+		return isIgnore(annotatedElement, () -> false);
+	}
+
+	public static Boolean isIgnore(AnnotatedElement annotatedElement, Supplier<Boolean> defaultValue) {
 		Ignore ignore = getMergedAnnotation(annotatedElement, Ignore.class);
-		return ignore == null ? defaultValue : ignore.value();
+		return ignore == null ? defaultValue.get() : ignore.value();
 	}
 
 	public static String getDescription(AnnotatedElement annotatedElement) {

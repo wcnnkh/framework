@@ -5,11 +5,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
-import scw.core.annotation.AnnotationUtils;
+import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.parameter.DefaultParameterDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.ArrayUtils;
-import scw.util.Supplier;
 import scw.value.Value;
 
 public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
@@ -30,14 +29,10 @@ public class DefaultSetter extends AbstractFieldDescriptor implements Setter {
 		}
 
 		if (setterParameterDescriptor == null) {
-			this.nullable = AnnotationUtils.isNullable(this, false);
+			this.nullable = AnnotatedElementUtils.isNullable(this, () -> false);
 		} else {
-			this.nullable = AnnotationUtils.isNullable(setterParameterDescriptor, new Supplier<Boolean>() {
-
-				public Boolean get() {
-					return AnnotationUtils.isNullable(DefaultSetter.this, false);
-				}
-			}).get();
+			this.nullable = AnnotatedElementUtils.isNullable(setterParameterDescriptor,
+					() -> AnnotatedElementUtils.isNullable(DefaultSetter.this, () -> false));
 		}
 	}
 

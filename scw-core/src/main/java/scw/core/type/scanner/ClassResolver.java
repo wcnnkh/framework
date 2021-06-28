@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import scw.core.reflect.ReflectionUtils;
 import scw.core.type.AnnotationMetadata;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
@@ -22,7 +21,7 @@ import scw.io.ResourceLoader;
 import scw.lang.Ignore;
 import scw.util.Accept;
 import scw.util.DefaultClassLoaderProvider;
-import scw.util.JavaVersion;
+import scw.util.XUtils;
 
 public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 	private MetadataReaderFactory metadataReaderFactory;
@@ -41,11 +40,7 @@ public class ClassResolver implements TypeFilter, Accept<Class<?>> {
 	}
 
 	public boolean accept(Class<?> clazz) {
-		if(Modifier.isPrivate(clazz.getModifiers())){
-			return false;
-		}
-		
-		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
+		return Modifier.isPublic(clazz.getModifiers()) && XUtils.isAvailable(clazz);
 	}
 
 	public boolean match(MetadataReader metadataReader,

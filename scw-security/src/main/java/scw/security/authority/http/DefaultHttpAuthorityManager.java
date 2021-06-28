@@ -4,17 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.core.utils.StringUtils;
-import scw.http.HttpMethod;
 import scw.json.JSONUtils;
 import scw.lang.AlreadyExistsException;
 import scw.security.authority.DefaultAuthorityManager;
 
 public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
 		DefaultAuthorityManager<T> implements HttpAuthorityManager<T> {
-	private Map<String, Map<HttpMethod, String>> pathMap = new HashMap<String, Map<HttpMethod, String>>();
+	private Map<String, Map<String, String>> pathMap = new HashMap<String, Map<String, String>>();
 
-	public T getAuthority(String path, HttpMethod method) {
-		Map<HttpMethod, String> map = pathMap.get(path);
+	public T getAuthority(String path, String method) {
+		Map<String, String> map = pathMap.get(path);
 		if (map == null) {
 			return null;
 		}
@@ -29,9 +28,9 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
 
 	public synchronized void register(T authority) {
 		if (StringUtils.isNotEmpty(authority.getPath())) {
-			Map<HttpMethod, String> map = pathMap.get(authority.getPath());
+			Map<String, String> map = pathMap.get(authority.getPath());
 			if (map == null) {
-				map = new HashMap<HttpMethod, String>();
+				map = new HashMap<String, String>();
 			}
 
 			if (map.containsKey(authority.getMethod())) {
@@ -48,7 +47,7 @@ public class DefaultHttpAuthorityManager<T extends HttpAuthority> extends
 	@Override
 	public void remove(T authority) {
 		if (StringUtils.isNotEmpty(authority.getPath())) {
-			Map<HttpMethod, String> map = pathMap.get(authority.getPath());
+			Map<String, String> map = pathMap.get(authority.getPath());
 			if(map != null){
 				map.remove(authority.getMethod());
 			}

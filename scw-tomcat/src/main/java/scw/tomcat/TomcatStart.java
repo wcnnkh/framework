@@ -66,7 +66,7 @@ public class TomcatStart implements Main, Destroy {
 				}
 
 				for (HttpPattern pattern : action.getPatternts()) {
-					if (pattern.isPattern() && pattern.getMethod() == HttpMethod.GET) {
+					if (pattern.isPattern() && HttpMethod.GET.name().equals(pattern.getMethod())) {
 						continue;
 					}
 

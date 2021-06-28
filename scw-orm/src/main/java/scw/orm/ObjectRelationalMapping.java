@@ -62,7 +62,7 @@ public interface ObjectRelationalMapping {
 	}
 
 	default boolean isNullable(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.isNullable(fieldDescriptor, !isPrimaryKey(fieldDescriptor));
+		return AnnotatedElementUtils.isNullable(fieldDescriptor, ()-> !isPrimaryKey(fieldDescriptor));
 	}
 
 	default boolean isNullable(Field field) {
