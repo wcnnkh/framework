@@ -25,4 +25,10 @@ public class ApiTest {
 	public String b(String a, String b) {
 		return "hello";
 	}
+	
+	@GET
+	@Path("/test")
+	public ApiResponse test(ApiRequest apiRequest){
+		return new ApiResponse();
+	}
 }
