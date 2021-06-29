@@ -170,7 +170,7 @@ public class RequestBeanFactory extends RequestParameterFactory
 	@Override
 	public Object getParameter(ParameterDescriptor parameterDescriptor) {
 		if (parameterDescriptor.getType().isAnnotationPresent(RequestBody.class)) {
-			return isInstance(parameterDescriptor.getType());
+			return getInstance(parameterDescriptor.getType());
 		}
 		return super.getParameter(parameterDescriptor);
 	}

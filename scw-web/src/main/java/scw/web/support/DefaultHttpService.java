@@ -6,6 +6,7 @@ import java.util.List;
 import scw.beans.BeanFactory;
 import scw.web.HttpService;
 import scw.web.HttpServiceInterceptor;
+import scw.web.HttpServiceRegistry;
 import scw.web.cors.CorsRegistry;
 import scw.web.resource.DefaultStaticResourceLoader;
 import scw.web.resource.StaticResourceHttpService;
@@ -13,10 +14,9 @@ import scw.web.resource.StaticResourceLoader;
 
 public class DefaultHttpService extends AbstractHttpService {
 	private final List<HttpServiceInterceptor> interceptors = new ArrayList<HttpServiceInterceptor>();
-	private final BeanFactory beanFactory;
 
 	public DefaultHttpService(BeanFactory beanFactory) {
-		this.beanFactory = beanFactory;
+		super(beanFactory.getInstance(HttpServiceRegistry.class));
 		if (beanFactory.isInstance(CorsRegistry.class)) {
 			setCorsRegistry(beanFactory.getInstance(CorsRegistry.class));
 		}
@@ -24,8 +24,8 @@ public class DefaultHttpService extends AbstractHttpService {
 		if (beanFactory.isInstance(NotFoundServiceRegistry.class)) {
 			setNotFoundServiceRegistry(beanFactory.getInstance(NotFoundServiceRegistry.class));
 		}
-		
-		if(beanFactory.isInstance(StaticResourceRegistry.class)){
+
+		if (beanFactory.isInstance(StaticResourceRegistry.class)) {
 			getServiceRegistry().register(beanFactory.getInstance(StaticResourceRegistry.class));
 		}
 
@@ -43,10 +43,6 @@ public class DefaultHttpService extends AbstractHttpService {
 		for (HttpService handler : beanFactory.getServiceLoader(HttpService.class)) {
 			getServiceRegistry().register(handler);
 		}
-	}
-
-	public BeanFactory getBeanFactory() {
-		return beanFactory;
 	}
 
 	public List<HttpServiceInterceptor> getHttpServiceInterceptors() {

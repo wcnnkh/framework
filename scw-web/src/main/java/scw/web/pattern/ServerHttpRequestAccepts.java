@@ -10,8 +10,8 @@ import scw.logger.LoggerFactory;
 import scw.web.HttpService;
 import scw.web.ServerHttpRequest;
 
-public class ServerHttpRequestAcceptS<T> implements Comparator<T>, ServerHttpRequestAccept {
-	private static Logger logger = LoggerFactory.getLogger(ServerHttpRequestAcceptS.class);
+public class ServerHttpRequestAccepts<T> implements Comparator<T>, ServerHttpRequestAccept {
+	private static Logger logger = LoggerFactory.getLogger(ServerHttpRequestAccepts.class);
 	private Set<T> services = new TreeSet<T>(this);
 
 	/**

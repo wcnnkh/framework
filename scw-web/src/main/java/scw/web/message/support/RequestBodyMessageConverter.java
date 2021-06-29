@@ -3,6 +3,7 @@ package scw.web.message.support;
 import java.io.IOException;
 
 import scw.convert.ConversionService;
+import scw.convert.ConversionServiceAware;
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.web.ServerHttpRequest;
@@ -12,10 +13,11 @@ import scw.web.message.WebMessageConverter;
 import scw.web.message.WebMessagelConverterException;
 import scw.web.message.annotation.RequestBody;
 
-public class RequestBodyMessageConverter implements WebMessageConverter {
-	private final ConversionService conversionService;
-
-	public RequestBodyMessageConverter(ConversionService conversionService) {
+public class RequestBodyMessageConverter implements WebMessageConverter, ConversionServiceAware {
+	private ConversionService conversionService;
+	
+	@Override
+	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 

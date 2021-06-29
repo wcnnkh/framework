@@ -4,23 +4,21 @@ import java.io.IOException;
 
 import io.swagger.v3.oas.integration.api.OpenApiContext;
 import io.swagger.v3.oas.models.OpenAPI;
-import scw.beans.annotation.Autowired;
-import scw.context.annotation.Provider;
 import scw.http.MediaType;
 import scw.json.JSONUtils;
 import scw.web.HttpService;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
-import scw.web.pattern.ServerHttpRequestAccept;
 
-@Provider
-public class SwaggerUiHttpService implements HttpService, ServerHttpRequestAccept {
-	@Autowired
-	private OpenApiContext openApiContext;
+public class SwaggerUiHttpService implements HttpService {
+	private final OpenApiContext openApiContext;
 
-	@Override
-	public boolean accept(ServerHttpRequest request) {
-		return request.getPath().equals("/swagger-ui/swagger.json");
+	public SwaggerUiHttpService(OpenApiContext openApiContext) {
+		this.openApiContext = openApiContext;
+	}
+
+	public OpenApiContext getOpenApiContext() {
+		return openApiContext;
 	}
 
 	@Override

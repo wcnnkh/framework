@@ -8,8 +8,8 @@ import scw.lang.AlreadyExistsException;
 import scw.web.ServerHttpRequest;
 
 public class HttpPatternRegistry<T> {
-	private Map<String, Map<String, ServerHttpRequestAcceptS<T>>> serviceMap = new HashMap<String, Map<String, ServerHttpRequestAcceptS<T>>>();
-	private ServerHttpRequestAcceptS<InternalHttpService<T>> services = new ServerHttpRequestAcceptS<InternalHttpService<T>>();
+	private Map<String, Map<String, ServerHttpRequestAccepts<T>>> serviceMap = new HashMap<String, Map<String, ServerHttpRequestAccepts<T>>>();
+	private ServerHttpRequestAccepts<InternalHttpService<T>> services = new ServerHttpRequestAccepts<InternalHttpService<T>>();
 
 	public HttpPatternRegsitration<T> register(T service)
 			throws AlreadyExistsException {
@@ -59,16 +59,16 @@ public class HttpPatternRegistry<T> {
 			}
 		} else {
 			synchronized (serviceMap) {
-				Map<String, ServerHttpRequestAcceptS<T>> map = serviceMap
+				Map<String, ServerHttpRequestAccepts<T>> map = serviceMap
 						.get(pattern.getPath());
 				if (map == null) {
-					map = new HashMap<String, ServerHttpRequestAcceptS<T>>();
+					map = new HashMap<String, ServerHttpRequestAccepts<T>>();
 					serviceMap.put(pattern.getPath(), map);
 				}
 
-				ServerHttpRequestAcceptS<T> services = map.get(pattern.getMethod());
+				ServerHttpRequestAccepts<T> services = map.get(pattern.getMethod());
 				if (services == null) {
-					services = new ServerHttpRequestAcceptS<T>();
+					services = new ServerHttpRequestAccepts<T>();
 					map.put(pattern.getMethod(), services);
 				}
 
@@ -81,13 +81,13 @@ public class HttpPatternRegistry<T> {
 					@Override
 					public boolean unregister() {
 						synchronized (serviceMap) {
-							Map<String, ServerHttpRequestAcceptS<T>> map = serviceMap
+							Map<String, ServerHttpRequestAccepts<T>> map = serviceMap
 									.get(pattern.getPath());
 							if (map == null) {
 								return false;
 							}
 
-							ServerHttpRequestAcceptS<T> services = map.get(pattern
+							ServerHttpRequestAccepts<T> services = map.get(pattern
 									.getMethod());
 							if (services == null) {
 								return false;
@@ -133,13 +133,13 @@ public class HttpPatternRegistry<T> {
 	}
 
 	private T getMappingService(ServerHttpRequest request) {
-		Map<String, ServerHttpRequestAcceptS<T>> map = serviceMap.get(request
+		Map<String, ServerHttpRequestAccepts<T>> map = serviceMap.get(request
 				.getPath());
 		if (map == null) {
 			return null;
 		}
 
-		ServerHttpRequestAcceptS<T> services = map.get(request.getRawMethod());
+		ServerHttpRequestAccepts<T> services = map.get(request.getRawMethod());
 		if (services == null) {
 			return null;
 		}

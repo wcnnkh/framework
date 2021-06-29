@@ -1,29 +1,35 @@
 package scw.core.parameter;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 import java.util.Iterator;
 
+import scw.core.annotation.AnnotatedElementUtils;
+import scw.core.annotation.MultiAnnotatedElement;
 import scw.util.AbstractIterator;
 
 public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	private final T source;
 	private final Class<?> declaringClass;
 	private final ParameterDescriptor[] parameterDescriptors;
-	
-	public DefaultParameterDescriptors(T source, Class<?> declaringClass, ParameterDescriptor[] parameterDescriptors){
+
+	public DefaultParameterDescriptors(T source, Class<?> declaringClass, ParameterDescriptor[] parameterDescriptors) {
 		this.source = source;
 		this.declaringClass = declaringClass;
 		this.parameterDescriptors = parameterDescriptors;
 	}
 
 	public DefaultParameterDescriptors(Class<?> declaringClass, T source, String[] names, Annotation[][] annotations,
-			Type[] genericTypes, Class<?>[] types) {
+			AnnotatedElement commonAnnotations, Type[] genericTypes, Class<?>[] types) {
 		this.source = source;
 		this.declaringClass = declaringClass;
 		parameterDescriptors = new ParameterDescriptor[names.length];
-		for(int index=0; index<names.length; index++){
-			parameterDescriptors[index] = new DefaultParameterDescriptor(names[index], annotations[index], types[index], genericTypes[index]);
+		for (int index = 0; index < names.length; index++) {
+			AnnotatedElement annotatedElement = MultiAnnotatedElement
+					.forAnnotatedElements(AnnotatedElementUtils.forAnnotations(annotations[index]), commonAnnotations);
+			parameterDescriptors[index] = new DefaultParameterDescriptor(names[index], annotatedElement, types[index],
+					genericTypes[index]);
 		}
 	}
 
@@ -40,7 +46,7 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 	}
 
 	public int size() {
-		return parameterDescriptors == null? 0:parameterDescriptors.length;
+		return parameterDescriptors == null ? 0 : parameterDescriptors.length;
 	}
 
 	private class InternalIterator extends AbstractIterator<ParameterDescriptor> {
@@ -57,7 +63,7 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 
 	public Class<?>[] getTypes() {
 		Class<?>[] types = new Class<?>[size()];
-		for(int i=0; i<types.length; i++){
+		for (int i = 0; i < types.length; i++) {
 			types[i] = parameterDescriptors[i].getType();
 		}
 		return types;
@@ -78,7 +84,7 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.valueOf(source);
