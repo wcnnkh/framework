@@ -226,6 +226,11 @@ public class MysqlDialect extends AbstractSqlDialect {
 		while (iterator.hasNext()) {
 			Field column = iterator.next();
 			appendFieldName(sb, column.getGetter());
+			sb.append("=?");
+			params.add(getDataBaseValue(entity, column));
+			if(iterator.hasNext()){
+				sb.append(",");
+			}
 		}
 
 		sb.append(WHERE);

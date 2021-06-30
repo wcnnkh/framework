@@ -75,7 +75,6 @@ public final class StreamProcessorSupport {
 	 * @param stream
 	 * @return
 	 */
-	@SuppressWarnings("resource")
 	public static <T> Cursor<T> cursor(Stream<T> stream) {
 		if (stream instanceof Cursor) {
 			return (Cursor<T>) stream;
