@@ -10,17 +10,31 @@ import java.sql.Date;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.lang.Nullable;
+import scw.util.stream.Callback;
+import scw.util.stream.Cursor;
+import scw.util.stream.Processor;
+import scw.util.stream.StreamProcessor;
+import scw.util.stream.StreamProcessorSupport;
 
 public final class SqlUtils {
-	
-	public static String toString(String sql, Object... args){
+
+	public static String toString(String sql, Object... args) {
 		if (args == null || args.length == 0) {
 			return sql;
 		} else {
@@ -34,145 +48,19 @@ public final class SqlUtils {
 		}
 	}
 
-	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql) throws SQLException {
-		PreparedStatement statement;
-		if (sql.isStoredProcedure()) {
-			statement = connection.prepareCall(sql.getSql());
-		} else {
-			statement = connection.prepareStatement(sql.getSql());
-		}
-
-		try {
-			setSqlParams(statement, sql.getParams());
-		} catch (SQLException e) {
-			statement.close();
-			throw e;
-		}
-		return statement;
-	}
-
 	public static void setSqlParams(PreparedStatement preparedStatement, Object[] args) throws SQLException {
-		if (args != null && args.length != 0) {
-			for (int i = 0; i < args.length; i++) {
-				Object value = args[i];
-				if (value != null) {
-					if (value instanceof Enum) {
-						value = ((Enum<?>) value).name();
-					}
+		if (args == null || args.length == 0) {
+			return;
+		}
+
+		for (int i = 0; i < args.length; i++) {
+			Object value = args[i];
+			if (value != null) {
+				if (value instanceof Enum) {
+					value = ((Enum<?>) value).name();
 				}
-				preparedStatement.setObject(i + 1, value);
 			}
-		}
-	}
-
-	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
-			int resultSetConcurrency) throws SQLException {
-		PreparedStatement preparedStatement;
-		if (sql.isStoredProcedure()) {
-			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency);
-		} else {
-			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency);
-		}
-
-		try {
-			setSqlParams(preparedStatement, sql.getParams());
-		} catch (SQLException e) {
-			preparedStatement.close();
-			throw e;
-		}
-		return preparedStatement;
-	}
-
-	public static PreparedStatement createPreparedStatement(Connection connection, Sql sql, int resultSetType,
-			int resultSetConcurrency, int resultSetHoldability) throws SQLException {
-		PreparedStatement preparedStatement;
-		if (sql.isStoredProcedure()) {
-			preparedStatement = connection.prepareCall(sql.getSql(), resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		} else {
-			preparedStatement = connection.prepareStatement(sql.getSql(), resultSetType, resultSetConcurrency,
-					resultSetHoldability);
-		}
-
-		try {
-			setSqlParams(preparedStatement, sql.getParams());
-		} catch (SQLException e) {
-			preparedStatement.close();
-			throw e;
-		}
-		return preparedStatement;
-	}
-
-	public static void query(Connection connection, Sql sql, ResultSetCallback resultSetCallback) throws SQLException {
-
-		PreparedStatement statement = null;
-		try {
-			statement = createPreparedStatement(connection, sql);
-			query(statement, resultSetCallback);
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public static void query(PreparedStatement statement, ResultSetCallback resultSetCallback) throws SQLException {
-		ResultSet resultSet = null;
-		try {
-			resultSet = statement.executeQuery();
-			resultSetCallback.process(resultSet);
-		} finally {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
-	}
-
-	public static <T> T query(Connection connection, Sql sql, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		PreparedStatement statement = null;
-		try {
-			statement = SqlUtils.createPreparedStatement(connection, sql);
-			return query(statement, resultSetMapper);
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public static <T> T query(PreparedStatement statement, ResultSetMapper<T> resultSetMapper) throws SQLException {
-		ResultSet resultSet = null;
-		try {
-			resultSet = statement.executeQuery();
-			return resultSetMapper.mapper(resultSet);
-		} finally {
-			if (resultSet != null) {
-				resultSet.close();
-			}
-		}
-	}
-
-	public static boolean execute(Connection connection, Sql sql) throws SQLException {
-		PreparedStatement statement = null;
-		try {
-			statement = createPreparedStatement(connection, sql);
-			return statement.execute();
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
-		}
-	}
-
-	public static int update(Connection connection, Sql sql) throws SQLException {
-		PreparedStatement statement = null;
-		try {
-			statement = createPreparedStatement(connection, sql);
-			return statement.executeUpdate();
-		} finally {
-			if (statement != null) {
-				statement.close();
-			}
+			preparedStatement.setObject(i + 1, value);
 		}
 	}
 
@@ -205,5 +93,243 @@ public final class SqlUtils {
 				|| Array.class.isAssignableFrom(type) || Blob.class.isAssignableFrom(type)
 				|| Clob.class.isAssignableFrom(type) || BigDecimal.class.isAssignableFrom(type)
 				|| Reader.class.isAssignableFrom(type) || NClob.class.isAssignableFrom(type);
+	}
+
+	/**
+	 * Determine the column name to use. The column name is determined based on a
+	 * lookup using ResultSetMetaData.
+	 * <p>
+	 * This method implementation takes into account recent clarifications expressed
+	 * in the JDBC 4.0 specification:
+	 * <p>
+	 * <i>columnLabel - the label for the column specified with the SQL AS clause.
+	 * If the SQL AS clause was not specified, then the label is the name of the
+	 * column</i>.
+	 * 
+	 * @param resultSetMetaData the current meta-data to use
+	 * @param columnIndex       the index of the column for the look up
+	 * @return the column name to use
+	 * @throws SQLException in case of lookup failure
+	 */
+	public static String lookupColumnName(ResultSetMetaData resultSetMetaData, int columnIndex) throws SQLException {
+		String name = resultSetMetaData.getColumnLabel(columnIndex);
+		if (!StringUtils.hasLength(name)) {
+			name = resultSetMetaData.getColumnName(columnIndex);
+		}
+		return name;
+	}
+
+	public static <S, P extends Statement> StreamProcessor<P, SQLException> streamProcess(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator) throws SQLException {
+		P ps = statementCreator.process(source);
+		StreamProcessor<P, SQLException> streamProcessor = StreamProcessorSupport.stream(ps);
+		return streamProcessor.onClose(() -> {
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		});
+	}
+
+	public static <S, P extends Statement, T, E extends Throwable> T process(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ? extends T, ? extends E> processor) throws SQLException, E {
+		P ps = null;
+		try {
+			ps = statementCreator.process(source);
+			return processor.process(ps);
+		} finally {
+			if (ps != null && !ps.isClosed()) {
+				ps.close();
+			}
+		}
+	}
+
+	public static <S, P extends Statement> void process(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Callback<P, ? extends SQLException> callback) throws SQLException {
+		P statement = null;
+		try {
+			statement = statementCreator.process(source);
+			callback.call(statement);
+		} finally {
+			if (statement != null && !statement.isClosed()) {
+				statement.close();
+			}
+		}
+	}
+
+	public static <T> T process(PreparedStatement ps,
+			Processor<ResultSet, ? extends T, ? extends SQLException> resultSetProcessor) throws SQLException {
+		ResultSet resultSet = null;
+		try {
+			resultSet = ps.executeQuery();
+			return resultSetProcessor.process(resultSet);
+		} finally {
+			if (resultSet != null && !resultSet.isClosed()) {
+				resultSet.close();
+			}
+		}
+	}
+
+	public static int update(Connection connection,
+			Processor<Connection, ? extends PreparedStatement, ? extends SQLException> preparedStatementCreator)
+			throws SQLException {
+		return process(connection, preparedStatementCreator, (ps) -> {
+			return ps.executeUpdate();
+		});
+	}
+
+	public static <P extends PreparedStatement> int[] executeBatch(Connection connection,
+			Processor<Connection, ? extends P, ? extends SQLException> connectionProcessor,
+			@Nullable Collection<Object[]> batchArgs) throws SQLException {
+		return process(connection, connectionProcessor, (ps) -> {
+			if (batchArgs != null) {
+				for (Object[] args : batchArgs) {
+					setSqlParams(ps, args);
+					ps.addBatch();
+				}
+			}
+			return ps.executeBatch();
+		});
+	}
+
+	public static <S> StreamProcessor<ResultSet, SQLException> streamQuery(S source,
+			Processor<S, ? extends ResultSet, ? extends SQLException> queryProcessor) throws SQLException {
+		ResultSet resultSet = queryProcessor.process(source);
+		StreamProcessor<ResultSet, SQLException> streamProcessor = StreamProcessorSupport.stream(resultSet);
+		return streamProcessor.onClose(() -> {
+			if (resultSet != null && !resultSet.isClosed()) {
+				resultSet.close();
+			}
+		});
+	}
+
+	public static <S, P extends Statement> StreamProcessor<ResultSet, SQLException> streamQuery(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ? extends ResultSet, ? extends SQLException> queryProcessor) throws SQLException {
+		P statement = statementCreator.process(source);
+		try {
+			return streamQuery(statement, queryProcessor);
+		} catch (SQLException e) {
+			if (statement != null && !statement.isClosed()) {
+				statement.close();
+			}
+			throw e;
+		}
+	}
+
+	public static <S> Stream<ResultSet> streamQuery(S source, Processor<S, ResultSet, ? extends SQLException> query,
+			@Nullable Supplier<String> desc) throws SQLException {
+		ResultSet resultSet = query.process(source);
+		ResultSetIterator iterator = new ResultSetIterator(resultSet);
+		Spliterator<ResultSet> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
+		Stream<ResultSet> stream = StreamSupport.stream(spliterator, false);
+		return stream.onClose(() -> {
+			try {
+				if (!resultSet.isClosed()) {
+					resultSet.close();
+				}
+			} catch (Throwable e) {
+				throw throwableSqlException(e, desc);
+			}
+		});
+	}
+
+	public static <S, P extends Statement> Stream<ResultSet> streamQuery(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ResultSet, ? extends SQLException> query, @Nullable Supplier<String> desc)
+			throws SQLException {
+		P statement = statementCreator.process(source);
+		try {
+			return streamQuery(statement, query, desc).onClose(() -> {
+				try {
+					if (!statement.isClosed()) {
+						statement.close();
+					}
+				} catch (Throwable e) {
+					throw throwableSqlException(e, desc);
+				}
+			});
+		} catch (SQLException e) {
+			if (!statement.isClosed()) {
+				statement.close();
+			}
+			throw e;
+		}
+	}
+
+	public static SqlException throwableSqlException(Throwable e, Supplier<String> desc) {
+		if (e instanceof SqlException) {
+			return (SqlException) e;
+		}
+		if (desc == null) {
+			return new SqlException(e);
+		}
+		return new SqlException(desc.get(), e);
+	}
+
+	public static <S, T, P extends Statement, E extends Throwable> Cursor<T> query(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ResultSet, ? extends SQLException> query,
+			Processor<ResultSet, ? extends T, ? extends E> mapProcessor, @Nullable Supplier<String> desc)
+			throws SQLException, E {
+		Stream<T> stream = streamQuery(source, statementCreator, query, desc).map((rs) -> {
+			try {
+				return mapProcessor.process(rs);
+			} catch (Throwable e) {
+				throw throwableSqlException(e, desc);
+			}
+		});
+		return StreamProcessorSupport.cursor(stream);
+	}
+
+	public static <S, T, E extends Throwable> T query(S source,
+			Processor<S, ? extends ResultSet, ? extends SQLException> queryProcessor,
+			Processor<ResultSet, ? extends T, ? extends E> mapProcessor) throws SQLException, E {
+		ResultSet rs = queryProcessor.process(source);
+		try {
+			return mapProcessor.process(rs);
+		} finally {
+			if (rs != null && !rs.isClosed()) {
+				rs.close();
+			}
+		}
+	}
+
+	public static <S, P extends Statement, T, E extends Throwable> T query(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ? extends ResultSet, ? extends SQLException> queryProcessor,
+			Processor<ResultSet, ? extends T, ? extends E> mapProcessor) throws SQLException, E {
+		P statement = statementCreator.process(source);
+		try {
+			return query(statement, queryProcessor, mapProcessor);
+		} finally {
+			if (statement != null && !statement.isClosed()) {
+				statement.close();
+			}
+		}
+	}
+
+	public static PreparedStatementProcessor prepare(Connection connection, Sql sql,
+			SqlStatementProcessor statementProcessor) {
+		return new PreparedStatementProcessor(() -> connection, false,
+				(conn) -> statementProcessor.statement(conn, sql), () -> sql.toString());
+	}
+
+	public static PreparedStatementProcessor prepare(ConnectionFactory connectionFactory, Sql sql,
+			SqlStatementProcessor statementProcessor) {
+		return new PreparedStatementProcessor(() -> connectionFactory.getConnection(), true,
+				(conn) -> statementProcessor.statement(conn, sql), () -> sql.toString());
+	}
+
+	public static <T> Cursor<T> query(Connection connection, Sql sql, SqlStatementProcessor statementProcessor,
+			Processor<ResultSet, ? extends T, ? extends Throwable> processor) throws SqlException {
+		return prepare(connection, sql, statementProcessor).query().stream(processor);
+	}
+
+	public static <T> Cursor<T> query(ConnectionFactory connectionFactory, Sql sql,
+			SqlStatementProcessor statementProcessor, Processor<ResultSet, ? extends T, ? extends Throwable> processor)
+			throws SqlException {
+		return prepare(connectionFactory, sql, statementProcessor).query().stream(processor);
 	}
 }

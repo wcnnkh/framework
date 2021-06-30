@@ -14,9 +14,9 @@ import scw.db.DB;
 import scw.db.locks.TableLockFactory;
 import scw.io.SerializerException;
 import scw.orm.annotation.PrimaryKey;
+import scw.orm.sql.annotation.Table;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
-import scw.sql.orm.annotation.Table;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DBCompensatePolicy extends StorageCompensatePolicy{
@@ -40,7 +40,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 	@Override
 	public Enumeration<String> getUnfinishedGroups() {
 		Sql sql = new SimpleSql("select `group` from " + TABLE_NAME + " where cts<? group by `group` order by cts desc", (System.currentTimeMillis() - XTime.ONE_MINUTE * getCompenstBeforeMinute()));
-		List<String> groups = db.select(String.class, sql);
+		List<String> groups = db.query(String.class, sql).shared();
 		if(CollectionUtils.isEmpty(groups)){
 			return Collections.emptyEnumeration();
 		}
@@ -51,7 +51,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 	@Override
 	public String getLastUnfinishedId(String group) {
 		Sql sql = new SimpleSql("select `id` from " + TABLE_NAME + " where group=? order by cts desc limit 0,1");
-		return db.selectOne(String.class, sql);
+		return db.query(String.class, sql).first();
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class DBCompensatePolicy extends StorageCompensatePolicy{
 	
 	@Override
 	public boolean exists(String group, String id) {
-		return db.selectOne(String.class, new SimpleSql("select id from " + TABLE_NAME + " where group=? and id=?", group, id)) != null;
+		return db.query(String.class, new SimpleSql("select id from " + TABLE_NAME + " where group=? and id=?", group, id)).findFirst().isPresent();
 	}
 	
 	@Override

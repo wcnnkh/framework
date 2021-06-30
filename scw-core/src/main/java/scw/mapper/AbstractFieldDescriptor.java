@@ -7,14 +7,10 @@ import java.lang.reflect.Modifier;
 
 import scw.core.annotation.AnnotatedElementWrapper;
 import scw.core.annotation.AnnotationArrayAnnotatedElement;
-import scw.core.annotation.AnnotationUtils;
 import scw.core.annotation.MultiAnnotatedElement;
-import scw.core.parameter.annotation.DefaultValue;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NestedExceptionUtils;
 import scw.lang.NotSupportedException;
-import scw.value.StringValue;
-import scw.value.Value;
 
 public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<AnnotatedElement> implements FieldDescriptor {
 	private final Class<?> declaringClass;
@@ -36,11 +32,6 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 		return method;
 	}
 	
-	public Value getDefaultValue() {
-		DefaultValue defaultValue = AnnotationUtils.getAnnotation(DefaultValue.class, this);
-		return defaultValue == null? null:new StringValue(defaultValue.value());
-	}
-	
 	public int getModifiers() {
 		Method method = getMethod();
 		Field field = getField();
@@ -59,7 +50,7 @@ public abstract class AbstractFieldDescriptor extends AnnotatedElementWrapper<An
 	}
 
 	protected NotSupportedException createNotSupportException() {
-		return new NotSupportedException("class=[" + getDeclaringClass() + "] column [" + getName() + "]");
+		return new NotSupportedException("class=[" + getDeclaringClass() + "] field [" + getName() + "]");
 	}
 
 	public Class<?> getDeclaringClass() {

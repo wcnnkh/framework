@@ -66,7 +66,7 @@ final class SimpleClientHttpResponse implements ClientHttpResponse {
 		return this.headers;
 	}
 
-	public InputStream getBody() throws IOException {
+	public InputStream getInputStream() throws IOException {
 		InputStream errorStream = this.connection.getErrorStream();
 		this.responseStream = (errorStream != null ? errorStream : this.connection.getInputStream());
 		return this.responseStream;

@@ -47,7 +47,7 @@ public class SignerRemoteMessageCodec implements RemoteMessageCodec {
 		byte[] data = serializer.serialize(message);
 		String sign = signer.encode(data);
 		output.getHeaders().set(SIGN_HEADER_NAME, sign);
-		OutputStream os = output.getBody();
+		OutputStream os = output.getOutputStream();
 		try{
 			IOUtils.write(data, os);
 		}finally{
@@ -57,7 +57,7 @@ public class SignerRemoteMessageCodec implements RemoteMessageCodec {
 	
 	public Object read(InputMessage input) throws IOException,
 			RemoteMessageCodecException {
-		InputStream is = input.getBody();
+		InputStream is = input.getInputStream();
 		byte[] data;
 		try {
 			data = IOUtils.toByteArray(is);

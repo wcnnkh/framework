@@ -2,7 +2,7 @@ package scw.upload.kind;
 
 import java.io.IOException;
 
-import scw.net.message.multipart.FileItem;
+import scw.net.message.multipart.MultipartMessage;
 import scw.upload.UploaderException;
 
 public interface KindEditor {
@@ -15,7 +15,7 @@ public interface KindEditor {
 	 * @throws UploadException
 	 * @throws IOException
 	 */
-	String upload(String group, KindDirType dir, FileItem fileItem) throws UploaderException, IOException;
+	String upload(String group, KindDirType dir, MultipartMessage fileItem) throws UploaderException, IOException;
 
 	KindManagerResult manager(String group, KindDirType dir, String path, KindOrderType orderType);
 }

@@ -121,4 +121,8 @@ public class EmptyValue implements Value, Serializable {
 		return null;
 	}
 
+	@Override
+	public String toString() {
+		return getAsString();
+	}
 }

@@ -1,9 +1,6 @@
 package scw.core.utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.nio.CharBuffer;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -21,8 +18,6 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.TreeSet;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import scw.core.Assert;
 import scw.lang.Nullable;
@@ -1326,39 +1321,6 @@ public final class StringUtils {
 		return (List<T>) list;
 	}
 
-	public static List<String> toStrList(String strs, boolean isTrim) {
-		if (isEmpty(strs)) {
-			return null;
-		}
-
-		List<String> list = new ArrayList<String>();
-		String[] strList = strs.split(",");
-		for (String str : strList) {
-			if (isEmpty(str)) {
-				continue;
-			}
-
-			if (isTrim) {
-				str = str.trim();
-			}
-
-			if (isEmpty(str)) {
-				continue;
-			}
-			list.add(str);
-		}
-		return list;
-	}
-
-	public static String addStr(String str, String addStr, int beginIndex) {
-		if (addStr != null && addStr.length() != 0) {
-			String str1 = str.substring(0, beginIndex);
-			String str2 = str.substring(beginIndex);
-			return str1 + addStr + str2;
-		}
-		return str;
-	}
-
 	/**
 	 * 1M = 1024K
 	 * 
@@ -1392,58 +1354,6 @@ public final class StringUtils {
 		} else {
 			return oldSize;
 		}
-	}
-
-	/**
-	 * 将字符串的走出指定长度的部分截取，向后面添加指定字符串
-	 * 
-	 * @param len
-	 * @param repStr
-	 */
-	public static String sub(String str, int len, String repStr) {
-		if (str.length() > len) {
-			return str.substring(0, len) + repStr;
-		}
-		return str;
-	}
-
-	/**
-	 * 半角转全角
-	 * 
-	 * @param input String.
-	 * @return 全角字符串.
-	 */
-	public static String toSBC(String input) {
-		char c[] = input.toCharArray();
-		for (int i = 0; i < c.length; i++) {
-			if (c[i] == ' ') {
-				c[i] = '\u3000';
-			} else if (c[i] < '\177') {
-				c[i] = (char) (c[i] + 65248);
-
-			}
-		}
-		return new String(c);
-	}
-
-	/**
-	 * 全角转半角
-	 * 
-	 * @param input String.
-	 * @return 半角字符串
-	 */
-	public static String toDBC(String input) {
-		char c[] = input.toCharArray();
-		for (int i = 0; i < c.length; i++) {
-			if (c[i] == '\u3000') {
-				c[i] = ' ';
-			} else if (c[i] > '\uFF00' && c[i] < '\uFF5F') {
-				c[i] = (char) (c[i] - 65248);
-
-			}
-		}
-		String returnString = new String(c);
-		return returnString;
 	}
 
 	/**
@@ -2150,55 +2060,6 @@ public final class StringUtils {
 		}
 	}
 
-	/**
-	 * 字符串的压缩
-	 *
-	 * @param str 待压缩的字符串
-	 * @return 返回压缩后的字符串
-	 * @throws IOException
-	 */
-	public static String compress(String str, String charsetName) throws IOException {
-		if (null == str || str.length() <= 0) {
-			return str;
-		}
-		// 创建一个新的 byte 数组输出流
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		// 使用默认缓冲区大小创建新的输出流
-		GZIPOutputStream gzip = new GZIPOutputStream(out);
-		// 将 b.length 个字节写入此输出流
-		gzip.write(str.getBytes(charsetName));
-		gzip.close();
-		// 使用指定的 charsetName，通过解码字节将缓冲区内容转换为字符串
-		return out.toString(charsetName);
-	}
-
-	/**
-	 * 字符串的解压
-	 *
-	 * @param str 对字符串解压
-	 * @return 返回解压缩后的字符串
-	 * @throws IOException
-	 */
-	public static String unCompress(String str, String charsetName) throws IOException {
-		if (null == str || str.length() <= 0) {
-			return str;
-		}
-		// 创建一个新的 byte 数组输出流
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		// 创建一个 ByteArrayInputStream，使用 buf 作为其缓冲区数组
-		ByteArrayInputStream in = new ByteArrayInputStream(str.getBytes(charsetName));
-		// 使用默认缓冲区大小创建新的输入流
-		GZIPInputStream gzip = new GZIPInputStream(in);
-		byte[] buffer = new byte[256];
-		int n = 0;
-		while ((n = gzip.read(buffer)) >= 0) {// 将未压缩数据读入字节数组
-			// 将指定 byte 数组中从偏移量 off 开始的 len 个字节写入此 byte数组输出流
-			out.write(buffer, 0, n);
-		}
-		// 使用指定的 charsetName，通过解码字节将缓冲区内容转换为字符串
-		return out.toString(charsetName);
-	}
-
 	public static boolean contains(String text, String index, boolean ignoreCase) {
 		if (text == null || index == null) {
 			return text == index;
@@ -2293,11 +2154,6 @@ public final class StringUtils {
 
 	/**
 	 * Parse the given {@code String} representation into a {@link Locale}.
-	 * <p>
-	 * For many parsing scenarios, this is an inverse operation of
-	 * {@link Locale#toString Locale's toString}, in a lenient sense. This method
-	 * does not aim for strict {@code Locale} design compliance; it is rather
-	 * specifically tailored for typical Spring parsing needs.
 	 * <p>
 	 * <b>Note: This delegate does not accept the BCP 47 language tag format. Please
 	 * use {@link #parseLocale} for lenient parsing of both formats.</b>

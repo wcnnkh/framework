@@ -57,10 +57,7 @@ public class FieldsWrapper implements Fields {
 	public Fields exclude(Accept<Field> accept) {
 		return fields.exclude(accept);
 	}
-	public void test(Object instance, FieldTest test) throws IllegalArgumentException {
-		fields.test(instance, test);
-	}
-
+	
 	public Fields exclude(Collection<String> names) {
 		return fields.exclude(names);
 	}

@@ -1,6 +1,6 @@
 package scw.data.geo;
 
-import scw.util.comparator.OrderBy;
+import scw.util.comparator.Sort;
 
 /**
  * 查询附近的点所需的参数
@@ -15,7 +15,7 @@ public class QueryNearby extends Point {
 	 * 数量
 	 */
 	private int count;
-	private OrderBy orderBy;
+	private Sort orderBy;
 
 	public QueryNearby(double x, double y) {
 		super(x, y);
@@ -37,11 +37,11 @@ public class QueryNearby extends Point {
 		this.count = count;
 	}
 
-	public OrderBy getOrderBy() {
+	public Sort getOrderBy() {
 		return orderBy;
 	}
 
-	public void setOrderBy(OrderBy orderBy) {
+	public void setOrderBy(Sort orderBy) {
 		this.orderBy = orderBy;
 	}
 }

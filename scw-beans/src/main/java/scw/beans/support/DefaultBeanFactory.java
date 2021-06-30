@@ -220,9 +220,10 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	public Object getSingleton(String beanName) {
 		return singletonBeanRegistry.getSingleton(beanName);
 	}
-
-	public <T> Result<T> getSingleton(String beanName, Creator<T> creater) {
-		return singletonBeanRegistry.getSingleton(beanName, creater);
+	
+	@Override
+	public <T, E extends Throwable> Result<T> getSingleton(String name, Creator<T, E> creater) throws E {
+		return singletonBeanRegistry.getSingleton(name, creater);
 	}
 
 	public String[] getSingletonNames() {

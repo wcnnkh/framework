@@ -7,11 +7,6 @@ import java.util.Map;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
 
-/**
- * Caching implementation of the {@link MetadataReaderFactory} interface,
- * caching a {@link MetadataReader} instance per Spring {@link Resource} handle
- * (i.e. per ".class" file).
- */
 public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 
 	/** Default maximum number of entries for the MetadataReader cache: 256 */
@@ -37,11 +32,6 @@ public class CachingMetadataReaderFactory extends SimpleMetadataReaderFactory {
 		super();
 	}
 
-	/**
-	 * Create a new CachingMetadataReaderFactory for the given resource loader.
-	 * @param resourceLoader the Spring ResourceLoader to use
-	 * (also determines the ClassLoader to use)
-	 */
 	public CachingMetadataReaderFactory(ResourceLoader resourceLoader) {
 		super(resourceLoader);
 	}

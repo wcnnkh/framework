@@ -1,7 +1,6 @@
 package scw.web;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import scw.core.utils.ObjectUtils;
@@ -9,117 +8,87 @@ import scw.http.HttpCookie;
 import scw.http.HttpHeaders;
 import scw.http.HttpStatus;
 import scw.http.MediaType;
-import scw.net.MimeType;
-import scw.util.Target;
+import scw.net.message.OutputMessageWrapper;
 import scw.util.XUtils;
 
-public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
-	private final ServerHttpResponse targetResponse;
+public class ServerHttpResponseWrapper extends OutputMessageWrapper<ServerHttpResponse> implements ServerHttpResponse {
 
 	public ServerHttpResponseWrapper(ServerHttpResponse targetResponse) {
-		this.targetResponse = targetResponse;
+		super(targetResponse);
 	}
 
-	public ServerHttpResponse getTargetResponse() {
-		return targetResponse;
-	}
-
-	public <T> T getTarget(Class<T> targetType) {
-		return XUtils.getTarget(targetResponse, targetType);
-	}
-
-	public void setContentType(MimeType contentType) {
-		targetResponse.setContentType(contentType);
-	}
-
-	public void setContentLength(long contentLength) {
-		targetResponse.setContentLength(contentLength);
-	}
-
-	public OutputStream getBody() throws IOException {
-		return targetResponse.getBody();
-	}
-
-	public long getContentLength() {
-		return targetResponse.getContentLength();
+	public <T> T getDelegate(Class<T> targetType) {
+		return XUtils.getDelegate(wrappedTarget, targetType);
 	}
 
 	public void flush() throws IOException {
-		targetResponse.flush();
+		wrappedTarget.flush();
 	}
 
 	public boolean isCommitted() {
-		return targetResponse.isCommitted();
+		return wrappedTarget.isCommitted();
 	}
 
 	public PrintWriter getWriter() throws IOException {
-		return targetResponse.getWriter();
+		return wrappedTarget.getWriter();
 	}
 
 	public void close() throws IOException {
-		targetResponse.close();
-	}
-
-	public String getCharacterEncoding() {
-		return targetResponse.getCharacterEncoding();
-	}
-
-	public void setCharacterEncoding(String env) {
-		targetResponse.setCharacterEncoding(env);
+		wrappedTarget.close();
 	}
 
 	public MediaType getContentType() {
-		return targetResponse.getContentType();
+		return wrappedTarget.getContentType();
 	}
 
 	public void addCookie(HttpCookie cookie) {
-		targetResponse.addCookie(cookie);
+		wrappedTarget.addCookie(cookie);
 	}
 
 	public void addCookie(String name, String value) {
-		targetResponse.addCookie(name, value);
+		wrappedTarget.addCookie(name, value);
 	}
 
 	public void sendError(int sc) throws IOException {
-		targetResponse.sendError(sc);
+		wrappedTarget.sendError(sc);
 	}
 
 	public void sendRedirect(String location) throws IOException {
-		targetResponse.sendRedirect(location);
+		wrappedTarget.sendRedirect(location);
 	}
 
 	public void sendError(int sc, String msg) throws IOException {
-		targetResponse.sendError(sc, msg);
+		wrappedTarget.sendError(sc, msg);
 	}
 
 	public void setStatusCode(HttpStatus httpStatus) {
-		targetResponse.setStatusCode(httpStatus);
+		wrappedTarget.setStatusCode(httpStatus);
 	}
 
 	public void setStatus(int sc) {
-		targetResponse.setStatus(sc);
+		wrappedTarget.setStatus(sc);
 	}
 
 	public int getStatus() {
-		return targetResponse.getStatus();
+		return wrappedTarget.getStatus();
 	}
 
 	public HttpHeaders getHeaders() {
-		return targetResponse.getHeaders();
+		return wrappedTarget.getHeaders();
 	}
 
 	public void setContentType(MediaType contentType) {
-		targetResponse.setContentType(contentType);
+		wrappedTarget.setContentType(contentType);
 	}
 
 	@Override
 	public String toString() {
-		return targetResponse.toString();
+		return wrappedTarget.toString();
 	}
 
 	@Override
 	public int hashCode() {
-		return targetResponse.hashCode();
+		return wrappedTarget.hashCode();
 	}
 
 	@Override
@@ -129,7 +98,7 @@ public class ServerHttpResponseWrapper implements ServerHttpResponse, Target {
 		}
 
 		if (obj instanceof ServerHttpResponseWrapper) {
-			return ObjectUtils.nullSafeEquals(targetResponse, ((ServerHttpResponseWrapper) obj).targetResponse);
+			return ObjectUtils.nullSafeEquals(wrappedTarget, ((ServerHttpResponseWrapper) obj).wrappedTarget);
 		}
 		return false;
 	}

@@ -9,11 +9,15 @@
   <dependencies>
   	<dependency>
   		<groupId>scw</groupId>
-  		<artifactId>scw-core</artifactId>
+  		<artifactId>scw-data</artifactId>
   	</dependency>
   	<dependency>
   		<groupId>scw</groupId>
   		<artifactId>scw-dom</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>scw</groupId>
+  		<artifactId>scw-sql</artifactId>
   	</dependency>
   </dependencies>
 </project>

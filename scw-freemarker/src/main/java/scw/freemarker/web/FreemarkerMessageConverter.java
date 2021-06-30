@@ -61,7 +61,7 @@ public class FreemarkerMessageConverter extends PageMessageConverter implements 
 
 		Template template = configuration.getTemplate(page.getName(), outputMessage.getCharacterEncoding());
 		try {
-			template.process(page, new PrintWriter(outputMessage.getBody()));
+			template.process(page, new PrintWriter(outputMessage.getOutputStream()));
 		} catch (TemplateException e) {
 			logger.error(e, "freemarker:{}", page);
 		}

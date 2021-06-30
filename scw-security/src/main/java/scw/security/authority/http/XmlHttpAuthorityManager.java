@@ -7,15 +7,14 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import scw.convert.TypeDescriptor;
-import scw.core.parameter.annotation.DefaultValue;
 import scw.core.utils.StringUtils;
 import scw.dom.DomUtils;
 import scw.env.Environment;
 import scw.env.Sys;
-import scw.http.HttpMethod;
 import scw.instance.annotation.PropertyName;
 import scw.instance.annotation.ResourceParameter;
 import scw.json.JSONUtils;
+import scw.lang.DefaultValue;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 
@@ -25,11 +24,14 @@ public class XmlHttpAuthorityManager extends
 			.getLogger(XmlHttpAuthorityManager.class);
 	private final Environment environment;
 
-	public XmlHttpAuthorityManager(Environment environment, @PropertyName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
+	public XmlHttpAuthorityManager(
+			Environment environment,
+			@PropertyName("xml.http.authority") @ResourceParameter @DefaultValue("classpath:/http-authority.xml") String xml) {
 		this(environment, xml, null);
 	}
 
-	public XmlHttpAuthorityManager(Environment environment, String xml, String parentId) {
+	public XmlHttpAuthorityManager(Environment environment, String xml,
+			String parentId) {
 		this.environment = environment;
 		addByXml(xml, StringUtils.isEmpty(parentId) ? "" : parentId);
 	}
@@ -53,8 +55,13 @@ public class XmlHttpAuthorityManager extends
 			if (node == null) {
 				continue;
 			}
-			
-			Map<String, String> map = (Map<String, String>) Sys.env.getConversionService().convert(node, TypeDescriptor.forObject(node), TypeDescriptor.map(Map.class, String.class, String.class));
+
+			Map<String, String> map = (Map<String, String>) Sys.env
+					.getConversionService().convert(
+							node,
+							TypeDescriptor.forObject(node),
+							TypeDescriptor.map(Map.class, String.class,
+									String.class));
 			if (map.isEmpty()) {
 				continue;
 			}
@@ -98,7 +105,7 @@ public class XmlHttpAuthorityManager extends
 		String path = map.remove("path");
 		String method = map.remove("method");
 		boolean isMenu = !StringUtils.isEmpty(path, method);
-		register(new DefaultHttpAuthority(id, parentId, name, map, isMenu, path,
-				HttpMethod.resolve(method)));
+		register(new DefaultHttpAuthority(id, parentId, name, map, isMenu,
+				path, method));
 	}
 }

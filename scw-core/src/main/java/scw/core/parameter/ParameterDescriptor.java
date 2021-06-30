@@ -3,8 +3,7 @@ package scw.core.parameter;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
-import scw.core.annotation.AnnotationUtils;
-import scw.core.parameter.annotation.DefaultValue;
+import scw.core.annotation.AnnotatedElementUtils;
 import scw.lang.Nullable;
 import scw.util.Named;
 import scw.value.StringValue;
@@ -27,15 +26,10 @@ public interface ParameterDescriptor extends AnnotatedElement, Named{
 	
 	@Nullable
 	default Value getDefaultValue() {
-		DefaultValue defaultValue = getAnnotation(DefaultValue.class);
+		String defaultValue = AnnotatedElementUtils.getDefaultValue(this);
 		if(defaultValue == null){
 			return null;
 		}
-		return new StringValue(defaultValue.value());
-	}
-	
-	@Nullable
-	default String getDescription() {
-		return AnnotationUtils.getDescription(this);
+		return new StringValue(defaultValue);
 	}
 }

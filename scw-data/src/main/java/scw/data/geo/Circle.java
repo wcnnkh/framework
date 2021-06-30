@@ -1,5 +1,10 @@
 package scw.data.geo;
 
+/**
+ * 圆
+ * @author shuchaowen
+ *
+ */
 public class Circle implements Shape {
 	private static final long serialVersionUID = 1L;
 	private final Point point;

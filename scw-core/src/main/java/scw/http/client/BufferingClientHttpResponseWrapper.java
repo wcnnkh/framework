@@ -34,9 +34,9 @@ final class BufferingClientHttpResponseWrapper implements ClientHttpResponse {
 		return this.response.getHeaders();
 	}
 
-	public InputStream getBody() throws IOException {
+	public InputStream getInputStream() throws IOException {
 		if (this.body == null) {
-			this.body = StreamUtils.copyToByteArray(this.response.getBody());
+			this.body = StreamUtils.copyToByteArray(this.response.getInputStream());
 		}
 		return new ByteArrayInputStream(this.body);
 	}

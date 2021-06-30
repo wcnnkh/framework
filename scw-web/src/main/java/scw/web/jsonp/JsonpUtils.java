@@ -25,7 +25,7 @@ public final class JsonpUtils {
 			return response;
 		}
 
-		JsonpServerHttpResponse jsonpServerHttpResponse = XUtils.getTarget(request, JsonpServerHttpResponse.class);
+		JsonpServerHttpResponse jsonpServerHttpResponse = XUtils.getDelegate(request, JsonpServerHttpResponse.class);
 		if (jsonpServerHttpResponse != null) {
 			return response;
 		}

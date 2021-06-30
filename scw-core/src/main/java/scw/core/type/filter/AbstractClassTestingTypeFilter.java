@@ -6,13 +6,6 @@ import scw.core.type.ClassMetadata;
 import scw.core.type.classreading.MetadataReader;
 import scw.core.type.classreading.MetadataReaderFactory;
 
-/**
- * Type filter that exposes a
- * {@link org.springframework.core.type.ClassMetadata} object
- * to subclasses, for class testing purposes.
- *
- * @see #match(org.springframework.core.type.ClassMetadata)
- */
 public abstract class AbstractClassTestingTypeFilter implements TypeFilter {
 
 	public final boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)

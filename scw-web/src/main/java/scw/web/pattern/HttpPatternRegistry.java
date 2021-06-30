@@ -1,21 +1,21 @@
 package scw.web.pattern;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
 import scw.core.OrderComparator.OrderSourceProvider;
-import scw.http.HttpMethod;
 import scw.lang.AlreadyExistsException;
 import scw.web.ServerHttpRequest;
 
 public class HttpPatternRegistry<T> {
-	private Map<String, EnumMap<HttpMethod, HttpPatterns<T>>> serviceMap = new HashMap<String, EnumMap<HttpMethod, HttpPatterns<T>>>();
-	private HttpPatterns<InternalHttpService<T>> services = new HttpPatterns<InternalHttpService<T>>();
+	private Map<String, Map<String, ServerHttpRequestAccepts<T>>> serviceMap = new HashMap<String, Map<String, ServerHttpRequestAccepts<T>>>();
+	private ServerHttpRequestAccepts<InternalHttpService<T>> services = new ServerHttpRequestAccepts<InternalHttpService<T>>();
 
-	public HttpPatternRegsitration<T> register(T service) throws AlreadyExistsException {
+	public HttpPatternRegsitration<T> register(T service)
+			throws AlreadyExistsException {
 		synchronized (services) {
-			InternalHttpService<T> config = new InternalHttpService<T>(null, service);
+			InternalHttpService<T> config = new InternalHttpService<T>(null,
+					service);
 			if (!services.add(config)) {
 				throw new AlreadyExistsException(service.toString());
 			}
@@ -32,10 +32,17 @@ public class HttpPatternRegistry<T> {
 		}
 	}
 
-	public HttpPatternRegsitration<T> register(HttpPattern pattern, T service) throws AlreadyExistsException {
+	public HttpPatternRegsitration<T> register(String pattern, T service)
+			throws AlreadyExistsException {
+		return register(new HttpPattern(pattern), service);
+	}
+
+	public HttpPatternRegsitration<T> register(HttpPattern pattern, T service)
+			throws AlreadyExistsException {
 		if (pattern.isPattern()) {
 			synchronized (services) {
-				InternalHttpService<T> config = new InternalHttpService<T>(pattern, service);
+				InternalHttpService<T> config = new InternalHttpService<T>(
+						pattern, service);
 				if (!services.add(config)) {
 					throw new AlreadyExistsException(service.toString());
 				}
@@ -52,15 +59,16 @@ public class HttpPatternRegistry<T> {
 			}
 		} else {
 			synchronized (serviceMap) {
-				EnumMap<HttpMethod, HttpPatterns<T>> map = serviceMap.get(pattern.getPath());
+				Map<String, ServerHttpRequestAccepts<T>> map = serviceMap
+						.get(pattern.getPath());
 				if (map == null) {
-					map = new EnumMap<HttpMethod, HttpPatterns<T>>(HttpMethod.class);
+					map = new HashMap<String, ServerHttpRequestAccepts<T>>();
 					serviceMap.put(pattern.getPath(), map);
 				}
 
-				HttpPatterns<T> services = map.get(pattern.getMethod());
+				ServerHttpRequestAccepts<T> services = map.get(pattern.getMethod());
 				if (services == null) {
-					services = new HttpPatterns<T>();
+					services = new ServerHttpRequestAccepts<T>();
 					map.put(pattern.getMethod(), services);
 				}
 
@@ -73,12 +81,14 @@ public class HttpPatternRegistry<T> {
 					@Override
 					public boolean unregister() {
 						synchronized (serviceMap) {
-							EnumMap<HttpMethod, HttpPatterns<T>> map = serviceMap.get(pattern.getPath());
+							Map<String, ServerHttpRequestAccepts<T>> map = serviceMap
+									.get(pattern.getPath());
 							if (map == null) {
 								return false;
 							}
 
-							HttpPatterns<T> services = map.get(pattern.getMethod());
+							ServerHttpRequestAccepts<T> services = map.get(pattern
+									.getMethod());
 							if (services == null) {
 								return false;
 							}
@@ -90,7 +100,8 @@ public class HttpPatternRegistry<T> {
 		}
 	}
 
-	private static class InternalHttpService<T> implements ServerHttpRequestAccept, OrderSourceProvider {
+	private static class InternalHttpService<T> implements
+			ServerHttpRequestAccept, OrderSourceProvider {
 		private final T service;
 		private final HttpPattern pattern;
 
@@ -98,14 +109,14 @@ public class HttpPatternRegistry<T> {
 			this.pattern = pattern;
 			this.service = service;
 		}
-		
+
 		@Override
 		public boolean accept(ServerHttpRequest request) {
-			if(pattern != null && !pattern.accept(request)) {
+			if (pattern != null && !pattern.accept(request)) {
 				return false;
 			}
-			
-			if(service instanceof ServerHttpRequestAccept) {
+
+			if (service instanceof ServerHttpRequestAccept) {
 				return ((ServerHttpRequestAccept) service).accept(request);
 			}
 			return true;
@@ -122,12 +133,13 @@ public class HttpPatternRegistry<T> {
 	}
 
 	private T getMappingService(ServerHttpRequest request) {
-		EnumMap<HttpMethod, HttpPatterns<T>> map = serviceMap.get(request.getPath());
+		Map<String, ServerHttpRequestAccepts<T>> map = serviceMap.get(request
+				.getPath());
 		if (map == null) {
 			return null;
 		}
 
-		HttpPatterns<T> services = map.get(request.getMethod());
+		ServerHttpRequestAccepts<T> services = map.get(request.getRawMethod());
 		if (services == null) {
 			return null;
 		}

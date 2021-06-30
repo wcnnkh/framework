@@ -2,16 +2,16 @@ package scw.db.database;
 
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
-import scw.sql.orm.dialect.mysql.MySqlSqlDialect;
+import scw.mysql.MysqlDialect;
 
 public class MysqlDataBase extends AbstractDataBase {
 	private String name;
-	private String connectionUrl;
+	private String url;
 	private String charsetName = "utf8";
 	private String collate = "utf8_general_ci";
 
 	public MysqlDataBase(String driverClass, String url, String username, String password) {
-		super(username, password, driverClass, new MySqlSqlDialect());
+		super(username, password, driverClass, new MysqlDialect());
 
 		int databaseBeginIndex = url.indexOf("//");
 		if (databaseBeginIndex == -1) {
@@ -32,10 +32,10 @@ public class MysqlDataBase extends AbstractDataBase {
 
 		if (databaseEndIndex == -1) {
 			this.name = url.substring(databaseBeginIndex);
-			this.connectionUrl = url.substring(0, databaseBeginIndex - 1);
+			this.url = url.substring(0, databaseBeginIndex - 1);
 		} else {
 			this.name = url.substring(databaseBeginIndex, databaseEndIndex);
-			this.connectionUrl = url.substring(0, databaseBeginIndex - 1) + url.substring(databaseEndIndex);
+			this.url = url.substring(0, databaseBeginIndex - 1) + url.substring(databaseEndIndex);
 		}
 	}
 
@@ -43,8 +43,8 @@ public class MysqlDataBase extends AbstractDataBase {
 		return name;
 	}
 
-	public String getConnectionURL() {
-		return connectionUrl;
+	public String getUrl() {
+		return url;
 	}
 
 	@Override

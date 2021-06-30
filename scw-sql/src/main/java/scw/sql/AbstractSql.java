@@ -4,10 +4,6 @@ import scw.core.utils.ObjectUtils;
 
 public abstract class AbstractSql implements Sql{
 	
-	public boolean isStoredProcedure() {
-		return false;
-	}
-	
 	@Override
 	public int hashCode() {
 		return ObjectUtils.nullSafeHashCode(getSql(), getParams());

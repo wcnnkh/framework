@@ -24,14 +24,14 @@ public class ByteArrayMessageConverter extends AbstractMessageConverter<byte[]>{
 	@Override
 	protected byte[] readInternal(TypeDescriptor type, InputMessage inputMessage)
 			throws IOException, MessageConvertException {
-		return IOUtils.toByteArray(inputMessage.getBody());
+		return IOUtils.toByteArray(inputMessage.getInputStream());
 	}
 
 	@Override
 	protected void writeInternal(TypeDescriptor type, byte[] body, MimeType contentType,
 			OutputMessage outputMessage) throws IOException,
 			MessageConvertException {
-		outputMessage.getBody().write(body);
+		outputMessage.getOutputStream().write(body);
 	}
 	
 	@Override

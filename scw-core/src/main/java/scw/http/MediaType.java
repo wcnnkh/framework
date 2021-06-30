@@ -473,10 +473,6 @@ public class MediaType extends MimeType implements Serializable {
 	}
 
 	/**
-	 * Parse the given String value into a {@code MediaType} object, with this
-	 * method name following the 'valueOf' naming convention (as supported by
-	 * {@link org.springframework.core.convert.ConversionService}.
-	 * 
 	 * @param value
 	 *            the string to parse
 	 * @throws InvalidMediaTypeException

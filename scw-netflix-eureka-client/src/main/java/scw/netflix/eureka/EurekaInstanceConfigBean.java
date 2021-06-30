@@ -266,7 +266,7 @@ public class EurekaInstanceConfigBean implements CloudEurekaInstanceConfig {
 	private String secureHealthCheckUrl;
 
 	/**
-	 * Get the namespace used to find properties. Ignored in Spring Cloud.
+	 * Get the namespace used to find properties.
 	 */
 	private String namespace = "eureka";
 

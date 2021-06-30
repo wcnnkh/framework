@@ -1,14 +1,16 @@
 package scw.sql;
 
-public class SqlException extends RuntimeException {
+import scw.lang.NestedRuntimeException;
+
+public class SqlException extends NestedRuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public SqlException(String msg, Throwable cause) {
 		super(msg, cause);
 	}
-	
+
 	public SqlException(Sql sql, Throwable cause) {
-		this(sql.toString(), cause);
+		this("Execute - " + sql.toString(), cause);
 	}
 
 	public SqlException(String msg) {

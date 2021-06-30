@@ -6,9 +6,11 @@ import java.util.List;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
+import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.json.JSONUtils;
 import scw.net.MimeTypeUtils;
+import scw.value.Value;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.WebUtils;
@@ -33,24 +35,27 @@ public class ConversionMessageConverter implements WebMessageConverter {
 	@Override
 	public Object read(ParameterDescriptor parameterDescriptor, ServerHttpRequest request)
 			throws IOException, WebMessagelConverterException {
-		TypeDescriptor targetType = new TypeDescriptor(parameterDescriptor);
-		TypeDescriptor sourceType = null;
 		Object source;
 		if (parameterDescriptor.getClass().isArray()) {
-			source = WebUtils.getParameterValues(request, parameterDescriptor.getName());
+			Value[] values = WebUtils.getParameterValues(request, parameterDescriptor.getName());
+			if(ArrayUtils.isEmpty(values)){
+				Value defaultValue = parameterDescriptor.getDefaultValue();
+				if(defaultValue != null){
+					values = new Value[]{defaultValue};
+				}
+			}
+			source = values;
 		} else {
-			source = WebUtils.getParameter(request, parameterDescriptor.getName());
+			Value value = WebUtils.getParameter(request, parameterDescriptor.getName());
+			if(value == null || value.isEmpty()){
+				Value defaultValue = parameterDescriptor.getDefaultValue();
+				if(defaultValue != null){
+					value = defaultValue;
+				}
+			}
+			source = value;
 		}
-		
-		if(source == null) {
-			source = parameterDescriptor.getDefaultValue();
-		}
-
-		if (source != null) {
-			sourceType = targetType.narrow(source);
-		}
-
-		return conversionService.convert(source, sourceType, targetType);
+		return conversionService.convert(source, TypeDescriptor.forObject(source), new TypeDescriptor(parameterDescriptor));
 	}
 
 	@Override

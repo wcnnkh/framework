@@ -11,12 +11,6 @@
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-db</artifactId>
-			<exclusions>
-				<exclusion>
-					<groupId>scw</groupId>
-					<artifactId>scw-mysql</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc -->

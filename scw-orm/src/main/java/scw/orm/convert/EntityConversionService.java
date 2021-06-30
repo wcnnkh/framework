@@ -1,35 +1,35 @@
 package scw.orm.convert;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import scw.convert.ConversionService;
 import scw.convert.ConversionServiceAware;
 import scw.convert.TypeDescriptor;
 import scw.convert.lang.ConditionalConversionService;
-import scw.core.reflect.ReflectionUtils;
-import scw.core.utils.ArrayUtils;
 import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Sys;
 import scw.instance.NoArgsInstanceFactory;
+import scw.lang.Nullable;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.mapper.Field;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
-import scw.mapper.MapperUtils;
-import scw.orm.annotation.Entity;
+import scw.orm.ObjectRelationalMapping;
+import scw.orm.OrmUtils;
 import scw.util.ConfigurableAccept;
 import scw.util.alias.AliasRegistry;
 
 public abstract class EntityConversionService extends ConditionalConversionService implements ConversionServiceAware {
 	private static Logger logger = LoggerFactory.getLogger(EntityConversionService.class);
 	private AliasRegistry aliasRegistry;
-	private boolean ignoreStaticField = true;
 	private final ConfigurableAccept<Field> fieldAccept = new ConfigurableAccept<Field>();
 	private String prefix;
 	private String connector = ".";
@@ -37,19 +37,42 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 	private ConversionService conversionService;
 	private NoArgsInstanceFactory instanceFactory;
 	private Level loggerLevel = scw.logger.Levels.DEBUG.getValue();
+	private ObjectRelationalMapping objectRelationalMapping;
 	private boolean useSuperClass = true;// 默认也使用父类
-	private boolean ignoreFinalField = false;// 是否忽略常量字段
+	private Field parentField;
+	//是否先检查key存在
+	private boolean checkKeyExists = false;
+	
+	public final boolean isCheckKeyExists() {
+		return checkKeyExists;
+	}
+
+	public void setCheckKeyExists(boolean checkKeyExists) {
+		this.checkKeyExists = checkKeyExists;
+	}
+
+	public final Field getParentField() {
+		return parentField;
+	}
+
+	public void setParentField(Field parentField) {
+		this.parentField = parentField;
+	}
+
+	public ObjectRelationalMapping getObjectRelationalMapping() {
+		return objectRelationalMapping == null ? OrmUtils.getMapping() : objectRelationalMapping;
+	}
+
+	public void setObjectRelationalMapping(ObjectRelationalMapping objectRelationalMapping) {
+		this.objectRelationalMapping = objectRelationalMapping;
+	}
 
 	public NoArgsInstanceFactory getInstanceFactory() {
-		return instanceFactory;
+		return instanceFactory == null ? Sys.env : instanceFactory;
 	}
 
 	public void setInstanceFactory(NoArgsInstanceFactory instanceFactory) {
 		this.instanceFactory = instanceFactory;
-	}
-
-	public boolean isIgnoreFinalField() {
-		return ignoreFinalField;
 	}
 
 	public final ConversionService getConversionService() {
@@ -58,10 +81,6 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
-	}
-
-	public void setIgnoreFinalField(boolean ignoreFinalField) {
-		this.ignoreFinalField = ignoreFinalField;
 	}
 
 	public Level getLoggerLevel() {
@@ -96,14 +115,6 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		this.strict = strict;
 	}
 
-	public boolean isIgnoreStaticField() {
-		return ignoreStaticField;
-	}
-
-	public void setIgnoreStaticField(boolean ignoreStaticField) {
-		this.ignoreStaticField = ignoreStaticField;
-	}
-
 	public final String getPrefix() {
 		return prefix;
 	}
@@ -124,12 +135,11 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		this.connector = connector;
 	}
 
-	private Map<String, Object> getMapByPrefix(Object source, String prefix, String connector) {
-		Map<String, Object> map = new LinkedHashMap<String, Object>();
+	protected void appendMapProperty(Map<String, Object> valueMap, Object source, String prefix) {
 		Enumeration<String> keys = keys(source);
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement();
-			if (StringUtils.isNotEmpty(prefix) && (key.equals(prefix) || map.containsKey(key))) {
+			if (StringUtils.isNotEmpty(prefix) && (key.equals(prefix) || valueMap.containsKey(key))) {
 				continue;
 			}
 
@@ -139,89 +149,55 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 					continue;
 				}
 
-				map.put(StringUtils.isEmpty(prefix) ? key : key.substring(prefix.length() + connector.length()), value);
+				valueMap.put(StringUtils.isEmpty(prefix) ? key : key.substring(prefix.length() + connector.length()),
+						value);
 			}
 		}
-		return map;
 	}
 
-	private Object getProperty(Object source, String name, String prefix) {
-		Object value = getProperty(source, prefix + name);
-		if (value == null && aliasRegistry != null) {
-			String[] names = aliasRegistry.getAliases(name);
-			if (!ArrayUtils.isEmpty(names)) {
-				for (String n : names) {
-					value = getProperty(source, prefix + n);
-					if (value != null) {
-						break;
-					}
-				}
+	@Nullable
+	private Object getProperty(Object source, Field field) {
+		Collection<String> names = getSetterNames(field);
+		if(logger.isTraceEnabled()) {
+			logger.trace(field + " - " + names);
+		}
+		for (String name : names) {
+			if (!checkKeyExists || containsKey(source, name)) {
+				return getProperty(source, name);
 			}
 		}
-		return value;
-	}
 
-	private Object getProperty(Object source, Field field, String prefix) {
-		String name = field.getSetter().getName();
-		Object value = getProperty(source, name, prefix);
-		if (value == null) {
-			name = StringUtils.humpNamingReplacement(field.getSetter().getName(), "-");
-			value = getProperty(source, name, prefix);
+		if (Map.class.isAssignableFrom(field.getSetter().getType())) {
+			Map<String, Object> valueMap = new LinkedHashMap<String, Object>();
+			for (String name : names) {
+				appendMapProperty(valueMap, source, name + connector);
+			}
+			if (!CollectionUtils.isEmpty(valueMap)) {
+				return valueMap;
+			}
 		}
-		return value;
-	}
-
-	private Map<String, Object> getMapProperty(Object source, Field field, String prefix, String connector) {
-		Map<String, Object> valueMap = new LinkedHashMap<String, Object>();
-		valueMap.putAll(getMapByPrefix(source, prefix + field.getSetter().getName(), connector));
-		valueMap.putAll(getMapByPrefix(source,
-				prefix + StringUtils.humpNamingReplacement(field.getSetter().getName(), "-"), connector));
-		return valueMap;
-	}
-
-	/**
-	 * 将source转化为map并插入到targetMap
-	 * 
-	 * @param source
-	 * @param targetMap
-	 * @param keyType
-	 * @param valueType
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void putAll(Object source, Map targetMap, TypeDescriptor keyType, TypeDescriptor valueType) {
-		Map<String, Object> sourceMap = getMapByPrefix(source, prefix, connector);
-		for (Entry<String, Object> entry : sourceMap.entrySet()) {
-			Object key = getConversionService().convert(entry.getKey(), TypeDescriptor.valueOf(String.class), keyType);
-			Object value = getConversionService().convert(entry.getValue(), TypeDescriptor.forObject(entry.getValue()),
-					valueType);
-			targetMap.put(key, value);
-		}
+		return null;
 	}
 
 	protected abstract Enumeration<String> keys(Object source);
 
-	protected abstract Object getProperty(Object source, String key);
-
-	protected Fields getFields(Class<?> type) {
-		Fields fields = MapperUtils.getMapper().getFields(type, isUseSuperClass())
-				.accept(FieldFeature.EXISTING_SETTER_FIELD);
-		if (isIgnoreStaticField()) {
-			fields = fields.accept(FieldFeature.IGNORE_STATIC);
-		}
-
-		if (isIgnoreFinalField()) {
-			fields = fields.accept(FieldFeature.IGNORE_SETTER_FINAL);
-		}
-		return fields.accept(fieldAccept);
+	protected boolean containsKey(Object source, String key) {
+		return getProperty(source, key) != null;
 	}
 
-	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target,
-			TypeDescriptor targetType) {
+	protected abstract Object getProperty(Object source, String key);
+
+	protected Fields getFields(Class<?> type, Field parentField) {
+		return getObjectRelationalMapping().getFields(type, isUseSuperClass(), parentField)
+				.accept(FieldFeature.SUPPORT_SETTER).accept(getFieldAccept());
+	}
+
+	private void setValue(Field field, Object value, TypeDescriptor sourceType, Object target) {
 		Object valueToUse = getConversionService().convert(value, sourceType.narrow(value),
 				new TypeDescriptor(field.getSetter()));
 		if (logger.isLoggable(loggerLevel)) {
-			logger.log(loggerLevel, "Property {} on target {} set value {}", field.getSetter().getName(),
-					targetType.getType(), valueToUse);
+			logger.log(loggerLevel, "Property {} on target {} set value {}", field.getSetter().getName(), target,
+					valueToUse);
 		}
 		field.getSetter().set(target, valueToUse);
 	}
@@ -230,54 +206,112 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 		configurationProperties(source, TypeDescriptor.forObject(source), target, TypeDescriptor.forObject(target));
 	}
 
+	private Collection<String> getUseSetterNames(Field field) {
+		List<String> useNames = new ArrayList<String>(8);
+		Collection<String> names = getObjectRelationalMapping().getAliasNames(field.getSetter());
+		for (String name : names) {
+			useNames.add(name);
+			for (String alias : getAliasRegistry().getAliases(name)) {
+				useNames.add(alias);
+			}
+		}
+		return useNames;
+	}
+
+	private String toUseName(String parentName, String name) {
+		StringBuilder nameAppend = new StringBuilder(32);
+		if (prefix != null) {
+			nameAppend.append(prefix);
+		}
+
+		if (parentName != null) {
+			nameAppend.append(parentName);
+		}
+
+		if (nameAppend.length() != 0) {
+			nameAppend.append(connector);
+		}
+
+		nameAppend.append(name);
+		return nameAppend.toString();
+	}
+
+	private void appendNames(@Nullable AliasRegistry aliasRegistry, List<String> names, String parentName,
+			Field field) {
+		Field parent = field.getParentField();
+		if (parent == null) {
+			//最顶层的字段
+			Collection<String> aliasNames = getObjectRelationalMapping().getAliasNames(field.getSetter());
+			for (String name : aliasNames) {
+				names.add(toUseName(parentName, name));
+				if (aliasRegistry != null) {
+					for (String alias : aliasRegistry.getAliases(name)) {
+						names.add(toUseName(parentName, alias));
+					}
+				}
+			}
+			
+			//该字段的声明类
+			Class<?> declaringClass = field.getSetter().getDeclaringClass();
+			for(String entityName : getObjectRelationalMapping().getAliasNames(declaringClass)) {
+				for(String alias : aliasNames) {
+					names.add(toUseName(parentName, entityName + connector + alias));
+					if (aliasRegistry != null) {
+						for (String aliasName : aliasRegistry.getAliases(alias)) {
+							names.add(toUseName(parentName, entityName + connector + aliasName));
+						}
+					}
+				}
+			}
+		} else {
+			for (String name : getUseSetterNames(parent)) {
+				appendNames(aliasRegistry, names,
+						parentName == null ? (name + connector) : (name + connector + parentName),
+						field.getParentField());
+			}
+		}
+	}
+
+	private Collection<String> getSetterNames(Field field) {
+		List<String> names = new ArrayList<String>(8);
+		appendNames(getAliasRegistry(), names, null, field);
+		return names;
+	}
+
 	public void configurationProperties(Object source, TypeDescriptor sourceType, Object target,
 			TypeDescriptor targetType) {
 		if (source == null) {
 			return;
 		}
 
-		String connector = getConnector();
 		String prefix = getPrefix();
 		prefix = StringUtils.isEmpty(prefix) ? "" : (prefix + connector);
-		Fields fields = getFields(targetType.getType());
+		Fields targetFields = getFields(targetType.getType(), parentField);
 		if (isStrict()) {
-			strictConfiguration(fields, source, sourceType, target, targetType, prefix);
+			strictConfiguration(targetFields, source, sourceType, target);
 		} else {
-			noStrictConfiguration(fields, source, sourceType, target, targetType, prefix, connector);
+			noStrictConfiguration(targetFields, source, sourceType, target);
 		}
 	}
 
-	private void noStrictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target,
-			TypeDescriptor targetType, String prefix, String connector) {
+	private void noStrictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target) {
 		for (Field field : fields) {
 			Object value = null;
-			if (field.isAnnotationPresent(Entity.class)
-					|| field.getSetter().getType().isAnnotationPresent(Entity.class)) {
+			if (getObjectRelationalMapping().isEntity(field.getSetter())) {
 				// 如果是一个实体
-				String entityPrefix = prefix + connector + field.getSetter().getName();
 				Class<?> entityClass = field.getSetter().getType();
 				value = getInstanceFactory().getInstance(entityClass);
-				noStrictConfiguration(getFields(entityClass), source, sourceType, value,
-						new TypeDescriptor(field.getSetter()), entityPrefix, connector);
+				noStrictConfiguration(getFields(entityClass, field), source, sourceType, value);
 			} else {
-				value = getProperty(source, field, prefix);
-				if (value == null) {
-					if (Map.class.isAssignableFrom(field.getSetter().getType())) {
-						Map<String, Object> valueMap = getMapProperty(source, field, prefix, connector);
-						if (!CollectionUtils.isEmpty(valueMap)) {
-							value = valueMap;
-						}
-					}
-				}
+				value = getProperty(source, field);
 			}
 			if (value != null) {
-				setValue(field, value, sourceType, target, targetType);
+				setValue(field, value, sourceType, target);
 			}
 		}
 	}
 
-	protected void strictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target,
-			TypeDescriptor targetType, String prefix) {
+	private void strictConfiguration(Fields fields, Object source, TypeDescriptor sourceType, Object target) {
 		Enumeration<String> keys = keys(source);
 		while (keys.hasMoreElements()) {
 			String originKey = keys.nextElement();
@@ -302,7 +336,7 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 
 			Object value = getProperty(source, originKey);
 			if (value != null) {
-				setValue(field, value, sourceType, target, targetType);
+				setValue(field, value, sourceType, target);
 			}
 		}
 	}
@@ -312,27 +346,13 @@ public abstract class EntityConversionService extends ConditionalConversionServi
 			return null;
 		}
 
-		Object target = newInstance(targetType);
+		Object target = getInstanceFactory().getInstance(targetType.getType());
 		configurationProperties(source, sourceType, target, targetType);
 		return target;
 	}
 
-	protected boolean isInstance(TypeDescriptor targetType) {
-		if (instanceFactory == null) {
-			return ReflectionUtils.isInstance(targetType.getType());
-		}
-		return instanceFactory.isInstance(targetType.getType());
-	}
-
-	protected Object newInstance(TypeDescriptor targetType) {
-		if (instanceFactory == null) {
-			return ReflectionUtils.newInstance(targetType.getType());
-		}
-		return instanceFactory.getInstance(targetType.getType());
-	}
-
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		return !canDirectlyConvert(sourceType, targetType) && super.canConvert(sourceType, targetType)
-				&& isInstance(targetType);
+				&& getInstanceFactory().isInstance(targetType.getType());
 	}
 }

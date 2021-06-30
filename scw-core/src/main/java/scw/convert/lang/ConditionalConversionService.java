@@ -3,9 +3,8 @@ package scw.convert.lang;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.utils.ClassUtils;
-import scw.json.JSONSupportAccessor;
 
-public abstract class ConditionalConversionService extends JSONSupportAccessor implements ConversionService, ConvertibleConditional {
+public abstract class ConditionalConversionService extends AbstractConversionService implements ConversionService, ConvertibleConditional {
 	
 	public boolean canConvert(TypeDescriptor sourceType,
 			TypeDescriptor targetType) {

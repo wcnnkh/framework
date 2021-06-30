@@ -24,15 +24,7 @@ import scw.core.Assert;
 import scw.util.task.TaskExecutor;
 
 /**
- * Adapter that takes a Spring
- * {@link org.springframework.core.task.TaskExecutor} and exposes a full
  * {@code java.util.concurrent.ExecutorService} for it.
- *
- * <p>
- * This is primarily for adapting to client components that communicate via the
- * {@code java.util.concurrent.ExecutorService} API. It can also be used as
- * common ground between a local Spring {@code TaskExecutor} backend and a
- * JNDI-located {@code ManagedExecutorService} in a Java EE 7 environment.
  *
  * <p>
  * <b>NOTE:</b> This ExecutorService adapter does <em>not</em> support the

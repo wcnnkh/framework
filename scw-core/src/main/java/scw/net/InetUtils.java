@@ -24,7 +24,7 @@ import scw.lang.Nullable;
 import scw.net.message.Headers;
 import scw.net.message.Message;
 import scw.net.message.OutputMessage;
-import scw.net.message.multipart.FileItemParser;
+import scw.net.message.multipart.MultipartMessageResolver;
 import scw.util.Accept;
 
 public final class InetUtils {
@@ -43,17 +43,11 @@ public final class InetUtils {
 	private static final String INNER_IP_PATTERN = "((192\\.168|172\\.([1][6-9]|[2]\\d|3[01]))"
 			+ "(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){2}|"
 			+ "^(\\D)*10(\\.([2][0-4]\\d|[2][5][0-5]|[01]?\\d?\\d)){3})";
-
-	private static final FileItemParser FILE_ITEM_PARSER = Sys.loadService(FileItemParser.class,
-			"scw.net.message.multipart.apache.ApacheFileItemParser");
+	private static final MultipartMessageResolver MULTIPART_MESSAGE_RESOLVER = Sys.env.getServiceLoader(MultipartMessageResolver.class).first();
 	
 	@Nullable
-	public static FileItemParser getFileItemParser() {
-		return FILE_ITEM_PARSER;
-	}
-
-	public static boolean isSupportMultiPart() {
-		return FILE_ITEM_PARSER != null;
+	public static MultipartMessageResolver getMultipartMessageResolver() {
+		return MULTIPART_MESSAGE_RESOLVER;
 	}
 
 	public static List<InetSocketAddress> parseInetSocketAddressList(String address) {

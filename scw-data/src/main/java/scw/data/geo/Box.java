@@ -9,9 +9,7 @@ import scw.lang.Nullable;
  *
  */
 public class Box implements Shape {
-
-	private static final long serialVersionUID = 8198095179084040711L;
-
+	private static final long serialVersionUID = 1L;
 	private final Point first;
 	private final Point second;
 

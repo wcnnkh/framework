@@ -21,8 +21,8 @@ public final class MicrosoftUtils {
 	private MicrosoftUtils() {
 	};
 
-	private static final ExcelOperations EXCEL_OPERATIONS = Sys.loadService(ExcelOperations.class,
-			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations");
+	private static final ExcelOperations EXCEL_OPERATIONS = Sys.env.getServiceLoader(ExcelOperations.class,
+			"scw.microsoft.poi.PoiExcelOperations", "scw.microsoft.jxl.JxlExcelOperations").first();
 
 	static {
 		if (EXCEL_OPERATIONS == null) {
@@ -113,6 +113,6 @@ public final class MicrosoftUtils {
 		if (excelVersion == null) {
 			excelVersion = ExcelVersion.XLS;
 		}
-		return getExcelOperations().createExcelExport(outputMessage.getBody(), excelVersion);
+		return getExcelOperations().createExcelExport(outputMessage.getOutputStream(), excelVersion);
 	}
 }

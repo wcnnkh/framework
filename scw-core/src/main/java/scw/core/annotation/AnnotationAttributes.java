@@ -15,7 +15,6 @@ import scw.core.utils.StringUtils;
 /**
  * {@link LinkedHashMap} subclass representing annotation attribute
  * <em>key-value</em> pairs as read by {@link AnnotationUtils},
- * {@link AnnotatedElementUtils}, and Spring's reflection- and ASM-based
  * {@link scw.core.type.AnnotationMetadata} implementations.
  *
  * <p>Provides 'pseudo-reification' to avoid noisy Map generics in the calling

@@ -18,7 +18,7 @@ import scw.core.utils.StringUtils;
  * Implements the extended {@link WritableResource} interface.
  *
  */
-public class FileSystemResource extends AbstractResource {
+public class FileSystemResource extends AbstractResource implements WritableResource{
 
 	private final File file;
 
@@ -111,6 +111,11 @@ public class FileSystemResource extends AbstractResource {
 	public OutputStream getOutputStream() throws IOException {
 		return new FileOutputStream(this.file);
 	}
+	
+	@Override
+	public boolean isFile() {
+		return true;
+	}
 
 	/**
 	 * This implementation returns a URL for the underlying file.
@@ -149,7 +154,6 @@ public class FileSystemResource extends AbstractResource {
 	/**
 	 * This implementation creates a FileSystemResource, applying the given path
 	 * relative to the path of the underlying file of this resource descriptor.
-	 * @see org.springframework.util.StringUtils#applyRelativePath(String, String)
 	 */
 	@Override
 	public Resource createRelative(String relativePath) {

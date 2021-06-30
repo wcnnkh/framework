@@ -27,7 +27,7 @@ public final class IdUtils {
 	private static final String SEPARATOR = ":";
 
 	// @checkstyle:off
-	public static final String DEFAULT_SERVICE_ID_STRING = "${vcap.application.name:${spring.application.name:application}}:${vcap.application.instance_index:${spring.application.index:${local.server.port:${server.port:0}}}}:${vcap.application.instance_id:${cachedrandom.${vcap.application.name:${spring.application.name:application}}.value}}";
+	public static final String DEFAULT_SERVICE_ID_STRING = "${vcap.application.name:${application.name:application}}:${vcap.application.instance_index:${application.index:${local.server.port:${server.port:0}}}}:${vcap.application.instance_id:${cachedrandom.${vcap.application.name:${application.name:application}}.value}}";
 
 	// @checkstyle:on
 
@@ -47,13 +47,13 @@ public final class IdUtils {
 
 		String hostname = null;
 		if (includeHostname) {
-			hostname = environment.getString("spring.cloud.client.hostname");
+			hostname = environment.getString("cloud.client.hostname");
 		}
-		String appName = environment.getString("spring.application.name");
+		String appName = environment.getString("application.name");
 
 		String namePart = combineParts(hostname, SEPARATOR, appName);
 
-		String indexPart = environment.getValue("spring.application.instance_id", String.class, environment.getString("server.port"));
+		String indexPart = environment.getValue("application.instance_id", String.class, environment.getString("server.port"));
 
 		return combineParts(namePart, SEPARATOR, indexPart);
 	}

@@ -11,14 +11,14 @@ import scw.io.Resource;
 import scw.io.ResourceUtils;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.util.DefaultStringMatcher;
 import scw.util.StringMatcher;
+import scw.util.StringMatchers;
 
 public class BaseIPVerification extends HashSet<String> implements IPVerification {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	private StringMatcher matcher = DefaultStringMatcher.getInstance();
-	
+	private StringMatcher matcher = StringMatchers.SIMPLE;
+
 	public StringMatcher getMatcher() {
 		return matcher;
 	}

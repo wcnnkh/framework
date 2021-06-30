@@ -16,7 +16,7 @@ import scw.mvc.security.UserSessionResolver;
 import scw.mvc.view.View;
 import scw.security.session.UserSession;
 import scw.security.session.UserSessionFactory;
-import scw.util.Target;
+import scw.util.Decorator;
 import scw.util.XUtils;
 import scw.value.Value;
 import scw.web.ServerHttpRequest;
@@ -25,7 +25,7 @@ import scw.web.message.RequestBeanFactory;
 import scw.web.message.WebMessageConverter;
 import scw.web.message.WebMessagelConverterException;
 
-public class DefaultHttpChannel extends RequestBeanFactory implements HttpChannel, Destroy, Target {
+public class DefaultHttpChannel extends RequestBeanFactory implements HttpChannel, Destroy, Decorator {
 	private static Logger logger = LoggerFactory.getLogger(DefaultHttpChannel.class);
 	private final long createTime;
 	private boolean completed = false;
@@ -83,13 +83,13 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 		}
 	}
 
-	public <T> T getTarget(Class<T> targetType) {
-		T target = XUtils.getTarget(getRequest(), targetType);
+	public <T> T getDelegate(Class<T> targetType) {
+		T target = XUtils.getDelegate(getRequest(), targetType);
 		if (target != null) {
 			return target;
 		}
 
-		target = XUtils.getTarget(getResponse(), targetType);
+		target = XUtils.getDelegate(getResponse(), targetType);
 		if (target != null) {
 			return target;
 		}
@@ -97,7 +97,7 @@ public class DefaultHttpChannel extends RequestBeanFactory implements HttpChanne
 	}
 
 	protected Object getExtend(ParameterDescriptor parameterDescriptor) {
-		Object target = XUtils.getTarget(this, parameterDescriptor.getType());
+		Object target = XUtils.getDelegate(this, parameterDescriptor.getType());
 		if (target != null) {
 			return target;
 		}

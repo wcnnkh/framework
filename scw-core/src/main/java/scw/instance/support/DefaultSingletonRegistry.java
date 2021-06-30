@@ -15,9 +15,8 @@ public class DefaultSingletonRegistry implements SingletonRegistry {
 		synchronized (singletionMap) {
 			Object old = singletionMap.get(beanName);
 			if (old != null) {
-				throw new IllegalStateException("Could not register object ["
-						+ singletonObject + "] under bean name '" + beanName
-						+ "': there is already object [" + old + "] bound");
+				throw new IllegalStateException("Could not register object [" + singletonObject + "] under bean name '"
+						+ beanName + "': there is already object [" + old + "] bound");
 			}
 
 			singletionMap.put(beanName, singletonObject);
@@ -49,14 +48,15 @@ public class DefaultSingletonRegistry implements SingletonRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> Result<T> getSingleton(final String beanName, Creator<T> creater) {
-		T object = (T) singletionMap.get(beanName);
+	@Override
+	public <T, E extends Throwable> Result<T> getSingleton(String name, Creator<T, E> creater) throws E {
+		T object = (T) singletionMap.get(name);
 		if (object == null) {
 			synchronized (singletionMap) {
-				object = (T) singletionMap.get(beanName);
+				object = (T) singletionMap.get(name);
 				if (object == null) {
 					object = creater.create();
-					registerSingleton(beanName, object);
+					registerSingleton(name, object);
 					return new Result<T>(true, object);
 				}
 			}

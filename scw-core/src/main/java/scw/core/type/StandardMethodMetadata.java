@@ -27,16 +27,6 @@ public class StandardMethodMetadata implements MethodMetadata {
 		this(introspectedMethod, false);
 	}
 
-	/**
-	 * Create a new StandardMethodMetadata wrapper for the given Method,
-	 * providing the option to return any nested annotations or annotation arrays in the
-	 * form of {@link org.springframework.core.annotation.AnnotationAttributes} instead
-	 * of actual {@link java.lang.annotation.Annotation} instances.
-	 * @param introspectedMethod the Method to introspect
-	 * @param nestedAnnotationsAsMap return nested annotations and annotation arrays as
-	 * {@link org.springframework.core.annotation.AnnotationAttributes} for compatibility
-	 * with ASM-based {@link AnnotationMetadata} implementations
-	 */
 	public StandardMethodMetadata(Method introspectedMethod, boolean nestedAnnotationsAsMap) {
 		Assert.notNull(introspectedMethod, "Method must not be null");
 		this.introspectedMethod = introspectedMethod;

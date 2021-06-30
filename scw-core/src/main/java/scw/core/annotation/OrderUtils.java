@@ -5,9 +5,6 @@ import java.lang.annotation.Annotation;
 import scw.core.utils.ClassUtils;
 
 /**
- * General utility for determining the order of an object based on its type declaration.
- * Handles Spring's {@link Order} annotation as well as {@link javax.annotation.Priority}.
- *
  * @see Order
  * @see javax.annotation.Priority
  */

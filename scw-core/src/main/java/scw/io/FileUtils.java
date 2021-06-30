@@ -27,8 +27,6 @@ import java.util.zip.Checksum;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.io.FileExistsException;
-
 import scw.core.IteratorCallback;
 import scw.core.IteratorCallback.All;
 import scw.core.IteratorCallback.First;

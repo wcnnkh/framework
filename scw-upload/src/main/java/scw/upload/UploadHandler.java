@@ -22,16 +22,12 @@ public class UploadHandler implements HttpService, ServerHttpRequestAccept {
 
 	@Override
 	public boolean accept(ServerHttpRequest request) {
-		return (request.getMethod() == HttpMethod.GET || request.getMethod() == HttpMethod.POST)
+		return request.getMethod() == HttpMethod.POST
 				&& request.getPath().equals(uploader.getUploadPolicy().getController());
 	}
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		if (request.getMethod() == HttpMethod.GET) {
-
-		}
-
 		boolean b = uploader.getUploadPolicy().upload(request, uploader);
 		if (b) {
 			Cors.DEFAULT.write(request, response.getHeaders());

@@ -60,8 +60,8 @@ public class Uploader implements ResourceStorageService {
 		File file = new File(directory, key);
 		InputStream is = null;
 		try {
-			is = input.getBody();
-			FileUtils.copyInputStreamToFile(input.getBody(), file);
+			is = input.getInputStream();
+			FileUtils.copyInputStreamToFile(is, file);
 		} finally {
 			IOUtils.close(is);
 		}

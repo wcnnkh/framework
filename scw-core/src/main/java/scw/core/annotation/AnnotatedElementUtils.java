@@ -11,10 +11,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import scw.core.Assert;
 import scw.core.BridgeMethodResolver;
 import scw.core.utils.CollectionUtils;
+import scw.lang.DefaultValue;
+import scw.lang.Description;
+import scw.lang.Ignore;
+import scw.lang.Nullable;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 
@@ -214,28 +219,6 @@ public class AnnotatedElementUtils {
 
 		return Boolean.TRUE
 				.equals(searchWithGetSemantics(element, null, annotationName, alwaysTrueAnnotationProcessor));
-	}
-
-	/**
-	 * @deprecated As of Spring Framework 4.2, use
-	 *             {@link #getMergedAnnotationAttributes(AnnotatedElement, String)}
-	 *             instead.
-	 */
-	@Deprecated
-	public static AnnotationAttributes getAnnotationAttributes(AnnotatedElement element, String annotationName) {
-		return getMergedAnnotationAttributes(element, annotationName);
-	}
-
-	/**
-	 * @deprecated As of Spring Framework 4.2, use
-	 *             {@link #getMergedAnnotationAttributes(AnnotatedElement, String, boolean, boolean)}
-	 *             instead.
-	 */
-	@Deprecated
-	public static AnnotationAttributes getAnnotationAttributes(AnnotatedElement element, String annotationName,
-			boolean classValuesAsString, boolean nestedAnnotationsAsMap) {
-
-		return getMergedAnnotationAttributes(element, annotationName, classValuesAsString, nestedAnnotationsAsMap);
 	}
 
 	/**
@@ -730,44 +713,6 @@ public class AnnotatedElementUtils {
 	}
 
 	/**
-	 * Find the first annotation of the specified {@code annotationName} within the
-	 * annotation hierarchy <em>above</em> the supplied {@code element}, merge that
-	 * annotation's attributes with <em>matching</em> attributes from annotations in
-	 * lower levels of the annotation hierarchy, and synthesize the result back into
-	 * an annotation of the specified {@code annotationName}.
-	 * <p>
-	 * {@link AliasFor @AliasFor} semantics are fully supported, both within a
-	 * single annotation and within the annotation hierarchy.
-	 * <p>
-	 * This method delegates to
-	 * {@link #findMergedAnnotationAttributes(AnnotatedElement, String, boolean, boolean)}
-	 * (supplying {@code false} for {@code classValuesAsString} and
-	 * {@code nestedAnnotationsAsMap}) and
-	 * {@link AnnotationUtils#synthesizeAnnotation(Map, Class, AnnotatedElement)}.
-	 * <p>
-	 * This method follows <em>find semantics</em> as described in the
-	 * {@linkplain AnnotatedElementUtils class-level javadoc}.
-	 * 
-	 * @param element        the annotated element
-	 * @param annotationName the fully qualified class name of the annotation type
-	 *                       to find
-	 * @return the merged, synthesized {@code Annotation}, or {@code null} if not
-	 *         found
-	 * @see #findMergedAnnotation(AnnotatedElement, Class)
-	 * @see #findMergedAnnotationAttributes(AnnotatedElement, String, boolean,
-	 *      boolean)
-	 * @see AnnotationUtils#synthesizeAnnotation(Map, Class, AnnotatedElement)
-	 * @deprecated As of Spring Framework 4.2.3, use
-	 *             {@link #findMergedAnnotation(AnnotatedElement, Class)} instead.
-	 */
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	public static <A extends Annotation> A findMergedAnnotation(AnnotatedElement element, String annotationName) {
-		AnnotationAttributes attributes = findMergedAnnotationAttributes(element, annotationName, false, false);
-		return AnnotationUtils.synthesizeAnnotation(attributes, (Class<A>) attributes.annotationType(), element);
-	}
-
-	/**
 	 * Find <strong>all</strong> annotations of the specified {@code annotationType}
 	 * within the annotation hierarchy <em>above</em> the supplied {@code element};
 	 * and for each annotation found, merge that annotation's attributes with
@@ -880,6 +825,35 @@ public class AnnotatedElementUtils {
 		MergedAnnotationAttributesProcessor processor = new MergedAnnotationAttributesProcessor(false, false, true);
 		searchWithFindSemantics(element, annotationType, null, containerType, processor);
 		return postProcessAndSynthesizeAggregatedResults(element, annotationType, processor.getAggregatedResults());
+	}
+
+	public static Boolean isNullable(AnnotatedElement annotatedElement, Supplier<Boolean> defaultValue) {
+		Nullable nullable = getMergedAnnotation(annotatedElement, Nullable.class);
+		return nullable == null ? defaultValue.get() : nullable.value();
+	}
+
+	public static String getCharsetName(AnnotatedElement annotatedElement, Supplier<String> defaultValue) {
+		CharsetName charsetName = getMergedAnnotation(annotatedElement, CharsetName.class);
+		return charsetName == null ? (defaultValue == null ? null : defaultValue.get()) : charsetName.value();
+	}
+
+	public static Boolean isIgnore(AnnotatedElement annotatedElement) {
+		return isIgnore(annotatedElement, () -> false);
+	}
+
+	public static Boolean isIgnore(AnnotatedElement annotatedElement, Supplier<Boolean> defaultValue) {
+		Ignore ignore = getMergedAnnotation(annotatedElement, Ignore.class);
+		return ignore == null ? defaultValue.get() : ignore.value();
+	}
+
+	public static String getDescription(AnnotatedElement annotatedElement) {
+		Description description = getMergedAnnotation(annotatedElement, Description.class);
+		return description == null ? null : description.value();
+	}
+
+	public static String getDefaultValue(AnnotatedElement annotatedElement) {
+		DefaultValue defaultValue = getMergedAnnotation(annotatedElement, DefaultValue.class);
+		return defaultValue == null ? null : defaultValue.value();
 	}
 
 	/**

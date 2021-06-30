@@ -1,8 +1,8 @@
 package scw.security.ip;
 
-import scw.core.parameter.annotation.DefaultValue;
 import scw.env.Environment;
 import scw.instance.annotation.ResourceParameter;
+import scw.lang.DefaultValue;
 
 /**
  * 白名单

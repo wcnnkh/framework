@@ -44,9 +44,9 @@ public class JsonpServerHttpResponse extends ServerHttpResponseWrapper {
 	}
 
 	@Override
-	public OutputStream getBody() throws IOException {
+	public OutputStream getOutputStream() throws IOException {
 		writeJsonp();
-		return super.getBody();
+		return super.getOutputStream();
 	}
 
 	@Override

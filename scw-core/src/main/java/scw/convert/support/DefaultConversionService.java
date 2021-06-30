@@ -14,6 +14,7 @@ import scw.convert.lang.DateFormatConversionService;
 import scw.convert.lang.JsonConversionService;
 import scw.convert.lang.JsonToObjectConversionService;
 import scw.convert.lang.ObjectToStringConverter;
+import scw.convert.lang.PrimitiveConversionService;
 import scw.convert.lang.ReaderToStringConverter;
 import scw.convert.lang.ResourceToPropertiesConverter;
 import scw.convert.lang.StringToCharsetConverter;
@@ -23,12 +24,14 @@ import scw.convert.lang.StringToTimeZoneConverter;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
+import scw.value.EmptyValue;
 
 public class DefaultConversionService extends ConversionServices {
 
 	public DefaultConversionService() {
 		addConversionService(new ArrayToArrayConversionService(this));
 		addConversionService(new ArrayToCollectionConversionService(this));
+		addConversionService(new PrimitiveConversionService(EmptyValue.INSTANCE));
 
 		addConversionService(new ByteBufferConversionService(this));
 

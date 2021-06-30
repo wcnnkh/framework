@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import scw.net.message.multipart.FileItem;
+import scw.net.message.multipart.MultipartMessage;
 import scw.upload.ueditor.PathFormat;
 import scw.upload.ueditor.define.AppInfo;
 import scw.upload.ueditor.define.BaseState;
@@ -18,14 +18,14 @@ public class BinaryUploader {
 
 	public static final State save(MultiPartServerHttpRequest request,
 			Map<String, Object> conf) {
-		FileItem fileItem = request.getFirstFile();
+		MultipartMessage fileItem = request.getFirstFile();
 		if (fileItem == null) {
 			return new BaseState(false, AppInfo.NOTFOUND_UPLOAD_DATA);
 		}
 		
 		try {
 			String savePath = (String) conf.get("savePath");
-			String originFileName = fileItem.getName();
+			String originFileName = fileItem.getOriginalFilename();
 			String suffix = FileType.getSuffixByFilename(originFileName);
 
 			originFileName = originFileName.substring(0,
@@ -42,7 +42,7 @@ public class BinaryUploader {
 
 			String physicalPath = (String) conf.get("rootPath") + savePath;
 
-			InputStream is = fileItem.getBody();
+			InputStream is = fileItem.getInputStream();
 			State storageState = StorageManager.saveFileByInputStream(is,
 					physicalPath, maxSize);
 			is.close();

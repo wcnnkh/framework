@@ -35,7 +35,7 @@ public final class PropertiesFileValueProcesser extends AbstractObservableValueP
 			return properties;
 		} else {
 			Class<?> fieldType = field.getSetter().getType();
-			Object obj = Sys.getInstanceFactory().getInstance(fieldType);
+			Object obj = Sys.env.getInstance(fieldType);
 			Fields fields = MapperUtils.getMapper().getFields(fieldType).accept(FieldFeature.SUPPORT_SETTER);
 			for (final Object key : properties.keySet()) {
 				Field keyField = fields.findSetter(key.toString(), null);

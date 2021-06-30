@@ -2,8 +2,8 @@ package scw.db.database;
 
 import scw.core.utils.StringUtils;
 import scw.lang.NotFoundException;
+import scw.mysql.MysqlDialect;
 import scw.net.uri.UriUtils;
-import scw.sql.orm.dialect.mysql.MySqlSqlDialect;
 import scw.util.MultiValueMap;
 
 /**
@@ -14,10 +14,10 @@ import scw.util.MultiValueMap;
  */
 public class SqlServerDataBase extends AbstractDataBase {
 	private String name;
-	private String connectionUrl;
+	private String url;
 
 	public SqlServerDataBase(String driverClass, String url, String username, String password) {
-		super(username, password, driverClass, new MySqlSqlDialect());
+		super(username, password, driverClass, new MysqlDialect());
 
 		int databaseBeginIndex = url.indexOf("//");
 		if (databaseBeginIndex == -1) {
@@ -36,14 +36,14 @@ public class SqlServerDataBase extends AbstractDataBase {
 			throw new NotFoundException("无法解析数据库名称：" + url);
 		}
 
-		this.connectionUrl = url.substring(0, databaseBeginIndex - 1);
+		this.url = url.substring(0, databaseBeginIndex - 1);
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public String getConnectionURL() {
-		return connectionUrl;
+	public String getUrl() {
+		return url;
 	}
 }

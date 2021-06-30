@@ -14,20 +14,23 @@ import scw.beans.annotation.Service;
 import scw.beans.annotation.Singleton;
 import scw.context.ContextAware;
 import scw.convert.TypeDescriptor;
-import scw.core.annotation.AnnotationUtils;
+import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.utils.StringUtils;
 import scw.env.Environment;
 import scw.env.EnvironmentAware;
 import scw.env.Sys;
 import scw.lang.Nullable;
+import scw.logger.Levels;
 import scw.mapper.Field;
 import scw.orm.convert.EntityConversionService;
 import scw.orm.convert.PropertyFactoryToEntityConversionService;
 import scw.util.Accept;
+import scw.util.StringMatchers;
 import scw.value.PropertyFactory;
+import scw.value.Value;
 
 public final class BeanUtils {
-	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = Sys.loadAllService(AopEnableSpi.class);
+	private static final List<AopEnableSpi> AOP_ENABLE_SPIS = Sys.env.getServiceLoader(AopEnableSpi.class).toList();
 
 	private BeanUtils() {
 	};
@@ -51,7 +54,7 @@ public final class BeanUtils {
 		Class<?> classToUse = clazz;
 		while (classToUse != null && classToUse != Object.class) {
 			for (Class<?> i : classToUse.getInterfaces()) {
-				if (AnnotationUtils.isIgnore(classToUse) || i.getMethods().length == 0) {
+				if (AnnotatedElementUtils.isIgnore(classToUse) || i.getMethods().length == 0) {
 					continue;
 				}
 
@@ -74,8 +77,8 @@ public final class BeanUtils {
 		if (instance instanceof EnvironmentAware) {
 			((EnvironmentAware) instance).setEnvironment(beanFactory.getEnvironment());
 		}
-		
-		if(instance instanceof ContextAware) {
+
+		if (instance instanceof ContextAware) {
 			((ContextAware) instance).setContext(beanFactory);
 		}
 	}
@@ -149,6 +152,36 @@ public final class BeanUtils {
 			Environment environment) {
 		ConfigurationProperties configurationProperties = annotatedElement == null ? null
 				: annotatedElement.getAnnotation(ConfigurationProperties.class);
+		configurationProperties(instance, configurationProperties, environment);
+	}
+
+	public static void configurationProperties(Object instance, Environment environment, String prefix, Levels levels) {
+		configurationProperties(instance, new ConfigurationProperties() {
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return ConfigurationProperties.class;
+			}
+
+			@Override
+			public String value() {
+				return null;
+			}
+
+			@Override
+			public String prefix() {
+				return prefix;
+			}
+
+			@Override
+			public Levels loggerLevel() {
+				return levels;
+			}
+		}, environment);
+	}
+
+	public static void configurationProperties(Object instance,
+			@Nullable ConfigurationProperties configurationProperties, Environment environment) {
 		Class<?> configurationPropertiesClass = ProxyUtils.getFactory().getUserClass(instance.getClass());
 		if (configurationProperties == null) {
 			// 定义上不存在此注解
@@ -196,7 +229,7 @@ public final class BeanUtils {
 				return true;
 			}
 		});
-		if(configurationProperties != null) {
+		if (configurationProperties != null) {
 			entityConversionService.setPrefix(getPrefix(configurationProperties));
 			entityConversionService.setLoggerLevel(configurationProperties.loggerLevel().getValue());
 		}
@@ -204,7 +237,7 @@ public final class BeanUtils {
 		return entityConversionService;
 	}
 
-	@SuppressWarnings({ "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static void configurationMap(String prefix, Object instance, Environment environment,
 			EntityConversionService conversionService) {
 		if (!(instance instanceof Map)) {
@@ -213,8 +246,20 @@ public final class BeanUtils {
 
 		Map properties = (Map) instance;
 		TypeDescriptor descriptor = TypeDescriptor.forObject(instance);
-		conversionService.putAll(environment, properties, descriptor.getMapKeyTypeDescriptor(),
-				descriptor.getMapKeyTypeDescriptor());
+		environment.stream(prefix, StringMatchers.PREFIX).forEach((key) -> {
+			Value value = environment.getValue(key);
+			if (value == null) {
+				return;
+			}
+
+			String targetKey = StringUtils.isEmpty(prefix) ? key
+					: key.substring(prefix.length() + conversionService.getConnector().length());
+			Object mapKey = environment.getConversionService().convert(targetKey, TypeDescriptor.forObject(targetKey),
+					descriptor.getMapKeyTypeDescriptor());
+			Object mapValue = environment.getConversionService().convert(value, TypeDescriptor.forObject(value),
+					descriptor.getMapValueTypeDescriptor());
+			properties.put(mapKey, mapValue);
+		});
 	}
 
 	private static String getPrefix(ConfigurationProperties configurationProperties) {
@@ -225,7 +270,9 @@ public final class BeanUtils {
 			Class<?> configClass, Environment environment, EntityConversionService entityConversionService) {
 		Class<?> clazz = configClass;
 		while (clazz != null && clazz != Object.class) {
-			ConfigurationProperties configuration = clazz.getAnnotation(ConfigurationProperties.class);
+			ConfigurationProperties configuration = configurationProperties == null
+					? clazz.getAnnotation(ConfigurationProperties.class)
+					: configurationProperties;
 			if (configuration != null) {
 				entityConversionService.setPrefix(getPrefix(configuration));
 				entityConversionService.setLoggerLevel(configuration.loggerLevel().getValue());

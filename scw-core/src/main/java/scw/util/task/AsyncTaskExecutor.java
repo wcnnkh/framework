@@ -33,7 +33,6 @@ import java.util.concurrent.Future;
  * asynchronously in some other thread.
  *
  * @see SimpleAsyncTaskExecutor
- * @see org.springframework.scheduling.SchedulingTaskExecutor
  * @see java.util.concurrent.Callable
  * @see java.util.concurrent.Executors
  */

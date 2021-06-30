@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import scw.convert.ConvertibleIterator;
-import scw.convert.EmptyConverter;
+import scw.convert.IdentityConverter;
 import scw.convert.lang.ObjectToStringConverter;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
@@ -18,7 +18,7 @@ import scw.value.Value;
 public class ObservableProperties extends ConvertibleObservableProperties<Properties> implements PropertyFactory {
 
 	public ObservableProperties() {
-		super(new EmptyConverter<Properties>());
+		super(new IdentityConverter<Properties>());
 	}
 
 	@SafeVarargs

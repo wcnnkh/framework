@@ -5,12 +5,18 @@ import scw.convert.ConversionService;
 import scw.convert.Converter;
 import scw.convert.TypeDescriptor;
 import scw.convert.annotation.JSON;
+import scw.core.Ordered;
 import scw.json.JSONSupportAccessor;
 
-public class ObjectToStringConverter extends JSONSupportAccessor implements ConversionService, Converter<Object, String> {
+public class ObjectToStringConverter extends JSONSupportAccessor implements ConversionService, Converter<Object, String>, Ordered {
 
 	public String convert(Object o) {
-		return String.valueOf(o);
+		return o == null? null:o.toString();
+	}
+	
+	@Override
+	public int getOrder() {
+		return Ordered.LOWEST_PRECEDENCE;
 	}
 
 	@Override

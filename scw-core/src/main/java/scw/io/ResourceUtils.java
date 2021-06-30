@@ -80,6 +80,8 @@ public final class ResourceUtils {
 	public static final String WAR_URL_SEPARATOR = "*/";
 	
 	public static final String META_INF_PREFIX = "META-INF/";
+	
+	public static final Resource NONEXISTENT_RESOURCE = new NonexistentResource();
 
 	/**
 	 * 因为eclipse默认打包为可执行jar会将资源打包在resources目录下，所以会尝试在此目录下查找资源

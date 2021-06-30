@@ -4,23 +4,20 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
 
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.Observable;
 
-public abstract class ResourceWrapper implements Resource, Observable<Resource>{
+public abstract class ResourceWrapper implements Resource, Observable<Resource> {
 
 	public InputStream getInputStream() throws IOException {
 		return get().getInputStream();
-	}
-
-	public OutputStream getOutputStream() throws IOException {
-		return get().getOutputStream();
 	}
 
 	public boolean exists() {
@@ -29,10 +26,6 @@ public abstract class ResourceWrapper implements Resource, Observable<Resource>{
 
 	public boolean isReadable() {
 		return get().isReadable();
-	}
-
-	public boolean isWritable() {
-		return get().isWritable();
 	}
 
 	public boolean isOpen() {
@@ -70,12 +63,47 @@ public abstract class ResourceWrapper implements Resource, Observable<Resource>{
 	public String getDescription() {
 		return get().getDescription();
 	}
-	
+
 	@Override
 	public EventRegistration registerListener(EventListener<ChangeEvent<Resource>> eventListener) {
 		return get().registerListener(eventListener);
 	}
-	
+
+	@Override
+	public boolean isFile() {
+		return get().isFile();
+	}
+
+	@Override
+	public <T> T read(IoProcessor<InputStream, ? extends T> processor) throws IOException {
+		return get().read(processor);
+	}
+
+	@Override
+	public ReadableByteChannel readableChannel() throws IOException {
+		return get().readableChannel();
+	}
+
+	@Override
+	public void read(IoCallback<InputStream> callback) throws IOException {
+		get().read(callback);
+	}
+
+	@Override
+	public byte[] getBytes() throws IOException {
+		return get().getBytes();
+	}
+
+	@Override
+	public void transferTo(File dest) throws IOException, IllegalStateException {
+		get().transferTo(dest);
+	}
+
+	@Override
+	public void transferTo(Path dest) throws IOException, IllegalStateException {
+		get().transferTo(dest);
+	}
+
 	@Override
 	public String toString() {
 		return get().toString();

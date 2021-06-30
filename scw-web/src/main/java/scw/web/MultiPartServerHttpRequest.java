@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.fileupload.FileItem;
+
 import scw.core.utils.CollectionUtils;
 import scw.http.MediaType;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.net.message.multipart.FileItem;
-import scw.net.message.multipart.FileItemParser;
+import scw.net.message.multipart.MultipartMessage;
+import scw.net.message.multipart.MultipartMessageResolver;
 import scw.util.LinkedMultiValueMap;
 import scw.util.MultiValueMap;
 
@@ -22,77 +24,77 @@ import scw.util.MultiValueMap;
  */
 public class MultiPartServerHttpRequest extends ServerHttpRequestWrapper implements AutoCloseable {
 	private static Logger logger = LoggerFactory.getLogger(MultiPartServerHttpRequest.class);
-	private final FileItemParser fileItemParser;
+	private final MultipartMessageResolver multipartMessageResolver;
 
-	public MultiPartServerHttpRequest(ServerHttpRequest targetRequest, FileItemParser fileItemParser) {
+	public MultiPartServerHttpRequest(ServerHttpRequest targetRequest,
+			MultipartMessageResolver multipartMessageResolver) {
 		super(targetRequest);
-		this.fileItemParser = fileItemParser;
+		this.multipartMessageResolver = multipartMessageResolver;
 	}
 
-	private List<FileItem> fileItems;
+	private List<MultipartMessage> multipartMessageList;
 
-	public List<FileItem> getMultiPartList() {
-		if (fileItems == null) {
+	public List<MultipartMessage> getMultipartMessageList() {
+		if (multipartMessageList == null) {
 			try {
-				fileItems = fileItemParser.parse(this);
+				multipartMessageList = multipartMessageResolver.resolve(this);
 			} catch (IOException e) {
 				logger.error(e, toString());
 			}
 
-			if (CollectionUtils.isEmpty(fileItems)) {
-				this.fileItems = Collections.emptyList();
+			if (CollectionUtils.isEmpty(multipartMessageList)) {
+				this.multipartMessageList = Collections.emptyList();
 			} else {
-				this.fileItems = Collections.unmodifiableList(fileItems);
+				this.multipartMessageList = Collections.unmodifiableList(multipartMessageList);
 			}
 		}
-		return fileItems;
+		return multipartMessageList;
 	}
 
-	private MultiValueMap<String, FileItem> multiPartMap;
+	private MultiValueMap<String, MultipartMessage> multipartMessageMap;
 
-	public MultiValueMap<String, FileItem> getMultiPartMap() {
-		if (multiPartMap == null) {
-			List<FileItem> fileItems = getMultiPartList();
-			if (CollectionUtils.isEmpty(fileItems)) {
-				multiPartMap = CollectionUtils.emptyMultiValueMap();
-				return multiPartMap;
+	public MultiValueMap<String, MultipartMessage> getMultipartMessageMap() {
+		if (multipartMessageMap == null) {
+			List<MultipartMessage> multipartMessages = getMultipartMessageList();
+			if (CollectionUtils.isEmpty(multipartMessages)) {
+				multipartMessageMap = CollectionUtils.emptyMultiValueMap();
+				return multipartMessageMap;
 			}
 
-			multiPartMap = new LinkedMultiValueMap<String, FileItem>();
-			for (FileItem fileItem : fileItems) {
-				if (fileItem == null) {
+			multipartMessageMap = new LinkedMultiValueMap<String, MultipartMessage>();
+			for (MultipartMessage multipartMessage : multipartMessages) {
+				if (multipartMessage == null) {
 					continue;
 				}
 
-				multiPartMap.add(fileItem.getFieldName(), fileItem);
+				multipartMessageMap.add(multipartMessage.getName(), multipartMessage);
 			}
 
-			this.multiPartMap = CollectionUtils.unmodifiableMultiValueMap(multiPartMap);
+			this.multipartMessageMap = CollectionUtils.unmodifiableMultiValueMap(multipartMessageMap);
 		}
-		return multiPartMap;
+		return multipartMessageMap;
 	}
 
-	public FileItem getFirstFile() {
-		for (FileItem fileItem : getMultiPartList()) {
-			if (fileItem.isFormField()) {
-				continue;
+	public MultipartMessage getFirstFile() {
+		for (MultipartMessage message : getMultipartMessageList()) {
+			if (message.isFile()) {
+				return message;
 			}
-
-			return fileItem;
 		}
-
 		return null;
 	}
 
 	/**
 	 * 关闭所有的item
 	 * 
+	 * @throws IOException
+	 * 
 	 * @see FileItem#close()
 	 */
-	public void close() {
-		if (!CollectionUtils.isEmpty(fileItems)) {
-			for (FileItem item : fileItems) {
-				item.close();
+	public void close() throws IOException {
+		if (!CollectionUtils.isEmpty(multipartMessageMap)) {
+			for (MultipartMessage message : multipartMessageList) {
+				message.close();
 			}
 		}
 	}

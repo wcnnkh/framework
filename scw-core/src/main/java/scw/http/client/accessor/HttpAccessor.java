@@ -46,8 +46,6 @@ public abstract class HttpAccessor {
 	 * factory to enable PATCH.</b>
 	 * 
 	 * @see #createRequest(URI, HttpMethod)
-	 * @see org.springframework.http.client.HttpComponentsAsyncClientHttpRequestFactory
-	 * @see org.springframework.http.client.OkHttp3ClientHttpRequestFactory
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
 		Assert.notNull(requestFactory, "ClientHttpRequestFactory must not be null");

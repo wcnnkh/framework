@@ -15,21 +15,22 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
-import scw.util.DefaultStringMatcher;
-import scw.util.StringMatcher;
+import scw.util.AntPathMatcher;
+import scw.util.PathMatcher;
+import scw.util.StringMatchers;
 import scw.util.XUtils;
 
 public abstract class AbstractStaticResourceLoader implements StaticResourceLoader {
 	private static Logger logger = LoggerFactory.getLogger(StaticResourceLoader.class);
 	private final TreeMap<String, TreeSet<String>> mappingMap = new TreeMap<String, TreeSet<String>>();
-	private StringMatcher matcher = DefaultStringMatcher.getInstance();
+	private PathMatcher matcher = new AntPathMatcher();
 	private String defaultFileName = "index.html";
 
-	public StringMatcher getMatcher() {
+	public PathMatcher getMatcher() {
 		return matcher;
 	}
 
-	public void setMatcher(StringMatcher matcher) {
+	public void setMatcher(PathMatcher matcher) {
 		Assert.requiredArgument(matcher != null, "matcher");
 		this.matcher = matcher;
 	}
@@ -76,7 +77,7 @@ public abstract class AbstractStaticResourceLoader implements StaticResourceLoad
 		String locationToUse = location.endsWith("/") ? (location + getDefaultFileName()) : location;
 		for (Entry<String, TreeSet<String>> entry : mappingMap.entrySet()) {
 			for (String path : entry.getValue()) {
-				boolean accept = matcher.isPattern(path) ? matcher.match(path, location) : path.equals(location);
+				boolean accept = StringMatchers.match(matcher, path, location);
 				if (accept) {
 					String resourceRoot = entry.getKey();
 					if (resourceRoot.endsWith("/")) {

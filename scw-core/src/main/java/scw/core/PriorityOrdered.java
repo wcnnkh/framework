@@ -11,11 +11,6 @@ package scw.core;
  * the set of <em>plain</em> {@code Ordered} objects and with relative
  * ordering applied within those subsets.
  *
- * <p>This is primarily a special-purpose interface, used within the framework
- * itself for objects where it is particularly important to recognize
- * <em>prioritized</em> objects first, potentially without even obtaining the
- * remaining objects. A typical example: prioritized post-processors in a Spring
- *
  * <p>Note: {@code PriorityOrdered} post-processor beans are initialized in
  * a special phase, ahead of other post-processor beans. This subtly
  * affects their autowiring behavior: they will only be autowired against

@@ -3,6 +3,7 @@ package scw.util;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.NavigableSet;
 import java.util.Properties;
@@ -23,8 +25,10 @@ import java.util.TreeSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import scw.convert.Converter;
 import scw.core.Assert;
 import scw.core.reflect.ReflectionUtils;
+import scw.core.utils.CollectionUtils;
 import scw.env.Sys;
 import scw.lang.Nullable;
 
@@ -184,7 +188,7 @@ public final class CollectionFactory {
 				throw new IllegalArgumentException("Unsupported Collection type: " + collectionType.getName());
 			}
 			try {
-				return (Collection<E>) Sys.getInstanceFactory().getInstance(collectionType);
+				return (Collection<E>) Sys.env.getInstance(collectionType);
 			} catch (Throwable ex) {
 				throw new IllegalArgumentException("Could not instantiate Collection type: " + collectionType.getName(),
 						ex);
@@ -269,7 +273,6 @@ public final class CollectionFactory {
 	 * @return a new map instance
 	 * @see java.util.LinkedHashMap
 	 * @see java.util.TreeMap
-	 * @see org.springframework.util.LinkedMultiValueMap
 	 * @see java.util.EnumMap
 	 * @throws IllegalArgumentException if the supplied {@code mapType} is
 	 *                                  {@code null}; or if the desired
@@ -298,7 +301,7 @@ public final class CollectionFactory {
 				throw new IllegalArgumentException("Unsupported Map type: " + mapType.getName());
 			}
 			try {
-				return (Map<K, V>) Sys.getInstanceFactory().getInstance(mapType);
+				return (Map<K, V>) Sys.env.getInstance(mapType);
 			} catch (Throwable ex) {
 				throw new IllegalArgumentException("Could not instantiate Map type: " + mapType.getName(), ex);
 			}
@@ -405,9 +408,9 @@ public final class CollectionFactory {
 	public static <E> Set<E> createSet(boolean concurrent, int initialCapacity) {
 		return concurrent ? new CopyOnWriteArraySet<E>() : new LinkedHashSet<E>(initialCapacity);
 	}
-	
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static <T> Class<T> getEnumMapKeyType(Map map){
+	public static <T> Class<T> getEnumMapKeyType(Map map) {
 		Class<T> keyType = null;
 		if (map instanceof EnumMap) {
 			keyType = (Class<T>) ReflectionUtils.getField(KEY_TYPE_FIELD, map);
@@ -444,7 +447,7 @@ public final class CollectionFactory {
 		}
 		return elementType;
 	}
-	
+
 	/**
 	 * 克隆一个collection
 	 * 
@@ -459,9 +462,37 @@ public final class CollectionFactory {
 		if (collection instanceof Cloneable) {
 			return ReflectionUtils.clone((Cloneable) collection);
 		} else {
-			C cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection), collection.size());
+			C cloneCollection = (C) createCollection(collection.getClass(), getEnumSetElementType(collection),
+					collection.size());
 			cloneCollection.addAll(collection);
 			return cloneCollection;
 		}
+	}
+
+	public static <K, V, SK, SV> Map<K, V> convert(Map<? extends SK, ? extends SV> sourceMap,
+			Converter<SK, K> keyConverter, Converter<SV, V> valueConverter) {
+		if (CollectionUtils.isEmpty(sourceMap)) {
+			return Collections.emptyMap();
+		}
+
+		Map<K, V> targetMap = createMap(sourceMap.getClass(), getEnumMapKeyType(sourceMap), sourceMap.size());
+		for (Entry<? extends SK, ? extends SV> entry : sourceMap.entrySet()) {
+			K key = keyConverter.convert(entry.getKey());
+			V value = valueConverter.convert(entry.getValue());
+			targetMap.put(key, value);
+		}
+		return targetMap;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T empty(Class<?> type) {
+		if (Map.class.isAssignableFrom(type)) {
+			return (T) Collections.emptyNavigableMap();
+		} else if (Set.class.isAssignableFrom(type)) {
+			return (T) Collections.emptyNavigableSet();
+		} else if (Collection.class.isAssignableFrom(type)) {
+			return (T) Collections.emptyList();
+		}
+		throw new IllegalArgumentException("Unsupported Collection type: " + type);
 	}
 }

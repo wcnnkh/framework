@@ -25,12 +25,6 @@ import java.util.function.BiFunction;
 
 import scw.lang.RequiredJavaVersion;
 
-/**
- * Adapts a {@link CompletableFuture} or {@link CompletionStage} into a Spring
- * {@link ListenableFuture}.
- *
- */
-
 @RequiredJavaVersion(8)
 public class CompletableToListenableFutureAdapter<T> implements ListenableFuture<T> {
 

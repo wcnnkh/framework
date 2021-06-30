@@ -36,8 +36,8 @@ import scw.net.InetUtils;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.message.Headers;
-import scw.util.DefaultStringMatcher;
 import scw.util.Pair;
+import scw.util.StringMatchers;
 
 /**
  * A data structure representing HTTP request or response headers, mapping
@@ -828,11 +828,6 @@ public class HttpHeaders extends Headers {
 	/**
 	 * Set the {@code Content-Disposition} header when creating a
 	 * {@code "multipart/form-data"} request.
-	 * <p>
-	 * Applications typically would not set this header directly but rather
-	 * prepare a {@code MultiValueMap<String, Object>}, containing an Object or
-	 * a {@link org.springframework.core.io.Resource} for each part, and then
-	 * pass that to the {@code RestTemplate} or {@code WebClient}.
 	 * 
 	 * @param name
 	 *            the control name
@@ -1439,7 +1434,7 @@ public class HttpHeaders extends Headers {
 	}
 
 	private boolean matchHeader(String name, String value, String match) {
-		boolean b = DefaultStringMatcher.getInstance().match(match, value);
+		boolean b = StringMatchers.SIMPLE.match(match, value);
 		if (logger.isDebugEnabled()) {
 			logger.debug("check ajax header name={}, value={}, match={}, result={}", name, value, match, b);
 		}

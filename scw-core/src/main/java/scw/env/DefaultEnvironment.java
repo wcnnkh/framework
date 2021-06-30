@@ -24,6 +24,7 @@ import scw.io.FileSystemResourceLoader;
 import scw.io.ProtocolResolver;
 import scw.io.Resource;
 import scw.io.ResourceLoader;
+import scw.io.ResourceUtils;
 import scw.io.resolver.ConfigurablePropertiesResolver;
 import scw.io.resolver.PropertiesResolver;
 import scw.io.resolver.support.PropertiesResolvers;
@@ -105,7 +106,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 				}
 			}
 			if (resource == null) {
-				cacheMap.putIfAbsent(location, Resource.NONEXISTENT_RESOURCE);
+				cacheMap.putIfAbsent(location, ResourceUtils.NONEXISTENT_RESOURCE);
 			}
 		}
 		return resource;

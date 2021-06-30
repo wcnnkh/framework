@@ -1,17 +1,20 @@
 package scw.env;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
+import scw.convert.ConvertibleEnumeration;
 import scw.core.utils.CollectionUtils;
 import scw.event.Observable;
+import scw.instance.InstanceDefinition;
+import scw.instance.InstanceFactory;
 import scw.instance.NoArgsInstanceFactory;
+import scw.instance.ServiceLoader;
+import scw.instance.ServiceLoaderFactory;
 import scw.instance.support.DefaultInstanceFactory;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.util.Clock;
-import scw.util.EnumerationConvert;
 import scw.util.MultiIterator;
 import scw.util.XUtils;
 import scw.value.StringValue;
@@ -23,7 +26,7 @@ import scw.value.Value;
  * @author shuchaowen
  *
  */
-public final class Sys extends DefaultEnvironment {
+public final class Sys extends DefaultEnvironment implements ServiceLoaderFactory, InstanceFactory {
 	/**
 	 * 为了兼容老版本
 	 */
@@ -46,9 +49,8 @@ public final class Sys extends DefaultEnvironment {
 		unsafeInstanceFactory = instanceFactory.getServiceLoader(
 				NoArgsInstanceFactory.class,
 				"scw.instance.support.SunNoArgsInstanceFactory",
-				"scw.instance.support.UnsafeNoArgsInstanceFactory").getFirst();
-
-		clock = loadService(Clock.class);
+				"scw.instance.support.UnsafeNoArgsInstanceFactory").first();
+		clock = env.getServiceLoader(Clock.class).first();
 		if (clock == null) {
 			clock = Clock.SYSTEM;
 		}
@@ -84,47 +86,6 @@ public final class Sys extends DefaultEnvironment {
 		return unsafeInstanceFactory;
 	}
 
-	public static DefaultInstanceFactory getInstanceFactory() {
-		return instanceFactory;
-	}
-
-	public static <S> S loadService(Class<S> serviceClass) {
-		return instanceFactory.getServiceLoader(serviceClass).getFirst();
-	}
-
-	/**
-	 * DefaultInstanceFactory#getServiceLoader(Class, String...)
-	 * @param serviceClass
-	 * @return
-	 */
-	public static <S> List<S> loadAllService(Class<S> serviceClass) {
-		return instanceFactory.getServiceLoader(serviceClass).toList();
-	}
-
-	/**
-	 * @see DefaultInstanceFactory#getServiceLoader(Class, String...)
-	 * @param serviceClass
-	 * @param defaultNames
-	 * @return
-	 */
-	public static <S> S loadService(Class<S> serviceClass,
-			String... defaultNames) {
-		return instanceFactory.getServiceLoader(serviceClass, defaultNames)
-				.getFirst();
-	}
-
-	/**
-	 * @see DefaultInstanceFactory#getServiceLoader(Class, String...)
-	 * @param serviceClass
-	 * @param defaultNames
-	 * @return
-	 */
-	public static <S> List<S> loadAllService(Class<S> serviceClass,
-			String... defaultNames) {
-		return instanceFactory.getServiceLoader(serviceClass, defaultNames)
-				.toList();
-	}
-
 	public static Clock getClock() {
 		return clock;
 	}
@@ -139,7 +100,7 @@ public final class Sys extends DefaultEnvironment {
 
 	public Iterator<String> iterator() {
 		return new MultiIterator<String>(super.iterator(),
-				CollectionUtils.toIterator(EnumerationConvert
+				CollectionUtils.toIterator(ConvertibleEnumeration
 						.convertToStringEnumeration(System.getProperties()
 								.keys())), System.getenv().keySet().iterator());
 	}
@@ -192,5 +153,80 @@ public final class Sys extends DefaultEnvironment {
 			}
 		}
 		return path;
+	}
+
+	@Override
+	public <T> T getInstance(Class<T> clazz) {
+		return instanceFactory.getInstance(clazz);
+	}
+
+	@Override
+	public boolean isInstance(Class<?> clazz) {
+		return instanceFactory.isInstance(clazz);
+	}
+	
+	@Override
+	public boolean isInstance(String name) {
+		return instanceFactory.isInstance(name);
+	}
+	
+	@Override
+	public <T> T getInstance(String name) {
+		return instanceFactory.getInstance(name);
+	}
+
+	@Override
+	public <S> ServiceLoader<S> getServiceLoader(Class<S> serviceClass) {
+		return instanceFactory.getServiceLoader(serviceClass);
+	}
+
+	@Override
+	public InstanceDefinition getDefinition(String name) {
+		return instanceFactory.getDefinition(name);
+	}
+
+	@Override
+	public InstanceDefinition getDefinition(Class<?> clazz) {
+		return instanceFactory.getDefinition(clazz);
+	}
+
+	@Override
+	public boolean isInstance(String name, Object... params) {
+		return instanceFactory.isInstance(name, params);
+	}
+
+	@Override
+	public <T> T getInstance(String name, Object... params) {
+		return instanceFactory.getInstance(name, params);
+	}
+
+	@Override
+	public boolean isInstance(Class<?> clazz, Object... params) {
+		return instanceFactory.isInstance(clazz, params);
+	}
+
+	@Override
+	public <T> T getInstance(Class<T> clazz, Object... params) {
+		return instanceFactory.getInstance(clazz, params);
+	}
+
+	@Override
+	public boolean isInstance(String name, Class<?>[] parameterTypes) {
+		return instanceFactory.isInstance(name, parameterTypes);
+	}
+
+	@Override
+	public <T> T getInstance(String name, Class<?>[] parameterTypes, Object[] params) {
+		return instanceFactory.getInstance(name, parameterTypes, params);
+	}
+
+	@Override
+	public boolean isInstance(Class<?> clazz, Class<?>[] parameterTypes) {
+		return instanceFactory.isInstance(clazz, parameterTypes);
+	}
+
+	@Override
+	public <T> T getInstance(Class<T> clazz, Class<?>[] parameterTypes, Object[] params) {
+		return instanceFactory.getInstance(clazz, parameterTypes, params);
 	}
 }

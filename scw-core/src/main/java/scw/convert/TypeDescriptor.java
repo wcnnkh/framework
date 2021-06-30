@@ -95,7 +95,7 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 	public TypeDescriptor(ParameterDescriptor parameterDescriptor){
 		this.resolvableType = ResolvableType.forType(parameterDescriptor.getGenericType());
 		this.type = this.resolvableType.resolve(parameterDescriptor.getType());
-		AnnotatedElement arrayAnnnotation = XUtils.getTarget(parameterDescriptor, AnnotationArrayAnnotatedElement.class);
+		AnnotatedElement arrayAnnnotation = XUtils.getDelegate(parameterDescriptor, AnnotationArrayAnnotatedElement.class);
 		this.annotatedElement = arrayAnnnotation == null? new AnnotationArrayAnnotatedElement(parameterDescriptor):arrayAnnnotation;
 	}
 
@@ -217,8 +217,6 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 
 	/**
 	 * Determine if this type descriptor has the specified annotation.
-	 * <p>As of Spring Framework 4.2, this method supports arbitrary levels
-	 * of meta-annotations.
 	 * @param annotationType the annotation type
 	 * @return <tt>true</tt> if the annotation is present
 	 */
@@ -233,7 +231,6 @@ public class TypeDescriptor implements AnnotatedElement, Serializable {
 
 	/**
 	 * Obtain the annotation of the specified {@code annotationType} that is on this type descriptor.
-	 * <p>As of Spring Framework 4.2, this method supports arbitrary levels of meta-annotations.
 	 * @param annotationType the annotation type
 	 * @return the annotation, or {@code null} if no such annotation exists on this type descriptor
 	 */

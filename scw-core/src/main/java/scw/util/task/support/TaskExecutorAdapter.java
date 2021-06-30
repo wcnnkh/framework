@@ -31,12 +31,6 @@ import scw.util.task.TaskDecorator;
 import scw.util.task.TaskRejectedException;
 
 /**
- * Adapter that takes a JDK {@code java.util.concurrent.Executor} and exposes a
- * Spring {@link org.springframework.core.task.TaskExecutor} for it. Also
- * detects an extended {@code java.util.concurrent.ExecutorService}, adapting
- * the {@link org.springframework.core.task.AsyncTaskExecutor} interface
- * accordingly.
- *
  * @see java.util.concurrent.Executor
  * @see java.util.concurrent.ExecutorService
  * @see java.util.concurrent.Executors

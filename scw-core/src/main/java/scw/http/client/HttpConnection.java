@@ -26,9 +26,9 @@ import scw.net.InetUtils;
 import scw.util.XUtils;
 
 public interface HttpConnection extends HttpConnectionFactory {
-	static final RedirectManager REDIRECT_MANAGER = Sys.loadService(
+	static final RedirectManager REDIRECT_MANAGER = Sys.env.getServiceLoader(
 			RedirectManager.class,
-			"scw.http.client.HttpConnection.DefaultRedirectManager");
+			"scw.http.client.HttpConnection.DefaultRedirectManager").first();
 
 	/**
 	 * Add the given, single header value under the given name.
@@ -255,7 +255,7 @@ public interface HttpConnection extends HttpConnectionFactory {
 			}
 
 			try {
-				FileUtils.copyInputStreamToFile(response.getBody(), file);
+				FileUtils.copyInputStreamToFile(response.getInputStream(), file);
 			} finally {
 				file.deleteOnExit();
 			}

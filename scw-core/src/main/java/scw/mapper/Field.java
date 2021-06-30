@@ -16,7 +16,7 @@ public final class Field extends FieldMetadata {
 		super(getter, setter);
 		this.parentField = parentField;
 	}
-	
+
 	public Field(Field parentField, FieldMetadata metadata) {
 		super(metadata);
 		this.parentField = parentField;

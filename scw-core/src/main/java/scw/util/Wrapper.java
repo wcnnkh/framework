@@ -3,7 +3,7 @@ package scw.util;
 import scw.core.Assert;
 import scw.core.utils.ObjectUtils;
 
-public class Wrapper<W> implements Target{
+public class Wrapper<W> implements Decorator{
 	protected final W wrappedTarget;
 
 	public Wrapper(W wrappedTarget) {
@@ -12,8 +12,8 @@ public class Wrapper<W> implements Target{
 	}
 	
 	@Override
-	public <T> T getTarget(Class<T> targetType) {
-		return XUtils.getTarget(wrappedTarget, targetType);
+	public <T> T getDelegate(Class<T> targetType) {
+		return XUtils.getDelegate(wrappedTarget, targetType);
 	}
 
 	@Override
@@ -21,7 +21,6 @@ public class Wrapper<W> implements Target{
 		return wrappedTarget.toString();
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -29,7 +28,7 @@ public class Wrapper<W> implements Target{
 		}
 
 		if (obj instanceof Wrapper) {
-			return ObjectUtils.nullSafeEquals(wrappedTarget, ((Wrapper) obj).wrappedTarget);
+			return ObjectUtils.nullSafeEquals(wrappedTarget, ((Wrapper<?>) obj).wrappedTarget);
 		}
 		return false;
 	}
