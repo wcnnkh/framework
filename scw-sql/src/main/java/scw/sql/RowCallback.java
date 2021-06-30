@@ -5,5 +5,5 @@ import java.sql.SQLException;
 
 @FunctionalInterface
 public interface RowCallback {
-	boolean processRow(ResultSet rs, int rowNum) throws SQLException;
+	void processRow(ResultSet rs, int rowNum) throws SQLException;
 }

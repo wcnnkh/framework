@@ -10,8 +10,8 @@ import scw.orm.ObjectRelationalMapping;
 import scw.orm.OrmUtils;
 import scw.orm.convert.PropertyFactoryToEntityConversionService;
 import scw.sql.RowMapper;
-import scw.sql.SqlProcessor;
 import scw.sql.SqlUtils;
+import scw.util.stream.Processor;
 
 /**
  * 对ResultSet和实体之间的映射做了最大的兼容,支持任意对象的组合
@@ -22,7 +22,7 @@ import scw.sql.SqlUtils;
  *
  * @param <T>
  */
-public class SmartRowMapper<T> implements RowMapper<T>, SqlProcessor<ResultSet, T> {
+public class SmartRowMapper<T> implements RowMapper<T>, Processor<ResultSet, T, SQLException> {
 	private final ConversionService conversionService;
 	private final TypeDescriptor typeDescriptor;
 	private final ObjectRelationalMapping objectRelationalMapping;

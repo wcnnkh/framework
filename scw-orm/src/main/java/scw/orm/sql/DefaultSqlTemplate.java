@@ -1,7 +1,6 @@
 package scw.orm.sql;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -30,11 +29,10 @@ import scw.orm.generator.GeneratorProcessor;
 import scw.orm.sql.convert.SmartRowMapper;
 import scw.sql.ConnectionFactory;
 import scw.sql.DefaultSqlOperations;
-import scw.sql.RowMapper;
 import scw.sql.Sql;
-import scw.sql.SqlProcessor;
 import scw.util.Pagination;
-import scw.util.stream.AutoCloseStream;
+import scw.util.stream.Cursor;
+import scw.util.stream.Processor;
 
 public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTemplate {
 	private static Logger logger = LoggerFactory.getLogger(DefaultSqlTemplate.class);
@@ -101,21 +99,13 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	public boolean createTable(String tableName, Class<?> entityClass) {
 		Class<?> clazz = getUserEntityClass(entityClass);
 		Sql sql = sqlDialect.toCreateTableSql(getTableName(tableName, clazz, null), clazz);
-		execute(sql);
+		prepare(sql).execute();
 		return true;
 	}
 
 	private Object getAutoIncrementLastId(Connection connection, String tableName) throws SQLException {
 		Sql sql = sqlDialect.toLastInsertIdSql(tableName);
-		return query(connection, sql, new SqlProcessor<ResultSet, Object>() {
-
-			public Object process(ResultSet resultSet) throws SQLException {
-				if (resultSet.next()) {
-					return resultSet.getObject(1);
-				}
-				return null;
-			}
-		});
+		return query(connection, Object.class, sql).first();
 	}
 
 	private void setAutoIncrementLastId(int updateCount, Sql sql, Connection connection, String tableName,
@@ -146,14 +136,10 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 		String tName = getTableName(tableName, entityClass, entity);
 		Sql sql = sqlDialect.save(tName, entityClass, entity);
-		return process(sql, new SqlProcessor<PreparedStatement, Integer>() {
-
-			@Override
-			public Integer process(PreparedStatement statement) throws SQLException {
-				int updateCount = statement.executeUpdate();
-				setAutoIncrementLastId(updateCount, sql, statement.getConnection(), tName, entityClass, entity);
-				return updateCount;
-			}
+		return prepare(sql).process((ps) -> {
+			int updateCount = ps.executeUpdate();
+			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tName, entityClass, entity);
+			return updateCount;
 		}) > 0;
 	}
 
@@ -171,14 +157,10 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 		String tName = getTableName(tableName, entityClass, entity);
 		Sql sql = sqlDialect.toSaveOrUpdateSql(tName, entityClass, entity);
-		return process(sql, new SqlProcessor<PreparedStatement, Integer>() {
-
-			@Override
-			public Integer process(PreparedStatement statement) throws SQLException {
-				int updateCount = statement.executeUpdate();
-				setAutoIncrementLastId(updateCount, sql, statement.getConnection(), tName, entityClass, entity);
-				return updateCount;
-			}
+		return prepare(sql).process((ps) -> {
+			int updateCount = ps.executeUpdate();
+			setAutoIncrementLastId(updateCount, sql, ps.getConnection(), tName, entityClass, entity);
+			return updateCount;
 		}) > 0;
 	}
 
@@ -195,7 +177,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 		Class<?> clazz = getUserEntityClass(entity.getClass());
 		Sql sql = sqlDialect.delete(getTableName(tableName, clazz, entity), clazz, entity);
-		return update(sql) > 0;
+		return prepare(sql).update() > 0;
 	}
 
 	@Override
@@ -210,7 +192,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 		Class<?> clazz = getUserEntityClass(entityClass);
 		Sql sql = sqlDialect.deleteById(getTableName(tableName, clazz, null), clazz, ids);
-		return update(sql) > 0;
+		return prepare(sql).update() > 0;
 	}
 
 	@Override
@@ -225,7 +207,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 		Class<?> clazz = getUserEntityClass(entity.getClass());
 		Sql sql = sqlDialect.update(getTableName(tableName, clazz, entity), clazz, entity);
-		return update(sql) > 0;
+		return prepare(sql).update() > 0;
 	}
 
 	@Override
@@ -239,19 +221,19 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		if (cacheManager == null || (value == null && cacheManager.isKeepLooking(entityClass, ids))) {
 			Class<?> clazz = getUserEntityClass(entityClass);
 			Sql sql = sqlDialect.toSelectByIdsSql(getTableName(tableName, clazz, null), clazz, ids);
-			value = queryFirst(entityClass, sql);
+			value = query(entityClass, sql).first();
 			if (value != null && cacheManager != null) {
 				cacheManager.save(value);
 			}
 		}
 		return value;
 	}
-
+	
 	@Override
-	public <T> AutoCloseStream<T> streamQuery(Connection connection, TypeDescriptor resultTypeDescriptor, Sql sql) {
-		return streamQuery(connection, sql, new SmartRowMapper<T>(sqlDialect, resultTypeDescriptor));
+	public <T> Processor<ResultSet, T, ? extends Throwable> getMapperProcessor(TypeDescriptor type) {
+		return new SmartRowMapper<T>(sqlDialect, type);
 	}
-
+	
 	@Override
 	public <T> Pagination<T> paginationQuery(TypeDescriptor resultType, Sql sql, long page, int limit) {
 		if (limit <= 0 || page <= 0) {
@@ -260,14 +242,14 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 		long start = Pagination.getBegin(page, limit);
 		PaginationSql paginationSql = sqlDialect.toPaginationSql(sql, start, limit);
-		Long count = streamQuery(Long.class, paginationSql.getCountSql()).findFirst().orElse(0L);
+		Long count = query(Long.class, paginationSql.getCountSql()).first();
 		Pagination<T> pagination = new Pagination<T>(limit);
 		if (count == null || count == 0) {
 			pagination.emptyData();
 			return pagination;
 		} else {
 			pagination.setTotalCount(count);
-			pagination.setData(query(resultType, paginationSql.getResultSql()));
+			pagination.setData(query(resultType, paginationSql.getResultSql()).shared());
 		}
 		return pagination;
 	}
@@ -275,11 +257,8 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	public TableChanges getTableChanges(Class<?> tableClass, String tableName) {
 		String tName = getTableName(tableName, tableClass, null);
 		TableStructureMapping tableStructureMapping = sqlDialect.getTableStructureMapping(tableClass, tName);
-		List<String> list = query(tableStructureMapping.getSql(), new RowMapper<String>() {
-
-			public String mapRow(java.sql.ResultSet rs, int rowNum) throws SQLException {
-				return tableStructureMapping.getName(rs);
-			}
+		List<String> list = prepare(tableStructureMapping.getSql()).query().process((rs, rowNum) -> {
+			return tableStructureMapping.getName(rs);
 		});
 		HashSet<String> hashSet = new HashSet<String>();
 		List<String> deleteList = new ArrayList<String>();
@@ -306,14 +285,15 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	public <T> T getMaxValue(Class<? extends T> type, Class<?> tableClass, String tableName, Field field) {
 		String tName = getTableName(tableName, tableClass, null);
 		Sql sql = sqlDialect.toMaxIdSql(tableClass, tName, field);
-		return queryFirst(type, sql);
+		return query(type, sql).first();
 	}
 
 	@Override
 	public <T> List<T> getByIdList(String tableName, Class<? extends T> entityClass, Object... ids) {
 		String tName = getTableName(tableName, entityClass, null);
 		Sql sql = sqlDialect.toSelectByIdsSql(tName, entityClass, ids);
-		return query(entityClass, sql);
+		Cursor<T> cursor = query(entityClass, sql);
+		return cursor.shared();
 	}
 
 	@Override
@@ -321,7 +301,8 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 			Collection<? extends K> inPrimaryKeys, Object... primaryKeys) {
 		String tName = getTableName(tableName, entityClass, null);
 		Sql sql = sqlDialect.getInIds(tName, entityClass, primaryKeys, inPrimaryKeys);
-		List<V> list = query(entityClass, sql);
+		Cursor<V> cursor = query(entityClass, sql);
+		List<V> list = cursor.shared();
 		if (list == null || list.isEmpty()) {
 			return Collections.emptyMap();
 		}

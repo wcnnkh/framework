@@ -18,18 +18,29 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-import scw.core.utils.ObjectUtils;
+import scw.util.Wrapper;
 
-public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
-	private final DoubleStream stream;
+public class AutoCloseDoubleStreamWrapper extends Wrapper<DoubleStream> implements AutoCloseDoubleStream {
+	private boolean closed;
 
 	public AutoCloseDoubleStreamWrapper(DoubleStream stream) {
-		this.stream = stream;
+		super(stream);
+	}
+
+	@Override
+	public boolean isClosed() {
+		return closed;
+	}
+
+	@Override
+	public void close() {
+		this.closed = true;
+		wrappedTarget.close();
 	}
 
 	@Override
 	public AutoCloseDoubleStream filter(DoublePredicate predicate) {
-		DoubleStream stream = this.stream.filter(predicate);
+		DoubleStream stream = this.wrappedTarget.filter(predicate);
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -38,7 +49,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseDoubleStream map(DoubleUnaryOperator mapper) {
-		DoubleStream stream = this.stream.map(mapper);
+		DoubleStream stream = this.wrappedTarget.map(mapper);
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -47,7 +58,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public <U> AutoCloseStream<U> mapToObj(DoubleFunction<? extends U> mapper) {
-		Stream<U> stream = this.stream.mapToObj(mapper);
+		Stream<U> stream = this.wrappedTarget.mapToObj(mapper);
 		if (stream instanceof AutoCloseStream) {
 			return (AutoCloseStream<U>) stream;
 		}
@@ -56,7 +67,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseIntStream mapToInt(DoubleToIntFunction mapper) {
-		IntStream stream = this.stream.mapToInt(mapper);
+		IntStream stream = this.wrappedTarget.mapToInt(mapper);
 		if (stream instanceof AutoCloseIntStream) {
 			return (AutoCloseIntStream) stream;
 		}
@@ -65,7 +76,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseLongStream mapToLong(DoubleToLongFunction mapper) {
-		LongStream stream = this.stream.mapToLong(mapper);
+		LongStream stream = this.wrappedTarget.mapToLong(mapper);
 		if (stream instanceof AutoCloseLongStream) {
 			return (AutoCloseLongStream) stream;
 		}
@@ -74,7 +85,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseDoubleStream flatMap(DoubleFunction<? extends DoubleStream> mapper) {
-		DoubleStream stream = this.stream.flatMap(mapper);
+		DoubleStream stream = this.wrappedTarget.flatMap(mapper);
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -83,7 +94,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseDoubleStream distinct() {
-		DoubleStream stream = this.stream.distinct();
+		DoubleStream stream = this.wrappedTarget.distinct();
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -92,7 +103,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseDoubleStream sorted() {
-		DoubleStream stream = this.stream.sorted();
+		DoubleStream stream = this.wrappedTarget.sorted();
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -101,7 +112,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseDoubleStream peek(DoubleConsumer action) {
-		DoubleStream stream = this.stream.peek(action);
+		DoubleStream stream = this.wrappedTarget.peek(action);
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -110,7 +121,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseDoubleStream limit(long maxSize) {
-		DoubleStream stream = this.stream.limit(maxSize);
+		DoubleStream stream = this.wrappedTarget.limit(maxSize);
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -119,7 +130,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseDoubleStream skip(long n) {
-		DoubleStream stream = this.stream.skip(n);
+		DoubleStream stream = this.wrappedTarget.skip(n);
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -129,7 +140,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public void forEach(DoubleConsumer action) {
 		try {
-			this.stream.forEach(action);
+			this.wrappedTarget.forEach(action);
 		} finally {
 			close();
 		}
@@ -138,7 +149,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public void forEachOrdered(DoubleConsumer action) {
 		try {
-			this.stream.forEachOrdered(action);
+			this.wrappedTarget.forEachOrdered(action);
 		} finally {
 			close();
 		}
@@ -147,7 +158,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public double[] toArray() {
 		try {
-			return this.stream.toArray();
+			return this.wrappedTarget.toArray();
 		} finally {
 			close();
 		}
@@ -156,7 +167,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public double reduce(double identity, DoubleBinaryOperator op) {
 		try {
-			return this.stream.reduce(identity, op);
+			return this.wrappedTarget.reduce(identity, op);
 		} finally {
 			close();
 		}
@@ -165,7 +176,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public OptionalDouble reduce(DoubleBinaryOperator op) {
 		try {
-			return this.stream.reduce(op);
+			return this.wrappedTarget.reduce(op);
 		} finally {
 			close();
 		}
@@ -174,7 +185,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public <R> R collect(Supplier<R> supplier, ObjDoubleConsumer<R> accumulator, BiConsumer<R, R> combiner) {
 		try {
-			return this.stream.collect(supplier, accumulator, combiner);
+			return this.wrappedTarget.collect(supplier, accumulator, combiner);
 		} finally {
 			close();
 		}
@@ -183,7 +194,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public double sum() {
 		try {
-			return this.stream.sum();
+			return this.wrappedTarget.sum();
 		} finally {
 			close();
 		}
@@ -192,7 +203,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public OptionalDouble min() {
 		try {
-			return this.stream.min();
+			return this.wrappedTarget.min();
 		} finally {
 			close();
 		}
@@ -201,7 +212,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public OptionalDouble max() {
 		try {
-			return this.stream.max();
+			return this.wrappedTarget.max();
 		} finally {
 			close();
 		}
@@ -210,7 +221,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public long count() {
 		try {
-			return this.stream.count();
+			return this.wrappedTarget.count();
 		} finally {
 			close();
 		}
@@ -219,7 +230,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public OptionalDouble average() {
 		try {
-			return this.stream.average();
+			return this.wrappedTarget.average();
 		} finally {
 			close();
 		}
@@ -228,7 +239,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public DoubleSummaryStatistics summaryStatistics() {
 		try {
-			return this.stream.summaryStatistics();
+			return this.wrappedTarget.summaryStatistics();
 		} finally {
 			close();
 		}
@@ -237,7 +248,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public boolean anyMatch(DoublePredicate predicate) {
 		try {
-			return this.stream.anyMatch(predicate);
+			return this.wrappedTarget.anyMatch(predicate);
 		} finally {
 			close();
 		}
@@ -246,7 +257,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public boolean allMatch(DoublePredicate predicate) {
 		try {
-			return this.stream.allMatch(predicate);
+			return this.wrappedTarget.allMatch(predicate);
 		} finally {
 			close();
 		}
@@ -255,7 +266,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public boolean noneMatch(DoublePredicate predicate) {
 		try {
-			return this.stream.noneMatch(predicate);
+			return this.wrappedTarget.noneMatch(predicate);
 		} finally {
 			close();
 		}
@@ -264,7 +275,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public OptionalDouble findFirst() {
 		try {
-			return this.stream.findFirst();
+			return this.wrappedTarget.findFirst();
 		} finally {
 			close();
 		}
@@ -273,7 +284,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 	@Override
 	public OptionalDouble findAny() {
 		try {
-			return this.stream.findAny();
+			return this.wrappedTarget.findAny();
 		} finally {
 			close();
 		}
@@ -281,16 +292,16 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseStream<Double> boxed() {
-		Stream<Double> stream = this.stream.boxed();
+		Stream<Double> stream = this.wrappedTarget.boxed();
 		if (stream instanceof AutoCloseStream) {
-			return (AutoCloseStream<Double>)stream;
+			return (AutoCloseStream<Double>) stream;
 		}
 		return new AutoCloseStreamWrapper<>(stream);
 	}
 
 	@Override
 	public AutoCloseDoubleStream sequential() {
-		DoubleStream stream = this.stream.sequential();
+		DoubleStream stream = this.wrappedTarget.sequential();
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -299,7 +310,7 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseDoubleStream parallel() {
-		DoubleStream stream = this.stream.parallel();
+		DoubleStream stream = this.wrappedTarget.parallel();
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -308,22 +319,22 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public OfDouble iterator() {
-		return this.stream.iterator();
+		return this.wrappedTarget.iterator();
 	}
 
 	@Override
 	public java.util.Spliterator.OfDouble spliterator() {
-		return this.stream.spliterator();
+		return this.wrappedTarget.spliterator();
 	}
 
 	@Override
 	public boolean isParallel() {
-		return this.stream.isParallel();
+		return this.wrappedTarget.isParallel();
 	}
 
 	@Override
 	public AutoCloseDoubleStream unordered() {
-		DoubleStream stream = this.stream.unordered();
+		DoubleStream stream = this.wrappedTarget.unordered();
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
@@ -332,37 +343,10 @@ public class AutoCloseDoubleStreamWrapper implements AutoCloseDoubleStream {
 
 	@Override
 	public AutoCloseDoubleStream onClose(Runnable closeHandler) {
-		DoubleStream stream = this.stream.onClose(closeHandler);
+		DoubleStream stream = this.wrappedTarget.onClose(closeHandler);
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
 		return new AutoCloseDoubleStreamWrapper(stream);
-	}
-
-	@Override
-	public void close() {
-		this.stream.close();
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
-
-		if (obj instanceof AutoCloseDoubleStreamWrapper) {
-			return ObjectUtils.nullSafeEquals(((AutoCloseDoubleStreamWrapper) obj).stream, this.stream);
-		}
-		return false;
-	}
-
-	@Override
-	public int hashCode() {
-		return this.stream.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return this.stream.toString();
 	}
 }

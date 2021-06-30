@@ -57,11 +57,11 @@ public final class DBManager {
 	}
 
 	public static <T> List<T> select(Class<T> type, Sql sql) {
-		return getDB(type).query(type, sql);
+		return getDB(type).query(type, sql).shared();
 	}
 
 	public static <T> T selectOne(Class<T> type, Sql sql) {
-		return getDB(type).queryFirst(type, sql);
+		return getDB(type).query(type, sql).first();
 	}
 
 	/**

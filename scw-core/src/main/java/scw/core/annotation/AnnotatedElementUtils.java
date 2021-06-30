@@ -834,7 +834,7 @@ public class AnnotatedElementUtils {
 
 	public static String getCharsetName(AnnotatedElement annotatedElement, Supplier<String> defaultValue) {
 		CharsetName charsetName = getMergedAnnotation(annotatedElement, CharsetName.class);
-		return charsetName == null ? defaultValue.get() : charsetName.value();
+		return charsetName == null ? (defaultValue == null ? null : defaultValue.get()) : charsetName.value();
 	}
 
 	public static Boolean isIgnore(AnnotatedElement annotatedElement) {

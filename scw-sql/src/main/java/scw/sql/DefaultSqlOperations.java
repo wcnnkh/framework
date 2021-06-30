@@ -5,7 +5,7 @@ import java.sql.SQLException;
 
 import scw.sql.transaction.SqlTransactionUtils;
 
-public class DefaultSqlOperations implements SqlOperations {
+public class DefaultSqlOperations extends DefaultSqlStatementProcessor implements SqlOperations {
 	private ConnectionFactory connectionFactory;
 
 	public DefaultSqlOperations(ConnectionFactory connectionFactory) {

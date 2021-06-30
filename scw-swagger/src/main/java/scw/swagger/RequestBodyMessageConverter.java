@@ -1,4 +1,4 @@
-package scw.web.swagger;
+package scw.swagger;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import scw.context.annotation.Provider;

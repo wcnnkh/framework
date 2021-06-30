@@ -1,5 +1,8 @@
 package scw.util.stream;
 
+import java.util.Spliterator;
+
+import scw.convert.Converter;
 import scw.lang.Nullable;
 
 /**
@@ -22,6 +25,19 @@ public interface AutoCloseStreamProcessor<T, E extends Throwable> extends Stream
 
 	AutoCloseStreamProcessor<T, E> onClose(CallbackProcessor<E> closeProcessor);
 
+	boolean isClosed();
+	
+	@Override
+	default <TE extends Throwable> AutoCloseStreamProcessor<T, TE> exceptionConvert(
+			Converter<Throwable, TE> exceptionConverter) {
+		return new AutoCloseStreamProcessorWrapper<>(StreamProcessor.super.exceptionConvert(exceptionConverter));
+	}
+
+	@Override
+	default <V> AutoCloseStream<V> stream(Processor<T, Spliterator<V>, E> processor) throws E {
+		return new AutoCloseStreamWrapper<>(StreamProcessor.super.stream(processor));
+	}
+
 	@Override
 	default void process(Callback<T, ? extends E> callback) throws E {
 		try {
@@ -38,6 +54,5 @@ public interface AutoCloseStreamProcessor<T, E extends Throwable> extends Stream
 		} finally {
 			close();
 		}
-
 	}
 }

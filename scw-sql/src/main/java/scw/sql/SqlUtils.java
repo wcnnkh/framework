@@ -27,6 +27,7 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.lang.Nullable;
 import scw.util.stream.Callback;
+import scw.util.stream.Cursor;
 import scw.util.stream.Processor;
 import scw.util.stream.StreamProcessor;
 import scw.util.stream.StreamProcessorSupport;
@@ -118,8 +119,8 @@ public final class SqlUtils {
 		return name;
 	}
 
-	public static <S, P extends Statement, E extends SQLException> StreamProcessor<P, SQLException> streamProcess(
-			S source, Processor<S, ? extends P, ? extends E> statementCreator) throws SQLException {
+	public static <S, P extends Statement> StreamProcessor<P, SQLException> streamProcess(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator) throws SQLException {
 		P ps = statementCreator.process(source);
 		StreamProcessor<P, SQLException> streamProcessor = StreamProcessorSupport.stream(ps);
 		return streamProcessor.onClose(() -> {
@@ -129,9 +130,9 @@ public final class SqlUtils {
 		});
 	}
 
-	public static <S, P extends Statement, T, E extends SQLException> T process(S source,
-			Processor<S, ? extends P, ? extends E> statementCreator, Processor<P, ? extends T, ? extends E> processor)
-			throws SQLException {
+	public static <S, P extends Statement, T, E extends Throwable> T process(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ? extends T, ? extends E> processor) throws SQLException, E {
 		P ps = null;
 		try {
 			ps = statementCreator.process(source);
@@ -143,11 +144,12 @@ public final class SqlUtils {
 		}
 	}
 
-	public static <S, P extends Statement, E extends SQLException> void process(S connection,
-			Processor<S, ? extends P, ? extends E> statementCreator, Callback<P, E> callback) throws SQLException {
+	public static <S, P extends Statement> void process(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Callback<P, ? extends SQLException> callback) throws SQLException {
 		P statement = null;
 		try {
-			statement = statementCreator.process(connection);
+			statement = statementCreator.process(source);
 			callback.call(statement);
 		} finally {
 			if (statement != null && !statement.isClosed()) {
@@ -156,24 +158,8 @@ public final class SqlUtils {
 		}
 	}
 
-	/**
-	 * 执行一条sql语句
-	 * 
-	 * @return 返回结果并不代表是否执行成功，意义请参考jdk文档<br/>
-	 *         true if the first result is a ResultSet object; false if the first
-	 *         result is an update count or there is no result
-	 * @throws SQLException
-	 */
-	public static <E extends SQLException> boolean execute(Connection connection,
-			Processor<Connection, ? extends PreparedStatement, ? extends E> preparedStatementCreator)
-			throws SQLException {
-		return process(connection, preparedStatementCreator, (ps) -> {
-			return ps.execute();
-		});
-	}
-
-	public static <T, E extends SQLException> T process(PreparedStatement ps,
-			Processor<ResultSet, ? extends T, ? extends E> resultSetProcessor) throws SQLException {
+	public static <T> T process(PreparedStatement ps,
+			Processor<ResultSet, ? extends T, ? extends SQLException> resultSetProcessor) throws SQLException {
 		ResultSet resultSet = null;
 		try {
 			resultSet = ps.executeQuery();
@@ -185,16 +171,16 @@ public final class SqlUtils {
 		}
 	}
 
-	public static <E extends SQLException> int update(Connection connection,
-			Processor<Connection, ? extends PreparedStatement, ? extends E> preparedStatementCreator)
+	public static int update(Connection connection,
+			Processor<Connection, ? extends PreparedStatement, ? extends SQLException> preparedStatementCreator)
 			throws SQLException {
 		return process(connection, preparedStatementCreator, (ps) -> {
 			return ps.executeUpdate();
 		});
 	}
 
-	public static <P extends PreparedStatement, E extends SQLException> int[] executeBatch(Connection connection,
-			Processor<Connection, ? extends P, ? extends E> connectionProcessor,
+	public static <P extends PreparedStatement> int[] executeBatch(Connection connection,
+			Processor<Connection, ? extends P, ? extends SQLException> connectionProcessor,
 			@Nullable Collection<Object[]> batchArgs) throws SQLException {
 		return process(connection, connectionProcessor, (ps) -> {
 			if (batchArgs != null) {
@@ -207,8 +193,8 @@ public final class SqlUtils {
 		});
 	}
 
-	public static <S, E extends SQLException> StreamProcessor<ResultSet, SQLException> streamQuery(S source,
-			Processor<S, ? extends ResultSet, ? extends E> queryProcessor) throws SQLException {
+	public static <S> StreamProcessor<ResultSet, SQLException> streamQuery(S source,
+			Processor<S, ? extends ResultSet, ? extends SQLException> queryProcessor) throws SQLException {
 		ResultSet resultSet = queryProcessor.process(source);
 		StreamProcessor<ResultSet, SQLException> streamProcessor = StreamProcessorSupport.stream(resultSet);
 		return streamProcessor.onClose(() -> {
@@ -218,9 +204,9 @@ public final class SqlUtils {
 		});
 	}
 
-	public static <S, P extends Statement, E extends SQLException> StreamProcessor<ResultSet, SQLException> streamQuery(
-			S source, Processor<S, ? extends P, ? extends E> statementCreator,
-			Processor<P, ? extends ResultSet, ? extends E> queryProcessor) throws SQLException {
+	public static <S, P extends Statement> StreamProcessor<ResultSet, SQLException> streamQuery(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ? extends ResultSet, ? extends SQLException> queryProcessor) throws SQLException {
 		P statement = statementCreator.process(source);
 		try {
 			return streamQuery(statement, queryProcessor);
@@ -232,8 +218,8 @@ public final class SqlUtils {
 		}
 	}
 
-	public static <S, E extends SQLException> Stream<ResultSet> streamQuery(S source,
-			Processor<S, ResultSet, ? extends E> query, @Nullable Supplier<String> desc) throws SQLException {
+	public static <S> Stream<ResultSet> streamQuery(S source, Processor<S, ResultSet, ? extends SQLException> query,
+			@Nullable Supplier<String> desc) throws SQLException {
 		ResultSet resultSet = query.process(source);
 		ResultSetIterator iterator = new ResultSetIterator(resultSet);
 		Spliterator<ResultSet> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
@@ -244,20 +230,15 @@ public final class SqlUtils {
 					resultSet.close();
 				}
 			} catch (Throwable e) {
-				if (e instanceof SqlException) {
-					throw (SqlException) e;
-				}
-				if (desc == null) {
-					throw new SqlException(e);
-				}
-				throw new SqlException(desc.get(), e);
+				throw throwableSqlException(e, desc);
 			}
 		});
 	}
 
-	public static <S, P extends Statement, E extends SQLException> Stream<ResultSet> streamQuery(S source,
-			Processor<S, ? extends P, ? extends E> statementCreator, SqlProcessor<P, ResultSet> query,
-			@Nullable Supplier<String> desc) throws SQLException {
+	public static <S, P extends Statement> Stream<ResultSet> streamQuery(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ResultSet, ? extends SQLException> query, @Nullable Supplier<String> desc)
+			throws SQLException {
 		P statement = statementCreator.process(source);
 		try {
 			return streamQuery(statement, query, desc).onClose(() -> {
@@ -266,13 +247,7 @@ public final class SqlUtils {
 						statement.close();
 					}
 				} catch (Throwable e) {
-					if (e instanceof SqlException) {
-						throw (SqlException) e;
-					}
-					if (desc == null) {
-						throw new SqlException(e);
-					}
-					throw new SqlException(desc.get(), e);
+					throw throwableSqlException(e, desc);
 				}
 			});
 		} catch (SQLException e) {
@@ -283,9 +258,34 @@ public final class SqlUtils {
 		}
 	}
 
-	public static <S, T, E extends SQLException> T query(S source,
-			Processor<S, ? extends ResultSet, ? extends E> queryProcessor,
-			Processor<ResultSet, ? extends T, ? extends E> mapProcessor) throws SQLException {
+	public static SqlException throwableSqlException(Throwable e, Supplier<String> desc) {
+		if (e instanceof SqlException) {
+			return (SqlException) e;
+		}
+		if (desc == null) {
+			return new SqlException(e);
+		}
+		return new SqlException(desc.get(), e);
+	}
+
+	public static <S, T, P extends Statement, E extends Throwable> Cursor<T> query(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ResultSet, ? extends SQLException> query,
+			Processor<ResultSet, ? extends T, ? extends E> mapProcessor, @Nullable Supplier<String> desc)
+			throws SQLException, E {
+		Stream<T> stream = streamQuery(source, statementCreator, query, desc).map((rs) -> {
+			try {
+				return mapProcessor.process(rs);
+			} catch (Throwable e) {
+				throw throwableSqlException(e, desc);
+			}
+		});
+		return StreamProcessorSupport.cursor(stream);
+	}
+
+	public static <S, T, E extends Throwable> T query(S source,
+			Processor<S, ? extends ResultSet, ? extends SQLException> queryProcessor,
+			Processor<ResultSet, ? extends T, ? extends E> mapProcessor) throws SQLException, E {
 		ResultSet rs = queryProcessor.process(source);
 		try {
 			return mapProcessor.process(rs);
@@ -296,10 +296,10 @@ public final class SqlUtils {
 		}
 	}
 
-	public static <S, P extends Statement, T, E extends SQLException> T query(S source,
-			Processor<S, ? extends P, ? extends E> statementCreator,
-			Processor<P, ? extends ResultSet, ? extends E> queryProcessor,
-			Processor<ResultSet, ? extends T, ? extends E> mapProcessor) throws SQLException {
+	public static <S, P extends Statement, T, E extends Throwable> T query(S source,
+			Processor<S, ? extends P, ? extends SQLException> statementCreator,
+			Processor<P, ? extends ResultSet, ? extends SQLException> queryProcessor,
+			Processor<ResultSet, ? extends T, ? extends E> mapProcessor) throws SQLException, E {
 		P statement = statementCreator.process(source);
 		try {
 			return query(statement, queryProcessor, mapProcessor);
@@ -308,5 +308,28 @@ public final class SqlUtils {
 				statement.close();
 			}
 		}
+	}
+
+	public static PreparedStatementProcessor prepare(Connection connection, Sql sql,
+			SqlStatementProcessor statementProcessor) {
+		return new PreparedStatementProcessor(() -> connection, false,
+				(conn) -> statementProcessor.statement(conn, sql), () -> sql.toString());
+	}
+
+	public static PreparedStatementProcessor prepare(ConnectionFactory connectionFactory, Sql sql,
+			SqlStatementProcessor statementProcessor) {
+		return new PreparedStatementProcessor(() -> connectionFactory.getConnection(), true,
+				(conn) -> statementProcessor.statement(conn, sql), () -> sql.toString());
+	}
+
+	public static <T> Cursor<T> query(Connection connection, Sql sql, SqlStatementProcessor statementProcessor,
+			Processor<ResultSet, ? extends T, ? extends Throwable> processor) throws SqlException {
+		return prepare(connection, sql, statementProcessor).query().stream(processor);
+	}
+
+	public static <T> Cursor<T> query(ConnectionFactory connectionFactory, Sql sql,
+			SqlStatementProcessor statementProcessor, Processor<ResultSet, ? extends T, ? extends Throwable> processor)
+			throws SqlException {
+		return prepare(connectionFactory, sql, statementProcessor).query().stream(processor);
 	}
 }

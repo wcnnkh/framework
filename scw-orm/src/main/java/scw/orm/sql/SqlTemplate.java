@@ -1,12 +1,9 @@
 package scw.orm.sql;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import scw.convert.TypeDescriptor;
 import scw.lang.Nullable;
@@ -14,13 +11,12 @@ import scw.mapper.Field;
 import scw.orm.EntityOperations;
 import scw.orm.MaxValueFactory;
 import scw.sql.Sql;
-import scw.sql.SqlException;
 import scw.sql.SqlOperations;
+import scw.sql.SqlStatementProcessor;
 import scw.util.Pagination;
-import scw.util.stream.AutoCloseStream;
-import scw.util.stream.StreamProcessorSupport;
+import scw.util.stream.Cursor;
 
-public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
+public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory, MapperProcessorFactory {
 	SqlDialect getSqlDialect();
 
 	default boolean createTable(Class<?> entityClass) {
@@ -111,40 +107,38 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 	<K, V> Map<K, V> getInIds(String tableName, Class<? extends V> entityClass, Collection<? extends K> inPrimaryKeys,
 			Object... primaryKeys);
 
-	<T> AutoCloseStream<T> streamQuery(Connection connection, TypeDescriptor resultTypeDescriptor, Sql sql);
-
-	default <T> AutoCloseStream<T> streamQuery(TypeDescriptor resultTypeDescriptor, Sql sql) {
-		try {
-			Stream<T> stream = streamProcess((connection) -> {
-				return streamQuery(connection, resultTypeDescriptor, sql);
-			}, () -> sql.toString());
-			return StreamProcessorSupport.autoClose(stream);
-		} catch (SQLException e) {
-			throw new SqlException(sql, e);
-		}
+	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql,
+			SqlStatementProcessor statementProcessor) {
+		return prepare(connection, sql, statementProcessor).query().stream(getMapperProcessor(resultType));
 	}
 
-	default <T> AutoCloseStream<T> streamQuery(Connection connection, Class<? extends T> resultType, Sql sql) {
-		return streamQuery(connection, TypeDescriptor.valueOf(resultType), sql);
+	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql) {
+		return prepare(connection, sql).query().stream(getMapperProcessor(resultType));
 	}
 
-	default <T> AutoCloseStream<T> streamQuery(Class<? extends T> resultType, Sql sql) {
-		return streamQuery(TypeDescriptor.valueOf(resultType), sql);
+	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql, SqlStatementProcessor statementProcessor) {
+		return prepare(sql, statementProcessor).query().stream(getMapperProcessor(resultType));
 	}
 
-	@Nullable
-	default <T> T queryFirst(Class<? extends T> resultType, Sql sql) {
-		Stream<T> stream = streamQuery(resultType, sql);
-		return stream.findFirst().orElse(null);
+	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql) {
+		return prepare(sql).query().stream(getMapperProcessor(resultType));
 	}
 
-	default <T> List<T> query(TypeDescriptor typeDescriptor, Sql sql) {
-		Stream<T> stream = streamQuery(typeDescriptor, sql);
-		return stream.collect(Collectors.toList());
+	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql,
+			SqlStatementProcessor statementProcessor) {
+		return query(connection, TypeDescriptor.valueOf(resultType), sql, statementProcessor);
 	}
 
-	default <T> List<T> query(Class<? extends T> entityClass, Sql sql) {
-		return query(TypeDescriptor.valueOf(entityClass), sql);
+	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql) {
+		return query(connection, TypeDescriptor.valueOf(resultType), sql);
+	}
+
+	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql, SqlStatementProcessor statementProcessor) {
+		return query(TypeDescriptor.valueOf(resultType), sql, statementProcessor);
+	}
+
+	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql) {
+		return query(TypeDescriptor.valueOf(resultType), sql);
 	}
 
 	<T> Pagination<T> paginationQuery(TypeDescriptor resultType, Sql sql, long page, int limit);

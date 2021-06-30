@@ -2,17 +2,16 @@ package scw.sql;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-import scw.util.stream.StreamProcessor;
-import scw.util.stream.StreamProcessorSupport;
+import scw.util.stream.Callback;
+import scw.util.stream.Processor;
 
 @FunctionalInterface
 public interface ConnectionFactory {
 	Connection getConnection() throws SQLException;
 
-	default <T> T process(SqlProcessor<Connection, T> process) throws SQLException {
+	default <T, E extends Throwable> T process(Processor<Connection, ? extends T, ? extends E> process)
+			throws SQLException, E {
 		Connection connection = null;
 		try {
 			connection = getConnection();
@@ -29,45 +28,13 @@ public interface ConnectionFactory {
 	 * @param callback
 	 * @throws SQLException
 	 */
-	default void process(SqlCallback<Connection> callback) throws SQLException {
-		process(new SqlProcessor<Connection, Void>() {
+	default <E extends Throwable> void process(Callback<Connection, ? extends E> callback) throws SQLException, E {
+		process(new Processor<Connection, Void, E>() {
 
 			@Override
-			public Void process(Connection connection) throws SQLException {
+			public Void process(Connection connection) throws E {
 				callback.call(connection);
 				return null;
-			}
-		});
-	}
-
-	default StreamProcessor<Connection, SQLException> stream() throws SQLException {
-		Connection connection = getConnection();
-		StreamProcessor<Connection, SQLException> processor = StreamProcessorSupport.stream(connection);
-		return processor.onClose(() -> {
-			if (connection != null && !connection.isClosed()) {
-				connection.close();
-			}
-		});
-	}
-
-	default <T> Stream<T> streamProcess(SqlProcessor<Connection, Stream<T>> processor, Supplier<String> descSupplier)
-			throws SQLException {
-		Connection connection = getConnection();
-		return processor.process(connection).onClose(new Runnable() {
-
-			@Override
-			public void run() {
-				try {
-					if (!connection.isClosed()) {
-						connection.close();
-					}
-				} catch (SQLException e) {
-					if (descSupplier == null) {
-						throw new SqlException(e);
-					} else {
-						throw new SqlException(descSupplier.get(), e);
-					}
-				}
 			}
 		});
 	}

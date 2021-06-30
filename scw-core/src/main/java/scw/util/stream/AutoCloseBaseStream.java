@@ -12,7 +12,7 @@ import java.util.stream.BaseStream;
  * @param <T>
  * @param <S>
  */
-public interface AutoCloseBaseStream<T, S extends BaseStream<T, S>> extends BaseStream<T, S> {
+public interface AutoCloseBaseStream<T, S extends BaseStream<T, S>> extends BaseStream<T, S>, Iterable<T> {
 	/**
 	 * 此方法不会自动关闭Stream
 	 */
@@ -24,4 +24,6 @@ public interface AutoCloseBaseStream<T, S extends BaseStream<T, S>> extends Base
 	 */
 	@Override
 	Spliterator<T> spliterator();
+	
+	boolean isClosed();
 }

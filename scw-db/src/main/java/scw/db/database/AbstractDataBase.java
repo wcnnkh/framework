@@ -7,10 +7,10 @@ import java.sql.SQLException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.orm.sql.SqlDialect;
+import scw.sql.DefaultSqlStatementProcessor;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.sql.SqlException;
-import scw.sql.SqlPreparedStatementCreator;
 import scw.sql.SqlUtils;
 
 public abstract class AbstractDataBase implements DataBase {
@@ -64,7 +64,7 @@ public abstract class AbstractDataBase implements DataBase {
 		logger.info(sql.toString());
 		try {
 			connection = getConnection();
-			SqlUtils.execute(connection, new SqlPreparedStatementCreator(sql));
+			SqlUtils.prepare(this, sql, new DefaultSqlStatementProcessor()).execute();
 		} catch (SQLException e) {
 			throw new SqlException(e);
 		} finally {

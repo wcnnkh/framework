@@ -3,10 +3,10 @@ package scw.microsoft.support;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import scw.sql.SqlProcessor;
 import scw.sql.SqlUtils;
+import scw.util.stream.Processor;
 
-public class SimpleSqlExportRowMapping implements SqlProcessor<ResultSet, String[]> {
+public class SimpleSqlExportRowMapping implements Processor<ResultSet, String[], SQLException> {
 	private int colCount;
 
 	public SimpleSqlExportRowMapping(int colCount) {

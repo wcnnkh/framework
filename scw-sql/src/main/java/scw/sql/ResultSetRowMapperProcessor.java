@@ -5,10 +5,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RowMapperProcessor<T> implements SqlProcessor<ResultSet, List<T>> {
+import scw.util.stream.Processor;
+
+public class ResultSetRowMapperProcessor<T> implements Processor<ResultSet, List<T>, SQLException> {
 	private RowMapper<T> rowMapper;
 
-	public RowMapperProcessor(RowMapper<T> rowMapper) {
+	public ResultSetRowMapperProcessor(RowMapper<T> rowMapper) {
 		this.rowMapper = rowMapper;
 	}
 
@@ -16,9 +18,7 @@ public class RowMapperProcessor<T> implements SqlProcessor<ResultSet, List<T>> {
 		List<T> list = new ArrayList<T>();
 		for (int i = 1; resultSet.next(); i++) {
 			T t = rowMapper.mapRow(resultSet, i);
-			if (t != null) {
-				list.add(t);
-			}
+			list.add(t);
 		}
 		return list;
 	}
