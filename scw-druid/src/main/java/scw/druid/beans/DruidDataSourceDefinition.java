@@ -7,7 +7,7 @@ import com.alibaba.druid.pool.DruidDataSource;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
-import scw.db.ConnectionPoolConfig;
+import scw.db.Configurable;
 import scw.db.DBUtils;
 import scw.druid.DruidConnectionFactory;
 import scw.instance.InstanceException;
@@ -22,7 +22,7 @@ public class DruidDataSourceDefinition extends DefaultBeanDefinition {
 	@Override
 	public boolean isInstance(Class<?>[] parameterTypes) {
 		return beanFactory.getEnvironment().exists(DBUtils.DEFAULT_CONFIGURATION)
-				|| beanFactory.isInstance(ConnectionPoolConfig.class);
+				|| beanFactory.isInstance(Configurable.class);
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class DruidDataSourceDefinition extends DefaultBeanDefinition {
 			DBUtils.loadProperties(dataSource, new PropertiesPropertyFactory(properties.get()));
 			return dataSource;
 		} else {
-			ConnectionPoolConfig config = beanFactory.getInstance(ConnectionPoolConfig.class);
+			Configurable config = beanFactory.getInstance(Configurable.class);
 			DruidConnectionFactory connectionFactory = new DruidConnectionFactory(config);
 			return connectionFactory.getDruidDataSource();
 		}

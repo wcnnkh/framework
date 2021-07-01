@@ -22,8 +22,8 @@ public interface DB extends SqlTemplate {
 	 */
 	boolean createTable(Class<?> tableClass, String tableName, boolean registerManager);
 
-	default void createTable(String packageName) {
-		createTable(packageName, true);
+	default void createTables(String packageName) {
+		createTables(packageName, true);
 	}
 
 	/**
@@ -32,5 +32,5 @@ public interface DB extends SqlTemplate {
 	 * @param packageName
 	 * @param registerManager 是否注册到{@see DBManager}
 	 */
-	void createTable(String packageName, boolean registerManager);
+	void createTables(String packageName, boolean registerManager);
 }

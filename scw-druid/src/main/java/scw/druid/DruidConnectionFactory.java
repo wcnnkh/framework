@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import com.alibaba.druid.pool.DruidDataSource;
 
 import scw.context.Destroy;
-import scw.db.ConnectionPoolConfig;
+import scw.db.Configurable;
 import scw.sql.ConnectionFactory;
 
 public class DruidConnectionFactory implements ConnectionFactory, Destroy {
@@ -18,7 +18,7 @@ public class DruidConnectionFactory implements ConnectionFactory, Destroy {
 		this.canClose = false;
 	}
 
-	public DruidConnectionFactory(ConnectionPoolConfig config) {
+	public DruidConnectionFactory(Configurable config) {
 		this.canClose = true;
 		this.druidDataSource = new DruidDataSource();
 		druidDataSource.setDriverClassName(config.getDriverClassName());
