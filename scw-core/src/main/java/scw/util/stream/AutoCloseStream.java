@@ -35,6 +35,11 @@ public interface AutoCloseStream<T> extends Stream<T>, AutoCloseBaseStream<T, St
 		return findFirst().orElse(null);
 	}
 
+	@Override
+	default void forEach(Consumer<? super T> action) {
+		AutoCloseBaseStream.super.forEach(action);
+	}
+
 	AutoCloseStream<T> filter(Predicate<? super T> predicate);
 
 	<R> AutoCloseStream<R> map(Function<? super T, ? extends R> mapper);

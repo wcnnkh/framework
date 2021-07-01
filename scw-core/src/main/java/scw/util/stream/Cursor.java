@@ -12,12 +12,19 @@ import java.util.stream.StreamSupport;
  *
  * @param <T>
  */
-public final class Cursor<T> extends
-		AbstractAutoCloseStreamWrapper<T, Cursor<T>> implements StreamPosition {
+public final class Cursor<T> extends AbstractAutoCloseStreamWrapper<T, Cursor<T>> implements StreamPosition {
 	private final CursorPosition cursorPosition;
 
 	public Cursor(Iterator<T> iterator) {
 		this(iterator, 0);
+	}
+
+	public Cursor(Stream<T> stream) {
+		this(stream, 0);
+	}
+
+	public Cursor(Stream<T> stream, long position) {
+		this(stream, new SimpleCursorPosition(position));
 	}
 
 	public Cursor(Iterator<T> iterator, long position) {
@@ -30,7 +37,7 @@ public final class Cursor<T> extends
 	}
 
 	private Cursor(Stream<T> stream, CursorPosition cursorPosition) {
-		super(stream);
+		super(stream(stream.iterator(), cursorPosition).onClose(() -> stream.close()));
 		this.cursorPosition = cursorPosition;
 	}
 
@@ -40,16 +47,11 @@ public final class Cursor<T> extends
 
 	@Override
 	protected Cursor<T> wrapper(Stream<T> stream) {
-		CursorPosition cursorPosition = new SimpleCursorPosition(0);
-		Iterator<T> iterator = new CursorIterator<T>(stream.iterator(),
-				cursorPosition);
-		return new Cursor<T>(stream(iterator, cursorPosition).onClose(
-				() -> stream.close()), cursorPosition);
+		return new Cursor<>(stream);
 	}
 
-	private static <E> Stream<E> stream(Iterator<E> iterator,
-			CursorPosition cursorPosition) {
-		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(
-				new CursorIterator<E>(iterator, cursorPosition), 0), false);
+	private static <E> Stream<E> stream(Iterator<E> iterator, CursorPosition cursorPosition) {
+		return StreamSupport
+				.stream(Spliterators.spliteratorUnknownSize(new CursorIterator<E>(iterator, cursorPosition), 0), false);
 	}
 }
