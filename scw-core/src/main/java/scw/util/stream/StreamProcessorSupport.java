@@ -79,6 +79,6 @@ public final class StreamProcessorSupport {
 		if (stream instanceof Cursor) {
 			return (Cursor<T>) stream;
 		}
-		return new Cursor<>(stream.iterator()).onClose(() -> stream.close());
+		return new Cursor<>(stream);
 	}
 }

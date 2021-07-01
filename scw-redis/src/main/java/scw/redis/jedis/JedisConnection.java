@@ -17,7 +17,6 @@ import redis.clients.jedis.GeoUnit;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.ListPosition;
 import redis.clients.jedis.Pipeline;
-import redis.clients.jedis.ScanParams;
 import redis.clients.jedis.Transaction;
 import redis.clients.jedis.ZParams;
 import redis.clients.jedis.args.ListDirection;
@@ -45,15 +44,12 @@ import scw.redis.core.DataType;
 import scw.redis.core.GeoRadiusArgs;
 import scw.redis.core.GeoRadiusWith;
 import scw.redis.core.GeoWithin;
-import scw.redis.core.KeyBoundCursor;
 import scw.redis.core.MessageListener;
 import scw.redis.core.RedisAuth;
 import scw.redis.core.RedisConnection;
 import scw.redis.core.RedisSubscribedConnectionException;
 import scw.redis.core.RedisValueEncoding;
 import scw.redis.core.RedisValueEncodings;
-import scw.redis.core.ScanCursor;
-import scw.redis.core.ScanIteration;
 import scw.redis.core.ScanOptions;
 import scw.redis.core.SetOption;
 import scw.redis.core.Subscription;
@@ -62,7 +58,7 @@ import scw.util.Decorator;
 import scw.util.XUtils;
 import scw.util.comparator.Sort;
 
-@SuppressWarnings({"unchecked"})
+@SuppressWarnings({ "unchecked" })
 public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorator {
 	private final Jedis jedis;
 
@@ -230,33 +226,9 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 		jedis.restore(key, ttl, serializedValue, params);
 	}
 
-	private ScanParams toScanParams(ScanOptions<byte[]> options) {
-		ScanParams scanParams = new ScanParams();
-		if (options != null) {
-			scanParams.match(options.getPattern());
-			if (options.getCount() != null) {
-				scanParams.count(options.getCount().intValue());
-			}
-		}
-		return scanParams;
-	}
-
 	@Override
 	public Cursor<byte[]> scan(long cursorId, ScanOptions<byte[]> options) {
-		return new ScanCursor<byte[], byte[]>(cursorId, options) {
-
-			@Override
-			protected ScanIteration<byte[]> doScan(long cursorId, ScanOptions<byte[]> options) {
-				ScanParams scanParams = toScanParams(options);
-				redis.clients.jedis.ScanResult<byte[]> result = jedis.scan(SafeEncoder.encode(String.valueOf(cursorId)),
-						scanParams);
-				return new ScanIteration<>(Long.parseLong(result.getCursor()), result.getResult());
-			}
-
-			protected void doClose() {
-				jedis.close();
-			}
-		}.open();
+		return new JedisScanCursor(cursorId, options, jedis);
 	}
 
 	@Override
@@ -441,7 +413,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	public Boolean psetex(byte[] key, long milliseconds, byte[] value) {
 		return "OK".equalsIgnoreCase(jedis.psetex(key, milliseconds, value));
 	}
-	
+
 	@Override
 	public void set(byte[] key, byte[] value) {
 		jedis.set(key, value);
@@ -597,21 +569,7 @@ public class JedisConnection implements RedisConnection<byte[], byte[]>, Decorat
 	@Override
 	public Cursor<byte[]> sScan(long cursorId, byte[] key, ScanOptions<byte[]> options) {
 		Assert.notNull(key, "Key must not be null!");
-		return new KeyBoundCursor<byte[], byte[]>(key, cursorId, options) {
-
-			@Override
-			protected ScanIteration<byte[]> doScan(byte[] key, long cursorId, ScanOptions<byte[]> options) {
-				ScanParams params = toScanParams(options);
-
-				redis.clients.jedis.ScanResult<byte[]> result = jedis.sscan(key,
-						SafeEncoder.encode(String.valueOf(cursorId)), params);
-				return new ScanIteration<>(Long.valueOf(result.getCursor()), result.getResult());
-			}
-
-			protected void doClose() {
-				jedis.close();
-			};
-		}.open();
+		return new JedisKeyBoundCursor(key, cursorId, options, jedis);
 	}
 
 	@Override

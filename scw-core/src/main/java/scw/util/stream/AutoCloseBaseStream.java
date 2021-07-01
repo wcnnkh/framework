@@ -2,6 +2,7 @@ package scw.util.stream;
 
 import java.util.Iterator;
 import java.util.Spliterator;
+import java.util.function.Consumer;
 import java.util.stream.BaseStream;
 
 /**
@@ -26,4 +27,13 @@ public interface AutoCloseBaseStream<T, S extends BaseStream<T, S>> extends Base
 	Spliterator<T> spliterator();
 	
 	boolean isClosed();
+	
+	@Override
+	default void forEach(Consumer<? super T> action) {
+		try {
+			Iterable.super.forEach(action);
+		} finally {
+			close();
+		}
+	}
 }
