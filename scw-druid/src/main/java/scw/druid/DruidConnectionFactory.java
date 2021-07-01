@@ -5,29 +5,13 @@ import java.sql.SQLException;
 
 import com.alibaba.druid.pool.DruidDataSource;
 
-import scw.context.Destroy;
-import scw.db.Configurable;
 import scw.sql.ConnectionFactory;
 
-public class DruidConnectionFactory implements ConnectionFactory, Destroy {
+public class DruidConnectionFactory implements ConnectionFactory {
 	private final DruidDataSource druidDataSource;
-	private final boolean canClose;
 
 	public DruidConnectionFactory(DruidDataSource druidDataSource) {
 		this.druidDataSource = druidDataSource;
-		this.canClose = false;
-	}
-
-	public DruidConnectionFactory(Configurable config) {
-		this.canClose = true;
-		this.druidDataSource = new DruidDataSource();
-		druidDataSource.setDriverClassName(config.getDriverClassName());
-		druidDataSource.setUrl(config.getUrl());
-		druidDataSource.setUsername(config.getUsername());
-		druidDataSource.setPassword(config.getPassword());
-		druidDataSource.setInitialSize(config.getMinSize());
-		druidDataSource.setMinIdle(config.getMinSize());
-		druidDataSource.setMaxActive(config.getMaxSize());
 	}
 
 	@Override
@@ -38,12 +22,4 @@ public class DruidConnectionFactory implements ConnectionFactory, Destroy {
 	public DruidDataSource getDruidDataSource() {
 		return druidDataSource;
 	}
-
-	@Override
-	public void destroy() {
-		if (canClose) {
-			druidDataSource.close();
-		}
-	}
-
 }

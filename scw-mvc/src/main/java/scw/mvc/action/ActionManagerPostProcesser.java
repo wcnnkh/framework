@@ -1,6 +1,7 @@
 package scw.mvc.action;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import scw.beans.BeanFactory;
 import scw.beans.BeanFactoryPostProcessor;
@@ -12,11 +13,14 @@ import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.event.EventListener;
 import scw.event.ObjectEvent;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.mvc.HttpPatternResolvers;
 import scw.mvc.security.HttpActionAuthorityManager;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, EventListener<BeanlifeCycleEvent> {
+	private static Logger logger = LoggerFactory.getLogger(ActionManagerPostProcesser.class);
 
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
 		beanFactory.getLifecycleDispatcher().registerListener(this);
@@ -47,7 +51,7 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 			return;
 		}
 
-		if (event.getStep() != Step.AFTER_DEPENDENCE) {
+		if (event.getStep() != Step.AFTER_INIT) {
 			return;
 		}
 
@@ -55,15 +59,21 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 			BeanFactory beanFactory = event.getBeanFactory();
 			HttpPatternResolvers patternResolver = new HttpPatternResolvers(beanFactory);
 			patternResolver.setPropertyResolver(beanFactory.getEnvironment());
-			
+
 			ActionManager actionManager = (ActionManager) source;
 			for (Class<?> clz : beanFactory.getContextClassesLoader()) {
-				if(!patternResolver.canResolveHttpPattern(clz)){
+				if (!patternResolver.canResolveHttpPattern(clz)) {
 					continue;
 				}
 
 				for (Method method : clz.getDeclaredMethods()) {
-					if(!patternResolver.canResolveHttpPattern(clz, method)){
+					if (!patternResolver.canResolveHttpPattern(clz, method)) {
+						continue;
+					}
+
+					//如果是非静态方法，说明要使用beanFactory进行实体化，此时应该判断是否可以实例化
+					if (!Modifier.isStatic(method.getModifiers()) && !beanFactory.isInstance(clz)) {
+						logger.error("Unsupported controller: {}", method);
 						continue;
 					}
 

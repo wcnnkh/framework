@@ -28,7 +28,10 @@ public class HikariDataSourceDefinition extends DefaultBeanDefinition {
 	@Override
 	public void destroy(Object instance) throws BeansException {
 		if (instance instanceof HikariDataSource) {
-			((HikariDataSource) instance).close();
+			HikariDataSource dataSource = (HikariDataSource) instance;
+			if (!dataSource.isClosed()) {
+				dataSource.close();
+			}
 		}
 		super.destroy(instance);
 	}
