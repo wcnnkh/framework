@@ -26,7 +26,7 @@ import scw.mapper.Fields;
 import scw.orm.cache.CacheManager;
 import scw.orm.generator.DefaultGeneratorProcessor;
 import scw.orm.generator.GeneratorProcessor;
-import scw.orm.sql.convert.SmartRowMapper;
+import scw.orm.sql.convert.SmartMapperProcessor;
 import scw.sql.ConnectionFactory;
 import scw.sql.DefaultSqlOperations;
 import scw.sql.Sql;
@@ -105,7 +105,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 
 	private Object getAutoIncrementLastId(Connection connection, String tableName) throws SQLException {
 		Sql sql = sqlDialect.toLastInsertIdSql(tableName);
-		return query(connection, Object.class, sql).first();
+		return query(connection, sql, (rs) -> rs.getObject(1)).first();
 	}
 
 	private void setAutoIncrementLastId(int updateCount, Sql sql, Connection connection, String tableName,
@@ -231,7 +231,7 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	
 	@Override
 	public <T> Processor<ResultSet, T, ? extends Throwable> getMapperProcessor(TypeDescriptor type) {
-		return new SmartRowMapper<T>(sqlDialect, type);
+		return new SmartMapperProcessor<T>(sqlDialect, type);
 	}
 	
 	@Override
