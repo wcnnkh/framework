@@ -7,6 +7,7 @@ import scw.beans.BeanFactoryPostProcessor;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.context.annotation.Provider;
+import scw.db.database.DataBase;
 import scw.sql.ConnectionFactory;
 
 @Provider
@@ -28,6 +29,10 @@ public class DruidBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 			if (!beanFactory.isAlias(ConnectionFactory.class.getName())) {
 				beanFactory.registerAlias(connectionFactoryDefinition.getId(), ConnectionFactory.class.getName());
 			}
+		}
+
+		if (!beanFactory.containsDefinition(DataBase.class.getName())) {
+			beanFactory.registerDefinition(new DataBaseDefinition(beanFactory));
 		}
 	}
 }

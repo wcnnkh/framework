@@ -7,7 +7,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import scw.context.Destroy;
-import scw.db.ConnectionPoolConfig;
+import scw.db.Configurable;
 import scw.sql.ConnectionFactory;
 
 public class HikariConnectionFactory implements ConnectionFactory, Destroy {
@@ -24,7 +24,7 @@ public class HikariConnectionFactory implements ConnectionFactory, Destroy {
 		this.dataSource = new HikariDataSource(config);
 	}
 
-	public HikariConnectionFactory(ConnectionPoolConfig config) {
+	public HikariConnectionFactory(Configurable config) {
 		this.canClose = true;
 		this.dataSource = new HikariDataSource();
 		HikariUtils.config(dataSource, config);

@@ -6,7 +6,7 @@ import com.zaxxer.hikari.HikariConfig;
 
 import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
-import scw.db.ConnectionPoolConfig;
+import scw.db.Configurable;
 import scw.db.DBUtils;
 import scw.event.Observable;
 import scw.hikari.HikariUtils;
@@ -21,7 +21,7 @@ public class HikariConfigDefinition extends DefaultBeanDefinition {
 	@Override
 	public boolean isInstance(Class<?>[] parameterTypes) {
 		return beanFactory.getEnvironment().exists(DBUtils.DEFAULT_CONFIGURATION)
-				|| beanFactory.isInstance(ConnectionPoolConfig.class);
+				|| beanFactory.isInstance(Configurable.class);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class HikariConfigDefinition extends DefaultBeanDefinition {
 			HikariConfig config = new HikariConfig(properties.get());
 			return config;
 		} else {
-			ConnectionPoolConfig properties = beanFactory.getInstance(ConnectionPoolConfig.class);
+			Configurable properties = beanFactory.getInstance(Configurable.class);
 			HikariConfig config = new HikariConfig();
 			HikariUtils.config(config, properties);
 			return config;

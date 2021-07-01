@@ -68,7 +68,7 @@ public class DefaultDB extends DefaultSqlTemplate implements DB {
 		return b;
 	}
 
-	public void createTable(String packageName, boolean registerManager) {
+	public void createTables(String packageName, boolean registerManager) {
 		for (Class<?> tableClass : getClassesLoaderFactory().getClassesLoader(packageName)) {
 			Table table = tableClass.getAnnotation(Table.class);
 			if (table == null) {
