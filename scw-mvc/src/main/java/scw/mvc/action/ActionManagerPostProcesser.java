@@ -48,18 +48,23 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 			if (!patternResolver.canResolveHttpPattern(clz)) {
 				continue;
 			}
-
+			
 			for (Method method : clz.getDeclaredMethods()) {
 				if (!patternResolver.canResolveHttpPattern(clz, method)) {
 					continue;
 				}
-
+				
 				// 如果是非静态方法，说明要使用beanFactory进行实体化，此时应该判断是否可以实例化
 				if (!Modifier.isStatic(method.getModifiers()) && !beanFactory.isInstance(clz)) {
-					logger.error("Unsupported controller: {}", method);
+					if(logger.isDebugEnabled()) {
+						logger.debug("Unsupported controller: {}", method);
+					}
 					continue;
 				}
 
+				if(logger.isTraceEnabled()) {
+					logger.trace("Register controller: {}", method);
+				}
 				Action action = new BeanAction(beanFactory, clz, method, patternResolver);
 				actionManager.register(action);
 			}
