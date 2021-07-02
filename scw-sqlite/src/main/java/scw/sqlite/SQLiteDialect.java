@@ -54,6 +54,9 @@ public class SQLiteDialect extends MysqlDialect {
 			sb.append(" ");
 			scw.orm.sql.SqlType sqlType = getSqlType(col.getGetter().getType());
 			sb.append(sqlType.getName());
+			if (sqlType.getLength() > 0) {
+				sb.append("(" + sqlType.getLength() + ")");
+			}
 
 			if (primaryKeys.size() == 1) {
 				if (isPrimaryKey(col)) {

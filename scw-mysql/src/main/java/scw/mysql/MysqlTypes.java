@@ -26,7 +26,7 @@ public enum MysqlTypes implements SqlType {
 	 * 保存可变长度的字符串（可包含字母、数字以及特殊字符）。在括号中指定字符串的最大长度。最多 255 个字符。注释：如果值的长度大于 255，则被转换为
 	 * TEXT 类型。
 	 */
-	VARCHAR("varchar", String.class),
+	VARCHAR("varchar", String.class, 255),
 	/**
 	 * 存放最大长度为 255 个字符的字符串。
 	 */
@@ -141,10 +141,16 @@ public enum MysqlTypes implements SqlType {
 
 	private final String name;
 	private final Class<?> type;
+	private final int length;
+	
+	MysqlTypes(String name, Class<?> type){
+		this(name, type, 0);
+	}
 
-	MysqlTypes(String name, Class<?> type) {
+	MysqlTypes(String name, Class<?> type, int length) {
 		this.name = name;
 		this.type = type;
+		this.length = length;
 	}
 
 	@Override
@@ -155,5 +161,10 @@ public enum MysqlTypes implements SqlType {
 	@Override
 	public Class<?> getType() {
 		return type;
+	}
+	
+	@Override
+	public int getLength() {
+		return length;
 	}
 }

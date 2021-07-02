@@ -87,10 +87,11 @@ public class MysqlDialect extends AbstractSqlDialect {
 	public Sql toSelectByIdsSql(String tableName, Class<?> entityClass,
 			Object... ids) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
-		if(ids.length > primaryKeys.size()) {
-			throw new SqlDialectException("Wrong number of primary key parameters");
+		if (ids.length > primaryKeys.size()) {
+			throw new SqlDialectException(
+					"Wrong number of primary key parameters");
 		}
-		
+
 		StringBuilder sb = new StringBuilder();
 		sb.append(SELECT_ALL_PREFIX);
 		keywordProcessing(sb, tableName);
@@ -228,7 +229,7 @@ public class MysqlDialect extends AbstractSqlDialect {
 			appendFieldName(sb, column.getGetter());
 			sb.append("=?");
 			params.add(getDataBaseValue(entity, column));
-			if(iterator.hasNext()){
+			if (iterator.hasNext()) {
 				sb.append(",");
 			}
 		}
@@ -338,12 +339,16 @@ public class MysqlDialect extends AbstractSqlDialect {
 		Fields primaryKeys = getPrimaryKeys(entityClass);
 		Fields columns = getFields(entityClass).duplicateRemoval();
 		Iterator<Field> iterator = columns.iterator();
-		for (Field col : columns) {
+		while (iterator.hasNext()) {
+			Field col = iterator.next();
 			SqlType sqlType = getSqlType(col.getGetter().getType());
 			appendFieldName(sb, col.getGetter());
 
 			sb.append(" ");
 			sb.append(sqlType.getName());
+			if (sqlType.getLength() > 0) {
+				sb.append("(" + sqlType.getLength() + ")");
+			}
 
 			if (primaryKeys.size() == 1) {
 				if (isPrimaryKey(col)) {
