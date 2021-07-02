@@ -10,7 +10,7 @@ import java.util.Set;
 import scw.context.ClassesLoader;
 import scw.context.ConfigurableClassesLoader;
 import scw.instance.Configurable;
-import scw.instance.ServiceList;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 import scw.lang.Nullable;
 import scw.util.Accept;
@@ -21,7 +21,7 @@ public class DefaultClassesLoader implements ConfigurableClassesLoader, Configur
 	private final List<ClassesLoader> loaders = new LinkedList<ClassesLoader>();
 	private final Set<Class<?>> defaultClasses = new LinkedHashSet<Class<?>>();
 	private final Accept<Class<?>> accept;
-	private final ServiceList<ClassesLoader> serviceList = new ServiceList<>(ClassesLoader.class);
+	private final ConfigurableServices<ClassesLoader> serviceList = new ConfigurableServices<>(ClassesLoader.class);
 
 	public DefaultClassesLoader() {
 		this(null);

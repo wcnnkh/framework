@@ -3,7 +3,7 @@ package scw.util.placeholder.support;
 import java.util.Iterator;
 
 import scw.instance.Configurable;
-import scw.instance.ServiceList;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
 import scw.util.placeholder.PlaceholderReplacer;
@@ -14,7 +14,7 @@ public class DefaultPlaceholderReplacer implements ConfigurablePlaceholderReplac
 	private static final String DEFAULT_SUFFIX = "}";
 	private static final PlaceholderReplacer DEFAULT_SIMPLE_REPLACER = new SimplePlaceholderReplaer(DEFAULT_PREFIX, DEFAULT_SUFFIX, true);
 	private static final PlaceholderReplacer DEFAULT_SMART_REPLACER = new SmartPlaceholderReplacer(DEFAULT_PREFIX, DEFAULT_SUFFIX, true);	
-	private final ServiceList<PlaceholderReplacer> placeholderReplacers = new ServiceList<>(PlaceholderReplacer.class);
+	private final ConfigurableServices<PlaceholderReplacer> placeholderReplacers = new ConfigurableServices<>(PlaceholderReplacer.class);
 	
 	public void addPlaceholderReplacer(PlaceholderReplacer placeholderReplacer){
 		placeholderReplacers.addService(placeholderReplacer);

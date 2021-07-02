@@ -9,7 +9,7 @@ import scw.convert.ConversionServiceAware;
 import scw.convert.TypeDescriptor;
 import scw.convert.resolve.ConfigurableResourceResolver;
 import scw.convert.resolve.ResourceResolver;
-import scw.instance.ServiceList;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 import scw.instance.Configurable;
 import scw.io.Resource;
@@ -18,7 +18,7 @@ import scw.lang.NotSupportedException;
 
 public class DefaultResourceResolver extends PropertiesResourceResolver
 		implements ConfigurableResourceResolver, Configurable {
-	private ServiceList<ResourceResolver> resourceResolvers = new ServiceList<>(
+	private ConfigurableServices<ResourceResolver> resourceResolvers = new ConfigurableServices<>(
 			ResourceResolver.class, (s) -> aware(s));
 
 	public DefaultResourceResolver(ConversionService conversionService, PropertiesResolver propertiesResolver,

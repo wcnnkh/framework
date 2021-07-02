@@ -10,8 +10,8 @@ import scw.convert.ConverterNotFoundException;
 import scw.convert.TypeDescriptor;
 import scw.lang.LinkedThreadLocal;
 
-public class ConversionServices extends ConvertibleConditionalComparator<Object>
-		implements ConfigurableConversionService, Comparable<Object>, ConversionServiceAware, Iterable<ConversionService> {
+public class ConversionServices extends ConvertibleConditionalComparator<Object> implements
+		ConfigurableConversionService, Comparable<Object>, ConversionServiceAware, Iterable<ConversionService> {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
 			ConversionServices.class.getName());
 	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(this);
@@ -42,7 +42,7 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 			conversionServices.add(conversionService);
 		}
 	}
-	
+
 	@Override
 	public Iterator<ConversionService> iterator() {
 		return conversionServices.iterator();
@@ -50,7 +50,7 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConversionService service : this) {
-			if (canConvert(service, sourceType, targetType)) {
+			if(canConvert(sourceType, targetType, service)) {
 				return true;
 			}
 		}
@@ -62,7 +62,7 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 		return canDirectlyConvert(sourceType, targetType);
 	}
 
-	private boolean canConvert(ConversionService service, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	private boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType, ConversionService service) {
 		if (NESTED.exists(service)) {
 			return false;
 		}
@@ -77,12 +77,12 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 
 	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		TypeDescriptor sourceTypeToUse = sourceType;
-		if(sourceType == null && source != null){
+		if (sourceType == null && source != null) {
 			sourceTypeToUse = TypeDescriptor.forObject(source);
 		}
-		
+
 		for (ConversionService service : this) {
-			if (canConvert(service, sourceTypeToUse, targetType)) {
+			if(canConvert(sourceTypeToUse, targetType, service)) {
 				return service.convert(source, sourceTypeToUse, targetType);
 			}
 		}

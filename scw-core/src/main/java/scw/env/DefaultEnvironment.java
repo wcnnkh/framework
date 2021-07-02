@@ -18,7 +18,7 @@ import scw.core.utils.StringUtils;
 import scw.env.ObservablePropertiesPropertyFactory.ValueCreator;
 import scw.event.Observable;
 import scw.instance.Configurable;
-import scw.instance.ServiceList;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 import scw.io.FileSystemResourceLoader;
 import scw.io.ProtocolResolver;
@@ -256,7 +256,7 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 		};
 	}
 	
-	private ServiceList<PropertyFactory> propertyFactorys = new ServiceList<>(PropertyFactory.class, (s) -> aware(s));
+	private ConfigurableServices<PropertyFactory> propertyFactorys = new ConfigurableServices<>(PropertyFactory.class, (s) -> aware(s));
 	
 	@Override
 	public Iterator<PropertyFactory> getFactories() {

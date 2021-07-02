@@ -24,7 +24,7 @@ import scw.convert.lang.StringToCurrencyConverter;
 import scw.convert.lang.StringToLocaleConverter;
 import scw.convert.lang.StringToTimeZoneConverter;
 import scw.instance.Configurable;
-import scw.instance.ServiceList;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
@@ -33,7 +33,7 @@ import scw.util.MultiIterator;
 import scw.value.EmptyValue;
 
 public class DefaultConversionService extends ConversionServices implements Configurable {
-	private ServiceList<ConversionService> serviceList = new ServiceList<>(ConversionService.class, (s) -> aware(s));
+	private ConfigurableServices<ConversionService> serviceList = new ConfigurableServices<>(ConversionService.class, (s) -> aware(s));
 
 	public DefaultConversionService() {
 		addConversionService(new ArrayToArrayConversionService(this));

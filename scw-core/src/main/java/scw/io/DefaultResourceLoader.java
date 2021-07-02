@@ -6,7 +6,7 @@ import java.net.URL;
 import scw.core.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
-import scw.instance.ServiceList;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 import scw.instance.Configurable;
 import scw.util.ClassLoaderProvider;
@@ -14,8 +14,8 @@ import scw.util.DefaultClassLoaderProvider;
 
 public class DefaultResourceLoader implements ConfigurableResourceLoader, Configurable {
 	private ClassLoaderProvider classLoaderProvider;
-	private ServiceList<ProtocolResolver> protocolResolvers = new ServiceList<>(ProtocolResolver.class);
-	private ServiceList<ResourceLoader> resourceLoaders = new ServiceList<>(ResourceLoader.class);
+	private ConfigurableServices<ProtocolResolver> protocolResolvers = new ConfigurableServices<>(ProtocolResolver.class);
+	private ConfigurableServices<ResourceLoader> resourceLoaders = new ConfigurableServices<>(ResourceLoader.class);
 
 	public DefaultResourceLoader() {
 	}

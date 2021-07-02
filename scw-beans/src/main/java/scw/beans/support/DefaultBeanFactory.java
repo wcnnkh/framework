@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import scw.aop.AopPolicy;
 import scw.aop.ConfigurableAop;
 import scw.aop.support.DefaultConfigurableAop;
 import scw.aop.support.ProxyUtils;
@@ -57,12 +56,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 
 	public DefaultBeanFactory() {
 		super(true);
-		aop.addAopPolicy(new AopPolicy() {
-
-			public boolean isProxy(Object instance) {
-				return BeanUtils.getRuntimeBean(instance) != null;
-			}
-		});
+		aop.addAopPolicy((instance) -> BeanUtils.getRuntimeBean(instance) != null);
 		getEnvironment().addFactory(Sys.env);
 
 		registerSingleton(BeanFactory.class.getName(), this);

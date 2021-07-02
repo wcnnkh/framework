@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import scw.instance.ServiceList;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 import scw.instance.Configurable;
 import scw.io.Resource;
@@ -16,7 +16,7 @@ import scw.lang.NotSupportedException;
 
 public class PropertiesResolvers extends DefaultPropertiesResolver
 		implements ConfigurablePropertiesResolver, Comparator<PropertiesResolver>, Configurable {
-	private ServiceList<PropertiesResolver> services = new ServiceList<>(PropertiesResolver.class);
+	private ConfigurableServices<PropertiesResolver> services = new ConfigurableServices<>(PropertiesResolver.class);
 
 	protected volatile List<PropertiesResolver> resolvers;
 

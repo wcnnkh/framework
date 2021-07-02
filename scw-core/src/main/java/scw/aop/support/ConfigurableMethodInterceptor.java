@@ -9,13 +9,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import scw.aop.MethodInterceptor;
 import scw.instance.Configurable;
-import scw.instance.ServiceList;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 import scw.util.MultiIterator;
 
 public class ConfigurableMethodInterceptor extends AbstractMethodInterceptors implements Configurable{
 	private static final long serialVersionUID = 1L;
-	private final ServiceList<MethodInterceptor> serviceList = new ServiceList<>(MethodInterceptor.class);
+	private final ConfigurableServices<MethodInterceptor> serviceList = new ConfigurableServices<>(MethodInterceptor.class);
 	private volatile List<MethodInterceptor> interceptors;
 	
 	@Override

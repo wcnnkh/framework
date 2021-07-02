@@ -6,13 +6,13 @@ import scw.aop.AopPolicy;
 import scw.aop.ConfigurableAop;
 import scw.aop.ProxyFactory;
 import scw.instance.Configurable;
-import scw.instance.ServiceList;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 
 public class DefaultConfigurableAop extends AbstractAop implements ConfigurableAop, Configurable {
 	private final ProxyFactory proxyFactory;
 	private final ConfigurableMethodInterceptor configurableMethodInterceptor = new ConfigurableMethodInterceptor();
-	private final ServiceList<AopPolicy> policies = new ServiceList<>(AopPolicy.class);
+	private final ConfigurableServices<AopPolicy> policies = new ConfigurableServices<>(AopPolicy.class);
 
 	public DefaultConfigurableAop() {
 		this(ProxyUtils.getFactory());

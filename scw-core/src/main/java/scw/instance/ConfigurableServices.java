@@ -6,24 +6,34 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
+import scw.core.Assert;
 import scw.core.OrderComparator;
 import scw.lang.Nullable;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.util.MultiIterator;
 
-public class ServiceList<T> implements Configurable, Iterable<T> {
+public class ConfigurableServices<T> implements Configurable, Iterable<T> {
+	private static Logger LOGGER = LoggerFactory.getLogger(ConfigurableServices.class);
 	private volatile List<T> services;
 	private volatile List<T> defaultServices;
 	private final Class<T> serviceClass;
 	private volatile ServiceLoaderFactory serviceLoaderFactory;
 	private final Consumer<T> consumer;
+	private Logger logger = LOGGER;
 
-	public ServiceList(Class<T> serviceClass) {
+	public ConfigurableServices(Class<T> serviceClass) {
 		this(serviceClass, null);
 	}
 
-	public ServiceList(Class<T> serviceClass, @Nullable Consumer<T> consumer) {
+	public ConfigurableServices(Class<T> serviceClass, @Nullable Consumer<T> consumer) {
 		this.serviceClass = serviceClass;
 		this.consumer = consumer;
+	}
+	
+	public void setLogger(Logger logger) {
+		Assert.requiredArgument(logger != null, "logger");
+		this.logger = logger;
 	}
 
 	public int size() {
@@ -53,6 +63,11 @@ public class ServiceList<T> implements Configurable, Iterable<T> {
 				services = new CopyOnWriteArrayList<>();
 			}
 			services.add(service);
+			
+			if(logger.isDebugEnabled()) {
+				logger.debug("Add [{}] service {}", serviceClass, service);
+			}
+			
 			Collections.sort(services, OrderComparator.INSTANCE);
 		}
 	}
@@ -75,6 +90,9 @@ public class ServiceList<T> implements Configurable, Iterable<T> {
 			this.serviceLoaderFactory = serviceLoaderFactory;
 			this.defaultServices = serviceLoaderFactory.getServiceLoader(serviceClass).toList();
 			defaultServices.stream().forEach((service) -> aware(service));
+			if(logger.isDebugEnabled()) {
+				logger.debug("Configure [{}] services {}", serviceClass, defaultServices);
+			}
 		}
 	}
 
