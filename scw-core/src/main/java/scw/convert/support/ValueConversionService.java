@@ -1,6 +1,5 @@
 package scw.convert.support;
 
-import scw.convert.ConversionFailedException;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.value.AnyValue;
@@ -20,11 +19,7 @@ class ValueConversionService implements ConversionService {
 			return value;
 		}
 		
-		try {
-			return value.getAsObject(targetType.getResolvableType());
-		} catch (Exception e) {
-			throw new ConversionFailedException(sourceType, targetType, value, e);
-		}
+		return value.getAsObject(targetType.getResolvableType());
 	}
 	
 	public boolean canConvert(TypeDescriptor sourceType,

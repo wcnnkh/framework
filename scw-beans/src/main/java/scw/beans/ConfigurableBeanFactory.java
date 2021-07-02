@@ -13,4 +13,10 @@ public interface ConfigurableBeanFactory
 	ConfigurableAop getAop();
 
 	EventDispatcher<BeanlifeCycleEvent> getLifecycleDispatcher();
+	
+	/**
+	 * 是否已经初始化
+	 * @return
+	 */
+	boolean isInitialized();
 }

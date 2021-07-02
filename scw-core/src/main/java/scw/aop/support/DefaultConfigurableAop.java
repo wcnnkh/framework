@@ -1,30 +1,31 @@
 package scw.aop.support;
 
 import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.aop.AopPolicy;
 import scw.aop.ConfigurableAop;
-import scw.aop.MethodInterceptor;
 import scw.aop.ProxyFactory;
-import scw.core.utils.CollectionUtils;
-import scw.instance.ServiceLoader;
+import scw.instance.Configurable;
+import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
 
-public class DefaultConfigurableAop extends AbstractAop implements
-		ConfigurableAop {
+public class DefaultConfigurableAop extends AbstractAop implements ConfigurableAop, Configurable {
 	private final ProxyFactory proxyFactory;
 	private final ConfigurableMethodInterceptor configurableMethodInterceptor = new ConfigurableMethodInterceptor();
-	private final List<AopPolicy> policies = new CopyOnWriteArrayList<AopPolicy>();
+	private final ConfigurableServices<AopPolicy> policies = new ConfigurableServices<>(AopPolicy.class);
 
-	public DefaultConfigurableAop(){
+	public DefaultConfigurableAop() {
 		this(ProxyUtils.getFactory());
 	}
 
 	public DefaultConfigurableAop(ProxyFactory proxyFactory) {
 		this.proxyFactory = proxyFactory;
+	}
+
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		configurableMethodInterceptor.configure(serviceLoaderFactory);
+		policies.configure(serviceLoaderFactory);
 	}
 
 	@Override
@@ -37,13 +38,11 @@ public class DefaultConfigurableAop extends AbstractAop implements
 	}
 
 	public void addAopPolicy(AopPolicy aopPolicy) {
-		synchronized (policies) {
-			policies.add(aopPolicy);
-		}
+		policies.addService(aopPolicy);
 	}
 
 	public Iterator<AopPolicy> getPolicyIterator() {
-		return CollectionUtils.getIterator(policies, true);
+		return policies.iterator();
 	}
 
 	public boolean isProxy(Object instance) {
@@ -59,24 +58,5 @@ public class DefaultConfigurableAop extends AbstractAop implements
 			}
 		}
 		return super.isProxy(instance);
-	}
-
-	private final AtomicBoolean loaded = new AtomicBoolean();
-
-	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory) {
-		if (loaded.compareAndSet(false, true)) {
-			ServiceLoader<MethodInterceptor> interceptorLoader = serviceLoaderFactory
-					.getServiceLoader(MethodInterceptor.class);
-			configurableMethodInterceptor
-					.addMethodInterceptor(new UnmodifiableMethodInterceptors(
-							interceptorLoader));
-
-			for (AopPolicy aopPolicy : serviceLoaderFactory
-					.getServiceLoader(AopPolicy.class)) {
-				addAopPolicy(aopPolicy);
-			}
-			return true;
-		}
-		return false;
 	}
 }

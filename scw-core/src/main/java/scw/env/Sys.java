@@ -73,7 +73,7 @@ public final class Sys extends DefaultEnvironment implements ServiceLoaderFactor
 		/**
 		 * 加载默认服务
 		 */
-		loadServices(instanceFactory, logger);
+		configure(instanceFactory);
 	}
 
 	/**

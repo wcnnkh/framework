@@ -8,7 +8,6 @@ import scw.context.ClassesLoader;
 import scw.context.ClassesLoaderFactory;
 import scw.context.ConfigurableClassesLoader;
 import scw.context.ConfigurableContext;
-import scw.context.Init;
 import scw.context.annotation.AbstractProviderServiceLoaderFactory;
 import scw.context.annotation.ComponentScan;
 import scw.context.annotation.ComponentScans;
@@ -20,11 +19,12 @@ import scw.core.type.scanner.DefaultClassScanner;
 import scw.core.utils.CollectionUtils;
 import scw.env.ConfigurableEnvironment;
 import scw.env.DefaultEnvironment;
-import scw.logger.LoggerFactory;
+import scw.instance.Configurable;
+import scw.instance.ServiceLoaderFactory;
 import scw.value.ValueFactory;
 
 public abstract class AbstractConfigurableContext extends AbstractProviderServiceLoaderFactory
-		implements ConfigurableContext, Init {
+		implements ConfigurableContext, Configurable {
 	private final DefaultClassScanner classScanner = new DefaultClassScanner();
 	private final DefaultClassesLoaderFactory classesLoaderFactory;
 	private final Set<Class<?>> sourceClasses = new LinkedHashSet<Class<?>>(8);
@@ -39,10 +39,11 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 		contextClassesLoader.add(LockMethodInterceptor.class);
 		componentScan(Constants.SYSTEM_PACKAGE_NAME);
 	}
-
+	
 	@Override
-	public void init() throws Throwable {
-		environment.loadServices(this, LoggerFactory.getLogger(getClass()));
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		environment.configure(serviceLoaderFactory);
+		contextClassesLoader.configure(serviceLoaderFactory);
 	}
 
 	@Override

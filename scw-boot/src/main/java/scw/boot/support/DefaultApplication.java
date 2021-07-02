@@ -12,6 +12,7 @@ import scw.beans.xml.XmlBeanFactory;
 import scw.boot.Application;
 import scw.boot.ApplicationAware;
 import scw.boot.ApplicationEvent;
+import scw.boot.ApplicationException;
 import scw.boot.ApplicationPostProcessor;
 import scw.boot.ConfigurableApplication;
 import scw.core.OrderComparator;
@@ -34,6 +35,7 @@ public class DefaultApplication extends XmlBeanFactory
 	private volatile Logger logger;
 	private final long createTime;
 	private List<ApplicationPostProcessor> postProcessors = new ArrayList<ApplicationPostProcessor>(8);
+	private volatile boolean initialized;
 
 	public DefaultApplication() {
 		this(XmlBeanFactory.DEFAULT_CONFIG);
@@ -47,6 +49,10 @@ public class DefaultApplication extends XmlBeanFactory
 	}
 
 	public void addPostProcessor(ApplicationPostProcessor postProcessor) {
+		if(initialized) {
+			throwInitializedApplicationException();
+		}
+		
 		synchronized (postProcessors) {
 			postProcessors.add(postProcessor);
 			Collections.sort(postProcessors, OrderComparator.INSTANCE);
@@ -85,31 +91,47 @@ public class DefaultApplication extends XmlBeanFactory
 		}
 	}
 
+	protected void throwInitializedApplicationException() {
+		throw new ApplicationException("This application has been initialized");
+	}
+
 	public void init() throws Throwable {
-		for (String suffix : new String[] { ".properties", ".yaml", ".yml" }) {
-			Resource resource = getEnvironment().getResource(APPLICATION_PREFIX + suffix);
-			if (resource != null && resource.exists()) {
-				Observable<Properties> properties = Sys.env.toObservableProperties(resource);
-				getEnvironment().loadProperties(properties);
+		synchronized (this) {
+			if (initialized) {
+				throwInitializedApplicationException();
 			}
-		}
-		super.init();
 
-		for (ApplicationPostProcessor initializer : getBeanFactory().getServiceLoader(ApplicationPostProcessor.class)) {
-			postProcessApplication(initializer);
-		}
+			for (String suffix : new String[] { ".properties", ".yaml", ".yml" }) {
+				Resource resource = getEnvironment().getResource(APPLICATION_PREFIX + suffix);
+				if (resource != null && resource.exists()) {
+					Observable<Properties> properties = Sys.env.toObservableProperties(resource);
+					getEnvironment().loadProperties(properties);
+				}
+			}
+			
+			super.init();
+			
+			for (ApplicationPostProcessor initializer : getBeanFactory()
+					.getServiceLoader(ApplicationPostProcessor.class)) {
+				postProcessApplication(initializer);
+			}
 
-		for (ApplicationPostProcessor postProcessor : postProcessors) {
-			postProcessApplication(postProcessor);
-		}
+			for (ApplicationPostProcessor postProcessor : postProcessors) {
+				postProcessApplication(postProcessor);
+			}
 
-		getLogger().info(
-				new SplitLine("Start up complete in " + (Sys.currentTimeMillis() - createTime) + "ms").toString());
+			getLogger().info(
+					new SplitLine("Start up complete in " + (Sys.currentTimeMillis() - createTime) + "ms").toString());
+			initialized = true;
+		}
 	}
 
 	public void destroy() throws Throwable {
-		getLogger().info(new SplitLine("destroy").toString());
-		super.destroy();
+		synchronized (this) {
+			getLogger().info(new SplitLine("destroy").toString());
+			super.destroy();
+			initialized = false;
+		}
 	}
 
 	protected void postProcessApplication(ApplicationPostProcessor processor) throws Throwable {

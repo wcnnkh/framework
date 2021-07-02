@@ -18,7 +18,7 @@ public class DefaultPropertyFactory extends DefaultValueFactory<String, Property
 	public Iterator<String> iterator() {
 		List<Iterator<String>> iterators = new LinkedList<Iterator<String>>();
 		iterators.add(getValueMap().keySet().iterator());
-		Iterator<PropertyFactory> iterator = getFactoriesIterator();
+		Iterator<PropertyFactory> iterator = getFactories();
 		while (iterator.hasNext()) {
 			iterators.add(iterator.next().iterator());
 		}

@@ -1,10 +1,7 @@
 package scw.convert.resolve.support;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Supplier;
 
 import scw.convert.ConversionService;
@@ -12,14 +9,17 @@ import scw.convert.ConversionServiceAware;
 import scw.convert.TypeDescriptor;
 import scw.convert.resolve.ConfigurableResourceResolver;
 import scw.convert.resolve.ResourceResolver;
-import scw.core.OrderComparator;
-import scw.core.utils.CollectionUtils;
+import scw.instance.Configurable;
+import scw.instance.ConfigurableServices;
+import scw.instance.ServiceLoaderFactory;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.NotSupportedException;
 
-public class DefaultResourceResolver extends PropertiesResourceResolver implements ConfigurableResourceResolver {
-	protected List<ResourceResolver> resourceResolvers;
+public class DefaultResourceResolver extends PropertiesResourceResolver
+		implements ConfigurableResourceResolver, Configurable {
+	private ConfigurableServices<ResourceResolver> resourceResolvers = new ConfigurableServices<>(
+			ResourceResolver.class, (s) -> aware(s));
 
 	public DefaultResourceResolver(ConversionService conversionService, PropertiesResolver propertiesResolver,
 			Supplier<Charset> charset) {
@@ -28,10 +28,7 @@ public class DefaultResourceResolver extends PropertiesResourceResolver implemen
 
 	@Override
 	public Iterator<ResourceResolver> iterator() {
-		if (resourceResolvers == null) {
-			return Collections.emptyIterator();
-		}
-		return CollectionUtils.getIterator(resourceResolvers, true);
+		return resourceResolvers.iterator();
 	}
 
 	protected void aware(ResourceResolver resourceResolver) {
@@ -45,15 +42,7 @@ public class DefaultResourceResolver extends PropertiesResourceResolver implemen
 			return;
 		}
 
-		synchronized (this) {
-			if (resourceResolvers == null) {
-				resourceResolvers = new ArrayList<ResourceResolver>(8);
-			}
-
-			aware(resourceResolver);
-			resourceResolvers.add(resourceResolver);
-			Collections.sort(resourceResolvers, OrderComparator.INSTANCE.reversed());
-		}
+		resourceResolvers.addService(resourceResolver);
 	}
 
 	public boolean canResolveResource(Resource resource, TypeDescriptor targetType) {
@@ -76,5 +65,10 @@ public class DefaultResourceResolver extends PropertiesResourceResolver implemen
 			return super.resolveResource(resource, targetType);
 		}
 		throw new NotSupportedException(resource.getDescription());
+	}
+
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		resourceResolvers.configure(serviceLoaderFactory);
 	}
 }

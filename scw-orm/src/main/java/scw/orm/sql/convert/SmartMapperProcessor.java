@@ -22,20 +22,20 @@ import scw.util.stream.Processor;
  *
  * @param <T>
  */
-public class SmartRowMapper<T> implements RowMapper<T>, Processor<ResultSet, T, SQLException> {
+public class SmartMapperProcessor<T> implements RowMapper<T>, Processor<ResultSet, T, SQLException> {
 	private final ConversionService conversionService;
 	private final TypeDescriptor typeDescriptor;
 	private final ObjectRelationalMapping objectRelationalMapping;
 
-	public SmartRowMapper(TypeDescriptor typeDescriptor) {
+	public SmartMapperProcessor(TypeDescriptor typeDescriptor) {
 		this(OrmUtils.getMapping(), typeDescriptor);
 	}
 
-	public SmartRowMapper(ObjectRelationalMapping objectRelationalMapping, TypeDescriptor typeDescriptor) {
+	public SmartMapperProcessor(ObjectRelationalMapping objectRelationalMapping, TypeDescriptor typeDescriptor) {
 		this(objectRelationalMapping, Sys.env.getConversionService(), typeDescriptor);
 	}
 
-	public SmartRowMapper(ObjectRelationalMapping objectRelationalMapping, ConversionService conversionService,
+	public SmartMapperProcessor(ObjectRelationalMapping objectRelationalMapping, ConversionService conversionService,
 			TypeDescriptor typeDescriptor) {
 		this.objectRelationalMapping = objectRelationalMapping;
 		this.conversionService = conversionService;

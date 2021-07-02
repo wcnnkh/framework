@@ -1,11 +1,12 @@
 package scw.beans.support;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
-import scw.aop.AopPolicy;
 import scw.aop.ConfigurableAop;
 import scw.aop.support.DefaultConfigurableAop;
 import scw.aop.support.ProxyUtils;
@@ -50,15 +51,12 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(this);
 	private final SingletonBeanRegistry singletonBeanRegistry = new DefaultSingletonBeanRegistry(this);
 	private ClassLoaderProvider classLoaderProvider;
+	private volatile boolean initialized;
+	private List<BeanFactoryPostProcessor> beanFactoryPostProcessors = new ArrayList<BeanFactoryPostProcessor>(8);
 
 	public DefaultBeanFactory() {
 		super(true);
-		aop.addAopPolicy(new AopPolicy() {
-
-			public boolean isProxy(Object instance) {
-				return BeanUtils.getRuntimeBean(instance) != null;
-			}
-		});
+		aop.addAopPolicy((instance) -> BeanUtils.getRuntimeBean(instance) != null);
 		getEnvironment().addFactory(Sys.env);
 
 		registerSingleton(BeanFactory.class.getName(), this);
@@ -220,7 +218,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	public Object getSingleton(String beanName) {
 		return singletonBeanRegistry.getSingleton(beanName);
 	}
-	
+
 	@Override
 	public <T, E extends Throwable> Result<T> getSingleton(String name, Creator<T, E> creater) throws E {
 		return singletonBeanRegistry.getSingleton(name, creater);
@@ -294,51 +292,91 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 		return (T) instance;
 	}
 
+	public void addBeanFactoryPostProcessor(BeanFactoryPostProcessor beanFactoryPostProcessor) {
+		synchronized (this) {
+			if (initialized) {
+				throwInitializedBeanException();
+			}
+
+			beanFactoryPostProcessors.add(beanFactoryPostProcessor);
+		}
+	}
+
+	protected void throwInitializedBeanException() throws BeansException {
+		throw new BeansException("The bean factory has been initialized");
+	}
+
 	public void postProcessBeanFactory(BeanFactoryPostProcessor beanFactoryPostProcessor) {
 		beanFactoryPostProcessor.postProcessBeanFactory(this);
 	}
+	
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		aop.configure(serviceLoaderFactory);
+		super.configure(serviceLoaderFactory);
+	}
 
 	public void init() throws Throwable {
-		postProcessBeanFactory(new MethodBeanFactoryPostProcessor());
-		postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
-		postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
-
-		for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {
-			postProcessBeanFactory(processor);
-		}
-
-		for (BeanDefinition definition : getServiceLoader(BeanDefinition.class)) {
-			if (containsDefinition(definition.getId())) {
-				logger.debug("ignore definition {}", definition);
-				continue;
+		synchronized (this) {
+			if (initialized) {
+				throwInitializedBeanException();
 			}
-			registerDefinition(definition.getId(), definition);
-		}
 
-		aop.loadServices(this);
-		super.init();
-		// TODO 初始化所有单例(原来是想全部懒加载，但是后来出现问题了)
-		for (String id : beanDefinitionRegistry.getDefinitionIds()) {
-			if (isSingleton(id) && isInstance(id)) {
-				getInstance(id);
+			postProcessBeanFactory(new MethodBeanFactoryPostProcessor());
+			postProcessBeanFactory(new ServiceBeanFactoryPostProcessor());
+			postProcessBeanFactory(new ExecutorBeanFactoryPostProcessor());
+
+			for (BeanFactoryPostProcessor processor : getServiceLoader(BeanFactoryPostProcessor.class)) {
+				postProcessBeanFactory(processor);
 			}
-		}
 
-		// 处理静态依赖
-		for (Class<?> clazz : getContextClassesLoader()) {
-			for (Ioc ioc : Ioc.forClass(clazz)) {
-				ioc.getDependence().process(null, null, this);
-				ioc.getInit().process(null, null, this);
+			for (BeanFactoryPostProcessor processor : beanFactoryPostProcessors) {
+				postProcessBeanFactory(processor);
+			}
+
+			for (BeanDefinition definition : getServiceLoader(BeanDefinition.class)) {
+				if (containsDefinition(definition.getId())) {
+					logger.debug("ignore definition {}", definition);
+					continue;
+				}
+				registerDefinition(definition.getId(), definition);
+			}
+			//在定义初始完成后就可以认为已经初始化了
+			initialized = true;
+			
+			configure(this);
+			
+			// TODO 初始化所有单例(原来是想全部懒加载，但是后来出现问题了)
+			for (String id : beanDefinitionRegistry.getDefinitionIds()) {
+				if (isSingleton(id) && isInstance(id)) {
+					getInstance(id);
+				}
+			}
+
+			// 处理静态依赖
+			for (Class<?> clazz : getContextClassesLoader()) {
+				for (Ioc ioc : Ioc.forClass(clazz)) {
+					ioc.getDependence().process(null, null, this);
+					ioc.getInit().process(null, null, this);
+				}
 			}
 		}
 	}
 
+	@Override
+	public boolean isInitialized() {
+		return initialized;
+	}
+
 	public void destroy() throws Throwable {
-		singletonBeanRegistry.destroyAll();
-		for (Class<?> clazz : getContextClassesLoader()) {
-			for (Ioc ioc : Ioc.forClass(clazz)) {
-				ioc.getDestroy().process(null, null, this);
+		synchronized (this) {
+			singletonBeanRegistry.destroyAll();
+			for (Class<?> clazz : getContextClassesLoader()) {
+				for (Ioc ioc : Ioc.forClass(clazz)) {
+					ioc.getDestroy().process(null, null, this);
+				}
 			}
+			initialized = false;
 		}
 	}
 
