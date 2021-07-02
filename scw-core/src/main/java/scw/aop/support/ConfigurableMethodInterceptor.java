@@ -8,11 +8,20 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import scw.aop.MethodInterceptor;
+import scw.instance.Configurable;
+import scw.instance.ServiceList;
+import scw.instance.ServiceLoaderFactory;
 import scw.util.MultiIterator;
 
-public class ConfigurableMethodInterceptor extends AbstractMethodInterceptors{
+public class ConfigurableMethodInterceptor extends AbstractMethodInterceptors implements Configurable{
 	private static final long serialVersionUID = 1L;
+	private final ServiceList<MethodInterceptor> serviceList = new ServiceList<>(MethodInterceptor.class);
 	private volatile List<MethodInterceptor> interceptors;
+	
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		serviceList.configure(serviceLoaderFactory);
+	}
 
 	public Iterator<MethodInterceptor> iterator() {
 		if(interceptors == null){
@@ -36,15 +45,16 @@ public class ConfigurableMethodInterceptor extends AbstractMethodInterceptors{
 				iterators.add(Arrays.asList(interceptor).iterator());
 			}
 		}
+		iterators.add(serviceList.iterator());
 		return new MultiIterator<MethodInterceptor>(iterators);
 	}
 	
 	public int size(){
-		return interceptors == null? 0:interceptors.size();
+		return (interceptors == null? 0:interceptors.size()) + serviceList.size();
 	}
 	
 	public boolean isEmpty(){
-		return interceptors == null || interceptors.isEmpty();
+		return size() == 0;
 	}
 	
 	private void init(){

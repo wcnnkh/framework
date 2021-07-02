@@ -2,14 +2,12 @@ package scw.env;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.convert.ConfigurableConversionService;
-import scw.convert.ConversionService;
 import scw.convert.resolve.ConfigurableResourceResolver;
-import scw.convert.resolve.ResourceResolver;
 import scw.convert.resolve.ResourceResolverConversionService;
 import scw.convert.resolve.support.DefaultResourceResolver;
 import scw.convert.support.DefaultConversionService;
@@ -19,6 +17,8 @@ import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
 import scw.env.ObservablePropertiesPropertyFactory.ValueCreator;
 import scw.event.Observable;
+import scw.instance.Configurable;
+import scw.instance.ServiceList;
 import scw.instance.ServiceLoaderFactory;
 import scw.io.FileSystemResourceLoader;
 import scw.io.ProtocolResolver;
@@ -26,7 +26,6 @@ import scw.io.Resource;
 import scw.io.ResourceLoader;
 import scw.io.ResourceUtils;
 import scw.io.resolver.ConfigurablePropertiesResolver;
-import scw.io.resolver.PropertiesResolver;
 import scw.io.resolver.support.PropertiesResolvers;
 import scw.lang.Nullable;
 import scw.logger.Logger;
@@ -34,8 +33,8 @@ import scw.logger.LoggerFactory;
 import scw.util.ClassLoaderProvider;
 import scw.util.ConcurrentReferenceHashMap;
 import scw.util.DefaultClassLoaderProvider;
+import scw.util.MultiIterator;
 import scw.util.placeholder.ConfigurablePlaceholderReplacer;
-import scw.util.placeholder.PlaceholderReplacer;
 import scw.util.placeholder.support.DefaultPlaceholderReplacer;
 import scw.value.AnyValue;
 import scw.value.PropertyFactory;
@@ -43,7 +42,7 @@ import scw.value.StringValue;
 import scw.value.Value;
 import scw.value.support.DefaultPropertyFactory;
 
-public class DefaultEnvironment extends DefaultPropertyFactory implements ConfigurableEnvironment {
+public class DefaultEnvironment extends DefaultPropertyFactory implements ConfigurableEnvironment, Configurable {
 	private static final String[] SUFFIXS = new String[] { "scw_res_suffix", "SHUCHAOWEN_CONFIG_SUFFIX",
 			"resource.suffix" };
 	private static Logger logger = LoggerFactory.getLogger(DefaultEnvironment.class);
@@ -56,9 +55,9 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 	};
 
 	private final PropertiesResolvers configurablePropertiesResolver = new PropertiesResolvers();
-	private final ConfigurableConversionService configurableConversionService = new DefaultConversionService(
+	private final DefaultConversionService configurableConversionService = new DefaultConversionService(
 			configurablePropertiesResolver, getObservableCharset());
-	private final ConfigurableResourceResolver configurableResourceResolver = new DefaultResourceResolver(
+	private final DefaultResourceResolver configurableResourceResolver = new DefaultResourceResolver(
 			configurableConversionService, configurablePropertiesResolver, getObservableCharset());
 	private final DefaultPlaceholderReplacer placeholderReplacer = new DefaultPlaceholderReplacer();
 	private ClassLoaderProvider classLoaderProvider;
@@ -256,56 +255,21 @@ public class DefaultEnvironment extends DefaultPropertyFactory implements Config
 			return resolvePlaceholders(super.getAsString());
 		};
 	}
-
-	private final AtomicBoolean loaded = new AtomicBoolean();
-
-	/**
-	 * 使用ServiceLoaderFactory加载依赖服务
-	 * 
-	 * @param serviceLoaderFactory
-	 * @return 返回是否加载成功
-	 */
-	public boolean loadServices(ServiceLoaderFactory serviceLoaderFactory, Logger logger) {
-		if (loaded.compareAndSet(false, true)) {
-			for (PropertiesResolver propertiesResolver : serviceLoaderFactory
-					.getServiceLoader(PropertiesResolver.class)) {
-				logger.debug("add properties resolver: {}", propertiesResolver);
-				configurablePropertiesResolver.addPropertiesResolver(propertiesResolver);
-			}
-
-			for (ResourceResolver resourceResolver : serviceLoaderFactory.getServiceLoader(ResourceResolver.class)) {
-				logger.debug("add resource resolver: {}", resourceResolver);
-				configurableResourceResolver.addResourceResolver(resourceResolver);
-			}
-
-			for (ResourceLoader resourceLoader : serviceLoaderFactory.getServiceLoader(ResourceLoader.class)) {
-				logger.debug("add resource loader: {}", resourceLoader);
-				addResourceLoader(resourceLoader);
-			}
-
-			for (ProtocolResolver protocolResolver : serviceLoaderFactory.getServiceLoader(ProtocolResolver.class)) {
-				logger.debug("add protocol resolver: {}", protocolResolver);
-				addProtocolResolver(protocolResolver);
-			}
-
-			for (ConversionService conversionService : serviceLoaderFactory.getServiceLoader(ConversionService.class)) {
-				logger.debug("add conversion service: {}", conversionService);
-				configurableConversionService.addConversionService(conversionService);
-			}
-
-			for (PropertyFactory propertyFactory : serviceLoaderFactory.getServiceLoader(PropertyFactory.class)) {
-				logger.debug("add property factory: {}", propertyFactory);
-				addFactory(propertyFactory);
-			}
-
-			for (PlaceholderReplacer placeholderReplacer : serviceLoaderFactory
-					.getServiceLoader(PlaceholderReplacer.class)) {
-				logger.debug("add placeholder replacer: {}", placeholderReplacer);
-				this.placeholderReplacer.addPlaceholderReplacer(placeholderReplacer);
-			}
-			return true;
-		}
-		return false;
+	
+	private ServiceList<PropertyFactory> propertyFactorys = new ServiceList<>(PropertyFactory.class, (s) -> aware(s));
+	
+	@Override
+	public Iterator<PropertyFactory> getFactories() {
+		return new MultiIterator<>(super.getFactories(), propertyFactorys.iterator());
+	}
+	
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		configurablePropertiesResolver.configure(serviceLoaderFactory);
+		configurableResourceResolver.configure(serviceLoaderFactory);
+		configurableConversionService.configure(serviceLoaderFactory);
+		propertyFactorys.configure(serviceLoaderFactory);
+		placeholderReplacer.configure(serviceLoaderFactory);
 	}
 
 	@Override

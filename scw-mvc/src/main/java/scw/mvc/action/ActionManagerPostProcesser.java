@@ -24,25 +24,6 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
 		beanFactory.getLifecycleDispatcher().registerListener(this);
-
-		if (beanFactory.isInstance(HttpActionAuthorityManager.class)
-				&& beanFactory.isSingleton(HttpActionAuthorityManager.class)
-				&& beanFactory.isInstance(ActionManager.class) && beanFactory.isSingleton(ActionManager.class)) {
-			ActionManager actionManager = beanFactory.getInstance(ActionManager.class);
-			HttpActionAuthorityManager actionAuthorityManager = beanFactory
-					.getInstance(HttpActionAuthorityManager.class);
-			for (Action action : actionManager) {
-				actionAuthorityManager.register(action);
-			}
-
-			actionManager.registerListener(new EventListener<ObjectEvent<Action>>() {
-
-				@Override
-				public void onEvent(ObjectEvent<Action> event) {
-					actionAuthorityManager.register(event.getSource());
-				}
-			});
-		}
 	}
 
 	public void onEvent(BeanlifeCycleEvent event) {
@@ -56,31 +37,49 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 		}
 
 		if (source instanceof ActionManager) {
-			BeanFactory beanFactory = event.getBeanFactory();
-			HttpPatternResolvers patternResolver = new HttpPatternResolvers(beanFactory);
-			patternResolver.setPropertyResolver(beanFactory.getEnvironment());
+			actionManagerInit(event.getBeanFactory(), (ActionManager) source);
+		}
+	}
 
-			ActionManager actionManager = (ActionManager) source;
-			for (Class<?> clz : beanFactory.getContextClassesLoader()) {
-				if (!patternResolver.canResolveHttpPattern(clz)) {
+	private void actionManagerInit(BeanFactory beanFactory, ActionManager actionManager) {
+		HttpPatternResolvers patternResolver = new HttpPatternResolvers(beanFactory);
+		patternResolver.setPropertyResolver(beanFactory.getEnvironment());
+		for (Class<?> clz : beanFactory.getContextClassesLoader()) {
+			if (!patternResolver.canResolveHttpPattern(clz)) {
+				continue;
+			}
+
+			for (Method method : clz.getDeclaredMethods()) {
+				if (!patternResolver.canResolveHttpPattern(clz, method)) {
 					continue;
 				}
 
-				for (Method method : clz.getDeclaredMethods()) {
-					if (!patternResolver.canResolveHttpPattern(clz, method)) {
-						continue;
-					}
-
-					//如果是非静态方法，说明要使用beanFactory进行实体化，此时应该判断是否可以实例化
-					if (!Modifier.isStatic(method.getModifiers()) && !beanFactory.isInstance(clz)) {
-						logger.error("Unsupported controller: {}", method);
-						continue;
-					}
-
-					Action action = new BeanAction(beanFactory, clz, method, patternResolver);
-					actionManager.register(action);
+				// 如果是非静态方法，说明要使用beanFactory进行实体化，此时应该判断是否可以实例化
+				if (!Modifier.isStatic(method.getModifiers()) && !beanFactory.isInstance(clz)) {
+					logger.error("Unsupported controller: {}", method);
+					continue;
 				}
+
+				Action action = new BeanAction(beanFactory, clz, method, patternResolver);
+				actionManager.register(action);
 			}
+		}
+
+		if (beanFactory.isInstance(HttpActionAuthorityManager.class)
+				&& beanFactory.isSingleton(HttpActionAuthorityManager.class)) {
+			HttpActionAuthorityManager actionAuthorityManager = beanFactory
+					.getInstance(HttpActionAuthorityManager.class);
+			for (Action action : actionManager) {
+				actionAuthorityManager.register(action);
+			}
+
+			actionManager.registerListener(new EventListener<ObjectEvent<Action>>() {
+
+				@Override
+				public void onEvent(ObjectEvent<Action> event) {
+					actionAuthorityManager.register(event.getSource());
+				}
+			});
 		}
 	}
 }

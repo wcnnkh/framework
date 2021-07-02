@@ -2,23 +2,20 @@ package scw.io;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 
 import scw.core.Assert;
-import scw.core.OrderComparator;
 import scw.core.utils.ClassUtils;
-import scw.core.utils.CollectionUtils;
 import scw.core.utils.StringUtils;
+import scw.instance.ServiceList;
+import scw.instance.ServiceLoaderFactory;
+import scw.instance.Configurable;
 import scw.util.ClassLoaderProvider;
 import scw.util.DefaultClassLoaderProvider;
 
-public class DefaultResourceLoader implements ConfigurableResourceLoader {
+public class DefaultResourceLoader implements ConfigurableResourceLoader, Configurable {
 	private ClassLoaderProvider classLoaderProvider;
-	private List<ProtocolResolver> protocolResolvers;
-	private List<ResourceLoader> resourceLoaders;
+	private ServiceList<ProtocolResolver> protocolResolvers = new ServiceList<>(ProtocolResolver.class);
+	private ServiceList<ResourceLoader> resourceLoaders = new ServiceList<>(ResourceLoader.class);
 
 	public DefaultResourceLoader() {
 	}
@@ -42,50 +39,28 @@ public class DefaultResourceLoader implements ConfigurableResourceLoader {
 	public void addProtocolResolver(ProtocolResolver resolver) {
 		Assert.notNull(resolver, "ProtocolResolver must not be null");
 		synchronized (this) {
-			if (protocolResolvers == null) {
-				protocolResolvers = new ArrayList<ProtocolResolver>(4);
-			}
-			protocolResolvers.add(resolver);
-			Collections.sort(protocolResolvers,
-					OrderComparator.INSTANCE.reversed());
+			protocolResolvers.addService(resolver);
 		}
+	}
+	
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		protocolResolvers.configure(serviceLoaderFactory);
+		resourceLoaders.configure(serviceLoaderFactory);
 	}
 
 	public Iterable<ProtocolResolver> getProtocolResolvers() {
-		return new Iterable<ProtocolResolver>() {
-
-			@Override
-			public Iterator<ProtocolResolver> iterator() {
-				if (protocolResolvers == null) {
-					return Collections.emptyIterator();
-				}
-				return CollectionUtils.getIterator(protocolResolvers, true);
-			}
-		};
+		return protocolResolvers;
 	}
 
 	public Iterable<ResourceLoader> getResourceLoaders() {
-		return new Iterable<ResourceLoader>() {
-
-			@Override
-			public Iterator<ResourceLoader> iterator() {
-				if (resourceLoaders == null) {
-					return Collections.emptyIterator();
-				}
-				return CollectionUtils.getIterator(resourceLoaders, true);
-			}
-		};
+		return resourceLoaders;
 	}
 
 	public void addResourceLoader(ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		synchronized (this) {
-			if (resourceLoaders == null) {
-				resourceLoaders = new ArrayList<ResourceLoader>(4);
-			}
-			resourceLoaders.add(resourceLoader);
-			Collections.sort(resourceLoaders,
-					OrderComparator.INSTANCE.reversed());
+			resourceLoaders.addService(resourceLoader);
 		}
 	}
 

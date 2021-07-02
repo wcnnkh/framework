@@ -1,5 +1,6 @@
 package scw.convert.lang;
 
+import java.util.Iterator;
 import java.util.TreeSet;
 
 import scw.convert.ConfigurableConversionService;
@@ -10,7 +11,7 @@ import scw.convert.TypeDescriptor;
 import scw.lang.LinkedThreadLocal;
 
 public class ConversionServices extends ConvertibleConditionalComparator<Object>
-		implements ConfigurableConversionService, Comparable<Object>, ConversionServiceAware {
+		implements ConfigurableConversionService, Comparable<Object>, ConversionServiceAware, Iterable<ConversionService> {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
 			ConversionServices.class.getName());
 	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(this);
@@ -41,9 +42,14 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 			conversionServices.add(conversionService);
 		}
 	}
+	
+	@Override
+	public Iterator<ConversionService> iterator() {
+		return conversionServices.iterator();
+	}
 
 	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		for (ConversionService service : conversionServices) {
+		for (ConversionService service : this) {
 			if (canConvert(service, sourceType, targetType)) {
 				return true;
 			}
@@ -75,7 +81,7 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 			sourceTypeToUse = TypeDescriptor.forObject(source);
 		}
 		
-		for (ConversionService service : conversionServices) {
+		for (ConversionService service : this) {
 			if (canConvert(service, sourceTypeToUse, targetType)) {
 				return service.convert(source, sourceTypeToUse, targetType);
 			}
@@ -93,7 +99,7 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 	}
 
 	public int compareTo(Object o) {
-		for (ConversionService service : conversionServices) {
+		for (ConversionService service : this) {
 			if (ConvertibleConditionalComparator.INSTANCE.compare(service, o) == 1) {
 				return 1;
 			}

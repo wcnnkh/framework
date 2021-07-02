@@ -7,7 +7,6 @@ import java.util.List;
 
 import scw.core.Assert;
 import scw.core.OrderComparator;
-import scw.core.utils.CollectionUtils;
 import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
@@ -36,19 +35,15 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 		}
 
 		factories.add(factory);
-		Collections.sort(factories, OrderComparator.INSTANCE.reversed());
+		Collections.sort(factories, OrderComparator.INSTANCE);
 	}
 
 	public ObservableMap<K, Value> getValueMap() {
 		return valueMap;
 	}
 
-	protected Iterator<F> getFactoriesIterator() {
-		return CollectionUtils.getIterator(factories, true);
-	}
-
-	public List<F> getFactories() {
-		return Collections.unmodifiableList(factories);
+	public Iterator<F> getFactories() {
+		return factories.iterator();
 	}
 
 	public Value getValue(K key) {
@@ -57,10 +52,10 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 			return value;
 		}
 
-		Iterator<F> iterator = getFactoriesIterator();
+		Iterator<F> iterator = getFactories();
 		while (iterator.hasNext()) {
 			ValueFactory<K> valueFactory = iterator.next();
-			if(valueFactory == null){
+			if (valueFactory == null) {
 				continue;
 			}
 			value = valueFactory.getValue(key);
@@ -76,7 +71,7 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 			return true;
 		}
 
-		Iterator<F> iterator = getFactoriesIterator();
+		Iterator<F> iterator = getFactories();
 		while (iterator.hasNext()) {
 			if (iterator.next().containsKey(key)) {
 				return true;
@@ -100,7 +95,7 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 
 		List<EventRegistration> registrations = new ArrayList<EventRegistration>(factories.size());
 		registrations.add(registration1);
-		Iterator<F> iterator = getFactoriesIterator();
+		Iterator<F> iterator = getFactories();
 		while (iterator.hasNext()) {
 			F factory = iterator.next();
 			EventRegistration registration = factory.registerListener(key, eventListener);
