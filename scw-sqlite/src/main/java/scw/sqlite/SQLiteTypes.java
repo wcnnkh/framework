@@ -49,4 +49,9 @@ public enum SQLiteTypes implements SqlType {
 	public Class<?> getType() {
 		return type;
 	}
+	
+	@Override
+	public int getLength() {
+		return 0;
+	}
 }

@@ -26,4 +26,10 @@ public interface SqlType {
 	 * @return
 	 */
 	Class<?> getType();
+	
+	/**
+	 * 如里小于等于0可以忽略
+	 * @return
+	 */
+	int getLength();
 }
