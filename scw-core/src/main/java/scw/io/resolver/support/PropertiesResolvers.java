@@ -6,9 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import scw.instance.Configurable;
 import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
-import scw.instance.Configurable;
 import scw.io.Resource;
 import scw.io.resolver.ConfigurablePropertiesResolver;
 import scw.io.resolver.PropertiesResolver;

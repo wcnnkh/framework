@@ -3,13 +3,11 @@ package scw.convert.support;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.util.Currency;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.function.Supplier;
 
-import scw.convert.ConversionService;
 import scw.convert.lang.ConversionServices;
 import scw.convert.lang.ConverterConversionService;
 import scw.convert.lang.DateFormatConversionService;
@@ -24,16 +22,12 @@ import scw.convert.lang.StringToCurrencyConverter;
 import scw.convert.lang.StringToLocaleConverter;
 import scw.convert.lang.StringToTimeZoneConverter;
 import scw.instance.Configurable;
-import scw.instance.ConfigurableServices;
-import scw.instance.ServiceLoaderFactory;
 import scw.io.Resource;
 import scw.io.resolver.PropertiesResolver;
 import scw.lang.Nullable;
-import scw.util.MultiIterator;
 import scw.value.EmptyValue;
 
 public class DefaultConversionService extends ConversionServices implements Configurable {
-	private ConfigurableServices<ConversionService> serviceList = new ConfigurableServices<>(ConversionService.class, (s) -> aware(s));
 
 	public DefaultConversionService() {
 		addConversionService(new ArrayToArrayConversionService(this));
@@ -73,15 +67,5 @@ public class DefaultConversionService extends ConversionServices implements Conf
 		this();
 		addConversionService(new ConverterConversionService(Resource.class, Properties.class,
 				new ResourceToPropertiesConverter(propertiesResolver, charset)));
-	}
-
-	@Override
-	public Iterator<ConversionService> iterator() {
-		return new MultiIterator<>(super.iterator(), serviceList.iterator());
-	}
-
-	@Override
-	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
-		serviceList.configure(serviceLoaderFactory);
 	}
 }

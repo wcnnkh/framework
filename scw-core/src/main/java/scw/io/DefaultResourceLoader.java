@@ -6,9 +6,9 @@ import java.net.URL;
 import scw.core.Assert;
 import scw.core.utils.ClassUtils;
 import scw.core.utils.StringUtils;
+import scw.instance.Configurable;
 import scw.instance.ConfigurableServices;
 import scw.instance.ServiceLoaderFactory;
-import scw.instance.Configurable;
 import scw.util.ClassLoaderProvider;
 import scw.util.DefaultClassLoaderProvider;
 

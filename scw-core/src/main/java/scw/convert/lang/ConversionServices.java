@@ -8,13 +8,18 @@ import scw.convert.ConversionService;
 import scw.convert.ConversionServiceAware;
 import scw.convert.ConverterNotFoundException;
 import scw.convert.TypeDescriptor;
+import scw.instance.Configurable;
+import scw.instance.ConfigurableServices;
+import scw.instance.ServiceLoaderFactory;
 import scw.lang.LinkedThreadLocal;
 
-public class ConversionServices extends ConvertibleConditionalComparator<Object> implements
-		ConfigurableConversionService, Comparable<Object>, ConversionServiceAware, Iterable<ConversionService> {
+public class ConversionServices extends ConvertibleConditionalComparator<Object>
+		implements ConfigurableConversionService, Comparable<Object>, ConversionServiceAware,
+		Iterable<ConversionService>, Configurable {
 	private static final LinkedThreadLocal<ConversionService> NESTED = new LinkedThreadLocal<ConversionService>(
 			ConversionServices.class.getName());
-	private final TreeSet<ConversionService> conversionServices = new TreeSet<ConversionService>(this);
+	private ConfigurableServices<ConversionService> conversionServices = new ConfigurableServices<>(
+			ConversionService.class, (s) -> aware(s), () -> new TreeSet<>(this));
 	private ConversionService awareConversionService = this;
 	private ConversionService parentConversionService;
 
@@ -37,10 +42,12 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 	}
 
 	public void addConversionService(ConversionService conversionService) {
-		aware(conversionService);
-		synchronized (conversionServices) {
-			conversionServices.add(conversionService);
-		}
+		conversionServices.addService(conversionService);
+	}
+
+	@Override
+	public void configure(ServiceLoaderFactory serviceLoaderFactory) {
+		conversionServices.configure(serviceLoaderFactory);
 	}
 
 	@Override
@@ -48,10 +55,19 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 		return conversionServices.iterator();
 	}
 
-	public boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public final boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType) {
 		for (ConversionService service : this) {
-			if(canConvert(sourceType, targetType, service)) {
-				return true;
+			if (NESTED.exists(service)) {
+				continue;
+			}
+
+			NESTED.set(service);
+			try {
+				if (service.canConvert(sourceType, targetType)) {
+					return true;
+				}
+			} finally {
+				NESTED.remove(service);
 			}
 		}
 
@@ -62,28 +78,24 @@ public class ConversionServices extends ConvertibleConditionalComparator<Object>
 		return canDirectlyConvert(sourceType, targetType);
 	}
 
-	private boolean canConvert(TypeDescriptor sourceType, TypeDescriptor targetType, ConversionService service) {
-		if (NESTED.exists(service)) {
-			return false;
-		}
-
-		NESTED.set(service);
-		try {
-			return service.canConvert(sourceType, targetType);
-		} finally {
-			NESTED.remove(service);
-		}
-	}
-
-	public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
+	public final Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
 		TypeDescriptor sourceTypeToUse = sourceType;
 		if (sourceType == null && source != null) {
 			sourceTypeToUse = TypeDescriptor.forObject(source);
 		}
 
 		for (ConversionService service : this) {
-			if(canConvert(sourceTypeToUse, targetType, service)) {
-				return service.convert(source, sourceTypeToUse, targetType);
+			if (NESTED.exists(service)) {
+				continue;
+			}
+
+			NESTED.set(service);
+			try {
+				if (service.canConvert(sourceType, targetType)) {
+					return service.convert(source, sourceTypeToUse, targetType);
+				}
+			} finally {
+				NESTED.remove(service);
 			}
 		}
 
