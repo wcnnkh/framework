@@ -125,8 +125,7 @@ public final class ArrayUtils {
 			return ArrayUtils.isEmpty(array1) ? 0 : 1;
 		}
 
-		int i = 0;
-		for (; i < Math.min(array1.length, array2.length); i++) {
+		for (int i=0; i < Math.min(array1.length, array2.length); i++) {
 			int v = comparator.compare(array1[i], array2[i]);
 			if (v != 0) {
 				return v;
