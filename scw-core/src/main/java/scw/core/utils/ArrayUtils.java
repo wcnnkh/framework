@@ -3,6 +3,7 @@ package scw.core.utils;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import scw.core.Assert;
@@ -101,8 +102,36 @@ public final class ArrayUtils {
 		int len = Array.getLength(array);
 		Object newArray = Array.newInstance(array.getClass().getComponentType(), len);
 		for (int i = len - 1, index = 0; i >= 0; i--) {
-			Array.set(newArray, index ++, Array.get(array, i));
+			Array.set(newArray, index++, Array.get(array, i));
 		}
 		return (T[]) newArray;
+	}
+
+	/**
+	 * 比较两个数组
+	 * 
+	 * @param <T>
+	 * @param array1
+	 * @param array2
+	 * @param comparator
+	 * @return
+	 */
+	public static <T> int compare(T[] array1, T[] array2, Comparator<T> comparator) {
+		if (ArrayUtils.isEmpty(array1)) {
+			return ArrayUtils.isEmpty(array2) ? 0 : -1;
+		}
+
+		if (ArrayUtils.isEmpty(array2)) {
+			return ArrayUtils.isEmpty(array1) ? 0 : 1;
+		}
+
+		int i = 0;
+		for (; i < Math.min(array1.length, array2.length); i++) {
+			int v = comparator.compare(array1[i], array2[i]);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return array1.length - array2.length;
 	}
 }
