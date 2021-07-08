@@ -572,4 +572,27 @@ public abstract class CollectionUtils {
 		}
 		return collection1.size() - collection2.size();
 	}
+
+	public static boolean isEmpty(Iterator<?> iterator) {
+		return iterator == null || !iterator.hasNext();
+	}
+
+	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2,
+			Comparator<T> comparator) {
+		if (CollectionUtils.isEmpty(iterator1)) {
+			return CollectionUtils.isEmpty(iterator2) ? 0 : -1;
+		}
+
+		if (CollectionUtils.isEmpty(iterator2)) {
+			return CollectionUtils.isEmpty(iterator1) ? 0 : 1;
+		}
+
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			int v = comparator.compare(iterator1.next(), iterator2.next());
+			if (v != 0) {
+				return v;
+			}
+		}
+		return iterator1.hasNext() ? 1 : -1;
+	}
 }

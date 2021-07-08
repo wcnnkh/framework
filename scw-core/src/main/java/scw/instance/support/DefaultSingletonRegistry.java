@@ -6,7 +6,7 @@ import java.util.Map;
 import scw.core.utils.StringUtils;
 import scw.instance.SingletonRegistry;
 import scw.util.Creator;
-import scw.util.Result;
+import scw.util.DefaultStatus;
 
 public class DefaultSingletonRegistry implements SingletonRegistry {
 	private volatile Map<String, Object> singletionMap = new LinkedHashMap<String, Object>();
@@ -49,7 +49,7 @@ public class DefaultSingletonRegistry implements SingletonRegistry {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T, E extends Throwable> Result<T> getSingleton(String name, Creator<T, E> creater) throws E {
+	public <T, E extends Throwable> DefaultStatus<T> getSingleton(String name, Creator<T, E> creater) throws E {
 		T object = (T) singletionMap.get(name);
 		if (object == null) {
 			synchronized (singletionMap) {
@@ -57,10 +57,10 @@ public class DefaultSingletonRegistry implements SingletonRegistry {
 				if (object == null) {
 					object = creater.create();
 					registerSingleton(name, object);
-					return new Result<T>(true, object);
+					return new DefaultStatus<T>(true, object);
 				}
 			}
 		}
-		return new Result<T>(false, object);
+		return new DefaultStatus<T>(false, object);
 	}
 }

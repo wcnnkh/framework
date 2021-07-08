@@ -13,7 +13,7 @@ import scw.boot.ApplicationAware;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.util.Result;
+import scw.util.Status;
 import scw.web.servlet.ServletService;
 import scw.web.servlet.ServletUtils;
 
@@ -67,8 +67,8 @@ public class DispatcherServlet extends HttpServlet implements ApplicationAware {
 			initialized = true;
 			try {
 				if(application == null){
-					Result<Application> startUp = ServletContextUtils.getServletApplicationStartup().start(servletConfig.getServletContext());
-					this.application = startUp.getResult();
+					Status<Application> startUp = ServletContextUtils.getServletApplicationStartup().start(servletConfig.getServletContext());
+					this.application = startUp.get();
 					if(startUp.isActive()){
 						reference = false;
 					}

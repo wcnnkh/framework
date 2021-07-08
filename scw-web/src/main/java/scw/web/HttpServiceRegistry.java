@@ -1,6 +1,6 @@
 package scw.web;
 
-import scw.web.pattern.HttpPatternRegistry;
+import scw.web.pattern.HttpPatterns;
 
-public class HttpServiceRegistry extends HttpPatternRegistry<HttpService> {
+public class HttpServiceRegistry extends HttpPatterns<HttpService> {
 }

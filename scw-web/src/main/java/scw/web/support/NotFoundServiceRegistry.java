@@ -1,7 +1,7 @@
 package scw.web.support;
 
 import scw.web.HttpService;
-import scw.web.pattern.HttpPatternRegistry;
+import scw.web.pattern.HttpPatterns;
 
-public class NotFoundServiceRegistry extends HttpPatternRegistry<HttpService> {
+public class NotFoundServiceRegistry extends HttpPatterns<HttpService> {
 }

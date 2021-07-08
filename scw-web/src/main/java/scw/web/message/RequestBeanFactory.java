@@ -18,7 +18,8 @@ import scw.instance.NoArgsInstanceFactory;
 import scw.mapper.Field;
 import scw.orm.convert.EntityConversionService;
 import scw.util.Accept;
-import scw.util.Result;
+import scw.util.DefaultStatus;
+import scw.util.Status;
 import scw.value.support.MapPropertyFactory;
 import scw.web.ServerHttpRequest;
 import scw.web.WebUtils;
@@ -64,7 +65,7 @@ public class RequestBeanFactory extends RequestParameterFactory
 			return (T) instance;
 		}
 
-		Result<Object> result = null;
+		Status<Object> result = null;
 		for (final ParameterDescriptors parameterDescriptors : beanDefinition) {
 			if (isAccept(parameterDescriptors)) {
 				if (beanDefinition.isSingleton()) {
@@ -73,7 +74,7 @@ public class RequestBeanFactory extends RequestParameterFactory
 								getParameters(parameterDescriptors));
 					});
 				} else {
-					result = new Result<Object>(true, beanDefinition.create(parameterDescriptors.getTypes(),
+					result = new DefaultStatus<Object>(true, beanDefinition.create(parameterDescriptors.getTypes(),
 							getParameters(parameterDescriptors)));
 				}
 
@@ -104,14 +105,14 @@ public class RequestBeanFactory extends RequestParameterFactory
 
 					Map<String, Object> parameterMap = (Map<String, Object>) beanFactory.getEnvironment()
 							.getConversionService().convert(body, TypeDescriptor.forObject(body), REQUEST_BODY_TYPE);
-					conversionService.configurationProperties(new MapPropertyFactory(parameterMap), result.getResult());
+					conversionService.configurationProperties(new MapPropertyFactory(parameterMap), result.get());
 				}
 				break;
 			}
 		}
 
 		if (result != null) {
-			Object obj = result.getResult();
+			Object obj = result.get();
 			if (result.isActive()) {
 				beanDefinition.dependence(obj);
 				beanDefinition.init(obj);

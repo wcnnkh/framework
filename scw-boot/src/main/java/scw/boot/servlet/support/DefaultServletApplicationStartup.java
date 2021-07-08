@@ -8,12 +8,13 @@ import scw.boot.servlet.ServletApplicationStartup;
 import scw.boot.servlet.ServletContextInitialization;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.util.Result;
+import scw.util.DefaultStatus;
+import scw.util.Status;
 
 public class DefaultServletApplicationStartup implements ServletApplicationStartup{
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
-	protected Result<Application> getStartup(ServletContext servletContext) throws ServletException{
+	protected Status<Application> getStartup(ServletContext servletContext) throws ServletException{
 		Application application = ServletContextUtils.getApplication(servletContext);
 		if(application == null){
 			ServletContextUtils.startLogger(logger, servletContext, null, false);
@@ -24,15 +25,15 @@ public class DefaultServletApplicationStartup implements ServletApplicationStart
 				ServletContextUtils.startLogger(logger, servletContext, e, false);
 			}
 			ServletContextUtils.setApplication(servletContext, application);
-			return new Result<Application>(true, application);
+			return new DefaultStatus<Application>(true, application);
 		}else{
-			return new Result<Application>(false, application);
+			return new DefaultStatus<Application>(false, application);
 		}
 	}
 	
-	public Result<Application> start(ServletContext servletContext) throws ServletException {
-		Result<Application> startUp = getStartup(servletContext);
-		start(servletContext, startUp.getResult());
+	public Status<Application> start(ServletContext servletContext) throws ServletException {
+		Status<Application> startUp = getStartup(servletContext);
+		start(servletContext, startUp.get());
 		return startUp;
 	}
 

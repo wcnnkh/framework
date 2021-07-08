@@ -7,11 +7,10 @@ import java.util.TreeSet;
 import scw.core.OrderComparator;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.web.HttpService;
 import scw.web.ServerHttpRequest;
 
-public class ServerHttpRequestAccepts<T> implements Comparator<T>, ServerHttpRequestAccept {
-	private static Logger logger = LoggerFactory.getLogger(ServerHttpRequestAccepts.class);
+class HttpPatternServices<T> implements Comparator<T>, ServerHttpRequestAccept {
+	private static Logger logger = LoggerFactory.getLogger(HttpPatternServices.class);
 	private Set<T> services = new TreeSet<T>(this);
 
 	/**
@@ -36,8 +35,8 @@ public class ServerHttpRequestAccepts<T> implements Comparator<T>, ServerHttpReq
 		return v == 0 ? 1 : v;
 	}
 
-	public boolean remove(T service) {
-		return services.remove(service);
+	public boolean remove(T pattern) {
+		return services.remove(pattern);
 	}
 
 	public boolean add(T service) {
@@ -48,8 +47,8 @@ public class ServerHttpRequestAccepts<T> implements Comparator<T>, ServerHttpReq
 		return false;
 	}
 
-	public boolean contains(HttpService service) {
-		return services.contains(service);
+	public boolean contains(T pattern) {
+		return services.contains(pattern);
 	}
 
 	public boolean isEmpty() {
@@ -63,7 +62,7 @@ public class ServerHttpRequestAccepts<T> implements Comparator<T>, ServerHttpReq
 					return service;
 				}
 			} else {
-				//因为services已经进行过排序了，ServerHttpRequestAccept一定在前面
+				// 因为services已经进行过排序了，ServerHttpRequestAccept一定在前面
 				return service;
 			}
 		}

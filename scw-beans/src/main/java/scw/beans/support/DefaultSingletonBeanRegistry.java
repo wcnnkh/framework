@@ -6,7 +6,7 @@ import scw.beans.SingletonBeanRegistry;
 import scw.instance.support.DefaultSingletonRegistry;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.util.Result;
+import scw.util.Status;
 
 public class DefaultSingletonBeanRegistry extends DefaultSingletonRegistry implements SingletonBeanRegistry{
 	private static Logger logger = LoggerFactory.getLogger(DefaultSingletonBeanRegistry.class);
@@ -45,7 +45,7 @@ public class DefaultSingletonBeanRegistry extends DefaultSingletonRegistry imple
 		return super.containsSingleton(definition.getId());
 	}
 	
-	public Result<Object> getSingleton(BeanDefinition definition) {
+	public Status<Object> getSingleton(BeanDefinition definition) {
 		return getSingleton(definition.getId(), definition);
 	}
 	

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import scw.context.Destroy;
-import scw.context.result.BaseResult;
 import scw.context.support.LifecycleAuxiliary;
 import scw.http.HttpStatus;
 import scw.io.IOUtils;
@@ -13,6 +12,7 @@ import scw.logger.CustomLevel;
 import scw.logger.Levels;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.Status;
 import scw.web.ServerHttpAsyncEvent;
 import scw.web.ServerHttpAsyncListener;
 
@@ -82,7 +82,7 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 			return;
 		}
 
-		if ((responseBody != null && responseBody instanceof BaseResult && ((BaseResult) responseBody).isError())) {
+		if (responseBody != null && responseBody instanceof Status && !((Status<?>) responseBody).isActive()) {
 			level = Levels.ERROR;
 		}
 
