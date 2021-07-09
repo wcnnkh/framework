@@ -39,7 +39,8 @@ public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
 	private static ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedThreadLocal<ServerHttpRequest>(
 			WebUtils.class.getSimpleName() + "-ServerHttpRequest");
-	private static final String RESTFUL_PARAMETER_MAP = "_restful_parameter_map";
+	private static final String RESTFUL_PARAMETER_MAP = "_scw_restful_parameter_map";
+	private static final String REQUEST_ID = "_scw_request_context_id";
 
 	/**
 	 * 缓存是否过期,如果未过期那么返回304，如果已过期则setLastModified
@@ -345,5 +346,13 @@ public final class WebUtils {
 		} else {
 			return WebUtils.getParameterMap(request, null);
 		}
+	}
+	
+	public static void setRequestId(ServerHttpRequest request, String id) {
+		request.setAttribute(REQUEST_ID, id);
+	}
+	
+	public static String getRequestId(ServerHttpRequest request) {
+		return (String) request.getAttribute(REQUEST_ID);
 	}
 }

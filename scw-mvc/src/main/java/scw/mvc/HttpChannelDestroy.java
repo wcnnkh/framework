@@ -12,14 +12,11 @@ import scw.logger.CustomLevel;
 import scw.logger.Levels;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
-import scw.util.Status;
 import scw.web.ServerHttpAsyncEvent;
 import scw.web.ServerHttpAsyncListener;
 
 public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);
-
-	private Long executeWarnTime;
 	private java.util.logging.Level enableLevel = Levels.ALL.getValue();
 	private final HttpChannel httpChannel;
 	private Object responseBody;
@@ -53,14 +50,6 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 		this.enableLevel = enableLevel;
 	}
 
-	public Long getExecuteWarnTime() {
-		return executeWarnTime;
-	}
-
-	public void setExecuteWarnTime(Long executeWarnTime) {
-		this.executeWarnTime = executeWarnTime;
-	}
-
 	public void destroy() throws IOException {
 		if (!httpChannel.isCompleted()) {
 			try {
@@ -75,15 +64,10 @@ public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 
 	protected void log() {
 		long useTime = System.currentTimeMillis() - httpChannel.getCreateTime();
-		Long executeWarnTime = getExecuteWarnTime();
-		Levels level = (executeWarnTime != null && useTime > executeWarnTime) ? Levels.WARN : Levels.DEBUG;
+		Levels level = Levels.DEBUG;
 		if (error != null) {
 			logger.error(error, "Execution {}ms of {}", useTime, this);
 			return;
-		}
-
-		if (responseBody != null && responseBody instanceof Status && !((Status<?>) responseBody).isActive()) {
-			level = Levels.ERROR;
 		}
 
 		if (!level.equals(Levels.ERROR)) {

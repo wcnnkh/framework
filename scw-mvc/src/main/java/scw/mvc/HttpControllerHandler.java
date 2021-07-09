@@ -7,7 +7,6 @@ import scw.beans.BeanFactory;
 import scw.context.annotation.Provider;
 import scw.core.Ordered;
 import scw.core.annotation.AnnotationUtils;
-import scw.event.Observable;
 import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
@@ -38,11 +37,9 @@ public class HttpControllerHandler implements HttpService, ServerHttpRequestAcce
 	private final HttpChannelFactory httpChannelFactory;
 	protected final BeanFactory beanFactory;
 	private ActionManager actionManager;
-	private final Observable<Long> executeWarnTime;
 
 	public HttpControllerHandler(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
-		executeWarnTime = beanFactory.getEnvironment().getObservableValue("mvc.warn-execute-time", Long.class, 200L);
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
 		} else {
@@ -106,7 +103,6 @@ public class HttpControllerHandler implements HttpService, ServerHttpRequestAcce
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
-		httpChannelDestroy.setExecuteWarnTime(executeWarnTime.get());
 		Levels level = MVCUtils.getActionLoggerLevel(action);
 		if (level != null) {
 			httpChannelDestroy.setEnableLevel(level.getValue());

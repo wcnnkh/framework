@@ -3,11 +3,11 @@ package scw.web.pattern;
 import scw.core.OrderComparator.OrderSourceProvider;
 import scw.web.ServerHttpRequest;
 
-class HttpServicePattern<T> implements ServerHttpRequestAccept, OrderSourceProvider {
+class ServerHttpRequestAcceptWrapper<T> implements ServerHttpRequestAccept, OrderSourceProvider {
 	private final T service;
 	private final HttpPattern pattern;
 
-	public HttpServicePattern(HttpPattern pattern, T service) {
+	public ServerHttpRequestAcceptWrapper(HttpPattern pattern, T service) {
 		this.pattern = pattern;
 		this.service = service;
 	}

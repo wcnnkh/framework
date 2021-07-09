@@ -17,7 +17,7 @@ import scw.web.ServerHttpRequest;
  */
 public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	private Map<String, Map<String, HttpPatternServices<T>>> matcherMap = new HashMap<>();
-	private HttpPatternServices<HttpServicePattern<T>> matchers = new HttpPatternServices<>();
+	private HttpPatternServices<ServerHttpRequestAcceptWrapper<T>> matchers = new HttpPatternServices<>();
 
 	public Holder<T> add(String path, T service) throws AlreadyExistsException {
 		return add(new HttpPattern(path), service);
@@ -64,10 +64,10 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	}
 
 	public Holder<T> add(T service) throws AlreadyExistsException {
-		return add(new HttpServicePattern<T>(null, service));
+		return add(new ServerHttpRequestAcceptWrapper<T>(null, service));
 	}
 
-	private Holder<T> add(HttpServicePattern<T> pattern) throws AlreadyExistsException {
+	private Holder<T> add(ServerHttpRequestAcceptWrapper<T> pattern) throws AlreadyExistsException {
 		synchronized (matchers) {
 			if (!matchers.add(pattern)) {
 				throw new AlreadyExistsException(pattern.toString());
@@ -87,7 +87,7 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 
 	public Holder<T> add(HttpPattern httpPattern, T service) throws AlreadyExistsException {
 		if (httpPattern.isPattern()) {
-			return add(new HttpServicePattern<T>(httpPattern, service));
+			return add(new ServerHttpRequestAcceptWrapper<T>(httpPattern, service));
 		} else {
 			return add(httpPattern.getPath(), httpPattern.getMethod(), service);
 		}
@@ -115,7 +115,7 @@ public class ServerHttpRequestMatcher<T> implements ServerHttpRequestAccept {
 	public T get(ServerHttpRequest request) {
 		T service = getMappingService(request);
 		if (service == null) {
-			HttpServicePattern<T> pattern = matchers.get(request);
+			ServerHttpRequestAcceptWrapper<T> pattern = matchers.get(request);
 			if (pattern != null) {
 				service = pattern.getService();
 			}

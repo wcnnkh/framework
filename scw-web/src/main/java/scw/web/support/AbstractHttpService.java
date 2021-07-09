@@ -1,10 +1,13 @@
 package scw.web.support;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
+import scw.core.Assert;
 import scw.http.HttpStatus;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.XUtils;
 import scw.web.HttpService;
 import scw.web.HttpServiceInterceptor;
 import scw.web.HttpServiceInterceptorChain;
@@ -23,12 +26,18 @@ public abstract class AbstractHttpService implements HttpService {
 	private final HttpServiceRegistry serviceRegistry;
 	private CorsRegistry corsRegistry;
 	private NotFoundServiceRegistry notFoundServiceRegistry;
+	private Supplier<String> requestIdSupplier = XUtils::getUUID;
 
 	public AbstractHttpService(HttpServiceRegistry serviceRegistry) {
 		this.serviceRegistry = serviceRegistry;
 	}
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+		String requestId = WebUtils.getRequestId(request);
+		if(requestId == null) {
+			requestId = requestIdSupplier.get();
+			WebUtils.setRequestId(request, requestId);
+		}
 		CorsRegistry corsRegistry = getCorsRegistry();
 		if (corsRegistry != null) {
 			if (CorsUtils.isCorsRequest(request)) {
@@ -99,6 +108,15 @@ public abstract class AbstractHttpService implements HttpService {
 
 	public HttpServiceRegistry getServiceRegistry() {
 		return serviceRegistry;
+	}
+
+	public Supplier<String> getRequestIdSupplier() {
+		return requestIdSupplier;
+	}
+
+	public void setRequestIdSupplier(Supplier<String> requestIdSupplier) {
+		Assert.requiredArgument(requestIdSupplier != null, "requestIdSupplier");
+		this.requestIdSupplier = requestIdSupplier;
 	}
 
 	public CorsRegistry getCorsRegistry() {

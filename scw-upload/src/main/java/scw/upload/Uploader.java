@@ -9,18 +9,32 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import scw.beans.annotation.Value;
+import scw.codec.support.CharsetCodec;
+import scw.context.annotation.Provider;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.data.ResourceStorageService;
 import scw.data.StorageException;
+import scw.http.HttpMethod;
 import scw.http.HttpRequestEntity;
+import scw.http.HttpStatus;
+import scw.http.MediaType;
 import scw.io.FileUtils;
 import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.message.InputMessage;
+import scw.net.uri.UriComponentsBuilder;
 import scw.net.uri.UriUtils;
+import scw.util.DefaultStatus;
+import scw.util.Status;
+import scw.web.HttpService;
+import scw.web.ServerHttpRequest;
+import scw.web.ServerHttpResponse;
+import scw.web.cors.Cors;
+import scw.web.pattern.ServerHttpRequestAccept;
 
 /**
  * 上传器
@@ -28,34 +42,32 @@ import scw.net.uri.UriUtils;
  * @author shuchaowen
  *
  */
-public class Uploader implements ResourceStorageService {
+@Provider
+public class Uploader implements ResourceStorageService, HttpService, ServerHttpRequestAccept {
 	public static final String CONTROLLER = "${upload.controller:/upload}";
 	private static Logger logger = LoggerFactory.getLogger(Uploader.class);
-	private final UploadPolicy uploadPolicy;
 	private final String directory;
+	private String baseUrl;
+	@Value(CONTROLLER)
+	private String controller;
+	private String sign;
 
-	public Uploader(UploadPolicy uploadPolicy, String directory) {
-		this.uploadPolicy = uploadPolicy;
+	public Uploader(String directory) {
 		this.directory = directory;
-	}
-
-	public UploadPolicy getUploadPolicy() {
-		return uploadPolicy;
 	}
 
 	@Override
 	public Resource get(String key) throws StorageException, IOException {
 		File file = new File(directory, key);
 		StringBuilder sb = new StringBuilder();
-		sb.append(uploadPolicy.getBaseUrl());
+		sb.append(getBaseUrl());
 		sb.append("/");
 		sb.append(key);
 		return new UploadResource(file, UriUtils.toUri(sb.toString()));
 	}
 
 	@Override
-	public boolean put(String key, InputMessage input) throws StorageException,
-			IOException {
+	public boolean put(String key, InputMessage input) throws StorageException, IOException {
 		logger.info("put [{}]", key);
 		File file = new File(directory, key);
 		InputStream is = null;
@@ -80,23 +92,98 @@ public class Uploader implements ResourceStorageService {
 		logger.info("delete [{}]", uri);
 		String str = uri.toString();
 		str = StringUtils.cleanPath(str);
-		if (!str.startsWith(uploadPolicy.getBaseUrl())) {
+		if (!str.startsWith(getBaseUrl())) {
 			return false;
 		}
 
-		String key = str.substring(uploadPolicy.getBaseUrl().length());
+		String key = str.substring(getBaseUrl().length());
 		return delete(key);
 	}
 
-	@Override
-	public HttpRequestEntity<?> generatePolicy(String key, Date expiration)
-			throws StorageException {
-		return uploadPolicy.generatePolicy(key, expiration);
+	public String getBaseUrl() {
+		return baseUrl;
 	}
-	
+
+	public void setBaseUrl(String baseUrl) {
+		this.baseUrl = StringUtils.cleanPath(baseUrl);
+	}
+
+	public String getController() {
+		return controller;
+	}
+
+	public void setController(String controller) {
+		this.controller = StringUtils.cleanPath(controller);
+	}
+
+	public String getSign() {
+		return sign;
+	}
+
+	public void setSign(String sign) {
+		this.sign = sign;
+	}
+
+	public String getSign(String key, Date expiration) {
+		return CharsetCodec.UTF_8.toMD5().encode(key + expiration.getTime() + sign);
+	}
+
+	public Status<String> checkSign(String key, String expiration, String sign) {
+		long time = Long.parseLong(expiration);
+		if (System.currentTimeMillis() > time) {
+			return new DefaultStatus<>(false, "签名已过期");
+		}
+		boolean succes = CharsetCodec.UTF_8.toMD5().toSigner().verify(key + expiration + this.sign, sign);
+		if (succes) {
+			return new DefaultStatus<>(true, "上传成功");
+		}
+		return new DefaultStatus<>(false, "签名错误");
+	}
+
+	public Status<String> upload(ServerHttpRequest request) throws StorageException, IOException {
+		String key = request.getParameterMap().getFirst("key");
+		String expiration = request.getParameterMap().getFirst("expiration");
+		String sign = request.getParameterMap().getFirst("sign");
+		if (StringUtils.isEmpty(key, expiration, sign)) {
+			return new DefaultStatus<>(false, "参数错误");
+		}
+
+		Status<String> checkStatus = checkSign(key, expiration, sign);
+		if (!checkStatus.isActive()) {
+			return checkStatus;
+		}
+
+		logger.info("upload request " + request);
+		put(key, request);
+		return new DefaultStatus<>(true, key);
+	}
+
 	@Override
-	public List<Resource> list(String keyPrefix, String marker, int limit)
-			throws StorageException, IOException {
+	public HttpRequestEntity<?> generatePolicy(String key, Date expiration) throws StorageException {
+		String sign = getSign(key, expiration);
+		URI uri = UriComponentsBuilder.fromUriString(getBaseUrl() + getController()).queryParam("key", key)
+				.queryParam("sign", sign).queryParam("expiration", expiration.getTime()).build().toUri();
+		return HttpRequestEntity.post(uri).contentType(MediaType.MULTIPART_FORM_DATA).build();
+	}
+
+	@Override
+	public boolean accept(ServerHttpRequest request) {
+		return request.getMethod() == HttpMethod.POST && request.getPath().equals(getController());
+	}
+
+	@Override
+	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
+		Status<String> status = upload(request);
+		if (status.isActive()) {
+			Cors.DEFAULT.write(request, response.getHeaders());
+			response.setStatusCode(HttpStatus.OK);
+		} else {
+			response.setStatusCode(HttpStatus.FORBIDDEN);
+		}
+	}
+
+	@Override
+	public List<Resource> list(String keyPrefix, String marker, int limit) throws StorageException, IOException {
 		String prefix = StringUtils.isEmpty(keyPrefix) ? "" : StringUtils.cleanPath(keyPrefix);
 		File file;
 		if (StringUtils.isEmpty(prefix)) {
@@ -120,7 +207,7 @@ public class Uploader implements ResourceStorageService {
 		appendFile(fileFilter, file, list);
 		return list;
 	}
-	
+
 	private final class ListFileFilter implements FileFilter {
 		private String keyPrefix;
 		private String marker;
@@ -167,10 +254,11 @@ public class Uploader implements ResourceStorageService {
 		key = StringUtils.cleanPath(key);
 		Assert.isTrue(key.startsWith(directory));
 		key = key.substring(directory.length());
-		return key.startsWith("/")? key.substring(1):key;
+		return key.startsWith("/") ? key.substring(1) : key;
 	}
 
-	private void appendFile(FileFilter fileFilter, File directory, List<Resource> list) throws StorageException, IOException {
+	private void appendFile(FileFilter fileFilter, File directory, List<Resource> list)
+			throws StorageException, IOException {
 		for (File fileToUse : directory.listFiles()) {
 			if (fileToUse.isDirectory()) {
 				appendFile(fileFilter, directory, list);
