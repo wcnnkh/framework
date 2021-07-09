@@ -125,12 +125,68 @@ public final class ArrayUtils {
 			return ArrayUtils.isEmpty(array1) ? 0 : 1;
 		}
 
-		for (int i=0; i < Math.min(array1.length, array2.length); i++) {
+		for (int i = 0; i < Math.min(array1.length, array2.length); i++) {
 			int v = comparator.compare(array1[i], array2[i]);
 			if (v != 0) {
 				return v;
 			}
 		}
 		return array1.length - array2.length;
+	}
+
+	public static int compare(int[] array1, int[] array2, int defaultValue) {
+		int size1 = array1 == null ? 0 : array1.length;
+		int size2 = array2 == null ? 0 : array2.length;
+		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
+			int v1 = i < size1 ? array1[i] : defaultValue;
+			int v2 = i < size2 ? array2[i] : defaultValue;
+			int v = Integer.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
+	}
+
+	public static int compare(long[] array1, long[] array2, long defaultValue) {
+		int size1 = array1 == null ? 0 : array1.length;
+		int size2 = array2 == null ? 0 : array2.length;
+		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
+			long v1 = i < size1 ? array1[i] : defaultValue;
+			long v2 = i < size2 ? array2[i] : defaultValue;
+			int v = Long.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
+	}
+
+	public static int compare(double[] array1, double[] array2, double defaultValue) {
+		int size1 = array1 == null ? 0 : array1.length;
+		int size2 = array2 == null ? 0 : array2.length;
+		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
+			double v1 = i < size1 ? array1[i] : defaultValue;
+			double v2 = i < size2 ? array2[i] : defaultValue;
+			int v = Double.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
+	}
+
+	public static int compare(Number[] array1, Number[] array2, Number defaultValue, Comparator<Number> comparator) {
+		int size1 = array1 == null ? 0 : array1.length;
+		int size2 = array2 == null ? 0 : array2.length;
+		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
+			Number v1 = i < size1 ? array1[i] : defaultValue;
+			Number v2 = i < size2 ? array2[i] : defaultValue;
+			int v = comparator.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
 	}
 }

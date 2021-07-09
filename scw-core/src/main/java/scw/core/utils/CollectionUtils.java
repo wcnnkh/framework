@@ -593,6 +593,27 @@ public abstract class CollectionUtils {
 				return v;
 			}
 		}
-		return iterator1.hasNext() ? 1 : -1;
+		return iterator1.hasNext() ? 1 : (iterator2.hasNext() ? -1 : 0);
+	}
+
+	public static <T> int compare(Iterable<? extends T> iterable1, Iterable<? extends T> iterable2, T defaultValue,
+			Comparator<T> comparator) {
+		return compare(iterable1 == null ? Collections.emptyIterator() : iterable1.iterator(),
+				iterable2 == null ? Collections.emptyIterator() : iterable2.iterator(), defaultValue, comparator);
+	}
+
+	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2, T defaultValue,
+			Comparator<T> comparator) {
+		Iterator<? extends T> useIterator1 = iterator1 == null ? Collections.emptyIterator() : iterator1;
+		Iterator<? extends T> useIterator2 = iterator2 == null ? Collections.emptyIterator() : iterator2;
+		while (useIterator1.hasNext() || useIterator2.hasNext()) {
+			T v1 = useIterator1.hasNext() ? useIterator1.next() : defaultValue;
+			T v2 = useIterator2.hasNext() ? useIterator2.next() : defaultValue;
+			int v = comparator.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
 	}
 }
