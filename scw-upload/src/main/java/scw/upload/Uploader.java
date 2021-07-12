@@ -28,11 +28,13 @@ import scw.logger.LoggerFactory;
 import scw.net.FileMimeTypeUitls;
 import scw.net.MimeType;
 import scw.net.message.InputMessage;
+import scw.net.message.multipart.MultipartMessage;
 import scw.net.uri.UriComponentsBuilder;
 import scw.net.uri.UriUtils;
 import scw.util.DefaultStatus;
 import scw.util.Status;
 import scw.web.HttpService;
+import scw.web.MultiPartServerHttpRequest;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.WebUtils;
@@ -144,6 +146,10 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	public Status<String> upload(ServerHttpRequest request) throws StorageException, IOException {
+		if(!(request instanceof MultiPartServerHttpRequest)){
+			return new DefaultStatus<String>(false, "无法解析的文件上传请求");
+		}
+		
 		String key = request.getParameterMap().getFirst("key");
 		String expiration = request.getParameterMap().getFirst("expiration");
 		String sign = request.getParameterMap().getFirst("sign");
@@ -157,7 +163,12 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 		}
 
 		logger.info("upload request " + request);
-		put(key, request);
+		MultiPartServerHttpRequest multiPartServerHttpRequest = (MultiPartServerHttpRequest) request;
+		MultipartMessage message = multiPartServerHttpRequest.getFirstFile();
+		if(message == null){
+			return new DefaultStatus<String>(false, "无文件");
+		}
+		put(key, message);
 		return new DefaultStatus<>(true, key);
 	}
 

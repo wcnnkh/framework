@@ -9,7 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import scw.beans.BeanFactory;
 import scw.event.Observable;
+import scw.http.MediaType;
 import scw.web.servlet.ServletService;
+import scw.web.servlet.http.multipart.ServletMultiPartServerHttpRequest;
 import scw.web.support.DefaultHttpService;
 
 public class DefaultHttpServletService extends DefaultHttpService implements ServletService {
@@ -35,7 +37,13 @@ public class DefaultHttpServletService extends DefaultHttpService implements Ser
 		String charsetName = getCharsetName();
 		request.setCharacterEncoding(charsetName);
 		response.setCharacterEncoding(charsetName);
-		ServletServerHttpRequest serverHttpRequest = new ServletServerHttpRequest(request);
+		ServletServerHttpRequest serverHttpRequest;
+		String contentType  = request.getContentType();
+		if(contentType != null && contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE)){
+			serverHttpRequest = new ServletMultiPartServerHttpRequest(request);
+		}else{
+			serverHttpRequest = new ServletServerHttpRequest(request);
+		}
 		ServletServerHttpResponse serverHttpResponse = new ServletServerHttpResponse(response);
 		service(serverHttpRequest, serverHttpResponse);
 	}
