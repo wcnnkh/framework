@@ -239,6 +239,11 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 	public Enumeration<String> getAttributeNames() {
 		return httpServletRequest.getAttributeNames();
 	}
+	
+	@Override
+	public long getContentLength() {
+		return httpServletRequest.getContentLength();
+	}
 
 	public boolean isSupportAsyncControl() {
 		return httpServletRequest.isAsyncSupported();

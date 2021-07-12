@@ -224,7 +224,7 @@ public final class WebUtils {
 			if (multipartMessageResolver == null) {
 				logger.warn("Multipart is not supported: {}", request);
 			} else {
-				return new MultiPartServerHttpRequest(request, multipartMessageResolver);
+				return new DefaultMultiPartServerHttpRequest(request, multipartMessageResolver);
 			}
 		}
 		return request;

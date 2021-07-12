@@ -25,6 +25,8 @@ import scw.io.IOUtils;
 import scw.io.Resource;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.net.FileMimeTypeUitls;
+import scw.net.MimeType;
 import scw.net.message.InputMessage;
 import scw.net.uri.UriComponentsBuilder;
 import scw.net.uri.UriUtils;
@@ -33,6 +35,7 @@ import scw.util.Status;
 import scw.web.HttpService;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
+import scw.web.WebUtils;
 import scw.web.cors.Cors;
 import scw.web.pattern.ServerHttpRequestAccept;
 
@@ -159,26 +162,38 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	@Override
-	public HttpRequestEntity<?> generatePolicy(String key, Date expiration) throws StorageException {
+	public UploadPolicy generatePolicy(String key, Date expiration) throws StorageException {
 		String sign = getSign(key, expiration);
-		URI uri = UriComponentsBuilder.fromUriString(getBaseUrl() + getController()).queryParam("key", key)
-				.queryParam("sign", sign).queryParam("expiration", expiration.getTime()).build().toUri();
-		return HttpRequestEntity.post(uri).contentType(MediaType.MULTIPART_FORM_DATA).build();
+		String baseUrl = StringUtils
+				.cleanPath((StringUtils.isEmpty(getBaseUrl()) ? "" : getBaseUrl()) + getController());
+		URI uri = UriComponentsBuilder.fromUriString(baseUrl).queryParam("key", key).queryParam("sign", sign)
+				.queryParam("expiration", expiration.getTime()).build().toUri();
+		HttpRequestEntity<?> requestEntity = HttpRequestEntity.post(uri).contentType(MediaType.MULTIPART_FORM_DATA)
+				.build();
+		return new UploadPolicy(StringUtils.cleanPath(baseUrl + "/" + key), requestEntity);
 	}
 
 	@Override
 	public boolean accept(ServerHttpRequest request) {
-		return request.getMethod() == HttpMethod.POST && request.getPath().equals(getController());
+		return (request.getMethod() == HttpMethod.GET || request.getMethod() == HttpMethod.POST)
+				&& request.getPath().startsWith(getController());
 	}
 
 	@Override
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		Status<String> status = upload(request);
-		if (status.isActive()) {
-			Cors.DEFAULT.write(request, response.getHeaders());
-			response.setStatusCode(HttpStatus.OK);
+		if (request.getMethod() == HttpMethod.GET) {
+			String key = request.getPath().substring(getController().length());
+			Resource resource = get(key);
+			MimeType mimeType = FileMimeTypeUitls.getMimeType(resource);
+			WebUtils.writeStaticResource(request, response, resource, mimeType);
 		} else {
-			response.setStatusCode(HttpStatus.FORBIDDEN);
+			Status<String> status = upload(request);
+			if (status.isActive()) {
+				Cors.DEFAULT.write(request, response.getHeaders());
+				response.setStatusCode(HttpStatus.OK);
+			} else {
+				response.setStatusCode(HttpStatus.FORBIDDEN);
+			}
 		}
 	}
 
