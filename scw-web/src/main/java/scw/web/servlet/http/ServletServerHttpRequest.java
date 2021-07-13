@@ -27,16 +27,16 @@ import scw.http.InvalidMediaTypeException;
 import scw.http.MediaType;
 import scw.net.uri.UriUtils;
 import scw.security.session.Session;
+import scw.util.Decorator;
 import scw.util.LinkedCaseInsensitiveMap;
 import scw.util.MultiValueMap;
-import scw.util.Decorator;
 import scw.util.XUtils;
 import scw.web.ServerHttpAsyncControl;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.servlet.ServletUtils;
 
-public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
+public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletAsyncControl asyncControl;

@@ -1,6 +1,6 @@
 package scw.context.support;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -16,7 +16,6 @@ import scw.context.transaction.TransactionMethodInterceptor;
 import scw.core.Constants;
 import scw.core.type.scanner.ConfigurableClassScanner;
 import scw.core.type.scanner.DefaultClassScanner;
-import scw.core.utils.CollectionUtils;
 import scw.env.ConfigurableEnvironment;
 import scw.env.DefaultEnvironment;
 import scw.instance.Configurable;
@@ -77,8 +76,18 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 	}
 
 	@Override
-	public Enumeration<Class<?>> getSourceClasses() {
-		return CollectionUtils.toEnumeration(sourceClasses.iterator());
+	public ClassesLoader getSourceClasses() {
+		return new ClassesLoader() {
+			
+			@Override
+			public void reload() {
+			}
+			
+			@Override
+			public Iterator<Class<?>> iterator() {
+				return sourceClasses.iterator();
+			}
+		};
 	}
 
 	@Override

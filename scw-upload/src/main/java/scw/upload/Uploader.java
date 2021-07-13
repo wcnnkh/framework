@@ -14,6 +14,7 @@ import scw.codec.support.CharsetCodec;
 import scw.context.annotation.Provider;
 import scw.core.Assert;
 import scw.core.utils.StringUtils;
+import scw.core.utils.XTime;
 import scw.data.ResourceStorageService;
 import scw.data.StorageException;
 import scw.http.HttpMethod;
@@ -135,6 +136,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 
 	public Status<String> checkSign(String key, String expiration, String sign) {
 		long time = Long.parseLong(expiration);
+		System.out.println(XTime.format(time, "yyyy-MM-dd HH:mm:ss"));
 		if (System.currentTimeMillis() > time) {
 			return new DefaultStatus<>(false, "签名已过期");
 		}
@@ -146,10 +148,10 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 	}
 
 	public Status<String> upload(ServerHttpRequest request) throws StorageException, IOException {
-		if(!(request instanceof MultiPartServerHttpRequest)){
+		if (!(request instanceof MultiPartServerHttpRequest)) {
 			return new DefaultStatus<String>(false, "无法解析的文件上传请求");
 		}
-		
+
 		String key = request.getParameterMap().getFirst("key");
 		String expiration = request.getParameterMap().getFirst("expiration");
 		String sign = request.getParameterMap().getFirst("sign");
@@ -165,7 +167,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 		logger.info("upload request " + request);
 		MultiPartServerHttpRequest multiPartServerHttpRequest = (MultiPartServerHttpRequest) request;
 		MultipartMessage message = multiPartServerHttpRequest.getFirstFile();
-		if(message == null){
+		if (message == null) {
 			return new DefaultStatus<String>(false, "无文件");
 		}
 		put(key, message);
@@ -203,7 +205,7 @@ public class Uploader implements ResourceStorageService, HttpService, ServerHttp
 				Cors.DEFAULT.write(request, response.getHeaders());
 				response.setStatusCode(HttpStatus.OK);
 			} else {
-				response.setStatusCode(HttpStatus.FORBIDDEN);
+				response.sendError(HttpStatus.NOT_ACCEPTABLE.value(), status.get());
 			}
 		}
 	}

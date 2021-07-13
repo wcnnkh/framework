@@ -1,4 +1,4 @@
-package scw.web.servlet.http.multipart;
+package scw.web.servlet.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,10 +11,10 @@ import scw.http.MediaType;
 import scw.net.MimeType;
 import scw.net.message.multipart.MultipartMessage;
 
-public class PartMultipartMessage implements MultipartMessage {
+public class ServletMultipartMessage implements MultipartMessage {
 	private final Part part;
 
-	public PartMultipartMessage(Part part) {
+	public ServletMultipartMessage(Part part) {
 		this.part = part;
 	}
 
@@ -23,12 +23,12 @@ public class PartMultipartMessage implements MultipartMessage {
 		return part.getInputStream();
 	}
 
-	private PartHeaders headers;
+	private ServletPartHeaders headers;
 
 	@Override
 	public HttpHeaders getHeaders() {
 		if (headers == null) {
-			headers = new PartHeaders(part);
+			headers = new ServletPartHeaders(part);
 		}
 		return headers;
 	}

@@ -11,12 +11,11 @@ import scw.beans.BeanFactory;
 import scw.event.Observable;
 import scw.http.MediaType;
 import scw.web.servlet.ServletService;
-import scw.web.servlet.http.multipart.ServletMultiPartServerHttpRequest;
 import scw.web.support.DefaultHttpService;
 
 public class DefaultHttpServletService extends DefaultHttpService implements ServletService {
 	private final Observable<String> charsetName;
-	
+
 	public DefaultHttpServletService(BeanFactory beanFactory) {
 		super(beanFactory);
 		charsetName = beanFactory.getEnvironment().getObservableCharsetName();
@@ -25,11 +24,10 @@ public class DefaultHttpServletService extends DefaultHttpService implements Ser
 	public String getCharsetName() {
 		return charsetName.get();
 	}
-	
-	public void service(ServletRequest request, ServletResponse response)
-			throws IOException {
-		if(request instanceof HttpServletRequest && response instanceof HttpServletResponse){
-			service((HttpServletRequest)request, (HttpServletResponse)response);
+
+	public void service(ServletRequest request, ServletResponse response) throws IOException {
+		if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
+			service((HttpServletRequest) request, (HttpServletResponse) response);
 		}
 	}
 
@@ -38,10 +36,10 @@ public class DefaultHttpServletService extends DefaultHttpService implements Ser
 		request.setCharacterEncoding(charsetName);
 		response.setCharacterEncoding(charsetName);
 		ServletServerHttpRequest serverHttpRequest;
-		String contentType  = request.getContentType();
-		if(contentType != null && contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE)){
+		String contentType = request.getContentType();
+		if (contentType != null && contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE)) {
 			serverHttpRequest = new ServletMultiPartServerHttpRequest(request);
-		}else{
+		} else {
 			serverHttpRequest = new ServletServerHttpRequest(request);
 		}
 		ServletServerHttpResponse serverHttpResponse = new ServletServerHttpResponse(response);

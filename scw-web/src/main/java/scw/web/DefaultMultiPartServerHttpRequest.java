@@ -12,8 +12,6 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.net.message.multipart.MultipartMessage;
 import scw.net.message.multipart.MultipartMessageResolver;
-import scw.util.LinkedMultiValueMap;
-import scw.util.MultiValueMap;
 
 /**
  * 一个MultiPart请求
@@ -33,56 +31,23 @@ public class DefaultMultiPartServerHttpRequest extends ServerHttpRequestWrapper
 		this.multipartMessageResolver = multipartMessageResolver;
 	}
 
-	private List<MultipartMessage> multipartMessageList;
+	private List<MultipartMessage> multipartMessages;
 
-	public List<MultipartMessage> getMultipartMessageList() {
-		if (multipartMessageList == null) {
+	public List<MultipartMessage> getMultipartMessages() {
+		if (multipartMessages == null) {
 			try {
-				multipartMessageList = multipartMessageResolver.resolve(this);
+				multipartMessages = multipartMessageResolver.resolve(this);
 			} catch (IOException e) {
 				logger.error(e, toString());
 			}
 
-			if (CollectionUtils.isEmpty(multipartMessageList)) {
-				this.multipartMessageList = Collections.emptyList();
-			} else {
-				this.multipartMessageList = Collections.unmodifiableList(multipartMessageList);
-			}
-		}
-		return multipartMessageList;
-	}
-
-	private MultiValueMap<String, MultipartMessage> multipartMessageMap;
-
-	public MultiValueMap<String, MultipartMessage> getMultipartMessageMap() {
-		if (multipartMessageMap == null) {
-			List<MultipartMessage> multipartMessages = getMultipartMessageList();
 			if (CollectionUtils.isEmpty(multipartMessages)) {
-				multipartMessageMap = CollectionUtils.emptyMultiValueMap();
-				return multipartMessageMap;
-			}
-
-			multipartMessageMap = new LinkedMultiValueMap<String, MultipartMessage>();
-			for (MultipartMessage multipartMessage : multipartMessages) {
-				if (multipartMessage == null) {
-					continue;
-				}
-
-				multipartMessageMap.add(multipartMessage.getName(), multipartMessage);
-			}
-
-			this.multipartMessageMap = CollectionUtils.unmodifiableMultiValueMap(multipartMessageMap);
-		}
-		return multipartMessageMap;
-	}
-
-	public MultipartMessage getFirstFile() {
-		for (MultipartMessage message : getMultipartMessageList()) {
-			if (message.isFile()) {
-				return message;
+				this.multipartMessages = Collections.emptyList();
+			} else {
+				this.multipartMessages = Collections.unmodifiableList(multipartMessages);
 			}
 		}
-		return null;
+		return multipartMessages;
 	}
 
 	/**
@@ -93,8 +58,8 @@ public class DefaultMultiPartServerHttpRequest extends ServerHttpRequestWrapper
 	 * @see FileItem#close()
 	 */
 	public void close() throws IOException {
-		if (!CollectionUtils.isEmpty(multipartMessageMap)) {
-			for (MultipartMessage message : multipartMessageList) {
+		if (!CollectionUtils.isEmpty(multipartMessages)) {
+			for (MultipartMessage message : multipartMessages) {
 				message.close();
 			}
 		}

@@ -11,8 +11,6 @@ import scw.convert.TypeDescriptor;
 import scw.core.Ordered;
 import scw.core.utils.StringUtils;
 import scw.http.HttpHeaders;
-import scw.logger.Logger;
-import scw.logger.LoggerFactory;
 import scw.net.MimeType;
 import scw.net.MimeTypeUtils;
 import scw.net.MimeTypes;
@@ -29,7 +27,6 @@ import scw.web.model.PageMessageConverter;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class FreemarkerMessageConverter extends PageMessageConverter implements WebMessageConverter, MessageConverter {
-	private static Logger logger = LoggerFactory.getLogger(FreemarkerMessageConverter.class);
 	private final Configuration configuration;
 
 	public FreemarkerMessageConverter(Configuration configuration) {
@@ -63,7 +60,7 @@ public class FreemarkerMessageConverter extends PageMessageConverter implements 
 		try {
 			template.process(page, new PrintWriter(outputMessage.getOutputStream()));
 		} catch (TemplateException e) {
-			logger.error(e, "freemarker:{}", page);
+			throw new MessageConvertException(page.getName(), e);
 		}
 	}
 
@@ -86,7 +83,7 @@ public class FreemarkerMessageConverter extends PageMessageConverter implements 
 		try {
 			template.process(page, response.getWriter());
 		} catch (TemplateException e) {
-			logger.error(e, "freemarker:{}", page);
+			throw new WebMessagelConverterException(page.getName(), e);
 		}
 	}
 

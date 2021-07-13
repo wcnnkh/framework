@@ -188,6 +188,11 @@ public final class WebUtils {
 		return Value.EMPTY_ARRAY;
 	}
 
+	/**
+	 * 此方法不一定返回scw.web.JsonServerHttpRequest
+	 * @param request
+	 * @return
+	 */
 	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request) {
 		if (request.getMethod() == HttpMethod.GET) {
 			return request;
@@ -206,6 +211,12 @@ public final class WebUtils {
 		return request;
 	}
 
+	/**
+	 * 此方法不一定返回scw.web.MultiPartServerHttpRequest
+	 * @param request
+	 * @param multipartMessageResolver
+	 * @return
+	 */
 	public static ServerHttpRequest wrapperServerMultipartFormRequest(ServerHttpRequest request,
 			MultipartMessageResolver multipartMessageResolver) {
 		if (request.getMethod() == HttpMethod.GET) {

@@ -1,13 +1,13 @@
-package scw.web.servlet.http.multipart;
+package scw.web.servlet.http;
 
 import javax.servlet.http.Part;
 
 import scw.http.HttpHeaders;
 
-public class PartHeaders extends HttpHeaders {
+public class ServletPartHeaders extends HttpHeaders {
 	private static final long serialVersionUID = 1L;
 
-	public PartHeaders(Part part) {
+	public ServletPartHeaders(Part part) {
 		if (part == null) {
 			return;
 		}
