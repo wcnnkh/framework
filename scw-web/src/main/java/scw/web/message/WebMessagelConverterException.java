@@ -3,10 +3,10 @@ package scw.web.message;
 import scw.convert.TypeDescriptor;
 import scw.core.parameter.ParameterDescriptor;
 import scw.core.utils.ObjectUtils;
-import scw.lang.NestedRuntimeException;
 import scw.web.ServerHttpRequest;
+import scw.web.WebException;
 
-public class WebMessagelConverterException extends NestedRuntimeException {
+public class WebMessagelConverterException extends WebException {
 	private static final long serialVersionUID = 1L;
 
 	public WebMessagelConverterException(String msg) {

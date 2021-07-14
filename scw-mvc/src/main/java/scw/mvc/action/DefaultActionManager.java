@@ -13,12 +13,12 @@ import scw.logger.Logger;
 import scw.logger.LoggerFactory;
 import scw.web.ServerHttpRequest;
 import scw.web.pattern.HttpPattern;
-import scw.web.pattern.HttpPatternRegistry;
+import scw.web.pattern.HttpPatterns;
 
 @Provider
 public class DefaultActionManager extends DefaultEventDispatcher<ObjectEvent<Action>> implements ActionManager {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	private HttpPatternRegistry<Action> registry = new HttpPatternRegistry<Action>();
+	private HttpPatterns<Action> registry = new HttpPatterns<Action>();
 	private Map<Method, Action> actionMap = new HashMap<Method, Action>();
 
 	public DefaultActionManager() {
@@ -49,7 +49,7 @@ public class DefaultActionManager extends DefaultEventDispatcher<ObjectEvent<Act
 		}
 
 		for (HttpPattern pattern : action.getPatternts()) {
-			registry.register(pattern, action);
+			registry.add(pattern, action);
 		}
 		publishEvent(new ObjectEvent<Action>(action));
 	}

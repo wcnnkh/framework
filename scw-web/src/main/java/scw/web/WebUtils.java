@@ -39,7 +39,7 @@ public final class WebUtils {
 	private static Logger logger = LoggerFactory.getLogger(WebUtils.class);
 	private static ThreadLocal<ServerHttpRequest> SERVER_HTTP_REQUEST_LOCAL = new NamedThreadLocal<ServerHttpRequest>(
 			WebUtils.class.getSimpleName() + "-ServerHttpRequest");
-	private static final String RESTFUL_PARAMETER_MAP = "_restful_parameter_map";
+	private static final String RESTFUL_PARAMETER_MAP = "_scw_restful_parameter_map";
 
 	/**
 	 * 缓存是否过期,如果未过期那么返回304，如果已过期则setLastModified
@@ -187,6 +187,11 @@ public final class WebUtils {
 		return Value.EMPTY_ARRAY;
 	}
 
+	/**
+	 * 此方法不一定返回scw.web.JsonServerHttpRequest
+	 * @param request
+	 * @return
+	 */
 	public static ServerHttpRequest wrapperServerJsonRequest(ServerHttpRequest request) {
 		if (request.getMethod() == HttpMethod.GET) {
 			return request;
@@ -205,6 +210,12 @@ public final class WebUtils {
 		return request;
 	}
 
+	/**
+	 * 此方法不一定返回scw.web.MultiPartServerHttpRequest
+	 * @param request
+	 * @param multipartMessageResolver
+	 * @return
+	 */
 	public static ServerHttpRequest wrapperServerMultipartFormRequest(ServerHttpRequest request,
 			MultipartMessageResolver multipartMessageResolver) {
 		if (request.getMethod() == HttpMethod.GET) {
@@ -223,7 +234,7 @@ public final class WebUtils {
 			if (multipartMessageResolver == null) {
 				logger.warn("Multipart is not supported: {}", request);
 			} else {
-				return new MultiPartServerHttpRequest(request, multipartMessageResolver);
+				return new DefaultMultiPartServerHttpRequest(request, multipartMessageResolver);
 			}
 		}
 		return request;

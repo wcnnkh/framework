@@ -1,25 +1,39 @@
 package scw.context.result;
 
-import scw.context.transaction.RollbackOnlyResult;
+import java.io.Serializable;
 
-public class Result extends BaseResult implements RollbackOnlyResult, ErrorCode {
+import scw.context.transaction.RollbackOnlyResult;
+import scw.util.Status;
+
+public class Result implements Status<Long>, ResultMsgCode, RollbackOnlyResult, Serializable {
 	private static final long serialVersionUID = 1L;
 	private final long code;
 	private Boolean rollbackOnlyResult;
+	private String msg;
+	private boolean success;
 
 	public Result(boolean success, long code) {
-		super(success);
+		this.success = success;
 		this.code = code;
 	}
 
 	public Result(Result result) {
-		super(result);
+		this.success = result.success;
+		this.msg = result.msg;
 		this.code = result.code;
 		this.rollbackOnlyResult = result.rollbackOnlyResult;
 	}
 
+	public String getMsg() {
+		return msg;
+	}
+
 	public final long getCode() {
 		return code;
+	}
+
+	public boolean isSuccess() {
+		return success;
 	}
 
 	public boolean isError() {
@@ -31,7 +45,7 @@ public class Result extends BaseResult implements RollbackOnlyResult, ErrorCode 
 	}
 
 	public Result setMsg(String msg) {
-		super.setMsg(msg);
+		this.msg = msg;
 		return this;
 	}
 
@@ -60,5 +74,15 @@ public class Result extends BaseResult implements RollbackOnlyResult, ErrorCode 
 			dataResult.setData(data);
 		}
 		return dataResult;
+	}
+
+	@Override
+	public final Long get() {
+		return code;
+	}
+
+	@Override
+	public final boolean isActive() {
+		return isSuccess();
 	}
 }

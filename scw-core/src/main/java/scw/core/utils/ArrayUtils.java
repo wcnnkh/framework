@@ -3,6 +3,7 @@ package scw.core.utils;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import scw.core.Assert;
@@ -101,8 +102,91 @@ public final class ArrayUtils {
 		int len = Array.getLength(array);
 		Object newArray = Array.newInstance(array.getClass().getComponentType(), len);
 		for (int i = len - 1, index = 0; i >= 0; i--) {
-			Array.set(newArray, index ++, Array.get(array, i));
+			Array.set(newArray, index++, Array.get(array, i));
 		}
 		return (T[]) newArray;
+	}
+
+	/**
+	 * 比较两个数组
+	 * 
+	 * @param <T>
+	 * @param array1
+	 * @param array2
+	 * @param comparator
+	 * @return
+	 */
+	public static <T> int compare(T[] array1, T[] array2, Comparator<T> comparator) {
+		if (ArrayUtils.isEmpty(array1)) {
+			return ArrayUtils.isEmpty(array2) ? 0 : -1;
+		}
+
+		if (ArrayUtils.isEmpty(array2)) {
+			return ArrayUtils.isEmpty(array1) ? 0 : 1;
+		}
+
+		for (int i = 0; i < Math.min(array1.length, array2.length); i++) {
+			int v = comparator.compare(array1[i], array2[i]);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return array1.length - array2.length;
+	}
+
+	public static int compare(int[] array1, int[] array2, int defaultValue) {
+		int size1 = array1 == null ? 0 : array1.length;
+		int size2 = array2 == null ? 0 : array2.length;
+		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
+			int v1 = i < size1 ? array1[i] : defaultValue;
+			int v2 = i < size2 ? array2[i] : defaultValue;
+			int v = Integer.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
+	}
+
+	public static int compare(long[] array1, long[] array2, long defaultValue) {
+		int size1 = array1 == null ? 0 : array1.length;
+		int size2 = array2 == null ? 0 : array2.length;
+		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
+			long v1 = i < size1 ? array1[i] : defaultValue;
+			long v2 = i < size2 ? array2[i] : defaultValue;
+			int v = Long.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
+	}
+
+	public static int compare(double[] array1, double[] array2, double defaultValue) {
+		int size1 = array1 == null ? 0 : array1.length;
+		int size2 = array2 == null ? 0 : array2.length;
+		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
+			double v1 = i < size1 ? array1[i] : defaultValue;
+			double v2 = i < size2 ? array2[i] : defaultValue;
+			int v = Double.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
+	}
+
+	public static int compare(Number[] array1, Number[] array2, Number defaultValue, Comparator<Number> comparator) {
+		int size1 = array1 == null ? 0 : array1.length;
+		int size2 = array2 == null ? 0 : array2.length;
+		for (int i = 0, size = Math.max(size1, size2); i < size; i++) {
+			Number v1 = i < size1 ? array1[i] : defaultValue;
+			Number v2 = i < size2 ? array2[i] : defaultValue;
+			int v = comparator.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
 	}
 }

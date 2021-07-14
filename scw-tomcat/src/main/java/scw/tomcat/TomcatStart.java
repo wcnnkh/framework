@@ -7,8 +7,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContainerInitializer;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.descriptor.JspConfigDescriptor;
 
 import org.apache.catalina.Context;
@@ -141,6 +143,20 @@ public class TomcatStart implements Main, Destroy {
 		String servletName = mainClass.getSimpleName();
 		Servlet servlet = ServletContextUtils.createServlet(application.getBeanFactory());
 		Wrapper wrapper = Tomcat.addServlet(context, servletName, servlet);
+		wrapper.setAsyncSupported(true);
+
+		if (application.getBeanFactory().isInstance(MultipartConfigElement.class)) {
+			wrapper.setMultipartConfigElement(application.getBeanFactory().getInstance(MultipartConfigElement.class));
+		} else {
+			for (Class<?> clazz : application.getSourceClasses()) {
+				if (clazz.isAnnotationPresent(MultipartConfig.class)) {
+					wrapper.setMultipartConfigElement(
+							new MultipartConfigElement(clazz.getAnnotation(MultipartConfig.class)));
+					break;
+				}
+			}
+		}
+
 		Properties properties = TomcatUtils
 				.getServletInitParametersConfig(application.getBeanFactory().getEnvironment(), servletName, true);
 		for (Entry<Object, Object> entry : properties.entrySet()) {

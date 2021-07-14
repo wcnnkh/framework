@@ -7,7 +7,7 @@ public class DataResult<T> extends Result {
 	public DataResult(boolean success, long code) {
 		super(success, code);
 	};
-	
+
 	public T getData() {
 		return data;
 	}

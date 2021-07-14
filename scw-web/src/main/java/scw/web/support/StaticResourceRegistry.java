@@ -12,10 +12,10 @@ import scw.web.HttpService;
 import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.WebUtils;
-import scw.web.pattern.HttpPatternRegistry;
+import scw.web.pattern.HttpPatterns;
 import scw.web.pattern.ServerHttpRequestAccept;
 
-public class StaticResourceRegistry extends HttpPatternRegistry<String>
+public class StaticResourceRegistry extends HttpPatterns<String>
 		implements HttpService, ServerHttpRequestAccept {
 	private String defaultFileName = "index.html";
 	private ResourceLoader resourceLoader;

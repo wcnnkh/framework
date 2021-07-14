@@ -1,10 +1,10 @@
 package scw.beans;
 
 import scw.instance.SingletonRegistry;
-import scw.util.Result;
+import scw.util.Status;
 
-public interface SingletonBeanRegistry extends SingletonRegistry{
-	Result<Object> getSingleton(BeanDefinition definition);
-	
+public interface SingletonBeanRegistry extends SingletonRegistry {
+	Status<Object> getSingleton(BeanDefinition definition);
+
 	void destroyAll();
 }

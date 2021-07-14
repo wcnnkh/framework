@@ -1,5 +1,5 @@
 package scw.context.result;
 
-public interface ErrorCode {
+public interface ResultMsgCode {
 	long getCode();
 }

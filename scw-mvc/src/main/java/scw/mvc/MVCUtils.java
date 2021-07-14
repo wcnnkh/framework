@@ -16,6 +16,7 @@ import scw.web.ServerHttpRequest;
 
 public final class MVCUtils {
 	private static final boolean SUPPORT_SERVLET = ClassUtils.isPresent("javax.servlet.Servlet", null);
+	private static final String REQUEST_LOG_ID = "_scw_request_log_id";
 
 	private MVCUtils() {
 	};
@@ -84,7 +85,7 @@ public final class MVCUtils {
 	public static Levels getActionLoggerLevel(Action action) {
 		LoggerEnable loggerEnable = AnnotationUtils.getAnnotation(LoggerEnable.class, action.getDeclaringClass(),
 				action);
-		return loggerEnable == null ? null : loggerEnable.value();
+		return loggerEnable == null ? Levels.DEBUG : loggerEnable.value();
 	}
 
 	public static void setAction(ServerHttpRequest request, Action action) {
@@ -93,5 +94,13 @@ public final class MVCUtils {
 
 	public static Action getAction(ServerHttpRequest request) {
 		return (Action) request.getAttribute(Action.class.getName());
+	}
+	
+	public static void setRequestLogId(ServerHttpRequest request, String id) {
+		request.setAttribute(REQUEST_LOG_ID, id);
+	}
+	
+	public static String getRequestLogId(ServerHttpRequest request) {
+		return (String) request.getAttribute(REQUEST_LOG_ID);
 	}
 }

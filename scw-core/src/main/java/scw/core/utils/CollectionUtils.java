@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -518,6 +519,7 @@ public abstract class CollectionUtils {
 
 	/**
 	 * 获取一个迭代器
+	 * 
 	 * @param list
 	 * @param previous 是否反向迭代
 	 * @return
@@ -548,5 +550,70 @@ public abstract class CollectionUtils {
 			map.put((K) key, source.get(key));
 		}
 		return map;
+	}
+
+	public static <T> int compare(Collection<? extends T> collection1, Collection<? extends T> collection2,
+			Comparator<T> comparator) {
+		if (CollectionUtils.isEmpty(collection1)) {
+			return CollectionUtils.isEmpty(collection2) ? 0 : -1;
+		}
+
+		if (CollectionUtils.isEmpty(collection2)) {
+			return CollectionUtils.isEmpty(collection1) ? 0 : 1;
+		}
+
+		Iterator<? extends T> iterator1 = collection1.iterator();
+		Iterator<? extends T> iterator2 = collection2.iterator();
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			int v = comparator.compare(iterator1.next(), iterator2.next());
+			if (v != 0) {
+				return v;
+			}
+		}
+		return collection1.size() - collection2.size();
+	}
+
+	public static boolean isEmpty(Iterator<?> iterator) {
+		return iterator == null || !iterator.hasNext();
+	}
+
+	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2,
+			Comparator<T> comparator) {
+		if (CollectionUtils.isEmpty(iterator1)) {
+			return CollectionUtils.isEmpty(iterator2) ? 0 : -1;
+		}
+
+		if (CollectionUtils.isEmpty(iterator2)) {
+			return CollectionUtils.isEmpty(iterator1) ? 0 : 1;
+		}
+
+		while (iterator1.hasNext() && iterator2.hasNext()) {
+			int v = comparator.compare(iterator1.next(), iterator2.next());
+			if (v != 0) {
+				return v;
+			}
+		}
+		return iterator1.hasNext() ? 1 : (iterator2.hasNext() ? -1 : 0);
+	}
+
+	public static <T> int compare(Iterable<? extends T> iterable1, Iterable<? extends T> iterable2, T defaultValue,
+			Comparator<T> comparator) {
+		return compare(iterable1 == null ? Collections.emptyIterator() : iterable1.iterator(),
+				iterable2 == null ? Collections.emptyIterator() : iterable2.iterator(), defaultValue, comparator);
+	}
+
+	public static <T> int compare(Iterator<? extends T> iterator1, Iterator<? extends T> iterator2, T defaultValue,
+			Comparator<T> comparator) {
+		Iterator<? extends T> useIterator1 = iterator1 == null ? Collections.emptyIterator() : iterator1;
+		Iterator<? extends T> useIterator2 = iterator2 == null ? Collections.emptyIterator() : iterator2;
+		while (useIterator1.hasNext() || useIterator2.hasNext()) {
+			T v1 = useIterator1.hasNext() ? useIterator1.next() : defaultValue;
+			T v2 = useIterator2.hasNext() ? useIterator2.next() : defaultValue;
+			int v = comparator.compare(v1, v2);
+			if (v != 0) {
+				return v;
+			}
+		}
+		return 0;
 	}
 }

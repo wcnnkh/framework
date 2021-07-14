@@ -3,7 +3,7 @@ package scw.mvc.exception;
 import java.io.IOException;
 
 import scw.context.annotation.Provider;
-import scw.context.result.ErrorCode;
+import scw.context.result.ResultMsgCode;
 import scw.context.result.ResultFactory;
 import scw.lang.NestedExceptionUtils;
 import scw.lang.ParameterException;
@@ -31,7 +31,7 @@ public final class DefaultExceptionHandler implements ExceptionHandler {
 		} else if (error instanceof AuthorizationFailureException) {
 			return resultFactory.authorizationFailure();
 		} else {
-			Long code = error instanceof ErrorCode ? ((ErrorCode) error).getCode() : null;
+			Long code = error instanceof ResultMsgCode ? ((ResultMsgCode) error).getCode() : null;
 			String message = NestedExceptionUtils.getNonEmptyMessage(error, false);
 			if (code == null) {
 				if (message == null) {

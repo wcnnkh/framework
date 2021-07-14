@@ -13,7 +13,7 @@ public class ResultFactory {
 			.getObservableValue("result.parameter.error.msg", String.class,
 					"参数错误");
 
-	private final ResultMessageFactory resultMessageFactory;
+	private final ResultMsgFactory resultMessageFactory;
 	private final int defaultErrorCode;
 	private final int successCode;
 	private final int authorizationFailureCode;
@@ -23,11 +23,11 @@ public class ResultFactory {
 		this(null);
 	}
 
-	public ResultFactory(ResultMessageFactory resultMessageFactory) {
+	public ResultFactory(ResultMsgFactory resultMessageFactory) {
 		this(resultMessageFactory, 1, 0, -1, 2);
 	}
 
-	public ResultFactory(ResultMessageFactory resultMessageFactory,
+	public ResultFactory(ResultMsgFactory resultMessageFactory,
 			int defaultErrorCode, int successCode,
 			int authorizationFailureCode, int parameterErrorCode) {
 		this.resultMessageFactory = resultMessageFactory;
@@ -116,7 +116,7 @@ public class ResultFactory {
 		return parameterErrorCode;
 	}
 
-	public final ResultMessageFactory getResultMessageFactory() {
+	public final ResultMsgFactory getResultMessageFactory() {
 		return resultMessageFactory;
 	}
 

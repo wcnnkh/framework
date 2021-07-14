@@ -26,7 +26,7 @@ public class DefaultHttpService extends AbstractHttpService {
 		}
 
 		if (beanFactory.isInstance(StaticResourceRegistry.class)) {
-			getServiceRegistry().register(beanFactory.getInstance(StaticResourceRegistry.class));
+			getServiceRegistry().add(beanFactory.getInstance(StaticResourceRegistry.class));
 		}
 
 		StaticResourceLoader staticResourceLoader = beanFactory.isInstance(StaticResourceLoader.class)
@@ -34,14 +34,14 @@ public class DefaultHttpService extends AbstractHttpService {
 				: new DefaultStaticResourceLoader(beanFactory.getEnvironment());
 		StaticResourceHttpService resourceHandler = new StaticResourceHttpService();
 		resourceHandler.setResourceLoader(staticResourceLoader);
-		getServiceRegistry().register(resourceHandler);
+		getServiceRegistry().add(resourceHandler);
 
 		for (HttpServiceInterceptor interceptor : beanFactory.getServiceLoader(HttpServiceInterceptor.class)) {
 			interceptors.add(interceptor);
 		}
 
 		for (HttpService handler : beanFactory.getServiceLoader(HttpService.class)) {
-			getServiceRegistry().register(handler);
+			getServiceRegistry().add(handler);
 		}
 	}
 

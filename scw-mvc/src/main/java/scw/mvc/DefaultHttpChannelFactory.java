@@ -10,14 +10,14 @@ import scw.web.WebUtils;
 import scw.web.jsonp.JsonpUtils;
 import scw.web.message.WebMessageConverters;
 import scw.web.message.support.DefaultWebMessageConverters;
-import scw.web.pattern.HttpPatternRegistry;
+import scw.web.pattern.HttpPatterns;
 
 public class DefaultHttpChannelFactory implements HttpChannelFactory {
 	protected final BeanFactory beanFactory;
 	private MultipartMessageResolver multipartMessageResolver;
-	private final HttpPatternRegistry<Boolean> jsonpSupportConfig = new HttpPatternRegistry<Boolean>();
-	private final HttpPatternRegistry<Boolean> jsonSupportWrapperConfig = new HttpPatternRegistry<Boolean>();
-	private final HttpPatternRegistry<Boolean> multipartFormSupportWrapperConfig = new HttpPatternRegistry<Boolean>();
+	private final HttpPatterns<Boolean> jsonpSupportConfig = new HttpPatterns<Boolean>();
+	private final HttpPatterns<Boolean> jsonSupportWrapperConfig = new HttpPatterns<Boolean>();
+	private final HttpPatterns<Boolean> multipartFormSupportWrapperConfig = new HttpPatterns<Boolean>();
 	private final WebMessageConverters webMessageConverters;
 
 	public DefaultHttpChannelFactory(BeanFactory beanFactory) {
@@ -34,15 +34,15 @@ public class DefaultHttpChannelFactory implements HttpChannelFactory {
 		this.multipartMessageResolver = multipartMessageResolver;
 	}
 
-	public final HttpPatternRegistry<Boolean> getJsonpSupportConfig() {
+	public final HttpPatterns<Boolean> getJsonpSupportConfig() {
 		return jsonpSupportConfig;
 	}
 
-	public final HttpPatternRegistry<Boolean> getJsonSupportWrapperConfig() {
+	public final HttpPatterns<Boolean> getJsonSupportWrapperConfig() {
 		return jsonSupportWrapperConfig;
 	}
 
-	public final HttpPatternRegistry<Boolean> getMultipartFormSupportWrapperConfig() {
+	public final HttpPatterns<Boolean> getMultipartFormSupportWrapperConfig() {
 		return multipartFormSupportWrapperConfig;
 	}
 

@@ -20,12 +20,12 @@ public class SwaggerBeanFactoryPostProcessor implements BeanFactoryPostProcessor
 				if (isEnableSwagger(beanFactory.getEnvironment())) {
 					if (info.getSource() instanceof StaticResourceRegistry) {
 						StaticResourceRegistry staticResourceRegistry = (StaticResourceRegistry) info.getSource();
-						staticResourceRegistry.register("/swagger-ui/*", "/");
+						staticResourceRegistry.add("/swagger-ui/*", "/");
 					}
 
 					if (info.getSource() instanceof HttpServiceRegistry) {
 						HttpServiceRegistry registry = (HttpServiceRegistry) info.getSource();
-						registry.register("/swagger-ui/swagger.json",
+						registry.add("/swagger-ui/swagger.json",
 								beanFactory.getInstance(SwaggerUiHttpService.class));
 					}
 				}

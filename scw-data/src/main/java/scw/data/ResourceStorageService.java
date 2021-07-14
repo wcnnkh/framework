@@ -12,6 +12,7 @@ import scw.net.message.InputMessage;
 
 /**
  * 资源存储服务
+ * 
  * @author shuchaowen
  *
  */
@@ -34,8 +35,7 @@ public interface ResourceStorageService {
 	 * @throws StorageException
 	 * @throws IOException
 	 */
-	boolean put(String key, InputMessage input) throws StorageException,
-			IOException;
+	boolean put(String key, InputMessage input) throws StorageException, IOException;
 
 	/**
 	 * 删除
@@ -64,19 +64,36 @@ public interface ResourceStorageService {
 	 * @return
 	 * @throws StorageException
 	 */
-	List<Resource> list(@Nullable String prefix,
-			@Nullable String marker, int limit) throws StorageException, IOException;
+	List<Resource> list(@Nullable String prefix, @Nullable String marker, int limit)
+			throws StorageException, IOException;
 
 	/**
 	 * 生成上传策略<br/>
 	 * 另外，此方法和put方法的区别最大的区别是当存储服务使用的是第三方实现时<br/>
 	 * put方法是使用服务器带宽进行上传,而此方法使用的是第三方服务的带宽
-	 * @see scw.upload.UploadPolicy
+	 * 
 	 * @param key
-	 * @param expiration
-	 *            到期时间点
+	 * @param expiration 到期时间点
 	 * @return
 	 * @throws StorageException
 	 */
-	HttpRequestEntity<?> generatePolicy(String key, Date expiration) throws StorageException;
+	UploadPolicy generatePolicy(String key, Date expiration) throws StorageException;
+
+	static final class UploadPolicy {
+		private final HttpRequestEntity<?> policy;
+		private final String url;
+
+		public UploadPolicy(String url, HttpRequestEntity<?> policy) {
+			this.url = url;
+			this.policy = policy;
+		}
+
+		public HttpRequestEntity<?> getPolicy() {
+			return policy;
+		}
+
+		public String getUrl() {
+			return url;
+		}
+	}
 }

@@ -1,5 +1,5 @@
 package scw.context.result;
 
-public interface ResultMessageFactory {
+public interface ResultMsgFactory {
 	String getMessage(long code);
 }

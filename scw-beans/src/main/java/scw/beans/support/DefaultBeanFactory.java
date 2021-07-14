@@ -39,7 +39,8 @@ import scw.logger.LoggerFactory;
 import scw.util.ClassLoaderProvider;
 import scw.util.Creator;
 import scw.util.DefaultClassLoaderProvider;
-import scw.util.Result;
+import scw.util.DefaultStatus;
+import scw.util.Status;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class DefaultBeanFactory extends AbstractConfigurableContext
@@ -220,7 +221,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 	}
 
 	@Override
-	public <T, E extends Throwable> Result<T> getSingleton(String name, Creator<T, E> creater) throws E {
+	public <T, E extends Throwable> Status<T> getSingleton(String name, Creator<T, E> creater) throws E {
 		return singletonBeanRegistry.getSingleton(name, creater);
 	}
 
@@ -243,14 +244,14 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 			return null;
 		}
 
-		Result<Object> result;
+		Status<Object> result;
 		if (definition.isSingleton()) {
 			result = singletonBeanRegistry.getSingleton(definition);
 		} else {
-			result = new Result<Object>(true, definition.create());
+			result = new DefaultStatus<Object>(true, definition.create());
 		}
 
-		object = result.getResult();
+		object = result.get();
 		if (result.isActive()) {
 			init(definition, object);
 		}
