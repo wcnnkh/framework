@@ -33,11 +33,6 @@ public abstract class AbstractHttpService implements HttpService {
 	}
 
 	public void service(ServerHttpRequest request, ServerHttpResponse response) throws IOException {
-		String requestId = WebUtils.getRequestId(request);
-		if(requestId == null) {
-			requestId = requestIdSupplier.get();
-			WebUtils.setRequestId(request, requestId);
-		}
 		CorsRegistry corsRegistry = getCorsRegistry();
 		if (corsRegistry != null) {
 			if (CorsUtils.isCorsRequest(request)) {

@@ -11,6 +11,8 @@ import scw.json.JSONSupport;
 import scw.json.JSONUtils;
 import scw.lang.NotSupportedException;
 import scw.logger.Levels;
+import scw.logger.Logger;
+import scw.logger.LoggerFactory;
 import scw.mvc.action.Action;
 import scw.mvc.action.ActionInterceptor;
 import scw.mvc.action.ActionInterceptorChain;
@@ -21,6 +23,7 @@ import scw.mvc.exception.ExceptionHandler;
 import scw.net.message.convert.DefaultMessageConverters;
 import scw.net.message.convert.MessageConverters;
 import scw.util.MultiIterable;
+import scw.util.XUtils;
 import scw.web.HttpService;
 import scw.web.ServerHttpAsyncControl;
 import scw.web.ServerHttpRequest;
@@ -30,6 +33,8 @@ import scw.web.pattern.ServerHttpRequestAccept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
 public class HttpControllerHandler implements HttpService, ServerHttpRequestAccept {
+	private static Logger logger = LoggerFactory.getLogger(HttpControllerHandler.class);
+	
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport;
 	private final MessageConverters messageConverters;
@@ -91,7 +96,17 @@ public class HttpControllerHandler implements HttpService, ServerHttpRequestAcce
 			// 不应该到这里的，因为accept里面已经判断过了
 			throw new NotSupportedException(request.toString());
 		}
-
+		String requestLogId = MVCUtils.getRequestLogId(request);
+		if(requestLogId == null) {
+			requestLogId = XUtils.getUUID();
+			MVCUtils.setRequestLogId(request, requestLogId);
+		}
+		
+		Levels level = MVCUtils.getActionLoggerLevel(action);
+		if(logger.isLoggable(level.getValue())) {
+			logger.log(level.getValue(), "[{}] request: {}", requestLogId, request);
+		}
+		
 		ServerHttpRequest requestToUse = request;
 		ServerHttpResponse responseToUse = response;
 
@@ -103,11 +118,6 @@ public class HttpControllerHandler implements HttpService, ServerHttpRequestAcce
 
 		HttpChannel httpChannel = httpChannelFactory.create(requestToUse, responseToUse);
 		HttpChannelDestroy httpChannelDestroy = new HttpChannelDestroy(httpChannel);
-		Levels level = MVCUtils.getActionLoggerLevel(action);
-		if (level != null) {
-			httpChannelDestroy.setEnableLevel(level.getValue());
-		}
-
 		MultiIterable<ActionInterceptor> filters = new MultiIterable<ActionInterceptor>(actionInterceptor,
 				action.getActionInterceptors());
 		try {
@@ -120,8 +130,13 @@ public class HttpControllerHandler implements HttpService, ServerHttpRequestAcce
 				message = doError(httpChannel, action, e, httpChannelDestroy);
 			}
 
-			httpChannelDestroy.setResponseBody(message);
-			httpChannel.write(action.getReturnType(), message);
+			try {
+				httpChannel.write(action.getReturnType(), message);
+			} finally {
+				if(logger.isLoggable(level.getValue())) {
+					logger.log(level.getValue(), "Execution {}ms of [{}] response: {}", System.currentTimeMillis() - httpChannel.getCreateTime(), requestLogId, message);
+				}
+			}
 		} finally {
 			if (!httpChannel.isCompleted()) {
 				if (requestToUse.isSupportAsyncControl()) {
