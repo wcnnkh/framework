@@ -3,9 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="scw.ibatis.test.mapper.TestMapper">
-
-	<select id="query"
-		parameterType="java.lang.String" resultType="java.lang.Integer">
-		select * from user
+	<select id="query" resultType="java.lang.String">
+		select uid from user
 	</select>
 </mapper>

@@ -18,5 +18,11 @@
 			<artifactId>mybatis</artifactId>
 			<version>3.4.6</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>scw</groupId>
+			<artifactId>scw-mysql</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 </project>

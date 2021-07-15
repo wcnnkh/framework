@@ -2,9 +2,13 @@ package scw.ibatis.beans;
 
 import java.io.IOException;
 
+import javax.sql.DataSource;
+
 import org.apache.ibatis.binding.MapperRegistry;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
+import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.TypeAliasRegistry;
 
 import scw.beans.BeanFactory;
@@ -23,6 +27,22 @@ public class IbatisBeanUtils {
 	private static Logger logger = LoggerFactory.getLogger(IbatisBeanUtils.class);
 
 	public static void configuration(Configuration configuration, BeanFactory beanFactory) {
+		Environment environment = configuration.getEnvironment();
+		if(environment == null){
+			//创建Environment
+			if(beanFactory.isInstance(DataSource.class)){
+				environment = new Environment("scw_default", new JdbcTransactionFactory(), beanFactory.getInstance(DataSource.class));
+				configuration.setEnvironment(environment);
+			}
+		}else{
+			DataSource dataSource = environment.getDataSource();
+			if(dataSource == null && beanFactory.isInstance(DataSource.class)){
+				dataSource = beanFactory.getInstance(DataSource.class);
+				environment = new Environment(environment.getId(), environment.getTransactionFactory(), dataSource);
+				configuration.setEnvironment(environment);
+			}
+		}
+		
 		PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver(
 				beanFactory.getEnvironment());
 		TypeAliasRegistry typeAliasRegistry = configuration.getTypeAliasRegistry();
