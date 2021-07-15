@@ -32,7 +32,7 @@ public class DefaultConfiguration extends Configuration {
 		}
 
 		setObjectWrapper(new DefaultObjectWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS));
-		for (Class<?> clz : beanFactory.getContextClassesLoader()) {
+		for (Class<?> clz : beanFactory.getContextClasses()) {
 			SharedVariable sharedVariable = clz.getAnnotation(SharedVariable.class);
 			if (sharedVariable == null) {
 				continue;

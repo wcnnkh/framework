@@ -11,7 +11,7 @@ public class RmiClientBeanfactoryPostProcessor implements BeanFactoryPostProcess
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		for (Class<?> clazz : beanFactory.getContextClassesLoader()) {
+		for (Class<?> clazz : beanFactory.getContextClasses()) {
 			RmiClient client = clazz.getAnnotation(RmiClient.class);
 			if (client == null) {
 				continue;

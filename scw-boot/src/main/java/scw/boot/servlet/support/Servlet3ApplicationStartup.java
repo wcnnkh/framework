@@ -53,7 +53,7 @@ public class Servlet3ApplicationStartup extends DefaultServletApplicationStartup
 		}
 		
 		for (ServletContainerInitializer initializer : application.getBeanFactory().getServiceLoader(ServletContainerInitializer.class)) {
-			initializer.onStartup(application.getContextClassesLoader().toSet(), servletContext);
+			initializer.onStartup(application.getContextClasses().toSet(), servletContext);
 		}
 		super.afterStarted(servletContext, application);
 	}

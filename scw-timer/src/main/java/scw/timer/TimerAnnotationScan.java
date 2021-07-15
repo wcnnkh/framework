@@ -24,7 +24,7 @@ public final class TimerAnnotationScan implements ApplicationPostProcessor {
 	public void postProcessApplication(ConfigurableApplication application)
 			throws Throwable {
 		Timer timer = application.getBeanFactory().getInstance(Timer.class);
-		for (Class<?> clz : application.getContextClassesLoader()) {
+		for (Class<?> clz : application.getContextClasses()) {
 			for (Method method : AnnotationUtils.getAnnoationMethods(clz, true, true, Schedule.class)) {
 				Schedule schedule = method.getAnnotation(Schedule.class);
 				schedule(application.getBeanFactory(), clz, method, timer, schedule);

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-
-	<properties resource="db.properties"></properties>
 	<settings>
 		<!-- 打印查询语句 -->
 		<setting name="logImpl" value="STDOUT_LOGGING" />
@@ -18,10 +16,6 @@
 		<!-- <setting name="localCacheScope" value="STATEMENT"/> -->
 		<setting name="localCacheScope" value="SESSION" />
 	</settings>
-
-	<typeAliases>
-		<typeAlias alias="blog" type="com.wuzz.domain.Blog" />
-	</typeAliases>
 
 	<!-- <typeHandlers> <typeHandler handler="com.wuzz.type.MyTypeHandler"></typeHandler> 
 		</typeHandlers> -->
@@ -46,9 +40,9 @@
 		</environment>
 	</environments>
 
-	<mappers>
+	<!-- <mappers>
 		<mapper resource="BlogMapper.xml" />
 		<mapper resource="BlogMapperExt.xml" />
-	</mappers>
+	</mappers> -->
 
 </configuration>

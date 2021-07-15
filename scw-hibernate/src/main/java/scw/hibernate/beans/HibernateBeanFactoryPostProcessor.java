@@ -13,11 +13,11 @@ public class HibernateBeanFactoryPostProcessor implements BeanFactoryPostProcess
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory) throws BeansException {
-		if(beanFactory.containsDefinition(SessionFactory.class.getName())) {
+		if(!beanFactory.containsDefinition(SessionFactory.class.getName())) {
 			beanFactory.registerDefinition(new SessionFactoryBeanDefinition(beanFactory));
 		}
 		
-		if(beanFactory.containsDefinition(Configuration.class.getName())) {
+		if(!beanFactory.containsDefinition(Configuration.class.getName())) {
 			beanFactory.registerDefinition(new ConfigurationBeanDefinition(beanFactory));
 		}
 	}

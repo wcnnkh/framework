@@ -31,7 +31,7 @@ public class MessageListenerApplicationPostProcess implements ApplicationPostPro
 
 		MessageConsumerFactory factory = application.getBeanFactory().getInstance(MessageConsumerFactory.class);
 		MessageListenerFactory listenerFactory = application.getBeanFactory().getInstance(MessageListenerFactory.class);
-		for (Class<?> clazz : application.getContextClassesLoader()) {
+		for (Class<?> clazz : application.getContextClasses()) {
 			scw.jms.bind.MessageListener messageListener = clazz
 					.getAnnotation(scw.jms.bind.MessageListener.class);
 			if (messageListener != null) {

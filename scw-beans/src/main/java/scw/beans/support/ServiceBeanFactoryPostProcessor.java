@@ -9,7 +9,7 @@ public class ServiceBeanFactoryPostProcessor implements BeanFactoryPostProcessor
 
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
 			throws BeansException {
-		for (Class<?> clz : beanFactory.getContextClassesLoader()) {
+		for (Class<?> clz : beanFactory.getContextClasses()) {
 			Service service = clz.getAnnotation(Service.class);
 			if (service == null) {
 				continue;

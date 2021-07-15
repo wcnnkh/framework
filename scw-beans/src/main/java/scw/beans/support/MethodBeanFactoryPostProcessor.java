@@ -12,7 +12,7 @@ public class MethodBeanFactoryPostProcessor implements BeanFactoryPostProcessor 
 
 	public void postProcessBeanFactory(ConfigurableBeanFactory beanFactory)
 			throws BeansException {
-		for (Class<?> clz : beanFactory.getContextClassesLoader()) {
+		for (Class<?> clz : beanFactory.getContextClasses()) {
 			for (Method method : clz.getDeclaredMethods()) {
 				Bean bean = method.getAnnotation(Bean.class);
 				if (bean == null) {
