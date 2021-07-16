@@ -45,9 +45,9 @@ public final class HibernateUtils {
 			return sessionFactory.openSession();
 		}
 
-		HibernateTransactionResource resource = transaction.getResource(sessionFactory);
+		SessionTransactionResource resource = transaction.getResource(sessionFactory);
 		if (resource == null) {
-			HibernateTransactionResource hibernateTransactionResource = new HibernateTransactionResource(sessionFactory,
+			SessionTransactionResource hibernateTransactionResource = new SessionTransactionResource(sessionFactory,
 					transaction.isActive());
 			resource = transaction.bindResource(sessionFactory, hibernateTransactionResource);
 			if(resource == null){

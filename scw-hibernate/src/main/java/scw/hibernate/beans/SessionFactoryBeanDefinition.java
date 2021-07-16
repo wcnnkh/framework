@@ -1,6 +1,7 @@
 package scw.hibernate.beans;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
 import scw.beans.BeansException;
@@ -14,11 +15,11 @@ public class SessionFactoryBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	public boolean isInstance() {
-		return beanFactory.isInstance(org.hibernate.cfg.Configuration.class);
+		return beanFactory.isInstance(Configuration.class);
 	}
 
 	public Object create() throws BeansException {
-		org.hibernate.cfg.Configuration configuration = beanFactory.getInstance(org.hibernate.cfg.Configuration.class);
+		Configuration configuration = beanFactory.getInstance(Configuration.class);
 		if (beanFactory.isInstance(ServiceRegistry.class)) {
 			return configuration.buildSessionFactory(beanFactory.getInstance(ServiceRegistry.class));
 		} else {

@@ -8,14 +8,14 @@ import scw.transaction.Savepoint;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionResource;
 
-public class HibernateTransactionResource implements TransactionResource {
+public class SessionTransactionResource implements TransactionResource {
 	private final SessionFactory sessionFactory;
 	private final boolean isActive;
 	
 	private Session session;
 	private Transaction transaction;
 
-	public HibernateTransactionResource(SessionFactory sessionFactory,
+	public SessionTransactionResource(SessionFactory sessionFactory,
 			boolean isActive) {
 		this.sessionFactory = sessionFactory;
 		this.isActive = isActive;
