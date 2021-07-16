@@ -1,5 +1,6 @@
 package scw.ibatis.beans;
 
+import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
@@ -7,8 +8,6 @@ import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
 import scw.beans.support.DefaultBeanDefinition;
 import scw.ibatis.MybatisUtils;
-import scw.io.Resource;
-import scw.io.ResourceUtils;
 
 public class SqlSessionFactoryBeanDefinition extends DefaultBeanDefinition {
 
@@ -17,18 +16,12 @@ public class SqlSessionFactoryBeanDefinition extends DefaultBeanDefinition {
 	}
 
 	public boolean isInstance() {
-		return true;
+		return beanFactory.isInstance(Configuration.class);
 	}
 
 	public Object create() throws BeansException {
-		Resource resource = beanFactory.getEnvironment().getResource("mybatis-config.xml");
-		SqlSessionFactory sqlSessionFactory;
-		if (resource != null && resource.exists()) {
-			sqlSessionFactory = new SqlSessionFactoryBuilder().build(ResourceUtils.getInputStream(resource));
-		} else {
-			sqlSessionFactory = new SqlSessionFactoryBuilder()
-					.build(beanFactory.getInstance(org.apache.ibatis.session.Configuration.class));
-		}
+		Configuration configuration = beanFactory.getInstance(Configuration.class);
+		SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
 		return MybatisUtils.proxySqlSessionFactory(sqlSessionFactory);
 	}
 }

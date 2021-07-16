@@ -1,7 +1,6 @@
 package scw.ibatis;
 
 import java.lang.reflect.Proxy;
-import java.util.function.Supplier;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -16,16 +15,15 @@ public final class MybatisUtils {
 	private MybatisUtils() {
 	};
 
-	public static SqlSession getTransactionSqlSession(SqlSessionFactory sqlSessionFactory,
-			Supplier<SqlSession> sqlSessionSupplier) {
+	public static SqlSession getTransactionSqlSession(SqlSessionFactory sqlSessionFactory, OpenSessionProcessor openSessionProcessor) {
 		Transaction transaction = TransactionUtils.getManager().getTransaction();
 		if (transaction == null) {
-			return sqlSessionSupplier.get();
+			return openSessionProcessor.process(transaction);
 		}
 
-		MybatisTransactionResource resource = transaction.getResource(sqlSessionFactory);
+		SqlSessionTransactionResource resource = transaction.getResource(sqlSessionFactory);
 		if (resource == null) {
-			MybatisTransactionResource mybatisTransactionResource = new MybatisTransactionResource(sqlSessionSupplier);
+			SqlSessionTransactionResource mybatisTransactionResource = new SqlSessionTransactionResource(transaction, openSessionProcessor);
 			resource = transaction.bindResource(sqlSessionFactory, mybatisTransactionResource);
 			if (resource == null) {
 				resource = mybatisTransactionResource;
@@ -74,11 +72,11 @@ public final class MybatisUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T proxyMapper(SqlSessionFactory sqlSessionFactory, Class<? extends T> mapperClass,
+	public static <T> T proxyMapper(Class<? extends T> mapperClass,
 			Processor<scw.aop.Proxy, Object, IbatisException> processor,
 			Processor<MethodInvoker, SqlSession, Throwable> openSessionProcessor) {
 		scw.aop.Proxy proxy = ProxyUtils.getFactory().getProxy(mapperClass, null,
-				new MapperMethodInterceptor(sqlSessionFactory, openSessionProcessor));
+				new MapperMethodInterceptor(mapperClass, openSessionProcessor));
 		return (T) processor.process(proxy);
 	}
 }

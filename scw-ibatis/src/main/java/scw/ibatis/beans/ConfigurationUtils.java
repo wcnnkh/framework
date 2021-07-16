@@ -4,14 +4,17 @@ import java.io.IOException;
 
 import javax.sql.DataSource;
 
-import org.apache.ibatis.binding.MapperRegistry;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.builder.annotation.MapperAnnotationBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.ibatis.type.TypeAliasRegistry;
 
+import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
+import scw.beans.ConfigurableBeanFactory;
 import scw.core.utils.StringUtils;
 import scw.ibatis.IbatisException;
 import scw.ibatis.beans.annotation.MapperResources;
@@ -22,35 +25,42 @@ import scw.io.Resource;
 import scw.io.support.PathMatchingResourcePatternResolver;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
+import scw.util.XUtils;
 
-public class IbatisBeanUtils {
-	private static Logger logger = LoggerFactory.getLogger(IbatisBeanUtils.class);
+public class ConfigurationUtils {
+	private static Logger logger = LoggerFactory.getLogger(ConfigurationUtils.class);
 
-	public static void configuration(Configuration configuration, BeanFactory beanFactory) {
+	public static void configurationEnvironment(Configuration configuration, BeanFactory beanFactory) {
 		Environment environment = configuration.getEnvironment();
-		if(environment == null){
-			//创建Environment
-			if(beanFactory.isInstance(DataSource.class)){
-				environment = new Environment("scw_default", new JdbcTransactionFactory(), beanFactory.getInstance(DataSource.class));
+		if (environment == null) {
+			// 创建Environment
+			if (beanFactory.isInstance(DataSource.class)) {
+				environment = new Environment(XUtils.getUUID(), new JdbcTransactionFactory(),
+						beanFactory.getInstance(DataSource.class));
 				configuration.setEnvironment(environment);
 			}
-		}else{
+		} else {
 			DataSource dataSource = environment.getDataSource();
-			if(dataSource == null && beanFactory.isInstance(DataSource.class)){
+			if (dataSource == null && beanFactory.isInstance(DataSource.class)) {
 				dataSource = beanFactory.getInstance(DataSource.class);
 				environment = new Environment(environment.getId(), environment.getTransactionFactory(), dataSource);
 				configuration.setEnvironment(environment);
 			}
 		}
-		
+	}
+
+	public static void configuration(Configuration configuration, BeanFactory beanFactory) {
 		PathMatchingResourcePatternResolver pathMatchingResourcePatternResolver = new PathMatchingResourcePatternResolver(
 				beanFactory.getEnvironment());
 		TypeAliasRegistry typeAliasRegistry = configuration.getTypeAliasRegistry();
-		MapperRegistry mapperRegistry = configuration.getMapperRegistry();
 		for (Class<?> clazz : beanFactory.getContextClasses()) {
 			TypeAliase typeAliase = clazz.getAnnotation(TypeAliase.class);
 			if (typeAliase != null) {
 				typeAliases(typeAliasRegistry, typeAliase.value(), clazz);
+			}
+
+			if (clazz.isAnnotationPresent(Mapper.class)) {
+				registerMapper(configuration, clazz);
 			}
 		}
 
@@ -59,7 +69,7 @@ public class IbatisBeanUtils {
 			if (scan != null) {
 				for (String packageName : scan.value()) {
 					for (Class<?> mapperClass : beanFactory.getClassesLoaderFactory().getClassesLoader(packageName)) {
-						registerMapper(mapperRegistry, mapperClass);
+						registerMapper(configuration, mapperClass);
 					}
 				}
 			}
@@ -105,8 +115,10 @@ public class IbatisBeanUtils {
 		}
 	}
 
-	private static void registerMapper(MapperRegistry mapperRegistry, Class<?> clazz) {
-		mapperRegistry.addMapper(clazz);
+	public static void registerMapper(Configuration configuration, Class<?> clazz) {
+		configuration.addMapper(clazz);
+		MapperAnnotationBuilder annotationBuilder = new MapperAnnotationBuilder(configuration, clazz);
+		annotationBuilder.parse();
 	}
 
 	private static void typeAliases(TypeAliasRegistry typeAliasRegistry, String name, Class<?> clazz) {
@@ -115,5 +127,12 @@ public class IbatisBeanUtils {
 			return;
 		}
 		typeAliasRegistry.registerAlias(nameToUse, clazz);
+	}
+
+	public static void registerMapperDefinition(ConfigurableBeanFactory beanFactory, Class<?> mapperClass) {
+		BeanDefinition definition = new MapperBeanDefinition(beanFactory, mapperClass);
+		if (!beanFactory.containsDefinition(definition.getId())) {
+			beanFactory.registerDefinition(definition);
+		}
 	}
 }

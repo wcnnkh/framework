@@ -21,7 +21,7 @@
 		
 		<dependency>
 			<groupId>scw</groupId>
-			<artifactId>scw-mysql</artifactId>
+			<artifactId>scw-druid</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

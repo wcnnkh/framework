@@ -1,24 +1,25 @@
 package scw.ibatis;
 
-import java.util.function.Supplier;
-
 import org.apache.ibatis.session.SqlSession;
 
 import scw.transaction.Savepoint;
+import scw.transaction.Transaction;
 import scw.transaction.TransactionException;
 import scw.transaction.TransactionResource;
 
-class MybatisTransactionResource implements TransactionResource {
-	private final Supplier<SqlSession> sqlSessionSupplier;
+public class SqlSessionTransactionResource implements TransactionResource {
+	private final OpenSessionProcessor openSessionProcessor;
+	private final Transaction transaction;
 	private SqlSession sqlSession;
 
-	public MybatisTransactionResource(Supplier<SqlSession> sqlSessionSupplier) {
-		this.sqlSessionSupplier = sqlSessionSupplier;
+	public SqlSessionTransactionResource(Transaction transaction, OpenSessionProcessor openSessionProcessor) {
+		this.transaction = transaction;
+		this.openSessionProcessor = openSessionProcessor;
 	}
 
 	public SqlSession getSqlSession() {
 		if (sqlSession == null) {
-			sqlSession = sqlSessionSupplier.get();
+			sqlSession = openSessionProcessor.process(transaction);
 			sqlSession = MybatisUtils.proxySqlSession(sqlSession);
 		}
 		return sqlSession;

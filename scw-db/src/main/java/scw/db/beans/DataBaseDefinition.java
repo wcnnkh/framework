@@ -9,6 +9,7 @@ import scw.db.DBUtils;
 import scw.db.DefaultDB;
 import scw.db.database.DataBase;
 import scw.instance.InstanceException;
+import scw.mysql.MysqlDialect;
 import scw.orm.sql.SqlDialect;
 import scw.sql.ConnectionFactory;
 
@@ -50,8 +51,12 @@ public class DataBaseDefinition extends DefaultBeanDefinition {
 			}
 		}
 
-		if (sqlDialect == null) {
+		if (sqlDialect == null && beanFactory.isInstance(SqlDialect.class)) {
 			sqlDialect = beanFactory.getInstance(SqlDialect.class);
+		}
+		
+		if(sqlDialect == null) {
+			sqlDialect = new MysqlDialect();
 		}
 
 		DB db = new DefaultDB(connectionFactory, sqlDialect);

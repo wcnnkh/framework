@@ -8,21 +8,19 @@ import scw.ibatis.MybatisUtils;
 import scw.instance.InstanceException;
 
 public class MapperBeanDefinition extends DefaultBeanDefinition {
-	private final SqlSessionFactory sqlSessionFactory;
 
-	public MapperBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> sourceClass,
-			SqlSessionFactory sqlSessionFactory) {
+	public MapperBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> sourceClass) {
 		super(beanFactory, sourceClass);
-		this.sqlSessionFactory = sqlSessionFactory;
 	}
 
 	@Override
 	public boolean isInstance() {
-		return true;
+		return beanFactory.isInstance(SqlSessionFactory.class);
 	}
 
 	@Override
 	public Object create() throws InstanceException {
-		return MybatisUtils.proxyMapper(sqlSessionFactory, getTargetClass(), (p) -> p.create(), (m) -> sqlSessionFactory.openSession());
+		SqlSessionFactory sqlSessionFactory = beanFactory.getInstance(SqlSessionFactory.class);
+		return MybatisUtils.proxyMapper(getTargetClass(), (p) -> p.create(), (m) -> sqlSessionFactory.openSession());
 	}
 }

@@ -18,7 +18,7 @@ public class SqlSessionFactoryProxyInvocationHandler implements InvocationHandle
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 		if (method.getReturnType() == SqlSession.class) {
-			return MybatisUtils.getTransactionSqlSession(sqlSessionFactory, () -> {
+			return MybatisUtils.getTransactionSqlSession(sqlSessionFactory, (transaction) -> {
 				try {
 					return (SqlSession) method.invoke(sqlSessionFactory, args);
 				} catch (Throwable e) {
