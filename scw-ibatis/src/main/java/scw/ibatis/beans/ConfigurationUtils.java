@@ -6,6 +6,7 @@ import javax.sql.DataSource;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.builder.annotation.MapperAnnotationBuilder;
+import org.apache.ibatis.builder.xml.XMLConfigBuilder;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
@@ -15,6 +16,7 @@ import org.apache.ibatis.type.TypeAliasRegistry;
 import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.ConfigurableBeanFactory;
+import scw.core.Assert;
 import scw.core.utils.StringUtils;
 import scw.ibatis.IbatisException;
 import scw.ibatis.beans.annotation.MapperResources;
@@ -133,6 +135,19 @@ public class ConfigurationUtils {
 		BeanDefinition definition = new MapperBeanDefinition(beanFactory, mapperClass);
 		if (!beanFactory.containsDefinition(definition.getId())) {
 			beanFactory.registerDefinition(definition);
+		}
+	}
+
+	public static Configuration build(Resource resource) {
+		Assert.requiredArgument(resource != null, "resource");
+		try {
+			return resource.read((is) -> {
+				XMLConfigBuilder builder = new XMLConfigBuilder(is);
+				builder.parse();
+				return builder.getConfiguration();
+			});
+		} catch (IOException e) {
+			throw new IbatisException(resource.getDescription(), e);
 		}
 	}
 }
