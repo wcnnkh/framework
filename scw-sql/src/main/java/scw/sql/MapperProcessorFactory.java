@@ -1,4 +1,4 @@
-package scw.orm.sql;
+package scw.sql;
 
 import java.sql.ResultSet;
 

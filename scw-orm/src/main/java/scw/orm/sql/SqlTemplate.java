@@ -1,6 +1,5 @@
 package scw.orm.sql;
 
-import java.sql.Connection;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +11,9 @@ import scw.orm.EntityOperations;
 import scw.orm.MaxValueFactory;
 import scw.sql.Sql;
 import scw.sql.SqlOperations;
-import scw.sql.SqlStatementProcessor;
 import scw.util.Pagination;
-import scw.util.stream.Cursor;
 
-public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory, MapperProcessorFactory {
+public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
 	SqlDialect getSqlDialect();
 
 	default boolean createTable(Class<?> entityClass) {
@@ -106,40 +103,6 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	<K, V> Map<K, V> getInIds(String tableName, Class<? extends V> entityClass, Collection<? extends K> inPrimaryKeys,
 			Object... primaryKeys);
-
-	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql,
-			SqlStatementProcessor statementProcessor) {
-		return prepare(connection, sql, statementProcessor).query().stream(getMapperProcessor(resultType));
-	}
-
-	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql) {
-		return prepare(connection, sql).query().stream(getMapperProcessor(resultType));
-	}
-
-	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql, SqlStatementProcessor statementProcessor) {
-		return prepare(sql, statementProcessor).query().stream(getMapperProcessor(resultType));
-	}
-
-	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql) {
-		return prepare(sql).query().stream(getMapperProcessor(resultType));
-	}
-
-	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql,
-			SqlStatementProcessor statementProcessor) {
-		return query(connection, TypeDescriptor.valueOf(resultType), sql, statementProcessor);
-	}
-
-	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql) {
-		return query(connection, TypeDescriptor.valueOf(resultType), sql);
-	}
-
-	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql, SqlStatementProcessor statementProcessor) {
-		return query(TypeDescriptor.valueOf(resultType), sql, statementProcessor);
-	}
-
-	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql) {
-		return query(TypeDescriptor.valueOf(resultType), sql);
-	}
 
 	<T> Pagination<T> paginationQuery(TypeDescriptor resultType, Sql sql, long page, int limit);
 

@@ -6,28 +6,20 @@
 		<artifactId>scw</artifactId>
 		<version>2.1</version>
 	</parent>
-	<artifactId>scw-ibatis</artifactId>
+	<artifactId>scw-jpa</artifactId>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-beans</artifactId>
 		</dependency>
-		<!-- mybatis相关 -->
+
+		<!-- https://mvnrepository.com/artifact/javax.persistence/javax.persistence-api -->
 		<dependency>
-			<groupId>org.mybatis</groupId>
-			<artifactId>mybatis</artifactId>
-			<version>3.4.6</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-boot</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-druid</artifactId>
-			<scope>test</scope>
+			<groupId>javax.persistence</groupId>
+			<artifactId>javax.persistence-api</artifactId>
+			<version>2.2</version>
+			<!-- 只是编译使用，因为jpa只是规范，由实现方来引用此jar -->
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
