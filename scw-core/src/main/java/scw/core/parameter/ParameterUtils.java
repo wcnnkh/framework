@@ -16,6 +16,7 @@ import scw.util.JavaVersion;
 
 public final class ParameterUtils {
 	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER;
+	private static final ParameterDescriptorsResolver PARAMETER_DESCRIPTORS_RESOLVER;
 
 	static {
 		ParameterNameDiscoverer parameterNameDiscoverer = null;
@@ -27,6 +28,8 @@ public final class ParameterUtils {
 
 		PARAMETER_NAME_DISCOVERER = parameterNameDiscoverer == null ? new LocalVariableTableParameterNameDiscoverer()
 				: parameterNameDiscoverer;
+		
+		PARAMETER_DESCRIPTORS_RESOLVER = new DefaultParameterDescriptorsResolver(PARAMETER_NAME_DISCOVERER);
 	}
 
 	private ParameterUtils() {
@@ -34,6 +37,10 @@ public final class ParameterUtils {
 
 	public static ParameterNameDiscoverer getParameterNameDiscoverer() {
 		return PARAMETER_NAME_DISCOVERER;
+	}
+
+	public static ParameterDescriptorsResolver getParameterDescriptorsResolver() {
+		return PARAMETER_DESCRIPTORS_RESOLVER;
 	}
 
 	public static ParameterDescriptor[] getParameterDescriptors(Constructor<?> constructor) {
