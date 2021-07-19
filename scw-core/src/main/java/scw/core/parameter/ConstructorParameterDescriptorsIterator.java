@@ -17,7 +17,7 @@ public class ConstructorParameterDescriptorsIterator extends scw.util.AbstractIt
 	public ConstructorParameterDescriptorsIterator(Class<?> clazz) {
 		this(clazz, ReflectionUtils.getConstructorOrderList(clazz).iterator());
 	}
-	
+
 	public boolean hasNext() {
 		return iterator.hasNext();
 	}

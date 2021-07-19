@@ -1,12 +1,15 @@
 package scw.core.parameter;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 
+import scw.core.annotation.AnnotatedElementUtils;
+import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
 import scw.util.JavaVersion;
@@ -44,8 +47,10 @@ public final class ParameterUtils {
 		Class<?>[] parameterTypes = constructor.getParameterTypes();
 		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
 		for (int i = 0; i < names.length; i++) {
-			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], parameterAnnoatations[i],
-					parameterTypes[i], parameterGenericTypes[i]);
+			AnnotatedElement annotatedElement = MultiAnnotatedElement
+					.forAnnotatedElements(AnnotatedElementUtils.forAnnotations(parameterAnnoatations[i]), constructor);
+			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], annotatedElement, parameterTypes[i],
+					parameterGenericTypes[i]);
 		}
 		return parameterDefinitions;
 	}
@@ -61,8 +66,10 @@ public final class ParameterUtils {
 		Class<?>[] parameterTypes = method.getParameterTypes();
 		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
 		for (int i = 0; i < names.length; i++) {
-			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], parameterAnnoatations[i],
-					parameterTypes[i], parameterGenericTypes[i]);
+			AnnotatedElement annotatedElement = MultiAnnotatedElement
+					.forAnnotatedElements(AnnotatedElementUtils.forAnnotations(parameterAnnoatations[i]), method);
+			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], annotatedElement, parameterTypes[i],
+					parameterGenericTypes[i]);
 		}
 		return parameterDefinitions;
 	}
@@ -117,8 +124,8 @@ public final class ParameterUtils {
 		}
 		return true;
 	}
-	
-	public static boolean isisAssignable(ParameterDescriptors parameterDescriptors, Class<?>[] types){
+
+	public static boolean isisAssignable(ParameterDescriptors parameterDescriptors, Class<?>[] types) {
 		// 异或运算，如果两个不同则结果为1
 		if (parameterDescriptors.size() == 0 ^ ArrayUtils.isEmpty(types)) {
 			return false;

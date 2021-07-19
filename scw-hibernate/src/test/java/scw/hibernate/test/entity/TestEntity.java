@@ -1,9 +1,11 @@
 package scw.hibernate.test.entity;
 
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class TestEntity {
+	@NotNull
 	private String name;
 	private String value;
 	public String getName() {

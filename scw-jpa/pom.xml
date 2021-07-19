@@ -18,8 +18,6 @@
 			<groupId>javax.persistence</groupId>
 			<artifactId>javax.persistence-api</artifactId>
 			<version>2.2</version>
-			<!-- 只是编译使用，因为jpa只是规范，由实现方来引用此jar -->
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
