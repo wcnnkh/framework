@@ -3,11 +3,14 @@ package scw.validation;
 import java.util.Optional;
 import java.util.Set;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+
+import scw.context.annotation.Provider;
 import scw.core.utils.CollectionUtils;
 
+@Provider
 public class HibernateValidator extends AbstractValidator {
 	protected static final Validator VALIDATOR = Validation.byProvider(org.hibernate.validator.HibernateValidator.class)
 			.configure().failFast(true).buildValidatorFactory().getValidator();

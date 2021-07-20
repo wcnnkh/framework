@@ -54,6 +54,9 @@
 		<junit.version>4.13.2</junit.version>
 		<commons-fileupload.version>1.4</commons-fileupload.version>
 		<swagger.version>2.1.9</swagger.version>
+		<!-- tomcat7只支持jdk1.6及以上的版本 -->
+		<!-- tomcat8只支持jdk1.7及以上的版本 -->
+		<tomcat.version>9.0.50</tomcat.version>
 	</properties>
 
 	<dependencyManagement>
@@ -112,6 +115,13 @@
 				<groupId>javax.ws.rs</groupId>
 				<artifactId>javax.ws.rs-api</artifactId>
 				<version>2.1.1</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-el -->
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-el</artifactId>
+				<version>${tomcat.version}</version>
 			</dependency>
 
 			<dependency>
@@ -479,7 +489,7 @@
 				<artifactId>scw-jpa</artifactId>
 				<version>2.1</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>scw</groupId>
 				<artifactId>scw-validation</artifactId>

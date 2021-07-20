@@ -7,8 +7,11 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import scw.context.annotation.Provider;
+import scw.core.Ordered;
 import scw.core.utils.CollectionUtils;
 
+@Provider(order = Ordered.LOWEST_PRECEDENCE)
 public class DefaultValidator extends AbstractValidator {
 	private static final Validator VALIDATOR = Validation.buildDefaultValidatorFactory().getValidator();
 	private final Validator validator;
@@ -22,40 +25,48 @@ public class DefaultValidator extends AbstractValidator {
 	}
 
 	@Override
-	public <T> void validate(T instance, Class<?>... groups) throws ValidationException {
-		Set<ConstraintViolation<T>> violations = validator.validate(instance, groups);
-		if (CollectionUtils.isEmpty(violations)) {
-			return;
-		}
-
-		Optional<ConstraintViolation<T>> optional = violations.stream().findFirst();
-		if (optional.isPresent()) {
-			throw new ValidationException(optional.get().getMessage());
-		}
-	}
-
-	@Override
-	public <T> void validateProperty(T object, String propertyName, Class<?>... groups) throws ValidationException {
-		Set<ConstraintViolation<T>> violations = validator.validateProperty(object, propertyName, groups);
-		if (CollectionUtils.isEmpty(violations)) {
-			return;
-		}
-
-		Optional<ConstraintViolation<T>> optional = violations.stream().findFirst();
-		if (optional.isPresent()) {
-			throw new ValidationException(optional.get().getMessage());
-		}
-	}
-
-	@Override
-	public <T> void validateValue(Class<T> beanType, String propertyName, Object value, Class<?>... groups)
+	public <T> void validate(T instance, Class<?>... groups)
 			throws ValidationException {
-		Set<ConstraintViolation<T>> violations = validator.validateValue(beanType, propertyName, value, groups);
+		Set<ConstraintViolation<T>> violations = validator.validate(instance,
+				groups);
 		if (CollectionUtils.isEmpty(violations)) {
 			return;
 		}
 
-		Optional<ConstraintViolation<T>> optional = violations.stream().findFirst();
+		Optional<ConstraintViolation<T>> optional = violations.stream()
+				.findFirst();
+		if (optional.isPresent()) {
+			throw new ValidationException(optional.get().getMessage());
+		}
+	}
+
+	@Override
+	public <T> void validateProperty(T object, String propertyName,
+			Class<?>... groups) throws ValidationException {
+		Set<ConstraintViolation<T>> violations = validator.validateProperty(
+				object, propertyName, groups);
+		if (CollectionUtils.isEmpty(violations)) {
+			return;
+		}
+
+		Optional<ConstraintViolation<T>> optional = violations.stream()
+				.findFirst();
+		if (optional.isPresent()) {
+			throw new ValidationException(optional.get().getMessage());
+		}
+	}
+
+	@Override
+	public <T> void validateValue(Class<T> beanType, String propertyName,
+			Object value, Class<?>... groups) throws ValidationException {
+		Set<ConstraintViolation<T>> violations = validator.validateValue(
+				beanType, propertyName, value, groups);
+		if (CollectionUtils.isEmpty(violations)) {
+			return;
+		}
+
+		Optional<ConstraintViolation<T>> optional = violations.stream()
+				.findFirst();
 		if (optional.isPresent()) {
 			throw new ValidationException(optional.get().getMessage());
 		}

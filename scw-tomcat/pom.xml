@@ -10,7 +10,6 @@
 	<properties>
 		<!-- tomcat7只支持jdk1.6及以上的版本 -->
 		<!-- tomcat8只支持jdk1.7及以上的版本 -->
-		<tomcat.version>8.5.55</tomcat.version>
 	</properties>
 	<dependencies>
 		<dependency>
