@@ -12,7 +12,7 @@ public class DefaultCountLimitFactory implements CountLimitFactory {
 		StringBuilder sb = new StringBuilder();
 		sb.append("count-limit:");
 		sb.append(invoker.getMethod().getName());
-		ParameterDescriptor[] parameterConfigs = ParameterUtils.getParameterDescriptors(invoker.getMethod());
+		ParameterDescriptor[] parameterConfigs = ParameterUtils.getParameters(invoker.getMethod());
 		for (int i = 0; i < parameterConfigs.length; i++) {
 			ParameterDescriptor config = parameterConfigs[i];
 			boolean b = countLimitSecurity.useAllParameters();

@@ -9,6 +9,8 @@ import scw.transaction.Transaction;
 import scw.transaction.TransactionUtils;
 
 public final class HibernateUtils {
+	
+	
 	private HibernateUtils(){};
 	
 	public static Session proxySession(Session session) {

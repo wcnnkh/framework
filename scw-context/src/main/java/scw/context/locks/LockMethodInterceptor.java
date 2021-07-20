@@ -31,7 +31,7 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 	public LockMethodInterceptor(LockFactory lockFactory) {
 		this.lockFactory = lockFactory;
 	}
-	
+
 	public boolean isAccept(MethodInvoker invoker, Object[] args) {
 		return AnnotationUtils.getAnnotation(LockConfig.class, invoker.getMethod(), invoker.getDeclaringClass()) != null;
 	}
@@ -44,7 +44,7 @@ public final class LockMethodInterceptor implements MethodInterceptor, MethodInt
 
 		StringBuilder sb = new StringBuilder(128);
 		sb.append(invoker.getMethod().toString());
-		ParameterDescriptor[] configs = ParameterUtils.getParameterDescriptors(invoker.getMethod());
+		ParameterDescriptor[] configs = ParameterUtils.getParameters(invoker.getMethod());
 		for (int i = 0; i < configs.length; i++) {
 			ParameterDescriptor config = configs[i];
 			boolean b = lockConfig.all();

@@ -123,7 +123,7 @@ public class AnnotationHttpCallableFactory extends HttpConnectionCallableFactory
 		
 		UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(url);
 		Map<String, Object> pathParameters = new LinkedHashMap<String, Object>();
-		ParameterDescriptor[] parameterDescriptors = ParameterUtils.getParameterDescriptors(method);
+		ParameterDescriptor[] parameterDescriptors = ParameterUtils.getParameters(method);
 		Map<String, Object> formParams = new LinkedHashMap<String, Object>();
 		if(!ArrayUtils.isEmpty(parameterDescriptors)){
 			for(int i=0; i<parameterDescriptors.length; i++){

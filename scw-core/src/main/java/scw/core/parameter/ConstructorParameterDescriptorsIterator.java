@@ -8,14 +8,18 @@ import scw.core.reflect.ReflectionUtils;
 public class ConstructorParameterDescriptorsIterator extends scw.util.AbstractIterator<ParameterDescriptors> {
 	private final Iterator<Constructor<?>> iterator;
 	private final Class<?> targetClass;
+	private final ParameterNameDiscoverer parameterNameDiscoverer;
 
-	public ConstructorParameterDescriptorsIterator(Class<?> targetClass, Iterator<Constructor<?>> iterator) {
+	public ConstructorParameterDescriptorsIterator(ParameterNameDiscoverer parameterNameDiscoverer,
+			Class<?> targetClass, Iterator<Constructor<?>> iterator) {
 		this.iterator = iterator;
 		this.targetClass = targetClass;
+		this.parameterNameDiscoverer = parameterNameDiscoverer;
 	}
 
 	public ConstructorParameterDescriptorsIterator(Class<?> clazz) {
-		this(clazz, ReflectionUtils.getConstructorOrderList(clazz).iterator());
+		this(ParameterUtils.getParameterNameDiscoverer(), clazz,
+				ReflectionUtils.getConstructorOrderList(clazz).iterator());
 	}
 
 	public boolean hasNext() {
@@ -24,7 +28,7 @@ public class ConstructorParameterDescriptorsIterator extends scw.util.AbstractIt
 
 	public ParameterDescriptors next() {
 		Constructor<?> constructor = iterator.next();
-		return new ConstructorParameterDescriptors(targetClass, constructor);
+		return new ConstructorParameterDescriptors(parameterNameDiscoverer, targetClass, constructor);
 	}
 
 }

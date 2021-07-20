@@ -14,23 +14,11 @@
 			<artifactId>scw-jpa</artifactId>
 		</dependency>
 		
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-validation</artifactId>
-		</dependency>
-		
 		<!-- hiberante相关 -->
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>6.0.0.Alpha4</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
-		<dependency>
-			<groupId>org.hibernate.validator</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>7.0.1.Final</version>
 		</dependency>
 
 		<dependency>

@@ -164,8 +164,7 @@ public class TccService implements MethodInterceptor, MethodInterceptorAccept {
 
 	public Object[] getStepArgs(Method tryMethod, Object tryResult,
 			Object[] tryArgs, Method stepMethod) {
-		ParameterDescriptor[] parameterDescriptors = ParameterUtils
-				.getParameterDescriptors(stepMethod);
+		ParameterDescriptor[] parameterDescriptors = ParameterUtils.getParameters(stepMethod);
 		if (parameterDescriptors.length == 0) {
 			return new Object[0];
 		}

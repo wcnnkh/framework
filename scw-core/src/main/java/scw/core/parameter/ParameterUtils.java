@@ -16,7 +16,6 @@ import scw.util.JavaVersion;
 
 public final class ParameterUtils {
 	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER;
-	private static final ParameterDescriptorsResolver PARAMETER_DESCRIPTORS_RESOLVER;
 
 	static {
 		ParameterNameDiscoverer parameterNameDiscoverer = null;
@@ -28,8 +27,6 @@ public final class ParameterUtils {
 
 		PARAMETER_NAME_DISCOVERER = parameterNameDiscoverer == null ? new LocalVariableTableParameterNameDiscoverer()
 				: parameterNameDiscoverer;
-		
-		PARAMETER_DESCRIPTORS_RESOLVER = new DefaultParameterDescriptorsResolver(PARAMETER_NAME_DISCOVERER);
 	}
 
 	private ParameterUtils() {
@@ -39,12 +36,18 @@ public final class ParameterUtils {
 		return PARAMETER_NAME_DISCOVERER;
 	}
 
-	public static ParameterDescriptorsResolver getParameterDescriptorsResolver() {
-		return PARAMETER_DESCRIPTORS_RESOLVER;
+	public static String[] getParameterNames(Method method) {
+		return PARAMETER_NAME_DISCOVERER.getParameterNames(method);
 	}
 
-	public static ParameterDescriptor[] getParameterDescriptors(Constructor<?> constructor) {
-		String[] names = ParameterUtils.getParameterNames(constructor);
+	@SuppressWarnings("rawtypes")
+	public static String[] getParameterNames(Constructor constructor) {
+		return PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
+	}
+
+	public static ParameterDescriptor[] getParameters(ParameterNameDiscoverer parameterNameDiscoverer,
+			Constructor<?> constructor) {
+		String[] names = parameterNameDiscoverer.getParameterNames(constructor);
 		if (ArrayUtils.isEmpty(names)) {
 			return ParameterDescriptor.EMPTY_ARRAY;
 		}
@@ -62,8 +65,8 @@ public final class ParameterUtils {
 		return parameterDefinitions;
 	}
 
-	public static ParameterDescriptor[] getParameterDescriptors(Method method) {
-		String[] names = ParameterUtils.getParameterNames(method);
+	public static ParameterDescriptor[] getParameters(ParameterNameDiscoverer parameterNameDiscoverer, Method method) {
+		String[] names = parameterNameDiscoverer.getParameterNames(method);
 		if (ArrayUtils.isEmpty(names)) {
 			return ParameterDescriptor.EMPTY_ARRAY;
 		}
@@ -80,14 +83,13 @@ public final class ParameterUtils {
 		}
 		return parameterDefinitions;
 	}
-
-	public static String[] getParameterNames(Method method) {
-		return getParameterNameDiscoverer().getParameterNames(method);
+	
+	public static ParameterDescriptor[] getParameters(Constructor<?> constructor) {
+		return getParameters(PARAMETER_NAME_DISCOVERER, constructor);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static String[] getParameterNames(Constructor constructor) {
-		return getParameterNameDiscoverer().getParameterNames(constructor);
+	public static ParameterDescriptor[] getParameters(Method method) {
+		return getParameters(PARAMETER_NAME_DISCOVERER, method);
 	}
 
 	public static LinkedHashMap<String, Object> getParameterMap(ParameterDescriptor[] parameterDescriptors,
@@ -101,11 +103,21 @@ public final class ParameterUtils {
 	}
 
 	public static LinkedHashMap<String, Object> getParameterMap(Method method, Object[] args) {
-		return getParameterMap(getParameterDescriptors(method), args);
+		String[] names = getParameterNames(method);
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(names.length);
+		for (int i = 0; i < names.length; i++) {
+			map.put(names[i], args[i]);
+		}
+		return map;
 	}
 
 	public static LinkedHashMap<String, Object> getParameterMap(Constructor<?> constructor, Object[] args) {
-		return getParameterMap(getParameterDescriptors(constructor), args);
+		String[] names = getParameterNames(constructor);
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>(names.length);
+		for (int i = 0; i < names.length; i++) {
+			map.put(names[i], args[i]);
+		}
+		return map;
 	}
 
 	public static boolean isAssignableValue(ParameterDescriptors parameterDescriptors, Object[] params) {
