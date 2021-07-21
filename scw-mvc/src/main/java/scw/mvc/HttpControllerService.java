@@ -32,8 +32,8 @@ import scw.web.jsonp.JsonpUtils;
 import scw.web.pattern.ServerHttpRequestAccept;
 
 @Provider(order = Ordered.LOWEST_PRECEDENCE, value = HttpService.class)
-public class HttpControllerHandler implements HttpService, ServerHttpRequestAccept {
-	private static Logger logger = LoggerFactory.getLogger(HttpControllerHandler.class);
+public class HttpControllerService implements HttpService, ServerHttpRequestAccept {
+	private static Logger logger = LoggerFactory.getLogger(HttpControllerService.class);
 	
 	protected final LinkedList<ActionInterceptor> actionInterceptor = new LinkedList<ActionInterceptor>();
 	private JSONSupport jsonSupport;
@@ -43,7 +43,7 @@ public class HttpControllerHandler implements HttpService, ServerHttpRequestAcce
 	protected final BeanFactory beanFactory;
 	private ActionManager actionManager;
 
-	public HttpControllerHandler(BeanFactory beanFactory) {
+	public HttpControllerService(BeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
 		if (beanFactory.isInstance(HttpChannelFactory.class)) {
 			httpChannelFactory = beanFactory.getInstance(HttpChannelFactory.class);
@@ -126,7 +126,7 @@ public class HttpControllerHandler implements HttpService, ServerHttpRequestAcce
 			try {
 				message = new ActionInterceptorChain(filters.iterator()).intercept(httpChannel, action, parameters);
 			} catch (Throwable e) {
-				httpChannelDestroy.setError(e);
+				logger.error(e, httpChannel.toString());
 				message = doError(httpChannel, action, e, httpChannelDestroy);
 			}
 

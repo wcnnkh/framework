@@ -1,20 +1,35 @@
 package scw.validation;
 
-import scw.env.Sys;
+import java.util.Optional;
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+
+import scw.core.utils.CollectionUtils;
+import scw.util.stream.CallableProcessor;
 
 public class ValidationUtils {
 	private ValidationUtils() {
 	};
 
-	private static final Validator VALIDATOR = Sys.env
-			.getServiceLoader(Validator.class, "scw.validation.HibernateValidator", "scw.validation.DefaultValidator")
-			.first();
+	public static <T extends ConstraintViolation<?>> void throwValidationException(Set<? extends T> violations)
+			throws ValidationException {
+		if (CollectionUtils.isEmpty(violations)) {
+			return;
+		}
 
-	public static Validator getValidator() {
-		return VALIDATOR;
+		Optional<? extends T> optional = violations.stream().findFirst();
+		if (optional.isPresent()) {
+			if (optional.isPresent()) {
+				throw new ValidationException(optional.get().getMessage());
+			}
+		}
+		return;
 	}
 
-	public static void validate(Object object) {
-		VALIDATOR.validate(object);
+	public static <T extends ConstraintViolation<?>> void validate(
+			CallableProcessor<Set<T>, RuntimeException> processor) throws ValidationException {
+		Set<T> constraintViolations = processor.process();
+		throwValidationException(constraintViolations);
 	}
 }

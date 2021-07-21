@@ -3,6 +3,7 @@ package scw.core.parameter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -12,22 +13,10 @@ import scw.core.annotation.AnnotatedElementUtils;
 import scw.core.annotation.MultiAnnotatedElement;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.ClassUtils;
-import scw.util.JavaVersion;
+import scw.lang.NestedExceptionUtils;
 
 public final class ParameterUtils {
-	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER;
-
-	static {
-		ParameterNameDiscoverer parameterNameDiscoverer = null;
-		if (JavaVersion.INSTANCE.getMasterVersion() >= 8) {
-			parameterNameDiscoverer = ClassUtils.newInstance("scw.core.parameter.Jdk8ParameterNameDiscoverer", null);
-		} else {
-			parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
-		}
-
-		PARAMETER_NAME_DISCOVERER = parameterNameDiscoverer == null ? new LocalVariableTableParameterNameDiscoverer()
-				: parameterNameDiscoverer;
-	}
+	private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new Jdk8ParameterNameDiscoverer();
 
 	private ParameterUtils() {
 	};
@@ -36,60 +25,41 @@ public final class ParameterUtils {
 		return PARAMETER_NAME_DISCOVERER;
 	}
 
-	public static String[] getParameterNames(Method method) {
-		return PARAMETER_NAME_DISCOVERER.getParameterNames(method);
+	public static String[] getParameterNames(Executable executable) {
+		return getParameterNames(PARAMETER_NAME_DISCOVERER, executable);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public static String[] getParameterNames(Constructor constructor) {
-		return PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
+	public static String[] getParameterNames(ParameterNameDiscoverer parameterNameDiscoverer, Executable executable) {
+		if (executable instanceof Method) {
+			return parameterNameDiscoverer.getParameterNames((Method) executable);
+		} else if (executable instanceof Constructor) {
+			return parameterNameDiscoverer.getParameterNames((Constructor<?>) executable);
+		}
+		throw NestedExceptionUtils.shouldNeverGetHere();
 	}
 
 	public static ParameterDescriptor[] getParameters(ParameterNameDiscoverer parameterNameDiscoverer,
-			Constructor<?> constructor) {
-		String[] names = parameterNameDiscoverer.getParameterNames(constructor);
+			Executable executable) {
+		String[] names = getParameterNames(parameterNameDiscoverer, executable);
 		if (ArrayUtils.isEmpty(names)) {
 			return ParameterDescriptor.EMPTY_ARRAY;
 		}
 
-		Annotation[][] parameterAnnoatations = constructor.getParameterAnnotations();
-		Type[] parameterGenericTypes = constructor.getGenericParameterTypes();
-		Class<?>[] parameterTypes = constructor.getParameterTypes();
+		Annotation[][] parameterAnnoatations = executable.getParameterAnnotations();
+		Type[] parameterGenericTypes = executable.getGenericParameterTypes();
+		Class<?>[] parameterTypes = executable.getParameterTypes();
 		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
 		for (int i = 0; i < names.length; i++) {
 			AnnotatedElement annotatedElement = MultiAnnotatedElement
-					.forAnnotatedElements(AnnotatedElementUtils.forAnnotations(parameterAnnoatations[i]), constructor);
+					.forAnnotatedElements(AnnotatedElementUtils.forAnnotations(parameterAnnoatations[i]), executable);
 			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], annotatedElement, parameterTypes[i],
 					parameterGenericTypes[i]);
 		}
 		return parameterDefinitions;
 	}
 
-	public static ParameterDescriptor[] getParameters(ParameterNameDiscoverer parameterNameDiscoverer, Method method) {
-		String[] names = parameterNameDiscoverer.getParameterNames(method);
-		if (ArrayUtils.isEmpty(names)) {
-			return ParameterDescriptor.EMPTY_ARRAY;
-		}
-
-		Annotation[][] parameterAnnoatations = method.getParameterAnnotations();
-		Type[] parameterGenericTypes = method.getGenericParameterTypes();
-		Class<?>[] parameterTypes = method.getParameterTypes();
-		ParameterDescriptor[] parameterDefinitions = new ParameterDescriptor[names.length];
-		for (int i = 0; i < names.length; i++) {
-			AnnotatedElement annotatedElement = MultiAnnotatedElement
-					.forAnnotatedElements(AnnotatedElementUtils.forAnnotations(parameterAnnoatations[i]), method);
-			parameterDefinitions[i] = new DefaultParameterDescriptor(names[i], annotatedElement, parameterTypes[i],
-					parameterGenericTypes[i]);
-		}
-		return parameterDefinitions;
-	}
-	
-	public static ParameterDescriptor[] getParameters(Constructor<?> constructor) {
-		return getParameters(PARAMETER_NAME_DISCOVERER, constructor);
-	}
-
-	public static ParameterDescriptor[] getParameters(Method method) {
-		return getParameters(PARAMETER_NAME_DISCOVERER, method);
+	public static ParameterDescriptor[] getParameters(Executable executable) {
+		return getParameters(PARAMETER_NAME_DISCOVERER, executable);
 	}
 
 	public static LinkedHashMap<String, Object> getParameterMap(ParameterDescriptor[] parameterDescriptors,

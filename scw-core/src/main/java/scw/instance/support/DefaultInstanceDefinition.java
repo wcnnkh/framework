@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import scw.core.parameter.ConstructorParameterDescriptorsIterator;
+import scw.core.parameter.ExecutableParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.parameter.ParameterUtils;
 import scw.core.reflect.ReflectionUtils;
@@ -89,7 +89,7 @@ public class DefaultInstanceDefinition extends InstanceParametersFactory impleme
 	}
 
 	public Iterator<ParameterDescriptors> iterator() {
-		return new ConstructorParameterDescriptorsIterator(getTargetClass());
+		return new ExecutableParameterDescriptorsIterator(getTargetClass());
 	}
 
 	public boolean isInstance() {

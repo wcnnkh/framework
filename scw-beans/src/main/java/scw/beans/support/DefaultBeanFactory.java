@@ -23,7 +23,7 @@ import scw.beans.ioc.Ioc;
 import scw.context.Destroy;
 import scw.context.Init;
 import scw.context.support.AbstractConfigurableContext;
-import scw.core.parameter.ConstructorParameterDescriptorsIterator;
+import scw.core.parameter.ExecutableParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.utils.ClassUtils;
 import scw.env.Environment;
@@ -441,7 +441,7 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 		}
 
 		public Iterator<ParameterDescriptors> iterator() {
-			return new ConstructorParameterDescriptorsIterator(getTargetClass());
+			return new ExecutableParameterDescriptorsIterator(getTargetClass());
 		}
 
 		public boolean isInstance(Object... params) {

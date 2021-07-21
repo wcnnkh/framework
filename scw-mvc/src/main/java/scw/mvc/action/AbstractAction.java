@@ -10,33 +10,27 @@ import scw.core.ResolvableType;
 import scw.core.annotation.AnnotatedElementWrapper;
 import scw.core.annotation.AnnotationArrayAnnotatedElement;
 import scw.core.annotation.MultiAnnotatedElement;
-import scw.core.parameter.MethodParameterDescriptors;
+import scw.core.parameter.ExecutableParameterDescriptors;
 import scw.core.parameter.ParameterDescriptors;
 import scw.mvc.HttpPatternResolver;
 import scw.web.pattern.HttpPattern;
 
-public abstract class AbstractAction extends
-		AnnotatedElementWrapper<AnnotatedElement> implements Action {
+public abstract class AbstractAction extends AnnotatedElementWrapper<AnnotatedElement> implements Action {
 	private Collection<HttpPattern> httpPatterns;
 	private final Method method;
 	private final Class<?> sourceClass;
 	private final ParameterDescriptors parameterDescriptors;
 	private final TypeDescriptor returnType;
 
-	public AbstractAction(Class<?> sourceClass, Method method,
-			HttpPatternResolver httpPatternResolver) {
+	public AbstractAction(Class<?> sourceClass, Method method, HttpPatternResolver httpPatternResolver) {
 		super(new AnnotationArrayAnnotatedElement(method));
-		this.returnType = new TypeDescriptor(
-				ResolvableType.forMethodReturnType(method),
-				method.getReturnType(), MultiAnnotatedElement
-						.forAnnotatedElements(this, sourceClass)
+		this.returnType = new TypeDescriptor(ResolvableType.forMethodReturnType(method), method.getReturnType(),
+				MultiAnnotatedElement.forAnnotatedElements(method.getAnnotatedReturnType(), this, sourceClass)
 						.getAnnotations());
 		this.sourceClass = sourceClass;
 		this.method = method;
-		this.parameterDescriptors = new MethodParameterDescriptors(sourceClass,
-				method);
-		this.httpPatterns = httpPatternResolver.resolveHttpPattern(sourceClass,
-				method);
+		this.parameterDescriptors = new ExecutableParameterDescriptors(sourceClass, method);
+		this.httpPatterns = httpPatternResolver.resolveHttpPattern(sourceClass, method);
 	}
 
 	@Override
@@ -45,8 +39,7 @@ public abstract class AbstractAction extends
 	}
 
 	public void optimization() {
-		this.httpPatterns = Arrays.asList(httpPatterns
-				.toArray(new HttpPattern[0]));
+		this.httpPatterns = Arrays.asList(httpPatterns.toArray(new HttpPattern[0]));
 	}
 
 	public Class<?> getDeclaringClass() {

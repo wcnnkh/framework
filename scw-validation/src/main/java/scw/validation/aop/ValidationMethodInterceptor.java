@@ -1,17 +1,22 @@
 package scw.validation.aop;
 
+import java.util.Set;
+
+import javax.validation.ConstraintViolation;
+import javax.validation.Validator;
+
 import scw.aop.MethodInterceptor;
 import scw.context.annotation.Provider;
 import scw.core.reflect.MethodInvoker;
+import scw.validation.FastValidator;
 import scw.validation.ValidationUtils;
-import scw.validation.Validator;
 
 @Provider
 public class ValidationMethodInterceptor implements MethodInterceptor {
-	private final Validator validator;
+	private Validator validator;
 
 	public ValidationMethodInterceptor() {
-		this(ValidationUtils.getValidator());
+		this(FastValidator.getValidator());
 	}
 
 	public ValidationMethodInterceptor(Validator validator) {
@@ -20,7 +25,13 @@ public class ValidationMethodInterceptor implements MethodInterceptor {
 
 	@Override
 	public Object intercept(MethodInvoker invoker, Object[] args) throws Throwable {
-		validator.validate(invoker.getDeclaringClass(), invoker.getMethod(), args);
-		return invoker.invoke(args);
+		Set<ConstraintViolation<Object>> constraintViolations = validator.forExecutables()
+				.validateParameters(invoker.getInstance(), invoker.getMethod(), args);
+		ValidationUtils.throwValidationException(constraintViolations);
+		Object returnValue = invoker.invoke(args);
+		constraintViolations = validator.forExecutables().validateReturnValue(invoker.getInstance(),
+				invoker.getMethod(), returnValue);
+		ValidationUtils.throwValidationException(constraintViolations);
+		return returnValue;
 	}
 }

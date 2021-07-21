@@ -33,7 +33,6 @@ public class BeanAction extends AbstractAction {
 		this.beanFactory = beanFactory;
 		Supplier<Object> instanceSupplier;
 		if(beanFactory.isSingleton(targetClass)){
-			//如果是单例就不延迟加载
 			instanceSupplier = new SimpleInstanceSupplier<Object>(beanFactory.getInstance(targetClass));
 		}else{
 			instanceSupplier = new NameInstanceSupplier<Object>(beanFactory, targetClass.getName());

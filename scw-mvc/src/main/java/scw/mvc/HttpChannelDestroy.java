@@ -12,18 +12,9 @@ import scw.web.ServerHttpAsyncListener;
 public class HttpChannelDestroy implements Destroy, ServerHttpAsyncListener {
 	private static Logger logger = LoggerFactory.getLogger(HttpChannelDestroy.class);
 	private final HttpChannel httpChannel;
-	private Throwable error;
 
 	public HttpChannelDestroy(HttpChannel httpChannel) {
 		this.httpChannel = httpChannel;
-	}
-
-	public final Throwable getError() {
-		return error;
-	}
-
-	public void setError(Throwable error) {
-		this.error = error;
 	}
 
 	public void destroy() throws IOException {

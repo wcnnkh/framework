@@ -8,8 +8,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
-import scw.core.parameter.MethodParameterDescriptors;
-import scw.core.parameter.MethodParameterDescriptorsIterator;
+import scw.core.parameter.ExecutableParameterDescriptors;
+import scw.core.parameter.ExecutableParameterDescriptorsIterator;
 import scw.core.parameter.ParameterDescriptors;
 import scw.core.reflect.ReflectionUtils;
 import scw.lang.NotSupportedException;
@@ -17,14 +17,14 @@ import scw.lang.NotSupportedException;
 public class MethodBeanDefinition extends DefaultBeanDefinition {
 	private final Method method;
 	private final Class<?> methodTargetClass;
-	private final MethodParameterDescriptors methodParameterDescriptors;
+	private final ParameterDescriptors parameterDescriptors;
 	
 	public MethodBeanDefinition(ConfigurableBeanFactory beanFactory, Class<?> methodTargetClass,
 			Method method) {
 		super(beanFactory, method.getReturnType());
 		this.methodTargetClass = methodTargetClass;
 		this.method = method;
-		this.methodParameterDescriptors = new MethodParameterDescriptors(methodTargetClass, method);
+		this.parameterDescriptors = new ExecutableParameterDescriptors(methodTargetClass, method);
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 
 	private final AtomicBoolean error = new AtomicBoolean();
 	public boolean isInstance() {
-		boolean accept = isAccept(methodParameterDescriptors);
+		boolean accept = isAccept(parameterDescriptors);
 		if(!accept){
 			if(!error.get() && error.compareAndSet(false, true)){
 				logger.error("not found {} accept method {}", this, method);
@@ -48,7 +48,7 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 			throw new NotSupportedException("不支持的构造方式");
 		}
 		
-		return createInternal(methodTargetClass, methodParameterDescriptors, getParameters(methodParameterDescriptors));
+		return createInternal(methodTargetClass, parameterDescriptors, getParameters(parameterDescriptors));
 	}
 	
 	@Override
@@ -82,7 +82,7 @@ public class MethodBeanDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public Iterator<ParameterDescriptors> iterator() {
-		return new MethodParameterDescriptorsIterator(methodTargetClass, method, true);
+		return new ExecutableParameterDescriptorsIterator(methodTargetClass, method, true);
 	}
 
 	public Method getMethod() {
