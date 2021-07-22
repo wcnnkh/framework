@@ -1,5 +1,8 @@
 package scw.cloud.loadbalancer;
 
-public interface ServerAccept<T> {
+import scw.util.Accept;
+
+@FunctionalInterface
+public interface ServerAccept<T> extends Accept<Server<T>>{
 	boolean accept(Server<T> server);
 }

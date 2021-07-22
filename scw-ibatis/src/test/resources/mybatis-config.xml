@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<!-- 打印查询语句 -->
+		<setting name="logImpl" value="STDOUT_LOGGING" />
+		<!-- 控制全局缓存（二级缓存） -->
+		<setting name="cacheEnabled" value="true" />
+		<!-- 延迟加载的全局开关。当开启时，所有关联对象都会延迟加载。默认 false -->
+		<setting name="lazyLoadingEnabled" value="true" />
+		<!-- 当开启时，任何方法的调用都会加载该对象的所有属性。默认 false，可通过select标签的 fetchType来覆盖 -->
+		<setting name="aggressiveLazyLoading" value="false" />
+		<!-- Mybatis 创建具有延迟加载能力的对象所用到的代理工具，默认JAVASSIST -->
+		<!--<setting name="proxyFactory" value="CGLIB" /> -->
+		<!-- STATEMENT级别的缓存，使一级缓存，只针对当前执行的这一statement有效 -->
+		<!-- <setting name="localCacheScope" value="STATEMENT"/> -->
+		<setting name="localCacheScope" value="SESSION" />
+	</settings>
+
+	<!-- <typeHandlers> <typeHandler handler="com.wuzz.type.MyTypeHandler"></typeHandler> 
+		</typeHandlers> -->
+
+	<!-- 对象工厂 -->
+	<!-- <objectFactory type="com.wuzz.objectfactory.GPObjectFactory"> <property 
+		name="wuzz" value="666"/> </objectFactory> -->
+
+	<!-- <plugins> <plugin interceptor="com.wuzz.interceptor.SQLInterceptor"> 
+		<property name="wuzz" value="betterme" /> </plugin> <plugin interceptor="com.wuzz.interceptor.MyPageInterceptor"> 
+		</plugin> </plugins> -->
+
+	<!-- <mappers>
+		<mapper resource="BlogMapper.xml" />
+		<mapper resource="BlogMapperExt.xml" />
+	</mappers> -->
+
+</configuration>

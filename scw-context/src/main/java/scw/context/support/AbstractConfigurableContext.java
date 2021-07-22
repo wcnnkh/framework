@@ -61,7 +61,7 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 	}
 
 	@Override
-	public ConfigurableClassesLoader getContextClassesLoader() {
+	public ConfigurableClassesLoader getContextClasses() {
 		return contextClassesLoader;
 	}
 
@@ -122,6 +122,6 @@ public abstract class AbstractConfigurableContext extends AbstractProviderServic
 
 	public void componentScan(String packageName) {
 		ClassesLoader classesLoader = getClassesLoaderFactory().getClassesLoader(packageName);
-		getContextClassesLoader().add(classesLoader);
+		getContextClasses().add(classesLoader);
 	}
 }

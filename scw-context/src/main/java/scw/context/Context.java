@@ -9,7 +9,7 @@ public interface Context extends ServiceLoaderFactory {
 
 	ClassesLoader getSourceClasses();
 
-	ClassesLoader getContextClassesLoader();
+	ClassesLoader getContextClasses();
 
 	ClassesLoaderFactory getClassesLoaderFactory();
 

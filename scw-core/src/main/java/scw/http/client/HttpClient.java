@@ -64,12 +64,12 @@ public interface HttpClient extends HttpConnectionFactory {
 	<T> HttpResponseEntity<T> get(Class<T> responseType, String url)
 			throws HttpClientException;
 
-	HttpResponseEntity<Object> get(TypeDescriptor responseType, String url)
+	<T> HttpResponseEntity<T> get(TypeDescriptor responseType, String url)
 			throws HttpClientException;
 
 	<T> HttpResponseEntity<T> post(Class<T> responseType, String url,
 			Object body, MediaType contentType) throws HttpClientException;
 
-	HttpResponseEntity<Object> post(TypeDescriptor responseType, String url, Object body,
+	<T> HttpResponseEntity<T> post(TypeDescriptor responseType, String url, Object body,
 			MediaType contentType) throws HttpClientException;
 }

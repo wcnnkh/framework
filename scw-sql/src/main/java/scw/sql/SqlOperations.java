@@ -5,10 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import scw.convert.TypeDescriptor;
 import scw.util.stream.Cursor;
 import scw.util.stream.Processor;
 
-public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor {
+public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor, MapperProcessorFactory {
 
 	default PreparedStatementProcessor prepare(Connection connection, Sql sql,
 			SqlStatementProcessor statementProcessor) {
@@ -64,7 +65,7 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor 
 			Processor<ResultSet, ? extends T, ? extends Throwable> processor) {
 		return prepare(sql, statementProcessor).query().stream(processor);
 	}
-
+	
 	default <T> Cursor<T> query(Sql sql, Processor<ResultSet, ? extends T, ? extends Throwable> processor) {
 		return prepare(sql).query().stream(processor);
 	}
@@ -73,9 +74,6 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor 
 		try {
 			return SqlUtils.executeBatch(connection, (conn) -> this.statement(conn, new SimpleSql(sql)), batchArgs);
 		} catch (Throwable e) {
-			if (e instanceof SqlException) {
-				throw (SqlException) e;
-			}
 			throw new SqlException(sql, e);
 		}
 	}
@@ -90,10 +88,41 @@ public interface SqlOperations extends ConnectionFactory, SqlStatementProcessor 
 				}
 			});
 		} catch (Throwable e) {
-			if (e instanceof SqlException) {
-				throw (SqlException) e;
-			}
 			throw new SqlException(sql, e);
 		}
+	}
+	
+	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql,
+			SqlStatementProcessor statementProcessor) {
+		return prepare(connection, sql, statementProcessor).query().stream(getMapperProcessor(resultType));
+	}
+
+	default <T> Cursor<T> query(Connection connection, TypeDescriptor resultType, Sql sql) {
+		return prepare(connection, sql).query().stream(getMapperProcessor(resultType));
+	}
+
+	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql, SqlStatementProcessor statementProcessor) {
+		return prepare(sql, statementProcessor).query().stream(getMapperProcessor(resultType));
+	}
+
+	default <T> Cursor<T> query(TypeDescriptor resultType, Sql sql) {
+		return prepare(sql).query().stream(getMapperProcessor(resultType));
+	}
+
+	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql,
+			SqlStatementProcessor statementProcessor) {
+		return query(connection, TypeDescriptor.valueOf(resultType), sql, statementProcessor);
+	}
+
+	default <T> Cursor<T> query(Connection connection, Class<? extends T> resultType, Sql sql) {
+		return query(connection, TypeDescriptor.valueOf(resultType), sql);
+	}
+
+	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql, SqlStatementProcessor statementProcessor) {
+		return query(TypeDescriptor.valueOf(resultType), sql, statementProcessor);
+	}
+
+	default <T> Cursor<T> query(Class<? extends T> resultType, Sql sql) {
+		return query(TypeDescriptor.valueOf(resultType), sql);
 	}
 }

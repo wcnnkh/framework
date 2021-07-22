@@ -8,7 +8,7 @@ import scw.instance.SingletonRegistry;
 
 public interface ConfigurableBeanFactory
 		extends BeanFactory, ConfigurableContext, BeanDefinitionRegistry, SingletonRegistry {
-	ConfigurableClassesLoader getContextClassesLoader();
+	ConfigurableClassesLoader getContextClasses();
 
 	ConfigurableAop getAop();
 

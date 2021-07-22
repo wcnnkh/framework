@@ -82,7 +82,7 @@ public class LazyBeanDefinitionRegsitry extends DefaultBeanDefinitionRegistry {
 	}
 
 	private BeanDefinition provider(Class<?> sourceClass) {
-		ProviderClassesLoader classesLoader = new ProviderClassesLoader(beanFactory.getContextClassesLoader(),
+		ProviderClassesLoader classesLoader = new ProviderClassesLoader(beanFactory.getContextClasses(),
 				sourceClass);
 		for (Class<?> impl : classesLoader) {
 			BeanDefinition definition = super.getDefinition(impl);

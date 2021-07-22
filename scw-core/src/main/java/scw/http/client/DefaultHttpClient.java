@@ -388,7 +388,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		return createConnection(HttpMethod.GET, url).execute(responseType);
 	}
 
-	public HttpResponseEntity<Object> get(TypeDescriptor responseType, String url) throws HttpClientException {
+	public <T> HttpResponseEntity<T> get(TypeDescriptor responseType, String url) throws HttpClientException {
 		return createConnection(HttpMethod.GET, url).execute(responseType);
 	}
 
@@ -397,7 +397,7 @@ public class DefaultHttpClient extends AbstractHttpConnectionFactory implements 
 		return createConnection(HttpMethod.POST, url).contentType(contentType).body(body).execute(responseType);
 	}
 
-	public HttpResponseEntity<Object> post(TypeDescriptor responseType, String url, Object body, MediaType contentType)
+	public <T> HttpResponseEntity<T> post(TypeDescriptor responseType, String url, Object body, MediaType contentType)
 			throws HttpClientException {
 		return createConnection(HttpMethod.POST, url).contentType(contentType).body(body).execute(responseType);
 	}

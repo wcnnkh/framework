@@ -16,7 +16,7 @@ public class ServletApplication extends DefaultApplication {
 		String webRoot = ServletContextUtils.getWebRoot(servletContext);
 		if(webRoot != null){
 			getEnvironment().setWorkPath(webRoot);
-			getContextClassesLoader().add(new DirectoryClassesLoader(webRoot));
+			getContextClasses().add(new DirectoryClassesLoader(webRoot));
 		}
 		
 		getEnvironment().addFactory(new ServletContextPropertyFactory(servletContext));

@@ -19,7 +19,7 @@ public class SqlSessionProxyInvocationHandler implements InvocationHandler{
 		if(ArrayUtils.isEmpty(args)){
 			if(method.getName().equals("close")){
 				return null;
-			}else if(method.getName().equals("getTargetSqlSession")){
+			}else if(method.getName().equals(SqlSessionProxy.TARGET_SQL_SESSION_METHOD)){
 				return sqlSession;
 			}
 		}

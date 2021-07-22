@@ -9,7 +9,8 @@ import scw.beans.BeanDefinition;
 import scw.beans.BeanFactory;
 import scw.beans.BeansException;
 import scw.beans.ioc.AbstractIocProcessor;
-import scw.core.parameter.MethodParameterDescriptors;
+import scw.core.parameter.ExecutableParameterDescriptors;
+import scw.core.parameter.ParameterDescriptors;
 import scw.core.reflect.ReflectionUtils;
 import scw.json.JSONUtils;
 
@@ -52,9 +53,9 @@ public class XmlMethodIocProcessor extends AbstractIocProcessor {
 					continue;
 				}
 
-				MethodParameterDescriptors methodParameterDescriptors = new MethodParameterDescriptors(type, method);
-				if (xmlParameterFactory.isAccept(methodParameterDescriptors)) {
-					Object[] args = xmlParameterFactory.getParameters(methodParameterDescriptors);
+				ParameterDescriptors parameterDescriptors = new ExecutableParameterDescriptors(type, method);
+				if (xmlParameterFactory.isAccept(parameterDescriptors)) {
+					Object[] args = xmlParameterFactory.getParameters(parameterDescriptors);
 					ReflectionUtils.makeAccessible(method);
 					ReflectionUtils.invokeMethod(method, bean, args);
 					return;

@@ -11,7 +11,7 @@ public interface ConfigurableContext extends Context {
 	
 	void componentScan(String packageName);
 
-	ConfigurableClassesLoader getContextClassesLoader();
+	ConfigurableClassesLoader getContextClasses();
 
 	ConfigurableClassScanner getClassScanner();
 }

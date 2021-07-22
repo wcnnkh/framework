@@ -480,6 +480,14 @@ public abstract class CollectionUtils {
 		}
 	}
 
+	public static int size(Collection<?> collection) {
+		return collection == null ? 0 : collection.size();
+	}
+
+	public static int size(Map<?, ?> map) {
+		return map == null ? 0 : map.size();
+	}
+
 	public static <E> List<E> toList(Iterable<E> iterable) {
 		Iterator<E> iterator = iterable.iterator();
 		if (!iterator.hasNext()) {

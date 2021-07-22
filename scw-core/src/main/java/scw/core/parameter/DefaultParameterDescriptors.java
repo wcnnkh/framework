@@ -33,6 +33,11 @@ public class DefaultParameterDescriptors<T> implements ParameterDescriptors {
 		}
 	}
 
+	@Override
+	public ParameterDescriptor[] toArray() {
+		return parameterDescriptors.clone();
+	}
+
 	public T getSource() {
 		return source;
 	}

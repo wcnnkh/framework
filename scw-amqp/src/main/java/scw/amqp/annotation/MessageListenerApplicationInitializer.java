@@ -18,7 +18,7 @@ public final class MessageListenerApplicationInitializer implements ApplicationP
 	@SuppressWarnings("unchecked")
 	public void postProcessApplication(ConfigurableApplication application)
 			throws Throwable {
-		for (Class<?> clazz : application.getContextClassesLoader()) {
+		for (Class<?> clazz : application.getContextClasses()) {
 			if (scw.amqp.MessageListener.class.isAssignableFrom(clazz)) {
 				MessageListener messageListener = clazz.getAnnotation(MessageListener.class);
 				if (messageListener != null) {

@@ -44,7 +44,7 @@ public class ActionManagerPostProcesser implements BeanFactoryPostProcessor, Eve
 	private void actionManagerInit(BeanFactory beanFactory, ActionManager actionManager) {
 		HttpPatternResolvers patternResolver = new HttpPatternResolvers(beanFactory);
 		patternResolver.setPropertyResolver(beanFactory.getEnvironment());
-		for (Class<?> clz : beanFactory.getContextClassesLoader()) {
+		for (Class<?> clz : beanFactory.getContextClasses()) {
 			if (!patternResolver.canResolveHttpPattern(clz)) {
 				continue;
 			}

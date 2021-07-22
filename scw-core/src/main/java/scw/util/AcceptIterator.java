@@ -10,7 +10,6 @@ public class AcceptIterator<E> extends AbstractIterator<E> {
 
 	public AcceptIterator(Iterator<E> iterator, Accept<E> accept) {
 		this.iterator = iterator;
-		setOperableIterator(this.iterator);
 		this.accept = accept;
 	}
 

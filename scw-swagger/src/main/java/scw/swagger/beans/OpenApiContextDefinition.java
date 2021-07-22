@@ -25,7 +25,7 @@ public class OpenApiContextDefinition extends DefaultBeanDefinition {
 
 	@Override
 	public Object create() throws InstanceException {
-		Set<String> classNames = beanFactory.getContextClassesLoader().stream().map((c) -> c.getName())
+		Set<String> classNames = beanFactory.getContextClasses().stream().map((c) -> c.getName())
 				.collect(Collectors.toSet());
 		SwaggerConfiguration configuration = new SwaggerConfiguration();
 		configuration = configuration.resourceClasses(classNames);
