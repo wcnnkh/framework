@@ -11,6 +11,8 @@
 			  <url>http://maven.shuchaowen.com</url>
 		  </repository>
     </repositories>
+或下载源码maven clean install
+
 2.示例:
 -----------------
 [示例](https://github.com/wcnnkh/scw-example/blob/master/src/main/java/scw/example/ExampleApplication.java)

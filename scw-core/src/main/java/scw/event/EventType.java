@@ -1,5 +1,6 @@
 package scw.event;
 
+@FunctionalInterface
 public interface EventType {
 	public static final EventType CREATE = new DefaultEventType("CREATE");
 	
