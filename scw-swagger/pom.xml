@@ -6,7 +6,6 @@
 		<artifactId>scw</artifactId>
 		<version>2.1</version>
 	</parent>
-	<groupId>scw-swagger</groupId>
 	<artifactId>scw-swagger</artifactId>
 	<dependencies>
 		<dependency>
