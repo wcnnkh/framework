@@ -148,10 +148,4 @@ public class PathFormat {
 		return ( Math.random() + "" ).replace( ".", "" ).substring( 0, length );
 		
 	}
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
-	}
-
 }
