@@ -140,7 +140,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 						Charset charSet = Charset.forName(requestEncoding);
 						Map<String, String> params = new LinkedCaseInsensitiveMap<String>();
 						params.putAll(contentType.getParameters());
-						params.put("charset", charSet.toString());
+						params.put("charset", charSet.name());
 						MediaType mediaType = new MediaType(
 								contentType.getType(),
 								contentType.getSubtype(), params);

@@ -899,6 +899,11 @@ public class HttpHeaders extends Headers {
 	 * the {@code Content-Type} header.
 	 */
 	public void setContentType(MediaType mediaType) {
+		if(mediaType == null) {
+			remove(CONTENT_TYPE);
+			return ;
+		}
+		
 		Assert.isTrue(!mediaType.isWildcardType(), "Content-Type cannot contain wildcard type '*'");
 		Assert.isTrue(!mediaType.isWildcardSubtype(), "Content-Type cannot contain wildcard subtype '*'");
 		set(CONTENT_TYPE, mediaType.toString());
