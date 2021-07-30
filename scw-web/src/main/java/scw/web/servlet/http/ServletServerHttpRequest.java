@@ -36,7 +36,7 @@ import scw.web.ServerHttpRequest;
 import scw.web.ServerHttpResponse;
 import scw.web.servlet.ServletUtils;
 
-public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
+public class ServletServerHttpRequest implements ServerHttpRequest, Decorator {
 	private HttpHeaders headers;
 	private HttpServletRequest httpServletRequest;
 	private HttpServletAsyncControl asyncControl;
@@ -90,8 +90,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 
 	public InetSocketAddress getLocalAddress() {
 		if (localAddress == null) {
-			localAddress = new InetSocketAddress(
-					this.httpServletRequest.getLocalName(),
+			localAddress = new InetSocketAddress(this.httpServletRequest.getLocalName(),
 					this.httpServletRequest.getLocalPort());
 		}
 		return localAddress;
@@ -101,8 +100,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 
 	public InetSocketAddress getRemoteAddress() {
 		if (remoteAddress == null) {
-			remoteAddress = new InetSocketAddress(
-					this.httpServletRequest.getRemoteHost(),
+			remoteAddress = new InetSocketAddress(this.httpServletRequest.getRemoteHost(),
 					this.httpServletRequest.getRemotePort());
 		}
 		return remoteAddress;
@@ -111,11 +109,10 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 	public HttpHeaders getHeaders() {
 		if (this.headers == null) {
 			this.headers = new HttpHeaders();
-			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names
-					.hasMoreElements();) {
+			for (Enumeration<?> names = httpServletRequest.getHeaderNames(); names.hasMoreElements();) {
 				String headerName = (String) names.nextElement();
-				for (Enumeration<?> headerValues = httpServletRequest
-						.getHeaders(headerName); headerValues.hasMoreElements();) {
+				for (Enumeration<?> headerValues = httpServletRequest.getHeaders(headerName); headerValues
+						.hasMoreElements();) {
 					String headerValue = (String) headerValues.nextElement();
 					this.headers.add(headerName, headerValue);
 				}
@@ -126,12 +123,9 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 			try {
 				MediaType contentType = this.headers.getContentType();
 				if (contentType == null) {
-					String requestContentType = httpServletRequest
-							.getContentType();
+					String requestContentType = httpServletRequest.getContentType();
 					if (StringUtils.hasLength(requestContentType)) {
-						contentType = MediaType
-								.parseMediaType(requestContentType);
-						this.headers.setContentType(contentType);
+						this.headers.set(HttpHeaders.CONTENT_TYPE, requestContentType);
 					}
 				}
 				if (contentType != null && contentType.getCharset() == null) {
@@ -141,10 +135,8 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 						Map<String, String> params = new LinkedCaseInsensitiveMap<String>();
 						params.putAll(contentType.getParameters());
 						params.put("charset", charSet.name());
-						MediaType mediaType = new MediaType(
-								contentType.getType(),
-								contentType.getSubtype(), params);
-						this.headers.setContentType(mediaType);
+						MediaType mediaType = new MediaType(contentType.getType(), contentType.getSubtype(), params);
+						this.headers.set(HttpHeaders.CONTENT_TYPE, mediaType.toString());
 					}
 				}
 			} catch (InvalidMediaTypeException ex) {
@@ -153,8 +145,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 			}
 
 			if (this.headers.getContentLength() < 0) {
-				int requestContentLength = httpServletRequest
-						.getContentLength();
+				int requestContentLength = httpServletRequest.getContentLength();
 				if (requestContentLength != -1) {
 					this.headers.setContentLength(requestContentLength);
 				}
@@ -200,8 +191,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 			valueMap.put(entry.getKey(), Arrays.asList(values));
 		}
 
-		this.parameterMap = CollectionUtils.toMultiValueMap(Collections
-				.unmodifiableMap(valueMap));
+		this.parameterMap = CollectionUtils.toMultiValueMap(Collections.unmodifiableMap(valueMap));
 	}
 
 	public MultiValueMap<String, String> getParameterMap() {
@@ -212,8 +202,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 	@Override
 	public String getCharacterEncoding() {
 		String charsetName = ServerHttpRequest.super.getCharacterEncoding();
-		return charsetName == null ? httpServletRequest.getCharacterEncoding()
-				: charsetName;
+		return charsetName == null ? httpServletRequest.getCharacterEncoding() : charsetName;
 	}
 
 	public String getRawMethod() {
@@ -239,7 +228,7 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 	public Enumeration<String> getAttributeNames() {
 		return httpServletRequest.getAttributeNames();
 	}
-	
+
 	@Override
 	public long getContentLength() {
 		return httpServletRequest.getContentLength();
@@ -252,14 +241,11 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 	public ServerHttpAsyncControl getAsyncControl(ServerHttpResponse response) {
 		if (asyncControl == null) {
 			if (response instanceof ServletServerHttpResponse) {
-				this.asyncControl = new HttpServletAsyncControl(
-						httpServletRequest,
-						((ServletServerHttpResponse) response)
-								.getHttpServletResponse());
+				this.asyncControl = new HttpServletAsyncControl(httpServletRequest,
+						((ServletServerHttpResponse) response).getHttpServletResponse());
 			} else {
 				throw new IllegalArgumentException(
-						"Response must be a ServletServerHttpResponse: "
-								+ response.getClass());
+						"Response must be a ServletServerHttpResponse: " + response.getClass());
 			}
 		}
 		return this.asyncControl;
@@ -278,10 +264,8 @@ public class ServletServerHttpRequest implements ServerHttpRequest, Decorator{
 		return restfulParameterMap;
 	}
 
-	public void setRestfulParameterMap(
-			MultiValueMap<String, String> restfulParameterMap) {
-		this.restfulParameterMap = CollectionUtils
-				.unmodifiableMultiValueMap(restfulParameterMap);
+	public void setRestfulParameterMap(MultiValueMap<String, String> restfulParameterMap) {
+		this.restfulParameterMap = CollectionUtils.unmodifiableMultiValueMap(restfulParameterMap);
 	}
 
 	@Override

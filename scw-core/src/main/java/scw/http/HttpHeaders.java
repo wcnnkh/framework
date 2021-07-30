@@ -1473,7 +1473,7 @@ public class HttpHeaders extends Headers {
 		}
 
 		for (MimeType type : contentTypes) {
-			if (contentType.isCompatibleWith(type)) {
+			if (type.includes(contentType)) {
 				return true;
 			}
 		}

@@ -26,7 +26,7 @@ public class InputMessageConverter implements WebMessageConverter {
 	}
 
 	@Override
-	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request) {
+	public boolean canWrite(TypeDescriptor type, Object body, ServerHttpRequest request, ServerHttpResponse response) {
 		return body != null && body instanceof InputMessage;
 	}
 
