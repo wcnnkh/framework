@@ -1,11 +1,17 @@
 package scw.data.geo;
 
-import java.util.List;
-
 import scw.lang.Nullable;
 import scw.util.comparator.Sort;
+import scw.util.stream.Cursor;
 
-public interface MarkerManager<K> {
+/**
+ * 基于位置的服务（Location Based Services，LBS）
+ * 
+ * @author shuchaowen
+ *
+ * @param <K>
+ */
+public interface Lbs<K> {
 	/**
 	 * 上报位置信息
 	 * 
@@ -25,5 +31,5 @@ public interface MarkerManager<K> {
 	 * 
 	 * @return
 	 */
-	List<Marker<K>> getNearbyMarkers(Point point, Distance radius, int count, Sort sort);
+	Cursor<Marker<K>> getNearbyMarkers(Point point, Distance radius, int count, Sort sort);
 }

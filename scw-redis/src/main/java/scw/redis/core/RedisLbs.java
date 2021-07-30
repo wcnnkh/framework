@@ -2,24 +2,25 @@ package scw.redis.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import scw.convert.Converter;
 import scw.core.utils.CollectionUtils;
 import scw.data.geo.Circle;
 import scw.data.geo.Distance;
+import scw.data.geo.Lbs;
 import scw.data.geo.Marker;
-import scw.data.geo.MarkerManager;
 import scw.data.geo.Point;
 import scw.util.comparator.Sort;
+import scw.util.stream.Cursor;
+import scw.util.stream.StreamProcessorSupport;
 
 @SuppressWarnings("unchecked")
-public class RedisMarkerManager<K, V> implements MarkerManager<V> {
+public class RedisLbs<K, V> implements Lbs<V> {
 	private final RedisCommands<K, V> redisCommands;
 	private final K key;
 
-	public RedisMarkerManager(RedisCommands<K, V> redisCommands, K key) {
+	public RedisLbs(RedisCommands<K, V> redisCommands, K key) {
 		this.redisCommands = redisCommands;
 		this.key = key;
 	}
@@ -58,14 +59,15 @@ public class RedisMarkerManager<K, V> implements MarkerManager<V> {
 	};
 
 	@Override
-	public List<Marker<V>> getNearbyMarkers(Point point, Distance radius, int count, Sort sort) {
+	public Cursor<Marker<V>> getNearbyMarkers(Point point, Distance radius, int count, Sort sort) {
 		Collection<GeoWithin<V>> collection = redisCommands.georadius(this.key, new Circle(point, radius),
 				new GeoRadiusWith().withCoord(), new GeoRadiusArgs<K>().sort(sort).count(count));
 		if (CollectionUtils.isEmpty(collection)) {
-			return Collections.emptyList();
+			return StreamProcessorSupport.emptyCursor();
 		}
 
-		return markerConvert.convert(collection, new ArrayList<Marker<V>>(collection.size()));
+		return StreamProcessorSupport
+				.cursor(markerConvert.convert(collection, new ArrayList<Marker<V>>(collection.size())).stream());
 	}
 
 }

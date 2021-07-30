@@ -1,6 +1,8 @@
 package scw.util.stream;
 
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.DoubleStream;
@@ -80,5 +82,18 @@ public final class StreamProcessorSupport {
 			return (Cursor<T>) stream;
 		}
 		return new Cursor<>(stream);
+	}
+
+	public static <T> Cursor<T> emptyCursor() {
+		return new Cursor<>(Collections.emptyIterator());
+	}
+
+	public static <T> Stream<T> emptyStream() {
+		List<T> list = Collections.emptyList();
+		return list.stream();
+	}
+
+	public static <T> AutoCloseStream<T> emptyAutoCloseStream() {
+		return new AutoCloseStreamWrapper<>(emptyStream());
 	}
 }

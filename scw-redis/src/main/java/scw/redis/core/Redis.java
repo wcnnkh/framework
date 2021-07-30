@@ -7,7 +7,7 @@ import scw.codec.support.CharsetCodec;
 import scw.core.Constants;
 import scw.data.DataOperations;
 import scw.data.cas.CASOperations;
-import scw.data.geo.MarkerManager;
+import scw.data.geo.Lbs;
 import scw.io.JavaSerializer;
 import scw.io.ResourceUtils;
 import scw.io.Serializer;
@@ -56,8 +56,8 @@ public class Redis implements RedisConnectionFactory<String, String> {
 		return dataOperations;
 	}
 
-	public MarkerManager<String> getMarkerManager(String key) {
-		return new RedisMarkerManager<String, String>(this, key);
+	public Lbs<String> getMarkerManager(String key) {
+		return new RedisLbs<String, String>(this, key);
 	}
 
 	public Serializer getSerializer() {
