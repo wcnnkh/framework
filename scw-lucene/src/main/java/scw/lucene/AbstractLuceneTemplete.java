@@ -33,11 +33,19 @@ import scw.value.StringValue;
 import scw.value.Value;
 
 public abstract class AbstractLuceneTemplete implements LuceneTemplete {
+	private ConversionService conversionService;
+
+	public ConversionService getConversionService() {
+		return conversionService == null ? Sys.env.getConversionService() : conversionService;
+	}
+
+	public void setConversionService(ConversionService conversionService) {
+		this.conversionService = conversionService;
+	}
+
 	protected abstract IndexWriter getIndexWrite() throws IOException;
 
 	protected abstract IndexReader getIndexReader() throws IOException;
-	
-	protected abstract ConversionService getConversionService();
 
 	public <T> T indexWriter(IndexWriterExecutor<T> indexWriterExecutor) throws IOException {
 		Transaction transaction = TransactionUtils.getManager().getTransaction();
@@ -64,12 +72,13 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 	protected abstract Field toField(FieldDescriptor fieldDescriptor, Value value);
 
 	private Fields getFields(Class<?> clazz) {
-		return MapperUtils.getMapper().getFields(clazz).accept(FieldFeature.GETTER).accept(new Accept<scw.mapper.Field>() {
+		return MapperUtils.getMapper().getFields(clazz).accept(FieldFeature.GETTER)
+				.accept(new Accept<scw.mapper.Field>() {
 
-			public boolean accept(scw.mapper.Field field) {
-				return field.getGetter().getField() != null;
-			}
-		});
+					public boolean accept(scw.mapper.Field field) {
+						return field.getGetter().getField() != null;
+					}
+				});
 	}
 
 	public Document createDocument(Object instance) {
@@ -104,7 +113,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 			if (resource == null) {
 				IndexWriterResource indexWriterResource = new IndexWriterResource(getIndexWrite());
 				resource = transaction.bindResource(IndexWriter.class, indexWriterResource);
-				if(resource == null){
+				if (resource == null) {
 					resource = indexWriterResource;
 				}
 			}

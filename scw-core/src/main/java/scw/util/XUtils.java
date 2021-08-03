@@ -56,8 +56,7 @@ public final class XUtils {
 	 * 
 	 * @see ValueUtils#isBaseType(Class) 此类型无法解析
 	 * @param instance
-	 * @param recursion
-	 *            是否递归
+	 * @param recursion 是否递归
 	 * @return
 	 */
 	@SuppressWarnings({ "rawtypes" })
@@ -77,8 +76,7 @@ public final class XUtils {
 			throw new NotSupportedException(instance.getClass().getName());
 		}
 
-		Map<String, Object> valueMap = MapperUtils.getMapper()
-				.getFields(instance.getClass())
+		Map<String, Object> valueMap = MapperUtils.getMapper().getFields(instance.getClass())
 				.accept(FieldFeature.IGNORE_STATIC).getValueMap(instance);
 		return recursion ? parseMap(valueMap) : valueMap;
 	}
@@ -132,23 +130,20 @@ public final class XUtils {
 			}
 			return array;
 		} else {
-			Map<String, Object> valueMap = MapperUtils.getMapper()
-					.getFields(value.getClass())
+			Map<String, Object> valueMap = MapperUtils.getMapper().getFields(value.getClass())
 					.accept(FieldFeature.IGNORE_STATIC).getValueMap(value);
 			return parseMap(valueMap);
 		}
 	}
 
-	public static void appendToMap(Properties properties,
-			Map<String, String> map) {
+	public static void appendToMap(Properties properties, Map<String, String> map) {
 		if (properties == null || map == null) {
 			return;
 		}
 
 		for (Entry<Object, Object> entry : properties.entrySet()) {
 			map.put(entry.getKey() == null ? null : entry.getKey().toString(),
-					entry.getValue() == null ? null : entry.getValue()
-							.toString());
+					entry.getValue() == null ? null : entry.getValue().toString());
 		}
 	}
 
@@ -218,7 +213,7 @@ public final class XUtils {
 		URL url = classLoader.getResource("");
 		return url == null ? FileUtils.getUserDir() : url.getPath();
 	}
-	
+
 	/**
 	 * 获取webapp目录
 	 * 
@@ -267,28 +262,29 @@ public final class XUtils {
 		}
 		return path;
 	}
-	
+
 	/**
 	 * 此类是否可用
+	 * 
 	 * @param clazz
 	 * @return
 	 */
 	public static boolean isAvailable(Class<?> clazz) {
-		if(clazz == null){
+		if (clazz == null) {
 			return false;
 		}
-		
-		if(ClassUtils.isPrimitiveOrWrapper(clazz) || clazz.isAnnotationPresent(Ignore.class)){
+
+		if (ClassUtils.isPrimitiveOrWrapper(clazz) || clazz.isAnnotationPresent(Ignore.class)) {
 			return false;
 		}
-		
+
 		return ReflectionUtils.isSupported(clazz) && JavaVersion.isSupported(clazz);
 	}
-	
+
 	public static String getClassPath() {
 		return System.getProperty("java.class.path");
 	}
-	
+
 	/**
 	 * 获取环境变量分割符
 	 * 
@@ -306,7 +302,7 @@ public final class XUtils {
 
 		return StringUtils.split(classPath, getPathSeparator());
 	}
-	
+
 	public static String getOSName() {
 		return System.getProperty("os.name");
 	}

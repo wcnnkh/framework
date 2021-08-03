@@ -44,7 +44,7 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements
 		return namedEventListenerMap;
 	}
 
-	protected EventDispatcher<T> createBasicEventDispatcher(K name) {
+	protected EventDispatcher<T> createEventDispatcher(K name) {
 		return new DefaultEventDispatcher<T>(isConcurrent());
 	}
 
@@ -53,7 +53,7 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements
 		EventDispatcher<T> eventDispatcher = getNamedEventListenerMap()
 				.get(name);
 		if (eventDispatcher == null) {
-			eventDispatcher = createBasicEventDispatcher(name);
+			eventDispatcher = createEventDispatcher(name);
 			EventDispatcher<T> dispatcher = getNamedEventListenerMap()
 					.putIfAbsent(name, eventDispatcher);
 			if (dispatcher != null) {

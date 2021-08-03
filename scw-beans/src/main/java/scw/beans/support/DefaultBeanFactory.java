@@ -18,6 +18,7 @@ import scw.beans.BeanUtils;
 import scw.beans.BeanlifeCycleEvent;
 import scw.beans.BeansException;
 import scw.beans.ConfigurableBeanFactory;
+import scw.beans.ContextLoader;
 import scw.beans.SingletonBeanRegistry;
 import scw.beans.ioc.Ioc;
 import scw.context.Destroy;
@@ -344,6 +345,8 @@ public class DefaultBeanFactory extends AbstractConfigurableContext
 			}
 			//在定义初始完成后就可以认为已经初始化了
 			initialized = true;
+			
+			ContextLoader.bindBeanFactory(this);
 			
 			configure(this);
 			

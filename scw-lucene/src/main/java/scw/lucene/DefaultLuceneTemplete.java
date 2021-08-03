@@ -16,9 +16,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.MMapDirectory;
 
-import scw.convert.ConversionService;
 import scw.core.utils.ClassUtils;
 import scw.mapper.FieldDescriptor;
 import scw.value.Value;
@@ -26,25 +25,18 @@ import scw.value.Value;
 public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	private final Directory directory;
 	private final Analyzer analyzer;
-	private final ConversionService conversionService;
-
-	public DefaultLuceneTemplete(String directory, ConversionService conversionService) throws IOException {
-		this(directory, new StandardAnalyzer(), conversionService);
+	
+	public DefaultLuceneTemplete(String directory) throws IOException {
+		this(directory, new StandardAnalyzer());
 	}
 	
-	public DefaultLuceneTemplete(String directory, Analyzer analyzer, ConversionService conversionService) throws IOException {
-		this(FSDirectory.open(Paths.get(directory)), new StandardAnalyzer(), conversionService);
+	public DefaultLuceneTemplete(String directory, Analyzer analyzer) throws IOException {
+		this(MMapDirectory.open(Paths.get(directory)), new StandardAnalyzer());
 	}
 	
-	public DefaultLuceneTemplete(Directory directory, Analyzer analyzer, ConversionService conversionService) {
+	public DefaultLuceneTemplete(Directory directory, Analyzer analyzer) {
 		this.directory = directory;
 		this.analyzer = analyzer;
-		this.conversionService = conversionService;
-	}
-	
-	@Override
-	protected ConversionService getConversionService() {
-		return conversionService;
 	}
 
 	public final Directory getDirectory() {

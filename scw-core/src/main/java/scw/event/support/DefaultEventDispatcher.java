@@ -2,6 +2,7 @@ package scw.event.support;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.Executor;
 
 import scw.core.Assert;
 import scw.event.Event;
@@ -21,6 +22,7 @@ public class DefaultEventDispatcher<T extends Event> implements EventDispatcher<
 	private volatile Collection<EventRegistrationInternal> eventListeners;
 	private final boolean concurrent;
 	private final int initialCapacity;
+	private Executor executor;
 	
 	public DefaultEventDispatcher(boolean concurrent) {
 		this(concurrent, 8);
@@ -29,6 +31,14 @@ public class DefaultEventDispatcher<T extends Event> implements EventDispatcher<
 	public DefaultEventDispatcher(boolean concurrent, int initialCapacity) {
 		this.concurrent = concurrent;
 		this.initialCapacity = initialCapacity;
+	}
+
+	public Executor getExecutor() {
+		return executor;
+	}
+
+	public void setExecutor(Executor executor) {
+		this.executor = executor;
 	}
 
 	public Collection<EventRegistrationInternal> getEventListeners() {
