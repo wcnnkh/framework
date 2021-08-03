@@ -13,6 +13,11 @@ import java.util.stream.StreamSupport;
 
 import scw.lang.NotSupportedException;
 
+/**
+ * 使用静态代理而不动态代理的原因是考虑性能
+ * @author shuchaowen
+ *
+ */
 public final class StreamProcessorSupport {
 	private StreamProcessorSupport() {
 		throw new NotSupportedException(StreamProcessorSupport.class.getName());
