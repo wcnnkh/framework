@@ -16,7 +16,7 @@ public interface Page<T> extends Cursor<Long, T> {
 	 * @return
 	 */
 	default long getPageNumber() {
-		return PageSupport.getPageNumber(getCursorId(), getCount());
+		return PageSupport.getPageNumber(getCount(), getCursorId());
 	}
 
 	/**
