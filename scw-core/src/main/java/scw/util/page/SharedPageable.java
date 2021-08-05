@@ -21,6 +21,11 @@ public class SharedPageable<K, T> implements Pageable<K, T>, Serializable {
 		this.count = count;
 		this.hasNext = hasNext;
 	}
+	
+	@Override
+	public Pageable<K, T> shared() {
+		return this;
+	}
 
 	@Override
 	public Iterator<T> iterator() {

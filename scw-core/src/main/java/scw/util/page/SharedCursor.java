@@ -13,6 +13,11 @@ public class SharedCursor<K, T> extends SharedPageable<K, T> implements
 	}
 	
 	@Override
+	public Cursor<K, T> shared() {
+		return this;
+	}
+	
+	@Override
 	public Stream<T> stream() {
 		return super.stream().onClose(() -> close());
 	}

@@ -16,6 +16,11 @@ public class SharedPage<T> extends SharedCursor<Long, T> implements Page<T> {
 		super(cursorId, list, nextCursorId, count, hasMore);
 		this.total = total;
 	}
+	
+	@Override
+	public Page<T> shared() {
+		return this;
+	}
 
 	@Override
 	public Long getCursorId() {
