@@ -14,14 +14,6 @@ public class JumpPage<T> implements Page<T> {
 	}
 
 	@Override
-	public boolean isClosed() {
-		if (pageable instanceof Cursor) {
-			return ((Cursor<?, ?>) pageable).isClosed();
-		}
-		return false;
-	}
-
-	@Override
 	public void close() {
 		if (pageable instanceof Cursor) {
 			((Cursor<?, ?>) pageable).close();
@@ -34,7 +26,7 @@ public class JumpPage<T> implements Page<T> {
 	}
 
 	@Override
-	public Long getCount() {
+	public long getCount() {
 		return pageable.getCount();
 	}
 
@@ -49,22 +41,17 @@ public class JumpPage<T> implements Page<T> {
 	}
 
 	@Override
-	public long getCreateTime() {
-		return pageable.getCreateTime();
-	}
-
-	@Override
-	public Long getPageNumber() {
+	public long getPageNumber() {
 		return pageNumber;
 	}
 
 	@Override
-	public Long getPages() {
+	public long getPages() {
 		return PageSupport.getPages(total, pageable.getCount());
 	}
 
 	@Override
-	public Long getTotal() {
+	public long getTotal() {
 		return total;
 	}
 }

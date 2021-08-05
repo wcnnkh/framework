@@ -460,7 +460,7 @@ public class MysqlDialect extends AbstractSqlDialect {
 	}
 
 	@Override
-	public PaginationSql toPaginationSql(Sql sql, long start, int limit)
+	public PaginationSql toPaginationSql(Sql sql, long start, long limit)
 			throws SqlDialectException {
 		String str = sql.getSql();
 		int fromIndex = str.indexOf(" from ");// ignore select

@@ -8,10 +8,9 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import scw.core.Assert;
-import scw.event.Event;
 import scw.lang.Nullable;
 
-public interface Pageable<K, T> extends Iterable<T>, Event {
+public interface Pageable<K, T> extends Iterable<T> {
 	/**
 	 * 获取当前页的使用的开始游标
 	 * 
@@ -25,7 +24,7 @@ public interface Pageable<K, T> extends Iterable<T>, Event {
 	 * 
 	 * @return
 	 */
-	Long getCount();
+	long getCount();
 
 	/**
 	 * 获取下一页的开始游标id
@@ -41,6 +40,14 @@ public interface Pageable<K, T> extends Iterable<T>, Event {
 	 * @return
 	 */
 	boolean hasNext();
+	
+	/**
+	 * 返回的结果是可以被序列化的
+	 * @return
+	 */
+	default Pageable<K, T> shared(){
+		return new SharedPageable<K, T>(getCursorId(), rows(), getNextCursorId(), getCount(), hasNext());
+	}
 
 	default <R> Pageable<K, R> map(Function<? super T, ? extends R> mapper) {
 		return new MapperPageable<>(this, mapper);
@@ -54,15 +61,17 @@ public interface Pageable<K, T> extends Iterable<T>, Event {
 		return stream().collect(Collectors.toList());
 	}
 
-	default Pageable<K, T> jumpTo(PageableProcessor<K, T> processor, K cursorId) {
+	default <R> Pageable<K, R> jumpTo(PageableProcessor<K, R> processor,
+			K cursorId) {
 		Assert.requiredArgument(processor != null, "processor");
 		return processor.process(cursorId, getCount());
 	}
 
-	default Pageable<K, T> next(PageableProcessor<K, T> processor) {
+	default <R> Pageable<K, R> next(PageableProcessor<K, R> processor) {
 		if (!hasNext()) {
-			throw new NoSuchElementException(
-					"cursorId=" + getCursorId() + ", nextCursorId=" + getNextCursorId() + ", count=" + getCount());
+			throw new NoSuchElementException("cursorId=" + getCursorId()
+					+ ", nextCursorId=" + getNextCursorId() + ", count="
+					+ getCount());
 		}
 		return jumpTo(processor, getNextCursorId());
 	}

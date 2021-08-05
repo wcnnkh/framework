@@ -30,7 +30,10 @@ import scw.orm.sql.convert.SmartMapperProcessor;
 import scw.sql.ConnectionFactory;
 import scw.sql.DefaultSqlOperations;
 import scw.sql.Sql;
-import scw.util.Pagination;
+import scw.util.page.Page;
+import scw.util.page.PageSupport;
+import scw.util.page.Pages;
+import scw.util.page.StreamPage;
 import scw.util.stream.Cursor;
 import scw.util.stream.Processor;
 
@@ -235,23 +238,24 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 	}
 	
 	@Override
-	public <T> Pagination<T> paginationQuery(TypeDescriptor resultType, Sql sql, long page, int limit) {
-		if (limit <= 0 || page <= 0) {
-			throw new RuntimeException("page=" + page + ", limit=" + limit);
+	public <T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber,
+			long limit) {
+		if (limit <= 0 || pageNumber <= 0) {
+			throw new RuntimeException("page=" + pageNumber + ", limit=" + limit);
 		}
-
-		long start = Pagination.getBegin(page, limit);
+		
+		long start = PageSupport.getStart(pageNumber, limit);
 		PaginationSql paginationSql = sqlDialect.toPaginationSql(sql, start, limit);
-		Long count = query(Long.class, paginationSql.getCountSql()).first();
-		Pagination<T> pagination = new Pagination<T>(limit);
-		if (count == null || count == 0) {
-			pagination.emptyData();
-			return pagination;
-		} else {
-			pagination.setTotalCount(count);
-			pagination.setData(query(resultType, paginationSql.getResultSql()).shared());
+		Long total = query(Long.class, paginationSql.getCountSql()).first();
+		if(total == null || total == 0){
+			return PageSupport.emptyPages(pageNumber, limit);
 		}
-		return pagination;
+		
+		Cursor<T> cursor = query(resultType, paginationSql.getResultSql());
+		Page<T> page = new StreamPage<T>(cursor, total, limit, start);
+		return PageSupport.getPages(page, (startIndex, count) -> {
+			return query(resultType, sqlDialect.toPaginationSql(sql, startIndex, count).getResultSql());
+		});
 	}
 
 	public TableChanges getTableChanges(Class<?> tableClass, String tableName) {

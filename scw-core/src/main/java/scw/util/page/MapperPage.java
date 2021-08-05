@@ -9,17 +9,17 @@ public class MapperPage<P extends Page<S>, S, T> extends MapperCursor<P, Long, S
 	}
 
 	@Override
-	public Long getPages() {
+	public long getPages() {
 		return wrappedTarget.getPages();
 	}
 
 	@Override
-	public Long getTotal() {
+	public long getTotal() {
 		return wrappedTarget.getPages();
 	}
 
 	@Override
-	public Long getPageNumber() {
+	public long getPageNumber() {
 		return wrappedTarget.getPageNumber();
 	}
 }

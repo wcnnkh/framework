@@ -1,46 +1,43 @@
 package scw.util.page;
 
-public class JumpPages<T> extends JumpCursors<Long, T> implements Pages<T>{
+public class JumpPages<T> extends JumpCursors<Long, T> implements Pages<T> {
 	private final long pageNumber;
 	private final long total;
-	
-	public JumpPages(PageableProcessor<Long, T> processor, Pageable<Long, T> pageable, long pageNumber, long total) {
-		super(processor, pageable);
+
+	public JumpPages(Page<T> page, CursorProcessor<Long, T> processor) {
+		this(page, new PageProcessor<T>(page, processor));
+	}
+
+	public JumpPages(Page<T> page, PageableProcessor<Long, T> processor) {
+		this(page, processor, page.getPageNumber(), page.getTotal());
+	}
+
+	public JumpPages(Pageable<Long, T> pageable,
+			PageableProcessor<Long, T> processor, long pageNumber, long total) {
+		super(pageable, processor);
 		this.pageNumber = pageNumber;
 		this.total = total;
 	}
 
 	@Override
-	public Long getPageNumber() {
+	public Pages<T> process(Long start, long count) {
+		Cursors<Long, T> pageable = super.process(start, count);
+		return new JumpPages<T>(this, pageable, PageSupport.getPageNumber(
+				count, start), getTotal());
+	}
+
+	@Override
+	public long getPageNumber() {
 		return pageNumber;
 	}
 
 	@Override
-	public Long getPages() {
+	public long getPages() {
 		return PageSupport.getPages(total, pageNumber);
 	}
 
 	@Override
-	public Long getTotal() {
+	public long getTotal() {
 		return total;
 	}
-
-	@Override
-	public Pages<T> jumpTo(Long cursorId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Pages<T> jumpToPage(long pageNumber) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Pages<T> previous() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

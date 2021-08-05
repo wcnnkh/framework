@@ -27,7 +27,8 @@ import scw.mapper.MapperUtils;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionUtils;
 import scw.util.Accept;
-import scw.util.Pagination;
+import scw.util.page.Page;
+import scw.util.page.PageSupport;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
@@ -246,18 +247,18 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 		});
 	}
 
-	public <T> Pagination<T> search(Query query, final RowMapper<T> rowMapper, long page, final int limit)
+	public <T> Page<T> search(Query query, final RowMapper<T> rowMapper, long page, final int limit)
 			throws IOException {
-		final int begin = Pagination.getBegin(page, limit);
+		final int begin = (int) PageSupport.getStart(page, limit);
 		return search(query, begin + limit, new PaginationTopDocsMapper<T>(rowMapper, begin, limit));
 	}
 
-	public <T> Pagination<T> search(Query query, Sort sort, boolean doDocScores, final RowMapper<T> rowMapper,
+	public <T> Page<T> search(Query query, Sort sort, boolean doDocScores, final RowMapper<T> rowMapper,
 			long page, final int limit) throws IOException {
-		final int begin = Pagination.getBegin(page, limit);
-		return search(query, begin + limit, sort, doDocScores, new TopFieldDocsMapper<Pagination<T>>() {
+		final int begin = (int) PageSupport.getStart(page, limit);
+		return search(query, begin + limit, sort, doDocScores, new TopFieldDocsMapper<Page<T>>() {
 
-			public Pagination<T> mapper(IndexReader indexReader, IndexSearcher indexSearcher, TopFieldDocs topFieldDocs)
+			public Page<T> mapper(IndexReader indexReader, IndexSearcher indexSearcher, TopFieldDocs topFieldDocs)
 					throws IOException {
 				return new PaginationTopDocsMapper<T>(rowMapper, begin, limit).mapper(indexReader, indexSearcher,
 						topFieldDocs);
@@ -265,12 +266,12 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 		});
 	}
 
-	public <T> Pagination<T> search(Query query, final Class<? extends T> resultType, long page, int limit)
+	public <T> Page<T> search(Query query, final Class<? extends T> resultType, long page, int limit)
 			throws IOException {
 		return search(query, new DefaultRowMapper<T>(resultType), page, limit);
 	}
 
-	public <T> Pagination<T> search(Query query, Sort sort, boolean doDocScores, final Class<? extends T> resultType,
+	public <T> Page<T> search(Query query, Sort sort, boolean doDocScores, final Class<? extends T> resultType,
 			long page, int limit) throws IOException {
 		return search(query, sort, doDocScores, new DefaultRowMapper<T>(resultType), page, limit);
 	}
@@ -297,16 +298,16 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 		});
 	}
 
-	public <T> Pagination<T> searchAfter(ScoreDoc after, Query query, int numHits, RowMapper<T> rowMapper)
+	public <T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, RowMapper<T> rowMapper)
 			throws IOException {
 		return searchAfter(after, query, numHits, new PaginationTopDocsMapper<T>(rowMapper, 0, numHits));
 	}
 
-	public <T> Pagination<T> searchAfter(ScoreDoc after, Query query, final int numHits, Sort sort, boolean doDocScores,
+	public <T> Page<T> searchAfter(ScoreDoc after, Query query, final int numHits, Sort sort, boolean doDocScores,
 			final RowMapper<T> rowMapper) throws IOException {
-		return searchAfter(after, query, numHits, sort, doDocScores, new TopFieldDocsMapper<Pagination<T>>() {
+		return searchAfter(after, query, numHits, sort, doDocScores, new TopFieldDocsMapper<Page<T>>() {
 
-			public Pagination<T> mapper(IndexReader indexReader, IndexSearcher indexSearcher, TopFieldDocs topFieldDocs)
+			public Page<T> mapper(IndexReader indexReader, IndexSearcher indexSearcher, TopFieldDocs topFieldDocs)
 					throws IOException {
 				return new PaginationTopDocsMapper<T>(rowMapper, 0, numHits).mapper(indexReader, indexSearcher,
 						topFieldDocs);
@@ -314,12 +315,12 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 		});
 	}
 
-	public <T> Pagination<T> searchAfter(ScoreDoc after, Query query, int numHits, Class<? extends T> resultType)
+	public <T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Class<? extends T> resultType)
 			throws IOException {
 		return searchAfter(after, query, numHits, new DefaultRowMapper<T>(resultType));
 	}
 
-	public <T> Pagination<T> searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
+	public <T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
 			Class<? extends T> resultType) throws IOException {
 		return searchAfter(after, query, numHits, sort, doDocScores, new DefaultRowMapper<T>(resultType));
 	}
@@ -348,7 +349,7 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 		}
 	}
 
-	private final class PaginationTopDocsMapper<T> implements TopDocsMapper<Pagination<T>> {
+	private final class PaginationTopDocsMapper<T> implements TopDocsMapper<Page<T>> {
 		private final RowMapper<T> rowMapper;
 		private final int begin;
 		private final int limit;
@@ -359,14 +360,14 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 			this.limit = limit;
 		}
 
-		public Pagination<T> mapper(IndexReader indexReader, IndexSearcher indexSearcher, TopDocs topDocs)
+		public Page<T> mapper(IndexReader indexReader, IndexSearcher indexSearcher, TopDocs topDocs)
 				throws IOException {
 			List<T> list = new ArrayList<T>();
 			int index = 0;
 			for (int i = begin; i < topDocs.scoreDocs.length; i++) {
 				list.add(rowMapper.mapper(index++, indexReader, indexSearcher, topDocs.scoreDocs[i]));
 			}
-			return new Pagination<T>(topDocs.totalHits.value, limit, list);
+			return PageSupport.toPage(topDocs.totalHits.value, PageSupport.getPageNumber(limit, begin), limit, list);
 		}
 
 	}

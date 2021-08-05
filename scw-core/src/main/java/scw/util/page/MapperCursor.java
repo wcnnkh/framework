@@ -9,11 +9,6 @@ public class MapperCursor<P extends Cursor<K, S>, K, S, T> extends MapperPageabl
 	}
 
 	@Override
-	public boolean isClosed() {
-		return wrappedTarget.isClosed();
-	}
-
-	@Override
 	public void close() {
 		wrappedTarget.close();
 	}

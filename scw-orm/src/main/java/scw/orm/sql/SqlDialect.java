@@ -68,7 +68,7 @@ public interface SqlDialect extends ObjectKeyFormat, ObjectRelationalMapping{
 
 	Sql toLastInsertIdSql(String tableName) throws SqlDialectException;
 
-	PaginationSql toPaginationSql(Sql sql, long start, int limit) throws SqlDialectException;
+	PaginationSql toPaginationSql(Sql sql, long start, long limit) throws SqlDialectException;
 
 	Sql getInIds(String tableName, Class<?> entityClass, Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException;

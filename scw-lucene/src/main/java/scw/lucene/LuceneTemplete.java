@@ -8,7 +8,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 
-import scw.util.Pagination;
+import scw.util.page.Page;
 
 public interface LuceneTemplete {
 	Document createDocument(Object instance);
@@ -38,14 +38,14 @@ public interface LuceneTemplete {
 	<T> T search(Query query, int top, Sort sort, boolean doDocScores, TopFieldDocsMapper<T> topFieldDocsMapper)
 			throws IOException;
 	
-	<T> Pagination<T> search(Query query, RowMapper<T> rowMapper, long page, int limit) throws IOException;
+	<T> Page<T> search(Query query, RowMapper<T> rowMapper, long page, int limit) throws IOException;
 
-	<T> Pagination<T> search(Query query, Sort sort, boolean doDocScores, RowMapper<T> rowMapper, long page, int limit)
+	<T> Page<T> search(Query query, Sort sort, boolean doDocScores, RowMapper<T> rowMapper, long page, int limit)
 			throws IOException;
 	
-	<T> Pagination<T> search(Query query, Class<? extends T> resultType, long page, int limit) throws IOException;
+	<T> Page<T> search(Query query, Class<? extends T> resultType, long page, int limit) throws IOException;
 
-	<T> Pagination<T> search(Query query, Sort sort, boolean doDocScores, Class<? extends T> resultType, long page,
+	<T> Page<T> search(Query query, Sort sort, boolean doDocScores, Class<? extends T> resultType, long page,
 			int limit) throws IOException;
 
 	<T> T searchAfter(ScoreDoc after, Query query, int numHits, TopDocsMapper<T> topDocsMapper) throws IOException;
@@ -53,14 +53,14 @@ public interface LuceneTemplete {
 	<T> T searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
 			TopFieldDocsMapper<T> topFieldDocsMapper) throws IOException;
 
-	<T> Pagination<T> searchAfter(ScoreDoc after, Query query, int numHits, RowMapper<T> rowMapper) throws IOException;
+	<T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, RowMapper<T> rowMapper) throws IOException;
 
-	<T> Pagination<T> searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
+	<T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
 			RowMapper<T> rowMapper) throws IOException;
 
-	<T> Pagination<T> searchAfter(ScoreDoc after, Query query, int numHits, Class<? extends T> resultType)
+	<T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Class<? extends T> resultType)
 			throws IOException;
 
-	<T> Pagination<T> searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
+	<T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
 			Class<? extends T> resultType) throws IOException;
 }

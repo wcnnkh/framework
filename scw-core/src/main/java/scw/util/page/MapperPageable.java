@@ -25,7 +25,7 @@ public class MapperPageable<P extends Pageable<K, S>, K, S, T> extends Wrapper<P
 	}
 
 	@Override
-	public Long getCount() {
+	public long getCount() {
 		return wrappedTarget.getCount();
 	}
 
@@ -37,10 +37,5 @@ public class MapperPageable<P extends Pageable<K, S>, K, S, T> extends Wrapper<P
 	@Override
 	public boolean hasNext() {
 		return wrappedTarget.hasNext();
-	}
-
-	@Override
-	public long getCreateTime() {
-		return wrappedTarget.getCreateTime();
 	}
 }

@@ -11,7 +11,8 @@ import scw.orm.EntityOperations;
 import scw.orm.MaxValueFactory;
 import scw.sql.Sql;
 import scw.sql.SqlOperations;
-import scw.util.Pagination;
+import scw.util.page.Page;
+import scw.util.page.Pages;
 
 public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFactory {
 	SqlDialect getSqlDialect();
@@ -103,11 +104,20 @@ public interface SqlTemplate extends EntityOperations, SqlOperations, MaxValueFa
 
 	<K, V> Map<K, V> getInIds(String tableName, Class<? extends V> entityClass, Collection<? extends K> inPrimaryKeys,
 			Object... primaryKeys);
+	
+	default <T> Page<T> getPage(TypeDescriptor resultType, Sql sql, long pageNumber, long limit){
+		Pages<T> pages = getPages(resultType, sql, pageNumber, limit);
+		return pages.shared();
+	}
+	
+	default <T> Page<T> getPage(Class<? extends T> resultType, Sql sql, long pageNumber, long limit) {
+		return getPage(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
+	}
+	
+	<T> Pages<T> getPages(TypeDescriptor resultType, Sql sql, long pageNumber, long limit);
 
-	<T> Pagination<T> paginationQuery(TypeDescriptor resultType, Sql sql, long page, int limit);
-
-	default <T> Pagination<T> paginationQuery(Class<? extends T> resultType, Sql sql, long page, int limit) {
-		return paginationQuery(TypeDescriptor.valueOf(resultType), sql, page, limit);
+	default <T> Pages<T> getPages(Class<? extends T> resultType, Sql sql, long pageNumber, int limit){
+		return getPages(TypeDescriptor.valueOf(resultType), sql, pageNumber, limit);
 	}
 
 	/**

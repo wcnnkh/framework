@@ -4,36 +4,53 @@ import java.util.function.Function;
 
 public interface Page<T> extends Cursor<Long, T> {
 	/**
+	 * 总数
+	 * 
+	 * @return
+	 */
+	long getTotal();
+	
+	/**
 	 * 获取当前页码
 	 * 
 	 * @return
 	 */
-	Long getPageNumber();
+	default long getPageNumber() {
+		return PageSupport.getPageNumber(getCursorId(), getCount());
+	}
 
 	/**
 	 * 总页数
 	 * 
 	 * @return
 	 */
-	Long getPages();
+	default long getPages(){
+		return PageSupport.getPages(getTotal(), getCount());
+	}
 
-	/**
-	 * 总数
-	 * 
-	 * @return
-	 */
-	Long getTotal();
+	@Override
+	default boolean hasNext() {
+		return getPageNumber() < getPages();
+	}
 
-	default Page<T> next(PageableProcessor<Long, T> processor) {
+	@Override
+	default Page<T> shared() {
+		return new SharedPage<T>(getCursorId(), rows(), getCount(), getTotal());
+	}
+
+	default <R> Page<R> next(PageableProcessor<Long, R> processor) {
 		return jumpToPage(processor, getPageNumber() + 1);
 	}
 
-	default Page<T> jumpTo(PageableProcessor<Long, T> processor, Long cursorId) {
-		Pageable<Long, T> pageable = processor.process(cursorId, getCount());
-		return new JumpPage<>(pageable, PageSupport.getPageNumber(getCount(), cursorId), getTotal());
+	default <R> Page<R> jumpTo(PageableProcessor<Long, R> processor,
+			Long cursorId) {
+		Pageable<Long, R> pageable = processor.process(cursorId, getCount());
+		return new JumpPage<>(pageable, PageSupport.getPageNumber(getCount(),
+				cursorId), getTotal());
 	}
 
-	default Page<T> jumpToPage(PageableProcessor<Long, T> processor, long pageNumber) {
+	default <R> Page<R> jumpToPage(PageableProcessor<Long, R> processor,
+			long pageNumber) {
 		return jumpTo(processor, PageSupport.getStart(pageNumber, getCount()));
 	}
 
@@ -41,7 +58,7 @@ public interface Page<T> extends Cursor<Long, T> {
 		return getPageNumber() > 1;
 	}
 
-	default Page<T> previous(PageableProcessor<Long, T> processor) {
+	default <R> Page<R> previous(PageableProcessor<Long, R> processor) {
 		return jumpToPage(processor, getPageNumber() - 1);
 	}
 
@@ -51,7 +68,7 @@ public interface Page<T> extends Cursor<Long, T> {
 		if (start == null) {
 			start = 0L;
 		}
-		return PageSupport.getNextStart(start, getCount(), getTotal());
+		return PageSupport.getNextStart(start, getCount());
 	}
 
 	@Override
