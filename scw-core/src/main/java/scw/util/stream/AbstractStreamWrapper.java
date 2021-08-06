@@ -2,6 +2,7 @@ package scw.util.stream;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.BiConsumer;
@@ -16,11 +17,13 @@ import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
+import scw.lang.Nullable;
 import scw.util.Wrapper;
 
 public abstract class AbstractStreamWrapper<T, M extends Stream<T>, S extends Stream<T>> extends Wrapper<M>
@@ -28,6 +31,15 @@ public abstract class AbstractStreamWrapper<T, M extends Stream<T>, S extends St
 
 	public AbstractStreamWrapper(M stream) {
 		super(stream);
+	}
+	
+	public List<T> shared() {
+		return collect(Collectors.toList());
+	}
+
+	@Nullable
+	public T first() {
+		return findFirst().orElse(null);
 	}
 
 	protected abstract S wrapper(Stream<T> stream);

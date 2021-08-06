@@ -1,6 +1,7 @@
 package scw.util.stream;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -14,37 +15,44 @@ import java.util.function.ToDoubleFunction;
 import java.util.function.ToIntFunction;
 import java.util.function.ToLongFunction;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
-public abstract class AbstractAutoCloseStreamWrapper<T, S extends AutoCloseStream<T>>
-		extends AbstractStreamWrapper<T, Stream<T>, S> implements AutoCloseStream<T> {
-	private boolean closed;
+import scw.lang.Nullable;
 
-	public AbstractAutoCloseStreamWrapper(Stream<T> stream) {
+/**
+ * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
+ * @author shuchaowen
+ *
+ * @param <T>
+ * @param <S>
+ */
+public abstract class AbstractAutoCloseStream<T, S extends Stream<T>>
+		extends AbstractStreamWrapper<T, Stream<T>, S> implements Stream<T> {
+
+	public AbstractAutoCloseStream(Stream<T> stream) {
 		super(stream);
 	}
 	
-	@Override
-	public boolean isClosed() {
-		return closed;
-	}
-	
-	@Override
-	public void close() {
-		closed = true;
-		super.close();
+	public List<T> shared() {
+		return collect(Collectors.toList());
 	}
 
+	@Nullable
+	public T first() {
+		return findFirst().orElse(null);
+	}
+	
 	@Override
 	public <R> AutoCloseStream<R> map(Function<? super T, ? extends R> mapper) {
 		Stream<R> stream = this.wrappedTarget.map(mapper);
 		if (stream instanceof AutoCloseStream) {
 			return (AutoCloseStream<R>) stream;
 		}
-		return new AutoCloseStreamWrapper<>(stream);
+		return new AutoCloseStream<>(stream);
 	}
 
 	@Override
@@ -53,7 +61,7 @@ public abstract class AbstractAutoCloseStreamWrapper<T, S extends AutoCloseStrea
 		if (stream instanceof AutoCloseIntStream) {
 			return (AutoCloseIntStream) stream;
 		}
-		return new AutoCloseIntStreamWrapper(stream);
+		return new AutoCloseIntStream(stream);
 	}
 
 	@Override
@@ -62,7 +70,7 @@ public abstract class AbstractAutoCloseStreamWrapper<T, S extends AutoCloseStrea
 		if (stream instanceof AutoCloseLongStream) {
 			return (AutoCloseLongStream) stream;
 		}
-		return new AutoCloseLongStreamWrapper(stream);
+		return new AutoCloseLongStream(stream);
 	}
 
 	@Override
@@ -71,7 +79,7 @@ public abstract class AbstractAutoCloseStreamWrapper<T, S extends AutoCloseStrea
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
-		return new AutoCloseDoubleStreamWrapper(stream);
+		return new AutoCloseDoubleStream(stream);
 	}
 
 	@Override
@@ -80,7 +88,7 @@ public abstract class AbstractAutoCloseStreamWrapper<T, S extends AutoCloseStrea
 		if (stream instanceof AutoCloseStream) {
 			return (AutoCloseStream<R>) stream;
 		}
-		return new AutoCloseStreamWrapper<>(stream);
+		return new AutoCloseStream<>(stream);
 	}
 
 	@Override
@@ -89,7 +97,7 @@ public abstract class AbstractAutoCloseStreamWrapper<T, S extends AutoCloseStrea
 		if (stream instanceof AutoCloseIntStream) {
 			return (AutoCloseIntStream) stream;
 		}
-		return new AutoCloseIntStreamWrapper(stream);
+		return new AutoCloseIntStream(stream);
 	}
 
 	@Override
@@ -98,7 +106,7 @@ public abstract class AbstractAutoCloseStreamWrapper<T, S extends AutoCloseStrea
 		if (stream instanceof AutoCloseLongStream) {
 			return (AutoCloseLongStream) stream;
 		}
-		return new AutoCloseLongStreamWrapper(stream);
+		return new AutoCloseLongStream(stream);
 	}
 
 	@Override
@@ -107,7 +115,7 @@ public abstract class AbstractAutoCloseStreamWrapper<T, S extends AutoCloseStrea
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
-		return new AutoCloseDoubleStreamWrapper(stream);
+		return new AutoCloseDoubleStream(stream);
 	}
 
 	@Override

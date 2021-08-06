@@ -13,11 +13,6 @@ import java.util.stream.StreamSupport;
 
 import scw.lang.NotSupportedException;
 
-/**
- * 使用静态代理而不动态代理的原因是考虑性能
- * @author shuchaowen
- *
- */
 public final class StreamProcessorSupport {
 	private StreamProcessorSupport() {
 		throw new NotSupportedException(StreamProcessorSupport.class.getName());
@@ -42,35 +37,72 @@ public final class StreamProcessorSupport {
 		return new AutoCloseStreamProcessorWrapper<>(streamProcessor);
 	}
 
-	public static AutoCloseIntStream autoClose(IntStream stream) {
+	/**
+	 * 使用静态代理而不动态代理的原因是考虑性能
+	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
+	 * 
+	 * @param stream
+	 * @return
+	 */
+	public static IntStream autoClose(IntStream stream) {
 		if (stream instanceof AutoCloseIntStream) {
 			return (AutoCloseIntStream) stream;
 		}
-		return new AutoCloseIntStreamWrapper(stream);
+		return new AutoCloseIntStream(stream);
 	}
 
-	public static AutoCloseLongStream autoClose(LongStream stream) {
+	/**
+	 * 使用静态代理而不动态代理的原因是考虑性能
+	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
+	 * 
+	 * @param stream
+	 * @return
+	 */
+	public static LongStream autoClose(LongStream stream) {
 		if (stream instanceof AutoCloseLongStream) {
 			return (AutoCloseLongStream) stream;
 		}
-		return new AutoCloseLongStreamWrapper(stream);
+		return new AutoCloseLongStream(stream);
 	}
 
-	public static AutoCloseDoubleStream autoClose(DoubleStream stream) {
+	/**
+	 * 使用静态代理而不动态代理的原因是考虑性能
+	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
+	 * 
+	 * @param stream
+	 * @return
+	 */
+	public static DoubleStream autoClose(DoubleStream stream) {
 		if (stream instanceof AutoCloseDoubleStream) {
 			return (AutoCloseDoubleStream) stream;
 		}
-		return new AutoCloseDoubleStreamWrapper(stream);
+		return new AutoCloseDoubleStream(stream);
 	}
 
-	public static <T> AutoCloseStream<T> autoClose(Stream<T> stream) {
+	/**
+	 * 使用静态代理而不动态代理的原因是考虑性能
+	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
+	 * 
+	 * @param <T>
+	 * @param stream
+	 * @return
+	 */
+	public static <T> Stream<T> autoClose(Stream<T> stream) {
 		if (stream instanceof AutoCloseStream) {
 			return (AutoCloseStream<T>) stream;
 		}
-		return new AutoCloseStreamWrapper<>(stream);
+		return new AutoCloseStream<>(stream);
 	}
 
-	public static <T> AutoCloseStream<T> stream(Iterator<T> iterator) {
+	/**
+	 * 使用静态代理而不动态代理的原因是考虑性能
+	 * 虽然可以自动关闭，并并非所有情况都适用，例如调用iterator/spliterator方法或获取到此对象后未调用任何方法
+	 * 
+	 * @param <T>
+	 * @param iterator
+	 * @return
+	 */
+	public static <T> Stream<T> stream(Iterator<T> iterator) {
 		Spliterator<T> spliterator = Spliterators.spliteratorUnknownSize(iterator, 0);
 		Stream<T> stream = StreamSupport.stream(spliterator, false);
 		return autoClose(stream);
@@ -99,6 +131,6 @@ public final class StreamProcessorSupport {
 	}
 
 	public static <T> AutoCloseStream<T> emptyAutoCloseStream() {
-		return new AutoCloseStreamWrapper<>(emptyStream());
+		return new AutoCloseStream<>(emptyStream());
 	}
 }
