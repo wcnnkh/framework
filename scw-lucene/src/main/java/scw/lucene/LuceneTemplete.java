@@ -3,18 +3,18 @@ package scw.lucene;
 import java.io.IOException;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Sort;
 
-import scw.util.page.Page;
+import scw.util.stream.Processor;
 
 public interface LuceneTemplete {
 	Document createDocument(Object instance);
-	
+
 	<T> T parse(Class<? extends T> type, Document document);
-	
+
 	<T> T indexWriter(IndexWriterExecutor<T> indexWriterExecutor) throws IOException;
 
 	long createIndex(Object instance) throws IOException;
@@ -29,38 +29,22 @@ public interface LuceneTemplete {
 
 	long updateIndex(Term term, Iterable<?> indexs) throws IOException;
 
-	<T> T indexReader(IndexReaderExecutor<T> indexReaderExecutor) throws IOException;
+	<T, E extends Throwable> T indexReader(Processor<IndexReader, T, E> processor) throws E, IOException;
 
-	<T> T indexSearcher(IndexSearchExecutor<T> indexSearchExecutor) throws IOException;
+	default <T> SearchResults<T> search(SearchParameters parameters, ScoreDocMapper<T> rowMapper) throws LuceneException {
+		try {
+			return indexReader(new SearchProcessor<>(this, null, parameters, rowMapper));
+		} catch (IOException e) {
+			throw new LuceneException(e);
+		}
+	}
 
-	<T> T search(Query query, int top, TopDocsMapper<T> topDocsMapper) throws IOException;
-
-	<T> T search(Query query, int top, Sort sort, boolean doDocScores, TopFieldDocsMapper<T> topFieldDocsMapper)
-			throws IOException;
-	
-	<T> Page<T> search(Query query, RowMapper<T> rowMapper, long page, int limit) throws IOException;
-
-	<T> Page<T> search(Query query, Sort sort, boolean doDocScores, RowMapper<T> rowMapper, long page, int limit)
-			throws IOException;
-	
-	<T> Page<T> search(Query query, Class<? extends T> resultType, long page, int limit) throws IOException;
-
-	<T> Page<T> search(Query query, Sort sort, boolean doDocScores, Class<? extends T> resultType, long page,
-			int limit) throws IOException;
-
-	<T> T searchAfter(ScoreDoc after, Query query, int numHits, TopDocsMapper<T> topDocsMapper) throws IOException;
-
-	<T> T searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
-			TopFieldDocsMapper<T> topFieldDocsMapper) throws IOException;
-
-	<T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, RowMapper<T> rowMapper) throws IOException;
-
-	<T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
-			RowMapper<T> rowMapper) throws IOException;
-
-	<T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Class<? extends T> resultType)
-			throws IOException;
-
-	<T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
-			Class<? extends T> resultType) throws IOException;
+	default <T> SearchResults<T> searchAfter(ScoreDoc after, SearchParameters parameters, ScoreDocMapper<T> rowMapper)
+			throws LuceneSearchException {
+		try {
+			return indexReader(new SearchProcessor<>(this, after, parameters, rowMapper));
+		} catch (IOException e) {
+			throw new LuceneException(e);
+		}
+	}
 }

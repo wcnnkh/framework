@@ -1,21 +1,14 @@
 package scw.lucene;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.TopFieldDocs;
 
 import scw.convert.ConversionService;
 import scw.env.Sys;
@@ -27,8 +20,7 @@ import scw.mapper.MapperUtils;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionUtils;
 import scw.util.Accept;
-import scw.util.page.Page;
-import scw.util.page.PageSupport;
+import scw.util.stream.Processor;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
@@ -205,170 +197,16 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 		return updateIndex(term, Arrays.asList(index));
 	}
 
-	public <T> T indexReader(IndexReaderExecutor<T> indexReaderExecutor) throws IOException {
+	@Override
+	public <T, E extends Throwable> T indexReader(Processor<IndexReader, T, E> processor) throws E, IOException {
 		IndexReader indexReader = null;
 		try {
 			indexReader = getIndexReader();
-			return indexReaderExecutor.execute(indexReader);
+			return processor.process(indexReader);
 		} finally {
 			if (indexReader != null) {
 				indexReader.close();
 			}
 		}
-	}
-
-	public <T> T indexSearcher(final IndexSearchExecutor<T> indexSearchExecutor) throws IOException {
-		return indexReader(new IndexReaderExecutor<T>() {
-
-			public T execute(IndexReader indexReader) throws IOException {
-				return indexSearchExecutor.execute(indexReader, new IndexSearcher(indexReader));
-			}
-		});
-	}
-
-	public <T> T search(final Query query, final int top, final TopDocsMapper<T> topDocsMapper) throws IOException {
-		return indexSearcher(new IndexSearchExecutor<T>() {
-
-			public T execute(IndexReader indexReader, IndexSearcher indexSearcher) throws IOException {
-				TopDocs topDocs = indexSearcher.search(query, top);
-				return topDocsMapper.mapper(indexReader, indexSearcher, topDocs);
-			}
-		});
-	}
-
-	public <T> T search(final Query query, final int top, final Sort sort, final boolean doDocScores,
-			final TopFieldDocsMapper<T> topFieldDocsMapper) throws IOException {
-		return indexSearcher(new IndexSearchExecutor<T>() {
-
-			public T execute(IndexReader indexReader, IndexSearcher indexSearcher) throws IOException {
-				TopFieldDocs topFieldDocs = indexSearcher.search(query, top, sort, doDocScores);
-				return topFieldDocsMapper.mapper(indexReader, indexSearcher, topFieldDocs);
-			}
-		});
-	}
-
-	public <T> Page<T> search(Query query, final RowMapper<T> rowMapper, long page, final int limit)
-			throws IOException {
-		final int begin = (int) PageSupport.getStart(page, limit);
-		return search(query, begin + limit, new PaginationTopDocsMapper<T>(rowMapper, begin, limit));
-	}
-
-	public <T> Page<T> search(Query query, Sort sort, boolean doDocScores, final RowMapper<T> rowMapper,
-			long page, final int limit) throws IOException {
-		final int begin = (int) PageSupport.getStart(page, limit);
-		return search(query, begin + limit, sort, doDocScores, new TopFieldDocsMapper<Page<T>>() {
-
-			public Page<T> mapper(IndexReader indexReader, IndexSearcher indexSearcher, TopFieldDocs topFieldDocs)
-					throws IOException {
-				return new PaginationTopDocsMapper<T>(rowMapper, begin, limit).mapper(indexReader, indexSearcher,
-						topFieldDocs);
-			}
-		});
-	}
-
-	public <T> Page<T> search(Query query, final Class<? extends T> resultType, long page, int limit)
-			throws IOException {
-		return search(query, new DefaultRowMapper<T>(resultType), page, limit);
-	}
-
-	public <T> Page<T> search(Query query, Sort sort, boolean doDocScores, final Class<? extends T> resultType,
-			long page, int limit) throws IOException {
-		return search(query, sort, doDocScores, new DefaultRowMapper<T>(resultType), page, limit);
-	}
-
-	public <T> T searchAfter(final ScoreDoc after, final Query query, final int numHits,
-			final TopDocsMapper<T> topDocsMapper) throws IOException {
-		return indexSearcher(new IndexSearchExecutor<T>() {
-
-			public T execute(IndexReader indexReader, IndexSearcher indexSearcher) throws IOException {
-				TopDocs topDocs = indexSearcher.searchAfter(after, query, numHits);
-				return topDocsMapper.mapper(indexReader, indexSearcher, topDocs);
-			}
-		});
-	}
-
-	public <T> T searchAfter(final ScoreDoc after, final Query query, final int numHits, final Sort sort,
-			final boolean doDocScores, final TopFieldDocsMapper<T> topFieldDocsMapper) throws IOException {
-		return indexSearcher(new IndexSearchExecutor<T>() {
-
-			public T execute(IndexReader indexReader, IndexSearcher indexSearcher) throws IOException {
-				TopFieldDocs topFieldDocs = indexSearcher.searchAfter(after, query, numHits, sort, doDocScores);
-				return topFieldDocsMapper.mapper(indexReader, indexSearcher, topFieldDocs);
-			}
-		});
-	}
-
-	public <T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, RowMapper<T> rowMapper)
-			throws IOException {
-		return searchAfter(after, query, numHits, new PaginationTopDocsMapper<T>(rowMapper, 0, numHits));
-	}
-
-	public <T> Page<T> searchAfter(ScoreDoc after, Query query, final int numHits, Sort sort, boolean doDocScores,
-			final RowMapper<T> rowMapper) throws IOException {
-		return searchAfter(after, query, numHits, sort, doDocScores, new TopFieldDocsMapper<Page<T>>() {
-
-			public Page<T> mapper(IndexReader indexReader, IndexSearcher indexSearcher, TopFieldDocs topFieldDocs)
-					throws IOException {
-				return new PaginationTopDocsMapper<T>(rowMapper, 0, numHits).mapper(indexReader, indexSearcher,
-						topFieldDocs);
-			}
-		});
-	}
-
-	public <T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Class<? extends T> resultType)
-			throws IOException {
-		return searchAfter(after, query, numHits, new DefaultRowMapper<T>(resultType));
-	}
-
-	public <T> Page<T> searchAfter(ScoreDoc after, Query query, int numHits, Sort sort, boolean doDocScores,
-			Class<? extends T> resultType) throws IOException {
-		return searchAfter(after, query, numHits, sort, doDocScores, new DefaultRowMapper<T>(resultType));
-	}
-
-	private final class DefaultRowMapper<T> implements RowMapper<T> {
-		private final Class<? extends T> resultType;
-
-		public DefaultRowMapper(Class<? extends T> resultType) {
-			this.resultType = resultType;
-		}
-
-		public T mapper(int index, IndexReader indexReader, IndexSearcher indexSearcher, ScoreDoc scoreDoc)
-				throws IOException {
-			Document document = indexSearcher.doc(scoreDoc.doc);
-
-			T instance = newInstance(resultType);
-			for (scw.mapper.Field field : getFields(resultType)) {
-				String value = document.get(field.getGetter().getName());
-				if (value == null) {
-					continue;
-				}
-
-				MapperUtils.setValue(getConversionService(), instance, field, value);
-			}
-			return instance;
-		}
-	}
-
-	private final class PaginationTopDocsMapper<T> implements TopDocsMapper<Page<T>> {
-		private final RowMapper<T> rowMapper;
-		private final int begin;
-		private final int limit;
-
-		public PaginationTopDocsMapper(RowMapper<T> rowMapper, int begin, int limit) {
-			this.rowMapper = rowMapper;
-			this.begin = begin;
-			this.limit = limit;
-		}
-
-		public Page<T> mapper(IndexReader indexReader, IndexSearcher indexSearcher, TopDocs topDocs)
-				throws IOException {
-			List<T> list = new ArrayList<T>();
-			int index = 0;
-			for (int i = begin; i < topDocs.scoreDocs.length; i++) {
-				list.add(rowMapper.mapper(index++, indexReader, indexSearcher, topDocs.scoreDocs[i]));
-			}
-			return PageSupport.toPage(topDocs.totalHits.value, PageSupport.getPageNumber(limit, begin), limit, list);
-		}
-
 	}
 }

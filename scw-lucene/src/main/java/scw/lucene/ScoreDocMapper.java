@@ -6,6 +6,6 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 
-public interface RowMapper<T> {
-	T mapper(int index, IndexReader indexReader, IndexSearcher indexSearcher, ScoreDoc scoreDoc) throws IOException;
+public interface ScoreDocMapper<T> {
+	T map(IndexReader indexReader, IndexSearcher indexSearcher, ScoreDoc scoreDoc) throws IOException;
 }
