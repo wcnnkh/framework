@@ -33,7 +33,7 @@ import scw.sql.Sql;
 import scw.util.page.Page;
 import scw.util.page.PageSupport;
 import scw.util.page.Pages;
-import scw.util.page.StreamPage;
+import scw.util.page.SharedPage;
 import scw.util.stream.Cursor;
 import scw.util.stream.Processor;
 
@@ -252,9 +252,10 @@ public class DefaultSqlTemplate extends DefaultSqlOperations implements SqlTempl
 		}
 		
 		Cursor<T> cursor = query(resultType, paginationSql.getResultSql());
-		Page<T> page = new StreamPage<T>(cursor, total, limit, start);
+		Page<T> page = new SharedPage<T>(start, cursor.shared(), limit, total);
 		return PageSupport.getPages(page, (startIndex, count) -> {
-			return query(resultType, sqlDialect.toPaginationSql(sql, startIndex, count).getResultSql());
+			Cursor<T> rows = query(resultType, sqlDialect.toPaginationSql(sql, startIndex, count).getResultSql());
+			return rows.shared();
 		});
 	}
 

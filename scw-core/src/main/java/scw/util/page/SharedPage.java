@@ -2,7 +2,7 @@ package scw.util.page;
 
 import java.util.List;
 
-public class SharedPage<T> extends SharedCursor<Long, T> implements Page<T> {
+public class SharedPage<T> extends SharedPageable<Long, T> implements Page<T> {
 	private static final long serialVersionUID = 1L;
 	private long total;
 
@@ -11,15 +11,9 @@ public class SharedPage<T> extends SharedCursor<Long, T> implements Page<T> {
 				PageSupport.hasMore(total, count, cursorId));
 	}
 
-	public SharedPage(long cursorId, List<T> list, long nextCursorId, long count, long total,
-			boolean hasMore) {
+	public SharedPage(long cursorId, List<T> list, long nextCursorId, long count, long total, boolean hasMore) {
 		super(cursorId, list, nextCursorId, count, hasMore);
 		this.total = total;
-	}
-	
-	@Override
-	public Page<T> shared() {
-		return this;
 	}
 
 	@Override

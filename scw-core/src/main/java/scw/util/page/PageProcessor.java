@@ -1,6 +1,6 @@
 package scw.util.page;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 public class PageProcessor<T> implements PageableProcessor<Long, T> {
 	private final Page<T> page;
@@ -13,9 +13,7 @@ public class PageProcessor<T> implements PageableProcessor<Long, T> {
 
 	@Override
 	public Pageable<Long, T> process(Long start, long count) {
-		Stream<T> stream = processor.stream(start, count);
-		return new StreamCursor<>(stream, count, start,
-				PageSupport.getNextStart(start, count), PageSupport.hasMore(
-						page.getTotal(), count, start));
+		List<T> list = processor.process(start, count);
+		return PageSupport.toPage(page.getTotal(), PageSupport.getPageNumber(count, start), count, list);
 	}
 }

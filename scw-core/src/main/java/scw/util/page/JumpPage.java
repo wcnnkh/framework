@@ -1,6 +1,7 @@
 package scw.util.page;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class JumpPage<T> implements Page<T> {
 	private final Pageable<Long, T> pageable;
@@ -11,13 +12,6 @@ public class JumpPage<T> implements Page<T> {
 		this.pageable = pageable;
 		this.pageNumber = pageNumber;
 		this.total = total;
-	}
-
-	@Override
-	public void close() {
-		if (pageable instanceof Cursor) {
-			((Cursor<?, ?>) pageable).close();
-		}
 	}
 
 	@Override
@@ -53,5 +47,10 @@ public class JumpPage<T> implements Page<T> {
 	@Override
 	public long getTotal() {
 		return total;
+	}
+
+	@Override
+	public List<T> rows() {
+		return pageable.rows();
 	}
 }

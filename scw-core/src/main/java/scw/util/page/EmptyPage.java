@@ -1,6 +1,6 @@
 package scw.util.page;
 
-public class EmptyPage<T> extends EmptyCursor<Long, T> implements Page<T> {
+public class EmptyPage<T> extends EmptyPageable<Long, T> implements Page<T> {
 	private static final long serialVersionUID = 1L;
 
 	public EmptyPage(Long cursorId, Long count) {

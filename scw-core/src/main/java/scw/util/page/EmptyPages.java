@@ -2,7 +2,7 @@ package scw.util.page;
 
 import java.util.NoSuchElementException;
 
-public class EmptyPages<T> extends EmptyCursors<Long, T> implements Pages<T> {
+public class EmptyPages<T> extends EmptyPageables<Long, T> implements Pages<T> {
 	private static final long serialVersionUID = 1L;
 
 	public EmptyPages(Long cursorId, long count) {

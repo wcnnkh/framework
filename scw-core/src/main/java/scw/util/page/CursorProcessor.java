@@ -1,8 +1,8 @@
 package scw.util.page;
 
-import java.util.stream.Stream;
+import java.util.List;
 
 @FunctionalInterface
 public interface CursorProcessor<K, T> {
-	Stream<T> stream(K start, long count);
+	List<T> process(K start, long count);
 }

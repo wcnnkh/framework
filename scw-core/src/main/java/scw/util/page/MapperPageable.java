@@ -1,8 +1,8 @@
 package scw.util.page;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import scw.util.Wrapper;
 
@@ -15,9 +15,8 @@ public class MapperPageable<P extends Pageable<K, S>, K, S, T> extends Wrapper<P
 	}
 
 	@Override
-	public Iterator<T> iterator() {
-		Stream<T> stream = wrappedTarget.stream().map(mapper);
-		return stream.iterator();
+	public List<T> rows() {
+		return wrappedTarget.rows().stream().map(mapper).collect(Collectors.toList());
 	}
 
 	public K getCursorId() {

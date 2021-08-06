@@ -1,16 +1,14 @@
 package scw.util.page;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import scw.core.Assert;
 import scw.lang.Nullable;
 
-public interface Pageable<K, T> extends Iterable<T> {
+public interface Pageable<K, T> extends Iterable<T>{
 	/**
 	 * 获取当前页的使用的开始游标
 	 * 
@@ -33,6 +31,8 @@ public interface Pageable<K, T> extends Iterable<T> {
 	 */
 	@Nullable
 	K getNextCursorId();
+	
+	List<T> rows();
 
 	/**
 	 * 是否还有更多数据
@@ -41,24 +41,13 @@ public interface Pageable<K, T> extends Iterable<T> {
 	 */
 	boolean hasNext();
 	
-	/**
-	 * 返回的结果是可以被序列化的
-	 * @return
-	 */
-	default Pageable<K, T> shared(){
-		return new SharedPageable<K, T>(getCursorId(), rows(), getNextCursorId(), getCount(), hasNext());
+	@Override
+	default Iterator<T> iterator() {
+		return rows().iterator();
 	}
-
+	
 	default <R> Pageable<K, R> map(Function<? super T, ? extends R> mapper) {
 		return new MapperPageable<>(this, mapper);
-	}
-
-	default Stream<T> stream() {
-		return StreamSupport.stream(spliterator(), false);
-	}
-
-	default List<T> rows() {
-		return stream().collect(Collectors.toList());
 	}
 
 	default <R> Pageable<K, R> jumpTo(PageableProcessor<K, R> processor,

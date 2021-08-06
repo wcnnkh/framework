@@ -1,6 +1,7 @@
 package scw.util.page;
 
 import java.util.Iterator;
+import java.util.List;
 
 import scw.util.Wrapper;
 
@@ -33,5 +34,10 @@ public class PageableWrapper<P extends Pageable<K, T>, K, T> extends Wrapper<P> 
 	@Override
 	public boolean hasNext() {
 		return wrappedTarget.hasNext();
+	}
+
+	@Override
+	public List<T> rows() {
+		return wrappedTarget.rows();
 	}
 }

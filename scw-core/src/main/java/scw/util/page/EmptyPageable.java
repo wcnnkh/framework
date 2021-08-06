@@ -2,7 +2,7 @@ package scw.util.page;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.List;
 
 public class EmptyPageable<K, T> implements Pageable<K, T>, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -12,11 +12,6 @@ public class EmptyPageable<K, T> implements Pageable<K, T>, Serializable {
 	public EmptyPageable(K cursorId, long count) {
 		this.cursorId = cursorId;
 		this.count = count;
-	}
-
-	@Override
-	public Iterator<T> iterator() {
-		return Collections.emptyIterator();
 	}
 
 	@Override
@@ -37,6 +32,11 @@ public class EmptyPageable<K, T> implements Pageable<K, T>, Serializable {
 	@Override
 	public boolean hasNext() {
 		return false;
+	}
+
+	@Override
+	public List<T> rows() {
+		return Collections.emptyList();
 	}
 
 }

@@ -55,11 +55,6 @@ public class PageSupport {
 		return new SharedPage<>(getStart(pageNumber, limit), list, limit, total);
 	}
 
-	public static <K, T> Cursors<K, T> getCursors(Cursor<K, T> cursor,
-			PageableProcessor<K, T> pageableProcessor) {
-		return new JumpCursors<>(cursor, pageableProcessor);
-	}
-
 	public static <T> Pages<T> getPages(Page<T> page,
 			CursorProcessor<Long, T> processor) {
 		return new JumpPages<T>(page, processor);
@@ -69,20 +64,12 @@ public class PageSupport {
 		return new EmptyPageable<K, T>(cursorId, count);
 	}
 
-	public static <K, T> Cursor<K, T> emptyCursor(K cursorId, long count) {
-		return new EmptyCursor<K, T>(cursorId, count);
-	}
-
 	public static <T> Page<T> emptyPage(long pageNumber, long count) {
 		return new EmptyPage<T>(getStart(pageNumber, count), count);
 	}
 
 	public static <K, T> Pageables<K, T> emptyPageables(K cursorId, long count) {
 		return new EmptyPageables<K, T>(cursorId, count);
-	}
-
-	public static <K, T> Cursors<K, T> emptyCursors(K cursorId, long count) {
-		return new EmptyCursors<K, T>(cursorId, count);
 	}
 
 	public static <T> Pages<T> emptyPages(long pageNumber, long count) {

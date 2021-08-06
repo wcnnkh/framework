@@ -1,6 +1,6 @@
 package scw.util.page;
 
-public class JumpPages<T> extends JumpCursors<Long, T> implements Pages<T> {
+public class JumpPages<T> extends JumpPageables<Long, T> implements Pages<T> {
 	private final long pageNumber;
 	private final long total;
 
@@ -21,8 +21,8 @@ public class JumpPages<T> extends JumpCursors<Long, T> implements Pages<T> {
 
 	@Override
 	public Pages<T> process(Long start, long count) {
-		Cursors<Long, T> pageable = super.process(start, count);
-		return new JumpPages<T>(this, pageable, PageSupport.getPageNumber(
+		Pageable<Long, T> pageable = super.process(start, count);
+		return new JumpPages<T>(pageable, this, PageSupport.getPageNumber(
 				count, start), getTotal());
 	}
 

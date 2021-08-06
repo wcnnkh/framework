@@ -6,6 +6,14 @@ import java.util.NoSuchElementException;
 public interface Pageables<K, T> extends Pageable<K, T>, PageableProcessor<K, T>,
 		Iterator<Pageable<K, T>> {
 	
+	/**
+	 * 返回的结果是可以被序列化的
+	 * @return
+	 */
+	default Pageable<K, T> shared(){
+		return new SharedPageable<K, T>(getCursorId(), rows(), getNextCursorId(), getCount(), hasNext());
+	}
+	
 	@Override
 	default <R> Pageables<K, R> jumpTo(PageableProcessor<K, R> processor, K cursorId) {
 		Pageable<K, R> pageable = Pageable.super.jumpTo(processor, cursorId);

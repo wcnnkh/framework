@@ -2,9 +2,13 @@ package scw.util.page;
 
 import java.util.function.Function;
 
-public interface Pages<T> extends Page<T>, Cursors<Long, T> {
+public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 
 	Pages<T> process(Long start, long count);
+	
+	default Page<T> shared(){
+		return new SharedPage<>(getCursorId(), rows(), getCount(), getTotal());
+	}
 
 	@Override
 	default boolean hasNext() {
