@@ -1,82 +1,97 @@
 package scw.lucene;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.DoubleDocValuesField;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.FloatDocValuesField;
+import org.apache.lucene.document.NumericDocValuesField;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.index.IndexableField;
 
 import scw.convert.ConversionService;
+import scw.core.utils.ClassUtils;
 import scw.env.Sys;
 import scw.json.JSONUtils;
+import scw.lucene.annotation.LuceneField;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.FieldFeature;
 import scw.mapper.Fields;
 import scw.mapper.MapperUtils;
 import scw.transaction.Transaction;
 import scw.transaction.TransactionUtils;
-import scw.util.Accept;
 import scw.util.stream.Processor;
 import scw.value.AnyValue;
 import scw.value.StringValue;
 import scw.value.Value;
 
-public abstract class AbstractLuceneTemplete implements LuceneTemplete {
+public abstract class AbstractLuceneTemplete implements LuceneTemplate {
 	private ConversionService conversionService;
 
 	public ConversionService getConversionService() {
-		return conversionService == null ? Sys.env.getConversionService() : conversionService;
+		return conversionService == null ? Sys.env.getConversionService()
+				: conversionService;
 	}
 
 	public void setConversionService(ConversionService conversionService) {
 		this.conversionService = conversionService;
 	}
 
-	protected abstract IndexWriter getIndexWrite() throws IOException;
+	private Fields getFields(Class<?> clazz) {
+		return MapperUtils.getMapper().getFields(clazz)
+				.accept(FieldFeature.EXISTING_GETTER_FIELD)
+				.accept(FieldFeature.EXISTING_SETTER_FIELD)
+				.accept(FieldFeature.IGNORE_STATIC);
+	}
 
-	protected abstract IndexReader getIndexReader() throws IOException;
+	@Override
+	public <T> T mapping(Document document, T instance) {
+		return mapping(document, instance, getFields(instance.getClass()));
+	}
 
-	public <T> T indexWriter(IndexWriterExecutor<T> indexWriterExecutor) throws IOException {
-		Transaction transaction = TransactionUtils.getManager().getTransaction();
-		IndexWriter indexWriter = null;
-		try {
-			indexWriter = getTransactionIndexWrite();
-			T v = indexWriterExecutor.execute(indexWriter);
-			if (transaction == null) {
-				indexWriter.commit();
+	@Override
+	public <T> T mapping(Document document, T instance, Fields fields) {
+		for (IndexableField field : document) {
+			if (!field.fieldType().stored()) {
+				//忽略不保存的字段
+				continue;
 			}
-			return v;
-		} catch (IOException e) {
-			if (indexWriter != null && transaction == null) {
-				indexWriter.rollback();
-			}
-			throw e;
-		} finally {
-			if (indexWriter != null && transaction == null) {
-				indexWriter.close();
+
+			for (scw.mapper.Field javaField : fields.acceptSetter(field.name(),
+					null)) {
+				MapperUtils.setValue(getConversionService(), instance, javaField,
+						field.stringValue());
 			}
 		}
+		return instance;
 	}
 
-	protected abstract Field toField(FieldDescriptor fieldDescriptor, Value value);
-
-	private Fields getFields(Class<?> clazz) {
-		return MapperUtils.getMapper().getFields(clazz).accept(FieldFeature.GETTER)
-				.accept(new Accept<scw.mapper.Field>() {
-
-					public boolean accept(scw.mapper.Field field) {
-						return field.getGetter().getField() != null;
-					}
-				});
+	protected boolean isLuceneField(scw.mapper.Field field) {
+		return Value.isBaseType(field.getGetter().getType());
 	}
 
-	public Document createDocument(Object instance) {
-		Document document = new Document();
-		for (scw.mapper.Field field : getFields(instance.getClass())) {
+	@Override
+	public Document wrap(Document document, Object instance) {
+		return wrap(
+				document,
+				instance,
+				getFields(instance.getClass()).accept(
+						(field) -> {
+							return field.isAnnotationPresent(LuceneField.class)
+									|| Value.isBaseType(field.getGetter()
+											.getType());
+						}));
+	}
+
+	@Override
+	public Document wrap(Document document, Object instance, Fields fields) {
+		for (scw.mapper.Field field : fields) {
 			Object value = field.getGetter().get(instance);
 			if (value == null) {
 				continue;
@@ -86,7 +101,8 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 			if (Value.isBaseType(field.getGetter().getType())) {
 				v = new AnyValue(value, getConversionService());
 			} else {
-				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(value));
+				v = new StringValue(JSONUtils.getJsonSupport().toJSONString(
+						value));
 			}
 
 			Field luceneField = toField(field.getGetter(), v);
@@ -99,13 +115,190 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 		return document;
 	}
 
+	private boolean isStored(FieldDescriptor fieldDescriptor) {
+		scw.lucene.annotation.LuceneField annotation = fieldDescriptor
+				.getAnnotation(scw.lucene.annotation.LuceneField.class);
+		if (annotation != null) {
+			return annotation.stored();
+		}
+		return true;
+	}
+
+	public void addField(Document document, FieldDescriptor fieldDescriptor,
+			Value value) {
+		if (ClassUtils.isLong(fieldDescriptor.getType())
+				|| ClassUtils.isInt(fieldDescriptor.getType())
+				|| ClassUtils.isShort(fieldDescriptor.getType())) {
+			document.add(new NumericDocValuesField(fieldDescriptor.getName(),
+					value.getAsLong()));
+			if (isStored(fieldDescriptor)) {
+				document.add(new StoredField(fieldDescriptor.getName(), value
+						.getAsString()));
+			}
+			return;
+		}
+
+		if (ClassUtils.isDouble(fieldDescriptor.getType())) {
+			document.add(new DoubleDocValuesField(fieldDescriptor.getName(),
+					value.getAsDoubleValue()));
+			if (isStored(fieldDescriptor)) {
+				document.add(new StoredField(fieldDescriptor.getName(), value
+						.getAsString()));
+			}
+			return;
+		}
+
+		if (ClassUtils.isFloat(fieldDescriptor.getType())) {
+			document.add(new FloatDocValuesField(fieldDescriptor.getName(),
+					value.getAsFloatValue()));
+			if (isStored(fieldDescriptor)) {
+				document.add(new StoredField(fieldDescriptor.getName(), value
+						.getAsString()));
+			}
+			return;
+		}
+
+		scw.lucene.annotation.LuceneField annotation = fieldDescriptor
+				.getAnnotation(scw.lucene.annotation.LuceneField.class);
+		if (annotation == null) {
+			document.add(new StringField(fieldDescriptor.getName(), value
+					.getAsString(), Store.YES));
+			return;
+		}
+
+		if (annotation.indexed()) {
+			if (annotation.tokenized()) {
+				document.add(new TextField(fieldDescriptor.getName(), value
+						.getAsString(), annotation.stored() ? Store.YES
+						: Store.NO));
+			} else {
+				document.add(new StringField(fieldDescriptor.getName(), value
+						.getAsString(), annotation.stored() ? Store.YES
+						: Store.NO));
+			}
+		} else {
+			document.add(new StoredField(fieldDescriptor.getName(), value
+					.getAsString()));
+		}
+	}
+
+	protected Field toField(FieldDescriptor fieldDescriptor, Value value) {
+		scw.lucene.annotation.LuceneField annotation = fieldDescriptor
+				.getAnnotation(scw.lucene.annotation.LuceneField.class);
+		if (annotation == null) {
+			if (ClassUtils.isLong(fieldDescriptor.getType())
+					|| ClassUtils.isInt(fieldDescriptor.getType())
+					|| ClassUtils.isShort(fieldDescriptor.getType())) {
+				return new NumericDocValuesField(fieldDescriptor.getName(),
+						value.getAsLong());
+			}
+
+			if (ClassUtils.isDouble(fieldDescriptor.getType())) {
+				return new DoubleDocValuesField(fieldDescriptor.getName(),
+						value.getAsDoubleValue());
+			}
+
+			if (ClassUtils.isFloat(fieldDescriptor.getType())) {
+				return new FloatDocValuesField(fieldDescriptor.getName(),
+						value.getAsFloatValue());
+			}
+			return new StringField(fieldDescriptor.getName(),
+					value.getAsString(), Store.YES);
+		} else {
+			if (annotation.indexed()) {
+				if (annotation.tokenized()) {
+					return new TextField(fieldDescriptor.getName(),
+							value.getAsString(),
+							annotation.stored() ? Store.YES : Store.NO);
+				} else {
+					return new StringField(fieldDescriptor.getName(),
+							value.getAsString(),
+							annotation.stored() ? Store.YES : Store.NO);
+				}
+			} else if (annotation.stored()) {
+				return new StoredField(fieldDescriptor.getName(),
+						value.getAsString());
+			} else {
+				return new StringField(fieldDescriptor.getName(),
+						value.getAsString(), Store.NO);
+			}
+		}
+	}
+
+	protected abstract IndexWriter getIndexWrite() throws IOException;
+
+	protected abstract IndexReader getIndexReader() throws IOException;
+
+	@Override
+	public <T, E extends Throwable> T write(
+			Processor<IndexWriter, T, E> processor) throws LuceneWriteException {
+		Transaction transaction = TransactionUtils.getManager()
+				.getTransaction();
+		IndexWriter indexWriter = null;
+		try {
+			indexWriter = getTransactionIndexWrite();
+			T v = processor.process(indexWriter);
+			if (transaction == null) {
+				indexWriter.commit();
+			}
+			return v;
+		} catch (Throwable e) {
+			if (indexWriter != null && transaction == null) {
+				try {
+					indexWriter.rollback();
+				} catch (IOException e1) {
+					throw new LuceneException(e);
+				}
+			}
+			if (e instanceof LuceneException) {
+				throw (LuceneException) e;
+			}
+			throw new LuceneWriteException(e);
+		} finally {
+			if (indexWriter != null && transaction == null) {
+				try {
+					indexWriter.close();
+				} catch (IOException e) {
+					throw new LuceneException(e);
+				}
+			}
+		}
+	}
+
+	@Override
+	public <T, E extends Throwable> T read(
+			Processor<IndexReader, T, E> processor) throws LuceneException {
+		IndexReader indexReader = null;
+		try {
+			indexReader = getIndexReader();
+			return processor.process(indexReader);
+		} catch (Throwable e) {
+			if (e instanceof LuceneException) {
+				throw (LuceneException) e;
+			}
+			throw new LuceneReadException(e);
+		} finally {
+			if (indexReader != null) {
+				try {
+					indexReader.close();
+				} catch (IOException e) {
+					throw new LuceneException(e);
+				}
+			}
+		}
+	}
+
 	private final IndexWriter getTransactionIndexWrite() throws IOException {
-		Transaction transaction = TransactionUtils.getManager().getTransaction();
+		Transaction transaction = TransactionUtils.getManager()
+				.getTransaction();
 		if (transaction != null) {
-			IndexWriterResource resource = transaction.getResource(IndexWriter.class);
+			IndexWriterResource resource = transaction
+					.getResource(IndexWriter.class);
 			if (resource == null) {
-				IndexWriterResource indexWriterResource = new IndexWriterResource(getIndexWrite());
-				resource = transaction.bindResource(IndexWriter.class, indexWriterResource);
+				IndexWriterResource indexWriterResource = new IndexWriterResource(
+						getIndexWrite());
+				resource = transaction.bindResource(IndexWriter.class,
+						indexWriterResource);
 				if (resource == null) {
 					resource = indexWriterResource;
 				}
@@ -113,100 +306,5 @@ public abstract class AbstractLuceneTemplete implements LuceneTemplete {
 			return resource.getIndexWriter();
 		}
 		return getIndexWrite();
-	}
-
-	public final long createIndex(final Iterable<?> indexs) throws IOException {
-		return indexWriter(new IndexWriterExecutor<Long>() {
-
-			public Long execute(IndexWriter indexWriter) throws IOException {
-				long count = 0;
-				for (Object index : indexs) {
-					Document document = createDocument(index);
-					if (document == null) {
-						continue;
-					}
-					count += indexWriter.addDocument(document);
-				}
-				return count;
-			}
-		});
-	}
-
-	public final long createIndex(Object index) throws IOException {
-		return createIndex(Arrays.asList(index));
-	}
-
-	protected <T> T newInstance(Class<? extends T> type) {
-		return Sys.env.getInstance(type);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T parse(Class<? extends T> type, Document document) {
-		if (Document.class.isAssignableFrom(type)) {
-			return (T) document;
-		}
-
-		T instance = newInstance(type);
-		for (scw.mapper.Field field : getFields(type)) {
-			String value = document.get(field.getGetter().getName());
-			if (value == null) {
-				continue;
-			}
-
-			MapperUtils.setValue(getConversionService(), instance, field, value);
-		}
-		return instance;
-	}
-
-	public final long deleteIndex(final Query... queries) throws IOException {
-		return indexWriter(new IndexWriterExecutor<Long>() {
-
-			public Long execute(IndexWriter indexWriter) throws IOException {
-				return indexWriter.deleteDocuments(queries);
-			}
-		});
-	}
-
-	public final long deleteIndex(final Term... terms) throws IOException {
-		return indexWriter(new IndexWriterExecutor<Long>() {
-
-			public Long execute(IndexWriter indexWriter) throws IOException {
-				return indexWriter.deleteDocuments(terms);
-			}
-		});
-	}
-
-	public final long updateIndex(final Term term, final Iterable<?> indexs) throws IOException {
-		return indexWriter(new IndexWriterExecutor<Long>() {
-
-			public Long execute(IndexWriter indexWriter) throws IOException {
-				long count = 0;
-				for (Object index : indexs) {
-					Document document = createDocument(index);
-					if (document == null) {
-						continue;
-					}
-					count += indexWriter.updateDocument(term, document);
-				}
-				return count;
-			}
-		});
-	}
-
-	public long updateIndex(Term term, Object index) throws IOException {
-		return updateIndex(term, Arrays.asList(index));
-	}
-
-	@Override
-	public <T, E extends Throwable> T indexReader(Processor<IndexReader, T, E> processor) throws E, IOException {
-		IndexReader indexReader = null;
-		try {
-			indexReader = getIndexReader();
-			return processor.process(indexReader);
-		} finally {
-			if (indexReader != null) {
-				indexReader.close();
-			}
-		}
 	}
 }

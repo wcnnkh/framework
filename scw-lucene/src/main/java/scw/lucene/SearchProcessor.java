@@ -5,22 +5,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 
 import scw.core.utils.ArrayUtils;
 import scw.util.stream.Processor;
-import scw.util.task.support.TaskExecutors;
 
-public class SearchProcessor<T> implements Processor<IndexReader, SearchResults<T>, LuceneException> {
+public class SearchProcessor<T> implements Processor<IndexSearcher, SearchResults<T>, LuceneException> {
 	protected final ScoreDoc after;
 	protected final SearchParameters parameters;
-	protected final LuceneTemplete luceneTemplete;
+	protected final LuceneTemplate luceneTemplete;
 	protected final ScoreDocMapper<T> rowMapper;
 
-	public SearchProcessor(LuceneTemplete luceneTemplete, ScoreDoc after, SearchParameters parameters,
+	public SearchProcessor(LuceneTemplate luceneTemplete, ScoreDoc after, SearchParameters parameters,
 			ScoreDocMapper<T> rowMapper) {
 		this.after = after;
 		this.luceneTemplete = luceneTemplete;
@@ -29,20 +27,19 @@ public class SearchProcessor<T> implements Processor<IndexReader, SearchResults<
 	}
 
 	@Override
-	public SearchResults<T> process(IndexReader reader) throws LuceneException {
-		IndexSearcher indexSearcher = new IndexSearcher(reader, TaskExecutors.getGlobalExecutor());
+	public SearchResults<T> process(IndexSearcher searcher) throws LuceneException {
 		TopDocs topDocs;
 		List<T> rows;
 		try {
-			topDocs = search(reader, indexSearcher);
-			rows = mapperRows(reader, indexSearcher, topDocs);
+			topDocs = search(searcher);
+			rows = mapperRows(searcher, topDocs);
 		} catch (IOException e) {
 			throw new LuceneSearchException(e);
 		}
 		return new SearchResults<>(parameters, after, topDocs, rows, rowMapper, luceneTemplete);
 	}
 
-	protected List<T> mapperRows(IndexReader indexReader, IndexSearcher indexSearcher, TopDocs topDocs)
+	protected List<T> mapperRows(IndexSearcher indexSearcher, TopDocs topDocs)
 			throws IOException {
 		if (ArrayUtils.isEmpty(topDocs.scoreDocs)) {
 			return Collections.emptyList();
@@ -50,12 +47,12 @@ public class SearchProcessor<T> implements Processor<IndexReader, SearchResults<
 
 		List<T> rows = new ArrayList<>(topDocs.scoreDocs.length);
 		for (int i = 0; i < topDocs.scoreDocs.length; i++) {
-			rows.add(rowMapper.map(indexReader, indexSearcher, topDocs.scoreDocs[i]));
+			rows.add(rowMapper.map(indexSearcher, topDocs.scoreDocs[i]));
 		}
 		return rows;
 	}
 
-	protected TopDocs search(IndexReader indexReader, IndexSearcher indexSearcher) throws IOException {
+	protected TopDocs search(IndexSearcher indexSearcher) throws IOException {
 		if (after == null) {
 			if (parameters.getSort() == null) {
 				return indexSearcher.search(parameters.getQuery(), parameters.getTop());

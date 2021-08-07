@@ -8,17 +8,12 @@
 	</parent>
 	<artifactId>scw-lucene</artifactId>
 	<properties>
-		<lucene.version>8.5.1</lucene.version>
+		<lucene.version>8.9.0</lucene.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>scw</groupId>
 			<artifactId>scw-data</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>scw</groupId>
-			<artifactId>scw-beans</artifactId>
-			<scope>provided</scope>
 		</dependency>
 
 		<!-- lucene相关 -->
@@ -43,10 +38,24 @@
 			<version>${lucene.version}</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-queries -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queries</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-highlighter -->
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-highlighter</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-misc -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-misc</artifactId>
 			<version>${lucene.version}</version>
 		</dependency>
 
@@ -85,12 +94,20 @@
 			<version>${lucene.version}</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.apache.lucene/lucene-spatial-extras -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-spatial-extras</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.janeluo/ikanalyzer -->
 		<dependency>
 			<groupId>com.janeluo</groupId>
 			<artifactId>ikanalyzer</artifactId>
 			<version>2012_u6</version>
 		</dependency>
+
 		<!-- lucene相关 -->
 	</dependencies>
 </project>

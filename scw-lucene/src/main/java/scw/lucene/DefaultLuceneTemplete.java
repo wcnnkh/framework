@@ -5,22 +5,12 @@ import java.nio.file.Paths;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.NumericDocValuesField;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.MMapDirectory;
-
-import scw.core.utils.ClassUtils;
-import scw.mapper.FieldDescriptor;
-import scw.value.Value;
 
 public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	private final Directory directory;
@@ -51,31 +41,6 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	public IndexWriter getIndexWrite() throws IOException {
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 		return new IndexWriter(getDirectory(), indexWriterConfig);
-	}
-
-	@Override
-	protected Field toField(FieldDescriptor fieldDescriptor, Value value) {
-		if (ClassUtils.isLong(fieldDescriptor.getType()) || ClassUtils.isInt(fieldDescriptor.getType())
-				|| ClassUtils.isShort(fieldDescriptor.getType())) {
-			return new NumericDocValuesField(fieldDescriptor.getName(), value.getAsLong());
-		}
-
-		scw.lucene.annotation.Field annotation = fieldDescriptor.getAnnotation(scw.lucene.annotation.Field.class);
-		if (annotation == null) {
-			return new StringField(fieldDescriptor.getName(), value.getAsString(), Store.YES);
-		}
-		if (annotation.indexed()) {
-			if (annotation.tokenized()) {
-				return new TextField(fieldDescriptor.getName(), value.getAsString(),
-						annotation.stored() ? Store.YES : Store.NO);
-			} else {
-				return new StringField(fieldDescriptor.getName(), value.getAsString(),
-						annotation.stored() ? Store.YES : Store.NO);
-			}
-		} else if (annotation.stored()) {
-			return new StoredField(fieldDescriptor.getName(), value.getAsString());
-		}
-		return null;
 	}
 
 	@Override

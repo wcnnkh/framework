@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 
 import scw.core.Assert;
+import scw.core.utils.CollectionUtils;
 import scw.lang.Nullable;
 
 public interface Pageable<K, T> extends Iterable<T>{
@@ -40,6 +41,30 @@ public interface Pageable<K, T> extends Iterable<T>{
 	 * @return
 	 */
 	boolean hasNext();
+	
+	/**
+	 * 获取当前分页的第一条数据
+	 * @return
+	 */
+	default T first(){
+		List<T> rows = rows();
+		if(CollectionUtils.isEmpty(rows)){
+			return null;
+		}
+		return rows.get(0);
+	}
+	
+	/**
+	 * 获取当前分页的最后一条数据
+	 * @return
+	 */
+	default T last(){
+		List<T> rows = rows();
+		if(CollectionUtils.isEmpty(rows)){
+			return null;
+		}
+		return rows.get(rows.size() - 1);
+	}
 	
 	@Override
 	default Iterator<T> iterator() {

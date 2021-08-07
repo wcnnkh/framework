@@ -1,6 +1,7 @@
 package scw.lucene;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
@@ -14,13 +15,13 @@ public class SearchResults<T> extends TopFieldDocs implements Pageables<ScoreDoc
 	private final SearchParameters parameters;
 	private final List<T> rows;
 	private Sort resultSort;
-	private final LuceneTemplete luceneTemplete;
+	private final LuceneTemplate luceneTemplete;
 	private final ScoreDocMapper<T> rowMapper;
 	private final ScoreDoc cursorId;
 	private ScoreDoc nextCursorId;
 
 	public SearchResults(SearchParameters parameters, ScoreDoc cursorId, TopDocs topDocs, SortField[] fields,
-			List<T> rows, ScoreDocMapper<T> rowMapper, LuceneTemplete luceneTemplete) {
+			List<T> rows, ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete) {
 		super(topDocs.totalHits, topDocs.scoreDocs, fields);
 		this.cursorId = cursorId;
 		this.parameters = parameters;
@@ -33,7 +34,7 @@ public class SearchResults<T> extends TopFieldDocs implements Pageables<ScoreDoc
 	}
 
 	public SearchResults(SearchParameters parameters, ScoreDoc cursorId, TopDocs topDocs, List<T> rows,
-			ScoreDocMapper<T> rowMapper, LuceneTemplete luceneTemplete) {
+			ScoreDocMapper<T> rowMapper, LuceneTemplate luceneTemplete) {
 		this(parameters, cursorId, topDocs, topDocs instanceof TopFieldDocs ? ((TopFieldDocs) topDocs).fields : null,
 				rows, rowMapper, luceneTemplete);
 	}
@@ -78,5 +79,18 @@ public class SearchResults<T> extends TopFieldDocs implements Pageables<ScoreDoc
 	@Override
 	public SearchResults<T> process(ScoreDoc start, long count) {
 		return luceneTemplete.searchAfter(start, parameters.setTop((int) count), rowMapper);
+	}
+	
+	@Override
+	public SearchResults<T> jumpTo(ScoreDoc cursorId) {
+		return process(cursorId, parameters.getTop());
+	}
+	
+	@Override
+	public SearchResults<T> next() {
+		if(!hasNext()){
+			throw new NoSuchElementException();
+		}
+		return process(getNextCursorId(), parameters.getTop());
 	}
 }
