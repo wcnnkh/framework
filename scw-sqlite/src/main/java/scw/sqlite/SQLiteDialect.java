@@ -6,21 +6,24 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import scw.core.utils.ClassUtils;
 import scw.core.utils.NumberUtils;
 import scw.core.utils.StringUtils;
 import scw.mapper.Field;
 import scw.mapper.Fields;
-import scw.mysql.MysqlDialect;
+import scw.orm.sql.PaginationSql;
 import scw.orm.sql.SqlDialectException;
 import scw.orm.sql.SqlType;
+import scw.orm.sql.StandardSqlDialect;
 import scw.orm.sql.TableStructureMapping;
+import scw.orm.sql.annotation.Counter;
 import scw.sql.SimpleSql;
 import scw.sql.Sql;
 import scw.value.AnyValue;
 
-public class SQLiteDialect extends MysqlDialect {
+public class SQLiteDialect extends StandardSqlDialect {
 	
 	@Override
 	public SqlType getSqlType(Class<?> type) {
@@ -117,7 +120,8 @@ public class SQLiteDialect extends MysqlDialect {
 		if (primaryKeys.size() == 0) {
 			throw new NullPointerException("not found primary key");
 		}
-
+		
+		Map<String, Object> changeMap = getChangeMap(entity);
 		StringBuilder sb = new StringBuilder(512);
 		StringBuilder cols = new StringBuilder();
 		StringBuilder values = new StringBuilder();
@@ -132,10 +136,14 @@ public class SQLiteDialect extends MysqlDialect {
 					continue;
 				}
 			}
-
+			
 			appendFieldName(cols, column.getGetter());
-			values.append("?");
-			params.add(value);
+			if(isPrimaryKey(column)) {
+				values.append("?");
+				params.add(value);
+			}else {
+				appendUpdateValue(values, params, entity, column, changeMap);
+			}
 
 			if (iterator.hasNext()) {
 				cols.append(",");
@@ -152,6 +160,26 @@ public class SQLiteDialect extends MysqlDialect {
 		sb.append(")");
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
+	
+	@Override
+	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Field column,
+			AnyValue oldValue, AnyValue newValue, Counter counter) {
+		double change = newValue.getAsDoubleValue() - oldValue.getAsDoubleValue();
+		sb.append("CASE WHEN ");
+		appendFieldName(sb, column.getGetter());
+		sb.append("+").append(change);
+		sb.append(">=").append(counter.min());
+		sb.append(AND);
+		appendFieldName(sb, column.getGetter());
+		sb.append("+").append(change);
+		sb.append("<=").append(counter.max());
+		sb.append(" THEN ");
+		appendFieldName(sb, column.getGetter());
+		sb.append("+").append(change);
+		sb.append(" ELSE ");
+		appendFieldName(sb, column.getGetter());
+		sb.append(")");
+	}
 
 	@Override
 	public TableStructureMapping getTableStructureMapping(Class<?> clazz, final String tableName) {
@@ -165,5 +193,39 @@ public class SQLiteDialect extends MysqlDialect {
 				return resultSet.getString("name");
 			}
 		};
+	}
+
+	@Override
+	public PaginationSql toPaginationSql(Sql sql, long start, long limit) throws SqlDialectException {
+		String str = sql.getSql();
+		int fromIndex = str.toLowerCase().indexOf(" from ");// ignore select
+		if (fromIndex == -1) {
+			throw new IndexOutOfBoundsException(str);
+		}
+
+		String whereSql;
+		int orderIndex = str.toLowerCase().lastIndexOf(" order by ");
+		if (orderIndex == -1) {// 不存在 order by 子语句
+			whereSql = str.substring(fromIndex);
+		} else {
+			whereSql = str.substring(fromIndex, orderIndex);
+		}
+
+		Sql countSql = new SimpleSql("select count(*)" + whereSql, sql.getParams());
+		StringBuilder sb = new StringBuilder(str);
+		sb.append(" limit ").append(start).append(",").append(limit);
+		return new PaginationSql(countSql, new SimpleSql(sb.toString(), sql.getParams()));
+	}
+
+	@Override
+	public Sql toCopyTableStructureSql(Class<?> entityClass, String newTableName, String oldTableName)
+			throws SqlDialectException {
+		StringBuilder sb = new StringBuilder();
+		sb.append(getCreateTablePrefix());
+		sb.append(" ");
+		keywordProcessing(sb, newTableName);
+		sb.append(" like ");
+		keywordProcessing(sb, oldTableName);
+		return new SimpleSql(sb.toString());
 	}
 }

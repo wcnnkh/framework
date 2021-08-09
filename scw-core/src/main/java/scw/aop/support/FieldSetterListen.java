@@ -7,20 +7,20 @@ import scw.core.reflect.MethodInvoker;
 import scw.mapper.Field;
 
 public interface FieldSetterListen extends WriteReplaceInterface{
-	public static final String GET_CHANGE_MAP = "get_field_setter_map";
-	public static final String CLEAR_FIELD_LISTEN = "clear_field_setter_listen";
+	public static final String GET_CHANGE_MAP = "_getFieldSetterMap";
+	public static final String CLEAR_FIELD_LISTEN = "_clearFieldSetterMap";
 
 	/**
 	 * 返回的map是调用了set方法的字段，值是在调用startFieldListen之前的值
 	 * 
 	 * @return
 	 */
-	Map<String, Object> get_field_setter_map();
+	Map<String, Object> _getFieldSetterMap();
 
-	void field_setter(MethodInvoker invoker, Field field, Object oldValue);
+	void _fieldSet(MethodInvoker invoker, Field field, Object oldValue);
 
 	/**
 	 * 清空监听数据
 	 */
-	void clear_field_setter_listen();
+	void _clearFieldSetterMap();
 }

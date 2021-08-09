@@ -11,7 +11,6 @@ import scw.mapper.FieldDescriptor;
 import scw.orm.ObjectKeyFormat;
 import scw.orm.ObjectRelationalMapping;
 import scw.orm.sql.annotation.AutoIncrement;
-import scw.orm.sql.annotation.Counter;
 import scw.orm.sql.annotation.Unique;
 import scw.sql.Sql;
 
@@ -25,10 +24,6 @@ public interface SqlDialect extends ObjectKeyFormat, ObjectRelationalMapping{
 	default boolean isAutoIncrement(Field field) {
 		return (field.isSupportGetter() && isAutoIncrement(field.getGetter())
 				|| (field.isSupportSetter() && isAutoIncrement(field.getSetter())));
-	}
-
-	default Counter getCounter(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.findMergedAnnotation(fieldDescriptor, Counter.class);
 	}
 
 	default boolean isUnique(FieldDescriptor fieldDescriptor) {

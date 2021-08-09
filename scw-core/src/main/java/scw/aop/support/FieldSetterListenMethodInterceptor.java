@@ -18,9 +18,9 @@ public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl im
 	private final Object change(MethodInvoker invoker, Object[] args, Field field) throws Throwable {
 		Object oldValue = field.getGetter().get(invoker.getInstance());
 		if (FieldSetterListen.class.isAssignableFrom(invoker.getDeclaringClass())) {
-			((FieldSetterListen) invoker.getInstance()).field_setter(invoker, field, oldValue);
+			((FieldSetterListen) invoker.getInstance())._fieldSet(invoker, field, oldValue);
 		} else {
-			field_setter(invoker, field, oldValue);
+			_fieldSet(invoker, field, oldValue);
 		}
 		return invoker.invoke(args);
 	}
@@ -35,14 +35,14 @@ public class FieldSetterListenMethodInterceptor extends FieldSetterListenImpl im
 				if (FieldSetterListen.class.isAssignableFrom(invoker.getDeclaringClass())) {
 					return invoker.invoke(args);
 				} else {
-					clear_field_setter_listen();
+					_clearFieldSetterMap();
 					return null;
 				}
 			} else if (FieldSetterListen.GET_CHANGE_MAP.equals(invoker.getMethod().getName())) {
 				if (FieldSetterListen.class.isAssignableFrom(invoker.getDeclaringClass())) {
 					return invoker.invoke(args);
 				} else {
-					return get_field_setter_map();
+					return _getFieldSetterMap();
 				}
 			}
 		}

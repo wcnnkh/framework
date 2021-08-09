@@ -18,7 +18,7 @@ public final class FieldSetterListenUtils {
 
 	public static void clearFieldSetterListen(Object instance) {
 		if (instance instanceof FieldSetterListen) {
-			((FieldSetterListen) instance).clear_field_setter_listen();
+			((FieldSetterListen) instance)._clearFieldSetterMap();
 		}
 	}
 }
