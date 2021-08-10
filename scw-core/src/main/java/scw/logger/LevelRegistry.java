@@ -14,7 +14,7 @@ import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.EventType;
-import scw.event.support.DefaultEventDispatcher;
+import scw.event.support.SimpleEventDispatcher;
 import scw.lang.Nullable;
 
 public class LevelRegistry extends TreeMap<String, Level> implements
@@ -66,7 +66,7 @@ public class LevelRegistry extends TreeMap<String, Level> implements
 		if (dispatcher == null) {
 			synchronized (this) {
 				if (dispatcher == null) {
-					dispatcher = new DefaultEventDispatcher<ChangeEvent<LevelRegistry>>(
+					dispatcher = new SimpleEventDispatcher<ChangeEvent<LevelRegistry>>(
 							true);
 				}
 			}

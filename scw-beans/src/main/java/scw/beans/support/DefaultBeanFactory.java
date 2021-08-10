@@ -30,7 +30,7 @@ import scw.core.utils.ClassUtils;
 import scw.env.Environment;
 import scw.env.Sys;
 import scw.event.EventDispatcher;
-import scw.event.support.DefaultEventDispatcher;
+import scw.event.support.SimpleEventDispatcher;
 import scw.instance.InstanceFactory;
 import scw.instance.NoArgsInstanceFactory;
 import scw.instance.ServiceLoaderFactory;
@@ -47,7 +47,7 @@ import scw.util.Status;
 public class DefaultBeanFactory extends AbstractConfigurableContext
 		implements ConfigurableBeanFactory, ServiceLoaderFactory, Init, Destroy {
 	private static Logger logger = LoggerFactory.getLogger(DefaultBeanFactory.class);
-	private final DefaultEventDispatcher<BeanlifeCycleEvent> beanLifeCycleEventDispatcher = new DefaultEventDispatcher<BeanlifeCycleEvent>(
+	private final SimpleEventDispatcher<BeanlifeCycleEvent> beanLifeCycleEventDispatcher = new SimpleEventDispatcher<BeanlifeCycleEvent>(
 			true);
 	private final DefaultConfigurableAop aop = new DefaultConfigurableAop();
 	private final BeanDefinitionRegistry beanDefinitionRegistry = new LazyBeanDefinitionRegsitry(this);

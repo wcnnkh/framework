@@ -7,7 +7,7 @@ import java.util.Map;
 
 import scw.context.annotation.Provider;
 import scw.event.ObjectEvent;
-import scw.event.support.DefaultEventDispatcher;
+import scw.event.support.SimpleEventDispatcher;
 import scw.lang.AlreadyExistsException;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -16,7 +16,7 @@ import scw.web.pattern.HttpPattern;
 import scw.web.pattern.HttpPatterns;
 
 @Provider
-public class DefaultActionManager extends DefaultEventDispatcher<ObjectEvent<Action>> implements ActionManager {
+public class DefaultActionManager extends SimpleEventDispatcher<ObjectEvent<Action>> implements ActionManager {
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 	private HttpPatterns<Action> registry = new HttpPatterns<Action>();
 	private Map<Method, Action> actionMap = new HashMap<Method, Action>();

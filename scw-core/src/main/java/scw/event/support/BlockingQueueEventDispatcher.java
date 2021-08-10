@@ -6,22 +6,22 @@ import java.util.concurrent.LinkedBlockingQueue;
 import scw.event.Event;
 import scw.lang.Nullable;
 
-public class DefaultQueueEventDispatcher<T extends Event> extends DefaultEventDispatcher<T>
+public class BlockingQueueEventDispatcher<T extends Event> extends SimpleEventDispatcher<T>
 		implements Runnable {
 	private BlockingQueue<T> blockingQueue;
 	private Thread thread;
 	private volatile boolean started = true;
 	private volatile boolean destroy = false;// 是否销毁结束
 	
-	public DefaultQueueEventDispatcher() {
+	public BlockingQueueEventDispatcher() {
 		this(null);
 	}
 	
-	public DefaultQueueEventDispatcher(@Nullable String name) {
+	public BlockingQueueEventDispatcher(@Nullable String name) {
 		this(new LinkedBlockingQueue<T>(), name);
 	}
 
-	public DefaultQueueEventDispatcher(BlockingQueue<T> blockingQueue, @Nullable String name) {
+	public BlockingQueueEventDispatcher(BlockingQueue<T> blockingQueue, @Nullable String name) {
 		super(true);
 		this.blockingQueue = blockingQueue;
 		thread = new Thread(this, name == null? getClass().getName():name);
@@ -31,7 +31,7 @@ public class DefaultQueueEventDispatcher<T extends Event> extends DefaultEventDi
 		Thread shutdown = new Thread() {
 			@Override
 			public void run() {
-				DefaultQueueEventDispatcher.this.destroy();
+				BlockingQueueEventDispatcher.this.destroy();
 			}
 		};
 		shutdown.setName(thread.getName() + "-shutdown");

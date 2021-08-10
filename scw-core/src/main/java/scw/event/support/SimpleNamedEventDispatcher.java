@@ -14,17 +14,17 @@ import scw.util.SmartMap;
  * @param <K>
  * @param <T>
  */
-public class DefaultNamedEventDispatcher<K, T extends Event> implements
+public class SimpleNamedEventDispatcher<K, T extends Event> implements
 		NamedEventDispatcher<K, T> {
 	private volatile SmartMap<K, EventDispatcher<T>> namedEventListenerMap;
 	private final boolean concurrent;
 	private final int initialCapacity;
 
-	public DefaultNamedEventDispatcher(boolean concurrent) {
+	public SimpleNamedEventDispatcher(boolean concurrent) {
 		this(concurrent, 8);
 	}
 
-	public DefaultNamedEventDispatcher(boolean concurrent, int initialCapacity) {
+	public SimpleNamedEventDispatcher(boolean concurrent, int initialCapacity) {
 		this.concurrent = concurrent;
 		this.initialCapacity = initialCapacity;
 	}
@@ -45,7 +45,7 @@ public class DefaultNamedEventDispatcher<K, T extends Event> implements
 	}
 
 	protected EventDispatcher<T> createEventDispatcher(K name) {
-		return new DefaultEventDispatcher<T>(isConcurrent());
+		return new SimpleEventDispatcher<T>(isConcurrent());
 	}
 
 	public EventRegistration registerListener(K name,

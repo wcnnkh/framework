@@ -21,7 +21,7 @@ import scw.event.EventDispatcher;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.Observable;
-import scw.event.support.DefaultEventDispatcher;
+import scw.event.support.SimpleEventDispatcher;
 import scw.io.Resource;
 import scw.logger.Logger;
 import scw.logger.LoggerFactory;
@@ -30,7 +30,7 @@ import scw.util.SplitLine;
 public class DefaultApplication extends XmlBeanFactory
 		implements ConfigurableApplication, EventListener<BeanlifeCycleEvent> {
 	private static final String APPLICATION_PREFIX = "application";
-	private final EventDispatcher<ApplicationEvent> applicationEventDispathcer = new DefaultEventDispatcher<ApplicationEvent>(
+	private final EventDispatcher<ApplicationEvent> applicationEventDispathcer = new SimpleEventDispatcher<ApplicationEvent>(
 			true);
 	private volatile Logger logger;
 	private final long createTime;

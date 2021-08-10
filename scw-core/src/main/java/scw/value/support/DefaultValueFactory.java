@@ -11,7 +11,7 @@ import scw.event.ChangeEvent;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.event.MultiEventRegistration;
-import scw.event.support.DefaultNamedEventDispatcher;
+import scw.event.support.SimpleNamedEventDispatcher;
 import scw.event.support.ObservableMap;
 import scw.util.CollectionFactory;
 import scw.util.Pair;
@@ -25,7 +25,7 @@ public class DefaultValueFactory<K, F extends ValueFactory<K>> implements Config
 
 	public DefaultValueFactory(boolean concurrent) {
 		this.valueMap = new ObservableMap<K, Value>(concurrent,
-				new DefaultNamedEventDispatcher<K, ChangeEvent<Pair<K, Value>>>(concurrent));
+				new SimpleNamedEventDispatcher<K, ChangeEvent<Pair<K, Value>>>(concurrent));
 		this.factories = CollectionFactory.createArrayList(concurrent, 8);
 	}
 

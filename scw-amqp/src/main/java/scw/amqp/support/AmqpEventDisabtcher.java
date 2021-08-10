@@ -10,11 +10,11 @@ import scw.amqp.QueueDeclare;
 import scw.event.Event;
 import scw.event.EventListener;
 import scw.event.EventRegistration;
-import scw.event.support.DefaultEventDispatcher;
+import scw.event.support.SimpleEventDispatcher;
 import scw.io.Serializer;
 import scw.io.SerializerUtils;
 
-public class AmqpEventDisabtcher<T extends Event> extends DefaultEventDispatcher<T>
+public class AmqpEventDisabtcher<T extends Event> extends SimpleEventDispatcher<T>
 		implements MessageListener {
 	private Exchange exchange;
 	private String routingKey;

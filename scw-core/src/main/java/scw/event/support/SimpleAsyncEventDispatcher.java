@@ -7,14 +7,14 @@ import scw.event.EventListener;
 import scw.event.EventRegistration;
 import scw.util.task.support.TaskExecutors;
 
-public class DefaultAsyncEventDispatcher<T extends Event> extends DefaultEventDispatcher<T> {
+public class SimpleAsyncEventDispatcher<T extends Event> extends SimpleEventDispatcher<T> {
 	private Executor executor;
 
-	public DefaultAsyncEventDispatcher() {
+	public SimpleAsyncEventDispatcher() {
 		this(TaskExecutors.getGlobalExecutor());
 	}
 
-	public DefaultAsyncEventDispatcher(Executor executor) {
+	public SimpleAsyncEventDispatcher(Executor executor) {
 		super(true);
 		this.executor = executor;
 	}

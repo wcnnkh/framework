@@ -18,17 +18,17 @@ import scw.util.CollectionFactory;
  *
  * @param <T>
  */
-public class DefaultEventDispatcher<T extends Event> implements EventDispatcher<T> {
+public class SimpleEventDispatcher<T extends Event> implements EventDispatcher<T> {
 	private volatile Collection<EventRegistrationInternal> eventListeners;
 	private final boolean concurrent;
 	private final int initialCapacity;
 	private Executor executor;
 	
-	public DefaultEventDispatcher(boolean concurrent) {
+	public SimpleEventDispatcher(boolean concurrent) {
 		this(concurrent, 8);
 	}
 
-	public DefaultEventDispatcher(boolean concurrent, int initialCapacity) {
+	public SimpleEventDispatcher(boolean concurrent, int initialCapacity) {
 		this.concurrent = concurrent;
 		this.initialCapacity = initialCapacity;
 	}
