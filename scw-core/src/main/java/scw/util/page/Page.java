@@ -1,6 +1,5 @@
 package scw.util.page;
 
-import java.util.function.Function;
 
 public interface Page<T> extends Pageable<Long, T> {
 	/**
@@ -33,28 +32,8 @@ public interface Page<T> extends Pageable<Long, T> {
 		return getPageNumber() < getPages();
 	}
 
-	default <R> Page<R> next(PageableProcessor<Long, R> processor) {
-		return jumpToPage(processor, getPageNumber() + 1);
-	}
-
-	default <R> Page<R> jumpTo(PageableProcessor<Long, R> processor,
-			Long cursorId) {
-		Pageable<Long, R> pageable = processor.process(cursorId, getCount());
-		return new JumpPage<>(pageable, PageSupport.getPageNumber(getCount(),
-				cursorId), getTotal());
-	}
-
-	default <R> Page<R> jumpToPage(PageableProcessor<Long, R> processor,
-			long pageNumber) {
-		return jumpTo(processor, PageSupport.getStart(pageNumber, getCount()));
-	}
-
 	default boolean hasPrevious() {
 		return getPageNumber() > 1;
-	}
-
-	default <R> Page<R> previous(PageableProcessor<Long, R> processor) {
-		return jumpToPage(processor, getPageNumber() - 1);
 	}
 
 	@Override
@@ -65,10 +44,4 @@ public interface Page<T> extends Pageable<Long, T> {
 		}
 		return PageSupport.getNextStart(start, getCount());
 	}
-
-	@Override
-	default <R> Page<R> map(Function<? super T, ? extends R> mapper) {
-		return new MapperPage<>(this, mapper);
-	}
-	
 }

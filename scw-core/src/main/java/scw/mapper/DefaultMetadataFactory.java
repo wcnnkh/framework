@@ -12,7 +12,6 @@ import java.util.List;
 import scw.core.reflect.ReflectionUtils;
 import scw.core.utils.ArrayUtils;
 import scw.core.utils.StringUtils;
-import scw.util.page.Pageable;
 
 public class DefaultMetadataFactory implements FieldMetadataFactory {
 	private final String[] getterMethodPrefixs;
@@ -173,24 +172,13 @@ public class DefaultMetadataFactory implements FieldMetadataFactory {
 		}
 
 		@Override
-		public Class<?> getNextCursorId() {
-			return cursorId.getSuperclass();
-		}
-
-		@Override
 		public List<FieldMetadata> rows() {
 			return rows;
 		}
 
 		@Override
-		public boolean hasNext() {
-			Class<?> superClass = cursorId.getSuperclass();
-			return superClass != null && superClass != Object.class;
-		}
-
-		@Override
-		public Pageable<Class<?>, FieldMetadata> process(Class<?> start, long count) {
-			return getFieldMetadatas(start);
+		public FieldMetadatas jumpTo(Class<?> cursorId) {
+			return getFieldMetadatas(cursorId);
 		}
 	}
 }

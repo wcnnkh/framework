@@ -1,23 +1,16 @@
 package scw.util.page;
 
-import java.util.Iterator;
+public class JumpPageables<P extends Pageable<K, T>, PS extends Pageables<K, T>, K, T>
+		extends PageableWrapper<P, K, T> implements Pageables<K, T> {
+	protected final PS pageables;
 
-public class JumpPageables<K, T> extends PageableWrapper<Pageable<K, T>, K, T>
-		implements Pageables<K, T>, Iterator<Pageable<K, T>> {
-	private final PageableProcessor<K, T> processor;
-	
-	public JumpPageables(Pageable<K, T> pageable, PageableProcessor<K, T> processor) {
+	public JumpPageables(P pageable, PS pageables) {
 		super(pageable);
-		this.processor = processor;
+		this.pageables = pageables;
 	}
 
 	@Override
-	public Pageable<K, T> process(K start, long count) {
-		return processor.process(start, count);
-	}
-
-	@Override
-	public Pageables<K, T> next() {
-		return Pageables.super.next();
+	public Pageables<K, T> jumpTo(K cursorId) {
+		return pageables.jumpTo(cursorId);
 	}
 }

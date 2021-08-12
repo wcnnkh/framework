@@ -57,7 +57,7 @@ public class PageSupport {
 
 	public static <T> Pages<T> getPages(Page<T> page,
 			CursorProcessor<Long, T> processor) {
-		return new JumpPages<T>(page, processor);
+		return new DefaultPages<>(page, processor);
 	}
 
 	public static <K, T> Pageable<K, T> emptyPageable(K cursorId, long count) {

@@ -22,4 +22,9 @@ public class EmptyPages<T> extends EmptyPageables<Long, T> implements Pages<T> {
 	public Pages<T> next() {
 		throw new NoSuchElementException();
 	}
+	
+	@Override
+	public Pages<T> jumpTo(Long cursorId) {
+		throw new NoSuchElementException();
+	}
 }

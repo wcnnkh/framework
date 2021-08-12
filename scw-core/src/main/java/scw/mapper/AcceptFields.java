@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import scw.util.Accept;
-import scw.util.page.Pageable;
 
 public class AcceptFields implements Fields, Serializable {
 	private static final long serialVersionUID = 1L;
@@ -47,9 +46,9 @@ public class AcceptFields implements Fields, Serializable {
 	public boolean hasNext() {
 		return fields.hasNext();
 	}
-
+	
 	@Override
-	public Pageable<Class<?>, Field> process(Class<?> start, long count) {
-		return fields.process(start, count);
+	public Fields jumpTo(Class<?> cursorId) {
+		return fields.jumpTo(cursorId);
 	}
 }

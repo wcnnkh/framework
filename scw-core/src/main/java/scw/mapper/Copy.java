@@ -277,7 +277,7 @@ public class Copy {
 
 		Object target = getInstanceFactory().getInstance(sourceClass);
 		while (sourceClass != null && sourceClass != Object.class) {
-			Fields fields = fieldFactory.getFields(sourceClass, false, parentField).accept(fieldAccept);
+			Fields fields = fieldFactory.getFields(sourceClass, parentField).accept(fieldAccept);
 			for (Field field : fields) {
 				if (!(field.isSupportGetter() && field.isSupportSetter() && field.getGetter().getField() != null
 						&& field.getSetter().getField() != null)) {

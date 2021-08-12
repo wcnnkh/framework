@@ -3,11 +3,11 @@ package scw.util.page;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class PageStream<K, T> implements Iterator<T> {
+public class IteratorAll<K, T> implements Iterator<T> {
 	private Pageables<K, T> pageables;
 	private Iterator<T> iterator;
 
-	public PageStream(Pageables<K, T> pageables) {
+	public IteratorAll(Pageables<K, T> pageables) {
 		this.pageables = pageables;
 		this.iterator = pageables.iterator();
 	}

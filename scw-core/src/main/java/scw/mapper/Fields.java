@@ -1,21 +1,17 @@
 package scw.mapper;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import scw.core.utils.CollectionUtils;
 import scw.lang.Nullable;
 import scw.util.Accept;
 import scw.util.page.Pageables;
 
-public interface Fields extends Pageables<Class<?>, Field>{
+public interface Fields extends Pageables<Class<?>, Field> {
+
 	@Nullable
 	default Field find(String name, @Nullable Type type) {
 		return accept(name, type).first();
@@ -40,13 +36,16 @@ public interface Fields extends Pageables<Class<?>, Field>{
 	}
 
 	default Fields accept(String name, @Nullable Type type) {
-		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(name, type);
+		AcceptFieldDescriptor acceptFieldDescriptor = new AcceptFieldDescriptor(
+				name, type);
 		return accept(new Accept<Field>() {
 
 			@Override
 			public boolean accept(Field e) {
-				return (e.isSupportGetter() && acceptFieldDescriptor.accept(e.getGetter()))
-						|| (e.isSupportSetter() && acceptFieldDescriptor.accept(e.getSetter()));
+				return (e.isSupportGetter() && acceptFieldDescriptor.accept(e
+						.getGetter()))
+						|| (e.isSupportSetter() && acceptFieldDescriptor
+								.accept(e.getSetter()));
 			}
 		});
 	}
@@ -78,18 +77,18 @@ public interface Fields extends Pageables<Class<?>, Field>{
 		});
 	}
 
+	@Override
+	public default Fields shared() {
+		return new SharedFields(getCursorId(), this, rows());
+	}
+
 	/**
 	 * 去重
 	 * 
 	 * @return
 	 */
 	default Fields distinct() {
-		
-		Set<Field> fields = new LinkedHashSet<Field>();
-		for (Field field : this) {
-			fields.add(field);
-		}
-		return new SharedFields(fields);
+		return new StreamFields(getCursorId(), this, stream().distinct());
 	}
 
 	default Fields accept(Accept<Field> accept) {
@@ -124,8 +123,10 @@ public interface Fields extends Pageables<Class<?>, Field>{
 		return exclude(new Accept<Field>() {
 
 			public boolean accept(Field e) {
-				return (e.isSupportGetter() && names.contains(e.getGetter().getName()))
-						|| (e.isSupportSetter() && names.contains(e.getSetter().getName()));
+				return (e.isSupportGetter() && names.contains(e.getGetter()
+						.getName()))
+						|| (e.isSupportSetter() && names.contains(e.getSetter()
+								.getName()));
 			}
 		});
 	}
@@ -154,13 +155,33 @@ public interface Fields extends Pageables<Class<?>, Field>{
 		}
 		return map;
 	}
-	
+
+	@Override
+	default boolean hasNext() {
+		Class<?> next = getNextCursorId();
+		return next != null && next != Object.class;
+	}
+
+	@Override
+	default Class<?> getNextCursorId() {
+		return getCursorId().getSuperclass();
+	}
+
 	/**
 	 * 获取全部字段
+	 * 
 	 * @see #stream()
 	 * @return
 	 */
 	default Fields all() {
-		return new SharedFields(getCursorId(), stream().collect(Collectors.toList()));
+		return new StreamFields(getCursorId(), null, this, streamAll());
 	}
+
+	@Override
+	public default Fields next() {
+		return jumpTo(getNextCursorId());
+	}
+
+	@Override
+	Fields jumpTo(Class<?> cursorId);
 }

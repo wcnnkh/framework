@@ -1,68 +1,35 @@
 package scw.mapper;
 
-import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
-import scw.lang.NotSupportedException;
-import scw.util.page.Pageable;
+public class SharedFields extends AbstractFields implements Fields {
+	private final List<Field> sharedFields;
 
-public class SharedFields implements Fields, Serializable {
-	private static final long serialVersionUID = 1L;
-	private final Class<?> cursorId;
-	private final List<Field> fields;
+	public SharedFields(Class<?> cursorId, Fields fields,
+			List<Field> sharedFields) {
+		super(cursorId, fields);
+		this.sharedFields = sharedFields;
+	}
 
-	public SharedFields(Class<?> cursorId, List<Field> fields) {
-		this.cursorId = cursorId;
-		this.fields = fields;
+	public SharedFields(Class<?> cursorId, Class<?> nextCursorId,
+			Fields fields, List<Field> sharedFields) {
+		super(cursorId, nextCursorId, fields);
+		this.sharedFields = sharedFields;
 	}
 
 	@Override
 	public Fields shared() {
-		return new SharedFields(cursorId, fields);
-	}
-	
-	@Override
-	public long getCount() {
-		return fields.size();
-	}
-
-	@Override
-	public Class<?> getCursorId() {
-		return cursorId;
-	}
-
-	@Override
-	public Class<?> getNextCursorId() {
-		return null;
-	}
-
-	@Override
-	public List<Field> rows() {
-		return Collections.unmodifiableList(fields);
-	}
-
-	@Override
-	public boolean hasNext() {
-		return false;
-	}
-	
-	@Override
-	public Fields all() {
 		return this;
 	}
 
 	@Override
-	public Pageable<Class<?>, Field> process(Class<?> start, long count) {
-		if (start == cursorId) {
-			return this;
-		}
-		throw new NotSupportedException("Shared");
+	public long getCount() {
+		return sharedFields.size();
 	}
 
 	@Override
-	public Stream<Field> stream() {
-		return fields.stream();
+	public List<Field> rows() {
+		return Collections.unmodifiableList(sharedFields);
 	}
 }

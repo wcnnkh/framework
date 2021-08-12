@@ -36,14 +36,8 @@ public class DefaultFieldFactory extends DefaultMetadataFactory implements Field
 		return Arrays.asList(supplier.get());
 	}
 	
-	/**
-	 * 获取一个类所有的字段
-	 * @param entityClass 实体类
-	 * @param useSuperClass 是否使用父类
-	 * @param parentField 父级字段
-	 * @return
-	 */
-	public Fields getFields(Class<?> entityClass, boolean useSuperClass, Field parentField) {
-		return new DefaultFields(this, entityClass, useSuperClass, parentField);
+	@Override
+	public Fields getFields(Class<?> entityClass, Field parentField) {
+		return new DefaultFields(parentField, getFieldMetadatas(entityClass));
 	}
 }

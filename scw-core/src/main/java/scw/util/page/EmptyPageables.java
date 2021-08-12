@@ -1,5 +1,7 @@
 package scw.util.page;
 
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 public class EmptyPageables<K, T> extends EmptyPageable<K, T> implements
@@ -16,7 +18,12 @@ public class EmptyPageables<K, T> extends EmptyPageable<K, T> implements
 	}
 
 	@Override
-	public Pageable<K, T> process(K start, long count) {
-		return new EmptyPageable<>(start, count);
+	public Iterator<T> iterator() {
+		return Collections.emptyIterator();
+	}
+
+	@Override
+	public Pageables<K, T> jumpTo(K cursorId) {
+		throw new NoSuchElementException();
 	}
 }
