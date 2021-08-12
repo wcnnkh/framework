@@ -1,6 +1,10 @@
 package scw.util.page;
 
+import java.util.Iterator;
+import java.util.Spliterators;
 import java.util.function.Function;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 
@@ -55,5 +59,10 @@ public interface Pages<T> extends Page<T>, Pageables<Long, T> {
 
 	default Pages<T> previous() {
 		return jumpToPage(getPageNumber() - 1);
+	}
+	
+	default Stream<Pages<T>> pages(){
+		Iterator<Pages<T>> iterator = new PagesIterator<>(this);
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator, 0), false);
 	}
 }

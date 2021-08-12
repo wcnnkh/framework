@@ -1,7 +1,6 @@
 package scw.mapper;
 
-import java.util.Collection;
-
+@FunctionalInterface
 public interface FieldMetadataFactory {
-	Collection<FieldMetadata> getFieldMetadatas(Class<?> clazz);
+	FieldMetadatas getFieldMetadatas(Class<?> clazz);
 }

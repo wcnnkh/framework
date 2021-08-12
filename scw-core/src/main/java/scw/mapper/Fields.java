@@ -8,27 +8,14 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+import java.util.stream.Collectors;
 
 import scw.core.utils.CollectionUtils;
 import scw.lang.Nullable;
 import scw.util.Accept;
+import scw.util.page.Pageables;
 
-public interface Fields extends Iterable<Field> {
-	/**
-	 * 获取第一个字段
-	 * 
-	 * @return
-	 */
-	@Nullable
-	default Field first() {
-		for (Field field : this) {
-			return field;
-		}
-		return null;
-	}
-
+public interface Fields extends Pageables<Class<?>, Field>{
 	@Nullable
 	default Field find(String name, @Nullable Type type) {
 		return accept(name, type).first();
@@ -96,39 +83,13 @@ public interface Fields extends Iterable<Field> {
 	 * 
 	 * @return
 	 */
-	default Fields duplicateRemoval() {
+	default Fields distinct() {
+		return new SharedFields(getCursorId(), rows().stream().distinct());
 		Set<Field> fields = new LinkedHashSet<Field>();
 		for (Field field : this) {
 			fields.add(field);
 		}
 		return new SharedFields(fields);
-	}
-
-	/**
-	 * 可共享的
-	 * 
-	 * @return
-	 */
-	default Fields shared() {
-		List<Field> fields = new ArrayList<Field>();
-		for (Field field : this) {
-			fields.add(field);
-		}
-		return new SharedFields(fields);
-	}
-
-	/**
-	 * 获取字段数量，在非shared下字段的数量通过遍历获取的,所以推荐先调用shared再获取数量
-	 * 
-	 * @see SharedFields
-	 */
-	default int size() {
-		int size = 0;
-		for (@SuppressWarnings("unused")
-		Field field : this) {
-			size++;
-		}
-		return size;
 	}
 
 	default Fields accept(Accept<Field> accept) {
@@ -193,12 +154,13 @@ public interface Fields extends Iterable<Field> {
 		}
 		return map;
 	}
-
-	default Stream<Field> stream() {
-		return StreamSupport.stream(spliterator(), false);
-	}
-
-	default Fields merge(Fields fields) {
-		return new MultiFields(this, fields);
+	
+	/**
+	 * 获取全部字段
+	 * @see #stream()
+	 * @return
+	 */
+	default Fields all() {
+		return new SharedFields(getCursorId(), stream().collect(Collectors.toList()));
 	}
 }

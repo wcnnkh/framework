@@ -19,7 +19,7 @@ import scw.core.utils.ArrayUtils;
 import scw.env.Sys;
 
 public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
-	public static final String DIRECTORY_PREFIX = "lucene";
+	public static final String DIRECTORY_PREFIX = "lucene-documents";
 	private final Directory directory;
 	private final Analyzer analyzer;
 	
@@ -73,5 +73,14 @@ public class DefaultLuceneTemplete extends AbstractLuceneTemplete {
 	@Override
 	protected IndexReader getIndexReader() throws IOException {
 		return DirectoryReader.open(directory);
+	}
+
+	@Override
+	public boolean indexExists() throws LuceneException{
+		try {
+			return DirectoryReader.indexExists(directory);
+		} catch (IOException e) {
+			throw new LuceneException(e);
+		}
 	}
 }

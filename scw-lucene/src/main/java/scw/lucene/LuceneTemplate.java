@@ -18,7 +18,7 @@ public interface LuceneTemplate {
 	default Document createDocument(Object instance) {
 		return wrap(new Document(), instance);
 	}
-
+	
 	default <T> T parse(Document document, Class<? extends T> type) {
 		return mapping(document, Sys.env.getInstance(type));
 	}
@@ -53,10 +53,12 @@ public interface LuceneTemplate {
 
 	default long saveOrUpdate(Term term, Object doc)
 			throws LuceneWriteException {
-		Document document = search(new SearchParameters(new TermQuery(term), 1), (reader, source) -> reader.doc(source.doc)).first();
-		if(document == null){
-			wrap(document, doc);
-			return update(term, document);
+		if(indexExists()) {
+			Document document = search(new SearchParameters(new TermQuery(term), 1), (reader, source) -> reader.doc(source.doc)).first();
+			if(document == null){
+				wrap(document, doc);
+				return update(term, document);
+			}
 		}
 		return update(term, doc);
 	}
@@ -106,6 +108,8 @@ public interface LuceneTemplate {
 			throws LuceneSearchException {
 		return search(new SearchProcessor<>(this, after, parameters, rowMapper));
 	}
+	
+	boolean indexExists() throws LuceneException;
 
 	<T> T mapping(Document document, T instance);
 

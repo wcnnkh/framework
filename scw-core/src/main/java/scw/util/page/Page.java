@@ -70,4 +70,5 @@ public interface Page<T> extends Pageable<Long, T> {
 	default <R> Page<R> map(Function<? super T, ? extends R> mapper) {
 		return new MapperPage<>(this, mapper);
 	}
+	
 }

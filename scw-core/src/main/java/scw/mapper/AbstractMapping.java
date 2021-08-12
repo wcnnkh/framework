@@ -12,12 +12,12 @@ public abstract class AbstractMapping implements Mapping {
 		return Sys.env.getInstance(type);
 	}
 	
-	public <T> T mapping(Class<T> entityClass, Fields fields, Mapper mapper) {
+	public <T> T mapping(Class<T> entityClass, Fields fields, FieldFactory fieldFactory) {
 		T entity = newInstance(entityClass);
 		for(Field field : fields){
 			Object value;
 			if(isNesting(field.getSetter())){
-				value = mapper.mapping(field.getSetter().getType(), field, this);
+				value = MapperUtils.mapping(fieldFactory, field.getSetter().getType(), field, this);
 			}else{
 				value = getValue(field);
 			}

@@ -5,58 +5,67 @@ import java.lang.reflect.Field;
 import scw.convert.ConversionService;
 import scw.convert.TypeDescriptor;
 import scw.core.utils.StringUtils;
+import scw.instance.support.DefaultServiceLoaderFactory;
 import scw.lang.NotSupportedException;
 import scw.value.Value;
+import scw.value.support.SystemPropertyFactory;
 
 public class MapperUtils {
-	private static final String BOOLEAN_GETTER_METHOD_PREFIX = "is";
-	private static final String DEFAULT_GETTER_METHOD_PREFIX = "get";
-	private static final String DEFAULT_SETTER_METHOD_PREFIX = "set";
-	private static final Mapper MAPPER = new Mapper(new String[]{BOOLEAN_GETTER_METHOD_PREFIX, DEFAULT_GETTER_METHOD_PREFIX},
-			new String[]{DEFAULT_SETTER_METHOD_PREFIX});
+	private static final FieldFactory FIELD_FACTORY = new DefaultServiceLoaderFactory(new SystemPropertyFactory())
+			.getServiceLoader(FieldFactory.class).first(() -> {
+				return new DefaultFieldFactory(
+						new String[] { Getter.BOOLEAN_GETTER_METHOD_PREFIX, Getter.DEFAULT_GETTER_METHOD_PREFIX },
+						new String[] { Setter.DEFAULT_SETTER_METHOD_PREFIX });
+			});
 
 	private MapperUtils() {
 	};
 
-	public static Mapper getMapper() {
-		return MAPPER;
+	public static FieldFactory getFieldFactory() {
+		return FIELD_FACTORY;
+	}
+	
+	public static Fields getFields(Class<?> entityClass) {
+		return FIELD_FACTORY.getFields(entityClass);
 	}
 
 	public static String getGetterMethodName(Field field) {
 		String name = field.getName();
 		if (field.getType() == boolean.class) {
-			if (name.length() > 2 && name.startsWith(BOOLEAN_GETTER_METHOD_PREFIX)
+			if (name.length() > 2 && name.startsWith(Getter.BOOLEAN_GETTER_METHOD_PREFIX)
 					&& Character.isUpperCase(name.charAt(2))) {
 				return name;
 			}
 
-			return BOOLEAN_GETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
+			return Getter.BOOLEAN_GETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
 		} else {
-			return DEFAULT_GETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
+			return Getter.DEFAULT_GETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
 		}
 	}
 
 	public static String getSetterMethodName(Field field) {
 		String name = field.getName();
 		if (field.getType() == boolean.class) {
-			if (name.length() > 2 && name.startsWith(BOOLEAN_GETTER_METHOD_PREFIX)
+			if (name.length() > 2 && name.startsWith(Getter.BOOLEAN_GETTER_METHOD_PREFIX)
 					&& Character.isUpperCase(name.charAt(2))) {
 				return name.substring(2);
 			}
 		}
-		return DEFAULT_SETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
+		return Setter.DEFAULT_SETTER_METHOD_PREFIX + StringUtils.toUpperCase(name, 0, 1);
 	}
-	
-	public static void setValue(ConversionService conversionService, Object instance, scw.mapper.Field field, Object value){
-		if(!field.isSupportSetter()){
+
+	public static void setValue(ConversionService conversionService, Object instance, scw.mapper.Field field,
+			Object value) {
+		if (!field.isSupportSetter()) {
 			throw new NotSupportedException(field.toString());
 		}
-		
+
 		Object valueToUse;
-		if(value != null && value instanceof Value){
-			valueToUse = ((Value)value).getAsObject(field.getSetter().getGenericType());
-		}else{
-			valueToUse = conversionService.convert(value, value == null? null:TypeDescriptor.forObject(value), new TypeDescriptor(field.getSetter()));
+		if (value != null && value instanceof Value) {
+			valueToUse = ((Value) value).getAsObject(field.getSetter().getGenericType());
+		} else {
+			valueToUse = conversionService.convert(value, value == null ? null : TypeDescriptor.forObject(value),
+					new TypeDescriptor(field.getSetter()));
 		}
 		field.getSetter().set(instance, valueToUse);
 	}
@@ -82,5 +91,20 @@ public class MapperUtils {
 		} else {
 			return field.getGetter().get(instance) != null;
 		}
+	}
+
+	public static final <T> T mapping(FieldFactory fieldFactory, Class<T> entityClass, scw.mapper.Field parentField,
+			Mapping mapping) {
+		return mapping.mapping(entityClass,
+				fieldFactory.getFields(entityClass, parentField).accept(FieldFeature.SUPPORT_SETTER).accept(mapping),
+				fieldFactory);
+	}
+
+	public static final <T> T mapping(Class<T> entityClass, scw.mapper.Field parentField, Mapping mapping) {
+		return mapping(FIELD_FACTORY, entityClass, parentField, mapping);
+	}
+
+	public static final <T> T mapping(Class<T> entityClass, Mapping mapping) {
+		return mapping(entityClass, null, mapping);
 	}
 }

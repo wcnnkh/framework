@@ -14,6 +14,7 @@ public class SearchParameters implements Cloneable {
 
 	public SearchParameters(Query query, int top) {
 		this.query = query;
+		this.top = top;
 	}
 
 	private SearchParameters(SearchParameters parameters) {

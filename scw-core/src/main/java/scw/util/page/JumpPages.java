@@ -40,4 +40,9 @@ public class JumpPages<T> extends JumpPageables<Long, T> implements Pages<T> {
 	public long getTotal() {
 		return total;
 	}
+	
+	@Override
+	public Pages<T> next() {
+		return Pages.super.next();
+	}
 }

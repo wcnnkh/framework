@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /**
- * 游标,只可被迭代一次
+ * 游标
  * 
  * @author shuchaowen
  *

@@ -3,7 +3,6 @@ package scw.util;
 import java.io.Serializable;
 
 import scw.core.utils.ObjectUtils;
-import scw.mapper.MapperUtils;
 
 public class Pair<K, V> implements Serializable, Cloneable {
 	private static final long serialVersionUID = 1L;
@@ -68,7 +67,7 @@ public class Pair<K, V> implements Serializable, Cloneable {
 
 	@Override
 	public String toString() {
-		return MapperUtils.getMapper().getFields(Pair.class).getValueMap(this).toString();
+		return "key = " + key + ", value=" + value;
 	}
 
 	@Override

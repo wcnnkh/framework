@@ -15,4 +15,9 @@ public class JumpPageables<K, T> extends PageableWrapper<Pageable<K, T>, K, T>
 	public Pageable<K, T> process(K start, long count) {
 		return processor.process(start, count);
 	}
+
+	@Override
+	public Pageables<K, T> next() {
+		return Pageables.super.next();
+	}
 }

@@ -38,10 +38,6 @@ public class FieldsWrapper implements Fields {
 		return fields.duplicateRemoval();
 	}
 
-	public Fields shared() {
-		return fields.shared();
-	}
-
 	public Field first() {
 		return fields.first();
 	}
