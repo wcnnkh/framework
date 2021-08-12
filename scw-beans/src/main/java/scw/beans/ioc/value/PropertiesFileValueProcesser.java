@@ -45,6 +45,8 @@ public final class PropertiesFileValueProcesser extends AbstractObservableValueP
 				
 				MapperUtils.setValue(beanFactory.getEnvironment().getConversionService(), obj, keyField, properties.getProperty(keyField.getSetter().getName()));
 			}
+			
+			MapperUtils.getFields(fieldType).
 			return obj;
 		}
 	}

@@ -84,7 +84,7 @@ public interface Fields extends Pageables<Class<?>, Field>{
 	 * @return
 	 */
 	default Fields distinct() {
-		return new SharedFields(getCursorId(), rows().stream().distinct());
+		
 		Set<Field> fields = new LinkedHashSet<Field>();
 		for (Field field : this) {
 			fields.add(field);
