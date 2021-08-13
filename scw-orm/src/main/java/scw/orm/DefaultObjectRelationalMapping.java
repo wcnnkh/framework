@@ -96,11 +96,6 @@ public class DefaultObjectRelationalMapping implements ObjectRelationalMapping {
 	}
 
 	@Override
-	public String getDescription(FieldDescriptor fieldDescriptor) {
-		return AnnotatedElementUtils.getDescription(fieldDescriptor);
-	}
-
-	@Override
 	public boolean isPrimaryKey(FieldDescriptor fieldDescriptor) {
 		return AnnotatedElementUtils.isAnnotated(fieldDescriptor, PrimaryKey.class);
 	}

@@ -46,7 +46,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 	protected static final String WHERE = " where ";
 	protected static final String AND = " and ";
 	protected static final String OR = " or ";
-	
+
 	private static final String IN = " in (";
 	private static final char POINT = '.';
 
@@ -87,7 +87,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 
 		return getConversionService().convert(value, sourceType, TypeDescriptor.valueOf(sqlType.getType()));
 	}
-	
+
 	public Counter getCounter(Field field) {
 		return field.getAnnotation(Counter.class);
 	}
@@ -200,11 +200,22 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		return indexMap;
 	}
 
+	/**
+	 * 字段描述
+	 * 
+	 * @param field
+	 * @return
+	 */
+	@Nullable
+	public String getComment(FieldDescriptor fieldDescriptor) {
+		return AnnotatedElementUtils.getDescription(fieldDescriptor);
+	}
+
 	@Override
 	public String getComment(Field field) {
-		String desc = getDescription(field.getGetter());
+		String desc = getComment(field.getGetter());
 		if (desc == null) {
-			desc = getDescription(field.getSetter());
+			desc = getComment(field.getSetter());
 		}
 		return desc;
 	}
@@ -213,9 +224,9 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 	public String getCharsetName(FieldDescriptor fieldDescriptor) {
 		return AnnotatedElementUtils.getCharsetName(fieldDescriptor, null);
 	}
-	
-	//--------------以下为标准实现-----------------
-	
+
+	// --------------以下为标准实现-----------------
+
 	@Override
 	public Sql toSelectByIdsSql(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
@@ -246,7 +257,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		}
 		return new SimpleSql(sb.toString(), params);
 	}
-	
+
 	@Override
 	public <T> Sql save(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
 		StringBuilder cols = new StringBuilder();
@@ -278,7 +289,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		sql.append(")");
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
-	
+
 	@Override
 	public <T> Sql delete(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
@@ -314,7 +325,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		}
 		return new SimpleSql(sql.toString(), params.toArray());
 	}
-	
+
 	@Override
 	public Sql deleteById(String tableName, Class<?> entityClass, Object... ids) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass);
@@ -346,7 +357,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		}
 		return new SimpleSql(sql.toString(), params);
 	}
-	
+
 	@Override
 	public Sql getInIds(String tableName, Class<?> entityClass, Object[] primaryKeys, Collection<?> inPrimaryKeys)
 			throws SqlDialectException {
@@ -401,7 +412,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		sb.append(WHERE).append(where);
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
-	
+
 	@Override
 	public Sql toMaxIdSql(Class<?> clazz, String tableName, Field field) throws SqlDialectException {
 		StringBuilder sb = new StringBuilder();
@@ -414,9 +425,9 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		sb.append(" desc");
 		return new SimpleSql(sb.toString());
 	}
-	
+
 	@Nullable
-	protected Map<String, Object> getChangeMap(Object entity) throws SqlDialectException{
+	protected Map<String, Object> getChangeMap(Object entity) throws SqlDialectException {
 		Map<String, Object> changeMap = null;
 		if (entity instanceof FieldSetterListen) {
 			changeMap = ((FieldSetterListen) entity)._getFieldSetterMap();
@@ -426,7 +437,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		}
 		return changeMap;
 	}
-	
+
 	@Override
 	public <T> Sql update(String tableName, Class<? extends T> entityClass, T entity) throws SqlDialectException {
 		Fields primaryKeys = getPrimaryKeys(entityClass).shared();
@@ -459,7 +470,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 			appendFieldName(sb, column.getGetter());
 			sb.append("=");
 			AnyValue newValue = new AnyValue(getDataBaseValue(entity, column));
-			AnyValue oldValue = new AnyValue(changeMap == null? null:changeMap.get(column.getSetter().getName()));
+			AnyValue oldValue = new AnyValue(changeMap == null ? null : changeMap.get(column.getSetter().getName()));
 			appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 			if (iterator.hasNext()) {
 				sb.append(",");
@@ -481,7 +492,7 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 		// 添加版本号字段变更条件
 		for (Field column : notPrimaryKeys) {
 			Counter counter = getCounter(column);
-			if(counter != null) {
+			if (counter != null) {
 				sb.append(AND);
 				appendFieldName(sb, column.getGetter());
 				sb.append(">=").append(counter.min());
@@ -489,50 +500,54 @@ public abstract class StandardSqlDialect extends DefaultObjectRelationalMapping 
 				appendFieldName(sb, column.getGetter());
 				sb.append("<=").append(counter.max());
 			}
-			
+
 			if (column.isAnnotationPresent(Version.class)) {
 				AnyValue oldVersion = null;
-				if(changeMap != null && changeMap.containsKey(column.getSetter().getName())) {
+				if (changeMap != null && changeMap.containsKey(column.getSetter().getName())) {
 					oldVersion = new AnyValue(changeMap.get(column.getSetter().getName()));
-					if(oldVersion.getAsDoubleValue() == 0) {
-						//如果存在变更但版本号为0就忽略此条件
+					if (oldVersion.getAsDoubleValue() == 0) {
+						// 如果存在变更但版本号为0就忽略此条件
 						continue;
 					}
 				}
-				
+
 				// 因为一定存在主键，所有一定有where条件，此处直接and
 				sb.append(AND);
 				appendFieldName(sb, column.getGetter());
 				sb.append("=?");
-				
-				//如果存在旧值就使用旧值
-				params.add(oldVersion == null? getDataBaseValue(entity, column): toDataBaseValue(oldVersion.getAsLongValue()));
+
+				// 如果存在旧值就使用旧值
+				params.add(oldVersion == null ? getDataBaseValue(entity, column)
+						: toDataBaseValue(oldVersion.getAsLongValue()));
 			}
 		}
 		return new SimpleSql(sb.toString(), params.toArray());
 	}
-	
-	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Field column, Map<String, Object> changeMap) {
+
+	protected final void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Field column,
+			Map<String, Object> changeMap) {
 		AnyValue newValue = new AnyValue(getDataBaseValue(entity, column));
-		AnyValue oldValue = new AnyValue(changeMap == null? null:changeMap.get(column.getSetter().getName()));
+		AnyValue oldValue = new AnyValue(changeMap == null ? null : changeMap.get(column.getSetter().getName()));
 		appendUpdateValue(sb, params, entity, column, oldValue, newValue);
 	}
-	
-	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Field column, AnyValue oldValue, AnyValue newValue) {
+
+	protected void appendUpdateValue(StringBuilder sb, List<Object> params, Object entity, Field column,
+			AnyValue oldValue, AnyValue newValue) {
 		Counter counter = getCounter(column);
-		if(counter != null) {
+		if (counter != null) {
 			appendCounterValue(sb, params, entity, column, oldValue, newValue, counter);
-		} else if(column.isAnnotationPresent(Version.class)) {
+		} else if (column.isAnnotationPresent(Version.class)) {
 			appendFieldName(sb, column.getGetter());
 			sb.append("+");
 			sb.append(newValue.getAsDoubleValue() - oldValue.getAsByteValue());
-		}else {
+		} else {
 			sb.append("?");
 			params.add(newValue.getValue());
 		}
 	}
-	
-	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Field column, AnyValue oldValue, AnyValue newValue, Counter counter) {
+
+	protected void appendCounterValue(StringBuilder sb, List<Object> params, Object entity, Field column,
+			AnyValue oldValue, AnyValue newValue, Counter counter) {
 		throw new SqlDialectException("This counter field cannot be processed: " + column);
 	}
 }

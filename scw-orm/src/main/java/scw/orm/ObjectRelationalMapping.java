@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import scw.aop.support.ProxyUtils;
 import scw.core.annotation.AnnotatedElementUtils;
-import scw.lang.Nullable;
 import scw.mapper.Field;
 import scw.mapper.FieldDescriptor;
 import scw.mapper.FieldFeature;
@@ -28,15 +27,6 @@ public interface ObjectRelationalMapping {
 	String getName(Class<?> clazz);
 
 	Collection<String> getAliasNames(Class<?> entityClass);
-
-	/**
-	 * 字段描述
-	 * 
-	 * @param field
-	 * @return
-	 */
-	@Nullable
-	String getDescription(FieldDescriptor fieldDescriptor);
 
 	/**
 	 * 是否是主键
